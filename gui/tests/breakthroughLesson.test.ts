@@ -79,6 +79,7 @@ describe("the breakthrough lesson", () => {
     expect(s1.formula).toContain(String.raw`\frac{\partial q_i}{\partial t} &= k_i \left( q^*_i - q_i \right)`);
     expect(prose(s1.note!)).toContain("linear driving force");
     expect(prose(s1.note!)).toContain("first-order upwind");
+    expect(prose(s1.note!)).toContain("van Leer");
   });
 
   it("defines the mass-transfer zone and why it crawls", () => {
@@ -121,13 +122,13 @@ describe("the design consequence — a switched bed is only partly used", () => 
     const tb = kpi("t_breakthrough_5pct_CO2");
     const tst = kpi("t_stoichiometric_CO2");
     const L = declared("L");
-    expect(Math.round(tb)).toBe(2891);
+    expect(Math.round(tb)).toBe(2934);
     expect(Math.round(tst)).toBe(3041);
     const lub = L * (1 - tb / tst);
-    expect(lub).toBeGreaterThan(0.024);
-    expect(lub).toBeLessThan(0.026);           // "some 2.5 cm"
-    expect((1 - tb / tst) * 100).toBeCloseTo(4.93, 1);   // "about 5 %"
-    for (const s of ["2891 s", "3041 s", "0.5 m bed", "2.5 cm", "5 %"])
+    expect(lub).toBeGreaterThan(0.0170);
+    expect(lub).toBeLessThan(0.0180);          // "some 1.75 cm"
+    expect((1 - tb / tst) * 100).toBeCloseTo(3.50, 1);   // "about 3.5 %"
+    for (const s of ["2934 s", "3041 s", "0.5 m bed", "1.75 cm", "3.5 %"])
       expect(prose(s4.note!), `the note lost ${s}`).toContain(s);
   });
 

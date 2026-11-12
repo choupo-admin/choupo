@@ -28,6 +28,7 @@ License
 
 #include "FixedBedAdsorber.H"
 
+#include "core/Advisory.H"
 #include "core/Constants.H"
 #include "core/RegistryRefusal.H"
 #include "io/SolutionWriter.H"
@@ -94,6 +95,20 @@ const Adsorbent& resolveAdsorbent(const std::string& name, int verbosity)
     }
 }
 
+//  C375: the van Leer limited slope of a cell from its two one-sided
+//  differences dm = c_j - c_{j-1}, dp = c_{j+1} - c_j:
+//      s = 2 dm dp / (dm + dp)   when dm dp > 0,   0 otherwise
+//  -- the harmonic mean of the two differences (twice it, as a slope times
+//  dz), zero at an extremum.  |s| <= 2 min(|dm|, |dp|), so the face value
+//  c_j + s/2 lies between c_j and c_{j+1}: no new extremum, no negative
+//  concentration from non-negative cells.  In ratio form s = phi(r) dp with
+//  r = dm/dp and phi(r) = (r + |r|)/(1 + |r|), the van Leer limiter.
+inline scalar vanLeerSlope(scalar dm, scalar dp)
+{
+    const scalar p = dm * dp;
+    return p > 0.0 ? 2.0 * p / (dm + dp) : 0.0;
+}
+
 } // anonymous namespace
 
 void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
@@ -152,7 +167,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             + "': operation.nCells is MISSING -- the axial mesh is the"
             " student's declared discretisation choice (no silent default)."
             "  Declare e.g. `nCells 100;` and do a mesh study (25/50/100/200)"
-            " to see the first-order upwind convergence.");
+            " to see the convergence of the declared convection scheme.");
     const scalar nCellsRaw = opDict->lookupScalar("nCells");
     N_ = static_cast<std::size_t>(nCellsRaw + 0.5);
     if (nCellsRaw < 3.0 || std::abs(nCellsRaw - static_cast<scalar>(N_)) > 1e-9)
@@ -161,6 +176,31 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             + " -- must be an integer >= 3 (the Danckwerts inlet, interior"
             " and outlet stencils need three distinct cells).  Remedy:"
             " declare nCells 25 or more and refine.");
+
+    // -----------------------------------------------------------------
+    //  C375: the convection scheme of the face values, a declared modelling
+    //  choice beside the mesh it acts on.  `upwind` (first order: adds
+    //  v dz/2 to the dispersion, announced below) or `vanLeer` (MUSCL
+    //  reconstruction with the van Leer limiter: second order where the
+    //  profile is smooth, bounded at fronts; the stated default, said so).
+    // -----------------------------------------------------------------
+    convectionDeclared_ = opDict->found("convectionScheme");
+    convectionScheme_ = opDict->lookupWordOrDefault("convectionScheme",
+                                                    convectionScheme_);
+    if (convectionScheme_ != "upwind" && convectionScheme_ != "vanLeer")
+        throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+            + registryRefusal::message("operation.convectionScheme",
+                  convectionScheme_, {"upwind", "vanLeer"}, "Accepted"));
+    secondOrder_ = (convectionScheme_ == "vanLeer");
+    if (opDict->found("schemeDiagnostics"))
+    {
+        const std::string w = opDict->lookupWord("schemeDiagnostics");
+        if (w != "true" && w != "false")
+            throw std::runtime_error("fixedBedAdsorber '" + name_ + "': "
+                + registryRefusal::message("operation.schemeDiagnostics", w,
+                      {"true", "false"}, "Accepted"));
+        schemeDiagnostics_ = (w == "true");
+    }
 
     // -----------------------------------------------------------------
     //  Declared geometry + operating constants (u, P, T constant is the
@@ -498,6 +538,11 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         writeInterval_ = cd->lookupScalarOrDefault("writeInterval", deltaT_);
         adaptive_      =
             (cd->lookupWordOrDefault("timeStepping", "fixed") == "adaptive");
+        //  The axial profiles are <t>/ files: they obey the declared
+        //  `solutionControl { write ...; }` switch, read by the drivers'
+        //  own parser (C375 (b)).
+        writeProfiles_ = SolutionWriter::readTimeDirectoryControl(
+                             *cd, "choupoBatch").write;
     }
 
     // -----------------------------------------------------------------
@@ -767,6 +812,32 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     tStoich_.assign(nAds, -1.0);
     feedSwitched_.assign(nAds, false);
     pendingAmendments_.clear();
+    mom0_.assign(nAds, 0.0);
+    mom1_.assign(nAds, 0.0);
+    mom2_.assign(nAds, 0.0);
+    cOutPrev_.assign(nAds, 0.0);
+    cMaxField_.assign(nAds, 0.0);
+    cMinField_.assign(nAds, 0.0);
+    cFeedMax_.assign(nAds, 0.0);
+    qMaxField_.assign(nAds, 0.0);
+    qMinField_.assign(nAds, 0.0);
+    qStarFeedMax_.assign(nAds, 0.0);
+    for (std::size_t a = 0; a < nAds; ++a)
+    {
+        const std::size_t rq = qOffset_() + a * N_;
+        qMaxField_[a] = *std::max_element(y_.begin() + long(rq),
+                                          y_.begin() + long(rq + N_));
+        qMinField_[a] = *std::min_element(y_.begin() + long(rq),
+                                          y_.begin() + long(rq + N_));
+        if (cIn_[a] > 0.0) qStarFeedMax_[a] = qStarFeed_(a);
+        const std::size_t r = (ergun_ ? adsIdx_[a] : a) * N_;
+        cOutPrev_[a] = y_[r + N_ - 1];
+        cFeedMax_[a] = cIn_[a];
+        cMaxField_[a] = *std::max_element(y_.begin() + long(r),
+                                          y_.begin() + long(r + N_));
+        cMinField_[a] = *std::min_element(y_.begin() + long(r),
+                                          y_.begin() + long(r + N_));
+    }
     for (std::size_t a = 0; a < nAds; ++a)
         if (cIn_[a] > 0.0)
         {
@@ -795,6 +866,28 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                 / (cpS_ + qs * cpG_(ia, T_)
                    + eps_ * cTot_ * cpgFeed_ / rhoB_);
         }
+    }
+
+    // -----------------------------------------------------------------
+    //  C375: THE SCHEME'S OWN DISPERSION, said at the start of every run.
+    //  First-order upwind face values add v dz/2 to the axial dispersion
+    //  (the modified equation: the upwind flux u c_L differs from the
+    //  centred u (c_L + c_R)/2 by -u dz/2 dc/dz, a Fickian flux).  The
+    //  front width, the breakthrough times and the unused bed length carry
+    //  it; the mean (the stoichiometric time) does not.  Interstitial
+    //  basis, the one the moments obey: D_L = Dax/eps, v = u/eps.
+    // -----------------------------------------------------------------
+    dPhysAnn_ = Dax_ / eps_;
+    dNumAnn_  = numericalDispersion_();
+    {
+        const std::string msg = convectionSchemeSentence_();
+        const bool matters = dNumAnn_ > 0.0
+            && (dPhysAnn_ <= 0.0 || dNumAnn_ >= 0.1 * dPhysAnn_);
+        if (AdvisoryLog::instance().add("model",
+                matters ? "warning" : "info",
+                "fixedBedAdsorber '" + name_ + "'", msg)
+            && verbosity_ >= 1 && verbosity_ < 2)
+            std::cout << "  [advisory] " << msg << "\n";
     }
 
     // -----------------------------------------------------------------
@@ -835,6 +928,9 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         else
             std::cout << "  [fixedBedAdsorber '" << name_ << "'] Dax = 0"
                          " (declared): pure advection, no dispersive flux\n";
+        //  C375: the scheme's own dispersion, said beside the declared one.
+        std::cout << "  [fixedBedAdsorber '" << name_ << "'] convection"
+                     " scheme: " << convectionSchemeSentence_() << "\n";
         if (thermal_)
         {
             //  A5-T1 anchors, printed BEFORE the run (design section 4;
@@ -916,7 +1012,8 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         const scalar dtBound = 0.5 * 2.78 / rho;
         std::cout << "  [fixedBedAdsorber '" << name_ << "'] Gershgorin"
                      " bound on the RK4 step, term by term: advection"
-                     " 2 u_i/dz = " << adv << " 1/s; dispersion 4 D_i/dz^2 = "
+                  << (secondOrder_ ? " 6 u_i/dz (van Leer stencil) = "
+                                   : " 2 u_i/dz = ") << adv << " 1/s; dispersion 4 D_i/dz^2 = "
                   << disp << " 1/s; LDF k(1 + rho_b q*'(0)/eps) = " << ldf
                   << " 1/s  -> rho(J) <= " << rho << " 1/s, dt_RK4 <="
                      " safety*2.78/rho = " << dtBound
@@ -953,16 +1050,28 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             {
                 buildOdeStructure_();
                 const std::size_t nv = odeStructure_.blockSize;
+                const std::size_t nB = odeStructure_.nBlocks;
+                std::size_t nPad = 0;
+                for (std::size_t r : odeStructure_.blockRows)
+                    if (r == solver::ODEBlockStructure::kPad) ++nPad;
                 std::cout << "  [fixedBedAdsorber '" << name_ << "'] Jacobian:"
                              " solver.jacobian blockTridiagonal ("
                           << (jacobianDeclared_ ? "declared"
-                                                : "stated default")
-                          << ") -- each cell couples only to its two"
-                             " neighbors, so the unit DECLARES " << N_
-                          << " blocks of " << nv << " unknowns (one per"
-                             " cell) and " << y_.size() - N_ * nv
-                          << " border ledger rows; colored finite"
-                             " differences cost " << nv * std::min<std::size_t>(3, N_)
+                                                : "stated default");
+                if (secondOrder_)
+                    std::cout << ") -- the van Leer stencil reaches two"
+                                 " cells upstream, so the unit gathers TWO"
+                                 " cells per block and DECLARES " << nB
+                              << " blocks of " << nv << " unknowns ("
+                              << nPad << " padding slots) and "
+                              << y_.size() - (nB * nv - nPad);
+                else
+                    std::cout << ") -- each cell couples only to its two"
+                                 " neighbors, so the unit DECLARES " << N_
+                              << " blocks of " << nv << " unknowns (one per"
+                                 " cell) and " << y_.size() - N_ * nv;
+                std::cout << " border ledger rows; colored finite"
+                             " differences cost " << nv * std::min<std::size_t>(3, nB)
                           << " derivative evaluations per Jacobian against "
                           << y_.size() << " dense, and W is factored by"
                              " block-Thomas.  The declaration is AUDITED"
@@ -976,9 +1085,14 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                           << y_.size() << " derivative evaluations per"
                              " Jacobian and a dense LU of W.\n";
         }
-        std::cout << "  [fixedBedAdsorber '" << name_ << "'] axial profiles:"
-                     " <t>/" << name_ << ".profile every writeInterval = "
-                  << writeInterval_ << " s (columns z, c_i, q_i)\n";
+        if (writeProfiles_)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] axial profiles:"
+                         " <t>/" << name_ << ".profile every writeInterval = "
+                      << writeInterval_ << " s (columns z, c_i, q_i)\n";
+        else
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] axial profiles:"
+                         " NOT written -- solutionControl { write false; } is"
+                         " declared, and the profiles are <t>/ files\n";
         std::cout << "  [fixedBedAdsorber '" << name_ << "'] open-boundary"
                      " campaign accounting: materialInventory = bed hold-up"
                      " (gas + solid) + remaining DECLARED feed commitment"
@@ -1049,21 +1163,30 @@ void FixedBedAdsorber::buildOdeStructure_()
     const std::size_t nFlow = ergun_ ? compNames_.size() : adsIdx_.size();
     const std::size_t nAds  = adsIdx_.size();
     const std::size_t nv    = nFlow + nAds + (thermal_ ? 2 : 0);
+    //  C375: the van Leer stencil reads two cells upstream (face j-1/2 needs
+    //  c_{j-2}), and two downstream on backflow, so ONE cell per block is no
+    //  longer block-tridiagonal; TWO cells per block are (cells 2b and 2b+1
+    //  read 2b-2 ... 2b+3, i.e. blocks b-1 ... b+1).  An odd cell count
+    //  leaves the last block half filled with PADDING slots (identity rows
+    //  of W, never perturbed).
+    const std::size_t cpb   = secondOrder_ ? 2 : 1;      // cells per block
+    const std::size_t nB    = (N_ + cpb - 1) / cpb;
+    const std::size_t bs    = cpb * nv;
     odeStructure_ = solver::ODEBlockStructure{};
-    odeStructure_.nBlocks   = N_;
-    odeStructure_.blockSize = nv;
-    odeStructure_.blockRows.assign(N_ * nv, 0);
+    odeStructure_.nBlocks   = nB;
+    odeStructure_.blockSize = bs;
+    odeStructure_.blockRows.assign(nB * bs, solver::ODEBlockStructure::kPad);
     for (std::size_t j = 0; j < N_; ++j)
     {
-        std::size_t k = 0;
+        std::size_t k = (j / cpb) * bs + (j % cpb) * nv;
         for (std::size_t i = 0; i < nFlow; ++i)
-            odeStructure_.blockRows[j * nv + k++] = i * N_ + j;
+            odeStructure_.blockRows[k++] = i * N_ + j;
         for (std::size_t a = 0; a < nAds; ++a)
-            odeStructure_.blockRows[j * nv + k++] = qOffset_() + a * N_ + j;
+            odeStructure_.blockRows[k++] = qOffset_() + a * N_ + j;
         if (thermal_)
         {
-            odeStructure_.blockRows[j * nv + k++] = tOffset_() + j;
-            odeStructure_.blockRows[j * nv + k++] = uOffset_() + j;
+            odeStructure_.blockRows[k++] = tOffset_() + j;
+            odeStructure_.blockRows[k++] = uOffset_() + j;
         }
     }
     //  The ledger rows say what they read: M_in integrates the IMPOSED
@@ -1071,7 +1194,7 @@ void FixedBedAdsorber::buildOdeStructure_()
     //  Q_wall sums every cell and is left undeclared (wide).  H_out (thermal)
     //  integrates the outlet face's enthalpy flux, which reads the last cell
     //  alone, exactly as M_out does.
-    const long last = long(N_) - 1;
+    const long last = long((N_ - 1) / cpb);   // the block of the last cell
     for (std::size_t i = 0; i < nFlow; ++i)
     {
         odeStructure_.borderReads.push_back({inOffset_() + i, 0, -1});
@@ -1327,12 +1450,105 @@ scalar FixedBedAdsorber::qStarFeed_(std::size_t a) const
     return ads_->loading(compNames_[adsIdx_[a]], pMap_, T_);
 }
 
+// -----------------------------------------------------------------------
+//  C375: the advected face value -- THE ONE HOME of the convection scheme.
+//  Face f (1 <= f <= N-1) separates cell f-1 (left) and cell f (right).
+//    upwind:  the upwind cell's value.
+//    vanLeer: a linear profile reconstructed in the UPWIND cell, its slope
+//             limited by van Leer (vanLeerSlope above), evaluated at the
+//             face: c_L + s_L/2 for u >= 0, c_R - s_R/2 for u < 0.
+//  The two ends of the bed, where a slope would need a cell that is not
+//  there:
+//    inlet  -- cell 0's slope reads the FEED c_in as the cell upstream of
+//              it (the matter that enters is at c_in; the inlet face flux
+//              itself stays the imposed Danckwerts u c_in);
+//    outlet -- the last cell's slope reads a zero-gradient ghost (dc/dz =
+//              0 at L), so the slope there is zero and the outlet face
+//              carries the last cell's value, as the upwind scheme does.
+// -----------------------------------------------------------------------
+scalar FixedBedAdsorber::faceValue_(const sVector& y, std::size_t row0,
+                                    std::size_t f, scalar uf,
+                                    scalar cIn) const
+{
+    const scalar* c = &y[row0];
+    if (uf >= 0.0)
+    {
+        const std::size_t L = f - 1;
+        if (!secondOrder_) return c[L];
+        const scalar cm = (L == 0) ? cIn : c[L - 1];
+        return c[L] + 0.5 * vanLeerSlope(c[L] - cm, c[f] - c[L]);
+    }
+    const std::size_t R = f;
+    if (!secondOrder_) return c[R];
+    const scalar cp = (R + 1 < N_) ? c[R + 1] : c[R];
+    return c[R] - 0.5 * vanLeerSlope(c[R] - c[R - 1], cp - c[R]);
+}
+
+scalar FixedBedAdsorber::numericalDispersion_() const
+{
+    //  The leading truncation term of the scheme's convective flux, read as
+    //  a dispersion (interstitial basis).  Upwind: the face value c_L where
+    //  the centred one is (c_L + c_R)/2 + O(dz^2), so the flux carries an
+    //  extra -u (dz/2) dc/dz and, divided by eps, D_num = v dz/2.  A
+    //  second-order reconstruction has no such term (its leading error is
+    //  O(dz^2), dispersive, and the limiter falls back to first order only
+    //  at extrema and fronts).
+    if (secondOrder_) return 0.0;
+    return 0.5 * (u_ / eps_) * dz_;
+}
+
+scalar FixedBedAdsorber::nCellsForTenth_() const
+{
+    //  D_num/D_L = (v L / (2 N D_L)) < 0.1  <=>  N > 5 v L / D_L = 5 Pe.
+    if (dPhysAnn_ <= 0.0) return 0.0;
+    return std::floor(5.0 * (u_ / eps_) * L_ / dPhysAnn_) + 1.0;
+}
+
+std::string FixedBedAdsorber::convectionSchemeSentence_() const
+{
+    std::ostringstream os;
+    os << std::setprecision(4);
+    if (!convectionDeclared_)
+        os << "(stated default, operation.convectionScheme absent) ";
+    if (dNumAnn_ <= 0.0)
+    {
+        os << convectionScheme_ << " (second order, van Leer-limited):"
+              " no first-order numerical dispersion -- its leading error is"
+              " O(dz^2); the declared D_L = Dax/eps = " << dPhysAnn_
+           << " m2/s is the dispersion the front sees, except where the"
+              " limiter falls back to first order at a front or an"
+              " extremum";
+        return os.str();
+    }
+    os << convectionScheme_ << " (first order) adds a NUMERICAL dispersion"
+          " D_num = v dz/2 = " << dNumAnn_ << " m2/s (v = u/eps = "
+       << u_ / eps_ << " m/s, dz = " << dz_ << " m) to the declared D_L ="
+          " Dax/eps = " << dPhysAnn_ << " m2/s";
+    if (dPhysAnn_ > 0.0)
+        os << " -- ratio " << dNumAnn_ / dPhysAnn_ << "; nCells >= "
+           << std::setprecision(10) << nCellsForTenth_()
+           << " would bring it under 0.1";
+    else
+        os << " -- the bed declares no physical dispersion, so every bit of"
+              " spreading is the grid's";
+    os << ".  The front width, the breakthrough times and the unused bed"
+          " length carry the grid's dispersion; the mean (stoichiometric"
+          " time) does not";
+    return os.str();
+}
+
 scalar FixedBedAdsorber::gershgorin_(scalar& adv, scalar& disp,
                                      scalar& ldf) const
 {
     const scalar ui = u_ / eps_;
     const scalar Di = Dax_ / eps_;
-    adv  = 2.0 * ui / dz_;
+    //  advection: the row sum of |d(flux divergence)/dc| over the stencil.
+    //  Upwind: |dF/dc| = u per face, two faces -> 2u/dz.  van Leer: the
+    //  face value c_L + s/2 has partial derivatives (-a, 1 + a - b, b) on
+    //  (c_{L-1}, c_L, c_R) with a, b in [0, 1] (the limited slope's own
+    //  derivatives, each between 0 and 2, halved), whose absolute sum is
+    //  at most 3 -> 6u/dz (C375).
+    adv  = (secondOrder_ ? 6.0 : 2.0) * ui / dz_;
     disp = 4.0 * Di / (dz_ * dz_);
     ldf  = 0.0;
     for (std::size_t a = 0; a < adsIdx_.size(); ++a)
@@ -1435,6 +1651,11 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
             flux[i][0] = u_ * cInAll_[i]; // imposed Danckwerts inlet flux
         uface[0] = u_;
 
+        //  cface[i][f]: the ADVECTED concentration at interior face f --
+        //  the convection scheme's one answer, read by the species flux
+        //  here and by the energy flux below (the advected moles carry
+        //  their enthalpy, so the two must be the same moles).
+        std::vector<sVector> cface(n, sVector(N_ + 1, 0.0));
         sVector cL(n), cR(n);
         for (std::size_t f = 1; f < N_; ++f)
         {
@@ -1447,7 +1668,10 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
             uface[f] = uf;
             for (std::size_t i = 0; i < n; ++i)
             {
-                const scalar cup = uf >= 0.0 ? cL[i] : cR[i];
+                const scalar cup = secondOrder_
+                    ? faceValue_(y, i * N_, f, uf, cInAll_[i])
+                    : (uf >= 0.0 ? cL[i] : cR[i]);
+                cface[i][f] = cup;
                 flux[i][f] = uf * cup - Dax_ * (cR[i] - cL[i]) / dz_;
             }
         }
@@ -1585,7 +1809,7 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
                 {
                     const scalar cl = y[i * N_ + f - 1];
                     const scalar cr = y[i * N_ + f];
-                    const scalar adv = uf * ((uf >= 0.0) ? cl : cr);
+                    const scalar adv = uf * cface[i][f];
                     const scalar disp = -Dax_ * (cr - cl) / dz_;
                     if (adv != 0.0) e += adv * hSens_(i, Tup);
                     if (disp != 0.0)
@@ -1656,6 +1880,27 @@ sVector FixedBedAdsorber::rhs_(const sVector& y)
         const scalar* dq = &dy[nAds * N_ + a * N_];
         scalar*       dc = &dy[a * N_];
         const scalar  ci = cIn_[a];
+
+        if (secondOrder_)
+        {
+            //  C375: the same finite volume with REconstructed face values.
+            //  F_{1/2} = u c_in imposed (Danckwerts), interior faces
+            //  u c_face - Dax (c_R - c_L)/dz with c_face from faceValue_,
+            //  outlet face u c_N (zero gradient: the reconstruction there
+            //  IS the last cell's value).  One face flux leaves one cell
+            //  and enters the next, so the sum telescopes exactly.
+            sVector F(N_ + 1);
+            F[0] = u_ * ci;
+            for (std::size_t f = 1; f < N_; ++f)
+                F[f] = u_ * faceValue_(y, a * N_, f, u_, ci)
+                     - Dax_ * (c[f] - c[f - 1]) / dz_;
+            F[N_] = u_ * c[N_ - 1];
+            for (std::size_t j = 0; j < N_; ++j)
+                dc[j] = ((F[j] - F[j + 1]) / dz_ - rhoB_ * dq[j]) / eps_;
+            dy[2 * nAds * N_ + a]        = A_ * F[0];
+            dy[2 * nAds * N_ + nAds + a] = A_ * F[N_];
+            continue;
+        }
 
         // cell 1 (j = 0): F_1/2 = u*c_in imposed (Danckwerts, exact
         // conservative form -- no ghost cell)
@@ -1732,6 +1977,30 @@ void FixedBedAdsorber::sample_(scalar t)
     const std::size_t nAds = adsIdx_.size();
     const scalar dt = t - tPrev_;
     if (dt <= 0.0) return;
+    //  C375: the scheme's witnesses -- outlet moments by the trapezoid over
+    //  this chunk (they run through feed switches: a pulse IS a switch),
+    //  and the field's extremes at this instant.
+    if (schemeDiagnostics_)
+        for (std::size_t a = 0; a < nAds; ++a)
+        {
+            const std::size_t r = (ergun_ ? adsIdx_[a] : a) * N_;
+            const scalar c0 = cOutPrev_[a], c1 = y_[r + N_ - 1];
+            mom0_[a] += 0.5 * (c0 + c1) * dt;
+            mom1_[a] += 0.5 * (tPrev_ * c0 + t * c1) * dt;
+            mom2_[a] += 0.5 * (tPrev_ * tPrev_ * c0 + t * t * c1) * dt;
+            cOutPrev_[a] = c1;
+            cFeedMax_[a] = std::max(cFeedMax_[a], cIn_[a]);
+            if (cIn_[a] > 0.0)
+                qStarFeedMax_[a] = std::max(qStarFeedMax_[a], qStarFeed_(a));
+            const std::size_t rq = qOffset_() + a * N_;
+            for (std::size_t j = 0; j < N_; ++j)
+            {
+                cMaxField_[a] = std::max(cMaxField_[a], y_[r + j]);
+                cMinField_[a] = std::min(cMinField_[a], y_[r + j]);
+                qMaxField_[a] = std::max(qMaxField_[a], y_[rq + j]);
+                qMinField_[a] = std::min(qMinField_[a], y_[rq + j]);
+            }
+        }
     for (std::size_t a = 0; a < nAds; ++a)
     {
         //  A switched feed changes the sampler's reference basis: the
@@ -1829,6 +2098,11 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         ctrl.rtol      = rtol_;
         ctrl.hInit     = (hCarry_ > 0.0) ? std::min(hCarry_, sub) : 0.0;
         ctrl.positiveRows.assign((ergun_ ? compNames_.size() + nAds : 2 * nAds) * N_, true);
+        //  C375: the van Leer flux is nonlinear, and the Rosenbrock stages
+        //  put the clean bed ahead of a front a round-off below zero; that
+        //  is accepted (unclipped: the ledger stays exact) down to -atol,
+        //  and anything below still rejects the step.
+        ctrl.positiveWithinAtol = secondOrder_;
         ctrl.verbosity = 0;               // the unit prints its own summary
         if (jacobian_ == "blockTridiagonal")
         {
@@ -1840,7 +2114,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         {
             std::ostringstream os;
             os << "fixedBedAdsorber '" << name_ << "': " << method_ << " gave up"
-                  " at t = " << tl << " s (step below hMin or maxSteps) --"
+                  " at t = " << tl << " s (" << st.failure << ") --"
                   " loosen rtol, refine the mesh, or reduce"
                   " samplingInterval";
             throw std::runtime_error(os.str());
@@ -1861,8 +2135,12 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
                   " structure VERIFIED on the first step ("
                << odeStructure_.nBlocks << " blocks of "
                << odeStructure_.blockSize << ", "
-               << y_.size() - odeStructure_.nBlocks
+               << y_.size() - (odeStructure_.nBlocks
                               * odeStructure_.blockSize
+                              - std::size_t(std::count(
+                                    odeStructure_.blockRows.begin(),
+                                    odeStructure_.blockRows.end(),
+                                    solver::ODEBlockStructure::kPad)))
                << " border rows): max |J| outside it = "
                << std::scientific << std::setprecision(2)
                << odeStructure_.offStructureMax
@@ -1959,7 +2237,7 @@ sVector FixedBedAdsorber::cycleState() const
 void FixedBedAdsorber::noteTimeAdvanced(scalar t)
 {
     tNow_ = t;
-    if (writeInterval_ <= 0.0) return;
+    if (!writeProfiles_ || writeInterval_ <= 0.0) return;
     while (t >= nextProfile_ - 1.0e-9)
     {
         writeProfile_(t);
@@ -2831,6 +3109,14 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
     const std::size_t nAds = adsIdx_.size();
     std::map<std::string, scalar> k;
     if (Dax_ > 0.0) k["Pe"] = u_ * L_ / Dax_;
+    //  C375: the scheme's numerical dispersion beside the declared one
+    //  (interstitial basis, frozen at initialise).
+    k["D_axial_interstitial"] = dPhysAnn_;
+    k["D_numerical"]          = dNumAnn_;
+    if (dPhysAnn_ > 0.0)
+        k["numerical_dispersion_ratio"] = dNumAnn_ / dPhysAnn_;
+    if (dNumAnn_ > 0.0 && dPhysAnn_ > 0.0)
+        k["nCells_numerical_ratio_0p1"] = nCellsForTenth_();
     if (ergun_)
     {
         k["P_first_cell_Pa"] = pressureCell_(y_, 0);
@@ -2915,6 +3201,28 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
         if (liveFeed)
             k["c_out_over_cin_final_" + nm] =
                 y_[(ergun_ ? adsIdx_[a] : a) * N_ + N_ - 1] / cIn_[a];
+        if (schemeDiagnostics_)
+        {
+            //  Moments of c_out about t = 0 (mol s/m3, s, s2): mean m1/m0,
+            //  variance m2/m0 - mean^2.
+            k["outlet_m0_" + nm] = mom0_[a];
+            if (mom0_[a] > 0.0)
+            {
+                const scalar mean = mom1_[a] / mom0_[a];
+                k["outlet_mean_" + nm]     = mean;
+                k["outlet_variance_" + nm] = mom2_[a] / mom0_[a] - mean * mean;
+            }
+            if (cFeedMax_[a] > 0.0)
+                k["c_max_over_feed_" + nm] = cMaxField_[a] / cFeedMax_[a];
+            k["c_min_" + nm] = cMinField_[a];
+            //  The loading against the equilibrium loading of the largest
+            //  feed declared (isothermal: the top of the isotherm's range
+            //  this run can reach).
+            if (qStarFeedMax_[a] > 0.0)
+                k["q_max_over_qstar_feed_" + nm] =
+                    qMaxField_[a] / qStarFeedMax_[a];
+            k["q_min_" + nm] = qMinField_[a];
+        }
         // closure + qbar (same expressions as the trajectory columns)
         scalar cs = 0.0, qs = 0.0;
         for (std::size_t j = 0; j < N_; ++j)

@@ -113,6 +113,14 @@ struct ODEBlockStructure
     std::size_t              nBlocks   = 0;
     std::size_t              blockSize = 0;
     std::vector<std::size_t> blockRows;     // [b*blockSize + k] -> index in y
+    //  A PADDING slot (C375): blockRows may name kPad instead of a row of y,
+    //  so that a model whose natural unit does not divide the block size
+    //  can still be gathered into equal blocks.  A second-order convection
+    //  stencil couples a cell to the cells TWO away; gathering two cells
+    //  per block makes it block-tridiagonal again, and an odd cell count
+    //  leaves the last block half empty.  A padding slot is an identity row
+    //  of W: never perturbed, never read, its unknown is zero.
+    static constexpr std::size_t kPad = static_cast<std::size_t>(-1);
 
     //  What a border row reads: blocks [first, last] (first > last: none).
     //  A border row not listed here is taken to read EVERY block (wide).
@@ -161,6 +169,14 @@ struct ODEControls
     //  adaptive driver switched the guard OFF whenever it packed more than
     //  one unit and the units clipped the overshoot after acceptance.
     std::vector<bool> positiveRows;
+    //  C375: the guard's threshold.  false (the default): a masked row is
+    //  "driven negative" below 0.  true: only below MINUS its own absolute
+    //  tolerance, and a value in (-atol, 0) is ACCEPTED as it is -- not set
+    //  to zero, so a linear invariant (a mass ledger) stays exact.  A
+    //  nonlinear limited flux (the fixed bed's van Leer scheme) puts the
+    //  stage combination a round-off below zero ahead of a front, where the
+    //  true value is zero; rejecting that halves the step without end.
+    bool        positiveWithinAtol = false;
     int         verbosity = 1;           // >=3 prints the stiffness verdict
 
     // Optional glass-box hook: invoked once per ACCEPTED step with the time at

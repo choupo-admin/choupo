@@ -32,9 +32,9 @@
 
   THE ENGINE IS THE JUDGE, NOT THE SOURCE.  The fixed-bed unit publishes its
   OWN stoichiometric time (`t_stoichiometric_<i>`, analytic, announced
-  BEFORE the run -- src/unitOperations/batch/FixedBedAdsorber.cpp:774-775)
+  BEFORE the run -- src/unitOperations/batch/FixedBedAdsorber.cpp:845-846)
   and its OWN retention factor (`retention_factor_<i>`, the isotherm's
-  q*(c_in) folded in -- FixedBedAdsorber.cpp:2906-2907).  The tool draws the
+  q*(c_in) folded in -- FixedBedAdsorber.cpp:3192-3193).  The tool draws the
   hand method's numbers BESIDE those two, and a disagreement is a finding
   about the curve (a cut tail, a bed not at equilibrium, a coarse mesh),
   never a moved answer.  Nothing here reaches an isotherm, a rate law or a
@@ -156,7 +156,7 @@ export interface StoichiometricResult {
  * t_st = INTEGRAL(1 - c_out/c_in) dt, as the trapezoid rule over the samples
  * -- what a student does on the data, and exactly the quadrature the engine's
  * `integral_anchor_<i>` KPI runs on its own outlet
- * (FixedBedAdsorber.H:171-172).  Integrated from the FIRST sample to the
+ * (FixedBedAdsorber.H:182-183).  Integrated from the FIRST sample to the
  * LAST; the tail after the last sample is dropped and the result says so.
  */
 export function stoichiometricTime(
@@ -240,7 +240,7 @@ export function loadingFromCurve(
 }
 
 /** q*(c_in) from the ENGINE's own retention factor, its definition
- *  R_f = eps + rho_b q*(c_in)/c_in (FixedBedAdsorber.cpp:898) solved for q*. */
+ *  R_f = eps + rho_b q*(c_in)/c_in (FixedBedAdsorber.cpp:994) solved for q*. */
 export function loadingFromRetention(
   rF: number, eps: number, cIn: number, rhoB: number,
 ): number {
@@ -253,7 +253,7 @@ export interface LabColumn {
   /** The `units[]` entry whose name matched the KPI unit, if any. */
   unitFound: boolean;
   /** Bed length, superficial velocity, void fraction: operation.{L,u,eps}
-   *  (FixedBedAdsorber.cpp:169-172), converted to SI. */
+   *  (FixedBedAdsorber.cpp:209-212), converted to SI. */
   L: number | null;
   u: number | null;
   eps: number | null;

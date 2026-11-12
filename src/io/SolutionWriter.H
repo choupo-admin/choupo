@@ -248,6 +248,11 @@ public:
     // is the steady path's.
     static SolutionControl timeDirectoryControl(const Dictionary&   controlDict,
                                                 const std::string&  binaryName);
+    //  The same reading WITHOUT the announcement, for a unit that writes
+    //  its own files into <t>/ and must obey the same declared switch (the
+    //  fixed bed's axial profiles, DEV.md 4c C375): one parser, two readers.
+    static SolutionControl readTimeDirectoryControl(const Dictionary&   controlDict,
+                                                    const std::string&  binaryName);
 
     // Format a physical time (s) as a clean OpenFOAM-style directory name:
     // an integer prints with no decimals (`10`), a fractional value trims

@@ -159,7 +159,7 @@ The run must reproduce these to the golden tolerances -- an independent analytic
   \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bed) at (0.0,-0.0) {\textbf{bed}\\[-1pt]{\tiny fixedBedAdsorber}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{CO2 15\%/He breakthrough on zeolite 13X -- 1-D isothermal fixed bed (A3): t\_st = 3040.5 s announced pre-run, t\_b(5\%) = 2890.7 s, ledger closure at machine level}
+\tutwhat{CO2 15\%/He breakthrough on zeolite 13X -- 1-D isothermal fixed bed (A3): t\_st = 3040.5 s announced pre-run, t\_b(5\%) = 2934.1 s on the second-order van Leer scheme (2890.7 s under first-order upwind), ledger closure at machine level}
 \begin{tutnarrative}
 CO2/He breakthrough on a zeolite-13X bed.
 
@@ -167,31 +167,33 @@ THE A3 anchor case (spec 2026-07-12): a 0.5 m isothermal fixed bed of zeolite 13
 
 q$\ast$(c\_in) = 5$\ast$9$\ast$0.15/(1 + 9$\ast$0.15) = 2.872340426 mol/kg R\_f = eps + rho\_b q$\ast$ / c\_in = 304.0512509 t\_st = (L/u) R\_f = 3040.512509 s u\_sh = u/R\_f = 1.644459605e-4 m/s
 
-Independent gates this run must reproduce (anchors\_a3.py, FV N = 100):
+The front this run computes (convectionScheme vanLeer, the stated default since C375; nCells = 100):
 
-t\_b(5\%) = 2890.669098 s t\_50 = 3036.448293 s t\_b(95\%) = 3204.166058 s INT(1 - c\_out/c\_in)dt = t\_st to 2.2e-10 (telescopic FV conservation) ledger mass closure <= 1e-10 (IN/OUT integrated as rows of the SAME ODE)
+t\_b(5\%) = 2934.069 s t\_50 = 3035.101 s t\_b(95\%) = 3165.565 s 5-95 \% width 231.5 s; unused bed length L(1 - t\_b/t\_st) = 0.0175 m INT(1 - c\_out/c\_in)dt = t\_st to 3e-8 (telescopic FV conservation) ledger mass closure at round-off (IN/OUT rows of the SAME ODE)
 
-Numerics: conservative FV, nCells = 100 DECLARED (do the 25/50/100/200 mesh study -- batch15 publishes it: first-order upwind, observed order \textasciitilde{}1.03-1.05), Danckwerts inlet as the imposed face flux u$\ast$c\_in, outlet dc/dz = 0. u, P, T are DECLARED constants of this phase, and the price is said OUT LOUD: the real velocity drops \textasciitilde{}15\% across the uptake zone, so the constant-u closure FABRICATES carrier (He) at exactly the net uptake rate (9.19 mol here) -- announced in the run header, pinned as the KPI carrier\_fabricated\_mol and booked as the `carrierMakeUp` inlet stream of the campaign ledger; Ergun (`flowModel ergun`) needs no such stream, and the energy balance of this closure stays UNAVAILABLE (named).
+That is the PHYSICAL front within the stated tolerance: the mesh- converged front (Richardson, 800/1600 cells) has t\_b(5\%) = 2939.26 s, width 219.6 s, unused length 0.0167 m, so at 100 cells van Leer is 0.18 \% early on t\_b and 5.4 \% wide (gate check\_fixed\_bed\_scheme; the width converges at order \textasciitilde{}2). THE COMPARISON A STUDENT CAN REPRODUCE: declare `convectionScheme upwind;` and the first-order scheme adds its numerical dispersion v dz/2 = 3.1e-4 m2/s, 1.25 times the physical Dax/eps = 2.5e-4 (the run announces it), and the front becomes the grid's: t\_b(5\%) = 2890.669 s, t\_50 = 3036.448 s, t\_b(95\%) = 3204.166 s, width 313.5 s, unused length 0.0246 m (the A3 anchors of anchors\_a3.py, FV N = 100, observed order \textasciitilde{}1.03-1.05 -- batch15 is that mesh study). The stoichiometric time does not move with either scheme or mesh.
 
-Log: run header prints the hypotheses, the derived rho\_p, Pe = 250, the Gershgorin step bound term by term and the stiffness verdict; profiles land in <t>/bed.profile every 100 s; trajectory.csv carries c\_out, y\_out, qbar and the per-species ledger closure.
+Numerics: conservative FV, nCells = 100 DECLARED, Danckwerts inlet as the imposed face flux u$\ast$c\_in, outlet dc/dz = 0. u, P, T are DECLARED constants of this phase, and the price is said OUT LOUD: the real velocity drops \textasciitilde{}15\% across the uptake zone, so the constant-u closure FABRICATES carrier (He) at exactly the net uptake rate (9.19 mol here) -- announced in the run header, pinned as the KPI carrier\_fabricated\_mol and booked as the `carrierMakeUp` inlet stream of the campaign ledger; Ergun (`flowModel ergun`) needs no such stream, and the energy balance of this closure stays UNAVAILABLE (named).
+
+Log: run header prints the hypotheses, the derived rho\_p, Pe = 250, the Gershgorin step bound term by term, the scheme's numerical dispersion and the stiffness verdict; the initial profile lands in 0/bed.profile (the later <t>/bed.profile files are erased by the instant writer -- a defect recorded in docs/design/fixed-bed-numerics-c375.md); trajectory.csv carries c\_out, y\_out, qbar and the per-species ledger closure.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-413.617021183}
-\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-413.617021183}
+\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-413.617021276}
+\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-413.617021276}
 \goldrow{kpi}{bed}{P\_final}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
 \goldrow{kpi}{bed}{T\_final}{298}
-\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.999999989455}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{9.19148935961}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{3040.51245606}
-\goldrow{kpi}{bed}{mass\_closure\_CO2}{8.94231742202e-15}
-\goldrow{kpi}{bed}{n\_CO2\_final}{1.21079552014e-05}
-\goldrow{kpi}{bed}{n\_He\_final}{6.86117461711e-05}
-\goldrow{kpi}{bed}{qbar\_CO2\_final}{2.87234042488}
+\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.999999999943}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{9.19148936169}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{3040.51243456}
+\goldrow{kpi}{bed}{mass\_closure\_CO2}{6.86742033269e-14}
+\goldrow{kpi}{bed}{n\_CO2\_final}{1.21079552058e-05}
+\goldrow{kpi}{bed}{n\_He\_final}{6.86117461666e-05}
+\goldrow{kpi}{bed}{qbar\_CO2\_final}{2.87234042553}
 \goldrow{kpi}{bed}{retention\_factor\_CO2}{304.051250948}
-\goldrow{kpi}{bed}{t\_50\_CO2}{3036.44839047}
-\goldmore{41}
+\goldrow{kpi}{bed}{t\_50\_CO2}{3035.10088974}
+\goldmore{44}
 \end{tutgolden}
 
 \clearpage
@@ -245,9 +247,9 @@ A declared zero is not a silent default: the unit announces "k = 0 DECLARED: tra
 \begin{tutnarrative}
 the declared-mesh lesson (A3 spec, gate G6).
 
-The axial mesh is a DECLARED modelling choice (nCells; absent = FATAL), and this case is the receipt: the batch13 breakthrough run on the 25/50/100/200 family, everything else identical. First-order upwind advection dominates the error, so t\_b(5\%) must converge MONOTONICALLY with observed order p \textasciitilde{} 1:
+The axial mesh is a DECLARED modelling choice (nCells; absent = FATAL), and this case is the receipt: the batch13 breakthrough run on the 25/50/100/200 family, everything else identical, with the scheme PINNED to `convectionScheme upwind;` (batch13 itself runs the default van Leer scheme since C375; its t\_b5 at 100 cells is 2934.07 s). First-order upwind advection dominates the error, so t\_b(5\%) must converge MONOTONICALLY with observed order p \textasciitilde{} 1:
 
-N = 25 t\_b5 = 2732.027658 s (this case) N = 50 t\_b5 = 2838.542518 s N = 100 t\_b5 = 2890.669098 s (batch13, the production mesh) N = 200 t\_b5 = 2915.764796 s p(25/50/100) = 1.031 p(50/100/200) = 1.055 Richardson (p = 1): t\_b5(inf) \textasciitilde{} 2940.86 s $\to$ N = 100 sits 1.7\% low
+N = 25 t\_b5 = 2732.027658 s (this case) N = 50 t\_b5 = 2838.542518 s N = 100 t\_b5 = 2890.669098 s (batch13's mesh, under upwind) N = 200 t\_b5 = 2915.764796 s p(25/50/100) = 1.031 p(50/100/200) = 1.055 Richardson (p = 1): t\_b5(inf) \textasciitilde{} 2940.86 s $\to$ N = 100 sits 1.7\% low
 
 The full table, the four overlaid breakthrough curves and the verdict are PUBLISHED in reports/meshStudy.md (generated from the four runs; the report header cites mesh, tolerances and integrator). The ledger mass closure stays <= \textasciitilde{}1e-11 on EVERY mesh -- conservation is telescopic in the FV form, it does not improve with refinement because it was never discretisation-limited (gate G3).
 
@@ -308,21 +310,21 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \end{tutscheme}
 \tutwhat{A4 F2: 400 ppm uptake, Ergun must approach the A3 constant-velocity limit}
 \begin{tutgolden}
-\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{5.32078747864e-13}
-\goldrow{kpi}{campaign}{element\_He\_closure\_rel}{2.64689939494e-13}
-\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{5.32078747864e-13}
-\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{5.33338602831e-13}
+\goldrow{kpi}{campaign}{element\_C\_closure\_rel}{5.33128627003e-13}
+\goldrow{kpi}{campaign}{element\_He\_closure\_rel}{2.669253225e-13}
+\goldrow{kpi}{campaign}{element\_O\_closure\_rel}{5.33128627003e-13}
+\goldrow{kpi}{campaign}{element\_worst\_closure\_rel}{5.33128627003e-13}
 \goldrow{kpi}{campaign}{energy\_balance\_available}{0}
 \goldrow{kpi}{campaign}{energy\_records\_invalid}{0}
 \goldrow{kpi}{campaign}{energy\_records\_valid}{3}
-\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.65824582384e-13}
-\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0.161636709221}
-\goldrow{kpi}{campaign}{mass\_kg\_final}{0.000558961907879}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{2.6805259481e-13}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0.161630811285}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.000565140820198}
 \goldrow{kpi}{campaign}{mass\_kg\_initial}{0.162173202362}
-\goldrow{kpi}{campaign}{mass\_residual\_kg}{4.31155965422e-14}
-\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.0403339312462}
-\goldrow{kpi}{campaign}{moles\_kmol\_final}{2.73636608673e-05}
-\goldmore{74}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{4.34770458296e-14}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0.0403338611118}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{2.7503993825e-05}
+\goldmore{80}
 \end{tutgolden}
 
 \clearpage
@@ -334,21 +336,21 @@ This case pins the N = 25 member; its numbers are DELIBERATELY the worst of the 
 \end{tutscheme}
 \tutwhat{A4 F3: 15 percent CO2 with explicit carrier continuity and Ergun velocity}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-413.699637907}
-\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-413.699637907}
-\goldrow{kpi}{bed}{P\_final}{100047.159082}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100092.418138}
-\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.886961}
-\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100047.162776}
+\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-413.69985154}
+\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-413.69985154}
+\goldrow{kpi}{bed}{P\_final}{100047.159985}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100092.419862}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.886963}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100047.163684}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
 \goldrow{kpi}{bed}{T\_final}{298.15}
-\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{1.00000763107}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-6.8212102633e-13}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{92.4181379529}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{3028.46636949}
-\goldrow{kpi}{bed}{mass\_closure\_CO2}{1.84877618489e-14}
-\goldmore{48}
+\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{1.0000135596}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-7.95807864051e-13}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{92.4198624974}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{3032.65647404}
+\goldrow{kpi}{bed}{mass\_closure\_CO2}{2.15282822286e-14}
+\goldmore{51}
 \end{tutgolden}
 
 \clearpage
@@ -364,7 +366,7 @@ THE A5 WITNESS: load, then switch the feed.
 
 batch13's bed (CO2 15\% in He on zeolite 13X, the A3 anchor), run through a TWO-STEP cycle in one campaign:
 
-0 .. 3600 s LOAD -- identical to batch13's feed; the front arrives on the batch13 anchors (t\_5 = 2890.7, t\_50 = 3036.4, t\_95 = 3204.2 s) 3600 s SWITCH -- recipe setParameter bed.feed.CO2 = 0: the feed becomes pure He (concentration- swing regeneration) 3600 .. 9000 s PURGE -- q$\ast$(c $\to$ 0) = 0, the LDF drives the bed to desorb; the favourable (Langmuir) isotherm makes desorption the UNFAVOURABLE direction -- watch the long tail on c\_out
+0 .. 3600 s LOAD -- identical to batch13's feed; the front arrives on batch13's front (t\_5 = 2934.1, t\_50 = 3035.1, t\_95 = 3165.6 s on the default van Leer scheme, C375) 3600 s SWITCH -- recipe setParameter bed.feed.CO2 = 0: the feed becomes pure He (concentration- swing regeneration) 3600 .. 9000 s PURGE -- q$\ast$(c $\to$ 0) = 0, the LDF drives the bed to desorb; the favourable (Langmuir) isotherm makes desorption the UNFAVOURABLE direction -- watch the long tail on c\_out
 
 What the switch does, and where each consequence is VISIBLE:
 
@@ -372,7 +374,7 @@ The feed commitment is DECLARED matter (the campaign datum owns A$\ast$u$\ast$c\
 
 The breakthrough sampler's reference basis (c\_out/c\_in) dies with the old feed: crossings and integral FREEZE at their pre-switch values (announced), so t\_5/t\_50/t\_95 here must MATCH batch13's anchors -- the frozen claim describes the first feed step. The desorption wave lives on in the trajectory's c\_out\_CO2 / qbar\_CO2 columns.
 
-The adsorption duty stays an EXACT state difference on the adsorbed inventory: E\_adsorption = dH\_ads $\ast$ (n\_ads(end) - n\_ads(0)). batch13 (load only) ledgers -413.6 kJ; here the purge takes part of the loading back OUT, so |E| is SMALLER -- desorption is endothermic and the ledger shows the heat returning, with no new formula anywhere.
+The adsorption duty stays an EXACT state difference on the adsorbed inventory: E\_adsorption = dH\_ads $\ast$ (n\_ads(end) - n\_ads(0)). batch13 (load only) ledgers -413.6 kJ; here (-20.3 kJ at 9000 s) the purge takes part of the loading back OUT, so |E| is SMALLER -- desorption is endothermic and the ledger shows the heat returning, with no new formula anywhere.
 
 u, P, T stay DECLARED CONSTANTS: asking the bed for a thermal swing (feed.T), a flow transient (u) or a blowdown (P) is REFUSED by name (fired by bin/curate/check\_feed\_switch.py, batch12-style honesty).
 
@@ -380,21 +382,21 @@ The carrier-fabrication caveat of the constant-(u, P, T) closure applies unchang
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-23.659607554}
-\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-23.659607554}
+\goldrow{kpi}{bed}{E\_adsorption\_seg0\_kJ}{-20.3329948533}
+\goldrow{kpi}{bed}{E\_adsorption\_total\_kJ}{-20.3329948533}
 \goldrow{kpi}{bed}{P\_final}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
 \goldrow{kpi}{bed}{T\_final}{298}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{0.525769056755}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{3040.50572088}
-\goldrow{kpi}{bed}{mass\_closure\_CO2}{1.23888355951e-14}
-\goldrow{kpi}{bed}{n\_CO2\_final}{3.21638319252e-07}
-\goldrow{kpi}{bed}{n\_He\_final}{8.03980630532e-05}
-\goldrow{kpi}{bed}{qbar\_CO2\_final}{0.164302830236}
-\goldrow{kpi}{bed}{t\_50\_CO2}{3036.44839075}
-\goldrow{kpi}{bed}{t\_breakthrough\_5pct\_CO2}{2890.66919752}
-\goldrow{kpi}{bed}{t\_breakthrough\_95pct\_CO2}{3204.16573565}
-\goldmore{49}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{0.451844330074}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{3040.51207995}
+\goldrow{kpi}{bed}{mass\_closure\_CO2}{8.63958271763e-14}
+\goldrow{kpi}{bed}{n\_CO2\_final}{2.75111922805e-07}
+\goldrow{kpi}{bed}{n\_He\_final}{8.04445894496e-05}
+\goldrow{kpi}{bed}{qbar\_CO2\_final}{0.141201353148}
+\goldrow{kpi}{bed}{t\_50\_CO2}{3035.10085907}
+\goldrow{kpi}{bed}{t\_breakthrough\_5pct\_CO2}{2934.06908679}
+\goldrow{kpi}{bed}{t\_breakthrough\_95pct\_CO2}{3165.56529487}
+\goldmore{52}
 \end{tutgolden}
 
 \clearpage
@@ -422,21 +424,21 @@ Adiabatic means NO energy record: nothing is exchanged with the environment; the
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{P\_final}{100050.377191}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100096.839501}
-\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100002.080676}
-\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100050.98468}
+\goldrow{kpi}{bed}{P\_final}{100050.550283}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100097.15555}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100002.081511}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100051.159061}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{315.824387829}
-\goldrow{kpi}{bed}{T\_max\_final\_K}{334.272787919}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{334.272787919}
-\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.823973072034}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.54374299402e-11}
+\goldrow{kpi}{bed}{T\_final}{315.850484743}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{334.326452215}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{334.326452215}
+\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.823725183953}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.4897417461e-11}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{96.9094456434}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{2836.92720575}
-\goldmore{41}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{97.1555499367}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{2839.09489826}
+\goldmore{44}
 \end{tutgolden}
 
 \clearpage
@@ -462,21 +464,21 @@ Breakthrough crossings/integral freeze at the switch (they describe the load ste
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{P\_final}{100030.435428}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100063.521237}
-\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.142356}
-\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100028.717422}
+\goldrow{kpi}{bed}{P\_final}{100030.237558}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100063.118446}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.142011}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100028.478818}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{349.865629068}
-\goldrow{kpi}{bed}{T\_max\_final\_K}{399.999997842}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{306.756247307}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-2.52953213931e-12}
+\goldrow{kpi}{bed}{T\_final}{349.866000841}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{399.999997624}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{306.831902423}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-1.13686837722e-12}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{63.428058323}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1313.67111248}
-\goldrow{kpi}{bed}{mass\_closure\_CO2}{3.75114008529e-15}
-\goldmore{50}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{63.1184455619}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1315.23023598}
+\goldrow{kpi}{bed}{mass\_closure\_CO2}{4.72969836841e-15}
+\goldmore{53}
 \end{tutgolden}
 
 \clearpage
@@ -504,21 +506,21 @@ The LEDGER is the design point (docs/design/fixed-bed-thermal-a5.md section 6): 
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{E\_wallHeat\_seg0\_kJ}{-184.873220163}
-\goldrow{kpi}{bed}{E\_wallHeat\_total\_kJ}{-184.873220163}
-\goldrow{kpi}{bed}{P\_final}{100048.41634}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100094.212734}
-\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.948175}
-\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100048.658554}
+\goldrow{kpi}{bed}{E\_wallHeat\_seg0\_kJ}{-185.062633189}
+\goldrow{kpi}{bed}{E\_wallHeat\_total\_kJ}{-185.062633189}
+\goldrow{kpi}{bed}{P\_final}{100048.490853}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100094.358494}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.949113}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100048.72665}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{Q\_wall\_removed\_kJ}{184.873220163}
-\goldrow{kpi}{bed}{T\_final}{306.218723043}
-\goldrow{kpi}{bed}{T\_max\_final\_K}{312.419674758}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{312.419674758}
-\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.890450653484}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.41868747253e-11}
-\goldmore{49}
+\goldrow{kpi}{bed}{Q\_wall\_removed\_kJ}{185.062633189}
+\goldrow{kpi}{bed}{T\_final}{306.216508093}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{312.429267214}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{312.429267214}
+\goldrow{kpi}{bed}{c\_out\_over\_cin\_final\_CO2}{0.890377021134}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{2.4698465495e-11}
+\goldmore{52}
 \end{tutgolden}
 
 \clearpage
@@ -544,21 +546,21 @@ TIME INTEGRATION: `solver \{ method rodas4; \}` selects the order-4 stiff integr
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{P\_final}{100030.094422}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100060.3912}
-\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.192563}
-\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100030.206567}
+\goldrow{kpi}{bed}{P\_final}{100029.977681}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100060.020399}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.18892}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100030.107889}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{328.44311544}
-\goldrow{kpi}{bed}{T\_max\_final\_K}{399.878003769}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{314.76443079}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{9.60653778748e-12}
+\goldrow{kpi}{bed}{T\_final}{328.511667754}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{399.868834476}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{314.928123967}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{-5.09885467181e-11}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{60.2477495124}
-\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1313.67166121}
-\goldrow{kpi}{bed}{mass\_closure\_CO2}{6.54546762708e-14}
-\goldmore{55}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{60.0203992802}
+\goldrow{kpi}{bed}{integral\_anchor\_CO2}{1315.23082099}
+\goldrow{kpi}{bed}{mass\_closure\_CO2}{6.95863667995e-14}
+\goldmore{58}
 \end{tutgolden}
 
 \clearpage
@@ -624,21 +626,21 @@ WHAT BUILDING IT FOUND, and it outlives the feature: the CSS norm and the loadin
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{P\_final}{100029.553817}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100059.686721}
-\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.177433}
-\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100029.506183}
+\goldrow{kpi}{bed}{P\_final}{100029.449382}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{100059.308732}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{100001.176121}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{100029.404542}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{100000}
 \goldrow{kpi}{bed}{Pe}{250}
-\goldrow{kpi}{bed}{T\_final}{324.055339766}
-\goldrow{kpi}{bed}{T\_max\_final\_K}{399.878004394}
-\goldrow{kpi}{bed}{T\_min\_final\_K}{297.887392824}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{310.618231369}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{1.35003119794e-11}
+\goldrow{kpi}{bed}{T\_final}{324.097107435}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{399.868835232}
+\goldrow{kpi}{bed}{T\_min\_final\_K}{297.290399767}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{310.560011256}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{1.42108547152e-11}
 \goldrow{kpi}{bed}{dT\_adiabatic\_CO2\_K}{125.813871501}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{59.5592829221}
-\goldrow{kpi}{bed}{gasInventory\_mol}{0.0748354923659}
-\goldmore{57}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{59.3087319557}
+\goldrow{kpi}{bed}{gasInventory\_mol}{0.0748325309122}
+\goldmore{60}
 \end{tutgolden}
 
 \clearpage
@@ -660,21 +662,60 @@ THE ANCHOR: T\_min\_final\_K sits BELOW the declared 298.15 K by a visible margi
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{bed}{P\_final}{49999.9997347}
-\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{49999.9996936}
-\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{49999.999898}
-\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{49999.9997123}
+\goldrow{kpi}{bed}{P\_final}{49999.9998351}
+\goldrow{kpi}{bed}{P\_first\_cell\_Pa}{49999.9997932}
+\goldrow{kpi}{bed}{P\_last\_cell\_Pa}{50000}
+\goldrow{kpi}{bed}{P\_mid\_cell\_Pa}{49999.9998123}
 \goldrow{kpi}{bed}{P\_out\_boundary\_Pa}{50000}
 \goldrow{kpi}{bed}{Pe}{0}
-\goldrow{kpi}{bed}{T\_final}{294.923818642}
-\goldrow{kpi}{bed}{T\_max\_final\_K}{295.066878523}
-\goldrow{kpi}{bed}{T\_min\_final\_K}{294.887442943}
-\goldrow{kpi}{bed}{T\_out\_final\_K}{295.066878523}
-\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{1.15463194561e-14}
-\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.000200492606382}
-\goldrow{kpi}{bed}{gasInventory\_mol}{0.0407808219207}
+\goldrow{kpi}{bed}{T\_final}{294.92367086}
+\goldrow{kpi}{bed}{T\_max\_final\_K}{295.066441477}
+\goldrow{kpi}{bed}{T\_min\_final\_K}{294.887445096}
+\goldrow{kpi}{bed}{T\_out\_final\_K}{295.066441477}
+\goldrow{kpi}{bed}{carrier\_fabricated\_mol}{4.17443857259e-14}
+\goldrow{kpi}{bed}{deltaP\_first\_to\_out\_Pa}{-0.000206758486456}
+\goldrow{kpi}{bed}{gasInventory\_mol}{0.0407808424401}
 \goldrow{kpi}{bed}{mass\_closure\_CO2}{0}
-\goldmore{38}
+\goldmore{41}
+\end{tutgolden}
+
+\clearpage
+\tutentry{batch29\_pulse\_two\_schemes}{tutorials/batch/adsorber/batch29\_pulse\_two\_schemes}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bedUpwind) at (0.0,-0.0) {\textbf{bedUpwind}\\[-1pt]{\tiny fixedBedAdsorber}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (bedVanLeer) at (0.0,-1.7) {\textbf{bedVanLeer}\\[-1pt]{\tiny fixedBedAdsorber}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A linear pulse through two identical fixed beds, upwind and van Leer, against the closed-form mean and variance: the grid widens the upwind peak by v dz/2, never moves its centre}
+\begin{tutnarrative}
+the same bed, two schemes, against the closed form.
+
+NUMERICAL DISPERSION, for a student. The bed is cut into cells, and the convective flux through each face needs ONE concentration at the face. The first-order `upwind` scheme takes the upstream cell's value; a Taylor expansion shows that this differs from the true face value by -(dz/2) dc/dz, so the scheme quietly adds a Fickian flux: it solves the model with D\_L + v dz/2 instead of D\_L (v = u/eps). Here v dz/2 is 3.1e-4 m2/s at 100 cells against a declared D\_L = 2.5e-4: the grid more than doubles the dispersion. The `vanLeer` scheme reconstructs a limited linear profile in each cell, which removes that term (second order), and its limiter keeps the peak free of over- and undershoots.
+
+THE EXPERIMENT. Two identical, independent beds of a synthetic LINEAR sorbent (Henry isotherm, case-local records under constant/), fed 1 \% CO2 in He for t\_inj = 2 s and then pure He (a rectangular pulse, the recipe below). Each bed publishes the moments of its outlet concentration (operation.schemeDiagnostics true;). The model is linear, so its moments have a closed form (derived in the Theory Guide, fixed-bed section; symbols: eps void fraction, u superficial velocity, v = u/eps, D\_L = Dax/eps, K = H R T the linear isotherm in m3/kg, rho\_b bulk density, k the LDF constant):
+
+t0 = eps L/u = 4 s k' = rho\_b K/eps = 12.39479 t\_R = t0 (1 + k') = 53.57914 s Pe = v L/D\_L = u L/Dax = 250 mean = t\_R + t\_inj/2 = 54.57914 s variance = t\_R\textasciicircum{}2 [2/Pe - 2(1 - exp(-Pe))/Pe\textasciicircum{}2] (Danckwerts, closed) + 2 k' t0/k (LDF) + t\_inj\textasciicircum{}2/12 (the pulse) = 22.87393 + 9.91583 + 0.33333 = 33.12309 s2
+
+bedVanLeer (100 cells) must reproduce THAT variance; bedUpwind (100 cells) reproduces it only with D\_L replaced by D\_L + v dz/2 (Pe\_eff = 111.1): 61.45714 s2. Both means are t\_R + t\_inj/2: the grid moves the width, never the centre. The `anchor` rows in `expected` are these closed-form values (DERIVED anchors: identities of the linear model, not measurements); the gate check\_fixed\_bed\_scheme repeats them at 200 cells and states the tolerance it measured.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{bedUpwind}{D\_axial\_interstitial}{0.00025}
+\goldrow{kpi}{bedUpwind}{D\_numerical}{0.0003125}
+\goldrow{kpi}{bedUpwind}{E\_adsorption\_seg0\_kJ}{-2.6519254011e-28}
+\goldrow{kpi}{bedUpwind}{E\_adsorption\_total\_kJ}{-2.6519254011e-28}
+\goldrow{kpi}{bedUpwind}{P\_final}{100000}
+\goldrow{kpi}{bedUpwind}{Pe}{250}
+\goldrow{kpi}{bedUpwind}{T\_final}{298.15}
+\goldrow{kpi}{bedUpwind}{c\_max\_over\_feed\_CO2}{0.906065328263}
+\goldrow{kpi}{bedUpwind}{c\_min\_CO2}{0}
+\goldrow{kpi}{bedUpwind}{carrier\_fabricated\_mol}{1.32596270055e-29}
+\goldrow{kpi}{bedUpwind}{carrier\_makeup\_rel}{3.28700455746e-30}
+\goldrow{kpi}{bedUpwind}{integral\_anchor\_CO2}{2}
+\goldrow{kpi}{bedUpwind}{mass\_closure\_CO2}{1.30352993952e-14}
+\goldrow{kpi}{bedUpwind}{nCells\_numerical\_ratio\_0p1}{1251}
+\goldmore{103}
 \end{tutgolden}
 
 \subsection{combustion}

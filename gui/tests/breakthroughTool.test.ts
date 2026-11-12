@@ -78,13 +78,13 @@ const BED_KPIS: KpiMap = {
   bed: {
     Pe: 250,
     t_end: 4200,
-    t_breakthrough_5pct_CO2: 2890.66919752,
-    t_50_CO2: 3036.44839047,
-    t_breakthrough_95pct_CO2: 3204.16573568,
+    t_breakthrough_5pct_CO2: 2934.06908679,
+    t_50_CO2: 3035.10088974,
+    t_breakthrough_95pct_CO2: 3165.56529407,
     t_stoichiometric_CO2: 3040.51250948,
     retention_factor_CO2: 304.051250948,
-    qbar_CO2_final: 2.87234042488,
-    c_out_over_cin_final_CO2: 0.999999989455,
+    qbar_CO2_final: 2.87234042553,
+    c_out_over_cin_final_CO2: 0.999999999943,
   },
 };
 
@@ -134,9 +134,9 @@ describe("detectBreakthrough — the activation predicate over real headers", ()
 describe("extractFrontMarkers — the four KPI-emitted front times, verbatim", () => {
   it("reads t_5% / t_50% / t_95% / t_st off a synthetic KPI block", () => {
     const m = extractFrontMarkers(BED_KPIS["bed"], "CO2");
-    expect(m.t5).toBeCloseTo(2890.66919752, 6);
-    expect(m.t50).toBeCloseTo(3036.44839047, 6);
-    expect(m.t95).toBeCloseTo(3204.16573568, 6);
+    expect(m.t5).toBeCloseTo(2934.06908679, 6);
+    expect(m.t50).toBeCloseTo(3035.10088974, 6);
+    expect(m.t95).toBeCloseTo(3165.56529407, 6);
     expect(m.tStoich).toBeCloseTo(3040.51250948, 6);
   });
 
@@ -159,7 +159,7 @@ describe("decideNormalisation — c_in from the run itself or not at all", () =>
     const d = decideNormalisation(BED_KPIS["bed"], ["CO2"], { CO2: plateau });
     expect(d.cIn).not.toBeNull();
     // c_in = plateau / ratio — arithmetic on two engine numbers, no physics.
-    expect(d.cIn!["CO2"]).toBeCloseTo(plateau / 0.999999989455, 9);
+    expect(d.cIn!["CO2"]).toBeCloseTo(plateau / 0.999999999943, 9);
     expect(d.caption).toContain("c_out_over_cin_final");
   });
 
