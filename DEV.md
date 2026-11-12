@@ -3446,6 +3446,35 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C375 (2026-11-12; three engine findings met by the chromatography page,
+> confirmed by run and by reading; the architect's decisions).**  (a) THE
+> FIXED BED ADDS ITS OWN DISPERSION: `FixedBedAdsorber` takes first-order
+> upwind face values, which adds v dz/2 to the axial dispersion.  MEASURED on
+> the shipped batch13 (100 cells): the numerical term is 3.1e-4 m2/s against
+> a physical 2.5e-4; the 5-95 % front is 314 s wide where the converged
+> front is about 219 s (30 % of the width is the grid); the pinned
+> breakthrough time 2890.7 s is the grid's, the converged one about 2935 s;
+> the unused-bed length reads 0.0247 m against about 0.0172 m.  The mean
+> (stoichiometric time) is exact at every grid.  All 14 fixed-bed tutorials
+> and the pages `breakthrough` and `lub-scaleup` rest on it; the second
+> carries the widened unused length to full scale.  DECIDED: (1) now, the
+> unit ANNOUNCES the numerical dispersion beside the declared one at the
+> start of every run (its value, its ratio to the physical term, the grid
+> that would bring it under a tenth) -- a number that is wrong by the mesh
+> is said, not hidden; (2) a second-order flux-limited convection scheme is
+> added as a selectable `convectionScheme`, validated against the closed
+> form of the linear pulse (first and second moments) and against mesh
+> convergence on batch13, and becomes the DEFAULT only after that, with the
+> 14 cases re-recorded and every moved row listed; first-order upwind stays
+> selectable and named, because seeing a mesh widen a front is itself a
+> lesson (batch15_mesh_study).  (b) the bed writes `<t>/bed.profile` at
+> every interval although `solutionControl { write false; }` is announced:
+> the unit obeys the declared switch.  (c) the Theory Guide wrote the
+> dispersive flux with the porosity multiplying Dax; the code uses Dax in
+> the flux and divides the balance by the porosity, and the measured
+> moments support the code (0.01-0.2 % against 19-27 % the other way): the
+> guide is corrected (landed with the page).  Branch c375-fixed-bed-scheme.
+
 > **C374 (Vitor, 2026-11-12, on a screenshot of the EduTools home: "esta
 > pagina esta gira, mas acho que podia ter mais cor e aquela linha dificulta
 > a selecao de uma categoria").**  The home (C251) lists the sections as a
