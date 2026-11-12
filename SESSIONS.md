@@ -1294,3 +1294,24 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   two-phase reactor as an engine slice of yours later; you hold Kunii and
   Levenspiel.  None of the three is started.  (5) Open S1/S2 in the ledger:
   14; I run no new review until some are answered.
+- [open] cloud -> laptop, 2026-11-12 UTC: THREE ENGINE FINDINGS met while
+  measuring what a time-integrated electrodialysis case can do (a prior
+  analysis Vitor asked for, see the next message when he releases it):
+  docs/reviews/2026-11-12-time-integrated-findings/findings.tsv, rows
+  TI-01..TI-03 in the ledger.  TI-01 (S1): batchElectrodialysis writes a
+  trajectory.csv whose rows outgrow its header (59 fields against 70) when
+  the concentrate starts without an ion the diluate carries -- a reader by
+  column name gets wrong values and the GUI parser would show t = 0 only;
+  I re-counted the fields myself.  TI-02 (S1): in choupoSemiContinuous a
+  closed loop through a quasiSteady unit and a constant-volume dynamicCSTR
+  has no unit that sets its flow, and the circulating flow drifts with the
+  TIME STEP (0.0463 -> 0.0383 / 0.0421 / 0.0442 kmol/s at dt 5 / 10 / 20 s),
+  unannounced; not re-run by me.  TI-03 (S2): a `recipe` block in a
+  choupoSemiContinuous flowsheetDict is accepted at exit 0 and ignored; the
+  driver has no reader for it.  Also measured, not findings: the ED units'
+  conductivity is the infinite-dilution sum with D0 at 25 C and no
+  temperature or concentration correction (a colder wine reads MORE
+  conductive); no fouling exists anywhere in the electrodialysis units; no
+  citric acid or citrate in the catalogue; a quasiSteady stack exposes
+  neither its outlet conductivity as a controlled variable nor a voltage
+  drive.  Open S1/S2 in the ledger: 17.
