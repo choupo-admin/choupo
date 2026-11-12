@@ -31288,6 +31288,67 @@ gain matrix, at any frequency, and the EduTool says so on its own face.
 Do not read a number here as something this simulator checked.
 \end{pitfall}
 
+% ---------------------------------------------------------------------
+\section{Operator panels and alarms: what a person at the rig should see}\label{sec:operatorPanels}
+
+A time-integrated run publishes every quantity its units compute, at every
+written instant: the batch electrodialysis rig of
+\file{edbatch01\_constant\_current} publishes 25 series at 41 instants.  A
+person standing at that rig cannot read a thousand numbers to decide whether
+the batch is normal.  An \emph{operator panel} is the answer to that
+problem, and designing one is a design exercise like any other: it has a
+purpose, it has a cost (the operator's attention), and a good one is
+recognised by whether a person can tell from it what the process is doing.
+No engine can grade that, and Choupo does not try.
+
+\textbf{Start from the operator's questions.}  A person at a running unit
+asks, in order: is it normal?  where is it heading?  what do I do?  A panel
+is designed backwards from those questions: for each task, the least
+information that answers it, and the display element that shows it.
+Everything else stays on a detail level the engineer reaches when he has to
+diagnose.  A value shown as a bare number says nothing about normality; the
+same value on its scale with its limit marked says how close it is; a trend
+says where it is heading; a lamp says only whether it is normal.  Colour is
+kept for the abnormal and is always doubled by a word or a shape.  The
+closest approach of a run to a high limit, as a fraction of the element's
+scale, is
+\begin{equation}
+d \;=\; \frac{x_{\text{high}} - \max_k x_k}{x_{\max} - x_{\min}},
+\label{eq:panel-closest-approach}
+\end{equation}
+where $x_k$ is the published value at the $k$-th written instant and
+$[x_{\min},x_{\max}]$ the element's declared range; $d<0$ when the limit is
+crossed.
+
+\textbf{Alarms.}  An alarm interrupts a person, so it must ask for an action
+he can take; a quantity that only needs watching is a trend, and an event
+someone should know of (a normal end of batch) is a message.  One cause
+earns one alarm.  A person can act on only a limited number of alarms in a
+given time, and an upset that sets off many at once --- a flood --- hides
+the one that matters.  These rules are written here from reasoning; they
+are also the subject of published alarm-management and display standards
+(ISA-18.2, IEC~62682, ISA-101.01) and of an open US-government review guide
+(NUREG-0700), none of which was read for this section, and no number is
+taken from them.
+
+\textbf{What the engine does.}  A case may declare its panel in
+\file{system/panelDict}; \code{choupoBatch} reads it after the time loop
+and reports \emph{facts} about it --- which limit is crossed and when, which
+element never moves, which limit is never approached, how many alarms are
+active at once --- in the result's \code{panel} block and its
+\code{[panel]} log lines.  The grammar and the exact definition of every
+fact are in the Design Guide, section ``The operator panel of a batch
+run''.  The EduTool \emph{Operator panels and alarms} works this section on
+the rig.
+
+\begin{pitfall}
+\textbf{A fact is not a mark.}  The engine reports that an element never
+moved; it does not say the element is wrong.  At constant current the
+current density never moves, and that is a statement about the mode of
+operation.  Deciding what a fact means is the student's part of the
+exercise.
+\end{pitfall}
+
 % ====================================================================
 %  THREE NEW CHAPTERS (kinetics + stiff numerics + polymers)
 %  Inserted before \end{document}.  House style: whatyoulllearn intro,

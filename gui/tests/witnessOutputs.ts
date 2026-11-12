@@ -471,6 +471,21 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["streamCardFlow.test.ts"],
     stdout: true,
   },
+  //  THE OPERATOR PANEL (DEV.md 4c C371, the operator-panels EduTool): the
+  //  engine's own `panel` block for the shipped edbatch01 panelDict, which the
+  //  page's reader (adapters/panelPayload via extractStructured) must carry
+  //  unchanged, and the trajectory its stale-answer guard reads.
+  {
+    caseDir: "tutorials/batch/electrodialysis/edbatch01_constant_current",
+    file: "log.choupoBatch",
+    readBy: ["operatorPanels.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/electrodialysis/edbatch01_constant_current",
+    file: "trajectory.csv",
+    readBy: ["operatorPanels.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by
