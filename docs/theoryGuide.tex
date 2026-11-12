@@ -23273,7 +23273,7 @@ ball size.  ANCHOR (arithmetic): H\&F's design power $1.82$\,kWh/t $\times$
 
 \subsubsection{Selection function \texttt{vogelPeukert}}\label{sec:mill-selection-vp}
 
-Vogel \& Peukert (2003) eq.~14 give the probability that a particle of size
+Vogel \& Peukert~\cite{VogelPeukert2003} eq.~14 give the probability that a particle of size
 $x$ breaks under $k$ impacts of mass-specific energy $W_{m,\text{kin}}$:
 \begin{equation}
 P_B(x) = 1 - \exp\!\left[-f_{\text{Mat}}\,x\,k\left(W_{m,\text{kin}} -
@@ -23312,7 +23312,7 @@ W = 10\,W_i\left(\frac{1}{\sqrt{P_{80}}} - \frac{1}{\sqrt{F_{80}}}\right)
 \sqrt{\frac{100\,\mu\text{m}}{F_{80}}}\right)
 \label{eq:mill-bond}
 \end{equation}
-(Bond 1952, as given by Wills \& Napier-Munn 2006 eq.~5.2, p.~111; King 2001
+(Bond~\cite{Bond1952}, as given by Wills \& Napier-Munn 2006 eq.~5.2, p.~111; King 2001
 eq.~5.167), $W$ and the work index $W_i$ in kWh per SHORT ton, $P_{80}$ and
 $F_{80}$ in $\mu$m (the second form holds in any unit).  With
 \dict{bond \{ workIndex 12.74 kWh/shortTon; \}} the mill prints $W$ on its
@@ -27422,6 +27422,18 @@ balance models'', \emph{International Journal of Mineral Processing}
 \textbf{7} (1980) 1--31, doi:10.1016/0301-7516(80)90034-4.  The
 energy-specific selection function (eqs.~10--11 and 22) and the normalisability
 condition on the breakage function (eq.~21).
+
+\bibitem{VogelPeukert2003} Vogel, L., \& Peukert, W., ``Breakage behaviour
+of different materials---construction of a mastercurve for the breakage
+probability'', \emph{Powder Technology} \textbf{129} (2003) 101--110,
+doi:10.1016/S0032-5910(02)00217-6.  The breakage probability under repeated
+impacts (eq.~14) behind the \code{vogelPeukert} selection model.
+
+\bibitem{Bond1952} Bond, F. C., ``The third theory of comminution'',
+\emph{Transactions AIME} \textbf{193} (1952) 484--494.  The work-index law
+printed beside the \code{mill} as an energy cross-check.  Located, not read:
+Eq.~(\ref{eq:mill-bond}) is the law as Wills \& Napier-Munn and
+King~\cite{King2001} give it.
 
 \bibitem{Gnielinski1976} Gnielinski, V., 1976.  The lower-scatter
 turbulent in-tube correlation on Petukhov's smooth-tube friction factor;
