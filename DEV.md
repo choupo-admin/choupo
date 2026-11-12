@@ -3433,6 +3433,46 @@ accepts today, and that is a policy call.
 > before a re-record.  Then a one-page source/licence/use sheet for a
 > jurist's one-hour review (Vitor decides whether to ask for one).  Cloud.
 
+> **C335 RESULT (2026-11-12, branch `c335-licence-debts`, not pushed).**
+> Measured first with the gate: 20 NC-compilation records, 4 pinned
+> violations, 25 NH3 mirrors.  (1) NC_COMPILATION 20 -> 7: thirteen records
+> re-sourced from NASA/TP-2002-211556 through
+> `bin/curate/nasa_tp2002_to_choupo.py` (C2O, C3H3 propargyl, C4H2, C6H5,
+> CH3CO, ClO, HOCl, HONO as the report's HNO2, N2H2, NO3, SH, NH2, O3), each
+> held to the report by the tool's `verify` (71 records, 0 mismatches),
+> `licence publicDomain;`, `reviewStatus interim`.  C3H3 and N2H2 had
+> carried another isomer's value under their own name; C2O now carries the
+> report's JANAF-era dHf, about 88 kJ/mol below the value it held, said in
+> its reviewReason.  Left, each with its reason in the registry: C3H5 (the
+> report's own source for allyl is the compiler's 2001 report), C4H4 (the
+> report has cyclobutadiene only), C5H5, CH3O2, HSO, HSO3, N2H3 (no entry).
+> No shipped case reads any of the twenty.  ATcT NOT used: no licence or
+> rights statement on atct.anl.gov or its OSTI dataset record (DOI
+> 10.17038/CSE/3703591), read 2026-11-12, and contractor authorship.
+> (2) SOURCE_LICENCE 4 -> 3: H3PO4's dHf/S/Cp re-sourced from the same
+> report's Table B2 (-1284.488 kJ/mol); Wagman et al. 1982 (-1279.0, read
+> 2026-11-12) kept as a cross-check, and the record no longer calls that
+> issue public domain (its masthead carries a Secretary of Commerce
+> copyright assigned to AIP/ACS, with permission to quote).  methylAcetate
+> (critical constants, outside this slice's edit scope) and the NRTL
+> ethanol-water / SRK N2-CH4 pairs (paths held by the laptop session) stay
+> pinned; no unsealed case reads either pair.  (3) NO_GRANT_CASE_LOCAL
+> 25 -> 5: twenty cases re-imported with `bin/choupo-import`, then
+> `bin/runTests --scope` PASS 24 / FAIL 0, nothing re-recorded; the same
+> route cleaned ignition01_h2o2_eulersi/_rk4 of compilation mirrors.  The
+> four green-ammonia plants refuse (goldens move) and basis01 cannot be
+> staged: the importer's validator crashes on its `closure` rows (its
+> re-import moves no row, measured on a copy).  (4) MOVED ROWS, NOT
+> RECORDED: 1358 rows in 9 cases, listed with cause in
+> `docs/reviews/2026-11-12-licence-debts-moved-rows.md` -- 1318 in the four
+> green-ammonia plants, all from the NH3 record's own C65 correction
+> (measured: NH3 alone moves the same rows to the same values), 40 in five
+> combustion/Gibbs cases from the C170 radical re-sourcing.  Vitor's list.
+> (5) Jurist sheet: `docs/reviews/2026-11-12-source-licence-sheet.md`.
+> Residual exposure outside every pin, named there: the compilation mirrors
+> of those five cases, nox01's adopted N/NH, four methylAcetate mirrors,
+> thirteen case-local DECHEMA pair records.
+
 > **C333 (Vitor, 2026-11-12, in the cloud session, after reading where the
 > plan leaves Choupo short of breadth-first simulators: "equacoes de estado
 > de alta precisao?! Nos nao podemos implementar isso ja?! Isso e facil!" and,

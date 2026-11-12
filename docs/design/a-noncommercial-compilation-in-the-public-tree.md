@@ -188,3 +188,22 @@ honestly unavailable and will be said to be, and COS — which is in the
 catalogue with **no formation data at all**, so it cannot enter a Gibbs
 reactor — can be given some.  The licence finding did not block the tutorial;
 it decided where its data comes from.
+
+---
+
+## 2026-11-12 (DEV.md 4c C335): thirteen more, and why seven stay
+
+The disagreements C170 had left were taken through the same report: a
+disagreement between the compilation and a public-domain primary is not a
+reason to keep the encumbered number.  Two of them were the record's fault
+(C3H3 and N2H2 carried another isomer's value under their own name).  One
+is the report's: its C2O enthalpy is a JANAF-era value about 88 kJ/mol below
+what modern determinations give, and the record now says so in its
+`reviewReason` rather than keeping the compilation's number.  Seven stay
+pinned, and the reason is in each registry entry: five molecules the report
+does not carry, one it carries only as a different molecule (C4H4), and one
+(allyl, C3H5) whose entry in the report names the compiler's own 2001 report
+as its source -- taking that number through a public-domain republication is
+exactly the laundering this record is about, so the question goes to Vitor.
+ATcT was read for its terms and states none; under this project's rule
+silence is not a grant, so it supplied no value.
