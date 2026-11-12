@@ -37,7 +37,10 @@
     the witness's numbers         tutorials/batch/adsorber/
                                     batch13_breakthrough_co2/{system,expected}
     the mesh's share of the
-      spreading                   tutorials/batch/adsorber/batch15_mesh_study
+      spreading                   bin/curate/check_fixed_bed_scheme.py (both
+                                  schemes on this bed, 50/100/200 cells) and
+                                  tutorials/batch/adsorber/batch15_mesh_study
+                                  (upwind)
 \*---------------------------------------------------------------------------*/
 
 import type { LessonStep, SymbolGloss } from "./lessonStep.js";
@@ -95,8 +98,10 @@ export const BREAKTHROUGH_STEPS: readonly LessonStep[] = [
         + "resistances together", unit: "1/s" },
     ],
     note: "Those two lines are what this unit actually solves — no more.  One "
-      + "dimension (axial), a declared mesh of finite volumes, first-order "
-      + "upwind advection, and a linear driving force for the uptake: the "
+      + "dimension (axial), a declared mesh of finite volumes, advection by "
+      + "the second-order van Leer scheme (the default; a case may declare "
+      + "first-order upwind instead), and a linear driving force for the "
+      + "uptake: the "
       + "solid chases its own equilibrium loading q* at a rate k, and the "
       + "whole of pore diffusion, film resistance and crystal uptake is "
       + "lumped into that one declared coefficient.",
@@ -195,8 +200,8 @@ t_\mathrm{st} &= \frac{L}{u}\, R_f
         + "5 %, 50 % and 95 % of the feed value, and the 5 % one is what "
         + "this page reads", unit: "s" },
     ],
-    note: "On the witness's own numbers t_b(5 %) = 2891 s against t_st = "
-      + "3041 s, so about 5 % of the 0.5 m bed — some 2.5 cm — is unused when "
+    note: "On the witness's own numbers t_b(5 %) = 2934 s against t_st = "
+      + "3041 s, so about 3.5 % of the 0.5 m bed — some 1.75 cm — is unused when "
       + "it is switched.  A sharp zone means a bed you can use almost fully; a "
       + "broad one means switching early and paying for adsorbent you never "
       + "loaded.  The design move is to make the bed comfortably longer than "
@@ -332,18 +337,24 @@ export const BREAKTHROUGH_LIMITS:
   },
   {
     id: "mesh",
-    title: "Part of the spreading is the mesh, and the case that measures it "
-      + "is a separate one.",
+    title: "The mesh's share of the spreading is small here — and you can make "
+      + "it large on purpose.",
     body: "First-order upwind advection on a declared mesh adds numerical "
       + "dispersion of order u·Δz/2. With the witness's own numbers — u = "
       + "0.05 m/s, L = 0.5 m, 100 cells — that is 1.25e-4 m²/s against the "
-      + "declared physical D_ax = 1e-4 m²/s, so the numerics contribute at "
-      + "least as much spreading as the physics does, and the Pe = 250 in the "
-      + "caption is the declared physical one, not an effective one. The mesh "
-      + "study on this same bed (25/50/100/200 cells) finds t_b(5 %) still "
-      + "moving at first order, with the 100-cell answer about 1.7 % below "
-      + "the extrapolated limit. The cell count is not a knob here, and the "
-      + "bed-length knob changes Δz without refining it.",
+      + "declared physical D_ax = 1e-4 m²/s, at least as much spreading as the "
+      + "physics. The witness therefore runs the engine's default second-order "
+      + "van Leer scheme, which has no such term: its 5–95 % front is 231.5 s "
+      + "wide against a mesh-converged 219.6 s, so the mesh's share of the "
+      + "width is about 5 %, and t_b(5 %) = 2934 s sits 0.18 % below the "
+      + "converged 2939 s. Declare `convectionScheme upwind;` in the case and "
+      + "the same 100 cells give a front 313.5 s wide and t_b(5 %) = 2891 s: "
+      + "the first-order grid leaves the front about 43 % wider than the "
+      + "converged one, and the unused "
+      + "length grows from 1.75 to 2.5 cm. The Pe = 250 in the caption is the "
+      + "declared physical one. The cell count is not a knob on this page, and "
+      + "the bed-length knob changes Δz without refining it; the upwind mesh "
+      + "study is batch15_mesh_study.",
   },
   {
     id: "one-loading-step",

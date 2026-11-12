@@ -255,9 +255,9 @@ L_\mathrm{MTZ} &\approx 2\, \mathrm{LUB} \qquad \text{(a symmetric front only)}
     note: "The plot marks both areas: above the curve up to t_b is the "
       + "capacity you used, between t_b and t_st is the capacity you paid "
       + "for and switched away.  The two vertical lines are the two times "
-      + "of step 2.  On the witness's own numbers, t_b(5 %) = 2891 s against "
-      + "t_st = 3041 s, so about 5 % of the half-metre column -- some "
-      + "2.5 cm -- is unused.  Move the criterion knob and watch LUB move "
+      + "of step 2.  On the witness's own numbers, t_b(5 %) = 2934 s against "
+      + "t_st = 3041 s, so about 3.5 % of the half-metre column -- some "
+      + "1.75 cm -- is unused.  Move the criterion knob and watch LUB move "
       + "with it: a stricter specification switches earlier and wastes more "
       + "bed, which is the trade the specification buys.",
   },
@@ -303,8 +303,8 @@ m_\mathrm{ads} &= \rho_b \frac{\pi D^2}{4} L_\mathrm{full}
     ],
     note: "The point of the lesson is in η_bed.  LUB is fixed by the conditions, "
       + "so a longer bed wastes a smaller fraction: a half-metre laboratory "
-      + "column that throws away 5 % of itself looks poor, and a three-metre "
-      + "plant bed with the same 2.5 cm unused wastes under 1 %.  That is "
+      + "column that throws away 3.5 % of itself looks poor, and a three-metre "
+      + "plant bed with the same 1.75 cm unused wastes under 1 %.  That is "
       + "why laboratory columns look terrible and plant beds do not, and why "
       + "the plant bed's service time is not the laboratory column's "
       + "breakthrough time scaled by length -- it is a little longer than that, because the unused "
@@ -402,8 +402,11 @@ export const LUB_SCALEUP_LIMITS: readonly LessonLimit[] = [
     title: "The engine's curve is a model, and the measured column is empty "
       + "until a case brings one.",
     body: "Everything on the plot by default is the engine's integration of "
-      + "the witness -- the same 1-D, LDF, first-order-upwind model the "
-      + "breakthrough tool draws, mesh spreading included.  A measurement "
+      + "the witness -- the same 1-D, LDF model the breakthrough tool draws, "
+      + "on the engine's default second-order van Leer scheme, whose mesh "
+      + "adds about 5 % to the front's width at 100 cells (first-order "
+      + "upwind, if the case declares it, adds about 43 % and makes the "
+      + "unused length 2.5 cm instead of 1.75 cm).  A measurement "
       + "enters through the open case: ship `constant/experimental/"
       + "breakthrough.csv` (a `t_s,c_over_c0` header, `#` comments allowed, "
       + "one row per sample, the same shape as the digitised figures under "
