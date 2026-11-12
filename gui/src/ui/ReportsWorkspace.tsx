@@ -71,7 +71,7 @@ import { massBalance } from "../case/balances.js";
 import { annualUtilitiesLine } from "../case/annualBasis.js";
 import { heatExchangerDatasheetHtml } from "./HeatExchangerDatasheet.js";
 import { findKernDesign, kernView } from "../case/hxDatasheet.js";
-import { columnDatasheetHtml } from "./ColumnDatasheet.js";
+import { columnDatasheetHtml, columnProfileOf } from "./ColumnDatasheet.js";
 import {
   PROVENANCE_INK, PROVENANCE_WORD, hasSchematic, pressureExchangerSvg,
 } from "../case/equipmentSchematic.js";
@@ -536,7 +536,8 @@ function ColumnsBody({ runResult, columns }: {
 }) {
   const prefs = useStore((s) => s.displayPrefs);
   const openColumnSheet = (u: UnitSpec) =>
-    openInTab(columnDatasheetHtml(u, runResult.kpis?.[u.name], runResult.designFiles, prefs));
+    openInTab(columnDatasheetHtml(u, runResult.kpis?.[u.name], runResult.designFiles, prefs,
+      columnProfileOf(runResult.profiles, u.name)));
   return (
     <Stack gap={6}>
       {columns.map(({ u, n }) => {
