@@ -1,0 +1,74 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-12";
+    importerVersion    "3";
+    records
+    {
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "b32cd13a8a4783d0ce02bf84800b74462e3fd46d8983942f70e958da3c731aae";
+            computationalSha256 "f9080a8aa18a3730b43c799b58ec335cab2bf5258c4cc955a781cda5ed311d9b";
+            origin        "data/standards/components/water.dat";
+            originSha256  "374ccb2ee48a45af9782204286a7e4de134729f99653a95af0a2d3d24b23e0c1";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/SetzmannWagner1991.dat"
+        {
+            type          imported;
+            sha256        "d6c8fb4e04b448b170e0cfca43acb642ec21edf2d9201d590a58018337f4b54b";
+            computationalSha256 "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
+            origin        "data/standards/parameters/Helmholtz/SetzmannWagner1991.dat";
+            originSha256  "790f7a5f9f1bb58f8a71dd40d7d2b7a877b72affa7585bc0f4896301d0d1ad2b";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/Span2000.dat"
+        {
+            type          imported;
+            sha256        "ed79b1fb118c19a369e616cf6ec9e859f5a7f8ab6f4de9dcaf074ef0c7e6c076";
+            computationalSha256 "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+            origin        "data/standards/parameters/Helmholtz/Span2000.dat";
+            originSha256  "d7c7e5479e5cc9dd0b5923cb2ab96a581cc49ebaed571f140054892688015fa5";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/SpanWagner1996.dat"
+        {
+            type          imported;
+            sha256        "7dd05425eef032ddaaae05d6bad0578b6ab9747cd42381df9710f2eb3bfd8333";
+            computationalSha256 "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
+            origin        "data/standards/parameters/Helmholtz/SpanWagner1996.dat";
+            originSha256  "b195dccec77ebca47f470255fb4de939126a1432b059a4752ee1e7fecfa447f5";
+            release       Choupo-2608;
+        }
+    }
+}

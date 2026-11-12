@@ -1,0 +1,173 @@
+// [imported] origin "data/standards/components/methanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Methanol  (CH4O, CAS 67-56-1)
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients, Cp polynomials and the ideal-gas formation datum
+           (dHf_298/s_298, JANAF convention) are individual literature
+           values -- primary re-citation pending (IST review).  Viscosity:
+           Andrade/Vogel fits to literature mu(T); UNIQUAC r,q are the van
+           der Waals values (Abrams-Prausnitz) as used by Popken 2000.
+\*---------------------------------------------------------------------------*/
+
+name        methanol;
+formula     CH4O;
+CAS         67-56-1;
+
+
+
+MW          32.042;
+Tc          512.64;
+Pc          80.97;
+omega       0.5650;
+Tb          337.85;
+HvapTb      35210;
+Vliq        4.070e-5;
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 29440;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+
+standardThermochemistry
+{
+    dHf_298   -200940.0;        // J/mol  -- ideal-gas reference
+    s_298     239.880;         // J/(mol·K)  -- third-law absolute
+}
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (5.20409   1581.341   -33.50);
+    Trange        (288  356);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (21.152   0.07092   2.587e-5   -2.852e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (81.0);
+    Trange        (280  340);
+}
+
+// Liquid transport (v0.62+).  associationFactor = Wilke-Chang phi (solvent).
+// liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
+// fitted to literature mu(T) over ~10-100 degC.
+associationFactor  1.9;
+liquidViscosity
+{
+    andrade { A -11.5712; B 1207.4; }
+    vogel   { A -11.5712; B 1207.4; C 0.0; }
+}
+
+groups
+{
+    unifac ( { group CH3OH; count 1; } );
+    joback ( { group CH3; count 1; } { group OH; count 1; } );
+}
+
+uniquac
+{
+    r   1.4311;
+    q   1.4320;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0477-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-56-1";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file METHANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey OKKJLVBELUTLKV-UHFFFAOYSA-N (full match); formula CH4O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        66.883835;   // sum of the profile below; GAMESS prints 66.88
+        volume      47.79;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.097278     0.723321     1.445691     0.894998     0.720544
+               0.413702     1.058308     1.061493     0.673244     0.967483     0.380336
+               0.570625     2.222730     7.059463     8.538420     4.706027     6.373604
+               5.289052     2.638041     1.364105     2.322613     0.699185     0.971510
+               0.878315     1.145324     0.519256     0.750279     0.506607     1.346040
+               0.500490     1.301539     1.226481     0.992033     1.129486     1.457911
+               1.780075     1.841421     0.316805     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// Curated fact: methanol does NOT participate in the aqueous speciation
+// network at this thermodynamic level (pKa ~ 15.5 -- negligible).
+aqueousSpeciation  none;
+
+surfaceTension
+{
+    A     0.04882949034;
+    B     0;
+    Tc    512.64;
+    n     0.8938361796;
+    Tmin  278.2;
+    Tmax  343.15;
+}
+
+provenance
+{
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 4.335927;
+        Trange        (278.2 343.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.jct.2011.10.013"; articleSha256 "105c8e0ba0946e2af6a699a87b91253f87a7d0fb172d53767bceced30bfb8be9"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2012.02.017"; articleSha256 "cd6140d30b0fbde52814138655662a0888555a67d1f194c5a9299aa84cee5410"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2013.04.015"; articleSha256 "1acb7464119df183aafb3b3f3eb236862e6844b6b3cd7fbe65f30ee75fda68be"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2013.12.009"; articleSha256 "2b8e0c2bc13c08ad28c344eed11c7a2c2b09cd9c8d571331b46eb13bf5305762"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2014.07.001"; articleSha256 "ce030785b416ae5a4d6e6cbbe1cacc44db11bf857774e3e51d4bf23906198d0b"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2016.06.004"; articleSha256 "e137c1a70aa75fcb0ee488a576a2de8c0d7768b2ca2f5e79815e8f728cf3eced"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2017.08.024"; articleSha256 "6dc72a738c8f278cc0f0c3305ecb6ffd13a0701a85a6d4e2710ffc1f06ca00d3"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2019.06.005"; articleSha256 "f6f65c822d26d46b7ca527db4eb2794abf60d27f0d57bac47fd7568211ba20f7"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.5b01023"; articleSha256 "426455e297cb8b437fb95f29882b9c7a779bee0b42a7446939e54201440a98f1"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je0301500"; articleSha256 "0f1564df276a2831c1a713e418a0dbeddb34c4d617ee2fb47a2f91e4678b02da"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je050519g"; articleSha256 "34f63043a57a854ef49d720f1fe02e2067b14e70edc25747ae33150b979ddf22"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je400004j"; articleSha256 "9d402b71f417e3bd90ce1de45d97df235e1f855f1d2819ee82eb32ebaeb38406"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je700578f"; articleSha256 "0b760d36017c30bb4866b0e4096cf1d7b492ac3e9f5ec919bcf19d6410952406"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je8003468"; articleSha256 "8bddbe91359b55c4af3569d52961e6c86b1d161880c5c663cb2a333f3db5d448"; pointsKept 13; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     14;
+            pointsKept  55;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.237015;
+            max_pct     4.335927;
+        }
+    }
+}

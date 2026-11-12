@@ -1071,13 +1071,13 @@
         "key": "components",
         "name": "Pure-component property records",
         "source": "data/standards/components/",
-        "count": 608
+        "count": 687
       },
       {
         "key": "species",
         "name": "Aqueous / gas / solid model-species records",
         "source": "data/standards/species/",
-        "count": 53
+        "count": 74
       },
       {
         "key": "chemistry",
@@ -1095,13 +1095,13 @@
         "key": "parameters.NRTL",
         "name": "NRTL binary-interaction pairs (public catalogue)",
         "source": "data/standards/parameters/NRTL/",
-        "count": 9
+        "count": 793
       },
       {
         "key": "parameters.UNIQUAC",
         "name": "UNIQUAC binary-interaction pairs (public catalogue)",
         "source": "data/standards/parameters/UNIQUAC/",
-        "count": 3
+        "count": 374
       },
       {
         "key": "parameters.UNIFAC",
@@ -1113,19 +1113,19 @@
         "key": "parameters.Henry",
         "name": "Henry's-law gas-solvent pairs",
         "source": "data/standards/parameters/Henry/",
-        "count": 206
+        "count": 486
       },
       {
         "key": "parameters.Pitzer",
         "name": "Pitzer (Harvie-Moller-Weare) ion-interaction pairs",
         "source": "data/standards/parameters/Pitzer/",
-        "count": 120
+        "count": 164
       },
       {
         "key": "parameters.eNRTL",
         "name": "eNRTL electrolyte pairs",
         "source": "data/standards/parameters/eNRTL/",
-        "count": 3
+        "count": 48
       },
       {
         "key": "parameters.EdwardsPitzer",

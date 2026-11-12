@@ -1,0 +1,210 @@
+// [imported] origin "data/standards/components/triethanolamine.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: triethanolamine  (CAS 102-71-6)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        triethanolamine;
+CAS         102-71-6;
+formula     C6H15NO3;      // counted from the ChemSep v8.3 structure formula "(HOCH2CH2)3N" (derived 2026-09-03; reproduces MW to 0.001 %)
+reviewStatus interim;
+MW          149.1882;      // kg/kmol [origin=ChemSep v8.3]
+Tc          787;      // K [origin=ChemSep v8.3]
+Pc          35.9;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       1.28411;      // [-] [origin=ChemSep v8.3]
+Tb          613;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -554000;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     538;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model AmbroseWalton;  // [origin=estimated method=Ambrose-Walton]
+}
+
+Vliq        0.000132705;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      72688.8;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (114.87  -616.04  6.601244721  -0.00048074  2.2464e-07);
+    Trange        (273  1200.15);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (285.56  313.35  -0.556755279  0.016374  -1.2842e-05);
+    Trange        (293.15  633.15);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     33.605;
+        B     4399.7;
+        C     -8.9203;
+        D     2.1038e-05;
+        E     2;
+        Tmin  293.15;
+        Tmax  617.68;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.76863;
+        B     26.11;
+        C     -0.3374;
+        D     0.0010847;
+        E     -1.1937e-06;
+        Tmin  294.35;
+        Tmax  723.15;
+    }
+}
+solubilityParameter 27430;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Triethanolamine";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+surfaceTension
+{
+    A     0.1122234811;
+    B     0;
+    Tc    787;
+    n     1.823644711;
+    Tmin  288.15;
+    Tmax  343.15;
+}
+
+provenance
+{
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file TRIETHANOLAMINE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey GSEJCLTVZPLZKY-UHFFFAOYSA-N (full match); formula C6H15NO3; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        192.347299;   // sum of the profile below; GAMESS prints 192.35
+        volume      190.18;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.640942     1.366447     5.573202     0.623788     1.801867
+               2.742964     3.876315     2.627663     2.612407     1.378932     2.383737
+               3.510010    10.188585    16.885511    18.181143    15.824895    14.485746
+              11.577495    10.239784     5.143238     5.589068     3.197027     3.046448
+               4.085770     4.245881     1.899140     1.471950     1.498902     3.061479
+               2.753999     4.144843     5.769228     3.684764     1.788097     5.185655
+               5.158250     4.102127     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 3.617742;
+        Trange        (288.15 343.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.jct.2013.01.020"; articleSha256 "4f67f65eb49dda806db03730f54a6f8be8f2eb38cc52edc036b37364a841b8f8"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je200124h"; articleSha256 "a27a0abf335062027984b0f70f9f064abfc8547042193f1e2b48ed3e5c2ad0e0"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je301123j"; articleSha256 "bbbadaf63a974976ab754d584b2c5a9c082597d66d56d64172d373eaa5f8c227"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je700647x"; articleSha256 "11e2e28b67cb3f4a2418931aadbfa73540b44be0d0e25b78e67699ee09cd3e6f"; pointsKept 6; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     4;
+            pointsKept  19;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     2.369243;
+            max_pct     3.617742;
+        }
+    }
+}

@@ -1,0 +1,218 @@
+// [imported] origin "data/standards/components/acetone.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Acetone  (C3H6O, CAS 67-64-1)
+  Sources:   constants + vapour pressure cross-checked against CoolProp
+             7.2.0 (MIT) within ~1%.  Ideal-gas formation properties and
+             liquid Cp are individual literature values -- primary
+             re-citation pending (IST review).
+\*---------------------------------------------------------------------------*/
+
+name        acetone;
+formula     C3H6O;
+CAS         67-64-1;
+
+
+
+MW          58.080;        // kg/kmol
+Tc          508.10;        // K
+Pc          47.01;         // bar
+omega       0.3070;        // [-]   acentric factor
+Tb          329.22;        // K     normal boiling point
+HvapTb      29100;         // J/mol latent heat at Tb
+Vliq        7.35e-5;       // m³/mol liquid molar volume at 25 °C (73.5 cm³/mol)
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 19730;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+standardThermochemistry
+{
+    dHf_298   -217100.0;      // J/mol  -- ideal-gas reference
+    s_298     295.30;         // J/(mol·K) -- third-law absolute
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   -- Psat(Tb) = 1.009 bar (check)
+    coefficients  (4.42448   1312.253   -32.445);
+    Trange        (259.16  507.60);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    // Cp [J/(mol·K)] = a0 + a1*T + a2*T^2 + a3*T^3   -- Cp(298) = 73.4
+    coefficients  (6.301   0.2606   -1.253e-4   2.038e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    // approximate constant ~125 J/(mol·K) over 250-330 K
+    coefficients  (125.0);
+    Trange        (250  330);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -50.27157576;
+        B     2612.345613;
+        C     5.867617121;
+        D     0;
+        E     0;
+        Tmin  278.15;
+        Tmax  318.15;
+    }
+}
+
+surfaceTension
+{
+    A     0.06433202026;
+    B     0;
+    Tc    508.1;
+    n     1.148525802;
+    Tmin  287.81;
+    Tmax  328.15;
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 2.5735, q = sum nu_k Q_k = 2.3360 over the record's unifac groups (1 CH3 + 1 CH3CO)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    vaporPressure  "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
+    constants      "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
+    standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
+}
+
+// Molecular group decomposition, per method (the curation RECIPE: a group-
+// contribution estimator / UNIFAC reads it from HERE instead of re-typed per
+// case).  Method-keyed because Joback groups != UNIFAC groups.  Acetone = CH3-CO-CH3.
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CH3CO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.5735;
+    q   2.3360;
+}
+
+groups
+{
+    joback ( { group CH3; count 2; } { group ketone; count 1; } );
+    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } );
+}
+
+diffusionVolume  67.7;   // Fuller (FSG revised: 3C+6H+O) -- enables Lewis-number wet-bulb
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0438-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-64-1";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ACETONE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey CSCPPACGZOOCGX-UHFFFAOYSA-N (full match); formula C3H6O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        102.039675;   // sum of the profile below; GAMESS prints 102.04
+        volume      85.95;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.105203     1.971327
+               9.923352     9.632329    12.992419     8.880851     7.036506     6.722447
+              15.529595     4.789188     1.434192     1.466586     1.024596     0.107694
+               0.091042     0.185602     1.113486     0.517621     0.822966     1.510640
+               1.301399     1.853276     2.329952     2.917110     3.804079     2.663409
+               1.312808     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 4.228159;
+        Trange        (278.15 318.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2018.10.024"; articleSha256 "21a90db0bde4de1de3fbb09443aba9d1102250e059ed455409e4f6467ba8f17f"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2005.08.002"; articleSha256 "2cad6523ec40199c85aa51d32401f7d50e545cc18c5c6da73050f8a726c959d0"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2009.12.008"; articleSha256 "7f73a3afce223818daba76bd71bc71a7ccc7a21f66f931327db773f1b50e0916"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je034203p"; articleSha256 "3e8a5266c028e5bb57d9440437688b08195e9267cc0c0cd6953afe4096cd10f0"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je034204h"; articleSha256 "1e369c75b4dcc82bd0775e2aaa0b2eac5d2b519cd07d28481e1a6eae690e85ce"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je050010l"; articleSha256 "2866b0f3b43126f3d6d0e194a7e2826b3437940395bf276d03e0c2a82723bef1"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je050110r"; articleSha256 "78a8089761d5b638fca254dacd5e8c065f11fa8745af380b0dee01f88f407e93"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je8001128"; articleSha256 "bb7deb6b0c30968df30249d7e945491442e247769b1575fc0f1270c2b6226266"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900523k"; articleSha256 "189a494a252a525c1fba6b65903a8ceed830da39ce5834cec238b901b6361b4e"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900535d"; articleSha256 "47a647617cd30496cef3b292b75a2823b7668c433035a3b15cc52f087207d54a"; pointsKept 8; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     10;
+            pointsKept  31;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.963710;
+            max_pct     4.228159;
+        }
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 2.905962;
+        Trange        (287.81 328.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2008.06.006"; articleSha256 "52dbf010232bc160ad7a38c6261f759b10374ce373a3e69a9d27ddf6a8856f6f"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2008.08.012"; articleSha256 "deea2a0e67fa87fbb9e27e9cc529289a0398dee31453b1ad9671acfcd9c71f83"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je0201323"; articleSha256 "c7899aaf15ed19de424bcb6afad7cea63591d5a6ed367ba3ddc3594b5cd6c1ff"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je0341763"; articleSha256 "b135448fe54dad323af363adc5b1a5dbdb35d7950ac4f6e40fc7eda945bb01c3"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je500205z"; articleSha256 "de6213bfca9b4754a45493cf576de2d8280b507501a96f8997111b9e6268070c"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je7000182"; articleSha256 "a357c52d16273d9ff1cb88313d92333d4bea38227942a55660db17e8c1bced54"; pointsKept 5; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     6;
+            pointsKept  14;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.906626;
+            max_pct     2.905962;
+        }
+    }
+}
