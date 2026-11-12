@@ -79,7 +79,8 @@ export type MethodToolId =
   | "correlation-simplicity" | "data-reconciliation" | "solvent-mixture"
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
-  | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves";
+  | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
+  | "adsorption-isotherms";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1290,6 +1291,30 @@ export const METHOD_TOOLS: MethodTool[] = [
     origins: ["engine", "assumption"],
     teaches: "The two classical drying plots: X against time, and the rate against moisture — where, for a material with a constant-rate period (not every material has one), the critical moisture is VISIBLE as the corner at which a flat rate starts to fall toward the isotherm's equilibrium.",
     theory: "ch:drying",
+  },
+  //  THE EQUILIBRIUM BEHIND THE BED (2026-11-12): laboratory (c, q) points,
+  //  the linear, Langmuir and Freundlich isotherms fitted to them by the
+  //  classical straight lines AND by direct least squares on q, with the
+  //  residuals, the standard errors and whether the measured range can tell
+  //  the models apart; used once, for a single-stage batch dose.  ALL of it
+  //  is the page's arithmetic (gui/src/case/adsorptionIsotherms.ts): the
+  //  engine's isotherms are gas-phase, in partial pressure, and it has no
+  //  Freundlich -- measured and proposed in
+  //  docs/design/adsorption-isotherms-from-laboratory-data.md.
+  {
+    id: "adsorption-isotherms", blurb: "Fit linear, Langmuir and Freundlich isotherms to your own equilibrium points.",
+    label: "Adsorption isotherms from laboratory data",
+    discipline: "Separations & phase equilibria", kind: "construction", status: "live",
+    origins: ["page", "assumption"],
+    teaches: "Which isotherm describes a set of measured (c, q) points and how far to trust it: "
+      + "the linear, Langmuir and Freundlich models and what each assumes; the classical "
+      + "straight-line fits (1/q against 1/c, log q against log c) beside a direct "
+      + "least-squares fit on q, and why they give different parameters; residuals, RMS and "
+      + "maximum relative error, the standard errors from s²(JᵀWJ)⁻¹, and whether the "
+      + "measured range can tell the models apart; then the single-stage batch balance as an "
+      + "operating line on the fitted isotherm -- on synthetic examples with stated "
+      + "generating parameters, or on points you paste.",
+    theory: "sec:adsorption-isotherm-fitting",
   },
   {
     id: "breakthrough", blurb: "Watch a bed's mass-transfer zone eat capacity before saturation.", label: "Adsorption breakthrough",

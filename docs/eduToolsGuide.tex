@@ -1183,6 +1183,89 @@ nothing about \emph{what kind}.
 \end{tryit}
 
 % ---------------------------------------------------------------------
+\subsection{Adsorption isotherms from laboratory data}\label{sec:edu-adsorption-isotherms}
+
+\declaredanchor{sec:adsorption-isotherm-fitting}
+
+\noindent\textit{\small Tool:} \code{tool=adsorption-isotherms}.
+\textit{\small Case it starts from:} none --- the page fits points it
+generates or points you paste, and runs no engine.
+
+\subsubsection*{The question}
+
+\emph{I have laboratory equilibrium points $(c, q)$ for a solute on an
+adsorbent; which isotherm describes them, with what parameters, and how far
+can I trust it?}
+
+The page opens on what an isotherm is --- the loading on the solid against
+the concentration left in the liquid, at one temperature, each point read
+from a flask balance $q = V(c_0-c)/M$ --- and on the three shapes
+(favourable, linear, unfavourable) and what each does to a front in a bed,
+which is where the \code{breakthrough} page continues.  It then derives the
+three models: linear $q = Kc$; Langmuir $q = q_{\max}c/(K_L+c)$ from a site
+balance, with its equivalent affinity form $b = 1/K_L$ and its Henry limit
+$q_{\max}/K_L$; and Freundlich $q = K_F c^{1/n}$, which has neither a Henry
+limit nor a plateau.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Everything is the page's own arithmetic, marked \emph{page} on every panel.
+The engine carries Henry and Langmuir isotherms for a gas, in partial
+pressure, and fits them to measured $(T, p, q)$ data; it has no
+liquid-phase isotherm and no Freundlich model, and handing it a
+concentration as a pressure would be a units lie.  The page fits each model
+two ways: the classical straight lines ($1/q$ against $1/c$; $\log q$
+against $\log c$) and a direct least-squares fit on $q$ by a hand-written
+Levenberg--Marquardt, with absolute or relative residuals.  It prints each
+parameter with its standard error from $s^2(J^{\mathsf T}WJ)^{-1}$, the
+root-mean-square residual, the largest relative error, a residual plot,
+and a diagnostic of whether the measured range can tell the models apart:
+the decades of $c$ spanned, the fraction of the fitted Langmuir plateau
+reached at the highest and the lowest point, and how many standard errors
+the Freundlich exponent lies from 1.  Every plot shades the concentrations
+outside the measured range.  Finally the fitted isotherm is used once: the
+single-stage batch balance $Vc_0 + Mq_0 = Vc + Mq$ drawn as an operating
+line, giving the dose for a target removal, with a warning when the target
+lies outside the data.  The design record
+\file{docs/design/adsorption-isotherms-from-laboratory-data.md} holds the
+measurements and a proposal for the engine side.
+
+\subsubsection*{The examples are synthetic}
+
+Three example sets are \emph{generated} by the page, not measured, and are
+labelled so: each states its model, its parameters, its concentrations and
+its noise (multiplicative, $\exp(\sigma e)$ with a seeded standard normal
+$e$), so the fit can be checked against the truth.  An organic solute on
+activated carbon, Freundlich-shaped over four decades of $c$; a metal ion on
+a chelating resin, strongly favourable Langmuir with a clear plateau; and a
+trace solute generated from a Langmuir isotherm but measured only far below
+$K_L$, where nothing in the data can tell the three models apart.  Your own
+points are pasted as two columns, in a unit chosen from a short list.
+
+\begin{tryit}
+On the activated-carbon set, compare the Langmuir straight-line fit with the
+direct one: the double-reciprocal line gives a capacity several times smaller,
+because the lowest concentrations dominate it, while its $R^2$ still looks
+excellent.  On the trace-solute set, read the standard error of $q_{\max}$
+and the diagnostic sentence, then switch the residuals from absolute to
+relative and watch the Freundlich exponent move towards or away from 1.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{Reading the smallest RMS as the right model.}  A two-parameter
+model always fits at least as well as a one-parameter one.  The residual
+plot --- a run of one sign then the other --- and the diagnostic of the
+measured range say more than the RMS alone.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+One temperature: no heat of adsorption, no van't Hoff extrapolation.  One
+solute: no competition.  Equilibrium only: no uptake rate.  One batch
+stage: no multistage dosing and no column.  The standard errors rest on the
+chosen error model and on local linearity.
+
+% ---------------------------------------------------------------------
 \subsection{Adsorption: sizing a bed from a breakthrough curve (LUB)}\label{sec:edu-lub-scaleup}
 
 \declaredanchor{ch:adsorption}
