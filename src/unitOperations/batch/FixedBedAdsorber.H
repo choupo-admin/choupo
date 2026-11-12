@@ -51,8 +51,11 @@ Description
     adsorbent identity and gas viscosity from the canonical transport model.
 
     Discretisation (spec section 2, audited): conservative finite volumes on
-    a DECLARED uniform mesh of nCells, first-order upwind advection + central
-    dispersion at the faces, Danckwerts inlet as the IMPOSED face flux
+    a DECLARED uniform mesh of nCells, the DECLARED convection scheme
+    (operation.convectionScheme: `upwind`, first order, or `vanLeer`, a
+    MUSCL face value with the van Leer limiter -- C375; faceValue_ is its one
+    home, with the inlet slope reading the feed and the outlet slope zero)
+    + central dispersion at the faces, Danckwerts inlet as the IMPOSED face flux
     F_1/2 = u*c_in (the exact conservative form -- no ghost cell), outlet
     face without a dispersive term (dc/dz|L = 0), source rho_b*k*(q*-q)
     with NO (1-eps) factor.  The scheme is telescopic: discrete conservation
@@ -70,8 +73,10 @@ Description
         Rosenbrock23 sub-steps each interval in samplingInterval chunks;
       * `timeStepping fixed;` -> explicit RK4 at the case deltaT, REFUSED
         when deltaT exceeds the Gershgorin bound printed term by term
-        (advection 2u_i/dz + dispersion 4D_i/dz^2 + LDF k(1+rho_b q*'(0)/eps))
-        -- the student SEES which term rules the step.
+        (advection 2u_i/dz + dispersion 4D_i/dz^2 + LDF k(1+rho_b q*'(0)/eps);
+        advection 6u_i/dz under vanLeer, whose face value's derivatives sum
+        in absolute value to at most 3) -- the student SEES which term rules
+        the step.
 
     Announced pre-run (spec section 1.3): Pe = uL/Dax, retention factor
     R_f = eps + rho_b q*(c_in)/c_in, stoichiometric time t_st = (L/u) R_f,
@@ -289,11 +294,15 @@ private:
     scalar rhoB_ = 0.0;      // bulk density [kg/m3] from the catalogue
     std::size_t N_ = 0;      // nCells (declared -- no silent default)
     scalar dz_   = 0.0;      // L/N [m]
-    //  C375: the convection scheme of the face values.  `upwind` takes the
-    //  upwind cell's value (first order: it adds a numerical dispersion
-    //  u dz/2 to Dax), announced at the start of every run.
+    //  C375: the convection scheme of the face values (operation.
+    //  convectionScheme).  `upwind` takes the upwind cell's value (first
+    //  order: it adds a numerical dispersion u dz/2 to Dax, announced at the
+    //  start of every run); `vanLeer` reconstructs a van Leer-limited linear
+    //  profile in the upwind cell (second order where smooth, bounded at
+    //  fronts).  The stencil of the second reaches two cells upstream, so the
+    //  declared Jacobian gathers TWO cells per block (buildOdeStructure_).
     std::string convectionScheme_ = "upwind";
-    bool        secondOrder_      = false;
+    bool        secondOrder_      = false;   // convectionScheme_ == vanLeer
     //  The numerical and the physical dispersion, frozen at initialise
     //  (interstitial basis, the one the moments obey: D_L = Dax/eps).
     scalar      dNumAnn_ = 0.0;
@@ -422,8 +431,14 @@ private:
     void    commit_(const sVector& y);       // y_ <- y, refresh state_.n
     void    sample_(scalar t);               // crossings + G5 integral update
     void    rk4Step_(scalar dt);
+    //  C375: the advected (face) concentration at face f (1 <= f <= N-1)
+    //  of the concentration row starting at y[row0], for a face velocity of
+    //  sign uf, with cIn the inlet ghost (the feed) -- the ONE home of the
+    //  convection scheme, read by the species and the energy fluxes.
+    scalar  faceValue_(const sVector& y, std::size_t row0, std::size_t f,
+                       scalar uf, scalar cIn) const;
     //  C375: the numerical dispersion the scheme adds [m2/s, interstitial
-    //  basis: v dz/2 for upwind], the smallest nCells that brings it under
+    //  basis: v dz/2 for upwind, 0 to leading order for vanLeer], the smallest nCells that brings it under
     //  a tenth of D_L, and the one sentence the header and the advisory
     //  both print.
     scalar      numericalDispersion_() const;
