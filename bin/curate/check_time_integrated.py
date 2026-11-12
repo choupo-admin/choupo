@@ -25,6 +25,11 @@ outcome; nothing is read from a stored result.
       streams.  The POSITIVES must still run: unsteady03 and unsteady04 (a
       feed-and-bleed loop: the flow is the balance of feed and splits) and
       unsteady05 (a dynamicTank with an outflow law), each cut to a few steps.
+
+  (c) TI-03  A `recipe` THIS BINARY CANNOT ACT ON IS REFUSED BY NAME.
+      unsteady05 and ctrl01 with a `recipe` block appended must exit non-zero,
+      naming `recipe`, choupoBatch (the binary that acts on it) and the
+      `Schedule` controller (the timed-change grammar of choupoCtrl).
 """
 import csv
 import shutil
@@ -168,6 +173,30 @@ def arm_b(tmp, bad):
     return ok
 
 
+RECIPE = """
+recipe
+(
+    { time 100 s; action setParameter; unit TANK; parameter opening; value 0.5; }
+);
+"""
+
+
+def arm_c(tmp, bad):
+    for tag, binary, src in (
+            ("semi", SEMI, ROOT / "tutorials" / "unsteady" / "unsteady05_tank_valve_drain"),
+            ("ctrl", CTRL, ROOT / "tutorials" / "ctrl" / "ctrl01_cstr_temp_control")):
+        c = make_case(tmp, "ti03_" + tag, src)
+        fs = c / "system" / "flowsheetDict"
+        fs.write_text(fs.read_text() + RECIPE)
+        r, out = run(binary, c)
+        if r.returncode == 0:
+            bad.append("(c) " + tag + ": a `recipe` block ran at exit 0")
+        else:
+            for w in ("recipe", "choupoBatch", "Schedule"):
+                if w not in out:
+                    bad.append("(c) " + tag + ": the refusal does not name '" + w + "'")
+
+
 def main():
     for b in (BATCH, SEMI, CTRL):
         if not b.exists():
@@ -182,6 +211,9 @@ def main():
         ok = arm_b(tmp, bad)
         notes.append("TI-02: the closed leaking loop is refused; " + ", ".join(ok)
                      + " still run")
+        arm_c(tmp, bad)
+        notes.append("TI-03: a `recipe` is refused by name under choupoSemiContinuous"
+                     " and choupoCtrl")
     if bad:
         print("check_time_integrated: FAILED")
         for b in bad:

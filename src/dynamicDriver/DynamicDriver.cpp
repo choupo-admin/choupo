@@ -445,6 +445,25 @@ try
             " that is choupoCtrl's class -- set `application choupoCtrl;` in"
             " system/controlDict, or remove the block to simulate the process"
             " open-loop here.");
+    //  A `recipe` IS READ BY choupoBatch ONLY (TI-03, 2026-11-12).  Its
+    //  actions -- `transfer` between batch vessels through a queue,
+    //  `setParameter` on a batch unit, `condition` and `cycle` blocks -- are
+    //  written against the batch units and choupoBatch's own event loop; this
+    //  driver has no reader for them, so a block here used to be accepted at
+    //  exit 0 and never acted on, and the user believed a drain-and-refill (or
+    //  whatever it said) had been simulated.  Refused by name, with the grammar
+    //  this class offers for a timed change: a `Schedule` controller, which
+    //  drives a manipulated variable of a unit from a time table (choupoCtrl).
+    if (flowsheetDict->found("recipe"))
+        throw std::runtime_error(cfg.binaryName + ": system/flowsheetDict declares a"
+            " `recipe`, and this binary does not act on a recipe -- its events"
+            " (transfer, setParameter, conditions, cycles) are executed only by"
+            " choupoBatch, on batch vessels.  Run the case with `application"
+            " choupoBatch;` if it is a batch campaign; for a timed change in a"
+            " continuous or semi-continuous process (a step in a feed, a"
+            " set-point, an opening) declare a `Schedule` controller under"
+            " `application choupoCtrl;` (see ctrl05_disturbance_transient).  Or"
+            " remove the block.");
     // The case system lives in constant/thermoPhysPropDict.
     if (!fs::exists("constant/thermoPhysPropDict")
         && fs::exists("constant/propertyDict"))

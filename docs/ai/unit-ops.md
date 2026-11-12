@@ -3257,6 +3257,13 @@ the stack never sees the feed).
 
 ## Recipe events (in `flowsheetDict`)
 
+A `recipe` is executed by `choupoBatch` ONLY.  `choupoSemiContinuous` and
+`choupoCtrl` share a driver that has no reader for it, and since 2026-11-12
+(review row TI-03) a flowsheetDict that declares one is REFUSED by name there
+instead of being accepted at exit 0 and ignored.  For a timed change in a
+continuous process use a `Schedule` controller under `choupoCtrl`
+(`ctrl05_disturbance_transient`).
+
 ```
 recipe
 (

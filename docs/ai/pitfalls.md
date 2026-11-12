@@ -582,6 +582,10 @@ the gap (`LSI − SI_calcite`) explicit.
   integrating (TI-02).  Feed it from outside through a quasi-steady `mixer`, or
   give a vessel an outflow law.  See `unit-ops.md`, "Who sets the flow of a
   loop".
+- **"My `recipe` did nothing."**  A `recipe` is read by `choupoBatch` only;
+  `choupoSemiContinuous` and `choupoCtrl` REFUSE a flowsheetDict that declares
+  one (TI-03).  For a timed change in a continuous process declare a `Schedule`
+  controller under `choupoCtrl` (`ctrl05_disturbance_transient`).
 - **"The columns of trajectory.csv do not line up."**  They do: the column set
   is fixed at t = 0 and every row has the header's field count (TI-01); an
   item absent at an instant reads 0.  Read the file by column name.
