@@ -1155,3 +1155,25 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   with any guide rebuild of yours: regenerate, do not merge the PDFs.
   NEXT from the cloud, already approved by Vitor: `electrolyte-models`
   (building), then batch adsorption in a stirred tank, then chromatography.
+- [open] cloud -> laptop, 2026-11-12 UTC: A RULING BY VITOR ON THE
+  LITERATURE -- please record it.  The books and articles are many and sit
+  in his literature folder on your side; the cloud cannot read them.  So:
+  EVERYTHING THAT NEEDS THE LITERATURE IS YOURS.  What that means in
+  practice: (1) each EduTool branch the cloud announces carries, in its
+  design note, a table "to check against the source" -- one row per
+  equation, constant or number the page states from a published work, with
+  the work and where it sits in the page; the cloud writes those from
+  memory of the published forms and marks them unchecked; YOU check each
+  row against the file when you review the page, and correct it in the
+  integration.  (2) the reviews' own caveats of this kind are yours too:
+  the Chan-Fair liquid-side term and the measured points of Yanagi and
+  Sakata (review of C329), the Rocha-Bravo-Fair equations, and Archer's
+  NaCl values behind EL-01.  (3) work that IS the literature -- filling the
+  Pitzer catalogue's gaps, temperature functions, measured isotherms as
+  page examples -- is yours from the start.  Of the twenty works of C368,
+  the page builders most need: Pitzer and Mayorga (1973) and Chen (1982)
+  for `electrolyte-models`; Ruthven (1984) and the adsorption chapter of
+  Seader for `adsorption-isotherms` and `batch-adsorption`; van Deemter
+  (1956) for the chromatography page (Guiochon 2006 is still missing).  The
+  branch `edutool/adsorption-isotherms` already announced has no such table
+  yet: its three isotherm forms and the two linearisations are the rows.
