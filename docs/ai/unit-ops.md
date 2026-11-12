@@ -2229,6 +2229,134 @@ Theory: `sec:hydrocyclone` (`sec:hydrocyclone-declared`).  Case:
 Table 9.1 run forward: two anchors, two stated gaps from Kelsall's assumption
 failing on the finest class).
 
+### `cakeFilter`
+A cake filter on a SLURRY (a liquid carrying solids; not a gas-borne powder),
+constant pressure, the two-resistance law of Geankoplis, Hersel & Lepek 5th ed.
+section 24.2: `t/V = K_p V/2 + B`, `K_p = mu alpha c_S/(A^2 dp)`,
+`B = mu R_m/(A dp)`; a compressible cake `alpha = alpha0 dp^s`.  Inlets
+`( slurry [wash] )`, outlets `( cake filtrate [spentWash] )`.  `model rotaryDrum`
+is continuous (declare `cycleTime` XOR `area`; the other is the result, eq.
+24.2-26); `model batchPress` is cyclic (declare `area`, `filtratePerCycle`,
+`cleaningTime`; the filtration, washing and cycle times and `pressesRequired` are
+results).  THE STREAMS ARE CYCLE-AVERAGED FLOWS: the cycle is a design result on
+the steady balance, never a second time axis.  The cake moisture is DECLARED
+(`wetToDryCakeRatio` m, kg wet per kg dry); the liquid viscosity and density are
+the package's (a case that declares no liquid viscosity model is refused).  A
+wash is a real second inlet and the spent wash a real third outlet: the solute
+left in the cake is the washing law's answer, `washing { model displacement; }`
+(R = max(0, 1 - N), ideal displacement) or `washing { model tabulated;
+washRatio ( ... ); remaining ( ... ); }` (the case's own wash test, ln R linear
+in N, no extrapolation); NO source in hand prints a washing law with constants.
+NONE of the keys has a default.  Every outlet is the difference, so the mass
+closes exactly; products leave at the feed's T and P.
+```
+type      cakeFilter;
+model     rotaryDrum;
+in        slurry;   outputs ( cake filtrate );
+operation
+{
+    pressureDrop      67.0 kPa;
+    submergence       0.33;
+    cycleTime         250 s;
+    alpha0            4.37e9;        // m/kg with dp in Pa: read in SI
+    compressibility   0.3;
+    mediumResistance  [0 -1 0 0 0] 0;
+    wetToDryCakeRatio 2.0;
+}
+```
+A press with a through-washed cake: `model batchPress; inputs ( slurry washWater );
+outputs ( cake filtrate spentWash );` with `area`, `filtratePerCycle`,
+`cleaningTime`, `washFlowPath throughWashing;` (one quarter of the final rate,
+eq. 24.2-20; `sameAsFiltrate` is eq. 24.2-19) and a `washing { }` block.
+KPIs: `alpha_m_kg`, `cS_kg_m3` (beside `cS_eq24_2_10_kg_m3`), `filtrate_m3_s`,
+`Kp_s_m6`, `B_s_m3`, `area_m2`, `cycleTime_s`, `filtrationTime_s`,
+`cakeThickness_mm`, `cakePorosity`, `washRatio`, `soluteRemaining`, `washTime_s`,
+`pressesRequired`, `componentMassClosure`; the profile is the t/V vs V line.
+Theory: `sec:cakeFilter` (`sec:cakeFilter-rotaryDrum`, `sec:cakeFilter-batchPress`,
+`sec:cakeFilter-washing`, `sec:wash-displacement`, `sec:wash-tabulated`).  Cases:
+`tutorials/steady/solids/filter01_caco3_rotaryDrum` (Geankoplis Example 24.2-4:
+all four rows anchored, area 6.6434 vs 6.60 m2) and
+`tutorials/steady/solids/filter02_caco3_pressWashing` (Examples 24.2-1 to 24.2-3:
+five rows anchored, -0.16 to -0.58 %, one cause: the package's water viscosity).
+
+### `thickener`
+A gravity thickener sized from the case's ONE batch settling test by Kynch's
+construction; the result is the AREA (no depth, no compression zone, no safety
+factor).  Inlet `in`, outlets `( underflow overflow )`.  The test is
+`settlingTest { initialConcentration C_0 kg/m3; time ( ... ); height ( ... ); }`
+(lists in SI, s and m; first point t = 0), the target `underflowConcentration`
+C_u, and, for `talmageFitch`, the DECLARED `compressionTime` (every way of picking
+it is empirical, Perry 9th ed. p. 18-64).  `model talmageFitch`: the tangent at
+the compression point meets the underflow line H_u = C_0 H_0/C_u at t_u,
+A = W t_u/(C_0 H_0) (Talmage & Fitch 1955 eqs. 7-10; Wills & Napier-Munn 2006
+eq. 15.6).  `model coeClevenger`: the largest over the test's layers of
+W (1/C - 1/C_u)/v (Wills eq. 15.5) with (C, v) from Kynch's construction.  The
+underflow carries every solid; the overflow is the difference.  A C_u outside what
+the test reached is refused.
+```
+type      thickener;
+model     talmageFitch;
+in        feed;   outputs ( underflow overflow );
+operation
+{
+    settlingTest
+    {
+        initialConcentration 250 kg/m3;
+        time   ( 0 1800 3600 6300 10800 18000 43200 72000 );   // s
+        height ( 0.360 0.285 0.211 0.150 0.125 0.113 0.102 0.090 );   // m
+    }
+    compressionTime        1.75 h;
+    underflowConcentration 700 kg/m3;
+}
+```
+KPIs: `area_m2`, `unitArea_m2_per_tpd`, `areaTalmageFitch_m2`, `areaCoeClevenger_m2`,
+`underflowLine_Hu_m`, `curveCrossesHu_s`, `compression_H_m`, `compression_v_m_s`,
+`tangentIntercept_Hi_m`, `compression_C_kg_m3`, `tu_s`, `anchor_TFequalsCC_dev`
+(Coe-Clevenger at the compression layer equals the tangent area: 0),
+`componentMassClosure`; the profile carries the construction for the GUI to draw.
+Theory: `sec:thickener` (`sec:thickener-talmageFitch`,
+`sec:thickener-coeClevenger`).  Case:
+`tutorials/steady/solids/thickener01_settlingTest_talmageFitch` (Geankoplis
+Problem 30.1-11's data; NO printed answer exists: held by the identity and a
+self-recorded golden only).
+
+### `sedimentingCentrifuge`
+A sedimenting centrifuge by Sigma theory on the case's `sizeGrid`; the feed must be
+a slurry on the grid.  Inlet `in`, outputs `( sediment centrate )`.  The cut size
+is `d50 = sqrt(9 mu Q/(drho g Sigma))` and Stokes' window is enforced (Re < 1 at
+the cut size, else refused, naming the remedy: a faster bowl or a lower
+throughput).  The grade efficiency per class is DERIVED here from the trajectories
+Geankoplis and Ambler print; no source prints a grade curve.  `model tubularBowl`:
+`bowlRadius`, `liquidRadius`, `bowlLength`; Sigma by Ambler's equal-volume cut,
+with Geankoplis's half-layer `D_pc` beside it (`cutSizeHalfLayer_Dpc_um`, the
+62.8 % size on the same curve).  `model discStack`: `discSpaces`, `outerRadius`,
+`innerRadius`, `discHalfAngle` (`deg` accepted); Sigma = 2 pi n w^2
+(r_2^3 - r_1^3)/(3 g tan theta) (de Haan et al. eq. 9.52, Ambler's flow factor
+C = 1).  Both need `speed` (`rpm` accepted) and the declared `sedimentSolids`
+(the sludge's solids mass fraction).  No hindered settling, no drive power.
+```
+type      sedimentingCentrifuge;
+model     discStack;
+in        feed;   outputs ( sediment centrate );
+operation
+{
+    discSpaces 100;   outerRadius 0.10 m;   innerRadius 0.04 m;
+    discHalfAngle 40 deg;   speed 6000 rpm;   sedimentSolids 0.2;
+}
+```
+KPIs: every classifier KPI (`sediment_`/`centrate_` names, the actual-curve d50 in um, the closures)
+plus `omega_rad_s`, `gForce_wall`, `sigma_m2`, `cutSize_d50_um`, `Re_cut`,
+`vWall_cut_m_s`, `gradeEfficiency_at_d50`, and for the tubular bowl
+`bowlVolume_m3`, `residenceTime_s`, `sigmaHalfLayer_m2`,
+`cutSizeHalfLayer_Dpc_um`, `gradeEfficiency_at_Dpc`.
+Theory: `sec:sedimentingCentrifuge` (`sec:centrifuge-tubularBowl`,
+`sec:centrifuge-discStack`).  Cases:
+`tutorials/steady/solids/centrifuge01_tubularBowl_geankoplis` (Geankoplis Example
+30.2-2: omega, V and D_pc anchored) and
+`tutorials/steady/solids/centrifuge02_discStack_sigmaIdentity` (a DECLARED
+ILLUSTRATION: no printed or measured result holds it; its one anchor is an
+identity, the printed Sigma formula evaluated by hand).
+
 ## Drying
 
 ### `sprayDryer`

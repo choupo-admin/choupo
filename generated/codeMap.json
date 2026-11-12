@@ -297,6 +297,9 @@
   "CSTR": [
    "src/unitOperations/reactor/CSTR.H"
   ],
+  "CakeFilter": [
+   "src/unitOperations/solids/CakeFilter.H"
+  ],
   "CashFlowYear": [
    "src/core/ResultRecords.H"
   ],
@@ -1936,6 +1939,9 @@
   "Screen": [
    "src/unitOperations/solids/Screen.H"
   ],
+  "SedimentingCentrifuge": [
+   "src/unitOperations/solids/SedimentingCentrifuge.H"
+  ],
   "Selection": [
    "src/thermo/PricedDensity.H"
   ],
@@ -1983,6 +1989,9 @@
   ],
   "Slot": [
    "src/propertyOps/PropsPlan.H"
+  ],
+  "SlurryState": [
+   "src/unitOperations/solids/SolidLiquidCore.H"
   ],
   "SolidCandidate": [
    "src/thermo/solidEquilibrium/SolidEquilibrium.H"
@@ -2195,6 +2204,9 @@
   ],
   "ThermoResolutionLog": [
    "src/core/ThermoResolution.H"
+  ],
+  "Thickener": [
+   "src/unitOperations/solids/Thickener.H"
   ],
   "ThielePellet": [
    "src/propertyOps/ThielePellet.H"
@@ -3220,6 +3232,18 @@
    {
     "key": "hydrocyclone",
     "type": "Hydrocyclone"
+   },
+   {
+    "key": "cakeFilter",
+    "type": "CakeFilter"
+   },
+   {
+    "key": "thickener",
+    "type": "Thickener"
+   },
+   {
+    "key": "sedimentingCentrifuge",
+    "type": "SedimentingCentrifuge"
    },
    {
     "key": "ionExchanger",
@@ -9563,10 +9587,13 @@
    "src/unitOperations/separation/PSA.H",
    "src/unitOperations/separation/Stripper.H",
    "src/unitOperations/separation/TSATwinBed.H",
+   "src/unitOperations/solids/CakeFilter.H",
    "src/unitOperations/solids/Classifier.H",
    "src/unitOperations/solids/Hydrocyclone.H",
    "src/unitOperations/solids/Mill.H",
    "src/unitOperations/solids/Screen.H",
+   "src/unitOperations/solids/SedimentingCentrifuge.H",
+   "src/unitOperations/solids/Thickener.H",
    "src/unitOperations/solids/classifierModel/PartitionCurves.H",
    "src/unitOperations/solids/millModel/MillModels.H",
    "src/unitOperations/storage/StorageTank.H",
@@ -12260,6 +12287,28 @@
    "src/unitOperations/separation/cycloneModel/CycloneModel.H",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.H"
   ],
+  "src/unitOperations/solids/CakeFilter.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/solids/CakeFilter.H",
+   "src/unitOperations/solids/SolidLiquidCore.H"
+  ],
   "src/unitOperations/solids/Classifier.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -12381,6 +12430,68 @@
    "src/unitOperations/solids/Screen.H",
    "src/unitOperations/solids/classifierModel/PartitionCurves.H",
    "src/unitOperations/solids/millModel/MillModels.H"
+  ],
+  "src/unitOperations/solids/SedimentingCentrifuge.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/solids/ClassifierCore.H",
+   "src/unitOperations/solids/SedimentingCentrifuge.H",
+   "src/unitOperations/solids/SolidLiquidCore.H"
+  ],
+  "src/unitOperations/solids/SolidLiquidCore.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/solids/SolidLiquidCore.H"
+  ],
+  "src/unitOperations/solids/Thickener.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/solids/SolidLiquidCore.H",
+   "src/unitOperations/solids/Thickener.H"
   ],
   "src/unitOperations/solids/classifierModel/PartitionCurves.cpp": [
    "src/core/Dictionary.H",
@@ -13151,11 +13262,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -13559,11 +13674,15 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/solids/classifierModel/PartitionCurves.cpp",
    "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -13953,11 +14072,15 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/solids/classifierModel/PartitionCurves.cpp",
    "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -14375,11 +14498,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -14704,11 +14831,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -15570,11 +15701,15 @@
    "src/unitOperations/separation/cycloneModel/Lapple.cpp",
    "src/unitOperations/separation/cycloneModel/LeithLicht.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/solids/classifierModel/PartitionCurves.cpp",
    "src/unitOperations/solids/millModel/MillModels.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
@@ -16657,10 +16792,13 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -16933,11 +17071,14 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17177,11 +17318,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17474,11 +17619,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -17870,11 +18019,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18144,11 +18297,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18443,11 +18600,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -18762,11 +18923,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -19194,11 +19359,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -19438,11 +19607,15 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20545,10 +20718,13 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -20630,10 +20806,13 @@
    "src/unitOperations/separation/PSA.cpp",
    "src/unitOperations/separation/Stripper.cpp",
    "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/Mill.cpp",
    "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -21487,6 +21666,10 @@
    "src/unitOperations/separation/cycloneModel/CycloneModel.cpp",
    "src/unitOperations/separation/cycloneModel/Muschelknautz.cpp"
   ],
+  "src/unitOperations/solids/CakeFilter.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp"
+  ],
   "src/unitOperations/solids/Classifier.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/solids/Classifier.cpp"
@@ -21495,7 +21678,8 @@
    "src/unitOperations/solids/Classifier.cpp",
    "src/unitOperations/solids/ClassifierCore.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
-   "src/unitOperations/solids/Screen.cpp"
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp"
   ],
   "src/unitOperations/solids/Hydrocyclone.H": [
    "src/unitOperations/UnitOperation.cpp",
@@ -21508,6 +21692,20 @@
   "src/unitOperations/solids/Screen.H": [
    "src/unitOperations/UnitOperation.cpp",
    "src/unitOperations/solids/Screen.cpp"
+  ],
+  "src/unitOperations/solids/SedimentingCentrifuge.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp"
+  ],
+  "src/unitOperations/solids/SolidLiquidCore.H": [
+   "src/unitOperations/solids/CakeFilter.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp"
+  ],
+  "src/unitOperations/solids/Thickener.H": [
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/solids/Thickener.cpp"
   ],
   "src/unitOperations/solids/classifierModel/PartitionCurves.H": [
    "src/unitOperations/UnitOperation.cpp",

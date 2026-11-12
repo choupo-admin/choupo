@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/sedimentingCentrifuge.schema.json",
+  "title": "sedimentingCentrifuge operation",
+  "description": "A sedimenting centrifuge by Sigma theory on the case's size grid. Model tubularBowl: Sigma = w^2 V / (g ln(2 r2^2/(r1^2 + r2^2))) (Ambler 1959 eqs. 24-28; de Haan et al. eqs. 9.44-9.46), Geankoplis's half-layer D_pc beside it. Model discStack: Sigma = 2 pi n w^2 (r2^3 - r1^3)/(3 g tan theta) (de Haan et al. eq. 9.52; Ambler eq. 46, C = 1). The cut size d50 = sqrt(9 mu Q/(drho g Sigma)); Stokes' window enforced (Re < 1 at the cut size). The grade efficiency per class is derived here, not printed by any source. Inlet in, outlets (sediment centrate).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "speed": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Rotational speed N",
+      "description": "Revolutions per unit time; rpm is accepted.",
+      "unit": "1/s"
+    },
+    "sedimentSolids": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Solids fraction of the sediment w_s",
+      "description": "Mass fraction of solids in the discharged sediment, declared.",
+      "unit": "-"
+    },
+    "bowlRadius": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bowl radius r_2 (tubularBowl)",
+      "unit": "m"
+    },
+    "liquidRadius": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Liquid-surface radius r_1 (tubularBowl)",
+      "description": "Smaller than the bowl radius.",
+      "unit": "m"
+    },
+    "bowlLength": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bowl length b (tubularBowl)",
+      "unit": "m"
+    },
+    "discSpaces": {
+      "type": "number",
+      "minimum": 1,
+      "title": "Disc spaces n (discStack)",
+      "unit": "-"
+    },
+    "outerRadius": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Outer radius of the stack r_2 (discStack)",
+      "unit": "m"
+    },
+    "innerRadius": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Inner radius of the stack r_1 (discStack)",
+      "description": "Smaller than the outer radius.",
+      "unit": "m"
+    },
+    "discHalfAngle": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Disc half angle theta (discStack)",
+      "description": "In (0, 90) degrees; deg is accepted.",
+      "unit": "rad"
+    }
+  },
+  "required": [
+    "speed",
+    "sedimentSolids"
+  ]
+}

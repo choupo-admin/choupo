@@ -931,3 +931,36 @@ recycleMaxIter 400;
 * Check the circulating load (recycle / fresh solids) and the energy per pass
   against the source; the case's `expected` shows how the circuit is held to
   H&F's Table II.
+
+
+## 17. A washed filter cake — the wash is a SECOND INLET, the spent wash a THIRD OUTLET  (filter02_caco3_pressWashing)
+
+A cake filter that washes its cake is not one stream in, two out.  The wash liquid
+is a real stream with its own `0/` file, and the liquor it displaces leaves as a
+real third product, so the balance closes across all five streams:
+```
+type      cakeFilter;
+model     batchPress;
+inputs    ( slurry washWater );
+outputs   ( cake filtrate spentWash );
+operation
+{
+    pressureDrop 338 kPa;   specificCakeResistance [-1 1 0 0 0] 1.863e11;
+    mediumResistance [0 -1 0 0 0] 10.63e10;   wetToDryCakeRatio 2.0;
+    area 17.46 m2;   filtratePerCycle 3.37 m3;   cleaningTime 20 min;
+    washFlowPath throughWashing;          // one quarter of the final rate
+    washing { model displacement; }       // or tabulated, from the case's wash test
+}
+```
+* The streams are CYCLE-AVERAGED flows.  Size the wash stream as the wash volume
+  per cycle over the cycle time; the cycle time is a RESULT (the press's
+  filtration, washing and cleaning times), so set the feed to what one press
+  passes (`pressesRequired` near 1) or read the number of presses.
+* A wash with solids, at another temperature than the slurry, or that cannot
+  supply the liquor it replaces is refused by name.
+* `washing { }` is required with a wash inlet and refused without one; no washing
+  law with constants is shipped (none is printed in the sources in hand): either
+  ideal `displacement`, or the case's own measurement as `tabulated`.
+* The cake moisture is DECLARED (`wetToDryCakeRatio`), never predicted; give the
+  slurry a liquid viscosity model in the thermo dict (`transport { liquid {
+  viscosity { model Vogel; } } }`) or the unit refuses.

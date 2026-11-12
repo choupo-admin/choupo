@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*117 of 117 registered operations carry a schema and are documented below.*
+*120 of 120 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -173,6 +173,26 @@ Bubble-point temperature at fixed pressure: the T at which the first vapour bubb
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `P` | ✓ | number | Pa | System pressure at which the bubble point is evaluated. |
+
+## `cakeFilter`  (cakeFilter operation)
+
+A cake filter on a slurry, constant pressure, two-resistance law (Geankoplis, Hersel & Lepek 5th ed. section 24.2): t/V = K_p V/2 + B with K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp); a compressible cake alpha = alpha0 dp^s. Model rotaryDrum is continuous (declare cycleTime or area, the other is the result; eq. 24.2-26); batchPress is cyclic (declare area, filtratePerCycle and cleaningTime; the cycle time and the number of presses are results). The streams are cycle-averaged flows. Inlets (slurry [wash]), outlets (cake filtrate [spentWash]). The liquid viscosity is the package's and its model must be declared by the case.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `pressureDrop` | ✓ | number | Pa | -dp, constant over the cycle. |
+| `specificCakeResistance` |   | number | m/kg | Use this OR alpha0 with compressibility, never both. |
+| `alpha0` |   | number | SI | Read in SI (m/kg with dp in Pa); its dimensions have no integer form. Give with compressibility. |
+| `compressibility` |   | number | - | The exponent s of alpha = alpha0 dp^s (Geankoplis eq. 24.2-11). Give with alpha0. |
+| `mediumResistance` | ✓ | number | 1/m | 0 is a declaration (the medium neglected). |
+| `wetToDryCakeRatio` | ✓ | number | - | kg wet cake per kg dry cake: the cake moisture, declared (Geankoplis eq. 24.2-10). |
+| `submergence` |   | number | - | The fraction of each revolution in which cake forms. |
+| `cycleTime` |   | number | s | Declare this XOR area; the other is the result. |
+| `area` |   | number | m2 | batchPress: declared. rotaryDrum: declare this XOR cycleTime. |
+| `filtratePerCycle` |   | number | m3 |  |
+| `cleaningTime` |   | number | s |  |
+| `washFlowPath` |   | string | — | sameAsFiltrate: wash at the final filtration rate (eq. 24.2-19, leaf filter). throughWashing: one quarter of it (eq. 24.2-20, plate-and-f… |
+| `washing` |   | object | — | Required when a wash inlet is connected, and only then. The solute left in the cake after a wash ratio N (wash volume / liquor in the cake). |
 
 ## `classifier`  (classifier operation)
 
@@ -1290,6 +1310,22 @@ A vibrating screen on the case's size grid. The unit's `model` word selects how 
 | `bypass` |   | number | - | declared only: the fraction of every class misplaced to the oversize. |
 | `fluidToOversize` |   | number | - | Only when the feed carries a fluid: the fraction of it leaving with the oversize (neither model predicts it). |
 
+## `sedimentingCentrifuge`  (sedimentingCentrifuge operation)
+
+A sedimenting centrifuge by Sigma theory on the case's size grid. Model tubularBowl: Sigma = w^2 V / (g ln(2 r2^2/(r1^2 + r2^2))) (Ambler 1959 eqs. 24-28; de Haan et al. eqs. 9.44-9.46), Geankoplis's half-layer D_pc beside it. Model discStack: Sigma = 2 pi n w^2 (r2^3 - r1^3)/(3 g tan theta) (de Haan et al. eq. 9.52; Ambler eq. 46, C = 1). The cut size d50 = sqrt(9 mu Q/(drho g Sigma)); Stokes' window enforced (Re < 1 at the cut size). The grade efficiency per class is derived here, not printed by any source. Inlet in, outlets (sediment centrate).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `speed` | ✓ | number | 1/s | Revolutions per unit time; rpm is accepted. |
+| `sedimentSolids` | ✓ | number | - | Mass fraction of solids in the discharged sediment, declared. |
+| `bowlRadius` |   | number | m |  |
+| `liquidRadius` |   | number | m | Smaller than the bowl radius. |
+| `bowlLength` |   | number | m |  |
+| `discSpaces` |   | number | - |  |
+| `outerRadius` |   | number | m |  |
+| `innerRadius` |   | number | m | Smaller than the outer radius. |
+| `discHalfAngle` |   | number | rad | In (0, 90) degrees; deg is accepted. |
+
 ## `shortcutColumn`  (shortcutColumn operation)
 
 Preliminary column design by the Fenske-Underwood-Gilliland shortcut method. Returns N_min (Fenske), R_min (Underwood), the stage count N (Gilliland) and the feed stage (Kirkbride). EXACTLY ONE operating reflux must be declared, `refluxFactor` (R/R_min, commonly 1.3) or `refluxRatio` (R = L/D directly); there is no default, because the reflux is the design decision the stage count descends from and an engine-chosen one is not defensible. Every relative volatility is evaluated at the FEED BUBBLE POINT, and a bubble point that will not converge refuses rather than falling back on the feed's declared temperature. Assumes constant relative volatility; not valid for azeotropes.
@@ -1421,6 +1457,16 @@ Counter-current multistage gas stripper solved by the Kremser method (the invers
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `stages` | ✓ | number | - | Number of equilibrium stages. |
+
+## `thickener`  (thickener operation)
+
+A gravity thickener sized from the case's batch settling test by Kynch's construction. Model talmageFitch: the tangent at the declared compression time (Talmage & Fitch 1955 eqs. 7-10; Wills & Napier-Munn 2006 eq. 15.6). Model coeClevenger: the largest area over the layers of the test (Wills eq. 15.5). The area is the result; depth, compression zone and safety factor are not applied. Inlet in, outlets (underflow overflow).
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `settlingTest` | ✓ | object | — | The interface height H against time t, first point t = 0, H = H_0. The lists are SI (s, m): a list carries no unit word. |
+| `underflowConcentration` | ✓ | number | kg/m3 | Above C_0, below the solid's density, and within what the test reached (H_u = C_0 H_0 / C_u not below the last height). |
+| `compressionTime` |   | number | s | The time at which the settling solids go into compression, read off the test: declared, never guessed (Perry 9th ed. p. 18-64). Required … |
 
 ## `thielePellet`  (thielePellet operation)
 
