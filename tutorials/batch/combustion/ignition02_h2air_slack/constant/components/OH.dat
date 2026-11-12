@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/components/OH.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/components/OH.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Hydroxyl radical  (OH, CAS 3352-57-6)
 
@@ -26,6 +26,7 @@ CAS            3352-57-6;
 
 MW             17.008;       // kg/kmol
 role        nonvolatile;         // never a liquid in any process context
+tags        ( radical gasPhase combustion );   // open-shell species; classified as such in the GUI
 
 standardThermochemistry
 {
