@@ -38,9 +38,13 @@ exactly (no CMO), and the energy crossing every cut equals Q_reboiler, so
 V_j = Q_R / (h_V(y_j, T_j) - h_L(y_j, T_bubble(y_j))).  The column is solved
 by one march up from the reboiler; with a computed efficiency the march is
 repeated on the previous march's efficiencies until they move by < 1e-10
-(8 marches on trayEfficiency01 at its recorded point, Fs 1.3).  The first law closes by two independent
-envelopes (reboiler vs condenser): gap 2.3e-13 kW on totalReflux01, published
-as a `verified` closure.
+(8 marches on trayEfficiency01 at its recorded point, Fs 1.3).  The first law is CONSISTENT BY CONSTRUCTION,
+NOT VERIFIED (review RB-02, 2026-11-12): the first version of this record called
+the reboiler and condenser envelopes "two independent" ones (gap 2.3e-13 kW on
+totalReflux01, published `verified`), but every V_j is defined from Q_R, so each
+cut carries Q_R and -Q_C = Q_R identically; the check cannot fail (a Q_R inflated
+10 % still closed).  The column now publishes no second route and says why; the
+packed bed, which assigns Q_C = -Q_R, says the same (RB-05).
 
 Witness: `totalReflux01_c6c7_yanagiRun628` (run 628 conditions, IDEAL trays).
 Its own check: ideal trays give `overallTrayEfficiency` 1.010 (not 1 only
@@ -112,9 +116,18 @@ where run 625 gives 41.1 % at Fs 2.356.  Every digitised point is marked
 ## 5. Measured vs predicted -- nothing fitted
 
 The reboiler liquid is 0.29 for every point (an ASSUMPTION: only two runs
-publish it, 0.284 and 0.294).  "out of sweep" = beyond the model's own
-entrainment flood (Fair's psi reaches 1), i.e. the model predicts the tray
-has flooded there and the measurement says it has not.
+publish it, 0.284 and 0.294).  "no prediction" = beyond the model's own
+entrainment flood (Fair's psi reaches 1): the column REFUSES there and no
+prediction exists.  A measured point the model cannot reach is a MODEL MISS,
+not a point to set aside (review RB-01, 2026-11-12): it is excluded from the
+mean / max statistics only because there is no prediction to subtract, and it
+is counted below as a miss.  The model's own limits (bisected, this binary):
+Fs 2.380 (14 %, 34 kPa), 2.150 (8 %, 34 kPa), 1.967 (14 %, 165 kPa), 1.779
+(8 %, 165 kPa).  The two highest 14 % / 34 kPa points (2.305, 2.356) are BELOW
+the limit of 2.380 -- the sweep of the cases stops at 2.3, the model does not --
+so they were run by hand and are predicted and counted.  Run 625 (Fs 2.356) is
+Table III's FLOODING run (type A; spray height 610 mm = the tray spacing), and
+the engine's own hydraulics put it at 102 % of flood (Fs 2.305: 99.5 %).
 
 ### 34 kPa, 14 % tray: overall tray efficiency vs F-factor (trayEfficiency01_yanagi14)
 | Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
@@ -124,10 +137,13 @@ has flooded there and the measurement says it has not.
 | 1.472 | 70.8 | 73.8 | +3.0 | 0.63 | Table III run 628 |
 | 1.825 | 74.3 | 69.6 | -4.7 | 0.78 | Fig. 12, digitised |
 | 2.030 | 67.5 | 65.4 | -2.1 | 0.87 | Fig. 12, digitised |
-| 2.305 | 41.3 | out of sweep | - | - | Fig. 12, digitised |
-| 2.356 | 41.1 | out of sweep | - | - | Table III run 625 |
+| 2.305 | 41.3 | 48.0 | +6.7 | 0.99 | Fig. 12, digitised (run by hand) |
+| 2.356 | 41.1 | 34.8 | -6.3 | 1.02 | Table III run 625, the flooding run (run by hand) |
 
-max |error| 14.3 pts, mean error +2.7 pts, mean |error| 5.4 pts over 5 points.
+max |error| 14.3 pts, mean error +2.0 pts, mean |error| 5.7 pts over 7 points
+(the first version of this record quoted +2.7 / 5.4 over the five points inside
+the sweep and set the two highest loads aside as "out of sweep"; the engine
+runs both).
 
 ### 34 kPa, 8 % tray (trayEfficiency02_yanagi08)
 | Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
@@ -139,7 +155,7 @@ max |error| 14.3 pts, mean error +2.7 pts, mean |error| 5.4 pts over 5 points.
 | 1.840 | 78.8 | 66.9 | -11.9 | 0.87 | Fig. 12, digitised |
 | 1.970 | 73.5 | 61.4 | -12.1 | 0.93 | Fig. 12, digitised |
 | 2.100 | 66.6 | 48.1 | -18.5 | 1.00 | Fig. 12, digitised |
-| 2.160 | 52.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.160 | 52.6 | MODEL MISS: refuses (psi >= 1; limit Fs 2.150) | - | - | Fig. 12, digitised |
 
 max |error| 32.8 pts, mean error -0.3 pts, mean |error| 14.1 pts over 7 points.
 
@@ -151,9 +167,9 @@ max |error| 32.8 pts, mean error -0.3 pts, mean |error| 14.1 pts over 7 points.
 | 0.814 | 72.9 | 94.5 | +21.6 | 0.42 | Fig. 12, digitised |
 | 1.053 | 82.7 | 95.3 | +12.6 | 0.54 | Fig. 12, digitised |
 | 1.528 | 84.3 | 94.1 | +9.8 | 0.79 | Fig. 12, digitised |
-| 2.123 | 84.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.362 | 74.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.649 | 58.0 | out of sweep | - | - | Fig. 12, digitised |
+| 2.123 | 84.6 | MODEL MISS: refuses (psi >= 1; limit Fs 1.967) | - | - | Fig. 12, digitised |
+| 2.362 | 74.6 | MODEL MISS: refuses (psi >= 1; limit Fs 1.967) | - | - | Fig. 12, digitised |
+| 2.649 | 58.0 | MODEL MISS: refuses (psi >= 1; limit Fs 1.967) | - | - | Fig. 12, digitised |
 
 max |error| 41.7 pts, mean error +21.4 pts over 4 points.
 
@@ -164,7 +180,7 @@ max |error| 41.7 pts, mean error +21.4 pts over 4 points.
 | 0.734 | 79.4 | 94.1 | +14.7 | 0.42 | Fig. 12, digitised |
 | 1.007 | 84.8 | 95.0 | +10.2 | 0.57 | Fig. 12, digitised |
 | 1.496 | 93.6 | 91.6 | -2.0 | 0.85 | Fig. 12, digitised |
-| 1.934-2.416 | 95.6, 91.9, 90.2, 64.5 | out of sweep | - | - | Fig. 12, digitised |
+| 1.934-2.416 | 95.6, 91.9, 90.2, 64.5 | MODEL MISS (4 points): refuses (psi >= 1; limit Fs 1.779), 9 / 24 / 29 / 36 % beyond it | - | - | Fig. 12, digitised |
 
 max |error| 17.8 pts, mean error +10.2 pts over 4 points.
 
@@ -299,9 +315,12 @@ its efficiency FALLS from weeping to flood, the opposite of the trend the
 paper describes.
 
 ### Overall tray efficiency, mean / max error (points), nothing fitted here
+(14 %, 34 kPa over 7 points including the two highest loads; the other rows over the points inside
+each case's sweep -- the points beyond the model's flood have no prediction and are counted as model
+misses: 1 at 8 %/34 kPa, 3 at 14 %/165 kPa, 4 at 8 %/165 kPa)
 | tray, P | AIChE | ChanFair | SyedaChuang |
 |---|---|---|---|
-| 14 %, 34 kPa | +2.7 / 14.3 | +18.8 / 21.7 | -8.9 / 12.6 |
+| 14 %, 34 kPa | +2.0 / 14.3 | +17.1 / 22.3 | -6.8 / 12.6 |
 | 8 %, 34 kPa | -0.3 / 32.8 | +8.2 / 18.8 | -12.7 / 17.9 |
 | 14 %, 165 kPa | +21.4 / 41.7 | +29.0 / 36.7 | -10.3 / 17.2 |
 | 8 %, 165 kPa | +10.2 / 17.8 | +18.6 / 24.2 | -19.9 / 26.4 |
@@ -363,9 +382,9 @@ summary is in section 9.)
 | 1.472 | 70.8 | 90.1 | +19.3 | 0.63 | Table III run 628 |
 | 1.825 | 74.3 | 89.4 | +15.1 | 0.78 | Fig. 12, digitised |
 | 2.030 | 67.5 | 86.4 | +18.9 | 0.87 | Fig. 12, digitised |
-| 2.305 | 41.3 | out of sweep | - | - | Fig. 12, digitised |
-| 2.356 | 41.1 | out of sweep | - | - | Table III run 625 |
-max |error| 21.7 pts, mean error +18.8 pts, mean |error| 18.8 pts over 5 points
+| 2.305 | 41.3 | 63.6 | +22.3 | 0.99 | Fig. 12, digitised (run by hand) |
+| 2.356 | 41.1 | 44.7 | +3.6 | 1.02 | Table III run 625, the flooding run (run by hand) |
+max |error| 22.3 pts, mean error +17.1 pts, mean |error| 17.1 pts over 7 points
 
 
 ##### 34 kPa, 08 % tray: overall tray efficiency vs F-factor
@@ -378,7 +397,7 @@ max |error| 21.7 pts, mean error +18.8 pts, mean |error| 18.8 pts over 5 points
 | 1.840 | 78.8 | 85.3 | +6.5 | 0.87 | Fig. 12, digitised |
 | 1.970 | 73.5 | 78.8 | +5.3 | 0.93 | Fig. 12, digitised |
 | 2.100 | 66.6 | 60.7 | -5.9 | 1.00 | Fig. 12, digitised |
-| 2.160 | 52.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.160 | 52.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
 max |error| 18.8 pts, mean error +8.2 pts, mean |error| 9.9 pts over 7 points
 
 
@@ -390,9 +409,9 @@ max |error| 18.8 pts, mean error +8.2 pts, mean |error| 9.9 pts over 7 points
 | 0.814 | 72.9 | 103.1 | +30.2 | 0.42 | Fig. 12, digitised |
 | 1.053 | 82.7 | 108.2 | +25.5 | 0.54 | Fig. 12, digitised |
 | 1.528 | 84.3 | 106.9 | +22.6 | 0.79 | Fig. 12, digitised |
-| 2.123 | 84.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.362 | 74.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.649 | 58.0 | out of sweep | - | - | Fig. 12, digitised |
+| 2.123 | 84.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.362 | 74.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.649 | 58.0 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
 max |error| 36.7 pts, mean error +29.0 pts, mean |error| 29.0 pts over 5 points
 
 
@@ -403,10 +422,10 @@ max |error| 36.7 pts, mean error +29.0 pts, mean |error| 29.0 pts over 5 points
 | 0.734 | 79.4 | 103.1 | +23.7 | 0.42 | Fig. 12, digitised |
 | 1.007 | 84.8 | 109.0 | +24.2 | 0.57 | Fig. 12, digitised |
 | 1.496 | 93.6 | 103.7 | +10.1 | 0.85 | Fig. 12, digitised |
-| 1.934 | 95.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.199 | 91.9 | out of sweep | - | - | Fig. 12, digitised |
-| 2.301 | 90.2 | out of sweep | - | - | Fig. 12, digitised |
-| 2.416 | 64.5 | out of sweep | - | - | Fig. 12, digitised |
+| 1.934 | 95.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.199 | 91.9 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.301 | 90.2 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.416 | 64.5 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
 max |error| 24.2 pts, mean error +18.6 pts, mean |error| 18.6 pts over 4 points
 
 
@@ -420,9 +439,9 @@ max |error| 24.2 pts, mean error +18.6 pts, mean |error| 18.6 pts over 4 points
 | 1.472 | 70.8 | 61.9 | -8.9 | 0.63 | Table III run 628 |
 | 1.825 | 74.3 | 61.7 | -12.6 | 0.78 | Fig. 12, digitised |
 | 2.030 | 67.5 | 59.6 | -7.9 | 0.87 | Fig. 12, digitised |
-| 2.305 | 41.3 | out of sweep | - | - | Fig. 12, digitised |
-| 2.356 | 41.1 | out of sweep | - | - | Table III run 625 |
-max |error| 12.6 pts, mean error -8.9 pts, mean |error| 8.9 pts over 5 points
+| 2.305 | 41.3 | 45.8 | +4.5 | 0.99 | Fig. 12, digitised (run by hand) |
+| 2.356 | 41.1 | 33.4 | -7.7 | 1.02 | Table III run 625, the flooding run (run by hand) |
+max |error| 12.6 pts, mean error -6.8 pts, mean |error| 8.1 pts over 7 points
 
 
 ##### 34 kPa, 08 % tray: overall tray efficiency vs F-factor
@@ -435,7 +454,7 @@ max |error| 12.6 pts, mean error -8.9 pts, mean |error| 8.9 pts over 5 points
 | 1.840 | 78.8 | 66.1 | -12.7 | 0.87 | Fig. 12, digitised |
 | 1.970 | 73.5 | 61.6 | -11.9 | 0.93 | Fig. 12, digitised |
 | 2.100 | 66.6 | 48.7 | -17.9 | 1.00 | Fig. 12, digitised |
-| 2.160 | 52.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.160 | 52.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
 max |error| 17.9 pts, mean error -12.7 pts, mean |error| 12.7 pts over 7 points
 
 
@@ -447,9 +466,9 @@ max |error| 17.9 pts, mean error -12.7 pts, mean |error| 12.7 pts over 7 points
 | 0.814 | 72.9 | 59.5 | -13.4 | 0.42 | Fig. 12, digitised |
 | 1.053 | 82.7 | 65.5 | -17.2 | 0.55 | Fig. 12, digitised |
 | 1.528 | 84.3 | 69.3 | -15.0 | 0.79 | Fig. 12, digitised |
-| 2.123 | 84.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.362 | 74.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.649 | 58.0 | out of sweep | - | - | Fig. 12, digitised |
+| 2.123 | 84.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.362 | 74.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.649 | 58.0 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
 max |error| 17.2 pts, mean error -10.3 pts, mean |error| 10.3 pts over 5 points
 
 
@@ -460,10 +479,10 @@ max |error| 17.2 pts, mean error -10.3 pts, mean |error| 10.3 pts over 5 points
 | 0.734 | 79.4 | 60.4 | -19.0 | 0.42 | Fig. 12, digitised |
 | 1.007 | 84.8 | 70.0 | -14.8 | 0.58 | Fig. 12, digitised |
 | 1.496 | 93.6 | 74.2 | -19.4 | 0.86 | Fig. 12, digitised |
-| 1.934 | 95.6 | out of sweep | - | - | Fig. 12, digitised |
-| 2.199 | 91.9 | out of sweep | - | - | Fig. 12, digitised |
-| 2.301 | 90.2 | out of sweep | - | - | Fig. 12, digitised |
-| 2.416 | 64.5 | out of sweep | - | - | Fig. 12, digitised |
+| 1.934 | 95.6 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.199 | 91.9 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.301 | 90.2 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
+| 2.416 | 64.5 | MODEL MISS: no prediction (psi >= 1) | - | - | Fig. 12, digitised |
 max |error| 26.4 pts, mean error -19.9 pts, mean |error| 19.9 pts over 4 points
 
 

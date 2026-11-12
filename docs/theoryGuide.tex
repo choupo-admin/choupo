@@ -4227,6 +4227,26 @@ excess-enthalpy predictions from a VLE-only fit are not to be trusted.
 And because $\alpha$ is held fixed during a fit, a poor $\alpha$ choice
 cannot be repaired by the energy parameters.
 
+\paragraph{When a pair is used outside its data.}\label{sec:pair-span}
+Every catalogue pair record of NRTL, Wilson and UNIQUAC declares the
+temperatures of the data it was fitted to
+(\code{provenance \{ validity \{ temperature \{ min; max; \} \} \}}).  A pair
+evaluated outside that span is announced once per run (\code{[pair-span]} line,
+category \code{validity}, and the result's caveat block) and the parameters are
+still used; no number changes.  Three rules fix what the announcement is
+\emph{about}.  (i) A pair is \emph{used} when both of its components are
+present --- except in the operation whose subject is the infinite-dilution
+coefficient (\code{activityCoefficients} with a component at exactly zero),
+where the zero composition \emph{is} the evaluation and the pair is used when
+either component is present.  (ii) The announcement describes the
+\emph{answer}: a bubble-point search raises its advisories at the temperatures
+it visits (its starting guess is the mole-weighted normal boiling point), and
+those are filed as the solver's path, not as caveats about the published
+temperature, unless the converged state raises them again.  (iii) A record that
+declares \emph{no} span (three UNIQUAC records of P\"opken et al.\ at present)
+says so when it is used --- once per run, naming the record --- because silence
+there would read as ``inside the span''.
+
 \subsection{Wilson (1964)}\label{sec:wilson}
 
 Simpler in form than NRTL, faster numerically (no $\alpha$, no nested
@@ -26609,7 +26629,14 @@ V_{j+1}\,h_V(y_{j+1},T_{j+1}) - L_j\,h_L(x_j,T_j) = Q_R ,
 \label{eq:total-reflux-energy}
 \end{equation}
 so the vapour flow changes from tray to tray as the latent heat does, and
-every stage energy balance is solved rather than assumed.
+every stage energy balance is solved rather than assumed.  \emph{Solved, not
+checked:} Eq.~\eqref{eq:total-reflux-energy} is what \emph{defines} each
+$V_{j+1}$ from $Q_R$, so every cut carries $Q_R$ and the condenser duty
+$-Q_C=Q_R$ follows identically, whatever $Q_R$ is.  The column therefore
+publishes its first law as \emph{consistent by construction, not verified}: no
+route independent of the march exists in this model, and a reboiler duty
+inflated by 10\,\% would still close to rounding.  The numbers are held by the
+case's golden and by the hand recomputation of the review, not by the closure.
 
 \textbf{The degrees of freedom.}  Per stage the unknowns are $x$ ($c$), $y$
 ($c$), $T$, $L$ and $V$; the equations are $c$ component balances, $c$
@@ -26767,8 +26794,19 @@ $P$ & $F_s$ & measured & AIChE & ChanFair & SyedaChuang \\
 paper's Fig.~12.)  Only the Syeda--Afacan--Chuang model, which sees the hole
 velocity, gives the measured \emph{sign} across the range --- and it is
 in-sample on these very trays.  AIChE, out of sample, never does.  On the
-absolute level, AIChE is within a mean of $+2.7$ points at 34~kPa (14\,\%)
-and $+21$ points high at 165~kPa.  The full tables are in
+absolute level, AIChE is within a mean of $+2.0$ points (mean $|{\rm error}|$ $5.7$,
+maximum $14.3$) at 34~kPa (14\,\%), over seven measured loads including the two
+highest ($F_s=2.305$ and $2.356$, predicted $48.0$ and $34.8$\,\% against $41.3$
+and $41.1$\,\%; the second is the paper's own flooding run, and the model's
+hydraulics put both at 99.5 and 102\,\% of flood), and $+21$ points high at
+165~kPa.  \emph{A measured point the model cannot reach is a miss of the model,
+not a point to set aside}: Fair's entrainment correlation gives $\psi\ge1$ and
+the column refuses beyond $F_s=2.380$ (14\,\%, 34~kPa), $2.150$ (8\,\%, 34~kPa),
+$1.967$ (14\,\%, 165~kPa) and $1.779$ (8\,\%, 165~kPa), while the trays were
+measured operating at one, three and four loads beyond those limits (up to 36\,\%
+beyond at 165~kPa).  Those eight points carry no prediction, so they are
+outside the mean and maximum above, and they are counted here as what they are:
+the model floods the 165~kPa trays too early.  The full tables are in
 \code{docs/design/c329-ratebased-first-delivery.md}.
 
 \subsection{Tray pressure drop by Bolles and Fair; the open-area flood correction}\label{sec:bolles-fair}

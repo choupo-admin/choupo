@@ -1035,6 +1035,9 @@
   "InfeasibleTrial": [
    "src/core/InfeasibleTrial.H"
   ],
+  "InfiniteDilutionScope": [
+   "src/thermo/PairAudit.H"
+  ],
   "Instant": [
    "src/unitOperations/batch/BatchElectrodialysis.H"
   ],
@@ -6532,20 +6535,25 @@
    "src/thermo/equationOfState/EquationOfState.H"
   ],
   "src/propertyOps/MolecularActivity.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/propertyOps/MolecularActivity.H",
    "src/propertyOps/PropertyOperation.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H"
@@ -12000,6 +12008,7 @@
    "src/unitOperations/rotating/Turbine.H"
   ],
   "src/unitOperations/saturation/BubblePoint.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12722,6 +12731,7 @@
    "src/propertyOps/GibbsMapOp.cpp",
    "src/propertyOps/HansenMixture.cpp",
    "src/propertyOps/LleResidual.cpp",
+   "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PhaseEnvelope.cpp",
    "src/propertyOps/PhaseSplitScan.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -12856,6 +12866,7 @@
    "src/unitOperations/rotating/Compressor.cpp",
    "src/unitOperations/rotating/PressureExchanger.cpp",
    "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/saturation/BubblePoint.cpp",
    "src/unitOperations/separation/Absorber.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
    "src/unitOperations/separation/Stripper.cpp",
@@ -15291,6 +15302,7 @@
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/reporting/ComputedReport.cpp",
@@ -18411,6 +18423,7 @@
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/streams/StreamStateIO.cpp",
@@ -18681,6 +18694,7 @@
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/streams/StreamStateIO.cpp",
@@ -19005,6 +19019,7 @@
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/MolecularActivity.cpp",
    "src/propertyOps/PitzerActivity.cpp",
    "src/propertyOps/Speciate.cpp",
    "src/streams/StreamStateIO.cpp",
