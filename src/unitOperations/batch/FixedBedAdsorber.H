@@ -176,7 +176,8 @@ Description
 
     Outputs: trajectory extras c_out/y_out/qbar/closure per component;
     axial profiles `<t>/<unit>.profile` (columns z, c_i..., q_i...) written
-    OpenFOAM-style every writeInterval; KPIs t_breakthrough_5pct / t_50 /
+    OpenFOAM-style every writeInterval, unless controlDict declares
+    `solutionControl { write false; }` (no <t>/ directories at all); KPIs t_breakthrough_5pct / t_50 /
     t_breakthrough_95pct / integral_anchor (trapezoid of (1 - c_out/c_in)
     over the internal <= samplingInterval samples, gate G5) /
     t_stoichiometric (analytic) / mass_closure per component.
@@ -303,6 +304,9 @@ private:
     //  declared Jacobian gathers TWO cells per block (buildOdeStructure_).
     std::string convectionScheme_ = "upwind";
     bool        secondOrder_      = false;   // convectionScheme_ == vanLeer
+    //  The declared switch for <t>/ time directories (controlDict
+    //  solutionControl { write ...; }): the axial profiles obey it (C375 b).
+    bool        writeProfiles_    = true;
     //  The numerical and the physical dispersion, frozen at initialise
     //  (interstitial basis, the one the moments obey: D_L = Dax/eps).
     scalar      dNumAnn_ = 0.0;

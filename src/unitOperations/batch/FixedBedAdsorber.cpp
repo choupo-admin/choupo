@@ -528,6 +528,11 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
         writeInterval_ = cd->lookupScalarOrDefault("writeInterval", deltaT_);
         adaptive_      =
             (cd->lookupWordOrDefault("timeStepping", "fixed") == "adaptive");
+        //  The axial profiles are <t>/ files: they obey the declared
+        //  `solutionControl { write ...; }` switch, read by the drivers'
+        //  own parser (C375 (b)).
+        writeProfiles_ = SolutionWriter::readTimeDirectoryControl(
+                             *cd, "choupoBatch").write;
     }
 
     // -----------------------------------------------------------------
@@ -1044,9 +1049,14 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
                           << y_.size() << " derivative evaluations per"
                              " Jacobian and a dense LU of W.\n";
         }
-        std::cout << "  [fixedBedAdsorber '" << name_ << "'] axial profiles:"
-                     " <t>/" << name_ << ".profile every writeInterval = "
-                  << writeInterval_ << " s (columns z, c_i, q_i)\n";
+        if (writeProfiles_)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] axial profiles:"
+                         " <t>/" << name_ << ".profile every writeInterval = "
+                      << writeInterval_ << " s (columns z, c_i, q_i)\n";
+        else
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] axial profiles:"
+                         " NOT written -- solutionControl { write false; } is"
+                         " declared, and the profiles are <t>/ files\n";
         std::cout << "  [fixedBedAdsorber '" << name_ << "'] open-boundary"
                      " campaign accounting: materialInventory = bed hold-up"
                      " (gas + solid) + remaining DECLARED feed commitment"
@@ -2165,7 +2175,7 @@ sVector FixedBedAdsorber::cycleState() const
 void FixedBedAdsorber::noteTimeAdvanced(scalar t)
 {
     tNow_ = t;
-    if (writeInterval_ <= 0.0) return;
+    if (!writeProfiles_ || writeInterval_ <= 0.0) return;
     while (t >= nextProfile_ - 1.0e-9)
     {
         writeProfile_(t);
