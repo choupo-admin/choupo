@@ -145,6 +145,29 @@ public:
     // Upper molality of the calorimetric fit's validity (the L_phi data
     // window); beyond it the consumer must ANNOUNCE extrapolation.
     virtual scalar lphiValidityMax() const { return 0.0; }
+
+    // ---- C377 (b), 2026-11-12: added at the END of the class so no line an
+    //      EduTool lesson cites above moved. -----------------------------------
+
+    // The same window at a temperature: a correlation whose concentration
+    // range depends on T (Olsson 1997, Table VII) answers per T; every other
+    // model's window is T-independent and answers the scalar one.
+    virtual scalar lphiValidityMaxAt(scalar T) const { (void)T; return lphiValidityMax(); }
+
+    // WHOSE calorimetry the L_phi curve rests on -- named on the evaporator's
+    // "heat of dilution INCLUDED" and "EXTRAPOLATED" lines, which used to say
+    // "Parker" whatever the model was.
+    virtual std::string lphiSource() const { return "Parker"; }
+
+    // A model whose water activity and enthalpy come from SEPARATE fitted
+    // correlations need not obey Gibbs-Helmholtz (Pitzer and eNRTL do, by
+    // construction: one excess-Gibbs surface gives both).  Such a model
+    // reports the gap at (m, T) [kJ/kg of solution] and the tolerance it is
+    // judged against (the source's own stated enthalpy error); a consumer
+    // ANNOUNCES a gap above it at the state it publishes.  0 / 0 otherwise.
+    virtual scalar lphiConsistencyGap(scalar molality, scalar T) const
+    { (void)molality; (void)T; return 0.0; }
+    virtual scalar lphiConsistencyTolerance() const { return 0.0; }
 };
 
 } // namespace Choupo

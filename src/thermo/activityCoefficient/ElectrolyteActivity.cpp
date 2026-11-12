@@ -37,6 +37,11 @@ License
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 
+#include <iomanip>
+#include <iostream>
+#include <set>
+#include <sstream>
+
 namespace Choupo {
 
 // BUILDER ctor: the ThermoPackageBuilder hands us a FULLY-RESOLVED assembly
@@ -46,7 +51,8 @@ namespace Choupo {
 ElectrolyteActivity::ElectrolyteActivity(std::vector<std::string> names,
                                          ElectrolyteAssembly a)
 :   n_(names.size()), names_(std::move(names)),
-    model_(a.isENRTL ? "eNRTL" : "pitzer"), isENRTL_(a.isENRTL),
+    model_(a.isOlsson ? "OlssonNaOH" : (a.isENRTL ? "eNRTL" : "pitzer")),
+    isENRTL_(a.isENRTL),
     salt_(std::move(a.pitzer)), enrtl_(std::move(a.enrtl)),
     soluteIdx_(a.soluteIdx), solventIdx_(a.solventIdx),
     solventMW_(a.solventMW), solubility_(a.solubility),
@@ -62,6 +68,8 @@ ElectrolyteActivity::ElectrolyteActivity(std::vector<std::string> names,
 {
     for (int k = 0; k < 5; ++k) ccNodes_[k] = a.ccNodes[k];
     if (isENRTL_) enrtl_.Mw = solventMW_;
+    isOlsson_ = a.isOlsson;
+    olsson_   = std::move(a.olsson);
     configured_ = true;
 }
 
@@ -113,6 +121,166 @@ scalar ElectrolyteActivity::saturationKsp(scalar T) const
     // van't Hoff shift to T: Ksp(T) = Ksp(298) exp[-dH_diff/R (1/T - 1/298)].
     constexpr scalar R = 8.314462618;                        // J/(mol K)
     return Ksp25 * std::exp(-dH / R * (1.0 / T - 1.0 / 298.15));
+}
+
+// ===========================================================================
+//  THE OlssonNaOH ROUTE (C377 (b), 2026-11-12).  Theory Guide sec:olsson-naoh;
+//  docs/design/naoh-water-olsson1997.md.
+//
+//  Above `toMolality` the Olsson-Jernqvist-Aly correlations; below
+//  `fromMolality` the Na-OH Pitzer pair (calorimetrically fitted to Parker up
+//  to 6 mol/kg at 25 C); in between, ln a_w and L_phi are each blended with a
+//  smooth step.  Above the band L_phi carries the paper's FULL temperature
+//  dependence (its measured heat capacities), on the package's own
+//  infinite-dilution leg, plus ONE constant fixed at 25 C where the Pitzer pair
+//  is calibrated (olssonLphiOffset_).
+// ===========================================================================
+
+namespace {
+//  0 at u <= 0, 1 at u >= 1, C1 in between (3u^2 - 2u^3).
+scalar smoothStep(scalar u)
+{
+    if (u <= 0.0) return 0.0;
+    if (u >= 1.0) return 1.0;
+    return u * u * (3.0 - 2.0 * u);
+}
+} // namespace
+
+void ElectrolyteActivity::olssonWindow_(electrolyte::OlssonNaOH::Property p,
+                                        const char* what, scalar m, scalar T) const
+{
+    //  One line per property per run (the AdvisoryLog keeps it per pass);
+    //  the latch skips the lock and the string on the hot path.
+    static std::set<std::string> said;
+    const scalar t = T - 273.15;
+    const scalar x = olsson_.xOfMolality(m);
+    if (olsson_.inWindow(p, x, t)) return;
+    const std::string key = std::string("olssonWindow:") + what;
+    if (said.count(key)) return;
+    said.insert(key);
+    std::ostringstream os;
+    os << what << " of NaOH(aq) at " << std::fixed << std::setprecision(1)
+       << t << " degC and " << std::setprecision(1) << 100.0 * (1.0 - x)
+       << " wt % NaOH lies OUTSIDE the window Olsson, Jernqvist & Aly (1997)"
+          " declare for it (" << olsson_.tLow(p) << "-" << olsson_.tHigh(p)
+       << " degC; at this temperature water mass fraction >= "
+       << std::setprecision(3) << olsson_.xMinAt(p, t)
+       << ") -- the correlation is EXTRAPOLATED there.";
+    if (AdvisoryLog::instance().addAnnouncedOnce(key, "electrolyte", "warning",
+            "OlssonNaOH", os.str(), /*echoUnderTrial=*/false))
+        std::cerr << "[OlssonNaOH] " << os.str() << "\n";
+}
+
+scalar ElectrolyteActivity::olssonWaterActivity_(scalar m, scalar T) const
+{
+    const scalar mF = olsson_.handoverFrom(), mT = olsson_.handoverTo();
+    if (m <= mF) { salt_.span.check(T); return salt_.waterActivity(m, T); }
+    olssonWindow_(electrolyte::OlssonNaOH::Property::vapourPressure,
+                  "the water activity (vapour-pressure correlation)", m, T);
+    const scalar lnO = olsson_.lnAw(olsson_.xOfMolality(m), T - 273.15);
+    if (m >= mT) return std::exp(lnO);
+    salt_.span.check(T);
+    const scalar s   = smoothStep((m - mF) / (mT - mF));
+    const scalar lnP = std::log(salt_.waterActivity(m, T));
+    return std::exp((1.0 - s) * lnP + s * lnO);
+}
+
+scalar ElectrolyteActivity::olssonOsmotic_(scalar m, scalar T) const
+{
+    if (m <= olsson_.handoverFrom()) { salt_.span.check(T); return salt_.osmoticCoefficient(m, T); }
+    //  The definition, on the same a_w: ln a_w = -phi nu m M_w.
+    const scalar nu = salt_.nu_c + salt_.nu_a;
+    return -std::log(olssonWaterActivity_(m, T)) / (nu * m * solventMW_ * 1.0e-3);
+}
+
+scalar ElectrolyteActivity::olssonGammaPM_(scalar m, scalar T) const
+{
+    //  GIBBS-DUHEM at constant T from the osmotic coefficient, started at the
+    //  handover where the Pitzer gamma is known:
+    //    ln g(m) = ln g(m0) + [phi(m) - 1] - [phi(m0) - 1] + int_m0^m (phi-1)/m' dm'
+    //  (the integral form of n_w d ln a_w + n_s d ln a_s = 0).  Simpson, 64
+    //  intervals: phi is smooth above m0 and the integrand has no singularity.
+    const scalar m0 = olsson_.handoverFrom();
+    salt_.span.check(T);
+    if (m <= m0) return salt_.gammaPM(m, T);
+    const int n = 64;
+    const scalar h = (m - m0) / n;
+    auto f = [&](scalar mm) { return (olssonOsmotic_(mm, T) - 1.0) / mm; };
+    scalar s = f(m0) + f(m);
+    for (int i = 1; i < n; ++i) s += f(m0 + i * h) * ((i % 2) ? 4.0 : 2.0);
+    const scalar integral = s * h / 3.0;
+    return salt_.gammaPM(m0, T)
+         * std::exp(olssonOsmotic_(m, T) - salt_.osmoticCoefficient(m0, T) + integral);
+}
+
+scalar ElectrolyteActivity::pitzerLphi_(scalar m, scalar T) const
+{
+    //  The Pitzer FD L_phi of apparentMolarEnthalpy, on the Pitzer kernel
+    //  itself (the routed osmotic()/gammaPM() would be the blended surface).
+    if (m <= 1.0e-12) return 0.0;
+    const scalar nu = salt_.nu_c + salt_.nu_a, dT = 0.05;
+    auto gex = [&](scalar TT)
+    { return nu * ((1.0 - salt_.osmoticCoefficient(m, TT)) + std::log(salt_.gammaPM(m, TT))); };
+    return -constant::R * T * T * (gex(T + dT) - gex(T - dT)) / (2.0 * dT);
+}
+
+scalar ElectrolyteActivity::olssonLphi_(scalar m, scalar T) const
+{
+    const scalar mF = olsson_.handoverFrom(), mT = olsson_.handoverTo();
+    salt_.span.check(T);
+    if (m <= mF) return pitzerLphi_(m, T);
+    olssonWindow_(electrolyte::OlssonNaOH::Property::enthalpy,
+                  "the solution enthalpy (enthalpy correlation)", m, T);
+    const scalar LO = olssonLphiCorrelation_(m, T);
+    if (m >= mT) return LO;
+    const scalar s = smoothStep((m - mF) / (mT - mF));
+    return (1.0 - s) * pitzerLphi_(m, T) + s * LO;
+}
+
+scalar ElectrolyteActivity::olssonLphiCorrelation_(scalar m, scalar T) const
+{
+    //  THE CONVERSION.  The paper's H is per kg of solution, on liquid water at
+    //  0 C and NaOH infinitely dilute at 20 C (p. 786), so per mole of NaOH
+    //      Phi(m,t) = M_s [H(x,t) - x H(1,t)] / (1-x)
+    //               = [Hbar_inf(t) - Hbar_inf(20 C)] + L_phi(m,t)       (paper)
+    //  and the package writes the salt as hfAq + Hinf(T) + L_phi, Hinf being
+    //  its own infinite-dilution leg cpAvg(T) (T - 298.15) (Criss-Cobble).  So
+    //      L_phi(m,T) = Phi(m,t) - [Hinf(T) - Hinf(293.15)] + delta,
+    //  and the package's solution enthalpy is then EXACTLY the paper's
+    //  temperature dependence: the Criss-Cobble leg cancels.  delta is ONE
+    //  constant: the correlation cannot resolve the infinite-dilution limit
+    //  (0.32 kJ/kg of solution is 1.3 kJ/mol of NaOH at 1 mol/kg), so it is
+    //  fixed where the Pitzer pair IS calibrated -- Parker, 25 C, at the top of
+    //  the handover band -- and carried unchanged to every T and m.
+    auto Hinf = [&](scalar TT) { return cpAvg25T_(TT) * (TT - 298.15); };
+    if (!olssonOffsetSet_)
+    {
+        const scalar mT = olsson_.handoverTo(), T0 = 298.15;
+        olssonLphiOffset_ = pitzerLphi_(mT, T0)
+            - (olsson_.Phi(mT, T0 - 273.15) - (Hinf(T0) - Hinf(293.15)));
+        olssonOffsetSet_ = true;
+    }
+    return olsson_.Phi(m, T - 273.15) - (Hinf(T) - Hinf(293.15)) + olssonLphiOffset_;
+}
+
+scalar ElectrolyteActivity::lphiConsistencyGap(scalar m, scalar T) const
+{
+    //  THE GIBBS-HELMHOLTZ CHECK (C377 b, part 2): the heat of diluting the
+    //  solution at m to 20 wt %, from the vapour-pressure correlation through
+    //  L1 = -R T^2 d ln a_w/dT and from the enthalpy correlation, minus each
+    //  other [kJ/kg of solution].  Only where the correlation prices the
+    //  surface (above the handover); the Pitzer part is consistent by
+    //  construction.  Evaluated at the state a consumer publishes, never on
+    //  the hot path (OlssonNaOH::gibbsHelmholtzGap integrates 200 steps).
+    if (!isOlsson_ || m <= olsson_.handoverTo()) return 0.0;
+    return olsson_.gibbsHelmholtzGap(olsson_.xOfMolality(m), T - 273.15);
+}
+
+scalar ElectrolyteActivity::olssonLphiMaxAt_(scalar T) const
+{
+    const scalar xMin = olsson_.xMinAt(electrolyte::OlssonNaOH::Property::enthalpy,
+                                       T - 273.15);
+    return xMin >= 1.0 ? 0.0 : olsson_.molalityOfX(xMin);
 }
 
 } // namespace Choupo

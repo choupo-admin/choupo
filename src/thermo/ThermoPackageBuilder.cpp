@@ -293,10 +293,13 @@ static void refuseUnreadAqueousKeys(const DictPtr& pkg)
 static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                                      const ChemistrySystem* chem);
 
+// C377 (b): defined at the END of the file (no lesson-cited line above moves).
+static void buildOlssonRoute(ElectrolyteAssembly&, const std::string&, const std::string&, const std::string&, const std::string&, double, double, const fs::path&);
 static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
                                       const Database& db,
                                       bool isENRTL,
-                                      const ChemistrySystem* chem, const std::string& solventName)
+                                      const ChemistrySystem* chem, const std::string& solventName,
+                                      bool isOlsson = false)
 {
     // Repo root = parent of the data/ dir (Database::currentRoot() is data/).
     const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
@@ -828,6 +831,11 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
         assembly.lphiValidityMax =
             pr ? pr->lookupScalarOrDefault("lphiValidityMax", 0.0) : 0.0;
     }
+    if (isOlsson)
+        buildOlssonRoute(assembly, saltName, catName, anName,
+                         comps[solventIdx].name(),
+                         comps[soluteIdx].MW(), comps[solventIdx].MW(),
+                         resolve("data/standards/parameters/OlssonNaOH/NaOH-water.dat"));
 
     // (f) the saturation/dissolution anchor from the salt record's
     //     solidPhases.<phase>.calorimetric block (the legacy
@@ -891,7 +899,8 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
     if (thermoAnnounce())
     {
         std::cout << "[builder] VLE world: electrolyte ("
-                  << (isENRTL ? "eNRTL" : "Pitzer")
+                  << (isOlsson ? "OlssonNaOH (Pitzer below the handover)"
+                               : (isENRTL ? "eNRTL" : "Pitzer"))
                   << " liquid gamma on the molality basis, idealGas vapour phi;"
                      " solvent VLE by Raoult)\n";
         // Capability honesty (no over-promise): the Pitzer adapter here is
@@ -2530,10 +2539,10 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                 " only -- remove `molecular`, or model the system on that"
                 " route.");
         const std::string model = decl.ionic;
-        if (model != "Pitzer" && model != "eNRTL")
+        if (model != "Pitzer" && model != "eNRTL" && model != "OlssonNaOH")
             throw std::runtime_error("thermophysicalPropertySystem: "
                 "electrolyteGammaPhi activityModel '" + model
-                + "' -- implemented: Pitzer | eNRTL.");
+                + "' -- implemented: Pitzer | eNRTL | OlssonNaOH.");
         if (aq->found("compositionBasis")
             && aq->lookupWord("compositionBasis") != "molality")
             throw std::runtime_error("thermophysicalPropertySystem: the"
@@ -2552,7 +2561,8 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                          " (elements datum).  Assembled NATIVELY from the v2"
                          " grammar (no translated intermediate).\n";
         return std::move(buildElectrolyte(v2->lookupWordList("components"), db, /*isENRTL=*/model == "eNRTL",
-                                chem, ThermoPackage::declaredAqueousSolventIn(aq)).stampAqueousSolvent(aq));
+                                chem, ThermoPackage::declaredAqueousSolventIn(aq),
+                                /*isOlsson=*/model == "OlssonNaOH").stampAqueousSolvent(aq));
     }
 
     if (form == "diluteSolution")
@@ -3001,6 +3011,48 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     out.assembleTwoPhase(v2->lookupWordList("components"), idealAct, eosDict,
                          "phiPhi", db);
     return out;
+}
+
+// ---- C377 (b): the OlssonNaOH route of the single-salt adapter.  The model
+//      is a CORRELATION OF ONE SYSTEM, so it refuses any other by name; its
+//      coefficients are ONE record, data/standards/parameters/OlssonNaOH/
+//      NaOH-water.dat (case-local constant/parameters/OlssonNaOH/ first).
+static void buildOlssonRoute(ElectrolyteAssembly& a, const std::string& saltName,
+                             const std::string& cat, const std::string& an,
+                             const std::string& solvent, double MWsalt,
+                             double MWsolvent, const fs::path& rec)
+{
+    if (cat != "Na" || an != "OH")
+        throw std::runtime_error("activityModel OlssonNaOH: the model is the"
+            " correlation of Olsson, Jernqvist & Aly (1997) for NaOH in water"
+            " and nothing else, but the active salt here is '" + saltName
+            + "' (" + cat + "+ / " + an + "-).  Select Pitzer or eNRTL for it.");
+    if (solvent != "water")
+        throw std::runtime_error("activityModel OlssonNaOH: the solvent must"
+            " be water (the correlations were fitted to NaOH-water only); this"
+            " system's solvent is '" + solvent + "'.");
+    if (rec.empty() || !fs::exists(rec))
+        throw std::runtime_error("activityModel OlssonNaOH: its coefficient"
+            " record parameters/OlssonNaOH/NaOH-water.dat was not found (a"
+            " sealed case carries it under constant/parameters/OlssonNaOH/).");
+    a.isOlsson = true;
+    a.olsson = electrolyte::OlssonNaOH::fromRecord(
+        Dictionary::fromFile(rec.string()), rec.string());
+    a.olsson.setMolarMasses(MWsalt, MWsolvent);
+    //  The model IS calorimetric (the enthalpy correlation rests on measured
+    //  enthalpies and heat capacities, p. 786), so its L_phi enters the
+    //  balance; the window is the enthalpy table's widest (x >= 0.22, Table
+    //  VII), and per temperature through lphiValidityMaxAt().
+    a.calorimetricFit = true;
+    a.lphiValidityMax = a.olsson.molalityOfX(
+        a.olsson.xMinAt(electrolyte::OlssonNaOH::Property::enthalpy, 150.0));
+    if (thermoAnnounce())
+        std::cout << "[builder] activityModel OlssonNaOH: " << a.olsson.citation()
+                  << " -- a_w and L_phi of NaOH(aq) to"
+                     " 80 wt %, 0-200 C; below " << a.olsson.handoverFrom()
+                  << " mol/kg the Na-OH Pitzer pair, blended to "
+                  << a.olsson.handoverTo() << " mol/kg (record "
+                  << rec.string() << ").\n";
 }
 
 } // namespace Choupo

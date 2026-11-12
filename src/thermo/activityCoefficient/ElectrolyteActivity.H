@@ -58,6 +58,7 @@ License
 #include "thermo/electrolyte/ElectrolyteModel.H"
 #include "thermo/electrolyte/PitzerSingleSalt.H"
 #include "thermo/electrolyte/ENRTLSingleSalt.H"
+#include "thermo/electrolyte/OlssonNaOH.H"
 
 #include <cmath>
 #include <string>
@@ -92,6 +93,11 @@ struct ElectrolyteAssembly
     // kernel.  ccAvail false -> the constant cpAqSum is the (announced) fallback.
     bool             ccAvail = false;
     scalar           ccNodes[5] = {0, 0, 0, 0, 0};
+    // C377 (b): the OlssonNaOH route -- the Olsson-Jernqvist-Aly correlations
+    // above the handover molality, the Na-OH Pitzer pair (`pitzer`, loaded
+    // too) below it.  Only for NaOH in water; the builder refuses the rest.
+    bool                   isOlsson = false;
+    electrolyte::OlssonNaOH olsson;
 };
 
 class ElectrolyteActivity : public ActivityModel, public ElectrolyteModel
@@ -125,11 +131,14 @@ public:
     void checkSpan_(scalar T) const
     { if (isENRTL_) enrtl_.span.check(T); else salt_.span.check(T); }
     scalar waterActivity(scalar m, scalar T = 298.15) const override
-    { checkSpan_(T); return isENRTL_ ? enrtl_.waterActivity(m, T) : salt_.waterActivity(m, T); }
+    { if (isOlsson_) return olssonWaterActivity_(m, T);
+      checkSpan_(T); return isENRTL_ ? enrtl_.waterActivity(m, T) : salt_.waterActivity(m, T); }
     scalar gammaPM(scalar m, scalar T = 298.15) const override
-    { checkSpan_(T); return isENRTL_ ? enrtl_.gammaPM(m, T) : salt_.gammaPM(m, T); }
+    { if (isOlsson_) return olssonGammaPM_(m, T);
+      checkSpan_(T); return isENRTL_ ? enrtl_.gammaPM(m, T) : salt_.gammaPM(m, T); }
     scalar osmotic(scalar m, scalar T = 298.15) const override
-    { checkSpan_(T); return isENRTL_ ? enrtl_.osmoticCoefficient(m, T) : salt_.osmoticCoefficient(m, T); }
+    { if (isOlsson_) return olssonOsmotic_(m, T);
+      checkSpan_(T); return isENRTL_ ? enrtl_.osmoticCoefficient(m, T) : salt_.osmoticCoefficient(m, T); }
     scalar gammaPMMixed(scalar m, scalar xAnti, scalar MwAnti,
                         scalar epsAnti, scalar vAnti, scalar T = 298.15) const override
     { return isENRTL_ ? enrtl_.gammaPMMixed(m, xAnti, MwAnti, epsAnti, vAnti, T) : gammaPM(m, T); }
@@ -140,6 +149,13 @@ public:
     std::size_t soluteIndex()          const override { return soluteIdx_; }
     std::size_t solventIndex()         const override { return solventIdx_; }
     scalar lphiValidityMax()           const override { return lphiValidityMax_; }
+    scalar lphiValidityMaxAt(scalar T) const override
+    { return isOlsson_ ? olssonLphiMaxAt_(T) : lphiValidityMax_; }
+    scalar lphiConsistencyGap(scalar m, scalar T) const override;
+    scalar lphiConsistencyTolerance() const override
+    { return isOlsson_ ? electrolyte::OlssonNaOH::enthalpyMaxError_kJkg : 0.0; }
+    std::string lphiSource() const override
+    { return isOlsson_ ? std::string("Olsson-Jernqvist-Aly 1997") : std::string("Parker"); }
 
     // h_ions_aq(T) + L_phi(m,T) [J/mol salt] -- the salt's enthalpy on the
     // aqueous infinite-dilution reference (elements datum; the H+(aq)=0
@@ -169,6 +185,7 @@ public:
     // until the T-dependence is refit (slice 2-3).  docs/electrolyte-enthalpy-spec.md.
     scalar apparentMolarEnthalpy(scalar m, scalar T = 298.15) const override
     {
+        if (isOlsson_) return olssonLphi_(m, T);
         if (m <= 1.0e-12) return 0.0;                      // infinite-dilution anchor
         const scalar nu = isENRTL_ ? (enrtl_.nu_c + enrtl_.nu_a)
                                    : (salt_.nu_c + salt_.nu_a);
@@ -216,6 +233,21 @@ private:
         return ccNodes_[4];
     }
     scalar      lphiValidityMax_ = 0.0;     // fitted-data window [mol/kg]
+
+    // ---- the OlssonNaOH route (C377 b; ElectrolyteActivity.cpp) ----------
+    bool                    isOlsson_ = false;
+    electrolyte::OlssonNaOH olsson_;
+    scalar olssonWaterActivity_(scalar m, scalar T) const;
+    scalar olssonOsmotic_(scalar m, scalar T) const;
+    scalar olssonGammaPM_(scalar m, scalar T) const;
+    scalar olssonLphi_(scalar m, scalar T) const;
+    scalar olssonLphiCorrelation_(scalar m, scalar T) const;   // the paper's L_phi, no blend
+    mutable scalar olssonLphiOffset_ = 0.0;     // delta, fixed once at 25 C (see .cpp)
+    mutable bool   olssonOffsetSet_  = false;
+    scalar olssonLphiMaxAt_(scalar T) const;
+    scalar pitzerLphi_(scalar m, scalar T) const;   // the Pitzer FD L_phi below the handover
+    void   olssonWindow_(electrolyte::OlssonNaOH::Property p, const char* what,
+                         scalar m, scalar T) const;
     scalar      dHsolution_ = 0.0;     // enthalpy of solution [J/mol]; 0 -> Ksp flat in T
     std::string soluteName_;
     bool        configured_ = false;

@@ -282,7 +282,8 @@ int Evaporator::solve(const DictPtr& dict,
     if (lphiFitted && verbosity >= 1)
         std::cout << "  [electrolyte] heat of dilution INCLUDED: '"
                   << thermo.electrolyte().soluteName()
-                  << "' carries a calorimetrically fitted L_phi (Parker-validated)"
+                  << "' carries a calorimetrically fitted L_phi ("
+                  << thermo.electrolyte().lphiSource() << "-validated)"
                      " -- the duty climbs the measured dilution curve.\n";
     if (useElectrolyte && !thermo.electrolyte().calorimetricFit())
     {
@@ -784,7 +785,11 @@ int Evaporator::solve(const DictPtr& dict,
                       << " kW   (L_phi: m " << std::setprecision(2)
                       << molality_salt(0.0) << " -> "
                       << molality_salt(V_over_F)
-                      << " mol/kg salt, calorimetric fit)\n";
+                      << " mol/kg salt, calorimetric fit"
+                      << (thermo.electrolyte().lphiSource() == "Parker"
+                            ? std::string()
+                            : ", " + thermo.electrolyte().lphiSource())
+                      << ")\n";
         std::cout << "==================================================================\n\n";
     }
 
@@ -793,7 +798,7 @@ int Evaporator::solve(const DictPtr& dict,
     // concentrates past it.  Announce loudly -- log + a GUI advisory.
     if (lphiFitted)
     {
-        const scalar mMax = thermo.electrolyte().lphiValidityMax();
+        const scalar mMax = thermo.electrolyte().lphiValidityMaxAt(T_boil);
         //  The window is the SALT's fit window, so the molality tested against
         //  it must be the salt's too -- otherwise a sugar in the liquor could
         //  trip (or, at the other end, mask) an extrapolation warning about a
@@ -804,12 +809,41 @@ int Evaporator::solve(const DictPtr& dict,
             const std::string msg =
                 "heat of dilution EXTRAPOLATED: concentrate molality "
                 + std::to_string(mOut) + " mol/kg exceeds the calorimetric-fit"
-                " window (<= " + std::to_string(mMax) + " mol/kg, Parker data)"
+                " window (<= " + std::to_string(mMax) + " mol/kg, "
+                + thermo.electrolyte().lphiSource() + " data)"
                 " -- the dilution term is an extrapolation there.";
             AdvisoryLog::instance().add("electrolyte", "warning",
                 "evaporator '" + dict->lookupWordOrDefault("name", "evaporator") + "'",
                 msg);
             if (verbosity >= 1) std::cout << "  [electrolyte] " << msg << "\n";
+        }
+    }
+
+    //  GIBBS-HELMHOLTZ CONSISTENCY of the electrolyte model AT THE ANSWER
+    //  (C377 b): a model built from separate activity and enthalpy
+    //  correlations says how far apart they are at the concentrate it
+    //  publishes; above its tolerance the gap is announced (log + advisory).
+    if (lphiFitted && thermo.electrolyte().lphiConsistencyTolerance() > 0.0)
+    {
+        const auto& el = thermo.electrolyte();
+        const scalar gap = el.lphiConsistencyGap(molality_salt(V_over_F), T_boil);
+        kpis_["GibbsHelmholtz_gap_kJ_kg"] = gap;
+        if (std::abs(gap) > el.lphiConsistencyTolerance())
+        {
+            std::ostringstream os;
+            os << "Gibbs-Helmholtz gap of the " << el.lphiSource()
+               << " correlations at the concentrate (" << std::fixed
+               << std::setprecision(2) << molality_salt(V_over_F) << " mol/kg, "
+               << (T_boil - 273.15) << " C): the heat of dilution to 20 wt % from"
+                  " the water activity and from the enthalpy correlation differ by "
+               << std::setprecision(1) << gap << " kJ/kg of solution, above the"
+                  " source's stated enthalpy error ("
+               << std::setprecision(2) << el.lphiConsistencyTolerance()
+               << " kJ/kg) -- the duty is priced on the ENTHALPY correlation.";
+            AdvisoryLog::instance().add("electrolyte", "warning",
+                "evaporator '" + dict->lookupWordOrDefault("name", "evaporator") + "'",
+                os.str());
+            if (verbosity >= 1) std::cout << "  [electrolyte] " << os.str() << "\n";
         }
     }
 
