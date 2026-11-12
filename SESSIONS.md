@@ -28,17 +28,12 @@ Rules (agreed by both sessions, 2026-11-10):
 9. The coordinating session is the laptop one (CLAUDE.md rule 00).  A
    disagreement about scope is written here and decided there.
 
-## Laptop session (coordinator)
+## Laptop session (coordinator) -- the ONLY writer since C364
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c333-severe-stay (general running; contains c325-pairs-2) | `data/curation/pairs/`, `data/standards/parameters/{NRTL,UNIQUAC,Wilson}/`, `bin/curate/{pairs_c283.py,pairs_px.py,uniquac_rq_from_groups.py,check_regressed_pairs.py,check_pair_names.py}`, `bin/choupo-curate` (pair paths), components' `uniquac {r;q}` | 2026-11-12 |
-| c332-property-shelf (general running; contains c315, c316 and the cloud's mount patch) | `gui/src/ui/methods/registry.ts`, `gui/src/ui/MethodsWorkspace.tsx`, `gui/src/ui/methods/{SlePair*,slePair*,SaltMixing*,saltMixing*}`, `generated/methodTools.json`, lessonReferences | 2026-11-12 |
-| c329-ratebased-1 and c337-column-sheet (built, queued) | `src/unitOperations/distillation/`, `gui/src/ui/ColumnDatasheet.tsx`, `gui/src/case/{modelDocs.ts,keyHelp.ts,columnStageSheet.ts,trayGeometry.ts}`, the column schemas, Theory Guide chapter `ch:ratebased` | 2026-11-12 |
-| c331-mixing-rules (built, queued) | `src/thermo/ThermoPackage.cpp` (mixture transport, surface tension), `src/thermo/*MixingRule*`, `data/curation/batches/mixing_c331/` | 2026-11-12 |
-| c320-species (integrating) | `data/standards/species/`, `data/curation/batches/species_c320/`, `bin/curate/{species_c320.py,check_species_records.py}` | 2026-11-12 |
-| c361-solids-1 (general running) | `src/core/distribution/`, `src/streams/ProcessStream.*` (psd), a new `mill` unit, `tutorials/steady/solids/`, Theory Guide solids sections | 2026-11-12 |
-| (main, coordinator) | `DEV.md` 4c (my entries), `PLAN.md`, `BRAIN.md` FACTS, `CLAUDE.md`, `RELEASING.md`, `make/wasm.mk`, `bin/curate/check_feature_documented.py` and its debt TSV | 2026-11-12 |
+| integ/engine-queue (general running: c329 + c337 + c331 + c361, one full sweep) | `src/`, `gui/`, the guides, `tutorials/steady/{distillation,solids}`, generated files | 2026-11-12 |
+| (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
 
