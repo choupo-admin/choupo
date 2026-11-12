@@ -20,7 +20,7 @@ kpi     column10               diameter         1.1              1e-4
 kpi     column10               downcomerBackup_max_mm 228.918370864    1e-4
 kpi     column10               downcomerFloodStages 0                1e-4
 kpi     column10               feedStage        8                1e-4
-kpi     column10               floodApproach_max 0.987392179889   1e-4
+kpi     column10               floodApproach_max 0.987181647806   1e-4
 kpi     column10               floodStage       7                1e-4
 kpi     column10               nStages          15               1e-4
 kpi     column10               weepingStages    0                1e-4
@@ -28,12 +28,12 @@ kpi     column10               x_B_HK           0.951017316705   1e-4
 kpi     column10               x_D_LK           0.951017315221   1e-4
 utility column10               heating.steamLP.duty_kW 679.510516909    1e-4
 utility column10               heating.steamLP.T 381.514100345    1e-4
-utility column10               heating.steamLP.kg_s 0.310846531065    1e-4
+utility column10               heating.steamLP.kg_s 0.310846531065   1e-4
 utility column10               heating.steamLP.eur_h 29.3548543305    1e-4
 utility column10               cooling.coolingWater.duty_kW -1315.28783372   1e-4
 utility column10               cooling.coolingWater.T 355.689111404    1e-4
 utility column10               cooling.coolingWater.kg_s 31.4662161178    1e-4
-utility column10               cooling.coolingWater.eur_h 1.89401448056     1e-4
+utility column10               cooling.coolingWater.eur_h 1.89401448056    1e-4
 stream  bottoms                T                381.514100345    1e-4
 stream  distillate             T                354.247899351    1e-4
 stream  feed                   T                370              1e-4
@@ -42,7 +42,8 @@ boundary global                 Q_boundary_kW    -635.777316814   1e-4
 boundary global                 H_products_kW    1143.76350869    1e-4
 boundary global                 residual_kW      0                1e-4
 kpi     column10               Q_condensate_m3_s 0.00403798363546 1e-4
-kpi     column10               diameter_rectifying 1.22206001165    1e-4
-kpi     column10               diameter_stripping 0.96948110719    1e-4
+kpi     column10               diameter_rectifying 1.22192972069    1e-4
+kpi     column10               diameter_stripping 0.969443381345   1e-4
 kpi     column10               nTrays           14               1e-4
 kpi     column10               diameterDesigned 0                1e-4
+kpi     column10               Q_reboiler_ownEnvelope_kW 772.668768681    1e-4
