@@ -3463,6 +3463,70 @@ accepts today, and that is a policy call.
 > - The credit restriction of 11-11 (pairs only until Saturday) was LIFTED the
 >   same evening.
 
+> **C321 part 2 RESULT (2026-11-12, cloud general, branch c321b-henry-organic).
+> HENRY CONSTANTS IN ORGANIC SOLVENTS FROM THERMOML.**  TOOL
+> `bin/curate/henry_organic.py` (census, declare, fetch, fit).  IDENTITY MAP
+> refreshed first (the coordinator's warning): `choupo-thermoml identity`
+> 522 -> 560 InChIKeys (resolved 524 -> 562 of 596 CAS-bearing records; 13
+> still incomplete, 4 formula mismatches, 2 ambiguous) and `vle-index`
+> rebuilt; the candidate set did NOT change (235 blocks before and after),
+> only the refusals moved.  CENSUS (non-water, two-compound blocks): Henry
+> mole-fraction scale 462 -- 235 candidates, 161 a compound outside the
+> catalogue, 24 no stated uncertainty, 18 solvent not less volatile than the
+> solute, 16 solute a liquid over the whole range, 8 solvent at or above its
+> Tc (methanol to 513 K); molality scale 2 and concentration scale 1, Ostwald
+> 14, gamma-infinity 2598 (318 with both compounds catalogued), liquid
+> composition at stated (T, P) 776 (200 catalogued): all REFUSED BY NAME, the
+> conversion to H_xp needing a quantity the measurement does not carry
+> (density, molar mass, the solute's vapour pressure, the vapour composition).
+> 235 PAIRS, each ONE block of ONE laboratory (16 articles; Miyano et al.'s
+> C3-C4 hydrocarbons, DME, chloroethane and R32 in alcohols, aromatics and
+> cresols, plus O2, CO2, N2, Ar, He, CH4, NH3).  Declarations committed before
+> the fit (dfb22d8cd).  FIT (C283 amended, C285, C300): van't Hoff in 1/T,
+> least squares then minimax on H_model/H - 1; outliers > 20 % by name after
+> the least-squares stage -- 2 points, both NH3-ethanol (277.35 and 298.15 K;
+> its series is not van't Hoff, and the record misses its own 298.15 K
+> measurement by ~25 %: the rule's consequence, named, graded warning 8.00 %).
+> GRADES in-sample: 225 clean, 10 warning, 0 severe, 0 refused (max 0.01-8.00
+> %, median 2.44 %); every clean CAPPED to warning (`fitGradeCap (
+> singleLaboratory )`), so 235 records PROMOTED as warning into
+> data/standards/parameters/Henry/ (autoPromoted, `review { by none; }`,
+> fitGrade + fitGradeMaxRelativeError_pct + fitGradeBasis inSample,
+> fittedInCase, evidence DOI/block/both sha256); no single-temperature pair
+> exists, so none was refused for want of an enthalpy.  NOT VOICED: the Henry
+> loader (src/thermo/henrysLaw/) reads neither `reviewStatus` nor `fitGrade`,
+> so no `[fit-grade]` or autoPromoted line reaches a run; the grade is on the
+> pairLookup card only.  Owed (src/, not done): call `announceFitGrade` from
+> `HenrysLaw::readFromDict` or the registry scan.  DESIGN NOTES for the
+> coordinator: (1) the series file is `constant/henryArchiveDatasets`, NOT
+> `archiveDatasets`, because bin/runTests runs `bin/choupo-curate fetch` on
+> every case carrying the latter and it has no Henry extractor; folding in
+> needs an `extractor henryConstant` branch in bin/choupo-curate that calls
+> henry_organic.fetch (laptop's path); (2) two hunks outside the declared
+> paths, commit e35f9980b: `FIT_KEYS` in bin/curate/migrate_henry_identity.py
+> (its --check refuses unknown record keys, as SANDER_KEYS did for part 1) and
+> a FASTSET line `data/curation/henry/NH3-ethanol` (check_fastset S5 requires
+> one per walked curation family); `curation_roots.ORIGINS` does not name
+> `henry` (bin/runTests walks the whole root, so the cases are run).  GATE:
+> check_henry_records gains `check_organic_records` (fetch, refit, the record
+> must equal the fit: H_ref, enthalpy, Trange, grade, cap, max error, counts,
+> fingerprint, evidence; severe outside a case and a refused fit with a
+> record refused; NOT RUN, exit 2, where no series can be regenerated; three
+> built negatives every run).  By-hand sabotages, all caught: enthalpy edited,
+> H_ref edited, grade edited down to clean with the cap removed, the grade
+> limits tightened so every refit is refused while its record stands (458
+> problems).  VALIDATED: make all; --scope data/curation/henry,
+> batches/henry_sander and the 27 unsealed tutorials whose package reads a
+> Henry pair (267 PASS, 0 FAIL; goldens recorded for the 235 new cases only,
+> none moved); --fast 82 PASS, 0 FAIL, 5 EXPECTED-FAIL; check_henry_records,
+> check_source_licence, check_doctrine, check_glossary_bans,
+> check_record_form, check_review_status, check_caveat_surface,
+> check_schema_coverage, check_legacy_schema, check_fastset; generated views
+> regenerated (caseManifest, releaseInventory henryPairs 251 -> 486,
+> docs/ai/components.md) and gate_manifest --check, the gate's claim
+> re-observed with --only.  NOT RUN: a full sweep, --gui, check_regressed_pairs
+> (not touched).
+
 > **C304 (Vitor, 2026-11-11, an external reviewer's reading of the Pinch
 > report of greenAmmoniaPEQ_baseCase: "a normal case report must be an
 > engineering report, not a textbook chapter").**  DECIDED: every case view
