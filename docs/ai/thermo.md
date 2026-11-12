@@ -296,18 +296,17 @@ per ion (declare the neutral master, or the fully dissociated ion, as the analyt
 total with `totalsBasis stoichiometric; pH solve;`):
 acetic (`Acetate`, `HAc-formation`), formic (`Formate`, `HFo-formation`, logK and dH
 DERIVED from the NBS rows: theoryGuide `sec:carboxylic-ionisation`), tartaric
-(`H2Tart`/`HTart`/`Tart`), **citric** (`H3Cit`/`H2Cit`/`HCit`/`Cit`; pK 3.128 /
-4.761 / 6.396, Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **succinic**
-(`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`), **maleic**
-(`H2Male`/`HMale`/`Male`).  The succinate and maleate ions carry NO `hfAq` (no work
-in hand prints one): their speciation is complete, the energy rung of the dissociated
-route refuses by name.  The crystal `citricAcid` carries a formation enthalpy and a
-heat of solution but no Cp or entropy.  **Malic and lactic acids are absent** (and
-malonic, fumaric, glycolic, gluconic, ascorbic, gallic, propionic, butyric and benzoic
-have no ionisation record): no admissible pK source is in the reference library
-yet.  Inventory, readings, consistency checks and the works still missing:
-`docs/design/organic-acids-in-the-catalogue.md`.  Cases: `volatileAcids01_acetic_formic`,
-`citricAcid01_speciation`.
+(`H2Tart`/`HTart`/`Tart`, Goldberg 2002 Table 7.63), **citric** (`H3Cit`/`H2Cit`/`HCit`/`Cit`;
+Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **malic** (`H2Malic`/`HMalic`/`Malic`,
+Eden & Bates 1959, racemic acid; note `Malic*`, not `Mal*`), **lactic** (`HLac`/`Lac`, Nims &
+Smith 1936), **succinic** (`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`),
+**maleic** (`H2Male`/`HMale`/`Male`).  The succinate, maleate, malate and lactate species carry
+NO `hfAq` (no work in hand prints one): their speciation is complete, a balance that needs
+their enthalpy refuses by name.  The crystal `citricAcid` carries a formation enthalpy and
+a heat of solution but no Cp or entropy.  Malonic, fumaric, glycolic, gluconic, ascorbic,
+gallic, propionic, butyric and benzoic acids have no ionisation record.  Inventory, readings,
+consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md`.
+Cases: `volatileAcids01_acetic_formic`, `citricAcid01_speciation`, `wineAcids01_tartaric_malic`.
 **The REACTIVE shape** (a speciation network + volatiles, as in the
 brine-CO₂ and sour-water flashes) declares its IONIC rung inside
 `aqueous {}` and the engine serves what its speciation kernel serves:

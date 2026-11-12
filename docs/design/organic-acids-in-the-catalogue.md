@@ -24,6 +24,8 @@ points at is read (its README).
 | **Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231** (NIST reprint, `Handbooks-DataCompilations/goldberg2002-buffers-...pdf`) | EVALUATED pK, dH_ion and dCp of each ionisation step at 298.15 K, I = 0, with an evaluation grade per step and every literature value it weighed.  Sections 7.2 acetate (p. 238), 7.22 citrate (p. 265), 7.42 maleate (p. 305), 7.50 oxalate (p. 316), 7.57 succinate (p. 340), 7.63 L-tartaric (p. 347); the summary is Section 8 (pp. 359-360).  **No** malate, lactate, malonate, fumarate, glycolate (the TOC and a text search were read: there is a diglycolate section, not glycolate) and no formate | acetic, citric, maleic, oxalic, succinic, tartaric |
 | Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903 | dHf of the crystal (bomb calorimetry); heat of solution; dHf of the hypothetical non-dissociated acid and of the anions in water.  **No pKa** and no dissociation heat of its own (it takes those from an unpublished thesis, its ref. [8]).  No entropy, no heat capacity | citric (Table 4), tartaric (Table 5) |
 | Patterson & Woolley, J. Chem. Thermodyn. 33 (2001) 1567-1585 | pK and dH_ion of the two steps, 278-393 K (Tables 9 and 10), Cp, V | tartaric only |
+| **Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161** (Research Paper 2947; US government work; scan, read from the page images) | thermodynamic pK1, pK2 of d,l-MALIC acid at 5-degree intervals 0-50 C, the fitted equations (24) and (25) (p. 168) and, in Tables 5 and 6 (p. 169), dG, dH, dS, dCp of both steps | malic |
+| **Nims & Smith, J. Biol. Chem. 113 (1936) 145** (open access, CC BY; page images) | thermodynamic pK of LACTIC acid at 0.3-50 C, equation (2) pK = 3.862 + 5e-5 (t - 23.5)^2 (p. 149), and dF, dH, dS at five temperatures in Table II (p. 148) | lactic |
 | NBS tables, Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 23:C (scanned; read from the page images) | dHf, dGf, S, Cp of aqueous species.  **Only C1 and C2 compounds**: formic acid and formate (p. 2-83), acetic acid and acetate, hydrogenoxalate (p. 2-93) and oxalate (p. 2-92), glycolate (dHf only, p. 2-93), glycolic acid crystal (p. 2-94) | formic, acetic, oxalic (anions), glycolic (partial) |
 | CODATA key values (Cox, Wagman & Medvedev 1989) | about 150 key substances, no organic acid beyond the carbon family | none |
 | CRC Handbook of Chemistry and Physics, 82nd ed. (Lide) | pKa at 25 C of 1070 organic acids; dHf/dGf/S/Cp of crystals and liquids.  **Aggregator: second reading, enters no value.**  Its pKa rows name no source (the table cites Perrin 1965/72, Serjeant & Dempsey 1979, Albert 1963, Sober 1968 as a group) | all |
@@ -38,10 +40,10 @@ pair.  "Goldberg" = the evaluated pK and dH of the work above.
 | acid | in the catalogue today | built here | what a source in hand carries | missing |
 |---|---|---|---|---|
 | **citric** | nothing | **C, H, S x4, I x4**, case | Goldberg 7.22: pK 3.128 / 4.761 / 6.396, dH 4.07 / 2.23 / -3.38 kJ/mol, dCp -131 / -178 / -254 (grades AAB); Kochergina Table 4: dHf of the crystal and four aqueous forms | s_298 and Cp of the crystal and of the solution; entropies of the ions; solubility vs T |
-| **malic** | nothing | nothing | CRC pKa 3.40 / 5.11 (second reading) | EVERYTHING: not in Goldberg, not in NBS, not in Kochergina |
-| **lactic** | nothing | nothing | CRC pKa 3.86 (second reading) | EVERYTHING, same |
+| **malic** | nothing | **S x3, I x3** (speciation-complete) | Eden & Bates Tables 5-6 p. 169: pK1 3.459, pK2 5.097, dH +2,955 / -1,181 J/mol, dCp -155 / -221 (d,l acid) | dHf, S of the ions and the crystal; no component |
+| **lactic** | nothing | **S x2, I x2** (speciation-complete) | Nims & Smith Table II p. 148: pK 3.862, dH -60 cal/mol (= -251 J/mol) at 25 C | dHf, S of lactate and of the acid (liquid / crystal); no component |
 | **succinic** | nothing (diethyl succinate) | **S x3, I x3** (speciation-complete) | Goldberg 7.57: pK 4.207 / 5.636, dH 3.0 / -0.5, dCp -121 / -217 (AAB / AAA); CRC crystal dHf second reading | dHf and S of the aqueous species and of the crystal; no component |
-| **tartaric** | C, S x3, I x3, H (earlier) | verified, not changed | Goldberg 7.63, Patterson Tables 9-10, Kochergina Table 5 | see section 4 |
+| **tartaric** | C, S x3, I x3, H (earlier) | the three I records CORRECTED to Goldberg 7.63 (see section 4) | Goldberg 7.63, Patterson Tables 9-10, Eden & Bates Table 6 (the same tartaric values), Kochergina Table 5 | nothing for the ionisation |
 | **malonic** | nothing | nothing | CRC pKa 2.85 / 5.70 | everything: not in Goldberg |
 | **oxalic** | C (`oxalicAcid`) | **S x3, I x3** | Goldberg 7.50: pK 1.27 / 4.266, dH -3.9 / -7.00, dCp ~-231 (BBC / AAA); NBS hfAq and S of HC2O4- and C2O4-- | NBS prints no dGf of the aqueous neutral acid (so pK1 is not derivable from NBS; Goldberg supplies it); no solution pair |
 | **fumaric** | nothing | nothing | CRC pKa 3.02 / 4.38 | everything: not in Goldberg |
@@ -71,6 +73,8 @@ table as the pK, never a difference of formation enthalpies.
 | **succinate** | `species/{H2Succ,HSucc,Succ}`; `chemistry/{HSucc,Succ,H2Succ}-formation` | Goldberg Table 7.57, p. 340 | none: nothing in hand | navigation `succinate` |
 | **oxalate** | `species/{H2Ox,HOx,Ox}`; `chemistry/{HOx,Ox,H2Ox}-formation` | Goldberg Table 7.50, p. 316 | NBS Table 23:C: HC2O4- -818.4 kJ/mol, S 149.4 (p. 2-93); C2O4-- -825.1, 45.6 (p. 2-92) | navigation `oxalate` |
 | **maleate** | `species/{H2Male,HMale,Male}`; `chemistry/{HMale,Male,H2Male}-formation` | Goldberg Table 7.42, p. 305 | none: nothing in hand | navigation `maleate` |
+| **malate** | `species/{H2Malic,HMalic,Malic}`; `chemistry/{HMalic,Malic,H2Malic}-formation`; navigation `malate` | Eden & Bates 1959, Table 6 p. 169 (eqs. 24-25 reproduce them: 3.4592 and 5.0966 at 298.15 K) | none: nothing in hand | keys are `Malic*`, not `Mal*`, so they cannot be confused with the maleate keys `Male*`; racemic acid |
+| **lactate** | `species/{HLac,Lac}`; `chemistry/{Lac,HLac}-formation`; navigation `lactate` | Nims & Smith 1936, Table II p. 148 (pK 3.862; dH -60 cal/mol, the unit inferred from dF 5267 = 2.3026 R T pK; their eq. (4) gives -255 J/mol) | none: nothing in hand | |
 | **formate** | `chemistry/HFo-formation` | DERIVED: dG_ion = dGf(HCO2-) - dGf(HCO2H,ao) = -351.0 + 372.3 = 21.3 kJ/mol -> pKa 3.732; dH_ion = -425.55 + 425.43 = -0.12 kJ/mol (NBS Table 23:C p. 2-83) | `Formate` (existing, NBS) | as acetic acid, HFo has no species file |
 
 **The succinate and maleate species carry no `aqueousThermo`.**  This is a
@@ -83,13 +87,20 @@ rather than borrowing a value.  The headers of the records say so.  If you prefe
 that no species ship without a formation datum, delete the six succinate/maleate
 species files and their six chemistry records; nothing else depends on them.
 
-**What was NOT built:** malic, lactic, malonic, fumaric, glycolic, gluconic,
+**What was NOT built:** malonic, fumaric, glycolic, gluconic,
 ascorbic, gallic, propionic, butyric, benzoic (no ionisation work in hand; the CRC
 pKa rows are second readings only).  Oxalic acid's neutral aqueous Gibbs energy
 and glycolate's are not in NBS either, which is why Goldberg, not NBS, supplies
 oxalic pK1.
 
-Cases: `volatileAcids01_acetic_formic` (acetic and formic, exercising
+**Where the malic reference was found.**  The IUPAC digitised pKa dataset
+(github.com/IUPAC/Dissociation-Constants, licensed CC BY-NC 4.0) lists Eden & Bates in its reference
+list.  It is a FINDING AID ONLY: no value from it entered any record, and none is quoted in
+one.  For lactic acid its high-confidence table has one approximate entry and names no
+usable primary; the lactic reference (Nims & Smith) was supplied separately.
+
+Cases: `wineAcids01_tartaric_malic` (tartaric + malic + lactic, 0.03 mol/kg each, titrated with KOH;
+illustrative round numbers, no sourced wine composition in hand), `volatileAcids01_acetic_formic` (acetic and formic, exercising
 `HAc-formation` and the new `HFo-formation`) and `citricAcid01_speciation`
 (0.1 mol/kg citric acid against 0 to 2.5 equivalents of NaOH).  Neither carries
 `anchor` rows: no work in hand prints a pH for these solutions.
@@ -137,36 +148,52 @@ Patterson (a new measurement) and Goldberg (an evaluation graded ABA that weighs
 the literature values it lists; its selected pK 3.036 / 4.366 equal the values tabulated there from Bates & Canham, ref. 51BAT/CAN) agree to 0.000 in
 pK and 0.1 in dH.  The records' 2.98 and 4.34 are the CRC's second-reading values,
 0.056 and 0.026 below.  In K1 K2 the records are 21 % high (7.32 against 7.402).
-**Decision: the records should stand on Goldberg Table 7.63**, for three reasons:
-it is the work the catalogue already uses for acetic acid; it is an evaluation that
-reports its grade and its rejected values, so a re-reading is possible; and it
-agrees with the independent Patterson measurement.  The records were NOT changed:
-their pK carries no citation (so they do not cite a source they mismatch) and
-their dH matches the Kochergina source they cite.  The consequence of the change,
-measured by reading the manifests, not run:
+**Decision: the records stand on Goldberg Table 7.63** (and Eden & Bates 1959 Table 6 prints
+the same tartaric values, 3.036 / 4.366, dH 3,100 / 990 J/mol, from Bates & Canham): it is the
+work the catalogue already uses for acetic acid; it is an evaluation that reports its grade and
+its rejected values, so a re-reading is possible; and it agrees with the independent Patterson
+measurement.  **DONE 2026-11-12 (the architect's authorisation: "the tartrate ionisation constants are
+corrected from uncited handbook values (K1 K2 21 % off) to the evaluated ones").**  The three
+records now carry logK 7.402 / -3.036 / -7.402 and dH -4.12 / +3.19 / +4.12 kJ/mol and cite Goldberg
+Table 7.63 p. 347 with Patterson & Woolley as the agreeing measurement.
 
-* `tartaricAcid_acidulation` (the ONLY case whose sealed `constant/chemistry`
-  carries `H2Tart/HTart/Tart-formation`): its tartrate pH and m_* goldens would
-  move at 1e-4 reltol (pH 2.272 under Pitzer, the speciation of H2Tart/HTart/Tart
-  in all five operations).  A change to `data/standards/` alone moves nothing
-  until that case is re-sealed with `bin/choupo-import --overwrite`.
-* `ed08_wine_kht_model_solution`, `ed09_wine_multiionic` and the plant
-  `tartaricAcid` use the tartrate SPECIES' hfAq and D0 and molecular reactors, not
-  the ionisation constants: not reached by a pK change.
-* `check_logk_crosscheck` and the aqueous graph read the standards records and are
-  unaffected by a re-sealing; a re-record of one case is the whole cost.
+| | before | after | change |
+|---|---|---|---|
+| pK1 | 2.98 | 3.036 | +0.056 |
+| pK2 | 4.34 | 4.366 | +0.026 |
+| sum, logK(H2Tart-formation) | 7.32 | 7.402 | +0.082 (K1 K2 +21 %) |
+| dH1, first ionisation | +3.8 kJ/mol (Kochergina hfAq difference) | +3.19 (Goldberg) | -0.61 |
+| dH1 + dH2 | +4.9 | +4.12 | -0.78 |
+
+The species' hfAq stay Kochergina's; the ionisation enthalpies now come from Goldberg and
+differ from the hfAq differences by the amounts above, inside Kochergina's +/-1.5 per species.
+
+Consequence, and what was done:
+
+* `tartaricAcid_acidulation` is the ONLY case whose sealed `constant/chemistry` carried the three
+  records.  A full `bin/choupo-import` re-seal was tried first and REFUSED to be a re-seal of
+  three records: with the golden set aside it rewrote 57 records (catalogue drift since
+  2026-08-02: the release label Choupo-2607 -> 2608, provenance blocks added to species and
+  Pitzer pairs, the Na-Cl pair "learned" from the ledger).  It was therefore restored, and the three
+  records were copied into `constant/chemistry/` with exactly their three manifest entries
+  (sha256, computationalSha256, originSha256) recomputed by the importer's own functions
+  (`sha_file`, `canonical_sha_file`); nothing else in the seal moved.  The golden was re-recorded
+  on that seal; every moved row is listed in the commit message of the re-record.
+* The case's two `pKa2_*` operations fixed `pH 4.34` ("the thermodynamic pKa2"); they now fix
+  `pH 4.366`, so they keep their meaning.  Rows moved by that input change alone are listed
+  separately from rows moved by the constants alone.
+* `ed08_wine_kht_model_solution`, `ed09_wine_multiionic` and the plant `tartaricAcid` use the
+  tartrate SPECIES' hfAq and D0 and molecular reactors, not the ionisation constants.  No other
+  shipped case, sealed manifest, GUI file or guide text carried 2.98 / 4.34 / 7.32 for tartaric
+  acid (grep of `gui/src`, `gui/tests`, `docs/*.tex`, `docs/ai`, `tutorials/`, `data/`).
 
 ## 5. The works still missing, in the order that matters for wine and food
 
-1. **Malic acid** (the second wine acid, the one malolactic fermentation
-   removes): pK1, pK2, dH of both steps; dHf of the acid and the anions.  Not in
-   Goldberg's 68 buffers.  The works named inside works in hand: Serjeant &
-   Dempsey, *Ionization Constants of Organic Acids in Aqueous Solution*, Pergamon
-   1979 (reference 2 of the CRC pKa table), an evaluated compilation of
-   pK; for the thermodynamics no evaluated compilation is named in any work in
-   hand (NBS stops at C2).
-2. **Lactic acid** (malolactic product): the same, plus the same gap for dHf.  A
-   calorimetric article of Kochergina's kind or Serjeant & Dempsey for the pK.
+1. **Formation data of the aqueous species and the crystals of malic, lactic, succinic and
+   citric acids.**  Malic and lactic acids now have their ionisation (Eden & Bates 1959; Nims &
+   Smith 1936), succinic and citric theirs (Goldberg 2002); none of the C3+ acids has an
+   evaluated formation datum in the works read above.  See the continuation of this note.
+2. **Lactic and malic liquid / crystal data** (component records): see the continuation.
 3. **Malonic and fumaric acid, then glycolic acid**: not in Goldberg; Serjeant &
    Dempsey for the pK; glycolate's dGf and S (NBS prints only dHf) from a
    Wagman-class page on C2 organics beyond the one read.

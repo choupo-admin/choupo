@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1825,
+  "cases": 1826,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 21
@@ -23323,6 +23323,16 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/wineAcids01_tartaric_malic": {
+   "application": "choupoProps",
+   "thermo": {
+    "activityModels": [
+     "davies"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/estimate/estimate_acetone": {
    "application": "choupoProps",
    "ops": [
@@ -30836,6 +30846,7 @@
     "tutorials/props/electrolyte/softener_brackish",
     "tutorials/props/electrolyte/tartaricAcid_acidulation",
     "tutorials/props/electrolyte/volatileAcids01_acetic_formic",
+    "tutorials/props/electrolyte/wineAcids01_tartaric_malic",
     "tutorials/props/estimate/estimate_acetone",
     "tutorials/props/estimate/estimate_ethanol_benzene",
     "tutorials/props/estimate/estimate_petroleum_cut",
@@ -32981,6 +32992,7 @@
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",
     "tutorials/props/electrolyte/tartaricAcid_acidulation",
     "tutorials/props/electrolyte/volatileAcids01_acetic_formic",
+    "tutorials/props/electrolyte/wineAcids01_tartaric_malic",
     "tutorials/props/membrane/polarisation01_geraldes_afonso_table1",
     "tutorials/steady/distillation/column13_sour_water_stage_identity",
     "tutorials/steady/distillation/stripper01_sour_water",

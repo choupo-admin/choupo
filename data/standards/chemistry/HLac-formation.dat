@@ -1,0 +1,14 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/HLac-formation.dat -- the neutral lactic acid from its anion:
+      Lac- + H+  <=>  HLac
+
+  logK25 = +pK = 3.862 and dH = +251 J/mol: Nims & Smith, J. Biol. Chem. 113 (1936) 145,
+  Table II, p. 148 (pK 3.862, dH -60 cal/mol at 25 C), the sign flipped for the direction
+  written.  The inverse of Lac-formation.dat (see there): a case declares one master and
+  the closure activates the record reachable from it.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HLac; masters ( { ion Lac; nu 1; } { ion H; nu 1; } );
+      logK25 3.862; dH 251; source "Nims & Smith, J. Biol. Chem. 113 (1936) 145, Table II p. 148 and eq. (2) p. 149: pK 3.862 at 25 C; dH -60 cal/mol = -251 J/mol, sign flipped";

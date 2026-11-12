@@ -1404,8 +1404,8 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
   `transport { liquid { thermalConductivity { model chemsepEq16; } } }`.
 - `associationFactor <phi>;` — for Wilke-Chang liquid diffusivity.
 - `solubility { coefficients ( a b c ); dHcryst; }` — c_sat(T), for crystalliser.
-- `solid { rho_p; k_v; }` — for solids (cyclone / crystalliser / sprayDryer).
-- `sorption { Xm; C; K; }` — GAB isotherm  **(typically case-local, axiom 4)**.
+- `solid { rho_p; k_v; }` — for solids (cyclone / crystalliser / sprayDryer).  `rho_p` is required where a unit reads it (refused by name, no default); an absent `k_v` is the sphere pi/6, announced.
+- `sorption { Xm; C; K; }` — GAB isotherm, all three required (refused by name), **(typically case-local, axiom 4)**.
 - `role <volatile|solute|nonvolatile|radical>;` — drives K-value choice.
 - `dissociation <nu>;` — ions per formula (for osmotic pressure).
 

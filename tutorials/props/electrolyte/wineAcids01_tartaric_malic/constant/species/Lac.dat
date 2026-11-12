@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Lac.dat -- ONE model species, ONE typed file: the lactate anion.
+
+  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH) of lactic acid is measured in
+  Nims & Smith, J. Biol. Chem. 113 (1936) 145, Table II, p. 148, and is in chemistry/ -- so the
+  SPECIATION (pH, distribution) is complete.  No work in hand prints a formation enthalpy or
+  entropy of this aqueous ion, so a balance that needs its enthalpy REFUSES BY NAME instead of
+  borrowing a value.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Lac;
+formula     "C3H5O3-";
+charge  -1;
+MW { value 89.070; unit g/mol;}

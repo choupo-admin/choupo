@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/HMalic-formation.dat -- the first dissociation of d,l-malic acid, written from
+  the neutral master:
+      H2Malic  <=>  HMalic- + H+
+
+  logK25 = -pK1 = -3.459 and dH = +2.955 kJ/mol are the thermodynamic values PRINTED in
+  Eden & Bates, "Resolution of the dissociation constants of d,l-malic acid from 0 to 50 C",
+  J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947): -log K1 = 3.459 and
+  dH = 2,955 J/mol at 25 C in Table 6, p. 169; Table 5, p. 169 lists dG 19,750, dH 2,955 J/mol,
+  dS -56.3 J/mol/K, dCp -155 J/mol/K for the process H2Mal = H+ + HMal-.  They follow from
+  the paper's own equation (24), p. 168, -log K1 = 1358.85/T - 5.1382 + 0.013550 T (checked:
+  3.4592 at 298.15 K; dH = 2.3026 R (A - C T^2) = 2,955 J/mol, eq. (27)).  The sample is the
+  RACEMIC acid; emf cells without liquid junction (Table 4 of the paper), 0 to 50 C; the
+  constants are the paper's thermodynamic ones (activity-corrected).
+  A US government work.  Hand-curated organic chemistry, not PHREEQC.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species HMalic; masters ( { ion H2Malic; nu 1; } { ion H; nu -1; } );
+      logK25 -3.459; dH 2955; source "Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947), Tables 5 and 6, p. 169 and eq. (24), p. 168: d,l-malic acid, -log K1 = 3.459, dH = 2955 J/mol at 25 C";

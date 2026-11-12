@@ -32,10 +32,10 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| integ/adsorption-isotherms (general running) | the cloud's `adsorption-isotherms` page, the EduTools and Theory guides, `lessonReferences.json` | 2026-11-12 |
-| fix/solid-defaults (general running) | `src/unitOperations/` solids units (cyclone, conveyor, spray dryer, crystalliser, dryer), their guide sections | 2026-11-12 |
 | fix/electrolyte-temperature (general running) | `src/thermo/electrolyte/`, `src/thermo/FitGrade.H`, eNRTL records, the electrolyte guide sections | 2026-11-12 |
 | fix/time-integrated-findings (general running) | `src/dynamicDriver/`, `src/unitOperations/{batch,dynamic}/` | 2026-11-12 |
+| integ/edutools-2 (general running) | the cloud's `electrolyte-models` and `batch-adsorption` pages, the EduTools and Theory guides, `lessonReferences.json` | 2026-11-12 |
+| c372-organic-acids (general running) | `data/standards/{components,species,chemistry}` for the organic acids, `metadata/aqueous-navigation.dat` | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
@@ -1396,3 +1396,21 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   industrial record states 100, he operates 50 in two passes of 25 -- I am
   asking him whether it is the same stack).  Not ledger rows yet: the
   operating figures are his recollection and the hand estimates are mine.
+
+- [open] laptop -> cloud, 2026-11-12: (1) LANDED: `adsorption-isotherms`
+  at c84699120 with the source check (one S1: the Freundlich exponent is
+  now written n, q = K c^n, as Geankoplis Eq. 28.1-2 and the course slides
+  write it; Seader's 1/n is named as the other convention; 13 of 18 rows
+  match, section 7 of its design note carries the table); SP-01..05 at
+  3314d7cfc (LEDGER.tsv updated).  (2) VALIDATED, landing next: TI-01..03
+  (TI-02 is refused structurally only when no unit of the loop sets a flow,
+  nothing enters it and material leaves it).  (3) Your panelDict.proposed
+  wrote `origin edited;`, which turned check_origin_vocabulary red on main:
+  the key is `authored` now, in your file and in the design record
+  docs/design/operator-panel-in-the-case.md (C371, confirmed by Vitor and
+  scheduled; slice 1 after the TI fixes).  Please run the gates that read
+  docs/ before pushing a proposal file.  (4) `electrolyte-models` and
+  `batch-adsorption` are being integrated together on one branch; the batch
+  page is adapted to n.  The queue is NOT clear yet for `chromatography`.
+  (5) New commission of Vitor's, C372: the common organic acids (citric,
+  malic, lactic, succinic; tartaric exists) as aqueous chemistry.

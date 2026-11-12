@@ -29,6 +29,7 @@ License
 #include "Cyclone.H"
 #include "cycloneModel/CycloneModel.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/SolidMixture.H"
 
 #include <cmath>
 #include <iomanip>
@@ -111,15 +112,14 @@ int Cyclone::solve(const DictPtr& dict,
     const scalar mu = thermo.viscosityGas(T, y);                             // Pa·s
 
     // ---- Particle density (mass-weighted over the solid components) -----
-    scalar rho_p = 0.0, sMassTot = 0.0;
+    //  ONE home (thermo/SolidMixture): volumes add, a solid with no density
+    //  REFUSES by name (it used to enter as zero and dilute the mean).
+    const scalar rho_p = solidMixture::particleDensity(thermo, sin,
+        "cyclone '" + (dict->name().empty() ? std::string("cyclone") : dict->name()) + "'",
+        verbosity);
+    scalar sMassTot = 0.0;                                   // kg/s of solids
     for (std::size_t i = 0; i < n; ++i)
-    {
-        if (sin[i] <= 0.0) continue;
-        const scalar mi = sin[i] * thermo.comp(i).MW();      // kg/s of solid i
-        rho_p += mi * (thermo.comp(i).rho_p() > 0.0 ? thermo.comp(i).rho_p() : 0.0);
-        sMassTot += mi;
-    }
-    rho_p = (sMassTot > 0.0) ? rho_p / sMassTot : 0.0;
+        if (sin[i] > 0.0) sMassTot += sin[i] * thermo.comp(i).MW();
     if (rho_p <= 0.0)
         throw std::runtime_error("Cyclone: the solid has no particle density"
             " --- add `solid { rho_p <kg/m^3>; }` to its component.dat.");

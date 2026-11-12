@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2Malic.dat -- ONE model species, ONE typed file.
+
+  The NEUTRAL, undissociated aqueous malic acid (d,l-hydroxybutanedioic acid): the
+  speciation MASTER of the malate family, from which HMalic- and Malic2- are formed by
+  the records in chemistry/ (the tartrate pattern, species/H2Tart.dat).  No `aqueousThermo`
+  here, as for H2Tart.  Key names: H2Malic/HMalic/Malic, not Mal*, so they cannot be
+  confused with the maleate keys H2Male/HMale/Male.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2Malic;
+formula     "H2C4H4O5";
+charge  0;
+MW { value 134.087; unit g/mol;}

@@ -2471,21 +2471,21 @@ Data: curated USGS PHREEQC records (public domain) resolved from data/standards/
 \end{tutscheme}
 \tutwhat{Tartaric-acid acidulation liquor: rigorous Pitzer brine chemistry (Ca-SO4-K-Cl) + the gypsum precipitation ceiling, with tartrate honestly on the Debye-Hueckel limit (no published Pitzer params). Davies vs Pitzer shown side by side.}
 \begin{tutgolden}
-\goldrow{diag}{acidulation\_pitzer}{I}{1.6414}
-\goldrow{diag}{acidulation\_pitzer}{SI\_anhydrite}{1.07386}
-\goldrow{diag}{acidulation\_pitzer}{SI\_arcanite}{-2.80366}
-\goldrow{diag}{acidulation\_pitzer}{SI\_gypsum}{1.36221}
-\goldrow{diag}{acidulation\_pitzer}{SI\_sylvite}{-3.52403}
-\goldrow{diag}{acidulation\_pitzer}{aw}{0.986675}
-\goldrow{diag}{acidulation\_pitzer}{gamma\_Ca}{0.0716778}
+\goldrow{diag}{acidulation\_pitzer}{I}{1.64144050032}
+\goldrow{diag}{acidulation\_pitzer}{SI\_anhydrite}{1.0754535353}
+\goldrow{diag}{acidulation\_pitzer}{SI\_arcanite}{-2.8030106129}
+\goldrow{diag}{acidulation\_pitzer}{SI\_gypsum}{1.36380506342}
+\goldrow{diag}{acidulation\_pitzer}{SI\_sylvite}{-3.52443821304}
+\goldrow{diag}{acidulation\_pitzer}{aw}{0.986678725259}
+\goldrow{diag}{acidulation\_pitzer}{gamma\_Ca}{0.0716900799414}
 \goldrow{diag}{acidulation\_pitzer}{gamma\_H2Tart}{1}
-\goldrow{diag}{acidulation\_pitzer}{gamma\_HTart}{0.409404}
-\goldrow{diag}{acidulation\_pitzer}{gamma\_SO4}{0.0662673}
-\goldrow{diag}{acidulation\_pitzer}{gamma\_Tart}{0.036756}
-\goldrow{diag}{acidulation\_pitzer}{m\_Ca}{0.397714}
-\goldrow{diag}{acidulation\_pitzer}{m\_H2Tart}{0.0656066}
-\goldrow{diag}{acidulation\_pitzer}{m\_HTart}{0.0314016}
-\goldmore{74}
+\goldrow{diag}{acidulation\_pitzer}{gamma\_HTart}{0.409345278708}
+\goldrow{diag}{acidulation\_pitzer}{gamma\_SO4}{0.0663095150828}
+\goldrow{diag}{acidulation\_pitzer}{gamma\_Tart}{0.0367750208263}
+\goldrow{diag}{acidulation\_pitzer}{m\_Ca}{0.397875191071}
+\goldrow{diag}{acidulation\_pitzer}{m\_H2Tart}{0.067298239739}
+\goldrow{diag}{acidulation\_pitzer}{m\_HTart}{0.029875274796}
+\goldmore{80}
 \end{tutgolden}
 
 \clearpage
@@ -2525,6 +2525,53 @@ No `anchor` rows: no work in hand prints a pH for these solutions.
 \goldrow{diag}{acetic\_half}{aw}{0.997300930971}
 \goldrow{diag}{acetic\_half}{chargeImposed}{1}
 \goldmore{46}
+\end{tutgolden}
+
+\clearpage
+\tutentry{wineAcids01\_tartaric\_malic}{tutorials/props/electrolyte/wineAcids01\_tartaric\_malic}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{K\_0p000}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{K\_0p020}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{K\_0p040}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{K\_0p060}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{K\_0p080}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{K\_0p100}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{K\_0p120}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{K\_0p140}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{K\_0p150}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{K\_0p180}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Tartaric + malic + lactic acid (0.03 mol/kg each) in water titrated with KOH, 0 to 1.2 equivalents of titratable acid, 25 C: pH and the eight-species distribution (Goldberg 2002 Table 7.63; Eden \& Bates 1959; Nims \& Smith 1936). Illustrative round composition; not validated against a measured pH.}
+\begin{tutnarrative}
+the three main organic acids of a wine together, titrated with potassium hydroxide: 0.03 mol/kg tartaric acid + 0.03 mol/kg malic acid + 0.03 mol/kg lactic acid in water, with 0 to 0.18 mol/kg KOH. The titratable protons are 0.03 x (2 + 2 + 1) = 0.15 mol/kg, so the axis runs from 0 to 1.2 equivalents of acid; ten beakers. pH and the distribution of the eight species H2Tart / HTart- / Tart2- / H2Malic / HMalic- / Malic2- / HLac / Lac-. (The file keeps the name given when it held two acids.)
+
+ILLUSTRATIVE COMPOSITION. No sourced must or wine composition is in hand, so 0.03 mol/kg of each is a round declared number, in the order of magnitude of the acids of a wine (a few g/L each; lactic acid is the product of the malolactic fermentation and rarely sits beside this much malic acid); the case says nothing about any particular wine, and there is no ethanol, no potassium or calcium of the wine, no citric or acetic acid, no ion pairing. It is a structural illustration of three families on one pH axis, NOT validated against a measured pH: no source in hand prints one, so no `anchor` rows.
+
+CONSTANTS (25 C, I = 0). Tartaric: pK1 3.036, pK2 4.366, dH +3.19 / +0.93 kJ/mol, Goldberg, Kishore \& Lennen 2002 Table 7.63 p. 347 (agreeing with Patterson \& Woolley 2001 Tables 9-10). Malic: pK1 3.459, pK2 5.097, dH +2.955 / -1.181 kJ/mol of the d,l acid, Eden \& Bates 1959 (J. Res. Natl. Bur. Stand. 62, 161) Table 6 p. 169. Lactic: pK 3.862, dH -0.251 kJ/mol, Nims \& Smith 1936 (J. Biol. Chem. 113, 145) Table II p. 148.
+
+The pH is a RESULT: `pH solve;` closes the charge balance and `totalsBasis stoichiometric` makes the potassium a titrant, as in bjerrum01\_carbonate\_pH.
+
+WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C; molalities in mmol/kg of each acid's 30) 1. The three acids alone (KOH = 0): pH 2.210. The strongest acid is the most ionised: tartaric 4.2 + 0.04 of 30 (HTart + Tart), malic 1.7, lactic 0.71 (Lac). The order of the acids is the order of pK1: tartaric 3.036, malic 3.459, lactic 3.862. 2. At KOH = 0.06 (pH 3.528, 0.4 equivalents) lactate is 11.0, HMalic 17.3 and HTart 19.5: the three acids are ionised in the order of their pK's, at one common pH. 3. At KOH = 0.10 (pH 4.163) Tart2- is 16.9 against HTart- 12.3: the second step of tartaric acid (pK2 4.366) is half done only a little above here, while lactate is already 21.7 of 30 and Malic2- 5.4 (pK2 5.097). 4. At KOH = 0.14 (pH 5.220) lactate is 29.0, Tart2- 28.3, Malic2- 22.7 and HMalic- 7.2: malic acid, with the highest pK2, is the last to finish. 5. At KOH = 0.15 (the titratable protons 0.03 x 5) all three are fully ionised (>= 29.99 of 30), pH 8.587; the next beaker has 0.03 mol/kg free KOH and pH 12.348. The curve has no plateau at any single pK: five proton steps lie between pH 3.0 and 5.1, so the solution is buffered across the whole of that range, which is the point of a wine's acid mixture.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{K\_0p000}{I}{0.00676709172209}
+\goldrow{diag}{K\_0p000}{T\_K}{298.15}
+\goldrow{diag}{K\_0p000}{aw}{0.998258995591}
+\goldrow{diag}{K\_0p000}{chargeImposed}{1}
+\goldrow{diag}{K\_0p000}{chargeResidual}{-3.18948853768e-16}
+\goldrow{diag}{K\_0p000}{gamma\_H2Malic}{1}
+\goldrow{diag}{K\_0p000}{gamma\_H2Tart}{1}
+\goldrow{diag}{K\_0p000}{gamma\_HLac}{1}
+\goldrow{diag}{K\_0p000}{gamma\_HMalic}{0.916791262199}
+\goldrow{diag}{K\_0p000}{gamma\_HTart}{0.916791262199}
+\goldrow{diag}{K\_0p000}{gamma\_Lac}{0.916791262199}
+\goldrow{diag}{K\_0p000}{gamma\_Malic}{0.706450703244}
+\goldrow{diag}{K\_0p000}{gamma\_Tart}{0.706450703244}
+\goldrow{diag}{K\_0p000}{m\_H2Malic}{0.0282598286666}
+\goldmore{206}
 \end{tutgolden}
 
 \subsection{estimate}

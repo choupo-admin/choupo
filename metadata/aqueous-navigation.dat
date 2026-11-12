@@ -147,6 +147,11 @@ speciesNavigation
     H2Male { familyRoots ( maleate );   }   // the neutral master of the family
     HMale  { familyRoots ( maleate );   }
     Male   { familyRoots ( maleate );   }
+    H2Malic { familyRoots ( malate );   }   // the neutral master of the family
+    HMalic  { familyRoots ( malate );   }
+    Malic   { familyRoots ( malate );   }
+    HLac    { familyRoots ( lactate );  }   // the neutral master of the family
+    Lac     { familyRoots ( lactate );  }
 }
 
 // The CLOSED vocabulary of process topics.  A topic that is an unambiguous

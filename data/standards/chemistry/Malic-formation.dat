@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Malic-formation.dat -- both dissociations of d,l-malic acid at once, written
+  from the neutral master:
+      H2Malic  <=>  Malic(2-) + 2 H+
+
+  logK25 = -(pK1 + pK2) = -(3.459 + 5.097) = -8.556 and dH = +(2.955 - 1.181) = +1.774 kJ/mol
+  from Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947), Table 6,
+  p. 169 (-log K1 3.459, dH1 +2,955 J/mol; -log K2 5.097, dH2 -1,181 J/mol at 25 C; Table 5
+  agrees: dG 19,750 and 29,090 J/mol).  Their equations (24) and (25), p. 168, give 3.4592
+  and 5.0966 at 298.15 K.  Racemic acid; see HMalic-formation.dat.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Malic; masters ( { ion H2Malic; nu 1; } { ion H; nu -2; } );
+      logK25 -8.556; dH 1774; source "Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947), Tables 5 and 6, p. 169: d,l-malic acid, -log K1 3.459 + -log K2 5.097 = 8.556; dH1 +2955 + dH2 -1181 = +1774 J/mol at 25 C";

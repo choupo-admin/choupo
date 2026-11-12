@@ -1,7 +1,7 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   Solution chemistry of the tartaric-acid acidulation liquor.  Tartaric acid is a
   REAL weak diprotic acid: neutral H2Tart is the speciation master, dissociating
-  H2Tart <=> HTart- <=> Tart^2- (pKa1 2.98, pKa2 4.34, dH from Kochergina 2006).
+  H2Tart <=> HTart- <=> Tart^2- (pKa1 3.036, pKa2 4.366, dH +3.19 and +0.93 kJ/mol: Goldberg, Kishore & Lennen 2002, Table 7.63; corrected C372 from uncited 2.98 / 4.34).
   Neutral master => an acid liquor is electroneutral at 0.0% (the H+ is from
   dissociation).  Every gamma below is Pitzer-HMW -- NOT ideal.
 
@@ -30,9 +30,9 @@ operations
       pH solve; equilibrate { minerals ( gypsum ); } diagSpecies ( Ca SO4 ); output { file gypsum_ceiling.csv; } }
 
     { name pKa2_davies; type speciate; activityModel davies;
-      analyticalTotals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
+      analyticalTotals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.366;
       diagSpecies ( H2Tart HTart Tart ); output { file pKa2_davies.csv; } }
     { name pKa2_pitzer; type speciate; activityModel pitzerHMW;
-      analyticalTotals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.34;
+      analyticalTotals { H2Tart 0.10 mol/kg; K 1.5 mol/kg; Cl 1.5 mol/kg; } pH 4.366;
       diagSpecies ( H2Tart HTart Tart ); output { file pKa2_pitzer.csv; } }
 );

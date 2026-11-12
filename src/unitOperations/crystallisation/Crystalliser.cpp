@@ -34,6 +34,7 @@ License
 #include "core/RegistryRefusal.H"
 #include "solver/NewtonRaphson.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/SolidMixture.H"
 
 #include <cmath>
 #include <limits>
@@ -476,6 +477,8 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
     const scalar MW_sol   = sat.MW_sol;
     const scalar rho_c    = sol.rho_p();
     const scalar k_v      = sol.k_v();
+    solidMixture::announceDefaultShapeFactor(sol,
+        "crystalliser '" + (dict->name().empty() ? std::string("crystalliser") : dict->name()) + "'", verbosity);
     if (rho_c <= 0.0)
         throw std::runtime_error("Crystalliser(MSMPR): solute '" + sol.name() + "' needs a `solid {"
             " rho_p; k_v; }` block (crystal density + volume shape factor).");
@@ -767,6 +770,8 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
     const scalar MW_sol   = sat.MW_sol;
     const scalar rho_c    = sol.rho_p();
     const scalar k_v      = sol.k_v();
+    solidMixture::announceDefaultShapeFactor(sol,
+        "crystalliser '" + (dict->name().empty() ? std::string("crystalliser") : dict->name()) + "'", verbosity);
     if (rho_c <= 0.0)
         throw std::runtime_error("Crystalliser(FVM): solute '" + sol.name() + "' needs a `solid {"
             " rho_p; k_v; }` block.");

@@ -1,0 +1,16 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Malic.dat -- ONE model species, ONE typed file: the doubly charged anion of malic acid.
+
+  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH) of malic acid is measured in
+  Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161, Table 5, p. 169, and is in chemistry/ -- so
+  the SPECIATION (pH, distribution) is complete.  No work in hand prints a formation enthalpy or
+  entropy of this aqueous ion, so a balance that needs its enthalpy REFUSES BY NAME instead of
+  borrowing a value.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Malic;
+formula     "C4H4O5-2";
+charge  -2;
+MW { value 132.071; unit g/mol;}
