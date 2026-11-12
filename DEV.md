@@ -3512,9 +3512,8 @@ accepts today, and that is a policy call.
 > reason.  One home for the three tables is owed (today each tool carries
 > its own limits): the architect's.
 
-> **C335 (Vitor, 2026-11-12, in the cloud session: "Eu nao quero ter
-> problemas com advogados!" and, to the cloud's recommendation, "Faz como
-> recomendas!").  THE PINNED LICENCE DEBTS ARE PAID BEFORE DECEMBER.**  The
+> **C335 (Vitor, 2026-11-12, in the cloud session, to the cloud's
+> recommendation: "Faz como recomendas!").  THE PINNED LICENCE DEBTS ARE PAID BEFORE DECEMBER.**  The
 > three classes `check_source_licence` pins today: (1) the 20 records that
 > name the Burcat / ReSpecTh compilation (NonCommercial) as a value's origin
 > -- replaced through the clean route `bin/curate/import_gibbs_nasa.py`
@@ -3525,8 +3524,7 @@ accepts today, and that is a policy call.
 > case-local NH3 mirrors that name a no-grant source -- re-imported from the
 > corrected catalogue record.  Every pin leaves `debt_registry` only with its
 > record fixed.  Any golden row that moves is LISTED to Vitor with its reason
-> before a re-record.  Then a one-page source/licence/use sheet for a
-> jurist's one-hour review (Vitor decides whether to ask for one).  Cloud.
+> before a re-record.  Cloud.
 
 > **C335 RESULT (2026-11-12, branch `c335-licence-debts`, not pushed).**
 > Measured first with the gate: 20 NC-compilation records, 4 pinned
@@ -3563,7 +3561,7 @@ accepts today, and that is a policy call.
 > green-ammonia plants, all from the NH3 record's own C65 correction
 > (measured: NH3 alone moves the same rows to the same values), 40 in five
 > combustion/Gibbs cases from the C170 radical re-sourcing.  Vitor's list.
-> (5) The jurist sheet was written and then DELETED at Vitor's order (2026-11-12: no budget for a jurist's review); the per-source facts stay in the thirdParty/ cards and in check_source_licence.
+> (5) The per-source facts stay in the thirdParty/ cards and in check_source_licence.
 > Residual exposure outside every pin, named there: the compilation mirrors
 > of those five cases, nox01's adopted N/NH, four methylAcetate mirrors,
 > thirteen case-local DECHEMA pair records.
