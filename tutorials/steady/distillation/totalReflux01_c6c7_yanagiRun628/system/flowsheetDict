@@ -10,7 +10,9 @@
   totalReflux01_c6c7_yanagiRun628  --  a column at TOTAL REFLUX: no feed, no
   products, every mole of overhead vapour back as reflux.  This is how tray
   efficiency is measured on a test column, and it is the mode every later
-  rate-based comparison (C329) stands on.
+  tray-efficiency comparison (C329: an efficiency computed from mass-transfer
+  correlations and applied to equilibrium stages, not a rate-based model)
+  stands on.
 
   WHAT IS SPECIFIED, AND WHY THESE NUMBERS (the degrees of freedom).  With no
   stream crossing the column boundary the component balances, summed over the

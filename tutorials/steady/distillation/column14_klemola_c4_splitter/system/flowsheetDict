@@ -308,10 +308,14 @@
   the value and announces it, and states what it does not check (the plug-flow
   ceiling, which needs the point efficiency and mV/L -- neither is declared).
 
-  It is an INPUT.  Predicting it needs the rate-based programme Choupo
-  deliberately does not have; the paper spends its own length on that
-  difficulty and its Table 4 shows ten published methods disagreeing across a
-  factor of five.  This case reads the measurement; it does not reproduce it.
+  It is an INPUT.  Predicting it needs a tray efficiency computed for a
+  MULTICOMPONENT column with feeds and products.  Choupo computes a tray
+  efficiency (AIChE, Chan & Fair, Syeda-Afacan-Chuang: `efficiency {}`, C329)
+  only for a BINARY column at TOTAL REFLUX, and it has no rate-based
+  (non-equilibrium) stage model with phase balances and interface fluxes at
+  all; the paper spends its own length on that difficulty and its Table 4
+  shows ten published methods disagreeing across a factor of five.  This case
+  reads the measurement; it does not reproduce it.
 
   The companion case column15_klemola_ideal_trays is this column with
   murphreeEfficiency 1.0 and nothing else changed.  The gap between the two is
