@@ -1,0 +1,29 @@
+variant	selector	n_tutorial_cases	cases
+pitzer single-salt (package)	equilibrium.aqueous.activityModel { model Pitzer; } (formulation electrolyteGammaPhi)	13	batch/crystallisation/batch13_nacl_pitzer,batch/crystallisation/batch14_nacl_pitzer_antisolvent,ctrl/ctrl10_brine_concentration,plant/lithiumBrinePlant/sectors/BRINE,props/electrolyte/enthalpy_naoh_water,props/electrolyte/pitzer02_nacl_package,steady/crystallisation/crystalliser05_nacl_pitzer,steady/crystallisation/crystalliser12_nacl_pitzer_antisolvent,steady/crystallisation/overlay02_nacl_calorimetric,steady/evaporation/evaporator06_nacl_pitzer,steady/evaporation/evaporator08_naoh_dilution_heat,steady/evaporation/evaporator09_nacl_sucrose_brine,steady/thermoTest/model2_pitzer_evaporator
+eNRTL single-salt (package)	equilibrium.aqueous.activityModel { model eNRTL; }	8	steady/crystallisation/crystalliser06_nacl_antisolvent,steady/crystallisation/crystalliser07_nacl_antisolvent_cooled,steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr,steady/crystallisation/crystalliser09_KHT_KCl_series,steady/crystallisation/crystalliser10_naoh_antisolvent,steady/crystallisation/crystalliser11_kcl_antisolvent_ethanol,steady/evaporation/evaporator07_nacl_enrtl,steady/thermoTest/model3_enrtl_antisolvent_crystalliser
+pitzerHMW (aqueousProperties surface)	aqueousProperties.activityCoefficients { model PitzerHMW; }	8	props/electrolyte/farelo_licl_range,props/electrolyte/farelo_nacl_nh4cl,props/electrolyte/pitzer_calcite_brine,props/electrolyte/pitzer_hmw_hot_agreement,props/electrolyte/pitzer_seawater_verify,props/electrolyte/pitzer_vs_davies_ro_concentrate,props/electrolyte/tartaricAcid_acidulation,props/thermoTest/model4_speciation_scaling
+davies (aqueousProperties surface)	aqueousProperties.activityCoefficients { model Davies; }	10	props/electrolyte/bjerrum01_carbonate_pH,props/electrolyte/composition01_nacl,props/electrolyte/davies01_band_edge,props/electrolyte/ksp_temperature,props/electrolyte/overlay01_nacl_ksp,props/electrolyte/pb82_calcite_open_co2,props/electrolyte/precipitation_ro_brackish,props/electrolyte/rainwater_air,props/electrolyte/scaling_ro_brackish,props/electrolyte/softener_brackish
+edwardsPitzer (aqueousProperties surface)	aqueousProperties.activityCoefficients { model EdwardsPitzer; }	3	props/electrolyte/edwards01_sour_water_activity,props/electrolyte/edwards02_table7_vle,props/electrolyte/edwards03_table8_vle
+composite ionic davies + molecular <w>	equilibrium.aqueous.activityModel { ionic davies; molecular NRTL|UNIQUAC|UNIFAC; }	5	steady/flash/flash13_acetic_ethanol_vacuum_flash,steady/flash/flash17_two_liquids_reactive,steady/flash/flash19_organic_and_precipitate,steady/flash/marcilla01_lls_tie_triangle,steady/flash/marcilla02_lls_ternary_invariant
+reactive ionic davies (no molecular)	equilibrium.aqueous.activityModel { ionic davies; }	0	
+reactive ionic pitzerHMW	equilibrium.aqueous.activityModel { ionic pitzerHMW; ... }	1	steady/flash/flash21_brine_co2_pitzer
+speciate op activityModel pitzerHMW	speciate { activityModel pitzerHMW; }	4	props/electrolyte/davies01_band_edge,props/electrolyte/pitzer_calcite_brine,props/electrolyte/pitzer_vs_davies_ro_concentrate,props/electrolyte/tartaricAcid_acidulation
+speciate op activityModel davies	speciate { activityModel davies; }	5	props/electrolyte/davies01_band_edge,props/electrolyte/edwards01_sour_water_activity,props/electrolyte/pitzer_calcite_brine,props/electrolyte/pitzer_vs_davies_ro_concentrate,props/electrolyte/tartaricAcid_acidulation
+speciate op activityModel edwardsPitzer	speciate { activityModel edwardsPitzer; }	1	props/electrolyte/edwards01_sour_water_activity
+pitzerActivity op (single-salt kernel)	type pitzerActivity;	7	props/electrolyte/archer01_nacl_cold_to_hot,props/electrolyte/enthalpy_naoh_water,props/electrolyte/pitzer01_nacl,props/electrolyte/pitzer02_cacl2,props/electrolyte/pitzer_gamma_hamer_wu,props/electrolyte/pitzer_hmw_hot_agreement,props/electrolyte/pitzer_nacl_sp77_hot
+electrolyteActivity op (package route)	type electrolyteActivity;	1	props/electrolyte/pitzer02_nacl_package
+enrtlMultiSalt op	type enrtlMultiSalt;	1	props/electrolyte/enrtl_multisalt_nacl_kcl
+enrtlMixedSolvent op	type enrtlMixedSolvent;	1	props/electrolyte/enrtl_mixed_nacl_ethanol_esteso
+electrolyteFit op	type electrolyteFit;	1	props/electrolyte/electrolyteFit01_nacl
+records	data/standards/parameters/Pitzer/pairs	99	
+records	data/standards/parameters/Pitzer/theta	18	
+records	data/standards/parameters/Pitzer/psi	40	
+records	data/standards/parameters/Pitzer/lambda	6	
+records	data/standards/parameters/Pitzer/zeta	1	
+records	data/standards/parameters/eNRTL	48	
+records	data/standards/parameters/EdwardsPitzer	34	
+records	Pitzer pairs with SP77 T-functions (sp_q1)	1	
+records	Pitzer pairs with linear T-slots (dbeta0_dT)	3	
+records	Pitzer pairs declaring top-level tCorrelationForm	3	
+records	EdwardsPitzer records declaring Trange	27	
+records	eNRTL pairs declaring a T-dependence key (tau_m_ca_b / dtau)	0	

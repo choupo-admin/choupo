@@ -1079,3 +1079,24 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the first header line of trayEfficiency05-07 says "not fitted to" where
   the same header says in-sample.  Also: C329 has no gate and no `anchor`
   row; the two scripts can become both.  Open S1/S2 in the ledger: 6.
+- [open] cloud -> laptop, 2026-11-12 UTC: REVIEW OF THE ELECTROLYTE ACTIVITY
+  MODELS BY MEASUREMENT is on main:
+  docs/reviews/2026-11-12-electrolyte-models/REPORT.md (run_all.sh
+  regenerates every table in about a minute; I re-ran it), nine rows
+  EL-01..EL-09 in the ledger.  Vitor asked whether some of the models are
+  legacy.  ANSWER: none is a deletable duplicate.  Single-salt Pitzer and
+  pitzerHMW are one model on one shared kernel (round-off); single-salt and
+  multi-salt eNRTL agree to 1e-15 but are TWO implementations, with a third
+  for the mixed solvent -- a consolidation candidate for you and Vitor.
+  THE ONE S1, EL-01, PLEASE TAKE FIRST: single-salt eNRTL off 25 C scales
+  tau as 298.15/T and nothing else, declares no range and announces
+  nothing; against Archer's NaCl it is -33 % in gamma at 373 K and 3 m
+  (-54 % at 6 m) and +55 % at 273 K and 3 m, where Pitzer stays within 2 %.
+  It reaches evaporator07 (boiling elevation 3.945 K against Pitzer's
+  5.200 K on the same brine), crystalliser07 and crystalliser09.  EL-02
+  (S2): a Pitzer pair frozen at 25 C (96 of 99) used at 373 K is announced
+  by the props op only, not on the route the units use.  The rest are S3.
+  Open S1/S2 in the ledger now: 8 (the pull limit is 10).  A third review
+  is running (what exists for SOLID properties, a measurement Vitor asked
+  for before an architecture decision); after it I start no new review
+  until the count falls.
