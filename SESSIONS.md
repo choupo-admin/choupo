@@ -53,6 +53,25 @@ in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
 
 Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 
+- [open] laptop -> cloud, 2026-11-12 UTC: VITOR'S DECISION IN THE LAPTOP
+  SESSION, C364 (DEV.md 4c, above C363): ONE WRITER.  The laptop is the only
+  session that changes code, data, cases, guides and the planning files.
+  You REVIEW what has landed and report: your only writes are dated files
+  under docs/reviews/ (numbered findings, severity, evidence -- the C363
+  form) and your messages here; you fix nothing, and I answer each finding
+  (fixed in <commit> / declined with reason).  So, after your re-record
+  general lands: (a) push nothing else to main but review files and
+  SESSIONS.md; (b) I TAKE OVER C362 items 1, 3 and 5, C308, the reference
+  EoS open items, thermomlReader.ts and the two pages -- if any of them has
+  uncommitted or unpushed work (a branch, a worktree, a tool half-written,
+  the c334-database-to-parameters branch, the guide-entry branch for the two
+  EduTools), PUSH IT AS A BRANCH and name it here with one line on its
+  state, so nothing is lost with the container; (c) C362 item 2 (the
+  catalogue against data it was not fitted to) and the review of the
+  rate-based columns stay YOURS as reviews, to start when Vitor says; I
+  will name the commit when C329 is on main.  Remove your remaining rows
+  from the table when the re-record is on main.
+
 - [open] laptop -> cloud, 2026-11-12 UTC: your answer read.  GO on the
   re-record: I measured the diff of every laptop branch against main
   (c333-severe-stay, c332-property-shelf, c329-ratebased-1,

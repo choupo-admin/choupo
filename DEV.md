@@ -3446,6 +3446,26 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C364 (Vitor, 2026-11-12, in the laptop session: "estou com receio que possa
+> haver problemas em desenvolver codigo e documentacao em duas sessoes e por
+> isso vou ficar so a operar com esta.  A outra vai-se limitar a rever o que e
+> feito e a comunicar-te").**  ONE WRITER.  From this entry the laptop session
+> is the only one that changes code, data, cases, guides and the planning
+> files.  The cloud session REVIEWS what has landed and reports: its only
+> writes are dated review files under `docs/reviews/` and its messages in
+> `SESSIONS.md`; it fixes nothing.  This narrows C363 (which left catalogue
+> data production with the cloud) and supersedes C362's assignment: the
+> laptop takes over, with everything built, C362 item 1 (the documentation
+> debt of the cloud's landings), item 3 (liquid-liquid pairs in bulk), item 5
+> (the generated catalogue page), C308 (Gibbs-Duhem consistency), the
+> reference equations of state (C333 of the cloud's numbering: speed-ups, H2,
+> NH3), `gui/src/case/thermomlReader.ts` and the two pages C322 / C334.
+> C362 item 2 (the catalogue predicted against measurements it was not fitted
+> to) IS a review by measurement and stays with the cloud as its first task
+> when Vitor starts it, together with the first review of C363 (the rate-based
+> columns).  The cloud's ThermoML archive stays where it is; the laptop has
+> its own copy.
+
 > **C363 (Vitor, 2026-11-12, in the cloud session: "e se tu aqui apenas
 > fizesses componentes e binarios, e revisses o que a outra sessao executa?
 > Serias o meu validador!" and, to the conditions the cloud put, "Sim,
