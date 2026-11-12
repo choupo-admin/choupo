@@ -32,7 +32,11 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-slice0 (general running; PLAN ONLY, no code yet) | `docs/design/thermophysical-slice0-plan.md`; `docs/design/thermophysical-property-routes.md` stays the coordinator's | 2026-11-12 |
+| c378-slice0 (general running; the door: steps 2-5 built on the branch, tables being reworked) | `src/thermo/` (ThermoPackage and its consumers), `src/result/`, `src/core/PropertySourceLog.H`, every unit that prices a liquid property, `bin/runTests`, the golden reader; `docs/design/thermophysical-property-routes.md` stays the coordinator's | 2026-11-12 |
+| c378-vliq-evidence (general; evidence only, no record edited) | `data/curation/batches/vliq_datum_temperature/`, `docs/design/liquid-volume-datum-temperature.md` | 2026-11-12 |
+| c378-pilot-data (general; data and baseline, no engine code) | `data/curation/batches/density_pilot/`, `docs/design/density-pilot-thresholds.md` | 2026-11-12 |
+| c198-boron-pitzer (general) | boron species, chemistry and Pitzer records, one electrolyte case, its Theory Guide section | 2026-11-12 |
+| c371-s2-panel-gui (general) | `gui/` (the panel workspace), the User Guide section | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
