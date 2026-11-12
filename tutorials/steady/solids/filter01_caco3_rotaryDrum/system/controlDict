@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter01_caco3_rotaryDrum
+
+  A CONTINUOUS ROTARY VACUUM DRUM FILTER, held to the printed worked example
+  of Geankoplis, Hersel & Lepek (5th ed.), Example 24.2-4, pp. 1089-1090:
+  a CaCO3 slurry in water at 298.2 K, 0.778 kg/s at c_x = 0.191 kg solid /
+  kg slurry, a cake of m = 2.0 kg wet / kg dry, 67.0 kPa across a drum 33 %
+  submerged and turning once every 250 s, a compressible cake alpha =
+  4.37e9 (-dp)^0.3 [m/kg, dp in Pa], the medium neglected (B = 0).
+
+  THE BOOK'S ARITHMETIC, which the unit repeats:
+    c_S = rho c_x / (1 - m c_x) = 308.1 kg solids / m3 filtrate  (eq. 24.2-10)
+    alpha = 4.37e9 x 67000^0.3 = 1.225e11 m/kg                  (eq. 24.2-11)
+    V / t_c = 0.778 c_x / c_S = 4.823e-4 m3 filtrate / s
+    V / (A t_c) = [2 f (-dp) / (t_c mu alpha c_S)]^1/2         (eq. 24.2-24)
+    A = 6.60 m2.
+  THE PRINTED AREA IS 0.9 % BELOW ITS OWN INPUTS: the book's numbers
+    (mu 0.8937e-3, alpha 1.225e11, c_S 308.1, f 0.33, t_c 250 s, dp 67.0 kPa)
+    give 6.660 m2 by the same equation; the anchor carries that gap (see
+    `expected`).
+  WHAT IS THE PACKAGE'S, NOT THE BOOK'S: the water's viscosity (Vogel, from
+    water's record: 8.89e-4 Pa s against the book's 8.937e-4) and density
+    (water's Vliq: 996.9 kg/m3, the book's value).  A scales with the
+    square root of mu.
+  THE STEADY REPRESENTATION: the drum is continuous; the streams are its
+    steady flows and the cycle (t_c declared, A the result) is the design
+    computed on them (docs/design/c361-solids-processing.md 8.3).
+  NOT CLAIMED: the cake thickness (from m and the densities, assuming a
+    saturated cake) and the porosity are the unit's, not the book's.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A continuous rotary vacuum drum filter on a compressible CaCO3 cake (alpha = 4.37e9 dp^0.3), held to Geankoplis Example 24.2-4: 0.778 kg/s of slurry, 33 % submergence, 250 s cycle, 67 kPa -- the filter area.";
+verbosity     3;
+citations
+(
+    "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall (year not read on the page). Section 24.2, eqs. 24.2-10 to 24.2-26, Example 24.2-4, pp. 1078-1090."
+    "Ruth, B.F. (1935) Studies in filtration III. Derivation of general filtration equations. Ind. Eng. Chem. 27(6), 708-723 (the two-resistance law as given by Geankoplis; the paper is in the literature folder and was not read for this case)."
+);

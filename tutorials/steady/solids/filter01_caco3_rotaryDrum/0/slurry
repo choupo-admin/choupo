@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Geankoplis Example 24.2-4: "0.778 kg slurry/s", "c_x = 0.191 kg solid/kg
+//  slurry", water at 298.2 K.  0.778 x 0.191 = 0.148598 kg/s of CaCO3
+//  (MW 100.0869), 0.629402 kg/s of water (MW 18.015).  No size distribution:
+//  the filtration law reads bulk properties only.
+
+componentMolarFlows
+{
+    CaCO3       5.3448833 kmol/h;
+    water     125.7755870 kmol/h;
+}
+
+T               298.2 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            water     125.7755870 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3       5.3448833 kmol/h;
+        }
+    }
+}

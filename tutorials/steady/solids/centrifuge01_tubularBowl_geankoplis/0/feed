@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  q = 0.002832 m3/h of slurry (Geankoplis Example 30.2-2).  The solids
+//  content is DECLARED dilute, 0.1 % by volume: 2.832e-6 m3/h of particles at
+//  1461 kg/m3 = 4.137552e-3 kg/h, and 2.829168e-3 m3/h of solution at 801
+//  kg/m3 = 2.266164 kg/h.  Both pseudo-components carry MW 100 (a basis).
+//  THE SIZE DISTRIBUTION IS NOT THE EXAMPLE'S (it prints none): a
+//  Rosin-Rammler law, d63 0.8 um, n 1.5, declared to show the split per
+//  class.  No anchor reads it.
+
+componentMolarFlows
+{
+    suspendedParticles   4.137552e-5 kmol/h;
+    viscousSolution      2.266163568e-2 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            viscousSolution      2.266163568e-2 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            suspendedParticles   4.137552e-5 kmol/h;
+        }
+        particleSizeDistribution
+        {
+            model     RosinRammler;
+            d63       0.8e-6;      // m  (DECLARED, see above)
+            n         1.5;         // spread [-]
+        }
+    }
+}

@@ -74,6 +74,9 @@ License
 #include "solids/Classifier.H"
 #include "solids/Screen.H"
 #include "solids/Hydrocyclone.H"
+#include "solids/CakeFilter.H"
+#include "solids/Thickener.H"
+#include "solids/SedimentingCentrifuge.H"
 #include "solids/classifierModel/PartitionCurves.H"
 #include "separation/BagFilter.H"
 #include "separation/GasSolidSplitter.H"
@@ -208,6 +211,11 @@ void UnitOperation::registerBuiltins()
     reg("classifier",         []{ return std::make_unique<Classifier>();         });
     reg("screen",             []{ return std::make_unique<Screen>();             });
     reg("hydrocyclone",       []{ return std::make_unique<Hydrocyclone>();       });
+    //  SOLID-LIQUID SEPARATION (C361 slice 4): cake filtration, a thickener
+    //  from a settling test, a sedimenting centrifuge by Sigma theory.
+    reg("cakeFilter",         []{ return std::make_unique<CakeFilter>();         });
+    reg("thickener",          []{ return std::make_unique<Thickener>();          });
+    reg("sedimentingCentrifuge", []{ return std::make_unique<SedimentingCentrifuge>(); });
     reg("ionExchanger",       []{ return std::make_unique<IonExchanger>();       });
     reg("psa",                []{ return std::make_unique<PSA>();                });
     reg("tsaTwinBed",         []{ return std::make_unique<TSATwinBed>();         });

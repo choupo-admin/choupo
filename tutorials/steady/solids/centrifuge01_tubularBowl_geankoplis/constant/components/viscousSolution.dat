@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: viscousSolution  -- a CASE-LOCAL PSEUDO-LIQUID.
+  The unnamed "viscous solution" of Geankoplis, Hersel & Lepek (5th ed.),
+  Example 30.2-2, p. 1437: "The solution density rho = 801 kg/m3 and its
+  viscosity is 100 cp."  Nothing else is known about it, and nothing else is
+  declared: a sedimenting centrifuge reads the liquid's density and
+  viscosity and does no work.
+
+  MW 100 is a BASIS, not a molecule: it only converts the example's volume
+  flow into the kmol/s a stream carries, and no result depends on it.
+  Vliq = MW / rho = 0.1 kg/mol / 801 kg/m3; with no critical constants the
+  engine keeps this density constant and says so.
+  liquidViscosity: Andrade ln(mu/Pa s) = A + B/T with B = 0, i.e. a
+  CONSTANT 0.100 Pa s -- the example gives one value at one (unstated)
+  temperature and no temperature dependence is invented.
+  No heat capacity and no formation datum: the case's only unit is
+  isothermal, and none is invented.
+  Sample-specific: lives in this case only (never data/standards).
+\*---------------------------------------------------------------------------*/
+
+name        viscousSolution;
+formula     "n/a";
+CAS         "n/a";
+
+MW          100.0;               // kg/kmol -- a BASIS (see header)
+Vliq        1.2484394e-4;        // m^3/mol = 0.1 / 801  (rho = 801 kg/m3, Geankoplis Ex. 30.2-2)
+
+role        nonvolatile;         // a liquid carrier that never enters a vapour
+
+liquidViscosity
+{
+    andrade { A -2.302585093; B 0; }   // mu = e^A = 0.100 Pa s ("100 cp"), constant
+}
