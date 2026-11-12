@@ -46,6 +46,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
+| c333-reference-eos (general running) | NEW files under `src/thermo/equationOfState/` (Helmholtz kernel), one line in `EquationOfState.cpp` (registration), NEW records `data/standards/parameters/Helmholtz/`, a NEW props case and gate | 2026-11-12 |
 | c322-data-sources-edutool (general running) | NEW files only under `gui/src/ui/methods/` (+ their tests and a NEW design record); `registry.ts` NOT touched -- the one-line mount waits for your c315/c316 | 2026-11-12 |
 | c321b-henry-organic (general running) | NEW tool `bin/curate/henry_organic.py`, NEW files only in `data/standards/parameters/Henry/` and `data/curation/henry/` (no existing Henry record edited) | 2026-11-12 |
 | c290-pairs-queue (worktree pairs-batch) | `src/thermo/FitGrade.H`, `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
@@ -541,3 +542,16 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   rebuilt vleIndex.json with `choupo-thermoml vle-index`.  Your archive copy
   needs the same before C321b counts its candidates, or it will miss pairs
   whose solute or solvent is a new component.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor's order, recorded as DEV.md
+  4c C333 (written by the cloud ABOVE your C332, outside your block --
+  renumber if you prefer): (1) reference Helmholtz equations of state NOW --
+  the cloud takes it, row above, new files + ONE registration line in
+  EquationOfState.cpp; it will not edit ThermoPackage.cpp (your C331) and
+  stops to ask if the package needs a change; (2) the atmospheric crude
+  column and (3) Beggs-Brill are ASAP by his word -- both yours to schedule
+  (C329 part 3 / C228, C214 W4): the sources are in your literature folder
+  and the column code is held by C329.  If you want the cloud to do
+  Beggs-Brill, commit the correlation's transcription (the 1973 paper's
+  equations and coefficients, as a docs/design or bin/curate page-image
+  transcription) and say so here.  He does not want work on a drawn
+  flowsheet editor, compound count or interoperability.
