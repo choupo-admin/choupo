@@ -191,6 +191,12 @@ const THEORY_DEST: Record<string, string> = {
   // case's size grid; each selectable model opens its own subsection through
   // SLOT_MODEL_DEST below.
   mill: "sec:mill",
+  // classification on the same grid (DEV.md 4c C361 slice 3): the three
+  // classifiers, each its own section; the models and the partition curves
+  // open theirs through SLOT_MODEL_DEST below.
+  classifier: "sec:classifier",
+  screen: "sec:screen",
+  hydrocyclone: "sec:hydrocyclone",
   // liquid-liquid extraction column: each theoretical stage IS one LL Gibbs-
   // minimisation flash; the cascade just tears the counter-current stages.
   // The dedicated chapter (ch:extractor) extends the LL-flash chapter
@@ -428,6 +434,21 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "mill.model:herbstFuerstenau":            { guide: "theory", dest: "sec:mill-selection-hf" },
   "mill.model:vogelPeukert":                { guide: "theory", dest: "sec:mill-selection-vp" },
   "mill.operation.breakage.model:austin":   { guide: "theory", dest: "sec:mill-breakage-austin" },
+  //  Classification (DEV.md 4c C361 slice 3): the unit's `model` word, and the
+  //  `partition { model ...; }` curve every classifier takes -- `declared` and
+  //  `tabulated` are words other places use, so they are resolved by slot.
+  "screen.model:karra":                     { guide: "theory", dest: "sec:screen-karra" },
+  "screen.model:declared":                  { guide: "theory", dest: "sec:screen-declared" },
+  "hydrocyclone.model:declared":            { guide: "theory", dest: "sec:hydrocyclone-declared" },
+  "classifier.operation.partition.model:whiten":             { guide: "theory", dest: "sec:partition-whiten" },
+  "classifier.operation.partition.model:rosinRammler":       { guide: "theory", dest: "sec:partition-rr" },
+  "classifier.operation.partition.model:tabulated":          { guide: "theory", dest: "sec:partition-tab" },
+  "screen.operation.partition.model:whiten":                 { guide: "theory", dest: "sec:partition-whiten" },
+  "screen.operation.partition.model:rosinRammler":           { guide: "theory", dest: "sec:partition-rr" },
+  "screen.operation.partition.model:tabulated":              { guide: "theory", dest: "sec:partition-tab" },
+  "hydrocyclone.operation.partition.model:whiten":           { guide: "theory", dest: "sec:partition-whiten" },
+  "hydrocyclone.operation.partition.model:rosinRammler":     { guide: "theory", dest: "sec:partition-rr" },
+  "hydrocyclone.operation.partition.model:tabulated":        { guide: "theory", dest: "sec:partition-tab" },
 };
 
 // The theory link of a word chosen INSIDE a unit block -- `model

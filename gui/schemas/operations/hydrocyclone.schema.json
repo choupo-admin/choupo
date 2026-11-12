@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/hydrocyclone.schema.json",
+  "title": "hydrocyclone operation",
+  "description": "A hydrocyclone classifying a slurry on the case's size grid. Model declared: the case gives the corrected curve (with its cut size) and the water recovery to underflow R_f, which is also the solids bypass (Kelsall; Wills & Napier-Munn 2006 eq. 9.15): a_k = R_f + (1 - R_f) c_k. A dry feed is refused. Outputs (underflow overflow). The empirical correlation of Nageswararao et al. 2004 is not built.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "partition": {
+      "type": "object",
+      "title": "Partition curve (corrected)",
+      "description": "The corrected classification function c(d): the fraction of a size class that reports to the coarse product, before the bypass. whiten: c = 1 - (e^a - 1)/(e^(a d/d50c) + e^a - 2) (Nageswararao et al. 2004 eq. 21). rosinRammler: c = 1 - exp(-0.693 (d/d50)^m) (King 2001 eq. 4.41). tabulated: c_k declared class by class on the case's own grid, pan first.",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "whiten",
+            "rosinRammler",
+            "tabulated"
+          ],
+          "title": "Curve model"
+        },
+        "d50c": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Corrected cut size (whiten)",
+          "description": "The size at which c = 1/2.",
+          "unit": "m"
+        },
+        "alpha": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Sharpness a (whiten)",
+          "unit": "-"
+        },
+        "d50": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Cut size (rosinRammler)",
+          "description": "c(d50) = 0.49997 (King's constant 0.693 is kept as printed).",
+          "unit": "m"
+        },
+        "m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Sharpness m (rosinRammler)",
+          "description": "King uses 5.9 for a vibrating screen.",
+          "unit": "-"
+        },
+        "corrected": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "title": "Class values (tabulated)",
+          "description": "Exactly one value per class of the case's size grid, the pan first, each in [0, 1]."
+        }
+      }
+    },
+    "waterToUnderflow": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Water recovery to underflow R_f",
+      "description": "The fraction of the feed water leaving in the underflow; also the solids bypass.",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "partition",
+    "waterToUnderflow"
+  ]
+}

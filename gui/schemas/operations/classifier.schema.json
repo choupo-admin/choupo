@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/classifier.schema.json",
+  "title": "classifier operation",
+  "description": "A size classifier defined by its partition curve alone, on the case's size grid (`sizeGrid {}` in system/flowsheetDict; King 2001 section 4.2, Herbst & Fuerstenau 1980 p. 18): coarse_k = a_k f_k m_s, fine_k = f_k m_s - coarse_k class by class, so the products close on the feed exactly. One solid population; no work, no heat. Outputs (coarse fine).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "partition": {
+      "type": "object",
+      "title": "Partition curve (corrected)",
+      "description": "The corrected classification function c(d): the fraction of a size class that reports to the coarse product, before the bypass. whiten: c = 1 - (e^a - 1)/(e^(a d/d50c) + e^a - 2) (Nageswararao et al. 2004 eq. 21). rosinRammler: c = 1 - exp(-0.693 (d/d50)^m) (King 2001 eq. 4.41). tabulated: c_k declared class by class on the case's own grid, pan first.",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "whiten",
+            "rosinRammler",
+            "tabulated"
+          ],
+          "title": "Curve model"
+        },
+        "d50c": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Corrected cut size (whiten)",
+          "description": "The size at which c = 1/2.",
+          "unit": "m"
+        },
+        "alpha": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Sharpness a (whiten)",
+          "unit": "-"
+        },
+        "d50": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Cut size (rosinRammler)",
+          "description": "c(d50) = 0.49997 (King's constant 0.693 is kept as printed).",
+          "unit": "m"
+        },
+        "m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Sharpness m (rosinRammler)",
+          "description": "King uses 5.9 for a vibrating screen.",
+          "unit": "-"
+        },
+        "corrected": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "title": "Class values (tabulated)",
+          "description": "Exactly one value per class of the case's size grid, the pan first, each in [0, 1]."
+        }
+      }
+    },
+    "bypass": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Bypass R",
+      "description": "The fraction of EVERY class short-circuited to the coarse product: the actual partition is a_k = R + (1 - R) c_k.",
+      "unit": "-"
+    },
+    "fluidToCoarse": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Fluid to the coarse product",
+      "description": "Only when the feed carries a fluid: the fraction of it leaving with the coarse product (the case's declaration, never a default).",
+      "unit": "-"
+    }
+  },
+  "required": [
+    "partition",
+    "bypass"
+  ]
+}

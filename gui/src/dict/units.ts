@@ -255,6 +255,10 @@ const TABLE: Record<string, UnitSpec> = {
   "kWh/t":        { factor: 3.6e6 / 1000.0, affine: false },
   "kWh/shortTon": { factor: 3.6e6 / 907.18474, affine: false },
   "t/kWh":        { factor: 1000.0 / 3.6e6, affine: false },
+  // the same in SHORT tons (C361 slice 3; Herbst & Fuerstenau print k^E in
+  // (kWh/ton)^-1 and their circuit in TPH) -- mirrors src/core/Units.cpp.
+  "shortTon/kWh": { factor: 907.18474 / 3.6e6, affine: false },
+  "shortTon/h":   { factor: 907.18474 / 3600.0, affine: false },
   // pressure gradient Pa/m, the drop per metre of a sized header (C199) --
   // mirrors src/core/Units.cpp, added in the same commit.
   "Pa/m":   { factor: 1.0, affine: false },

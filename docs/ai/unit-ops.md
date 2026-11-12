@@ -2129,6 +2129,106 @@ Theory: `sec:mill`.  Cases: `tutorials/steady/solids/mill01_limestone_herbstFuer
 `tutorials/steady/solids/mill02_bond_crosscheck`,
 `tutorials/steady/solids/mill03_impact_vogelPeukert`.
 
+### `classifier`
+A size classifier defined by its PARTITION CURVE alone, on the case's `sizeGrid`
+(King 2001 section 4.2, Herbst & Fuerstenau 1980 p. 18: their "classifier matrix
+C"): the coarse product takes `a_k = R + (1 - R) c_k` of each class (`c_k` the
+corrected curve, `R` the bypass), the fine product is the DIFFERENCE, so the
+products close on the feed class by class (`sizeMassClosure` 0).  The liquid, if
+any, splits by `fluidToCoarse`.  ONE solid population (every solid component
+splits in the same proportion); no work, no heat, both products at the feed's T
+and P.  Inputs `in`; outputs `( coarse fine )`.
+```
+type      classifier;
+in        millDischarge;   outputs ( recycle product );
+operation
+{
+    partition { model tabulated;     // whiten | rosinRammler | tabulated
+                corrected ( 0 0 0 0 1 1 1 1 1 1 1 1 1 ); }   // pan first, one per class
+    bypass 0.3;              // R: fraction of EVERY class to the coarse product
+    // fluidToCoarse 0.5;    // only when the feed carries a liquid
+}
+```
+Partition curves (`partition { model ...; }`, shared by the three classifiers):
+- `whiten` — `c = 1 - (e^a - 1)/(e^(a d/d50c) + e^a - 2)`; keys `d50c`, `alpha`.
+- `rosinRammler` — `c = 1 - exp(-0.693 (d/d50)^m)`; keys `d50`, `m`.
+- `tabulated` — `c_k` class by class on the case's own grid (`corrected ( ... )`,
+  exactly nClasses values, pan first, each in [0, 1]; never interpolated).
+
+Refused: a feed off the grid, no solids, a vapour-bearing fluid, a bypass outside
+[0, 1), a liquid with no `fluidToCoarse`.  KPIs: `solidsTo_coarse`, `fluidTo_coarse`,
+`bypass`, `d50c_um`, `d50_um`, `imperfection` (not published when the bypass
+leaves no d25), `feed_`/`coarse_`/`fine_` `d10_um .. d90_um d32_um Sv_m2_m3`,
+`sizeMassClosure`, `fluidMassClosure`.  Profile: feed fractions, corrected and
+actual partition, both products' fractions per class.
+Theory: `sec:classifier` (the curves `sec:partition-curve`).  Case:
+`tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit` (the closed
+grinding circuit; see `docs/ai/patterns.md`).
+
+### `screen`
+A vibrating screen on the case's `sizeGrid`; the unit's `model` word selects how
+the partition is obtained.  Outputs `( oversize undersize )`; one solid
+population; no work, no heat; a liquid needs `fluidToOversize`.
+- `karra` — King (2001) sections 4.2.1-4.2.2, eqs. 4.30-4.48 (Karra 1979), no
+  fitted parameter: effective aperture `h_T = (h + d_w) cos(theta) - d_w`, basic
+  capacity A times the oversize, half-size, deck, wet-screening, bulk-density
+  and near-size factors B C D E F G_c, loading K, cut size `d50 = h_T G_c / K^0.148`,
+  partition `rosinRammler` with m = 5.9.  Publishes the area utilisation factor
+  (`areaUtilisationFactor`: above 1 the screen is overloaded), the theoretical
+  and the transmitted undersize, the screening efficiency and every factor
+  (`karra_A .. karra_Gc`, `karra_K`, `karra_d50_um`).  Keys `aperture`,
+  `wireDiameter`, `inclination` (write `20 deg`), `area`, `deck` (1 = top),
+  `wetScreening yes|no`, `bulkDensity`, optional `openArea`.  Window enforced by
+  name: the aperture inside the grid, h_T > 0, A > 0 (h_T above about 0.6 mm).
+- `declared` — the case's `partition { }` curve and `bypass` (fines misplaced to
+  the oversize), optional `aperture` checked against the grid.
+```
+type      screen;
+model     karra;
+in        feed;   outputs ( oversize undersize );
+operation
+{
+    aperture 1.25 in;  wireDiameter 0.5 in;  inclination 20 deg;
+    area 1.308055 m2;  deck 1;  wetScreening no;  bulkDensity 1762.04 kg/m3;
+}
+```
+Theory: `sec:screen` (`sec:screen-karra`, `sec:screen-declared`).  Case:
+`tutorials/steady/solids/screen01_dolomite_karra` (King's Example 10.1, measured;
+compared, NOT anchored: Karra states no accuracy; the area utilisation factor 1.08
+against King's own 1.58 is unexplained).
+
+### `hydrocyclone`
+A hydrocyclone classifying a SLURRY on the case's `sizeGrid`.  Outputs
+`( underflow overflow )`.  A dry feed is refused (a powder is a `screen`'s or a
+`classifier`'s), as is a vapour-bearing fluid.  Model `declared` (the only one):
+the case gives the corrected `partition { }` curve (with its cut size) and
+`waterToUnderflow` R_f, the fraction of the feed water to the underflow, which is
+ALSO the solids bypass (Kelsall; Wills & Napier-Munn 2006 eq. 9.15):
+`a_k = R_f + (1 - R_f) c_k`.  The solid density is volume-additive from the
+components' `rho_p`; the unit publishes the feed's solids by weight and volume,
+the pulp density and the dilution (water/solids by mass) of the feed and both
+products.  The empirical correlation of Nageswararao, Wiseman & Napier-Munn
+(2004) is NOT built: the paper prints no values of its constants and no worked
+example, and prints its water-split equation with opposite signs in eqs. 15 and
+18 (Theory Guide, `sec:classification-deferred`).
+```
+type      hydrocyclone;
+model     declared;
+in        feed;   outputs ( underflow overflow );
+operation
+{
+    waterToUnderflow 0.39;
+    partition { model tabulated; corrected ( 0 0.0377 0.0885 0.1803 0.3574 0.7967 0.7967 1 1 1 1 ); }
+}
+```
+KPIs: those of `classifier` (names `underflow_`/`overflow_`) plus
+`feedSolids_wt_pct`, `feedSolids_vol_frac`, `rho_pulp`, `rho_solid`, `rho_liquid`,
+`feed_dilution`, `underflow_dilution`, `overflow_dilution`.
+Theory: `sec:hydrocyclone` (`sec:hydrocyclone-declared`).  Case:
+`tutorials/steady/solids/hydrocyclone01_quartz_willsTable91` (Wills & Napier-Munn
+Table 9.1 run forward: two anchors, two stated gaps from Kelsall's assumption
+failing on the finest class).
+
 ## Drying
 
 ### `sprayDryer`
