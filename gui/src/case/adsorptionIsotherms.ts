@@ -68,11 +68,11 @@ export const MODELS: readonly ModelId[] = ["linear", "langmuir", "freundlich"];
 export interface Pt { c: number; q: number }
 
 /** The parameter vector of each model, in the order the page prints it:
- *  linear [K]; Langmuir [q_max, K_L]; Freundlich [K_F, 1/n]. */
+ *  linear [K]; Langmuir [q_max, K_L]; Freundlich [K_F, n] (n the EXPONENT, q = K_F c^n, as Geankoplis writes it). */
 export const PARAM_NAMES: Readonly<Record<ModelId, readonly string[]>> = {
   linear: ["K"],
   langmuir: ["q_max", "K_L"],
-  freundlich: ["K_F", "1/n"],
+  freundlich: ["K_F", "n"],
 };
 
 export const MODEL_LABEL: Readonly<Record<ModelId, string>> = {
@@ -227,7 +227,7 @@ export function linearisedFit(model: ModelId, pts: readonly Pt[]): Fit {
       ...scoreFit(model, [qmax, KL], pts), r2Transformed: lf.r2, converged: true,
     };
   }
-  //  log10 q = log10 K_F + (1/n) log10 c.
+  //  log10 q = log10 K_F + n log10 c (Geankoplis Eq. 28.1-2: slope n).
   const lf = lineFit(pts.map((p) => Math.log10(p.c)), pts.map((p) => Math.log10(p.q)));
   const params = [Math.pow(10, lf.intercept), lf.slope];
   return {
@@ -361,7 +361,7 @@ export interface Diagnostics {
    *  lowest measured c: theta = c/(K_L + c), from the direct Langmuir fit. */
   thetaMax: number;
   thetaMin: number;
-  /** The Freundlich exponent's distance from 1 in standard errors. */
+  /** The Freundlich exponent n's distance from 1 in standard errors. */
   curvatureInSE: number;
   /** One sentence per thing the data cannot settle. */
   warnings: string[];
@@ -392,10 +392,10 @@ export function diagnostics(pts: readonly Pt[], lang: Fit, freu: Fit): Diagnosti
       + "extrapolation.");
   if (decades < 1)
     warnings.push(`The concentrations span ${decades.toFixed(2)} decades (less than one): the `
-      + "Freundlich exponent 1/n is fixed only loosely, because a power law and a gentle curve look "
+      + "Freundlich exponent n is fixed only loosely, because a power law and a gentle curve look "
       + "alike over a short range.");
   if (Number.isFinite(curvatureInSE) && curvatureInSE < 2)
-    warnings.push(`The fitted Freundlich exponent 1/n = ${m.toFixed(3)} is within two of its own `
+    warnings.push(`The fitted Freundlich exponent n = ${m.toFixed(3)} is within two of its own `
       + `standard errors (${seM.toPrecision(2)}) of 1: the data do not show, beyond their scatter, `
       + "that the isotherm curves at all.");
   return { decades, thetaMax, thetaMin, curvatureInSE, warnings };
@@ -491,7 +491,7 @@ export const Q_UNITS: readonly QUnit[] = [
 export function paramUnits(model: ModelId, cU: string, qU: string): string[] {
   if (model === "linear") return [`(${qU})/(${cU})`];
   if (model === "langmuir") return [qU, cU];
-  return [`(${qU})·(${cU})^(−1/n)`, "–"];
+  return [`(${qU})·(${cU})^(−n)`, "–"];
 }
 
 // ---- the synthetic examples -------------------------------------------------------

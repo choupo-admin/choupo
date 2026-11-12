@@ -603,7 +603,7 @@ export function AdsorptionIsothermsTool(): JSX.Element {
                     <Table.Tr><Table.Td>decades of c spanned, log₁₀(c_max/c_min)</Table.Td><Table.Td>{fmt(diag!.decades, 3)}</Table.Td></Table.Tr>
                     <Table.Tr><Table.Td>fraction of the Langmuir plateau at the highest point, c_max/(K_L + c_max)</Table.Td><Table.Td>{(100 * diag!.thetaMax).toFixed(1)} %</Table.Td></Table.Tr>
                     <Table.Tr><Table.Td>the same at the lowest point</Table.Td><Table.Td>{(100 * diag!.thetaMin).toFixed(1)} %</Table.Td></Table.Tr>
-                    <Table.Tr><Table.Td>Freundlich 1/n from 1, in standard errors, |1/n − 1|/se</Table.Td><Table.Td>{fmt(diag!.curvatureInSE, 3)}</Table.Td></Table.Tr>
+                    <Table.Tr><Table.Td>Freundlich n from 1, in standard errors, |n − 1|/se</Table.Td><Table.Td>{fmt(diag!.curvatureInSE, 3)}</Table.Td></Table.Tr>
                   </Table.Tbody>
                 </Table>
               </Wide>

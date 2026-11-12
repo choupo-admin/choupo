@@ -1204,7 +1204,7 @@ from a flask balance $q = V(c_0-c)/M$ --- and on the three shapes
 which is where the \code{breakthrough} page continues.  It then derives the
 three models: linear $q = Kc$; Langmuir $q = q_{\max}c/(K_L+c)$ from a site
 balance, with its equivalent affinity form $b = 1/K_L$ and its Henry limit
-$q_{\max}/K_L$; and Freundlich $q = K_F c^{1/n}$, which has neither a Henry
+$q_{\max}/K_L$; and Freundlich $q = K_F c^{n}$ (the exponent written as the course text writes it; Seader writes it $1/n$), which has neither a Henry
 limit nor a plateau.
 
 \subsubsection*{What the page computes, and what it does not}
@@ -1244,11 +1244,16 @@ points are pasted as two columns, in a unit chosen from a short list.
 
 \begin{tryit}
 On the activated-carbon set, compare the Langmuir straight-line fit with the
-direct one: the double-reciprocal line gives a capacity several times smaller,
-because the lowest concentrations dominate it, while its $R^2$ still looks
-excellent.  On the trace-solute set, read the standard error of $q_{\max}$
-and the diagnostic sentence, then switch the residuals from absolute to
-relative and watch the Freundlich exponent move towards or away from 1.
+direct one: the double-reciprocal line gives a capacity about four times
+smaller (13.5 against 58.5 mg/g), because the lowest concentrations dominate
+it, and neither Langmuir fit describes a set that has no plateau --- the
+Freundlich RMS is about a fifth of the direct Langmuir's.  On the trace-solute set the
+double-reciprocal line has $R^2 = 0.999$ and still returns $q_{\max} = 124$
+mg/g where the direct fit gives $64 \pm 29$: a high $R^2$ on the transformed
+variables says the points lie near a line, not that the capacity is known.
+Read that standard error and the diagnostic sentence, then switch the
+residuals from absolute to relative and watch the Freundlich exponent move
+towards or away from 1.
 \end{tryit}
 
 \begin{pitfall}

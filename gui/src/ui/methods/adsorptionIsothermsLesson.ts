@@ -114,11 +114,11 @@ export const ISO_STEPS: readonly LessonStep[] = [
           + "linear, with a slope fixed by the RATIO of its two parameters:",
         eq: String.raw`q \to \frac{q_\mathrm{max}}{K_L}\, c = K c \quad (c \ll K_L)` },
       { step: "Freundlich has neither limit.  As c falls its slope dq/dc grows without bound "
-          + "when 1/n < 1, so it has no Henry region; as c rises q grows without bound, so it "
+          + "when n < 1, so it has no Henry region; as c rises q grows without bound, so it "
           + "has no plateau:",
-        eq: String.raw`\begin{aligned} q &= K_F\, c^{1/n} \\ \frac{\mathrm{d}q}{\mathrm{d}c} &= \frac{K_F}{n}\, c^{1/n - 1} \end{aligned}` },
+        eq: String.raw`\begin{aligned} q &= K_F\, c^{n} \\ \frac{\mathrm{d}q}{\mathrm{d}c} &= n\, K_F\, c^{n - 1} \end{aligned}` },
     ],
-    formula: String.raw`\begin{aligned} &\text{linear:} & q &= K c \\ &\text{Langmuir:} & q &= \frac{q_\mathrm{max}\, c}{K_L + c} \\ &\text{Freundlich:} & q &= K_F\, c^{1/n} \end{aligned}`,
+    formula: String.raw`\begin{aligned} &\text{linear:} & q &= K c \\ &\text{Langmuir:} & q &= \frac{q_\mathrm{max}\, c}{K_L + c} \\ &\text{Freundlich:} & q &= K_F\, c^{n} \end{aligned}`,
     where: [
       { sym: "K", means: "the linear (Henry) constant: loading per unit concentration",
         unit: "(units of q)/(units of c), e.g. L/g" },
@@ -132,8 +132,9 @@ export const ISO_STEPS: readonly LessonStep[] = [
       { sym: "b", means: "the Langmuir affinity, 1/K_L", unit: "1/(units of c)" },
       { sym: "K_F", means: "the Freundlich capacity factor: the loading at c = 1 in the "
         + "units chosen, so its value depends on those units",
-        unit: "(units of q)·(units of c)^(−1/n)" },
-      { sym: "n", means: "the Freundlich intensity: 1/n below 1 is favourable, 1/n = 1 is "
+        unit: "(units of q)·(units of c)^(−n)" },
+      { sym: "n", means: "the Freundlich exponent, written n here as in the course "
+        + "text (some books write the exponent 1/n): n below 1 is favourable, n = 1 is "
         + "linear, above 1 unfavourable" },
       { sym: "\\mathrm{d}q/\\mathrm{d}c", means: "the slope of the isotherm",
         unit: "(units of q)/(units of c)" },
@@ -159,7 +160,7 @@ export const ISO_STEPS: readonly LessonStep[] = [
       { step: "Langmuir, inverted term by term (the double-reciprocal form):",
         eq: String.raw`\frac{1}{q} = \frac{1}{q_\mathrm{max}} + \frac{K_L}{q_\mathrm{max}}\,\frac{1}{c}` },
       { step: "Freundlich, in logarithms:",
-        eq: String.raw`\log_{10} q = \log_{10} K_F + \frac{1}{n}\,\log_{10} c` },
+        eq: String.raw`\log_{10} q = \log_{10} K_F + n\,\log_{10} c` },
       { step: "The direct fit chooses the parameters β that make the sum of squared "
           + "residuals in q smallest, with a weight w_i per point (w_i = 1 for absolute "
           + "residuals; w_i = 1/q_i for relative ones):",
@@ -173,7 +174,7 @@ export const ISO_STEPS: readonly LessonStep[] = [
     where: [
       { sym: "\\log_{10}", means: "logarithm to base 10" },
       { sym: "\\beta", means: "the parameter vector of the model: (K), (q_max, K_L) or "
-        + "(K_F, 1/n)" },
+        + "(K_F, n)" },
       { sym: "\\beta_k", means: "the k-th parameter" },
       { sym: "S", means: "the weighted sum of squared residuals" },
       { sym: "N", means: "number of measured points" },
@@ -193,7 +194,12 @@ export const ISO_STEPS: readonly LessonStep[] = [
       { sym: "\\mathrm{T}", means: "the transpose" },
       { sym: "\\mathrm{diag}", means: "the diagonal of a matrix, as a diagonal matrix" },
     ],
-    note: "The page iterates on the logarithm of each positive parameter (q_max, K_L, K_F), "
+    note: "Langmuir has more than one straight-line form.  This page draws 1/q against 1/c, "
+      + "the form of the course text; other books plot c/q against c (slope 1/q_max, intercept "
+      + "K_L/q_max, with K_L the half-saturation concentration written here), which "
+      + "distorts the points less, and each form weights them differently and returns "
+      + "different parameters from the same data.  "
+      + "The page iterates on the logarithm of each positive parameter (q_max, K_L, K_F), "
       + "so they cannot turn negative, and starts from the straight-line fit.  The linear "
       + "model needs no iteration: K = Σ w² c q / Σ w² c².",
   },

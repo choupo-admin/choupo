@@ -2553,11 +2553,47 @@
         },
         {
           "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
-          "note": "The adsorption monograph: isotherms, their assumptions, and the batch and column balances.",
+          "note": "The adsorption monograph: the Langmuir isotherm and both of its linear forms (Eqs. 2.27 to 2.32, p. 50), and adsorption from the liquid phase (sec. 4.7, p. 121).",
           "verified": {
-            "method": "catalogue",
-            "evidence": "Open Library ISBN 0471866067: author Douglas M. Ruthven, title, Wiley, 1984 (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
-            "date": "2026-11-09"
+            "method": "pdf",
+            "evidence": "Library copy Books/ruthven-principles-of-adsorption-and-adsorption-processes-1ed.pdf (a scan): copyright page read as an image: John Wiley & Sons, 1984, ISBN 0-471-86606-7 (= 978-0-471-86606-0), a Wiley-Interscience publication; Eqs. 2.27 to 2.32 read on p. 50 (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Geankoplis, C. J.; Hersel, A. A.; Lepek, D. H. (2018). Transport Processes and Separation Process Principles, 5th ed. Pearson (Prentice Hall). ISBN 978-0-13-418102-8.",
+          "note": "The course text: Eqs. 28.1-1 to 28.1-3 (linear, Freundlich q = K c^n, Langmuir q = q_o c/(K + c)), the 1/q against 1/c and log q against log c plots, and the batch balance of Eq. 28.2-1 (pp. 1348-1350).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/geankoplis-transport-processes-separation-process-principles-5ed.pdf: authors, title, edition, publisher, year and ISBNs read from the title and copyright pages; Eqs. 28.1-1 to 28.1-3 and 28.2-1 read as page images (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Wankat, P. C. (2007). Separation Process Engineering, 2nd ed. Prentice Hall (Pearson Education). ISBN 0-13-084789-5.",
+          "note": "The liquid-phase Langmuir isotherm, Eqs. 17-5a to 17-6c, and Example 17-1, which fits p/q against p (ch. 17).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/wankat-separation-process-engineering-2ed.pdf: author, title, edition, publisher, year and ISBN read from the title and copyright pages; equations read in the text layer (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "de Haan, A. B.; Eral, H. B.; Schuur, B. (2020). Industrial Separation Processes: Fundamentals, 2nd ed. De Gruyter. ISBN 978-3-11-065473-8.",
+          "note": "Langmuir isotherm in pressure and in concentration (Eqs. 6.6, 6.11) and its c/q against c line (Eq. 6.12); for a liquid, q_max and b' are empirical constants (pp. 164-167).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/dehaan-industrial-separation-processes-2ed.pdf: authors, title, edition, publisher, year and ISBN read from the title and copyright pages; equations read in the text layer (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
+          "note": "Freundlich q = k p^(1/n) (Eqs. 15-19, 15-20) and Langmuir with its p/q against p line (Eqs. 15-24, 15-25), with a worked fit of both (Example 15.4, ch. 15).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; chapter 15 present and read in the text layer (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
           }
         }
       ]
