@@ -69,6 +69,8 @@ Starting from the acid, the Table 6 dH_ion (+0.46) puts glycolate at -650.5 (Mil
 SPECIATION (pK 3.831, dH +0.46 kJ/mol, Table 6 p. 1057; not in Goldberg) and carries no formation data, and no
 component: the energy route through `Glyc` refuses by name.
 
+*Resolved in C376 (section 6.3): Shock (1995, Tables 8 and 10) corrects Miller's aqueous value to -648.06, the crystal route, and the family now carries formation data.*
+
 ### 1.4 One-scale consistency, per family
 
 Difference of the neighbouring species' formation enthalpies (the neutral one being the component's dHf plus the pair's
@@ -560,3 +562,72 @@ Glycine's enthalpy sits 7.6 kJ/mol lower in Amend (and in Alberty's Table 3.2, s
 four families, as the C373 ladders and their step enthalpies are Miller's (the one-scale rule), and nothing was overwritten.
 
 Species that gained formation data in this route: H3His, H2His, HHis, His, H3Cys, H2Cys, HCys, Cys (8, each with DfH and S).
+
+### 6.3 Route 2b: Shock (1995), carboxylic acids and hydroxyacids; Shock & Helgeson (1990)
+
+Shock, Am. J. Sci. 295 (1995) 496-580, is a scan without a text layer: the contents were located by a first OCR pass and every
+number below read from the page image at 170 to 300 dpi (rotated landscape tables: Table 4 p. 518-519 = PDF pp. 23-24, Table 7
+p. 534 = PDF p. 39, Tables 8-10 pp. 538-544 = PDF pp. 43-49).  The paper's tables are in cal/mol and cal/mol/K (converted at
+4.184 exactly), 25 C, 1 bar, H+ = 0 (Appendix 1).  Shock's Table 4 lists DfG, DfH and S of the acids and anions "adopted in
+this study", and a superscript on each value says how it was obtained; the estimates are not experimental: the entropy of an
+aqueous n-alkanoic acid or diacid is an estimate from the author's correlations (footnotes i, p: eq 13, 16), every anion entropy
+inherits it (footnote s), and the enthalpies of the diprotic anions are computed from DfG and the estimated S (footnote ab).
+Every such value is recorded with `origin estimated;` and its method in a per-value `provenance {}` block of the species
+record (the first species records to carry one; `check_origin_census` recounted, section 6.3 of this note and
+`provenance-semantics-five-axes.md`); the experimental values (acid enthalpies from heats of solution, benzoic acid's S) carry
+none (the source line says `literature`).  DEV.md rule: an `estimated` species value is not yet announced on use by the engine
+(section 7.3): these records are for the ionisation families' energy route and are flagged on their face; nothing in the
+tree consumes them.
+
+**Checks before entering anything.**  Convention: the same H+ = 0 aqueous scale as the catalogue (Shock states it, and his
+anion values for oxalate, hydrogenoxalate and succinate are NBS and Miller's: H-oxalate -195600 cal = -818.4 kJ/mol and oxalate
+-197200 cal = -825.1 equal the NBS entries `HOx` and `Ox` of the catalogue exactly; succinate -217350 cal = -909.37 equals
+Miller's).  The Gibbs identity: pK from the printed Gibbs energies of dissociation 6670 cal (propanoic) / 6560 (butanoic) / 5730
+(benzoic) = 4.889 / 4.809 / 4.200 against Table 7's 4.89, 4.81, 4.20; malonic 3890 and 7770 cal = 2.85 and 5.70 against 2.85,
+5.70; glutaric 5920 and 7390 cal = 4.34 and 5.42 against 4.34, 5.42.  Every one agrees to 0.01.  The tool's one-scale check
+(hf difference against the step enthalpy, both taken from Table 4) holds to 0.01 kJ/mol; `check_logk_crosscheck` holds on the new
+records.
+
+**New families** (neutral master with its own aqueous datum, since the catalogue holds no solution pair for these acids; pK =
+Table 7 at 25 C; dH_ion = the printed DfH of the anion minus that of the acid):
+
+| family | species | pK | dH_ion (kJ/mol) | acid DfH, S (kJ/mol, J/mol/K) | origin of S |
+|---|---|---|---|---|---|
+| propionic | HPropn, Propn | 4.89 | -0.669 | -512.41, 206.69 | estimated (eq 13) |
+| n-butyric | HBut, But | 4.81 | -2.845 | -535.34, 234.72 | estimated (eq 13) |
+| benzoic | HBenz, Benz | 4.20 | +0.335 | -355.93, 230.54 | experimental (Table 2) |
+| malonic | H2Maln, HMaln, Maln | 2.85, 5.70 | +0.084, -4.812 | -869.73, 233.05 | estimated (eq 16); anions DfH estimated |
+| glutaric | H2Glut, HGlut, Glut | 4.34, 5.42 | -0.544, -2.385 | -934.87, 306.27 | estimated (eq 16); anions DfH estimated |
+
+**Not entered.**  Adipic acid: Shock's H-adipate DfH (-227130 cal) is calculated from an estimated S and implies a first
+ionisation enthalpy of +10.96 kJ/mol (acid -229750 cal), which no measurement supports; the other diacids of the table (pimelic,
+suberic, azelaic, sebacic) and the monocarboxylic acids beyond butanoic are likewise estimates throughout and have no ionisation
+record in the catalogue: none was built.  Oxalate and succinate need nothing (NBS and Miller already carry them).  Malic acid: Shock
+adopts no malic or citric acid in Tables 4 and 10 (Table 9 lists only dissociation properties; Table 8 prints DL-malic acid
+DfH -259040 cal = -1083.8 kJ/mol, Miller's value, and citric acid DfH -364650 cal = -1525.7 kJ/mol), so **no malate or citrate
+entropy comes from this work**.
+
+**Hydroxyacids** (Tables 8 and 10, pp. 538 and 544).
+* Glycolic acid: DfH(aq) -154890 cal = **-648.06 kJ/mol** (Table 8 footnote a: Miller & Smith-Magowan's value "corrected in
+  present study"; it equals Miller's own crystal -664.0 plus the heat of solution +15.94, so the three-way disagreement of
+  section 1.3 resolves on the crystal route; the value Miller printed, -651.0, is the one the paper corrected).  S 43.1 cal =
+  180.33 J/mol/K, estimated (footnote g, eq 39).  Glycolate DfH = -647.60 (acid plus Miller's dH_ion +0.46) on one scale with the
+  evaluated step; the paper's own -154700 cal = -647.28 is derived by it from an estimated DfG and S (footnote r), 0.32 away; S =
+  180.33 - 72.0 = 108.33 (the paper's estimate 26.2 cal = 109.62).  NBS' -652.3 (the glycolate row, no entropy) is 4.7 away and not
+  used.  Records `HGlyc` and `Glyc` now carry them; tolerance of the one-scale check 0.05.
+* Lactic acid and lactate: S only (the enthalpies were already Miller's): 49.8 cal = 208.36 and 31.9 cal = 133.47 J/mol/K, both
+  estimated (footnotes g, h); with Nims & Smith's pK 3.862 and dH_ion -0.251 they imply a dissociation entropy of -74.9 against
+  -74.7 J/mol/K from the pK.  The neutral master `HLac` carries `sAq` and no `hfAq` (its datum is the component and pair).
+
+**Shock & Helgeson (1990), Geochim. Cosmochim. Acta 54, 915-945** (text layer with a heavily corrupted OCR; the rows read from
+page images where used).  Table 6 lists aqueous alkylamines (methanamine, ethanamine, 1-propanamine ...), amino acids and
+alcohols but **no ethanolamine**.  Methanamine row (p. 21 of the file, image): DfG 5040, DfH -16320 cal, S 30.5 cal/mol/K =
+21.09 and -68.28 kJ/mol, 127.6 J/mol/K, marked by the paper as calculated from a cited source ("q"); the NBS tables (route 1)
+print -70.17 and 123.4 for the same species, measured, 1.9 kJ/mol and 4.2 J/mol/K away.  NBS is kept (measured, and the cation
+CH3NH3+ is on the same table); where 1990 and 1995 both print a value the 1995 value supersedes.  The OCR rows of the 1990 Table 6 give propanoic acid
+DfG -93430 and butanoic acid -91190 cal/mol (DfH -122470 and -127950, equal to 1995) against the 1995 -93450 and -91210: the Gibbs
+energies differ by 20 cal/mol (0.08 kJ/mol) and the 1995 numbers are the ones entered; formic and acetic acid agree.  Ethanolamine and its cation: no value
+in any work in hand; the ethanolamine ladder stays without formation data.
+
+Species that gained formation data in this route: HGlyc, Glyc (DfH, S), HLac, Lac (S only), HPropn, Propn, HBut, But, HBenz,
+Benz, H2Maln, HMaln, Maln, H2Glut, HGlut, Glut (DfH, S): 16 species.

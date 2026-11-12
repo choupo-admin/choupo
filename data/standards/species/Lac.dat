@@ -15,6 +15,15 @@ charge  -1;
 MW { value 89.07; unit g/mol;}
 aqueousThermo
 {
-source "hfAq [kJ/mol] -686.63: dHf(aq acid, L) -686.2 + dH_ion -0.43 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 5 p. 1056 and Table 6 p. 1057 (read from a page image), the aqueous acid is the printed dHf -694.0 +/- 1.0 plus dH(soln) +7.82, no entropy printed";
+source "hfAq [kJ/mol] -686.63: dHf(aq acid, L) -686.2 + dH_ion -0.43 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 5 p. 1056 and Table 6 p. 1057 (read from a page image), the aqueous acid is the printed dHf -694.0 +/- 1.0 plus dH(soln) +7.82, no entropy printed ## sAq [J/mol/K] 133.47: printed S 31.9 cal/mol/K x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 10, p. 544 (PDF p. 49), row lactate (read from a page image), the paper marks it estimated (footnote h, eq 40), with the acid's 208.36 and Nims & Smith's dH_ion -0.251 and pK 3.862 it implies dS_ion -74.9 against -74.7 from the pK";
 hfAq { value -686630; unit J/mol;}
+sAq  { value 133.47; unit J/mol/K;}
+provenance
+{
+    sAq
+    {
+        origin  estimated;
+        method  "Shock (1995) Table 10 footnote h: S of the aqueous hydroxyacid anion estimated with the author's eq (40)";
+    }
+}
 }

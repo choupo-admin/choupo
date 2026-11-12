@@ -176,6 +176,18 @@ def thermo_lines(t, form):
         L.append(f"hfAq {{ value {jnum(D(q['hfAq']['value']) * 1000)}; unit J/mol;}}")
     if "sAq" in q:
         L.append(f"sAq  {{ value {format(D(q['sAq']['value']).normalize(), 'f')}; unit J/mol/K;}}")
+    # a value whose origin is not a plain table reading (an estimate printed in the source) declares it, per value
+    prov = [(k, q[k]) for k in ("hfAq", "sAq") if k in q and q[k].get("origin") not in ("", None, "literature")]
+    if prov:
+        L.append("provenance")
+        L.append("{")
+        for k, r in prov:
+            L.append(f"    {k}")
+            L.append("    {")
+            L.append(f"        origin  {r['origin']};")
+            L.append(f'        method  "{clean(r["method"])}";')
+            L.append("    }")
+        L.append("}")
     return L
 
 

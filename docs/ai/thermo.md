@@ -328,12 +328,12 @@ Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **malic** (`H2Malic`/`HMali
 Eden & Bates 1959, racemic acid; note `Malic*`, not `Mal*`), **lactic** (`HLac`/`Lac`, Nims &
 Smith 1936), **succinic** (`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`),
 **maleic** (`H2Male`/`HMale`/`Male`), **fumaric** (`H2Fumar`/`HFumar`/`Fumar`, Miller & Smith-Magowan 1990 Table 6),
-**glycolic** (`HGlyc`/`Glyc`, Miller Table 6; speciation only).  C373 (2026-11-12) put formation data on the ions
+**glycolic** (`HGlyc`/`Glyc`, Miller Table 6; formation data from Shock 1995 since C376).  C373 (2026-11-12) put formation data on the ions
 of succinic, fumaric, malic and lactic acids from Miller & Smith-Magowan 1990 (`hfAq`, and `sAq` for succinate and
 fumarate; derived from the acid's aqueous enthalpy plus the printed step enthalpies, theoryGuide
 `sec:evaluated-ionisation-families`) and built the crystal components `succinicAcid`, `fumaricAcid`, `malicAcid` (d,l)
 and `lacticAcid` with their heat-of-solution pairs.  The citrate family keeps Kochergina's ions; maleate, oxalate,
-glycolate and tartrate are unchanged (maleate has none, oxalate NBS, glycolate none because the source does not close).
+glycolate and tartrate are unchanged (maleate has none, oxalate NBS, glycolate from Shock 1995 since C376, where the crystal route closes).
 The neutral masters carry no `hfAq` (their datum is component + solution pair); a balance that needs an ion
 without one refuses by name.  No component carries a Cp or an entropy.  Malonic, gluconic, ascorbic,
 gallic, propionic, butyric and benzoic acids have no ionisation record.  Inorganic ladders from Goldberg et al. 2002 (C373 phase 2): **pyrophosphate**
@@ -359,6 +359,11 @@ C376 route 2a: the four histidine species (`H3His`..`His`) and the four cysteine
 Amend & Helgeson 1997 Table 1 (kcal x 4.184; histidine on Goldberg's steps to 0.7 kJ/mol, cysteine's differ by up to 6.9 and the family is
 held at tolerance 7.0, both stated in the design note); glycine, alanine, aspartic and glutamic acids keep Miller's values (Amend's
 compared, differences listed); glycylglycine and triglycine have no formation datum in any work in hand.
+C376 route 2b (Shock 1995, scan read from images): propionic, n-butyric, benzoic, malonic and glutaric acids are new ladders
+(`HPropn`/`Propn`, `HBut`/`But`, `HBenz`/`Benz`, `H2Maln`/`HMaln`/`Maln`, `H2Glut`/`HGlut`/`Glut`; the neutral master carries its own `hfAq`/`sAq`);
+glycolic acid carries DfH -648.06 kJ/mol (the crystal route) and lactic acid/lactate an entropy.  An entropy or an anion enthalpy the
+paper marks as estimated has a per-value `provenance { sAq { origin estimated; method ...; } }` block in the record: the engine does NOT
+yet announce a species' estimated datum on use (design note section 7.3), so treat these as flagged data, not as measurements.
 Phase 4 (C373): **laboratory buffers**, every other section of Goldberg 2002 (ACES, ADA, AMPSO, APSA, barbital, BES, Bicine,
 Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES, diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate,
 HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO, phthalate, PIPES, POPSO, TAPS, TAPSO, TES, Tricine): species

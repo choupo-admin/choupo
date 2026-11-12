@@ -317,7 +317,9 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2347 direct + 3673 per-value = 6020 across 3002 files**
+**census: 2347 direct + 3691 per-value = 6038 across 3016 files**
+
+(recounted 2026-11-12, DEV.md 4c C376: fourteen aqueous-species records gain a `provenance {}` block of per-value `estimated` entries for the entropies, and for the diprotic anions' enthalpies, that Shock 1995 marks as estimated (`species/HPropn`, `HBut`, `H2Maln`, `HGlyc`, `HLac` and their ions): +18 per-value blocks across 14 files, no direct entry.)
 
 (recounted 2026-11-01: sixteen catalogue records re-sourced from NASA/TP-2002-211556, DEV.md 4c C170 item 4, each adds three per-value `literature` blocks and gains a `provenance {}` it lacked: +48 per-value, +16 files; and, before it,
 2026-10-31: the six functional membrane classes of DEV.md 4c C189

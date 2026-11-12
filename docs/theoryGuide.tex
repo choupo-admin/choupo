@@ -7494,9 +7494,10 @@ difference of the neighbouring species' formation enthalpies are two readings of
 same table), malic $0.005$ and $0.001$ (Eden \& Bates and Miller print the same constants), lactic $0.20$~kJ/mol; the three
 citric steps differ by $0.5$, $1.3$ and $1.1$~kJ/mol, inside the $\pm1.1$ to $1.6$~kJ/mol Kochergina's formation
 enthalpies carry, which is why the whole citrate family keeps Kochergina's ions (Miller prints no formation enthalpy of
-citrate) and a mix of the two works never occurs.  A glycolic acid whose crystal, heat of solution and aqueous enthalpy
-do not close in the source (they differ by 2.9~kJ/mol) is carried for its speciation only: the energy route through it
-refuses by name.  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
+citrate) and a mix of the two works never occurs.  Glycolic acid, whose crystal, heat of solution and aqueous enthalpy do not close in Miller \& Smith-Magowan (they differ by
+2.9~kJ/mol), was carried for its speciation only until C376; Shock (1995, Tables~8 and~10) takes the closing reading
+($-648.06$~kJ/mol, the crystal plus the heat of solution), which fixes $\Delta_fH^\circ$ of glycolic acid and, by
+Eq.~\eqref{eq:ladder-formation}, of glycolate ($-647.60$).  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
 $\Delta C_p$ is exactly the $A_1$, $A_3$, $A_4$ terms of the \code{analytic} form above, proposed but not used.  The
 entropy of the fumarate ion is taken from the sum of the Table~6 steps ($105.3$~J/mol/K), because Table~2's own
 $\Delta G$ and $\Delta H$ imply $-155.4$~J/mol/K for the ionisation and not the $-152.2$ it prints.  Worked case: none for
@@ -7556,6 +7557,21 @@ Helgeson both print a species (glycine, alanine, aspartic and glutamic acids) bo
 alanine to $0.6$~kJ/mol, differ by $7.6$ for glycine and by $30$ for the dianions of aspartic and glutamic acids.
 Dick, LaRowe \& Helgeson (2006) reproduce Amend \& Helgeson's amino-acid table and give group contributions and
 Gly--X--Gly properties without formation data, so glycylglycine and triglycine stay without it.
+
+\emph{Carboxylic acids of Shock (1995), with the estimated values marked.}  Shock's Table~4 prints, at $25$~\textdegree C
+and $1$~bar, $\Delta_fG^\circ$, $\Delta_fH^\circ$ and $S^\circ$ of aqueous monocarboxylic and dicarboxylic acids and of their
+anions, with a footnote per value saying how it was obtained.  The enthalpy of an acid comes from the heat of solution of the
+solid or the liquid and is entered as a literature value; the entropy of the aqueous acid is, for every acid beyond acetic
+except benzoic, \emph{estimated} by the author's correlations (Eqs.~13 and 16, a linear function of the carbon number), the
+entropy of each anion is the acid's plus the selected dissociation entropy, and the enthalpy of a diprotic anion is
+computed from the tabulated $\Delta_fG^\circ$ and that estimated $S^\circ$.  Those values carry \code{origin estimated;} and
+their method in a per-value \code{provenance} block of the species record.  Propionic, n-butyric, benzoic, malonic and glutaric
+acids enter as families with the $\mathrm{p}K$ of the paper's Table~7 and the dissociation enthalpy of the difference of the
+printed formation enthalpies; the Gibbs identity $\mathrm{p}K=\Delta_{\rm ion}G^\circ/(RT\ln10)$ holds on the printed values
+to $0.01$.  Adipic acid is not entered: the paper's hydrogen-adipate enthalpy implies a first ionisation enthalpy of
+$+11$~kJ/mol, a consequence of the estimated entropy.  Glycolic acid takes $\Delta_fH^\circ=-648.06$~kJ/mol, lactic acid
+and lactate their entropies ($208.4$ and $133.5$~J/mol/K, both estimated), the ions of glycolic acid by
+Eq.~\eqref{eq:ladder-formation}.  Source: Shock (1995), Tables~4, 7, 8 and 10.
 
 \emph{Laboratory buffers.}  Phase~4 takes every remaining section of Goldberg et al.\ (2002) --- ACES, ADA, AMPSO,
 3-amino-1-propanesulfonic acid, barbital, BES, Bicine, Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES,
