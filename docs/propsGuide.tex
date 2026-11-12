@@ -1469,6 +1469,27 @@ temperature) is refused, never invented.
 \code{acceptance \{\}} block, with its reason; the default above is announced
 when it is used.
 
+\textbf{A fit window.}  A three-parameter Antoine cannot hold both a
+low-pressure end and a near-critical end of a wide measured range, and a fit
+over the whole range then misses the one place a user looks, the normal boiling
+point.  A vapour-pressure curation case may therefore declare, in its
+\code{system/curationDict}, \code{fitWindow \{ pressureMax 200 kPa; reason
+"\ldots"; \}} (\code{pressureMin} likewise; a \code{reason} is mandatory).
+\code{bin/choupo-curate vp <component> --redeclare} writes it into the
+\code{vaporPressureFit} operation as a \code{window \{\}} block and commits it
+before the fit.  Only the points inside the window are fitted; the others are
+\emph{left out by name} and their relative error against the fitted curve is
+reported beside the fit's, never graded and never hidden.  The grade is that of
+the fitted points; the record's \code{Trange} is the window actually fitted, so
+the engine announces an extrapolation beyond it, and its
+\code{provenance.vaporPressure.window} states the limits, the reason, how many
+points and which studies were left out, and the error on them.  Without the
+block the behaviour is unchanged.  The rule the catalogue applies is uniform:
+when the full-range fit grades worse than \code{clean} and some measured point
+lies above 2\,bar, the Antoine is refitted from the lowest measured point up
+to 200\,kPa; where no point exceeds 2\,bar the window would be the whole range
+and none is declared.  A window is never chosen to satisfy a check.
+
 \textbf{Where the numbers live.}  The limits are carried by the curation tools
 (\file{bin/choupo-curate} for vapour pressures, \file{bin/curate/pairs\_c283.py}
 and \file{bin/curate/pairs\_px.py} for pairs,

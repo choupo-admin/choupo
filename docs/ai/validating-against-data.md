@@ -146,6 +146,40 @@ its own band, with a reason.  When you tell a user a result rests on a
 `warning` or `severe` record, quote the number.  The Props Guide, section
 "How a curated catalogue record is graded", has the reasons.
 
+### 1.6 Restricting a vapour-pressure fit: the fit window (DEV.md 4c C367)
+
+A three-parameter Antoine cannot hold both ends of a wide measured range (a
+laboratory that goes from 300 K to near the critical point, or from vacuum to
+4 MPa).  `bin/choupo-curate vp <component>` therefore accepts, in the case's
+`system/curationDict`, a DECLARED fit window with a mandatory reason:
+
+```
+fitWindow
+{
+    pressureMax  200 kPa;    // and/or pressureMin <x> <unit>; Pa kPa MPa bar mbar atm
+    reason       "three-parameter Antoine fitted from the lowest measured point up to 2 bar: ...";
+}
+```
+
+`bin/choupo-curate vp <component> --redeclare` writes it into the case's
+`system/propsDict` as the `window { }` block of the `vaporPressureFit` operation
+and commits it BEFORE the fit.  Only the points inside the window are fitted;
+the others are LEFT OUT BY NAME, counted per study, and their relative error
+against the fitted curve is REPORTED beside the fit's (never graded, never
+hidden).  The grade is computed on the fitted points; the record's `Trange` is
+the window actually fitted, so the engine announces an extrapolation beyond it;
+the record's `provenance.vaporPressure.window` states the limits, the reason,
+the number of points and the studies left out, and the left-out mean and
+maximum error.  With no `fitWindow` block every output is unchanged.
+
+The rule the catalogue applies, uniform and physical: when the full-range fit
+grades worse than `clean` AND some measured point lies above 2 bar, the
+Antoine is refitted from the lowest measured point up to `pressureMax 200 kPa`
+(the range a process engineer evaluates it in); where no point exceeds 2 bar
+the window would be the whole range and none is declared.  A window is never
+chosen to satisfy a check: a record whose boiling point still disagrees with
+its curve stays flagged.
+
 ---
 
 ## 2. Where the data goes in the case

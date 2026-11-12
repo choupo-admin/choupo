@@ -1389,6 +1389,19 @@ def revert(stem):
 #       <component>` puts the AmbroseWalton block back, and only on a record
 #       this mode promoted.
 #
+#    8. THE FIT WINDOW (DEV.md 4c C367): `system/curationDict` may declare
+#       `fitWindow { pressureMax <x> <unit>; pressureMin <x> <unit>; reason
+#       "..."; }` (a reason REQUIRED, at least one limit).  Only the points
+#       whose pressure lies inside are FITTED (the engine's `window` block of
+#       vaporPressureFit, written into the case's propsDict by `--redeclare`,
+#       committed before the fit); the others are LEFT OUT BY NAME and their
+#       error against the fitted curve is REPORTED beside the fit's.  The
+#       grade is computed on the fitted points; the record's Trange is the
+#       window actually fitted, so the engine's out-of-range announcement
+#       speaks beyond it; the record's provenance states the window, its
+#       reason, and the left-out points and their error.  Without the block
+#       every output is byte-identical to what it was before C367.
+#
 #  WHAT IT DOES NOT DO: a study triage (C226 item 3 is the PAIR pipeline's;
 #  here a disagreeing held-out study simply fails the verdict and nothing is
 #  promoted); fit any form but the three-parameter Antoine of
@@ -1603,8 +1616,23 @@ VP_OBJ_WORDS = {"twoStage": "least squares in log10 P, then the largest relative
                 "minimax": "the largest relative error in P minimised"}
 
 
-def vp_props_text(pl, case_name, earlier=None):
+def vp_props_text(pl, case_name, earlier=None, window=None):
     comp = pl["comp"]
+    window_par, window_op = "", ""
+    accept_sent = f"case declares no `{VP_CURATION_DICT}`, so the default applies"
+    if window:
+        window_op = window["op"]
+        accept_sent = (f"case's `{VP_CURATION_DICT}` declares only the fit window below, so "
+                       "the default applies")
+        window_par = (
+            "\n" + wrap("FIT WINDOW (DEV.md 4c C367, declared in " + VP_CURATION_DICT
+                        + " with its reason before the window fit): only the points whose "
+                        f"pressure lies inside the window ({window['text']}) are FITTED; the "
+                        "others are LEFT OUT BY NAME and their relative error in P against "
+                        "the fitted curve is REPORTED beside the fit's own (never hidden). "
+                        "The grade is computed on the fitted points; the record's Trange is "
+                        "the window actually fitted, so the engine announces an extrapolation "
+                        "beyond it.  Reason: " + window["reason"]) + "\n")
     earlier_par = ("" if not earlier else
                    "\n  EARLIER FITS, SUPERSEDED BY THIS DECLARATION\n  @@EARLIER-BEGIN@@\n"
                    + wrap(earlier) + "\n  @@EARLIER-END@@\n")
@@ -1669,11 +1697,11 @@ def vp_props_text(pl, case_name, earlier=None):
   humanReviewed false) with `fitGrade <grade>;` and the deciding numbers in
   its provenance entry, which the component loader voices on every run that
   uses it (a warning or a severe grade); a refused one is not promoted.  This
-  case declares no `{VP_CURATION_DICT}`, so the default applies; a case
+  {accept_sent}; a case
   that needs another acceptance declares it there, with its reason.  The
   AmbroseWalton curve's errors on the same points are reported beside the
   fit's, as information.
-
+{window_par}
   NORMAL BOILING POINT: {pl['tb_rule']}.
 {earlier_par}
   NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
@@ -1699,7 +1727,7 @@ operations
 
         objective  {{ method {VP_OBJECTIVE}; }}
         outliers   {{ maxRelativeError {VP_OUTLIER_PCT:g} percent; }}
-
+{window_op}
         output     {{ file fit_antoine.csv; }}
     }}
 );
@@ -1778,17 +1806,27 @@ def vp_run(case):
     dropped = vp_dropped(cu.get("outliersDropped", ""))
     studies = []
     kept_T, kept_P = [], []
+    win = vp_window(case)
+    n_left = 0
     for x in decl:
         ds = read_vp_dataset(case / x["file"])
-        kT, kP, nd = [], [], 0
+        kT, kP, nd, nl = [], [], 0, 0
         for t, pk in zip(ds["T"], ds["P"]):
+            if not vp_in_window(win, pk):
+                nl += 1
+                continue
             if (x["doi"], round(t, 3), round(math.log10(pk * 1e3), 5)) in dropped:
                 nd += 1
                 continue
             kT.append(t); kP.append(pk)
         studies.append({"doi": x["doi"], "n": ds["n"], "kept": len(kT), "dropped": nd,
-                        "T": kT, "P": kP})
+                        "left": nl, "T": kT, "P": kP})
         kept_T += kT; kept_P += kP
+        n_left += nl
+    if win and n_left != int(d.get("n_window_left_out", -1)):
+        return None, (f"{label(case)}: the tool counts {n_left} points left out of the "
+                      f"window, the engine {d.get('n_window_left_out')} -- the window "
+                      "is not read the same way in both")
     if len(kept_T) != int(d.get("n_points", -1)):
         return None, (f"{label(case)}: the tool reconstructs {len(kept_T)} kept points, the "
                       f"engine fitted {d.get('n_points')} -- the outlier list does not "
@@ -1805,6 +1843,11 @@ def vp_run(case):
             "objective": {0: "leastSquares", 1: "minimax", 2: "twoStage"}.get(
                 int(d.get("objective_method", -1)), "unstated"),
             "studies": studies,
+            "window": win, "n_left": n_left,
+            "left_mean": d.get("relErr_mean_leftOut_pct"),
+            "left_max": d.get("relErr_max_leftOut_pct"),
+            "left_txt": cu.get("windowLeftOut"),
+            "left_pts": cu.get("windowLeftOutPoints"),
             "Tmin": min(kept_T), "Tmax": max(kept_T)}, out
 
 
@@ -1819,6 +1862,50 @@ def vp_dropped(txt):
     return out
 
 
+VP_P_UNITS_kPa = {"Pa": 1e-3, "kPa": 1.0, "MPa": 1e3, "bar": 100.0, "mbar": 0.1, "atm": 101.325}
+
+
+def vp_window(case):
+    """The fit window the case DECLARES (system/curationDict `fitWindow {}`, DEV.md
+    4c C367), else None: {"max_kPa", "min_kPa", "reason", "op"}, `op` being the
+    engine's `window {}` block as it is written into the propsDict.  A reason is
+    REQUIRED and the units are the engine's pressure words."""
+    p = case / VP_CURATION_DICT
+    if not p.exists():
+        return None
+    t = crp.strip_comments(p.read_text())
+    b = crp.block(t, "fitWindow")
+    if b is None:
+        return None
+    rs = re.search(r'reason\s+"([^"]+)"\s*;', b)
+    if not rs:
+        refuse(f"{p.relative_to(ROOT)}: a `fitWindow` carries its `reason \"...\";` -- the "
+               "physical reason the fit is restricted; none is declared")
+    lim, ops = {}, []
+    for key in ("pressureMax", "pressureMin"):
+        m = re.search(r"\b%s\s+([0-9.eE+-]+)\s+(\w+)\s*;" % key, b)
+        if m:
+            if m.group(2) not in VP_P_UNITS_kPa:
+                refuse(f"{p.relative_to(ROOT)}: fitWindow.{key} needs a pressure unit "
+                       f"({', '.join(VP_P_UNITS_kPa)}); got `{m.group(2)}`")
+            lim[key] = float(m.group(1)) * VP_P_UNITS_kPa[m.group(2)]
+            ops.append(f"            {key:<12} {m.group(1)} {m.group(2)};\n")
+    if not lim:
+        refuse(f"{p.relative_to(ROOT)}: a `fitWindow` declares `pressureMax` and/or "
+               "`pressureMin` (a number and a pressure unit)")
+    op = ("        window\n        {\n" + "".join(ops)
+          + f'            reason       "{rs.group(1)}";\n        }}\n')
+    return {"max_kPa": lim.get("pressureMax"), "min_kPa": lim.get("pressureMin"),
+            "reason": rs.group(1), "op": op,
+            "text": ", ".join(f"{k} {v:g} kPa" for k, v in lim.items())}
+
+
+def vp_in_window(w, p_kPa):
+    return (w is None
+            or ((w["max_kPa"] is None or p_kPa <= w["max_kPa"] * (1 + 1e-9))
+                and (w["min_kPa"] is None or p_kPa >= w["min_kPa"] * (1 - 1e-9))))
+
+
 def vp_acceptance(case):
     """The graded acceptance the case DECLARES (system/curationDict), else the
     C285 default -- (dict, declared?).  A declared acceptance gives the three
@@ -1828,6 +1915,8 @@ def vp_acceptance(case):
         return dict(VP_ACCEPT_DEFAULT), False
     t = crp.strip_comments(p.read_text())
     b = crp.block(t, "acceptance")
+    if b is None and crp.block(t, "fitWindow") is not None:
+        return dict(VP_ACCEPT_DEFAULT), False      # C367: the dict declares only the window
     if b is None:
         refuse(f"{p.relative_to(ROOT)}: no `acceptance {{}}` block")
     lim = lambda unit, key: re.search(
@@ -1877,12 +1966,19 @@ def vp_judge(case, rf):
     rf["acceptance_declared"] = declared
     who = (f"the graded acceptance declared in {VP_CURATION_DICT} ({acc['reason']})"
            if declared else
-           "the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict)")
+           "the DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict)"
+           if not rf.get("window") else
+           "the DEFAULT graded acceptance of DEV.md 4c C285 (the system/curationDict "
+           "declares only the fit window)")
     Tnb = antoine_Tnb(rf["A"], rf["B"], rf["C"])
     rf["Tnb"] = Tnb
     Tb = rf.get("Tb")
     info = (f"AmbroseWalton on the same points mean {rf['aw_aad']:.4g} % / max "
             f"{rf['aw_max']:.4g} %")
+    if rf.get("window"):
+        info += (f"; FIT WINDOW ({rf['window']['text']}): {rf['n_left']} measured point(s) "
+                 f"LEFT OUT ({rf['left_txt']}), error against the fitted curve mean "
+                 f"{rf['left_mean']:.4g} % / max {rf['left_max']:.4g} % (reported, not graded)")
     gP = vp_grade(rf["max_pct"], acc["maxRel"])
     errs = (f"{len(rf['studies'])} studies, {int(rf['n'])} points kept, "
             f"{rf['n_dropped']} discarded as outliers; max relative error "
@@ -1921,7 +2017,13 @@ def vp_fill_result(case, rf, reason):
            f"{rf['Tmin']:g}-{rf['Tmax']:g} K ({per}).  Relative error in P over the kept "
            f"points: mean {rf['aad_pct']:.4f} %, max {rf['max_pct']:.4f} %; AmbroseWalton on "
            f"the same points: mean {rf['aw_aad']:.4f} %, max {rf['aw_max']:.4f} %.  "
-           f"Outliers discarded: {rf['dropped_txt']}.  Its own normal boiling point "
+           f"Outliers discarded: {rf['dropped_txt']}.  "
+           + (f"Fit window ({rf['window']['text']}; reason: {rf['window']['reason']}): "
+              f"{rf['n_left']} point(s) left out ({rf['left_txt']}); their relative error "
+              f"in P against the fitted curve: mean {rf['left_mean']:.4f} %, max "
+              f"{rf['left_max']:.4f} %.  Left out, point by point: {rf['left_pts']}.  "
+              if rf.get("window") else "")
+           + f"Its own normal boiling point "
            f"(101.325 kPa): {rf['Tnb']:.2f} K.  {reason}")
     p = case / "system" / "propsDict"
     t = p.read_text()
@@ -1936,6 +2038,39 @@ def earlier_of(case):
     return " ".join(m.group(1).split()) if m else None
 
 
+def vp_redeclare_window(pl, case, win, old, no_commit):
+    """C367: the case's curationDict declares a fit window the propsDict does not
+    yet carry.  Only the window is added: the evidence is never re-partitioned
+    (the studies the extraction rules give now must be the case's own), the
+    result so far is kept in the header, and the new declaration is committed
+    BEFORE the fit runs."""
+    have = {(d["doi"], d["sha256"]) for d in (parse_decl(case) or [])}
+    now = {(s["doi"], sha_file(s["path"])) for s in pl["studies"]}
+    if have != now:
+        refuse(f"--redeclare: {label(case)} declares the studies {sorted(have)} and the "
+               f"extraction rules give {sorted(now)} now -- C367 adds a window only; "
+               "the evidence is never re-partitioned")
+    m = re.search(r"@@RESULT-BEGIN@@(.*?)@@RESULT-END@@", old, re.S)
+    prev = " ".join(m.group(1).split()) if m else "(no result recorded)"
+    before = earlier_of(case)
+    earlier = ((before.rstrip(". ") + ".  THEN " if before else "")
+               + "C285, every usable study fitted over its WHOLE measured range "
+               "(superseded by the fit window of C367): " + prev)
+    pd = case / "system" / "propsDict"
+    pd.write_text(vp_props_text(pl, label(case), earlier, win))
+    if not no_commit:
+        git(["add", "--", str(pd)])
+        git(["commit", "-q", "-m",
+             f"C367: {label(case)} -- the fit window, declared before the fit\n\n"
+             f"bin/choupo-curate vp {pl['comp']} --redeclare: system/curationDict declares "
+             f"a fit window ({win['text']}; reason: {win['reason']}); only the points "
+             "inside it are fitted, the others are left out by name and their error "
+             "reported.  The same studies, not re-partitioned; the earlier result kept "
+             "in the header."])
+        say(f"  committed the window declaration: {git(['rev-parse', '--short', 'HEAD']).strip()}")
+    return case
+
+
 def vp_redeclare(pl, no_commit):
     """C281 step 3: a NEW declaration for a case the tool already wrote --
     the SAME partition and band (re-derived by the same rules and refused if
@@ -1947,8 +2082,12 @@ def vp_redeclare(pl, no_commit):
         refuse("--redeclare: no case for this component -- run `vp` first")
     pd = case / "system" / "propsDict"
     old = pd.read_text()
+    win = vp_window(case)
     if VP_RULE_MARK in old:
-        refuse(f"--redeclare: {label(case)} already declares the C285 graded acceptance")
+        if win is None or win["op"] in old:
+            refuse(f"--redeclare: {label(case)} already declares the C285 graded acceptance"
+                   + ("" if win is None else " and this fit window"))
+        return vp_redeclare_window(pl, case, win, old, no_commit)
     c283 = VP_RULE_MARK_C283 in old
     if c283:
         #  C285 changes the ACCEPTANCE only: the evidence is never re-partitioned
@@ -2030,7 +2169,7 @@ def vp_main(a):
                                     "", s, flags=re.S)
             if (case / DECL).read_text() != vp_decl_text(pl, case.relative_to(ROOT).as_posix()) \
                     or norm((case / "system" / "propsDict").read_text()) != \
-                    norm(vp_props_text(pl, label(case), earlier_of(case))):
+                    norm(vp_props_text(pl, label(case), earlier_of(case), vp_window(case))):
                 refuse(f"--resume: {label(case)}'s declaration differs from the one the "
                        "rules give now -- a declaration is never rewritten after it "
                        "was committed")
@@ -2088,7 +2227,8 @@ def vp_prov(rf, case, decl):
                f'                articleSha256 "{d["articleSha256"]}";\n'
                f"                pointsKept    {st['kept']};\n"
                f"                pointsDropped {st['dropped']};\n"
-               "                provenance measured;\n"
+               + (f"                pointsLeftOut {st['left']};\n" if rf.get("window") else "")
+               + "                provenance measured;\n"
                "            }\n")
     acc = rf["acceptance"]
     lims = lambda v, u: " / ".join(f"{x:g}" for x in v) + f" {u}"
@@ -2106,9 +2246,25 @@ def vp_prov(rf, case, decl):
         + ("" if gap is None else
            f"        fitGradeBoilingPointGap_K    {gap:.4f};   // grade {rf['grade_T']} "
            "(Tb outside the kept points' range)\n"))
+    w = rf.get("window")
+    win_blk = ""
+    if w:
+        win_blk = (
+            "        window\n        {\n"
+            f'            limits        "{w["text"]}";\n'
+            f'            reason        "{w["reason"]}";\n'
+            f"            pointsFitted  {int(rf['n'])};\n"
+            f"            pointsLeftOut {rf['n_left']};\n"
+            f'            leftOut       "{rf["left_txt"]}";\n'
+            f"            leftOutMeanError_pct {rf['left_mean']:.6f};   // the fitted Antoine on the points the window left out: REPORTED, not fitted, not graded\n"
+            f"            leftOutMaxError_pct  {rf['left_max']:.6f};\n"
+            "        }\n")
+    scope_txt = ("every usable study fitted inside the declared window (DEV.md 4c C367: "
+                 "provenance window), the points outside it left out and reported"
+                 if w else "every usable study fitted")
     return ("    vaporPressure\n    {\n"
             "        origin        fitted;\n"
-            f'        method        "vaporPressureFit (three-parameter Antoine; objective {rf["objective"]}: {VP_OBJ_WORDS.get(rf["objective"], "unstated")}; every usable study fitted, outliers above {VP_OUTLIER_PCT:g} % discarded by name)";\n'
+            f'        method        "vaporPressureFit (three-parameter Antoine; objective {rf["objective"]}: {VP_OBJ_WORDS.get(rf["objective"], "unstated")}; {scope_txt}, outliers above {VP_OUTLIER_PCT:g} % discarded by name)";\n'
             '        methodVersion "choupoProps Choupo-dev";\n'
             f'        fittedInCase  "{case_rel}";\n'
             "        reviewStatus  autoPromoted;\n"
@@ -2121,6 +2277,7 @@ def vp_prov(rf, case, decl):
             '        uncertainty   "the fit\'s maximum relative error over every kept measurement, below";\n'
             '        replaces      "model AmbroseWalton (a corresponding-states estimate from Tc, Pc, omega); `bin/choupo-curate revert <component>` restores it";\n'
             "        evidence\n        (\n" + ev + "        );\n"
+            + win_blk +
             "        acceptance\n        {\n"
             f'            rule        "{acc_txt}";\n'
             "            verdict     accepted;\n"
