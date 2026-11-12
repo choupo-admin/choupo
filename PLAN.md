@@ -4,18 +4,9 @@ The CML plan (curto / médio / longo; Vítor's name, 2026-10-31; his horizons,
 2026-11-01: "1 h, 1 dia e 3 dias ou mais ... o que não couber pode ficar para
 > 1 semana").  Months and years are `ROADMAP.md`, which feeds the last
 section.  Read at the start of every session (CLAUDE.md rule 8).  Each row
-points at its DEV.md 4c entry, the register of record.  Vítor's private
-Portuguese view is https://claude.ai/artifact/JnokFGgoNMTAWvu9fkgyoQ; its
-header names the PLAN.md commit it reflects, so a stale view shows itself.
-
-> **USAGE FREEZE (Vitor, 2026-11-05: 96 % of the credits spent).**  Everything
-> that needs Opus or Fable WAITS FOR SATURDAY 2026-11-07: the C229 (A) port
-> review, C227 slice (b) (the pair index), the C223 pilot's decisions, the
-> C228 distillation and cracking cases, and any new physics.  Until then only
-> cheap work: integrations that run on their own (`bin/integrate`), reading
-> logs, registering.  No new general is dispatched; the two C229 generals were
-> told to commit WIP and stop.  Lifted by Vitor, never by the assistant.
-
+points at its DEV.md 4c entry, the register of record.  A private
+Portuguese view of this file is kept outside the repository; its header
+names the PLAN.md commit it reflects, so a stale view shows itself.
 
 > **THE MONTH (C238, deadline 2026-11-30, the architect's plan).**  To 11-15: land
 > what is built, in the order C235, C228, C236, C183, C227 (a), C234, C229; no new
@@ -54,7 +45,7 @@ Status words: `todo` · `queued` (built by a general, waiting its turn to integr
 | status | what | ref |
 |---|---|---|
 | integrating 11-11 (parallel lanes) | C311 electrolytes (eNRTL 3->48, Pitzer 55->99, eNRTL charge fix C312 already on main), C327/C328 transport (92 viscosity/conductivity records, 88 measured surface tensions, `StoredCorrelation` model with Brock-Bird fallback), C325 second pair campaign (NRTL +172, UNIQUAC +128, Wilson +199) | C311, C312, C325, C327, C328 |
-| until Sat 11-14: pairs only (Vitor's credit limit) | Henry in water (Sander) LANDED 11-11 (207->252); C315/C316 solubility EduTools built, parked until Saturday | C315, C316, C321 |
+| built, queued for integration | Henry in water (Sander) LANDED 11-11 (207->252); C315/C316 solubility EduTools built, parked until Saturday | C315, C316, C321 |
 | LANDED 11-11 | C301: the grand composite names Q_H,min/Q_C,min, the Q = 0 axis, the pinch, the pockets and the sink/source regions; status line 107.5 kW | C301 |
 | LANDED 11-11 (only new pinch rows; closures identical) | C302: greenAmmoniaPEQ and greenAmmonia03 declare a pinch pass (threshold, no hot utility; FEHE within 0.1 MW of the target); open: the converter's 30.3 MW outside the population, the five plants presented as one project | C302 |
 | LANDED 11-11 | red gates on main fixed: UNIFAC groups for 33 components (atoms checked), missing includes for the WASM build; check_reactor_limits' probe repaired (the engine was right) | C303 |

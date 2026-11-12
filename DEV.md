@@ -2704,9 +2704,9 @@ accepts today, and that is a policy call.
 > utility (the case's `utilities` circuits and the `utilityAllocation`
 > record already say which stream is the service) and ANNOUNCES it; the
 > witness is this very plant, whose answer is the threshold above; a gate
-> recomputes it independently.  FIXED NOWHERE YET: the usage freeze (the
-> credits) puts it first on Saturday, ahead of everything, because it is a
-> wrong number at exit 0 that a student reads on the live site.
+> recomputes it independently.  FIXED NOWHERE YET: it goes first in the
+> next slot, ahead of everything, because it is a wrong number at exit 0
+> that a student reads on the live site.
 
 > **C230 BUILT (2026-11-05, branch `c230-pinch`; not integrated).**  MEASURED
 > before: the engine on `ammonia02_full_plant` + `pinchPass { dTmin 20 K; }`
@@ -3799,8 +3799,6 @@ accepts today, and that is a policy call.
 > - Checklist for a NEW props operation (C311 cost a failed integration): a
 >   file-traffic row in PropsPlan.cpp, the generated GUI schema, one case in
 >   tutorials/ that builds it, a FASTSET line for a new curation family.
-> - The credit restriction of 11-11 (pairs only until Saturday) was LIFTED the
->   same evening.
 
 > **C321 part 2 RESULT (2026-11-12, cloud general, branch c321b-henry-organic).
 > HENRY CONSTANTS IN ORGANIC SOLVENTS FROM THERMOML.**  TOOL
