@@ -3567,6 +3567,26 @@ accepts today, and that is a policy call.
 > methods; the step that changes no number comes first; the CO2 reference
 > temperature is corrected as its own traceable change.  The reviewer ran
 > nothing and its web citations are not verified here.
+> FOUR QUESTIONS OF VITOR'S, answered and added to revision 2: (i) may a
+> user apply a crude empirical correlation in an operation?  YES: a
+> CASE-DECLARED CORRELATION, a method whose formula is written in the case
+> through the formula evaluator the case-carried rate laws already use,
+> with property, phase, variables, domain, checked units, a mandatory
+> reason and an optional source; with no source the run says "declared by
+> the case, not verified" at every use.  (ii) may he exclude compounds
+> from the calculation of a property?  YES, and ruling (4) above is
+> AMENDED: the exclusion returns in a BOUNDED form, per property, with a
+> mandatory limit on the neglected fraction and a mandatory reason; the
+> engine refuses beyond the limit and reports the largest fraction
+> neglected.  The reviewer's objection was to a generic, unbounded
+> exclusion; a bounded, announced one is the owner's original idea of a
+> declared hypothesis.  (iii) per unit or per sector?  YES, through the
+> existing override, which must learn to accept declared correlations and
+> hypotheses; the stream keeps one canonical value and the unit's choice is
+> shown beside it.  (iv) mass diffusivity?  YES: it joins the structure
+> after viscosity, as the clearest composite method (the infinite-dilution
+> correlation calls the solvent viscosity), with a small Pareto set and the
+> literature's stated errors.
 
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
