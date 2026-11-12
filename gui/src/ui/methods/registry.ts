@@ -65,6 +65,7 @@ export type MethodToolId =
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
+  | "sle-pair"
   | "sour-water" | "rules-of-thumb" | "bode"
   | "tear-streams" | "relaxation" | "wegstein" | "active-set-qp" | "lub-scaleup"
   | "batch-membrane" | "approach-to-equilibrium" | "equilibrium-landscapes"
@@ -742,6 +743,27 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "the shortfall is printed beneath them), and the crossovers sit "
       + "below the thermodynamic pK because the engine works in activities.",
     theory: "ch:electrolytes",
+  },
+  //  COMMISSIONED 2026-11-11 (DEV.md 4c C316, the architect's decision on
+  //  Vitor's ask): a binary pair obtained INDIRECTLY, from the solubility of
+  //  a solid.  Computed on the page (no engine operation fits or predicts
+  //  the solubility of a molecular solid), from cited measurements.
+  {
+    id: "sle-pair", blurb: "Fit an NRTL pair to how much solid a solvent dissolves.",
+    label: "Pair parameters from the solubility of a solid",
+    discipline: "Thermodynamics", kind: "construction", status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "That a saturated solution measures an activity coefficient: "
+      + "the ideal solubility from the solid's measured melting point and "
+      + "enthalpy of fusion (the same in every solvent), the heat-capacity "
+      + "term sized and then neglected, one gamma per measured solubility, "
+      + "two NRTL parameters fitted to them with every fourth point held "
+      + "out, and what such a pair cannot know -- the solvent's own "
+      + "coefficient and the solid-rich end, where equally good fits "
+      + "disagree by orders of magnitude.  Benzoic acid in acetone, "
+      + "2-propanol, acetic acid and cyclohexane (one article), with three "
+      + "predictions written before the page answers.",
+    theory: "ch:activity",
   },
   {
     id: "mccabe", blurb: "Count the stages a reflux ratio buys.", label: "Distillation (McCabe-Thiele)",

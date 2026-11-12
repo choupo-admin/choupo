@@ -734,6 +734,69 @@
         }
       ]
     },
+    "sle-pair": {
+      "references": [
+        {
+          "text": "Long, B.; Li, J.; Zhang, R.; Wan, L. (2010). Solubility of benzoic acid in acetone, 2-propanol, acetic acid and cyclohexane: Experimental measurement and thermodynamic modeling. Fluid Phase Equilib. 297(1), 113–120.",
+          "doi": "10.1016/j.fluid.2010.06.021",
+          "note": "The four measured solubility series.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.fluid.2010.06.021: authors, title, container, volume, issue, pages and year matched (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Wang, T.-C.; Lai, T.-Y.; Chen, Y.-P. (2010). Solid–Liquid Equilibria for Hexanedioic Acid + Benzoic Acid, Benzoic Acid + Pentanedioic Acid, and Hexanedioic Acid + Pentanedioic Acid. J. Chem. Eng. Data 55(12), 5797–5800.",
+          "doi": "10.1021/je100749m",
+          "note": "Melting temperature and enthalpy of fusion of benzoic acid (the default).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je100749m: authors, title, container, volume, issue, pages and year matched (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Yang, H.; Thati, J.; Rasmuson, Å. C. (2012). Thermodynamics of molecular solids in organic solvents. J. Chem. Thermodyn. 48, 150–159.",
+          "doi": "10.1016/j.jct.2011.12.015",
+          "note": "A second laboratory's fusion data, and the heat capacities of crystal and liquid.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.jct.2011.12.015: authors, title, container, volume, pages and year matched (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL and its non-randomness parameter.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/renon1968-nrtl.pdf (C259 thermodynamics-and-reaction audit); Crossref 10.1002/aic.690140124 title, volume and pages matched again 2026-11-11 (C316 sle-pair)",
+            "date": "2026-11-11"
+          }
+        },
+        {
+          "text": "Prausnitz, J. M.; Lichtenthaler, R. N.; Gomes de Azevedo, E. (1999). Molecular Thermodynamics of Fluid-Phase Equilibria, 3rd ed. Prentice Hall PTR. ISBN 0-13-977745-8.",
+          "note": "The solubility of solids in liquids, and the subcooled-liquid standard state.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0139777458: authors, title, 3rd ed., Prentice Hall PTR, 1999 (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "NIST Thermodynamics Research Center. ThermoML Archive, ThermoML.v2020-09-30 (data.nist.gov).",
+          "doi": "10.18434/mds2-2422",
+          "note": "The finding aid through which the three articles' values were located.",
+          "verified": {
+            "method": "official",
+            "evidence": "doi.org/10.18434/mds2-2422 resolves to data.nist.gov/od/id/mds2-2422 (checked 2026-11-11, C316 sle-pair); the record as read in thirdParty/thermoml/README.md",
+            "date": "2026-11-11"
+          }
+        }
+      ]
+    },
     "mccabe": {
       "references": [
         {

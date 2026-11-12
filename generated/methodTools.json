@@ -189,8 +189,8 @@
       ]
     }
   ],
-  "liveTools": 76,
-  "registryTools": 76,
+  "liveTools": 77,
+  "registryTools": 77,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -397,6 +397,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=bjerrum"
+    },
+    {
+      "id": "sle-pair",
+      "label": "Pair parameters from the solubility of a solid",
+      "blurb": "Fit an NRTL pair to how much solid a solvent dissolves.",
+      "discipline": "Thermodynamics",
+      "teaches": "That a saturated solution measures an activity coefficient: the ideal solubility from the solid's measured melting point and enthalpy of fusion (the same in every solvent), the heat-capacity term sized and then neglected, one gamma per measured solubility, two NRTL parameters fitted to them with every fourth point held out, and what such a pair cannot know -- the solvent's own coefficient and the solid-rich end, where equally good fits disagree by orders of magnitude.  Benzoic acid in acetone, 2-propanol, acetic acid and cyclohexane (one article), with three predictions written before the page answers.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=sle-pair"
     },
     {
       "id": "mccabe",
