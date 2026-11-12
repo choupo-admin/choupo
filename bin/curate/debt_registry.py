@@ -270,9 +270,79 @@ LAYERING_ACCEPTED_CYCLES = {
 #  stay until a curator opens the primaries.  Remedy: fix Tb or the Antoine
 #  coefficients from a primary source and remove the pin (the stale-pin arm
 #  in check_tb_antoine fails a pin that heals).  Blocker: literature access.
-TB_ANTOINE_PINNED = {}   # emptied 2026-08-23: all 13 records fixed from
-#  properly-licensed sources (Poling App. A / Landolt-Boernstein / curation
-#  fits to McGarry and Perry curves); H2S's Tb was the wrong half there.
+#  dimethylSulfoxide (registered 2026-11-12, DEV.md 4c C367; -3.8 %: the
+#  record's Tb 462.15 K, a ChemSep value, against its fitted Antoine, whose own
+#  normal boiling point is 463.63 K).  The archive holds TWO POPULATIONS of
+#  measurements that disagree by about 1.4 K.  (a) Eleven articles report a
+#  normal boiling temperature or a boiling temperature at about 1 atm,
+#  461.92-463.85 K, median 462.19 K: 10.1016/j.fluid.2008.09.010 (461.92 K),
+#  j.fluid.2014.04.025 (462.18), j.fluid.2015.08.014 (462.24 at 101.3 kPa),
+#  j.jct.2007.04.004 (462.19), j.jct.2019.05.005 (463.17), j.tca.2007.08.008
+#  (462.19), 10.1021/acs.jced.7b00241 (463.85), acs.jced.8b00225 (462.16),
+#  je100033s (462.06), je4006739 (462.25), je700408x (462.19); two more give
+#  462.19 K at 95.3 kPa (j.fluid.2007.10.017) and 461.55 K at 96.6 kPa
+#  (j.tca.2017.05.005).  (b) The pure-DMSO end of the vapour-liquid studies at
+#  101.3 kPa, 463.17-464.0 K, median 463.38 K: 10.1016/j.fluid.2015.07.029
+#  (464.0), j.fluid.2015.09.039 (463.75, at x = 0.011), j.jct.2019.03.036
+#  (463.27), j.jct.2019.05.005 (463.17), 10.1021/acs.jced.6b00040 (463.38);
+#  and the Psat points of 10.1021/je400531a at 463.43-463.45 K / 101.3 kPa,
+#  which the record's clean fit (max 0.79 %, 49 points) follows.  Why
+#  tolerated: which population is the pure liquid's boiling point depends on
+#  the purity (water lowers it) and the method of each article, which only a
+#  reading of the articles settles; the fit is NOT redone to meet the gate and
+#  Tb is NOT changed to meet the fit.  Remedy: a human reads the articles'
+#  purity and method statements, then fixes Tb or the curve and removes the pin
+#  (the stale-pin arm fails a pin that heals).  Blocker: reading the articles.
+#  methylDiEthanolAmine (registered 2026-11-12, DEV.md 4c C367; -11.1 %: the
+#  record's Tb 520.15 K against its fitted Antoine, whose own normal boiling
+#  point is 524.75 K).  The Tb is NOT the wrong half: it agrees with the two
+#  points measured near 1 atm (10.1021/je060269j: 519.70 K at 98.59 kPa;
+#  10.1021/je400373d: 520.28 K at 101.3 kPa).  The curve is the compromise of
+#  laboratories that disagree by up to 30 % at the same temperature:
+#  10.1021/je800290k reads 6.48 kPa at 430.48 K, 10.1021/acs.jced.8b00054 reads
+#  5.00 kPa at 430.52 K (the latter is the point the outlier rule discards);
+#  the fit stays severe (max 10.7 %) even inside the declared 2 bar window
+#  (C367, which left out 7 points of je060269j above 200 kPa).  Why tolerated:
+#  which laboratory is right is a judgement about each article's sample and
+#  method that no tool makes.  Remedy: a reviewer reads the four articles and
+#  sets studies aside BY NAME in the case, then refits and removes the pin.
+#  Blocker: reading the articles.
+#
+#  ethylLactate (registered 2026-11-12, C367; +6.2 %: Tb 426.1 K, the
+#  10.1016/j.fluid.2015.12.029 entry at 101.3 kPa, against a curve whose own
+#  normal boiling point is 424.05 K).  Three laboratories disagree by 6-10 % at
+#  the same temperature: 10.1016/j.tca.2013.11.010 reads 0.436 kPa at 303.15 K
+#  where 10.1016/j.jct.2018.07.029 interpolates (0.3751 kPa at 302.5 K, 0.4491
+#  at 304.5 K) to 0.398 kPa (tca 9.6 % higher), and jct.2018.07.029 reads
+#  0.6892 kPa at 311.3 K where tca.2013.11.010 interpolates (0.603 kPa at
+#  308.15 K, 0.829 at 313.15) to 0.737 kPa (jct 6.5 % lower); at 1 atm
+#  fluid.2015.12.029 (93.32 kPa at 423.47 K) and tca.2013.11.010 (92.51 kPa at
+#  423.15 K) agree with each other and sit above the minimax compromise.  No
+#  point exceeds 2 bar, so the C367 window cannot help.  Remedy as above: a
+#  reviewer reads the articles and sets studies aside by name.  Blocker:
+#  reading the articles.
+#
+#  squalane (registered 2026-11-12, C367; +9.4 %: Tb 686.4 K against a curve
+#  whose own normal boiling point is 682.26 K).  The one article
+#  (10.1016/j.jct.2019.03.032, correlation gas chromatography) spans 1.5e-9 to
+#  101.325 kPa -- ten and a half decades of pressure, 298.15-686.4 K -- with ONE
+#  extrapolated 1-atm entry (686.4 K) above a table that ends at 600 K, 12 kPa.
+#  A three-parameter Antoine cannot hold it; no point exceeds 2 bar, so the
+#  C367 window cannot help.  Remedy: a pressure FLOOR decided by a reviewer
+#  (fitWindow pressureMin, with its reason), or a wider correlation form.
+#  Blocker: a reviewer's decision.
+#
+#  NOTE ON THE NUMBER: the gate fails a pinned record whose deviation moves by
+#  more than 0.5 percentage points in EITHER direction (a defect that moves is a
+#  finding), and a pin that heals below 3 % fails as stale.
+TB_ANTOINE_PINNED = {   # 13 records fixed 2026-08-23 from properly-licensed
+    #  sources (Poling App. A / Landolt-Boernstein / curation fits to McGarry
+    #  and Perry curves); H2S's Tb was the wrong half there.
+    "dimethylSulfoxide": -3.8,
+    "methylDiEthanolAmine": -11.1,
+    "ethylLactate": 6.2,
+    "squalane": 9.4,
+}
 
 #  SPECIFICATION-SHEET UNIT WORDS CHOUPO'S OWN PARSER CANNOT READ (2026-09-07).
 #

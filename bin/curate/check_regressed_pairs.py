@@ -926,7 +926,56 @@ def vp_facts(text):
         "fitGrade": word(ent, "fitGrade"),
         "gradeMax": num(ent, "fitGradeMaxRelativeError_pct"),
         "gradeGap": num(ent, "fitGradeBoilingPointGap_K"),
+        "window": block(ent, "window"),
     }
+
+
+VP_P_kPa = {"Pa": 1e-3, "kPa": 1.0, "MPa": 1e3, "bar": 100.0, "mbar": 0.1, "atm": 101.325}
+
+
+def fit_window(case, pd_text, tag, fails):
+    """DEV.md 4c C367: the fit window a case declares in system/curationDict
+    (`fitWindow { pressureMax/pressureMin <x> <unit>; reason "..."; }`), read here
+    INDEPENDENTLY of the tool, and the `window {}` block of the fit operation in
+    its propsDict, which must carry the same limits and a reason (the engine ran
+    what the propsDict says).  Returns {"max_kPa", "min_kPa", "reason"} or None."""
+    cdict = case / "system" / "curationDict"
+    wb = block(strip_comments(cdict.read_text()), "fitWindow") if cdict.exists() else None
+    ob = block(pd_text, "window")
+    if wb is None and ob is None:
+        return None
+    if wb is None or ob is None:
+        fails.append(f"{tag}: the fit window is declared in "
+                     f"{'system/curationDict only' if ob is None else 'the propsDict only'} "
+                     "-- the two must agree (DEV.md 4c C367)")
+        return None
+    out = {}
+    for src, b in (("curationDict", wb), ("propsDict", ob)):
+        r = re.search(r'reason\s+"([^"]+)"', b)
+        if not r:
+            fails.append(f"{tag}: the fit window in {src} carries no `reason \"...\";`")
+        lim = {}
+        for key in ("pressureMax", "pressureMin"):
+            m = re.search(r"\b%s\s+([0-9.eE+-]+)\s+(\w+)\s*;" % key, b)
+            if m and m.group(2) in VP_P_kPa:
+                lim[key] = float(m.group(1)) * VP_P_kPa[m.group(2)]
+            elif m:
+                fails.append(f"{tag}: fit window {key} has the unit `{m.group(2)}`")
+        if not lim:
+            fails.append(f"{tag}: the fit window in {src} declares no pressure limit")
+        out[src] = (lim, r.group(1) if r else None)
+    if out["curationDict"] != out["propsDict"]:
+        fails.append(f"{tag}: the fit window of system/curationDict {out['curationDict']} "
+                     f"differs from the propsDict's {out['propsDict']}")
+    lim, reason = out["propsDict"]
+    return {"max_kPa": lim.get("pressureMax"), "min_kPa": lim.get("pressureMin"),
+            "reason": reason}
+
+
+def in_fit_window(w, pk):
+    return (w is None
+            or ((w["max_kPa"] is None or pk <= w["max_kPa"] * (1 + 1e-9))
+                and (w["min_kPa"] is None or pk >= w["min_kPa"] * (1 - 1e-9))))
 
 
 def check_vp_dataset(path, comp, fails, tag):
@@ -1054,6 +1103,15 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                          pd_text, re.M):
             fails.append(f"{tag}: its case does not declare `outliers {{ maxRelativeError "
                          "15 percent; }` (the C283 default)")
+        win = fit_window(case, pd_text, tag, fails)
+        left = [(t, pk) for doi, t, pk in pts if not in_fit_window(win, pk)]
+        pts = [(doi, t, pk) for doi, t, pk in pts if in_fit_window(win, pk)]
+        if win and not (rf["window"] or "").strip():
+            fails.append(f"{tag}: its case declares a fit window but provenance."
+                         "vaporPressure carries no `window {}` block")
+        if not win and (rf["window"] or "").strip():
+            fails.append(f"{tag}: provenance.vaporPressure carries a `window {{}}` block "
+                         "its case does not declare")
         drop = set()
         for item in (cu.get("outliersDropped") or "").split(";"):
             mm = re.match(r"\s*(\S+) T=([0-9.eE+-]+) K P=([0-9.eE+-]+) Pa", item)
@@ -1076,6 +1134,21 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
             if rf[k] is None or not close(rf[k], v, rel=1e-5):
                 fails.append(f"{tag}: `acceptance.{k}` = {rf[k]} in the record, {v:.6g} "
                              "recomputed from its case")
+        if win:
+            wblk = rf["window"] or ""
+            lrel = [100.0 * abs(100.0 * 10 ** (A_ - B_ / (t + C_)) / pk - 1.0)
+                    for t, pk in left]
+            want_w = {"pointsFitted": len(kept), "pointsLeftOut": len(left),
+                      "leftOutMeanError_pct": (sum(lrel) / len(lrel)) if lrel else 0.0,
+                      "leftOutMaxError_pct": max(lrel) if lrel else 0.0}
+            for k, v in want_w.items():
+                got = num(wblk, k)
+                if got is None or not close(got, v, rel=1e-5, abs_=1e-9):
+                    fails.append(f"{tag}: window.{k} = {got} in the record, {v:.6g} "
+                                 "recomputed from its case (the points the window left out)")
+            if int(d.get("n_window_left_out", -1)) != len(left):
+                fails.append(f"{tag}: the run left out {d.get('n_window_left_out')} point(s), "
+                             f"the window recomputed here leaves out {len(left)}")
         if (rf["dropped"] or "none") != (cu.get("outliersDropped") or "none"):
             fails.append(f"{tag}: the record's discarded points differ from its case's run")
         #  THE GRADE (DEV.md 4c C285).  Recomputed from the kept points: the
@@ -1085,7 +1158,10 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         #  the numbers that decided it, a refused fit is never in the catalogue.
         lim_P, lim_T = VP_LIMITS_P, VP_LIMITS_T
         cdict = case / "system" / "curationDict"
-        if cdict.exists():
+        if cdict.exists() and block(strip_comments(cdict.read_text()), "acceptance") is None \
+                and block(strip_comments(cdict.read_text()), "fitWindow") is not None:
+            pass        # C367: the dict declares only the fit window; the default acceptance applies
+        elif cdict.exists():
             ct = strip_comments(cdict.read_text())
             three = r"\(\s*([0-9.eE+-]+)\s+([0-9.eE+-]+)\s+([0-9.eE+-]+)\s*\)"
             mr = re.search(r"maxRelativeError\s*%s\s+percent" % three, ct)
@@ -1249,6 +1325,82 @@ def check_vp_grade_channel(tmp, fails):
 
 
 VP_GRADE_COUNT = {}
+
+VP_WINDOW_WITNESS = "methylDiEthanolAmine"   # a windowed vapour pressure (DEV.md 4c C367)
+
+
+def check_vp_window_negatives(tmp, fails):
+    """C367: the fit-window logic of arm (i) refuses what it must, each named.
+    The witness (a windowed record and its case) must pass as it stands, and
+      (1) a curationDict whose window DISAGREES with the propsDict's is refused
+          (checked on a scratch copy of the case's system/ directory), and
+      (2) a record whose `window.pointsLeftOut` is FALSIFIED is refused, through
+          arm (i) itself on a scratch catalogue holding only that record."""
+    global STD_COMP, VP_FLOOR
+    src = STD_COMP / (VP_WINDOW_WITNESS + ".dat")
+    if not src.exists():
+        fails.append(f"arm (i) window negatives: witness {src.relative_to(ROOT)} is gone")
+        return
+    text = src.read_text()
+    case_rel = word(vp_entry(text) or "", "fittedInCase")
+    case = ROOT / case_rel if case_rel else None
+    if case is None or not (case / "system" / "curationDict").exists() \
+            or "window" not in (vp_entry(text) or ""):
+        fails.append("arm (i) window negatives: the witness no longer carries a fit "
+                     "window and its curationDict -- it tests nothing")
+        return
+    pd_text = strip_comments((case / "system" / "propsDict").read_text())
+    got = []
+    fit_window(case, pd_text, "witness", got)
+    if got:
+        fails.append(f"arm (i) window negatives [as shipped]: the witness was accused: {got[0][:160]}")
+    #  (1) disagreeing window
+    work = Path(tempfile.mkdtemp(prefix="vpwin-", dir=ROOT / "build"))
+    try:
+        shutil.copytree(case / "system", work / "system")
+        cd = work / "system" / "curationDict"
+        edited = re.sub(r"pressureMax\s+[0-9.eE+-]+\s+kPa", "pressureMax  150 kPa",
+                        cd.read_text())
+        if edited == cd.read_text():
+            fails.append("arm (i) window negatives: the witness's curationDict has no "
+                         "`pressureMax <x> kPa` to edit")
+        cd.write_text(edited)
+        got = []
+        fit_window(work, pd_text, "witness", got)
+        if not any("differs from the propsDict" in g for g in got):
+            fails.append("arm (i) window negatives [window disagrees]: not refused: "
+                         f"{got[:1]}")
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+    #  (2) falsified left-out count, through arm (i) on a one-record catalogue
+    bad = re.sub(r"(pointsLeftOut\s+)7(\s*;\s*\n\s*leftOut\s)", r"\g<1>3\2", text)
+    if bad == text:
+        fails.append("arm (i) window negatives: the witness has no window `pointsLeftOut 7;` "
+                     "to falsify")
+        return
+    keep, keep_floor, keep_count = STD_COMP, VP_FLOOR, dict(VP_GRADE_COUNT)
+    VP_FLOOR = 0
+    work = Path(tempfile.mkdtemp(prefix="vpwin-", dir=ROOT / "build"))
+    try:
+        for label, body, must_fail in (("as shipped", text, False),
+                                       ("left-out count falsified", bad, True)):
+            for old in work.glob("*.dat"):
+                old.unlink()
+            (work / src.name).write_text(body)
+            STD_COMP = work
+            got = []
+            check_vapour_pressures(Path(tempfile.mkdtemp(prefix="vpwin-run-", dir=tmp)),
+                                   got, [], {})
+            if must_fail and not any("window.pointsLeftOut" in g for g in got):
+                fails.append(f"arm (i) window negatives [{label}]: not refused: {got[:1]}")
+            if not must_fail and got:
+                fails.append(f"arm (i) window negatives [{label}]: the witness was accused: "
+                             f"{got[0][:200]}")
+    finally:
+        STD_COMP, VP_FLOOR = keep, keep_floor
+        VP_GRADE_COUNT.clear()
+        VP_GRADE_COUNT.update(keep_count)
+        shutil.rmtree(work, ignore_errors=True)
 
 
 C286_GRADE_COUNT = {}
@@ -1906,6 +2058,7 @@ def main():
         model_done = check_model_records(tmp, runs, fetched, fails, not_run)
         vp_done = check_vapour_pressures(tmp, fails, not_run, fetched)
         check_vp_grade_channel(tmp, fails)
+        check_vp_window_negatives(tmp, fails)
         vp_grades = ", ".join(f"{VP_GRADE_COUNT.get(g, 0)} {g}" for g in VP_GRADES[:3])
         span_held = check_span_announcement(tmp, fails)
         ll_held = check_ll_arm(tmp, fails)

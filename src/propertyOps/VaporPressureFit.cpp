@@ -100,6 +100,67 @@ int VaporPressureFit::run(const DictPtr& dict,
         for (std::size_t k = n0; k < T.size(); ++k) src.push_back(ds.doi.empty() ? ds.path : ds.doi);
     }
 
+    //  THE FIT WINDOW (DEV.md 4c C367): `window { pressureMax <x> kPa; pressureMin
+    //  <x> kPa; reason "..."; }` -- only the points whose pressure lies inside
+    //  [pressureMin, pressureMax] are FITTED; the others are LEFT OUT BY NAME and
+    //  their error against the fitted curve is REPORTED beside the fit's own
+    //  (never hidden).  A three-parameter Antoine cannot hold both a
+    //  low-pressure end and a near-critical end of a wide measured range, so
+    //  the window is the declared way to say which part of the range the record
+    //  is promised for.  `reason` is MANDATORY: a window with no stated physical
+    //  reason cannot be told apart from one chosen after the residuals were seen.
+    //  Absent, every admissible point is fitted (the behaviour before C367).
+    //  Applied BEFORE the outlier rule, to every fit point alike.
+    std::vector<scalar> Tw, yw;                               // left out of the fit
+    std::vector<std::string> sw;
+    std::string windowReason;
+    bool windowed = false;
+    scalar pWinMax = -1.0, pWinMin = -1.0;                    // Pa
+    if (dict->found("window"))
+    {
+        auto wd = dict->subDict("window");
+        for (const auto& k : wd->keys())
+            if (k != "pressureMax" && k != "pressureMin" && k != "reason")
+                throw std::runtime_error(label + ": `window` has no entry `" + k
+                    + "`; the entries are pressureMax <x> <pressure unit>; pressureMin <x>"
+                      " <pressure unit>; and reason \"...\";");
+        if (!wd->found("reason") || wd->lookupWord("reason").empty())
+            throw std::runtime_error(label + ": `window` declares no `reason \"...\";` -- the"
+                " physical reason the fit is restricted is mandatory (a window chosen to"
+                " satisfy a check is not a window).");
+        if (!wd->found("pressureMax") && !wd->found("pressureMin"))
+            throw std::runtime_error(label + ": `window` declares neither `pressureMax` nor"
+                " `pressureMin`.");
+        for (const char* k : { "pressureMax", "pressureMin" })
+            if (wd->found(k))
+            {
+                const std::string u = wd->unitWordOf(k);
+                if (u != "Pa" && u != "kPa" && u != "MPa" && u != "bar" && u != "mbar" && u != "atm")
+                    throw std::runtime_error(label + ": `window." + std::string(k)
+                        + "` needs a pressure unit (Pa, kPa, MPa, bar, mbar, atm); got `" + u + "`.");
+            }
+        if (wd->found("pressureMax")) pWinMax = wd->lookupScalar("pressureMax");
+        if (wd->found("pressureMin")) pWinMin = wd->lookupScalar("pressureMin");
+        windowReason = wd->lookupWord("reason");
+        windowed = true;
+        std::vector<scalar> T1, y1; std::vector<std::string> s1;
+        for (std::size_t i = 0; i < T.size(); ++i)
+        {
+            const scalar P = std::pow(10.0, y[i]) * units::bar_to_Pa;
+            const bool inside = (pWinMax < 0.0 || P <= pWinMax * (1.0 + 1e-9))
+                             && (pWinMin < 0.0 || P >= pWinMin * (1.0 - 1e-9));
+            if (inside) { T1.push_back(T[i]); y1.push_back(y[i]); s1.push_back(src[i]); }
+            else        { Tw.push_back(T[i]); yw.push_back(y[i]); sw.push_back(src[i]); }
+        }
+        T = T1; y = y1; src = s1;
+        if (verbosity >= 1)
+            std::cout << "  Window:      " << T.size() << " point(s) inside, " << Tw.size()
+                      << " left out (pressure"
+                      << (pWinMin >= 0.0 ? " >= " + std::to_string(pWinMin) + " Pa" : "")
+                      << (pWinMax >= 0.0 ? " <= " + std::to_string(pWinMax) + " Pa" : "")
+                      << "); reason: " << windowReason << "\n";
+    }
+
     //  OUTLIERS (DEV.md 4c C283, amended): `outliers { maxRelativeError <x>
     //  percent; }` -- after the least-squares stage, a fit point whose
     //  relative pressure error exceeds x is DISCARDED BY NAME (its dataset, T
@@ -309,6 +370,44 @@ int VaporPressureFit::run(const DictPtr& dict,
             diag_["relErr_mean_fit_pct_leastSquares"] = 100.0 * m;
             diag_["relErr_max_fit_pct_leastSquares"]  = 100.0 * x;
         }
+    }
+
+    if (windowed)
+    {
+        //  the left-out points: NAMED, counted, and their error against the
+        //  fitted curve reported (a window that hid its residuals would be a filter)
+        scalar m = 0.0, x = 0.0;
+        relStats(A, B, C, Tw, yw, m, x);
+        diag_["n_window_left_out"]             = static_cast<scalar>(Tw.size());
+        diag_["relErr_mean_leftOut_pct"]       = 100.0 * m;
+        diag_["relErr_max_leftOut_pct"]        = 100.0 * x;
+        std::vector<std::string> doi;
+        for (const auto& s_ : sw) if (std::find(doi.begin(), doi.end(), s_) == doi.end()) doi.push_back(s_);
+        std::string txt;
+        for (const auto& d_ : doi)
+        {
+            std::size_t n = 0; scalar t0 = 1e30, t1 = 0.0;
+            for (std::size_t i = 0; i < sw.size(); ++i)
+                if (sw[i] == d_) { ++n; t0 = std::min(t0, Tw[i]); t1 = std::max(t1, Tw[i]); }
+            std::ostringstream os;
+            os << d_ << " " << n << " pt " << std::setprecision(6) << t0 << "-" << t1 << " K";
+            txt += (txt.empty() ? "" : "; ") + os.str();
+        }
+        curation_["windowLeftOut"]  = txt.empty() ? "none" : txt;
+        curation_["windowReason"]   = windowReason;
+        std::ostringstream pts;
+        for (std::size_t i = 0; i < Tw.size(); ++i)
+        {
+            if (i) pts << "; ";
+            pts << sw[i] << " T=" << std::setprecision(8) << Tw[i] << " K P="
+                << std::pow(10.0, yw[i]) * units::bar_to_Pa << " Pa err="
+                << std::setprecision(4) << 100.0 * relAt(A, B, C, Tw[i], yw[i]) << " %";
+        }
+        curation_["windowLeftOutPoints"] = pts.str().empty() ? "none" : pts.str();
+        if (verbosity >= 1)
+            std::cout << "  Window:      " << Tw.size() << " left-out point(s): mean "
+                      << 100.0 * m << " %, max " << 100.0 * x
+                      << " % relative error in P against the fitted curve (reported, not fitted)\n";
     }
 
     scalar ybar = 0; for (scalar v : y) ybar += v; ybar /= static_cast<scalar>(y.size());

@@ -31,9 +31,9 @@ properties
 
     fittedParameters
     {
-        A  5.2818640296;
-        B  2003.25390015;
-        C  -27.7426689283;
+        A  5.4196191202;
+        B  2078.36538167;
+        C  -22.7264243944;
     }
 
     evidence
@@ -74,13 +74,13 @@ properties
         domain
         {
             coordinate  K;
-            fit         { min 273.15; max 447.8; n 69; }
+            fit         { min 273.15; max 431.6; n 67; }
         }
     }
 
     metrics
     {
-        r2InSample        0.999092262955;   // the model reproducing the points it was FITTED to
+        r2InSample        0.998985721013;   // the model reproducing the points it was FITTED to
         //  NO HELD-OUT METRIC EXISTS.  r2InSample above is exactly that --
         //  in-sample -- and must not be read as an external check.
     }

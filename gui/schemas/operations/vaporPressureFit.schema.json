@@ -126,6 +126,35 @@
         }
       }
     },
+    "window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reason"
+      ],
+      "title": "Fit window (points left out by name)",
+      "description": "DEV.md 4c C367: only the fit points whose pressure lies inside [`pressureMin`, `pressureMax`] (each a number with a pressure unit: Pa, kPa, MPa, bar, mbar, atm) are fitted; the others are LEFT OUT BY NAME, counted per study in curation.windowLeftOut, and their relative error against the fitted curve is reported (diagnostics relErr_mean_leftOut_pct, relErr_max_leftOut_pct), never fitted and never hidden. `reason` is mandatory. Applied before the outlier rule. Absent, every admissible point is fitted.",
+      "properties": {
+        "pressureMax": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "e.g. `200 kPa`"
+        },
+        "pressureMin": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "description": "e.g. `1 kPa`"
+        },
+        "reason": {
+          "type": "string",
+          "description": "the physical reason the fit is restricted (mandatory)"
+        }
+      }
+    },
     "acceptance": {
       "type": "object",
       "additionalProperties": false,

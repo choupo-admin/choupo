@@ -325,6 +325,18 @@ at the point of use.*
 - **No estimated/regressed value without a `provenance{ origin · method }`
   entry** (the live `OriginInfo` struct parses it).  A `.dat` violating either
   is a **curation defect**.
+- **The origin words, strongest evidence first** (`core/Origin.H`,
+  `check_origin_census.KNOWN`): `measured` / `literature` (a reported
+  measurement or a cited table); `derived` (DEV.md 4c C367: COMPUTED from
+  NAMED measured values by a STATED method -- e.g. a Clausius-Clapeyron
+  interpolation between two measured boiling points; not a regression over a
+  dataset, not an estimate; it ranks just below the measurements it comes from
+  and NEVER outranks a measured value of the same quantity); `regressed` /
+  `fitted` (a fit to a dataset); `predictive`; `estimated` (group
+  contribution); `assumed`; `placeholder`.  A `derived` value's provenance
+  entry MUST carry its `method` (the formula, in words) and an `inputs ( ... )`
+  list naming, for each input, the value and its source (DOI); the record-form
+  gate refuses one without them.
 - Reference-state block headers
   (`identity/critical/gasIdeal/liquidPure/solid/aqueousInfDil/anchors/transport`
   + the model blocks + the referenced `solution/` pair file) make the file read

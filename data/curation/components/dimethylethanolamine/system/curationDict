@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  dimethylethanolamine -- the curation declaration of this case's vapour-pressure fit
+  (bin/choupo-curate vp; DEV.md 4c C367).  Only the fit window is declared
+  here; the graded acceptance is the default of DEV.md 4c C285.
+
+  THE RULE, uniform for every vapour-pressure case (not chosen per
+  substance): when the full-range fit grades worse than clean AND some measured
+  point lies above 2 bar, a three-parameter Antoine is fitted from the lowest
+  measured point up to 2 bar (200 kPa), the range a process engineer evaluates
+  it in; the points above are left out by name and their error reported.
+\*---------------------------------------------------------------------------*/
+
+fitWindow
+{
+    pressureMax  200 kPa;
+    reason       "uniform rule of DEV.md 4c C367: the full-range fit graded worse than clean and measured points lie above 2 bar, which a three-parameter Antoine cannot hold together with the low-pressure end; fitted from the lowest measured point up to 2 bar; the points above are left out and their error against the fitted curve is reported";
+}

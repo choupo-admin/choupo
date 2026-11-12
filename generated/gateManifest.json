@@ -678,13 +678,13 @@
     },
     "check_origin_census": {
       "exit": 0,
-      "claim": "check_origin_census: OK -- recounted at BOTH depths over 569 file(s) carrying a `provenance {}`: 30 origin declaration(s) as direct children and 2371 nested one level deeper in per-value blocks (2401 total; the largest are literature 1925, predictive 356, estimated 67, measured 11), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
-      "seconds": 0.1
+      "claim": "check_origin_census: OK -- recounted at BOTH depths over 2990 file(s) carrying a `provenance {}`: 2344 origin declaration(s) as direct children and 3660 nested one level deeper in per-value blocks (6004 total; the largest are literature 2048, estimated 390, predictive 340, definition 339), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
+      "seconds": 1.3
     },
     "check_origin_vocabulary": {
       "exit": 0,
-      "claim": "check_origin_vocabulary: OK -- 145 `origin <word>;` forms in 70 prose files all use a KNOWN word (15 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
-      "seconds": 3.3
+      "claim": "check_origin_vocabulary: OK -- 152 `origin <word>;` forms in 74 prose files all use a KNOWN word (16 words imported from check_origin_census, never copied), or one of 2 word(s) pinned in debt_registry with a stated exit (citedHeuristic, teachingSurrogate), or one of 6 sites exempt BY NAME (5 deliberate quotations, 1 English sentence).  SCANNED: docs, src, bin, gui/src, gui/schemas and the root *.md, every text file, read as one string so a line-wrapped form is seen.  NOT CHECKED: records under data/ (the census's domain) and case-local records under tutorials/ (nobody's); the engine's tolerance in core/Origin.H; whether a word is TRUE of its value; the backtick prose form with no semicolon.",
+      "seconds": 1.0
     },
     "check_overlay_aad_pinned": {
       "exit": 0,
@@ -993,8 +993,8 @@
     },
     "check_tb_antoine": {
       "exit": 0,
-      "claim": "tb-antoine: OK -- 400 record(s) checked for Psat(Tb) ~ 1 atm; 0 known defects pinned with their observed deviation (fix needs primary literature; the list cannot grow or heal in silence).  NOT COVERED: non-Antoine vapour-pressure models.",
-      "seconds": 0.0
+      "claim": "tb-antoine: OK -- 418 record(s) checked for Psat(Tb) ~ 1 atm; 4 known defects pinned with their observed deviation (fix needs primary literature; the list cannot grow or heal in silence).  NOT COVERED: non-Antoine vapour-pressure models.",
+      "seconds": 0.1
     },
     "check_temporal_utilities": {
       "exit": 0,
