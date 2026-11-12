@@ -3446,6 +3446,26 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C380 (Vitor, 2026-11-12: "se puderes, faz uma ultima analise e ve como
+> o kernel de propriedades termofisicas esta organizado" in the open-source
+> simulator the C378 study surveyed).**  A SECOND, DEEPER READING of that
+> simulator's source, for ORGANISATION only (no code and no value is
+> copied; the notes name it and therefore stay in the private Studies
+> folder, never in the tracked tree).  The first reading covered the
+> routines and their options; this one asks the questions revision 2 of
+> C378 raised: which facts a compound record carries and whether any act
+> as a class; how a user states his own correlation or overrides a
+> property; whether a unit can carry its own property set and what the
+> stream then shows; how special fluids (water, seawater, electrolytes)
+> take over a property; what is told to the user about the method used;
+> diffusivity.  The result is judged against revision 2 and its
+> amendments: what confirms them, what they should take, what they must
+> not copy.  ALSO RECORDED the same hour: the reviewing session accepted
+> the declined point (the case's correlation stays above the reference
+> equation, with the deviation printed and counted); its numerical review
+> continues and looks for the counterexample.  The pilot still waits for
+> Vitor's ratification.
+
 > **C379 (Vitor, 2026-11-12: "achas que e boa ideia criar um EduTool a
 > explicar a estrutura do kernel de propriedades termofisicas?  Isto para
 > alem do registo nos guias habituais").**  YES, on the shelf "How Choupo
