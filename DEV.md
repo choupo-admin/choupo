@@ -3446,6 +3446,26 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C367 (2026-11-12; the architect's decision, from the Tb-vs-Antoine gate
+> red on six components).**  Read against the measured ThermoML points: two
+> declared boiling points were wrong and are corrected (diNButylEther 415.35
+> -> 414.55 K, measured; squalane 623.15 -> 686.4 K, the article's own
+> extrapolated 1-atm entry, said as such -- the same table has 12 kPa at
+> 600 K).  For the others the ROOT CAUSE is the fit, not Tb: a
+> three-parameter Antoine fitted over the whole measured range
+> (methylDiEthanolAmine to 738 K and 3985 kPa) cannot hold both ends, and
+> `choupo-curate vp` has no way to restrict it.  DECIDED: the curation gets a
+> DECLARED fit window with a mandatory reason, one uniform physical rule
+> (never a window chosen to satisfy the gate), `Trange` equal to the window
+> fitted, and the error on the points left out printed beside the grade.
+> dimethylethanolamine's Tb is contradicted by a measurement (406.80 K at
+> 100 kPa) and is set from the two measured points that bracket 1 atm only if
+> the origin vocabulary can say "derived from named measurements".
+> dimethylsulfoxide is PINNED as debt, not fitted away: ebulliometric normal
+> boiling points (median 462.19 K, 11 articles) and boiling points inside
+> four vapour-liquid studies (463.3-463.9 K) disagree by 1.4 K, and only a
+> reading of the articles can say why.  Branch c367-vp-window.
+
 > **C366 (2026-11-12; a branch prepared by the cloud session before C364 took
 > effect, its scope agreed with Vitor there; the architect's decisions).**
 > `edutool/residue-curves` (0c91edfae): a residue-curve-map EduTool (id
