@@ -1,0 +1,14 @@
+/*  Placeholder the bench requires; no operation reads it.  The case asks the
+    catalogue (or this case's own constant/parameters/Henry/) for the record.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( oXylene );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}

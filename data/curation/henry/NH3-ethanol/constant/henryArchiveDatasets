@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Curation case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*  constant/henryArchiveDatasets -- WHERE the Henry constants of NH3 in ethanol
+    come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+    (C282).  `bin/curate/henry_organic.py fetch <case>` writes each dataset into
+    constant/archiveExtracts/ (gitignored) from the local ThermoML cache or the
+    NIST URL, checking BOTH sha256 sums; a mismatch refuses, an unreachable NIST
+    is reported NOT RUN, never a pass.  Not named `archiveDatasets`: that file
+    is fetched by bin/choupo-curate, which has no Henry extractor.  */
+
+recordType    archiveDatasets;
+
+solute        NH3;
+solvent       ethanol;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/NH3-ethanol-henry-j.fluid.2011.01.006-b1.dat";
+        role          fit;   // C283 amended: every laboratory is fitted
+        extractor     henryConstant;
+        doi           "10.1016/j.fluid.2011.01.006";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.fluid.2011.01.006.xml";
+        articleFile   "j.fluid.2011.01.006.xml";
+        articleSha256 "4fdf233a095729f94e3dc3a06b1336e1efd9eb5579a6c60778cfb5d5e2e10840";
+        block         1;
+        sha256        "406b4b37a12ce834f7da95ee303d8a78efd3d7c1920bed99fe73a1e874a319bc";
+    }
+);

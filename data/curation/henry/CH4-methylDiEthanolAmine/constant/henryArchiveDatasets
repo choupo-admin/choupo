@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Curation case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*  constant/henryArchiveDatasets -- WHERE the Henry constants of CH4 in methylDiEthanolAmine
+    come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+    (C282).  `bin/curate/henry_organic.py fetch <case>` writes each dataset into
+    constant/archiveExtracts/ (gitignored) from the local ThermoML cache or the
+    NIST URL, checking BOTH sha256 sums; a mismatch refuses, an unreachable NIST
+    is reported NOT RUN, never a pass.  Not named `archiveDatasets`: that file
+    is fetched by bin/choupo-curate, which has no Henry extractor.  */
+
+recordType    archiveDatasets;
+
+solute        CH4;
+solvent       methylDiEthanolAmine;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/CH4-methylDiEthanolAmine-henry-je060118g-b0.dat";
+        role          fit;   // C283 amended: every laboratory is fitted
+        extractor     henryConstant;
+        doi           "10.1021/je060118g";
+        url           "https://trc.nist.gov/ThermoML/10.1021/je060118g.xml";
+        articleFile   "je060118g.xml";
+        articleSha256 "d90db00d721d5f105a64bd55220242b5061ec12e7bdc2e5fe404f17eceeb2263";
+        block         0;
+        sha256        "7cb46959d7bed540b910378b1edb45406a20bbf0346bd97ab1b1f5b1283acc8b";
+    }
+);

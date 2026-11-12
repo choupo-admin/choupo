@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Curation case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*  constant/henryArchiveDatasets -- WHERE the Henry constants of 1Butene in 2Methyl1Propanol
+    come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+    (C282).  `bin/curate/henry_organic.py fetch <case>` writes each dataset into
+    constant/archiveExtracts/ (gitignored) from the local ThermoML cache or the
+    NIST URL, checking BOTH sha256 sums; a mismatch refuses, an unreachable NIST
+    is reported NOT RUN, never a pass.  Not named `archiveDatasets`: that file
+    is fetched by bin/choupo-curate, which has no Henry extractor.  */
+
+recordType    archiveDatasets;
+
+solute        1Butene;
+solvent       2Methyl1Propanol;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/1Butene-2Methyl1Propanol-henry-j.jct.2004.05.010-b9.dat";
+        role          fit;   // C283 amended: every laboratory is fitted
+        extractor     henryConstant;
+        doi           "10.1016/j.jct.2004.05.010";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2004.05.010.xml";
+        articleFile   "j.jct.2004.05.010.xml";
+        articleSha256 "4d53b9c689cddc5571149b0f561e85887b9e55738b1907cc944fe5c78ddc84bd";
+        block         9;
+        sha256        "9357626f7b902691ee4b4900fbd85be45fff21d891ee4593796a73bedd2247db";
+    }
+);
