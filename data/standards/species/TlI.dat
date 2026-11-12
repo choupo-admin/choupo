@@ -15,7 +15,7 @@ charge  +1;
 MW { value 204.38; unit g/mol;}
 aqueousThermo
 {
-source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 32:Tl, p. 2-135 (PDF p. 143), row Tl+ ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Tl+ ## hfAq [kJ/mol] chosen 5.36 (NBS): NBS 5.36, CRC 5.4 ## sAq [J/mol/K] chosen 125.5 (NBS): NBS 125.5, CRC 125.5";
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 32:Tl, p. 2-135 (PDF p. 143), row Tl+ ao ## second reading, enters no value -- the NBS table as reprinted, read via CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Tl+ ## hfAq [kJ/mol] chosen 5.36 (NBS): NBS 5.36, CRC 5.4 ## sAq [J/mol/K] chosen 125.5 (NBS): NBS 125.5, CRC 125.5";
 hfAq { value 5360; unit J/mol;}
 sAq  { value 125.5;  unit J/mol/K;}
 }

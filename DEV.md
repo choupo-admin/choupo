@@ -3457,8 +3457,8 @@ accepts today, and that is a policy call.
 > already checks), with the new dimensions written in the layoutDict and the
 > reason in the case; then the re-import and its listed rows, plus the two
 > bund rows, are recorded together.  `greenAmmonia03_basicDesign` matched its
-> 497 rows and is re-recorded on its own.  Also from that slice: bin/choupo-
-> import has no flag for an AUTHORISED re-record (the general followed the
+> 497 rows and is re-recorded on its own.  Also from that slice:
+> `bin/choupo-import` has no flag for an AUTHORISED re-record (the general followed the
 > letdown01 precedent by hand); a flag that takes the list of authorised rows
 > and refuses any other moved row is to be built with the re-import.
 

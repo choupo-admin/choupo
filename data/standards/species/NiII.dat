@@ -15,7 +15,7 @@ charge  +2;
 MW { value 58.693; unit g/mol;}
 aqueousThermo
 {
-source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 39:Ni, p. 2-166 (PDF p. 174), row Ni2+ ao ## CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ni+2 ## hfAq [kJ/mol] chosen -54.0 (NBS): NBS -54.0, CRC -54.0 ## sAq [J/mol/K] chosen -128.9 (NBS): NBS -128.9, CRC -128.9";
+source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 39:Ni, p. 2-166 (PDF p. 174), row Ni2+ ao ## second reading, enters no value -- the NBS table as reprinted, read via CRC = CRC Handbook, Thermodynamic Properties of Aqueous Systems, p. 5-85 (TeamLRN_5_1_CODATA_KEY_VALUES_FOR_THERMO.pdf), row Ni+2 ## hfAq [kJ/mol] chosen -54.0 (NBS): NBS -54.0, CRC -54.0 ## sAq [J/mol/K] chosen -128.9 (NBS): NBS -128.9, CRC -128.9";
 hfAq { value -54000; unit J/mol;}
 sAq  { value -128.9;  unit J/mol/K;}
 }

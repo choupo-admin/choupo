@@ -270,7 +270,7 @@ export const CLAUS_STEPS = [
 ] as const;
 
 export const CLAUS_TABLE = [
-  { sp: "S₂", furnace: "10.42 %", boiler: "0.055 %" },
+  { sp: "S₂", furnace: "10.43 %", boiler: "0.055 %" },
   { sp: "S₈", furnace: "9.4 × 10⁻¹⁴", boiler: "3.44 %" },
   { sp: "H₂S", furnace: "3.91 %", boiler: "2.783 %" },
   { sp: "SO₂", furnace: "3.75 %", boiler: "1.392 %" },
