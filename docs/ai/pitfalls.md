@@ -574,6 +574,18 @@ rigorous activity SI** for high-recovery / brine membrane scaling; read the
 index family as the convenient-but-unsafe shortcut.  The audit footer / CSV make
 the gap (`LSI − SI_calcite`) explicit.
 
+## Time-integrated cases (choupoCtrl / choupoSemiContinuous / choupoBatch)
+
+- **"The loop's flow keeps changing with the time step."**  A closed loop of
+  a constant-volume vessel and quasi-steady units with material leaving it and
+  no feed has no unit that sets the circulating flow; it is refused before
+  integrating (TI-02).  Feed it from outside through a quasi-steady `mixer`, or
+  give a vessel an outflow law.  See `unit-ops.md`, "Who sets the flow of a
+  loop".
+- **"The columns of trajectory.csv do not line up."**  They do: the column set
+  is fixed at t = 0 and every row has the header's field count (TI-01); an
+  item absent at an instant reads 0.  Read the file by column name.
+
 ## Recycle convergence
 
 ### Absolute `recycleTol` on a tear vector dominated by T

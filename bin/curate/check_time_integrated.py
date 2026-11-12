@@ -15,6 +15,16 @@ outcome; nothing is read from a stored result.
       columns must exist from the first row, be 0 there, and be > 0 at the end
       (the transfer put them in).  The runTests per-case arm (1b) holds the same
       shape on every shipped time-integrated case.
+
+  (b) TI-02  AN UNDETERMINED LOOP FLOW IS REFUSED BEFORE INTEGRATING.
+      unsteady03 with its mixer and splitter removed is a closed loop
+      TANK -> NF -> TANK in which the permeate LEAVES: no feed, no unit that
+      sets the flow (the vessel passes F_out = F_in), so the circulating flow
+      would shrink at every step and the answer depend on the time step.  It
+      must exit non-zero and the message must name the loop's units and
+      streams.  The POSITIVES must still run: unsteady03 and unsteady04 (a
+      feed-and-bleed loop: the flow is the balance of feed and splits) and
+      unsteady05 (a dynamicTank with an outflow law), each cut to a few steps.
 """
 import csv
 import shutil
@@ -99,6 +109,65 @@ def arm_a(tmp, bad):
     return len(h)
 
 
+def set_control(case, **kv):
+    import re
+    p = case / "system" / "controlDict"
+    t = p.read_text()
+    for k, v in kv.items():
+        t = re.sub(r"(?m)^" + k + r"\s+[^;]*;", k + " " + str(v) + ";", t)
+    p.write_text(t)
+
+
+def drop_unit(body, name):
+    k = body.index("name        " + name + ";")
+    a = body.rfind("    {", 0, k)
+    d, j = 0, a
+    while True:
+        if body[j] == "{":
+            d += 1
+        if body[j] == "}":
+            d -= 1
+            if d == 0:
+                break
+        j += 1
+    return body[:a] + body[j + 1:]
+
+
+def arm_b(tmp, bad):
+    uns = ROOT / "tutorials" / "unsteady"
+    case = make_case(tmp, "ti02", uns / "unsteady03_nf_feed_and_bleed_startup")
+    fs = case / "system" / "flowsheetDict"
+    s = fs.read_text()
+    i = s.index("units\n(")
+    body = drop_unit(drop_unit(s[i:], "MIX"), "SPLIT")
+    body = body.replace("in          ToTank;", "in          Retentate;")
+    fs.write_text(s[:i] + body)
+    for f in ("Recycle", "Feed", "ToTank"):
+        (case / "0" / f).unlink()
+    set_control(case, endTime=100, deltaT=5)
+    r, out = run(SEMI, case)
+    if r.returncode == 0:
+        bad.append("(b) the closed loop with a leak and no flow-setting unit RAN (exit 0)")
+    else:
+        for w in ("NO unit that sets its circulating flow", "TANK", "NF",
+                  "Retentate", "ModuleIn", "Permeate"):
+            if w not in out:
+                bad.append("(b) the refusal does not name '" + w + "'")
+    ok = []
+    for nm in ("unsteady03_nf_feed_and_bleed_startup",
+               "unsteady04_uf_feed_and_bleed_startup",
+               "unsteady05_tank_valve_drain"):
+        c = make_case(tmp, "pos_" + nm, uns / nm)
+        set_control(c, endTime=100, deltaT=5)
+        r, out = run(SEMI, c)
+        if r.returncode != 0 or "circulating flow" in out:
+            bad.append("(b) the well-posed " + nm + " was refused or failed: exit "
+                       + str(r.returncode))
+        else:
+            ok.append(nm.split("_")[0])
+    return ok
+
+
 def main():
     for b in (BATCH, SEMI, CTRL):
         if not b.exists():
@@ -110,6 +179,9 @@ def main():
         w = arm_a(tmp, bad)
         if w:
             notes.append(f"TI-01 fixture: {w}-field header held on every row")
+        ok = arm_b(tmp, bad)
+        notes.append("TI-02: the closed leaking loop is refused; " + ", ".join(ok)
+                     + " still run")
     if bad:
         print("check_time_integrated: FAILED")
         for b in bad:

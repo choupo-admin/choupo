@@ -802,6 +802,97 @@ try
             std::cout << "\n";
         }
     }
+    //  A CLOSED LOOP MUST HAVE A UNIT THAT SETS ITS FLOW (TI-02, 2026-11-12).
+    //  A constant-volume vessel passes F_out = F_in and every quasi-steady
+    //  unit's outflow is a function of its inflow, so on a loop made only of
+    //  such units nothing says how much circulates.  When the loop is fed
+    //  from outside (a domain inlet or a stream from another part of the
+    //  plant entering one of its units, e.g. the `Feed` of a mixer) the
+    //  circulating flow is a BALANCE of that feed and the splits; when a
+    //  vessel on it has an outflow law (`volumeMode variable`, `dynamicTank`)
+    //  that law sets it; when nothing leaves it the flow is simply the one
+    //  the 0/ files declare and stays.  The remaining case -- NO feed, NO
+    //  flow-setting unit, and material LEAVING the loop (a permeate, a bleed)
+    //  -- has a circulating flow that shrinks by what leaves at every
+    //  accepted step, so the answer depends on the time step.  It is a
+    //  mis-posed case and is refused here, before integrating, by name.
+    {
+        const std::size_t nU = units.size();
+        std::vector<std::vector<char>> reach(nU, std::vector<char>(nU, 0));
+        for (const auto& r : routes) reach[r.from][r.to] = 1;
+        for (std::size_t k = 0; k < nU; ++k)
+            for (std::size_t i = 0; i < nU; ++i)
+                if (reach[i][k])
+                    for (std::size_t j = 0; j < nU; ++j)
+                        if (reach[k][j]) reach[i][j] = 1;
+        std::map<std::string, std::size_t> producer;
+        for (std::size_t i = 0; i < unitList.size(); ++i)
+            if (unitList[i]->found("outputs"))
+                for (const auto& w : unitList[i]->lookupWordList("outputs"))
+                    producer[w] = i;
+        std::vector<char> seen(nU, 0);
+        for (std::size_t i = 0; i < nU; ++i)
+        {
+            if (seen[i] || !reach[i][i]) continue;
+            std::vector<std::size_t> scc;
+            std::vector<char> in(nU, 0);
+            for (std::size_t j = 0; j < nU; ++j)
+                if (j == i || (reach[i][j] && reach[j][i]))
+                { scc.push_back(j); in[j] = 1; seen[j] = 1; }
+            bool setsFlow = false, fedFromOutside = false;
+            std::vector<std::string> leaks, loopStreams;
+            for (auto u : scc)
+            {
+                if (units[u]->setsOutletFlow()) setsFlow = true;
+                std::vector<std::string> ins;
+                if (unitList[u]->found("inputs"))
+                    ins = unitList[u]->lookupWordList("inputs");
+                else if (unitList[u]->found("in"))
+                    ins = { unitList[u]->lookupWord("in") };
+                for (const auto& w : ins)
+                {
+                    auto it = producer.find(w);
+                    if (it == producer.end() || !in[it->second])
+                        fedFromOutside = true;
+                }
+                if (unitList[u]->found("outputs"))
+                {
+                    const auto outs = unitList[u]->lookupWordList("outputs");
+                    for (std::size_t k = 0; k < outs.size(); ++k)
+                    {
+                        bool stays = false;
+                        for (const auto& r : routes)
+                            if (r.from == u && r.fromPort == k && in[r.to])
+                            { stays = true; loopStreams.push_back(r.stream); }
+                        if (!stays) leaks.push_back(outs[k]);
+                    }
+                }
+            }
+            if (setsFlow || fedFromOutside || leaks.empty()) continue;
+            auto join = [](const std::vector<std::string>& v)
+            {
+                std::string s;
+                for (const auto& w : v) s += (s.empty() ? "" : ", ") + w;
+                return s;
+            };
+            std::vector<std::string> names;
+            for (auto u : scc) names.push_back(unitNames[u]);
+            throw std::runtime_error(cfg.binaryName + " routing: the loop through"
+                " units [" + join(names) + "] (streams " + join(loopStreams)
+                + ") has NO unit that sets its circulating flow, no feed"
+                " entering it, and material LEAVING it (" + join(leaks) + ").  Every"
+                " vessel on it passes F_out = F_in and every quasi-steady unit's"
+                " outflow follows its inflow, so the circulating flow would shrink"
+                " by what leaves at every accepted step and the answer would"
+                " depend on the time step.  Fix the case so something sets the"
+                " flow: feed the loop from outside (a `mixer` wrapped as"
+                " `quasiSteady` with a domain inlet in front of a vessel, as"
+                " unsteady03_nf_feed_and_bleed_startup does, so the flow is the"
+                " balance of feed and splits), or put on it a vessel with an"
+                " outflow law (a `dynamicCSTR` with `volumeMode variable` and an"
+                " `outflow {}` block, valve or manipulated flow, or a `dynamicTank`).");
+        }
+    }
     auto applyRoutes = [&]()
     {
         for (auto u : algebraicOrder)

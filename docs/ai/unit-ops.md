@@ -3419,6 +3419,26 @@ withholds the rung, naming why).  Example:
 `unsteady03_nf_feed_and_bleed_startup` (the start-up of membrane18's loop; it
 ends on membrane18's steady answer).
 
+**WHO SETS THE FLOW OF A LOOP (refused before integrating since 2026-11-12,
+review row TI-02).**  A constant-volume `dynamicCSTR` passes `F_out = F_in`
+and a quasi-steady unit's outflow follows its inflow, so on a loop made only
+of such units nothing says how much circulates.  The flow is determined when
+(i) the loop is FED from outside -- a domain inlet or a stream from another
+part of the plant enters one of its units, typically a `mixer` wrapped as
+`quasiSteady` with a `Feed` in front of the vessel, so the circulating flow is
+the balance of the feed and the splitter fractions (unsteady03, unsteady04);
+or (ii) a vessel on it has an OUTFLOW LAW (`volumeMode variable` with an
+`outflow {}` block, or a `dynamicTank`); or (iii) nothing leaves the loop, in
+which case the flow is the one `0/` declares and stays.  A closed loop with
+NO feed, NO flow-setting vessel and material LEAVING it (a membrane's
+permeate, a bleed) has a circulating flow that shrinks at every accepted step
+by what leaves, so the answer depends on the time step; the driver REFUSES it
+by name, listing the loop's units and streams and the remedies above.  The
+test is structural (a cycle of the routes, the declared `in`/`inputs`/
+`outputs`, and `DynamicUnitOperation::setsOutletFlow()`), not a reading of the
+numbers.  Held by `bin/curate/check_time_integrated.py`, which also runs the
+shipped loops to show they are not refused.
+
 ```
 { name NF;  type quasiSteady;
   in ModuleIn;  outputs ( Retentate  Permeate );
