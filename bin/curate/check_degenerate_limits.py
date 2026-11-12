@@ -620,11 +620,12 @@ def column_units(fs: Path):
             or re.search(r"\bmethod\s+(\w+)\s*;", blk)
         model = mm.group(1) if mm else "WangHenke"
         ins = re.search(r"\binputs\s*\(([^)]*)\)", top)
-        ins = ins.group(1).split() if ins else \
-            [re.search(r"\bin\s+(\S+?)\s*;", top).group(1)]
+        #  A `model totalReflux` column has no feed (C329): no `in` word.
+        _in = re.search(r"\bin\s+(\S+?)\s*;", top)
+        ins = ins.group(1).split() if ins else ([_in.group(1)] if _in else [])
         outs = re.search(r"\boutputs\s*\(([^)]*)\)", top)
-        outs = outs.group(1).split() if outs else \
-            [re.search(r"\bout\s+(\S+?)\s*;", top).group(1)]
+        _out = re.search(r"\bout\s+(\S+?)\s*;", top)
+        outs = outs.group(1).split() if outs else ([_out.group(1)] if _out else [])
         nu = {}
         if re.search(r"\breaction\b", blk):
             for sm in re.finditer(r"component\s+(\w+)\s*;\s*nu\s+(-?[\d.]+)",

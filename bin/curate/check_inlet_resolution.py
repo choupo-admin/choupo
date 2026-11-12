@@ -799,6 +799,13 @@ def arm_p(tmp: pathlib.Path, fail: list) -> str:
     src = DENSITY_SRC.read_text()
     m = re.search(r"scalar ThermoPackage::density\(.*?\n\}\n", src, re.S)
     body = strip_comments(m.group(0)) if m else ""
+    #  C331 moved the per-component liquid-volume body VERBATIM into
+    #  ThermoPackage::liquidMolarVolumeOf (density() calls it); the refusal
+    #  lives there now, so the source check reads both bodies.
+    m2 = re.search(r"scalar ThermoPackage::liquidMolarVolumeOf\(.*?\n\}\n",
+                   src, re.S)
+    if m and m2:
+        body += strip_comments(m2.group(0))
     if not body:
         fail.append("(p1) ThermoPackage::density not found")
     else:

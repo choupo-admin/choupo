@@ -180,7 +180,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
+| `nStages` |   | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
 | `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `refluxTemperature` |   | number | K | Temperature at which the reflux returns to the top stage, when it is SUBCOOLED below the distillate's bubble point (a total condenser fol… |
@@ -197,6 +197,9 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stag… |
 | `condenser` |   | object | — | The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStage… |
 | `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
+| `totalReflux` |   | object | — | Read only under `model totalReflux;`: no feed, no products. The c open degrees of freedom are closed by the boil-up (exactly one of `boil… |
+| `efficiency` |   | object | — | Computes each tray's Murphree efficiency from the `hydraulics` geometry, the tray traffic and the transport properties (AIChE correlation… |
+| `packing` |   | object | — | Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, E… |
 
 ## `compactionFit`  (compactionFit operation)
 
@@ -353,7 +356,7 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
-| `nStages` | ✓ | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
+| `nStages` |   | integer | — | Equilibrium stages between condenser and reboiler. Total stages = nStages + 2. |
 | `feedStage` |   | integer | — | 1-indexed stage where the single feed enters (1 = top tray below the condenser). Omit it when the column declares a `feeds` list, which i… |
 | `refluxRatio` |   | number | — | L/D, liquid returned to the column over distillate withdrawn. |
 | `refluxTemperature` |   | number | K | Temperature at which the reflux returns to the top stage, when it is SUBCOOLED below the distillate's bubble point (a total condenser fol… |
@@ -370,6 +373,9 @@ Multistage distillation column with constant molar overflow. Solved by the seque
 | `murphreeEfficiency` |   | number | - | Fraction of the equilibrium change each tray actually achieves; defaults to 1 (equilibrium stages). Any value other than 1 makes the stag… |
 | `condenser` |   | object | — | The condenser's own block. `type` decides what stage 1 IS, the same in every method: `total` (the default, announced when used) -- nStage… |
 | `hydraulics` |   | object | — | Present = run a hydraulic RATING on the converged profile, which the stage equations never do: can the trays pass the traffic? Give `diam… |
+| `totalReflux` |   | object | — | Read only under `model totalReflux;`: no feed, no products. The c open degrees of freedom are closed by the boil-up (exactly one of `boil… |
+| `efficiency` |   | object | — | Computes each tray's Murphree efficiency from the `hydraulics` geometry, the tray traffic and the transport properties (AIChE correlation… |
+| `packing` |   | object | — | Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, E… |
 
 ## `electricLoad`  (electricLoad operation)
 

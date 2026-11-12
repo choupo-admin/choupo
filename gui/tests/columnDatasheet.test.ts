@@ -23,8 +23,8 @@
 
   WHAT THE WITNESS IS.  A benzene/toluene column, 15 stages, feed on stage 8,
   the hydraulics in DESIGN mode (the case declares no `diameter`, so the pass
-  designs one).  The rectifying trays need 1.22206 m and the stripping trays
-  0.96948111 m -- 20.67 % apart -- so the tower is built STRAIGHT at
+  designs one).  The rectifying trays need 1.22193 m and the stripping trays
+  0.96944338 m -- 20.66 % apart -- so the tower is built STRAIGHT at
   1.22206 m, the WIDER of the two, and Choupo prices no transition cone.  The
   worst tray is stage 7, at 80.0 % of flood.
 
@@ -54,7 +54,7 @@
   AND THE GAP CROSSED ITS OWN RULE OF THUMB.  Whether to swage is ECONOMIC and
   Choupo does not decide it: below roughly 15-20 % difference the transition
   cone costs more than the plate a narrower section saves, and the old 8.08 %
-  was comfortably below that.  Today's 20.67 % is ABOVE it -- the first
+  was comfortably below that.  Today's 20.66 % is ABOVE it -- the first
   geometry in this corpus where a real designer would actually price a swaged
   tower -- and Choupo STILL builds straight and prices no cone, because it has
   no correlation for one (`ColumnSize` says so at the site, and
@@ -137,17 +137,17 @@ outlets
 
 sizing
 {
-    D                     1.22206 m;
-    D_rectifying          1.22206 m;
-    D_stripping           0.96948111 m;
+    D                     1.2219297 m;
+    D_rectifying          1.2219297 m;
+    D_stripping           0.96944338 m;
     H                     9.2 m;
-    V_R                   10.791027 m3;
+    V_R                   10.788726 m3;
     nTrays                [0 0 0 0 0] 14;
     pressureDesign        2 bar;
-    swageGap              [0 0 0 0 0] 0.2066829;
-    t_wall                0.0038736489 m;
+    swageGap              [0 0 0 0 0] 0.20662918;
+    t_wall                0.0038735557 m;
     traySpacing           0.5 m;
-    weight                1074.0392 kg;
+    weight                1073.8989 kg;
 }
 
 //  Inputs this sizer was not given and supplied itself.  Each was announced at
@@ -160,21 +160,21 @@ cost
     currency        EUR;
     sizeKey         V_R;
     correlation     log-quadratic;
-    purchased       22602.637;
-    bareModule      91992.734;
-    totalModule     108551.43;
+    purchased       22599.406;
+    bareModule      91979.584;
+    totalModule     108535.91;
     factors
     {
         B1                  2.25;
         B2                  1.82;
         C_TM_over_C_BM      1.18;
-        Cp_2001             11894.548;
+        Cp_2001             11892.848;
         F_M                 1;
         F_P                 1;
         K1                  3.4974;
         K2                  0.4485;
         K3                  0.1074;
-        S                   10.791027;
+        S                   10.788726;
         cepci               820;
         cepci2001           397;
         usdToEur            0.92;
@@ -248,8 +248,8 @@ outlets
 
 sizing
 {
-    A                     1.1729377 m2;
-    D                     1.22206 m;
+    A                     1.1726876 m2;
+    D                     1.2219297 m;
     nTrays                [0 0 0 0 0] 14;
     traySpacing           0.5 m;
 }`;
@@ -534,15 +534,15 @@ describe("the tower is drawn from the sheets and nothing else", () => {
     const notes = d.notes.map((n) => n.text).join(" | ");
     //  RECTIFYING is now the WIDER section -- see the header.  The labels are
     //  `fmt` at 4 significant figures (equipmentSchematic.ts:86), so 1.22206
-    //  renders 1.222 and 0.96948111 renders 0.9695.
+    //  renders 1.222 and 0.96944338 renders 0.9694.
     expect(notes).toContain("the rectifying trays need ⌀1.222 m");
-    expect(notes).toContain("the stripping trays need ⌀0.9695 m");
+    expect(notes).toContain("the stripping trays need ⌀0.9694 m");
     //  The gap is the ENGINE's: `swageGap = (big - sml) / big` at
     //  ColumnSize.cpp:302, published on the sheet, and the caption only
-    //  multiplies it by 100 (equipmentSchematic.ts:470).  0.2066829 -> 20.67.
-    expect(notes).toMatch(/20\.67 % apart/);
+    //  multiplies it by 100 (equipmentSchematic.ts:470).  0.20662918 -> 20.66.
+    expect(notes).toMatch(/20\.66 % apart/);
     expect(notes).toMatch(/sizes the shell STRAIGHT/);
-    //  20.67 % is ABOVE the 15-20 % rule of thumb, where a real designer would
+    //  20.66 % is ABOVE the 15-20 % rule of thumb, where a real designer would
     //  price a swaged tower -- and the tower is STILL not swaged, because
     //  Choupo prices no transition cone in ANY case.  That is why no drawing
     //  here ever shows one, and why this assertion did not have to change when
@@ -552,7 +552,7 @@ describe("the tower is drawn from the sheets and nothing else", () => {
     expect(d.svg).not.toMatch(/swage transition|transition cone drawn/);
     //  Both section diameters are on the DRAWING too: the narrower one beside
     //  the dashed outline, the built one on the diameter line.
-    expect(d.svg).toContain("⌀0.9695 m");
+    expect(d.svg).toContain("⌀0.9694 m");
     expect(d.svg).toContain("D 1.222 m");
   });
 
@@ -679,7 +679,7 @@ describe("a number the case declared does not look like a number Choupo computed
     //  EVERY note either states a provenance or is prose about the drawing.
     //  A dimension with no provenance is the state this page exists to end.
     expect(notes.filter((n) => n.who === null).map((n) => n.text))
-      .toEqual([expect.stringContaining("20.67 % apart")]);
+      .toEqual([expect.stringContaining("20.66 % apart")]);
   });
 });
 
