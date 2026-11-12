@@ -177,6 +177,9 @@ NC_COMPILATION = {
         "the report has no N2H3 entry (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
 }
 
+#  basis01_two_unit_chain LEFT 2026-11-12 (C335): the importer's validator
+#  read `energyClosures` as a dict; fixed, re-imported, no row moved.
+#
 #  NO_GRANT_CASE_LOCAL -- case-local records naming a no-grant compilation
 #  (Engineering Toolbox, REFPROP) as the origin of a value (2026-10-11, DEV.md
 #  4c C65 item c).  Every entry is a SEALED MIRROR of
@@ -217,8 +220,6 @@ NO_GRANT_CASE_LOCAL = {
     "tutorials/plant/greenAmmonia02_feasibility50bar/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/plant/greenAmmoniaPEQ_baseCase/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/thermo/basis01_two_unit_chain/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
 }
 
