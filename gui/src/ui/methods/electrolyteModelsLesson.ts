@@ -128,19 +128,24 @@ export const EM_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "Davies (AqueousActivity.cpp, line 142): the limit, softened by "
           + "a closest-approach factor, plus a linear term with the same "
-          + "fixed coefficient 0.3 for every salt.  Nothing in it knows "
+          + "fixed coefficient 0.3 for every salt (the form printed as eq 17 by "
+          + "Plummer and Busenberg 1982, who attribute it to Davies 1962; "
+          + "the engine uses 0.3).  Nothing in it knows "
           + "which ions they are.",
         eq: String.raw`\ln\gamma_i = -\ln(10)\,A\,z_i^2\left(\frac{\sqrt{I}}{1+\sqrt{I}} - 0.3\,I\right)` },
-      { step: "Pitzer (PitzerSingleSalt.H, lines 191-201): the limit in an "
+      { step: "Pitzer (PitzerSingleSalt.H, lines 191-201; the form of Pitzer and "
+          + "Mayorga 1973, eqs 3 and 6-11): the limit in an "
           + "extended form f, then a second and a third virial coefficient "
           + "of the salt -- B depends on the ionic strength through "
-          + "beta(0) and beta(1) (a 2-2 salt adds a beta(2)), C is a constant.  Three numbers per salt "
-          + "(four for a 2-2 salt), "
+          + "beta(0) and beta(1), and through a third parameter beta(2) in the "
+          + "records that carry one (Pitzer and Kim 1974 add it for 2-2 salts; "
+          + "the catalogue's CaCl2 and MgSO4 records carry one), C is a constant.  "
+          + "Three numbers per salt, four where a record carries beta(2), "
           + "read from its record in the catalogue.",
         eq: String.raw`\ln\gamma_\pm = \lvert z_+ z_-\rvert f^\gamma + m\,\frac{2\nu_+\nu_-}{\nu}\,B^\gamma + m^2\,\frac{2(\nu_+\nu_-)^{3/2}}{\nu}\,C^\gamma` },
       { step: "with the extended limit and the second virial coefficient "
           + "(PitzerForm.H, lines 98-103 and 259-262; PitzerSingleSalt.H, line 199):",
-        eq: String.raw`f^\gamma = -A_\phi\left[\frac{\sqrt{I}}{1+b\sqrt{I}} + \frac{2}{b}\ln\left(1+b\sqrt{I}\right)\right], \qquad B^\gamma = 2\beta^{(0)} + \frac{2\beta^{(1)}}{\alpha^2 I}\left[1-\left(1+\alpha\sqrt{I}-\frac{\alpha^2 I}{2}\right)e^{-\alpha\sqrt{I}}\right], \qquad C^\gamma = \tfrac{3}{2}C^\phi` },
+        eq: String.raw`f^\gamma = -A_\phi\left[\frac{\sqrt{I}}{1+b\sqrt{I}} + \frac{2}{b}\ln\left(1+b\sqrt{I}\right)\right], \qquad B^\gamma = 2\beta^{(0)} + \frac{2\beta^{(1)}}{\alpha_1^2 I}\left[1-\left(1+\alpha_1\sqrt{I}-\frac{\alpha_1^2 I}{2}\right)e^{-\alpha_1\sqrt{I}}\right] + \frac{2\beta^{(2)}}{\alpha_2^2 I}\left[1-\left(1+\alpha_2\sqrt{I}-\frac{\alpha_2^2 I}{2}\right)e^{-\alpha_2\sqrt{I}}\right], \qquad C^\gamma = \tfrac{3}{2}C^\phi` },
       { step: "eNRTL (ENRTLSingleSalt.H, lines 90 and 154): a Pitzer-Debye-"
           + "Hückel long-range term and an NRTL local-composition term for "
           + "each ion, averaged like the limit above, on the mole-fraction "
@@ -159,7 +164,10 @@ export const EM_STEPS: readonly LessonStep[] = [
       { sym: "\\beta^{(0)}", means: "the salt's first Pitzer parameter, from its catalogue record", unit: "kg/mol" },
       { sym: "\\beta^{(1)}", means: "the salt's second Pitzer parameter, from its catalogue record", unit: "kg/mol" },
       { sym: "C^\\phi", means: "the salt's third Pitzer parameter, from its catalogue record", unit: "(kg/mol)^2" },
-      { sym: "\\alpha", means: "the ionic-strength scale of beta(1), 2.0 for salts with a univalent ion", unit: "(kg/mol)^1/2" },
+      { sym: "\\beta^{(2)}", means: "the salt's optional fourth Pitzer parameter, zero unless its catalogue record carries one", unit: "kg/mol" },
+      { sym: "\\alpha_1", means: "the ionic-strength scale of beta(1): 2.0 for salts with a univalent ion "
+        + "(Pitzer and Mayorga 1973, p. 2301), 1.4 for 2-2 salts (Pitzer and Kim 1974, p. 5702)", unit: "(kg/mol)^1/2" },
+      { sym: "\\alpha_2", means: "the ionic-strength scale of beta(2), 12.0 (Pitzer and Kim 1974, p. 5702)", unit: "(kg/mol)^1/2" },
       { sym: "e", means: "the base of the natural logarithm" },
       { sym: "\\gamma_\\pm^{x}", means: "eNRTL's mean coefficient on the mole-fraction scale, before conversion" },
       { sym: "\\gamma_+^{\\mathrm{PDH}}", means: "the cation's long-range (Pitzer-Debye-Hückel) factor in eNRTL" },
@@ -208,10 +216,11 @@ export const EM_STEPS: readonly LessonStep[] = [
       + "Water flows to the salty side until the pressure there rises by the "
       + "osmotic pressure, so that is the least pressure a pump must add to "
       + "push water the other way.  It depends on the activity of the water, "
-      + "and therefore on the model.  An ideal solution (phi = 1) is van 't "
-      + "Hoff's law; the measured osmotic coefficient below 1 lowers the "
+      + "and therefore on the model.  An ideal solution (phi = 1) gives van 't "
+      + "Hoff's law in its molality form (nu m RT times the density of pure water, "
+      + "not the molarity of the solution); the measured osmotic coefficient below 1 lowers the "
       + "pressure, and where it passes 1 (for NaCl, between 2 and 2.5 mol/kg "
-      + "in the table) the pressure rises past van 't Hoff's.",
+      + "in the table) the pressure rises past the ideal one.",
     derivation: [
       { step: "At equilibrium across the membrane the water's chemical "
           + "potential is the same on both sides: pure water at P on one, "
@@ -276,7 +285,10 @@ export const EM_LIMITS: readonly LessonLimit[] = [
       + "their parameters at 25 °C only (three carry a temperature "
       + "dependence), and the single-salt eNRTL scales its two energies as "
       + "tau(T) = tau(25 °C) x 298.15/T and nothing else "
-      + "(ENRTLSingleSalt.H, line 84).  Neither is tested here away from 25 °C.",
+      + "(ENRTLSingleSalt.H, line 84), which is the engine's own simplification, "
+      + "not the form Chen and Evans (1986, eq 45) give, "
+      + "tau = a + b(1/T - 1/298.15) + c(...) with fitted b and c.  "
+      + "Neither model is tested here away from 25 °C.",
   },
   {
     id: "in-sample",
@@ -287,7 +299,12 @@ export const EM_LIMITS: readonly LessonLimit[] = [
       + "Na2SO4 the regression held every fourth row out "
       + "(ElectrolyteFit.H, line 70); those rows are interleaved points of "
       + "the same source and cannot contradict it.  The page reads each "
-      + "record's own source line and says which comparisons are in-sample.",
+      + "record's own source line and says which comparisons are in-sample.  "
+      + "The Pitzer records and the NaCl eNRTL record are not regressed to a "
+      + "table in this tree, but their authors fitted them to measurements of "
+      + "the same salts at 25 °C (Pitzer and Mayorga 1973 fitted the osmotic "
+      + "coefficients; Chen et al. 1982, Table 1, those of NaCl), so at 25 °C "
+      + "their small errors also show the quality of a fit, not a prediction.",
   },
   {
     id: "dilute",
@@ -307,8 +324,10 @@ export const EM_LIMITS: readonly LessonLimit[] = [
   {
     id: "davies-range",
     title: "Davies is drawn only up to I = 2 mol/kg, and its water is ideal.",
-    body: "Four times the band its author stated is far enough to see it "
-      + "leave.  Its water activity is the ideal one on the species it "
+    body: "Two mol/kg is far beyond the ionic strengths at which an "
+      + "equation of this kind is normally used, far enough to see it "
+      + "leave (this page has no source for the band its author stated).  "
+      + "Its water activity is the ideal one on the species it "
       + "carries, so its osmotic coefficient is a statement about ion "
       + "pairing, not about the water.",
   },

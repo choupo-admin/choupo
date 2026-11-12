@@ -2524,7 +2524,7 @@
         {
           "text": "Davies, C. W. (1938). The extent of dissociation of salts in water. Part VIII. An equation for the mean ionic activity coefficient of an electrolyte in water, and a revision of the dissociation constants of some sulphates. J. Chem. Soc., 2093–2098.",
           "doi": "10.1039/JR9380002093",
-          "note": "Davies' equation: the limiting law with one fixed correction for every salt.",
+          "note": "Davies' equation: the limiting law with one fixed correction for every salt. The 0.3 I form quoted on the page is printed by Plummer and Busenberg (1982, eq 17), who cite Davies (1962); the 1938 paper was not read.",
           "verified": {
             "method": "crossref",
             "evidence": "api.crossref.org/works/10.1039/JR9380002093: author, title, container, page and year matched (electrolyte-models EduTool)",
@@ -2552,9 +2552,27 @@
           }
         },
         {
+          "text": "Chen, C.-C.; Britt, H. I.; Boston, J. F.; Evans, L. B. (1982). Local composition model for excess Gibbs energy of electrolyte systems. Part I: Single solvent, single completely dissociated electrolyte systems. AIChE J. 28(4), 588–596.",
+          "note": "The original eNRTL paper: alpha = 0.2, rho = 14.9, the molal conversion, and Table 1 (p. 592) with the water-NaCl energies 8.885 and -4.549 the catalogue carries.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Articles/Electrolytes/chen1982-local-composition-electrolyte-part1.pdf read: title, authors, AIChE J. Vol. 28 No. 4, July 1982, pages 588-596 (page headers 590-593 seen); not checked on Crossref (electrolyte-models review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Plummer, L. N.; Busenberg, E. (1982). The solubilities of calcite, aragonite and vaterite in CO2-H2O solutions between 0 and 90 °C, and an evaluation of the aqueous model for the system CaCO3-CO2-H2O. Geochim. Cosmochim. Acta 46, 1011–1040.",
+          "note": "Prints the Davies equation with the 0.3 I term (eq 17, p. 1017).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/Articles/Electrolytes/plummer1982-calcite-aragonite-vaterite-solubility.pdf read: first page gives title, authors, GCA Vol. 46 pp. 1011-1040; eq 17 on p. 1017 seen as an image (electrolyte-models review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
           "text": "Chen, C.-C.; Evans, L. B. (1986). A local composition model for the excess Gibbs energy of aqueous electrolyte systems. AIChE J. 32(3), 444–454.",
           "doi": "10.1002/aic.690320311",
-          "note": "The electrolyte-NRTL model, and the source of the catalogue's water-NaCl parameters.",
+          "note": "The electrolyte-NRTL model; its Table 1 (p. 448) lists water-NaCl energies -4.5916 and 9.0234, which are NOT the 8.885 and -4.549 the catalogue's NaCl record carries (those are in Chen et al. 1982, Table 1, p. 592).",
           "verified": {
             "method": "crossref",
             "evidence": "api.crossref.org/works/10.1002/aic.690320311: authors, title, container, volume, pages and year matched (electrolyte-models EduTool)",

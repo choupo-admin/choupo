@@ -117,6 +117,32 @@ describe("the measured points are the tree's", () => {
   });
 });
 
+describe("the tables against the printed sources (checked by eye against the works, 2026-11-12)", () => {
+  it("NaCl rows equal Hamer and Wu 1972 Table 16 (p. 1067): m, gamma, phi", () => {
+    const t = measuredTable(NaCl);
+    const row = (m: number) => t.rows.find((r) => r.m === m)!;
+    expect([row(0.1).gamma, row(0.1).phi]).toEqual([0.779, 0.933]);
+    expect([row(1).gamma, row(1).phi]).toEqual([0.657, 0.936]);
+    expect([row(2).gamma, row(2).phi]).toEqual([0.668, 0.984]);
+    expect([row(6).gamma, row(6).phi]).toEqual([0.986, 1.27]);
+  });
+  it("Na2SO4 and CaCl2 rows equal Goldberg 1981 (p. 695) and Goldberg and Nuttall 1978 (Table 20)", () => {
+    const n = measuredTable(Na2SO4).rows.find((r) => r.m === 0.1)!;
+    expect([n.gamma, n.phi]).toEqual([0.4457, 0.7869]);
+    const c = measuredTable(CaCl2).rows.find((r) => r.m === 2)!;
+    expect([c.gamma, c.phi]).toEqual([0.7842, 1.3754]);
+  });
+  it("Davies at I = 0.5 for NaCl, by hand with 0.3 I (Plummer and Busenberg 1982 eq 17): 0.7332, +7.67 % on 0.681", () => {
+    const g = Math.pow(10, -0.51 * (Math.sqrt(0.5) / (1 + Math.sqrt(0.5)) - 0.3 * 0.5));
+    expect(g).toBeCloseTo(0.73325, 4);
+    expect(100 * (g / 0.681 - 1)).toBeCloseTo(7.67, 2);
+  });
+  it("the lesson's Pitzer B carries the beta(2) term the CaCl2 and MgSO4 records use", () => {
+    const eq = JSON.stringify(EM_STEPS.map((x) => (x.derivation ?? []).map((d) => d.eq)));
+    expect(eq).toContain("beta^{(2)}");
+  });
+});
+
 describe("in-sample or not is read from each record's own source line", () => {
   it("eNRTL: KCl, CaCl2 and Na2SO4 were regressed to these tables; NaCl was not", () => {
     const v = (s: typeof NaCl) => inSampleAgainst(pairRecord(s, "eNRTL"), measuredTable(s));
@@ -124,6 +150,10 @@ describe("in-sample or not is read from each record's own source line", () => {
     expect(v(KCl)).toMatchObject({ inSample: true, heldOutRows: false });
     expect(v(CaCl2)).toMatchObject({ inSample: true, heldOutRows: true });
     expect(v(Na2SO4)).toMatchObject({ inSample: true, heldOutRows: true });
+  });
+
+  it("a record not regressed here still says its error is the quality of a fit", () => {
+    expect(inSampleAgainst(pairRecord(NaCl, "Pitzer"), measuredTable(NaCl)).why).toContain("quality of a fit");
   });
 
   it("Pitzer: none of the four records names these tables", () => {

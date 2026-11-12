@@ -409,7 +409,7 @@ export function ElectrolyteModelsTool(): JSX.Element {
                       <Table.Td>{h ? `${fmt(h.aadPct, 2)} % (${h.n} rows)` : "—"}</Table.Td>
                       <Table.Td>
                         <Badge size="xs" variant="light" color={m.inSample.startsWith("yes") ? "yellow" : "gray"}>
-                          {m.inSample.startsWith("yes") ? "in-sample" : "not fitted to it"}
+                          {m.inSample.startsWith("yes") ? "in-sample" : "not regressed in this tree"}
                         </Badge>{" "}
                         <Text span size="xs">{m.inSample.replace(/^(yes|no): /, "")}</Text>
                         {rec && <Text size="xs" c="dimmed" style={{ overflowWrap: "anywhere" }}>{rec.file}: source "{rec.source}"</Text>}
@@ -480,7 +480,7 @@ export function ElectrolyteModelsTool(): JSX.Element {
           <Text size="xs" c="dimmed">
             The models' a_w are the engine's; the measured row's a_w is this page's, from the table's φ by
             ln a_w = −ν m M_w φ with ν = {nuOf(s)} and M_w = {M_WATER} kg/mol; the ideal row is φ = 1, van 't
-            Hoff's law. Π = −(R T / V̄_w) ln a_w with R = {R_GAS} J/(mol K), T = {T_25} K and
+            Hoff's law in its molality form (pure-water molar volume, not the solution's molarity). Π = −(R T / V̄_w) ln a_w with R = {R_GAS} J/(mol K), T = {T_25} K and
             V̄_w = {(V_WATER_25 * 1e5).toFixed(3)} × 10⁻⁵ m³/mol, the engine's molar volume of water at 25 °C;
             1 bar = 10⁵ Pa.
           </Text>

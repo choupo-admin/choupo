@@ -2186,7 +2186,7 @@ The page starts from the term every model shares, the Debye--Hückel limit
 $\ln\gamma_\pm = -3A_\phi\lvert z_+z_-\rvert\sqrt{I}$ with the engine's
 $A_\phi = 0.3915$ at 25\,\textdegree C, drawn alone against the measured table
 of the salt the student picks.  It then writes what Davies (a fixed correction,
-charge only), Pitzer (short-range virial terms per cation--anion pair) and
+charge only), Pitzer (short-range virial terms per cation--anion pair, with a $\beta^{(2)}$ term in the records that carry one) and
 eNRTL (a local-composition term with water and the salt as species) add, each
 equation read from the source file it names.  The student picks NaCl, KCl,
 CaCl$_2$ or Na$_2$SO$_4$; the page draws $\gamma_\pm$ and $\phi$ under each
@@ -2234,13 +2234,16 @@ $I = 0.6$\,mol/kg --- the specific interaction Davies lacks, declared as
 chemistry --- and leaves again above it (+19\,\% at $I = 1.8$).  On CaCl$_2$, compare
 Pitzer and eNRTL: eNRTL was fitted to this very table and still misses it by
 up to 4.6\,\%.  In step~4, pick 1\,mol/kg of NaCl: Davies' water is ideal, so
-its osmotic pressure is van~'t Hoff's.
+its osmotic pressure is the ideal one, van~'t Hoff's law in its molality form (pure-water molar volume, not the solution's molarity).
 \end{tryit}
 
 \begin{pitfall}
 \textbf{A small error on a fitted table.}  An error on the points a model was
 regressed to shows that the fit worked, not that the model predicts; the
-page says which comparisons are in-sample.
+page says which comparisons are in-sample.  The Pitzer records and the NaCl eNRTL
+record are not regressed to a table in this tree, but their authors fitted them to
+measurements of the same salts at 25\,\textdegree C, so their small errors there
+also show the quality of a fit, not a prediction.
 \end{pitfall}
 
 \subsubsection*{What this tool does not carry}
@@ -2248,7 +2251,7 @@ page says which comparisons are in-sample.
 Everything is at 25\,\textdegree C, with no temperature control: 96 of the
 catalogue's 99 Pitzer pair records hold their parameters at 25\,\textdegree C
 only, and the single-salt eNRTL scales its two energies by $298.15/T$ and
-nothing else; neither is tested here away from 25\,\textdegree C.  The
+nothing else (the engine's own simplification, not the form of Chen and Evans, 1986, eq.~45); neither is tested here away from 25\,\textdegree C.  The
 measured tables start at 0.1\,mol/kg.  Only single salts in water are compared
 with measurements; \code{pitzerHMW}, the mixed-solvent eNRTL and
 \code{edwardsPitzer} appear only as answers in step~5.  Davies is drawn up to

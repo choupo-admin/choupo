@@ -111,5 +111,9 @@ export function inSampleAgainst(rec: PairRecord | null, t: MeasuredTable): Sampl
       inSample: true, heldOutRows: false,
       why: `its source line names ${first}, the author of this table: a refit to it`,
     };
-  return { inSample: false, heldOutRows: false, why: "not regressed to this table in the tree" };
+  return {
+    inSample: false, heldOutRows: false,
+    why: "not regressed to this table in the tree; but the source it names fitted the parameters "
+      + "to measurements of this salt at 25 °C, so the error is the quality of a fit, not a prediction",
+  };
 }
