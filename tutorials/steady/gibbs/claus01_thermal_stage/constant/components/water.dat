@@ -1,8 +1,21 @@
-// [imported] origin "data/standards/components/water.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/components/water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Water  (H2O, CAS 7732-18-5)
-  Warning: Antoine fit accurate for 273-373 K only.
-           Above ~373 K use steam tables or a proper EoS (IAPWS).
+  Warning: the Antoine fit below is NOT accurate over its whole declared
+           Trange.  Measured 2026-09-27 against the IAPWS saturation
+           equation (IAPWS SR1-86(1992), Eq. 1, which reproduces its own
+           Table 1 check values to 2e-7): -0.07 % at 273.16 K, -0.10 % at
+           298.15 K, +0.03 % at 313.15 K, +0.49 % at 333.15 K, +1.32 % at
+           353.15 K and +2.47 % at 373.15 K -- so this fit puts water's own
+           normal boiling point at 372.45 K, not at the Tb 373.15 declared
+           below.  Above 373 K it extrapolates (+6.4 % at 423 K, +18 % at
+           573 K).  Use the Antoine block only below ~313 K; above that, a
+           case that needs water's saturation curve should opt in to the
+           IAPWS equation (vapour-pressure model `Wagner`, see
+           docs/design/what-water-dat-does-not-say.md) or to the IAPWS-IF97
+           pure-fluid route (`pureFluids { water { method IF97; } }`).
+           Replacing this block in the catalogue is RESERVED for Vitor: it
+           moves goldens once the sealed cases are re-imported.
   Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), the Antoine
            fit, the Cp polynomials and the ideal-gas formation datum
            (dHf_298/s_298, JANAF convention) are individual literature
@@ -10,6 +23,27 @@
            and the Andrade/Vogel viscosity fits repeat the same pending
            re-citation at their blocks; UNIQUAC r,q are the van der Waals
            values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
+  Cross-checks against primaries (2026-09-27; values NOT changed, because
+  a changed value here moves goldens once the sealed mirrors are re-imported,
+  and that is Vitor's to see first):
+    Pc      220.64 bar  = IAPWS SR1-86(1992) Sec. 2, pc = 22.064 MPa (agrees).
+    Tc      647.14 K    ; SR1-86 Sec. 2 gives 647.096 K on ITS-90 and notes
+                          it is the IAPS 1983 value converted to ITS-90
+                          (0.044 K apart).
+    Tb      373.15 K    ; SR1-86 Table 1: p = 101325 Pa at 373.1243 K.
+    HvapTb  40660 J/mol ; SR1-86 Table 1 at 373.1243 K: h'' - h' =
+                          2675.7 - 419.05 kJ/kg = 40653.5 J/mol at MW 18.015.
+    omega   0.3449      ; from SR1-86 Eq. 1 at T = 0.7 x 647.096 K: 0.3443.
+    dHf_298 (gas)       = CODATA Key Values (Cox, Wagman & Medvedev 1989),
+                          H2O(g): -241.826 +/- 0.040 kJ/mol (agrees).
+    s_298   (gas)       ; CODATA Key Values: 188.835 +/- 0.010 J/(mol K);
+                          this record's 188.834 is inside that uncertainty.
+    The LIQUID datum is NOT stored here (one formation datum per component;
+    check_record_form).  The engine DERIVES it through the Watson latent
+    heat at 298.15 K, which gives -286.40 kJ/mol against the CODATA Key
+    Value for H2O(l), -285.830 +/- 0.040 kJ/mol: the derivation, not the
+    datum, is what is 0.57 kJ/mol off (Watson with this record's Tc/Tb/HvapTb
+    overstates the 298.15 K latent heat by 1.33 % against SR1-86).
 \*---------------------------------------------------------------------------*/
 
 name        water;
@@ -149,6 +183,75 @@ liquidViscosity
     vogel   { A -10.5366; B 541.4; C 144.0; }
 }
 
+//  ---- LIQUID THERMAL CONDUCTIVITY (added 2026-09-27) -----------------------
+//  Form 16 of the ChemSep equation set (the model key `chemsepEq16`),
+//      k [W/(m K)] = A + exp(B/T + C + D T + E T^2),
+//  with coefficients DERIVED here -- not transcribed from any databank -- by
+//  a least-squares fit to the IAPWS 2011 thermal-conductivity formulation of
+//  ordinary water (IAPWS R15-11, Plzen 2011, eqs. 15-17, Tables 1-2) along the
+//  SATURATED-LIQUID line, 273.16-573.15 K in 1 K steps (300 points).  The
+//  formulation is the one already in the tree (src/thermo/iapws/
+//  IAPWSTransport.cpp, verified against the release's own Table 4 on every
+//  run), evaluated at the IAPWS-IF97 region-1 density on psat(T)
+//  (src/thermo/iapws/IF97.cpp, verified against the IF97 release tables).
+//
+//  THE FIT, AND ITS RESIDUAL, since a fitted record without its residual is a
+//  number nobody can check.  Form 16 is over-parameterised for water: a free
+//  A runs off to minus infinity (the form degenerates into a polynomial in
+//  the exponent), so A is FIXED by the curator at -1 W/(m K) and B, C, D, E
+//  are the weighted linear least-squares solution for ln(k - A) (weight
+//  ((k-A)/k)^2, i.e. relative error in k).  Against the IAPWS values the
+//  fit's RMS relative deviation is 0.14 % and its MAXIMUM is 0.64 %, at the
+//  triple point (+0.64 %); at 298.16 K it is -0.18 %, at 373.16 K +0.07 %,
+//  at 473.16 K -0.02 % and at 572.16 K +0.45 %.  The formulation's OWN
+//  estimated uncertainty on the saturated-liquid line is 0.7 % (R15-11
+//  Sec. 2.5), so the fit adds less than the formulation already carries.
+//
+//  WHAT IT IS NOT.  (1) It is the BACKGROUND conductivity only: the kernel
+//  omits the release's critical-enhancement term, which grows toward Tc and
+//  is not quantified here -- that, not the fit, is why the window stops at
+//  573.15 K.  (2) It is the SATURATED liquid; the pressure dependence of a
+//  compressed liquid is small but not modelled by a T-only form.  (3) No
+//  corpus case reads it today: no case selects `chemsepEq16` with water in
+//  its component list (one props case selects the predictive SatoRiedel,
+//  which reads no record block), and `chemsepEq16` REFUSED water by name
+//  before this block existed.  So this block moves no golden.
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -1.0;
+        B     -128.61843;
+        C     0.89906926;
+        D     0.00048843274;
+        E     -1.5744065e-06;
+        Tmin  273.16;
+        Tmax  573.15;
+    }
+}
+
+surfaceTension
+{
+    A     0.1171452505;
+    B     0;
+    Tc    647.14;
+    n     0.7997567931;
+    Tmin  249.9;
+    Tmax  353.15;
+}
+
+provenance
+{
+    liquidThermalConductivity
+    {
+        origin        regressed;
+        method        "least-squares fit of ChemSep form 16 (A fixed at -1) to IAPWS R15-11 background conductivity of saturated liquid water, rho from IAPWS-IF97 region 1 at psat(T), 300 points 273.16-573.15 K";
+        validity      (273.16 573.15);
+        uncertainty   "fit residual vs IAPWS R15-11: RMS 0.14 %, max 0.64 % (at 273.16 K); critical enhancement omitted";
+        notes         "IAPWS R15-11 cover page: publication in whole or in part is allowed in all countries provided that attribution is given to IAPWS";
+    }
+}
+
 groups
 {
     unifac ( { group H2O; count 1; } );
@@ -190,5 +293,87 @@ cosmo
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1076-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7732-18-5";
         licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 2.710171;
+        Trange        (249.9 353.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1007/s10765-010-0725-9"; articleSha256 "570a1285ebe8035e1242edafe3150d605a910ad3ba9ea982e2bb8a59fc5da485"; pointsKept 15; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2007.05.029"; articleSha256 "f06f6dbbb8dd2782658f7418f2aceebfb92b5eac7ec5429dc8354696fa234d5b"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2009.07.010"; articleSha256 "053d0eaafe411a6ab6e34dead9eaccdb98658f4e11fa1fd93f1a55dcdb4c093e"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2012.01.014"; articleSha256 "bc60a290a278322f5a65a65e7a24e129b84e4e6b8ec1ae4b3ffa047d1d3156a9"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2012.05.007"; articleSha256 "f32e921270d73de51be837083782f85e3e158b161284fcf9142b071e3a7ea9a3"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2014.12.040"; articleSha256 "f9cfdcab0386a53af6fc50263296cbdc01a02097e145f7128f3c9fa04bd827b1"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2015.03.040"; articleSha256 "aafcac987d98a7c0e274e7a80af0ecf7df9acf02c029667b9c2bf741004271ea"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2015.07.022"; articleSha256 "e678dc6e57b787e2da7b4a56a45d9854ed41325ff4d242d765804edca9df6c2a"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2018.08.011"; articleSha256 "dfb669ab50867ca5488075aad5f1ff96f242cf4aa745e3f23aad4476a34b4d34"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2009.07.018"; articleSha256 "e3f285767094f57d02c6162bc22289f4fb84257f68c722596abf043f6b2fd57f"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2010.09.003"; articleSha256 "af418740f9a2d90df5f9d6a0d4a77d4cc8515bbe7418ea29d132ffd168209ad3"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2012.01.023"; articleSha256 "f3949f0524aa5e8ebeb25c82c847b16f5267e3a31088f658ca7d1f3969fe66a7"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2012.02.027"; articleSha256 "33c55eba407c283000cbecf92fdda5e64843758a6359e89566f3d72a977fff9a"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2013.04.015"; articleSha256 "1acb7464119df183aafb3b3f3eb236862e6844b6b3cd7fbe65f30ee75fda68be"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2013.05.037"; articleSha256 "8bbe873ad5384f6c62324a20ed6bdebd474c983a39fb8f849e52859c2dc9bf8b"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2013.10.010"; articleSha256 "36c54a513c4389dcea57580afa19e5163f76d36f8280db01e35ca294e7c407f5"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2014.02.012"; articleSha256 "6d56adbb984c97e19c53c3a03ad10b7049944eb0fa44c6844048b00b730fc948"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2014.05.001"; articleSha256 "9e481c3101372a0007ef0fff5e002e782d6c9cd2850d856f52e763c1d050468d"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2015.08.006"; articleSha256 "ad9750d7582efab9e50c3f82bb3d96cd45da683ecd34f46c4baae7307a0638b9"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2016.04.003"; articleSha256 "ed2ab8279a98bedd2d1d084a9abf5fe122ed132963dff953d15712d7ecb9911a"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2016.06.004"; articleSha256 "e137c1a70aa75fcb0ee488a576a2de8c0d7768b2ca2f5e79815e8f728cf3eced"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2016.10.007"; articleSha256 "37c7ef15f113594320223d186fda0a72178d9d98a065e2d18c78cf816cdd99ea"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2016.12.022"; articleSha256 "021b4483153bd65964c2a2064d64f1efabe82fc3fb07214c0c5e04a44bba634f"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2017.01.007"; articleSha256 "8c16c69ab37571e1914b274f6f41b8a46c595a8a165570f12434ac6dccd2a7c4"; pointsKept 8; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2017.08.024"; articleSha256 "6dc72a738c8f278cc0f0c3305ecb6ffd13a0701a85a6d4e2710ffc1f06ca00d3"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2017.12.011"; articleSha256 "7a14640be386a5a68775bfe476b685b6c737c1d977157dc160d3985907568ca6"; pointsKept 10; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2018.05.013"; articleSha256 "88e9f9d1b9ed1a8d31b3bd592c8611aba3f4ffcdfa694ed510d75021159836e8"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2018.12.021"; articleSha256 "799dcc754d85f36ef4500833e53ce7582271f06b87d4b6acd382b919fcb64272"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2018.12.042"; articleSha256 "8b199618d74134df2752192dabc9cf23ebc4e0a713d059c78acf0dac1443e583"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.tca.2012.05.025"; articleSha256 "58fdf59b1fb72f9965e58e6fe4016a2f02e55d659f92a6164bb669e64d562580"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.tca.2019.01.018"; articleSha256 "b0a45ddf2381fce6a088ecdfc3919d994ce67c8bf17a5114aaee33d8c043cb1f"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.5b00447"; articleSha256 "bf672a988ed99f6ca8c6ace5fcaa46f0e36af19622b668ae688ae772ec4dd518"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.5b00485"; articleSha256 "053508d543eeea66eabbb08fbab2508d545de87e8864095528b53f4c4723f178"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.5b00776"; articleSha256 "0150113e40c48bacc65294ba9ff30cd36604215e0454ec5dca375869b872f9af"; pointsKept 33; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.5b00944"; articleSha256 "9693e4fe53b84a20c96d34fba6711bbc3bbd42fafd03246d6a0287ee9de8d060"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.7b00042"; articleSha256 "9dfb44062c8bfc1bfa96319601c16392dd4775ccf29e1d0c01a343a9136f453b"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.7b00503"; articleSha256 "64bd92798e4657da9d48fe301f7cbd35a7773534c947d62017830bbb15e9de01"; pointsKept 8; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.7b00519"; articleSha256 "772cddb3df1531f776d3d6e4b74bebee8411fae93ce0b3b96a3312f019fc2388"; pointsKept 127; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.8b00086"; articleSha256 "24383c3980526116721910b9b4b4c5813435c98c1c6b7ce09eb7613b8a91f6b1"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.8b00372"; articleSha256 "74e88e20639b7e7705b1041588eeaf3508d679cf3c1f12262c0d20f0a8e67307"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.8b00492"; articleSha256 "8937f439e11c9d92098e87d90c88088a55b4b2955f8688d67167add742a8da4c"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.9b00026"; articleSha256 "e2b6a00b526f1289e60e5465ad9d31a623035657177263fc328e166e810f66b7"; pointsKept 29; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je020048n"; articleSha256 "95fcf726dae4c03f2044f30a2996824e930cab2a291a4768f9cb40b5ec85e4b5"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je030173e"; articleSha256 "c744d991ba21c75e975e551cbaee4b8c977870e28af9e1dc3182f64f715a4209"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je034225b"; articleSha256 "6b31fd45e84891d59087132e8fa1504e5edec768dabd598ff11f1413be760ed5"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je049932z"; articleSha256 "470cef4b29cbf9a7fad3ff3526800ccff77b1685e65c9e3e876d74a833b32975"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je049955d"; articleSha256 "aff3676a3f5f5e9c7868500d7c25df386abdcece1c9b8fe3502814b49629ab12"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je050202g"; articleSha256 "8bbcb8bd222f09779b02feaedfbc23525c44a11325e1be8f04ce7519119cf3ad"; pointsKept 2; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je1001329"; articleSha256 "2f3c50c0936e840296bf1eb65b4e3beaf43b0bd482044fb1706c65f532fbb546"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je200659c"; articleSha256 "a0c9fec49933eb318973f66e78fd809b73a065ae610e2cffd8d51e6b3b2a23b2"; pointsKept 8; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je301279x"; articleSha256 "e51f5fe53ec04189f2bf727046c420392fd221748d1aee92b023723f99245539"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je400004j"; articleSha256 "9d402b71f417e3bd90ce1de45d97df235e1f855f1d2819ee82eb32ebaeb38406"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je700536m"; articleSha256 "0e67e799bafd6786e5cf7f11b97f19d6ff4468c9b64cf3f6d4cab4298ea8ccaa"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900337a"; articleSha256 "948a26666cf554a19bf572ef3342f0d19298fb9140728fe617735e25d05bd647"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900962v"; articleSha256 "2d394078d96ae121af0e32c3b79cb97f0c63c4707abfa4d05868f149aa713d7e"; pointsKept 1; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     55;
+            pointsKept  368;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.542756;
+            max_pct     2.710171;
+        }
     }
 }

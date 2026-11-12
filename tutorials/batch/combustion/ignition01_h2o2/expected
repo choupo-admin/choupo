@@ -2,16 +2,16 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 kpi     bomb                   P_final          500000             1e-4
-kpi     bomb                   T_final          3077.97900108      1e-4
+kpi     bomb                   T_final          3076.31278179      1e-4
 kpi     bomb                   n_H2O2_final     2.59406092875e-11  1e-4
-kpi     bomb                   n_H2_final       1.67644666948e-06  1e-4
+kpi     bomb                   n_H2_final       1.6749742078e-06  1e-4
 kpi     bomb                   n_HO2_final      1.97492765295e-10  1e-4
-kpi     bomb                   n_H_final        5.11250559107e-07   1e-4
+kpi     bomb                   n_H_final        5.08698565686e-07   1e-4
 kpi     bomb                   n_N2_final       2.857145e-05       1e-4
-kpi     bomb                   n_O2_final       6.64822219482e-07  1e-4
-kpi     bomb                   n_OH_final       7.55609252321e-07  1e-4
-kpi     bomb                   n_O_final        2.25566026101e-07  1e-4
-kpi     bomb                   n_water_final    1.19727313332e-05  1e-4
+kpi     bomb                   n_O2_final       6.5975872805e-07  1e-4
+kpi     bomb                   n_OH_final       7.52547147842e-07  1e-4
+kpi     bomb                   n_O_final        2.34567190793e-07  1e-4
+kpi     bomb                   n_water_final    1.19770504681e-05  1e-4
 kpi     bomb                   t_end            0.0002             1e-4
 kpi     bomb                   totalMoles_final 4.43789505344e-05  1e-4
 kpi     campaign               element_H_closure_rel 6.76051276934e-15 1e-4
@@ -21,11 +21,11 @@ kpi     campaign               element_worst_closure_rel 8.4669498077e-14 1e-4
 kpi     campaign               energy_balance_available 0                1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 0                1e-4
-kpi     campaign               mass_closure_rel 5.40937754349e-06 1e-4
+kpi     campaign               mass_closure_rel 5.41710307429e-06 1e-4
 kpi     campaign               mass_kg_external_out 0                1e-4
 kpi     campaign               mass_kg_final    0.00105772599108 1e-4
 kpi     campaign               mass_kg_initial  0.0010577310172  1e-4
-kpi     campaign               mass_residual_kg 5.7216664115e-09 1e-4
+kpi     campaign               mass_residual_kg 5.72983794504e-09 1e-4
 kpi     campaign               moles_kmol_external_out 0                1e-4
 kpi     campaign               moles_kmol_final 4.43789505344e-05 1e-4
 kpi     campaign               moles_kmol_initial 5e-05            1e-4

@@ -329,3 +329,24 @@ hard-refresh (`Ctrl+Shift+R`) to see it.
 preferred-citation URL points at the release tag (a moving branch is not a
 citable object).  The landing page's "Cite Choupo" section shows the same
 reference for the current stable release.
+
+## Before cutting the NEXT release: one coordinated history clean-up
+
+Decided by Vítor, 2026-11-12 (confirmed in the coordinating session).  The
+repository is public: `DEV.md`, `PLAN.md`, `SESSIONS.md`, `BRAIN.md` and commit
+messages carry the technical task only.  At the cut of the next release, and
+not before, the history of `main` AFTER the latest release tag is rewritten
+once to remove what earlier commits carried beyond that.
+
+1. Both sessions stopped; no general running; every worktree clean.
+2. Every live branch listed (`git branch -a`, `git worktree list`) and either
+   landed or named for re-basing after the rewrite.
+3. The rewrite is done on a fresh clone and verified: the tree at the new tip
+   is byte-identical to the tree at the old tip.  Released tags are never
+   moved (see "Branches & tags" in `CLAUDE.md`), so nothing at or before the
+   latest release tag is rewritten.
+4. Vítor authorises the push of the rewritten `main` at that moment, by name;
+   the standing rule "never force-push `main`" is otherwise unchanged.
+5. Every surviving branch is re-based onto the new `main`; hashes cited in
+   `DEV.md` and `PLAN.md` are re-pointed or dropped.
+6. The old and the new tip hashes are recorded in `DEV.md` 4c.

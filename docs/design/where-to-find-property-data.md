@@ -112,3 +112,16 @@ and `gate_manifest --check` OK.
 It is not legal advice, it does not rank sources by accuracy, and it
 verifies no number against a measurement.  Licences change: each row says
 when it was read.
+
+## The licence policy the page quotes (a stable anchor)
+
+The page's licence-class table cites these four sentences.  They are quoted
+here, from the project's policy in CLAUDE.md and
+docs/architecture/settled-contracts.md, because those two files are edited
+every day and a line number into them does not hold; the page cites THIS
+section.
+
+- **DATA** in `data/standards/` and vendored case data is multi-licensed by component: each file may carry its own open licence, copyleft included.
+- An aggregator (a WebBook, a handbook) raises an authority-versus-route question: a primary measurement read THROUGH it is compliant, because the value came from the journal.
+- Excluded regardless of copyleft: NonCommercial data, and no-grant or all-rights-reserved compilations.
+- Cite the PRIMARY source per value, never the compiler's arrangement.

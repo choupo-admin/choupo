@@ -2704,9 +2704,9 @@ accepts today, and that is a policy call.
 > utility (the case's `utilities` circuits and the `utilityAllocation`
 > record already say which stream is the service) and ANNOUNCES it; the
 > witness is this very plant, whose answer is the threshold above; a gate
-> recomputes it independently.  FIXED NOWHERE YET: the usage freeze (the
-> credits) puts it first on Saturday, ahead of everything, because it is a
-> wrong number at exit 0 that a student reads on the live site.
+> recomputes it independently.  FIXED NOWHERE YET: it goes first in the
+> next slot, ahead of everything, because it is a wrong number at exit 0
+> that a student reads on the live site.
 
 > **C230 BUILT (2026-11-05, branch `c230-pinch`; not integrated).**  MEASURED
 > before: the engine on `ammonia02_full_plant` + `pinchPass { dTmin 20 K; }`
@@ -3446,6 +3446,120 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C364 (Vitor, 2026-11-12, in the laptop session: "estou com receio que possa
+> haver problemas em desenvolver codigo e documentacao em duas sessoes e por
+> isso vou ficar so a operar com esta.  A outra vai-se limitar a rever o que e
+> feito e a comunicar-te").**  ONE WRITER.  From this entry the laptop session
+> is the only one that changes code, data, cases, guides and the planning
+> files.  The cloud session REVIEWS what has landed and reports: its only
+> writes are dated review files under `docs/reviews/` and its messages in
+> `SESSIONS.md`; it fixes nothing.  This narrows C363 (which left catalogue
+> data production with the cloud) and supersedes C362's assignment: the
+> laptop takes over, with everything built, C362 item 1 (the documentation
+> debt of the cloud's landings), item 3 (liquid-liquid pairs in bulk), item 5
+> (the generated catalogue page), C308 (Gibbs-Duhem consistency), the
+> reference equations of state (C333 of the cloud's numbering: speed-ups, H2,
+> NH3), `gui/src/case/thermomlReader.ts` and the two pages C322 / C334.
+> C362 item 2 (the catalogue predicted against measurements it was not fitted
+> to) IS a review by measurement and stays with the cloud as its first task
+> when Vitor starts it, together with the first review of C363 (the rate-based
+> columns).  The cloud's ThermoML archive stays where it is; the laptop has
+> its own copy.
+
+> **C363 (Vitor, 2026-11-12, in the cloud session: "e se tu aqui apenas
+> fizesses componentes e binarios, e revisses o que a outra sessao executa?
+> Serias o meu validador!" and, to the conditions the cloud put, "Sim,
+> transfere o que for codigo para a outra sessao").  TWO ROLES.**  THE LAPTOP
+> SESSION BUILDS: every engine and GUI slice (units, models, solvers, pages).
+> THE CLOUD SESSION (a) PRODUCES CATALOGUE DATA -- components, binary and
+> Henry records from the archive it holds, with their curation tools -- and
+> (b) VALIDATES what the laptop lands.  The rules of the validation:
+> (1) BY MEASUREMENT, NOT BY READING: each review runs the cases, recomputes
+> the result by an independent route, sabotages by hand to see whether the
+> slice's own gates fire, and compares with measured data where the archive
+> or an open source has it; an opinion formed by reading alone is not a
+> review (both sessions are the same kind of model and share blind spots).
+> (2) THE VALIDATOR DOES NOT FIX: a review is a dated file under
+> docs/reviews/ with numbered findings, each with a severity and the
+> evidence; the builder answers every finding (fixed in <commit>, or
+> declined with the reason); the validator never edits the slice it reviews.
+> (3) AFTER LANDING, not before: a review does not gate a landing; it
+> follows it within the next working session.
+> (4) THE CLOUD'S OWN RECORDS NEED A VALIDATOR TOO: the laptop (or Vitor by
+> sampling) reviews the cloud's components and pairs; nobody reviews their
+> own fits (C300).
+> (5) A LIMIT, stated: the cloud cannot read the literature folder, so it
+> checks a transcription only against an open-access primary or against a
+> transcription committed to the tree.
+> C362 is amended: its item (4) (the reference equations of state: the three
+> speed-ups, H2, NH3) is TRANSFERRED to the laptop with the code it built
+> (kernel, records, gate, guide section, design record section 5); items
+> (1) (its own documentation), (2), (3), (5) and C308 stay with the cloud.
+
+> **C362 (Vitor, 2026-11-12, in the cloud session: "Vamos fazer isso", to
+> the cloud's proposal for its next days).  THE CLOUD SESSION CONSOLIDATES
+> AND PROVES; IT DOES NOT WIDEN.**  Five items, in this order, one general at
+> a time, the cloud responsible for each:
+> (1) THE DOCUMENTATION DEBT of everything the cloud landed since 11-10,
+> against rule 4d and `check_feature_documented` (vaporPressureFit's
+> objective and outliers keys, the fit grades and their voice, the
+> `rho_liquid_<comp>` key, the pair / vapour-pressure / component / Henry
+> tools, the guide entries of the two EduTools).
+> (2) THE CATALOGUE HELD TO MEASUREMENTS IT WAS NOT FITTED TO: the archive's
+> infinite-dilution activity coefficients (318 blocks with both compounds in
+> the catalogue) and its ternary VLE data, PREDICTED by the catalogue pairs
+> with nothing fitted; published per pair and per model, never used to tune.
+> Every grade today is in-sample; this is the first out-of-sample number.
+> (3) LIQUID-LIQUID PAIRS IN BULK from the archive's tie lines (only
+> nButanol-water has them today), by the existing `T_bubble+LLE` / binodal
+> route and C336's grading.
+> (4) THE REFERENCE EQUATIONS OF STATE finished: the three measured
+> speed-ups (C333 slice 2, design record section 5), H2 and NH3.
+> (5) A GENERATED PAGE OF WHAT THE CATALOGUE HOLDS AND WHAT IT IS WORTH:
+> counts by grade, by number of laboratories, by kind of evidence, and the
+> results of (2).
+> NOT in this session until (2) reports: new pair or component rounds.  NOT
+> in this session at all: new unit operations (C339 kinetics, C340
+> bioprocesses, C361 solids are built by the laptop session).
+
+> **C361 (Vitor, 2026-11-12, in the cloud session: "Agenda isso", and of
+> the breadth-first tools he has used: models he could not trust and
+> documentation he could not read -- "e preciso que o Choupo ultrapasse
+> isso").  SOLIDS PROCESSING, THE SKELETON.**  Measured today in the
+> registered types: cyclone (several models), bag filter, gas-solid
+> splitter, crystalliser with a size distribution, four dryers, pneumatic
+> conveying, a solid phase with its own size distribution on the stream, and
+> the tablet plant (lots, campaigns, GMP layout, cost).  NOT in the engine:
+> any size reduction, any size classification of a slurry or a powder, cake
+> filtration, a centrifuge, a thickener, and a size distribution that every
+> unit receives, transforms and hands on.  ON THE AGENDA, in this order,
+> each unit a correlation OBJECT (validity window, citation, verify anchor),
+> each documented in the guides in the same slice (rule 4d), each with a
+> case held to its primary's own worked numbers:
+> (1) THE SIZE DISTRIBUTION AS A STREAM ATTRIBUTE every solids unit reads and
+> writes, on one discretisation: Hounslow, Ryall & Marshall 1988
+> (10.1002/aic.690341108); Kumar & Ramkrishna 1996
+> (10.1016/0009-2509(96)88489-2).
+> (2) SIZE REDUCTION -- a mill as a breakage population balance, with the
+> specific energy beside it: Austin 1971 (10.1016/0032-5910(71)80064-5);
+> Herbst & Fuerstenau 1980 (10.1016/0301-7516(80)90034-4); Vogel & Peukert
+> 2003 (10.1016/S0032-5910(02)00217-6); Bond's third theory from a handbook
+> (the 1952 paper has no DOI).
+> (3) CLASSIFICATION -- screen and hydrocyclone by a partition curve:
+> Nageswararao, Wiseman & Napier-Munn 2004 (10.1016/j.mineng.2004.01.017);
+> the screen model from a readable textbook Vitor supplies (no DOI-bearing
+> primary was verified).
+> (4) SOLID-LIQUID SEPARATION -- cake filtration with washing: Ruth 1935
+> (10.1021/ie50306a024); thickener: Kynch 1952 (10.1039/tf9524800166),
+> Talmage & Fitch 1955 (10.1021/ie50541a022); sedimenting centrifuge (sigma
+> theory): Ambler 1959 (10.1002/jbmte.390010206).
+> A published open-source solids flowsheet framework exists to compare
+> answers against, never to copy from: Skorych et al. 2020
+> (10.1016/j.softx.2020.100572).  Every DOI above resolved on Crossref
+> 2026-11-12.  The pedagogical scope of each unit goes to Vitor before its
+> engine slice.  THE BAR (his): every model a student can read, with its
+> source, its window and its refusal -- documentation is part of the model.
+
 > **C340 SCOPE APPROVED (Vitor, 2026-11-12, "aprovo", on the scope put to
 > him in the cloud session).**  (1) THE CELL: biomass is a component the
 > CASE declares -- a measured elemental formula with its source, its
@@ -3565,6 +3679,29 @@ accepts today, and that is a policy call.
 > Residual exposure outside every pin, named there: the compilation mirrors
 > of those five cases, nox01's adopted N/NH, four methylAcetate mirrors,
 > thirteen case-local DECHEMA pair records.
+> (6) RE-RECORD, authorised by Vitor ("Autorizo, grava nos tres passos"),
+> branch `c335-rerecord`.  Importer fix first: `bin/choupo-import`'s golden
+> check read `energyClosures` as a dict (it is a list keyed by unit) and
+> crashed; fixed, basis01_two_unit_chain re-imported, no row moved.  Step 1:
+> ignition01_h2o2, ignition02_h2air_slack, nox01_zeldovich_postflame,
+> claus01_thermal_stage, gibbs06_h2_flame_radicals -- 40 rows, each the
+> listed value.  Step 2: greenAmmonia02_feasibility150bar (257) and _50bar
+> (243) -- 500 rows, each the listed value; plant first-law residual 1.7532
+> kW and 0.0817 kW, unchanged.  In both steps only the listed rows were
+> re-pinned (rows --record moved inside their own tolerance were put back).
+> Import route, as for letdown01 in C112: the golden set aside during the
+> import (kept as its utility rows at a non-refusing tolerance, because the
+> importer reads its utility closure from them), restored, then --record.
+> Step 3 NOT LANDED: greenAmmonia03_basicDesign matched its 497 listed rows,
+> but greenAmmoniaPEQ_baseCase's record added two rows nobody listed
+> (`layout bundCapacity:tankFarm: value 20672 / limit 23055.33`), the
+> announcement of the listed verdict flip `bund:tankFarm adequate ->
+> inadequate` (the corrected NH3 liquid volume raises the tank farm's
+> required bund volume 20492.6 -> 23055.3 m3, +12.5 %); the working tree
+> was restored and both pins stay.  Pins now: NC_COMPILATION 7,
+> SOURCE_LICENCE 3, NO_GRANT_CASE_LOCAL 2 (greenAmmonia03, PEQ); were
+> 20 / 4 / 25 before C335.  Still outside every pin: nox01's adopted N/NH,
+> four methylAcetate mirrors, thirteen case-local DECHEMA pair records.
 
 > **C333 (Vitor, 2026-11-12, in the cloud session, after reading where the
 > plan leaves Choupo short of breadth-first simulators: "equacoes de estado
@@ -3761,8 +3898,6 @@ accepts today, and that is a policy call.
 > - Checklist for a NEW props operation (C311 cost a failed integration): a
 >   file-traffic row in PropsPlan.cpp, the generated GUI schema, one case in
 >   tutorials/ that builds it, a FASTSET line for a new curation family.
-> - The credit restriction of 11-11 (pairs only until Saturday) was LIFTED the
->   same evening.
 
 > **C321 part 2 RESULT (2026-11-12, cloud general, branch c321b-henry-organic).
 > HENRY CONSTANTS IN ORGANIC SOLVENTS FROM THERMOML.**  TOOL

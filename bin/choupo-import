@@ -1511,7 +1511,10 @@ def validate_staged_agrees(staged, out):
         elif kind == "stream":
             got = (res.get("streams") or {}).get(name, {}).get(key)
         elif kind == "closure":
-            got = (res.get("energyClosures") or {}).get(name, {}).get(key)
+            #  `energyClosures` is a LIST of objects keyed by "unit" (as
+            #  bin/runTests' get_closure reads it), not a dict: .get() on it crashed.
+            got = next((r.get(key) for r in (res.get("energyClosures") or [])
+                        if isinstance(r, dict) and r.get("unit") == name), None)
         elif kind == "utility":
             #  utility <unit> <tier.name.field> -- the allocation table is
             #  a LIST.  Added 2026-08-23: esterification2sector resealed as

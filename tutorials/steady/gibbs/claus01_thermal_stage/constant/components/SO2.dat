@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/components/SO2.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/components/SO2.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*-----------------------*\
   Component: Sulfur dioxide  (SO2, CAS 7446-09-5)
 
@@ -63,5 +63,28 @@ cosmo
         source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0389-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7446-09-5";
         licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
         installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file SULFUR_DIOXIDE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey RAHZWNYVWXNFOC-UHFFFAOYSA-N (full match); formula O2S; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        78.140500;   // sum of the profile below; GAMESS prints 78.14
+        volume      60.41;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.888946
+               2.658093     2.870493     4.076033     4.162562     5.833943     3.681778
+               3.902373     2.002503     1.809132     1.816587     1.007706     0.000000
+               0.602770     2.366690     0.464731     2.000812     0.904888     2.344140
+               3.488116     2.809880     3.270334    10.823700     7.269190     6.371695
+               0.713405     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
     }
 }
