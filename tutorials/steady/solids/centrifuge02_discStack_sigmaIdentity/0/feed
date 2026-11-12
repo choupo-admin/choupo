@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  DECLARED (an illustration): 135.5 kg/h of CaCO3 (MW 100.0869) in 9930
+//  kg/h of water (MW 18.015), about 10 m3/h of slurry at 0.5 % solids by
+//  volume.  The size law is a Rosin-Rammler, d63 1 um, n 1.5, also declared.
+
+componentMolarFlows
+{
+    CaCO3       1.3538 kmol/h;
+    water     551.2073 kmol/h;
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            water     551.2073 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3       1.3538 kmol/h;
+        }
+        particleSizeDistribution
+        {
+            model     RosinRammler;
+            d63       1.0e-6;      // m  (DECLARED)
+            n         1.5;         // spread [-]
+        }
+    }
+}
