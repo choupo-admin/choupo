@@ -659,7 +659,7 @@
     "check_model_default_registered": {
       "exit": 0,
       "claim": "check_model_default_registered: OK -- 13 factory call site(s) across 9 factory class(es) take a literal `model` default, and every one of those defaults is a name the class's own registerBuiltins registers (both sides recounted here, never transcribed).  The probe holds: the construct itself -- a default naming a model nobody registered -- is still reported, and the negative (a default that IS registered) is not.  Before this existed, SpiralWoundModule defaulted the `massTransfer {}` block's model to 'constant', pruned from the factory on 2026-08-23, so a block that merely forgot its `model` key died naming a model the engine had invented.  AND THE CATCH-ALL ELSE IS GONE: 7 if-chain site(s) that read a declared word -- Crystalliser model, DistillationColumn model, SprayDryer chamber model, DistillationColumn side-draw phase, PneumaticConveyor bend type, HeatExchanger model, BatchStill model -- were each RUN twice from a scratch copy of a corpus case: a mistyped word refuses naming the word and listing what the site accepts, and an accepted alias does not.  DOMAIN: literal factory defaults across src/, plus those 7 if-chains.  LIMITS: a default built from a variable rather than a literal is invisible to arm (a); whether a registered default is the RIGHT one for the physics is judgement, not reachability; whether the list a site hands registryRefusal is the list its branches accept can only be read, not derived; and arm (d) covers 7 if-chains, not every one in the tree -- no census of the rest has been taken.",
-      "seconds": 1.7
+      "seconds": 0.8
     },
     "check_models_catalogue": {
       "exit": 0,
@@ -1649,7 +1649,7 @@
     "check_transport_records": {
       "exit": 0,
       "claim": "check_transport_records: OK -- 92 fitted liquid-viscosity / liquid-thermal-conductivity record(s) held to the dataset (parameters, window, D/E written as zero, review by none, fitGradeBasis inSample, grade limits 5/10/20 %, C300 cap words, Trange = window, nothing below warning or with one parameter), and, when the ThermoML archive cache is reachable, each refit from it (parameters, window and max error equal the stored ones at 1e-6).  NOT CHECKED: that a fit agrees with the articles' own tables (a machine read them), surface tension (its own arm, `verify --surface-tension`), any molecule outside the written records.",
-      "seconds": 0.2
+      "seconds": 19.9
     },
     "check_henry_records": {
       "exit": 0,
