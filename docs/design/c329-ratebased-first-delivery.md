@@ -552,3 +552,97 @@ model hydraulic flood beyond F_G (bed mean) = 3.14
   the measured efficiency flood, below the measured hydraulic flood.  The
   "anomaly" Schulz reports (no capacity gain at 0.02 bar) is reproduced in
   the sense that the model also puts both floods at nearly the same F.
+
+## 12. Third pass (2026-11-12)
+
+### Zuiderweg 1982 -- the Syeda readings checked against the primary
+* Eq 33 (clear liquid): Zuiderweg, Chem. Eng. Sci. 37 (1982) 1441, Eq (8),
+  p. 1443, prints the Hofhuis equation h_l = 0.6 H_w^0.5 p^0.25 (FP/b)^0.25
+  (25 < H_w < 100 mm).  The reading implemented (h_w^0.5) is CONFIRMED; the
+  Syeda paper and thesis dropped the exponent.  No code change.
+* Eq 28 (t_GLB): Zuiderweg does not contain the break-up equation (it is
+  Syeda's own); the reading stays on the paper's own statements (section 9).
+* Zuiderweg's spray / mixed-regime interfacial areas (pp. 1460-1461, Figs
+  35-36) were derived from the FRI performance data (Sakata & Yanagi): an
+  efficiency model built on them is in-sample on these trays.  Recorded in
+  TrayEfficiency.H; not implemented.
+
+### Garcia & Fair 2000 + Prado & Fair 1990 -- NOT done in this pass
+Prado & Fair, IECR 29 (1990) 1031, carries the zone equations (its Eqs 1-62:
+jet zone, large/small-bubble zones, residence times, the air-water bubble
+correlations) that Garcia & Fair part 2 modifies (its Eqs 5-17).  The text
+layer of Prado & Fair garbles most equations, so each has to be read off a
+page render, about 40 of them; the model was deferred so that the Delft
+packing model, the one Schulz compares against, could be completed and
+validated in this pass.  Completeness of the pair was not assessed
+equation by equation.  In-sample status is already known from Garcia & Fair
+part 1 Table 3: the Yanagi (14 %) and Sakata (8 %) FRI trays are in its
+database.
+
+### Delft model for the Schulz bed
+Built: `packing { model Delft; corrugationBase; corrugationHeight;
+elementHeight; holeFraction; }` (PackingDelft.{H,cpp}), the working
+equations of Fair, Seibert, Behrens, Saraber & Olujic, IECR 39 (2000) 1788,
+Table 2 (Eqs 1-16) and Table 4 (Eqs 30-55), for Olujic, Kamerbeek & de
+Graauw 1999.  One reading: the sign inside psi (Eq 43) is not legible; taken
+as minus (the chord).  Cases `packing03_schulz_delft_0p10bar`,
+`packing04_schulz_delft_0p02bar`, the same bed integration as packing01/02.
+
+ESTIMATED GEOMETRY: Schulz does not print the corrugation dimensions.  Base
+b = 11.5 mm, height h = 6.1 mm: the Montz B1-400 base/height ratio (Fair et
+al. 2000 Table 1) scaled so that a_p = 4 s/(b h) returns the installed 478.
+Element height 0.169 m = 2.2 m / 13 layers (Schulz).  Omega = 0
+(unperforated).  For RochaBravoFair the side S = 9 mm (Sulzer BX) is the
+estimate; the B1-400-shaped estimate would give s = 8.4 mm.
+
+
+#### 0.10 bar: HETP and pressure drop vs F-factor (bed mean)
+| F_G | HETP measured m | HETP predicted m | error % | dp/dz measured mbar/m | predicted | error % |
+|---|---|---|---|---|---|---|
+| 0.42 | 0.125 | 0.137 | 10 | 0.13 | 0.05 | -58 |
+| 0.56 | 0.133 | 0.141 | 6 | 0.24 | 0.09 | -64 |
+| 0.69 | 0.140 | 0.145 | 4 | 0.26 | 0.12 | -53 |
+| 1.03 | 0.156 | 0.158 | 2 | 0.39 | 0.24 | -37 |
+| 1.37 | 0.171 | 0.171 | -0 | 0.49 | 0.41 | -17 |
+| 1.72 | 0.187 | 0.181 | -3 | 0.64 | 0.61 | -4 |
+| 2.04 | 0.203 | 0.189 | -7 | 0.94 | 0.97 | 3 |
+| 2.69 | 0.220 | 0.203 | -8 | 1.71 | 3.41 | 99 |
+| 3.00 | 0.247 | 0.209 | -16 | 2.50 | 5.53 | 121 |
+| 3.30 | 0.295 | 0.213 | -28 | 3.47 | 8.47 | 144 |
+| 3.58 | 0.535 | beyond the model flood | beyond the model flood | 5.13 | beyond the model flood | beyond the model flood |
+HETP: mean -4 %, max |28| % over 10; dp: mean +13 %, max |144| % over 10
+model hydraulic flood beyond F_G (bed mean) = 3.33
+
+#### 0.02 bar: HETP and pressure drop vs F-factor (bed mean)
+| F_G | HETP measured m | HETP predicted m | error % | dp/dz measured mbar/m | predicted | error % |
+|---|---|---|---|---|---|---|
+| 0.58 | 0.120 | 0.152 | 26 | 0.40 | 0.12 | -71 |
+| 0.86 | 0.126 | 0.146 | 16 | 0.45 | 0.22 | -52 |
+| 1.13 | 0.133 | 0.148 | 11 | 0.58 | 0.34 | -41 |
+| 1.40 | 0.142 | 0.152 | 7 | 0.72 | 0.49 | -32 |
+| 2.04 | 0.173 | 0.164 | -5 | 1.43 | 0.94 | -34 |
+| 2.60 | 0.245 | 0.175 | -29 | 1.99 | 1.99 | 0 |
+| 3.12 | 0.263 | 0.184 | -30 | 2.84 | 4.34 | 53 |
+| 3.53 | 0.479 | 0.192 | -60 | 4.24 | 7.17 | 69 |
+HETP: mean -8 %, max |60| % over 8; dp: mean -14 %, max |71| % over 8
+model hydraulic flood beyond F_G (bed mean) = 3.83
+
+
+### Both packing models side by side (errors, measured as the reference)
+| P | region | RBF HETP | RBF dp/dz | Delft HETP | Delft dp/dz |
+|---|---|---|---|---|---|
+| 0.10 bar | preloading (F <= 2.04, 7 pts) | mean -15 %, max 21 % | mean +65 %, max 145 % | mean +2 %, max 10 % | mean -33 %, max 64 % |
+| 0.10 bar | all points in range | mean -14 %, max 21 % (9) | mean +78 %, max 145 % (9) | mean -4 %, max 28 % (10) | mean +13 %, max 144 % (10) |
+| 0.02 bar | preloading (F <= 2.04, 5 pts) | mean -19 %, max 24 % | mean +36 %, max 68 % | mean +11 %, max 26 % | mean -46 %, max 71 % |
+| 0.02 bar | all points in range | mean -23 %, max 36 % (7) | mean +51 %, max 90 % (7) | mean -8 %, max 60 % (8) | mean -14 %, max 71 % (8) |
+
+Reading against Schulz's own Delft evaluation (p. 766-767): the Delft model
+here follows the 0.10 bar HETP closely in the preloading region (+2 % mean)
+and under-predicts the preloading pressure drop at low load, as Schulz
+describe for 0.02 bar; it does not see the efficiency departure (HETP stays
+smooth to F 3.3, -28 % there); its pressure drop reaches the 10.25 mbar/m
+flooding value at a bed-mean F of about 3.3 (0.10 bar) and 3.8 (0.02 bar) --
+a HIGHER capacity at 0.02 bar, which is exactly the expectation Schulz say
+their 0.02 bar data contradict.  The pressure effect on HETP in the
+preloading region: Delft at F 1.4 gives 0.152 (0.02 bar) vs 0.171 (0.10
+bar), -11 %; measured -17 %; RBF -19 %.

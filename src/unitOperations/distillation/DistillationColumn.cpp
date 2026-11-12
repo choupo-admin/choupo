@@ -39,6 +39,7 @@ License
 #include "TrayHydraulics.H"
 #include "TrayEfficiency.H"
 #include "PackingRBF.H"
+#include "PackingDelft.H"
 #include "core/Constants.H"
 #include "thermo/transport/WilkeChang.H"
 #include "solver/NewtonRaphson.H"
@@ -5485,22 +5486,38 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
 
     auto pk = operDict->subDict("packing");
     const std::string pmodel = pk->lookupWordOrDefault("model", "RochaBravoFair");
-    if (pmodel != "RochaBravoFair")
+    if (pmodel != "RochaBravoFair" && pmodel != "Delft")
         throw std::runtime_error("DistillationColumn '" + unit + "': "
-            + registryRefusal::message("packing model", pmodel, {"RochaBravoFair"}, "Accepted"));
+            + registryRefusal::message("packing model", pmodel, {"RochaBravoFair", "Delft"}, "Accepted"));
+    const bool delft = (pmodel == "Delft");
     const scalar Dcol = pk->lookupScalar("diameter", Dims::length);
     const scalar Hbed = pk->lookupScalar("height", Dims::length);
     PackingRBF::Geometry pg;
+    PackingDelft::Geometry dg;
     pg.ap    = pk->lookupScalar("specificArea");
     pg.eps   = pk->lookupScalar("voidFraction");
     pg.theta = pk->lookupScalar("corrugationAngle") * constant::pi / 180.0;
-    pg.S     = pk->lookupScalar("corrugationSide", Dims::length);
-    const std::string surf = pk->lookupWordOrDefault("surface", "gauze");
-    if (surf != "gauze" && surf != "sheetMetal")
-        throw std::runtime_error("DistillationColumn '" + unit + "': "
-            + registryRefusal::message("packing surface", surf, {"gauze", "sheetMetal"}, "Accepted"));
-    pg.gauze = (surf == "gauze");
-    if (!pg.gauze) pg.FSE = pk->lookupScalar("surfaceEnhancement");
+    if (delft)
+    {
+        //  The Delft model reads the corrugation base and height and the
+        //  element height (Fair et al. 2000, Table 2); its side follows.
+        dg.ap = pg.ap; dg.eps = pg.eps; dg.alpha = pg.theta;
+        dg.b   = pk->lookupScalar("corrugationBase", Dims::length);
+        dg.h   = pk->lookupScalar("corrugationHeight", Dims::length);
+        dg.hpe = pk->lookupScalar("elementHeight", Dims::length);
+        dg.hpb = Hbed; dg.dc = Dcol;
+        dg.Omega = pk->lookupScalarOrDefault("holeFraction", 0.0);
+    }
+    else
+    {
+        pg.S     = pk->lookupScalar("corrugationSide", Dims::length);
+        const std::string surf = pk->lookupWordOrDefault("surface", "gauze");
+        if (surf != "gauze" && surf != "sheetMetal")
+            throw std::runtime_error("DistillationColumn '" + unit + "': "
+                + registryRefusal::message("packing surface", surf, {"gauze", "sheetMetal"}, "Accepted"));
+        pg.gauze = (surf == "gauze");
+        if (!pg.gauze) pg.FSE = pk->lookupScalar("surfaceEnhancement");
+    }
     const std::size_t lk = pk->found("lightKey") ? thermo.indexOf(pk->lookupWord("lightKey")) : 0;
     const std::size_t hk = 1 - lk;
     const scalar muLdecl = pk->found("liquidViscosity")
@@ -5559,7 +5576,8 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), p.T, st.muL);
         st.DL = x[0] * D10 + x[1] * D01;
         st.lambda = p.lambda;
-        const PackingRBF::Result r = PackingRBF::evaluate(pg, st);
+        const PackingRBF::Result r = delft ? PackingDelft::evaluate(dg, st)
+                                           : PackingRBF::evaluate(pg, st);
         if (r.flooded)
         {
             std::ostringstream o;
@@ -5658,11 +5676,15 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
 
     std::ostringstream rep;
     rep << "\n=============  DistillationColumn (total reflux, packed bed)  =============\n"
-        << "  Rocha-Bravo-Fair (IECR 32 (1993) 641; 35 (1996) 1660), "
-        << (pg.gauze ? "gauze area (1996 Eq 14)" : "sheet-metal area (1996 Eq 10)") << "\n"
+        << (delft ? std::string("  Delft model (Olujic et al. 1999; working equations of Fair et al., IECR 39 (2000) 1788, Tables 2 and 4)")
+                  : std::string("  Rocha-Bravo-Fair (IECR 32 (1993) 641; 35 (1996) 1660), ")
+                    + (pg.gauze ? "gauze area (1996 Eq 14)" : "sheet-metal area (1996 Eq 10)")) << "\n"
         << std::fixed << std::setprecision(4)
         << "  bed " << Hbed << " m, D " << Dcol << " m, a_p " << pg.ap << ", eps " << pg.eps
-        << ", S " << pg.S * 1000.0 << " mm, theta " << pg.theta * 180.0 / constant::pi << " deg\n"
+        << ", theta " << pg.theta * 180.0 / constant::pi << " deg"
+        << (delft ? ", b " + std::to_string(dg.b * 1000.0) + " mm, h " + std::to_string(dg.h * 1000.0)
+                    + " mm, element " + std::to_string(dg.hpe) + " m"
+                  : ", S " + std::to_string(pg.S * 1000.0) + " mm") << "\n"
         << "  top " << top.P * 1.0e-5 << " bar (declared), bottom " << bot.P * 1.0e-5
         << " bar (" << it + 1 << " marches)\n\n"
         << "      z [m]    P [mbar]   T [K]    y(" << thermo.comp(lk).name()

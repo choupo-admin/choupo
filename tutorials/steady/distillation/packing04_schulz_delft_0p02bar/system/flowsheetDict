@@ -1,0 +1,104 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  packing04_schulz_delft_0p02bar  --  a STRUCTURED-PACKING bed at total reflux, its HETP and
+  pressure drop computed from the packing geometry (DEV.md 4c C329).
+
+  THE TEST: Schulz, Rietfort, Jansen & Olujic, Chem. Eng. Trans. 69 (2018)
+  763: FRI low-pressure column, 1.22 m, Montz-Pak A3-500M (corrugated wire
+  gauze, 60 deg corrugations, installed area 478 m2/m3 measured on the
+  delivered packing, void fraction ~0.92), bed 2.2 m (13 layers), p-xylene /
+  o-xylene at total reflux, top pressure 0.02 bar.  HETP = bed height /
+  Fenske stages between the distributor and the cross-sampler below the bed
+  (section 2) -- the KPI `HETP` here is that definition.
+
+  THE MODEL: the Delft model -- Olujic, Kamerbeek & de Graauw, Chem. Eng.
+  Process. 38 (1999) 683, in the working form of Fair, Seibert, Behrens,
+  Saraber & Olujic, IECR 39 (2000) 1788, Tables 2 and 4 -- the model Schulz
+  et al. compare their own data with.  Complete wetting, holdup from the
+  falling film, preloading drop from gas/liquid friction, gas/gas
+  interaction and direction changes, the loading enhancement above F_G,lp;
+  no per-packing constant.  The same bed integration as
+  packing01/02 (Rocha-Bravo-Fair), which are this case's twins.
+
+  WHY NOT BILLET & SCHULTES 1999 (the folder holds it): its Table 2b gives
+  constants for Montz B1-200, B2-300, C1-200, C2-200 and no gauze packing --
+  nothing for A3-500M.  The Delft model needs only the geometry.
+
+  MEASURED INPUTS (Schulz section 2 and Table 1): diameter, bed height,
+    installed area 478, void fraction 0.92, angle 60 deg, top pressure; the
+    liquid viscosity 0.539 mPa s (Table 1 -- the package has no
+    liquid-viscosity record for the xylenes).
+  ESTIMATED: the corrugation base b = 11.5 mm and height h = 6.1 mm -- NOT
+    printed by Schulz.  Taken with the base/height ratio of Montz B1-400
+    (14.0/7.4 mm, Fair et al. 2000 Table 1) and scaled so that Fair's Eq 2,
+    a_p = 4 s/(b h), returns the installed 478 m2/m3: h = 2.910/478 m.
+    The element height 0.169 m is 2.2 m / 13 layers (Schulz section 2).
+    The surface is unperforated (Schulz section 2): Omega = 0.
+  ASSUMED: the reboiler liquid 0.17 mol fraction p-xylene, chosen so that the
+    bed's mean liquid is near Table 1's average composition (0.49);
+    the vapour molar flow is taken constant up the bed.
+  ESTIMATED PROPERTIES: as listed in constant/thermoPhysPropDict, plus
+    Wilke-Chang liquid diffusivity and Rackett liquid density.
+  FITTED: nothing (and nothing at 0.10 bar to carry over): this is a
+    PREDICTION of the 0.02 bar curve.
+  HELD-OUT: every point of Schulz Fig. 2b at 0.02 bar (DIGITISED from the
+    figure, 180 ppi raster; method and uncertainty in
+    docs/design/c329-ratebased-first-delivery.md).
+  IN-SAMPLE OR NOT: the Delft model has no per-packing constant; Fair et
+    al. 2000 evaluated it on Montz B1/BSH sheet packings with
+    cyclohexane/n-heptane -- not gauze, not this system.  Out of sample.
+
+  THE SWEEP moves the boil-up F-factor (reboiler vapour on the tower area)
+  and stops where the computed drop passes 10.25 mbar/m (Fair et al.
+  2000's flooding-point pressure drop for structured packings).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       totalReflux;
+
+        operation
+        {
+            P              0.02 bar;      // TOP pressure
+            condenser      { type total; }
+
+            totalReflux
+            {
+                fFactor        1.5;      // swept; (m/s)(kg/m3)^0.5, reboiler vapour on the tower area
+                specifiedAt    reboiler;
+                composition
+                {
+                    pXylene    0.17;
+                    oXylene    0.83;
+                }
+            }
+
+            packing
+            {
+                model             Delft;
+                diameter          1.22 m;      // Schulz section 2
+                height            2.2 m;       // Schulz section 2
+                specificArea      478;         // m2/m3, installed (Schulz section 2)
+                voidFraction      0.92;        // Schulz section 2
+                corrugationAngle  60;          // deg (Schulz section 2)
+                corrugationBase   0.01152 m;   // ESTIMATED: Montz B1-400 shape scaled to a_p = 478
+                corrugationHeight 0.00609 m;   // ESTIMATED: as above
+                elementHeight     0.169 m;     // 2.2 m / 13 layers (Schulz section 2)
+                holeFraction      0;           // unperforated (Schulz section 2)
+                lightKey          pXylene;
+                liquidViscosity   5.39e-4;       // Pa s, Schulz Table 1
+                segments          100;
+            }
+        }
+    }
+);

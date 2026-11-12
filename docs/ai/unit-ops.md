@@ -1234,6 +1234,9 @@ dy/dz = (y* - y)/H_OG, with Rocha-Bravo-Fair holdup, pressure drop and flooding
 specification and the bed's own pressure drop sets the bottom.  KPI `HETP` = bed
 height / Fenske stages.  Binary only.  Examples: `packing01_schulz_0p10bar`,
 `packing02_schulz_0p02bar` (Montz-Pak A3-500M, Schulz et al. 2018).
+`model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads
+`corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction` instead of
+`corrugationSide`/`surface`: `packing03_schulz_delft_0p10bar`, `packing04_schulz_delft_0p02bar`.
 
 **Sieve-tray hydraulics** (optional `operation { hydraulics { ... } }`, works with BOTH
 methods).  The MESH equations contain no diameter — a column of any width converges to

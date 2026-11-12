@@ -153,8 +153,13 @@ Class
       * Eq (33), h_L = 0.6 h_w (p/b FP)^0.25, has units of m^1.5 and gives
         6.7 mm of clear liquid on the 51 mm weir of the FRI tray.
         Implemented as 0.6 h_w^0.5 (p/b FP)^0.25 (30 mm), the dimensionally
-        consistent form; Zuiderweg 1982 itself is NOT in the folder, so this
-        reading is unchecked against the primary.
+        consistent form -- CONFIRMED against the primary: Zuiderweg, Chem.
+        Eng. Sci. 37 (1982) 1441, Eq (8), p. 1443, prints the "Hofhuis
+        equation" h_l = 0.6 H_w^0.5 p^0.25 (FP/b)^0.25 (25 < H_w < 100 mm).
+        Zuiderweg's own spray/mixed interfacial areas (pp. 1460-1461, Figs
+        35-36) were derived from the FRI performance data of Sakata & Yanagi
+        -- an efficiency model built on them would be in-sample on these
+        trays; it is not implemented.
     The as-printed results are reported beside these in
     docs/design/c329-ratebased-first-delivery.md.
     Supplied here because Syeda does not print it: the jet K_OG by
