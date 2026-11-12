@@ -3468,6 +3468,23 @@ accepts today, and that is a policy call.
 > Pitzer and selectable, validated against the classical
 > enthalpy-concentration chart; the source asked of Vitor.  Branch
 > c377-naoh-multieffect for (a).
+> SLICE (b) AUTHORISED by Vitor ("avanca", 2026-11-12) after the kernel was
+> explained to him: a NaOH-water electrolyte model from Olsson, Jernqvist &
+> Aly (1997, Int. J. Thermophys. 18, 779; in the literature folder) that
+> implements the SAME electrolyte interface the evaporator already reads
+> (`waterActivity(m,T)` for the boiling-point rise,
+> `apparentMolarEnthalpy(m,T)` for the dilution heat, `lphiValidityMax()`
+> for the window), selectable beside Pitzer, with the evaporator, balances
+> and reports unchanged.  Conditions: (1) the paper's vapour-pressure and
+> enthalpy correlations are checked against each other through
+> Gibbs-Helmholtz before use, and any inconsistency is reported, not hidden;
+> (2) in the same slice the evaporator solves the EXACT boiling-point
+> relation a_w Psat(T) = Psat(T - BPE) instead of the linearised
+> Clausius-Clapeyron form (identical for small rises; the change is measured
+> on the shipped evaporator cases); (3) water above 373 K on its reference
+> equation where the package can reach it.  Validated against the paper's
+> own tables and the enthalpy-concentration chart of a book in hand.
+> Branch c377-naoh-olsson.
 
 > **C376 (Vitor, 2026-11-12: "A maior parte das especies novas nao tem dados
 > de formacao?! Podes ver online como vamos resolver isto? Se for preciso
