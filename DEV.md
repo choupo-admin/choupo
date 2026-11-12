@@ -3497,6 +3497,76 @@ accepts today, and that is a policy call.
 > records; a pilot on one property first, reversible.  Declared
 > hypotheses, if adopted, extend the existing `approximations {}` block
 > under a closed vocabulary -- never a new free-form dictionary.
+> THE STUDY LANDED (8cce7aaf7, docs/design/thermophysical-property-routes.md,
+> status OPEN) and Vitor put its proposal to an independent reviewer (a
+> second AI; his words: an opinion, the architect decides).  JUDGED ON
+> CONTENT, the review changes the proposal in seven places (revision 2 of
+> the record, still nothing built):
+> (1) THE UNIT OF ORGANISATION IS THE APPLICABLE METHOD, NOT A FIXED
+> PIPELINE.  A unit asks for one property of an identified phase at a
+> state; a method declares what it computes, the inputs it needs, its
+> domain and its evidence; a method MAY call others (ideal mixing of pure
+> volumes does; a direct rho(T, w) of a solution does not).  "pure ->
+> mixing -> system correction -> pressure" was one composite method among
+> several, wrongly made the frame.  A method that already takes P gets no
+> second pressure correction.
+> (2) NO SINGLE CLASS SELECTS THE METHOD.  Five classes conflated a
+> compound's attributes, its role in a solution and the state of the phase
+> (CO2 dissolved in water below its Tc; acetic acid, associating AND
+> dissociating; a molten salt with no solvent).  Applicability belongs to
+> the method and reads FACTS: attributes of the component (associating is
+> kept as POSITIVE information that can exclude a method; absence of the
+> flag proves nothing), the composition of the phase, the records that
+> exist.  The decision trees of the literature stay as what a student is
+> SHOWN, not as the selector.
+> (3) A SOLUTION RECORD NAMES ITS CONSTITUENTS, THEIR ROLES, THE
+> COMPOSITION BASIS AND WHAT IT RETURNS (solution density, apparent
+> volume, or increment over the solvent): two correlations that each
+> include the water must never be summed.  The pair is the commonest case
+> of that one format, not a special home.  Several salts are combined
+> only by a PUBLISHED multi-salt rule, and the result must not depend on
+> which salts the ions were fed as; a salt in a mixed solvent is refused
+> on binary aqueous data.
+> (4) HYPOTHESES: `massWithoutVolume` stays, written with its equation
+> (the solute's apparent molar volume taken as zero); `excludedFromMixing`
+> is WITHDRAWN (a trace surfactant decides a surface tension; a generic
+> exclusion can redefine any property).  A hypothesis authorises an
+> approximation a concrete method knows how to execute, with property,
+> scope, components, limit and reason; the report keeps the largest
+> fraction it covered.
+> (5) A POOR ESTIMATE: shown, labelled, in the property bench; in a unit
+> that sizes with it, where a deficiency of that size is known for the
+> system (an aqueous or associating pair with no interaction parameter),
+> it needs the case's explicit authorisation or an applicable
+> measurement.  Quality is three separate statements, not one word:
+> origin of the value, whether the point is inside the domain, and the
+> quantitative evidence (or "not quantified").  A user's measurement beats
+> an estimate for the same quantity, phase, composition and conditions;
+> using one point as a constant over a range is itself a hypothesis.
+> (6) ONE CANONICAL VALUE PER STREAM STATE AND PROPERTY; a unit's override
+> is a local, named approximation shown beside it.  Methods are resolved
+> at assembly from what data exist, NOT switched by state during
+> iteration: leaving a domain is announced as extrapolation, so no
+> discontinuity is introduced.  Messages are aggregated per method and
+> site, not printed per call.  The ratchet on raw reads holds only during
+> migration; the lasting test is behavioural (give the stream a known
+> artificial density and check the unit's flow, power or residence time).
+> A record may bind a substance to its own published method (water's
+> reference equation); the ban is on names in the general selector.
+> (7) THE PILOT IS END TO END ON TWO UNITS (pump and CSTR on one stream)
+> with five demonstrations as the judgement point: water near its density
+> maximum and compressed, against the reference equation; a molecular
+> mixture by additive volumes with each datum's own temperature shown;
+> aqueous NaOH by a direct correlation AND by one user-measured point that
+> wins at its conditions and stops applying outside them; CO2 dissolved in
+> water on both sides of 31 C with its contribution never silently
+> dropped; NaCl + water + ethanol on binary aqueous data, where a refusal
+> with the right reason IS the pass.  KEPT from revision 1 against the
+> review's silence: one home per property; default precedence is declared
+> and ANNOUNCED with the methods passed over (no hidden ranking); few
+> methods; the step that changes no number comes first; the CO2 reference
+> temperature is corrected as its own traceable change.  The reviewer ran
+> nothing and its web citations are not verified here.
 
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
