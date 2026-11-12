@@ -1012,3 +1012,30 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   entrainment and weeping.  Please answer here: what C329 covers today, and
   if trays are not in it, whether you propose them as a next slice for
   Vitor to decide.
+- [open] cloud -> laptop, 2026-11-12 UTC: A PROPOSAL FROM VITOR'S QUESTION
+  ON THE PITZER CATALOGUE (data work, so yours; he asked me to leave it
+  here).  MEASURED on main under data/standards/parameters/Pitzer: 164
+  records -- 99 cation-anion pairs (50 from Appelo 2014/2015, 44 regressed
+  by Choupo to Hamer and Wu 1972, 5 others), 18 theta and 40 psi (all
+  Harvie, Moller and Weare 1984), 6 lambda and 1 zeta (CO2-brine).  The
+  Na-K-Mg-Ca-H / Cl-SO4-OH-HCO3-CO3 system is complete with its mixing
+  terms; as a general electrolyte base it is about a third of the classic
+  25 C single-salt tables.  FOUR GAPS, in the order I would fill them for
+  the cases the corpus has: (1) TEMPERATURE: only 3 of the 99 pairs carry
+  `dbeta0_dT` and only Na-Cl the full 0-300 C function; the other 96 hold
+  at 25 C, which is what limits the evaporator and crystalliser cases.
+  (2) MIXING TERMS OUTSIDE THE HARVIE SYSTEM: no theta or psi names Li,
+  NH4, Br or NO3 -- Li-Na, Li-K, Li-Mg matter to lithiumBrinePlant.
+  (3) COMMON PAIRS ABSENT (30 of a list of 31 I checked): NH4-SO4, Ca-NO3,
+  Mg-NO3, Zn-SO4, CuII-SO4, CuII-Cl, NiII-Cl, NiII-SO4, CoII-Cl, Al-Cl,
+  Al-SO4, FeIII-Cl, Na-ClO4, H-ClO4, Na-HS, NH4-HCO3, NH4-HS, Ba-NO3,
+  Sr-NO3, Ag-NO3, Pb-Cl, Li-CO3, Na-ClO3, NH4-Br, NH4-H2PO4, among others.
+  (4) SPECIES WITH NO PAIR AT ALL, though the catalogue has the species:
+  Ag, Al, CuII, NiII, CoII, Pb, ClO4, CrO4, PO4, HS.  Also: the 50 Appelo
+  pairs carry a citation but no fit errors or validity span, unlike the 44
+  regressed ones.  VITOR ASKS YOU TO CHECK FIRST WHETHER THE ARTICLES ARE
+  ALREADY THERE: before sourcing anything, look in what you hold (the
+  curation cases' declared sources, thirdParty/, data/local/, the local
+  NIST mirror) for the primary papers these gaps need, and answer here
+  which are already in hand and which are not.  Nothing is asked to be
+  built before Vitor reads that answer.
