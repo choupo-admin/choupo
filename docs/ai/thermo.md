@@ -289,6 +289,22 @@ The stream carries the SALT (the flowsheet/component basis); the model
 activates its ions from the component's `dissociatesTo` and the ion records
 in `species/`.
 
+**Temperature validity of an electrolyte pair (2026-11-12).**  A Pitzer or
+eNRTL pair record states the temperatures its parameters are good for in
+`provenance { validity { temperature { min 298.15 K; max 298.15 K; } } }`.
+A record with no declared span is read as 298.15 K (the temperature of its
+data), except a Pitzer record that carries temperature functions/slopes,
+whose window is `TvalidLo`-`TvalidHi` (default 273.15-573.15 K).  Evaluated
+outside it, EVERY route (the `pitzerActivity` op, the package route the units
+use, the `pitzerHMW` speciation route, and the eNRTL package) prints ONE
+`[pair-span]` line per pair per run and records it in the caveat block; no
+number changes.  Two things to tell a user: 96 of the 99 Pitzer pair records
+have no temperature dependence (only the Debye-Hueckel slope follows T), and
+the eNRTL temperature rule is the engine's own `tau(T) = tau(25 C) x 298.15/T`,
+NOT a fitted law -- against Archer (1992) NaCl it is off by tens of per cent at
+273 K and 373 K at 3-6 mol/kg while Pitzer stays within 2.1 % (Theory Guide,
+eNRTL "Temperature dependence").  For NaCl-water off 25 C use Pitzer.
+
 **The REACTIVE shape** (a speciation network + volatiles, as in the
 brine-CO₂ and sour-water flashes) declares its IONIC rung inside
 `aqueous {}` and the engine serves what its speciation kernel serves:
