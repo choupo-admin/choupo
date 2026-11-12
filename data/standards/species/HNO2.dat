@@ -1,5 +1,5 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/HNO2aq.dat -- the aqueous species HNO2 (C320, DEV.md 4c).  ONE model species, ONE
+  species/HNO2.dat -- the aqueous species HNO2 (C320, DEV.md 4c).  ONE model species, ONE
   typed file.  Made by bin/curate/species_c320.py from
   data/curation/batches/species_c320/species.tsv, which holds every reading (NBS table, page, row;
   the CRC second reading; the CODATA key value where the species has one) and the chosen value.
@@ -9,7 +9,7 @@
 recordType modelSpecies;
 schemaVersion 1;
 
-name    HNO2aq;
+name    HNO2;
 formula     "HNO2";
 charge  0;
 MW { value 47.013; unit g/mol;}
