@@ -167,7 +167,7 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             + "': operation.nCells is MISSING -- the axial mesh is the"
             " student's declared discretisation choice (no silent default)."
             "  Declare e.g. `nCells 100;` and do a mesh study (25/50/100/200)"
-            " to see the first-order upwind convergence.");
+            " to see the convergence of the declared convection scheme.");
     const scalar nCellsRaw = opDict->lookupScalar("nCells");
     N_ = static_cast<std::size_t>(nCellsRaw + 0.5);
     if (nCellsRaw < 3.0 || std::abs(nCellsRaw - static_cast<scalar>(N_)) > 1e-9)
@@ -182,8 +182,9 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
     //  choice beside the mesh it acts on.  `upwind` (first order: adds
     //  v dz/2 to the dispersion, announced below) or `vanLeer` (MUSCL
     //  reconstruction with the van Leer limiter: second order where the
-    //  profile is smooth, bounded at fronts).
+    //  profile is smooth, bounded at fronts; the stated default, said so).
     // -----------------------------------------------------------------
+    convectionDeclared_ = opDict->found("convectionScheme");
     convectionScheme_ = opDict->lookupWordOrDefault("convectionScheme",
                                                     convectionScheme_);
     if (convectionScheme_ != "upwind" && convectionScheme_ != "vanLeer")
@@ -1507,6 +1508,8 @@ std::string FixedBedAdsorber::convectionSchemeSentence_() const
 {
     std::ostringstream os;
     os << std::setprecision(4);
+    if (!convectionDeclared_)
+        os << "(stated default, operation.convectionScheme absent) ";
     if (dNumAnn_ <= 0.0)
     {
         os << convectionScheme_ << " (second order, van Leer-limited):"
@@ -3193,6 +3196,11 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
         if (tCross5_[a]  >= 0.0) k["t_breakthrough_5pct_" + nm]  = tCross5_[a];
         if (tCross50_[a] >= 0.0) k["t_50_" + nm]                 = tCross50_[a];
         if (tCross95_[a] >= 0.0) k["t_breakthrough_95pct_" + nm] = tCross95_[a];
+        if (cIn_[a] > 0.0 || feedSwitched_[a])
+            k["integral_anchor_" + nm] = integral_[a];
+        if (liveFeed)
+            k["c_out_over_cin_final_" + nm] =
+                y_[(ergun_ ? adsIdx_[a] : a) * N_ + N_ - 1] / cIn_[a];
         if (schemeDiagnostics_)
         {
             //  Moments of c_out about t = 0 (mol s/m3, s, s2): mean m1/m0,
@@ -3215,11 +3223,6 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
                     qMaxField_[a] / qStarFeedMax_[a];
             k["q_min_" + nm] = qMinField_[a];
         }
-        if (cIn_[a] > 0.0 || feedSwitched_[a])
-            k["integral_anchor_" + nm] = integral_[a];
-        if (liveFeed)
-            k["c_out_over_cin_final_" + nm] =
-                y_[(ergun_ ? adsIdx_[a] : a) * N_ + N_ - 1] / cIn_[a];
         // closure + qbar (same expressions as the trajectory columns)
         scalar cs = 0.0, qs = 0.0;
         for (std::size_t j = 0; j < N_; ++j)

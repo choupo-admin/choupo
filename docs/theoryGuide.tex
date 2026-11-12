@@ -22148,7 +22148,8 @@ honest model.
 The finite volume \eqref{eq:bed-fv} needs \emph{one} concentration at
 each face to form the convective flux $u\,c_{f}$; how it is chosen is
 the convection scheme, declared beside the mesh it acts on as
-\code{operation.convectionScheme} (\code{upwind} or \code{vanLeer}).
+\code{operation.convectionScheme} (\code{upwind} or \code{vanLeer}; absent,
+the stated default is \code{vanLeer}, announced as such).
 Face $f$ separates cell $L=f-1$ from cell $R=f$; $\Delta z = L_{\mathrm{bed}}/N$.
 
 \emph{First-order upwind} takes the upstream cell's value,

@@ -53,7 +53,8 @@ Description
     Discretisation (spec section 2, audited): conservative finite volumes on
     a DECLARED uniform mesh of nCells, the DECLARED convection scheme
     (operation.convectionScheme: `upwind`, first order, or `vanLeer`, a
-    MUSCL face value with the van Leer limiter -- C375; faceValue_ is its one
+    MUSCL face value with the van Leer limiter and the stated default --
+    C375; faceValue_ is its one
     home, with the inlet slope reading the feed and the outlet slope zero)
     + central dispersion at the faces, Danckwerts inlet as the IMPOSED face flux
     F_1/2 = u*c_in (the exact conservative form -- no ghost cell), outlet
@@ -305,8 +306,11 @@ private:
     //  profile in the upwind cell (second order where smooth, bounded at
     //  fronts).  The stencil of the second reaches two cells upstream, so the
     //  declared Jacobian gathers TWO cells per block (buildOdeStructure_).
-    std::string convectionScheme_ = "upwind";
-    bool        secondOrder_      = false;   // convectionScheme_ == vanLeer
+    //  The stated default is vanLeer (C375 part 4, after the closed-form and
+    //  mesh validation of part 3); absent, the run says it is the default.
+    std::string convectionScheme_ = "vanLeer";
+    bool        secondOrder_      = true;    // convectionScheme_ == vanLeer
+    bool        convectionDeclared_ = false; // the case named the scheme
     //  The declared switch for <t>/ time directories (controlDict
     //  solutionControl { write ...; }): the axial profiles obey it (C375 b).
     bool        writeProfiles_    = true;

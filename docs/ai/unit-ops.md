@@ -2887,7 +2887,8 @@ operation {
 }
 ```
 `convectionScheme upwind | vanLeer;` (in `operation`, beside `nCells`) picks
-the face value of the convective flux.  `upwind` is first order and adds a
+the face value of the convective flux; absent, the stated default is
+`vanLeer`, and the run says so.  `upwind` is first order and adds a
 numerical dispersion `v dz/2` (v = u/eps) to `D_L = Dax/eps`; every run
 announces it (header, advisory, KPIs `D_numerical`,
 `numerical_dispersion_ratio`, `nCells_numerical_ratio_0p1`; the ratio falls

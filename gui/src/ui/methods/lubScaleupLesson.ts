@@ -29,14 +29,14 @@
 
     what the engine solves            src/unitOperations/batch/FixedBedAdsorber.H:41
     the declared lab column           system/flowsheetDict operation {L, area,
-                                      eps, u, T, P} -- FixedBedAdsorber.cpp:169-174
+                                      eps, u, T, P} -- FixedBedAdsorber.cpp:209-214
     rho_b from the adsorbent record   Adsorbent.cpp:42 (`rho_bulk`),
-                                      FixedBedAdsorber.cpp:222
-    the pre-run t_st claim            FixedBedAdsorber.cpp:774-775, printed at
-                                      841-845
-    the engine's own trapezoid        FixedBedAdsorber.cpp:1743
-    the engine's own 5 % crossing     FixedBedAdsorber.cpp:1744-1751
-    the KPIs the tool reads           FixedBedAdsorber.cpp:2906-2917, 2932
+                                      FixedBedAdsorber.cpp:262
+    the pre-run t_st claim            FixedBedAdsorber.cpp:845-846, printed at
+                                      996-1002
+    the engine's own trapezoid        FixedBedAdsorber.cpp:2012
+    the engine's own 5 % crossing     FixedBedAdsorber.cpp:2013-2020
+    the KPIs the tool reads           FixedBedAdsorber.cpp:3192-3203, 3240
     the witness's numbers             tutorials/batch/adsorber/
                                         batch13_breakthrough_co2/{system,expected}
 \*---------------------------------------------------------------------------*/
@@ -138,7 +138,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
         + "outlet reaches the declared fraction f_b, found by linear "
         + "interpolation between the two samples that bracket it, which is "
         + "the engine's own rule for its 5 % crossing "
-        + "(FixedBedAdsorber.cpp:1744-1751)", unit: "s" },
+        + "(FixedBedAdsorber.cpp:2013-2020)", unit: "s" },
       { sym: "f_b", means: "the breakthrough criterion, c_out/c_in at which "
         + "you switch beds -- a specification you declare (the knob), never "
         + "a datum the curve carries" },
@@ -154,7 +154,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       { sym: "f_k,\\ f_{k+1}", means: "c_out/c_in at those two samples -- the "
         + "trapezoid rule applied to the data, which is exactly the "
         + "quadrature the engine runs on its own outlet "
-        + "(FixedBedAdsorber.cpp:1743)" },
+        + "(FixedBedAdsorber.cpp:2012)" },
     ],
     note: "The tail is handled honestly rather than extrapolated.  The sum "
       + "runs to the last sample; whatever the curve would still have "
@@ -169,7 +169,7 @@ t_\mathrm{st} &= \int_0^\infty \left( 1 - \frac{c_\mathrm{out}}{c_\mathrm{in}} \
       + "makes the bed look worse than it is.  Do not size from it; extend the curve first.  "
       + "The engine publishes its own t_st for the same "
       + "curve -- the analytic (L/u)·R_f it announced before integrating "
-      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:774-775) -- and the "
+      + "(t_stoichiometric_<i>, FixedBedAdsorber.cpp:845-846) -- and the "
       + "tool prints it beside the trapezoid: two readings of one quantity, "
       + "and the gap between them is the mesh plus the dropped tail, nothing "
       + "else.  On the witness they agree to about seven digits.",
@@ -203,11 +203,11 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       { sym: "q^*_\\mathrm{isotherm}",
         means: "the same loading as the isotherm gives "
         + "it, recovered from the engine's own retention factor "
-        + "(retention_factor_<i>, FixedBedAdsorber.cpp:2906-2907) by "
+        + "(retention_factor_<i>, FixedBedAdsorber.cpp:3192-3193) by "
         + "inverting the definition the engine prints", unit: "mol/kg" },
       { sym: "R_f", means: "the retention factor, how many empty-tube "
         + "transit times the front lags the gas -- defined at "
-        + "FixedBedAdsorber.cpp:898 exactly as written here" },
+        + "FixedBedAdsorber.cpp:994 exactly as written here" },
     ],
     note: "A disagreement is the diagnostic, and it points at the data, not "
       + "at the isotherm.  If q*_curve falls short, the curve's tail was cut "
@@ -219,7 +219,7 @@ q^*_\mathrm{isotherm} &= \frac{(R_f - \varepsilon)\, c_\mathrm{in}}{\rho_b}
       + "recorded is not the one the column saw.  Neither is something to "
       + "tune away; both are reasons to go back to the column.  The tool "
       + "also prints the bed-average loading the run actually reached at "
-      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:2932), which equals "
+      + "its end (qbar_<i>_final, FixedBedAdsorber.cpp:3240), which equals "
       + "q* only on a saturated bed.",
   },
   {
