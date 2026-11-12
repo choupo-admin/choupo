@@ -54,7 +54,7 @@
   kept span 277.35-328.15 K; max relative error
   19.0299 % (least squares 20.9390 %); in-sample
   grade severe.
-  NOT promoted (C300 rule 3): the record is this case's own.
+  PROMOTED into data/standards/parameters/Henry/ with a SEVERE grade (C285).
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the

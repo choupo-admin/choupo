@@ -798,6 +798,9 @@ def record_text(case, s, v, decl, res, fingerprint):
           f"  20 % after the least-squares stage discarded by name ({len(res['discarded'])} here).",
           f"  {len(res['kept'])} kept points, {res['Tmin']:g}-{res['Tmax']:g} K; max relative error",
           f"  {res['maxRel_pct']:.2f} % in-sample (graded 5 / 10 / 20 %).",
+          ] + ([f"  ONE laboratory: no point discarded (C321 part 2 amended); the series does not",
+                f"  follow van't Hoff within 5 % -- it misses its own points by up to {res['maxRel_pct']:.2f} %."]
+               if res["labs"] < 2 and res["grade_in"] != "clean" else []) + [
           "  Regressed by Choupo, NOT read by a human; the archive's transcription has",
           "  not been read back against the articles.", "",
           "  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;",

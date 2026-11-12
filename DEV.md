@@ -3590,7 +3590,12 @@ accepts today, and that is a policy call.
 > (constant/parameters/Henry/, C300 rule 3) -- 234 promoted, henryPairs 486 ->
 > 485, the FASTSET line moved to CO2-cyclohexanol, and check_organic_records
 > refuses a single-laboratory record carrying discarded points (built
-> negative and by-hand sabotage, both caught).
+> negative and by-hand sabotage, both caught).  RULED THE SAME DAY (Vitor, C285
+> over C300 rule 3: "com 19 % ainda pode ficar; so acima de 20 % e que nao"):
+> a severe record stays in the catalogue, voiced severe, so NH3-ethanol is
+> promoted at 19.03 % (235 promoted: 234 warning, 1 severe; henryPairs 485 ->
+> 486, FASTSET line unchanged) and check_organic_records refuses only a fit
+> above 20 % (a > 20 % fit dressed as severe is a built negative).
 
 > **C304 (Vitor, 2026-11-11, an external reviewer's reading of the Pinch
 > report of greenAmmoniaPEQ_baseCase: "a normal case report must be an

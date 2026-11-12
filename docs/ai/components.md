@@ -871,6 +871,7 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `N2-methylChloride` |
 | `N2-water` |
 | `N2O-water` |
+| `NH3-ethanol` |
 | `NH3-water` |
 | `NO-water` |
 | `NO2-water` |

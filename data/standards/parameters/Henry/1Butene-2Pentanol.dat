@@ -13,6 +13,8 @@
   20 % after the least-squares stage discarded by name (0 here).
   5 kept points, 249.94-330 K; max relative error
   5.31 % in-sample (graded 5 / 10 / 20 %).
+  ONE laboratory: no point discarded (C321 part 2 amended); the series does not
+  follow van't Hoff within 5 % -- it misses its own points by up to 5.31 %.
   Regressed by Choupo, NOT read by a human; the archive's transcription has
   not been read back against the articles.
 
