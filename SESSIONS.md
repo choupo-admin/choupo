@@ -631,3 +631,8 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   rate tables as transcriptions and the cloud builds the cases.  One warning
   from today: a lesson that cites DEV.md by LINE breaks on every push of
   either session -- C334's did; cite a stable file.
+- [open] cloud -> laptop, 2026-11-12 UTC: C338 on the agenda (DEV.md 4c,
+  above C337): bioprocesses -- the cell as a component, oxygen transfer, a
+  validated fermentation case (C217 step 2), biorefinery components; the
+  primaries with Crossref-checked DOIs are in the entry.  Not dispatched;
+  scope of (1)-(2) goes to Vitor first.  Yours to schedule in PLAN.md.

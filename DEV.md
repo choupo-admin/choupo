@@ -3417,6 +3417,35 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C338 (Vitor, 2026-11-12, in the cloud session, after asking what the
+> simulator lacks for biotechnology and biorefineries: "Poe os pontos 1 a 4
+> na agenda e da-me os DOIs dos artigos").  BIOPROCESSES, THE FIRST FOUR.**
+> Measured today: the tree has the reactors (cstr, batch, fed-batch on
+> choupoSemiContinuous, dynamicCSTR), the written rate law, campaign plans,
+> GMP layout, the downstream separations and glucose / sucrose / glycerol /
+> ethanol / furfural; it has NO cell component, NO oxygen transfer, NO
+> validated fermentation case, NO lignocellulosic component.  On the agenda,
+> each with its sources (every DOI below resolved on Crossref 2026-11-12):
+> (1) THE CELL AS A COMPONENT -- elemental formula, formation enthalpy from
+> the heat of combustion, element and degree-of-reduction balances: Roels
+> 1980 (10.1002/bit.260221202); Cordier et al. 1987 (10.1007/BF00252538);
+> heat from oxygen uptake, Cooney, Wang & Mateles 1969
+> (10.1002/bit.260110302).  (2) OXYGEN TRANSFER -- kLa, OTR against OUR,
+> gassed power: Van't Riet 1979 (10.1021/i260071a001); Garcia-Ochoa & Gomez
+> 2009 (10.1016/j.biotechadv.2008.10.006); Michel & Miller 1962
+> (10.1002/aic.690080226).  (3) A VALIDATED FERMENTATION CASE (C217 step 2)
+> -- Mazzoleni et al. 2015, open access (10.1186/s12934-015-0295-4);
+> Sonnleitner & Kappeli 1986 (10.1002/bit.260280620).  (4) BIOREFINERY
+> COMPONENTS AND A FIRST KINETICS -- cellulose, xylan, lignin, xylose and
+> the acids: NREL/MP-425-20685, Wooley & Putsche 1996 (10.2172/257362; its
+> reuse terms to be READ before a value enters); the reference plant,
+> NREL/TP-5100-47764, Humbird et al. 2011 (10.2172/1013269); enzymatic
+> saccharification kinetics, Kadam, Rydholm & McMillan 2004
+> (10.1021/bp034316x).  The pedagogical scope of (1) and (2) -- what a
+> student is told a cell and an aerated tank are -- goes to Vitor before
+> any engine slice.  Only Mazzoleni and the two NREL reports are freely
+> readable; the others need Vitor's copies.
+
 > **C337 (Vitor, 2026-11-12, in the cloud session, after asking what the
 > kinetics lack: "Implementa ou poe na agenda o que achares que e razoavel do
 > ponto de vista de Pareto").  KINETICS, THE PARETO.**  Measured: the rate
