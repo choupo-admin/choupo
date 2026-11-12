@@ -82,7 +82,7 @@ def run_bench():
         print((p.stdout + p.stderr)[-3000:])
         sys.exit(1)
     summary = [l.strip() for l in p.stdout.splitlines()
-               if l.strip().startswith(("records", "non-finite", "wall time"))]
+               if l.strip().startswith(("records", "non-finite"))]
     return secs, summary
 
 
@@ -159,7 +159,7 @@ def main() -> int:
               "--record and list the moved blocks in the commit.")
         return 1
     print(f"{NAME}: OK -- {len(got)} (record, route) blocks of the liquid-property kernel "
-          f"answer bit for bit as recorded ({secs:.1f} s; " + "; ".join(summary) + ").  "
+          f"answer bit for bit as recorded (" + "; ".join(summary) + ").  "
           "NOT CHECKED: whether any value is right, states off the grid, mixtures other than "
           "the manifest's binaries, activity-model effects, per-unit overrides.")
     return 0

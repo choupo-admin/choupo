@@ -1703,8 +1703,8 @@
     },
     "check_property_route_bench": {
       "exit": 0,
-      "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded (3.3 s; records 696, binaries 8, blocks 4974, values 81003, refusals 74163, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357; wall time 3.3 s).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 3.4
+      "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded (records 696, binaries 8, blocks 4974, values 81003, refusals 74163, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 3.6
     }
   }
 }
