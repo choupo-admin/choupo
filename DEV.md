@@ -3455,6 +3455,21 @@ accepts today, and that is a policy call.
 > readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
 > editor, compound count, interoperability.
 
+> **C334 (Vitor, 2026-11-12: "vou estender o severo ate 29 %").**  The severe
+> band of PAIR fits widens: bubble pressure 5 / 10 / 29 % (was 20), bubble
+> temperature 1 / 2 / 8 K (was 4; 8 K is the Clausius-Clapeyron equivalent of
+> 29 % near 350 K, and the old 4 K was stricter than the old 20 %).  The
+> architect's condition, same commit: a severe fit is promoted only if it
+> BEATS THE IDEAL MIXTURE on its own kept points (both maxima written in the
+> record), because "better than nothing" is the only reason to ship a severe
+> pair and it must be measured, not assumed.  NOT widened: pure-component
+> vapour pressure and liquid density (a 29 % error there has no excuse: the
+> forms fit to a few per cent), the electrolyte scale (2 / 5 / 10 %).
+> Transport (viscosity, conductivity) may follow: correlations of that kind
+> carry 20-30 % anyway; decided when C327 lands.  Reading for a user: severe
+> means screening and teaching, never column design; the engine says SEVERE
+> on every load.
+
 > **C333 (Vitor, 2026-11-12: "estas a descartar ajustes severos entre 10 % e
 > 20 %, mas esses sao para ficar!  So acima de 20 % e que se descartam!").**
 > C300 rule 3 (the architect's own tightening: `severe` leaves the default
