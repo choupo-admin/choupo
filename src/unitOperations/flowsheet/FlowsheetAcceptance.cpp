@@ -43,6 +43,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "Flowsheet.H"
+#include "unitOperations/PropertySourceDeclarations.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitAcceptance.H"
 #include "unitOperations/UnitOperation.H"
@@ -74,6 +75,8 @@ void Flowsheet::checkAuthoredInletAcceptance(
     };
     for (const auto& fu : topology_)
     {
+        //  What the unit says it will use for a liquid property (C378).
+        propertySourceDeclarations::declareFor(fu.type, fu.name);
         //  The DECLARATION is asked of the class.  An unknown type is not this
         //  pass's finding: lint reports it by name, and the solve refuses it
         //  at the unit's turn.

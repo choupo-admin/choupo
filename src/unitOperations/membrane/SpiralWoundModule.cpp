@@ -868,6 +868,24 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         "membrane '" + membraneName + "'", verbosity,
         transportModel->decomposesSaltsIntoIons());
     const bool perSoluteK = polar.perSoluteK();
+    //  Where the film model's solute diffusivity came from (C378 slice 0).
+    if (opDict->found("massTransfer") && polar.nIons() < polar.solutes().size())
+    {
+        if (DDeclared)
+            PropertySourceLog::instance().useHere("liquidDiffusivity",
+                liquidSource::declaredByCase, "declared");
+        else if (dSoluteSeverity == "info")
+            PropertySourceLog::instance().useHere("liquidDiffusivity",
+                NamedSource{ "kernel.liquidDiffusivity.soluteInWater",
+                             "kernel: the package's liquid-diffusivity model, first nonvolatile solute in the aqueous solvent" },
+                "kernel");
+        else
+            PropertySourceLog::instance().useHere("liquidDiffusivity",
+                liquidSource::soluteDiffusivityLegacy);
+    }
+    if (opDict->found("massTransfer") && polar.nIons() > 0)
+        PropertySourceLog::instance().useHere("liquidDiffusivity",
+            liquidSource::speciesRecordD0, "record");
     if (!dSoluteAdvisory.empty() && polar.nIons() < polar.solutes().size())
         AdvisoryLog::instance().add("model", dSoluteSeverity,
             "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",

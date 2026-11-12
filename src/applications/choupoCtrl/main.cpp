@@ -45,6 +45,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "control/Controller.H"
+#include "core/PropertySourceLog.H"
 #include "control/signal/Signal.H"
 #include "dynamicDriver/DynamicDriver.H"
 
@@ -52,6 +53,8 @@ using namespace Choupo;
 
 int main(int argc, char** argv)
 {
+    //  One run per process, or per WASM run_case (C378 slice 0).
+    PropertySourceLog::instance().clear();
     //  THE CONTROL LAYER -- the one thing this application owns.  Registered
     //  here, explicitly, before the driver runs (the factory contract: no
     //  auto-registration anywhere).  The driver itself registers every other

@@ -47,6 +47,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "AadCompare.H"
+#include "core/PropertySourceLog.H"
 #include "core/AdvisorySummary.H"
 #include "core/DivergenceSummary.H"
 #include "propertyOps/CurationDossier.H"
@@ -247,6 +248,8 @@ void emitGapReport(const ThermoPackage& thermo, std::ostream& os)
 int main(int argc, char** argv)
 try
 {
+    //  One run per process, or per WASM run_case (C378 slice 0).
+    PropertySourceLog::instance().clear();
     static const char* USAGE =
         "Usage: choupoProps [options] [case-directory]\n"
         "\n"
@@ -1177,6 +1180,7 @@ try
     }
     // advisories (forum #75-1/#77-6): the ONE shared emitter.
     std::cout << advisoriesJson(AdvisoryLog::instance().entries());
+    std::cout << PropertySourceLog::instance().json();
     std::cout << ",\n  \"thermoResolution\": [";
     for (std::size_t i = 0; i < resln.size(); ++i)
     {

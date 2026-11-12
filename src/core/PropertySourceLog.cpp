@@ -88,7 +88,18 @@ void PropertySourceLog::use(const std::string& type, const std::string& unit,
     u.sourceClass = sourceClass;
     u.pressureNote = pressureNote;
     u.units.insert(unit);
-    if (!leftOut.empty()) u.leftOut.insert(leftOut);
+    //  one name per entry, whatever list the caller joined
+    std::size_t s = 0;
+    while (s < leftOut.size())
+    {
+        std::size_t e = leftOut.find(',', s);
+        if (e == std::string::npos) e = leftOut.size();
+        std::string w = leftOut.substr(s, e - s);
+        while (!w.empty() && w.front() == ' ') w.erase(w.begin());
+        while (!w.empty() && w.back() == ' ') w.pop_back();
+        if (!w.empty()) u.leftOut.insert(w);
+        s = e + 1;
+    }
 }
 
 void PropertySourceLog::useHere(const std::string& property, const NamedSource& s,

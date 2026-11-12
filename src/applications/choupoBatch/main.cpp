@@ -50,6 +50,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "core/Advisory.H"
+#include "core/PropertySourceLog.H"
 #include "core/AdvisorySummary.H"
 #include "core/DivergenceSummary.H"
 #include "core/distribution/SizeDistribution.H"
@@ -169,6 +170,8 @@ static void seedBatchUnitsFrom0(const std::vector<DictPtr>& unitList,
 int main(int argc, char** argv)
 try
 {
+    //  One run per process, or per WASM run_case (C378 slice 0).
+    PropertySourceLog::instance().clear();
     printBanner("  batch");
 
     // Registries shared with choupoSolve.

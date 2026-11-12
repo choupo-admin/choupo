@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "result/ResultEmitter.H"
+#include "core/PropertySourceLog.H"
 #include "core/distribution/SizeGrid.H"
 #include "result/BatchPlanJson.H"
 #include "result/BuildingJson.H"
@@ -111,6 +112,11 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
 {
     const auto& names = r.componentNames;
 
+    //  THE LIQUID-PROPERTY SOURCES (C378 slice 0): the two tables -- what
+    //  each unit declared at assembly, what each consumer used -- in the
+    //  log, just before the result they describe.
+    PropertySourceLog::instance().printDeclared(os);
+    PropertySourceLog::instance().printUsed(os);
     os << "<<<Choupo:result-begin>>>\n";
     os << "{ \"version\": 1,\n";
     os << "  \"converged\": " << (r.converged ? "true" : "false") << ",\n";
@@ -1201,6 +1207,10 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
     // ---- advisories (solver "speak-up": bounds active at the solution,
     //      rating exceedances, auto-init) -- so the GUI surfaces them ----
     os << advisoriesJson(r.advisories);
+
+    // ---- propertySources (C378 slice 0): where each consumer's liquid
+    //      density, viscosity, surface tension and diffusivity came from ----
+    os << PropertySourceLog::instance().json();
 
     // ---- thermoResolution (binary-pair provenance) -- feeds the GUI
     //      foundation navigator + pair-coverage matrix ----

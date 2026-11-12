@@ -48,11 +48,14 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "dynamicDriver/DynamicDriver.H"
+#include "core/PropertySourceLog.H"
 
 using namespace Choupo;
 
 int main(int argc, char** argv)
 {
+    //  One run per process, or per WASM run_case (C378 slice 0).
+    PropertySourceLog::instance().clear();
     //  No control layer: the Controller and Signal factories are NOT
     //  registered here, and the driver refuses a case that would need them.
     static const char* USAGE =
