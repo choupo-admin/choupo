@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 224 records already exist
+## 1. Why an index, when 225 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 224 design records, **161 state a rejected alternative and 63 do not** —
+- Of 225 design records, **162 state a rejected alternative and 63 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -67,6 +67,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`c361-solids-processing.md`](../design/c361-solids-processing.md) | ADR | yes | **SLICES 1-2 BUILT 2026-11-12 (DEV.md 4c C361)** -- one size axis per case (`sizeGrid { xMax; ratio; nClasses; }`, geometric, the pan as class 0), every authored inlet put on it before the first unit (a law INTEGRATED in its mass basis, a table RE-BINNED uniform in ln x, both mass-exact and printed), the grid handed to every unit, the mixer blending class by class (a stream on its own bins re-binned and announced, two different grids REFUSED), moments from one home (`psdMoments`) on every stream and drawn by the GUI; the `mill`: a breakage population balance (Austin 1971) with selection functions `austin`, `herbstFuerstenau` (energy-specific), `vogelPeukert` (impact threshold), breakage `austin`, plug flow and perfectly mixed, mass exact per class, adiabatic shaft work, Bond printed beside.  No grid declared: no golden moves (`--scope` over 180 solids cases).  REJECTED: each unit's own bins with re-binning at every consumer; one engine-wide grid; carrying the continuous law on the stream.  DEFERRED: one distribution per solid species, the time-integrated binaries, residence-time distributions, slices 3 (screen, hydrocyclone, closed circuit) and 4 (filtration, thickener, centrifuge) |
 | [`a-tear-has-a-pressure.md`](../design/a-tear-has-a-pressure.md) | ADR | no | **SHIPPED 2026-11-01 (DEV.md 4c C186 item 5)** -- pressure is a tear variable: a recycle with a pressure drop and nothing setting a pressure is refused by tear name instead of "converging" on a pass-to-pass drift; `sweep`, `gridSweep` and `designSpec` read every point through the one `simulationFailure` verdict (a failed point is named, nan, counted; all-fail refuses).  Reproduced first.  Gate `check_driver_convergence` |
 | [`a-negative-pressure-is-refused.md`](../design/a-negative-pressure-is-refused.md) | ADR | no | **SHIPPED 2026-11-02 (DEV.md 4c C186 item 5b)** -- a NEGATIVE outlet pressure on an accepted pass refuses by unit, stream, P, inlet and remedy (it was replaced by the inlet's pressure, exit 0, a recycle "converging" on it); a trial sweep keeps the old handling and is announced (`trial pressure clamped N time(s)`); P == 0 stays the unit-did-not-set sentinel (28 corpus cases, cstr/pfr).  Reproduced and corpus-measured first.  Gate `check_negative_pressure` |
 | [`a-shortlist-has-no-score.md`](../design/a-shortlist-has-no-score.md) | ADR | yes | **SHIPPED 2026-11-01 (C189 slice 5)** -- `membraneShortlist` (choupoProps): from a functional class to the commercial elements that do it -- hard filters on each record's own numbers (membrane type, class band, one rated test of the solute, `limits {}`), each survivor re-rated at the STUDENT's conditions on the same module (feed flow found for his recovery), every criterion side by side, candidates in alphabetical order of the name, NO score, weight or rank (a source arm and a fixture whose best performer is alphabetically last); a record's `partner`/`dataVerifiedBy` is read by nothing on the path (source arm; output byte-identical with or without).  The re-rating rests on `waterPermeance fromRatedTest;`: the 2.16x / 2.08x permeate finding of slice 2 is the membrane records' A_w being a teaching fit (36 and 3.6 L/m2/h/bar) where the sheet measures the element (derived 14.88 and 1.318), found TOGETHER with R_int by alternating the two bracketed solves, the sheet's permeate reproduced to 5e-15.  The module registry now reads `data/local/assets` as its lowest tier (standards beats local, `[shadowed]`; `[local] UNVERIFIED` when used; a sealed run never reads it) -- a REVERSAL of slice 4's declined third tier, with the reason (a comparison over N imported elements cannot have N copies in a case).  `bin/choupo-import` follows a class's `element` (the class case could not be sealed).  REJECTED: a default weighted score or any sort by a criterion; re-rating with the membrane record's A_w; editing the NF270/SW30HR records to match their sheets; storing the derived A_w in the module record; a `waterPermeance <number>` beside a record that has one; reading `partner` to break a tie; letting a machine's data/local reach a golden (`tiers` declares the candidates) |
@@ -378,7 +379,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**63 of 224 records state no rejected alternative.**  For a FORUM or a STUDY
+**63 of 225 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
