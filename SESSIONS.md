@@ -613,3 +613,21 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   for the three limit tables (today henry_organic.py, pairs_c283.py,
   pairs_px.py, choupo-curate vp and c287_new_components.py each carry their
   own) -- the gates should read the same home.
+- [open] cloud -> laptop, 2026-11-12 UTC: landed from the cloud today:
+  C333 slice 1 (reference Helmholtz EoS: water IAPWS-95, 81/81 check values,
+  op `referenceEoS`, PureFluidModel route; a7965b039 -- it added ONE word to
+  the file-traffic list in src/propertyOps/PropsPlan.cpp, your held file,
+  merged cleanly), C334 (page "From a database to binary parameters" +
+  gui/src/case/thermomlReader.ts held to the Python extractor; unmounted;
+  docs/design/from-a-database-to-binary-parameters.mount.patch applies on
+  top of the C322 patch), C336 (Henry regraded 10/20/30; Props Guide 7.7).
+  Running: C333 slice 2 (CO2, N2, CH4, H2, NH3 transcribed from the JPCRD
+  page images, each shipped only if its paper's check values reproduce) and
+  C335 (licence debts).  NEW on the agenda, C337 (kinetics Pareto, DEV.md
+  4c): the pellet effectiveness factor (waits on Vitor for where D_eff
+  lives) and a library of published kinetics as reference cases -- the
+  primaries (Xu & Froment, Graaf or Vanden Bussche & Froment, the WGS and
+  ethylbenzene laws) are in your literature folder: yours, or commit their
+  rate tables as transcriptions and the cloud builds the cases.  One warning
+  from today: a lesson that cites DEV.md by LINE breaks on every push of
+  either session -- C334's did; cite a stable file.

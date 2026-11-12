@@ -3417,6 +3417,31 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C337 (Vitor, 2026-11-12, in the cloud session, after asking what the
+> kinetics lack: "Implementa ou poe na agenda o que achares que e razoavel do
+> ponto de vista de Pareto").  KINETICS, THE PARETO.**  Measured: the rate
+> forms are complete for teaching (Arrhenius power law, LHHW, the written
+> `expression` law with units and tables, a case's own C++ law); what is
+> missing is around them.  ON THE AGENDA, in this order: (1) THE PELLET --
+> the effectiveness factor inside cstr / pfr / batchReactor / dynamicCSTR
+> (today eta = 1, announced; scope in
+> docs/design/edutools-curriculum-survey.md section 6.1: a `kind catalyst`
+> asset record, the Thiele modulus from a declared D_eff, the rate
+> multiplied in ONE home).  WAITS ON VITOR for one ruling: where D_eff lives
+> (the catalyst record, or the case).  (2) A LIBRARY OF PUBLISHED KINETICS
+> AS REFERENCE CASES -- one `rateLawBench` witness per reaction, the law
+> written in the case's `constant/reactions` (axiom 3 keeps a rate law's
+> numbers in the case, so the library is a set of cases a student copies,
+> not a new data home), each held to the primary's own printed rates:
+> methanol synthesis, steam methane reforming, water-gas shift, ethylbenzene
+> dehydrogenation, a liquid esterification, thermal cracking (C228).  Each
+> needs its primary READ: the laptop's literature folder holds them; the
+> cloud takes those whose primary is open access.  (3) LATER, each with its
+> own case first: catalyst deactivation; Michaelis-Menten / Monod examples
+> (C217); Butler-Volmer for the electrolyser (C214 W7); a kinetic-parameter
+> fit from rate data.  NOT planned: package activities or fugacities as
+> formula symbols (C67's decision stands).
+
 > **C336 (Vitor, 2026-11-12, in the cloud session: he proposed stretching
 > "severe" to 29 % and asked whether that is reasonable for a process
 > simulator; the cloud answered "by property kind, not for all", and he
