@@ -3446,6 +3446,18 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C374 (Vitor, 2026-11-12, on a screenshot of the EduTools home: "esta
+> pagina esta gira, mas acho que podia ter mais cor e aquela linha dificulta
+> a selecao de uma categoria").**  The home (C251) lists the sections as a
+> row of small text links ("Jump to ...") that reads as one line of prose,
+> and every section looks the same.  DECIDED: the sections become the
+> page's first visual element -- one tile per section with its name, its
+> count and its own accent colour, large enough to hit, in place of the
+> link row; the same accent marks the section's heading and its cards, so
+> colour means "which section" and nothing else (the phase colours of the
+> flowsheet stay reserved for phases); the Find box keeps its place and its
+> behaviour.  Shown to him as a render before it lands.
+
 > **C373 (Vitor, 2026-11-12, on seeing the evaluated compilations fetched for
 > C372: "sera que podes tirar de la o maximo de ioes que puderes?").**  A
 > species campaign from the evaluated compilations now in the literature
