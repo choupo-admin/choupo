@@ -107,6 +107,9 @@ const THEORY_DEST: Record<string, string> = {
   conversionReactor: "ch:conversion-reactor",
   yieldReactor: "ch:conversion-reactor",
   batchReactor: "ch:batch-adiabatic",
+  // the 1-D fixed bed (choupoBatch): its finite-volume balance; the scheme's
+  // words open their own equations (SLOT_MODEL_DEST, C375).
+  fixedBedAdsorber: "sec:fixed-bed",
   dynamicCSTR: "ch:dyn-cstr",
   dynamicTank: "ch:dyn-tank",
   // distillation / gas contacting
@@ -466,6 +469,11 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "thickener.model:coeClevenger":           { guide: "theory", dest: "sec:thickener-coeClevenger" },
   "sedimentingCentrifuge.model:tubularBowl": { guide: "theory", dest: "sec:centrifuge-tubularBowl" },
   "sedimentingCentrifuge.model:discStack":   { guide: "theory", dest: "sec:centrifuge-discStack" },
+  //  The fixed bed's convection scheme (DEV.md 4c C375): `upwind` opens the
+  //  derivation of its numerical dispersion v dz/2, `vanLeer` the limited
+  //  slope that removes it -- both inside the section on the scheme.
+  "fixedBedAdsorber.operation.convectionScheme:upwind":  { guide: "theory", dest: "eq:bed-numdisp" },
+  "fixedBedAdsorber.operation.convectionScheme:vanLeer": { guide: "theory", dest: "eq:bed-vanleer" },
 };
 
 // The theory link of a word chosen INSIDE a unit block -- `model

@@ -2913,6 +2913,24 @@ operation {
          k { CO2 [0 0 -1 0 0] 0.05; } }
 }
 ```
+`convectionScheme upwind | vanLeer;` (in `operation`, beside `nCells`) picks
+the face value of the convective flux; absent, the stated default is
+`vanLeer`, and the run says so.  `upwind` is first order and adds a
+numerical dispersion `v dz/2` (v = u/eps) to `D_L = Dax/eps`; every run
+announces it (header, advisory, KPIs `D_numerical`,
+`numerical_dispersion_ratio`, `nCells_numerical_ratio_0p1`; the ratio falls
+under 0.1 only for nCells > 5 Pe).  `vanLeer` is a MUSCL face value with the
+van Leer limiter: no `v dz/2` term, bounded (no over- or undershoot), second
+order where smooth; its declared Jacobian gathers two cells per block, and
+explicit RK4 is bounded by `6 u_i/dz` instead of `2 u_i/dz`.
+`schemeDiagnostics true;` adds the outlet moments (`outlet_m0_<i>`,
+`outlet_mean_<i>`, `outlet_variance_<i>`) and the field extremes
+(`c_max_over_feed_<i>`, `c_min_<i>`, `q_max_over_qstar_feed_<i>`, `q_min_<i>`).
+Witness: `batch29_pulse_two_schemes` (a linear pulse, both schemes, against
+the closed-form moments); Theory Guide, section "The convection scheme and its
+numerical dispersion".  With `solutionControl { write false; }` in controlDict
+the bed writes no `<t>/<unit>.profile`.
+
 `constantVelocity` remains an explicit A3 teaching/compatibility mode and
 announces its carrier-fabrication residual.  Examples: `batch16_ergun_profile`
 (closed-form pressure profile), `batch17_dilute_ergun_limit`, and

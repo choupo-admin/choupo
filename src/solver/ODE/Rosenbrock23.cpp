@@ -90,6 +90,7 @@ void indexStructure(const ODEBlockStructure& s, std::size_t n,
     for (std::size_t p = 0; p < nb; ++p)
     {
         const std::size_t r = s.blockRows[p];
+        if (r == ODEBlockStructure::kPad) continue;   // a padding slot
         if (r >= n || posOf[r] >= 0)
             throw std::runtime_error(
                 "Rosenbrock23: the DECLARED block structure is malformed --"
@@ -505,10 +506,13 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             if (!S) return luSolve(W, piv, r);
             const std::size_t nv = S->blockSize;
             sVector rb(nb);
-            for (std::size_t p = 0; p < nb; ++p) rb[p] = r[S->blockRows[p]];
+            constexpr std::size_t kPad = ODEBlockStructure::kPad;
+            for (std::size_t p = 0; p < nb; ++p)
+                rb[p] = S->blockRows[p] == kPad ? 0.0 : r[S->blockRows[p]];
             const sVector xb = blockThomasSolve(Wbt, std::move(rb));
             sVector x(n, 0.0);
-            for (std::size_t p = 0; p < nb; ++p) x[S->blockRows[p]] = xb[p];
+            for (std::size_t p = 0; p < nb; ++p)
+                if (S->blockRows[p] != kPad) x[S->blockRows[p]] = xb[p];
             for (std::size_t i = 0; i < narrow.size(); ++i)
             {
                 const auto& br = narrow[i];
@@ -524,6 +528,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
             for (std::size_t p = 0; p < nb; ++p)
             {
                 const std::size_t i = S->blockRows[p];
+                if (i == kPad) continue;
                 rel = std::max(rel, std::abs(x[i])
                                     / std::max(std::abs(y[i]), typ[i]));
             }
@@ -534,6 +539,7 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
                 for (std::size_t p = 0; p < nb; ++p)
                 {
                     const std::size_t i = S->blockRows[p];
+                    if (i == kPad) continue;
                     yp[i] = y[i] + delta * x[i];
                 }
                 const sVector fp = f(t, yp);
@@ -609,7 +615,9 @@ ODEStats Rosenbrock23::integrate(sVector& y, scalar t0, scalar t1,
         // (the mask covers every packed unit's rows, at their own offsets).
         bool negative = false;
         for (std::size_t i = 0; i < ctrl.positiveRows.size() && i < n; ++i)
-            if (ctrl.positiveRows[i] && ynew[i] < 0.0)
+            if (ctrl.positiveRows[i]
+                && ynew[i] < (ctrl.positiveWithinAtol ? -atolFor(ctrl, i)
+                                                       : 0.0))
             { negative = true; st.negativeRow = i; break; }
 
         bool finite = true;

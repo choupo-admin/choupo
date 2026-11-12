@@ -23,7 +23,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoBatch;
-description   "CO2 15%/He breakthrough on zeolite 13X -- 1-D isothermal fixed bed (A3): t_st = 3040.5 s announced pre-run, t_b(5%) = 2890.7 s, ledger closure at machine level";
+description   "CO2 15%/He breakthrough on zeolite 13X -- 1-D isothermal fixed bed (A3): t_st = 3040.5 s announced pre-run, t_b(5%) = 2934.1 s on the second-order van Leer scheme (2890.7 s under first-order upwind), ledger closure at machine level";
 
 verbosity     3;
 

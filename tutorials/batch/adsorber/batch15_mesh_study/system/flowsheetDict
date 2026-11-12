@@ -11,13 +11,15 @@
 
   The axial mesh is a DECLARED modelling choice (nCells; absent = FATAL),
   and this case is the receipt: the batch13 breakthrough run on the
-  25/50/100/200 family, everything else identical.  First-order upwind
+  25/50/100/200 family, everything else identical, with the scheme PINNED
+  to `convectionScheme upwind;` (batch13 itself runs the default van Leer
+  scheme since C375; its t_b5 at 100 cells is 2934.07 s).  First-order upwind
   advection dominates the error, so t_b(5%) must converge MONOTONICALLY
   with observed order p ~ 1:
 
       N =  25   t_b5 = 2732.027658 s      (this case)
       N =  50   t_b5 = 2838.542518 s
-      N = 100   t_b5 = 2890.669098 s      (batch13, the production mesh)
+      N = 100   t_b5 = 2890.669098 s      (batch13's mesh, under upwind)
       N = 200   t_b5 = 2915.764796 s
       p(25/50/100) = 1.031    p(50/100/200) = 1.055
       Richardson (p = 1): t_b5(inf) ~ 2940.86 s  -> N = 100 sits 1.7% low
@@ -52,6 +54,7 @@ units
             P           1     bar;
             Dax  [0 2 -1 0 0]  1e-4;   // m2/s (Pe = 250)
             nCells      25;            // the COARSE member of 25/50/100/200
+            convectionScheme upwind;   // pinned (C375): this is the first-order mesh lesson (order ~1)
 
             feed    { molarComposition { CO2 0.15; He 0.85; } }
             initial { molarComposition { He  1.0; } }
