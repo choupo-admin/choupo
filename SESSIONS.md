@@ -32,7 +32,6 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| integ/c377-naoh-olsson (integration + full sweep running) | `src/thermo/electrolyte/`, `src/unitOperations/heatTransfer/Evaporator.cpp`, `data/standards/parameters/OlssonNaOH/`, the evaporation cases and their goldens, the Theory Guide | 2026-11-12 |
 | c378-slice0 (general running; PLAN ONLY, no code yet) | `docs/design/thermophysical-slice0-plan.md`; `docs/design/thermophysical-property-routes.md` stays the coordinator's | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 

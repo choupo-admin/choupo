@@ -3740,6 +3740,24 @@ accepts today, and that is a policy call.
 > deliberate choice, and the danger named is the silence, which the
 > printed deviation removes.
 
+> **C377 LANDED IN FULL (2026-11-12, night; dc0ed4a4b).**  The NaOH-water
+> model from the published correlation, the exact boiling-point rise and
+> both cases are on main, validated by a FULL SWEEP of the integrated tree
+> (2175 PASS / 11 FAIL / 6 EXPECTED-FAIL; reason written in the
+> integration commit).  The 11 failures were all gates: two from the
+> branch (an activity-model name missing from a gate's list, a design
+> record with no index row) and NINE ALREADY ON MAIN, which no scoped
+> validation since the morning had run -- four records whose header line
+> began with the word "name", a borrowed `<map>`, stale catalogue counts,
+> a stale code map and inventory, a tally hand-carried in the Theory
+> Guide, and one gate that was not executable.  LESSON, applied from the
+> next integration: the cheap gates only the full sweep runs (catalogue
+> names, code map, models catalogue, standard includes, release
+> inventory, file modes) are added to every integration's list.  STILL
+> OPEN from this commission: water's liquid heat capacity above 373 K in
+> the electrolyte package (the reference equation on the elements datum,
+> its own slice); the solution's density and viscosity (C378).
+
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
 > MEASURED the same turn on evaporator08_naoh_dilution_heat (single effect):
