@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*112 of 112 registered operations carry a schema and are documented below.*
+*113 of 113 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 

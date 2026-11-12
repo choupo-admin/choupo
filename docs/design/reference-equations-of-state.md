@@ -114,18 +114,71 @@ Sabotages by hand, 2026-11-12:
   departure from IAPWS-95.  It took 2.9 s against 0.03 s: every (T, p) query
   solves a density (and, for a new T, a saturation) from scratch.
 
-## 5. What is NOT done
+## 5. Slice 2 (2026-11-12): three more fluids, read off page images
 
-* **Fluids other than water.**  CO2 (Span & Wagner, J. Phys. Chem. Ref. Data
-  25 (1996) 1509) IS readable: NIST serves the article at
-  https://srd.nist.gov/JPCRD/jpcrd516.pdf, but as an 88-page SCANNED image
-  with no text layer, so its 42 residual terms, ideal part and check values
-  must be transcribed from page images and read back against the paper's
-  own tables -- not done in this slice, nothing shipped.  N2 (Span et al.
-  2000), H2 (Leachman et al. 2009), NH3 (Gao et al. 2020) and CH4
-  (Setzmann & Wagner 1991) were not located in a readable primary today;
-  nothing shipped for them.  No permissively licensed library's fluid file
-  was used, as origin or as cross-check.
+The NIST JPCRD reprint archive (`https://srd.nist.gov/jpcrdreprint/<doi>.pdf`,
+and `https://srd.nist.gov/JPCRD/jpcrd516.pdf`) serves the primaries of CO2,
+N2, CH4 and H2.  On the Svehla-1962 precedent, each fluid's tables are
+transcribed into ONE committed text file,
+`bin/curate/helmholtz/<fluid>/<Equation>.txt` (pages, URL, date read), and the
+record is GENERATED from it by `bin/curate/helmholtz/gen_record.py`; arm (d)
+of the gate holds the record to its transcription.  Each table was read
+twice -- two renderings of the page images for the scanned CO2; the text
+layer and the page images for N2 (digital) and CH4 (OCR) -- and diffed.  The
+readings disagreed twice: N2 Table 17 k = 19 (the text layer dropped its
+x10^-1 onto the line above) and CH4 Table 39 at 180 K, the liquid speed of
+sound (OCR 491.01, image 497.01; the engine's check later agreed with the
+image).  None of the three publications prints a dedicated verification
+table, so their check values are rows of their own property tables at the
+digits printed there; a molar paper (N2) is converted to the kernel's mass
+basis by the generator in exact decimal arithmetic with the paper's own
+molar mass, and each value carries a `printedScale` so it is judged on the
+number as printed.
+
+| record | fluid | check values reproduced | worst relative deviation |
+|---|---|---|---|
+| `SpanWagner1996` | CO2 | 67 / 67 | 8.4e-4 (an entropy printed to 3 digits) |
+| `Span2000` | N2 | 67 / 67 | 2.7e-4 |
+| `SetzmannWagner1991` | CH4 | 74 / 74 | 1.2e-4 |
+
+Every one of them reproduced at the first load: no coefficient needed
+correcting.  The kernel gained only check-value kinds (saturation cv, cp, w;
+(T, p) table states, which exercise the density root search) and a refusal:
+a branch root that is mechanically stable but thermally not (cv <= 0) is
+not a state (nitrogen at 120 K has such a stretch between its spinodals).
+Sabotages S3-S5 (one coefficient per fluid, 5th digit) are recorded in the
+gate.
+
+Flowsheet: a scratch copy of `compressor01_air` made pure N2 with
+`pureFluids { N2 { method Helmholtz; equation Span2000; } }` runs (0.88 s)
+and moves the outlet pressure at fixed shaft work by 0.5 % against the
+ideal-gas package.  No corpus case is effectively pure in CO2 or CH4.
+
+Speed, measured (IAPWS-95, 56 terms, -O2): one (T, rho) evaluation 7 us; a
+saturation at a new T 13 ms; a subcritical (T, p) density at a new T 13.6 ms
+(it needs the saturation), at a cached T 0.17 ms; a supercritical (T, p)
+density 19 ms.  The 100x against IF97 is the SPINODAL SCAN (1200 evaluations
+per new temperature) and the supercritical scan (2600), not the Newton
+iterations.  Cheapest honest speed-ups, not built: pick the stable branch by
+comparing g of the two branch roots (the Maxwell definition itself, no
+saturation solve); seed the spinodal bracket from the nearest cached
+isotherm and refine locally; above T_c a bracketed Newton from the ideal-gas
+density with a monotonicity check, falling back to the scan.
+
+## 6. What is NOT done
+
+* **H2 (Leachman et al. 2009)** -- the reprint is readable
+  (srd.nist.gov/jpcrdreprint/1.3160306.pdf), but the paper prints no molar
+  mass while its equation is molar and its tables are per kilogram; a value
+  of M not printed in the primary would have to be typed from elsewhere.
+  Nothing shipped.
+* **NH3 (Gao, Wu, Bell, Harvey & Lemmon, J. Phys. Chem. Ref. Data 52 (2023)
+  013102)** -- the NIST author manuscript is readable
+  (tsapps.nist.gov/publication/get_pdf.cfm?pub_id=935147, a Word file) and
+  carries a verification table (its Table 7), but the equation adds an
+  ASSOCIATING term (its Eq. 29) the kernel does not have; that is a new term
+  type with its derivatives and its own slice.  Nothing shipped.
+* No program's fluid file was used, as origin or as cross-check.
 * **Mixtures** (GERG-2008) -- its own slice.
 * **Phase equilibrium of a mixture inside the flowsheet** -- the
   PureFluidModel route serves a phase EFFECTIVELY PURE in one component

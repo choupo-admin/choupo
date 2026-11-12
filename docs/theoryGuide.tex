@@ -8627,6 +8627,206 @@ fractions and the closed-form oracle echoed at verbosity~3).
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Reference equations of state (Helmholtz energy)}\label{ch:helmholtz-eos}
+
+A cubic equation or PC-SAFT is a \emph{model} of a fluid with a handful of
+physical parameters.  A \textbf{reference equation of state} is something
+else: a single empirical function, fitted by its authors to essentially
+every reliable measurement of one pure fluid, and published with the
+digits needed to reproduce it and a table of values to check an
+implementation against.  It is the most accurate description of a pure
+fluid that exists, and it is how the property tables of steam, carbon
+dioxide or nitrogen in the literature are computed.  Choupo carries such
+equations through \textbf{one kernel} and keeps every coefficient in a
+record; this section derives what the kernel does.
+
+\subsection{The reduced Helmholtz energy}\label{sec:helmholtz-eos-form}
+
+The equation is explicit in the Helmholtz energy $f(\rho, T)$ per unit mass,
+written in reduced form
+\begin{equation}
+  \alpha(\delta,\tau) = \frac{f(\rho,T)}{R\,T}
+    = \alpha^{0}(\delta,\tau) + \alpha^{r}(\delta,\tau),
+  \qquad \delta = \frac{\rho}{\rho_c},\quad \tau = \frac{T_c}{T},
+  \label{eq:helmholtz-alpha}
+\end{equation}
+where $R$ is the publication's specific gas constant (IAPWS-95 requires its
+own value, 461.518\,05\,J\,kg$^{-1}$\,K$^{-1}$, because the residual
+coefficients were fitted with it), and $\rho_c$, $T_c$ its reducing
+constants.  $\alpha^{0}$ is the \emph{ideal-gas part} (it carries the
+ideal-gas heat capacity and the zeros of energy and entropy); $\alpha^{r}$
+is the \emph{residual part}, a sum of empirical terms.  Every property needs
+$\alpha$ and five partial derivatives, written here
+$\alpha_\delta = \partial\alpha/\partial\delta|_\tau$,
+$\alpha_{\delta\delta}$, $\alpha_\tau = \partial\alpha/\partial\tau|_\delta$,
+$\alpha_{\tau\tau}$ and $\alpha_{\delta\tau}$.  The kernel
+(\file{src/thermo/equationOfState/HelmholtzEnergy.cpp}) computes all six
+analytically, one block per term type; no finite difference is taken.
+
+\subsection{The term types}\label{sec:helmholtz-eos-terms}
+
+\paragraph{Ideal part.}  Always $\ln\delta$ (the ideal gas's only density
+dependence), plus any of
+\begin{align}
+  \text{lead:}&\quad a_1 + a_2\,\tau, \label{eq:helmholtz-lead}\\
+  \text{logTau:}&\quad a_3 \ln\tau, \qquad
+     \alpha_\tau = a_3/\tau,\ \alpha_{\tau\tau} = -a_3/\tau^2, \\
+  \text{power:}&\quad n\,\tau^{t}, \\
+  \text{planckEinstein:}&\quad n \ln\!\left(1 - e^{-\gamma\tau}\right),\qquad
+     \alpha_\tau = \frac{n\gamma\,e^{-\gamma\tau}}{1-e^{-\gamma\tau}},\quad
+     \alpha_{\tau\tau} = -\frac{n\gamma^2 e^{-\gamma\tau}}{(1-e^{-\gamma\tau})^2},
+  \label{eq:helmholtz-pe}
+\end{align}
+the last being the vibrational contribution of one mode with reduced
+characteristic temperature $\gamma = \Theta/T_c$.
+
+\paragraph{Residual part.}  Four types, each summed over its rows:
+\begin{align}
+  \text{power:}&\quad n\,\delta^{d}\tau^{t}, \label{eq:helmholtz-power}\\
+  \text{exponential:}&\quad n\,\delta^{d}\tau^{t}\,e^{-\delta^{c}},
+    \label{eq:helmholtz-exp}\\
+  \text{gaussian:}&\quad n\,\delta^{d}\tau^{t}
+     \exp\!\left[-\alpha(\delta-\varepsilon)^2 - \beta(\tau-\gamma)^2\right],
+     \label{eq:helmholtz-gauss}\\
+  \text{nonAnalytic:}&\quad n\,\Delta^{b}\,\delta\,\psi,\qquad
+     \psi = e^{-C(\delta-1)^2 - D(\tau-1)^2},\quad
+     \Delta = \theta^2 + B\left[(\delta-1)^2\right]^{a},\quad
+     \theta = (1-\tau) + A\left[(\delta-1)^2\right]^{1/(2\beta)}.
+     \label{eq:helmholtz-na}
+\end{align}
+For the exponential term, with $E = e^{-\delta^c}$ and $g = d - c\,\delta^c$,
+\begin{equation}
+  \alpha_\delta = n\tau^{t}E\,\delta^{d-1} g,\qquad
+  \alpha_{\delta\delta} = n\tau^{t}E\,\delta^{d-2}\left[g\,(g-1) - c^2\delta^{c}\right],
+  \label{eq:helmholtz-exp-dd}
+\end{equation}
+and the kernel forms $g-1$ as $(d-1) - c\,\delta^c$: at a small $\delta$ with
+$d = 1$, forming $g$ first and subtracting one cancels every digit of
+$c\,\delta^c$ (it moved IAPWS-95's third virial coefficient in its eighth
+digit before it was written this way).  For the Gaussian term, with
+$X$ the term, $f_\delta = d/\delta - 2\alpha(\delta-\varepsilon)$ and
+$f_\tau = t/\tau - 2\beta(\tau-\gamma)$:
+$\alpha_\delta = X f_\delta$,
+$\alpha_{\delta\delta} = X\left(f_\delta^2 - d/\delta^2 - 2\alpha\right)$,
+$\alpha_\tau = X f_\tau$,
+$\alpha_{\tau\tau} = X\left(f_\tau^2 - t/\tau^2 - 2\beta\right)$,
+$\alpha_{\delta\tau} = X f_\delta f_\tau$.  The non-analytic term's
+derivatives are the chain rule through $\Delta^b$ and $\psi$, transcribed
+in the source from IAPWS R6-95(2018) Table~5\cite{IAPWS_R695}.  Its second
+$\delta$-derivative is singular exactly on the critical isochore; an
+evaluation at $\delta = 1$ is taken at $\delta = 1 + 10^{-12}$, the kernel's
+one numerical guard, stated at its site.  A paper written with the opposite
+sign convention for the Gaussian ($e^{\varphi(\delta-D)^2+\beta(\tau-\gamma)^2}$
+with $\varphi,\beta<0$) is converted when its record is generated, never in
+the kernel.
+
+\subsection{Properties from the derivatives}\label{sec:helmholtz-eos-properties}
+
+With $\alpha^{0}$, $\alpha^{r}$ and their derivatives at $(\delta,\tau)$
+(R6-95 Table~3):
+\begin{align}
+  p &= \rho R T\left(1 + \delta\alpha^r_\delta\right), \label{eq:helmholtz-p}\\
+  \frac{u}{RT} &= \tau\left(\alpha^0_\tau + \alpha^r_\tau\right), \qquad
+  \frac{h}{RT} = 1 + \tau\left(\alpha^0_\tau + \alpha^r_\tau\right) + \delta\alpha^r_\delta,\\
+  \frac{s}{R} &= \tau\left(\alpha^0_\tau + \alpha^r_\tau\right) - \alpha^0 - \alpha^r,
+  \qquad \frac{g}{RT} = 1 + \alpha^0 + \alpha^r + \delta\alpha^r_\delta,\\
+  \frac{c_v}{R} &= -\tau^2\left(\alpha^0_{\tau\tau} + \alpha^r_{\tau\tau}\right),\qquad
+  \frac{c_p}{R} = \frac{c_v}{R} + \frac{\left(1 + \delta\alpha^r_\delta - \delta\tau\alpha^r_{\delta\tau}\right)^2}
+       {1 + 2\delta\alpha^r_\delta + \delta^2\alpha^r_{\delta\delta}},\\
+  \frac{w^2}{RT} &= 1 + 2\delta\alpha^r_\delta + \delta^2\alpha^r_{\delta\delta}
+       - \frac{\left(1 + \delta\alpha^r_\delta - \delta\tau\alpha^r_{\delta\tau}\right)^2}
+              {\tau^2\left(\alpha^0_{\tau\tau} + \alpha^r_{\tau\tau}\right)},\\
+  \ln\varphi &= \alpha^r + \delta\alpha^r_\delta - \ln\left(1 + \delta\alpha^r_\delta\right),
+  \label{eq:helmholtz-phi}
+\end{align}
+and the virial coefficients are the zero-density limits
+$B\rho_c = \lim_{\delta\to0}\alpha^r_\delta$,
+$C\rho_c^2 = \lim_{\delta\to0}\alpha^r_{\delta\delta}$, taken at
+$\delta = 10^{-14}$ (converged to twelve digits; at $10^{-10}$ IAPWS-95's
+$C$ is not, in its ninth).
+
+\subsection{Density from (T, p), and the saturation curve}\label{sec:helmholtz-eos-roots}
+
+The equation is explicit in $(\rho, T)$; a state given as $(T, p)$ needs a
+root of $p(T,\rho) = p$, and below $T_c$ an isotherm has more than one.  The
+kernel finds the \textbf{spinodals} first: the first maximum of $p$ along
+the isotherm ($\delta_V$, the end of the vapour branch) and the last minimum
+($\delta_L$, the start of the liquid branch), by a scan of
+$(\partial p/\partial\delta)_T$ over $0 < \delta \le 4$ and a bisection of
+each sign change.  Between them a multiparameter equation is fitted to
+nothing and oscillates freely --- IAPWS-95 at 300\,K swings through
+$\pm10^{25}$\,Pa there, its $\tau^{50}$ terms being free outside the stable
+region --- so crossings in that stretch are \emph{counted and printed, never
+taken}.  Each branch root is a safeguarded Newton inside its bracket.  A
+branch root that is mechanically stable but not thermally
+($c_v \le 0$; nitrogen at 120\,K has such a stretch) is refused by name.
+
+The \textbf{saturation} pressure at $T$ is the Maxwell criterion, equal $p$
+and equal $g$ in the two phases, solved by Newton on $p$ with the
+Gibbs--Duhem slope
+\begin{equation}
+  \frac{\partial(g_L - g_V)}{\partial p}\bigg|_T = \frac{1}{\rho_L} - \frac{1}{\rho_V},
+  \label{eq:helmholtz-maxwell}
+\end{equation}
+safeguarded inside the window $\left(p(\delta_L), p(\delta_V)\right)$ the
+spinodals give.  No ancillary equation is used, not even as a seed.  At
+$(T, p)$ off the saturation curve the stable branch is the one $p_\sigma(T)$
+names (the liquid when $p \ge p_\sigma$); above $T_c$ the isotherm is scanned
+and the lowest $g$ among mechanically stable roots is taken.  The props
+operation lists every root it found, with its branch.
+
+\subsection{The check-value contract}\label{sec:helmholtz-eos-checks}
+
+A record carries its publication's own check values, and
+\file{ReferenceFluid::read} evaluates \emph{every one} at every load: a value
+is reproduced when it agrees within half a unit in the last digit the
+publication \emph{printed}.  One miss refuses the record --- a mistranscribed
+coefficient is worse than no equation.  For a paper written on a molar basis
+the record's values are converted (density $\times M$, energies
+$\times 1000/M$, with the paper's own $M$) and carry a
+\code{printedScale}, so the comparison is made on the number as it appears
+on the page.  \file{bin/curate/check\_reference\_eos.py} reproduces the same
+values with an independent implementation.  Where a paper is a scanned image,
+its tables were read twice from the page images (and from its text layer
+where one exists) and diffed; the transcription is committed under
+\file{bin/curate/helmholtz/} and the record is generated from it.
+
+\subsection{The fluids carried, their windows and their uncertainty}\label{sec:helmholtz-eos-fluids}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.20\linewidth}p{0.18\linewidth}p{0.10\linewidth}p{0.42\linewidth}}
+\hline
+equation (record) & window & checks & uncertainty, as the publication states it \\
+\hline
+\code{IAPWS95}, water\cite{IAPWS_R695} & 251.165--1273\,K, $\le$1000\,MPa & 81 & density 0.0001\,\% (liquid near ambient) to 0.5\,\%; $w$, $c_p$ growing towards the critical point \\
+\code{SpanWagner1996}, CO$_2$\cite{SpanWagner1996} & 216.592--1100\,K, $\le$800\,MPa & 67 & to 30\,MPa and 523\,K: density 0.03--0.05\,\%, $w$ 0.03--1\,\%, $c_p$ 0.15--1.5\,\% \\
+\code{Span2000}, N$_2$\cite{Span2000N2} & 63.151--1000\,K, $\le$2200\,MPa & 67 & density 0.02\,\% below 30\,MPa to 0.6\,\% at very high pressure; 0.01\,\% at 270--350\,K below 12\,MPa \\
+\code{SetzmannWagner1991}, CH$_4$\cite{SetzmannWagner1991} & 90.6941--625\,K, $\le$1000\,MPa & 74 & density 0.03\,\% below 12\,MPa and 350\,K, 0.03--0.15\,\% above; $w$ 0.03--0.3\,\%; heat capacities 1\,\% \\
+\hline
+\end{tabular}
+\end{center}
+
+IAPWS-95's 81 values are its release's Tables~6--8, the virial footnote and
+the triple point; the three others publish no dedicated verification table,
+so their check values are rows of their own property tables (saturation
+and single phase) at the digits printed there.  A $(T, p)$ outside the
+window is announced as an extrapolation, quoting the publication's own
+statement on extrapolating it.
+
+\subsection{How it is reached}\label{sec:helmholtz-eos-reach}
+
+The props operation \code{referenceEoS} evaluates one state
+(\code{state \{ T; p | rho; [branch]; \}}) or one saturation point, and at
+verbosity~3 prints each check value and every term's contribution to
+$\alpha$ (witness \file{tutorials/props/thermo/refEoS01\_iapws95\_verification}).
+A flowsheet reaches the same equation through the pure-fluid route,
+\code{pureFluids \{ water \{ method Helmholtz; equation IAPWS95; \} \}}, which
+serves a phase effectively pure in that component, on the publication's own
+energy datum.  Not carried: mixtures (GERG-2008), transport properties, and
+the melting curve that bounds the window from below.
+
+% ---------------------------------------------------------------------
 \section{\texorpdfstring{$K$}{K}-values and Rachford-Rice}\label{ch:rr}
 
 \begin{whatyoulllearn}
@@ -26057,6 +26257,26 @@ Chem. Res.}\ \textbf{41}, 5510, 2002.  The working form of the
 association contribution Choupo implements (Wertheim TPT1, after Chapman
 et al.\ 1990), with the $\sigma_{ij}^3$ convention under which the
 published $\kappa^{AB}$ were fitted.
+
+\bibitem{IAPWS_R695} IAPWS R6-95(2018), Revised Release on the IAPWS
+  Formulation 1995 for the Thermodynamic Properties of Ordinary Water
+  Substance for General and Scientific Use (2018); W.~Wagner and A.~Pru\ss,
+  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 31 (2002) 387--535.
+
+\bibitem{SpanWagner1996} R.~Span and W.~Wagner, A New Equation of State for
+  Carbon Dioxide Covering the Fluid Region from the Triple-Point Temperature
+  to 1100\,K at Pressures up to 800\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\
+  Data} 25 (1996) 1509--1596.
+
+\bibitem{Span2000N2} R.~Span, E.~W.~Lemmon, R.~T Jacobsen, W.~Wagner and
+  A.~Yokozeki, A Reference Equation of State for the Thermodynamic Properties
+  of Nitrogen for Temperatures from 63.151 to 1000\,K and Pressures to
+  2200\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 29 (2000) 1361--1433.
+
+\bibitem{SetzmannWagner1991} U.~Setzmann and W.~Wagner, A New Equation of
+  State and Tables of Thermodynamic Properties for Methane Covering the Range
+  from the Melting Line to 625\,K at Pressures up to 1000\,MPa,
+  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 20 (1991) 1061--1155.
 
 \bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
 \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,

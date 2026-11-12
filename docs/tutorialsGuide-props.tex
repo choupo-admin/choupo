@@ -5203,15 +5203,23 @@ NOT MODELLED, said plainly (the run says it too): nucleation and supercooling --
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{metastableVapour300}\\[-1pt]{\tiny referenceEoS}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{supercritical900}\\[-1pt]{\tiny referenceEoS}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{extrapolated1500}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{co2Sat280}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{co2Supercritical350}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{n2Sat100}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{n2Liquid100}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{ch4Sat150}\\[-1pt]{\tiny referenceEoS}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{ch4Dense200}\\[-1pt]{\tiny referenceEoS}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{IAPWS-95 (R6-95(2018)) from the reference-equation kernel: every check value of the release reproduced at the printed precision at load, states on (T, p) and (T, rho), saturation by the Maxwell criterion.}
+\tutwhat{Reference (multiparameter Helmholtz) equations of state through one kernel: water IAPWS-95 (R6-95(2018)), carbon dioxide (Span and Wagner 1996), nitrogen (Span et al. 2000) and methane (Setzmann and Wagner 1991) -- every check value of each publication reproduced at the printed precision at load; states on (T, p) and (T, rho), saturation by the Maxwell criterion.}
 \begin{tutnarrative}
 water from its REFERENCE equation of state, IAPWS-95, through Choupo's one Helmholtz-energy kernel.
 
 The equation is a record, data/standards/parameters/Helmholtz/IAPWS95.dat: 56 residual terms and 8 ideal-gas terms transcribed from IAPWS R6-95(2018), with the release's own computer-program verification values (Tables 6, 7, 8, the virial footnote, the triple point) -- 81 numbers. Loading the record evaluates ALL of them at the precision the release prints them; a single wrong digit refuses the run. The log lists each check (verbosity 3) and the term-by-term contributions to alpha at every state: the glass box of a reference equation.
 
 The operations show the four things a reference equation is asked: a saturation state by the Maxwell criterion (equal p, equal g); a (T, p) state on the liquid side -- the density is SOLVED, and every root of the isotherm is listed with its branch; a (T, p) state on a DECLARED metastable branch (a supersaturated vapour at 300 K, above psat = 3.54 kPa); a supercritical state, and one OUTSIDE the release's validated window (1500 K), which is announced as an extrapolation with the release's own words on extrapolating it. Each writes its CSV (12 significant digits, SI) that bin/curate/check\_reference\_eos.py recomputes independently.
+
+The SAME kernel then carries three more fluids whose records are generated from page-image transcriptions (bin/curate/helmholtz/<fluid>/): carbon dioxide (Span \& Wagner 1996), nitrogen (Span et al. 2000) and methane (Setzmann \& Wagner 1991), each held at load to every value of its own property tables the transcription carries.
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -5229,7 +5237,7 @@ The operations show the four things a reference equation is asked: a saturation 
 \goldrow{diag}{sat450}{worstCheckRelDev}{4.99275183559e-07}
 \goldrow{diag}{liquid300}{T}{300}
 \goldrow{diag}{liquid300}{checkValues}{81}
-\goldmore{58}
+\goldmore{139}
 \end{tutgolden}
 
 \clearpage

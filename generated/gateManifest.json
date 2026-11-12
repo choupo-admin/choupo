@@ -1663,8 +1663,8 @@
     },
     "check_reference_eos": {
       "exit": 0,
-      "claim": "check_reference_eos: OK -- 1 reference equation(s) (IAPWS95); 81 published check values reproduced at the printed precision by an independent implementation and by the engine; 5 engine states agree with the recomputation to 1e-9.  NOT checked: whether an equation is right (its uncertainty is the publication's), the flowsheet route, states nearer the critical point than the check values.",
-      "seconds": 12.0
+      "claim": "check_reference_eos: OK -- 4 reference equation(s) (IAPWS95, SetzmannWagner1991, Span2000, SpanWagner1996); 289 published check values reproduced at the printed precision by an independent implementation and by the engine; 11 engine states agree with the recomputation to 1e-9.  NOT checked: whether an equation is right (its uncertainty is the publication's), the flowsheet route, states nearer the critical point than the check values.",
+      "seconds": 38.8
     }
   }
 }
