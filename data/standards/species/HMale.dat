@@ -3,8 +3,8 @@
 
   NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of maleic acid is evaluated in
   Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.42 (Maleate), p. 305, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
-  in hand prints a formation enthalpy or entropy of this aqueous ion, so the energy rung of the
-  DISSOCIATED route is not available and refuses by name; nothing is borrowed.
+  in hand prints a formation enthalpy or entropy of this aqueous ion, so a balance that needs its
+  enthalpy REFUSES BY NAME instead of borrowing a value.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;

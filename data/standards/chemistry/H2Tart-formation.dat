@@ -2,12 +2,20 @@
   chemistry/H2Tart-formation.dat -- the neutral tartaric acid as the sum of
   its fully dissociated form:   Tart2- + 2 H+  <=>  H2Tart
 
-  logK25 = pKa1 + pKa2 = 7.32 (literature, 25 C); dH = hf(H2Tart, aq)
-  - hf(Tart2-, aq) from Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys.
-  Chem. 80 (2006) 899-903, Table 5 -- the same study that supplies the
-  crystal datum in components/tartaricAcid.dat and the heat of solution in
-  parameters/solution/tartaricAcid-water.dat, so the whole tartrate family
-  is priced from one material in one work.
+  logK25 = pK1 + pK2 = 3.036 + 4.366 = 7.402 and dH = -(3.19 + 0.93) = -4.12 kJ/mol are the
+  selected values of Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231,
+  Table 7.63 (L-(+)-tartaric acid), p. 347 (pK 3.036 / 4.366, dH +3.19 / +0.93 kJ/mol at
+  298.15 K and I = 0, evaluation grade ABA), the sign flipped for the direction written.  The
+  independent measurement, Patterson & Woolley, J. Chem. Thermodyn. 33 (2001)
+  1567-1585, Tables 9 and 10, agrees (pK 3.0360 / 4.366, dH 3.10 / 0.99 kJ/mol).
+
+  CORRECTED 2026-11-12 (C372; the architect's authorisation).  Before: logK 7.32 (uncited
+  handbook pK's 2.98 + 4.34) and dH -4.9 kJ/mol (the difference of two Kochergina,
+  Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 5 formation
+  enthalpies).  The same Kochergina study still supplies the crystal datum in
+  components/tartaricAcid.dat, the heat of solution in parameters/solution/
+  tartaricAcid-water.dat and the species' hfAq; only the IONISATION enthalpy moved to
+  Goldberg (-4.12 against -4.9, a 0.78 kJ/mol difference inside Kochergina's +/-1.5).
 
   This record and Tart-formation.dat are algebraic INVERSES of each other,
   written from the two different masters a case may declare; the closure
@@ -17,4 +25,4 @@ recordType aqueousSpeciation;
 schemaVersion 1;
 
 species H2Tart; masters ( { ion Tart; nu 1; } { ion H; nu 2; } );
-      logK25 7.32; dH -4900; source "pKa1+pKa2=7.32 (lit. 25 C); dH=hf(H2Tart,aq)-hf(Tart) [Kochergina 2006]";
+      logK25 7.402; dH -4120; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.63, p. 347: pK1 3.036 + pK2 4.366 = 7.402; dH1 +3.19 + dH2 +0.93 = +4.12 kJ/mol, sign flipped (298.15 K, I = 0); agreeing measurement Patterson & Woolley, J. Chem. Thermodyn. 33 (2001) 1567, Tables 9 and 10";
