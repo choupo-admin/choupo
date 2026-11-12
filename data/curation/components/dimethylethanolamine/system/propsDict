@@ -49,10 +49,23 @@
   humanReviewed false) with `fitGrade <grade>;` and the deciding numbers in
   its provenance entry, which the component loader voices on every run that
   uses it (a warning or a severe grade); a refused one is not promoted.  This
-  case declares no `system/curationDict`, so the default applies; a case
+  case's `system/curationDict` declares only the fit window below, so the default applies; a case
   that needs another acceptance declares it there, with its reason.  The
   AmbroseWalton curve's errors on the same points are reported beside the
   fit's, as information.
+
+  FIT WINDOW (DEV.md 4c C367, declared in system/curationDict with its
+  reason before the window fit): only the points whose pressure lies
+  inside the window (pressureMax 200 kPa) are FITTED; the others are LEFT
+  OUT BY NAME and their relative error in P against the fitted curve is
+  REPORTED beside the fit's own (never hidden). The grade is computed on
+  the fitted points; the record's Trange is the window actually fitted,
+  so the engine announces an extrapolation beyond it. Reason: uniform
+  rule of DEV.md 4c C367: the full-range fit graded worse than clean and
+  measured points lie above 2 bar, which a three-parameter Antoine cannot
+  hold together with the low-pressure end; fitted from the lowest
+  measured point up to 2 bar; the points above are left out and their
+  error against the fitted curve is reported
 
   NORMAL BOILING POINT: the record's Tb 404.15 K is judged against the range of the KEPT points (all studies span 273.15-447.8 K before any outlier is discarded): if Tb lies OUTSIDE that range, the fitted Antoine's own normal boiling point (P = 101.325 kPa) is GRADED by its absolute gap to it (the temperature limits of the acceptance below); inside it, the gap is reported and is not a condition.
 
@@ -89,7 +102,25 @@
   acceptance of DEV.md 4c C283 (no system/curationDict): 3 studies, 69
   points kept, 0 discarded as outliers; max relative error 8.506 % (mean
   5.308 %) against 5 %; AmbroseWalton on the same points mean 37.16 % /
-  max 63.98 %; the record keeps AmbroseWalton
+  max 63.98 %; the record keeps AmbroseWalton. THEN C285, every usable
+  study fitted over its WHOLE measured range (superseded by the fit
+  window of C367): WHAT THE RUN FOUND (pinned in `expected`; measured,
+  not argued). Objective twoStage. Antoine log10(Psat/bar) = 5.281864 -
+  2003.2539/(T + -27.7427), in-sample R2 0.999092 over 69 kept points,
+  273.15-447.8 K (10.1021/je049761y 29/29 kept; 10.1016/j.jct.2013.03.020
+  25/25 kept; 10.1021/je101259r 15/15 kept). Relative error in P over the
+  kept points: mean 5.3080 %, max 8.5056 %; AmbroseWalton on the same
+  points: mean 37.1625 %, max 63.9790 %. Outliers discarded: none. Its
+  own normal boiling point (101.325 kPa): 407.42 K. PROMOTED on
+  2026-11-10 into data/standards/components/dimethylethanolamine.dat as
+  reviewStatus autoPromoted, humanReviewed false, because: fit grade
+  warning under the DEFAULT graded acceptance of DEV.md 4c C285 (no
+  system/curationDict), 3 studies, 69 points kept, 0 discarded as
+  outliers; max relative error 8.506 % (mean 5.308 %), grade warning
+  (limits 5 / 10 / 20 %); Tb inside the kept points' range, normal
+  boiling point 407.42 K, +3.27 K from the record's Tb 404.15 K
+  (reported, not a condition); AmbroseWalton on the same points mean
+  37.16 % / max 63.98 %
   @@EARLIER-END@@
 
   NO MEASURED POINT IS IN THIS TREE: constant/archiveDatasets declares every
@@ -98,22 +129,7 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-  Objective twoStage. Antoine log10(Psat/bar) = 5.281864 - 2003.2539/(T +
-  -27.7427), in-sample R2 0.999092 over 69 kept points, 273.15-447.8 K
-  (10.1021/je049761y 29/29 kept; 10.1016/j.jct.2013.03.020 25/25 kept;
-  10.1021/je101259r 15/15 kept). Relative error in P over the kept
-  points: mean 5.3080 %, max 8.5056 %; AmbroseWalton on the same points:
-  mean 37.1625 %, max 63.9790 %. Outliers discarded: none. Its own normal
-  boiling point (101.325 kPa): 407.42 K. PROMOTED on 2026-11-10 into
-  data/standards/components/dimethylethanolamine.dat as reviewStatus
-  autoPromoted, humanReviewed false, because: fit grade warning under the
-  DEFAULT graded acceptance of DEV.md 4c C285 (no system/curationDict), 3
-  studies, 69 points kept, 0 discarded as outliers; max relative error
-  8.506 % (mean 5.308 %), grade warning (limits 5 / 10 / 20 %); Tb inside
-  the kept points' range, normal boiling point 407.42 K, +3.27 K from the
-  record's Tb 404.15 K (reported, not a condition); AmbroseWalton on the
-  same points mean 37.16 % / max 63.98 %
+  (filled in by bin/choupo-curate after the run)
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
@@ -145,6 +161,11 @@ operations
 
         objective  { method twoStage; }
         outliers   { maxRelativeError 15 percent; }
+        window
+        {
+            pressureMax  200 kPa;
+            reason       "uniform rule of DEV.md 4c C367: the full-range fit graded worse than clean and measured points lie above 2 bar, which a three-parameter Antoine cannot hold together with the low-pressure end; fitted from the lowest measured point up to 2 bar; the points above are left out and their error against the fitted curve is reported";
+        }
 
         output     { file fit_antoine.csv; }
     }
