@@ -646,6 +646,11 @@ export function ResidueCurvesTool(): JSX.Element {
             through the NIST/TRC ThermoML Archive; the reading is written out in
             docs/design/residue-curve-maps.md). The measured pressures differ from 1.01325 bar by up
             to 1.3 %, which alone moves an azeotrope's temperature by a few tenths of a kelvin.
+            Three of the four series (all but ethanol-water) are transcriptions that were not read
+            back against their articles. The isopropanol-water pair was fitted to the very series
+            read here, so that row is in-sample and shows only that the fit and the page agree; the
+            methyl acetate-methanol and acetonitrile-water pairs were fitted to other series, and
+            these are their held-out ones; the ethanol-water pair is a literature record.
             No measured azeotrope was read for benzene-methanol, chloroform-methanol,
             chloroform-methyl ethyl ketone, methanol-methyl ethyl ketone, benzene-isopropanol,
             acetonitrile-ethanol or the ternary azeotrope of the last preset, so those are not

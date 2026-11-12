@@ -229,7 +229,7 @@ export const RCM_LIMITS: readonly LessonLimit[] = [
     title: "The map is as fine as the grid.",
     body: "The engine is asked about the compositions of a triangular grid "
       + "and the page interpolates linearly between them.  An azeotrope is "
-      + "located to about one grid cell, and to a twentieth of a cell after "
+      + "located to about one grid cell, and to a tenth of a cell on an edge (a quarter inside) after "
       + "the refinement run.  An azeotrope within one cell of a pure "
       + "component is not found at all, and two singular points closer than "
       + "a cell may be read as one.",
