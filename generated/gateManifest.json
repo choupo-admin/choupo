@@ -1578,8 +1578,8 @@
     },
     "check_brain_fresh": {
       "exit": 0,
-      "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 142/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
-      "seconds": 0.4
+      "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 147/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
+      "seconds": 0.3
     },
     "check_petroleum_cuts": {
       "exit": 0,
@@ -1670,6 +1670,11 @@
       "exit": 0,
       "claim": "check_feature_documented: OK -- 253 registered names, 212 documented in a labelled guide section and the catalogue, 41 pinned as debt (ActivityModel 1, AqueousVolumetric 2, Atomizer 1, BatchUnitOperation 2, BedWallHeatTransfer 1, ConstantEstimator 3, DynamicUnitOperation 1, EquipmentSize 2, FrictionFactorCorrelation 1, HeatCapacityModel 5, HeatTransferCorrelation 1, IsothermModel 1, LiquidViscosityModel 2, ODEIntegrator 2, PhaseChangeHTC 3, PureFluidModel 1, Report 2, Signal 1, SizeDistribution 3, SurfaceTensionModel 1, TransportModel 1, UnitOperation 3, VaporPressureModel 1); NOT COVERED: that the section's equations match the implementation",
       "seconds": 0.3
+    },
+    "check_species_records": {
+      "exit": 0,
+      "claim": "check_species_records: OK -- 21 aqueous species reproduce from species.tsv (NBS 1982 read against the CRC reprint and the Gibbs identity, 8 CODATA-chosen quantities, 6 held; NOT CHECKED: any radius or D0 -- none is carried)",
+      "seconds": 0.0
     }
   }
 }
