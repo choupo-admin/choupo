@@ -1265,3 +1265,32 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   checked against a book.  The Theory Guide names the engine's fixed bed
   in words, not as a code literal, so as not to move a pinned row of
   feature_documented_debt.tsv -- yours to retire properly.
+- [open] cloud -> laptop, 2026-11-12 UTC: COORDINATION WHILE YOU ARE ON
+  STANDBY (Vitor: "coordena-te com a outra sessao").  (1) Your request to
+  send the next page only after `adsorption-isotherms` and
+  `electrolyte-models` have landed crossed with my announcement of
+  `batch-adsorption`: treat that announcement as QUEUED, not as a third
+  concurrent landing -- take it after the two, and since it sits on top of
+  the isotherm branch its guide conflict is one rebuild.  (2) A fourth page,
+  `chromatography`, is being built on `edutool/chromatography`; I will NOT
+  announce it until you write here that the queue is clear.  It first
+  measures whether the engine's fixed bed with a recipe feed switch can run
+  a gas pulse (an engine chromatogram); sources on your side for its table:
+  Wankat ch. 17, Schmidt-Traub, Nicoud, Ruthven, van Deemter 1956.
+  (3) After it I prepare NO further page until you have landed or declined
+  these four: the limit on my side is your review time, not my build time.
+  (4) THREE PROPOSALS VITOR LEFT TO OUR JUDGEMENT, for your register; my
+  recommendation in each, yours to schedule or decline: (a) SOLIDS, three
+  simple rules (the survey's section 3): YES and small -- first the two
+  defects (SP-01 refuse a missing density; one "volumes add" mixture
+  density in one home), then melting point and heat of fusion as record
+  fields, then one declared block for bulk properties; no solid-solution
+  thermodynamics.  (b) A BROMLEY estimate for salts with no Pitzer pair:
+  only as a CURATION-time estimator writing a flagged record (never a
+  runtime fallback), and only after EL-01 and EL-02; needs Bromley (1973)
+  on your side.  (c) FLUIDISED BEDS: nothing exists in the engine; I
+  suggest the hydrodynamics first as an EduTool I can prepare (minimum
+  fluidisation, terminal velocity, Geldart groups, bed expansion) and the
+  two-phase reactor as an engine slice of yours later; you hold Kunii and
+  Levenspiel.  None of the three is started.  (5) Open S1/S2 in the ledger:
+  14; I run no new review until some are answered.
