@@ -4,6 +4,8 @@
     bin/curate/species_c373.py write     (re)write every record the tables say `build`
     bin/curate/species_c373.py check     compare the tables with the tree; exit 1 on any difference
     bin/curate/species_c373.py list      families, species and step counts
+    bin/curate/species_c373.py scale     the one-scale table (formation-enthalpy differences against the printed step enthalpies)
+    bin/curate/species_c373.py compare   records already in the catalogue against Goldberg's selected values (chem `compare` families)
 
 SOURCE OF TRUTH: data/curation/batches/species_c373/*.tsv, one reading per row:
   sources.tsv    key -> full citation and the scale the source states
@@ -136,8 +138,9 @@ def render_species(t, sp):
     else:
         L.append("  NO `aqueousThermo` ON PURPOSE: " + (fam["nothermo"] or
                  "the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION"
-                 " is complete; no work in hand prints a formation enthalpy or entropy for this species, so a balance that"
-                 " needs its enthalpy REFUSES BY NAME instead of borrowing a value."))
+                 " is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none"
+                 " was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME"
+                 " instead of borrowing a value."))
     L.append("\\*-----------------------------------------------------------------------------*/")
     L += ["recordType modelSpecies;", "schemaVersion 1;", "", f"name    {sp['key']};", f'formula     "{f}";',
           f"charge  {z:+d};" if z else "charge  0;", f"MW {{ value {c320.mw(f):g}; unit g/mol;}}"]
@@ -188,12 +191,13 @@ def step_lines(t, fam, st):
 
 def source_line(t, fam, st):
     src_keys = sorted({r["src"] for r in st})
-    parts = []
+    groups = {}
     for r in st:
-        parts.append(f"{r['where']}: pK{r['step']} {r['pK']}" + (f", dH{r['step']} {r['dH']} kJ/mol" if r["dH"] else "")
-                     + (" (read from a page image)" if r["image"] == "yes" else ""))
+        item = f"pK{r['step']} {r['pK']}" + (f", dH{r['step']} {r['dH']} kJ/mol" if r["dH"] else "") + \
+            (" (read from a page image)" if r["image"] == "yes" else "")
+        groups.setdefault(r["where"], []).append(item)
     cit = "; ".join(cite(t, k) for k in src_keys)
-    return clean(f"{cit} -- " + "; ".join(parts) + " (pK, dH_ion at 298.15 K)")
+    return clean(f"{cit} -- " + "; ".join(f"{w}: " + ", ".join(items) for w, items in groups.items()) + " (pK, dH_ion at 298.15 K)")
 
 
 def render_chem(t, family, i):
@@ -227,7 +231,7 @@ def render_chem(t, family, i):
     for ln in step_lines(t, fam, st):
         L.append("      " + ln)
     for k in sorted({r["src"] for r in st}):
-        L.append(f"  {k}: {cite(t, k)}; {t['src'][k]['scale']}.")
+        L.append(f"  Source: {cite(t, k)}; {t['src'][k]['scale']}.")
     L.append(f"  This record carries {carries} ({sign}).")
     if dhj is None:
         L.append("  A dH is not printed for every step this record sums, so the record carries NO dH and its K is flat in T,")
@@ -341,6 +345,8 @@ def check(t):
             bad.append(f"{r['key']}: charge {r['charge']} != formula {r['formula']}")
     # the existing hand-written chemistry holds to steps.tsv
     for fam in t["families"]:
+        if fam["chem"] != "existing":
+            continue        # `build`: rendered above; `compare`: records of another origin, reported by `compare`, never held
         lad, st = ladder_data(t, fam["family"])
         nn = len(lad) - 1
         for i in range(0, len(lad)):
@@ -366,11 +372,12 @@ def check(t):
         tol = D(fam["tolerance_kJ"]) if fam["tolerance_kJ"] else None
         hfs = []
         for i, r in enumerate(lad):
-            if i == 0:
-                hfs.append(neutral_hf(t, fam))
+            p = SPECIES / f"{r['key']}.dat"
+            own = parse_hf(p) if p.exists() else None
+            if i == 0 and own is None:
+                hfs.append(neutral_hf(t, fam))      # a neutral master carries no hfAq: its datum is component + pair
             else:
-                p = SPECIES / f"{r['key']}.dat"
-                hfs.append(parse_hf(p) if p.exists() else None)
+                hfs.append(own)
         for i in range(1, len(lad)):
             if hfs[i] is None or hfs[i - 1] is None or not st[i - 1]["dH"]:
                 continue
@@ -379,6 +386,49 @@ def check(t):
             if tol is not None and abs(diff - D(st[i - 1]["dH"])) > tol:
                 bad.append(f"{fam['family']} step {i}: hf difference {diff} kJ/mol vs dH {st[i-1]['dH']} exceeds {tol}")
     return bad, n, rows
+
+
+def analytic_dH(a, T=298.15):
+    """dH (J/mol) implied by a PHREEQC analytic log K(T) = A1 + A2 T + A3/T + A4 log10 T + A5/T^2 + A6 T^2."""
+    import math
+    a = list(a) + [0.0] * (6 - len(a))
+    dlog = a[1] - a[2] / T ** 2 + a[3] / (T * math.log(10)) - 2 * a[4] / T ** 3 + 2 * a[5] * T
+    return 8.314462 * math.log(10) * T * T * dlog
+
+
+def compare(t):
+    """records already in the catalogue against Goldberg's selected values: pK and dH as the record implies them."""
+    rows = []
+    for c in load("compare.tsv"):
+        fam = c["family"]
+        st = steps_of(t, fam)
+        idx = [int(x) for x in c["steps"].split("+")]
+        sel = [r for r in st if int(r["step"]) in idx]
+        gpk = sum(D(r["pK"]) for r in sel)
+        gdh = sum(D(r["dH"]) for r in sel) if all(r["dH"] for r in sel) else None
+        path = CHEM / (c["record"] + ".dat")
+        txt = path.read_text(encoding="utf-8")
+        m = re.search(r"logK25\s+([-+0-9.eE]+)\s*;", txt)
+        h = re.search(r"\bdH\s+([-+0-9.eE]+)\s*;", txt)
+        an = re.search(r"analytic\s*\(([^)]*)\)", txt)
+        sign = 1 if c["direction"] == "formation" else -1     # formation: logK = +pK; ionisation: logK = -pK
+        rpk = D(m.group(1)) * sign
+        rdh = (-D(h.group(1)) * sign / 1000) if h else None   # as an ionisation enthalpy, kJ/mol
+        adh = None
+        if an:
+            adh = -D(repr(analytic_dH([float(x) for x in an.group(1).split()]) / 1000)) * sign
+        rows.append((c["record"], fam, c["steps"], rpk, gpk, rdh, adh, gdh))
+    return rows
+
+
+def print_compare(t):
+    print("record\tfamily\tsteps\tpK(record)\tpK(Goldberg)\tdiff\tdH_ion(record dH)\tdH_ion(analytic at 298.15)\tdH_ion(Goldberg)\tdiff(dH field)\tdiff(analytic)")
+    for rec, fam, steps, rpk, gpk, rdh, adh, gdh in compare(t):
+        f = lambda x: "" if x is None else f"{float(x):.3f}"
+        d1 = "" if rdh is None or gdh is None else f"{float(rdh - gdh):+.2f}"
+        d2 = "" if adh is None or gdh is None else f"{float(adh - gdh):+.2f}"
+        print(f"{rec}\t{fam}\t{steps}\t{float(rpk):.3f}\t{float(gpk):.3f}\t{float(rpk - gpk):+.3f}\t{f(rdh)}\t{f(adh)}\t{f(gdh)}\t{d1}\t{d2}")
+
 
 
 def main():
@@ -404,6 +454,9 @@ def main():
         if cmd == "check" and not bad:
             print(f"species_c373: OK -- {n} files reproduce byte-identically from the tables; {len(rows)} ladder steps held to their one-scale tolerance")
         return 1 if bad else 0
+    if cmd == "compare":
+        print_compare(t)
+        return 0
     if cmd == "scale":
         bad, n, rows = check(t)
         for fam, i, a, b in rows:

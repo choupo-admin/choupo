@@ -1829,6 +1829,46 @@ Until this case the crystal was exercised only by check\_ice\_freezing's probe; 
 \end{tutgolden}
 
 \clearpage
+\tutentry{inorganicLadders01\_goldberg}{tutorials/props/electrolyte/inorganicLadders01\_goldberg}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{phosphate\_equimolar}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{pyrophosphate\_1p5eq}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pyrophosphate\_2p5eq}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{pyrophosphate\_3p5eq}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{arsenate\_1p5eq}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{sulfite\_1p5eq}\\[-1pt]{\tiny speciate}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{hydrazine\_half}\\[-1pt]{\tiny speciate}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Half-neutralisation beakers of phosphoric, pyrophosphoric, arsenic and sulfurous acids and hydrazinium at 25 C against the evaluated pK's of Goldberg, Kishore \& Lennen 2002 (Section 8). A structural illustration, not validated against a measured pH.}
+\begin{tutnarrative}
+the ionisation ladders of phosphoric, pyrophosphoric, arsenic and sulfurous acids and of hydrazine at 25 C: seven beakers, each made up at a half-neutralisation point of one step, the pH a RESULT of the charge balance, read against the evaluated pK's of Goldberg, Kishore \& Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Section 8 (p. 359-360).
+
+WHAT THIS CASE IS. A STRUCTURAL ILLUSTRATION of the C373 phase 2 records (pyrophosphate, arsenate, sulfite and hydrazine ladders, written by bin/curate/species\_c373.py from data/curation/batches/species\_c373). It is NOT validated against a measured pH: no work in hand prints a pH for these solutions, so there are no `anchor` rows. The phosphate beaker runs on the catalogue's earlier PHREEQC records (pK2 7.207 there, 7.198 in Goldberg), which this campaign compared and did not change. `pH solve;` closes the charge balance; `totalsBasis stoichiometric` makes the sodium a titrant (a neutral NaOH feed) and the chloride of the hydrazine beaker the counter-ion of hydrazinium chloride.
+
+WHAT TO LOOK FOR. (this run's numbers, Davies, 25 C) 1. For two neighbouring species at equal molality the Davies pH is pK + log10(gamma\_B / gamma\_A) exactly: arsenate (H2AsO4-/HAsO4--, 0.025 each, I = 0.100) pH 6.728 = 7.05 - 0.322 (log 0.3725/0.7812); sulfite (HSO3-/SO3--) 6.850 = 7.172 - 0.322; hydrazinium (N2H5+/N2H4, I = 0.100) 8.127 = 8.02 + 0.107, the neutral base having gamma 1. The difference to the printed pK is the activity-coefficient ratio, not an error of the constant. 2. Phosphate, equimolar H2PO4-/HPO4-- (0.05 each, I = 0.200): pH 6.826 = 7.207 - 0.38. 3. Pyrophosphate: the first two steps overlap (pK 0.83 and 2.26) and the three beakers at 1.5, 2.5 and 3.5 equivalents of sodium give pH 2.230, 6.068 and 8.510 against pK2, pK3, pK4 = 2.26, 6.72, 9.46: the gap grows with the charge of the pair (1.5 eq: H3P2O7- 0.0164 against H2P2O7-- 0.0331, the steps overlap; 3.5 eq: HP2O7--- 0.0248 and P2O7---- 0.0251, gamma 0.059 and 0.0066, a factor of 9 between the two, so -0.95 pH). Beyond I \textasciitilde{} 0.4 the Davies window is passed, which is why the series stops at 3.5 equivalents. 4. No ion pairing with sodium for any of these anions: the catalogue holds none, so the distribution is complete only up to the reactions somebody wrote down.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{phosphate\_equimolar}{I}{0.200001782466}
+\goldrow{diag}{phosphate\_equimolar}{T\_K}{298.15}
+\goldrow{diag}{phosphate\_equimolar}{aw}{0.995506371485}
+\goldrow{diag}{phosphate\_equimolar}{chargeImposed}{1}
+\goldrow{diag}{phosphate\_equimolar}{chargeResidual}{-6.8331331275e-15}
+\goldrow{diag}{phosphate\_equimolar}{gamma\_H2PO4}{0.746450683976}
+\goldrow{diag}{phosphate\_equimolar}{gamma\_H3PO4aq}{1}
+\goldrow{diag}{phosphate\_equimolar}{gamma\_HPO4}{0.310459162279}
+\goldrow{diag}{phosphate\_equimolar}{gamma\_PO4}{0.0719465681426}
+\goldrow{diag}{phosphate\_equimolar}{m\_H2PO4}{0.0499989004234}
+\goldrow{diag}{phosphate\_equimolar}{m\_H3PO4aq}{8.20260683142e-07}
+\goldrow{diag}{phosphate\_equimolar}{m\_HPO4}{0.0499996277312}
+\goldrow{diag}{phosphate\_equimolar}{m\_PO4}{6.51584654407e-07}
+\goldrow{diag}{phosphate\_equimolar}{pH}{6.82600967837}
+\goldmore{87}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ksp\_temperature}{tutorials/props/electrolyte/ksp\_temperature}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

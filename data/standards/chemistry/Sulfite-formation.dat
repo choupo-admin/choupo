@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Sulfite-formation.dat -- the first 2 dissociations of sulfurous acid, written from the master:
+      H2SO3  <=>  Sulfite + 2 H+
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 1.857, dH1 = -17.80 kJ/mol, dCp -272 J/mol/K
+      pK2 = 7.172, dH2 = -3.65 kJ/mol, dCp -262 J/mol/K
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  This record carries the sum of the first 2 steps (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  Goldberg writes the neutral acid H2SO3; the species H2SO3 is the formal stoichiometric acid (aqueous SO2).
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Sulfite; masters ( { ion H2SO3; nu 1; } { ion H; nu -2; } );
+      logK25 -9.029; dH -21450; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 360, and Section 7.59, p. 344: pK1 1.857, dH1 -17.80 kJ/mol, pK2 7.172, dH2 -3.65 kJ/mol (pK, dH_ion at 298.15 K)";

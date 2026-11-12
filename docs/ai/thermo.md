@@ -309,7 +309,11 @@ and `lacticAcid` with their heat-of-solution pairs.  The citrate family keeps Ko
 glycolate and tartrate are unchanged (maleate has none, oxalate NBS, glycolate none because the source does not close).
 The neutral masters carry no `hfAq` (their datum is component + solution pair); a balance that needs an ion
 without one refuses by name.  No component carries a Cp or an entropy.  Malonic, gluconic, ascorbic,
-gallic, propionic, butyric and benzoic acids have no ionisation record.  Inventory, readings,
+gallic, propionic, butyric and benzoic acids have no ionisation record.  Inorganic ladders from Goldberg et al. 2002 (C373 phase 2): **pyrophosphate**
+(`H4P2O7`/`H3P2O7`/`H2P2O7`/`HP2O7`/`P2O7`, navigation family `phosphate`), **arsenate** (`H3AsO4`/`H2AsO4`/`HAsO4`/`AsO4`),
+**sulfite** (`H2SO3`/`Bisulfite`/`Sulfite`) and **hydrazine** (`N2H6`/`N2H5`/`Hydrazine`); ionisation only, no formation
+data.  Carbonate, phosphate, hydrogensulfate, ammonia and borate keep their PHREEQC records (compared in the design note;
+hydrogensulfate's ionisation enthalpy is 6.3 kJ/mol off Goldberg's).  Case: `inorganicLadders01_goldberg`.  Inventory, readings,
 consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md` and
 `docs/design/species-from-evaluated-compilations.md`; the records are written by `bin/curate/species_c373.py` from
 `data/curation/batches/species_c373/*.tsv` and held by `check_species_c373`.

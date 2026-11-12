@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/N2H6-formation.dat -- the hydrazine master as the sum of its fully dissociated form (the inverse of the records written from the master; a case declares one master and the closure activates the record reachable from it):
+      Hydrazine(0) + 2 H+  <=>  N2H6
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = -0.99, dH1 = 38.1 kJ/mol
+      pK2 = 8.02, dH2 = 41.7 kJ/mol
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  This record carries the sum of the first 2 steps (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  The neutral base is `Hydrazine`, not `N2H4`: the catalogue holds a component N2H4, a derived neutral species of that name would have to carry the `aq` suffix, and check_species_identity pins that suffix as a closed historical class (so `N2H4aq` is refused).  The records are written from the diprotonated master N2H6.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species N2H6; masters ( { ion Hydrazine; nu 1; } { ion H; nu 2; } );
+      logK25 7.03; dH -79800; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 360, and Section 7.40, p. 300: pK1 -0.99, dH1 38.1 kJ/mol, pK2 8.02, dH2 41.7 kJ/mol (pK, dH_ion at 298.15 K)";

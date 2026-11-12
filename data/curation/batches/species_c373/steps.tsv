@@ -10,3 +10,22 @@ malate	1	3.459	2.955	-155		EB59	Table 6, p. 169 (Table 5 lists dCp)	yes
 malate	2	5.097	-1.181	-221		EB59	Table 6, p. 169 (Table 5 lists dCp)	yes	
 lactate	1	3.862	-0.251			NS36	Table II, p. 148 (eq. 2, p. 149)	yes	dH printed as -60 cal/mol at 25 C; 60 x 4.184 = 251 J/mol
 glycolate	1	3.831	0.46			MILL90	Table 6, p. 1057	yes	pK and dH_ion from the compilation (its ref. 77CHR/HAN); dS_ion -72.0 J/mol/K printed
+ammonia	1	9.245	51.95	8		GOLD02	Section 8 summary, p. 359, and Section 7.7, p. 245	no	Section 8 summary text layer, checked against the page image
+arsenate	1	2.31	-7.8			GOLD02	Section 8 summary, p. 359, and Section 7.9, p. 248	no	Section 8 summary text layer, checked against the page image
+arsenate	2	7.05	1.7			GOLD02	Section 8 summary, p. 359, and Section 7.9, p. 248	no	Section 8 summary text layer, checked against the page image
+arsenate	3	11.9	15.9			GOLD02	Section 8 summary, p. 359, and Section 7.9, p. 248	no	Section 8 summary text layer, checked against the page image
+borate	1	9.237	13.8	~-240		GOLD02	Section 8 summary, p. 359, and Section 7.15, p. 259	no	dCp printed as approximate; Section 8 summary text layer, checked against the page image
+carbonate	1	6.351	9.15	-371		GOLD02	Section 8 summary, p. 359, and Section 7.20, p. 264	no	Section 8 summary text layer, checked against the page image
+carbonate	2	10.329	14.70	-249		GOLD02	Section 8 summary, p. 359, and Section 7.20, p. 264	no	Section 8 summary text layer, checked against the page image
+phosphate	1	2.148	-8.0	-141		GOLD02	Section 8 summary, p. 360, and Section 7.51, p. 321	no	Section 8 summary text layer, checked against the page image
+phosphate	2	7.198	3.6	-230		GOLD02	Section 8 summary, p. 360, and Section 7.51, p. 321	no	Section 8 summary text layer, checked against the page image
+phosphate	3	12.35	16.0	-242		GOLD02	Section 8 summary, p. 360, and Section 7.51, p. 321	no	Section 8 summary text layer, checked against the page image
+pyrophosphate	1	0.83	-9.2	~-90		GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	dCp printed as approximate; Section 8 summary text layer, checked against the page image
+pyrophosphate	2	2.26	-5.0	~-130		GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	dCp printed as approximate; Section 8 summary text layer, checked against the page image
+pyrophosphate	3	6.72	0.5	-136		GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	Section 8 summary text layer, checked against the page image
+pyrophosphate	4	9.46	1.4	-141		GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	Section 8 summary text layer, checked against the page image
+sulfate	1	1.987	-22.4	-258		GOLD02	Section 8 summary, p. 360, and Section 7.58, p. 344	no	Section 8 summary text layer, checked against the page image
+sulfite	1	1.857	-17.80	-272		GOLD02	Section 8 summary, p. 360, and Section 7.59, p. 344	no	Section 8 summary text layer, checked against the page image
+sulfite	2	7.172	-3.65	-262		GOLD02	Section 8 summary, p. 360, and Section 7.59, p. 344	no	Section 8 summary text layer, checked against the page image
+hydrazine	1	-0.99	38.1			GOLD02	Section 8 summary, p. 360, and Section 7.40, p. 300	no	Section 8 summary text layer, checked against the page image
+hydrazine	2	8.02	41.7			GOLD02	Section 8 summary, p. 360, and Section 7.40, p. 300	no	Section 8 summary text layer, checked against the page image
