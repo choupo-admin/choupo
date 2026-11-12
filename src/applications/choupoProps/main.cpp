@@ -66,6 +66,7 @@ Description
 #include "propertyOps/PropsPlan.H"
 #include "propertyOps/ConstantEstimator.H"
 #include "thermo/Database.H"
+#include "PropertyRouteBench.H"
 #include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
@@ -262,6 +263,10 @@ try
         "  --canonical-dump FILE   the parsed content the hash is taken over\n"
         "  --aqueous-graph [OUT]   write the aqueous equilibrium graph as JSON\n"
         "  --family [NAME]         print the aqueous family index, or one family\n"
+        "  --property-route-bench MANIFEST [OUT]\n"
+        "                          every liquid-property route over every\n"
+        "                          component record, values as hexfloats\n"
+        "                          (default OUT build/propertyRouteBench/bench.tsv)\n"
         "  --version, -V           print the banner (version and commit)\n"
         "  --help, -h              this text\n";
 
@@ -365,6 +370,22 @@ try
     PropertyOperation ::registerBuiltins();
     ConstantEstimator ::registerBuiltins();   // estimateComponent's `model` slot
     registerUserTypes();          // case-local property ops (empty by default)
+
+    //  THE CHARACTERISATION BENCH of the liquid-property routes (DEV.md 4c
+    //  C378 slice 0; PropertyRouteBench.H).  A flag, not a props operation:
+    //  it registers no factory name and reads no case.
+    for (int gi = 1; gi < argc; ++gi)
+        if (std::string(argv[gi]) == "--property-route-bench")
+        {
+            if (gi + 1 >= argc)
+            {
+                std::cerr << "choupoProps --property-route-bench <manifest> [out]\n";
+                return 2;
+            }
+            const std::string outPath = (gi + 2 < argc && argv[gi + 2][0] != '-')
+                ? argv[gi + 2] : "build/propertyRouteBench/bench.tsv";
+            return propertyRouteBench::run(argv[gi + 1], outPath);
+        }
 
     //  THE FILE-TRAFFIC TABLE, as the engine holds it (src/propertyOps/
     //  PropsPlan.cpp): one line per slot, `type<TAB>read|write<TAB>key<TAB>
