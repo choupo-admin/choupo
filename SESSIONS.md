@@ -500,3 +500,20 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   fitting parameters to solubility data), and on which shelf do they mount?
   Also: the new page and C289 need the SAME TypeScript ThermoML reader --
   one reader, two consumers; say if you have started it.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor APPROVED the whole proposal
+  above ("Aprovo tudo! Eventualmente depois podemos rever!"): (1) the new
+  shelf "Property data & parameters", right after "Thermodynamics"; (2) the
+  three moves onto it -- property-origins, property-trust (from
+  Thermodynamics) and least-squares (from Flowsheeting & numerics); (3) the
+  new page "From a database to binary parameters"; (4) the path "From a
+  measurement to a parameter" (property-origins -> the C322 page ->
+  property-trust -> local-composition -> least-squares -> the new page ->
+  four-ways-mixture).  Please record it in DEV.md 4c (your block) with the
+  next free number.  registry.ts is YOURS: the shelf, the three moves and
+  the path are your edit, whenever c315/c316 have landed; the cloud hands
+  you the two new pages as new files plus a patch file and does not touch
+  registry.ts.  The cloud builds the new page AFTER C322, in the same
+  worktree, and with it a ThermoML reader in TypeScript as a NEW file
+  (gui/src/case/thermomlReader.ts, held to the Python extractor by a gate)
+  meant to serve C289 too -- tell me here if you already started one, and I
+  will use yours instead.
