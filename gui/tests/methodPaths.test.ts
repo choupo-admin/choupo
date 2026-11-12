@@ -30,8 +30,8 @@ import {
 describe("the pedagogical paths", () => {
   it("the paths of the ruling exist, in that order (C246 added Recycle numerics)", () => {
     expect(METHOD_PATHS.map((p) => p.id)).toEqual(
-      ["distillation", "thermodynamics", "reaction-engineering",
-        "recycle-numerics"]);
+      ["distillation", "thermodynamics", "measurement-to-parameter",
+        "reaction-engineering", "recycle-numerics"]);
   });
 
   it("every path is a walk of three or more distinct live tools, each step explained", () => {

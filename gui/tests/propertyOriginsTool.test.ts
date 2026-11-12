@@ -40,12 +40,12 @@ const SRC = readFileSync(
 const prose = (src: string): string => src.replace(/\s+/g, " ");
 
 describe("the registry entry", () => {
-  it("is live, notes-kind, on the Thermodynamics shelf", () => {
+  it("is live, notes-kind, on the Property data & parameters shelf", () => {
     const e = METHOD_TOOLS.find((m) => m.id === "property-origins");
     expect(e, "the tool left the registry").toBeTruthy();
     expect(e!.kind).toBe("notes");
     expect(e!.status).toBe("live");
-    expect(e!.discipline).toBe("Thermodynamics");
+    expect(e!.discipline).toBe("Property data & parameters");
     expect(e!.teaches).toContain("PROVENANCE");
     expect(e!.teaches).toContain("curation-time act");
   });

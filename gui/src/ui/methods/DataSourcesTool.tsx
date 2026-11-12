@@ -34,7 +34,7 @@ import {
   Anchor, Badge, Box, Button, Group, SegmentedControl, Stack, Table, Text, Title,
 } from "@mantine/core";
 
-import { LessonLimits, lessonStepper } from "./lessonStep.js";
+import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import {
   BAND_TMEAN_K, BAND_U_K, DS_CHOICES, DS_CHOICE_WORD, DS_EXERCISE, DS_LIMITS,
   DS_STEPS, DS_WALK, EXAMPLE_DATASETS, EXAMPLE_RECORD, EXAMPLE_URLS, EXCLUDED,
@@ -340,6 +340,8 @@ export function DataSourcesTool(): JSX.Element {
           </Anchor>{" "}(testing a record before you believe it), and later{" "}
           <i>{NEXT_PAGE_NAME}</i>{" "}(not yet written).
         </Text>
+
+        <LessonReferences tool="property-data-sources" />
       </Stack>
     </Box>
   );

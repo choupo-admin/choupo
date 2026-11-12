@@ -7,6 +7,7 @@
     "How Choupo works",
     "Modelling & scale-up",
     "Thermodynamics",
+    "Property data & parameters",
     "Separations & phase equilibria",
     "Heat transfer & energy",
     "Reaction engineering",
@@ -115,6 +116,67 @@
       ]
     },
     {
+      "id": "measurement-to-parameter",
+      "title": "From a measurement to a parameter",
+      "intro": "From where a number comes from to the model parameter fitted to it.",
+      "steps": [
+        {
+          "tool": "property-origins",
+          "label": "Where do properties come from? (estimation, Joback)",
+          "why": "Measured, fitted or estimated: how an estimate is made and what it costs.",
+          "href": "/app/?workspace=methods&tool=property-origins&path=measurement-to-parameter"
+        },
+        {
+          "tool": "property-data-sources",
+          "label": "Where to find property data",
+          "why": "Where a measured value is found, how it is cited, and whether it may be published.",
+          "href": "/app/?workspace=methods&tool=property-data-sources&path=measurement-to-parameter"
+        },
+        {
+          "tool": "property-trust",
+          "label": "When a property database lies to you",
+          "why": "Test a record against itself before you believe it.",
+          "href": "/app/?workspace=methods&tool=property-trust&path=measurement-to-parameter"
+        },
+        {
+          "tool": "local-composition",
+          "label": "Local composition, derived (Wilson · NRTL · UNIQUAC)",
+          "why": "The models whose parameters the data will fix: Wilson, NRTL, UNIQUAC.",
+          "href": "/app/?workspace=methods&tool=local-composition&path=measurement-to-parameter"
+        },
+        {
+          "tool": "least-squares",
+          "label": "Least squares: what a fitted parameter is worth",
+          "why": "How a parameter is fitted to measurements, and what the fit can and cannot tell.",
+          "href": "/app/?workspace=methods&tool=least-squares&path=measurement-to-parameter"
+        },
+        {
+          "tool": "database-to-parameters",
+          "label": "From a database to binary parameters",
+          "why": "A ThermoML file becomes an NRTL pair: the curation pipeline's rule, run by the engine on your own file.",
+          "href": "/app/?workspace=methods&tool=database-to-parameters&path=measurement-to-parameter"
+        },
+        {
+          "tool": "sle-pair",
+          "label": "Pair parameters from the solubility of a solid",
+          "why": "Fit a pair to how much solid dissolves, and see which end of the composition range solubility fixes.",
+          "href": "/app/?workspace=methods&tool=sle-pair&path=measurement-to-parameter"
+        },
+        {
+          "tool": "salt-mixing",
+          "label": "Salt mixtures: Pitzer mixing parameters from ternary solubility",
+          "why": "Fit Pitzer mixing parameters to a measured two-salt solubility curve, and hold other temperatures out.",
+          "href": "/app/?workspace=methods&tool=salt-mixing&path=measurement-to-parameter"
+        },
+        {
+          "tool": "four-ways-mixture",
+          "label": "Four ways to price a mixture (NRTL · UNIFAC · COSMO-SAC · PC-SAFT)",
+          "why": "What a fitted pair buys against the predictive models, graded on measured data.",
+          "href": "/app/?workspace=methods&tool=four-ways-mixture&path=measurement-to-parameter"
+        }
+      ]
+    },
+    {
       "id": "reaction-engineering",
       "title": "Reaction engineering",
       "intro": "From the heat a reaction releases to the reactor that keeps it under control.",
@@ -189,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 76,
-  "registryTools": 76,
+  "liveTools": 80,
+  "registryTools": 80,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -249,7 +311,7 @@
       "id": "property-origins",
       "label": "Where do properties come from? (estimation, Joback)",
       "blurb": "Trace each property value to measured, fitted or estimated.",
-      "discipline": "Thermodynamics",
+      "discipline": "Property data & parameters",
       "teaches": "That every number in a component's data file has a PROVENANCE -- measured, fitted, or estimated -- and the reflex question to ask of each: measured by whom, fitted over what window, estimated from which groups at what typical error.  The anatomy of a .dat file by what CONSUMES each field, and the standing rule that estimation is a curation-time act, never a runtime one.",
       "origins": [
         "engine",
@@ -259,10 +321,23 @@
       "href": "/app/?workspace=methods&tool=property-origins"
     },
     {
+      "id": "property-data-sources",
+      "label": "Where to find property data",
+      "blurb": "Find a property datum and decide whether it may be published.",
+      "discipline": "Property data & parameters",
+      "teaches": "Which property, which system, which conditions picks the kind of source; a map of free sources (the ThermoML archive, the NIST Chemistry WebBook, the IUPAC-NIST Solubility Data Series, the NASA Glenn coefficients, the CODATA Key Values, Sander's Henry's law compilation, the ChemSep pure-component databank, PubChem for identity) with what each holds, how to reach and cite it and what its licence allows; the classes that cannot enter a public project (NonCommercial, no grant, provenance laundering); read, cite, copy a value, redistribute as four permissions; measured, fitted and estimated values and the held-out deviation; cite the primary, never the compiler; a real NRTL record's provenance read line by line; and an exercise deciding whether six data may be published.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=property-data-sources"
+    },
+    {
       "id": "property-trust",
       "label": "When a property database lies to you",
       "blurb": "Test a property record for consistency before you believe it.",
-      "discipline": "Thermodynamics",
+      "discipline": "Property data & parameters",
       "teaches": "Never trust a thermophysical record merely because it exists: test its internal consistency and read its declared validity.  Thirteen records cross-examined against themselves, live -- water's own file disagrees with itself by 0.70 K, and a predictive glycerol correlation that asked to be validated misses by a factor of 19.",
       "origins": [
         "engine",
@@ -270,6 +345,19 @@
         "reference"
       ],
       "href": "/app/?workspace=methods&tool=property-trust"
+    },
+    {
+      "id": "database-to-parameters",
+      "label": "From a database to binary parameters",
+      "blurb": "Turn a ThermoML file into an NRTL pair, and grade it.",
+      "discipline": "Property data & parameters",
+      "teaches": "How a binary pair is made from measurements, as Choupo's curation pipeline makes it: name the pair by InChIKey, choose the usable blocks (bubble temperature at a stated pressure, or bubble pressure at a stated temperature, an uncertainty on every point), fit every laboratory together, discard outliers by name, least squares then the largest error, the graded acceptance and the cap on a clean that one temperature or one laboratory cannot earn, the one-liquid check, and what a record does not prove; a map of which measurement constrains which parameter; and a live fit of your own ThermoML file by the engine.",
+      "origins": [
+        "engine",
+        "page",
+        "reference"
+      ],
+      "href": "/app/?workspace=methods&tool=database-to-parameters"
     },
     {
       "id": "four-ways-mixture",
@@ -397,6 +485,33 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=bjerrum"
+    },
+    {
+      "id": "sle-pair",
+      "label": "Pair parameters from the solubility of a solid",
+      "blurb": "Fit an NRTL pair to how much solid a solvent dissolves.",
+      "discipline": "Property data & parameters",
+      "teaches": "That a saturated solution measures an activity coefficient: the ideal solubility from the solid's measured melting point and enthalpy of fusion (the same in every solvent), the heat-capacity term sized and then neglected, one gamma per measured solubility, two NRTL parameters fitted to them with every fourth point held out, and what such a pair cannot know -- the solvent's own coefficient and the solid-rich end, where equally good fits disagree by orders of magnitude.  Benzoic acid in acetone, 2-propanol, acetic acid and cyclohexane (one article), with three predictions written before the page answers.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=sle-pair"
+    },
+    {
+      "id": "salt-mixing",
+      "label": "Salt mixtures: Pitzer mixing parameters from ternary solubility",
+      "blurb": "Fit Pitzer mixing parameters to a measured NaCl-KCl solubility curve.",
+      "discipline": "Property data & parameters",
+      "teaches": "Why a second salt with a common ion changes a salt's solubility (the common ion against the ionic strength), what the single-salt Pitzer parameters already predict for NaCl + KCl + water, and how the two mixing parameters theta and psi are read off a measured solubility curve by a linear least-squares fit -- in-sample at the temperature fitted, held out at the others.  Also: a solubility product from a record's van't Hoff enthalpy against one anchored on the measured binary, the eutonic point, six ternary chloride systems and where charge makes mixing matter, and cooling a saturated brine to crystallise KCl.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=salt-mixing"
     },
     {
       "id": "mccabe",
@@ -837,7 +952,7 @@
       "id": "least-squares",
       "label": "Least squares: what a fitted parameter is worth",
       "blurb": "See what a fitted parameter is worth, and when it is not.",
-      "discipline": "Flowsheeting & numerics",
+      "discipline": "Property data & parameters",
       "teaches": "That Levenberg-Marquardt is the easy half.  Watch the damping being repriced up and down on a real NRTL fit -- and then meet the apparatus that makes the answer worth quoting: three measurements withheld from the fitter by data flow rather than by rule, an acceptance band declared with its reason BEFORE anything was fitted, and a verdict published as a WORD.  Turn the band and watch that word change while the residual does not move -- which is exactly why a real curation declares it first.  The same run is `validated` and NOT individually identifiable at once.",
       "origins": [
         "engine",

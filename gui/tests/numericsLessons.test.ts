@@ -332,7 +332,9 @@ describe("the three tools are registered and shelved", () => {
       expect(t, `no registry entry for '${id}'`).toBeTruthy();
       expect(t!.status).toBe("live");
       expect(t!.kind).toBe("construction");
-      expect(t!.discipline).toBe("Flowsheeting & numerics");
+      //  least-squares moved to "Property data & parameters" (C332).
+      expect(t!.discipline).toBe(id === "least-squares"
+        ? "Property data & parameters" : "Flowsheeting & numerics");
       expect(t!.teaches.length).toBeGreaterThan(80);
       expect(t!.theory, `${id} must name a Theory Guide destination`)
         .toBeTruthy();
@@ -346,7 +348,10 @@ describe("the three tools are registered and shelved", () => {
       .map((t) => t.id).sort();
     //  `element-potential` (C15, 2026-09-27) sits on the same shelf; its
     //  lesson and its tests are its own (elementPotentialLesson.test.ts).
-    expect(shelf).toEqual([...ids, "element-potential", "relaxation"].sort());
+    //  least-squares left for "Property data & parameters" (C332).
+    expect(shelf).toEqual(
+      [...ids.filter((i) => i !== "least-squares"), "element-potential",
+        "relaxation"].sort());
   });
 
   it("each names a REAL label in the Theory Guide", () => {
