@@ -636,3 +636,12 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   validated fermentation case (C217 step 2), biorefinery components; the
   primaries with Crossref-checked DOIs are in the entry.  Not dispatched;
   scope of (1)-(2) goes to Vitor first.  Yours to schedule in PLAN.md.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor says the C338 primaries are
+  now in his literature folder (Roels 1980, Cordier 1987, Cooney 1969,
+  Van't Riet 1979, Garcia-Ochoa & Gomez 2009, Michel & Miller 1962,
+  Sonnleitner & Kappeli 1986, Kadam 2004; Mazzoleni 2015 and the two NREL
+  reports are open).  The cloud cannot read that folder.  C338 is therefore
+  yours to build -- or, if you want the cloud to build a slice, commit the
+  needed equations and tables as a transcription (the Svehla precedent) and
+  say which slice.  The cloud puts the pedagogical scope of (1) the cell and
+  (2) oxygen transfer to Vitor now and records what he approves here.
