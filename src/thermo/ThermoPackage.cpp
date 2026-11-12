@@ -2290,8 +2290,8 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
             static bool announced = false;
             if (!announced)
             {
-                std::cout << "density: IAPWS fundamental equation"
-                             " (rho = MW / v_molar)\n";
+                std::cout << "density: the pure-fluid formulation "
+                          << m.type() << " (rho = MW / v_molar)\n";
                 announced = true;
             }
             const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
