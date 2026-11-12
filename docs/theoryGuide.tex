@@ -15867,6 +15867,102 @@ tear streams (one per inter-effect pair, see
 \code{evaporator03\_co\_current} and
 \code{evaporator05\_counter\_current} cover both wirings.
 
+\subsection{An electrolyte liquor in several effects: the heat of dilution and where its fit ends}\label{sec:evap-dilution-window}
+
+For a calorimetrically fitted salt the liquor's enthalpy surface carries the
+term $n_{\mathrm{salt}}\,L_\phi(m,T)$ (Eq.~\eqref{eq:lphi-gh} and Eq.~\eqref{eq:dHdiff}), so the
+evaporator's duty
+$Q=F_{\mathrm{chest}}\,[h(\mathrm{chest})-h(\mathrm{condensate})]
+ = L\,h_L+V\,H_V-F\,h_F$
+already contains the heat of dilution, and the line
+\texttt{heat of dilution = X kW} the unit prints is a \emph{reported part} of
+$Q$, not a term added to it:
+\[
+  Q_{\mathrm{dil}} \;=\; n_{\mathrm{salt}}\,\bigl[\,L_\phi(m_{\mathrm{out}},T_{\mathrm{out}})
+        - L_\phi(m_{\mathrm{in}},T_{\mathrm{in}})\,\bigr].
+\]
+It therefore holds the concentration step \emph{and} the change of $L_\phi$ with
+temperature between the inlet and outlet states, and it can be negative.  In
+the shipped triple-effect caustic case
+(\code{evaporator10\_naoh\_triple\_effect}, 10\,wt\,\% to 18\,wt\,\%, every
+effect inside the fit's window $m\le 6$\,mol/kg) it is $+18.1$, $-5.5$ and
+$-5.2$\,kW against duties of $1881$, $1076$ and $1294$\,kW, about one percent
+of each: the boiling-point rise (Pitzer $a_w$) agrees with the measured
+partial pressures of Perry's Table~2-19\cite{Perry9} to $0.3$\,K there
+($3.57/4.07/5.08$ against $3.25/3.79/4.88$\,K).
+
+\paragraph{Past the window.}
+The $L_\phi$ fit of the Na--OH pair is valid to
+\texttt{lphiValidityMax}\,$=6$\,mol/kg (19.4\,wt\,\%), while caustic is
+concentrated to 50\,wt\,\% (25\,mol/kg).  Beyond the window the engine still
+returns a boiling-point rise and a dilution heat, announced as
+\texttt{EXTRAPOLATED}, and both leave the measurements.  Table~\ref{tab:naoh-window}
+is one single-effect evaporator, fed 4536\,kg/h of 20\,wt\,\% NaOH at 60\,\textdegree C
+with the vapour space at 11.7\,kPa (pure water boils at 48.9\,\textdegree C), the
+product target alone changed.  The Perry column is computed from the partial
+pressures of Table~2-19 (log-pressure interpolated in $1/T$ and in
+concentration, about $0.3$\,K); the Geankoplis column is read from the
+D\"uhring lines of his Fig.~32.4-2\cite{Geankoplis2018} at a water boiling
+point of $120\,^\circ$F with a reading uncertainty of about $2$\,K, except the
+50\,\% value, which his Example~32.4-3 prints ($89.5-48.9=40.6$\,K).
+
+\begin{table}[h]
+\centering
+\caption{NaOH in water past the fit window: boiling-point rise and heat of
+dilution returned by the engine (extrapolated) beside the measured values.}
+\label{tab:naoh-window}
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+product & $m$ & \multicolumn{3}{c}{BPE [K]} & $Q_{\mathrm{dil}}$ [kW] \\
+\cmidrule(lr){3-5}
+wt\,\% & mol/kg & engine & Perry T2-19 & Geankoplis & engine \\
+\midrule
+25 & 8.3  & 10.0 & 9.6  & $9\pm2$    & 14.5 \\
+30 & 10.7 & 14.6 & 14.2 & $13\pm2$   & 43.3 \\
+40 & 16.7 & 24.6 & 27.6 & $27\pm2$   & 169.4 \\
+50 & 25.0 & 27.8 & 47.3 & 40.6 (printed) & 464.4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No printed value of the heat of dilution alone was found.  The nearest printed
+number is the example's duty: on its own specification (steam at 172.4\,kPa,
+$U=1560$\,W/(m\textsuperscript{2}\,K), 50\,wt\,\% product) the engine returns
+2307\,kW, 3665\,kg/h of steam, $A=38.0$\,m\textsuperscript{2} and an economy
+of 0.74, against the book's 2002\,kW, 3255\,kg/h, 49.2\,m\textsuperscript{2} and
+0.836 (enthalpies $214$ and $505$\,kJ/kg read from his Fig.~32.4-3).  Two
+causes are mixed in the gap and cannot be separated from these numbers: the
+smaller extrapolated BPE (a larger temperature difference, hence the smaller
+area) and the extrapolated $L_\phi$ (464 of the 2307\,kW).  Nothing is tuned.
+Inside the window the engine follows both sources; past 30\,wt\,\% it does
+not, which is the evidence that caustic to 50\,wt\,\% needs a property model
+fitted to that range, not a longer extrapolation of this one.
+
+\paragraph{Water above 373\,K.}
+The catalogue water record's Antoine fit is $+2.5$\,\% at 373\,K and $+6$\,\% at
+423\,K against IAPWS SR1-86.  A case that boils or condenses water above
+373\,K adopts a case-local record whose \texttt{vaporPressure} block is the
+\texttt{Wagner} model (\code{src/thermo/vaporPressure/Wagner.cpp}) with the IAPWS
+saturation equation's coefficients (the shipped caustic case does).  As
+implemented,
+\begin{equation}
+  \ln\frac{P^{\mathrm{sat}}}{P_r} \;=\; \frac{T_r}{T}\sum_{i=1}^{6} a_i\,\tau^{\,e_i},
+  \qquad \tau = 1-\frac{T}{T_r},\quad e=(1,\,1.5,\,3,\,3.5,\,4,\,7.5),
+  \label{eq:wagner-psat}
+\end{equation}
+with $T_r=647.096$\,K, $P_r=22.064$\,MPa and $a=(-7.85951783,\ 1.84408259,\
+-11.7866497,\ 22.6807411,\ -15.9618719,\ 1.80122502)$, read from IAPWS
+SR1-86\cite{IAPWS_SR186} Eq.~(1) (the exponents and the \emph{reducing}
+constants are declared in the record, never taken from the component's own
+$T_c$, $P_c$, which differ in the fourth digit).  Valid on 273.16--647.096\,K;
+above $T_r$ it returns $P_r$ and the base class announces the excursion.  The
+release's Table~1 values are reproduced to $1.5\times10^{-7}$ (relative) at
+273.16\,K, 373.124\,K and 647.096\,K.  The fundamental-equation route
+\texttt{pureFluids \{ water \{ method IF97; \} \}} is not available with a
+dissolved salt.  The water liquid heat capacity (a constant, window
+273--373\,K) and the latent heat of the enthalpy surface ($\approx 2$\,\% above
+the steam table near 390\,K) stay announced limits.
+
 \begin{intuition}
 The mental model the student should leave with: the evaporator is a black box with two stream inputs, three stream
 outputs, and two parameters ($A$ and $U$).  It always computes
@@ -28656,6 +28752,25 @@ measurements in experimental catalysis'', \emph{Advances in Catalysis}
 which removes the intrinsic rate constant that a diffusion-limited experiment
 cannot measure.
 
+\bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
+Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
+Eqs.~(14-90) table (open-area flood correction, p.~14-36), (14-98)--(14-99)
+(Colburn, Fair's entrainment), (14-100)--(14-109) (Bolles--Fair pressure drop),
+(14-102a) (orifice coefficient); Section~13, Eq.~(13-77).
+
+\bibitem{Geankoplis2018} Geankoplis, C.~J., Hersel, A.~A.\ and Lepek, D.~H.,
+\emph{Transport Processes and Separation Process Principles}, 5th ed., Prentice
+Hall / Pearson Education, 2018.  Section~24.2 (cake filtration: eqs.~24.2-4,
+24.2-10, 24.2-11, 24.2-14, 24.2-15, 24.2-17, 24.2-19, 24.2-20, 24.2-23 to
+24.2-26, Examples~24.2-1 to 24.2-4, pp.~1078--1090); section~30.1 (settling,
+Problem~30.1-11, p.~1451); section~30.2 (centrifuges: eqs.~30.2-1 to 30.2-19,
+Example~30.2-2, pp.~1434--1439).
+
+\bibitem{IAPWS_SR186} IAPWS SR1-86(1992).  Revised Supplementary Release on
+Saturation Properties of Ordinary Water Substance, Eq.~(1) (the
+vapour-pressure equation) and Table~1 (its check values); unrestricted
+publication allowed.
+
 \bibitem{Michelsen} Michelsen, M. L., ``The Isothermal Flash Problem.
 Part I --- Stability'' and ``Part II --- Phase-Split Calculation'',
 \emph{Fluid Phase Equilibria}, 9, 1--19, 21--40 (1982). The
@@ -29074,14 +29189,6 @@ Whiten's partition curve (eq.~21, p.~681) behind the \code{whiten} model;
 its hydrocyclone correlations (eqs.~13--15) are deferred
 (\S\ref{sec:classification-deferred}).
 
-\bibitem{Geankoplis2018} Geankoplis, C.~J., Hersel, A.~A.\ and Lepek, D.~H.,
-\emph{Transport Processes and Separation Process Principles}, 5th ed., Prentice
-Hall / Pearson Education, 2018.  Section~24.2 (cake filtration: eqs.~24.2-4,
-24.2-10, 24.2-11, 24.2-14, 24.2-15, 24.2-17, 24.2-19, 24.2-20, 24.2-23 to
-24.2-26, Examples~24.2-1 to 24.2-4, pp.~1078--1090); section~30.1 (settling,
-Problem~30.1-11, p.~1451); section~30.2 (centrifuges: eqs.~30.2-1 to 30.2-19,
-Example~30.2-2, pp.~1434--1439).
-
 \bibitem{TalmageFitch1955} Talmage, W.~P.\ and Fitch, E.~B., ``Determining
 thickener unit areas'', \emph{Industrial \& Engineering Chemistry} \textbf{47}(1)
 (1955) 38--41, doi:10.1021/ie50541a022.  Kynch's construction as a thickener
@@ -29092,12 +29199,6 @@ for the sedimentation type centrifuge'', \emph{Journal of Biochemical and
 Microbiological Technology and Engineering} \textbf{1}(2) (1959) 185--205,
 doi:10.1002/jbmte.390010206.  The tubular $\Sigma$ (eqs.~24--28, p.~191), the
 cut size (eq.~9) and the disc-type $\Sigma$ (eqs.~43--46, p.~194).
-
-\bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
-Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
-Eqs.~(14-90) table (open-area flood correction, p.~14-36), (14-98)--(14-99)
-(Colburn, Fair's entrainment), (14-100)--(14-109) (Bolles--Fair pressure drop),
-(14-102a) (orifice coefficient); Section~13, Eq.~(13-77).
 
 \bibitem{Ruth1935} Ruth, B.~F., ``Studies in filtration III.  Derivation of
 general filtration equations'', \emph{Industrial \& Engineering Chemistry}

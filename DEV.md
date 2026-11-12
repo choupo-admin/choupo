@@ -3446,6 +3446,26 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C379 (Vitor, 2026-11-12: "achas que e boa ideia criar um EduTool a
+> explicar a estrutura do kernel de propriedades termofisicas?  Isto para
+> alem do registo nos guias habituais").**  YES, on the shelf "How Choupo
+> works", beside the two pages on how a case is assembled and how a log is
+> read.  THE TASK IT SERVES: "I need the density (viscosity, diffusivity,
+> surface tension) of this stream: where does the number come from, and
+> how far do I trust it?"  The page is the visible face of the
+> resolved-routes table of C378: the student picks a liquid (water; water
+> + ethanol; water + NaOH; CO2 dissolved in water), sees which methods
+> apply, which one is used and which were passed over and why, the three
+> statements of quality and the expected error; then adds a measured
+> point, a case-declared correlation or a bounded hypothesis and watches
+> the precedence change, and meets a refusal with its reason.  It teaches
+> the distinction the structure rests on: a model predicts, a measurement
+> is a number with its source, a hypothesis is a stated concession.  BUILT
+> ONLY AFTER C378 is ratified and its pilot (liquid density) runs: an
+> EduTool cites the engine by file and line and shows the engine's own
+> output, so a page written before the structure exists would describe a
+> plan.  The guide sections (rule 4d) are owed by each slice regardless.
+
 > **C378 (Vitor, 2026-11-12, on learning that the kernel refuses the density
 > and the viscosity of a caustic solution: "precisamos de sistematizar a
 > forma como a viscosidade e calculada! E a massa especifica (o inverso dos
@@ -3567,6 +3587,26 @@ accepts today, and that is a policy call.
 > methods; the step that changes no number comes first; the CO2 reference
 > temperature is corrected as its own traceable change.  The reviewer ran
 > nothing and its web citations are not verified here.
+> FOUR QUESTIONS OF VITOR'S, answered and added to revision 2: (i) may a
+> user apply a crude empirical correlation in an operation?  YES: a
+> CASE-DECLARED CORRELATION, a method whose formula is written in the case
+> through the formula evaluator the case-carried rate laws already use,
+> with property, phase, variables, domain, checked units, a mandatory
+> reason and an optional source; with no source the run says "declared by
+> the case, not verified" at every use.  (ii) may he exclude compounds
+> from the calculation of a property?  YES, and ruling (4) above is
+> AMENDED: the exclusion returns in a BOUNDED form, per property, with a
+> mandatory limit on the neglected fraction and a mandatory reason; the
+> engine refuses beyond the limit and reports the largest fraction
+> neglected.  The reviewer's objection was to a generic, unbounded
+> exclusion; a bounded, announced one is the owner's original idea of a
+> declared hypothesis.  (iii) per unit or per sector?  YES, through the
+> existing override, which must learn to accept declared correlations and
+> hypotheses; the stream keeps one canonical value and the unit's choice is
+> shown beside it.  (iv) mass diffusivity?  YES: it joins the structure
+> after viscosity, as the clearest composite method (the infinite-dilution
+> correlation calls the solvent viscosity), with a small Pareto set and the
+> literature's stated errors.
 
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**

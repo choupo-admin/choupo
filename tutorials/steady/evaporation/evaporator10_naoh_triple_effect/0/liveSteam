@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     Saturated steam at 160 kPa abs (58.6 kPa gauge), 113.3 C; `phase gas;` is load-bearing
+     (the evaporator refuses a chest that is not declared vapour).  The flow is the
+     designSpec's first unknown. ---*/
+
+componentMolarFlows
+{
+    water    130 kmol/h;
+}
+
+T               386.45 K;
+P               160000 Pa;
+phase           gas;
