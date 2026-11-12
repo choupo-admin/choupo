@@ -1,0 +1,16 @@
+case	exit	last_error_line
+davies	0	
+davies_full	0	
+hmw	0	
+ms_enrtl	0	
+pkg_Pitzer_CaCl2	0	
+pkg_Pitzer_KCl	0	
+pkg_Pitzer_MgSO4	0	
+pkg_Pitzer_Na2SO4	0	
+pkg_Pitzer_NaCl	0	
+pkg_eNRTL_CaCl2	0	
+pkg_eNRTL_KCl	0	
+pkg_eNRTL_MgSO4	1	*** choupoProps fatal error: eNRTL: no parameters for (Mg, SO4) in constant/electrolyte/enrtl.dat (case) or standards/parameters/eNRTL/Mg-SO4.dat
+pkg_eNRTL_Na2SO4	0	
+pkg_eNRTL_NaCl	0	
+ss_pitzer	0	

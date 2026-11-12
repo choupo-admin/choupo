@@ -1,0 +1,3 @@
+model	Fs	Eo_independent_CMO	Eo_engine	diff_pts	Eo_measured	measured_source
+AIChE	1.47	0.7428	0.7377	0.51	0.708	Yanagi & Sakata 1982 Table III run 628 (tabulated)
+ChanFair	1.47	0.8955	0.9011	-0.56	0.708	Yanagi & Sakata 1982 Table III run 628 (tabulated)

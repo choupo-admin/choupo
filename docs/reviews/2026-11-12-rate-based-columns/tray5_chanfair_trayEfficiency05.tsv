@@ -1,0 +1,13 @@
+quantity	independent	engine	rel_diff_pct
+flood approach	0.5793	0.580	-0.12
+E_MV with entrainment (ChanFair)	0.8870	0.8894	-0.26
+ChanFair Fa	1.9305	not printed	
+ChanFair hL	0.02258	not printed	
+ChanFair phie	0.32362	not printed	
+ChanFair NG	1.6487	not printed	
+ChanFair NL	8.2875	not printed	
+ChanFair EOG	0.77342	not printed	
+ChanFair DE	0.0128	not printed	
+ChanFair Pe	5.1908	not printed	
+ChanFair EMVdry	0.89628	not printed	
+ChanFair psi	0.011483	not printed	

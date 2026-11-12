@@ -900,3 +900,34 @@ else (an imposed-Jv dataset says nothing about A_w, so the stage's A_w is
 the base record's); a mixture feed in Process mode is an extrapolation of a
 fit to single salts; the thermophysical package (ion radii, D0) is NOT
 fingerprinted, so changing a species record does not stale the fit.
+
+
+## 16. A closed grinding circuit — a recycle of a SOLID on the size grid  (circuit01_herbstFuerstenau_closedCircuit)
+
+Fresh feed + the classifier's coarse product go to a mill; the classifier splits
+the mill discharge; the fine product leaves, the coarse one is the recycle.  The
+recycle carries a particle-size distribution on the case's `sizeGrid`, and in
+Choupo `F` and `z` of a stream are its FLUID's, so a dry circuit's tear has
+`F = 0`.  The tear vector therefore carries the class flows too (appended after
+every tear's `[F, z, T, P]` block), and ONLY the fixed-point solvers iterate them:
+```
+sizeGrid { xMax 2.36 mm; ratio 1.41421356; nClasses 13; }
+tearStreams    ( recycle );
+recycleSolver  directSubstitution;     // or Wegstein, DominantEigenvalue
+recycleTol     1e-12;                  // energy closure refuses a looser tear (0.1 W)
+recycleMaxIter 400;
+```
+* The default `Newton` is REFUSED by name for a tear carrying a size
+  distribution (it differentiates the fluid block, which a dry recycle lacks);
+  declare one of the fixed-point solvers.
+* Seed the recycle in `0/recycle` with a size distribution on the grid
+  (`bin/choupo-init0` refuses to invent one).
+* A mill with an ENERGY-specific rate (`model herbstFuerstenau;`) in a perfectly
+  mixed model splits exactly into two units in series at half the power each:
+  that IS H&F's "two ideal mixers in series" residence-time distribution
+  (`sec:grinding-circuit`).
+* The classifier is `type classifier;` with `partition { model tabulated; }` and a
+  `bypass`; a hydrocyclone needs a slurry (`type hydrocyclone;`, `waterToUnderflow`).
+* Check the circulating load (recycle / fresh solids) and the energy per pass
+  against the source; the case's `expected` shows how the circuit is held to
+  H&F's Table II.

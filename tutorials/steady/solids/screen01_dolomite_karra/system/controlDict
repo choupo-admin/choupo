@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  screen01_dolomite_karra
+
+  A VIBRATING SCREEN ON THE KARRA MODEL, held to a MEASURED test: King (2001)
+  Example 10.1 (pp. 363-366), one of the experiments of USBM Report J0395138
+  (Hennings & Grant 1982) on a well-controlled experimental screen.
+
+  THEIRS (Table 10.1, measured): the screen (16 x 0.88 ft, woven wire,
+    1.25 in aperture, 0.5 in wire, 20 deg), the dolomite's bulk density
+    (110 lb/ft3), the feed analysis, and the analyses of the oversize and
+    undersize.  The feed rate, 99.4 short tons/h, is the one on King's
+    Fig. 10.3.
+  THE MODEL: Karra's, as King prints it (eqs. 4.30-4.48).  It has no fitted
+    parameter (King p. 90), so NOTHING here is calibrated: the screen is
+    predicted from its own dimensions and its feed.
+  HELD TO (in `expected`):
+    * the split.  The table's own mass balance gives the undersize fraction
+      U/F = (f - c)/(u - c) at every sieve; at 1.0 in and 0.75 in it gives
+      0.6946 and 0.6946 (Wills & Napier-Munn 2006 p. 187 for the algebra), so
+      the measured oversize is 0.3054 of the feed;
+    * the measured % passing of each product at the 1.5, 0.75 and 0.375 in
+      sieves, which are class edges of the case's grid;
+    * King's own report of the same model on the same test: area utilisation
+      factor 1.58 (p. 365).  That is a COMPUTED number, not a measurement,
+      and it is compared, not anchored -- see `expected`.
+  NOT CLAIMED: the measured feed table is coarse (nine sieves); the grid
+    re-bins it uniformly in ln x, which is the same within-class assumption
+    the moments use.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A vibrating screen predicted by Karra's model (King 2001, eqs. 4.30-4.48, no fitted parameter) and held to a measured test: King's Example 10.1, 99.4 short tons/h of dolomite on a 1.25-inch woven-wire screen (Hennings & Grant 1982).";
+verbosity     3;
+citations
+(
+    "King, R.P. (2001) Modeling and Simulation of Mineral Processing Systems. Butterworth-Heinemann, Oxford. Section 4.2.1-4.2.2 and Example 10.1."
+    "Karra, V.K. (1979) Development of a model for predicting the screening performance of vibrating screens. CIM Bulletin, pp. 168-171 (as cited by King 2001)."
+    "Hennings, K.; Grant, D. (1982) A simulation model for the prediction of the performance of vibrating screens. USBM Contract J0395138, U.S. Department of the Interior, Washington D.C. (as reported by King 2001, Table 10.1)."
+);

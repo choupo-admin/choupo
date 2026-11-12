@@ -23337,6 +23337,367 @@ the energy basis, plug flow against perfectly mixed, Bond beside each. \\
 with a breakage threshold.
 \end{tutoriallink}
 
+
+\subsection{Classification on the size grid: partition curves, screen, hydrocyclone and the closed circuit}\label{sec:classification}
+
+A mill (\S\ref{sec:mill}) turns a coarse distribution into a finer one; a
+CLASSIFIER sorts a distribution into two.  Everything in this section acts on
+the case's size grid (\dict{sizeGrid \{\}} in \file{system/flowsheetDict}), on
+the mass fractions $f_k$ of its classes $k = 0$ (the pan) $\dots n_c-1$, and
+splits ONE feed into a COARSE and a FINE product class by class.  Three units
+share one split (\S\ref{sec:partition-curve}) and differ in how the curve that
+drives it is obtained: the \code{classifier} (\S\ref{sec:classifier}) is given
+it, the \code{screen} (\S\ref{sec:screen}) predicts it from the cloth and the
+loading, the \code{hydrocyclone} (\S\ref{sec:hydrocyclone}) is given it
+with a water split.  Closed with a mill they are a grinding circuit
+(\S\ref{sec:grinding-circuit}).
+
+\subsubsection{The partition curve and the split every classifier performs}\label{sec:partition-curve}
+
+King (2001)~\cite{King2001}, section 4.2, eqs.~4.20--4.29, pp.~86--87: the
+\emph{classification function} $c(d_{p,k})$ is the fraction of class $k$ of the
+feed that leaves in the coarse product.  Two curves are kept apart.  The
+\textbf{corrected} curve $c_k$ is what a \code{partition \{\}} object returns;
+the \textbf{actual} curve adds the bypass $R$, the fraction of EVERY class
+short-circuited to the coarse product,
+\begin{equation}
+a_k = R + (1-R)\,c_k .
+\label{eq:class-actual}
+\end{equation}
+In a hydrocyclone $R$ is the water recovery to the underflow $R_f$ (Kelsall's
+assumption: the fines follow the water; Wills \& Napier-Munn
+(2006)~\cite{Wills2006} eq.~9.15, p.~214, $c' = (c - R_f)/(1 - R_f)$, written
+forward here).  With $m_s$ the feed's solids mass flow,
+\begin{equation}
+\text{coarse}_k = a_k f_k m_s,\qquad \text{fine}_k = f_k m_s - \text{coarse}_k .
+\label{eq:class-split}
+\end{equation}
+The fine product is the DIFFERENCE, so coarse $+$ fine $=$ feed per class to
+the last bit; the run prints the closure ($0$ in every shipped case).  The
+fluid (the stream's $F\,z$: in Choupo $F$ and $z$ are the FLUID's, the solids
+ride $s$) splits by ONE fraction $R_{\text{fl}}$, the same for every fluid
+component.  Every solid component splits in the proportion
+$Y = \sum_k a_k f_k$: ONE SOLID POPULATION (a per-species distribution is
+deferred, and each unit's header says so).  There is no work and no heat: both
+products leave at the feed's $T$ and $P$.  A continuous curve is evaluated at
+each class's representative size, the geometric mean of its edges ($d_{p,k}$).
+
+\paragraph{What is published.}  Per class: the feed fractions, the corrected and
+actual partition, both products' fractions.  KPIs: the solids and fluid
+splits, the bypass, \code{d50c\_um} (the 0.5 crossing of the corrected curve),
+\code{d50\_um} and \code{imperfection} on the ACTUAL curve, both products'
+$d_{10}\dots d_{90}$, $d_{32}$ and $S_v$, and the closures.  The imperfection is
+$I = (d_{75}-d_{25})/(2\,d_{50})$ (Wills \& Napier-Munn eq.~9.14, p.~214); it is
+NOT published when the bypass leaves no $d_{25}$ (undefined, not zero).  A
+crossing is linear in $\ln x$ between neighbouring representative sizes, the
+first from the fine end.
+
+\paragraph{The curve objects.}  \dict{partition \{ model \dots; \}} selects one
+of three, each with its window and an anchor that is an IDENTITY at a printed
+point (said as such).  Lengths carry their unit; $a$ and $m$ are
+dimensionless.
+\begin{center}\small
+\begin{tabular}{@{}llp{5.6cm}@{}}
+\toprule
+\dict{model} & $c(d)$ as implemented & keys \\ \midrule
+\code{whiten} (\S\ref{sec:partition-whiten}) &
+  $1 - \dfrac{e^{a}-1}{e^{a\,d/d_{50c}}+e^{a}-2}$ & \dict{d50c}, \dict{alpha} ($=a$) \\[2mm]
+\code{rosinRammler} (\S\ref{sec:partition-rr}) &
+  $1-\exp\!\big[-0.693\,(d/d_{50})^{m}\big]$ & \dict{d50}, \dict{m} \\[1mm]
+\code{tabulated} (\S\ref{sec:partition-tab}) &
+  $c_k$ declared class by class & \dict{corrected ( \dots )}, exactly $n_c$ values, pan first \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{Partition curve \texttt{whiten}}\label{sec:partition-whiten}
+\begin{equation}
+c(d) = 1-\frac{e^{a}-1}{e^{a\,d/d_{50c}}+e^{a}-2}
+\label{eq:class-whiten}
+\end{equation}
+Nageswararao, Wiseman \& Napier-Munn (2004)~\cite{Nageswararao2004} eq.~21,
+p.~681 (Whiten's curve, written there for the OVERFLOW recovery; divided by $C$
+and complemented here to the coarse side).  $d_{50c}$ is the corrected cut
+size, $a>0$ the sharpness ($a=0$ is no classification).  WINDOW: monotone; the
+fish-hook form of the paper (eq.~25, p.~683) is NOT built.  ANCHOR (identity):
+$c(d_{50c}) = 1/2$ for any $a$, the definition of $d_{50c}$ (p.~683).
+
+\subsubsection{Partition curve \texttt{rosinRammler}}\label{sec:partition-rr}
+\begin{equation}
+c(d) = 1-\exp\!\left[-0.693\left(\frac{d}{d_{50}}\right)^{m}\right]
+\label{eq:class-rr}
+\end{equation}
+King (2001) eq.~4.41, p.~89 (the screen's partition); the same form
+Nageswararao et al.\ eq.~20, p.~680, attribute to Plitt.  The constant is kept
+as King prints it, $0.693$ ($\ln 2$ to three figures), so $c(d_{50}) =
+0.49997$, not $1/2$.  WINDOW: a monotone S-curve; $m$ is fitted to the device
+and feed (King uses $m = 5.9$ for a vibrating screen).  ANCHOR (identity):
+$c(d_{50}) = 1-e^{-0.693} = 0.49997$.
+
+\subsubsection{Partition curve \texttt{tabulated}}\label{sec:partition-tab}
+
+The curve IS its data: $c_k$ for each class, pan first, each in $[0,1]$, exactly
+as many values as the case's grid has classes (anything else is refused by
+name).  It is how Herbst \& Fuerstenau (1980)~\cite{HerbstFuerstenau1980}
+specify their design classifier (the diagonal of the classifier matrix
+$\mathbf{C}$, p.~18) and how a plant test reports it (Wills \& Napier-Munn
+Table~9.1, p.~216).  WINDOW: the case's own classes; never interpolated to
+another grid.  ANCHOR: none computed --- a tabulated curve is its own data, and
+the run says so rather than print a $0\,\%$ that reads as a test of physics.
+
+\subsubsection{The \texttt{classifier}: a curve and a bypass}\label{sec:classifier}
+
+The unit of Herbst \& Fuerstenau's ``classifier matrix $\mathbf{C}$'' and of
+King's section 4.2: nothing about the device is modelled, only
+eqs.~(\ref{eq:class-actual})--(\ref{eq:class-split}).  Inputs \dict{in}; outputs
+$(\text{coarse},\ \text{fine})$.  Operation: \dict{partition \{ \}} (any of the
+three curves), \dict{bypass} $R\in[0,1)$ and, when the feed carries a fluid,
+\dict{fluidToCoarse} (the split of the liquid is the case's declaration, never
+a default).  REFUSED by name: a feed not on the grid, a feed with no solids, a
+vapour-bearing fluid (a gas-borne powder is the \code{cyclone}'s), a fluid with
+no \dict{fluidToCoarse}.  Held by the circuit of \S\ref{sec:grinding-circuit}.
+
+\subsubsection{The \texttt{screen}}\label{sec:screen}
+
+\code{screen} takes \dict{model} \code{karra} (the loading and the cloth give
+the cut size) or \code{declared} (the case gives the curve).  Inputs \dict{in};
+outputs $(\text{oversize},\ \text{undersize})$; one solid population, no work,
+no heat; a fluid-bearing feed needs \dict{fluidToOversize}.
+
+\paragraph{Model \texttt{karra}.}\label{sec:screen-karra}  Karra (1979) as King
+(2001)~\cite{King2001} prints it, section 4.2.1--4.2.2, pp.~87--90, in KING's
+units ($h_T$ in mm, capacity in t/(h\,m$^2$), $W^F$ in t/h,
+$\rho_B$ in kg/m$^3$); the unit converts the case's SI inputs.  $P^F(x)$ is the
+fraction of the feed below $x$ (the grid's own within-class assumption: uniform
+in $\ln x$, and uniform in $x$ in the pan).
+\begin{center}\small
+\begin{tabular}{@{}lp{7.6cm}l@{}}
+\toprule
+quantity & as implemented & King \\ \midrule
+effective aperture & $h_T = (h + d_w)\cos\theta - d_w$ & 4.31 \\
+basic capacity $A$ & $12.13\,h_T^{0.32}-10.3$ ($h_T<51$ mm); $0.34\,h_T+14.41$ ($\ge 51$) & 4.32--4.33 \\
+open area (optional) & $A\leftarrow A\cdot 100\,oa/OA$, $OA = 21.5\log_{10}h+37$ & 4.34--4.35 \\
+oversize factor $B$ & $1.6-1.2\bar P$ ($\bar P\le0.87$); $4.275-4.25\bar P$; $\bar P = 1-P^F(h_T)$ & 4.36 \\
+half-size factor $C$ & $0.7+1.2x$ ($x\le0.3$); $2.053x^{0.564}$ ($\le0.55$); $3.35x^{1.37}$ ($\le0.8$); $5x-1.5$; $x = P^F(h_T/2)$ & 4.37 \\
+deck factor $D$ & $1.1-0.1\,S$ ($S=1$ top deck) & 4.38 \\
+wet-screening $E$ & the table below, $T = 1.26\,h_T$; only with \dict{wetScreening yes}, else 1 & p.~89 \\
+bulk density $F$ & $\rho_B/1600$ & 4.39 \\
+near-size factor $G_c$ & $0.975\,\big(1-P^F(1.25h_T)+P^F(0.75h_T)\big)^{0.511}$ & 4.40 \\
+loading $K$ & $\dfrac{W^F P^F(h_T)/\text{area}}{A\,B\,C\,D\,E\,F}$ & 4.42 \\
+cut size & $d_{50} = h_T\,G_c\,/\,K^{0.148}$ & 4.43 \\
+partition & \code{rosinRammler}, $m=5.9$, no bypass & 4.41 \\
+capacity, AUF, efficiency & $Th = A B C D E F G_c\,\text{area}$; $\text{AUF} = $ undersize transmitted $/\,Th$; $\text{eff} = $ transmitted $/\,(W^F P^F(h))$ & 4.30, 4.48, 4.46--4.47 \\
+\bottomrule
+\end{tabular}
+\end{center}
+The $E$ table, as coded ($T$ in the unit King prints): $1$ ($T<1$); $T$ ($<2$);
+$1.5+0.25T$ ($<4$); $2.5$ ($<6$); $3.25-0.125T$ ($<10$); $4.5-0.25T$ ($<12$);
+$2.1-0.05T$ ($<16$); $1.5-0.0125T$ ($<24$); $1.35-0.00625T$ ($<32$); $1.15$
+beyond.  The relation signs of eqs.~4.36--4.37 and the $\theta$ of 4.31 do not
+survive text extraction of the book; they were read from the rendered pages and
+the branches meet within $0.03$ at each boundary.  Keys: \dict{aperture},
+\dict{wireDiameter}, \dict{inclination} (with its unit, e.g. \code{20 deg}),
+\dict{area}, \dict{deck}, \dict{wetScreening}, \dict{bulkDensity},
+\dict{openArea}, \dict{fluidToOversize}.
+
+WINDOW (enforced by name): the aperture inside the grid; $h_T>0$; $A>0$ (the
+correlation's own zero, $h_T$ above about 0.6\,mm).  No parameter is fitted
+(King p.~90), and King states no accuracy for it.  ANCHOR (identity at a
+printed point, King p.~87): the factors are unity at the standard condition,
+$B(0.5)\,C(0.25) = 1$.  An area utilisation factor above $1$ means the screen
+is overloaded; the run says so.
+
+\paragraph{Model \texttt{declared}.}\label{sec:screen-declared}  The case gives
+a \dict{partition \{\}} curve, a \dict{bypass} (fines misplaced to the
+oversize) and an optional \dict{aperture}, checked against the grid.  Nothing
+is predicted.
+
+\paragraph{Comparison with a measured screen.}  \file{screen01\_dolomite\_karra}
+runs King's Example 10.1 (Table 10.1, after Hennings \& Grant 1982): a
+dolomite on a 1.25\,in opening in 0.5\,in wire, MEASURED data.  The case
+carries the catalogue's calcite record for the test's dolomite (a screen reads
+only the declared bulk density).  It is NOT anchored, because Karra states no
+accuracy and no tolerance a row could honestly carry; the model's values are
+pinned as self-recorded rows (they catch drift, not error) and the comparison
+is on the record:
+\begin{center}\small
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+quantity & measured & Choupo & gap \\ \midrule
+oversize / feed & 0.3054 & 0.2933 & $-4.0\,\%$ \\
+oversize, \% passing 1.5\,in & 62.61 & 61.06 & $-2.5\,\%$ \\
+oversize, \% passing 0.75\,in & 0.44 & 2.55 & the model leaks fines \\
+undersize, \% passing 0.75\,in & 87.62 & 85.26 & $-2.7\,\%$ \\
+undersize, \% passing 0.375\,in & 52.26 & 51.44 & $-1.6\,\%$ \\
+area utilisation factor (King's own run) & 1.58 & 1.08 & UNEXPLAINED \\
+\bottomrule
+\end{tabular}
+\end{center}
+The area utilisation factor is the one gap with no explanation: King's own run
+of the same model on the same test reports 1.58 (p.~365), Choupo gives 1.082,
+and the hand arithmetic of eqs.~4.30--4.48 done before the engine ran gave
+1.05.  King's Fig.~10.5 (the parameters his run used) is an image.  The likeliest
+reading is the open-area correction (eq.~4.35: 1.25\,in openings in 0.5\,in
+wire are 51\,\% open against $OA = 69.3\,\%$ for standard light-medium mesh),
+which would give about 1.47; it was not adopted because the test's cloth is not
+stated to be non-standard.
+
+\subsubsection{The \texttt{hydrocyclone}}\label{sec:hydrocyclone}
+
+A hydrocyclone classifies a SLURRY: a dry feed is refused by name (a dry powder
+is a \code{screen}'s or a \code{classifier}'s), and so is a vapour-bearing
+fluid.  Inputs \dict{in}; outputs $(\text{underflow},\ \text{overflow})$.  The
+solid density is volume-additive from the components' \code{rho\_p}, the liquid
+density the package's at the feed's $T$ and $P$; the unit publishes the feed's
+solids by weight and volume, the pulp density and the dilution
+(water\,/\,solids by mass) of the feed and both products (the quantity a plant
+reads off its densities, Wills p.~215).
+
+\paragraph{Model \texttt{declared}.}\label{sec:hydrocyclone-declared}  The case
+gives the corrected curve \dict{partition \{\}} (it must carry a cut size) and
+\dict{waterToUnderflow} $R_f\in[0,1)$, the fraction of the feed water leaving in
+the underflow --- which is ALSO the solids bypass (Kelsall;
+eq.~(\ref{eq:class-actual}) with $R=R_f$; Wills eq.~9.15).  The water splits by
+$R_f$, the solids by eq.~(\ref{eq:class-split}).  WINDOW: Kelsall's assumption
+(a size-independent bypass equal to the water split) holds only
+approximately --- Wills notes it ``has been questioned'' (p.~214) --- and the
+example below is a case where it fails.  The empirical correlation of
+Nageswararao, Wiseman \& Napier-Munn (2004) that would PREDICT the cut size and
+$R_f$ from the geometry is not built (\S\ref{sec:classification-deferred}).
+
+\paragraph{Comparison with a printed worked example.}
+\file{hydrocyclone01\_quartz\_willsTable91} runs Wills \& Napier-Munn
+Table~9.1 (pp.~215--216) FORWARD: the book derives the partition curve from
+the two products' sieve analyses; here that curve (Wills column 8, corrected by
+$R_f = 0.39$) and the water split are given and the products predicted.  THE
+COMPARISON IS THEREFORE IN-SAMPLE: the curve comes from the same table, so
+agreement shows the arithmetic is the book's, and says nothing about a model's
+power to predict a cyclone.
+\begin{center}\small
+\begin{tabular}{@{}lrrrl@{}}
+\toprule
+quantity & Wills & Choupo & gap & row \\ \midrule
+underflow dilution (w/s) & 0.34 & 0.3390 & $-0.3\,\%$ & anchor ($1.5\,\%$, the 2-figure print) \\
+$d_{50}$ of the actual curve, $\mu$m & 177.5 & 176.0 & $-0.8\,\%$ & anchor ($1\,\%$, see below) \\
+solids to underflow $U/F$ & 0.652 & 0.6557 & $+0.56\,\%$ & GAP, not anchored \\
+overflow dilution (w/s) & 1.00 & 1.0098 & $+1.0\,\%$ & GAP, not anchored \\
+\bottomrule
+\end{tabular}
+\end{center}
+Wills plots column 8 at the ARITHMETIC mean of each sieve interval ($177.5\,\mu$m
+for 147--208); the grid's representative size is the GEOMETRIC mean of the same
+interval ($176.0\,\mu$m), which is the $0.8\,\%$.  The two gaps have ONE cause:
+the book's $-74\,\mu$m class reaches the underflow at $37.2\,\%$, BELOW the
+water's $39\,\%$, so Kelsall's correction gives it a negative corrected
+recovery ($-0.0295$); a recovery cannot be negative, so it is declared $0$, which
+sends $(0.39-0.372)\times0.301 = 0.54\,\%$ of the feed's solids to the underflow
+that the book's test did not.  Kelsall's assumption failing on measured data,
+shown, not tuned away.
+
+\subsubsection{A closed grinding circuit}\label{sec:grinding-circuit}
+
+\file{circuit01\_herbstFuerstenau\_closedCircuit} is Herbst \&
+Fuerstenau's design circuit (1980, Fig.~2 and pp.~18--24)~\cite{HerbstFuerstenau1980}:
+fresh feed $+$ classifier oversize $\to$ ball mill $\to$ classifier; the
+undersize is the product.
+
+\paragraph{The recycle of a grid solid.}  A stream's $F$ and $z$ are its
+fluid's, so a dry circuit's tear carried $F = 0$ and was judged converged on
+$T$ and $P$ alone (the first run ``converged'' with a $0.002\,\%$ mass and
+element closure).  When a tear carries a distribution on the grid, the tear
+vector now also holds its CLASS molar flows (total solid kmol/s $\times$ mass
+fraction), appended after every tear's $[F, z, T, P]$ block (the pressure
+check's stride is unchanged); the unpacked flows set the distribution and
+rescale every solid component in proportion.  A case without a grid packs
+exactly what it packed before.  The circuit declares
+\dict{recycleSolver directSubstitution} and \dict{recycleTol 1e-12} (at
+$10^{-9}$ the mixer's published inlets missed its outlet by $2.6$\,W of
+enthalpy on the elements datum, which \code{check\_energy\_closure} refuses at
+$0.1$\,W).  SOLVERS: \dict{directSubstitution}, \dict{Wegstein} and \dict{DominantEigenvalue} (the same loop) carry the class flows, and on this circuit reach the same solution to the printed digits (solids to the coarse product $Y = 0.7213$ in all three).  The default \dict{Newton}-on-tears does NOT: measured on a copy of this case it cannot even start (``no feasible perturbation for variable 0''), because its step differentiates the fluid block, which a dry recycle lacks; so a tear that carries a size distribution on the grid under \dict{Newton} is REFUSED by name before solving, naming the tear and the solvers that carry it (held by \code{check\_driver\_convergence}).
+
+\paragraph{Two mixers in series, exactly.}  H\&F's mill residence-time
+distribution is ``two ideal mixers in series'' (p.~18 footnote,
+$E(\theta) = 4\theta e^{-2\theta}$).  The circuit is two perfectly mixed
+\code{mill} units in series, each drawing half the power.  With an
+ENERGY-specific rate the extent of each half is $\kappa_i^{\text{half}} = S^E_i
+P/(2\dot m) = \kappa_i/2$: two perfect mixers of extent $\kappa/2$ each ARE the
+tanks-in-series RTD with total extent $\kappa$, so no residence model was added
+and nothing is approximated.  (This is exact only because the rate is
+energy-specific; for a time rate each half would need its own hold-up.)  The
+specific rate is H\&F's printed Fig.~14 legend,
+$k^E_i = 2.40\,(\sqrt{x_ix_{i+1}}/2000\,\mu\text{m})^{0.72}$ (kWh/ton)$^{-1}$
+(``ton'' read as the US short ton: units \code{shortTon/kWh} and
+\code{shortTon/h}).  The classifier is H\&F's two-level step (p.~18: $C = 1$
+above 150 mesh, $0.3$ below): a \code{tabulated} corrected curve (a step at the
+150-mesh sieve, $104.3\,\mu$m on this grid) with \dict{bypass 0.3}, i.e.
+$a_k = 0.3 + 0.7c_k$.
+
+\paragraph{Comparison, and what it does not show.}  IN-SAMPLE FOR ONE INPUT: the
+breakage distribution function is \file{mill01}'s Austin fit to points READ from
+H\&F's Fig.~13 (every point within $4\,\%$), so it is ours; H\&F print it only as
+a figure.  Held to H\&F Table~II, the 70\,\% classifier efficiency / two-mixer
+cell, and p.~23 (637\,kW holds 100\,TPH at $250\,\%$ circulating load, $E =
+1.82$\,kWh/short ton):
+\begin{center}\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+quantity & H\&F & Choupo & gap \\ \midrule
+circulating load (recycle / fresh) & 2.500 & 2.588 & $+3.5\,\%$ \\
+mill feed, short TPH & 350.0 & 358.8 & $+2.5\,\%$ \\
+$E$ per half, kWh/t & 1.0031 & 0.9785 & $-2.5\,\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+The rows are anchored at $5\,\%$, which is the uncertainty band of the
+figure-read input (moving $\phi$ across its $4\,\%$ read band alone moves the
+circulating load by $-3.4\,\%$; $\beta$ across $\pm0.3$ by $-9/+8\,\%$), not a
+solver tolerance: the circuit reproduces H\&F's design point to within the
+uncertainty of a function H\&F printed only as a figure, which is not the same
+as the model being right to $3.5\,\%$.  The other eight cells of Table~II
+(run on scratch copies; compared, not anchored), each of which should give
+$2.50$ at 100\,TPH:
+\begin{center}\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+RTD $\backslash$ classifier efficiency & 100\,\% & 70\,\% & 50\,\% \\ \midrule
+plug flow & 498\,kW: 2.574 & 581\,kW: 2.567 & 770\,kW: 2.439 \\
+two mixers & 532\,kW: \textbf{2.774} & 637\,kW: 2.588 (anchor) & 875\,kW: 2.454 \\
+one mixer & 595\,kW: 2.456 & 720\,kW: 2.461 & 980\,kW: 2.518 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Seven of the eight lie within $-2.5\,\%/+3.0\,\%$ of $2.50$; the
+two-mixers / 100\,\% cell is $+11\,\%$ and is NOT explained by anything found
+(an independent re-computation in Python, not shipped, agrees with the engine to
+four figures on the cells it ran, so the spread is the model with our Fig.~13
+fit, not an engine artefact).  The circuit's product size distribution exists in
+H\&F only as a figure (Fig.~16) and is not compared.
+
+\subsubsection{What is deferred or refused}\label{sec:classification-deferred}
+
+\begin{itemize}
+\item \textbf{The empirical hydrocyclone correlation} of Nageswararao, Wiseman
+\& Napier-Munn (2004)~\cite{Nageswararao2004} (eqs.~13--15: pressure--flow,
+corrected cut size and water split from the cyclone geometry) is NOT built and
+not shipped.  The paper prints no values of its material constants $K_{Q0},
+K_{D0}, K_{W0}$ for any material and no worked example, and prints its
+water-split equation with opposite signs on the inlet-diameter exponent in
+eq.~15 ($+0.50$, p.~677) and in its repetition eq.~18 ($-0.50$, p.~680);
+neither King (2001) nor Wills \& Napier-Munn (2006) prints a worked example or
+the constants (Wills only names the model, p.~217).  A model that no case
+exercises and no number holds does not ship: it waits for a source with the
+constants and a worked example.  Until then the \code{hydrocyclone} is
+\code{declared}.
+\item \textbf{The fish-hook} (Whiten's $\beta$ form, eq.~25): $\beta^*$ is
+defined only implicitly and the paper calls the effect undetermined (p.~683).
+\item \textbf{Plitt's model} (eqs.~3--6): four more declared constants.
+\item \textbf{King's kinetic screen model} (eqs.~4.49--4.86): King says it awaits
+experiments on the crowded length (p.~97).
+\item \textbf{Per-species classification:} every classifier splits one
+population.
+\item The time-integrated binaries, and a sizer or cost for any classifier.
+\end{itemize}
+
 % ---------------------------------------------------------------------
 \section{Drying: spray dryer and solid dryer}\label{ch:drying-overview}
 
@@ -27435,6 +27796,20 @@ printed beside the \code{mill} as an energy cross-check.  Located, not read:
 Eq.~(\ref{eq:mill-bond}) is the law as Wills \& Napier-Munn and
 King~\cite{King2001} give it.
 
+\bibitem{Wills2006} Wills, B. A., \& Napier-Munn, T. J., \emph{Wills'
+Mineral Processing Technology}, 7th ed., Elsevier / Butterworth-Heinemann,
+2006 (ISBN 0750644508).  The actual and corrected partition curves, the
+imperfection (eqs.~9.14--9.15, p.~214) and the worked hydrocyclone test of
+Table~9.1 (pp.~215--216) behind \code{hydrocyclone01}; also Bond's law
+(eq.~5.2) and its work indices for the \code{mill}.
+
+\bibitem{Nageswararao2004} Nageswararao, K., Wiseman, D. M., \& Napier-Munn,
+T. J., ``Two empirical hydrocyclone models revisited'', \emph{Minerals
+Engineering} \textbf{17} (2004) 671--687, doi:10.1016/j.mineng.2004.01.017.
+Whiten's partition curve (eq.~21, p.~681) behind the \code{whiten} model;
+its hydrocyclone correlations (eqs.~13--15) are deferred
+(\S\ref{sec:classification-deferred}).
+
 \bibitem{Gnielinski1976} Gnielinski, V., 1976.  The lower-scatter
 turbulent in-tube correlation on Petukhov's smooth-tube friction factor;
 Choupo's \code{Gnielinski} model and the default tube-side film.  As
@@ -27629,6 +28004,12 @@ context of Appendix~C.
 % and Sandu1997 -- this guide's own closing paragraph of the stiff-ODE
 % chapter, where both stood in prose; Flory1953 --
 % src/unitOperations/reactor/PolymerKPIs.H.
+
+\bibitem{DohertyPerkins1978} Doherty, M. F., \& Perkins, J. D., ``On the
+dynamics of distillation processes---I'', \emph{Chemical Engineering Science}
+\textbf{33} (1978) 281--301, doi:10.1016/0009-2509(78)80086-4.  The residue
+curve equation and the classification of its singular points
+(Eq.~\ref{eq:residue-curve}).
 
 \bibitem{SundaresanKrishnaswamy1978} Sundaresan, K. R., \& Krishnaswamy,
 P. R., ``Estimation of time delay, time constant parameters in time,
@@ -28610,8 +28991,8 @@ $\xi=\ln(W_0/W)$,
 \label{eq:residue-curve}
 \end{equation}
 of which two are independent.  A solution is a \emph{residue curve}; the
-bubble temperature rises monotonically along it (Doherty and Perkins, Chem.\
-Eng.\ Sci.\ 33 (1978) 281--301).  Two curves do not cross because the solution
+bubble temperature rises monotonically along it (Doherty and
+Perkins~\cite{DohertyPerkins1978}).  Two curves do not cross because the solution
 of the ordinary differential equation through a given point is unique, not
 because the temperature rises.  Its fixed points,
 $x^{\star}=y^{*}(x^{\star})$, are the pure components and the azeotropes, and

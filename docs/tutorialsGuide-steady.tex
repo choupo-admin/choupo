@@ -12353,6 +12353,78 @@ This teaching case uses a CASE-LOCAL synthetic property anchor: cpSolid = 920 J/
 \subsection{solids}
 \grouptheory{solids}
 \clearpage
+\tutentry{circuit01\_herbstFuerstenau\_closedCircuit}{tutorials/steady/solids/circuit01\_herbstFuerstenau\_closedCircuit}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (feedMixer) at (0.0,-0.0) {\textbf{feedMixer}\\[-1pt]{\tiny mixer}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (millFirstHalf) at (2.9,-0.0) {\textbf{millFirstHalf}\\[-1pt]{\tiny mill}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (millSecondHalf) at (5.8,-0.0) {\textbf{millSecondHalf}\\[-1pt]{\tiny mill}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (classifier) at (8.7,-0.0) {\textbf{classifier}\\[-1pt]{\tiny classifier}};
+  \draw[->] ($(feedMixer.west)+(-1.05,0.00)$) -- ($(feedMixer.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {fresh};
+  \draw[->, dashed] (classifier.south) .. controls +(0,-1.0) and +(0,-1.0) .. (feedMixer.south) node[midway, below, font=\tiny] {recycle};
+  \draw[->] (feedMixer) -- (millFirstHalf) node[midway, above, font=\tiny] {millFeed};
+  \draw[->] (millFirstHalf) -- (millSecondHalf) node[midway, above, font=\tiny] {millMid};
+  \draw[->] (millSecondHalf) -- (classifier) node[midway, above, font=\tiny] {millDischarge};
+  \draw[->] ($(classifier.east)+(0,0.00)$) -- ($(classifier.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Herbst \& Fuerstenau's 1980 closed-circuit design case: 100 TPH of limestone, a ball mill with the residence-time distribution of two ideal mixers in series (built as two perfectly mixed mill halves), their energy-specific breakage rates (Fig. 14) and a 150-mesh classifier with 30 \% bypass; at their 637 kW the circuit must carry 250 \% circulating load.}
+\begin{tutnarrative}
+Herbst \& Fuerstenau's design circuit (1980, Fig. 2 and pp. 18-24): fresh feed + classifier oversize $\to$ ball mill $\to$ classifier; the undersize is the circuit product. The mill's residence-time distribution is "two ideal mixers in series" (p. 18, footnote: E(theta) = 4 theta exp(-2 theta)), built EXACTLY as two perfectly mixed `mill` units in series, each drawing half the mill's 637 kW: with an energy-specific rate the extent of each half is k\textasciicircum{}E (P/2)/M = kappa/2, and two perfect mixers of extent kappa/2 each ARE the RTD 4 theta e\textasciicircum{}(-2 theta) with total extent kappa (the tanks-in-series RTD; nothing is approximated).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{classifier}{coarse\_solids\_kg\_s}{62.9989}
+\goldrow{kpi}{millFirstHalf}{specificEnergy\_kWh\_t}{1.003105}
+\goldrow{kpi}{millSecondHalf}{specificEnergy\_kWh\_t}{1.003105}
+\goldrow{stream}{fresh}{F}{0.251776966944}
+\goldrow{stream}{fresh}{T}{298.15}
+\goldrow{stream}{millDischarge}{F}{0.903364872884}
+\goldrow{stream}{millDischarge}{T}{327.731851109}
+\goldrow{stream}{millFeed}{F}{0.903364872884}
+\goldrow{stream}{millFeed}{T}{319.619755418}
+\goldrow{stream}{millMid}{F}{0.903364872884}
+\goldrow{stream}{millMid}{T}{323.687892069}
+\goldrow{stream}{product}{F}{0.251776966945}
+\goldrow{stream}{product}{T}{327.731851109}
+\goldrow{stream}{recycle}{F}{0.651587905939}
+\goldmore{91}
+\end{tutgolden}
+
+\clearpage
+\tutentry{hydrocyclone01\_quartz\_willsTable91}{tutorials/steady/solids/hydrocyclone01\_quartz\_willsTable91}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (cyclone) at (0.0,-0.0) {\textbf{cyclone}\\[-1pt]{\tiny hydrocyclone}};
+  \draw[->] ($(cyclone.west)+(-1.05,0.00)$) -- ($(cyclone.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(cyclone.east)+(0,-0.17)$) -- ($(cyclone.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {underflow};
+  \draw[->] ($(cyclone.east)+(0,0.17)$) -- ($(cyclone.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {overflow};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A hydrocyclone on a declared corrected curve and water split (Kelsall's bypass), run forward on the worked example of Wills \& Napier-Munn (2006) Table 9.1: a quartz slurry, R = 0.39, underflow 65.2 \% of the solids at dilution 0.34, overflow at 1.00.}
+\begin{tutnarrative}
+One hydrocyclone, Wills \& Napier-Munn (2006) Table 9.1 run FORWARD: the book derives the partition curve from the two products; here the curve and the water split are given and the products are predicted.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{cyclone}{underflow\_dilution}{0.34}
+\goldrow{kpi}{cyclone}{d50\_um}{177.5}
+\goldrow{stream}{feed}{F}{1.34124372222}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{overflow}{F}{0.695322392592}
+\goldrow{stream}{overflow}{T}{298.15}
+\goldrow{stream}{underflow}{F}{0.64592132963}
+\goldrow{stream}{underflow}{T}{298.15}
+\goldrow{kpi}{cyclone}{anchor\_partition\_dev}{0}
+\goldrow{kpi}{cyclone}{bypass}{0.39}
+\goldrow{kpi}{cyclone}{d50c\_um}{278.543153552}
+\goldrow{kpi}{cyclone}{feedSolids\_vol\_frac}{0.397596673027}
+\goldrow{kpi}{cyclone}{feedSolids\_wt\_pct}{63.6942672853}
+\goldrow{kpi}{cyclone}{feed\_Sv\_m2\_m3}{44293.0927986}
+\goldmore{33}
+\end{tutgolden}
+
+\clearpage
 \tutentry{mill01\_limestone\_herbstFuerstenau}{tutorials/steady/solids/mill01\_limestone\_herbstFuerstenau}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -12538,6 +12610,39 @@ A mixer of two dry powders. The `sizeGrid` below is the ONLY place the classes a
 \goldrow{kpi}{blender}{psd\_massFractionSum}{1}
 \goldrow{kpi}{blender}{T\_out}{298.15}
 \goldmore{3}
+\end{tutgolden}
+
+\clearpage
+\tutentry{screen01\_dolomite\_karra}{tutorials/steady/solids/screen01\_dolomite\_karra}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (screen) at (0.0,-0.0) {\textbf{screen}\\[-1pt]{\tiny screen}};
+  \draw[->] ($(screen.west)+(-1.05,0.00)$) -- ($(screen.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(screen.east)+(0,-0.17)$) -- ($(screen.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {oversize};
+  \draw[->] ($(screen.east)+(0,0.17)$) -- ($(screen.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {undersize};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A vibrating screen predicted by Karra's model (King 2001, eqs. 4.30-4.48, no fitted parameter) and held to a measured test: King's Example 10.1, 99.4 short tons/h of dolomite on a 1.25-inch woven-wire screen (Hennings \& Grant 1982).}
+\begin{tutnarrative}
+One vibrating screen, King (2001) Example 10.1, Table 10.1 (p. 364).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feed}{F}{0.250266305556}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{oversize}{F}{0.073401528394}
+\goldrow{stream}{oversize}{T}{298.15}
+\goldrow{stream}{undersize}{F}{0.176864777162}
+\goldrow{stream}{undersize}{T}{298.15}
+\goldrow{kpi}{screen}{anchor\_partition\_dev}{0}
+\goldrow{kpi}{screen}{areaUtilisationFactor}{1.08200085255}
+\goldrow{kpi}{screen}{bypass}{0}
+\goldrow{kpi}{screen}{d50\_um}{25081.7725049}
+\goldrow{kpi}{screen}{d50c\_um}{25081.7725049}
+\goldrow{kpi}{screen}{feed\_Sv\_m2\_m3}{624.579099263}
+\goldrow{kpi}{screen}{feed\_d10\_um}{2500}
+\goldrow{kpi}{screen}{feed\_d32\_um}{9606.46939208}
+\goldmore{40}
 \end{tutgolden}
 
 \subsection{thermo}

@@ -63,6 +63,16 @@ const ACCEPTED_REGRESSIONS: { [id: string]: string } = {
   //  portions dayTank -> reactor, three refills storage -> dayTank and the
   //  failure's two hold/feed edges.  The same parallel-soft-edge routing
   //  defect, the same reason; it goes when parallel edges are bundled.
+  //  C361 slice 3, 2026-11-12: the closed grinding circuit (feed mixer ->
+  //  two mills -> classifier -> recycle back to the mixer, product out).
+  //  The automatic drawing pays ONE crossing where the old stacking paid
+  //  none, and wins on bends (11 against 18) at the cost of length (2012
+  //  against 1557).  The defect is in how a one-loop recycle with a side
+  //  exit is placed, not in this witness; REPORTED to the commander, not
+  //  fixed in the integration of the classification slice.
+  "steady/solids/circuit01_herbstFuerstenau_closedCircuit":
+    "one crossing on a single recycle loop with a side exit, against none"
+    + " in the old stacking; 11 bends against 18 (reported with C361)",
   "batch/reactor/batch28_dosing_vessel_limit":
     "sixteen parallel recipe-transfer edges dayTank -> reactor and three"
     + " storage -> dayTank; parallel soft edges are routed one by one"

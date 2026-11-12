@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  Wills & Napier-Munn (2006) pp. 215-216: a quartz slurry at a dilution of
+//  0.57 (water/solids by mass, from the 1670 kg/m3 pulp), its RECONSTITUTED
+//  feed analysis (Table 9.1, column 6).  Wills gives no feed rate ("F t/h");
+//  100 t/h of solids is taken (every number held to is a ratio).
+//
+//  THE SIEVES.  Table 9.1 uses the Tyler openings 74, 104, 147, 208, 295,
+//  589 and 1168 um, which are the sqrt-2 series from 74 um ROUNDED (74 x 2^(k/2)
+//  = 104.7, 148, 209.3, 296, 592, 1184 um).  The table is written here on the
+//  exact series -- a relabelling of each sieve by at most 1.4 %, which moves
+//  no mass -- so its classes are unions of the case's grid classes.  The top
+//  class "+1168" has no upper size in the book; 2368 um is taken (it reports
+//  100 % to the underflow, so where its mass sits inside the class changes
+//  nothing that is compared).
+
+componentMolarFlows
+{
+    silica      1664.4474 kmol/h;     // 100 t/h of quartz
+    water       3164.0300 kmol/h;     //  57 t/h: dilution 0.57
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    liquid
+    {
+        componentMolarFlows
+        {
+            water       3164.0300 kmol/h;
+        }
+    }
+    solid
+    {
+        componentMolarFlows
+        {
+            silica      1664.4474 kmol/h;
+        }
+        particleSizeDistribution
+        {
+            //          -74      74-104   104-147  147-208  208-295  295-589  589-1168 +1168
+            edges     ( 0  7.400000e-05  1.046518e-04  1.480000e-04  2.093036e-04  2.960000e-04  5.920000e-04  1.184000e-03  2.368000e-03 );
+            diameter  ( 6.222633e-05 8.800133e-05 1.244527e-04 1.760027e-04 2.489053e-04 4.186072e-04 8.372144e-04 1.674429e-03 );
+            massFrac  ( 0.301    0.046    0.070    0.082    0.079    0.184    0.142    0.096 );
+        }
+    }
+}

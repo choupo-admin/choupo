@@ -1,0 +1,85 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  KING'S EXAMPLE 10.1 -- MEASURED, and NOT ANCHORED (C361 slice 3).  Karra's
+#  model has no fitted parameter and King states no accuracy for it ("the
+#  agreement is satisfactory", p. 365), so there is no tolerance an anchor
+#  row could honestly carry: by the precedent of column14's open anchors the
+#  comparison is written here and the MODEL's values are pinned below as
+#  self-recorded rows, so drifting is caught and nothing is laundered.
+#
+#      quantity                              measured  Choupo   gap
+#      oversize / feed (Table 10.1 balance)  0.3054    0.2933   -4.0 %
+#      oversize % passing 1.5 in             62.61     61.06    -2.5 %
+#      oversize % passing 0.75 in             0.44      2.55    the model leaks fines
+#      oversize % passing 0.375 in            0.20      0.03
+#      undersize % passing 1.5 in           100.00    100.00     0
+#      undersize % passing 0.75 in           87.62     85.26    -2.7 %
+#      undersize % passing 0.375 in          52.26     51.44    -1.6 %
+#  (Choupo's values are sums of class fractions below grid edges that ARE those
+#  sieves; the class table prints at verbosity 2.)
+#
+#  King's own run of the same model on the same test reports an area
+#  utilisation factor of 1.58 (p. 365); Choupo gives 1.082, and the hand
+#  arithmetic of eqs. 4.30-4.48 done before the engine ran gave 1.05.  The
+#  difference is NOT explained: King's Fig. 10.5 (the parameters his run used)
+#  is an image.  The likeliest reading is the open-area correction (eq. 4.35):
+#  1.25 in openings in 0.5 in wire are 51 % open against OA = 69.3 % for
+#  standard light-medium mesh, which would give about 1.47 -- not adopted,
+#  because the test's cloth is not stated to be non-standard.
+# =============================================================================
+stream  feed                   F                0.250266305556     1e-4
+stream  feed                   T                298.15             1e-4
+stream  oversize               F                0.073401528394     1e-4
+stream  oversize               T                298.15             1e-4
+stream  undersize              F                0.176864777162     1e-4
+stream  undersize              T                298.15             1e-4
+kpi     screen                 anchor_partition_dev 0                  1e-4
+kpi     screen                 areaUtilisationFactor 1.08200085255      1e-4
+kpi     screen                 bypass           0                  1e-4
+kpi     screen                 d50_um           25081.7725049      1e-4
+kpi     screen                 d50c_um          25081.7725049      1e-4
+kpi     screen                 feed_Sv_m2_m3    624.579099263      1e-4
+kpi     screen                 feed_d10_um      2500               1e-4
+kpi     screen                 feed_d32_um      9606.46939208      1e-4
+kpi     screen                 feed_d50_um      14545.0046318      1e-4
+kpi     screen                 feed_d80_um      30536.6572038      1e-4
+kpi     screen                 feed_d90_um      40652.0068038      1e-4
+kpi     screen                 fluidMassClosure 0                  1e-4
+kpi     screen                 fluidMassFlow_kg_s 0                  1e-4
+kpi     screen                 fluidTo_oversize 0                  1e-4
+kpi     screen                 hT_mm            29.0693369939      1e-4
+kpi     screen                 imperfection     0.158244136437     1e-4
+kpi     screen                 karra_A          25.3582513046      1e-4
+kpi     screen                 karra_B          1.33708781913      1e-4
+kpi     screen                 karra_C          1.38824467343      1e-4
+kpi     screen                 karra_D          1                  1e-4
+kpi     screen                 karra_E          1                  1e-4
+kpi     screen                 karra_F          1.101275           1e-4
+kpi     screen                 karra_Gc         0.868613253702     1e-4
+kpi     screen                 karra_K          1.03851824962      1e-4
+kpi     screen                 karra_d50_um     25109.1659325      1e-4
+kpi     screen                 oversize_Sv_m2_m3 177.880996977      1e-4
+kpi     screen                 oversize_d10_um  22583.4462949      1e-4
+kpi     screen                 oversize_d32_um  33730.4158509      1e-4
+kpi     screen                 oversize_d50_um  34874.3833918      1e-4
+kpi     screen                 oversize_d80_um  49097.2417761      1e-4
+kpi     screen                 oversize_d90_um  58434.953818       1e-4
+kpi     screen                 oversize_solids_kg_s 7.34653143222      1e-4
+kpi     screen                 screeningEfficiency 0.867009453581     1e-4
+kpi     screen                 sizeMassClosure  0                  1e-4
+kpi     screen                 solidsMassFlow_kg_s 25.0483786975      1e-4
+kpi     screen                 solidsTo_oversize 0.293293690619     1e-4
+kpi     screen                 theoreticalUndersize_t_h 58.8970424606      1e-4
+kpi     screen                 undersizeTransmitted_t_h 63.726650155       1e-4
+kpi     screen                 undersize_Sv_m2_m3 809.965494251      1e-4
+kpi     screen                 undersize_d10_um 1766.78998998      1e-4
+kpi     screen                 undersize_d32_um 7407.72297411      1e-4
+kpi     screen                 undersize_d50_um 9173.37508044      1e-4
+kpi     screen                 undersize_d80_um 17311.8291687      1e-4
+kpi     screen                 undersize_d90_um 21475.8303453      1e-4
+kpi     screen                 undersize_solids_kg_s 17.7018472653      1e-4
+boundary global               H_feeds_kW       -302221.590589     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -302221.590589     1e-4

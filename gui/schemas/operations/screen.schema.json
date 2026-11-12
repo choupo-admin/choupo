@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/screen.schema.json",
+  "title": "screen operation",
+  "description": "A vibrating screen on the case's size grid. The unit's `model` word selects how the partition is obtained: karra (King 2001 section 4.2.1-4.2.2, eqs. 4.30-4.48: the cloth, the inclination and the loading give the cut size; no fitted parameter) or declared (the case's partition curve and bypass). Outputs (oversize undersize). One solid population; no work, no heat.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "aperture": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Aperture h",
+      "description": "karra: the cloth opening (must lie inside the size grid). declared: optional, checked against the grid.",
+      "unit": "m"
+    },
+    "wireDiameter": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Wire diameter d_w (karra)",
+      "unit": "m"
+    },
+    "inclination": {
+      "type": "number",
+      "minimum": 0,
+      "title": "Deck inclination theta (karra)",
+      "description": "Write it with its unit, e.g. `20 deg`; in [0, 90) degrees.",
+      "unit": "rad"
+    },
+    "area": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Deck area (karra)",
+      "unit": "m2"
+    },
+    "deck": {
+      "type": "integer",
+      "minimum": 1,
+      "title": "Deck number S (karra)",
+      "description": "1 for the top deck (King eq. 4.38: D = 1.1 - 0.1 S).",
+      "unit": "-"
+    },
+    "wetScreening": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ],
+      "title": "Wet screening (karra)",
+      "description": "yes applies King's factor E (p. 89); no gives E = 1."
+    },
+    "bulkDensity": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "title": "Bulk density (karra)",
+      "description": "F = rho_B/1600 (King eq. 4.39).",
+      "unit": "kg/m3"
+    },
+    "openArea": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Open area fraction (karra, optional)",
+      "description": "Scales the basic capacity by 100 oa/OA, OA = 21.5 log10(h) + 37 (King eqs. 4.34-4.35). Absent: standard light-medium mesh.",
+      "unit": "-"
+    },
+    "partition": {
+      "type": "object",
+      "title": "Partition curve (corrected)",
+      "description": "The corrected classification function c(d): the fraction of a size class that reports to the coarse product, before the bypass. whiten: c = 1 - (e^a - 1)/(e^(a d/d50c) + e^a - 2) (Nageswararao et al. 2004 eq. 21). rosinRammler: c = 1 - exp(-0.693 (d/d50)^m) (King 2001 eq. 4.41). tabulated: c_k declared class by class on the case's own grid, pan first.",
+      "additionalProperties": false,
+      "required": [
+        "model"
+      ],
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "whiten",
+            "rosinRammler",
+            "tabulated"
+          ],
+          "title": "Curve model"
+        },
+        "d50c": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Corrected cut size (whiten)",
+          "description": "The size at which c = 1/2.",
+          "unit": "m"
+        },
+        "alpha": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Sharpness a (whiten)",
+          "unit": "-"
+        },
+        "d50": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Cut size (rosinRammler)",
+          "description": "c(d50) = 0.49997 (King's constant 0.693 is kept as printed).",
+          "unit": "m"
+        },
+        "m": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "Sharpness m (rosinRammler)",
+          "description": "King uses 5.9 for a vibrating screen.",
+          "unit": "-"
+        },
+        "corrected": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "title": "Class values (tabulated)",
+          "description": "Exactly one value per class of the case's size grid, the pan first, each in [0, 1]."
+        }
+      }
+    },
+    "bypass": {
+      "type": "number",
+      "minimum": 0,
+      "exclusiveMaximum": 1,
+      "title": "Bypass R (declared)",
+      "description": "declared only: the fraction of every class misplaced to the oversize.",
+      "unit": "-"
+    },
+    "fluidToOversize": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "title": "Fluid to the oversize",
+      "description": "Only when the feed carries a fluid: the fraction of it leaving with the oversize (neither model predicts it).",
+      "unit": "-"
+    }
+  }
+}

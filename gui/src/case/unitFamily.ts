@@ -258,6 +258,22 @@ export const SYMBOLS: readonly UnitSymbolSpec[] = [
         + " M21 30a2.5 2.5 0 105 0a2.5 2.5 0 10-5 0"
         + " M28 28a2.5 2.5 0 105 0a2.5 2.5 0 10-5 0" },
 
+  { cls: "Classifier", label: "classifier (a partition curve on the size grid)",
+    //  A box that sorts: one feed in, a coarse stream down and a fine one out
+    //  the top, a stepped line for the partition curve inside.
+    path: "M10 10h28v14H10z M10 24l7 14h14l7-14 M3 17h7 M38 17h7 M24 38v8"
+        + " M14 20h6v-5h5v-3h4" },
+  { cls: "Screen", label: "vibrating screen (Karra)",
+    //  An inclined deck: oversize rides off the end, undersize falls through.
+    path: "M4 14l40 12 M8 25h8 M20 29h8 M32 33h8 M44 26v10 M4 8v6"
+        + " M14 22a1.6 1.6 0 103.2 0a1.6 1.6 0 10-3.2 0"
+        + " M28 28a1.6 1.6 0 103.2 0a1.6 1.6 0 10-3.2 0" },
+  { cls: "Hydrocyclone", label: "hydrocyclone (slurry classifier)",
+    //  The cylinder on its cone: feed enters tangentially, the overflow leaves
+    //  by the vortex finder at the top, the underflow by the apex.
+    path: "M12 10h24v12L28 40h-8l-8-18z M6 15h6 M24 10V4 M24 40v6"
+        + " M17 16h14 M19 22h10" },
+
   //  ---- DRYERS.  Four mechanisms, four shapes.
   { cls: "SprayDryer", label: "spray dryer",
     //  Chamber, ATOMISER at the top, the spray cone under it.
@@ -473,6 +489,9 @@ export const UNIT_CLASS: { readonly [type: string]: string } = {
   pipe: "Pipe",
   pneumaticConveyor: "PneumaticConveyor",
   mill: "Mill",
+  classifier: "Classifier",
+  screen: "Screen",
+  hydrocyclone: "Hydrocyclone",
   distillationColumn: "DistillationColumn",
   column: "DistillationColumn",
   absorber: "Absorber",

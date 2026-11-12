@@ -1810,6 +1810,21 @@ sVector packTears(const std::vector<std::string>& tears,
         //  their own units.
         v.push_back(s.P / 1.0e5);
     }
+    //  THE SOLIDS OF A TEAR ON THE CASE'S SIZE GRID (C361 slice 3).  F and z
+    //  are the FLUID's, so a solids recycle (a closed grinding circuit) was
+    //  judged converged on its temperature alone.  When a tear carries a
+    //  distribution on the grid, its class molar flows (total solid kmol/s
+    //  x mass fraction) are appended AFTER every tear's [F, z, T, P] block --
+    //  so the per-tear stride the pressure check reads is unchanged -- and a
+    //  case without a grid packs exactly what it packed before.
+    for (const auto& name : tears)
+    {
+        const auto& s = streams.at(name);
+        if (!s.psd.onGrid()) continue;
+        scalar sTot = 0.0;
+        for (auto x : s.s) sTot += x;
+        for (auto w : s.psd.massFrac) v.push_back(sTot * w);
+    }
     return v;
 }
 
@@ -1860,6 +1875,26 @@ void unpackTears(const std::vector<std::string>& tears,
             auto it = bounds->find(name);
             if (it != bounds->end() && it->second.any)
                 applyStreamBounds(s, it->second, name, announce);
+        }
+    }
+    //  The grid solids block packTears appends (C361 slice 3): the class
+    //  flows set the distribution, and their sum rescales every solid
+    //  component in proportion (one population).
+    for (const auto& name : tears)
+    {
+        auto& s = streams.at(name);
+        if (!s.psd.onGrid()) continue;
+        const std::size_t nc = s.psd.massFrac.size();
+        if (off + nc > v.size()) break;
+        scalar tot = 0.0, sOld = 0.0;
+        std::vector<scalar> c(nc, 0.0);
+        for (std::size_t k = 0; k < nc; ++k) { c[k] = std::max(v[off + k], 0.0); tot += c[k]; }
+        off += nc;
+        for (auto x : s.s) sOld += x;
+        if (tot > 0.0 && sOld > 0.0)
+        {
+            for (auto& x : s.s) x *= tot / sOld;
+            for (std::size_t k = 0; k < nc; ++k) s.psd.massFrac[k] = c[k] / tot;
         }
     }
 }
@@ -3254,6 +3289,29 @@ int Flowsheet::solve(const DictPtr& dict,
             throw std::runtime_error(
                 "recycleSolver '" + recSolver + "' is not known.  Accepted: "
                 "Newton, Wegstein, DominantEigenvalue, directSubstitution.");
+        //  A TEAR THAT CARRIES A SIZE DISTRIBUTION IS NOT NEWTON'S (C361
+        //  slice 3).  packTears/unpackTears put the class flows of a gridded
+        //  tear into the vector the fixed-point loop below iterates; the
+        //  Newton-on-tears step differentiates the FLUID block alone, so on a
+        //  dry solids recycle (F = 0) it has no variable to perturb ("no
+        //  feasible perturbation for variable 0": measured on circuit01) and
+        //  could only ever converge on the fluid.  Refuse by name, before
+        //  solving, rather than let that path exist.
+        if (recSolver == "Newton")
+            for (const auto& tn : tears)
+            {
+                auto it = streams_.find(tn);
+                if (it != streams_.end() && it->second.psd.onGrid())
+                    throw std::runtime_error(
+                        "recycleSolver Newton cannot converge tear '" + tn + "': it "
+                        "carries a particle-size distribution on the case's size "
+                        "grid, whose class flows only the fixed-point loop iterates "
+                        "(the Newton step differentiates the fluid block, and a dry "
+                        "solids recycle has none).  Declare `recycleSolver "
+                        "directSubstitution;` or `recycleSolver Wegstein;` (the "
+                        "solvers that carry the class flows; DominantEigenvalue runs "
+                        "the same loop).");
+            }
         //  THE RELAXATION RUNG (DEV.md 4c C246 (2)): the fixed factor w of
         //  x+ = (1 - w) x + w G(x), 0 < w <= 1, the OpenFOAM `relaxationFactors`
         //  idea on the tear loop.  It belongs to direct substitution only:

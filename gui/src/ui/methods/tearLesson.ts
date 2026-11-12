@@ -179,11 +179,11 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "Per torn stream, the Wegstein branch packs the total flow, "
           + "every mole fraction, the temperature and the pressure "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1814).",
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1796-1829).",
         eq: String.raw`n_W = N_t (N_c + 3)`},
       { step: "Per torn stream, the Newton branch packs component flows, "
           + "the temperature and the pressure "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:3595-3604). The "
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:3653-3662). The "
           + "pressure has been a tear variable since DEV.md 4c C186 (5).",
         eq: String.raw`n_N = N_t (N_c + 2)`},
       { step: "And one Newton step perturbs each of those variables up and "
@@ -240,8 +240,8 @@ n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
     title: "What the engine does when you get it wrong",
     body: "The plan is validated once the tear list is final and the state "
       + "has been read and seeded from 0/, and before any unit is solved "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:2210 reads 0/, "
-      + "Flowsheet.cpp:2595 validates the plan) — so an invalid plan refuses "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:2245 reads 0/, "
+      + "Flowsheet.cpp:2630 validates the plan) — so an invalid plan refuses "
       + "with every stream still at its 0/ value, and writes no converged/. "
       + "The findings are collected and reported as one list, "
       + "each carrying its own remedy — a lint tool describes the whole "

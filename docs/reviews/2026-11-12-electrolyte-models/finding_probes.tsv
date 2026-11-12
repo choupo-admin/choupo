@@ -1,0 +1,30 @@
+probe	quantity	value
+P1	evaporator06_nacl_pitzer BPE line	BPE = electrolyte a_w(m=4.167678) -> 5.199560 K  (electrolyte model)
+P1	evaporator06_nacl_pitzer caveat lines naming eNRTL or tau	0
+P1	evaporator07_nacl_enrtl BPE line	BPE = electrolyte a_w(m=4.224772) -> 3.945048 K  (electrolyte model)
+P1	evaporator07_nacl_enrtl caveat lines naming eNRTL or tau	0
+P2	Na-Cl record declares	tCorrelationForm silvesterPitzer1977;   // DECLARED (forum #101/#103/#105): typed T-correlation contract
+P2	Na-Cl engine announces	- pitzer pair Na-Cl: tCorrelationForm not declared -- inferred 'silvesterPitzer1977' from the record's fields; declare it in the record
+P2	K-Cl record declares	tCorrelationForm linearSlopes;   // DECLARED (forum #101/#103/#105): typed T-correlation contract
+P2	K-Cl engine announces	- pitzer pair K-Cl: tCorrelationForm not declared -- inferred 'linearSlopes' from the record's fields; declare it in the record
+P3	p3_hmw caveat lines about the frozen 25 C surface	0
+P3	p3_op caveat lines about the frozen 25 C surface	1
+P3	p3_pkgPitzer caveat lines about the frozen 25 C surface	0
+P3	p3_pkgENRTL caveat lines about the frozen 25 C surface	0
+P3	pkgPitzer CaCl2 3 m 373.15 K (m,gamma,phi,a_w)	3.00000000e+00,9.49050200e-01,1.68104496e+00,7.61430617e-01
+P3	pkgENRTL  CaCl2 3 m 373.15 K (m,gamma,phi,a_w)	3.00000000e+00,2.13356460e-01,8.57838540e-01,8.70153495e-01
+P3	HMW gamma_pm CaCl2 3 m 373.15 K	"gamma_pm_Ca_Cl": 0.94898680878
+P4	resolver line	[resolver] ions: Davies on water-referenced molality (mixed-solvent transfer term: named gap)
+P4	Davies band caveat	- speciation: Davies activity at I = 3.65 mol/kg -- beyond its ~0.5 mol/kg trust range; speciation and SI are INDICATIVE (use Pitzer for quantitative work)
+P5	enrtlMixedSolvent vs Esteso AAD_total_pct	4.30645321132
+P5	enrtlMixedSolvent vs Esteso AAD_wt0_pct	1.0101269464
+P5	enrtlMixedSolvent vs Esteso AAD_wt20_pct	5.27484474055
+P5	enrtlMixedSolvent vs Esteso AAD_wt40_pct	5.27091506549
+P5	enrtlMixedSolvent vs Esteso AAD_wt60_pct	2.69902360213
+P5	enrtlMixedSolvent vs Esteso AAD_wt80_pct	7.80889140849
+P5	enrtlMixedSolvent vs Esteso AAD_wt90_pct	7.78650421238
+P6	gamma oracle	single-salt oracle (gamma): max rel deviation vs PitzerSingleSalt = 1.565831e-14 over 99 binaries (worst MgBOH4Cl)
+P6	phi oracle	single-salt oracle (phi/osmotic): max rel deviation vs PitzerSingleSalt = 1.886328e-15 (worst BaCl)
+P6	gated value	[verifyGlobal] PitzerHMW single-salt oracle: FULL catalogue swept, max rel dev 1.56583e-14 (< 1e-9)
+P7	`model pitzer;` exit code	1
+P7	message	*** choupoProps fatal error: thermophysicalPropertySystem: electrolyteGammaPhi activityModel 'pitzer' -- implemented: Pitzer | eNRTL.

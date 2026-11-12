@@ -1,0 +1,10 @@
+case	model	Fs	engine_Eo_pct	measured_Eo_pct	measured_source	design_record_says	diff_pts
+trayEfficiency01_yanagi14	AIChE	2.305	48.04	41.3	Fig. 12 digitised (as transcribed in docs/design/c329-ratebased-first-delivery.md)	out of sweep (beyond the model's entrainment flood)	+6.7
+trayEfficiency01_yanagi14	AIChE	2.356	34.85	41.1	Table III run 625 (tabulated; as transcribed in the design record)	out of sweep (beyond the model's entrainment flood)	-6.3
+trayEfficiency01_yanagi14	AIChE	2.40	refused (psi >= 1)	-	-	-	-
+trayEfficiency05_chanFair_yanagi14	ChanFair	2.305	63.63	41.3	Fig. 12 digitised	out of sweep	+22.3
+trayEfficiency05_chanFair_yanagi14	ChanFair	2.356	44.74	41.1	Table III run 625	out of sweep	+3.6
+trayEfficiency05_chanFair_yanagi14	ChanFair	2.40	refused (psi >= 1)	-	-	-	-
+trayEfficiency06_syedaChuang_yanagi14	SyedaChuang	2.305	45.76	41.3	Fig. 12 digitised	out of sweep	+4.5
+trayEfficiency06_syedaChuang_yanagi14	SyedaChuang	2.356	33.39	41.1	Table III run 625	out of sweep	-7.7
+trayEfficiency06_syedaChuang_yanagi14	SyedaChuang	2.40	refused (psi >= 1)	-	-	-	-
