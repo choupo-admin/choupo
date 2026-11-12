@@ -1,0 +1,11 @@
+# file	kind	count -- the debt of check_liquid_property_ratchet (C378 slice 0);
+# it may only shrink: lower a count in the commit that removes a site
+src/unitOperations/crystallisation/CrystallisationSaturation.cpp	vliq	1
+src/unitOperations/crystallisation/Crystalliser.cpp	vliq	3
+src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
+src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	6
+src/unitOperations/heatTransfer/atomizer/Atomizer.H	literal	1
+src/unitOperations/reactor/CSTR.cpp	vliq	4
+src/unitOperations/reactor/PFR.cpp	vliq	4
+src/unitOperations/rotating/PressureExchanger.cpp	vliq	1
+src/unitOperations/rotating/Pump.cpp	vliq	2
