@@ -386,7 +386,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     copyValues: "yes, with attribution, share-alike honoured on that data, "
       + "changes stated",
     redistribute: "yes, under its own licence",
-    rule: "docs/architecture/settled-contracts.md:3471",
+    rule: "docs/design/where-to-find-property-data.md:124",
   },
   {
     cls: "aggregator",
@@ -396,7 +396,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     copyValues: "only the primary measurement, read through it and cited "
       + "to the original paper",
     redistribute: "no",
-    rule: "CLAUDE.md:726",
+    rule: "docs/design/where-to-find-property-data.md:125",
   },
   {
     cls: "noncommercial",
@@ -405,7 +405,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     read: "yes", cite: "as a cross-check only",
     copyValues: "no, not even cited",
     redistribute: "no",
-    rule: "docs/architecture/settled-contracts.md:3477",
+    rule: "docs/design/where-to-find-property-data.md:126",
   },
   {
     cls: "no-grant",
@@ -508,7 +508,7 @@ export const DS_STEPS: readonly LessonStep[] = [
       + "each rule is written.",
     note: "The rule behind the whole table: cite the PRIMARY source per "
       + "value, never the aggregator's arrangement "
-      + "(docs/architecture/settled-contracts.md:3482).",
+      + "(docs/design/where-to-find-property-data.md:127).",
   },
   {
     n: 4,
@@ -687,10 +687,10 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "data/standards/parameters/Henry/benzonitrile-water.dat", line: 10, contains: "CHANGES (indicated per CC-BY)" },
   { file: "docs/design/what-water-dat-does-not-say.md", line: 58, contains: "CODATA" },
   { file: "thirdParty/thermoml/README.md", line: 30, contains: "Bulk import" },
-  { file: "docs/architecture/settled-contracts.md", line: 3471, contains: "**DATA**" },
-  { file: "docs/architecture/settled-contracts.md", line: 3477, contains: "NonCommercial" },
-  { file: "docs/architecture/settled-contracts.md", line: 3482, contains: "PRIMARY" },
-  { file: "CLAUDE.md", line: 726, contains: "aggregator" },
+  { file: "docs/design/where-to-find-property-data.md", line: 124, contains: "**DATA**" },
+  { file: "docs/design/where-to-find-property-data.md", line: 126, contains: "NonCommercial" },
+  { file: "docs/design/where-to-find-property-data.md", line: 127, contains: "PRIMARY" },
+  { file: "docs/design/where-to-find-property-data.md", line: 125, contains: "aggregator" },
   { file: "bin/curate/check_source_licence.py", line: 337, contains: "EXCLUDED_TABLES" },
   { file: "bin/curate/check_source_licence.py", line: 485, contains: "ACCEPTED_PUBLIC_DOMAIN" },
   { file: EXAMPLE_RECORD, line: 120, contains: "rounded UP to two significant figures" },
