@@ -1022,6 +1022,23 @@ The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln
 \quad (and 1 more)
 \end{tutoriallink}
 
+\paragraph{\code{referenceEoS}}\label{op:referenceEoS}
+A pure fluid from its REFERENCE (multiparameter Helmholtz-energy) equation of state, read from data/standards/parameters/Helmholtz/<equation>.dat (case-local constant/parameters/Helmholtz/ first). This is a propsDict operation under choupoProps, NOT a flowsheet unit (a flowsheet reaches the same equation through \code{pureFluids \{ <component> \{ method Helmholtz; equation <name>; \} \}}). Loading a record evaluates EVERY check value its publication prints (IAPWS-95: 81) at the printed precision and REFUSES the run on a single miss. Give exactly ONE mode block: state (T with p, or T with rho) or saturation (T, by the Maxwell criterion). A (T, p) state lists every density root of the isotherm with its branch; the stable one is taken unless \code{branch} names one. A (T, p) outside the publication's validity window is announced as an extrapolation. Diagnostics are SI per unit mass. Tutorial: tutorials/props/thermo/refEoS01\_iapws95\_verification.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{equation}\textbf{*} & Reference equation \\
+\code{output} & CSV output \\
+\code{saturation} & Saturation state \\
+\code{state} & Single state (T, p) or (T, rho) \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/thermo/refEoS01\_iapws95\_verification}
+\end{tutoriallink}
+
 \paragraph{\code{solubilityParameter}}\label{op:solubilityParameter}
 The Hildebrand solubility parameter, delta = sqrt((dHvap(T) - R T) / V\_m), for every component of the case, plus the pairwise |delta\_i - delta\_j| table that is what the question usually is: the smaller the gap, the more likely two liquids mix. Delta is DERIVED and never stored -- the latent heat comes from the same Watson correlation the enthalpy legs use, and the molar volume from the record's Vliq -- so a stored value would be a second home for a fact the record already fixes. Where a record declares a published delta as an ANCHOR, the deviation is printed beside the derived number; that column is a check on the derivation and never an input to it, and it exists because all three ways this arithmetic fails are silent (a dropped RT term, a wrong V\_m unit, and Pa\textasciicircum{}0.5 reported where the literature uses MPa\textasciicircum{}0.5 -- a factor of 31.6 that still reads as a solubility parameter). Refuses by name for a component with no Tc, no HvapTb or no Vliq, and at a temperature at or above Tc, where there is no liquid and delta is not defined. States on every call that the cohesive energy it measures INCLUDES hydrogen bonding and that one number cannot separate it from dispersion and polarity -- it cannot tell a polar solvent from a hydrogen-bonding one of the same cohesive energy density, so a close pair is a CANDIDATE and never a verdict -- and names Hansen's three-parameter split as what would: the \code{hansenMixture} operation computes the Hansen distance of declared solvents and blends from a declared target, from \code{hansen \{ dD; dP; dH; Tref; \}} blocks the records carry (the catalogue carries none; witnesses carry case-local ones with a citation per value).
 

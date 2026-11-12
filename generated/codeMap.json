@@ -309,6 +309,9 @@
   "ChapmanEnskog": [
    "src/thermo/transport/ChapmanEnskog.H"
   ],
+  "CheckResult": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
   "ChemSepCond16": [
    "src/thermo/transport/ChemSepCond16.H"
   ],
@@ -497,6 +500,12 @@
   ],
   "DemandSample": [
    "src/unitOperations/batch/BatchUnitOperation.H"
+  ],
+  "DensityRoot": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
+  "Derivs": [
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
   ],
   "DesignReport": [
    "src/reporting/DesignReport.H"
@@ -959,6 +968,9 @@
   ],
   "HeldPhase": [
    "src/core/ResultRecords.H"
+  ],
+  "HelmholtzPureFluid": [
+   "src/thermo/equationOfState/ReferencePureFluid.H"
   ],
   "HenryIsotherm": [
    "src/thermo/adsorbent/IsothermModel.H"
@@ -1725,6 +1737,15 @@
   "RecycleLoop": [
    "src/result/SimulationResult.H"
   ],
+  "ReducedHelmholtz": [
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
+  ],
+  "ReferenceEoSOp": [
+   "src/propertyOps/ReferenceEoSOp.H"
+  ],
+  "ReferenceFluid": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
   "ReliefScenario": [
    "src/core/ResultRecords.H"
   ],
@@ -1825,6 +1846,9 @@
   ],
   "SaturatedVapour": [
    "src/thermo/VapourAssociation.H"
+  ],
+  "Saturation": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
   ],
   "SaturationLegs": [
    "src/unitOperations/flash/PureSaturationPlateau.H"
@@ -2014,7 +2038,8 @@
    "src/control/signal/Signals.H"
   ],
   "State": [
-   "src/thermo/electrolyte/ENRTLMultiSalt.H"
+   "src/thermo/electrolyte/ENRTLMultiSalt.H",
+   "src/thermo/equationOfState/ReferenceFluid.H"
   ],
   "Stats": [
    "src/propertyOps/LleResidual.H"
@@ -2085,6 +2110,9 @@
   ],
   "Term": [
    "src/thermo/electrolyte/AqueousVolumetric.H"
+  ],
+  "TermGroup": [
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
   ],
   "ThermalConductivityModel": [
    "src/thermo/transport/ThermalConductivityModel.H"
@@ -2629,6 +2657,10 @@
     "type": "SteamTables"
    },
    {
+    "key": "referenceEoS",
+    "type": "ReferenceEoSOp"
+   },
+   {
     "key": "scalingScan",
     "type": "ScalingScan"
    },
@@ -2873,6 +2905,10 @@
    {
     "key": "IF97",
     "type": "IF97WaterFluid"
+   },
+   {
+    "key": "Helmholtz",
+    "type": "HelmholtzPureFluid"
    }
   ],
   "src/thermo/reaction/ReactionRate.cpp": [
@@ -6570,6 +6606,7 @@
    "src/propertyOps/RateLawBench.H",
    "src/propertyOps/ReactionCurve.H",
    "src/propertyOps/ReactionGibbs.H",
+   "src/propertyOps/ReferenceEoSOp.H",
    "src/propertyOps/ScalingScan.H",
    "src/propertyOps/SolubilityParameter.H",
    "src/propertyOps/Speciate.H",
@@ -6796,6 +6833,21 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H"
+  ],
+  "src/propertyOps/ReferenceEoSOp.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/propertyOps/ReferenceEoSOp.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H"
   ],
   "src/propertyOps/RiaziDaubert.cpp": [
    "src/propertyOps/ConstantEstimator.H",
@@ -8500,6 +8552,12 @@
    "src/thermo/equationOfState/PR.H",
    "src/thermo/equationOfState/SRK.H"
   ],
+  "src/thermo/equationOfState/HelmholtzEnergy.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
+  ],
   "src/thermo/equationOfState/IdealGas.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -8532,6 +8590,28 @@
    "src/thermo/equationOfState/CubicEoS.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/PR.H"
+  ],
+  "src/thermo/equationOfState/ReferenceFluid.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
+  "src/thermo/equationOfState/ReferencePureFluid.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H",
+   "src/thermo/equationOfState/ReferencePureFluid.H",
+   "src/thermo/pureFluid/PureFluidModel.H"
   ],
   "src/thermo/equationOfState/SRK.cpp": [
    "src/core/Constants.H",
@@ -8783,6 +8863,9 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H",
+   "src/thermo/equationOfState/ReferencePureFluid.H",
    "src/thermo/iapws/IAPWSTransport.H",
    "src/thermo/iapws/IF97.H",
    "src/thermo/pureFluid/IF97WaterFluid.H",
@@ -12148,6 +12231,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
@@ -12835,6 +12919,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -12904,9 +12989,12 @@
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
@@ -13214,6 +13302,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -13283,9 +13372,12 @@
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
@@ -13682,6 +13774,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -13745,6 +13838,7 @@
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -13997,6 +14091,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -14063,6 +14158,7 @@
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
@@ -14347,6 +14443,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -14771,6 +14868,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -14857,9 +14955,12 @@
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
@@ -15742,6 +15843,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -15795,6 +15897,10 @@
   "src/propertyOps/ReactionGibbs.H": [
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/ReactionGibbs.cpp"
+  ],
+  "src/propertyOps/ReferenceEoSOp.H": [
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp"
   ],
   "src/propertyOps/ReynoldsSweep.H": [
    "src/propertyOps/FrictionBench.cpp",
@@ -17094,6 +17200,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -17157,6 +17264,7 @@
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -17388,6 +17496,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -17443,6 +17552,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
@@ -17996,6 +18106,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -18048,6 +18159,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
@@ -19242,6 +19354,13 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp"
   ],
+  "src/thermo/equationOfState/HelmholtzEnergy.H": [
+   "src/propertyOps/ReferenceEoSOp.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/pureFluid/PureFluidModel.cpp"
+  ],
   "src/thermo/equationOfState/IdealGas.H": [
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp"
@@ -19253,6 +19372,16 @@
   "src/thermo/equationOfState/PR.H": [
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PR.cpp"
+  ],
+  "src/thermo/equationOfState/ReferenceFluid.H": [
+   "src/propertyOps/ReferenceEoSOp.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/pureFluid/PureFluidModel.cpp"
+  ],
+  "src/thermo/equationOfState/ReferencePureFluid.H": [
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/pureFluid/PureFluidModel.cpp"
   ],
   "src/thermo/equationOfState/SRK.H": [
    "src/thermo/equationOfState/EquationOfState.cpp",
@@ -19450,6 +19579,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",

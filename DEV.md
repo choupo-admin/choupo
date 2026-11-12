@@ -3510,6 +3510,29 @@ accepts today, and that is a policy call.
 > surface tensions -- minus those that split; the gates that refuse a severe
 > record in the catalogue are changed with the rule, in the same commit.
 
+> **C333 RESULT (slice 1, 2026-11-12, the cloud; branch c333-reference-eos).**
+> ONE Helmholtz kernel (`src/thermo/equationOfState/HelmholtzEnergy`: ideal
+> ln delta / lead / logTau / power / Planck-Einstein, residual power /
+> exponential / Gaussian / non-analytic, analytic derivatives) and
+> `ReferenceFluid` (properties, density from (T, p) on the branch the
+> spinodals bound, saturation by Maxwell with no ancillary).  Coefficients in
+> records, `data/standards/parameters/Helmholtz/<equation>.dat`.  SHIPPED:
+> water, IAPWS-95, read from IAPWS R6-95(2018) (iapws.org, 2026-11-12):
+> 81 of 81 check values reproduced at the printed precision (worst relative
+> deviation 5.0e-7, a six-digit value), at every load (a miss refuses the
+> record) and in an independent Python implementation
+> (`bin/curate/check_reference_eos.py`, two by-hand sabotages caught).
+> Reached by the props op `referenceEoS` and, with NO ThermoPackage or
+> Component change, by a flowsheet through the PureFluidModel factory
+> (`pureFluids { water { method Helmholtz; equation IAPWS95; } }`; rankine02
+> agrees with IF97 to ~1e-4, 100x slower).  NOT shipped: CO2 (primary readable
+> only as a scanned image, jpcrd516.pdf -- a transcription slice), N2, H2,
+> NH3, CH4 (no readable primary located), GERG-2008, transport.  One word
+> added to the held `PropsPlan.cpp` table (the op's file-traffic row,
+> required by check_props_order) and one new GUI schema file.  Record:
+> `docs/design/reference-equations-of-state.md`.  Witness
+> `tutorials/props/thermo/refEoS01_iapws95_verification`.
+
 > **C332 (Vitor, 2026-11-12, in the cloud session: "Aprovo tudo!
 > Eventualmente depois podemos rever!").**  Approved: (1) a new EduTools shelf
 > "Property data & parameters" right after "Thermodynamics"; (2) property-

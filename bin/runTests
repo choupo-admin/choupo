@@ -6018,6 +6018,22 @@ PYEOF
     fi
     rm -f /tmp/if97reg.$$
 
+    # Reference-EoS gate (2026-11-12, DEV.md 4c C333): every reference
+    # (multiparameter Helmholtz) equation under data/standards/parameters/
+    # Helmholtz/ reproduces EVERY check value its publication prints, at the
+    # printed precision, in an independent Python implementation AND in the
+    # engine (which refuses a record that misses one); the witness
+    # refEoS01_iapws95_verification's CSV states agree with the recomputation.
+    if gate_exec "$ROOT/bin/curate/check_reference_eos.py" > /tmp/refeos.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "reference-eos-gate" "$(gate_claim check_reference_eos /tmp/refeos.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_reference_eos.py)\n" "reference-eos-gate"
+        cat /tmp/refeos.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/refeos.$$
+
     # Data-reconciliation gate (2026-10-20, DEV.md 4c C121): the
     # `dataReconciliation` props op reconciles plant flow readings under the
     # node balances through analysis::reconcileWeightedLeastSquares (the one

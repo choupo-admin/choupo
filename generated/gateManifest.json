@@ -1660,6 +1660,11 @@
       "exit": 0,
       "claim": "regressed-electrolytes: OK -- 101 regressed salt records (89 in the catalogue: 44 Pitzer, 45 eNRTL) reproduced by their 67 cases; grades follow the C311 rule and the C300 cap; the engine voices a promoted record; the transcription itself is NOT checked here",
       "seconds": 0.7
+    },
+    "check_reference_eos": {
+      "exit": 0,
+      "claim": "check_reference_eos: OK -- 1 reference equation(s) (IAPWS95); 81 published check values reproduced at the printed precision by an independent implementation and by the engine; 5 engine states agree with the recomputation to 1e-9.  NOT checked: whether an equation is right (its uncertainty is the publication's), the flowsheet route, states nearer the critical point than the check values.",
+      "seconds": 12.0
     }
   }
 }

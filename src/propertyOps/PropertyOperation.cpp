@@ -79,6 +79,7 @@ License
 #include "ScalingScan.H"
 #include "Speciate.H"
 #include "SteamTables.H"
+#include "ReferenceEoSOp.H"
 #include "ThielePellet.H"
 #include "VaporPressureFit.H"
 #include "VleConsistency.H"
@@ -229,6 +230,7 @@ void PropertyOperation::registerBuiltins()
     reg("speciate",       []{ return std::make_unique<Speciate>();       });
     reg("exchange",       []{ return std::make_unique<Exchange>();       });
     reg("steamTables",    []{ return std::make_unique<SteamTables>();    });
+    reg("referenceEoS",   []{ return std::make_unique<ReferenceEoSOp>(); });
     reg("scalingScan",    []{ return std::make_unique<ScalingScan>();    });
     reg("fitParameters",  []{ return std::make_unique<FitParameters>();  });
     // A1b adsorption: evaluate a curated isotherm record on a (T,p) grid and

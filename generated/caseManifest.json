@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1563,
+  "cases": 1564,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -20177,6 +20177,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/thermo/refEoS01_iapws95_verification": {
+   "application": "choupoProps",
+   "ops": [
+    "referenceEoS"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP": {
    "application": "choupoProps",
    "thermo": {
@@ -26010,6 +26024,7 @@
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
+    "tutorials/props/thermo/refEoS01_iapws95_verification",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
@@ -28954,6 +28969,7 @@
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
+    "tutorials/props/thermo/refEoS01_iapws95_verification",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
@@ -30716,6 +30732,9 @@
    "reactionGibbs": [
     "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes",
     "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff"
+   ],
+   "referenceEoS": [
+    "tutorials/props/thermo/refEoS01_iapws95_verification"
    ],
    "scalingScan": [
     "tutorials/props/electrolyte/pitzer_vs_davies_ro_concentrate",

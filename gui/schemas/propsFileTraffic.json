@@ -572,6 +572,16 @@
     }
    ]
   },
+  "referenceEoS": {
+   "reads": [],
+   "writes": [
+    {
+     "key": "output.file",
+     "kind": "file",
+     "default": ""
+    }
+   ]
+  },
   "scalingScan": {
    "reads": [],
    "writes": [
