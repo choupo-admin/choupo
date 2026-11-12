@@ -32,8 +32,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c375-fixed-bed-scheme (general running) | `src/unitOperations/batch/FixedBedAdsorber.*`, the shared ODE block structure, `tutorials/batch/adsorber/`, the breakthrough, lub-scaleup and chromatography pages | 2026-11-12 |
-| c376-formation-data (general running) | `data/curation/batches/species_c373/`, `data/standards/{species,chemistry}`, the aqueous-family guide sections | 2026-11-12 |
+| c377-naoh-olsson (general running) | `src/thermo/electrolyte/`, `src/unitOperations/heatTransfer/Evaporator.cpp`, a NaOH-water record, evaporation and props cases | 2026-11-12 |
+| c378-thermophysical-study (general running; a study, no code) | `docs/design/thermophysical-property-routes.md` | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session

@@ -3574,6 +3574,21 @@ accepts today, and that is a policy call.
 > of Goldberg et al. -- so a balance in which the buffer's total amount is
 > conserved depends only on measured quantities, and the estimate cancels.
 > Branch c376-formation-data: routes 1 and 2 first.
+> LANDED 2026-11-12 (3bd797fe6): species with hfAq 84 -> 123 (of 250),
+> with sAq 76 -> 117, from the NBS tables, Amend & Helgeson (1997), Shock
+> (1995) and Alberty (2003); every family on one scale, disagreements
+> tabulated in docs/design/species-from-evaluated-compilations.md
+> (phosphate and pyrophosphate stay on NBS against Alberty's 6-22 kJ/mol;
+> citrate stays on its calorimetric source; amino acids on Miller).
+> DECIDED on the laboratory buffers: NO estimated formation data -- the
+> group method has no sulfonic acid group or piperazine, and Tris lacks a
+> measured heat of solution; they stay pH-only.  A CONDITION, OPEN: some
+> entropies and enthalpies from Shock are correlation ESTIMATES and are
+> marked `origin estimated` per value, but the engine does not read or
+> announce a species datum's origin on use (only components are audited);
+> nothing consumes them today.  Before any energy or entropy balance prices
+> a species through these data, the engine reads `aqueousThermo.provenance`
+> and announces an estimated value at the point of use.
 
 > **C375 (2026-11-12; three engine findings met by the chromatography page,
 > confirmed by run and by reading; the architect's decisions).**  (a) THE
