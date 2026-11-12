@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Component: Lactic acid (2-hydroxypropanoic acid), crystal (the enantiopure acid) (C3H6O3).  MW 90.078 g/mol (the engine's atomic weights).
+
+  A NON-VOLATILE crystalline organic solid: never enters the vapour (K = 0),
+  no Antoine block.  Built on the citric-acid pattern (components/citricAcid.dat); the C372 campaign had left
+  this acid without a component, and C373 builds it from the formation data of Miller & Smith-Magowan (1990),
+  with Domalski (1972) as the second reading.
+
+  WHAT THIS RECORD CARRIES, AND WHAT IT DELIBERATELY DOES NOT.
+
+    carries   the crystal formation enthalpy dHf = -694.0 +/- 1.0 kJ/mol
+              (Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 5, p. 1056, row L-Lactic, dfH (their ref. b: Cox & Pilcher 1970; read from a page image));
+              NO density: the one value in hand (Perry's, Table 2-2) is for the liquid d,l acid, a different phase;
+              the heat of solution of the pair file parameters/solution/lacticAcid-water.dat.
+    does NOT  a standard entropy s_298 and any heat capacity: no work in hand prints them for this crystal
+              as a record value (Miller prints S of the crystal only for succinic and fumaric acid, and it
+              enters the ions' entropies through the third-law route of its Table 2, not this record).  An
+              energy balance that reaches the crystal's or the solution's SENSIBLE heat therefore refuses by
+              name, which is the honest behaviour (CLAUDE.md rule 5).
+
+    ALSO BUILT, in their own homes: the lactate family (HLac, Lac; chemistry/*-formation); pK 3.862 (Nims & Smith 1936, Table II, p. 148).
+              Dissolved, this crystal is the molecular master of the family (the hypothetical non-dissociated
+              acid); a case that needs the dissociation declares that master.
+              Second reading: Domalski, J. Phys. Chem. Ref. Data 1 (1972) 221, Section 6.11, p. 235: D-lactic acid (c) dHf -165.88 kcal/mol x 4.184 = -694.04 kJ/mol (Section 5.5, p. 225), the same crystal value; read from a page image.
+\*---------------------------------------------------------------------------*/
+
+name        lacticAcid;
+formula     C3H6O3;
+MW          90.078;            // kg/kmol
+
+role        nonvolatile;               // crystalline organic acid; never to the vapour (K = 0)
+dissociation 1;                 // molecular (the ions are species/, see the header)
+
+standardThermochemistry
+{
+    dHf_298   -694000;        // J/mol  crystalline [-694.0 +/- 1.0 kJ/mol, Miller & Smith-Magowan 1990]
+    referenceState     pureSolid;
+}
+
+provenance
+{
+    dHf_298
+    {
+        origin        literature;
+        method        "evaluated enthalpy of formation of the crystal (-694.0 +/- 1.0 kJ/mol); second reading: Domalski, J. Phys. Chem. Ref. Data 1 (1972) 221, Section 6.11, p. 235: D-lactic acid (c) dHf -165.88 kcal/mol x 4.184 = -694.04 kJ/mol (Section 5.5, p. 225), the same crystal value; read from a page image";
+        citation      "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 5, p. 1056, row L-Lactic, dfH (their ref. b: Cox & Pilcher 1970; read from a page image)";
+    }
+}

@@ -223,7 +223,7 @@
     },
     "check_decision_index": {
       "exit": 0,
-      "claim": "check_decision_index: OK -- all 224 design record(s) appear in the index, and its stated counts (161 state a rejected alternative, 63 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
+      "claim": "check_decision_index: OK -- all 236 design record(s) appear in the index, and its stated counts (165 state a rejected alternative, 71 do not) are recounted from the table rather than trusted.  Whether an `alt` mark is TRUE is a reading judgement and is deliberately not claimed.",
       "seconds": 0.0
     },
     "check_default_reports": {
@@ -608,8 +608,8 @@
     },
     "check_logk_crosscheck": {
       "exit": 0,
-      "claim": "check_logk_crosscheck: OK -- 78 record(s) accounted for, 0 unparsed; 5 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0187); 73 not derivable, each with its reason named (43 derived complex, no independent datum exists (the logK defines it); 10 water participates AND species datum missing; 9 recordType gasLiquidEquilibrium).  Of the species involved, 43 are DERIVED COMPLEXES with no independent datum anywhere -- the logK defines them, so those records are structurally uncheckable, not a backlog -- against 5 genuine curation gap(s) where a species file exists and carries no hfAq/sAq: H2PO4, H2Tart, HPO4, HTart, Tart.  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it.",
-      "seconds": 0.1
+      "claim": "check_logk_crosscheck: OK -- 102 record(s) accounted for, 0 unparsed; 5 derivable from the tree's own species data and all within 0.3 log units (max |dlogK| 0.0187); 97 not derivable, each with its reason named (44 derived complex, no independent datum exists (the logK defines it); 28 curation gap; 10 water participates AND species datum missing).  Of the species involved, 44 are DERIVED COMPLEXES with no independent datum anywhere -- the logK defines them, so those records are structurally uncheckable, not a backlog -- against 22 genuine curation gap(s) where a species file exists and carries no hfAq/sAq: Cit, Glyc, H2Cit, H2Fumar, H2Male, H2Malic, H2Ox, H2PO4, H2Succ, H2Tart, H3Cit, HCit, HGlyc, HLac, HMale, HMalic, HPO4, HTart, Lac, Male, Malic, Tart.  THIS GATE DOES NOT SAY THE CATALOGUE IS RIGHT: it examines only the checkable part and enumerates the rest, and the rest is most of it.",
+      "seconds": 0.0
     },
     "check_lumped_cp_note": {
       "exit": 0,
@@ -678,8 +678,8 @@
     },
     "check_origin_census": {
       "exit": 0,
-      "claim": "check_origin_census: OK -- recounted at BOTH depths over 2990 file(s) carrying a `provenance {}`: 2344 origin declaration(s) as direct children and 3660 nested one level deeper in per-value blocks (6004 total; the largest are literature 2048, estimated 390, predictive 340, definition 339), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
-      "seconds": 1.3
+      "claim": "check_origin_census: OK -- recounted at BOTH depths over 2995 file(s) carrying a `provenance {}`: 2344 origin declaration(s) as direct children and 3669 nested one level deeper in per-value blocks (6013 total; the largest are literature 2056, estimated 390, predictive 340, definition 339), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
+      "seconds": 1.2
     },
     "check_origin_vocabulary": {
       "exit": 0,
@@ -933,12 +933,12 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- 2950 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 3 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 7 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 9755 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5538 case-local records under tutorials/**/constant/: 2 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 44 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 16206 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
-      "seconds": 7.5
+      "claim": "check_source_licence: OK -- 3683 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 3 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 7 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 10646 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 5638 case-local records under tutorials/**/constant/: 2 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 44 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 17359 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
+      "seconds": 9.0
     },
     "check_species_citation": {
       "exit": 0,
-      "claim": "check_species_citation: OK -- 37 species record(s) declare thermochemistry; every one carries a source, except 18 pinned records awaiting curation.  The gate checks that a citation EXISTS, never that it is right -- that judgement needs a curator reading the primary, and a gate claiming it would be the failure I3 forbids.",
+      "claim": "check_species_citation: OK -- 70 species record(s) declare thermochemistry; every one carries a source, except 18 pinned records awaiting curation.  The gate checks that a citation EXISTS, never that it is right -- that judgement needs a curator reading the primary, and a gate claiming it would be the failure I3 forbids.",
       "seconds": 0.0
     },
     "check_species_identity": {
@@ -1579,7 +1579,7 @@
     "check_brain_fresh": {
       "exit": 0,
       "claim": "check_brain_fresh: OK -- FACTS block equals a fresh render from the tracked tree; BRAIN.md 147/250 lines; STATE BY AREA has a `judged` column.  Does NOT judge whether a dated judgement is still true.",
-      "seconds": 0.9
+      "seconds": 0.2
     },
     "check_petroleum_cuts": {
       "exit": 0,
@@ -1685,6 +1685,11 @@
       "exit": 0,
       "claim": "check_time_integrated: OK -- TI-01 fixture: 34-field header held on every row; TI-02: the closed leaking loop is refused; unsteady03, unsteady04, unsteady05 still run; TI-03: a `recipe` is refused by name under choupoSemiContinuous and choupoCtrl",
       "seconds": 7.0
+    },
+    "check_species_c373": {
+      "exit": 0,
+      "claim": "check_species_c373: OK -- 12 governed files reproduce byte-identically from the tables (6 families, 17 species, 11 ionisation steps, 11 formation readings); 10 ladder steps held to the family's one-scale tolerance; NOT CHECKED: that a number equals the page it was read from (the tables name table and page and flag every value read from an image), and any dCp (the record grammar has no place for it)",
+      "seconds": 0.0
     }
   }
 }

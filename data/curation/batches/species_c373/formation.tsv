@@ -1,0 +1,12 @@
+species	quantity	value	unit	src	derivation	where	image	note
+HSucc	hfAq	-908.93	kJ/mol	MILL90	dHf(aq acid) -912.11 + dH_ion1 +3.18	Table 2 p. 1059 (dHf(aq acid)) and Table 6 p. 1057 (dH_ion1)	yes	the aqueous acid is the printed dHf(cr) -940.81 +/- 0.42 plus dH(soln) 28.70; the record keeps no hfAq on the neutral master (its datum is components/succinicAcid.dat + parameters/solution/succinicAcid-water.dat)
+HSucc	sAq	190.72	J/mol/K	MILL90	S(aq acid) 260.62 + dS_ion1 -69.9	Table 2 p. 1059 and Table 6 p. 1057	yes	
+Succ	hfAq	-909.37	kJ/mol	MILL90	printed dHf(aq ion 2-) in the succinic column; equals -912.11 + 3.18 - 0.45	Table 2, p. 1059	yes	the two Table 6 enthalpies sum to 2.73, the printed dH_ion (both steps)
+Succ	sAq	81.5	J/mol/K	MILL90	printed S(aq ion 2-); equals 260.62 - 69.9 - 109.2 = 81.52	Table 2, p. 1059	yes	
+HFumar	hfAq	-774.72	kJ/mol	MILL90	dHf(aq acid) -775.18 + dH_ion1 +0.46	Table 2 p. 1059 and Table 6 p. 1057	yes	the aqueous acid is the printed dHf(cr) -810.98 +/- 0.63 plus dH(soln) 35.8
+HFumar	sAq	202.75	J/mol/K	MILL90	S(aq acid) 260.45 + dS_ion1 -57.7	Table 2 p. 1059 and Table 6 p. 1057	yes	
+Fumar	hfAq	-777.57	kJ/mol	MILL90	printed dHf(aq ion 2-); equals -775.18 + 0.46 - 2.85	Table 2, p. 1059	yes	
+Fumar	sAq	105.25	J/mol/K	MILL90	S(aq acid) 260.45 + dS_ion1 -57.7 + dS_ion2 -97.5	Table 2 p. 1059 and Table 6 p. 1057	yes	Table 2 prints dS_ion -152.2 and S(aq ion 2-) 108.3, 3.0 J/mol/K away from Table 6 (-57.7 - 97.5 = -155.2); its own dG_ion +43.93 and dH_ion -2.39 give (dH - dG)/T = -155.4, which agrees with Table 6 and not with the printed -152.2, so the Table 6 route is chosen
+HMalic	hfAq	-1080.86	kJ/mol	MILL90	dHf(aq acid, DL) -1083.81 + dH_ion1 +2.95	Table 5 p. 1056 and Table 6 p. 1057	yes	the aqueous acid is the printed dHf(cr, DL) -1105.66 +/- 0.63 plus dH(soln) 21.85; racemic acid, as the Eden & Bates ionisation constants
+Malic	hfAq	-1082.04	kJ/mol	MILL90	dHf(aq acid, DL) -1083.81 + 2.95 - 1.18	Table 5 p. 1056 and Table 6 p. 1057	yes	no entropy: Miller prints no S of malic acid or malate
+Lac	hfAq	-686.63	kJ/mol	MILL90	dHf(aq acid, L) -686.2 + dH_ion -0.43	Table 5 p. 1056 and Table 6 p. 1057	yes	the aqueous acid is the printed dHf -694.0 +/- 1.0 plus dH(soln) +7.82; no entropy printed

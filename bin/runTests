@@ -6904,6 +6904,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/speciesrec.$$
+    # species-c373 gate (2026-11-12, DEV.md 4c C373).  The species and ionisation records made from the evaluated compilations (Goldberg 2002, Miller 1990, Eden & Bates 1959, Nims & Smith 1936) reproduce byte for byte from species_c373/*.tsv; hand-written chemistry holds to the same steps; the formation enthalpies of each family are on one scale.
+    if gate_exec "$ROOT/bin/curate/check_species_c373.py" > /tmp/speciesc373.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "species-c373-gate" "$(head -1 /tmp/speciesc373.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_species_c373.py)\n" "species-c373-gate"
+        cat /tmp/speciesc373.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/speciesc373.$$
     # feature-documented gate (2026-11-12, DEV.md 4c C338, CLAUDE.md rule 4d).  Every name a factory registers is in a labelled Theory/Props Guide section AND the docs/ai catalogue; today's debt is pinned in bin/curate/feature_documented_debt.tsv and may only shrink.
     if gate_exec "$ROOT/bin/curate/check_feature_documented.py" > /tmp/featdoc.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "feature-documented-gate" "$(head -1 /tmp/featdoc.$$)"

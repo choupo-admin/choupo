@@ -1,10 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/HFumar.dat -- ONE model species, ONE typed file: the singly charged anion of fumaric acid.
-
-  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of fumaric acid is evaluated in
-  Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 6 (Ionization data for some Krebs compounds), p. 1057, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
-  in hand prints a formation enthalpy or entropy of this aqueous ion, so a balance that needs its
-  enthalpy REFUSES BY NAME instead of borrowing a value.
+  species/HFumar.dat -- ONE model species, ONE typed file: an intermediate ionisation state of fumaric acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -13,3 +13,9 @@ name    HFumar;
 formula     "HC4H2O4-";
 charge  -1;
 MW { value 115.064; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -774.72: dHf(aq acid) -775.18 + dH_ion1 +0.46 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2 p. 1059 and Table 6 p. 1057 (read from a page image), the aqueous acid is the printed dHf(cr) -810.98 +/- 0.63 plus dH(soln) 35.8 ## sAq [J/mol/K] 202.75: S(aq acid) 260.45 + dS_ion1 -57.7 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2 p. 1059 and Table 6 p. 1057 (read from a page image)";
+hfAq { value -774720; unit J/mol;}
+sAq  { value 202.75; unit J/mol/K;}
+}

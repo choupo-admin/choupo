@@ -300,12 +300,19 @@ DERIVED from the NBS rows: theoryGuide `sec:carboxylic-ionisation`), tartaric
 Goldberg 2002 Table 7.22; ion hfAq Kochergina 2006), **malic** (`H2Malic`/`HMalic`/`Malic`,
 Eden & Bates 1959, racemic acid; note `Malic*`, not `Mal*`), **lactic** (`HLac`/`Lac`, Nims &
 Smith 1936), **succinic** (`H2Succ`/`HSucc`/`Succ`), **oxalic** (`H2Ox`/`HOx`/`Ox`),
-**maleic** (`H2Male`/`HMale`/`Male`), **fumaric** (`H2Fumar`/`HFumar`/`Fumar`, Miller & Smith-Magowan 1990 Table 6).  The succinate, maleate, malate, lactate and fumarate species carry
-NO `hfAq` (no work in hand prints one): their speciation is complete, a balance that needs
-their enthalpy refuses by name.  The crystal `citricAcid` carries a formation enthalpy and
-a heat of solution but no Cp or entropy.  Malonic, glycolic, gluconic, ascorbic,
+**maleic** (`H2Male`/`HMale`/`Male`), **fumaric** (`H2Fumar`/`HFumar`/`Fumar`, Miller & Smith-Magowan 1990 Table 6),
+**glycolic** (`HGlyc`/`Glyc`, Miller Table 6; speciation only).  C373 (2026-11-12) put formation data on the ions
+of succinic, fumaric, malic and lactic acids from Miller & Smith-Magowan 1990 (`hfAq`, and `sAq` for succinate and
+fumarate; derived from the acid's aqueous enthalpy plus the printed step enthalpies, theoryGuide
+`sec:evaluated-ionisation-families`) and built the crystal components `succinicAcid`, `fumaricAcid`, `malicAcid` (d,l)
+and `lacticAcid` with their heat-of-solution pairs.  The citrate family keeps Kochergina's ions; maleate, oxalate,
+glycolate and tartrate are unchanged (maleate has none, oxalate NBS, glycolate none because the source does not close).
+The neutral masters carry no `hfAq` (their datum is component + solution pair); a balance that needs an ion
+without one refuses by name.  No component carries a Cp or an entropy.  Malonic, gluconic, ascorbic,
 gallic, propionic, butyric and benzoic acids have no ionisation record.  Inventory, readings,
-consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md`.
+consistency checks and the works still missing: `docs/design/organic-acids-in-the-catalogue.md` and
+`docs/design/species-from-evaluated-compilations.md`; the records are written by `bin/curate/species_c373.py` from
+`data/curation/batches/species_c373/*.tsv` and held by `check_species_c373`.
 Cases: `volatileAcids01_acetic_formic`, `citricAcid01_speciation`, `wineAcids01_tartaric_malic`.
 **The REACTIVE shape** (a speciation network + volatiles, as in the
 brine-CO₂ and sour-water flashes) declares its IONIC rung inside

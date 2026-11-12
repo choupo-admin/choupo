@@ -1,11 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/Lac.dat -- ONE model species, ONE typed file: the lactate anion.
-
-  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH) of lactic acid is measured in
-  Nims & Smith, J. Biol. Chem. 113 (1936) 145, Table II, p. 148, and is in chemistry/ -- so the
-  SPECIATION (pH, distribution) is complete.  No work in hand prints a formation enthalpy or
-  entropy of this aqueous ion, so a balance that needs its enthalpy REFUSES BY NAME instead of
-  borrowing a value.
+  species/Lac.dat -- ONE model species, ONE typed file: the fully dissociated form of lactic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -13,4 +12,9 @@ schemaVersion 1;
 name    Lac;
 formula     "C3H5O3-";
 charge  -1;
-MW { value 89.070; unit g/mol;}
+MW { value 89.07; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -686.63: dHf(aq acid, L) -686.2 + dH_ion -0.43 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 5 p. 1056 and Table 6 p. 1057 (read from a page image), the aqueous acid is the printed dHf -694.0 +/- 1.0 plus dH(soln) +7.82, no entropy printed";
+hfAq { value -686630; unit J/mol;}
+}

@@ -1,10 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/HSucc.dat -- ONE model species, ONE typed file: the singly charged anion of succinic acid.
-
-  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of succinic acid is evaluated in
-  Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.57 (Succinate), p. 340, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
-  in hand prints a formation enthalpy or entropy of this aqueous ion, so a balance that needs its
-  enthalpy REFUSES BY NAME instead of borrowing a value.
+  species/HSucc.dat -- ONE model species, ONE typed file: an intermediate ionisation state of succinic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -13,3 +13,9 @@ name    HSucc;
 formula     "HC4H4O4-";
 charge  -1;
 MW { value 117.08; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -908.93: dHf(aq acid) -912.11 + dH_ion1 +3.18 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2 p. 1059 (dHf(aq acid)) and Table 6 p. 1057 (dH_ion1) (read from a page image), the aqueous acid is the printed dHf(cr) -940.81 +/- 0.42 plus dH(soln) 28.70, the record keeps no hfAq on the neutral master (its datum is components/succinicAcid.dat + parameters/solution/succinicAcid-water.dat) ## sAq [J/mol/K] 190.72: S(aq acid) 260.62 + dS_ion1 -69.9 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2 p. 1059 and Table 6 p. 1057 (read from a page image)";
+hfAq { value -908930; unit J/mol;}
+sAq  { value 190.72; unit J/mol/K;}
+}
