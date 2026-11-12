@@ -53,7 +53,7 @@ import { Tokenizer, type Token } from "../dict/tokenizer.js";
 import type { JsonDict } from "../dict/index.js";
 import { rawOperationSchema } from "./operationSchemas.js";
 import { locatePropsBlocks } from "./propsDictLocate.js";
-import { propsModelTheoryLink, propsOpHelpLink, theoryLink } from "./modelDocs.js";
+import { propsModelTheoryLink, propsOpHelpLink, theoryLink, unitSlotTheoryLink } from "./modelDocs.js";
 import controlDictSchema from "../../schemas/controlDict.schema.json";
 
 const RECORD_GLOB = import.meta.glob("../../schemas/records/*.schema.json", { eager: true }) as
@@ -97,6 +97,23 @@ export function keyAtLine(text: string, line: number): KeyAt {
     atStart = false;
   }
   return { key: null, chain: chainAtLine ?? stack.map((f) => f.name).filter((n) => n !== "") };
+}
+
+/** The single-word VALUE of `key` on `line` (1-based, the tokenizer's
+ *  convention, as keyAtLine): `key word ;` on one line -> `word`, else null. */
+export function valueAtLine(text: string, line: number, key: string): string | null {
+  const toks: Token[] = [];
+  try {
+    const tk = new Tokenizer(text, "case file");
+    for (;;) {
+      const t = tk.next();
+      if (t.kind === "end" || t.line > line) break;
+      if (t.line === line) toks.push(t);
+    }
+  } catch { return null; }
+  if (toks.length < 3) return null;
+  const [k, v, semi] = toks;
+  return k!.kind === "word" && k!.text === key && v!.kind === "word" && semi!.kind === "semi" ? v!.text : null;
 }
 
 export interface KeyHelp {
@@ -191,9 +208,17 @@ export function keyHelp(file: string, text: string, line: number,
     let type = "";
     for (const m of types) if (text.slice(0, m.index).split("\n").length <= line) type = m[1]!;
     const schema = type ? rawOperationSchema(type) : null;
+    //  A word chosen INSIDE the unit (`model totalReflux`, `efficiency {
+    //  model ChanFair; }`, `pressureDropModel BollesFair`, ...) opens the
+    //  section that derives it (DEV.md 4c C329); any other line opens the
+    //  unit's chapter, exactly as before.
+    const word = at.key ? valueAtLine(text, line, at.key) : null;
+    const guide = word
+      ? { url: unitSlotTheoryLink(type, segs.slice(1).join("."), word), label: `the theory of ${word}` }
+      : { url: theoryLink(type), label: `the theory of ${type}` };
     if (schema)
       return fromSchema({ ...base, source: `the ${type} unit's schema (gui/schemas/operations/${type}.schema.json)`,
-        guide: { url: theoryLink(type), label: `the theory of ${type}` } }, schema, segs.slice(1), `unit ${type}`);
+        guide }, schema, segs.slice(1), `unit ${type}`);
   }
   if (/(^|\/)system\/controlDict$/.test(file))
     return fromSchema({ ...base, source: "the controlDict schema (gui/schemas/controlDict.schema.json)" },

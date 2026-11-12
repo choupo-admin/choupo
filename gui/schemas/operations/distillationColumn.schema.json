@@ -4,9 +4,6 @@
   "title": "distillationColumn operation",
   "description": "Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The column is specified by (`refluxRatio`, and then the distillate by rate or recovery) or by (`bottomsRate`, `boilupRatio`). The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.",
   "type": "object",
-  "required": [
-    "nStages"
-  ],
   "properties": {
     "nStages": {
       "type": "integer",
@@ -104,7 +101,10 @@
     },
     "newton": {
       "type": "string",
-      "enum": ["bounded", "legacy"],
+      "enum": [
+        "bounded",
+        "legacy"
+      ],
       "title": "MESH Newton contract",
       "description": "Which Newton the simultaneous MESH runs: `bounded` (default; Armijo line search, bounds on x and T, infeasible trials refused -- DEV.md 4c C245) or `legacy` (monotone search, no bounds, clamped residual), declared only where the bounded one is known to stall (stripper02, a heel case). The same choice as `distillationColumn { lineSearch armijo|none; }` in system/solverDict (armijo = bounded, none = legacy): declare it once, both at once is refused. Announced when declared.",
       "default": "bounded"
@@ -291,6 +291,191 @@
           "title": "Weep-point constant K2",
           "description": "From the weep chart at the operating h_w + h_ow.",
           "unit": "-"
+        },
+        "pressureDropModel": {
+          "type": "string",
+          "enum": [
+            "Sinnott",
+            "BollesFair"
+          ],
+          "title": "Tray pressure-drop route",
+          "description": "Sinnott (default): h_d + h_w + h_ow + h_r. BollesFair: h_d + beta (h_w + h_ow), Perry 9ed Eqs 14-100..14-109, the aeration factor from the hole F-factor and the weir load."
+        }
+      }
+    },
+    "totalReflux": {
+      "type": "object",
+      "title": "Total reflux",
+      "description": "Read only under `model totalReflux;`: no feed, no products. The c open degrees of freedom are closed by the boil-up (exactly one of `boilupRate` or `fFactor`) and the liquid composition at one point (`specifiedAt reboiler; composition {...}`).",
+      "additionalProperties": false,
+      "properties": {
+        "boilupRate": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "title": "Boil-up (vapour leaving the reboiler)",
+          "unit": "kmol/s"
+        },
+        "fFactor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "title": "F-factor of the reboiler vapour on the tower area",
+          "unit": "(m/s)(kg/m3)^0.5"
+        },
+        "specifiedAt": {
+          "type": "string",
+          "enum": [
+            "reboiler"
+          ],
+          "title": "Where the composition is fixed"
+        },
+        "composition": {
+          "type": "object",
+          "title": "Liquid mole fractions at that point",
+          "additionalProperties": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "efficiency": {
+      "type": "object",
+      "title": "Computed tray efficiency",
+      "description": "Computes each tray's Murphree efficiency from the `hydraulics` geometry, the tray traffic and the transport properties (AIChE correlations, Treybal 3ed 6.38/6.51-6.64; entrainment by Colburn with Fair's median psi, Perry 9ed 14-98/14-99). Binary only. Exclusive with `murphreeEfficiency`. Implemented under `model totalReflux;`.",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "AIChE",
+            "ChanFair",
+            "SyedaChuang"
+          ]
+        },
+        "lightKey": {
+          "type": "string"
+        },
+        "liquidViscosity": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "Pa s",
+          "exclusiveMinimum": 0
+        },
+        "entrainment": {
+          "type": "string",
+          "enum": [
+            "FairMedian",
+            "none"
+          ]
+        },
+        "holePitch": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Hole pitch (SyedaChuang only)."
+        }
+      }
+    },
+    "packing": {
+      "type": "object",
+      "title": "Structured-packing bed (total reflux)",
+      "description": "Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, Eqs 20-29) and HETP (IECR 35 (1996) 1660, Eqs 5-17). Binary only; exclusive with nStages, hydraulics and the tray efficiency. `model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads corrugationBase, corrugationHeight and elementHeight instead of corrugationSide.",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "RochaBravoFair",
+            "Delft"
+          ]
+        },
+        "diameter": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m"
+        },
+        "height": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m"
+        },
+        "specificArea": {
+          "type": "number",
+          "unit": "m2/m3"
+        },
+        "voidFraction": {
+          "type": "number"
+        },
+        "corrugationAngle": {
+          "type": "number",
+          "unit": "deg"
+        },
+        "corrugationSide": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m"
+        },
+        "surface": {
+          "type": "string",
+          "enum": [
+            "gauze",
+            "sheetMetal"
+          ]
+        },
+        "surfaceEnhancement": {
+          "type": "number"
+        },
+        "lightKey": {
+          "type": "string"
+        },
+        "liquidViscosity": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "Pa s"
+        },
+        "segments": {
+          "type": "number"
+        },
+        "corrugationBase": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Delft only: corrugation base b."
+        },
+        "corrugationHeight": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Delft only: corrugation (crimp) height h."
+        },
+        "elementHeight": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Delft only: height of one packing element h_pe."
+        },
+        "holeFraction": {
+          "type": "number",
+          "description": "Delft only: fraction of the surface occupied by holes (0 unperforated)."
         }
       }
     }

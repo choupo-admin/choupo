@@ -1,0 +1,115 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  trayEfficiency07_syedaChuang_yanagi08  --  the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS
+  GEOMETRY, held against a commercial-scale measurement it was not fitted to
+  (DEV.md 4c C329).  Cyclohexane / n-heptane at 34 kPa, total reflux.
+
+  THE TRAY: FRI's 8 % hole-area sieve tray, the one the paper compares against
+  (Sakata & Yanagi 1979): IDENTICAL to the 14 % tray (same column, 12.7 mm
+  holes, weir, downcomers) except the panels -- holes on 38.1 mm pitch, about
+  8 % of the bubbling area.  ONLY holeAreaFraction and the orifice
+  coefficient that follows from it differ from the 14 % case.
+  Source: Yanagi & Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712.
+  The pair of this case is trayEfficiency01_yanagi14 (14 %): the two differ in the open area
+  and in nothing else.
+
+  THE MODEL.  The stages stay equilibrium stages; each tray's Murphree
+  efficiency is computed by Syeda, Afacan & Chuang, Chem. Eng. Res. Des. 85
+  (2007) 269, Eqs 1-35: a bubbling zone (large bubbles from the hole velocity,
+  small bubbles at equilibrium, their fraction from turbulent break-up) and a
+  jetting zone (Zuiderweg's spray model, which reads the open area and the
+  hole pitch), weighted by the jetting fraction; converted to Murphree by
+  Garcia & Fair's eddy diffusion (IECR 39 (2000) 1809, Eq 12); then the
+  entrainment loss (Colburn with Fair's median psi).  Eq 28 is read with t_GLB
+  and Eq 33 with h_w^0.5 (the thesis prints both as the paper does; why) -- see
+  src/unitOperations/distillation/TrayEfficiency.H.  The tray pressure drop
+  is Bolles & Fair's (Perry 9ed 14-100..14-109).
+
+  MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid
+    viscosity 0.37 mPa s (Table II, 34 kPa -- the package carries no
+    liquid viscosity for these components, so the paper's own average enters
+    Wilke-Chang); the column pressure.
+  ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives
+    0.284 and 0.294 for the two runs it lists; the other points' compositions
+    are not published); every point of the sweep uses it.
+  ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal
+    liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity
+    (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the
+    case's own component records), liquid diffusivity (Wilke-Chang at
+    infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid
+    density (Rackett on the record's Vliq), surface tension (Brock-Bird).
+  FITTED PARAMETERS: NONE.
+  HELD-OUT POINTS: all -- the eight 8 % points at ~30 kPa of Figure 12 and the six of Figure 13
+    (DIGITISED; the 8 % tray's own tables are in Sakata & Yanagi 1979,
+    IChemE Symp. Ser. 56, which is not in hand).
+    The comparison table is in docs/design/c329-ratebased-first-delivery.md.
+  WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route.  The
+    default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured
+    0.393; Bolles & Fair was then implemented from Perry and gives 0.41.  No
+    number inside either correlation was touched.
+  IN-SAMPLE: YES, BY CONSTRUCTION.  The paper's one constant, C'' = 0.16, was
+    fitted (p. 273) to seven FRI data sets: Sakata & Yanagi 1979 and Yanagi &
+    Sakata 1982 -- these trays.  Nothing was fitted HERE.
+
+  WHAT THE MODEL SEES OF THE OPEN AREA: the hole velocity (the large-bubble
+  diameter), the open-area ratio and the hole pitch (the spray interfacial
+  area), besides the flood approach.  Weeping is not modelled.  The sweep
+  stops below the model's own entrainment flood (Fair's psi = 1).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       totalReflux;
+
+        operation
+        {
+            nStages        11;          // 10 trays + the reboiler
+            P              34 kPa;
+            condenser      { type total; }
+
+            totalReflux
+            {
+                fFactor        1.47;    // swept; (m/s)(kg/m3)^0.5, reboiler vapour on the tower area
+                specifiedAt    reboiler;
+                composition
+                {
+                    cyclohexane    0.29;
+                    nHeptane       0.71;
+                }
+            }
+
+            efficiency
+            {
+                model            SyedaChuang;
+                holePitch        0.0381;   // m, triangular pitch (Yanagi & Sakata 1982, p. 712)
+                lightKey         cyclohexane;
+                liquidViscosity  3.7e-4;   // Pa s, Yanagi & Sakata Table II, 34 kPa
+                entrainment      FairMedian;
+            }
+
+            hydraulics
+            {
+                trayType               sieve;
+                pressureDropModel      BollesFair;   // Perry 9ed 14-100..14-109
+                diameter               1.2;      // m  (Table I)
+                traySpacing            0.610;    // m  (Table I)
+                weirHeight             0.0508;   // m  (Table I, efficiency runs)
+                holeDiameter           0.0127;   // m  (Table I)
+                holeAreaFraction       0.0808;   // 8 % of the 0.859 m2 bubbling area = 0.0687 m2, over 0.851 m2 active
+                downcomerAreaFraction  0.1238;   // 0.14 m2 / 1.131 m2 (Table I)
+                weirLengthFraction     0.7833;   // 0.940 m / 1.2 m (Table I)
+                orificeCoefficient     0.651;    // Perry 9ed Eq 14-102a: 0.74 A_h/A_a + exp(0.29 (1.5/12.7) - 0.56)
+            }
+        }
+    }
+);

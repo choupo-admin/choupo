@@ -1198,6 +1198,74 @@ outer pass (exact at convergence).  Default `1` = the ideal stage, byte-exact.  
 `E` is DECLARED (O'Connell, a chart, or plant data); the engine never invents it.
 Example: `column11_murphree` (E = 0.70 → distillate 98.12 % → 95.05 %).
 
+**Total reflux** (`model totalReflux;`, C329): no feed, no products, no `in`/`outputs`
+wires.  The c degrees of freedom a closed column leaves open (how much of each
+component circulates) are closed by `operation { totalReflux { boilupRate <kmol/h> |
+fFactor <(m/s)(kg/m3)^0.5>; specifiedAt reboiler; composition { a 0.3; b 0.7; } } }`
+-- the boil-up and the reboiler liquid.  On every cut y = x and V = L exactly, and
+every stage energy balance is solved (the vapour flow follows the latent heat); the
+condenser is total, `fFactor` needs `hydraulics { diameter; }`.  KPI
+`overallTrayEfficiency` is a test report's definition: the Fenske slope of
+ln(x/(1-x)) per tray over ln(alpha).  Pressure drop is not fed back (every stage at
+`P`).  Example: `totalReflux01_c6c7_yanagiRun628`.
+```
+{ name column; type distillationColumn; model totalReflux;
+  operation {
+    nStages 11;  P 34 kPa;  condenser { type total; }
+    totalReflux { fFactor 1.47; specifiedAt reboiler;
+                  composition { cyclohexane 0.284; nHeptane 0.716; } }
+    hydraulics  { diameter 1.2; ... }      // fFactor needs the diameter
+  } }
+```
+
+**Computed tray efficiency** (`operation { efficiency { model AIChE; lightKey a;
+liquidViscosity <Pa s>; entrainment FairMedian|none; } }`, exclusive with
+`murphreeEfficiency`; implemented under `model totalReflux;`, binary only): each tray's
+E_MV from the `hydraulics` geometry, its own traffic and the package's transport
+(Chung + Fuller in the vapour, Wilke-Chang in the liquid) -- AIChE transfer units
+(Treybal 3ed 6.38, 6.61-6.64), point efficiency (6.51-6.52), eddy diffusion along the
+flow path (6.57-6.59), then Colburn's entrainment loss with Fair's median psi at the
+tray's approach to flood (Perry 9ed 14-98/14-99).  The correlations carry NO hole
+area: open area acts only through the hydraulics.  Examples:
+`trayEfficiency01_yanagi14`, `trayEfficiency02_yanagi08` (FRI data, Yanagi & Sakata 1982).
+`model ChanFair;` (Chan & Fair 1984, Eqs 9-26; open area only through the approach to
+flood) and `model SyedaChuang; holePitch <m>;` (Syeda, Afacan & Chuang 2007, Eqs 1-35;
+sees hole velocity, open area and pitch) are selectable beside it; both were fitted on
+data that include these FRI trays (in-sample).  Examples: `trayEfficiency05_chanFair_yanagi14`,
+`trayEfficiency06_syedaChuang_yanagi14`, `trayEfficiency07_syedaChuang_yanagi08`.
+```
+efficiency { model SyedaChuang;      // or AIChE | ChanFair
+             lightKey cyclohexane;
+             liquidViscosity 3.7e-4;   // Pa s, when the package has no liquid viscosity
+             holePitch 0.0302;         // m, SyedaChuang only
+             entrainment FairMedian; } // or none
+hydraulics { pressureDropModel BollesFair; ... }   // default Sinnott
+```
+
+**Packed bed at total reflux** (`model totalReflux;` + `operation { packing { model
+RochaBravoFair; diameter; height; specificArea; voidFraction; corrugationAngle;
+corrugationSide; surface gauze|sheetMetal; [surfaceEnhancement]; lightKey;
+[liquidViscosity]; } }`, no `nStages`): the composition is integrated up the bed,
+dy/dz = (y* - y)/H_OG, with Rocha-Bravo-Fair holdup, pressure drop and flooding
+(IECR 32 (1993) 641) and HETP (IECR 35 (1996) 1660); the top pressure is the
+specification and the bed's own pressure drop sets the bottom.  KPI `HETP` = bed
+height / Fenske stages.  Binary only.  Examples: `packing01_schulz_0p10bar`,
+`packing02_schulz_0p02bar` (Montz-Pak A3-500M, Schulz et al. 2018).
+`model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads
+`corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction` instead of
+`corrugationSide`/`surface`: `packing03_schulz_delft_0p10bar`, `packing04_schulz_delft_0p02bar`.
+```
+{ name column; type distillationColumn; model totalReflux;
+  operation {
+    P 0.10 bar;  condenser { type total; }          // TOP pressure; no nStages
+    totalReflux { fFactor 1.5; specifiedAt reboiler; composition { pXylene 0.2; oXylene 0.8; } }
+    packing { model RochaBravoFair; diameter 1.22 m; height 2.2 m;
+              specificArea 478; voidFraction 0.92; corrugationAngle 60;
+              corrugationSide 0.009 m; surface gauze;  // Delft: corrugationBase, corrugationHeight, elementHeight, holeFraction
+              lightKey pXylene; liquidViscosity 3.91e-4; }
+  } }
+```
+
 **Sieve-tray hydraulics** (optional `operation { hydraulics { ... } }`, works with BOTH
 methods).  The MESH equations contain no diameter — a column of any width converges to
 the same distillate, and a flooded one converges just as prettily.  This is a **rating

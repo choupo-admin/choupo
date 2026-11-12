@@ -1,0 +1,31 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     column                 HETP             0.183303712207     1e-4
+kpi     column                 HETP_local_mean  0.183726596113     1e-4
+kpi     column                 P_bottom_bar     0.10147106849      1e-4
+kpi     column                 Q_condenser_kW   -489.477047594     1e-4
+kpi     column                 Q_reboiler_kW    489.477047594      1e-4
+kpi     column                 T_bottom         346.56123905       1e-4
+kpi     column                 T_top            343.019923132      1e-4
+kpi     column                 V_boilup         0.0121186821853    1e-4
+kpi     column                 aeOverAp_mean    0.957866701852     1e-4
+kpi     column                 alpha_mean       1.24124783103      1e-4
+kpi     column                 dP_bed_mbar_per_m 0.668666302317     1e-4
+kpi     column                 dP_over_dPflood_max 0.065344999076     1e-4
+kpi     column                 fFactor_bedBottom 1.7994718969       1e-4
+kpi     column                 fFactor_bedTop   1.80390347411      1e-4
+kpi     column                 holdup_mean      0.0370895014043    1e-4
+kpi     column                 theoreticalStages_bed 12.0019391507      1e-4
+kpi     column                 uL_mean_m3_m2h   4.80222008376      1e-4
+kpi     column                 x_belowBed_LK    0.236483628438     1e-4
+kpi     column                 x_reboiler_LK    0.2                1e-4
+kpi     column                 x_reflux_LK      0.805615709865     1e-4
+utility column                 heating.steamLP.duty_kW 489.477047594      1e-4
+utility column                 heating.steamLP.T 346.56123905       1e-4
+utility column                 heating.steamLP.kg_s 0.223914477399     1e-4
+utility column                 heating.steamLP.eur_h 21.1454084561      1e-4
+utility column                 cooling.coolingWater.duty_kW -489.477047594     1e-4
+utility column                 cooling.coolingWater.T 343.019923132      1e-4
+utility column                 cooling.coolingWater.kg_s 11.7099772152      1e-4
+utility column                 cooling.coolingWater.eur_h 0.704846948536     1e-4
