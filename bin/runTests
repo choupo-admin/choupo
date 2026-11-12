@@ -6864,6 +6864,17 @@ PYEOF
     fi
     rm -f /tmp/henryrec.$$
 
+    # feature-documented gate (2026-11-12, DEV.md 4c C338, CLAUDE.md rule 4d).  Every name a factory registers is in a labelled Theory/Props Guide section AND the docs/ai catalogue; today's debt is pinned in bin/curate/feature_documented_debt.tsv and may only shrink.
+    if gate_exec "$ROOT/bin/curate/check_feature_documented.py" > /tmp/featdoc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "feature-documented-gate" "$(head -1 /tmp/featdoc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_feature_documented.py)\n" "feature-documented-gate"
+        cat /tmp/featdoc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/featdoc.$$
+
     # model-default-registered gate (2026-09-06).  A `massTransfer {}` block
     # that merely forgot its `model` key died naming 'constant' -- a model the
     # ENGINE invented in its own default, pruned from the factory on
