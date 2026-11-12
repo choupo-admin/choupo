@@ -1,0 +1,154 @@
+diff --git a/gui/src/ui/MethodsWorkspace.tsx b/gui/src/ui/MethodsWorkspace.tsx
+index 1832eac30..4a24c3ff6 100644
+--- a/gui/src/ui/MethodsWorkspace.tsx
++++ b/gui/src/ui/MethodsWorkspace.tsx
+@@ -241,6 +241,9 @@ const ThermometerTrustTool = lazy(() =>
+ const PropertyTrustTool = lazy(() =>
+   import("./methods/PropertyTrustTool.js")
+     .then((m) => ({ default: m.PropertyTrustTool })));
++const DatabaseToParametersTool = lazy(() =>
++  import("./methods/DatabaseToParametersTool.js")
++    .then((m) => ({ default: m.DatabaseToParametersTool })));
+ const DataSourcesTool = lazy(() =>
+   import("./methods/DataSourcesTool.js")
+     .then((m) => ({ default: m.DataSourcesTool })));
+@@ -610,6 +613,7 @@ export function MethodsWorkspace() {
+             : tool === "property-trust" ? <PropertyTrustTool />
+             : tool === "property-origins" ? <PropertyOriginsTool />
+             : tool === "property-data-sources" ? <DataSourcesTool />
++            : tool === "database-to-parameters" ? <DatabaseToParametersTool />
+             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
+             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
+             : tool === "local-composition" ? <LocalCompositionTool />
+diff --git a/gui/src/ui/methods/DatabaseToParametersTool.tsx b/gui/src/ui/methods/DatabaseToParametersTool.tsx
+index 77de17573..d20fdc0a3 100644
+--- a/gui/src/ui/methods/DatabaseToParametersTool.tsx
++++ b/gui/src/ui/methods/DatabaseToParametersTool.tsx
+@@ -50,7 +50,7 @@ import {
+   interiorIndices, isReaderError, isRefusal, readThermoML, ThermoMLRefusal,
+   type BubblePRecord, type BubbleTRecord, type ThermoMLCompound, type ThermoMLFile,
+ } from "../../case/thermomlReader.js";
+-import { LessonLimits, lessonStepper } from "./lessonStep.js";
++import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
+ import {
+   CASE_NAME, FIT_RULE, capOf, gradeOf, kindOf, maxErrorOf, outliersOf, pairFitCaseFiles,
+   pipelineIssues, readParity, temperaturesOf, type FitKind, type Grade, type PairFitInput,
+@@ -552,6 +552,8 @@ export function DatabaseToParametersTool(): JSX.Element {
+             Four ways to price a mixture
+           </Anchor>.
+         </Text>
++
++        <LessonReferences tool="database-to-parameters" />
+       </Stack>
+     </Box>
+   );
+diff --git a/gui/src/ui/methods/lessonReferences.json b/gui/src/ui/methods/lessonReferences.json
+index 28665b40e..fdc925231 100644
+--- a/gui/src/ui/methods/lessonReferences.json
++++ b/gui/src/ui/methods/lessonReferences.json
+@@ -2251,6 +2251,41 @@
+           }
+         }
+       ]
++    },
++    "database-to-parameters": {
++      "references": [
++        {
++          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
++          "doi": "10.1002/aic.690140124",
++          "note": "NRTL, the model the curated pairs fit.",
++          "verified": {
++            "method": "crossref",
++            "evidence": "api.crossref.org/works/10.1002/aic.690140124: authors, title, container, volume, issue, pages and year matched (C334)",
++            "date": "2026-11-12"
++          }
++        },
++        {
++          "text": "Frenkel, M.; Chirico, R. D.; Diky, V. V.; Dong, Q.; Frenkel, S.; Franchois, P. R.; Embry, D. L.; Teague, T. L.; Marsh, K. N.; Wilhoit, R. C. (2003). ThermoML — An XML-Based Approach for Storage and Exchange of Experimental and Critically Evaluated Thermophysical and Thermochemical Property Data. 1. Experimental Data. J. Chem. Eng. Data 48(1), 2–13.",
++          "doi": "10.1021/je025645o",
++          "note": "The ThermoML format the page reads.",
++          "verified": {
++            "method": "crossref",
++            "evidence": "api.crossref.org/works/10.1021/je025645o: authors, title, container, volume, issue, pages and year matched (C334)",
++            "date": "2026-11-12"
++          }
++        },
++        {
++          "text": "NIST Thermodynamics Research Center. ThermoML/Data Archive, version 1.2.6 (file ThermoML.v2020-09-30.tgz). National Institute of Standards and Technology.",
++          "doi": "10.18434/mds2-2422",
++          "url": "https://data.nist.gov/od/id/mds2-2422",
++          "note": "The archive the pipeline searches; it locates the articles, which are the sources.",
++          "verified": {
++            "method": "official",
++            "evidence": "data.nist.gov/rmm/records?@id=ark:/88434/mds2-2422: title, DOI, version 1.2.6, licence field and the file name read (C334)",
++            "date": "2026-11-12"
++          }
++        }
++      ]
+     }
+   }
+ }
+diff --git a/gui/src/ui/methods/registry.ts b/gui/src/ui/methods/registry.ts
+index e511d4eab..e98041d0f 100644
+--- a/gui/src/ui/methods/registry.ts
++++ b/gui/src/ui/methods/registry.ts
+@@ -62,6 +62,7 @@ export type MethodToolId =
+   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
+   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
+   | "thermometer-trust" | "property-trust" | "property-data-sources"
++  | "database-to-parameters"
+   | "what-is-entropy"
+   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
+   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
+@@ -234,10 +235,9 @@ export const METHOD_PATHS: MethodPath[] = [
+     ],
+   },
+   {
+-    //  C322 (2026-11-12, Vitor's approval relayed by the coordinator).  The
+-    //  architect's walk has one more step, "From a database to binary
+-    //  parameters", between least-squares and four-ways-mixture; it is
+-    //  added here the day that page exists (a step must name a live tool).
++    //  C322/C332 (2026-11-12, Vitor's approval relayed by the coordinator).
++    //  "From a database to binary parameters" (C334) follows least-squares;
++    //  sle-pair and salt-mixing follow it the day they land.
+     id: "measurement-to-parameter",
+     title: "From a measurement to a parameter",
+     intro: "From where a number comes from to the model parameter fitted to it.",
+@@ -247,6 +247,7 @@ export const METHOD_PATHS: MethodPath[] = [
+       { tool: "property-trust", why: "Test a record against itself before you believe it." },
+       { tool: "local-composition", why: "The models whose parameters the data will fix: Wilson, NRTL, UNIQUAC." },
+       { tool: "least-squares", why: "How a parameter is fitted to measurements, and what the fit can and cannot tell." },
++      { tool: "database-to-parameters", why: "A ThermoML file becomes an NRTL pair: the curation pipeline's rule, run by the engine on your own file." },
+       { tool: "four-ways-mixture", why: "What a fitted pair buys against the predictive models, graded on measured data." },
+     ],
+   },
+@@ -508,6 +509,29 @@ export const METHOD_TOOLS: MethodTool[] = [
+       + "correlation that asked to be validated misses by a factor of 19.",
+     theory: "ch:criticals",
+   },
++  {
++    //  FROM A DATABASE TO A BINARY PAIR (2026-11-12, DEV.md 4c C332 item 3,
++    //  C334, Vitor's approval): the curation pipeline of C282-C300 as the
++    //  lesson, and its rule run by the engine on a ThermoML file the student
++    //  loads (gui/src/case/thermomlReader.ts, held to bin/choupo-thermoml).
++    //  After least-squares on the shelf and on the path.
++    id: "database-to-parameters", blurb: "Turn a ThermoML file into an NRTL pair, and grade it.",
++    label: "From a database to binary parameters",
++    discipline: "Property data & parameters",
++    kind: "notes", status: "live",
++    origins: ["engine", "page", "reference"],
++    teaches: "How a binary pair is made from measurements, as Choupo's "
++      + "curation pipeline makes it: name the pair by InChIKey, choose the "
++      + "usable blocks (bubble temperature at a stated pressure, or bubble "
++      + "pressure at a stated temperature, an uncertainty on every point), "
++      + "fit every laboratory together, discard outliers by name, least "
++      + "squares then the largest error, the graded acceptance and the cap "
++      + "on a clean that one temperature or one laboratory cannot earn, the "
++      + "one-liquid check, and what a record does not prove; a map of which "
++      + "measurement constrains which parameter; and a live fit of your own "
++      + "ThermoML file by the engine.",
++    theory: "ch:criticals",
++  },
+   {
+     //  THE MODELS LESSON the owner asked for by name (2026-08-31: "o COSMO,
+     //  PC-SAFT etc tem de ser bem apresentados aos alunos").  One ladder --
