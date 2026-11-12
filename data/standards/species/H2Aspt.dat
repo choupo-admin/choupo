@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/H2Aspt.dat -- ONE model species, ONE typed file: L-aspartic acid in the form a case declares (the compound as weighed), the speciation MASTER of its family.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    H2Aspt;
+formula     "C4H7NO4";
+charge  0;
+MW { value 133.103; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -947.50: printed dHf(aq) of L-aspartic acid -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054 (read from a page image) ## sAq [J/mol/K] 229.49: printed S(aq) of L-aspartic acid -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054 (read from a page image)";
+hfAq { value -947500; unit J/mol;}
+sAq  { value 229.49; unit J/mol/K;}
+}

@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HGly.dat -- ONE model species, ONE typed file: glycine in the form a case declares (the compound as weighed), the speciation MASTER of its family.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HGly;
+formula     "C2H5NO2";
+charge  0;
+MW { value 75.067; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -514.36: printed dHf(aq) of glycine -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054 (read from a page image), dHf(cr) -528.52 +/- 0.50 + dH(soln) +14.16 +/- 0.01 ## sAq [J/mol/K] 158.45: printed S(aq) of glycine -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054 (read from a page image)";
+hfAq { value -514360; unit J/mol;}
+sAq  { value 158.45; unit J/mol/K;}
+}

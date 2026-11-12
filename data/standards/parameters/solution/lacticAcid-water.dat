@@ -1,0 +1,31 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution thermo: LACTIC ACID dissolved in liquid WATER (arity-2, the aqueous-solution tier -- the
+  molecular-solute sibling of parameters/solution/citricAcid-water.dat, written the same way).
+
+  PAIR data: a heat of solution is defined as `crystal -> species dissolved in WATER`, so it names a
+  second species and lives HERE, keyed by the (solute, solvent) pair, never inside lacticAcid.dat.
+
+  The engine reads dHsoln for the dissolved-vs-crystalline enthalpy rung:
+
+      h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'
+
+  The dissolved species is the molecular, non-dissociated acid at infinite dilution: Miller & Smith-Magowan's
+  dHf(aq acid) = -686.2 +/- 1.0 kJ/mol (Table 5, p. 1056) is dHf(cr) + dH(soln) to the printed digits, so the pair
+  reproduces the aqueous acid the lactate ions are referred to (their hfAq are that value plus the Table 6
+  ionisation enthalpies).  The dissociated route is the lactate family (see species/ and chemistry/).
+
+  NOT carried: the aqueous heat capacity `Cp`.  No work in hand prints it for this acid, so the cp_aq rung
+  refuses by name when a duty reaches the sensible heat of the solution; the formation-level (298.15 K)
+  balance is complete.
+\*---------------------------------------------------------------------------*/
+
+solute      lacticAcid;
+solvent     water;
+
+// Standard enthalpy of solution, crystal -> aqueous (infinite dilution), 298.15 K: 7.82 kJ/mol, endothermic.
+dHsoln      7820 J/mol;
+dHsoln_provenance
+{
+    origin   literature;
+    method   "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 5, p. 1056, row L-Lactic, dH soln (read from a page image): dH(soln) = 7.82 kJ/mol (their source 59SAV/GUN); dHf(cr) -694.0 +/- 1.0 kJ/mol and dHf(aq acid) -686.2 +/- 1.0 kJ/mol from the same table(s).";
+}

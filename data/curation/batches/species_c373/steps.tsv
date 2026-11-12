@@ -1,0 +1,109 @@
+family	step	pK	dH	dCp	grade	src	where	image	note
+citrate	1	3.128	4.07	-131	AAB	GOLD02	Table 7.22 (Citrate), p. 265	no	
+citrate	2	4.761	2.23	-178	AAB	GOLD02	Table 7.22 (Citrate), p. 265	no	
+citrate	3	6.396	-3.38	-254	AAB	GOLD02	Table 7.22 (Citrate), p. 265	no	
+succinate	1	4.207	3.0	-121	AAB	GOLD02	Table 7.57 (Succinate), p. 340	no	
+succinate	2	5.636	-0.5	-217	AAA	GOLD02	Table 7.57 (Succinate), p. 340	no	
+fumarate	1	3.095	0.46			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+fumarate	2	4.602	-2.85			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+malate	1	3.459	2.955	-155		EB59	Table 6, p. 169 (Table 5 lists dCp)	yes	
+malate	2	5.097	-1.181	-221		EB59	Table 6, p. 169 (Table 5 lists dCp)	yes	
+lactate	1	3.862	-0.251			NS36	Table II, p. 148 (eq. 2, p. 149)	yes	dH printed as -60 cal/mol at 25 C; 60 x 4.184 = 251 J/mol
+glycolate	1	3.831	0.46			MILL90	Table 6, p. 1057	yes	pK and dH_ion from the compilation (its ref. 77CHR/HAN); dS_ion -72.0 J/mol/K printed
+ammonia	1	9.245	51.95	8	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.7, p. 245	no	Section 8 summary text layer, checked against the page image
+arsenate	1	2.31	-7.8		CC	GOLD02	Section 8 summary, p. 359, and Section 7.9, p. 248	no	Section 8 summary text layer, checked against the page image
+arsenate	2	7.05	1.7		CC	GOLD02	Section 8 summary, p. 359, and Section 7.9, p. 248	no	Section 8 summary text layer, checked against the page image
+arsenate	3	11.9	15.9		CC	GOLD02	Section 8 summary, p. 359, and Section 7.9, p. 248	no	Section 8 summary text layer, checked against the page image
+borate	1	9.237	13.8	~-240	ABD	GOLD02	Section 8 summary, p. 359, and Section 7.15, p. 259	no	dCp printed as approximate; Section 8 summary text layer, checked against the page image
+carbonate	1	6.351	9.15	-371	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.20, p. 264	no	Section 8 summary text layer, checked against the page image
+carbonate	2	10.329	14.70	-249	BAA	GOLD02	Section 8 summary, p. 359, and Section 7.20, p. 264	no	Section 8 summary text layer, checked against the page image
+phosphate	1	2.148	-8.0	-141	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.51, p. 321	no	Section 8 summary text layer, checked against the page image
+phosphate	2	7.198	3.6	-230	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.51, p. 321	no	Section 8 summary text layer, checked against the page image
+phosphate	3	12.35	16.0	-242	BCA	GOLD02	Section 8 summary, p. 360, and Section 7.51, p. 321	no	Section 8 summary text layer, checked against the page image
+pyrophosphate	1	0.83	-9.2	~-90	CDD	GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	dCp printed as approximate; Section 8 summary text layer, checked against the page image
+pyrophosphate	2	2.26	-5.0	~-130	BCD	GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	dCp printed as approximate; Section 8 summary text layer, checked against the page image
+pyrophosphate	3	6.72	0.5	-136	BBC	GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	Section 8 summary text layer, checked against the page image
+pyrophosphate	4	9.46	1.4	-141	DCC	GOLD02	Section 8 summary, p. 360, and Section 7.56, p. 333	no	Section 8 summary text layer, checked against the page image
+sulfate	1	1.987	-22.4	-258	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.58, p. 344	no	Section 8 summary text layer, checked against the page image
+sulfite	1	1.857	-17.80	-272	BBA	GOLD02	Section 8 summary, p. 360, and Section 7.59, p. 344	no	Section 8 summary text layer, checked against the page image
+sulfite	2	7.172	-3.65	-262	BAB	GOLD02	Section 8 summary, p. 360, and Section 7.59, p. 344	no	Section 8 summary text layer, checked against the page image
+hydrazine	1	-0.99	38.1		CC	GOLD02	Section 8 summary, p. 360, and Section 7.40, p. 300	no	Section 8 summary text layer, checked against the page image
+hydrazine	2	8.02	41.7		BB	GOLD02	Section 8 summary, p. 360, and Section 7.40, p. 300	no	Section 8 summary text layer, checked against the page image
+tris	1	8.072	47.45	-59	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.68, p. 357	no	Section 8 summary text layer, checked against the page image
+triethanolamine	1	7.762	33.6	50	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.66, p. 353	no	Section 8 summary text layer, checked against the page image
+triethylamine	1	10.72	43.13	151	CB	GOLD02	Section 8 summary, p. 360, and Section 7.67, p. 355	no	Section 8 summary text layer, checked against the page image
+amp	1	9.694	54.05	~-21	AAC	GOLD02	Section 8 summary, p. 359, and Section 7.5, p. 244	no	Section 8 summary text layer, checked against the page image
+ampd	1	8.801	49.85	-44	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.4, p. 243	no	Section 8 summary text layer, checked against the page image
+diethanolamine	1	8.883	42.08	36	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.24, p. 270	no	Section 8 summary text layer, checked against the page image
+ethanolamine	1	9.498	50.52	26	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.28, p. 277	no	Section 8 summary text layer, checked against the page image
+methylamine	1	10.645	55.34	33	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.45, p. 310	no	Section 8 summary text layer, checked against the page image
+piperazine	1	5.333	31.11	86	AAB	GOLD02	Section 8 summary, p. 360, and Section 7.53, p. 329	no	Section 8 summary text layer, checked against the page image
+piperazine	2	9.731	42.89	75	AAB	GOLD02	Section 8 summary, p. 360, and Section 7.53, p. 329	no	Section 8 summary text layer, checked against the page image
+imidazole	1	6.993	36.64	-9	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.41, p. 302	no	Section 8 summary text layer, checked against the page image
+methylimidazole	1	8.01	36.8		CD	GOLD02	Section 8 summary, p. 360, and Section 7.46, p. 312	no	Section 8 summary text layer, checked against the page image
+ethylmorpholine	1	7.77	27.4		CC	GOLD02	Section 8 summary, p. 359, and Section 7.29, p. 279	no	Section 8 summary text layer, checked against the page image
+glycineamide	1	8.04	42.9		CC	GOLD02	Section 8 summary, p. 359, and Section 7.32, p. 286	no	Section 8 summary text layer, checked against the page image
+glycine	1	2.351	4.00	-139	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.31, p. 281	no	Section 8 summary text layer, checked against the page image
+glycine	2	9.780	44.2	-57	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.31, p. 281	no	Section 8 summary text layer, checked against the page image
+alanine	1	2.340	3.01			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+alanine	2	9.870	45.23			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+asparticacid	1	1.990	7.46			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+asparticacid	2	3.900	4.60			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+asparticacid	3	10.002	37.76			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+glutamicacid	1	2.162	-0.27			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+glutamicacid	2	4.272	1.56			MILL90	Table 6, p. 1057	yes	OCR text layer and page image agree
+glutamicacid	3	9.93	40.07			MILL90	Table 6, p. 1057	yes	pK3 9.93 is Miller's own calculation at I = 0 from pK 9.67 at 0.1 mol/dm3 KCl (Table 6 footnote h), not a measurement
+glycylglycine	1	3.140	0.11	-128	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.33, p. 287	no	Section 8 summary text layer, checked against the page image
+glycylglycine	2	8.265	43.4	-16	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.33, p. 287	no	Section 8 summary text layer, checked against the page image
+triglycine	1	3.224	0.84		AC	GOLD02	Section 8 summary, p. 359, and Section 7.34, p. 289	no	Section 8 summary text layer, checked against the page image
+triglycine	2	8.090	41.7		AC	GOLD02	Section 8 summary, p. 359, and Section 7.34, p. 289	no	Section 8 summary text layer, checked against the page image
+histidine	1	1.54	3.6		DBA	GOLD02	Section 8 summary, p. 360, and Section 7.39, p. 296	no	Section 8 summary text layer, checked against the page image
+histidine	2	6.07	29.5	176	BCA	GOLD02	Section 8 summary, p. 360, and Section 7.39, p. 296	no	Section 8 summary text layer, checked against the page image
+histidine	3	9.34	43.8	-233	CBA	GOLD02	Section 8 summary, p. 360, and Section 7.39, p. 296	no	Section 8 summary text layer, checked against the page image
+cysteine	1	1.71	-0.6		CD	GOLD02	Section 8 summary, p. 359, and Section 7.23, p. 268	no	Section 8 summary text layer, checked against the page image; dH printed as approximate
+cysteine	2	8.36	36.1	~-66	BBD	GOLD02	Section 8 summary, p. 359, and Section 7.23, p. 268	no	Section 8 summary text layer, checked against the page image
+cysteine	3	10.75	34.1	~-204	BBD	GOLD02	Section 8 summary, p. 359, and Section 7.23, p. 268	no	Section 8 summary text layer, checked against the page image
+aces	1	6.847	30.43	-49	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.1, p. 237	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+ampso	1	9.138	43.19	-61	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.8, p. 247	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+apsa	1	10.2			D	GOLD02	Section 8 summary, p. 359, and Section 7.6, p. 245	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+bes	1	7.187	24.25	-2	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.11, p. 253	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+caps	1	10.499	48.1	57	AAC	GOLD02	Section 8 summary, p. 359, and Section 7.18, p. 262	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+capso	1	9.825	46.67	21	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.19, p. 263	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+ches	1	9.394	39.55	9	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.21, p. 264	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+dipso	1	7.576	30.18	42	AAB	GOLD02	Section 8 summary, p. 359, and Section 7.27, p. 276	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+hepps	1	7.957	21.3	48	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.37, p. 294	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+heppso	1	8.042	23.70	47	AAB	GOLD02	Section 8 summary, p. 360, and Section 7.38, p. 295	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+mes	1	6.270	14.8	5	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.44, p. 309	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+mops	1	7.184	21.1	25	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.48, p. 313	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+pipes	1	7.141	11.2	22	ABA	GOLD02	Section 8 summary, p. 360, and Section 7.54, p. 331	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+popso	1	8.0			U	GOLD02	Section 8 summary, p. 360, and Section 7.55, p. 333	no	approximate pK (printed as ~8.0); Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+taps	1	8.44	40.4	15	BBB	GOLD02	Section 8 summary, p. 360, and Section 7.61, p. 345	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+tapso	1	7.635	39.09	-16	AAB	GOLD02	Section 8 summary, p. 360, and Section 7.62, p. 346	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+tes	1	7.550	32.13	0	AAB	GOLD02	Section 8 summary, p. 360, and Section 7.64, p. 350	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+mercaptoethanol	1	9.75	26.2		CB	GOLD02	Section 8 summary, p. 360, and Section 7.43, p. 308	no	pK printed 9.7 with subscript 5; Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+bicine	1	2.0			DD	GOLD02	Section 8 summary, p. 359, and Section 7.12, p. 255	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+bicine	2	8.334	26.34	0	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.12, p. 255	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+hepes	1	3.0			U	GOLD02	Section 8 summary, p. 359, and Section 7.36, p. 292	no	pK printed as approximate (~3.0); Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+hepes	2	7.564	20.4	47	ABB	GOLD02	Section 8 summary, p. 359, and Section 7.36, p. 292	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+mopso	1	0.060			A	GOLD02	Section 8 summary, p. 360, and Section 7.49, p. 315	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+mopso	2	6.90	25.0	~38	BCB	GOLD02	Section 8 summary, p. 360, and Section 7.49, p. 315	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+tricine	1	2.023	5.85	-196	AAB	GOLD02	Section 8 summary, p. 360, and Section 7.65, p. 351	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+tricine	2	8.135	31.37	-53	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.65, p. 351	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+barbital	1	7.980	24.27	-135	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.10, p. 251	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+barbital	2	12.8			C	GOLD02	Section 8 summary, p. 359, and Section 7.10, p. 251	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+diglycolate	1	3.05	-0.1	~-142	BCD	GOLD02	Section 8 summary, p. 359, and Section 7.25, p. 272	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+diglycolate	2	4.37	-7.2	~-138	BCD	GOLD02	Section 8 summary, p. 359, and Section 7.25, p. 272	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+dimethylglutarate	1	3.70			B	GOLD02	Section 8 summary, p. 359, and Section 7.26, p. 275	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+dimethylglutarate	2	6.34			B	GOLD02	Section 8 summary, p. 359, and Section 7.26, p. 275	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+glycerol2phosphate	1	1.329	-12.2	-330	ABB	GOLD02	Section 8 summary, p. 359, and Section 7.30, p. 280	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+glycerol2phosphate	2	6.650	-1.85	-212	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.30, p. 280	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+phthalate	1	2.950	-2.70	-91	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.52, p. 326	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+phthalate	2	5.408	-2.17	-295	AAA	GOLD02	Section 8 summary, p. 360, and Section 7.52, p. 326	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+ada	1	1.59			C	GOLD02	Section 8 summary, p. 359, and Section 7.3, p. 241	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+ada	2	2.48	16.7		CC	GOLD02	Section 8 summary, p. 359, and Section 7.3, p. 241	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+ada	3	6.844	12.23	-144	ABB	GOLD02	Section 8 summary, p. 359, and Section 7.3, p. 241	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+bistris	1	6.484	28.4	27	AAA	GOLD02	Section 8 summary, p. 359, and Section 7.13, p. 257	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+btp	1	6.65			D	GOLD02	Section 8 summary, p. 359, and Section 7.14, p. 258	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+btp	2	9.10			D	GOLD02	Section 8 summary, p. 359, and Section 7.14, p. 258	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+cacodylate	1	1.78	-3.5		CBB	GOLD02	Section 8 summary, p. 359, and Section 7.17, p. 261	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header
+cacodylate	2	6.28	-3.0	-86	BBB	GOLD02	Section 8 summary, p. 359, and Section 7.17, p. 261	no	Section 8 summary text layer, checked against the page image; formula and molar mass from the section header

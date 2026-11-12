@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution thermo: L-ALANINE dissolved in liquid WATER (arity-2, the aqueous-solution tier; the molecular-solute sibling of
+  parameters/solution/citricAcid-water.dat).
+
+  PAIR data: a heat of solution is defined as `crystal -> species dissolved in WATER`, so it lives HERE, keyed by the (solute,
+  solvent) pair, never inside alanine.dat.  h_aq(T) = Hf_crystal + dHsoln + INT_298^T cp_aq dT'.
+
+  The dissolved species is the zwitterion at infinite dilution: Miller & Smith-Magowan's dHf(aq) = -553.75 +/- 0.63 kJ/mol
+  (Table 3, p. 1054) is dHf(cr) + dH(soln) to the printed digits, and it is the `hfAq` of the zwitterion species of the
+  alanine ladder.  NOT carried: the aqueous heat capacity (no work in hand prints it), so the cp_aq rung refuses by name.
+\*---------------------------------------------------------------------------*/
+
+solute      alanine;
+solvent     water;
+
+// Standard enthalpy of solution, crystal -> aqueous (infinite dilution), 298.15 K: +7.49 +/- 0.03 kJ/mol, endothermic.
+dHsoln      7490 J/mol;
+dHsoln_provenance
+{
+    origin   literature;
+    method   "Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, row dH(soln) (+7.49 +/- 0.03 kJ/mol; their source 82ABA/SHE; read from a page image); dHf(cr) -561.24 +/- 0.63 kJ/mol and dHf(aq) -553.75 +/- 0.63 kJ/mol from the same table.";
+}

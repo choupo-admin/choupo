@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Aspt.dat -- ONE model species, ONE typed file: the fully dissociated form of L-aspartic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Aspt;
+formula     "C4H5NO4-2";
+charge  -2;
+MW { value 131.087; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -905.10: HAsp -942.86 + dH_ion3 +37.76 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image) ## sAq [J/mol/K] 105.19: HAsp 170.09 + dS_ion3 (-64.9) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image)";
+hfAq { value -905100; unit J/mol;}
+sAq  { value 105.19; unit J/mol/K;}
+}

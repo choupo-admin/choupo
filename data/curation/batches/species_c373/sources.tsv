@@ -1,0 +1,7 @@
+key	citation	scale
+GOLD02	Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231	standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359)
+MILL90	Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049	H+(aq) = 0, zero ionic strength, aqueous species at 1 mol/dm3 (Table 1 caption, p. 1052)
+EB59	Eden & Bates, J. Res. Natl. Bur. Stand. 62 (1959) 161 (Research Paper 2947)	thermodynamic constants, activity-corrected, 0 to 50 C
+NS36	Nims & Smith, J. Biol. Chem. 113 (1936) 145	thermodynamic pK, 0.3 to 50 C
+KOCH06	Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903	calorimetric formation enthalpies, hypothetical non-dissociated reference state
+DOM72	Domalski, J. Phys. Chem. Ref. Data 1 (1972) 221	kcal/mol x 4.184 = kJ/mol (Section 5.5, p. 225)

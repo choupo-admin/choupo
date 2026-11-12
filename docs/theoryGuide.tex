@@ -7435,11 +7435,95 @@ citric acid to 0.5--1.3~kJ/mol, inside Kochergina's stated uncertainty (see
 Eden \& Bates (1959), Table~6, and lactic acid from Nims \& Smith (1936), Table~II.
 The tartrate records stand on Goldberg et al.\ (2002), Table~7.63, in agreement with
 Patterson \& Woolley (2001).  Fumaric acid takes its constants from the evaluation of Miller \& Smith-Magowan (1990), Table~6.  Malonic acid is absent: no ionisation work
-covering them has been read.  A triprotic family is declared through its neutral master
+covering it has been read.  Glycolic acid takes its constants from the same table of Miller \& Smith-Magowan (1990).  A triprotic family is declared through its neutral master
 (\code{H3Cit}) or its fully dissociated ion (\code{Cit}); the closure activates
 the records reachable from whichever the case declares.  Worked cases:
 \file{volatileAcids01\_acetic\_formic}, \file{citricAcid01\_speciation} and
 \file{wineAcids01\_tartaric\_malic}.
+
+\subsection{Ionisation families from the evaluated compilations: the ions' formation data on one
+scale}\label{sec:evaluated-ionisation-families}
+
+C373 extends the carboxylic families of the previous subsection from three evaluated compilations.  A family is a
+\emph{ladder} of species $\mathrm{H}_n\mathrm{A}\to\mathrm{H}_{n-1}\mathrm{A}^-\to\cdots\to\mathrm{A}^{n-}$; every
+step is an \code{aqueousSpeciation} record written from the most protonated form (the speciation master), plus the inverse
+written from the fully dissociated form.  Where a compilation prints the enthalpy (and entropy) of formation of the
+\emph{aqueous acid}, the ions' values are not copied from a second source but \emph{derived} from it and from the
+step enthalpies and entropies printed beside the pK:
+\begin{equation}
+   \Delta_fH^\circ(\mathrm{H}_{n-i}\mathrm{A}^{i-}) = \Delta_fH^\circ(\mathrm{H}_n\mathrm{A},\mathrm{aq})
+        + \sum_{k=1}^{i}\Delta_{\rm ion,k}H^\circ ,\qquad
+   S^\circ(\mathrm{H}_{n-i}\mathrm{A}^{i-}) = S^\circ(\mathrm{H}_n\mathrm{A},\mathrm{aq})
+        + \sum_{k=1}^{i}\Delta_{\rm ion,k}S^\circ ,
+   \label{eq:ladder-formation}
+\end{equation}
+with $\Delta_fH^\circ(\mathrm{H}^+)=S^\circ(\mathrm{H}^+)=0$ (the aqueous convention), and
+$\Delta_fH^\circ(\mathrm{H}_n\mathrm{A},\mathrm{aq})=\Delta_fH^\circ(\mathrm{cr})+\Delta_{\rm sol}H^\circ$ the crystal's
+formation enthalpy plus its heat of solution, which is why the catalogue carries the acid as a \emph{component}
+(crystal datum) and a \emph{solution pair} (the heat of solution) and the neutral master species carries no
+\code{hfAq} of its own.  Symbols: $\Delta_{\rm ion,k}H^\circ$, $\Delta_{\rm ion,k}S^\circ$ the enthalpy and entropy of the
+$k$-th ionisation step at $298.15$~K, $i$ the number of protons lost.  Source: Miller \& Smith-Magowan (1990), Tables~2, 5
+and~6 (Table~2 prints the ion values it derived itself, which reproduce Eq.~\eqref{eq:ladder-formation}; the crystal
+enthalpies agree with Domalski (1972), Sections 6.11 to 6.15, to 0.3~kJ/mol).  \emph{Validity:} 25~\textdegree C, infinite
+dilution, zero ionic strength; the uncertainty of an ion is that of the acid's aqueous enthalpy (0.4 to 1.0~kJ/mol) plus
+the printed step enthalpies.
+
+\emph{One scale per family.}  The step enthalpy a record carries (from the work that printed the pK) and the
+difference of the neighbouring species' formation enthalpies are two readings of one quantity, and the gate
+\file{check\_species\_c373} holds them to a per-family tolerance: succinic $0.18$ and $0.06$, fumaric $0.00$ (the
+same table), malic $0.005$ and $0.001$ (Eden \& Bates and Miller print the same constants), lactic $0.20$~kJ/mol; the three
+citric steps differ by $0.5$, $1.3$ and $1.1$~kJ/mol, inside the $\pm1.1$ to $1.6$~kJ/mol Kochergina's formation
+enthalpies carry, which is why the whole citrate family keeps Kochergina's ions (Miller prints no formation enthalpy of
+citrate) and a mix of the two works never occurs.  A glycolic acid whose crystal, heat of solution and aqueous enthalpy
+do not close in the source (they differ by 2.9~kJ/mol) is carried for its speciation only: the energy route through it
+refuses by name.  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
+$\Delta C_p$ is exactly the $A_1$, $A_3$, $A_4$ terms of the \code{analytic} form above, proposed but not used.  The
+entropy of the fumarate ion is taken from the sum of the Table~6 steps ($105.3$~J/mol/K), because Table~2's own
+$\Delta G$ and $\Delta H$ imply $-155.4$~J/mol/K for the ionisation and not the $-152.2$ it prints.  Worked case: none for
+the formation data (the ion energies are not exercised by a speciation run).
+
+\emph{Inorganic ladders.}  The pyrophosphate (four steps), arsenate (three), sulfite (two) and hydrazine (two) ladders
+carry only the evaluated step constants of Goldberg, Kishore \& Lennen (2002), Section~8 (pp.~359--360; Sections~7.56,
+7.9, 7.59, 7.40): $\mathrm{p}K$ and $\Delta_{\rm ion}H^\circ$, written from the most protonated form by the same
+cumulative rule as every other family, $\log_{10}K_{25}(\mathrm{H}_{n-i}\mathrm{A})=-\sum_{k\le i}\mathrm{p}K_k$ and
+$\Delta H=\sum_{k\le i}\Delta_{\rm ion,k}H^\circ$.  The records the catalogue already held for carbonate, phosphate,
+hydrogensulfate, ammonia and borate (from PHREEQC) agree with Goldberg's selected $\mathrm{p}K$ to $0.007$ (phosphoric
+acid $0.025$ in the sum of three steps); their enthalpies agree to $0.3$~kJ/mol except phosphate (up to $1.5$) and
+hydrogensulfate, whose catalogue value $-16.1$ differs from the evaluated $-22.4$~kJ/mol by $6.3$; none was changed (the
+comparison is rendered by \file{bin/curate/species\_c373.py compare}).  Worked case:
+\file{inorganicLadders01\_goldberg} (half-neutralisation beakers whose Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(\gamma_B/\gamma_A)$
+at equal molality).
+
+\emph{Amines, imidazoles, peptides and amino acids.}  Phase~3 writes the ladders of Tris, triethanolamine, triethylamine,
+2-amino-2-methyl-1-propanol and -1,3-propanediol, diethanolamine, ethanolamine, methylamine, piperazine, imidazole,
+2-methylimidazole, N-ethylmorpholine, glycine amide, glycylglycine, glycylglycylglycine, L-histidine, L-cysteine and glycine
+from Goldberg et al.\ (2002) (Sections~7.4--7.68 as listed in the design note) and of L-alanine, L-aspartic and L-glutamic
+acids from Miller \& Smith-Magowan (1990), Table~6.  The master of each is the compound \emph{as weighed} (the neutral base, the zwitterion), and every other species is
+derived from it by one record, a protonation or a dissociation, as for the carbonate family whose master is
+$\mathrm{HCO_3^-}$; a family whose master is the most protonated form keeps the cumulative rule and the inverse record of
+the previous paragraphs.  For glycine, alanine, aspartic and glutamic acids the aqueous zwitterion's enthalpy and entropy are
+printed (Miller, Table~3: $\Delta_fH^\circ(\mathrm{aq})=-514.36,-553.75,-947.50,-980.72$~kJ/mol, crystal plus heat of solution)
+and Eq.~\eqref{eq:ladder-formation} gives the cation and the anion.  A ladder is held to the Gibbs identity
+$\mathrm{p}K=(\Delta H-T\,\Delta S)/(RT\ln 10)$ by the gate \file{check\_logk\_crosscheck}, which found that Miller's glutamic acid
+$\mathrm{p}K_3=9.93$ does not agree with its printed $\Delta_{\rm ion}S=-44.8$~J/mol/K ($9.36$): the entropy of the
+glutamate ion is therefore derived from the pK and the enthalpy.  The neutral amine as a dissolved species and the
+catalogue's volatile component of the same substance are two identities until a gas--liquid record links them.  Worked case:
+\file{aminoBuffers01\_tris\_glycine} (Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(1/\gamma_+)$ for a half-neutralised amine
+amine with HCl; the isoelectric glycine solution at $(\mathrm{p}K_1+\mathrm{p}K_2)/2$ to $0.01$); inventory and readings:
+\file{docs/design/species-from-evaluated-compilations.md}.
+
+\emph{Laboratory buffers.}  Phase~4 takes every remaining section of Goldberg et al.\ (2002) --- ACES, ADA, AMPSO,
+3-amino-1-propanesulfonic acid, barbital, BES, Bicine, Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES,
+diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate, HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO,
+phthalate, PIPES, POPSO, TAPS, TAPSO, TES and Tricine --- as ionisation ladders with the evaluated $\mathrm{p}K$, $\Delta_{\rm ion}H^\circ$
+and the evaluation grade of the section, the formula and molar mass of each species from the section's own header (the
+line ``where $\mathrm{HL}=\dots$'' disagrees with the header in three sections and is not used).  The master is the zwitterion
+or neutral acid as weighed.  No formation data are carried: the compilation prints none, so a balance that needs the
+enthalpy of formation of a buffer species refuses by name.  CABS, HEPBS, MOBS and TABS have no evaluated data and are
+not built.  Because a record carries $\Delta H$ of one step, the temperature dependence is the van't Hoff form
+$\log_{10}K(T)=\log_{10}K_{25}-\frac{\Delta H}{R\ln10}\left(\frac1T-\frac1{298.15}\right)$; for HEPES at 37~\textdegree C it lowers
+$\mathrm{p}K$ by $0.138$ ($\Delta H=20.4$~kJ/mol), the printed $\Delta C_p=47$~J/mol/K would add $0.002$ and is not carried.
+Worked case: \file{goodsBuffers01\_hepes\_mes}.
 
 \subsection{Open systems: the Henry gas pin}\label{sec:gaspin}
 

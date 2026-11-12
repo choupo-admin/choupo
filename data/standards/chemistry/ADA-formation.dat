@@ -1,0 +1,20 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/ADA-formation.dat -- the first 2 dissociations of ADA (N-(2-acetamido)iminodiacetic acid), written from the master:
+      H2ADA  <=>  ADA + 2 H+
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 1.59, dH not printed (grade C)
+      pK2 = 2.48, dH2 = 16.7 kJ/mol (grade CC)
+      pK3 = 6.844, dH3 = 12.23 kJ/mol, dCp -144 J/mol/K (grade ABB)
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  The master is H2ADA, the form a case declares; this record carries steps 2 to 3 (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  Goldberg gives no formation data for a buffer.  The species are the acid form(s) and the conjugate base(s) of the section, charges as the section states them, the formula the section's own empirical formula.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species ADA; masters ( { ion H2ADA; nu 1; } { ion H; nu -2; } );
+      logK25 -9.324; dH 28930; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 359, and Section 7.3, p. 241: pK2 2.48, dH2 16.7 kJ/mol, pK3 6.844, dH3 12.23 kJ/mol (pK, dH_ion at 298.15 K)";

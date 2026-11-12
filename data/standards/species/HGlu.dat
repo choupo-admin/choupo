@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/HGlu.dat -- ONE model species, ONE typed file: an intermediate ionisation state of L-glutamic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    HGlu;
+formula     "C5H8NO4-";
+charge  -1;
+MW { value 146.122; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -979.16: printed dHf of the monoanion (-+-), = -980.72 + dH_ion2 +1.56 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054 (read from a page image) ## sAq [J/mol/K] 170.30: S(aq glutamic acid) 246.90 + dS_ion2 (-76.6) -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image)";
+hfAq { value -979160; unit J/mol;}
+sAq  { value 170.3; unit J/mol/K;}
+}

@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  species/Glu.dat -- ONE model species, ONE typed file: the fully dissociated form of L-glutamic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
+\*-----------------------------------------------------------------------------*/
+recordType modelSpecies;
+schemaVersion 1;
+
+name    Glu;
+formula     "C5H7NO4-2";
+charge  -2;
+MW { value 145.114; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -939.09: HGlu -979.16 + dH_ion3 +40.07 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image) ## sAq [J/mol/K] 114.59: HGlu 170.30 + (dH_ion3 +40.07 - dG_ion3 56.68)/T, with dG_ion3 = ln10 R T pK3 for pK3 9.93 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 3, p. 1054, and Table 6, p. 1057 (read from a page image), Table 6 prints dS_ion3 -44.8 J/mol/K, which with dH_ion3 +40.07 corresponds to pK3 9.36, not to the 9.93 the table prints (footnote h: Miller replaced the literature 9.37 by 9.93, calculated at I = 0 from 9.67 at 0.1 mol/dm3 KCl, and kept the entropy), the entropy is therefore derived from the pK and dH so that the Gibbs identity closes (check_logk_crosscheck found the 0.57 log unit disagreement), the printed route would give 125.50";
+hfAq { value -939090; unit J/mol;}
+sAq  { value 114.59; unit J/mol/K;}
+}

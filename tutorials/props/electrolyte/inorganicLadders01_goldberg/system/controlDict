@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  inorganicLadders01_goldberg -- the ionisation ladders of phosphoric, pyrophosphoric,
+  arsenic, sulfurous acids and hydrazine at 25 C: the pH of a beaker made up at a
+  half-neutralisation point against the evaluated pK's of Goldberg, Kishore & Lennen
+  (2002).  A structural illustration of the C373 phase 2 records, not validated against a
+  measured pH (none in hand).
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Half-neutralisation beakers of phosphoric, pyrophosphoric, arsenic and sulfurous acids and hydrazinium at 25 C against the evaluated pK's of Goldberg, Kishore & Lennen 2002 (Section 8). A structural illustration, not validated against a measured pH.";
+verbosity     2;

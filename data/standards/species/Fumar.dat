@@ -1,10 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/Fumar.dat -- ONE model species, ONE typed file: the doubly charged anion of fumaric acid.
-
-  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of fumaric acid is evaluated in
-  Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 6 (Ionization data for some Krebs compounds), p. 1057, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
-  in hand prints a formation enthalpy or entropy of this aqueous ion, so a balance that needs its
-  enthalpy REFUSES BY NAME instead of borrowing a value.
+  species/Fumar.dat -- ONE model species, ONE typed file: the fully dissociated form of fumaric acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -13,3 +13,9 @@ name    Fumar;
 formula     "C4H2O4-2";
 charge  -2;
 MW { value 114.056; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -777.57: printed dHf(aq ion 2-), equals -775.18 + 0.46 - 2.85 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2, p. 1059 (read from a page image) ## sAq [J/mol/K] 105.25: S(aq acid) 260.45 + dS_ion1 -57.7 + dS_ion2 -97.5 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2 p. 1059 and Table 6 p. 1057 (read from a page image), Table 2 prints dS_ion -152.2 and S(aq ion 2-) 108.3, 3.0 J/mol/K away from Table 6 (-57.7 - 97.5 = -155.2), its own dG_ion +43.93 and dH_ion -2.39 give (dH - dG)/T = -155.4, which agrees with Table 6 and not with the printed -152.2, so the Table 6 route is chosen";
+hfAq { value -777570; unit J/mol;}
+sAq  { value 105.25; unit J/mol/K;}
+}

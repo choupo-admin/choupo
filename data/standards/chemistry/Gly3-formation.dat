@@ -1,0 +1,18 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/Gly3-formation.dat -- a dissociation of glycylglycylglycine, written from the master:
+      HGly3  <=>  Gly3 + H+
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 3.224, dH1 = 0.84 kJ/mol (grade AC)
+      pK2 = 8.090, dH2 = 41.7 kJ/mol (grade AC)
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  The master is HGly3, the form a case declares; this record carries step 2 (the sign flips with the direction written).
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species Gly3; masters ( { ion HGly3; nu 1; } { ion H; nu -1; } );
+      logK25 -8.09; dH 41700; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 359, and Section 7.34, p. 289: pK2 8.090, dH2 41.7 kJ/mol (pK, dH_ion at 298.15 K)";

@@ -1,0 +1,40 @@
+species	quantity	value	unit	src	derivation	where	image	note
+HSucc	hfAq	-908.93	kJ/mol	MILL90	dHf(aq acid) -912.11 + dH_ion1 +3.18	Table 2 p. 1059 (dHf(aq acid)) and Table 6 p. 1057 (dH_ion1)	yes	the aqueous acid is the printed dHf(cr) -940.81 +/- 0.42 plus dH(soln) 28.70; the record keeps no hfAq on the neutral master (its datum is components/succinicAcid.dat + parameters/solution/succinicAcid-water.dat)
+HSucc	sAq	190.72	J/mol/K	MILL90	S(aq acid) 260.62 + dS_ion1 -69.9	Table 2 p. 1059 and Table 6 p. 1057	yes	
+Succ	hfAq	-909.37	kJ/mol	MILL90	printed dHf(aq ion 2-) in the succinic column; equals -912.11 + 3.18 - 0.45	Table 2, p. 1059	yes	the two Table 6 enthalpies sum to 2.73, the printed dH_ion (both steps)
+Succ	sAq	81.5	J/mol/K	MILL90	printed S(aq ion 2-); equals 260.62 - 69.9 - 109.2 = 81.52	Table 2, p. 1059	yes	
+HFumar	hfAq	-774.72	kJ/mol	MILL90	dHf(aq acid) -775.18 + dH_ion1 +0.46	Table 2 p. 1059 and Table 6 p. 1057	yes	the aqueous acid is the printed dHf(cr) -810.98 +/- 0.63 plus dH(soln) 35.8
+HFumar	sAq	202.75	J/mol/K	MILL90	S(aq acid) 260.45 + dS_ion1 -57.7	Table 2 p. 1059 and Table 6 p. 1057	yes	
+Fumar	hfAq	-777.57	kJ/mol	MILL90	printed dHf(aq ion 2-); equals -775.18 + 0.46 - 2.85	Table 2, p. 1059	yes	
+Fumar	sAq	105.25	J/mol/K	MILL90	S(aq acid) 260.45 + dS_ion1 -57.7 + dS_ion2 -97.5	Table 2 p. 1059 and Table 6 p. 1057	yes	Table 2 prints dS_ion -152.2 and S(aq ion 2-) 108.3, 3.0 J/mol/K away from Table 6 (-57.7 - 97.5 = -155.2); its own dG_ion +43.93 and dH_ion -2.39 give (dH - dG)/T = -155.4, which agrees with Table 6 and not with the printed -152.2, so the Table 6 route is chosen
+HMalic	hfAq	-1080.86	kJ/mol	MILL90	dHf(aq acid, DL) -1083.81 + dH_ion1 +2.95	Table 5 p. 1056 and Table 6 p. 1057	yes	the aqueous acid is the printed dHf(cr, DL) -1105.66 +/- 0.63 plus dH(soln) 21.85; racemic acid, as the Eden & Bates ionisation constants
+Malic	hfAq	-1082.04	kJ/mol	MILL90	dHf(aq acid, DL) -1083.81 + 2.95 - 1.18	Table 5 p. 1056 and Table 6 p. 1057	yes	no entropy: Miller prints no S of malic acid or malate
+Lac	hfAq	-686.63	kJ/mol	MILL90	dHf(aq acid, L) -686.2 + dH_ion -0.43	Table 5 p. 1056 and Table 6 p. 1057	yes	the aqueous acid is the printed dHf -694.0 +/- 1.0 plus dH(soln) +7.82; no entropy printed
+H2Gly	hfAq	-518.37	kJ/mol	MILL90	dHf(aq glycine) -514.36 - dH_ion1 +4.01	Table 3, p. 1054, and Table 6, p. 1057	yes	the aqueous glycine is dHf(cr) -528.52 +/- 0.50 plus dH(soln) +14.16
+H2Gly	sAq	189.95	J/mol/K	MILL90	S(aq glycine) 158.45 - dS_ion1 (-31.5)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+HGly	hfAq	-514.36	kJ/mol	MILL90	printed dHf(aq) of glycine	Table 3, p. 1054	yes	dHf(cr) -528.52 +/- 0.50 + dH(soln) +14.16 +/- 0.01
+HGly	sAq	158.45	J/mol/K	MILL90	printed S(aq) of glycine	Table 3, p. 1054	yes	
+Gly	hfAq	-470.26	kJ/mol	MILL90	dHf(aq glycine) -514.36 + dH_ion2 +44.1	Table 3, p. 1054, and Table 6, p. 1057	yes	
+Gly	sAq	119.25	J/mol/K	MILL90	S(aq glycine) 158.45 + dS_ion2 (-39.2)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+H2Ala	hfAq	-556.76	kJ/mol	MILL90	dHf(aq L-alanine) -553.75 - dH_ion1 +3.01	Table 3, p. 1054, and Table 6, p. 1057	yes	the aqueous alanine is dHf(cr) -561.24 +/- 0.63 plus dH(soln) +7.49
+H2Ala	sAq	194.50	J/mol/K	MILL90	S(aq alanine) 159.80 - dS_ion1 (-34.7)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+HAla	hfAq	-553.75	kJ/mol	MILL90	printed dHf(aq) of L-alanine	Table 3, p. 1054	yes	
+HAla	sAq	159.80	J/mol/K	MILL90	printed S(aq) of L-alanine	Table 3, p. 1054	yes	
+Ala	hfAq	-508.52	kJ/mol	MILL90	dHf(aq alanine) -553.75 + dH_ion2 +45.23	Table 3, p. 1054, and Table 6, p. 1057	yes	
+Ala	sAq	122.60	J/mol/K	MILL90	S(aq alanine) 159.80 + dS_ion2 (-37.2)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+H3Aspt	hfAq	-954.96	kJ/mol	MILL90	dHf(aq L-aspartic acid) -947.50 - dH_ion1 +7.46	Table 3, p. 1054, and Table 6, p. 1057	yes	the aqueous acid is dHf(cr) -973.32 +/- 0.92 plus dH(soln) +25.82
+H3Aspt	sAq	242.49	J/mol/K	MILL90	S(aq aspartic acid) 229.49 - dS_ion1 (-13.0)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+H2Aspt	hfAq	-947.50	kJ/mol	MILL90	printed dHf(aq) of L-aspartic acid	Table 3, p. 1054	yes	
+H2Aspt	sAq	229.49	J/mol/K	MILL90	printed S(aq) of L-aspartic acid	Table 3, p. 1054	yes	
+HAspt	hfAq	-942.86	kJ/mol	MILL90	printed dHf of the monoanion (-+-)	Table 3, p. 1054	yes	built there on dH_ion +4.64; Table 6 prints +4.60, which would give -942.90
+HAspt	sAq	170.09	J/mol/K	MILL90	S(aq aspartic acid) 229.49 + dS_ion2 (-59.4)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+Aspt	hfAq	-905.10	kJ/mol	MILL90	HAsp -942.86 + dH_ion3 +37.76	Table 3, p. 1054, and Table 6, p. 1057	yes	
+Aspt	sAq	105.19	J/mol/K	MILL90	HAsp 170.09 + dS_ion3 (-64.9)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+H3Glu	hfAq	-980.45	kJ/mol	MILL90	dHf(aq L-glutamic acid) -980.72 - dH_ion1 (-0.27)	Table 3, p. 1054, and Table 6, p. 1057	yes	the aqueous acid is dHf(cr) -1005.25 +/- 1.26 plus dH(soln) +24.53
+H3Glu	sAq	289.20	J/mol/K	MILL90	S(aq glutamic acid) 246.90 - dS_ion1 (-42.3)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+H2Glu	hfAq	-980.72	kJ/mol	MILL90	printed dHf(aq) of L-glutamic acid	Table 3, p. 1054	yes	
+H2Glu	sAq	246.90	J/mol/K	MILL90	printed S(aq) of L-glutamic acid	Table 3, p. 1054	yes	
+HGlu	hfAq	-979.16	kJ/mol	MILL90	printed dHf of the monoanion (-+-); = -980.72 + dH_ion2 +1.56	Table 3, p. 1054	yes	
+HGlu	sAq	170.30	J/mol/K	MILL90	S(aq glutamic acid) 246.90 + dS_ion2 (-76.6)	Table 3, p. 1054, and Table 6, p. 1057	yes	
+Glu	hfAq	-939.09	kJ/mol	MILL90	HGlu -979.16 + dH_ion3 +40.07	Table 3, p. 1054, and Table 6, p. 1057	yes	
+Glu	sAq	114.59	J/mol/K	MILL90	HGlu 170.30 + (dH_ion3 +40.07 - dG_ion3 56.68)/T, with dG_ion3 = ln10 R T pK3 for pK3 9.93	Table 3, p. 1054, and Table 6, p. 1057	yes	Table 6 prints dS_ion3 -44.8 J/mol/K, which with dH_ion3 +40.07 corresponds to pK3 9.36, not to the 9.93 the table prints (footnote h: Miller replaced the literature 9.37 by 9.93, calculated at I = 0 from 9.67 at 0.1 mol/dm3 KCl, and kept the entropy); the entropy is therefore derived from the pK and dH so that the Gibbs identity closes (check_logk_crosscheck found the 0.57 log unit disagreement); the printed route would give 125.50

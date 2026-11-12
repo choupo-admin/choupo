@@ -1,10 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/Succ.dat -- ONE model species, ONE typed file: the doubly charged anion of succinic acid.
-
-  NO `aqueousThermo` ON PURPOSE.  The ionisation (pK, dH, dCp) of succinic acid is evaluated in
-  Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231, Table 7.57 (Succinate), p. 340, and is in chemistry/ -- so the SPECIATION (pH, distribution) is complete.  No work
-  in hand prints a formation enthalpy or entropy of this aqueous ion, so a balance that needs its
-  enthalpy REFUSES BY NAME instead of borrowing a value.
+  species/Succ.dat -- ONE model species, ONE typed file: the fully dissociated form of succinic acid.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are DERIVED from printed numbers; the arithmetic, tables and pages are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -13,3 +13,9 @@ name    Succ;
 formula     "C4H4O4-2";
 charge  -2;
 MW { value 116.072; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -909.37: printed dHf(aq ion 2-) in the succinic column, equals -912.11 + 3.18 - 0.45 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2, p. 1059 (read from a page image), the two Table 6 enthalpies sum to 2.73, the printed dH_ion (both steps) ## sAq [J/mol/K] 81.5: printed S(aq ion 2-), equals 260.62 - 69.9 - 109.2 = 81.52 -- Miller & Smith-Magowan, J. Phys. Chem. Ref. Data 19 (1990) 1049, Table 2, p. 1059 (read from a page image)";
+hfAq { value -909370; unit J/mol;}
+sAq  { value 81.5; unit J/mol/K;}
+}

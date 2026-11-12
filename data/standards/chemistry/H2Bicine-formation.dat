@@ -1,0 +1,21 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/H2Bicine-formation.dat -- a protonation of Bicine, written from the master:
+      HBicine + H+  <=>  H2Bicine
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv.
+
+  logK25 and dH are the PRINTED values of the sources below (standard state ideal solution at 1 mol/kg, 298.15 K):
+      pK1 = 2.0, dH not printed (grade DD)
+      pK2 = 8.334, dH2 = 26.34 kJ/mol, dCp 0 J/mol/K (grade AAA)
+  Source: Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231; standard state: hypothetical ideal solution of unit molality, 298.15 K, 0.1 MPa (Section 8, p. 359).
+  The master is HBicine, the form a case declares; this record carries step 1 (the sign flips with the direction written).
+  A dH is not printed for the step this record carries, so it carries NO dH and its K is flat in T,
+  which the engine announces; nothing is borrowed.
+  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
+  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  Goldberg gives no formation data for a buffer.  The species are the acid form(s) and the conjugate base(s) of the section, charges as the section states them, the formula the section's own empirical formula.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species H2Bicine; masters ( { ion HBicine; nu 1; } { ion H; nu 1; } );
+      logK25 2; source "Goldberg, Kishore & Lennen, J. Phys. Chem. Ref. Data 31 (2002) 231 -- Section 8 summary, p. 359, and Section 7.12, p. 255: pK1 2.0 (pK, dH_ion at 298.15 K)";
