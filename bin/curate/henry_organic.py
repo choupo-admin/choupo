@@ -58,8 +58,9 @@ in-sample clean resting on one laboratory is capped at warning with
 lie at ONE temperature cannot give the enthalpy, and the loader refuses a
 Henry record without one: such a pair is REFUSED, never given an invented
 enthalpy.  clean and warning are promoted into data/standards/parameters/
-Henry/ (`reviewStatus autoPromoted; review { by none; }`); a severe record
-stays in its case's constant/parameters/Henry/ (C300 rule 3); refused writes
+Henry/ (`reviewStatus autoPromoted; review { by none; }`), and so is a severe
+one, voiced as severe (Vitor's ruling of 2026-11-12, C285 over C300 rule 3:
+"com 19 % ainda pode ficar; so acima de 20 % e que nao"); refused writes
 nothing.  An existing record for the same (solute, solvent) is never
 overwritten.
 """
@@ -734,9 +735,9 @@ def declare(write):
                  "  error over the kept points: clean up to 5 %, warning up to 10 %, severe up",
                  "  to 20 %, refused above.  An in-sample clean resting on ONE laboratory is",
                  "  capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.",
-                 "  clean and warning are promoted (autoPromoted, review by none) into",
-                 "  data/standards/parameters/Henry/; severe stays in this case's",
-                 "  constant/parameters/Henry/ (C300 rule 3); refused writes nothing.", "",
+                 "  clean, warning and severe are promoted (autoPromoted, review by none)",
+                 "  into data/standards/parameters/Henry/ (C285; Vitor's ruling of",
+                 "  2026-11-12: only above 20 % is refused); refused writes nothing.", "",
                  "  @@RESULT-BEGIN@@", "  (the fit has not run)", "  @@RESULT-END@@", "",
                  "  WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the",
                  "  solvent's own vapour pressure, in the measured range only; the archive's",
@@ -769,7 +770,7 @@ def result_text(s, v, res):
                                              if res["caps"] else "") + ".",
               {"clean": "  PROMOTED into data/standards/parameters/Henry/.",
                "warning": "  PROMOTED into data/standards/parameters/Henry/.",
-               "severe": "  NOT promoted (C300 rule 3): the record is this case's own.",
+               "severe": "  PROMOTED into data/standards/parameters/Henry/ with a SEVERE grade (C285).",
                "refused": f"  REFUSED: {res['why']}."}[res["grade"]]]
     return lines
 
@@ -856,16 +857,16 @@ def fit_case(case, write=False):
                    "@@RESULT-BEGIN@@\n" + new + "\n  @@RESULT-END@@", t, flags=re.S)
         pd.write_text(t)
         std = HENRY / f"{s}-{v}.dat"
-        if res["grade"] in ("severe", "refused") and std.exists() and "henry_organic" in std.read_text():
+        if res["grade"] == "refused" and std.exists() and "henry_organic" in std.read_text():
             std.unlink()            # no longer accepted into the catalogue
         if res["grade"] in ("clean", "warning", "severe"):
             text = record_text(case, s, v, decl, res, fingerprint(case))
-            if res["grade"] == "severe":
-                dest = case / "constant" / "parameters" / "Henry" / f"{s}-{v}.dat"
-            else:
-                dest = HENRY / f"{s}-{v}.dat"
-                if dest.exists() and "henry_organic" not in dest.read_text():
-                    raise SystemExit(f"henry_organic: {dest} exists and is not ours -- never overwritten")
+            dest = HENRY / f"{s}-{v}.dat"
+            if dest.exists() and "henry_organic" not in dest.read_text():
+                raise SystemExit(f"henry_organic: {dest} exists and is not ours -- never overwritten")
+            local = case / "constant" / "parameters" / "Henry" / f"{s}-{v}.dat"
+            if local.exists():
+                local.unlink()      # the C300-rule-3 case-local copy, retired by the 11-12 ruling
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(text)
     return res

@@ -40,9 +40,9 @@
   error over the kept points: clean up to 5 %, warning up to 10 %, severe up
   to 20 %, refused above.  An in-sample clean resting on ONE laboratory is
   capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
-  clean and warning are promoted (autoPromoted, review by none) into
-  data/standards/parameters/Henry/; severe stays in this case's
-  constant/parameters/Henry/ (C300 rule 3); refused writes nothing.
+  clean, warning and severe are promoted (autoPromoted, review by none)
+  into data/standards/parameters/Henry/ (C285; Vitor's ruling of
+  2026-11-12: only above 20 % is refused); refused writes nothing.
 
   @@RESULT-BEGIN@@
   5 points of 1 laboratory(ies); 5 kept,
