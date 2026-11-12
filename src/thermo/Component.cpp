@@ -367,14 +367,14 @@ void Component::readFromDict(const DictPtr& d)
         }
     }
 
-    // Liquid-viscosity parameters: keep the raw `liquidViscosity`
-    // block so the selected model (Andrade / Vogel) reads its own sub-block.
-    // Wilke-Chang association factor (solvent) defaults to 1.0.
-    associationFactor_ = d->lookupScalarOrDefault("associationFactor", 1.0);
+    // Liquid transport blocks kept RAW (each model reads its own sub-block).
+    associationFactor_ = d->lookupScalarOrDefault("associationFactor", 1.0);   // Wilke-Chang
     if (d->found("liquidViscosity"))
         liquidViscDict_ = d->subDict("liquidViscosity");
     if (d->found("liquidThermalConductivity"))
         liquidCondDict_ = d->subDict("liquidThermalConductivity");
+    if (d->found("surfaceTension"))   // stored sigma(T), read by StoredCorrelation
+        surfaceTensionDict_ = d->subDict("surfaceTension");
 
     // Non-volatile / solute extensions.  When `nonvolatile true;`
     // is set, the component is dissolved-only: Antoine and Cp blocks are

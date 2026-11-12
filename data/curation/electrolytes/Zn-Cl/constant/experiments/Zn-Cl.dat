@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Zn-Cl: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Zn)1(Cl)2 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Bi-Univalent Compounds of Zinc, Cadmium, and Ethylene Bis(Trimethylammonium) Chloride and Iodide, J. Phys. Chem. Ref. Data 10 (1981) 1-55,
+    doi:10.1063/1.555639, the ZnCl2 table of recommended values, p. 10 (m, gamma, phi, a_w).
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.555639.pdf): every row read by eye from the page image; phi checked against the printed water activity (ln a_w = -nu m phi M_w, to 2.5e-4) and gamma against its neighbours by the Gibbs-Duhem relation.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "R. N. Goldberg, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: Bi-Univalent Compounds of Zinc, Cadmium, and Ethylene Bis(Trimethylammonium) Chloride and Iodide, J. Phys. Chem. Ref. Data 10 (1981) 1-55";
+    doi           "10.1063/1.555639";
+    location      "the ZnCl2 table of recommended values, p. 10 (m, gamma, phi, a_w)";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.4991   0.8423  
+    0.2     0.4467   0.8415  
+    0.3     0.4193   0.8421  
+    0.4     0.3998   0.8403  
+    0.5     0.3842   0.8363  
+    0.6     0.3707   0.831   
+    0.7     0.3589   0.825   
+    0.8     0.3483   0.8188  
+    0.9     0.3388   0.8128  
+    1       0.3302   0.8071  
+    1.25    0.3124   0.796   
+    1.5     0.2989   0.7899  
+    1.75    0.2892   0.7893  
+    2       0.2826   0.7939  
+);

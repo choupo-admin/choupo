@@ -309,6 +309,9 @@
   "ChapmanEnskog": [
    "src/thermo/transport/ChapmanEnskog.H"
   ],
+  "CheckResult": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
   "ChemSepCond16": [
    "src/thermo/transport/ChemSepCond16.H"
   ],
@@ -498,6 +501,12 @@
   "DemandSample": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "DensityRoot": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
+  "Derivs": [
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
+  ],
   "DesignReport": [
    "src/reporting/DesignReport.H"
   ],
@@ -635,6 +644,9 @@
   ],
   "ElectrolyteAssembly": [
    "src/thermo/activityCoefficient/ElectrolyteActivity.H"
+  ],
+  "ElectrolyteFit": [
+   "src/propertyOps/ElectrolyteFit.H"
   ],
   "ElectrolyteModel": [
    "src/thermo/electrolyte/ElectrolyteModel.H"
@@ -956,6 +968,9 @@
   ],
   "HeldPhase": [
    "src/core/ResultRecords.H"
+  ],
+  "HelmholtzPureFluid": [
+   "src/thermo/equationOfState/ReferencePureFluid.H"
   ],
   "HenryIsotherm": [
    "src/thermo/adsorbent/IsothermModel.H"
@@ -1722,6 +1737,15 @@
   "RecycleLoop": [
    "src/result/SimulationResult.H"
   ],
+  "ReducedHelmholtz": [
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
+  ],
+  "ReferenceEoSOp": [
+   "src/propertyOps/ReferenceEoSOp.H"
+  ],
+  "ReferenceFluid": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
   "ReliefScenario": [
    "src/core/ResultRecords.H"
   ],
@@ -1822,6 +1846,9 @@
   ],
   "SaturatedVapour": [
    "src/thermo/VapourAssociation.H"
+  ],
+  "Saturation": [
+   "src/thermo/equationOfState/ReferenceFluid.H"
   ],
   "SaturationLegs": [
    "src/unitOperations/flash/PureSaturationPlateau.H"
@@ -2011,7 +2038,8 @@
    "src/control/signal/Signals.H"
   ],
   "State": [
-   "src/thermo/electrolyte/ENRTLMultiSalt.H"
+   "src/thermo/electrolyte/ENRTLMultiSalt.H",
+   "src/thermo/equationOfState/ReferenceFluid.H"
   ],
   "Stats": [
    "src/propertyOps/LleResidual.H"
@@ -2033,6 +2061,9 @@
   ],
   "StorageTankSize": [
    "src/postProcessing/sizing/StorageTankSize.H"
+  ],
+  "StoredCorrelation": [
+   "src/thermo/transport/StoredCorrelation.H"
   ],
   "Stream": [
    "src/streams/Stream.H"
@@ -2079,6 +2110,9 @@
   ],
   "Term": [
    "src/thermo/electrolyte/AqueousVolumetric.H"
+  ],
+  "TermGroup": [
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
   ],
   "ThermalConductivityModel": [
    "src/thermo/transport/ThermalConductivityModel.H"
@@ -2587,6 +2621,10 @@
     "type": "ENRTLMultiSaltOp"
    },
    {
+    "key": "electrolyteFit",
+    "type": "ElectrolyteFit"
+   },
+   {
     "key": "gibbsMap",
     "type": "GibbsMapOp"
    },
@@ -2617,6 +2655,10 @@
    {
     "key": "steamTables",
     "type": "SteamTables"
+   },
+   {
+    "key": "referenceEoS",
+    "type": "ReferenceEoSOp"
    },
    {
     "key": "scalingScan",
@@ -2801,6 +2843,14 @@
    {
     "key": "brockbird",
     "type": "BrockBird"
+   },
+   {
+    "key": "StoredCorrelation",
+    "type": "StoredCorrelation"
+   },
+   {
+    "key": "storedCorrelation",
+    "type": "StoredCorrelation"
    }
   ],
   "src/thermo/adsorbent/IsothermModel.cpp": [
@@ -2855,6 +2905,10 @@
    {
     "key": "IF97",
     "type": "IF97WaterFluid"
+   },
+   {
+    "key": "Helmholtz",
+    "type": "HelmholtzPureFluid"
    }
   ],
   "src/thermo/reaction/ReactionRate.cpp": [
@@ -5668,14 +5722,45 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/propertyOps/ENRTLMultiSaltOp.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/ENRTLMultiSalt.H",
+   "src/thermo/electrolyte/ENRTLSingleSalt.H",
+   "src/thermo/electrolyte/PitzerForm.H",
+   "src/thermo/electrolyte/PitzerSingleSalt.H",
+   "src/thermo/electrolyte/SaltFromCatalogue.H",
+   "src/thermo/electrolyte/SolventProperties.H"
+  ],
+  "src/propertyOps/ElectrolyteFit.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/propertyOps/ElectrolyteFit.H",
+   "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/FitAlgebra.H",
+   "src/propertyOps/FitObjective.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
+   "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/PitzerForm.H",
    "src/thermo/electrolyte/PitzerSingleSalt.H",
@@ -5779,6 +5864,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/propertyOps/CasePackage.H",
    "src/propertyOps/Exchange.H",
@@ -5786,7 +5872,10 @@
    "src/propertyOps/Speciate.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/ExchangeInput.H",
@@ -5966,13 +6055,17 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/FreezingPoint.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/PitzerForm.H",
@@ -6345,13 +6438,17 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/propertyOps/EvidencePartition.H",
    "src/propertyOps/PitzerActivity.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/PitzerForm.H",
@@ -6465,6 +6562,7 @@
    "src/propertyOps/DataReconciliation.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
    "src/propertyOps/ENRTLMultiSaltOp.H",
+   "src/propertyOps/ElectrolyteFit.H",
    "src/propertyOps/ElectrolytePackageActivity.H",
    "src/propertyOps/ElementCompositionOp.H",
    "src/propertyOps/EnthalpyConcentration.H",
@@ -6508,6 +6606,7 @@
    "src/propertyOps/RateLawBench.H",
    "src/propertyOps/ReactionCurve.H",
    "src/propertyOps/ReactionGibbs.H",
+   "src/propertyOps/ReferenceEoSOp.H",
    "src/propertyOps/ScalingScan.H",
    "src/propertyOps/SolubilityParameter.H",
    "src/propertyOps/Speciate.H",
@@ -6735,6 +6834,21 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H"
   ],
+  "src/propertyOps/ReferenceEoSOp.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PublishedTable.H",
+   "src/core/Types.H",
+   "src/propertyOps/PropertyOperation.H",
+   "src/propertyOps/ReferenceEoSOp.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
   "src/propertyOps/RiaziDaubert.cpp": [
    "src/propertyOps/ConstantEstimator.H",
    "src/propertyOps/RiaziDaubert.H",
@@ -6786,6 +6900,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/core/Units.H",
    "src/propertyOps/CasePackage.H",
@@ -6795,8 +6910,11 @@
    "src/thermo/ChemistrySystem.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/ThermoPackageBuilder.H",
@@ -7733,6 +7851,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/core/distribution/SizeDistribution.H",
    "src/solver/Convergence.H",
@@ -7743,8 +7862,11 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/ElementComposition.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -7800,12 +7922,16 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/thermo/AtomicWeights.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/ElementComposition.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
@@ -7911,7 +8037,8 @@
    "src/core/Dimensions.H",
    "src/core/Types.H",
    "src/thermo/SurfaceTensionModel.H",
-   "src/thermo/transport/BrockBird.H"
+   "src/thermo/transport/BrockBird.H",
+   "src/thermo/transport/StoredCorrelation.H"
   ],
   "src/thermo/SystemClassifier.cpp": [
    "src/core/Dictionary.H",
@@ -8067,10 +8194,14 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/activityCoefficient/ElectrolyteActivity.H",
@@ -8236,10 +8367,14 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
@@ -8273,10 +8408,14 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/ExchangeInput.H",
@@ -8292,10 +8431,14 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/AqueousActivity.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
@@ -8312,12 +8455,16 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonND.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
@@ -8340,11 +8487,15 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/NewtonND.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/AqueousActivity.H",
@@ -8401,6 +8552,12 @@
    "src/thermo/equationOfState/PR.H",
    "src/thermo/equationOfState/SRK.H"
   ],
+  "src/thermo/equationOfState/HelmholtzEnergy.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H"
+  ],
   "src/thermo/equationOfState/IdealGas.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -8433,6 +8590,28 @@
    "src/thermo/equationOfState/CubicEoS.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/equationOfState/PR.H"
+  ],
+  "src/thermo/equationOfState/ReferenceFluid.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H"
+  ],
+  "src/thermo/equationOfState/ReferencePureFluid.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H",
+   "src/thermo/equationOfState/ReferencePureFluid.H",
+   "src/thermo/pureFluid/PureFluidModel.H"
   ],
   "src/thermo/equationOfState/SRK.cpp": [
    "src/core/Constants.H",
@@ -8684,6 +8863,9 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H",
+   "src/thermo/equationOfState/ReferencePureFluid.H",
    "src/thermo/iapws/IAPWSTransport.H",
    "src/thermo/iapws/IF97.H",
    "src/thermo/pureFluid/IF97WaterFluid.H",
@@ -8967,6 +9149,18 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/StokesEinstein.H"
   ],
+  "src/thermo/transport/StoredCorrelation.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/SurfaceTensionModel.H",
+   "src/thermo/transport/BrockBird.H",
+   "src/thermo/transport/StoredCorrelation.H"
+  ],
   "src/thermo/transport/ThermalConductivityModel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -9062,6 +9256,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -9069,8 +9264,11 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -9359,8 +9557,11 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
@@ -9837,12 +10038,16 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -9866,6 +10071,7 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -9874,8 +10080,11 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -9903,10 +10112,14 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
    "src/thermo/electrolyte/PitzerForm.H",
@@ -10557,6 +10770,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -10564,8 +10778,11 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -10587,6 +10804,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/core/Units.H",
    "src/result/ClosureVariable.H",
@@ -10595,8 +10813,11 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -10650,13 +10871,17 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonND.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -10716,13 +10941,17 @@
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/RegistryRefusal.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/solver/NewtonND.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -10780,12 +11009,16 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -11614,6 +11847,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -11621,8 +11855,11 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
+   "src/thermo/ReviewRecord.H",
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
@@ -11930,6 +12167,7 @@
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -11993,6 +12231,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
@@ -12011,6 +12250,7 @@
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/vaporPressure/AmbroseWalton.cpp",
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/unitOperations/UnitAcceptance.cpp",
@@ -12629,6 +12869,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -12678,6 +12919,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -12747,9 +12989,12 @@
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
@@ -12793,6 +13038,7 @@
    "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -13006,6 +13252,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -13055,6 +13302,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -13124,9 +13372,12 @@
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
@@ -13170,6 +13421,7 @@
    "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -13478,6 +13730,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -13521,6 +13774,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -13584,6 +13838,7 @@
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -13609,6 +13864,7 @@
    "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -13791,6 +14047,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -13834,6 +14091,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -13900,6 +14158,7 @@
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
@@ -13926,6 +14185,7 @@
    "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -14137,6 +14397,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -14182,6 +14443,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -14404,7 +14666,13 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
+   "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/Speciate.cpp",
    "src/reporting/ComputedReport.cpp",
    "src/reporting/DesignReport.cpp",
    "src/reporting/EconomicsReport.cpp",
@@ -14424,13 +14692,22 @@
    "src/result/ComponentIdentity.cpp",
    "src/result/EquipmentList.cpp",
    "src/result/ResultEmitter.cpp",
+   "src/streams/StreamStateIO.cpp",
+   "src/thermo/Component.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
+   "src/thermo/electrolyte/ExchangeInput.cpp",
+   "src/thermo/electrolyte/PitzerHMW.cpp",
+   "src/thermo/electrolyte/ReactiveVLE.cpp",
+   "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchAdsorber.cpp",
    "src/unitOperations/batch/BatchCrystalliser.cpp",
@@ -14441,8 +14718,17 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/electrochem/EDCell.cpp",
+   "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/electrochem/LimitingCurrent.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
-   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
+   "src/unitOperations/membrane/RatedTestInversion.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/core/Types.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -14532,6 +14818,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -14581,6 +14868,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -14667,9 +14955,12 @@
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
    "src/thermo/equationOfState/CubicEoS.cpp",
    "src/thermo/equationOfState/EquationOfState.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/IdealGas.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
@@ -14716,6 +15007,7 @@
    "src/thermo/transport/NeufeldOmega.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -15323,6 +15615,10 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/PropertyOperation.cpp"
   ],
+  "src/propertyOps/ElectrolyteFit.H": [
+   "src/propertyOps/ElectrolyteFit.cpp",
+   "src/propertyOps/PropertyOperation.cpp"
+  ],
   "src/propertyOps/ElectrolytePackageActivity.H": [
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/PropertyOperation.cpp"
@@ -15342,6 +15638,7 @@
   "src/propertyOps/EvidencePartition.H": [
    "src/applications/choupoProps/main.cpp",
    "src/propertyOps/CurationDossier.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/EstimateComponent.cpp",
    "src/propertyOps/EvidencePartition.cpp",
    "src/propertyOps/FitObjective.cpp",
@@ -15373,10 +15670,12 @@
   ],
   "src/propertyOps/FitAlgebra.H": [
    "src/propertyOps/CompactionFit.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitParametersMembrane.cpp"
   ],
   "src/propertyOps/FitObjective.H": [
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/FitObjective.cpp",
    "src/propertyOps/FitParameters.cpp",
    "src/propertyOps/FitWeighting.cpp",
@@ -15501,6 +15800,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -15543,6 +15843,7 @@
    "src/propertyOps/RateLawBench.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -15596,6 +15897,10 @@
   "src/propertyOps/ReactionGibbs.H": [
    "src/propertyOps/PropertyOperation.cpp",
    "src/propertyOps/ReactionGibbs.cpp"
+  ],
+  "src/propertyOps/ReferenceEoSOp.H": [
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp"
   ],
   "src/propertyOps/ReynoldsSweep.H": [
    "src/propertyOps/FrictionBench.cpp",
@@ -16851,6 +17156,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -16894,6 +17200,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -16957,6 +17264,7 @@
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PCSAFT.cpp",
    "src/thermo/equationOfState/PR.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/SRK.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -16981,6 +17289,7 @@
    "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -17143,6 +17452,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -17186,6 +17496,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -17241,6 +17552,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
@@ -17377,14 +17689,39 @@
    "src/unitOperations/heatTransfer/Heater.cpp"
   ],
   "src/thermo/FitGrade.H": [
+   "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
+   "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/Speciate.cpp",
+   "src/streams/StreamStateIO.cpp",
+   "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
-   "src/thermo/phase/LiquidPhase.cpp"
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
+   "src/thermo/electrolyte/ExchangeInput.cpp",
+   "src/thermo/electrolyte/PitzerHMW.cpp",
+   "src/thermo/electrolyte/ReactiveVLE.cpp",
+   "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/electrochem/EDCell.cpp",
+   "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/electrochem/LimitingCurrent.cpp",
+   "src/unitOperations/membrane/RatedTestInversion.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/thermo/PackageAudit.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -17612,13 +17949,38 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/PairAudit.H": [
+   "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
+   "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/Speciate.cpp",
+   "src/streams/StreamStateIO.cpp",
+   "src/thermo/Component.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
-   "src/thermo/phase/LiquidPhase.cpp"
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
+   "src/thermo/electrolyte/ExchangeInput.cpp",
+   "src/thermo/electrolyte/PitzerHMW.cpp",
+   "src/thermo/electrolyte/ReactiveVLE.cpp",
+   "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/electrochem/EDCell.cpp",
+   "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/electrochem/LimitingCurrent.cpp",
+   "src/unitOperations/membrane/RatedTestInversion.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/thermo/PricedDensity.H": [
    "src/postProcessing/sizing/GasStoreSize.cpp",
@@ -17701,6 +18063,7 @@
    "src/propertyOps/DataReconciliation.cpp",
    "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/ElectrolytePackageActivity.cpp",
    "src/propertyOps/ElementCompositionOp.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -17743,6 +18106,7 @@
    "src/propertyOps/PurePhaseDiagram.cpp",
    "src/propertyOps/ReactionCurve.cpp",
    "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/ReferenceEoSOp.cpp",
    "src/propertyOps/ScalingScan.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/propertyOps/Speciate.cpp",
@@ -17795,6 +18159,7 @@
    "src/thermo/electrolyte/ReactiveVLE.cpp",
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
@@ -17898,15 +18263,40 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/ReviewRecord.H": [
+   "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
+   "src/propertyOps/Exchange.cpp",
+   "src/propertyOps/FreezingPoint.cpp",
+   "src/propertyOps/PitzerActivity.cpp",
+   "src/propertyOps/Speciate.cpp",
+   "src/streams/StreamStateIO.cpp",
+   "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ReviewRecord.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
-   "src/thermo/phase/LiquidPhase.cpp"
+   "src/thermo/electrolyte/AqueousVolumetric.cpp",
+   "src/thermo/electrolyte/ExchangeInput.cpp",
+   "src/thermo/electrolyte/PitzerHMW.cpp",
+   "src/thermo/electrolyte/ReactiveVLE.cpp",
+   "src/thermo/electrolyte/SpeciationSolver.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/electrochem/EDCell.cpp",
+   "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/electrochem/LimitingCurrent.cpp",
+   "src/unitOperations/membrane/RatedTestInversion.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/separation/IonExchanger.cpp"
   ],
   "src/thermo/SaturationCurves.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -18013,7 +18403,8 @@
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/SurfaceTensionModel.cpp",
    "src/thermo/ThermoPackage.cpp",
-   "src/thermo/transport/BrockBird.cpp"
+   "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp"
   ],
   "src/thermo/SystemClassifier.H": [
    "src/thermo/SystemClassifier.cpp",
@@ -18025,6 +18416,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -18688,6 +19080,7 @@
   ],
   "src/thermo/electrolyte/ENRTLSingleSalt.H": [
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -18752,6 +19145,7 @@
   ],
   "src/thermo/electrolyte/PitzerForm.H": [
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -18787,6 +19181,7 @@
   ],
   "src/thermo/electrolyte/PitzerSingleSalt.H": [
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -18826,6 +19221,7 @@
   ],
   "src/thermo/electrolyte/SaltFromCatalogue.H": [
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -18858,6 +19254,7 @@
   ],
   "src/thermo/electrolyte/SolventProperties.H": [
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
+   "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
    "src/propertyOps/FreezingPoint.cpp",
    "src/propertyOps/PitzerActivity.cpp",
@@ -18957,6 +19354,13 @@
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp"
   ],
+  "src/thermo/equationOfState/HelmholtzEnergy.H": [
+   "src/propertyOps/ReferenceEoSOp.cpp",
+   "src/thermo/equationOfState/HelmholtzEnergy.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/pureFluid/PureFluidModel.cpp"
+  ],
   "src/thermo/equationOfState/IdealGas.H": [
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/IdealGas.cpp"
@@ -18968,6 +19372,16 @@
   "src/thermo/equationOfState/PR.H": [
    "src/thermo/equationOfState/EquationOfState.cpp",
    "src/thermo/equationOfState/PR.cpp"
+  ],
+  "src/thermo/equationOfState/ReferenceFluid.H": [
+   "src/propertyOps/ReferenceEoSOp.cpp",
+   "src/thermo/equationOfState/ReferenceFluid.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/pureFluid/PureFluidModel.cpp"
+  ],
+  "src/thermo/equationOfState/ReferencePureFluid.H": [
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/pureFluid/PureFluidModel.cpp"
   ],
   "src/thermo/equationOfState/SRK.H": [
    "src/thermo/equationOfState/EquationOfState.cpp",
@@ -19165,6 +19579,7 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/ThermoPackage.cpp",
+   "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp",
@@ -19264,7 +19679,8 @@
   ],
   "src/thermo/transport/BrockBird.H": [
    "src/thermo/SurfaceTensionModel.cpp",
-   "src/thermo/transport/BrockBird.cpp"
+   "src/thermo/transport/BrockBird.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp"
   ],
   "src/thermo/transport/ChapmanEnskog.H": [
    "src/thermo/transport/ChapmanEnskog.cpp",
@@ -19380,6 +19796,10 @@
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp"
+  ],
+  "src/thermo/transport/StoredCorrelation.H": [
+   "src/thermo/SurfaceTensionModel.cpp",
+   "src/thermo/transport/StoredCorrelation.cpp"
   ],
   "src/thermo/transport/ThermalConductivityModel.H": [
    "src/applications/choupoBatch/main.cpp",

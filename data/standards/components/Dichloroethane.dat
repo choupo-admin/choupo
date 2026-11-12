@@ -60,6 +60,30 @@ triplePoint
     P   239.8683;
 }
 
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     128.4243413;
+        B     -5084.576848;
+        C     -20.80678073;
+        D     0;
+        E     0;
+        Tmin  288.15;
+        Tmax  318.15;
+    }
+}
+
+surfaceTension
+{
+    A     0.05640413712;
+    B     0;
+    Tc    561.58;
+    n     0.9471772007;
+    Tmin  293.15;
+    Tmax  313.15;
+}
+
 provenance
 {
     constants      "CoolProp 7.2.0 -- Thol-THESIS-2015";
@@ -101,5 +125,68 @@ cosmo
                0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
                0.000000     0.000000     0.000000
         );
+    }
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 3.423435;
+        Trange        (288.15 318.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2015.06.041"; articleSha256 "4fb8177b38f53d0390d6b27cac327a95866f8aaf5f6a715432b4ceb09f98f053"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2006.06.009"; articleSha256 "c2d7d9c6191792e0d288a1f5c6a914ac27aca82226c7c082996805069e45bbe2"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je0501890"; articleSha256 "8a6c81df095736c703aa1929e185c4130d9b419e017a2988070bd23641ab86de"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je100552a"; articleSha256 "1d1c37a74eb4bb25bdb19ec863dfd2195704b4388159d37d1967c2606f111f31"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900212d"; articleSha256 "23be66e3c4c8e3c0466a3cf9e0d62d55e000b885189c81812f4b8d01baaa4664"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900278v"; articleSha256 "156d1806c0d58a7dbcf602d69f26bc2bd9d1358763cd84769dbf853ffcb51326"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je900570e"; articleSha256 "3164701b1b97f92564ab7576cedaab896e9ed63888d2d4878cd5557880480ff5"; pointsKept 4; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     7;
+            pointsKept  20;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.576149;
+            max_pct     3.423435;
+        }
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.116650;
+        Trange        (293.15 313.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.jct.2018.12.042"; articleSha256 "8b199618d74134df2752192dabc9cf23ebc4e0a713d059c78acf0dac1443e583"; pointsKept 5; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  5;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.087955;
+            max_pct     0.116650;
+        }
     }
 }

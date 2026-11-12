@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Ca-I: mean ionic activity coefficient gamma_pm and osmotic coefficient
+  phi of the salt (Ca)1(I)2 in water at 298.15 K -- the EVALUATED
+  (recommended) values of
+    R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310,
+    doi:10.1063/1.555569, Table 22, p. 293 (m, gamma, phi, a_w), the recommended values.
+  The evaluation is the primary source of these recommended values (its
+  own references are the measurements behind them).
+  TRANSCRIBED 2026-11-11 (DEV.md 4c C311) from the NIST reprint
+  (nist-jpcrd-1.555569.pdf): every row read by eye from the page image; phi checked against the printed water activity (ln a_w = -nu m phi M_w, to 2.5e-4) and gamma against its neighbours by the Gibbs-Duhem relation.
+  Rows kept: 0.1 mol/kg up to ionic strength 6 mol/kg; a row the
+  source marks saturated, supersaturated or from another author is not
+  here.  Every 4th row (0-based index % 4 == 3, never the first or the
+  last) is HELD OUT by the case (system/propsDict), not by this file.
+\*-----------------------------------------------------------------------------*/
+provenance
+{
+    source        "R. N. Goldberg and R. L. Nuttall, Evaluated Activity and Osmotic Coefficients for Aqueous Solutions: The Alkaline Earth Metal Halides, J. Phys. Chem. Ref. Data 7 (1978) 263-310";
+    doi           "10.1063/1.555569";
+    location      "Table 22, p. 293 (m, gamma, phi, a_w), the recommended values";
+    reviewStatus  transcribed;
+}
+
+temperature 298.15;   // K, every row
+
+columns
+(
+    { name m;     unit mol/kg; }
+    { name gamma; unit -; }       // gamma_pm, molality scale
+    { name phi;   unit -; }       // molal osmotic coefficient
+);
+
+data
+(
+    0.1     0.5518   0.8799  
+    0.2     0.5237   0.9042  
+    0.3     0.5234   0.9365  
+    0.4     0.535    0.972   
+    0.5     0.5541   1.0093  
+    0.6     0.579    1.0481  
+    0.7     0.6089   1.0881  
+    0.8     0.6438   1.1294  
+    0.9     0.6837   1.1718  
+    1       0.7288   1.2154  
+    1.1     0.7795   1.2601  
+    1.2     0.8364   1.3059  
+    1.3     0.9001   1.353   
+    1.4     0.9713   1.4011  
+    1.5     1.0508   1.4505  
+    1.6     1.1396   1.501   
+    1.7     1.239    1.5526  
+    1.8     1.3502   1.6055  
+    1.9     1.4747   1.6595  
+);

@@ -5221,6 +5221,40 @@ PYEOF
     fi
     rm -f /tmp/regpairs.$$
 
+    # transport-records gate (2026-11-11, DEV.md 4c C327).  The liquid
+    # viscosity / thermal-conductivity records fitted from the ThermoML archive
+    # are held to their dataset (parameters, window, labels, grade limits) and,
+    # where the archive cache is reachable, refit from it.
+    if gate_exec "$ROOT/bin/curate/check_transport_records.py" > /tmp/transrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "transport-records-gate" "$(head -1 /tmp/transrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_transport_records.py)\n" "transport-records-gate"
+        cat /tmp/transrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/transrec.$$
+    # regressed-electrolytes gate (2026-11-11, DEV.md 4c C311).  The sibling
+    # of the regressed-pairs gate for the SALT records: every Pitzer / eNRTL
+    # record carrying `fittedInCase` is reproduced by re-running its case
+    # (data/curation/electrolytes/<c>-<a>), its grade is held to the C311
+    # rule and the C300 cap, a severe fit is refused in the catalogue, and a
+    # probe requires the engine to voice a promoted record.  Exit 2 = cannot
+    # run (no binary), reported SKIP, never a pass.
+    gate_exec "$ROOT/bin/curate/check_regressed_electrolytes.py" > /tmp/regelec.$$ 2>&1
+    re_rc=$?
+    if [ "$re_rc" = 0 ]; then
+        printf "PASS  %-40s  (%s)\n" "regressed-electrolytes-gate" "$(tail -1 /tmp/regelec.$$)"
+        pass=$((pass+1))
+    elif [ "$re_rc" = 2 ]; then
+        printf "SKIP  %-40s  (%s; NOT counted as a pass)\n" "regressed-electrolytes-gate" "$(tail -1 /tmp/regelec.$$)"
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_regressed_electrolytes.py)\n" "regressed-electrolytes-gate"
+        cat /tmp/regelec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/regelec.$$
+
     # inline-pair announcement gate (2026-11-05, DEV.md 4c C224).  A binary
     # pair typed in the case is ANNOUNCED `[unreviewed] pair` once per run
     # (stderr + result JSON); a catalogue pair is silent; no number moves.
@@ -5983,6 +6017,22 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/if97reg.$$
+
+    # Reference-EoS gate (2026-11-12, DEV.md 4c C333): every reference
+    # (multiparameter Helmholtz) equation under data/standards/parameters/
+    # Helmholtz/ reproduces EVERY check value its publication prints, at the
+    # printed precision, in an independent Python implementation AND in the
+    # engine (which refuses a record that misses one); the witness
+    # refEoS01_iapws95_verification's CSV states agree with the recomputation.
+    if gate_exec "$ROOT/bin/curate/check_reference_eos.py" > /tmp/refeos.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "reference-eos-gate" "$(gate_claim check_reference_eos /tmp/refeos.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_reference_eos.py)\n" "reference-eos-gate"
+        cat /tmp/refeos.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/refeos.$$
 
     # Data-reconciliation gate (2026-10-20, DEV.md 4c C121): the
     # `dataReconciliation` props op reconciles plant flow readings under the
@@ -6813,6 +6863,17 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/henryrec.$$
+
+    # feature-documented gate (2026-11-12, DEV.md 4c C338, CLAUDE.md rule 4d).  Every name a factory registers is in a labelled Theory/Props Guide section AND the docs/ai catalogue; today's debt is pinned in bin/curate/feature_documented_debt.tsv and may only shrink.
+    if gate_exec "$ROOT/bin/curate/check_feature_documented.py" > /tmp/featdoc.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "feature-documented-gate" "$(head -1 /tmp/featdoc.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_feature_documented.py)\n" "feature-documented-gate"
+        cat /tmp/featdoc.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/featdoc.$$
 
     # model-default-registered gate (2026-09-06).  A `massTransfer {}` block
     # that merely forgot its `model` key died naming 'constant' -- a model the

@@ -32,7 +32,7 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 
 \begin{tutoriallink}
 \file{tutorials/props/compare/aceticWater01\_txy\_association}
-\quad (and 14 more)
+\quad (and 15 more)
 \end{tutoriallink}
 
 \paragraph{\code{explainProperty}}\label{op:explainProperty}
@@ -691,6 +691,29 @@ ONE TOOL CALL, ONE EVIDENCE CARD for a compound: whether the installation catalo
 
 \emph{No tutorial case declares this operation yet.}
 
+\paragraph{\code{electrolyteFit}}\label{op:electrolyteFit}
+Regresses the parameters of ONE fully dissociated salt in water against its mean ionic activity coefficient gamma\_pm and osmotic coefficient phi at one stated temperature, with the engine's own closed forms (PitzerSingleSalt: beta0, beta1, Cphi, and beta2 for a 2:2 salt; ENRTLSingleSalt: tau\_m\_ca, tau\_ca\_m with alpha fixed). The residual is ln gamma\_pm and phi, equal weight; the search is Levenberg-Marquardt. Optionally holds out every N-th point (interleaved points of the same source, reported beside the in-sample errors and never called a validation), grades the in-sample maximum relative error, and writes a proposal file a catalogue record is held equal to (DEV.md 4c C311).
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{anion}\textbf{*} & Anion species \\
+\code{cation}\textbf{*} & Cation species \\
+\code{dataset}\textbf{*} & Dataset \\
+\code{eNRTL} & eNRTL options \\
+\code{grade} & Grade \\
+\code{heldOut} & Held-out points \\
+\code{model}\textbf{*} & Model \\
+\code{objective} & Objective \\
+\code{pitzer} & Pitzer options \\
+\code{proposal} & Proposal file \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/electrolyte/electrolyteFit01\_nacl}
+\end{tutoriallink}
+
 \paragraph{\code{enthalpyConcentration}}\label{op:enthalpyConcentration}
 The saturated-liquid and saturated-vapour enthalpy loci of a BINARY at ONE pressure — the data an enthalpy-concentration (Ponchon-Savarit) construction is drawn on; the construction itself belongs to a drawing tool. Every row is one equilibrium: it carries BOTH ends of a tie line (the liquid x1 with h\_liquid, the vapour y1 with H\_vapour) at the ONE temperature they share, so a consumer never pairs rows by index and never interpolates one end of a tie. \code{role bubble} rows put x1 on the uniform grid, \code{role dew} rows put y1 on it; both are solved through the SAME bubble-point kernel, a dew node being the inversion y\_eq(x) = y1. The op REFUSES up front unless the thermophysical system has EXACTLY 2 components, and unless every component can be priced on the project's one enthalpy datum (the elements at 298.15 K): it names any component with no route to that datum, any component with no idealGasHeatCapacity\{\} block (no saturated-vapour leg), and any component whose standardThermochemistry.referenceState is off the ideal-gas rung — no private Cp integral is ever substituted. A node that cannot be solved (bubble Newton not converged, a non-monotonic y\_eq(x1) that has no single-valued dew inversion, a y1 outside the converged bubble image, an enthalpy kernel refusal) is PUBLISHED as a refusal row with its status, never dropped. Diagnostics headline lambda = H\_vapour $-$ h\_liquid over the locus, the spread of which measures what constant molar overflow costs.
 
@@ -997,6 +1020,23 @@ The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln
 \begin{tutoriallink}
 \file{tutorials/props/gibbs/landscape06\_nitrogen\_fixation\_routes}
 \quad (and 1 more)
+\end{tutoriallink}
+
+\paragraph{\code{referenceEoS}}\label{op:referenceEoS}
+A pure fluid from its REFERENCE (multiparameter Helmholtz-energy) equation of state, read from data/standards/parameters/Helmholtz/<equation>.dat (case-local constant/parameters/Helmholtz/ first). This is a propsDict operation under choupoProps, NOT a flowsheet unit (a flowsheet reaches the same equation through \code{pureFluids \{ <component> \{ method Helmholtz; equation <name>; \} \}}). Loading a record evaluates EVERY check value its publication prints (IAPWS-95: 81) at the printed precision and REFUSES the run on a single miss. Give exactly ONE mode block: state (T with p, or T with rho) or saturation (T, by the Maxwell criterion). A (T, p) state lists every density root of the isotherm with its branch; the stable one is taken unless \code{branch} names one. A (T, p) outside the publication's validity window is announced as an extrapolation. Diagnostics are SI per unit mass. Tutorial: tutorials/props/thermo/refEoS01\_iapws95\_verification.
+
+\begin{tabular}{@{}p{0.30\linewidth}p{0.62\linewidth}@{}}
+\hline
+\code{equation}\textbf{*} & Reference equation \\
+\code{output} & CSV output \\
+\code{saturation} & Saturation state \\
+\code{state} & Single state (T, p) or (T, rho) \\
+\hline
+\end{tabular}
+
+
+\begin{tutoriallink}
+\file{tutorials/props/thermo/refEoS01\_iapws95\_verification}
 \end{tutoriallink}
 
 \paragraph{\code{solubilityParameter}}\label{op:solubilityParameter}

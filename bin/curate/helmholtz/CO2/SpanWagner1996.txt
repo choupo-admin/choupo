@@ -1,0 +1,121 @@
+# SpanWagner1996 -- carbon dioxide, the reference equation of state of
+#   R. Span and W. Wagner, "A New Equation of State for Carbon Dioxide Covering
+#   the Fluid Region from the Triple-Point Temperature to 1100 K at Pressures
+#   up to 800 MPa", J. Phys. Chem. Ref. Data 25(6) (1996) 1509-1596.
+# Source read: https://srd.nist.gov/JPCRD/jpcrd516.pdf  (the NIST JPCRD reprint;
+#   a SCANNED image, no text layer), read on 2026-11-12.
+# HOW THIS FILE WAS MADE: every number below was read off the PAGE IMAGES of
+#   that PDF (rendered at 300-600 dpi), each table TWICE, at two different
+#   resolutions and crops, and the two readings were diffed before a digit was
+#   accepted (they agreed everywhere).  The images are not committed.  The
+#   record data/standards/parameters/Helmholtz/SpanWagner1996.dat is GENERATED
+#   from this file by bin/curate/helmholtz/gen_record.py -- never edit it by hand.
+# Mantissas are written as printed (the page groups digits in threes; the
+#   groups are joined here); "x10^k" is written "ek".
+#
+# Format: `[section] page=<journal page> table=<table>` then rows.
+
+[identity]
+equation SpanWagner1996
+fluid CO2
+citation R. Span and W. Wagner, A New Equation of State for Carbon Dioxide Covering the Fluid Region from the Triple-Point Temperature to 1100 K at Pressures up to 800 MPa, J. Phys. Chem. Ref. Data 25 (1996) 1509-1596
+url https://srd.nist.gov/JPCRD/jpcrd516.pdf
+read 2026-11-12
+
+[constants] page=1544 table=31-footnote
+# R = 0.188 924 1 kJ/(kg K); Tc = 304.128 2 K; rho_c = 467.6 kg/m3
+Tc 304.1282 K
+rhoc 467.6 kg/m3
+R 0.1889241 kJ/kg/K
+
+[triplePoint] page=1560 table=34 (first row, footnote a: triple point)
+T 216.592 K
+
+[validity] page=1509 (title and abstract) and page=1559 (Sec. 9)
+Tmin 216.592 K
+Tmax 1100 K
+pMax 800 MPa
+extrapolation Span and Wagner 1996, Sec. 9 (p. 1559): for the basic properties pressure, enthalpy and fugacity the equation should yield reasonable results within the whole region of chemical stability; the title range is the triple point to 1100 K at pressures up to 800 MPa
+uncertainty Span and Wagner 1996, abstract (p. 1509): in the technically most important region up to 30 MPa and 523 K, density +-0.03 % to +-0.05 %, speed of sound +-0.03 % to +-1 %, isobaric heat capacity +-0.15 % to +-1.5 %; larger outside it
+
+[ideal] page=1540 table=27
+# phi0 = ln delta + a1 + a2 tau + a3 ln tau + sum_{i=4..8} a_i ln(1 - exp(-theta_i tau))   (Table 28, p. 1541)
+# kind coefficient [parameter]: printed i = 1..8 (a_i, theta_i)
+lead0 8.37304456
+lead1 -3.70454304
+logTau 2.50000000
+planckEinstein 1.99427042 3.15163
+planckEinstein 0.62105248 6.11190
+planckEinstein 0.41195293 6.77708
+planckEinstein 1.04028922 11.32384
+planckEinstein 0.08327678 27.08792
+
+[residual-power] page=1544 table=31
+# n_i delta^d tau^t ;  i n d t
+1 0.38856823203161e0 1 0.00
+2 0.29385475942740e1 1 0.75
+3 -0.55867188534934e1 1 1.00
+4 -0.76753199592477e0 1 2.00
+5 0.31729005580416e0 2 0.75
+6 0.54803315897767e0 2 2.00
+7 0.12279411220335e0 3 0.75
+
+[residual-exponential] page=1544 table=31
+# n_i delta^d tau^t exp(-delta^c) ;  i n d t c
+8 0.21658961543220e1 1 1.50 1
+9 0.15841735109724e1 2 1.50 1
+10 -0.23132705405503e0 4 2.50 1
+11 0.58116916431436e-1 5 0.00 1
+12 -0.55369137205382e0 5 1.50 1
+13 0.48946615909422e0 5 2.00 1
+14 -0.24275739843501e-1 6 0.00 1
+15 0.62494790501678e-1 6 1.00 1
+16 -0.12175860225246e0 6 2.00 1
+17 -0.37055685270086e0 1 3.00 2
+18 -0.16775879700426e-1 1 6.00 2
+19 -0.11960736637987e0 4 3.00 2
+20 -0.45619362508778e-1 4 6.00 2
+21 0.35612789270346e-1 4 8.00 2
+22 -0.74427727132052e-2 7 6.00 2
+23 -0.17395704902432e-2 8 0.00 2
+24 -0.21810121289527e-1 2 7.00 3
+25 0.24332166559236e-1 3 12.00 3
+26 -0.37440133423463e-1 3 16.00 3
+27 0.14338715756878e0 5 22.00 4
+28 -0.13491969083286e0 5 24.00 4
+29 -0.23151225053480e-1 6 16.00 4
+30 0.12363125492901e-1 7 24.00 4
+31 0.21058321972940e-2 8 8.00 4
+32 -0.33958519026368e-3 10 2.00 4
+33 0.55993651771592e-2 4 28.00 5
+34 -0.30335118055646e-3 8 14.00 6
+
+[residual-gaussian] page=1544 table=31
+# n_i delta^d tau^t exp(-alpha (delta-eps)^2 - beta (tau-gamma)^2) ;  i n d t alpha beta gamma epsilon
+35 -0.21365488688320e3 2 1.00 25 325 1.16 1.00
+36 0.26641569149272e5 2 0.00 25 300 1.19 1.00
+37 -0.24027212204557e5 2 1.00 25 300 1.19 1.00
+38 -0.28341603423999e3 3 3.00 15 275 1.25 1.00
+39 0.21247284400179e3 3 3.00 20 275 1.22 1.00
+
+[residual-nonAnalytic] page=1544 table=31 (form: Eq. 6.5, p. 1544; Delta as Eq. 6.4, p. 1543)
+# n_i Delta^b delta exp(-C (delta-1)^2 - D (tau-1)^2) ;  i n a b beta A B C D
+40 -0.66642276540751e0 3.500 0.875 0.300 0.700 0.3 10.0 275
+41 0.72608632349897e0 3.500 0.925 0.300 0.700 0.3 10.0 275
+42 0.55068668612842e-1 3.000 0.875 0.300 0.700 1.0 12.5 275
+
+[saturation] page=1560-1561 table=34
+# liquid then vapour, as the table prints them on two lines
+columns T psat rhoL rhoV hL hV sL sV cvL cvV cpL cpV wL wV
+units K MPa kg/m3 kg/m3 kJ/kg kJ/kg kJ/kg/K kJ/kg/K kJ/kg/K kJ/kg/K kJ/kg/K kJ/kg/K m/s m/s
+220 0.59913 1166.14 15.817 -420.05 -75.142 -2.1873 -0.61957 0.96983 0.63894 1.9618 0.93032 951.21 223.15
+280 4.1607 883.58 121.74 -289.48 -80.840 -1.6792 -0.93401 0.96046 0.92316 2.8141 2.2769 471.54 207.72
+300 6.7131 679.24 268.58 -223.40 -119.70 -1.4631 -1.1175 1.1199 1.2476 8.6979 11.921 245.67 185.33
+
+[singlePhase] table=35 page=1563,1578
+columns p T rho u h s cv cp w
+units MPa K kg/m3 kJ/kg kJ/kg kJ/kg/K kJ/kg/K kJ/kg/K m/s
+0.10 1000 0.52921 570.02 758.98 1.2639 1.0452 1.2343 472.43 page=1563
+0.101325 300 1.7966 -55.760 0.63726 0.00307 0.65935 0.85262 269.38 page=1563
+8.00 250 1069.70 -366.78 -359.30 -1.9567 0.94120 2.0181 787.97 page=1578
+8.00 350 164.16 -68.627 -19.893 -0.82515 0.83106 1.5463 254.10 page=1578

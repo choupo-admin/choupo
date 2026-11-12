@@ -1,0 +1,251 @@
+diff --git a/gui/src/ui/MethodsWorkspace.tsx b/gui/src/ui/MethodsWorkspace.tsx
+index 1937ff778..1832eac30 100644
+--- a/gui/src/ui/MethodsWorkspace.tsx
++++ b/gui/src/ui/MethodsWorkspace.tsx
+@@ -241,6 +241,9 @@ const ThermometerTrustTool = lazy(() =>
+ const PropertyTrustTool = lazy(() =>
+   import("./methods/PropertyTrustTool.js")
+     .then((m) => ({ default: m.PropertyTrustTool })));
++const DataSourcesTool = lazy(() =>
++  import("./methods/DataSourcesTool.js")
++    .then((m) => ({ default: m.DataSourcesTool })));
+ const PropertyOriginsTool = lazy(() =>
+   import("./methods/PropertyOriginsTool.js")
+     .then((m) => ({ default: m.PropertyOriginsTool })));
+@@ -606,6 +609,7 @@ export function MethodsWorkspace() {
+             : tool === "thermometer-trust" ? <ThermometerTrustTool />
+             : tool === "property-trust" ? <PropertyTrustTool />
+             : tool === "property-origins" ? <PropertyOriginsTool />
++            : tool === "property-data-sources" ? <DataSourcesTool />
+             : tool === "four-ways-mixture" ? <FourWaysMixtureTool />
+             : tool === "cosmo-sac-theory" ? <CosmoSacTheoryTool />
+             : tool === "local-composition" ? <LocalCompositionTool />
+diff --git a/gui/src/ui/methods/DataSourcesTool.tsx b/gui/src/ui/methods/DataSourcesTool.tsx
+index dd4f0a2ba..d477e8b87 100644
+--- a/gui/src/ui/methods/DataSourcesTool.tsx
++++ b/gui/src/ui/methods/DataSourcesTool.tsx
+@@ -34,7 +34,7 @@ import {
+   Anchor, Badge, Box, Button, Group, SegmentedControl, Stack, Table, Text, Title,
+ } from "@mantine/core";
+ 
+-import { LessonLimits, lessonStepper } from "./lessonStep.js";
++import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
+ import {
+   BAND_TMEAN_K, BAND_U_K, DS_CHOICES, DS_CHOICE_WORD, DS_EXERCISE, DS_LIMITS,
+   DS_STEPS, DS_WALK, EXAMPLE_DATASETS, EXAMPLE_RECORD, EXAMPLE_URLS, EXCLUDED,
+@@ -340,6 +340,8 @@ export function DataSourcesTool(): JSX.Element {
+           </Anchor>{" "}(testing a record before you believe it), and later{" "}
+           <i>{NEXT_PAGE_NAME}</i>{" "}(not yet written).
+         </Text>
++
++        <LessonReferences tool="property-data-sources" />
+       </Stack>
+     </Box>
+   );
+diff --git a/gui/src/ui/methods/lessonReferences.json b/gui/src/ui/methods/lessonReferences.json
+index 00fa0640d..28665b40e 100644
+--- a/gui/src/ui/methods/lessonReferences.json
++++ b/gui/src/ui/methods/lessonReferences.json
+@@ -2196,6 +2196,61 @@
+           }
+         }
+       ]
++    },
++    "property-data-sources": {
++      "pageSources": "The map of free sources",
++      "references": [
++        {
++          "text": "Fukano, M.; Matsuda, H.; Kurihara, K.; Ochi, K. (2006). Ebulliometric Determination of Vapor–Liquid Equilibria for Methanol + Ethanol + Dimethyl Carbonate. J. Chem. Eng. Data 51(4), 1458–1463.",
++          "doi": "10.1021/je0601309",
++          "note": "The fit set of the worked example's NRTL pair.",
++          "verified": {
++            "method": "crossref",
++            "evidence": "api.crossref.org/works/10.1021/je0601309: authors, title, container, volume, issue, pages and year matched (C322)",
++            "date": "2026-11-12"
++          }
++        },
++        {
++          "text": "Chen, X.; Cai, F.; Wu, X.; Asumana, C.; Yu, G. (2013). Isobaric Vapor–Liquid Equilibrium for Methanol + Dimethyl Carbonate + 1-Butyl-3-methylimidazolium Dibutylphosphate. J. Chem. Eng. Data 58(5), 1186–1192.",
++          "doi": "10.1021/je301290c",
++          "note": "The held-out set of the worked example, from another laboratory.",
++          "verified": {
++            "method": "crossref",
++            "evidence": "api.crossref.org/works/10.1021/je301290c: authors, title, container, volume, issue, pages and year matched (C322)",
++            "date": "2026-11-12"
++          }
++        },
++        {
++          "text": "Sander, R. (2023). Compilation of Henry's law constants (version 5.0.0) for water as solvent. Atmos. Chem. Phys. 23(19), 10901–12440.",
++          "doi": "10.5194/acp-23-10901-2023",
++          "note": "The open (CC BY 4.0) compilation of Henry's constants for water as solvent.",
++          "verified": {
++            "method": "crossref",
++            "evidence": "api.crossref.org/works/10.5194/acp-23-10901-2023: authors, title, container, volume, issue, pages and year matched (C322)",
++            "date": "2026-11-12"
++          }
++        },
++        {
++          "text": "McBride, B. J.; Zehe, M. J.; Gordon, S. (2002). NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species. NASA/TP-2002-211556, NASA Glenn Research Center.",
++          "url": "https://ntrs.nasa.gov/citations/20020085330",
++          "note": "The public-domain source of ideal-gas heat capacities and formation enthalpies.",
++          "verified": {
++            "method": "official",
++            "evidence": "ntrs.nasa.gov/api/citations/20020085330: title, the three authors, date 2002-09 and distribution PUBLIC matched (C322)",
++            "date": "2026-11-12"
++          }
++        },
++        {
++          "text": "Cox, J. D.; Wagman, D. D.; Medvedev, V. A. (1989). CODATA Key Values for Thermodynamics. Hemisphere Publishing Corp., New York.",
++          "url": "https://www.codata.info/resources/databases/key1.html",
++          "note": "The internationally agreed formation enthalpies and entropies of key substances.",
++          "verified": {
++            "method": "official",
++            "evidence": "www.codata.info/resources/databases/key1.html: CODATA's own table page names this book as its reference (C322)",
++            "date": "2026-11-12"
++          }
++        }
++      ]
+     }
+   }
+ }
+diff --git a/gui/src/ui/methods/registry.ts b/gui/src/ui/methods/registry.ts
+index 5f030fa90..e511d4eab 100644
+--- a/gui/src/ui/methods/registry.ts
++++ b/gui/src/ui/methods/registry.ts
+@@ -61,7 +61,8 @@ export type MethodToolId =
+   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
+   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
+   | "what-is-temperature" | "flash-operating-line" | "bjerrum"
+-  | "thermometer-trust" | "property-trust" | "what-is-entropy"
++  | "thermometer-trust" | "property-trust" | "property-data-sources"
++  | "what-is-entropy"
+   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
+   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
+   | "pcsaft-theory" | "ponchon-savarit" | "claus-gibbs"
+@@ -131,6 +132,17 @@ export const METHOD_DISCIPLINES = [
+   //  a stirred-tank scale-up (the power number) or a pilot plant's choice.
+   "Modelling & scale-up",
+   "Thermodynamics",
++  //  THE SHELF FOR WHERE A PROPERTY NUMBER COMES FROM (2026-11-12, DEV.md
++  //  4c C322, Vitor's approval relayed by the coordinator).  How a value is
++  //  estimated, where a measured one is found and what its licence allows,
++  //  when a record can be believed, and how a measurement becomes a fitted
++  //  parameter: none of it is a thermodynamic MODEL, which is what the
++  //  shelf above teaches, though every page uses one.  It sits right after
++  //  Thermodynamics because every model there needs the parameters this
++  //  shelf is about.  It opened with three tenants moved or added at once:
++  //  property-origins and property-trust (moved from Thermodynamics) and
++  //  property-data-sources (new).
++  "Property data & parameters",
+   "Separations & phase equilibria",
+   "Heat transfer & energy",
+   "Reaction engineering",
+@@ -221,6 +233,23 @@ export const METHOD_PATHS: MethodPath[] = [
+       { tool: "element-potential", why: "How the engine solves it: one potential per element instead of one unknown per species." },
+     ],
+   },
++  {
++    //  C322 (2026-11-12, Vitor's approval relayed by the coordinator).  The
++    //  architect's walk has one more step, "From a database to binary
++    //  parameters", between least-squares and four-ways-mixture; it is
++    //  added here the day that page exists (a step must name a live tool).
++    id: "measurement-to-parameter",
++    title: "From a measurement to a parameter",
++    intro: "From where a number comes from to the model parameter fitted to it.",
++    steps: [
++      { tool: "property-origins", why: "Measured, fitted or estimated: how an estimate is made and what it costs." },
++      { tool: "property-data-sources", why: "Where a measured value is found, how it is cited, and whether it may be published." },
++      { tool: "property-trust", why: "Test a record against itself before you believe it." },
++      { tool: "local-composition", why: "The models whose parameters the data will fix: Wilson, NRTL, UNIQUAC." },
++      { tool: "least-squares", why: "How a parameter is fitted to measurements, and what the fit can and cannot tell." },
++      { tool: "four-ways-mixture", why: "What a fitted pair buys against the predictive models, graded on measured data." },
++    ],
++  },
+   {
+     id: "reaction-engineering",
+     title: "Reaction engineering",
+@@ -425,7 +454,7 @@ export const METHOD_TOOLS: MethodTool[] = [
+     //  the page from the engine's published numbers.
+     id: "property-origins", blurb: "Trace each property value to measured, fitted or estimated.",
+     label: "Where do properties come from? (estimation, Joback)",
+-    discipline: "Thermodynamics",
++    discipline: "Property data & parameters",
+     kind: "notes", status: "live",
+     origins: ["engine", "page", "reference"],
+     teaches: "That every number in a component's data file has a PROVENANCE "
+@@ -436,13 +465,40 @@ export const METHOD_TOOLS: MethodTool[] = [
+       + "a curation-time act, never a runtime one.",
+     theory: "ch:criticals",
+   },
++  {
++    //  WHERE TO FIND A NUMBER, AND WHETHER IT MAY BE PUBLISHED (2026-11-12,
++    //  DEV.md 4c C322, scope approved by Vitor): the question that picks a
++    //  source, a map of free sources each with the licence read on its own
++    //  page and the date, the project's licence classes with the line each
++    //  rule is written at, measured / fitted / estimated, a real catalogue
++    //  record quoted line by line, and an exercise.  Between the page that
++    //  says how an estimate is made and the page that tests a record.
++    id: "property-data-sources", blurb: "Find a property datum and decide whether it may be published.",
++    label: "Where to find property data",
++    discipline: "Property data & parameters",
++    kind: "notes", status: "live",
++    origins: ["page", "reference", "assumption"],
++    teaches: "Which property, which system, which conditions picks the kind "
++      + "of source; a map of free sources (the ThermoML archive, the NIST "
++      + "Chemistry WebBook, the IUPAC-NIST Solubility Data Series, the NASA "
++      + "Glenn coefficients, the CODATA Key Values, Sander's Henry's law "
++      + "compilation, the ChemSep pure-component databank, PubChem for "
++      + "identity) with what each holds, how to reach and cite it and what "
++      + "its licence allows; the classes that cannot enter a public project "
++      + "(NonCommercial, no grant, provenance laundering); read, cite, copy "
++      + "a value, redistribute as four permissions; measured, fitted and "
++      + "estimated values and the held-out deviation; cite the primary, "
++      + "never the compiler; a real NRTL record's provenance read line by "
++      + "line; and an exercise deciding whether six data may be published.",
++    theory: "ch:criticals",
++  },
+   {
+     //  THE PROPERTY-DATA LESSON that used to sit inside the temperature
+     //  page, teaching the right words in the wrong place: the ladder's
+     //  subject is not what a temperature is, it is when a database can be
+     //  believed.
+     id: "property-trust", blurb: "Test a property record for consistency before you believe it.", label: "When a property database lies to you",
+-    discipline: "Thermodynamics",
++    discipline: "Property data & parameters",
+     kind: "notes", status: "live",
+     origins: ["engine", "page", "reference"],
+     teaches: "Never trust a thermophysical record merely because it exists: "
+diff --git a/gui/tests/methodPaths.test.ts b/gui/tests/methodPaths.test.ts
+index 6b8c565a4..21e90e780 100644
+--- a/gui/tests/methodPaths.test.ts
++++ b/gui/tests/methodPaths.test.ts
+@@ -30,8 +30,8 @@ import {
+ describe("the pedagogical paths", () => {
+   it("the paths of the ruling exist, in that order (C246 added Recycle numerics)", () => {
+     expect(METHOD_PATHS.map((p) => p.id)).toEqual(
+-      ["distillation", "thermodynamics", "reaction-engineering",
+-        "recycle-numerics"]);
++      ["distillation", "thermodynamics", "measurement-to-parameter",
++        "reaction-engineering", "recycle-numerics"]);
+   });
+ 
+   it("every path is a walk of three or more distinct live tools, each step explained", () => {
+diff --git a/gui/tests/propertyOriginsTool.test.ts b/gui/tests/propertyOriginsTool.test.ts
+index 5f8e50a36..68b409ab8 100644
+--- a/gui/tests/propertyOriginsTool.test.ts
++++ b/gui/tests/propertyOriginsTool.test.ts
+@@ -40,12 +40,12 @@ const SRC = readFileSync(
+ const prose = (src: string): string => src.replace(/\s+/g, " ");
+ 
+ describe("the registry entry", () => {
+-  it("is live, notes-kind, on the Thermodynamics shelf", () => {
++  it("is live, notes-kind, on the Property data & parameters shelf", () => {
+     const e = METHOD_TOOLS.find((m) => m.id === "property-origins");
+     expect(e, "the tool left the registry").toBeTruthy();
+     expect(e!.kind).toBe("notes");
+     expect(e!.status).toBe("live");
+-    expect(e!.discipline).toBe("Thermodynamics");
++    expect(e!.discipline).toBe("Property data & parameters");
+     expect(e!.teaches).toContain("PROVENANCE");
+     expect(e!.teaches).toContain("curation-time act");
+   });

@@ -66,6 +66,30 @@ groups
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group CH; count 1; } { group OH; count 1; } { group ester; count 1; } );
 }
 
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -95.18281851;
+        B     6040.301046;
+        C     12.09186024;
+        D     0;
+        E     0;
+        Tmin  278.15;
+        Tmax  338.15;
+    }
+}
+
+surfaceTension
+{
+    A     0.06546606153;
+    B     0;
+    Tc    636.681497;
+    n     1.267876348;
+    Tmin  278.15;
+    Tmax  338.15;
+}
+
 provenance
 {
     MW
@@ -261,6 +285,66 @@ provenance
             awAad_pct   90.415009;   // the AmbroseWalton curve it replaces, the same points
             awMax_pct   210.582247;
             Tnb_fit     424.0547;   // K, the fitted curve at 101.325 kPa
+        }
+    }
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 1.398521;
+        Trange        (278.15 338.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2014.04.002"; articleSha256 "d49ad72234552ccc76b29559ac9877cc820707a30e95daad2c8dbba412e7b7b4"; pointsKept 8; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2015.04.017"; articleSha256 "21fd2a55892d9e3ce1cb201ee56ab417b092bbc91e7643cc030c97f1e2f516a5"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.tca.2013.11.010"; articleSha256 "1258a5fe7a5af26ad3162da9bd6fc878c45644acf4f8740a4d5431a8de4e3747"; pointsKept 25; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je600568w"; articleSha256 "b0eeaf7cae9cccd872badceef06c083d822ec2f7fcacd56d0f996071d168c769"; pointsKept 3; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     4;
+            pointsKept  37;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.864125;
+            max_pct     1.398521;
+        }
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      warning;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+        fitGradeMaxRelativeError_pct 0.442510;
+        Trange        (278.15 338.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.tca.2013.11.010"; articleSha256 "1258a5fe7a5af26ad3162da9bd6fc878c45644acf4f8740a4d5431a8de4e3747"; pointsKept 25; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     1;
+            pointsKept  25;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.217369;
+            max_pct     0.442510;
         }
     }
 }

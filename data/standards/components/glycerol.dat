@@ -79,6 +79,16 @@ source
     review        { state pending; reviewer unassigned; }
 }
 
+surfaceTension
+{
+    A     0.1011456132;
+    B     0;
+    Tc    850;
+    n     1.10677729;
+    Tmin  288.1;
+    Tmax  333.2;
+}
+
 provenance
 {
     MW
@@ -155,5 +165,35 @@ cosmo
                2.528948     2.011357     0.000000     0.000000     0.000000     0.000000
                0.000000     0.000000     0.000000
         );
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 3.612422;
+        Trange        (288.1 333.2);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2008.08.015"; articleSha256 "377c38103add78655a4edeb2c7442ff3dbe8c3f5a006fe5a5628f18fe3a0d9da"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2018.05.013"; articleSha256 "88e9f9d1b9ed1a8d31b3bd592c8611aba3f4ffcdfa694ed510d75021159836e8"; pointsKept 8; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2019.03.014"; articleSha256 "96844ae157bc6fe12808189c27bb2bf298d7409fdd2a692bfd14ac99d07d0e75"; pointsKept 6; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     3;
+            pointsKept  15;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     1.792918;
+            max_pct     3.612422;
+        }
     }
 }

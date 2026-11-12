@@ -76,19 +76,19 @@ level up.)
 | `124Trichlorobenzene` | 181.447 | (volatile) | 435-633 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `124Trimethylbenzene` | 120.1916 | (volatile) | 392-583 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `12Butadiene` | 54.09044 | (volatile) | 273-402 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `12Butanediol` | 90.1220 | fit | 372-470 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `12Butanediol` | 90.1220 | fit | 372-470 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `12Propanediol` | 76.0950 | fit | 345-461 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `12PropyleneOxide` | 58.07804 | (volatile) | 290-433 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `13Butadiene` | 54.09044 | (volatile) | 255-381 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `13Butanediol` | 90.1220 | fit | 288-688 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `13Butanediol` | 90.1220 | fit | 288-688 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `13Dioxolane` | 74.0790 | fit | 275-351 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `13Propanediol` | 76.0950 | fit | 292-465 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `13Propanediol` | 76.0950 | fit | 292-465 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `14Butanediol` | 90.121 | (volatile) | 408-588 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `14Dioxane` | 88.10513 | (volatile) | 353-528 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `16Hexanediol` | 118.1760 | fit | 523-740 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `1Butene` | 56.1063 | (volatile) | 189-411 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `1Chlorobutane` | 92.5660 | fit | 278-352 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `1Decanol` | 158.2850 | fit | 469-497 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `1Chlorobutane` | 92.5660 | fit | 278-352 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `1Decanol` | 158.2850 | fit | 469-497 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `1Heptanol` | 116.2013 | (volatile) | 380-563 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `1Heptene` | 98.18607 | (volatile) | 324-477 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `1Hexanol` | 102.1748 | (volatile) | 369-550 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -104,7 +104,7 @@ level up.)
 | `1Nitrobutane` | 103.1198 | (volatile) | 383-555 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `1Nitropropane` | 89.09318 | (volatile) | 363-536 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `1Nonene` | 126.2392 | (volatile) | 357-530 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `1Octanol` | 130.2310 | fit | 298-468 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `1Octanol` | 130.2310 | fit | 298-468 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `1Octene` | 112.2126 | (volatile) | 340-504 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `1Pentanamine` | 87.1660 | fit | 323-378 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `1Pentanol` | 88.14818 | (volatile) | 353-526 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -144,15 +144,15 @@ level up.)
 | `26Dinitrotoluene` | 182.1335 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `2Amino2Methyl1Propanol` | 89.1380 | fit | 293-452 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `2Butanol` | 74.1216 | (volatile) | 323-477 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `2Butoxyethanol` | 118.1760 | fit | 407-442 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `2Chlorobutane` | 92.5660 | fit | 320-342 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `2Butoxyethanol` | 118.1760 | fit | 407-442 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `2Chlorobutane` | 92.5660 | fit | 320-342 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `2Chlorotoluene` | 126.5830 | fit | 274-429 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `2Ethoxyethanol` | 90.1220 | fit | 346-408 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `2Ethoxyethanol` | 90.1220 | fit | 346-408 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `2Ethoxypropene` | 86.1340 | fit | 321-335 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `2Ethyl1Hexanol` | 130.2310 | fit | 294-458 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `2EthylMXylene` | 134.2182 | (volatile) | 406-600 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `2EthylPXylene` | 134.2182 | (volatile) | 413-600 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `2Ethylthiophene` | 112.1900 | fit | 292-410 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `2Ethylthiophene` | 112.1900 | fit | 292-410 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `2Heptanone` | 114.1855 | (volatile) | 367-550 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `2Hexanone` | 100.1589 | (volatile) | 354-525 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `2Methoxy2MethylHeptane` | 144.2545 | (volatile) | 313-618 | ✓ | — | ✓ | — | — | — | — |   |
@@ -185,7 +185,7 @@ level up.)
 | `33Dimethyl2Butanone` | 100.1589 | (volatile) | 344-510 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `33Dimethylhexane` | 114.2285 | (volatile) | 343-504 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `33Dimethylpentane` | 100.202 | (volatile) | 325-478 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `33Oxydipropanol` | 134.1750 | fit | 365-703 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `33Oxydipropanol` | 134.1750 | fit | 365-703 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `34Dimethylhexane` | 114.2285 | (volatile) | 272-569 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `34Dinitrotoluene` | 182.1335 | (volatile) | 520-740 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `35Dinitrotoluene` | 182.1335 | (volatile) | 484-720 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -194,7 +194,7 @@ level up.)
 | `3Ethylpentane` | 100.202 | (volatile) | 327-480 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `3Heptanone` | 114.1855 | (volatile) | 363-540 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `3Hexanone` | 100.1589 | (volatile) | 350-520 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `3Methyl1Butanol` | 88.1500 | fit | 336-446 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `3Methyl1Butanol` | 88.1500 | fit | 336-446 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `3Methyl1Butene` | 70.1329 | (volatile) | 273-398 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `3Methyl2Butanol` | 88.1500 | fit | 324-384 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `3Methyl3Ethylpentane` | 114.2285 | (volatile) | 348-514 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -218,9 +218,9 @@ level up.)
 | `5Methyl2Hexanone` | 114.1855 | (volatile) | 367-538 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `5Methylnonane` | 142.2817 | (volatile) | 367-543 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `acenaphthene` | 154.2078 | (volatile) | 483-711 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `aceticAcid` | 60.052 | (volatile) | 290-392 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `aceticAcid` | 60.052 | (volatile) | 290-392 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `aceticAnhydride` | 102.0886 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `acetone` | 58.080 | (volatile) | 259-508 | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
+| `acetone` | 58.080 | (volatile) | 259-508 | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F, μ_L |
 | `acetonitrile` | 41.05192 | (volatile) | 329-479 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `acetylChloride` | 78.49762 | (volatile) | 306-453 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `acetylene` | 26.038 | (volatile) | 192-308 | ✓ | — | ✓ | — | — | — | ✓ |   |
@@ -260,19 +260,19 @@ level up.)
 | `cumene` | 120.1916 | (volatile) | 380-562 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `cumeneHydroperoxide` | 152.1904 | (volatile) | 368-494 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `cyclobutane` | 56.10632 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `cyclohexane` | 84.1595 | (volatile) | 280-543 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `cyclohexane` | 84.1595 | (volatile) | 280-543 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `cyclohexanol` | 100.1589 | (volatile) | 394-576 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `cyclohexanone` | 98.143 | (volatile) | 392-566 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `cyclohexene` | 82.1436 | (volatile) | 336-500 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `cyclopentane` | 70.1329 | (volatile) | 230-501 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `cyclopentanol` | 86.1340 | fit | 280-413 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `cyclopentane` | 70.1329 | (volatile) | 230-501 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `cyclopentanol` | 86.1340 | fit | 280-413 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `cyclopentanone` | 84.1180 | fit | 292-403 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `cyclopropane` | 42.0810 | (volatile) | 274-391 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `D2` | 4.0282 | (volatile) | 19-38 | ✓ | ✓ | ✓ | — | — | — | — |   |
 | `diButylCarbonate` | 174.2374 | fit | 287-478 | ✓ | — | ✓ | — | — | — | — |   |
 | `dichloroacetaldehyde` | 112.9427 | (volatile) | 339-489 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dichloroacetylChloride` | 147.3877 | (volatile) | 361-515 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `Dichloroethane` | 98.9590 | (volatile) | 253-550 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `Dichloroethane` | 98.9590 | (volatile) | 253-550 | ✓ | ✓ | — | — | — | — | ✓ | μ_L |
 | `dichloromethane` | 84.9270 | fit | 286-311 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `dicyclopentadiene` | 132.2023 | (volatile) | 397-593 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diethanolamine` | 105.1356 | fit | 428-452 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
@@ -281,12 +281,12 @@ level up.)
 | `diethylDisulfide` | 122.2522 | (volatile) | 387-568 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diethyleneGlycol` | 106.1204 | (volatile) | 447-669 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diethyleneGlycolDibutylEther` | 218.3370 | fit | 403-473 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `diethyleneGlycolDiethylEther` | 162.2290 | fit | 363-453 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `diethyleneGlycolDiethylEther` | 162.2290 | fit | 363-453 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diethyleneGlycolMonohexylEther` | 190.2830 | fit | 403-473 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `diethylenetriamine` | 103.1661 | (volatile) | 420-606 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diethylethanolamine` | 117.1894 | fit | 274-450 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
-| `diethylEther` | 74.1216 | (volatile) | 270-459 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `diethylSuccinate` | 174.1960 | fit | 290-468 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `diethylEther` | 74.1216 | (volatile) | 270-459 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `diethylSuccinate` | 174.1960 | fit | 290-468 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diethylSulfide` | 90.18719 | (volatile) | 337-496 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diIsobutylEther` | 130.2310 | fit | 331-395 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `diisobutylKetone` | 142.2386 | (volatile) | 373-554 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -295,10 +295,10 @@ level up.)
 | `diisopropylEther` | 102.1748 | (volatile) | 300-450 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `diisopropylKetone` | 114.1855 | (volatile) | 350-520 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylacetylene` | 54.09044 | (volatile) | 287-424 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `dimethylCarbonate` | 90.0779 | (volatile) | 278-546 | ✓ | ✓ | — | — | — | — | ✓ |   |
+| `dimethylCarbonate` | 90.0779 | (volatile) | 278-546 | ✓ | ✓ | — | — | — | — | ✓ | μ_L |
 | `dimethylDisulfide` | 94.19904 | (volatile) | 364-525 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylethanolamine` | 89.13624 | fit | 273-448 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `dimethylEther` | 46.0684 | (volatile) | 180-392 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `dimethylEther` | 46.0684 | (volatile) | 180-392 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylSulfide` | 62.13404 | (volatile) | 304-451 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylSulfoxide` | 78.13344 | fit | 293-463 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylTerephthalate` | 194.184 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -313,15 +313,15 @@ level up.)
 | `diTertButylDisulfide` | 178.3585 | (volatile) | 423-601 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethane` | 30.070 | (volatile) | 168-305 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `ethanol` | 46.069 | (volatile) | 273-369 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, μ_L |
-| `ethylAcetate` | 88.106 | (volatile) | 266-373 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylAcetate` | 88.106 | (volatile) | 266-373 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylacetylene` | 54.09044 | (volatile) | 264-394 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylamine` | 45.08368 | (volatile) | 275-404 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `ethylBenzene` | 106.1650 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `ethylButanoate` | 116.1600 | fit | 349-433 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylBenzene` | 106.1650 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `ethylButanoate` | 116.1600 | fit | 349-433 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylChloride` | 64.5141 | (volatile) | 277-409 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylcyclohexane` | 112.2126 | (volatile) | 367-539 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylcyclopentane` | 98.18607 | (volatile) | 343-511 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `ethylDecanoate` | 200.3220 | fit | 294-462 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylDecanoate` | 200.3220 | fit | 294-462 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylene` | 28.054 | (volatile) | 150-283 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `ethyleneCarbonate` | 88.06207 | (volatile) | 492-701 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylenediamine` | 60.09832 | (volatile) | 356-528 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -329,18 +329,18 @@ level up.)
 | `ethyleneOxide` | 44.0526 | (volatile) | 211-460 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `ethylFormate` | 74.07854 | (volatile) | 310-453 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylHexanoate` | 144.2140 | fit | 253-462 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `ethylLactate` | 118.1320 | fit | 275-426 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylLactate` | 118.1320 | fit | 275-426 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylMercaptan` | 62.13404 | (volatile) | 300-440 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylMethylDisulfide` | 108.2256 | (volatile) | 394-559 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
-| `ethylOctanoate` | 172.2680 | fit | 273-452 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylOctanoate` | 172.2680 | fit | 273-452 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylPhenylCarbonate` | 166.1739 | (volatile) | 418-717 | ✓ | — | ✓ | — | — | — | — |   |
-| `ethylPropionate` | 102.1330 | fit | 348-409 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `ethylPropionate` | 102.1330 | fit | 348-409 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ethylPropylDisulfide` | 136.2788 | (volatile) | 399-582 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
 | `ethylTertPentylEther` | 116.2013 | (volatile) | 327-471 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `fluoranthene` | 202.2506 | (volatile) | 543-795 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `fluorene` | 166.2185 | (volatile) | 503-734 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `fluorine` | 37.9968 | (volatile) | 65-142 | ✓ | ✓ | ✓ | — | — | — | — |   |
-| `fluoroethane` | 48.0600 | fit | 231-372 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `fluoroethane` | 48.0600 | fit | 231-372 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `furan` | 68.0750 | fit | 284-304 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `furfural` | 96.08406 | fit | 277-430 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `glycerol` | 92.09382 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
@@ -365,8 +365,8 @@ level up.)
 | `isobutylbenzene` | 134.2182 | (volatile) | 390-582 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `isobutylMercaptan` | 90.18719 | (volatile) | 338-500 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `isohexane` | 86.1754 | (volatile) | 224-488 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `isopentane` | 72.1488 | (volatile) | 207-451 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `isopentylAcetate` | 130.1870 | fit | 368-416 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `isopentane` | 72.1488 | (volatile) | 207-451 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `isopentylAcetate` | 130.1870 | fit | 368-416 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `isoprene` | 68.11702 | (volatile) | 293-428 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `isopropanol` | 60.09502 | (volatile) | 305-457 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `isopropylAcetate` | 102.1317 | (volatile) | 312-462 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -394,7 +394,7 @@ level up.)
 | `methylChloride` | 50.48752 | (volatile) | 250-373 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylcyclohexane` | 98.18607 | (volatile) | 344-511 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylcyclopentane` | 84.15948 | (volatile) | 320-478 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `methylDecanoate` | 186.2950 | fit | 273-433 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylDecanoate` | 186.2950 | fit | 273-433 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylDiEthanolAmine` | 119.1622 | fit | 410-738 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
 | `methylethanolamine` | 75.10966 | fit | 275-451 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
 | `methylEthylCarbonate` | 104.1045 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | — |   |
@@ -402,28 +402,28 @@ level up.)
 | `methylEthylKetone` | 72.10572 | (volatile) | 326-480 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylEthylSulfide` | 76.16061 | (volatile) | 321-475 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylFormate` | 60.05196 | (volatile) | 293-438 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `methylHeptanoate` | 144.2140 | fit | 278-444 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylHeptanoate` | 144.2140 | fit | 278-444 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylHexanoate` | 130.1870 | fit | 263-422 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `methylIodide` | 141.939 | (volatile) | 317-460 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylIsobutylEther` | 88.14818 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylIsobutylKetone` | 100.1589 | (volatile) | 348-514 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylIsopropylEther` | 74.1216 | (volatile) | 287-411 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylIsopropylKetone` | 86.1323 | (volatile) | 347-494 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `methylLactate` | 104.1050 | fit | 303-413 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylLevulinate` | 130.1430 | fit | 294-453 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylLinoleate` | 294.4721 | (volatile) | 360-783 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylLinolenate` | 292.4562 | (volatile) | 347-757 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylLactate` | 104.1050 | fit | 303-413 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `methylLevulinate` | 130.1430 | fit | 294-453 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `methylLinoleate` | 294.4721 | (volatile) | 360-783 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `methylLinolenate` | 292.4562 | (volatile) | 347-757 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylMercaptan` | 48.10746 | (volatile) | 283-419 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylMethacrylate` | 100.1158 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylNPropylEther` | 74.1216 | (volatile) | 284-422 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylNPropylSulfide` | 90.18719 | (volatile) | 332-480 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `methylOctanoate` | 158.2410 | fit | 283-433 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylOctanoate` | 158.2410 | fit | 283-433 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylOleate` | 296.4879 | (volatile) | 352-766 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `methylPalmitate` | 270.4507 | (volatile) | 340-740 | ✓ | ✓ | ✓ | — | — | — | — |   |
-| `methylPentanoate` | 116.1600 | fit | 275-417 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `methylPalmitate` | 270.4507 | (volatile) | 340-740 | ✓ | ✓ | ✓ | — | — | — | — | μ_L |
+| `methylPentanoate` | 116.1600 | fit | 275-417 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylPhenylCarbonate` | 152.1473 | (volatile) | 393-705 | ✓ | — | ✓ | — | — | — | — |   |
 | `methylPropionate` | 88.10513 | (volatile) | 322-476 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `methylStearate` | 298.5038 | (volatile) | 349-760 | ✓ | ✓ | ✓ | — | — | — | — |   |
+| `methylStearate` | 298.5038 | (volatile) | 349-760 | ✓ | ✓ | ✓ | — | — | — | — | μ_L |
 | `methylTButylSulfide` | 104.2138 | (volatile) | 351-510 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylTertButylEther` | 88.14818 | (volatile) | 299-445 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylTertPentylEther` | 102.1748 | fit | 274-360 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -433,7 +433,7 @@ level up.)
 | `monochlorobenzene` | 112.5569 | (volatile) | 383-568 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `monoethanolamine` | 61.08308 | fit | 274-442 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
 | `morpholine` | 87.1220 | fit | 273-401 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `mXylene` | 106.1650 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `mXylene` | 106.1650 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `N2` | 28.013 | (volatile) | 61-84 | ✓ | ✓ | ✓ | — | — | — | ✓ | Σv_F |
 | `N2O` | 44.013 | (volatile) | 181-197 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `nAminoethylEthanolamine` | 104.1509 | fit | 323-374 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -443,13 +443,13 @@ level up.)
 | `nButanol` | 74.122 | (volatile) | 295-392 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `nButylAcetate` | 116.1583 | (volatile) | 349-516 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nButylbenzene` | 134.2182 | (volatile) | 400-585 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `nButylButanoate` | 144.2140 | fit | 406-457 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nButylButanoate` | 144.2140 | fit | 406-457 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nButylcyclohexane` | 140.2658 | (volatile) | 406-593 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nButylcyclopentane` | 126.2392 | (volatile) | 376-549 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nButylFormate` | 102.1330 | fit | 313-395 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `nButylPropionate` | 130.1870 | fit | 351-436 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `nButyricAcid` | 88.10513 | (volatile) | 375-561 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `nDecane` | 142.2817 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nDecane` | 142.2817 | (volatile) | 278-605 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nDocosane` | 310.6006 | (volatile) | 490-713 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nDodecane` | 170.3348 | (volatile) | 296-645 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `nEicosane` | 282.5475 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
@@ -458,10 +458,10 @@ level up.)
 | `nHeneicosane` | 296.5741 | (volatile) | 485-705 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHeptacosane` | 380.7336 | (volatile) | 514-727 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHeptadecane` | 240.4677 | (volatile) | 448-650 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `nHeptane` | 100.2020 | (volatile) | 244-530 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nHeptane` | 100.2020 | (volatile) | 244-530 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHexacosane` | 366.707 | (volatile) | 510-742 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHexadecane` | 226.4412 | (volatile) | 438-632 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `nHexane` | 86.178 | (volatile) | 286-343 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nHexane` | 86.178 | (volatile) | 286-343 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHexylAcetate` | 144.2114 | fit | 274-440 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nHexylMercaptan` | 118.2404 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nitrobenzene` | 123.1094 | (volatile) | 263-626 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -474,7 +474,7 @@ level up.)
 | `nNDimethylformamide` | 73.09378 | (volatile) | 397-581 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nNonacosane` | 408.7867 | (volatile) | 517-732 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nNonadecane` | 268.5209 | (volatile) | 457-663 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `nNonane` | 128.2551 | (volatile) | 268-583 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nNonane` | 128.2551 | (volatile) | 268-583 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `NO` | 30.006 | (volatile) | 107-128 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `NO2` | 46.006 | (volatile) | 250-294 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `nOctacosane` | 394.7601 | (volatile) | 508-753 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -496,7 +496,7 @@ level up.)
 | `nTetradecane` | 198.388 | (volatile) | 420-606 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nTricosane` | 324.6272 | (volatile) | 493-721 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `nTridecane` | 184.3614 | (volatile) | 411-606 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `nUndecane` | 156.3083 | (volatile) | 287-626 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `nUndecane` | 156.3083 | (volatile) | 287-626 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `O2` | 31.999 | (volatile) | 54-154 | ✓ | — | ✓ | — | — | — | ✓ | Σv_F |
 | `O3` | 47.9982 | (volatile) | 80-161 | ✓ | — | ✓ | — | — | — | ✓ |   |
 | `oCresol` | 108.1378 | (volatile) | 419-625 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -509,7 +509,7 @@ level up.)
 | `OrthoHydrogen` | 2.0159 | (volatile) | 15-33 | ✓ | ✓ | — | — | — | — | — |   |
 | `oToluicAcid` | 136.1479 | (volatile) | 456-674 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `oxalicAcid` | 90.03488 | (volatile) | 497-719 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `oXylene` | 106.1650 | (volatile) | 284-618 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `oXylene` | 106.1650 | (volatile) | 284-618 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `ParaDeuterium` | 4.0282 | (volatile) | 19-38 | ✓ | ✓ | — | — | — | — | — |   |
 | `ParaHydrogen` | 2.0159 | (volatile) | 15-32 | ✓ | ✓ | — | — | — | — | — |   |
 | `pCresol` | 108.1378 | (volatile) | 425-633 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -519,7 +519,7 @@ level up.)
 | `pDiisopropylbenzene` | 162.2713 | (volatile) | 407-598 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `pentanal` | 86.1323 | (volatile) | 337-485 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `pentanenitrile` | 83.1340 | fit | 329-413 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
-| `pentanoicAcid` | 102.1330 | fit | 403-452 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `pentanoicAcid` | 102.1330 | fit | 403-452 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `perfluorooctane` | 438.0520 | fit | 278-353 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `pEthyltoluene` | 120.1916 | (volatile) | 386-573 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `phenanthrene` | 178.2292 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -538,7 +538,7 @@ level up.)
 | `propyleneCarbonate` | 102.0886 | (volatile) | 472-691 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `propyne` | 40.0600 | (volatile) | 274-395 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `pToluicAcid` | 136.1479 | (volatile) | 470-689 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `pXylene` | 106.1650 | (volatile) | 287-604 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `pXylene` | 106.1650 | (volatile) | 287-604 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `pyrene` | 202.2506 | (volatile) | ✓ | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `pyridine` | 79.0999 | (volatile) | 373-555 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `pyrrole` | 67.0910 | fit | 338-402 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
@@ -563,7 +563,7 @@ level up.)
 | `secButylbenzene` | 134.2182 | (volatile) | 400-591 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
 | `secButylMercaptan` | 90.18719 | (volatile) | 332-490 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `SF6` | 146.0554 | (volatile) | 224-312 | ✓ | ✓ | — | — | — | — | ✓ |   |
-| `squalane` | 422.8133 | fit | 298-686 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `squalane` | 422.8133 | fit | 298-686 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `styrene` | 104.149 | (volatile) | 383-553 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `sulfolane` | 120.1701 | (volatile) | 522-766 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `terephthalicAcid` | 166.1308 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | ✓ |   |
@@ -572,10 +572,10 @@ level up.)
 | `tertButylcyclohexane` | 140.2658 | (volatile) | 393-586 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `tertButylEthylEther` | 102.1748 | (volatile) | 310-454 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `tertButylMercaptan` | 90.18719 | (volatile) | 318-477 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `tetradecanoicAcid` | 228.3760 | fit | 298-585 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `tetradecanoicAcid` | 228.3760 | fit | 298-585 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `tetraethyleneGlycol` | 194.2255 | (volatile) | 477-712 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `tetrahydrofuran` | 72.10572 | (volatile) | 328-483 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `tetrahydropyran` | 86.1340 | fit | 258-362 | ✓ | ✓ | ✓ | — | — | — | ✓ |   |
+| `tetrahydropyran` | 86.1340 | fit | 258-362 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `thiophene` | 84.13956 | (volatile) | 352-513 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `toluene` | 92.141 | (volatile) | 273-380 | ✓ | ✓ | ✓ | — | — | — | ✓ | φ_WC, Σv_F, μ_L |
 | `trans12Dimethylcyclohexane` | 112.2126 | (volatile) | 358-531 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -676,7 +676,7 @@ level up.)
 | `NaBr` | 102.894 | nonvolatile | — | — | — | — | — | — | — | — |   |
 | `NaCl` | 58.44 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
 | `NaF` | 41.988 | nonvolatile | — | — | — | — | — | — | — | — |   |
-| `NaNO3` | 84.994 | nonvolatile | — | — | — | — | — | — | — | — |   |
+| `NaNO3` | 84.994 | nonvolatile | — | — | — | — | — | — | — | — | μ_L |
 | `NaOH` | 39.997 | nonvolatile | — | — | — | — | — | ✓ | — | — | ν=2 |
 | `NCO` | 42.017 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
 | `NH` | 15.0146 | nonvolatile | — | ✓ | — | ✓ | — | — | — | — |   |
@@ -792,7 +792,45 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `11Dichloroethane-water` |
 | `123Trimethylbenzene-water` |
 | `124Trimethylbenzene-water` |
+| `13Butadiene-1Pentanol` |
+| `13Butadiene-1Propanol` |
+| `13Butadiene-2Butanol` |
+| `13Butadiene-2Methyl1Propanol` |
+| `13Butadiene-2Methyl2Propanol` |
+| `13Butadiene-2Pentanol` |
+| `13Butadiene-allylAlcohol` |
+| `13Butadiene-benzene` |
+| `13Butadiene-isopropanol` |
+| `13Butadiene-mCresol` |
+| `13Butadiene-mXylene` |
+| `13Butadiene-nButanol` |
+| `13Butadiene-oCresol` |
+| `13Butadiene-oXylene` |
+| `13Butadiene-pCresol` |
+| `13Butadiene-pXylene` |
+| `13Butadiene-styrene` |
+| `13Butadiene-tetrahydropyran` |
+| `13Butadiene-toluene` |
 | `14Dioxane-water` |
+| `1Butene-1Pentanol` |
+| `1Butene-1Propanol` |
+| `1Butene-2Butanol` |
+| `1Butene-2Methyl1Propanol` |
+| `1Butene-2Methyl2Propanol` |
+| `1Butene-2Pentanol` |
+| `1Butene-allylAlcohol` |
+| `1Butene-benzene` |
+| `1Butene-isopropanol` |
+| `1Butene-mCresol` |
+| `1Butene-mXylene` |
+| `1Butene-nButanol` |
+| `1Butene-oCresol` |
+| `1Butene-oXylene` |
+| `1Butene-pCresol` |
+| `1Butene-pXylene` |
+| `1Butene-styrene` |
+| `1Butene-tetrahydropyran` |
+| `1Butene-toluene` |
 | `1Hexanol-water` |
 | `1Methylnaphthalene-water` |
 | `1Nitropropane-water` |
@@ -806,10 +844,14 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `2Pentanone-water` |
 | `4Chlorotoluene-water` |
 | `Ar-NH3` |
+| `Ar-methylChloride` |
 | `Ar-water` |
 | `C4H4-water` |
+| `CH4-methylDiEthanolAmine` |
 | `CH4-water` |
 | `CO-water` |
+| `CO2-cyclohexanol` |
+| `CO2-methylChloride` |
 | `CO2-water` |
 | `CS2-water` |
 | `Cl2-water` |
@@ -823,13 +865,19 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `HO2-water` |
 | `HOCl-water` |
 | `HONO-water` |
+| `He-methylChloride` |
 | `He-water` |
 | `N2-NH3` |
+| `N2-methylChloride` |
 | `N2-water` |
 | `N2O-water` |
+| `NH3-ethanol` |
 | `NH3-water` |
 | `NO-water` |
 | `NO2-water` |
+| `O2-acetonitrile` |
+| `O2-cyclohexanol` |
+| `O2-methylChloride` |
 | `O2-water` |
 | `O3-water` |
 | `OH-water` |
@@ -852,6 +900,10 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `R22-water` |
 | `R227EA-water` |
 | `R23-water` |
+| `R32-1Propanol` |
+| `R32-ethanol` |
+| `R32-methanol` |
+| `R32-nButanol` |
 | `R32-water` |
 | `R40-water` |
 | `R41-water` |
@@ -893,6 +945,29 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `chlorobenzene-water` |
 | `chlorobutane1-water` |
 | `chloroform-water` |
+| `cis2Butene-1Pentanol` |
+| `cis2Butene-1Propanol` |
+| `cis2Butene-2Butanol` |
+| `cis2Butene-2Methyl1Butanol` |
+| `cis2Butene-2Methyl1Propanol` |
+| `cis2Butene-2Methyl2Butanol` |
+| `cis2Butene-2Methyl2Propanol` |
+| `cis2Butene-2Pentanol` |
+| `cis2Butene-3Methyl1Butanol` |
+| `cis2Butene-allylAlcohol` |
+| `cis2Butene-benzene` |
+| `cis2Butene-isopropanol` |
+| `cis2Butene-mCresol` |
+| `cis2Butene-mXylene` |
+| `cis2Butene-methanol` |
+| `cis2Butene-nButanol` |
+| `cis2Butene-oCresol` |
+| `cis2Butene-oXylene` |
+| `cis2Butene-pCresol` |
+| `cis2Butene-pXylene` |
+| `cis2Butene-styrene` |
+| `cis2Butene-tetrahydropyran` |
+| `cis2Butene-toluene` |
 | `cumene-water` |
 | `cyclohexane-water` |
 | `cyclohexanol-water` |
@@ -912,6 +987,29 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `diisopropylEther-water` |
 | `dimethoxyethane12-water` |
 | `dimethylDisulfide-water` |
+| `dimethylEther-1Pentanol` |
+| `dimethylEther-1Propanol` |
+| `dimethylEther-2Butanol` |
+| `dimethylEther-2Methyl1Butanol` |
+| `dimethylEther-2Methyl1Propanol` |
+| `dimethylEther-2Methyl2Butanol` |
+| `dimethylEther-2Methyl2Propanol` |
+| `dimethylEther-2Pentanol` |
+| `dimethylEther-3Methyl1Butanol` |
+| `dimethylEther-allylAlcohol` |
+| `dimethylEther-benzene` |
+| `dimethylEther-isopropanol` |
+| `dimethylEther-mCresol` |
+| `dimethylEther-mXylene` |
+| `dimethylEther-methanol` |
+| `dimethylEther-nButanol` |
+| `dimethylEther-oCresol` |
+| `dimethylEther-oXylene` |
+| `dimethylEther-pCresol` |
+| `dimethylEther-pXylene` |
+| `dimethylEther-styrene` |
+| `dimethylEther-tetrahydropyran` |
+| `dimethylEther-toluene` |
 | `dimethylEther-water` |
 | `dimethylFormamide-water` |
 | `dimethylPhthalate-water` |
@@ -924,6 +1022,29 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `ethanol-water` |
 | `ethylAcetate-water` |
 | `ethylBenzene-water` |
+| `ethylChloride-1Pentanol` |
+| `ethylChloride-1Propanol` |
+| `ethylChloride-2Butanol` |
+| `ethylChloride-2Methyl1Butanol` |
+| `ethylChloride-2Methyl1Propanol` |
+| `ethylChloride-2Methyl2Butanol` |
+| `ethylChloride-2Methyl2Propanol` |
+| `ethylChloride-2Pentanol` |
+| `ethylChloride-3Methyl1Butanol` |
+| `ethylChloride-allylAlcohol` |
+| `ethylChloride-benzene` |
+| `ethylChloride-isopropanol` |
+| `ethylChloride-mCresol` |
+| `ethylChloride-mXylene` |
+| `ethylChloride-methanol` |
+| `ethylChloride-nButanol` |
+| `ethylChloride-oCresol` |
+| `ethylChloride-oXylene` |
+| `ethylChloride-pCresol` |
+| `ethylChloride-pXylene` |
+| `ethylChloride-styrene` |
+| `ethylChloride-tetrahydropyran` |
+| `ethylChloride-toluene` |
 | `ethylFormate-water` |
 | `ethylMercaptan-water` |
 | `ethylTertButylEther-water` |
@@ -939,7 +1060,45 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `heptanol1-water` |
 | `hexanal-water` |
 | `hexanol1-water` |
+| `isoButane-1Pentanol` |
+| `isoButane-1Propanol` |
+| `isoButane-2Butanol` |
+| `isoButane-2Methyl1Propanol` |
+| `isoButane-2Methyl2Propanol` |
+| `isoButane-2Pentanol` |
+| `isoButane-allylAlcohol` |
+| `isoButane-benzene` |
+| `isoButane-isopropanol` |
+| `isoButane-mCresol` |
+| `isoButane-mXylene` |
+| `isoButane-nButanol` |
+| `isoButane-oCresol` |
+| `isoButane-oXylene` |
+| `isoButane-pCresol` |
+| `isoButane-pXylene` |
+| `isoButane-styrene` |
+| `isoButane-tetrahydropyran` |
+| `isoButane-toluene` |
 | `isoButane-water` |
+| `isoButene-1Pentanol` |
+| `isoButene-1Propanol` |
+| `isoButene-2Butanol` |
+| `isoButene-2Methyl1Propanol` |
+| `isoButene-2Methyl2Propanol` |
+| `isoButene-2Pentanol` |
+| `isoButene-allylAlcohol` |
+| `isoButene-benzene` |
+| `isoButene-isopropanol` |
+| `isoButene-mCresol` |
+| `isoButene-mXylene` |
+| `isoButene-nButanol` |
+| `isoButene-oCresol` |
+| `isoButene-oXylene` |
+| `isoButene-pCresol` |
+| `isoButene-pXylene` |
+| `isoButene-styrene` |
+| `isoButene-tetrahydropyran` |
+| `isoButene-toluene` |
 | `isoButene-water` |
 | `isohexane-water` |
 | `isoprene-water` |
@@ -964,6 +1123,25 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `monochlorobenzene-water` |
 | `morpholine-water` |
 | `mtbe-water` |
+| `nButane-1Pentanol` |
+| `nButane-1Propanol` |
+| `nButane-2Butanol` |
+| `nButane-2Methyl1Propanol` |
+| `nButane-2Methyl2Propanol` |
+| `nButane-2Pentanol` |
+| `nButane-allylAlcohol` |
+| `nButane-benzene` |
+| `nButane-isopropanol` |
+| `nButane-mCresol` |
+| `nButane-mXylene` |
+| `nButane-nButanol` |
+| `nButane-oCresol` |
+| `nButane-oXylene` |
+| `nButane-pCresol` |
+| `nButane-pXylene` |
+| `nButane-styrene` |
+| `nButane-tetrahydropyran` |
+| `nButane-toluene` |
 | `nButane-water` |
 | `nButanol-water` |
 | `nButylAcetate-water` |
@@ -1004,10 +1182,48 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `piperazine-water` |
 | `piperidine-water` |
 | `propanal-water` |
+| `propane-1Pentanol` |
+| `propane-1Propanol` |
+| `propane-2Butanol` |
+| `propane-2Methyl1Propanol` |
+| `propane-2Methyl2Propanol` |
+| `propane-2Pentanol` |
+| `propane-allylAlcohol` |
+| `propane-benzene` |
+| `propane-isopropanol` |
+| `propane-mCresol` |
+| `propane-mXylene` |
+| `propane-nButanol` |
+| `propane-oCresol` |
+| `propane-oXylene` |
+| `propane-pCresol` |
+| `propane-pXylene` |
+| `propane-styrene` |
+| `propane-tetrahydropyran` |
+| `propane-toluene` |
 | `propane-water` |
 | `propionitrile-water` |
 | `propylAcetate-water` |
 | `propylbenzene-water` |
+| `propylene-1Pentanol` |
+| `propylene-1Propanol` |
+| `propylene-2Butanol` |
+| `propylene-2Methyl1Propanol` |
+| `propylene-2Methyl2Propanol` |
+| `propylene-2Pentanol` |
+| `propylene-allylAlcohol` |
+| `propylene-benzene` |
+| `propylene-isopropanol` |
+| `propylene-mCresol` |
+| `propylene-mXylene` |
+| `propylene-nButanol` |
+| `propylene-oCresol` |
+| `propylene-oXylene` |
+| `propylene-pCresol` |
+| `propylene-pXylene` |
+| `propylene-styrene` |
+| `propylene-tetrahydropyran` |
+| `propylene-toluene` |
 | `propylene-water` |
 | `propyleneOxide-water` |
 | `propyne-water` |
@@ -1025,6 +1241,25 @@ One `<gas>-<solvent>.dat` per pair; each ships its temperature dependence and it
 | `tetralin-water` |
 | `thiophene-water` |
 | `toluene-water` |
+| `trans2Butene-1Pentanol` |
+| `trans2Butene-1Propanol` |
+| `trans2Butene-2Butanol` |
+| `trans2Butene-2Methyl1Propanol` |
+| `trans2Butene-2Methyl2Propanol` |
+| `trans2Butene-2Pentanol` |
+| `trans2Butene-allylAlcohol` |
+| `trans2Butene-benzene` |
+| `trans2Butene-isopropanol` |
+| `trans2Butene-mCresol` |
+| `trans2Butene-mXylene` |
+| `trans2Butene-nButanol` |
+| `trans2Butene-oCresol` |
+| `trans2Butene-oXylene` |
+| `trans2Butene-pCresol` |
+| `trans2Butene-pXylene` |
+| `trans2Butene-styrene` |
+| `trans2Butene-tetrahydropyran` |
+| `trans2Butene-toluene` |
 | `trichloroethane111-water` |
 | `trichloroethylene-water` |
 | `twoButanol-water` |
