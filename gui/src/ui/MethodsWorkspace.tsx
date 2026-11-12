@@ -343,6 +343,9 @@ const OverpressureTool = lazy(() =>
 const StackDispersionTool = lazy(() =>
   import("./methods/StackDispersionTool.js")
     .then((m) => ({ default: m.StackDispersionTool })));
+const ElectrolyteModelsTool = lazy(() =>
+  import("./methods/ElectrolyteModelsTool.js")
+    .then((m) => ({ default: m.ElectrolyteModelsTool })));
 const ResidueCurvesTool = lazy(() =>
   import("./methods/ResidueCurvesTool.js")
     .then((m) => ({ default: m.ResidueCurvesTool })));
@@ -659,6 +662,7 @@ export function MethodsWorkspace() {
             : tool === "stack-dispersion" ? <StackDispersionTool />
             : tool === "residue-curves" ? <ResidueCurvesTool />
             : tool === "adsorption-isotherms" ? <AdsorptionIsothermsTool />
+            : tool === "electrolyte-models" ? <ElectrolyteModelsTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

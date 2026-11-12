@@ -2259,6 +2259,94 @@ are fitted to the measured NaCl--KCl--H$_2$O solubility branches at one
 temperature and tested on the temperatures held out.
 \declaredanchor{ch:pitzer-hmw}
 
+\subsection{Choosing an electrolyte activity model}\label{sec:edu-electrolyte-models}
+
+\noindent\textit{\small Tool:} \code{tool=electrolyte-models}.  \textit{\small
+Case it starts from:} none in the corpus --- the page writes its own props
+cases and runs them with \code{choupoProps} in the browser.
+
+\subsubsection*{The question}
+
+\emph{I have a solution with salts; which activity model should I declare,
+and what do I lose with the others?}
+
+The page starts from the term every model shares, the Debye--Hückel limit
+$\ln\gamma_\pm = -3A_\phi\lvert z_+z_-\rvert\sqrt{I}$ with the engine's
+$A_\phi = 0.3915$ at 25\,\textdegree C, drawn alone against the measured table
+of the salt the student picks.  It then writes what Davies (a fixed correction,
+charge only), Pitzer (short-range virial terms per cation--anion pair, with a $\beta^{(2)}$ term in the records that carry one) and
+eNRTL (a local-composition term with water and the salt as species) add, each
+equation read from the source file it names.  The student picks NaCl, KCl,
+CaCl$_2$ or Na$_2$SO$_4$; the page draws $\gamma_\pm$ and $\phi$ under each
+model against the critically evaluated values of Hamer and Wu (1972),
+Goldberg and Nuttall (1978) and Goldberg (1981) that the tree carries in
+\file{data/curation/electrolytes/}, tabulates the mean and worst deviation,
+turns the water activity of each model into the osmotic pressure a membrane
+must overcome, asks four questions (dissolved acid gases, a second solvent, a
+second salt, the ionic strength) whose answers name a model, and ends with
+MgSO$_4$, for which the catalogue holds a Pitzer record and no eNRTL record.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The engine computes every model value.  Pitzer and eNRTL run through the
+package a process unit declares (\code{formulation electrolyteGammaPhi} with
+\code{activityModel \{ model Pitzer; \}} or \code{model eNRTL;}) and the props
+operation \code{electrolyteActivity}, one operation per molality; Davies runs
+through the speciation solver (\code{speciate}, \code{activityModel davies}),
+once with the network restricted to water's dissociation and once with every
+equilibrium the catalogue holds for the ions --- for Na$_2$SO$_4$ that forms
+NaSO$_4^-$.  Every model is asked at every measured molality, so no
+deviation is interpolated.  The page computes, and prints with its constants:
+the limiting law, the stoichiometric mean $\gamma_\pm$ of the run with ion
+pairs from the free-ion activities the engine wrote, Davies' $\phi$ from the
+engine's $a_w$, the measured $a_w$ from the table's $\phi$, the osmotic
+pressure $\Pi = -(RT/\bar V_w)\ln a_w$ with the engine's
+$\bar V_w = 1.807\times10^{-5}$\,m$^3$/mol, and the deviations.  Whether a
+model was regressed to the table on screen is read from the record's own
+\code{source} and \code{fittedInCase} lines: the eNRTL records of KCl,
+CaCl$_2$ and Na$_2$SO$_4$ were, so those comparisons are marked in-sample,
+and for CaCl$_2$ and Na$_2$SO$_4$ the rows the regression held out are drawn
+open and scored apart.  The MgSO$_4$ eNRTL run is shown as the engine's
+refusal, verbatim.  The design record
+\file{docs/design/choosing-an-electrolyte-model.md} holds the measured
+numbers for each salt.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+On NaCl, read where Davies leaves the table: within 0.3\,\% at
+$I = 0.1$\,mol/kg and about 8\,\% at $I = 0.5$.  Switch to Na$_2$SO$_4$:
+Davies on free ions is 21\,\% off already at the first row ($I = 0.3$), and the
+curve with the catalogue's NaSO$_4^-$ ion pair comes back to within 3\,\% up to
+$I = 0.6$\,mol/kg --- the specific interaction Davies lacks, declared as
+chemistry --- and leaves again above it (+19\,\% at $I = 1.8$).  On CaCl$_2$, compare
+Pitzer and eNRTL: eNRTL was fitted to this very table and still misses it by
+up to 4.6\,\%.  In step~4, pick 1\,mol/kg of NaCl: Davies' water is ideal, so
+its osmotic pressure is the ideal one, van~'t Hoff's law in its molality form (pure-water molar volume, not the solution's molarity).
+\end{tryit}
+
+\begin{pitfall}
+\textbf{A small error on a fitted table.}  An error on the points a model was
+regressed to shows that the fit worked, not that the model predicts; the
+page says which comparisons are in-sample.  The Pitzer records and the NaCl eNRTL
+record are not regressed to a table in this tree, but their authors fitted them to
+measurements of the same salts at 25\,\textdegree C, so their small errors there
+also show the quality of a fit, not a prediction.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Everything is at 25\,\textdegree C, with no temperature control: 96 of the
+catalogue's 99 Pitzer pair records hold their parameters at 25\,\textdegree C
+only, and the single-salt eNRTL scales its two energies by $298.15/T$ and
+nothing else (the engine's own simplification, not the form of Chen and Evans, 1986, eq.~45); neither is tested here away from 25\,\textdegree C.  The
+measured tables start at 0.1\,mol/kg.  Only single salts in water are compared
+with measurements; \code{pitzerHMW}, the mixed-solvent eNRTL and
+\code{edwardsPitzer} appear only as answers in step~5.  Davies is drawn up to
+$I = 2$\,mol/kg.  The osmotic pressure is the thermodynamic minimum, with the
+pure-water molar volume and the bulk composition.
+\declaredanchor{ch:electrolytes}
+
 \subsection{Residue curve maps: azeotropic and extractive distillation}\label{sec:edu-residue-curves}
 
 \noindent\textit{\small Tool:} \code{tool=residue-curves}.  \textit{\small

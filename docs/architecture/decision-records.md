@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 231 records already exist
+## 1. Why an index, when 232 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 231 design records, **162 state a rejected alternative and 69 do not** —
+- Of 232 design records, **162 state a rejected alternative and 70 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -68,6 +68,7 @@ direction is an error.
 | record | kind | alt | status |
 |---|---|---|---|
 | [`adsorption-isotherms-from-laboratory-data.md`](../design/adsorption-isotherms-from-laboratory-data.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `adsorption-isotherms` EduTool fits the linear, Langmuir and Freundlich isotherms to laboratory (c, q) points in TypeScript (a declared departure from the GUI credo's zero-physics rule, badge `page`) because the engine has `henry` and `langmuir` in gas partial pressure only and no Freundlich; section 7 is the source-check table (18 rows, one correction: the Freundlich exponent is written n as the course text writes it); the engine-side liquid-phase isotherm is a proposal, not built |
+| [`choosing-an-electrolyte-model.md`](../design/choosing-an-electrolyte-model.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `electrolyte-models` EduTool puts Davies, Pitzer and eNRTL side by side on one salt against measured osmotic and activity coefficients, running the engine's `choupoProps` operations and computing only the arithmetic of the comparison in TypeScript; section 7 is the source-check table (25 rows: 17 match, 4 corrected, 3 not in hand); no engine, data or case file changed |
 | [`c361-solids-processing.md`](../design/c361-solids-processing.md) | ADR | yes | **SLICES 1-2 BUILT 2026-11-12 (DEV.md 4c C361)** -- one size axis per case (`sizeGrid { xMax; ratio; nClasses; }`, geometric, the pan as class 0), every authored inlet put on it before the first unit (a law INTEGRATED in its mass basis, a table RE-BINNED uniform in ln x, both mass-exact and printed), the grid handed to every unit, the mixer blending class by class (a stream on its own bins re-binned and announced, two different grids REFUSED), moments from one home (`psdMoments`) on every stream and drawn by the GUI; the `mill`: a breakage population balance (Austin 1971) with selection functions `austin`, `herbstFuerstenau` (energy-specific), `vogelPeukert` (impact threshold), breakage `austin`, plug flow and perfectly mixed, mass exact per class, adiabatic shaft work, Bond printed beside.  No grid declared: no golden moves (`--scope` over 180 solids cases).  REJECTED: each unit's own bins with re-binning at every consumer; one engine-wide grid; carrying the continuous law on the stream.  DEFERRED: one distribution per solid species, the time-integrated binaries, residence-time distributions, slices 3 (screen, hydrocyclone, closed circuit) and 4 (filtration, thickener, centrifuge) |
 | [`a-tear-has-a-pressure.md`](../design/a-tear-has-a-pressure.md) | ADR | no | **SHIPPED 2026-11-01 (DEV.md 4c C186 item 5)** -- pressure is a tear variable: a recycle with a pressure drop and nothing setting a pressure is refused by tear name instead of "converging" on a pass-to-pass drift; `sweep`, `gridSweep` and `designSpec` read every point through the one `simulationFailure` verdict (a failed point is named, nan, counted; all-fail refuses).  Reproduced first.  Gate `check_driver_convergence` |
 | [`a-negative-pressure-is-refused.md`](../design/a-negative-pressure-is-refused.md) | ADR | no | **SHIPPED 2026-11-02 (DEV.md 4c C186 item 5b)** -- a NEGATIVE outlet pressure on an accepted pass refuses by unit, stream, P, inlet and remedy (it was replaced by the inlet's pressure, exit 0, a recycle "converging" on it); a trial sweep keeps the old handling and is announced (`trial pressure clamped N time(s)`); P == 0 stays the unit-did-not-set sentinel (28 corpus cases, cstr/pfr).  Reproduced and corpus-measured first.  Gate `check_negative_pressure` |
@@ -385,7 +386,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**69 of 231 records state no rejected alternative.**  For a FORUM or a STUDY
+**70 of 232 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

@@ -251,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 82,
-  "registryTools": 82,
+  "liveTools": 83,
+  "registryTools": 83,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -512,6 +512,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=salt-mixing"
+    },
+    {
+      "id": "electrolyte-models",
+      "label": "Choosing an electrolyte activity model",
+      "blurb": "Compare Davies, Pitzer and eNRTL on one salt against measurement.",
+      "discipline": "Property data & parameters",
+      "teaches": "Which activity model to declare for a solution of salts, and what each alternative loses: the Debye-Hückel limit every model shares, drawn alone against measurement; what Davies (a fixed correction, charge only), Pitzer (short-range ion-pair virial terms) and eNRTL (local composition) add to it; the same salt -- NaCl, KCl, CaCl2 or Na2SO4 -- under each model against its evaluated activity and osmotic coefficients at 25 °C, saying which comparisons are in-sample; the difference as the osmotic pressure a membrane must overcome; the choice as four questions (acid gases, a second solvent, a second salt, the ionic strength); and the engine's refusal, by name, of a pair the catalogue lacks.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=electrolyte-models"
     },
     {
       "id": "mccabe",
