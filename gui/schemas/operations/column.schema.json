@@ -4,9 +4,6 @@
   "title": "column operation",
   "description": "Multistage distillation column with constant molar overflow. Solved by the sequential bubble-point method (Wang-Henke, default) or the rigorous simultaneous MESH Newton, which is stable on azeotropes. The column is specified by (`refluxRatio`, and then the distillate by rate or recovery) or by (`bottomsRate`, `boilupRatio`). The distillate is specified EITHER by rate (`distillateRate`) or by recovery of one component (`distillateRecovery`) -- exactly one of the two, since they claim the same degree of freedom.",
   "type": "object",
-  "required": [
-    "nStages"
-  ],
   "properties": {
     "nStages": {
       "type": "integer",
@@ -351,7 +348,9 @@
         "model": {
           "type": "string",
           "enum": [
-            "AIChE"
+            "AIChE",
+            "ChanFair",
+            "SyedaChuang"
           ]
         },
         "lightKey": {
@@ -371,6 +370,83 @@
             "FairMedian",
             "none"
           ]
+        },
+        "holePitch": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m",
+          "description": "Hole pitch (SyedaChuang only)."
+        }
+      }
+    },
+    "packing": {
+      "type": "object",
+      "title": "Structured-packing bed (total reflux)",
+      "description": "Under `model totalReflux;` replaces the trays by a packed bed: Rocha-Bravo-Fair holdup, pressure drop and flooding (IECR 32 (1993) 641, Eqs 20-29) and HETP (IECR 35 (1996) 1660, Eqs 5-17). Binary only; exclusive with nStages, hydraulics and the tray efficiency.",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": [
+            "RochaBravoFair"
+          ]
+        },
+        "diameter": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m"
+        },
+        "height": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m"
+        },
+        "specificArea": {
+          "type": "number",
+          "unit": "m2/m3"
+        },
+        "voidFraction": {
+          "type": "number"
+        },
+        "corrugationAngle": {
+          "type": "number",
+          "unit": "deg"
+        },
+        "corrugationSide": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "m"
+        },
+        "surface": {
+          "type": "string",
+          "enum": [
+            "gauze",
+            "sheetMetal"
+          ]
+        },
+        "surfaceEnhancement": {
+          "type": "number"
+        },
+        "lightKey": {
+          "type": "string"
+        },
+        "liquidViscosity": {
+          "type": [
+            "number",
+            "string"
+          ],
+          "unit": "Pa s"
+        },
+        "segments": {
+          "type": "number"
         }
       }
     }
