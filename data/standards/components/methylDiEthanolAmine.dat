@@ -28,8 +28,8 @@ vaporPressure
     model         Antoine;
     // log10(Psat [bar]) = A - B / (T[K] + C), FITTED by bin/choupo-curate vp to
     // measured vapour pressures -- see provenance.vaporPressure
-    coefficients  (5.728795042  3050.850294  8.078972844);
-    Trange        (409.69  738.4);   // the fit's own span; outside it the engine announces the extrapolation
+    coefficients  (6.497772204  3841.844562  67.02347872);
+    Trange        (409.69  543.3);   // the fit's own span; outside it the engine announces the extrapolation
 }
 
 Vliq        0.000115301;      // m3/mol at 25 C  [ChemSep eqno 105]
@@ -140,16 +140,16 @@ provenance
     vaporPressure
     {
         origin        fitted;
-        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted, outliers above 15 % discarded by name)";
+        method        "vaporPressureFit (three-parameter Antoine; objective twoStage: least squares in log10 P, then the largest relative error in P minimised from it; every usable study fitted inside the declared window (DEV.md 4c C367: provenance window), the points outside it left out and reported, outliers above 15 % discarded by name)";
         methodVersion "choupoProps Choupo-dev";
         fittedInCase  "data/curation/components/methylDiEthanolAmine";
         reviewStatus  autoPromoted;
-        humanReviewed false;
+        review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
         fitGrade      severe;   // DEV.md 4c C285: the worse of the grades below
         fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-        fitGradeMaxRelativeError_pct 11.082804;   // grade severe
+        fitGradeMaxRelativeError_pct 10.738392;   // grade severe
         promotedBy    "bin/choupo-curate vp --promote";
-        promotedDate  "2026-11-10";
+        promotedDate  "2026-11-12";
         reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
         reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
         uncertainty   "the fit's maximum relative error over every kept measurement, below";
@@ -162,8 +162,9 @@ provenance
                 doi       "10.1021/je060269j";
                 sha256    "1688aa651c3e2584446c1b489ab66224f85e29ada8fef0a3079e844208533387";
                 articleSha256 "02c8cb4d842126b8f3f721cab2b12b266f42b2da0534cbb9ac3acc39d86a0acf";
-                pointsKept    9;
+                pointsKept    2;
                 pointsDropped 0;
+                pointsLeftOut 7;
                 provenance measured;
             }
             {
@@ -174,6 +175,7 @@ provenance
                 articleSha256 "5fd41a9baa3403e420dbd131ccdfe658a984d48b0965881982e740966f424eda";
                 pointsKept    7;
                 pointsDropped 0;
+                pointsLeftOut 0;
                 provenance measured;
             }
             {
@@ -184,6 +186,7 @@ provenance
                 articleSha256 "51baf217f8b5f257b4c5c26ec4713d84bc714c8775fffbd01af931591160e9c7";
                 pointsKept    7;
                 pointsDropped 0;
+                pointsLeftOut 0;
                 provenance measured;
             }
             {
@@ -194,22 +197,33 @@ provenance
                 articleSha256 "87fdfe4ce4455970e1a0d55c274cb156e01b4f7f3922db74ae4e4ff88b26f625";
                 pointsKept    5;
                 pointsDropped 1;
+                pointsLeftOut 0;
                 provenance measured;
             }
         );
+        window
+        {
+            limits        "pressureMax 200 kPa";
+            reason        "uniform rule of DEV.md 4c C367: the full-range fit graded worse than clean and measured points lie above 2 bar, which a three-parameter Antoine cannot hold together with the low-pressure end; fitted from the lowest measured point up to 2 bar; the points above are left out and their error against the fitted curve is reported";
+            pointsFitted  21;
+            pointsLeftOut 7;
+            leftOut       "10.1021/je060269j 7 pt 574.8-738.4 K";
+            leftOutMeanError_pct 20.979922;   // the fitted Antoine on the points the window left out: REPORTED, not fitted, not graded
+            leftOutMaxError_pct  34.989854;
+        }
         acceptance
         {
             rule        "the default of DEV.md 4c C285 (graded): max relative error in P over the kept points 5 / 10 / 20 %, and |Tnb - Tb| 1 / 2 / 4 K where Tb lies outside their range, are the upper limits of clean / warning / severe; above, refused; the grade is the worse of the two";
             verdict     accepted;
             studies     4;
-            pointsKept  28;
+            pointsKept  21;
             pointsDropped 1;
-            dropped     "10.1021/acs.jced.8b00054 T=430.52 K P=5000 Pa err=16.59 %";
-            aad_pct     6.252959;   // the fitted Antoine, every kept point
-            max_pct     11.082804;
-            awAad_pct   68.261350;   // the AmbroseWalton curve it replaces, the same points
+            dropped     "10.1021/acs.jced.8b00054 T=430.52 K P=5000 Pa err=15.81 %";
+            aad_pct     5.975749;   // the fitted Antoine, every kept point
+            max_pct     10.738392;
+            awAad_pct   83.911418;   // the AmbroseWalton curve it replaces, the same points
             awMax_pct   94.824711;
-            Tnb_fit     524.9996;   // K, the fitted curve at 101.325 kPa
+            Tnb_fit     524.7528;   // K, the fitted curve at 101.325 kPa
         }
     }
 }

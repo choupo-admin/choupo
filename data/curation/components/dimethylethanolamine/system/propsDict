@@ -129,7 +129,35 @@
 
   RESULT
   @@RESULT-BEGIN@@
-  (filled in by bin/choupo-curate after the run)
+  WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
+  Objective twoStage. Antoine log10(Psat/bar) = 5.419619 - 2078.3654/(T +
+  -22.7264), in-sample R2 0.998986 over 67 kept points, 273.15-431.6 K
+  (10.1021/je049761y 29/29 kept; 10.1016/j.jct.2013.03.020 25/25 kept;
+  10.1021/je101259r 13/15 kept). Relative error in P over the kept
+  points: mean 5.1800 %, max 8.5026 %; AmbroseWalton on the same points:
+  mean 37.8967 %, max 63.9790 %. Outliers discarded: none. Fit window
+  (pressureMax 200 kPa; reason: uniform rule of DEV.md 4c C367: the
+  full-range fit graded worse than clean and measured points lie above 2
+  bar, which a three-parameter Antoine cannot hold together with the
+  low-pressure end; fitted from the lowest measured point up to 2 bar;
+  the points above are left out and their error against the fitted curve
+  is reported): 2 point(s) left out (10.1021/je101259r 2 pt 440.4-447.8
+  K); their relative error in P against the fitted curve: mean 11.9783 %,
+  max 12.9233 %. Left out, point by point: 10.1021/je101259r T=440.4 K
+  P=250100 Pa err=11.03 %; 10.1021/je101259r T=447.8 K P=300200 Pa
+  err=12.92 %. Its own normal boiling point (101.325 kPa): 406.62 K.
+  PROMOTED on 2026-11-12 into
+  data/standards/components/dimethylethanolamine.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade warning under the
+  DEFAULT graded acceptance of DEV.md 4c C285 (the system/curationDict
+  declares only the fit window), 3 studies, 67 points kept, 0 discarded
+  as outliers; max relative error 8.503 % (mean 5.18 %), grade warning
+  (limits 5 / 10 / 20 %); Tb inside the kept points' range, normal
+  boiling point 406.62 K, +2.47 K from the record's Tb 404.15 K
+  (reported, not a condition); AmbroseWalton on the same points mean 37.9
+  % / max 63.98 %; FIT WINDOW (pressureMax 200 kPa): 2 measured point(s)
+  LEFT OUT (10.1021/je101259r 2 pt 440.4-447.8 K), error against the
+  fitted curve mean 11.98 % / max 12.92 % (reported, not graded)
   @@RESULT-END@@
 \*---------------------------------------------------------------------------*/
 
