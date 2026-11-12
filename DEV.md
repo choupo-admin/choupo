@@ -3455,6 +3455,23 @@ accepts today, and that is a policy call.
 > readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
 > editor, compound count, interoperability.
 
+> **C333 (Vitor, 2026-11-12: "estas a descartar ajustes severos entre 10 % e
+> 20 %, mas esses sao para ficar!  So acima de 20 % e que se descartam!").**
+> C300 rule 3 (the architect's own tightening: `severe` leaves the default
+> catalogue) is REVERSED.  It contradicted the graded acceptance he had ruled in
+> C285/C286 -- clean, warning AND severe are accepted and promoted; only
+> `refused` (above the severe limit) is discarded -- and the technical reason
+> stands on its own: without a record the engine falls back to an ideal pair,
+> which is usually far worse than a severe fit, while a severe record is voiced
+> SEVERE on every run that loads it.  What stays from C300: the in-sample
+> label, the cap at warning for one laboratory / one temperature, `review {}`.
+> What stays out: `refused`, and a pair whose model splits ONE liquid inside
+> its validity span (arm f) whatever its grade.  To promote now: the severe
+> fits kept in their cases -- C290 45 NRTL, C294 18 UNIQUAC and 50 Wilson,
+> C325 its severe NRTL/UNIQUAC/Wilson, C311 12 eNRTL, C327 7 viscosities and 2
+> surface tensions -- minus those that split; the gates that refuse a severe
+> record in the catalogue are changed with the rule, in the same commit.
+
 > **C332 (Vitor, 2026-11-12, in the cloud session: "Aprovo tudo!
 > Eventualmente depois podemos rever!").**  Approved: (1) a new EduTools shelf
 > "Property data & parameters" right after "Thermodynamics"; (2) property-
