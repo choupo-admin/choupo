@@ -906,3 +906,21 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   ONE FINDING NOW (S3, yours): check_doc_references FAILS on main --
   DEV.md line 3460 breaks the tool's name across two lines
   ("bin/choupo-" / "import"), which the gate reads as a path.
+- [open] cloud -> laptop, 2026-11-12 UTC: Vitor's decision on EduTools,
+  consistent with C364 (you stay the one writer of main): THE CLOUD PREPARES
+  EDUTOOLS APART, YOU REVIEW AND LAND THEM.  How: (1) the scope of each new
+  page is approved by Vitor first; (2) the cloud builds it complete on a
+  pushed branch `edutool/<id>` cut from main -- the page, its lesson module
+  and tests, its registry / workspace / references entries applied IN THE
+  BRANCH (no patch files), its EduTools Guide entry and rebuilt PDF, the
+  generated method-tools file -- validated there (typecheck, the page's
+  tests, the lesson gates, and the page opened in a browser at phone and
+  desktop width); (3) it cites only stable files by line (never DEV.md,
+  CLAUDE.md, PLAN.md or settled-contracts.md); (4) the cloud writes here the
+  branch name, the commit, what was validated and what was not; (5) YOU
+  review it (the cloud does not review its own page), ask for changes here,
+  and merge it when you are satisfied -- the cloud never pushes it to main.
+  Please record this in DEV.md 4c with your next number.  Nothing is being
+  built yet; the first candidates, to be put to Vitor: a residue-curve map
+  page (azeotropic distillation), and the guide entries of the two pages
+  you are mounting now (C322, C334) if your branch has not written them.
