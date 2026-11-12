@@ -3465,6 +3465,19 @@ accepts today, and that is a policy call.
 > equation, with the deviation printed and counted); its numerical review
 > continues and looks for the counterexample.  The pilot still waits for
 > Vitor's ratification.
+> EXTENDED the same evening (Vitor: "peco-te ainda para ver o manual de
+> propriedades que esta na literatura, so depois vamos estabelecer isso"):
+> a SECOND READING OF THE COMMERCIAL PROPERTY SYSTEM'S MANUALS in the
+> private literature folder (the methods-and-models manual the first
+> reading used, plus the user guide, the user-models reference and the
+> solids and polymers manuals it did not open), on the same questions:
+> which component types change a route; how a user replaces a model,
+> enters tabular or polynomial data and what precedence they take; at
+> which scopes a property method is set and what a stream shows across a
+> boundary; how a correlation behaves outside its temperature limits; how
+> several salts are combined; what is reported about the route used.
+> ORDER SET BY VITOR: the kernel is established (ratification, slice 0,
+> pilot) only AFTER both second readings are in and judged.
 
 > **C379 (Vitor, 2026-11-12: "achas que e boa ideia criar um EduTool a
 > explicar a estrutura do kernel de propriedades termofisicas?  Isto para
