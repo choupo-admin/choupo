@@ -3163,6 +3163,22 @@ PYEOF
     fi
     rm -f /tmp/feedswitch.$$
 
+    # fixed-bed-scheme gate (2026-11-12, DEV.md 4c C375): the bed's convection
+    # scheme held to the linear pulse's closed-form moments (vanLeer with no
+    # grid term, upwind only with v dz/2), to batch13's mesh convergence
+    # (observed orders and the converged front), to its bounds at Dax = 0,
+    # to round-off conservation (and batch20's energy on padded blocks), to
+    # the RK4 bound 6 u_i/dz, and the solutionControl switch of its profiles.
+    if gate_exec "$ROOT/bin/curate/check_fixed_bed_scheme.py" > /tmp/fbscheme.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "fixed-bed-scheme-gate" "$(tail -1 /tmp/fbscheme.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_fixed_bed_scheme.py)\n" "fixed-bed-scheme-gate"
+        cat /tmp/fbscheme.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/fbscheme.$$
+
     # third-body-rate gate (2026-10-31, DEV.md 4c C185 item 9): the batch
     # reactor's `thirdBody` rate is k(T)[M] PROD c, forward and reversible,
     # held against an independent integration with an independent Kc -- the

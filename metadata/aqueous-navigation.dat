@@ -299,6 +299,18 @@ speciesNavigation
     H2Cac     { familyRoots ( cacodylate ); }
     HCac      { familyRoots ( cacodylate ); }   // the master of the family
     Cac       { familyRoots ( cacodylate ); }
+    HPropn    { familyRoots ( propionic ); }   // the master of the family
+    Propn     { familyRoots ( propionic ); }
+    HBut      { familyRoots ( butyric ); }   // the master of the family
+    But       { familyRoots ( butyric ); }
+    HBenz     { familyRoots ( benzoic ); }   // the master of the family
+    Benz      { familyRoots ( benzoic ); }
+    H2Maln    { familyRoots ( malonic ); }   // the master of the family
+    HMaln     { familyRoots ( malonic ); }
+    Maln      { familyRoots ( malonic ); }
+    H2Glut    { familyRoots ( glutaric ); }   // the master of the family
+    HGlut     { familyRoots ( glutaric ); }
+    Glut      { familyRoots ( glutaric ); }
     // END C373
 }
 

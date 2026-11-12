@@ -1453,7 +1453,11 @@ A second confusion, the one that costs a plant:
         (\file{batch21\_tsa\_hot\_purge}, \file{batch23\_tsa\_cycles}), named
         on the page and not taught by it.
   \item \textbf{The engine's curve is a model.}  By default the plot is the
-        engine's integration of the witness, mesh spreading included.  A
+        engine's integration of the witness on its default second-order
+        van Leer scheme, whose mesh adds about 5\,\% to the front's width
+        at 100 cells (first-order upwind, which a case may declare, adds
+        about 43\,\% and makes the unused length 2.5~cm instead of
+        1.75~cm).  A
         measurement enters through the open case: a
         \file{constant/experimental/breakthrough.csv} with a
         \code{t\_s,c\_over\_c0} header is drawn as markers beside the
@@ -1506,8 +1510,10 @@ The engine runs the linear pulse: its outlet histories and its own
 stoichiometric times, Peclet number and mass closure are read off the run,
 and a run that does not belong to the current knobs is not drawn.  The page
 puts the moments derived in the Theory Guide (elution chromatography, in the adsorption chapter) beside it, with the
-dispersion the engine's first-order grid adds (one plate per cell) as a
-column of its own, and its own second-order integration of the same bed
+dispersion the first-order grid adds (one plate per cell) as a
+column of its own --- the page's case declares \code{convectionScheme
+upwind;} for exactly that reason, since the engine's default van Leer
+scheme adds no such term --- and its own second-order integration of the same bed
 equations as a third reading.  The overloaded column --- a competitive
 Langmuir isotherm, in concentration units --- is the page's integration
 only, on 100 cells, with its mass ledger printed and a button that repeats
@@ -2678,7 +2684,11 @@ specification echoed back.
 \subsection*{Adsorption breakthrough \quad(\code{tool=breakthrough})}
 The S-shaped breakthrough curve against the ideal square wave drawn at the
 engine's stoichiometric time: the mass-transfer zone consumes bed capacity
-long before the bed is saturated.
+long before the bed is saturated.  The witness runs the engine's default
+second-order van Leer scheme (t$_b$(5\,\%) = 2934~s, a 231.5~s wide front,
+1.75~cm unused, within 0.18\,\% and 5\,\% of the mesh-converged front);
+declaring \code{convectionScheme upwind;} shows the first-order grid widen
+the front to 313.5~s.
 \declaredanchor{ch:adsorption}
 
 % =====================================================================

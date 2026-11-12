@@ -20,8 +20,8 @@
   * the plate model against its own moments, and against the Gaussian as N
     grows;
   * the page's column integration: its mass ledger to round-off, its
-    linear pulse against the moment formulas (and, with the engine's own
-    first-order scheme, against the formulas that count that scheme's
+    linear pulse against the moment formulas (and, with the first-order
+    scheme the page's engine case declares, against the formulas that count that scheme's
     dispersion), its Langmuir pulse against the linear one at low load, and
     the overloaded peak against itself on finer grids;
   * the case the page hands the engine, parsed by the app's own reader.
@@ -141,7 +141,7 @@ describe("the page's column integration", () => {
     expect(r.fed[0]).toBeCloseTo(col.u * col.area * cIn * 2, 14);
   });
 
-  it("with the engine's first-order scheme reproduces the moments that count its grid", () => {
+  it("with the first-order scheme the engine case declares reproduces the moments that count its grid", () => {
     const r = solveColumn({ ...base, N: 200, scheme: "upwind" });
     for (const i of [0, 1]) {
       const m = sampledMoments(r.t, r.c[i]!);
@@ -227,6 +227,9 @@ describe("the engine's case", () => {
     expect(cf.controlDict["application"]).toBe("choupoBatch");
     const files = chromCaseFiles(spec);
     expect(files["system/flowsheetDict"]).toContain("type        fixedBedAdsorber;");
+    //  C375: the page adds a first-order grid's v dz/2 to its theory, so its
+    //  case must name that scheme (the engine's default is van Leer).
+    expect(files["system/flowsheetDict"]).toContain("convectionScheme upwind;");
     expect(files["system/flowsheetDict"]).toContain("key feed.CH4; value 0.0;");
     expect(files["constant/parameters/adsorption/equilibria/linearTeachingSorbent/CO2.dat"]).toContain("H_298 0.6;");
     expect(spec.tEnd % 0.5).toBe(0);

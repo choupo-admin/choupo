@@ -90,6 +90,22 @@ SolutionControl SolutionWriter::timeDirectoryControl(
     const Dictionary&   controlDict,
     const std::string&  binaryName)
 {
+    const SolutionControl sc = readTimeDirectoryControl(controlDict, binaryName);
+    if (sc.write)
+        std::cout << "solutionControl:   time directories <t>/ at the case"
+                     " root every writeInterval, in the layout of 0/ (the"
+                     " default; `solutionControl { write false; }` turns them"
+                     " off)\n\n";
+    else
+        std::cout << "solutionControl:   write false -> no <t>/ time"
+                     " directories (trajectory.csv only)\n\n";
+    return sc;
+}
+
+SolutionControl SolutionWriter::readTimeDirectoryControl(
+    const Dictionary&   controlDict,
+    const std::string&  binaryName)
+{
     SolutionControl sc;
     sc.write = true;                         // the OpenFOAM default
     //  DEV.md 4c C236: the time-integrated binaries do NOT fsync each instant
@@ -115,14 +131,6 @@ SolutionControl SolutionWriter::timeDirectoryControl(
         sc.write     = word("write", true);
         sc.flushEach = word("flushEach", sc.flushEach);
     }
-    if (sc.write)
-        std::cout << "solutionControl:   time directories <t>/ at the case"
-                     " root every writeInterval, in the layout of 0/ (the"
-                     " default; `solutionControl { write false; }` turns them"
-                     " off)\n\n";
-    else
-        std::cout << "solutionControl:   write false -> no <t>/ time"
-                     " directories (trajectory.csv only)\n\n";
     return sc;
 }
 

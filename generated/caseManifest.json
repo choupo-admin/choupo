@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1831,
+  "cases": 1833,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 23
+  "anchored": 24
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -21324,6 +21324,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/adsorber/batch29_pulse_two_schemes": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "fixedBedAdsorber"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/batch/combustion/ignition01_h2o2": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -26062,6 +26078,21 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/evaporation/evaporator10_naoh_triple_effect": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "evaporator"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29523,6 +29554,7 @@
     "tutorials/batch/adsorber/batch24_blowdown_inert",
     "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
+    "tutorials/batch/adsorber/batch29_pulse_two_schemes",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",
@@ -31127,6 +31159,7 @@
     "tutorials/steady/evaporation/evaporator07_nacl_enrtl",
     "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
     "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/evaporation/evaporator10_naoh_triple_effect",
     "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt",
     "tutorials/steady/flash/adiabaticFlash01_benzene_toluene",
     "tutorials/steady/flash/analysis01_water_analysis_inlet",
@@ -31687,6 +31720,7 @@
     "tutorials/steady/evaporation/evaporator07_nacl_enrtl",
     "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
     "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/evaporation/evaporator10_naoh_triple_effect",
     "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt",
     "tutorials/steady/optimisation/designSpec01_triple_equal_areas",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
@@ -31711,7 +31745,8 @@
     "tutorials/batch/adsorber/batch23_tsa_cycles",
     "tutorials/batch/adsorber/batch24_blowdown_inert",
     "tutorials/batch/adsorber/batch24_tsa_until_css",
-    "tutorials/batch/adsorber/batch25_blowdown_thermal"
+    "tutorials/batch/adsorber/batch25_blowdown_thermal",
+    "tutorials/batch/adsorber/batch29_pulse_two_schemes"
    ],
    "gasSolidSplitter": [
     "tutorials/steady/gas-solid/gasSolidSplitter01_ideal",
@@ -33012,6 +33047,7 @@
     "tutorials/steady/evaporation/evaporator06_nacl_pitzer",
     "tutorials/steady/evaporation/evaporator08_naoh_dilution_heat",
     "tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine",
+    "tutorials/steady/evaporation/evaporator10_naoh_triple_effect",
     "tutorials/steady/thermoTest/model2_pitzer_evaporator"
    ],
    "UNIFAC": [
@@ -34309,6 +34345,7 @@
     "tutorials/batch/adsorber/batch24_blowdown_inert",
     "tutorials/batch/adsorber/batch24_tsa_until_css",
     "tutorials/batch/adsorber/batch25_blowdown_thermal",
+    "tutorials/batch/adsorber/batch29_pulse_two_schemes",
     "tutorials/batch/combustion/ignition01_h2o2",
     "tutorials/batch/combustion/ignition01_h2o2_eulersi",
     "tutorials/batch/combustion/ignition01_h2o2_rk4",

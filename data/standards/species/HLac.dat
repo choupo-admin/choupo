@@ -1,10 +1,10 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
-  species/HLac.dat -- ONE model species, ONE typed file.
-
-  The NEUTRAL, undissociated aqueous lactic acid (2-hydroxypropanoic acid): the speciation
-  MASTER of the lactate family, from which Lac- is formed by chemistry/Lac-formation.dat
-  (the tartrate pattern, species/H2Tart.dat).  No `aqueousThermo` here, as for H2Tart.
-  Key names HLac / Lac cannot be confused with the acetate key HAc.
+  species/HLac.dat -- ONE model species, ONE typed file: the most protonated form of lactic acid, the speciation MASTER of its family.
+  Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
+  reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
+  1 mol/kg, 298.15 K, H+ = 0.
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -13,3 +13,16 @@ name    HLac;
 formula     "HC3H5O3";
 charge  0;
 MW { value 90.078; unit g/mol;}
+aqueousThermo
+{
+source "sAq [J/mol/K] 208.36: printed S 49.8 cal/mol/K x 4.184 -- Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580, Table 10, p. 544 (PDF p. 49), row lactic acid (read from a page image), the paper marks it estimated (footnote g, eq 39)";
+sAq  { value 208.36; unit J/mol/K;}
+provenance
+{
+    sAq
+    {
+        origin  estimated;
+        method  "Shock (1995) Table 10 footnote g: S of the aqueous hydroxyacid estimated with the author's eq (39)";
+    }
+}
+}

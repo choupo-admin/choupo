@@ -27,15 +27,29 @@
       t_st = (L/u) R_f                 = 3040.512509 s
       u_sh = u/R_f                     = 1.644459605e-4 m/s
 
-  Independent gates this run must reproduce (anchors_a3.py, FV N = 100):
+  The front this run computes (convectionScheme vanLeer, the stated
+  default since C375; nCells = 100):
 
-      t_b(5%) = 2890.669098 s    t_50 = 3036.448293 s    t_b(95%) = 3204.166058 s
-      INT(1 - c_out/c_in)dt = t_st to 2.2e-10  (telescopic FV conservation)
-      ledger mass closure <= 1e-10 (IN/OUT integrated as rows of the SAME ODE)
+      t_b(5%) = 2934.069 s    t_50 = 3035.101 s    t_b(95%) = 3165.565 s
+      5-95 % width 231.5 s; unused bed length L(1 - t_b/t_st) = 0.0175 m
+      INT(1 - c_out/c_in)dt = t_st to 3e-8  (telescopic FV conservation)
+      ledger mass closure at round-off (IN/OUT rows of the SAME ODE)
 
-  Numerics: conservative FV, nCells = 100 DECLARED (do the 25/50/100/200
-  mesh study -- batch15 publishes it: first-order upwind, observed order
-  ~1.03-1.05), Danckwerts inlet as the imposed face flux u*c_in, outlet
+  That is the PHYSICAL front within the stated tolerance: the mesh-
+  converged front (Richardson, 800/1600 cells) has t_b(5%) = 2939.26 s,
+  width 219.6 s, unused length 0.0167 m, so at 100 cells van Leer is
+  0.18 % early on t_b and 5.4 % wide (gate check_fixed_bed_scheme; the
+  width converges at order ~2).  THE COMPARISON A STUDENT CAN REPRODUCE:
+  declare `convectionScheme upwind;` and the first-order scheme adds its
+  numerical dispersion v dz/2 = 3.1e-4 m2/s, 1.25 times the physical
+  Dax/eps = 2.5e-4 (the run announces it), and the front becomes the
+  grid's: t_b(5%) = 2890.669 s, t_50 = 3036.448 s, t_b(95%) = 3204.166 s,
+  width 313.5 s, unused length 0.0246 m (the A3 anchors of anchors_a3.py,
+  FV N = 100, observed order ~1.03-1.05 -- batch15 is that mesh study).
+  The stoichiometric time does not move with either scheme or mesh.
+
+  Numerics: conservative FV, nCells = 100 DECLARED, Danckwerts inlet as the
+  imposed face flux u*c_in, outlet
   dc/dz = 0.  u, P, T are DECLARED constants of this phase, and the price
   is said OUT LOUD: the real velocity drops ~15% across the uptake zone,
   so the constant-u closure FABRICATES carrier (He) at exactly the net
@@ -45,8 +59,10 @@
   stream, and the energy balance of this closure stays UNAVAILABLE (named).
 
   Log: run header prints the hypotheses, the derived rho_p, Pe = 250, the
-  Gershgorin step bound term by term and the stiffness verdict; profiles
-  land in <t>/bed.profile every 100 s; trajectory.csv carries c_out, y_out,
+  Gershgorin step bound term by term, the scheme's numerical dispersion
+  and the stiffness verdict; the initial profile lands in 0/bed.profile
+  (the later <t>/bed.profile files are erased by the instant writer -- a
+  defect recorded in docs/design/fixed-bed-numerics-c375.md); trajectory.csv carries c_out, y_out,
   qbar and the per-species ledger closure.
 \*---------------------------------------------------------------------------*/
 

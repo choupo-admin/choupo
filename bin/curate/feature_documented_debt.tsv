@@ -27,7 +27,6 @@ ODEIntegrator	Rosenbrock23	catalogue
 PhaseChangeHTC	NusseltFilm	guide
 PhaseChangeHTC	Rohsenow	guide
 PhaseChangeHTC	ZuberCHF	guide+catalogue
-PureFluidModel	IF97	guide+catalogue
 Report	energyStreams	catalogue
 Report	profiles	catalogue
 Signal	prbs	catalogue
@@ -37,4 +36,3 @@ TransportModel	constantRejection	guide
 UnitOperation	convectiveDryer	guide
 UnitOperation	storageTank	guide
 UnitOperation	tsaTwinBed	guide
-VaporPressureModel	Wagner	guide+catalogue

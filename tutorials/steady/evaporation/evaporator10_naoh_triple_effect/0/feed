@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     Feed: 13 608 kg/h, 10 wt % NaOH (34.02 kmol/h NaOH, 679.8 kmol/h water), 37.8 C. ---*/
+
+componentMolarFlows
+{
+    water    679.8 kmol/h;
+    NaOH     34.02 kmol/h;
+}
+
+T               310.95 K;
+P               100000 Pa;

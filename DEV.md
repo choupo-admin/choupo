@@ -3446,6 +3446,168 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C379 (Vitor, 2026-11-12: "achas que e boa ideia criar um EduTool a
+> explicar a estrutura do kernel de propriedades termofisicas?  Isto para
+> alem do registo nos guias habituais").**  YES, on the shelf "How Choupo
+> works", beside the two pages on how a case is assembled and how a log is
+> read.  THE TASK IT SERVES: "I need the density (viscosity, diffusivity,
+> surface tension) of this stream: where does the number come from, and
+> how far do I trust it?"  The page is the visible face of the
+> resolved-routes table of C378: the student picks a liquid (water; water
+> + ethanol; water + NaOH; CO2 dissolved in water), sees which methods
+> apply, which one is used and which were passed over and why, the three
+> statements of quality and the expected error; then adds a measured
+> point, a case-declared correlation or a bounded hypothesis and watches
+> the precedence change, and meets a refusal with its reason.  It teaches
+> the distinction the structure rests on: a model predicts, a measurement
+> is a number with its source, a hypothesis is a stated concession.  BUILT
+> ONLY AFTER C378 is ratified and its pilot (liquid density) runs: an
+> EduTool cites the engine by file and line and shows the engine's own
+> output, so a page written before the structure exists would describe a
+> plan.  The guide sections (rule 4d) are owed by each slice regardless.
+
+> **C378 (Vitor, 2026-11-12, on learning that the kernel refuses the density
+> and the viscosity of a caustic solution: "precisamos de sistematizar a
+> forma como a viscosidade e calculada! E a massa especifica (o inverso dos
+> volumes molares) e a tensao superficial!! Achas que podemos ir buscar
+> inspiracao na literatura" and in the property systems of the two
+> simulators he names).**  A STUDY FIRST, written, before any architecture
+> (his standing rule of 2026-07-16: never design properties without studying
+> first; the deliverable is the study).  Scope: liquid molar volume /
+> density, liquid and gas viscosity, surface tension (thermal conductivity
+> and diffusivity noted where the same structure serves them), for the four
+> kinds of liquid Choupo meets: molecular mixtures, aqueous electrolytes,
+> solutions with dissolved gases or supercritical components, and slurries.
+> It maps (1) what the kernel does today, route by route, with what refuses
+> and what silently estimates; (2) how a large commercial property system
+> organises these properties (its methods-and-models manual is in the
+> literature folder) and how an open-source simulator does (its public
+> source); (3) the literature's own hierarchy (the standard monograph on
+> the properties of gases and liquids, the handbook, the electrolyte
+> correlations for density and viscosity fitted across many salts); and
+> proposes ONE systematic structure -- a route per property and per kind of
+> liquid, each a named, selectable object with its window and source, a
+> declared default, and a refusal where no route applies -- with a
+> migration that moves no golden silently.  The comparative study names its
+> sources and is kept OUTSIDE the tracked tree; the repository gets the
+> design record, which describes the other systems by what they are.
+> Branch c378-thermophysical-study; no code in this slice.
+> VITOR'S GUIDANCE the same hour, binding on the proposal: the method may
+> depend on how the COMPOUND IS CLASSIFIED, so the study finds the smallest
+> classification that changes which method is right (from what the records
+> already carry where possible); "muito bom senso e Pareto": few simple
+> routes that cover most of what a flowsheet meets, not a method for every
+> cell -- "todos os modelos sao errados, mas ha alguns que sao uteis"; and
+> some liquid-phase properties are hard to predict, so each route SAYS its
+> expected error at the point of use and a measured value from the case
+> always overrides an estimate.
+> AND A HARD CONSTRAINT (Vitor, the same hour: "isso tem de ser feito de
+> forma elegante! Porque a forma como se organiza os componentes e a
+> informacao vai depender disso! Martelar isto a bruta e exigir correcoes
+> brutas para componentes caso a caso pode dar super confusao").  BINDING:
+> (1) NOTHING is built for liquid density, viscosity or surface tension
+> until he has read the study and the design is ratified; (2) the
+> NaOH-only density and viscosity seam that had been added to the C377
+> slice is WITHDRAWN (the paper's correlations are transcribed as evidence
+> for the study, not implemented); (3) the proposal is judged by: no
+> component name and no per-component special case in code; the record's
+> organisation designed, each fact in one home (a solution property belongs
+> to the salt-solvent system, like a Pitzer pair, not to a component); few
+> concepts; exceptions as declared data with a reason; no big-bang edit of
+> records; a pilot on one property first, reversible.  Declared
+> hypotheses, if adopted, extend the existing `approximations {}` block
+> under a closed vocabulary -- never a new free-form dictionary.
+> THE STUDY LANDED (8cce7aaf7, docs/design/thermophysical-property-routes.md,
+> status OPEN) and Vitor put its proposal to an independent reviewer (a
+> second AI; his words: an opinion, the architect decides).  JUDGED ON
+> CONTENT, the review changes the proposal in seven places (revision 2 of
+> the record, still nothing built):
+> (1) THE UNIT OF ORGANISATION IS THE APPLICABLE METHOD, NOT A FIXED
+> PIPELINE.  A unit asks for one property of an identified phase at a
+> state; a method declares what it computes, the inputs it needs, its
+> domain and its evidence; a method MAY call others (ideal mixing of pure
+> volumes does; a direct rho(T, w) of a solution does not).  "pure ->
+> mixing -> system correction -> pressure" was one composite method among
+> several, wrongly made the frame.  A method that already takes P gets no
+> second pressure correction.
+> (2) NO SINGLE CLASS SELECTS THE METHOD.  Five classes conflated a
+> compound's attributes, its role in a solution and the state of the phase
+> (CO2 dissolved in water below its Tc; acetic acid, associating AND
+> dissociating; a molten salt with no solvent).  Applicability belongs to
+> the method and reads FACTS: attributes of the component (associating is
+> kept as POSITIVE information that can exclude a method; absence of the
+> flag proves nothing), the composition of the phase, the records that
+> exist.  The decision trees of the literature stay as what a student is
+> SHOWN, not as the selector.
+> (3) A SOLUTION RECORD NAMES ITS CONSTITUENTS, THEIR ROLES, THE
+> COMPOSITION BASIS AND WHAT IT RETURNS (solution density, apparent
+> volume, or increment over the solvent): two correlations that each
+> include the water must never be summed.  The pair is the commonest case
+> of that one format, not a special home.  Several salts are combined
+> only by a PUBLISHED multi-salt rule, and the result must not depend on
+> which salts the ions were fed as; a salt in a mixed solvent is refused
+> on binary aqueous data.
+> (4) HYPOTHESES: `massWithoutVolume` stays, written with its equation
+> (the solute's apparent molar volume taken as zero); `excludedFromMixing`
+> is WITHDRAWN (a trace surfactant decides a surface tension; a generic
+> exclusion can redefine any property).  A hypothesis authorises an
+> approximation a concrete method knows how to execute, with property,
+> scope, components, limit and reason; the report keeps the largest
+> fraction it covered.
+> (5) A POOR ESTIMATE: shown, labelled, in the property bench; in a unit
+> that sizes with it, where a deficiency of that size is known for the
+> system (an aqueous or associating pair with no interaction parameter),
+> it needs the case's explicit authorisation or an applicable
+> measurement.  Quality is three separate statements, not one word:
+> origin of the value, whether the point is inside the domain, and the
+> quantitative evidence (or "not quantified").  A user's measurement beats
+> an estimate for the same quantity, phase, composition and conditions;
+> using one point as a constant over a range is itself a hypothesis.
+> (6) ONE CANONICAL VALUE PER STREAM STATE AND PROPERTY; a unit's override
+> is a local, named approximation shown beside it.  Methods are resolved
+> at assembly from what data exist, NOT switched by state during
+> iteration: leaving a domain is announced as extrapolation, so no
+> discontinuity is introduced.  Messages are aggregated per method and
+> site, not printed per call.  The ratchet on raw reads holds only during
+> migration; the lasting test is behavioural (give the stream a known
+> artificial density and check the unit's flow, power or residence time).
+> A record may bind a substance to its own published method (water's
+> reference equation); the ban is on names in the general selector.
+> (7) THE PILOT IS END TO END ON TWO UNITS (pump and CSTR on one stream)
+> with five demonstrations as the judgement point: water near its density
+> maximum and compressed, against the reference equation; a molecular
+> mixture by additive volumes with each datum's own temperature shown;
+> aqueous NaOH by a direct correlation AND by one user-measured point that
+> wins at its conditions and stops applying outside them; CO2 dissolved in
+> water on both sides of 31 C with its contribution never silently
+> dropped; NaCl + water + ethanol on binary aqueous data, where a refusal
+> with the right reason IS the pass.  KEPT from revision 1 against the
+> review's silence: one home per property; default precedence is declared
+> and ANNOUNCED with the methods passed over (no hidden ranking); few
+> methods; the step that changes no number comes first; the CO2 reference
+> temperature is corrected as its own traceable change.  The reviewer ran
+> nothing and its web citations are not verified here.
+> FOUR QUESTIONS OF VITOR'S, answered and added to revision 2: (i) may a
+> user apply a crude empirical correlation in an operation?  YES: a
+> CASE-DECLARED CORRELATION, a method whose formula is written in the case
+> through the formula evaluator the case-carried rate laws already use,
+> with property, phase, variables, domain, checked units, a mandatory
+> reason and an optional source; with no source the run says "declared by
+> the case, not verified" at every use.  (ii) may he exclude compounds
+> from the calculation of a property?  YES, and ruling (4) above is
+> AMENDED: the exclusion returns in a BOUNDED form, per property, with a
+> mandatory limit on the neglected fraction and a mandatory reason; the
+> engine refuses beyond the limit and reports the largest fraction
+> neglected.  The reviewer's objection was to a generic, unbounded
+> exclusion; a bounded, announced one is the owner's original idea of a
+> declared hypothesis.  (iii) per unit or per sector?  YES, through the
+> existing override, which must learn to accept declared correlations and
+> hypotheses; the stream keeps one canonical value and the unit's choice is
+> shown beside it.  (iv) mass diffusivity?  YES: it joins the structure
+> after viscosity, as the clearest composite method (the infinite-dilution
+> correlation calls the solvent viscosity), with a small Pareto set and the
+> literature's stated errors.
+
 > **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
 > agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
 > MEASURED the same turn on evaporator08_naoh_dilution_heat (single effect):
@@ -3485,6 +3647,18 @@ accepts today, and that is a policy call.
 > equation where the package can reach it.  Validated against the paper's
 > own tables and the enthalpy-concentration chart of a book in hand.
 > Branch c377-naoh-olsson.
+> DENSITY AND VISCOSITY (Vitor asked the same day how the kernel handles
+> them; MEASURED: it does not -- the liquid density mixes pure-liquid molar
+> volumes ideally and refuses, the NaOH record having neither Vliq nor
+> critical constants; the liquid viscosity mixes pure-liquid viscosities and
+> refuses for want of a NaOH model; the aqueousAnalysis reader's volumetric
+> slot is a separate, ideal estimate).  DECIDED, added to the same slice:
+> the electrolyte interface gains optional `solutionDensity(m,T)` and
+> `solutionViscosity(m,T)`, the Olsson model provides them from the same
+> paper, and the package's liquid density and viscosity use them when the
+> liquid is that electrolyte solution, announced; every other model and
+> case byte-identical.  Other salts (a general correlation fitted across
+> many salts) are a later slice.
 
 > **C376 (Vitor, 2026-11-12: "A maior parte das especies novas nao tem dados
 > de formacao?! Podes ver online como vamos resolver isto? Se for preciso
@@ -3510,6 +3684,21 @@ accepts today, and that is a policy call.
 > of Goldberg et al. -- so a balance in which the buffer's total amount is
 > conserved depends only on measured quantities, and the estimate cancels.
 > Branch c376-formation-data: routes 1 and 2 first.
+> LANDED 2026-11-12 (3bd797fe6): species with hfAq 84 -> 123 (of 250),
+> with sAq 76 -> 117, from the NBS tables, Amend & Helgeson (1997), Shock
+> (1995) and Alberty (2003); every family on one scale, disagreements
+> tabulated in docs/design/species-from-evaluated-compilations.md
+> (phosphate and pyrophosphate stay on NBS against Alberty's 6-22 kJ/mol;
+> citrate stays on its calorimetric source; amino acids on Miller).
+> DECIDED on the laboratory buffers: NO estimated formation data -- the
+> group method has no sulfonic acid group or piperazine, and Tris lacks a
+> measured heat of solution; they stay pH-only.  A CONDITION, OPEN: some
+> entropies and enthalpies from Shock are correlation ESTIMATES and are
+> marked `origin estimated` per value, but the engine does not read or
+> announce a species datum's origin on use (only components are audited);
+> nothing consumes them today.  Before any energy or entropy balance prices
+> a species through these data, the engine reads `aqueousThermo.provenance`
+> and announces an estimated value at the point of use.
 
 > **C375 (2026-11-12; three engine findings met by the chromatography page,
 > confirmed by run and by reading; the architect's decisions).**  (a) THE

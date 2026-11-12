@@ -4,7 +4,7 @@
   "latestReleasedAt": "2026-09-02",
   "catalogue": {
     "components": 696,
-    "aqueousSpecies": 238,
+    "aqueousSpecies": 250,
     "nrtlPairs": 793,
     "wilsonPairs": 790,
     "uniquacPairs": 374,
@@ -21,10 +21,10 @@
     "engines": 5
   },
   "tutorials": {
-    "runnableCases": 571,
-    "regressionChecks": 555,
+    "runnableCases": 573,
+    "regressionChecks": 557,
     "byTier": {
-      "witness": 513,
+      "witness": 515,
       "tutorial": 42,
       "showcase": 16
     }

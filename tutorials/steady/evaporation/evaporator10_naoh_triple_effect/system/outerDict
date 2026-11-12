@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  evaporator10_naoh_triple_effect -- outer driver.
+
+  Two unknowns, two specifications (the structure of evaporator03):
+
+    $A                         common heating area of the three effects
+    streams.liveSteam.F        live-steam flow into effect 1
+
+    (1) productConc.F_mass = 2.1 kg/s     18 wt % NaOH from 1360.8 kg/h of
+                                          NaOH (7560 kg/h of product)
+    (2) effect3.P          = 6760 Pa      vapour-space pressure of the last
+                                          effect (6.76 kPa)
+\*---------------------------------------------------------------------------*/
+
+type         designSpec;
+
+manipulate
+(
+    { variable A;        initial 40.0   m2;     min 5.0   m2;       max 200.0  m2;     }
+    { variable streams.liveSteam.F;
+      initial 130.0  kmol/h; min 30.0  kmol/h;   max 600.0  kmol/h; }
+);
+
+targets
+(
+    { path  productConc.F_mass;   value 2.1 kg/s;      tol 1.0e-4 kg/s; }
+    { path  effect3.P;            value 6760 Pa;       tol 20 Pa; }
+);
+
+options
+{
+    maxIter      40;
+    tolF         1.0;
+    fdStep       1.0e-4;
+}
+
+report
+{
+    file         designspec_history.csv;
+}

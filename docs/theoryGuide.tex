@@ -7494,9 +7494,10 @@ difference of the neighbouring species' formation enthalpies are two readings of
 same table), malic $0.005$ and $0.001$ (Eden \& Bates and Miller print the same constants), lactic $0.20$~kJ/mol; the three
 citric steps differ by $0.5$, $1.3$ and $1.1$~kJ/mol, inside the $\pm1.1$ to $1.6$~kJ/mol Kochergina's formation
 enthalpies carry, which is why the whole citrate family keeps Kochergina's ions (Miller prints no formation enthalpy of
-citrate) and a mix of the two works never occurs.  A glycolic acid whose crystal, heat of solution and aqueous enthalpy
-do not close in the source (they differ by 2.9~kJ/mol) is carried for its speciation only: the energy route through it
-refuses by name.  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
+citrate) and a mix of the two works never occurs.  Glycolic acid, whose crystal, heat of solution and aqueous enthalpy do not close in Miller \& Smith-Magowan (they differ by
+2.9~kJ/mol), was carried for its speciation only until C376; Shock (1995, Tables~8 and~10) takes the closing reading
+($-648.06$~kJ/mol, the crystal plus the heat of solution), which fixes $\Delta_fH^\circ$ of glycolic acid and, by
+Eq.~\eqref{eq:ladder-formation}, of glycolate ($-647.60$).  The records do not carry the printed $\Delta C_p^\circ$ of an ionisation: a constant
 $\Delta C_p$ is exactly the $A_1$, $A_3$, $A_4$ terms of the \code{analytic} form above, proposed but not used.  The
 entropy of the fumarate ion is taken from the sum of the Table~6 steps ($105.3$~J/mol/K), because Table~2's own
 $\Delta G$ and $\Delta H$ imply $-155.4$~J/mol/K for the ionisation and not the $-152.2$ it prints.  Worked case: none for
@@ -7513,6 +7514,19 @@ hydrogensulfate, whose catalogue value $-16.1$ differs from the evaluated $-22.4
 comparison is rendered by \file{bin/curate/species\_c373.py compare}).  Worked case:
 \file{inorganicLadders01\_goldberg} (half-neutralisation beakers whose Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(\gamma_B/\gamma_A)$
 at equal molality).
+
+\emph{Formation data of the inorganic ladders (C376).}  The NBS tables (Wagman et al., 1982, Tables 14:S, 18:N,
+19:P, 20:As, 23:C) print $\Delta_fH^\circ$ and $S^\circ$ of the aqueous ($ao$ state, hypothetical ideal 1~mol/kg
+solution, $\mathrm{H^+}=0$) phosphate, pyrophosphate, sulfite, arsenate, hydrazine and methylamine species, and they are entered as
+printed wherever the ladder they close holds the Gibbs identity of the previous paragraph within $0.3$ log units
+(phosphate, sulfite, hydrazine, methylamine, and the existing H$_2$AsO$_4^-$, HAsO$_4^{2-}$).  Where they do not
+(the NBS pyrophosphoric acid rows give $\mathrm{p}K_1=1.54$ against Goldberg's $0.83$; arsenic acid $0.3$ to $0.6$ in the
+sums) the family is kept on ONE scale: one species as printed and each neighbour from it by
+Eq.~\eqref{eq:ladder-formation} with the evaluated step, $\Delta_{\rm ion}S^\circ=(\Delta_{\rm ion}H^\circ-RT\ln 10\,\mathrm{p}K)/T$.
+Both readings are tabulated (\file{formation\_compare.tsv}); the heat of the second ionisation of sulfite from the NBS
+formation enthalpies ($-9.3$~kJ/mol) differs from the evaluated $-3.65$ by $5.6$~kJ/mol and is the largest difference
+left on any family, recorded in the design note.  Uncertainty: the NBS integer entropies of the pyrophosphates and of the
+trivalent anions are estimates.  Source: Wagman et al.\ (1982); Goldberg et al.\ (2002), Section~8.
 
 \emph{Amines, imidazoles, peptides and amino acids.}  Phase~3 writes the ladders of Tris, triethanolamine, triethylamine,
 2-amino-2-methyl-1-propanol and -1,3-propanediol, diethanolamine, ethanolamine, methylamine, piperazine, imidazole,
@@ -7531,6 +7545,44 @@ catalogue's volatile component of the same substance are two identities until a 
 \file{aminoBuffers01\_tris\_glycine} (Davies $\mathrm{pH}=\mathrm{p}K+\log_{10}(1/\gamma_+)$ for a half-neutralised amine
 amine with HCl; the isoelectric glycine solution at $(\mathrm{p}K_1+\mathrm{p}K_2)/2$ to $0.01$); inventory and readings:
 \file{docs/design/species-from-evaluated-compilations.md}.
+
+\emph{Formation data of histidine and cysteine (C376).}  Amend \& Helgeson (1997), Table~1 (p.~1929), print
+$\Delta_fG^\circ$, $\Delta_fH^\circ$ (kcal/mol, converted at $4.184$ exactly) and $S^\circ$ of the L-histidine and
+L-cysteine species on the aqueous convention ($\mathrm{H^+}=0$); the entropies are the authors' own
+$S^\circ=(\Delta_fH^\circ-\Delta_fG^\circ)/T+\sum S^\circ_{\rm el}$ with the charge convention of the table, so they enter as printed.
+The ladders then hold two scales: histidine's neighbouring enthalpies reproduce Goldberg's step enthalpies to $0.7$~kJ/mol;
+cysteine's differ by up to $6.9$~kJ/mol (Goldberg's cysteine enthalpies are grades CD to BBD) and Amend's set is kept, with the
+family tolerance of the one-scale gate raised to $7.0$ and stated.  Where Miller \& Smith-Magowan (1990) and Amend \&
+Helgeson both print a species (glycine, alanine, aspartic and glutamic acids) both values are tabulated and Miller's kept: they agree for
+alanine to $0.6$~kJ/mol, differ by $7.6$ for glycine and by $30$ for the dianions of aspartic and glutamic acids.
+Dick, LaRowe \& Helgeson (2006) reproduce Amend \& Helgeson's amino-acid table and give group contributions and
+Gly--X--Gly properties without formation data, so glycylglycine and triglycine stay without it.
+
+\emph{Carboxylic acids of Shock (1995), with the estimated values marked.}  Shock's Table~4 prints, at $25$~\textdegree C
+and $1$~bar, $\Delta_fG^\circ$, $\Delta_fH^\circ$ and $S^\circ$ of aqueous monocarboxylic and dicarboxylic acids and of their
+anions, with a footnote per value saying how it was obtained.  The enthalpy of an acid comes from the heat of solution of the
+solid or the liquid and is entered as a literature value; the entropy of the aqueous acid is, for every acid beyond acetic
+except benzoic, \emph{estimated} by the author's correlations (Eqs.~13 and 16, a linear function of the carbon number), the
+entropy of each anion is the acid's plus the selected dissociation entropy, and the enthalpy of a diprotic anion is
+computed from the tabulated $\Delta_fG^\circ$ and that estimated $S^\circ$.  Those values carry \code{origin estimated;} and
+their method in a per-value \code{provenance} block of the species record.  Propionic, n-butyric, benzoic, malonic and glutaric
+acids enter as families with the $\mathrm{p}K$ of the paper's Table~7 and the dissociation enthalpy of the difference of the
+printed formation enthalpies; the Gibbs identity $\mathrm{p}K=\Delta_{\rm ion}G^\circ/(RT\ln10)$ holds on the printed values
+to $0.01$.  Adipic acid is not entered: the paper's hydrogen-adipate enthalpy implies a first ionisation enthalpy of
+$+11$~kJ/mol, a consequence of the estimated entropy.  Glycolic acid takes $\Delta_fH^\circ=-648.06$~kJ/mol, lactic acid
+and lactate their entropies ($208.4$ and $133.5$~J/mol/K, both estimated), the ions of glycolic acid by
+Eq.~\eqref{eq:ladder-formation}.  Source: Shock (1995), Tables~4, 7, 8 and 10.
+
+\emph{Alberty's Table~3.2.}  Alberty (2003) prints $\Delta_fG^\circ$ and $\Delta_fH^\circ$ at zero ionic
+strength with $\Delta_fG^\circ(\mathrm{H^+})=\Delta_fH^\circ(\mathrm{H^+})=0$ but no entropy.  Where both are printed an entropy
+equivalent follows, $S^\circ=(\Delta_fH^\circ-\Delta_fG^\circ)/T+\sum_{\rm el}\nu S^\circ_{\rm el}-z\,S^\circ(\mathrm{H_2})/2$, which
+reproduces acetate, oxalate, hydrogenphosphate and fumarate to $0.7$~J/mol/K and succinate to $12$ (the uncertainty to assume).
+Alberty's values coincide with the NBS tables for acetate, formate, oxalate, ammonium, carbonate and methylammonium and differ
+for inorganic phosphate (both $\Delta_fH^\circ$ and $\Delta_fG^\circ$ lower by $6$ to $7$~kJ/mol) and pyrophosphate (enthalpy lower by
+$22$): the catalogue keeps the NBS phosphates, and the pyrophosphates with them, so that the hydrolysis of pyrophosphate stays on
+one table.  Glycylglycine, on which no other work in hand has a formation datum, takes the zwitterion from Alberty and its ions by
+Eq.~\eqref{eq:ladder-formation}; the citrate and malate families are not changed (the enthalpies differ by $8$ to $13$~kJ/mol and
+are blank, respectively).
 
 \emph{Laboratory buffers.}  Phase~4 takes every remaining section of Goldberg et al.\ (2002) --- ACES, ADA, AMPSO,
 3-amino-1-propanesulfonic acid, barbital, BES, Bicine, Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES,
@@ -15815,6 +15867,102 @@ tear streams (one per inter-effect pair, see
 \code{evaporator03\_co\_current} and
 \code{evaporator05\_counter\_current} cover both wirings.
 
+\subsection{An electrolyte liquor in several effects: the heat of dilution and where its fit ends}\label{sec:evap-dilution-window}
+
+For a calorimetrically fitted salt the liquor's enthalpy surface carries the
+term $n_{\mathrm{salt}}\,L_\phi(m,T)$ (Eq.~\eqref{eq:lphi-gh} and Eq.~\eqref{eq:dHdiff}), so the
+evaporator's duty
+$Q=F_{\mathrm{chest}}\,[h(\mathrm{chest})-h(\mathrm{condensate})]
+ = L\,h_L+V\,H_V-F\,h_F$
+already contains the heat of dilution, and the line
+\texttt{heat of dilution = X kW} the unit prints is a \emph{reported part} of
+$Q$, not a term added to it:
+\[
+  Q_{\mathrm{dil}} \;=\; n_{\mathrm{salt}}\,\bigl[\,L_\phi(m_{\mathrm{out}},T_{\mathrm{out}})
+        - L_\phi(m_{\mathrm{in}},T_{\mathrm{in}})\,\bigr].
+\]
+It therefore holds the concentration step \emph{and} the change of $L_\phi$ with
+temperature between the inlet and outlet states, and it can be negative.  In
+the shipped triple-effect caustic case
+(\code{evaporator10\_naoh\_triple\_effect}, 10\,wt\,\% to 18\,wt\,\%, every
+effect inside the fit's window $m\le 6$\,mol/kg) it is $+18.1$, $-5.5$ and
+$-5.2$\,kW against duties of $1881$, $1076$ and $1294$\,kW, about one percent
+of each: the boiling-point rise (Pitzer $a_w$) agrees with the measured
+partial pressures of Perry's Table~2-19\cite{Perry9} to $0.3$\,K there
+($3.57/4.07/5.08$ against $3.25/3.79/4.88$\,K).
+
+\paragraph{Past the window.}
+The $L_\phi$ fit of the Na--OH pair is valid to
+\texttt{lphiValidityMax}\,$=6$\,mol/kg (19.4\,wt\,\%), while caustic is
+concentrated to 50\,wt\,\% (25\,mol/kg).  Beyond the window the engine still
+returns a boiling-point rise and a dilution heat, announced as
+\texttt{EXTRAPOLATED}, and both leave the measurements.  Table~\ref{tab:naoh-window}
+is one single-effect evaporator, fed 4536\,kg/h of 20\,wt\,\% NaOH at 60\,\textdegree C
+with the vapour space at 11.7\,kPa (pure water boils at 48.9\,\textdegree C), the
+product target alone changed.  The Perry column is computed from the partial
+pressures of Table~2-19 (log-pressure interpolated in $1/T$ and in
+concentration, about $0.3$\,K); the Geankoplis column is read from the
+D\"uhring lines of his Fig.~32.4-2\cite{Geankoplis2018} at a water boiling
+point of $120\,^\circ$F with a reading uncertainty of about $2$\,K, except the
+50\,\% value, which his Example~32.4-3 prints ($89.5-48.9=40.6$\,K).
+
+\begin{table}[h]
+\centering
+\caption{NaOH in water past the fit window: boiling-point rise and heat of
+dilution returned by the engine (extrapolated) beside the measured values.}
+\label{tab:naoh-window}
+\begin{tabular}{@{}rrrrrr@{}}
+\toprule
+product & $m$ & \multicolumn{3}{c}{BPE [K]} & $Q_{\mathrm{dil}}$ [kW] \\
+\cmidrule(lr){3-5}
+wt\,\% & mol/kg & engine & Perry T2-19 & Geankoplis & engine \\
+\midrule
+25 & 8.3  & 10.0 & 9.6  & $9\pm2$    & 14.5 \\
+30 & 10.7 & 14.6 & 14.2 & $13\pm2$   & 43.3 \\
+40 & 16.7 & 24.6 & 27.6 & $27\pm2$   & 169.4 \\
+50 & 25.0 & 27.8 & 47.3 & 40.6 (printed) & 464.4 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No printed value of the heat of dilution alone was found.  The nearest printed
+number is the example's duty: on its own specification (steam at 172.4\,kPa,
+$U=1560$\,W/(m\textsuperscript{2}\,K), 50\,wt\,\% product) the engine returns
+2307\,kW, 3665\,kg/h of steam, $A=38.0$\,m\textsuperscript{2} and an economy
+of 0.74, against the book's 2002\,kW, 3255\,kg/h, 49.2\,m\textsuperscript{2} and
+0.836 (enthalpies $214$ and $505$\,kJ/kg read from his Fig.~32.4-3).  Two
+causes are mixed in the gap and cannot be separated from these numbers: the
+smaller extrapolated BPE (a larger temperature difference, hence the smaller
+area) and the extrapolated $L_\phi$ (464 of the 2307\,kW).  Nothing is tuned.
+Inside the window the engine follows both sources; past 30\,wt\,\% it does
+not, which is the evidence that caustic to 50\,wt\,\% needs a property model
+fitted to that range, not a longer extrapolation of this one.
+
+\paragraph{Water above 373\,K.}
+The catalogue water record's Antoine fit is $+2.5$\,\% at 373\,K and $+6$\,\% at
+423\,K against IAPWS SR1-86.  A case that boils or condenses water above
+373\,K adopts a case-local record whose \texttt{vaporPressure} block is the
+\texttt{Wagner} model (\code{src/thermo/vaporPressure/Wagner.cpp}) with the IAPWS
+saturation equation's coefficients (the shipped caustic case does).  As
+implemented,
+\begin{equation}
+  \ln\frac{P^{\mathrm{sat}}}{P_r} \;=\; \frac{T_r}{T}\sum_{i=1}^{6} a_i\,\tau^{\,e_i},
+  \qquad \tau = 1-\frac{T}{T_r},\quad e=(1,\,1.5,\,3,\,3.5,\,4,\,7.5),
+  \label{eq:wagner-psat}
+\end{equation}
+with $T_r=647.096$\,K, $P_r=22.064$\,MPa and $a=(-7.85951783,\ 1.84408259,\
+-11.7866497,\ 22.6807411,\ -15.9618719,\ 1.80122502)$, read from IAPWS
+SR1-86\cite{IAPWS_SR186} Eq.~(1) (the exponents and the \emph{reducing}
+constants are declared in the record, never taken from the component's own
+$T_c$, $P_c$, which differ in the fourth digit).  Valid on 273.16--647.096\,K;
+above $T_r$ it returns $P_r$ and the base class announces the excursion.  The
+release's Table~1 values are reproduced to $1.5\times10^{-7}$ (relative) at
+273.16\,K, 373.124\,K and 647.096\,K.  The fundamental-equation route
+\texttt{pureFluids \{ water \{ method IF97; \} \}} is not available with a
+dissolved salt.  The water liquid heat capacity (a constant, window
+273--373\,K) and the latent heat of the enthalpy surface ($\approx 2$\,\% above
+the steam table near 390\,K) stay announced limits.
+
 \begin{intuition}
 The mental model the student should leave with: the evaporator is a black box with two stream inputs, three stream
 outputs, and two parameters ($A$ and $U$).  It always computes
@@ -22352,7 +22500,7 @@ the closed form the integrator must reproduce to $10^{-8}$
 analytic gate that certifies the numerics before any nonlinear case
 is trusted.
 
-\subsection{The 1-D isothermal fixed bed}
+\subsection{The 1-D isothermal fixed bed}\label{sec:fixed-bed}
 
 The bed balance is written the way it is solved: conservative finite
 volumes.  For cell $j$ of volume $V_j$, species $i$:
@@ -22366,8 +22514,9 @@ F^{\mathrm{disp}}_{i,j-\frac12} - F^{\mathrm{disp}}_{i,j+\frac12}
 \rho_b\,V_j\,\frac{\mathrm{d}q_{ij}}{\mathrm{d}t},
 \label{eq:bed-fv}
 \end{equation}
-with upwind convective face fluxes $u\,A\,c$ ($u$ the superficial
-velocity), dispersive fluxes
+with convective face fluxes $u\,A\,c_f$ ($u$ the superficial
+velocity, $c_f$ the face value of the declared convection scheme,
+Section~\ref{sec:bed-convection-scheme}), dispersive fluxes
 $-D_{\mathrm{ax}} A\,\partial c/\partial z$ at the
 interior faces (no factor $\varepsilon$: the code divides the whole
 row by $\varepsilon$, so $D_{\mathrm{ax}}/\varepsilon$ is the dispersion
@@ -22393,6 +22542,114 @@ them as a KPI, and discounts them in the campaign ledger.  The model's
 residual is \emph{declared}, at a named magnitude, instead of being
 absorbed invisibly --- the difference between a wrong number and an
 honest model.
+
+\subsection{The convection scheme and its numerical dispersion}
+\label{sec:bed-convection-scheme}
+
+The finite volume \eqref{eq:bed-fv} needs \emph{one} concentration at
+each face to form the convective flux $u\,c_{f}$; how it is chosen is
+the convection scheme, declared beside the mesh it acts on as
+\code{operation.convectionScheme} (\code{upwind} or \code{vanLeer}; absent,
+the stated default is \code{vanLeer}, announced as such).
+Face $f$ separates cell $L=f-1$ from cell $R=f$; $\Delta z = L_{\mathrm{bed}}/N$.
+
+\emph{First-order upwind} takes the upstream cell's value,
+$c_f = c_L$ for $u\ge 0$.  Expanding about the face,
+$c_L = c_f - \tfrac{\Delta z}{2}\,\partial c/\partial z + O(\Delta z^2)$, so
+\[
+u\,c_L = u\,c_f - \frac{u\,\Delta z}{2}\,\frac{\partial c}{\partial z} + O(\Delta z^2):
+\]
+the scheme adds a Fickian flux with coefficient $u\,\Delta z/2$ to
+$D_{\mathrm{ax}}$.  Divided by $\varepsilon$, as the whole row is, the
+interstitial dispersion the front sees is
+\begin{equation}
+D_L + D_{\mathrm{num}},\qquad D_L = \frac{D_{\mathrm{ax}}}{\varepsilon},\qquad
+D_{\mathrm{num}} = \frac{v\,\Delta z}{2},\quad v=\frac{u}{\varepsilon},
+\label{eq:bed-numdisp}
+\end{equation}
+and $D_{\mathrm{num}}/D_L = v L/(2N D_L) = \mathrm{Pe}/(2N)$ falls under
+$0.1$ only for $N > 5\,\mathrm{Pe}$.  Every fixed-bed run prints
+$D_{\mathrm{num}}$, its ratio to $D_L$ and that cell count before it
+integrates (KPIs \code{D\_numerical}, \code{D\_axial\_interstitial},
+\code{numerical\_dispersion\_ratio}, \code{nCells\_numerical\_ratio\_0p1}).
+The front width, the breakthrough times and the unused bed length carry
+it; the mean does not, because \eqref{eq:integral-anchor} holds on any
+mesh.  Seen from chromatography, upwind cells are a cascade of stirred
+plates, one per cell (Nicoud, Section~7.9.3, pp.~430--431, who also
+states that first-order schemes ``suffer from numerical
+diffusion''\cite{Nicoud}); the artificial band broadening of a coarse
+grid, and the test of refining it until the profile stops moving, are
+Schmidt-Traub's Section~6.4.2.1, pp.~346--348\cite{SchmidtTraub2020}.
+
+\emph{The van Leer scheme} reconstructs a linear profile in the upwind
+cell and evaluates it at the face, $c_f = c_L + s_L/2$ ($u\ge 0$) or
+$c_f = c_R - s_R/2$ ($u<0$), with the limited slope (times $\Delta z$)
+\begin{equation}
+s_j = \begin{cases}
+\dfrac{2\,\Delta_{-}\Delta_{+}}{\Delta_{-}+\Delta_{+}}, & \Delta_{-}\Delta_{+}>0,\\[1ex]
+0, & \text{otherwise},
+\end{cases}
+\qquad \Delta_{-}=c_j-c_{j-1},\ \ \Delta_{+}=c_{j+1}-c_j,
+\label{eq:bed-vanleer}
+\end{equation}
+which is $s_j = \phi(r)\,\Delta_{+}$ with $r=\Delta_{-}/\Delta_{+}$ and
+$\phi(r) = (r+|r|)/(1+|r|)$.  Where the profile is smooth
+$\Delta_{+}-\Delta_{-} = O(\Delta z^2)$, so $s_j$ is the central slope
+$(\Delta_{-}+\Delta_{+})/2$ to $O(\Delta z^3)$, the face value is
+second-order accurate and the $v\,\Delta z/2$ term of
+\eqref{eq:bed-numdisp} is gone; at an extremum $s_j = 0$ and the face
+falls back to upwind there.  Because $|s_j| \le 2\min(|\Delta_{-}|,|\Delta_{+}|)$,
+$c_L + s_L/2$ lies between $c_L$ and $c_R$: no face value leaves the
+range of its two cells, so the scheme creates no new extremum and keeps
+non-negative concentrations non-negative; the loading follows
+$\mathrm{d}q/\mathrm{d}t = k(q^{*}-q)$ towards a $q^{*}$ evaluated on
+those bounded concentrations.  This limiter was chosen over the minmod
+one because it is smooth away from $r=0$ (the Rosenbrock integrator
+differentiates the right-hand side by finite differences) and clips less
+at a smooth peak.
+
+\emph{The two ends.}  The inlet face keeps the imposed Danckwerts flux
+$u\,c_{\mathrm{in}}$ under both schemes; the slope of cell 1 reads the
+feed $c_{\mathrm{in}}$ as the value upstream of it.  At the outlet the
+condition $\partial c/\partial z = 0$ is a zero-gradient ghost, so the
+last cell's slope is zero and the outlet face carries $c_N$, as under
+upwind.  On backflow (Ergun mode) the reconstruction is taken in the
+downstream cell with the same rules.  Every face flux is computed once
+and leaves one cell as it enters the next, for the gas, every adsorbing
+species and, in thermal mode, the enthalpy those same moles carry, so the
+cells telescope to the boundary fluxes and the campaign closes to
+round-off under either scheme.
+
+\emph{The time step.}  The integrator is the unit's own
+(Rosenbrock23, L-stable, or explicit RK4 at a declared step).  The van
+Leer face value has partial derivatives $(-a,\,1+a-b,\,b)$ on
+$(c_{L-1},c_L,c_R)$ with $a,b\in[0,1]$ (halved derivatives of
+\eqref{eq:bed-vanleer}, each between 0 and 2), absolute sum at most 3,
+so a cell's row of the Jacobian sums to at most $6v/\Delta z$ in the
+convective part against $2v/\Delta z$ under upwind: the Gershgorin bound
+the unit prints, and the explicit step it enforces, use $6v/\Delta z$
+for \code{vanLeer}.  The stencil reaches two cells upstream, so the
+declared Jacobian structure gathers two cells per block (block
+tridiagonal again, the last block padded when $N$ is odd) and the
+integrator audits it on its first step.  The stages of the stiff
+integrator can leave a cell ahead of a front a round-off below zero
+($-10^{-22}$ measured); that is accepted down to the row's absolute
+tolerance and kept as it is (not set to zero), so the ledger stays
+exact, and anything lower still rejects the step.
+
+\emph{The check.}  On a straight isotherm the moments of a pulse have
+the closed form \eqref{eq:chrom-moments}.  The upwind bed reproduces it
+only with $D$ replaced by $D_L + v\Delta z/2$; the van Leer bed
+reproduces it as written.  Measured on
+\file{tutorials/batch/adsorber/batch29\_pulse\_two\_schemes}
+($\mathrm{Pe}=250$, 100 cells): the upwind mean matches to $6\times10^{-13}$
+and its variance to 0.23\,\% once $v\Delta z/2$ is added (86\,\% off
+without it); the van Leer variance matches the closed form as written to
+1.9\,\% at 100 cells and 0.26\,\% at 200, the residue being the limiter's
+clipping at the peak.  On batch13's breakthrough the 5--95\,\% width at
+100 cells is 313.5\,s under upwind and 231.5\,s under van Leer against a
+converged 219.6\,s; the observed orders of the width are 1.04 and about 2
+(gate \code{check\_fixed\_bed\_scheme}).
 
 \subsection{The stoichiometric time: where the front must arrive}
 
@@ -22427,7 +22684,8 @@ $t_{\mathrm{st}}$, but cannot move its centroid: because
 \end{equation}
 holds for the conservative scheme on \emph{any} mesh, while the
 useful capacity $t_b$ (breakthrough at, say, 5\,\%) converges with
-the mesh at the upwind scheme's first order --- run the mesh study
+the mesh at the upwind scheme's first order (about the second under
+\code{vanLeer}, Section~\ref{sec:bed-convection-scheme}) --- run the mesh study
 and watch both statements hold
 (\file{tutorials/batch/adsorber/batch13\_breakthrough\_co2},
 \file{batch15\_mesh\_study}; the pure-transport twin
@@ -22744,8 +23002,9 @@ puts the hydrodynamic plate height of a good packing near two particle
 diameters, i.e.\ $\lambda\approx 1$).  The plate model of Martin and
 Synge\cite{MartinSynge1941} (their Eq.~(1)) is the Erlang peak the page
 draws; at $t = 3$ standard deviations it leaves 0.13\,\% on the wrong side.  The engine's first-order
-upwind grid adds $v\,\Delta z/2$ to $D$: on a grid of cells it is itself a
-cascade of stirred plates, one per cell, $H_{\mathrm{grid}} = \Delta z$.
+upwind grid (\code{convectionScheme upwind}) adds $v\,\Delta z/2$ to $D$: on a grid of cells it is itself a
+cascade of stirred plates, one per cell, $H_{\mathrm{grid}} = \Delta z$; the
+\code{vanLeer} scheme removes that term (Section~\ref{sec:bed-convection-scheme}).
 Two peaks are resolved by
 $R_s = (t_{R,2}-t_{R,1})/\bigl(2(\sigma_1+\sigma_2)\bigr)$ (base widths of
 $4\sigma$; Wankat's Eq.~(17-82), Schmidt-Traub's Eq.~(2.25)), and
@@ -22760,7 +23019,11 @@ by the earlier solute drags the later one along (pp.~40--43).
 
 \emph{What Choupo computes.}  No unit operation is a chromatographic column
 and no operation computes \eqref{eq:chrom-moments}.  The fixed bed runs a
-gas pulse when its feed is switched off by a recipe; the EduTool
+gas pulse when its feed is switched off by a recipe, and with
+\code{schemeDiagnostics true;} it publishes the moments of its own outlet
+(\code{outlet\_mean}, \code{outlet\_variance});
+\file{batch29\_pulse\_two\_schemes} holds them against
+\eqref{eq:chrom-moments}; the EduTool
 \code{chromatography} writes that case, compares its outlet peaks with
 \eqref{eq:chrom-moments}, and integrates the overloaded (Langmuir) column
 itself.  The derivation, the measurement and the checks are in
@@ -28722,6 +28985,25 @@ measurements in experimental catalysis'', \emph{Advances in Catalysis}
 which removes the intrinsic rate constant that a diffusion-limited experiment
 cannot measure.
 
+\bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
+Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
+Eqs.~(14-90) table (open-area flood correction, p.~14-36), (14-98)--(14-99)
+(Colburn, Fair's entrainment), (14-100)--(14-109) (Bolles--Fair pressure drop),
+(14-102a) (orifice coefficient); Section~13, Eq.~(13-77).
+
+\bibitem{Geankoplis2018} Geankoplis, C.~J., Hersel, A.~A.\ and Lepek, D.~H.,
+\emph{Transport Processes and Separation Process Principles}, 5th ed., Prentice
+Hall / Pearson Education, 2018.  Section~24.2 (cake filtration: eqs.~24.2-4,
+24.2-10, 24.2-11, 24.2-14, 24.2-15, 24.2-17, 24.2-19, 24.2-20, 24.2-23 to
+24.2-26, Examples~24.2-1 to 24.2-4, pp.~1078--1090); section~30.1 (settling,
+Problem~30.1-11, p.~1451); section~30.2 (centrifuges: eqs.~30.2-1 to 30.2-19,
+Example~30.2-2, pp.~1434--1439).
+
+\bibitem{IAPWS_SR186} IAPWS SR1-86(1992).  Revised Supplementary Release on
+Saturation Properties of Ordinary Water Substance, Eq.~(1) (the
+vapour-pressure equation) and Table~1 (its check values); unrestricted
+publication allowed.
+
 \bibitem{GeankoplisHL2018} Geankoplis, C. J., Hersel, A. A., \& Lepek, D. H.,
 \emph{Transport Processes and Separation Process Principles}, 5th ed., Pearson
 (Prentice Hall), 2018, Chapter~28 (equations (28.1-1) to (28.1-3) and (28.2-1),
@@ -28911,6 +29193,18 @@ minimum, used by \cite{GeraldesAfonso2010} to locate $i_\text{lim}$.
 
 \bibitem{Wachinski2017} Wachinski, A. M., \emph{Ion Exchange Treatment for Water}, American Water Works Association, Denver (2017). Practitioner reference for water-softening capacity bases (eq/L bed vs eq/kg dry), regeneration and the sodium ``salt penalty'' \eqref{eq:salt-penalty}.
 
+\bibitem{Nicoud} Nicoud, R.-M., \emph{Chromatographic Processes: Modeling,
+Simulation, and Design}, Cambridge University Press,
+doi:10.1017/CBO9781139998284 (the year is not given in the library copy,
+which has no title page): Table~2.4 (p.~39), Eqs.~(2.48)--(2.50) and
+appendix~B.
+
+\bibitem{SchmidtTraub2020} Schmidt-Traub, H., Schulte, M.\ and
+Seidel-Morgenstern, A.\ (eds.), \emph{Preparative Chromatography}, 3rd ed.,
+Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
+displacement and tag-along effects (pp.~40--43) and overloading
+(pp.~43--45).
+
 \bibitem{Wankat2007} Wankat, P. C., \emph{Separation Process Engineering},
 2nd ed., Prentice Hall (Pearson Education), 2007, Chapter~17: Eqs.~(17-5a) to
 (17-6c), the liquid-phase Langmuir isotherm, and Example~17-1, which fits
@@ -28968,18 +29262,6 @@ Formulae for diffusion into spheres and their application to
 chromatography'', \emph{Trans.\ Faraday Soc.} \textbf{51} (1955) 1540--1551,
 doi:10.1039/TF9555101540.  The series film-and-particle resistance of
 Section~\ref{sec:batch-adsorption-stirred-tank}.
-
-\bibitem{SchmidtTraub2020} Schmidt-Traub, H., Schulte, M.\ and
-Seidel-Morgenstern, A.\ (eds.), \emph{Preparative Chromatography}, 3rd ed.,
-Wiley-VCH, 2020, Chapter~2: Eqs.~(2.5), (2.14)--(2.28), (2.40)--(2.48), the
-displacement and tag-along effects (pp.~40--43) and overloading
-(pp.~43--45).
-
-\bibitem{Nicoud} Nicoud, R.-M., \emph{Chromatographic Processes: Modeling,
-Simulation, and Design}, Cambridge University Press,
-doi:10.1017/CBO9781139998284 (the year is not given in the library copy,
-which has no title page): Table~2.4 (p.~39), Eqs.~(2.48)--(2.50) and
-appendix~B.
 
 \bibitem{vanDeemter1956} van Deemter, J.~J., Zuiderweg, F.~J.\ and
 Klinkenberg, A., ``Longitudinal diffusion and resistance to mass transfer as
@@ -29147,14 +29429,6 @@ Whiten's partition curve (eq.~21, p.~681) behind the \code{whiten} model;
 its hydrocyclone correlations (eqs.~13--15) are deferred
 (\S\ref{sec:classification-deferred}).
 
-\bibitem{Geankoplis2018} Geankoplis, C.~J., Hersel, A.~A.\ and Lepek, D.~H.,
-\emph{Transport Processes and Separation Process Principles}, 5th ed., Prentice
-Hall / Pearson Education, 2018.  Section~24.2 (cake filtration: eqs.~24.2-4,
-24.2-10, 24.2-11, 24.2-14, 24.2-15, 24.2-17, 24.2-19, 24.2-20, 24.2-23 to
-24.2-26, Examples~24.2-1 to 24.2-4, pp.~1078--1090); section~30.1 (settling,
-Problem~30.1-11, p.~1451); section~30.2 (centrifuges: eqs.~30.2-1 to 30.2-19,
-Example~30.2-2, pp.~1434--1439).
-
 \bibitem{TalmageFitch1955} Talmage, W.~P.\ and Fitch, E.~B., ``Determining
 thickener unit areas'', \emph{Industrial \& Engineering Chemistry} \textbf{47}(1)
 (1955) 38--41, doi:10.1021/ie50541a022.  Kynch's construction as a thickener
@@ -29165,12 +29439,6 @@ for the sedimentation type centrifuge'', \emph{Journal of Biochemical and
 Microbiological Technology and Engineering} \textbf{1}(2) (1959) 185--205,
 doi:10.1002/jbmte.390010206.  The tubular $\Sigma$ (eqs.~24--28, p.~191), the
 cut size (eq.~9) and the disc-type $\Sigma$ (eqs.~43--46, p.~194).
-
-\bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
-Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
-Eqs.~(14-90) table (open-area flood correction, p.~14-36), (14-98)--(14-99)
-(Colburn, Fair's entrainment), (14-100)--(14-109) (Bolles--Fair pressure drop),
-(14-102a) (orifice coefficient); Section~13, Eq.~(13-77).
 
 \bibitem{Ruth1935} Ruth, B.~F., ``Studies in filtration III.  Derivation of
 general filtration equations'', \emph{Industrial \& Engineering Chemistry}
