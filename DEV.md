@@ -3446,6 +3446,22 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C381 (Vitor, 2026-11-12, night: "nao te esquecas de fazer as
+> instrucoes para agentes de AI para lhes explicares como a arquitetura de
+> propriedades termofisicas esta organizada").**  TWO AUDIENCES, both owed
+> by C378 and written WITH each slice, never ahead of it (an assistant
+> that reads a planned key writes it into a case, and the engine refuses
+> it): (a) THE CASE AUTHOR'S ASSISTANT (`docs/ai/`, the brief, the packs,
+> the capability index): where the density, viscosity, surface tension and
+> diffusivity of a liquid come from, how to read the per-consumer table,
+> what is refused and the remedy, which keys the engine accepts TODAY;
+> (b) THE SOURCE EDITOR'S ASSISTANT (`docs/ai/extending.md`, the settled
+> contracts, the steps for adding a unit operation in CLAUDE.md): a unit
+> never prices a liquid property itself, it asks the one door, and what a
+> brief to a general must say.  ACCEPTANCE CRITERIA of slice 0 and of
+> every later slice of C378, beside the four of rule 4d; the slice-0 plan
+> carries them.
+
 > **C380 (Vitor, 2026-11-12: "se puderes, faz uma ultima analise e ve como
 > o kernel de propriedades termofisicas esta organizado" in the open-source
 > simulator the C378 study surveyed).**  A SECOND, DEEPER READING of that
