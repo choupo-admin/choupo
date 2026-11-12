@@ -60,7 +60,7 @@ export type MethodToolId =
   | "mccabe" | "fug" | "psychro" | "kremser" | "pinch-composite" | "entu"
   | "pump-system" | "breakthrough" | "merkel" | "rayleigh" | "levenspiel"
   | "vanheerden" | "drying" | "hunter-nash" | "column-control" | "thiele"
-  | "what-is-temperature" | "flash-operating-line" | "bjerrum"
+  | "what-is-temperature" | "flash-operating-line" | "bjerrum" | "salt-mixing"
   | "thermometer-trust" | "property-trust" | "what-is-entropy"
   | "what-is-exergy" | "property-origins" | "four-ways-mixture"
   | "cosmo-sac-theory" | "local-composition" | "unifac-theory"
@@ -764,6 +764,30 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "2-propanol, acetic acid and cyclohexane (one article), with three "
       + "predictions written before the page answers.",
     theory: "ch:activity",
+  },
+  {
+    //  SALT MIXTURES (DEV.md 4c C316, the architect's decision at Vitor's
+    //  request): the solubility of NaCl and KCl in each other's solutions,
+    //  the binaries-only Pitzer prediction, and theta / psi fitted to Farelo
+    //  et al. (1993) at one temperature and held out at the others.  The
+    //  page's Pitzer arithmetic is its own (saltMixingMath.ts), held by a
+    //  test to the engine's pitzerHMW and pitzerActivity.
+    id: "salt-mixing", blurb: "Fit Pitzer mixing parameters to a measured NaCl-KCl solubility curve.",
+    label: "Salt mixtures: Pitzer mixing parameters from ternary solubility",
+    discipline: "Thermodynamics",
+    kind: "construction", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "Why a second salt with a common ion changes a salt's "
+      + "solubility (the common ion against the ionic strength), what the "
+      + "single-salt Pitzer parameters already predict for NaCl + KCl + "
+      + "water, and how the two mixing parameters theta and psi are read "
+      + "off a measured solubility curve by a linear least-squares fit -- "
+      + "in-sample at the temperature fitted, held out at the others.  "
+      + "Also: a solubility product from a record's van't Hoff enthalpy "
+      + "against one anchored on the measured binary, the eutonic point, "
+      + "six ternary chloride systems and where charge makes mixing "
+      + "matter, and cooling a saturated brine to crystallise KCl.",
+    theory: "ch:pitzer-hmw",
   },
   {
     id: "mccabe", blurb: "Count the stages a reflux ratio buys.", label: "Distillation (McCabe-Thiele)",

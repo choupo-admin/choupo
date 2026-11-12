@@ -126,6 +126,23 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "sweep_pumpSystem.csv",
     readBy: ["pumpSystemLesson.test.ts"],
   },
+  //  The salt-mixtures EduTool (C316): the page's own Pitzer gamma_+- held to
+  //  the engine's single-salt kernel, NaCl and KCl at 25 C and NaCl at 100 C.
+  {
+    caseDir: "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",
+    file: "pitzer_nacl.csv",
+    readBy: ["saltMixing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/electrolyte/pitzer_gamma_hamer_wu",
+    file: "pitzer_kcl.csv",
+    readBy: ["saltMixing.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/electrolyte/pitzer_hmw_hot_agreement",
+    file: "kernel_nacl_100C.csv",
+    readBy: ["saltMixing.test.ts"],
+  },
   //  The element-potential lesson (C15): the gibbsReactor's opt-in
   //  `newtonLog`, one file per reactor that declares it.
   {
