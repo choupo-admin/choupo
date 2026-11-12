@@ -228,6 +228,53 @@ if missing:
     print("  note: %d explained key(s) no longer reported -- if the plant was"
           " fixed, trim EXPECTED above." % len(missing))
 
+# --- 5. a block ONLY `totalReflux` reads is REFUSED, not announced -------
+#  RB-03 / RB-07 of docs/reviews/2026-11-12-rate-based-columns.  `efficiency {}`
+#  and `packing {}` are read by `model totalReflux;` and by no other column
+#  model.  Declared on a Wang-Henke column they used to leave ONE "[dict] key
+#  written and never read" line mid-log and run on ideal stages at exit 0 --
+#  the author received E_MV = 1.  The generic mechanism above announces (and
+#  the measurement in the docstring says ANNOUNCE is right for a hardware key a
+#  unit may lawfully leave unread); a block whose ONLY reader is one named model
+#  is a different case: the author asked for a computation that cannot happen,
+#  so the engine REFUSES, naming the model that reads it and the word that
+#  selects it.
+tmp5 = tempfile.mkdtemp(prefix="unreadkeys-rb03-")
+try:
+    for blk, text_block, must in (
+        ("efficiency", "efficiency { model AIChE; }",
+         ("model totalReflux", "efficiency", "murphreeEfficiency")),
+        ("packing", "packing { model RochaBravoFair; }",
+         ("model totalReflux", "packing")),
+    ):
+        dst5 = os.path.join(tmp5, blk)
+        shutil.copytree(WITNESS, dst5)
+        fs5 = os.path.join(dst5, "system", "flowsheetDict")
+        t5 = open(fs5, errors="replace").read()
+        t5n = re.sub(r"murphreeEfficiency\s+[\d.]+\s*;[^\n]*", text_block, t5, count=1)
+        if t5n == t5:
+            fail("RB-03: the witness's murphreeEfficiency line was not found --"
+                 " the arm would test nothing")
+            continue
+        open(fs5, "w").write(t5n)
+        r5 = run(dst5)
+        o5 = r5.stdout + r5.stderr
+        if r5.returncode == 0:
+            fail("RB-03: a Wang-Henke column declaring `%s {}` RAN (exit 0) --"
+                 " the block is ignored and the column solves on ideal stages"
+                 % blk)
+        elif not all(w in o5 for w in must):
+            fail("RB-03: the `%s {}` refusal does not name %s: %s"
+                 % (blk, must, o5.strip().splitlines()[-1][:200]))
+        elif "written and never read" in o5:
+            fail("RB-03: the `%s {}` refusal came AFTER a never-read line --"
+                 " it must be refused before solving" % blk)
+        else:
+            ok("RB-03: `%s {}` on a Wang-Henke column is REFUSED before solving,"
+               " naming model totalReflux" % blk)
+finally:
+    shutil.rmtree(tmp5, ignore_errors=True)
+
 print()
 if fails:
     print("check_unread_keys: %d FAILURE(S)" % len(fails))

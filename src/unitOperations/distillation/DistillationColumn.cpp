@@ -1323,6 +1323,31 @@ int DistillationColumn::solve(const DictPtr& dict,
     const std::string method = dict->lookupWordOrDefault(
         "model", operDict->lookupWordOrDefault("method", "WangHenke"));
 
+    //  A BLOCK ONLY `totalReflux` READS IS REFUSED ELSEWHERE (RB-03, 2026-11-12).
+    //  `efficiency { model AIChE|ChanFair|SyedaChuang; }` and `packing { ... }`
+    //  are read by `model totalReflux;` and by nothing else.  On a Wang-Henke,
+    //  simultaneous or recovery column they were ignored: the column ran on
+    //  IDEAL stages at exit 0 and the only notice was one "[dict] key written
+    //  and never read" line mid-log, absent from the caveat block -- a student
+    //  who declared a computed efficiency received E_MV = 1.
+    if (method != "totalReflux")
+        for (const char* blk : {"efficiency", "packing"})
+            if (operDict->found(blk))
+                throw std::runtime_error("DistillationColumn '" + dict->name()
+                    + "': `" + blk + " { ... }` is read ONLY by `model totalReflux;`"
+                      " (a binary column at total reflux, C329) and this column"
+                      " runs `model " + method + ";`, which would ignore it and"
+                      " solve on ideal stages.  Select `model totalReflux;` to"
+                      " compute the "
+                    + (std::string(blk) == "efficiency"
+                           ? std::string("tray efficiency (`efficiency { model"
+                                         " AIChE|ChanFair|SyedaChuang; }`)")
+                           : std::string("packed-bed HETP and pressure drop"
+                                         " (`packing { model RochaBravoFair|Delft; }`)"))
+                    + ", or remove the block; for a fixed Murphree efficiency on"
+                      " this column declare `murphreeEfficiency <E>;` where the"
+                      " model reads it.");
+
     //  A recovery specification wraps whichever method is selected: it drives
     //  the RATE those methods already take.  See DistillationColumn.H.
     if (method == "totalReflux") return solveTotalReflux(dict, thermo, verbosity);
@@ -4916,7 +4941,15 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
                                          int verbosity)
 {
     auto operDict = dict->subDict("operation");
-    if (operDict->found("packing")) return solveTotalRefluxPacked(dict, thermo, verbosity);
+    if (operDict->found("packing"))
+    {
+        if (operDict->found("efficiency"))
+            throw std::runtime_error("DistillationColumn '" + dict->name() + "': `packing {}`"
+                " (a packed bed) and `efficiency {}` (a tray efficiency) are two"
+                " different columns; the packed route does not read `efficiency`."
+                "  Declare one of them.");
+        return solveTotalRefluxPacked(dict, thermo, verbosity);
+    }
     const std::string unit = dict->name();
     const std::size_t n = thermo.n();
 
