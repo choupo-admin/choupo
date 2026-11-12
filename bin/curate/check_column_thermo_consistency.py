@@ -264,6 +264,21 @@ def check_column(case, name, block, d, info, log=""):
     comps = d["components"]
     n = len(comps)
     k = d["kpis"][name]
+    #  Every arm below reads the stage count, the reflux ratio and the product
+    #  flows.  A PACKED column publishes no `nStages` (a bed has height, not
+    #  stages) and a TOTAL-REFLUX column publishes no `R` (nothing leaves the
+    #  top), so the arms have no input there: the case is SKIPPED BY NAME and
+    #  counted under `skip-inputs`, and the verdict line names it under NOT
+    #  CHECKED -- never an exception swallowed (C329).
+    missing = [key for key in ("nStages", "R", "D", "B") if key not in k]
+    if missing:
+        return [("skip-inputs", True,
+                 "%s: publishes no %s -- %s; every arm needs them, so this"
+                 " column is NOT checked"
+                 % (name, ", ".join("`" + m + "`" for m in missing),
+                    "a packed column has no stage count" if "nStages" in missing
+                    else "a total-reflux column has no reflux ratio / product"
+                         " flows"))]
     prof = d["profiles"][name]
     cols = prof["columns"] if "columns" in prof else prof
     N = int(round(k["nStages"]))
@@ -704,6 +719,12 @@ def main(argv):
         print(l)
     summary = ", ".join("%s %d/%d" % (a, c[0], c[0] + c[1])
                         for a, c in sorted(counts.items()))
+    skipped = [m for _l, rs in results for a, _ok, m in rs
+               if a == "skip-inputs"]
+    skipnote = ""
+    if skipped:
+        skipnote = ("; skipped BY NAME for want of inputs (%d): %s"
+                    % (len(skipped), " | ".join(skipped)))
     if fails:
         print(LABEL + ": FAILED -- %d finding(s) [%s]" % (len(fails), summary))
         return 1
@@ -712,8 +733,8 @@ def main(argv):
           " every full-MESH stage and reboiler on the streams' surface,"
           " fugacity equality at the published y, the reactive full-MESH"
           " refusal and the enthalpic CMO q [%s]; NOT checked: feed"
-          " stages, Kremser units, shortcutColumn" % (len(cases), nprobes,
-                                                       summary))
+          " stages, Kremser units, shortcutColumn%s" % (len(cases), nprobes,
+                                                       summary, skipnote))
     return 0
 
 

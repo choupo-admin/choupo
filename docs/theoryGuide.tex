@@ -23096,7 +23096,7 @@ they all speak about the SAME size classes.  This section gives the one
 axis a case declares (\dict{sizeGrid}), how a fitted law or a measured
 sieve table is put on it without creating or losing mass, the moments the
 engine derives from it, and the first unit that moves material along it:
-the \code{mill}, a breakage population balance (Austin 1971) with three
+the \code{mill}, a breakage population balance (Austin 1971~\cite{Austin1971}) with three
 selectable rate laws, one breakage function, two residence-time limits and
 Bond's third theory printed beside it as an energy cross-check.  Design
 record: \file{docs/design/c361-solids-processing.md}.
@@ -23176,7 +23176,7 @@ species on the shared grid is the deferred general case (design record
 
 \subsection{The mill: a breakage population balance}\label{sec:mill}
 
-Austin (1971) showed that every grinding model of the preceding thirty years
+Austin (1971)~\cite{Austin1971} showed that every grinding model of the preceding thirty years
 is one first-order balance on size classes (his eq.~37).  With $w_i$ the mass
 fraction in class $i$, $S_i$ the SELECTION function (the specific rate at which
 class $i$ breaks) and $b_{ij}$ the BREAKAGE function (the share of class $j$'s
@@ -23243,7 +23243,7 @@ S(x) = S_1\left(\frac{x}{x_1}\right)^{\alpha}\Big/\left[1 +
 \left(\frac{x}{\mu}\right)^{\Lambda}\right]
 \label{eq:mill-austin-S}
 \end{equation}
-(King 2001, eq.~5.127, after Austin, Klimpel \& Luckie).  $S_1$ [1/time] is
+(King 2001~\cite{King2001}, eq.~5.127, after Austin, Klimpel \& Luckie).  $S_1$ [1/time] is
 the rate at the reference size $x_1$ (default 1\,mm), $\alpha$ the slope;
 $\mu$ and $\Lambda$ (default 2) put a maximum near $\mu$; without \dict{mu}
 the law is the power law of Herbst \& Fuerstenau (1980) eq.~22.  WINDOW:
@@ -23255,7 +23255,7 @@ no worked $S$ at a second size.  Keys: \dict{S1}, \dict{x1}, \dict{alpha},
 
 \subsubsection{Selection function \texttt{herbstFuerstenau}}\label{sec:mill-selection-hf}
 
-Herbst \& Fuerstenau (1980) eq.~10: the rate is proportional to the net
+Herbst \& Fuerstenau (1980)~\cite{HerbstFuerstenau1980} eq.~10: the rate is proportional to the net
 specific POWER, $S_i = S^E_i P/H$, so one pass breaks
 \begin{equation}
 \kappa_i = S^E_i\,E,\qquad
@@ -27625,6 +27625,23 @@ step-growth chain statistics of \S\ref{ch:polymers}: the number- and
 weight-average degrees of polymerisation, the most-probable distribution
 and the polydispersity; Choupo's \code{PolymerKPIs}.
 
+\bibitem{Austin1971} Austin, L. G., ``Introduction to the mathematical
+description of grinding as a rate process'', \emph{Powder Technology}
+\textbf{5} (1971) 1--17, doi:10.1016/0032-5910(71)80064-5.  The first-order
+breakage balance on size classes behind the \code{mill} unit (eq.~37), the
+definition of the breakage function, and the sieve-series size grid.
+
+\bibitem{HerbstFuerstenau1980} Herbst, J. A., \& Fuerstenau, D. W.,
+``Scale-up procedure for continuous grinding mill design using population
+balance models'', \emph{International Journal of Mineral Processing}
+\textbf{7} (1980) 1--31, doi:10.1016/0301-7516(80)90034-4.  The
+energy-specific selection function (eqs.~10--11 and 22) and the normalisability
+condition on the breakage function (eq.~21).
+
+\bibitem{King2001} King, R. P., \emph{Modeling and Simulation of Mineral
+Processing Systems}, 2001.  The Austin selection function (eqs.~5.78--5.79 and
+5.127), the quadratic size dependence (eq.~5.138) and the third-theory law as a
+population-balance statement (eqs.~5.165--5.167).
 \end{thebibliography}
 
 \clearpage
