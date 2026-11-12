@@ -24937,6 +24937,294 @@ and stage~14 runs at $115.6\,\%$ of its flooding velocity.  On paper it is a
 perfectly good column.  It would not work.
 
 % ---------------------------------------------------------------------
+\section{Columns from their internals: total reflux, computed tray efficiency, packed beds}\label{ch:ratebased}
+
+Up to here a tray's Murphree efficiency was a number the student declared
+(Eq.~\eqref{eq:murphree}) and a column was a cascade of stages whatever it was
+built of.  This section is the first step towards predicting what the
+\emph{hardware} does to the separation: the stages stay equilibrium stages,
+and the efficiency that relaxes them --- or, for a packed bed, the height that
+makes one --- is computed from the geometry, the local flows and the
+transport properties.  It is how a test column is evaluated, so it starts
+with the mode a test column runs in.
+
+\subsection{Total reflux, and what closes the problem}\label{sec:total-reflux}
+
+At total reflux (\code{model totalReflux;}) the column has no feed and no
+products: the condenser returns every mole the top tray sends up, the reboiler
+boils every mole the bottom tray sends down.  Cut the column between tray $j$
+and the stage below.  Nothing leaves, so each component flow crossing the cut
+balances by itself,
+\begin{equation}
+V_{j+1}\,y_{j+1,i} = L_j\,x_{j,i}\quad\Rightarrow\quad V_{j+1}=L_j,\;\; y_{j+1}=x_j ,
+\label{eq:total-reflux-cut}
+\end{equation}
+exactly, with no constant-molar-overflow assumption: the operating line is the
+diagonal.  The energy crossing every cut is the one heat the column receives,
+\begin{equation}
+V_{j+1}\,h_V(y_{j+1},T_{j+1}) - L_j\,h_L(x_j,T_j) = Q_R ,
+\label{eq:total-reflux-energy}
+\end{equation}
+so the vapour flow changes from tray to tray as the latent heat does, and
+every stage energy balance is solved rather than assumed.
+
+\textbf{The degrees of freedom.}  Per stage the unknowns are $x$ ($c$), $y$
+($c$), $T$, $L$ and $V$; the equations are $c$ component balances, $c$
+equilibrium (or Murphree) relations, two summations and one energy balance:
+$2c+3$ of each.  With nothing crossing the boundary, the $c$ component
+balances summed over the stages read $0=0$ --- $c$ of them are dependent.
+What is left open is how much of each component circulates.  A real test
+column fixes that by its charge and its hold-up; a steady stage model has no
+hold-up, so the case must give $c$ numbers: the \emph{boil-up} (one number,
+\code{boilupRate} or the \code{fFactor} of the reboiler vapour on the tower
+area) and the \emph{liquid composition at one point} ($c-1$ numbers, the
+reboiler liquid, which is what a test report publishes).  The column is then
+solved by one march up from the reboiler, a bubble point per stage.
+
+What a test report computes from the profile is published as the KPI
+\code{overallTrayEfficiency}: the Fenske slope \cite{Fenske1932} per tray,
+\begin{equation}
+E_o = \frac{\ln\!\left[\dfrac{x_T/(1-x_T)}{x_B/(1-x_B)}\right]}{(N_{\mathrm{trays}}-1)\,\ln\bar\alpha},
+\qquad \bar\alpha = \sqrt{\alpha_{\mathrm{top}}\alpha_{\mathrm{bottom}}},
+\label{eq:total-reflux-eo}
+\end{equation}
+between the liquids leaving the top and the bottom tray --- the definition of
+Yanagi and Sakata \cite{YanagiSakata1982}.  With ideal trays it returns $1$
+up to the variation of $\alpha$ (witness: \code{totalReflux01\_c6c7\_yanagiRun628},
+$1.010$).  Not modelled: the pressure drop is not fed back (every tray at the
+declared $P$), and the reflux returns saturated.
+
+\subsection{Point efficiency, Murphree efficiency and entrainment}\label{sec:tray-efficiency}
+
+With \code{efficiency \{ model ...; \}} each tray's $E_{MV}$ is computed in three
+steps, the same for every point-efficiency model below.  First, the point
+efficiency from the transfer units of the two phases (two-film resistances
+in series, vapour in plug flow through the froth) \cite{Treybal1980}:
+\begin{equation}
+\frac{1}{N_{OG}} = \frac{1}{N_G} + \frac{\lambda}{N_L},\qquad
+E_{OG} = 1 - e^{-N_{OG}},\qquad \lambda = m\,\frac{G}{L},
+\label{eq:point-efficiency}
+\end{equation}
+with $m=\mathrm{d}y^*/\mathrm{d}x$ the local slope of the equilibrium line.
+Second, point to tray: the liquid crosses the tray in plug flow with
+superimposed eddy diffusion (the vapour mixed between trays), with Peclet
+number $Pe = Z^2/(D_E\,t_L)$, $Z$ the length of liquid travel and $t_L$ the
+liquid residence time \cite{Treybal1980,ChanFair1984}:
+\begin{equation}
+\frac{E_{MV}}{E_{OG}} = \frac{1-e^{-(\eta+Pe)}}{(\eta+Pe)\left(1+\frac{\eta+Pe}{\eta}\right)}
+ + \frac{e^{\eta}-1}{\eta\left(1+\frac{\eta}{\eta+Pe}\right)},\qquad
+\eta = \frac{Pe}{2}\left[\left(1+\frac{4\lambda E_{OG}}{Pe}\right)^{1/2}-1\right].
+\label{eq:eddy-diffusion}
+\end{equation}
+$Pe\to 0$ is the back-mixed tray ($E_{MV}=E_{OG}$); $Pe\to\infty$ is Lewis's
+plug-flow case \cite{Lewis1936}, $E_{MV} = (e^{\lambda E_{OG}}-1)/\lambda$ ---
+which is how $E_{MV}>1$ arises on a large tray without anything exceeding
+equilibrium.  Third, entrainment: Colburn's correction \cite{Colburn1936}
+with Fair's median entrainment correlation as printed by Perry
+\cite{Perry9}, Eqs.~(14-98) and (14-99), at the tray's approach to flood
+$\Phi$ (Section~\ref{ch:hydraulics}):
+\begin{equation}
+E_a = \frac{E_{MV}}{1+E_{MV}\,\psi/(1-\psi)},\qquad
+\ln\psi = -3.2108 - 8.9049\,\Phi + 11.6291\,\Phi^2 .
+\label{eq:colburn}
+\end{equation}
+A tray at which $\psi\ge 1$ is past entrainment flood and is refused.  Weeping
+is modelled by none of the three models.  Binary only: for a binary the two
+components' Murphree efficiencies are identical (both $y$ and $y^*$ sum to
+one), so one $E_{MV}$ per tray is exact.
+
+\subsubsection{AIChE (\code{model AIChE;})}\label{sec:eff-aiche}
+The AIChE Bubble-Tray Manual correlations for sieve trays, in the SI form
+printed by Treybal \cite{Treybal1980}, Eqs.~(6.61)--(6.64) and (6.38):
+\begin{align}
+N_G &= \frac{0.776 + 4.57\,h_w - 0.238\,V_a\rho_G^{0.5} + 104.6\,q/Z}{Sc_G^{0.5}},
+&N_L &= 40\,000\,D_L^{0.5}\,(0.213\,V_a\rho_G^{0.5}+0.15)\,t_L, \nonumber\\
+D_E &= \left(3.93\times10^{-3}+0.0171\,V_a+3.67\,q/Z+0.18\,h_w\right)^2,
+&h_L &= 6.1\times10^{-3}+0.725\,h_w-0.238\,h_w V_a\rho_G^{0.5}+1.225\,q/z,
+\label{eq:aiche}
+\end{align}
+with $t_L = h_L z Z/q$, $V_a$ the vapour velocity on the active area, $q$ the
+liquid flow (m$^3$/s), $z$ the average flow width.  Treybal's Illustration
+6.4 is reproduced by these equations as printed.  Perry 9th ed.\ Eq.~(13-77)
+prints $Q_L/W$ (weir length) where Treybal prints $q/Z$ (length of travel); the
+difference is an open uncertainty.  \textbf{The AIChE correlations carry no
+hole area}: open area reaches the efficiency only through the flood approach.
+
+\subsubsection{Chan and Fair (\code{model ChanFair;})}\label{sec:eff-chanfair}
+Chan and Fair \cite{ChanFair1984}, Eqs.~(9)--(26) (units of the paper: $h$ in
+cm, $D$ in cm$^2$/s): Bennett's clear liquid
+$h_L = \phi_e h_w + 1533\,\phi_e C\,(q_L/\phi_e)^{2/3}$ with
+$\phi_e = \exp(-12.55 K_s^{0.91})$; the vapour-side volumetric coefficient
+\begin{equation}
+k_V a_i = \frac{D_V^{0.5}\,(1030 f - 867 f^2)}{h_L^{0.5}},\qquad f = U_a/U_{af},
+\label{eq:chanfair}
+\end{equation}
+with $t_V = (1-\phi_e)h_L/(100\,\phi_e U_a)$; the Foss--Gerster liquid side
+$k_L a_i = (0.40F_{va}+0.17)(197 D_L^{0.5})$; Barker and Self's
+$D_E = 6.675\times10^{-3}U_a^{1.44}+0.922\times10^{-3}h_L - 5.62\times10^{-3}$
+(plug flow where it is not positive).  The paper attributes the decline of
+Eq.~\eqref{eq:chanfair} above $f=0.6$ to entrainment; with the entrainment
+correction on, the dry curve is held flat there.  Open area enters only
+through $f$.  \textbf{In-sample}: the paper's data bank (Table~I) lists the
+FRI trays of Yanagi and Sakata.
+
+\subsubsection{Syeda, Afacan and Chuang (\code{model SyedaChuang;})}\label{sec:eff-syeda}
+Syeda, Afacan and Chuang \cite{Syeda2007}, Eqs.~(1)--(35): the point
+efficiency is a bubbling zone and a jetting zone weighted by the jetting
+fraction $f_j(F_{bba})$,
+\begin{equation}
+E_{OG} = (1-f_j)\left[(1-F_{SB})E_{LB} + F_{SB}\right] + f_j E_j ,
+\label{eq:syeda}
+\end{equation}
+large bubbles from the hole velocity ($d_{32L}=0.887 D_H^{0.846}u_H^{0.21}$)
+by two-film theory, small bubbles at equilibrium, their fraction $F_{SB}$
+from turbulent break-up with the paper's one constant $C''=0.16$, and the
+jets by Zuiderweg's spray model \cite{Zuiderweg1982}, whose interfacial area
+reads the open area and the hole pitch.  The conversion to Murphree uses
+Garcia and Fair's eddy diffusivity $D_e = 0.02366\,h_{2\phi}^{1.5}g^{0.5}$
+\cite{GarciaFair2000a}.  Two printed equations are read differently from the
+page --- the thesis behind the paper prints them identically:
+\begin{itemize}
+\item Eq.~(28), the break-up group $k\overline{\Delta t}$, is introduced as
+  the product of the rate (25) and $\overline{\Delta t}=n\,t_{GLB}$ (26) but
+  carries no $t_{GLB}$.  It is implemented \emph{with} $t_{GLB}$: as printed
+  every large bubble breaks at every load and pressure, and the efficiency
+  falls from weeping to flood --- the opposite of the paper's own description
+  (p.~274).
+\item Eq.~(33), the clear liquid, is printed $h_L = 0.6\,h_w(p/b\,FP)^{0.25}$,
+  which is not dimensionally consistent.  It is implemented as
+  $0.6\,h_w^{0.5}(p\,FP/b)^{0.25}$, \textbf{confirmed against the primary}:
+  Zuiderweg \cite{Zuiderweg1982}, Eq.~(8), p.~1443.
+\end{itemize}
+\textbf{In-sample}: $C''$ was fitted to seven FRI data sets that include
+Yanagi and Sakata; and Zuiderweg's interfacial areas were derived from the
+same FRI data.
+
+\subsubsection{What was measured: the open-area test}\label{sec:eff-yanagi}
+Yanagi and Sakata \cite{YanagiSakata1982} measured the same FRI 1.2~m column
+with a 14\,\% and an 8\,\% hole-area sieve tray (12.7~mm holes),
+cyclohexane/$n$-heptane at total reflux.  Changing \emph{only} the open area,
+nothing refitted (cases \code{trayEfficiency01}--\code{07}), the change in
+overall efficiency at equal F-factor is:
+\begin{center}
+\begin{tabular}{llrrrr}
+\hline
+$P$ & $F_s$ & measured & AIChE & ChanFair & SyedaChuang \\
+\hline
+34 kPa & 1.2 & $+10.0$ & $-0.1$ & $+1.1$ & $+5.8$ \\
+34 kPa & 1.6 & $+8.1$ & $-0.6$ & $-1.0$ & $+6.2$ \\
+34 kPa & 2.0 & $+3.4$ & $-6.5$ & $-10.4$ & $+0.1$ \\
+165 kPa & 0.8 & $+8.9$ & $-0.0$ & $+2.9$ & $+4.2$ \\
+165 kPa & 1.2 & $+5.1$ & $-0.4$ & $-0.5$ & $+5.9$ \\
+165 kPa & 1.6 & $+9.7$ & $-6.3$ & $-7.9$ & $+2.2$ \\
+\hline
+\end{tabular}
+\end{center}
+(points of $E_o(8\,\%)-E_o(14\,\%)$; the measured values are read off the
+paper's Fig.~12.)  Only the Syeda--Afacan--Chuang model, which sees the hole
+velocity, gives the measured \emph{sign} across the range --- and it is
+in-sample on these very trays.  AIChE, out of sample, never does.  On the
+absolute level, AIChE is within a mean of $+2.7$ points at 34~kPa (14\,\%)
+and $+21$ points high at 165~kPa.  The full tables are in
+\code{docs/design/c329-ratebased-first-delivery.md}.
+
+\subsection{Tray pressure drop by Bolles and Fair; the open-area flood correction}\label{sec:bolles-fair}
+
+\code{hydraulics \{ pressureDropModel BollesFair; \}} replaces the default
+Sinnott heads \cite{Sinnott} by the route printed in Perry \cite{Perry9},
+Eqs.~(14-100)--(14-109):
+\begin{equation}
+h_t = h_d + \beta\,(h_w + h_{ow}),\quad
+h_{ow} = 664\left(\frac{Q}{L_w}\right)^{2/3},\quad
+\beta = 0.0825\ln\frac{Q}{L_w} - 0.269\ln F_h + 1.679 ,
+\label{eq:bolles-fair}
+\end{equation}
+($h$ in mm of clear liquid, $F_h$ the hole F-factor), with the orifice term
+$h_d$ unchanged.  The aeration factor $\beta$ is what Sinnott's residual head
+does not see: on Yanagi and Sakata's run 628 Sinnott gives 0.79~kPa per tray
+against the measured 0.393, Bolles--Fair 0.44.
+
+Fair's flooding correlation (Eq.~\eqref{eq:souders-brown}) holds for an open
+area $A_h/A_a \ge 0.10$; below it Perry \cite{Perry9}, p.~14-36, tabulates
+the flood velocity multiplied by $0.90$ at $0.08$ and $0.80$ at $0.06$
+(linear between; refused below $0.06$).  At $0.10$ and above the factor is
+exactly one.
+
+\subsection{Packed beds at total reflux}\label{sec:packed-bed}
+
+With \code{packing \{ model ...; \}} under \code{model totalReflux;} the trays
+are replaced by a bed of structured packing of height $H$.  On every
+cross-section of the bed $y = x$ (Eq.~\eqref{eq:total-reflux-cut}), so the
+vapour composition obeys the transfer-unit equation
+\begin{equation}
+\frac{\mathrm{d}y}{\mathrm{d}z} = \frac{y^*(x=y) - y}{H_{OG}(z)},\qquad
+H_{OG} = \frac{u_{Gs}}{k_G a_e} + \lambda\,\frac{u_{Ls}}{k_L a_e},\qquad
+\mathrm{HETP} = H_{OG}\,\frac{\ln\lambda}{\lambda-1},
+\label{eq:packed-bed}
+\end{equation}
+integrated up the bed, with the pressure falling by the bed's own pressure
+drop; the \emph{top} pressure is the specification (a test report gives the
+head pressure), and the bottom pressure is found by bisection.  The KPI
+\code{HETP} is the test report's definition: bed height over the Fenske
+stages between the liquid at the top of the bed and the liquid leaving it.
+
+\subsubsection{Rocha, Bravo and Fair (\code{model RochaBravoFair;})}\label{sec:packing-rbf}
+Hydraulics from Rocha, Bravo and Fair 1993 \cite{RochaBravoFair1993},
+Eqs.~(20)--(29): the dry drop
+$\Delta p_d/\Delta z = A u_{Gs}^2 + B u_{Gs}$, the holdup
+$h_L = (4F_t/S)^{2/3}\,(3\mu_L u_{Ls}/(\rho_L\sin\theta\,\varepsilon\,g_{\mathrm{eff}}))^{1/3}$
+and $\Delta p/\Delta z = (\Delta p_d/\Delta z)\,[1-K_2 h_L]^{-5}$, implicit
+through the effective gravity $g_{\mathrm{eff}}$, with flooding at
+$1025$~Pa/m.  Mass transfer from part~2 \cite{RochaBravoFair1996}, Eqs.~(5)--(17),
+with the gauze area $a_e/a_p = 1 - 1.203\,(u_{Ls}^2/Sg)^{0.111}$ (Eq.~14) or
+the sheet-metal one (Eq.~10).  Packing input: $a_p$, $\varepsilon$,
+$\theta$ and the corrugation side $S$.
+
+\subsubsection{The Delft model (\code{model Delft;})}\label{sec:packing-delft}
+The Delft model of Olujic, Kamerbeek and de Graauw \cite{Olujic1999}, in the
+working equations tabulated by Fair et al.\ \cite{Fair2000Delft}, Tables~2
+and~4: complete wetting with the falling-film holdup $h_L = \delta a_p$,
+$\delta = (3\mu_L u_{Ls}/(\rho_L g a_p\sin\alpha))^{1/3}$; a preloading drop from
+gas/liquid friction, gas/gas interaction and direction changes,
+$\Delta p = (\zeta_{GL}+\zeta_{GG}+\zeta_{DC})\,\rho_G u_{Ge}^2/2$, enhanced
+above the loading point; laminar and turbulent gas-side Sherwood numbers
+combined in quadrature, a penetration liquid side, and
+$a_e = a_p(1-\Omega)/(1+A/u_{Ls}^{B})$.  Packing input: $a_p$, $\varepsilon$,
+$\alpha$, corrugation base $b$ and height $h$, element height.  One reading:
+the sign inside $\psi$ (Table~4) is not legible and is taken as minus (the
+chord).
+
+\subsubsection{What was measured: Montz-Pak A3-500M}\label{sec:packing-schulz}
+Schulz et al.\ \cite{Schulz2018} measured HETP and pressure drop of a
+wire-gauze packing (478~m$^2$/m$^3$ installed, $60^\circ$, 2.2~m bed) at
+FRI with $p$-/$o$-xylene at total reflux, 0.10 and 0.02~bar top pressure.
+Nothing fitted; the corrugation dimensions are not printed by the paper and
+are \emph{estimated} ($S = 9$~mm for RBF, from Sulzer~BX; $b=11.5$, $h=6.1$~mm
+for Delft, the Montz~B1-400 shape scaled to $a_p=478$).  Mean errors, with the
+measurement read off Fig.~2b (cases \code{packing01}--\code{04}):
+\begin{center}
+\begin{tabular}{llrrrr}
+\hline
+$P$ & region & RBF HETP & RBF $\Delta p$ & Delft HETP & Delft $\Delta p$ \\
+\hline
+0.10 bar & preloading & $-15\,\%$ & $+65\,\%$ & $+2\,\%$ & $-33\,\%$ \\
+0.02 bar & preloading & $-19\,\%$ & $+36\,\%$ & $+11\,\%$ & $-46\,\%$ \\
+\hline
+\end{tabular}
+\end{center}
+Neither model sees the efficiency departure the authors observe before the
+hydraulic flood; both predict the sign of the pressure effect on HETP in the
+preloading region (measured $-17\,\%$ at $F=1.4$, RBF $-19\,\%$, Delft
+$-11\,\%$).  Bisection on the pressure drop marks the model's hydraulic limit
+at the flooding drop ($\approx 10$~mbar/m).
+
+\begin{keyidea}
+A correlation fitted to the very data it is compared with proves only that it
+was fitted.  Every comparison in this section says whether the model saw the
+data: AIChE did not see the FRI trays, Chan--Fair and Syeda--Afacan--Chuang
+did, Rocha--Bravo--Fair and Delft saw neither this packing nor these runs.
+\end{keyidea}
+
 \section{Multi-stream heat exchanger (MHeatX): a checker, not a
 solver}\label{ch:mheatx}
 
@@ -26689,6 +26977,69 @@ head, downcomer backup, and the weep point.
 \emph{Petroleum Refiner} \textbf{36} (1957).  The sieve-tray discharge
 coefficient $C_o$, charted against $A_h/A_p$ and plate thickness over hole
 diameter.
+
+\bibitem{YanagiSakata1982} Yanagi, T.\ and Sakata, M., ``Performance of a
+commercial scale 14\,\% hole area sieve tray'', \emph{Ind.\ Eng.\ Chem.\
+Process Des.\ Dev.}\ \textbf{21} (1982) 712--717.  FRI 1.2~m column; Table~III
+tabulated runs, the 8\,\% tray in Figs.~12--13.
+
+\bibitem{Treybal1980} Treybal, R.~E., \emph{Mass-Transfer Operations}, 3rd
+ed., McGraw-Hill, 1980.  Pp.~172 (Eq.~6.38) and 180--184 (Eqs.~6.47--6.64,
+Illustration 6.4): the AIChE sieve-tray correlations in SI form, point
+efficiency and the eddy-diffusion conversion.
+
+\bibitem{ChanFair1984} Chan, H.\ and Fair, J.~R., ``Prediction of point
+efficiencies on sieve trays.\ 1.\ Binary systems'', \emph{Ind.\ Eng.\ Chem.\
+Process Des.\ Dev.}\ \textbf{23} (1984) 814--819.
+
+\bibitem{Lewis1936} Lewis, W.~K., ``Rectification of binary mixtures: plate
+efficiency of bubble cap columns'', \emph{Ind.\ Eng.\ Chem.}\ \textbf{28}
+(1936) 399--402.
+
+\bibitem{Colburn1936} Colburn, A.~P., ``Effect of entrainment on plate
+efficiency in distillation'', \emph{Ind.\ Eng.\ Chem.}\ \textbf{28} (1936)
+526--530.
+
+\bibitem{Perry9} Green, D.~W.\ and Southard, M.~Z.\ (eds.), \emph{Perry's
+Chemical Engineers' Handbook}, 9th ed., McGraw-Hill, 2019.  Section~14:
+Eqs.~(14-90) table (open-area flood correction, p.~14-36), (14-98)--(14-99)
+(Colburn, Fair's entrainment), (14-100)--(14-109) (Bolles--Fair pressure drop),
+(14-102a) (orifice coefficient); Section~13, Eq.~(13-77).
+
+\bibitem{Syeda2007} Syeda, S.~R., Afacan, A.\ and Chuang, K.~T., ``A
+fundamental model for prediction of sieve tray efficiency'', \emph{Chem.\ Eng.\
+Res.\ Des.}\ \textbf{85} (A2) (2007) 269--277.
+
+\bibitem{Zuiderweg1982} Zuiderweg, F.~J., ``Sieve trays: a view on the state
+of the art'', \emph{Chem.\ Eng.\ Sci.}\ \textbf{37} (1982) 1441--1464.
+
+\bibitem{GarciaFair2000a} Garcia, J.~A.\ and Fair, J.~R., ``A fundamental
+model for the prediction of distillation sieve tray efficiency.\ 1.\ Database
+development'', \emph{Ind.\ Eng.\ Chem.\ Res.}\ \textbf{39} (2000) 1809--1817.
+
+\bibitem{RochaBravoFair1993} Rocha, J.~A., Bravo, J.~L.\ and Fair, J.~R.,
+``Distillation columns containing structured packings: a comprehensive model
+for their performance.\ 1.\ Hydraulic models'', \emph{Ind.\ Eng.\ Chem.\ Res.}\
+\textbf{32} (1993) 641--651.
+
+\bibitem{RochaBravoFair1996} Rocha, J.~A., Bravo, J.~L.\ and Fair, J.~R.,
+``Distillation columns containing structured packings: a comprehensive model
+for their performance.\ 2.\ Mass-transfer model'', \emph{Ind.\ Eng.\ Chem.\
+Res.}\ \textbf{35} (1996) 1660--1667.
+
+\bibitem{Olujic1999} Olujic, \v{Z}., Kamerbeek, A.~B.\ and de Graauw, J., ``A
+corrugation geometry based model for efficiency of structured distillation
+packing'', \emph{Chem.\ Eng.\ Process.}\ \textbf{38} (1999) 683--695.
+
+\bibitem{Fair2000Delft} Fair, J.~R., Seibert, A.~F., Behrens, M., Saraber,
+P.~P.\ and Olujic, \v{Z}., ``Structured packing performance --- experimental
+evaluation of two predictive models'', \emph{Ind.\ Eng.\ Chem.\ Res.}\
+\textbf{39} (2000) 1788--1796.  Tables~2 and~4: the working equations.
+
+\bibitem{Schulz2018} Schulz, R., Rietfort, T., Jansen, H.\ and Olujic, \v{Z}.,
+``Experimental evidence on performance of an advanced gauze structured packing
+under deep vacuum distillation conditions'', \emph{Chem.\ Eng.\ Trans.}\
+\textbf{69} (2018) 763--768.
 
 \bibitem{Turton} Turton, R., Bailie, R. C., Whiting, W. B., \& Shaeiwitz,
 J. A., \emph{Analysis, Synthesis, and Design of Chemical Processes},

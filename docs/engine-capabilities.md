@@ -33,6 +33,21 @@ records for itself.  What belongs here is the SHAPE, never the size:
   aqueous species, Henry pairs (van't Hoff), NRTL/UNIQUAC/Pitzer/eNRTL
   pair tables, materials, membranes, adsorbents, utilities — the per-kind
   tallies are in the inventory JSON.
+* **Columns from their internals** (2026-11-12, DEV.md 4c C329): a
+  distillation column at TOTAL REFLUX (`model totalReflux;`, closed by the
+  boil-up and the reboiler liquid, every stage energy balance solved); the
+  tray Murphree efficiency COMPUTED from the tray geometry, traffic and
+  transport (`efficiency { model AIChE | ChanFair | SyedaChuang; }`, eddy
+  diffusion and Colburn/Fair entrainment); the Bolles-Fair tray pressure
+  drop (`hydraulics { pressureDropModel BollesFair; }`) and Perry's
+  open-area flood correction; a structured-PACKED bed at total reflux
+  (`packing { model RochaBravoFair | Delft; }`, HETP and pressure drop).
+  Held against FRI data (Yanagi & Sakata 1982 trays; Schulz et al. 2018
+  Montz-Pak A3-500M) with the in-sample status of each model stated --
+  Theory Guide `ch:ratebased`, record `docs/design/c329-ratebased-first-delivery.md`;
+  cases `tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628`,
+  `trayEfficiency01`-`07`, `packing01`-`04`.  Binary only; the efficiency
+  and packing models run under total reflux only.
 * **Concentration polarisation of a multi-ionic solution** (2026-09-15):
   the wall concentration has ONE home (`membrane/massTransfer/Polarisation`)
   for all three transport laws — per-ion k on each ion's own D0,

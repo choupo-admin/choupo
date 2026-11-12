@@ -2031,6 +2031,166 @@ Nothing here was read off, or fitted to, any simulator's result.
 \end{tutgolden}
 
 \clearpage
+\tutentry{packing01\_schulz\_0p10bar}{tutorials/steady/distillation/packing01\_schulz\_0p10bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Structured packing at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.10 bar top pressure (FRI, Schulz et al. 2018), HETP and pressure drop by Rocha-Bravo-Fair, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+a STRUCTURED-PACKING bed at total reflux, its HETP and pressure drop computed from the packing geometry (DEV.md 4c C329).
+
+THE TEST: Schulz, Rietfort, Jansen \& Olujic, Chem. Eng. Trans. 69 (2018) 763: FRI low-pressure column, 1.22 m, Montz-Pak A3-500M (corrugated wire gauze, 60 deg corrugations, installed area 478 m2/m3 measured on the delivered packing, void fraction \textasciitilde{}0.92), bed 2.2 m (13 layers), p-xylene / o-xylene at total reflux, top pressure 0.10 bar. HETP = bed height / Fenske stages between the distributor and the cross-sampler below the bed (section 2) -- the KPI `HETP` here is that definition.
+
+THE MODEL: Rocha, Bravo \& Fair -- hydraulics (holdup, pressure drop, flooding at 1025 Pa/m), IECR 32 (1993) 641, Eqs 20-29; mass transfer, IECR 35 (1996) 1660, Eqs 5-17, the GAUZE effective area of Eq 14. The composition is integrated up the bed, dy/dz = (y$\ast$ - y)/H\_OG; the pressure falls by the bed's own pressure drop from the bottom to the declared top.
+
+WHY NOT BILLET \& SCHULTES 1999 (the folder holds it): its Table 2b gives constants for Montz B1-200, B2-300, C1-200, C2-200 and no gauze packing -- nothing for A3-500M. Rocha-Bravo-Fair needs only the geometry.
+
+MEASURED INPUTS (Schulz section 2 and Table 1): diameter, bed height, installed area 478, void fraction 0.92, angle 60 deg, top pressure; the liquid viscosity 0.391 mPa s (Table 1 -- the package has no liquid-viscosity record for the xylenes). ESTIMATED: the corrugation side S = 9 mm -- NOT in the paper ("with corrugation dimensions known", p. 765, but not printed); taken as Sulzer BX's, the gauze packing of the same area class (492 m2/m3, 60 deg) in Rocha-Bravo-Fair 1993 Table IV. This is the one geometric number not from the source; HETP is roughly proportional to it. ASSUMED: the reboiler liquid 0.2 mol fraction p-xylene, chosen so that the bed's mean liquid is near Table 1's average composition (0.54); the vapour molar flow is taken constant up the bed. ESTIMATED PROPERTIES: as listed in constant/thermoPhysPropDict, plus Wilke-Chang liquid diffusivity and Rackett liquid density. FITTED: nothing. The 0.10 bar curve is the one the brief allowed to fit "what the correlation requires"; Rocha-Bravo-Fair requires no per-packing constant, so nothing was fitted at 0.10 bar either. HELD-OUT: every point of Schulz Fig. 2b at 0.10 bar (DIGITISED from the figure, 180 ppi raster; method and uncertainty in docs/design/c329-ratebased-first-delivery.md). IN-SAMPLE OR NOT: the Rocha-Bravo-Fair 1996 data bank (Table 2) holds Sulzer BX with o-/p-xylenes at 0.021, 0.39 and 1.0 bar (Sakata 1972) -- the same system and a gauze packing of the same class, not this packing and not these runs. Out of sample for A3-500M; the system and the gauze area law are not new to the model.
+
+THE SWEEP moves the boil-up F-factor (reboiler vapour on the tower area) and stops below the model's hydraulic flood (F\_G about 3.1 at both pressures).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{HETP}{0.159484727499}
+\goldrow{kpi}{column}{HETP\_local\_mean}{0.159838767068}
+\goldrow{kpi}{column}{P\_bottom\_bar}{0.103016780053}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-437.950429588}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{437.950429588}
+\goldrow{kpi}{column}{T\_bottom}{346.932630783}
+\goldrow{kpi}{column}{T\_top}{342.756657137}
+\goldrow{kpi}{column}{V\_boilup}{0.0108480870552}
+\goldrow{kpi}{column}{aeOverAp\_mean}{0.646428508593}
+\goldrow{kpi}{column}{alpha\_mean}{1.24118644267}
+\goldrow{kpi}{column}{dP\_bed\_mbar\_per\_m}{1.37126353411}
+\goldrow{kpi}{column}{dP\_over\_dPflood\_max}{0.135024034124}
+\goldrow{kpi}{column}{fFactor\_bedBottom}{1.59953159281}
+\goldrow{kpi}{column}{fFactor\_bedTop}{1.61415167923}
+\goldmore{14}
+\end{tutgolden}
+
+\clearpage
+\tutentry{packing02\_schulz\_0p02bar}{tutorials/steady/distillation/packing02\_schulz\_0p02bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Structured packing at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.02 bar top pressure (FRI, Schulz et al. 2018), HETP and pressure drop by Rocha-Bravo-Fair, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+a STRUCTURED-PACKING bed at total reflux, its HETP and pressure drop computed from the packing geometry (DEV.md 4c C329).
+
+THE TEST: Schulz, Rietfort, Jansen \& Olujic, Chem. Eng. Trans. 69 (2018) 763: FRI low-pressure column, 1.22 m, Montz-Pak A3-500M (corrugated wire gauze, 60 deg corrugations, installed area 478 m2/m3 measured on the delivered packing, void fraction \textasciitilde{}0.92), bed 2.2 m (13 layers), p-xylene / o-xylene at total reflux, top pressure 0.02 bar. HETP = bed height / Fenske stages between the distributor and the cross-sampler below the bed (section 2) -- the KPI `HETP` here is that definition.
+
+THE MODEL: Rocha, Bravo \& Fair -- hydraulics (holdup, pressure drop, flooding at 1025 Pa/m), IECR 32 (1993) 641, Eqs 20-29; mass transfer, IECR 35 (1996) 1660, Eqs 5-17, the GAUZE effective area of Eq 14. The composition is integrated up the bed, dy/dz = (y$\ast$ - y)/H\_OG; the pressure falls by the bed's own pressure drop from the bottom to the declared top.
+
+WHY NOT BILLET \& SCHULTES 1999 (the folder holds it): its Table 2b gives constants for Montz B1-200, B2-300, C1-200, C2-200 and no gauze packing -- nothing for A3-500M. Rocha-Bravo-Fair needs only the geometry.
+
+MEASURED INPUTS (Schulz section 2 and Table 1): diameter, bed height, installed area 478, void fraction 0.92, angle 60 deg, top pressure; the liquid viscosity 0.539 mPa s (Table 1 -- the package has no liquid-viscosity record for the xylenes). ESTIMATED: the corrugation side S = 9 mm -- NOT in the paper ("with corrugation dimensions known", p. 765, but not printed); taken as Sulzer BX's, the gauze packing of the same area class (492 m2/m3, 60 deg) in Rocha-Bravo-Fair 1993 Table IV. This is the one geometric number not from the source; HETP is roughly proportional to it. ASSUMED: the reboiler liquid 0.17 mol fraction p-xylene, chosen so that the bed's mean liquid is near Table 1's average composition (0.49); the vapour molar flow is taken constant up the bed. ESTIMATED PROPERTIES: as listed in constant/thermoPhysPropDict, plus Wilke-Chang liquid diffusivity and Rackett liquid density. FITTED: nothing (and nothing at 0.10 bar to carry over): this is a PREDICTION of the 0.02 bar curve. HELD-OUT: every point of Schulz Fig. 2b at 0.02 bar (DIGITISED from the figure, 180 ppi raster; method and uncertainty in docs/design/c329-ratebased-first-delivery.md). IN-SAMPLE OR NOT: the Rocha-Bravo-Fair 1996 data bank (Table 2) holds Sulzer BX with o-/p-xylenes at 0.021, 0.39 and 1.0 bar (Sakata 1972) -- the same system and a gauze packing of the same class, not this packing and not these runs. Out of sample for A3-500M; the system and the gauze area law are not new to the model.
+
+THE SWEEP moves the boil-up F-factor (reboiler vapour on the tower area) and stops below the model's hydraulic flood (F\_G about 3.1 at both pressures).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{HETP}{0.128958485255}
+\goldrow{kpi}{column}{HETP\_local\_mean}{0.129468603517}
+\goldrow{kpi}{column}{P\_bottom\_bar}{0.0235553554803}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-229.085785266}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{229.085785266}
+\goldrow{kpi}{column}{T\_bottom}{314.773320277}
+\goldrow{kpi}{column}{T\_top}{307.865467293}
+\goldrow{kpi}{column}{V\_boilup}{0.00544587444708}
+\goldrow{kpi}{column}{aeOverAp\_mean}{0.698828481101}
+\goldrow{kpi}{column}{alpha\_mean}{1.29094854246}
+\goldrow{kpi}{column}{dP\_bed\_mbar\_per\_m}{1.61607052318}
+\goldrow{kpi}{column}{dP\_over\_dPflood\_max}{0.169489187383}
+\goldrow{kpi}{column}{fFactor\_bedBottom}{1.5994864239}
+\goldrow{kpi}{column}{fFactor\_bedTop}{1.71724137533}
+\goldmore{14}
+\end{tutgolden}
+
+\clearpage
+\tutentry{packing03\_schulz\_delft\_0p10bar}{tutorials/steady/distillation/packing03\_schulz\_delft\_0p10bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Structured packing at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.10 bar top pressure (FRI, Schulz et al. 2018), HETP and pressure drop by the Delft model, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+a STRUCTURED-PACKING bed at total reflux, its HETP and pressure drop computed from the packing geometry (DEV.md 4c C329).
+
+THE TEST: Schulz, Rietfort, Jansen \& Olujic, Chem. Eng. Trans. 69 (2018) 763: FRI low-pressure column, 1.22 m, Montz-Pak A3-500M (corrugated wire gauze, 60 deg corrugations, installed area 478 m2/m3 measured on the delivered packing, void fraction \textasciitilde{}0.92), bed 2.2 m (13 layers), p-xylene / o-xylene at total reflux, top pressure 0.10 bar. HETP = bed height / Fenske stages between the distributor and the cross-sampler below the bed (section 2) -- the KPI `HETP` here is that definition.
+
+THE MODEL: the Delft model -- Olujic, Kamerbeek \& de Graauw, Chem. Eng. Process. 38 (1999) 683, in the working form of Fair, Seibert, Behrens, Saraber \& Olujic, IECR 39 (2000) 1788, Tables 2 and 4 -- the model Schulz et al. compare their own data with. Complete wetting, holdup from the falling film, preloading drop from gas/liquid friction, gas/gas interaction and direction changes, the loading enhancement above F\_G,lp; no per-packing constant. The same bed integration as packing01/02 (Rocha-Bravo-Fair), which are this case's twins.
+
+WHY NOT BILLET \& SCHULTES 1999 (the folder holds it): its Table 2b gives constants for Montz B1-200, B2-300, C1-200, C2-200 and no gauze packing -- nothing for A3-500M. The Delft model needs only the geometry.
+
+MEASURED INPUTS (Schulz section 2 and Table 1): diameter, bed height, installed area 478, void fraction 0.92, angle 60 deg, top pressure; the liquid viscosity 0.391 mPa s (Table 1 -- the package has no liquid-viscosity record for the xylenes). ESTIMATED: the corrugation base b = 11.5 mm and height h = 6.1 mm -- NOT printed by Schulz. Taken with the base/height ratio of Montz B1-400 (14.0/7.4 mm, Fair et al. 2000 Table 1) and scaled so that Fair's Eq 2, a\_p = 4 s/(b h), returns the installed 478 m2/m3: h = 2.910/478 m. The element height 0.169 m is 2.2 m / 13 layers (Schulz section 2). The surface is unperforated (Schulz section 2): Omega = 0. ASSUMED: the reboiler liquid 0.2 mol fraction p-xylene, chosen so that the bed's mean liquid is near Table 1's average composition (0.54); the vapour molar flow is taken constant up the bed. ESTIMATED PROPERTIES: as listed in constant/thermoPhysPropDict, plus Wilke-Chang liquid diffusivity and Rackett liquid density. FITTED: nothing. The 0.10 bar curve is the one the brief allowed to fit "what the correlation requires"; the Delft model requires no per-packing constant, so nothing was fitted at 0.10 bar either. HELD-OUT: every point of Schulz Fig. 2b at 0.10 bar (DIGITISED from the figure, 180 ppi raster; method and uncertainty in docs/design/c329-ratebased-first-delivery.md). IN-SAMPLE OR NOT: the Delft model has no per-packing constant; Fair et al. 2000 evaluated it on Montz B1/BSH sheet packings with cyclohexane/n-heptane -- not gauze, not this system. Out of sample.
+
+THE SWEEP moves the boil-up F-factor (reboiler vapour on the tower area) and stops where the computed drop passes 10.25 mbar/m (Fair et al. 2000's flooding-point pressure drop for structured packings).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{HETP}{0.183303712207}
+\goldrow{kpi}{column}{HETP\_local\_mean}{0.183726596113}
+\goldrow{kpi}{column}{P\_bottom\_bar}{0.10147106849}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-489.477047594}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{489.477047594}
+\goldrow{kpi}{column}{T\_bottom}{346.56123905}
+\goldrow{kpi}{column}{T\_top}{343.019923132}
+\goldrow{kpi}{column}{V\_boilup}{0.0121186821853}
+\goldrow{kpi}{column}{aeOverAp\_mean}{0.957866701852}
+\goldrow{kpi}{column}{alpha\_mean}{1.24124783103}
+\goldrow{kpi}{column}{dP\_bed\_mbar\_per\_m}{0.668666302317}
+\goldrow{kpi}{column}{dP\_over\_dPflood\_max}{0.065344999076}
+\goldrow{kpi}{column}{fFactor\_bedBottom}{1.7994718969}
+\goldrow{kpi}{column}{fFactor\_bedTop}{1.80390347411}
+\goldmore{14}
+\end{tutgolden}
+
+\clearpage
+\tutentry{packing04\_schulz\_delft\_0p02bar}{tutorials/steady/distillation/packing04\_schulz\_delft\_0p02bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Structured packing at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.02 bar top pressure (FRI, Schulz et al. 2018), HETP and pressure drop by the Delft model, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+a STRUCTURED-PACKING bed at total reflux, its HETP and pressure drop computed from the packing geometry (DEV.md 4c C329).
+
+THE TEST: Schulz, Rietfort, Jansen \& Olujic, Chem. Eng. Trans. 69 (2018) 763: FRI low-pressure column, 1.22 m, Montz-Pak A3-500M (corrugated wire gauze, 60 deg corrugations, installed area 478 m2/m3 measured on the delivered packing, void fraction \textasciitilde{}0.92), bed 2.2 m (13 layers), p-xylene / o-xylene at total reflux, top pressure 0.02 bar. HETP = bed height / Fenske stages between the distributor and the cross-sampler below the bed (section 2) -- the KPI `HETP` here is that definition.
+
+THE MODEL: the Delft model -- Olujic, Kamerbeek \& de Graauw, Chem. Eng. Process. 38 (1999) 683, in the working form of Fair, Seibert, Behrens, Saraber \& Olujic, IECR 39 (2000) 1788, Tables 2 and 4 -- the model Schulz et al. compare their own data with. Complete wetting, holdup from the falling film, preloading drop from gas/liquid friction, gas/gas interaction and direction changes, the loading enhancement above F\_G,lp; no per-packing constant. The same bed integration as packing01/02 (Rocha-Bravo-Fair), which are this case's twins.
+
+WHY NOT BILLET \& SCHULTES 1999 (the folder holds it): its Table 2b gives constants for Montz B1-200, B2-300, C1-200, C2-200 and no gauze packing -- nothing for A3-500M. The Delft model needs only the geometry.
+
+MEASURED INPUTS (Schulz section 2 and Table 1): diameter, bed height, installed area 478, void fraction 0.92, angle 60 deg, top pressure; the liquid viscosity 0.539 mPa s (Table 1 -- the package has no liquid-viscosity record for the xylenes). ESTIMATED: the corrugation base b = 11.5 mm and height h = 6.1 mm -- NOT printed by Schulz. Taken with the base/height ratio of Montz B1-400 (14.0/7.4 mm, Fair et al. 2000 Table 1) and scaled so that Fair's Eq 2, a\_p = 4 s/(b h), returns the installed 478 m2/m3: h = 2.910/478 m. The element height 0.169 m is 2.2 m / 13 layers (Schulz section 2). The surface is unperforated (Schulz section 2): Omega = 0. ASSUMED: the reboiler liquid 0.17 mol fraction p-xylene, chosen so that the bed's mean liquid is near Table 1's average composition (0.49); the vapour molar flow is taken constant up the bed. ESTIMATED PROPERTIES: as listed in constant/thermoPhysPropDict, plus Wilke-Chang liquid diffusivity and Rackett liquid density. FITTED: nothing (and nothing at 0.10 bar to carry over): this is a PREDICTION of the 0.02 bar curve. HELD-OUT: every point of Schulz Fig. 2b at 0.02 bar (DIGITISED from the figure, 180 ppi raster; method and uncertainty in docs/design/c329-ratebased-first-delivery.md). IN-SAMPLE OR NOT: the Delft model has no per-packing constant; Fair et al. 2000 evaluated it on Montz B1/BSH sheet packings with cyclohexane/n-heptane -- not gauze, not this system. Out of sample.
+
+THE SWEEP moves the boil-up F-factor (reboiler vapour on the tower area) and stops where the computed drop passes 10.25 mbar/m (Fair et al. 2000's flooding-point pressure drop for structured packings).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{HETP}{0.160198373981}
+\goldrow{kpi}{column}{HETP\_local\_mean}{0.160873646753}
+\goldrow{kpi}{column}{P\_bottom\_bar}{0.021704792813}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-248.508560385}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{248.508560385}
+\goldrow{kpi}{column}{T\_bottom}{313.186726859}
+\goldrow{kpi}{column}{T\_top}{308.104964474}
+\goldrow{kpi}{column}{V\_boilup}{0.00589590424471}
+\goldrow{kpi}{column}{aeOverAp\_mean}{0.879890082479}
+\goldrow{kpi}{column}{alpha\_mean}{1.29209464969}
+\goldrow{kpi}{column}{dP\_bed\_mbar\_per\_m}{0.774905809328}
+\goldrow{kpi}{column}{dP\_over\_dPflood\_max}{0.0780493662801}
+\goldrow{kpi}{column}{fFactor\_bedBottom}{1.79941588621}
+\goldrow{kpi}{column}{fFactor\_bedTop}{1.8598717731}
+\goldmore{14}
+\end{tutgolden}
+
+\clearpage
 \tutentry{shortcut01\_benzene\_toluene}{tutorials/steady/distillation/shortcut01\_benzene\_toluene}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -2167,6 +2327,314 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \goldrow{kpi}{tower}{nSideDraws}{0}
 \goldrow{kpi}{tower}{nStages}{8}
 \goldmore{27}
+\end{tutgolden}
+
+\clearpage
+\tutentry{totalReflux01\_c6c7\_yanagiRun628}{tutorials/steady/distillation/totalReflux01\_c6c7\_yanagiRun628}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Total reflux: a 10-tray cyclohexane/n-heptane column at 34 kPa on the conditions of FRI run 628 (Yanagi \& Sakata 1982, Table III), ideal trays}
+\begin{tutnarrative}
+a column at TOTAL REFLUX: no feed, no products, every mole of overhead vapour back as reflux. This is how tray efficiency is measured on a test column, and it is the mode every later rate-based comparison (C329) stands on.
+
+WHAT IS SPECIFIED, AND WHY THESE NUMBERS (the degrees of freedom). With no stream crossing the column boundary the component balances, summed over the stages, read 0 = 0: c of them are dependent, and what is left open is how much of each component circulates -- a test column fixes it by its charge and hold-up, which a steady stage model does not have. So the case gives c numbers: the boil-up (one) and the liquid composition at one point (c - 1). Both come from a measured run:
+
+MEASURED INPUTS -- Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712, Table III, run 628 (cyclohexane / n-heptane, 34 kPa): reboiler liquid 28.4 mol \% cyclohexane vapour rate 1.69 kg/s at vapour density 1.03 kg/m3 $\to$ u = 1.69/(1.03 x 1.131 m2) = 1.451 m/s on the 1.2 m tower, F = u sqrt(rho\_V) = 1.47 column 1.2 m diameter, 10 trays (Table III numbers the samples up to tray 10), top 34 kPa ESTIMATED PROPERTIES: everything else (Antoine, ideal liquid, Chung, Fuller, Brock-Bird, Rackett) -- see constant/thermoPhysPropDict. FITTED PARAMETERS: none. HELD-OUT POINTS: the measured profile of the same run, below.
+
+The trays are declared IDEAL here (no `murphreeEfficiency`, no `efficiency` block): this case is the total-reflux mode itself, and its own check is that ideal trays give an overall efficiency of 1 by the paper's own definition (the Fenske slope of ln(x/(1-x)) per tray over ln alpha) -- printed as the KPI `overallTrayEfficiency`, not 1 to the last digit only because alpha varies from the top tray to the bottom one.
+
+What the real trays did on that run (Table III): reflux 98.8 \%, tray 10 97.4 \%, tray 8 93.7 \%, tray 5 81.9 \%, tray 4 73.2 \%; overall tray efficiency 70.8 \%. The ideal column here separates MORE than that, as it must. The computed efficiency of the same trays is trayEfficiency01\_yanagi14.
+
+NOT MODELLED: the pressure drop (0.393 kPa per tray measured) is not fed back, so every stage sits at 34 kPa and the reboiler is cooler than the measured 60.2 C; the reflux returns saturated (the run's was subcooled, 38.3 C).
+
+THE HYDRAULICS here run on the default pressure-drop route (Sinnott) and print about 0.79 kPa per tray against the measured 0.393: Sinnott's residual head and full weir head do not see how aerated a froth at 34 kPa is. The trayEfficiency cases declare `pressureDropModel BollesFair;` (Perry 9ed 14-100..14-109), which prints 0.44 kPa on this run.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_mean}{1}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.00225852939182}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-641.496486142}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{641.496486142}
+\goldrow{kpi}{column}{T\_bottom}{332.656731849}
+\goldrow{kpi}{column}{T\_reflux}{321.598526034}
+\goldrow{kpi}{column}{T\_top}{321.623028645}
+\goldrow{kpi}{column}{V\_boilup}{0.019072520418}
+\goldrow{kpi}{column}{V\_top}{0.0201729509249}
+\goldrow{kpi}{column}{alpha\_mean}{1.9004637869}
+\goldrow{kpi}{column}{dP\_column\_kPa}{7.88237055294}
+\goldrow{kpi}{column}{diameter}{1.2}
+\goldrow{kpi}{column}{diameterDesigned}{0}
+\goldrow{kpi}{column}{downcomerBackup\_max\_mm}{180.6984657}
+\goldmore{25}
+\end{tutgolden}
+
+\clearpage
+\tutentry{trayEfficiency01\_yanagi14}{tutorials/steady/distillation/trayEfficiency01\_yanagi14}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Sieve-tray efficiency computed from the internals (AIChE + eddy diffusion + entrainment), FRI 14 \% hole-area tray of Yanagi \& Sakata 1982 at total reflux, cyclohexane/n-heptane at 34 kPa, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS GEOMETRY, held against a commercial-scale measurement it was not fitted to (DEV.md 4c C329). Cyclohexane / n-heptane at 34 kPa, total reflux.
+
+THE TRAY: FRI's 14 \% hole-area sieve tray (Table I): 1.2 m column, 610 mm spacing, 12.7 mm holes on 30.2 mm triangular pitch, 1.5 mm plate, outlet weir 50.8 mm x 940 mm, downcomer 0.14 m2, hole area 0.118 m2. Source: Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712. The pair of this case is trayEfficiency02\_yanagi08 (8 \%): the two differ in the open area and in nothing else.
+
+THE MODEL. The stages stay equilibrium stages; each tray's Murphree efficiency is computed from its geometry, its own traffic and the transport properties of its two phases -- the AIChE Bubble-Tray Manual correlations for sieve trays (Treybal 3ed Eqs 6.38, 6.51-6.64), eddy diffusion along the liquid path, and the entrainment loss near flood (Colburn with Fair's median entrainment, Perry 9ed Eqs 14-98, 14-99) at the tray's approach to flood (Fair / Lygeros, with Perry's open-area correction below 10 \%). The tray pressure drop is Bolles \& Fair's (Perry 9ed Eqs 14-100..14-109).
+
+MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid viscosity 0.37 mPa s (Table II, 34 kPa -- the package carries no liquid viscosity for these components, so the paper's own average enters Wilke-Chang); the column pressure. ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives 0.284 and 0.294 for the two runs it lists; the other points' compositions are not published); every point of the sweep uses it. ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the case's own component records), liquid diffusivity (Wilke-Chang at infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid density (Rackett on the record's Vliq), surface tension (Brock-Bird). FITTED PARAMETERS: NONE. HELD-OUT POINTS: all -- Table III runs 628 (F 1.47, E\_o 70.8 \%, dP 0.393 kPa) and 625 (F 2.36, 41.1 \%, 0.858 kPa) -- TABULATED -- and the five 14 \% points at \textasciitilde{}30 kPa of Figure 12 and of Figure 13 (DIGITISED). The comparison table is in docs/design/c329-ratebased-first-delivery.md. WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route. The default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured 0.393; Bolles \& Fair was then implemented from Perry and gives 0.41. No number inside either correlation was touched. IN-SAMPLE OR NOT: the AIChE correlations were built from the AIChE research programme of the 1950s; Perry 9ed p. 13-38 notes FRI data were then available only to FRI members, so these points are out of the correlation's sample. (Zuiderweg 1982 would NOT be: his interfacial area was fitted to these very FRI data -- Klemola \& Ilme 1996, p. 4581.)
+
+WHAT THE MODEL CANNOT SEE: hole area. The AIChE transfer units carry none, so the open area reaches the efficiency only through the flood approach (entrainment) and the pressure drop. Weeping is not modelled, so the low-load fall-off of the measured efficiency is not predicted. The sweep stops below the load at which Fair's entrainment correlation passes psi = 1 (the model's own entrainment flood).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_dry\_mean}{0.791551818033}
+\goldrow{kpi}{column}{E\_MV\_max}{0.897712932329}
+\goldrow{kpi}{column}{E\_MV\_mean}{0.785682064571}
+\goldrow{kpi}{column}{E\_MV\_min}{0.743512156009}
+\goldrow{kpi}{column}{E\_OG\_mean}{0.646725065686}
+\goldrow{kpi}{column}{Pe\_mean}{22.4118442091}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.00200279237712}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-567.488222754}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{567.488222754}
+\goldrow{kpi}{column}{T\_bottom}{332.544796542}
+\goldrow{kpi}{column}{T\_reflux}{321.711423758}
+\goldrow{kpi}{column}{T\_top}{321.788438336}
+\goldrow{kpi}{column}{V\_boilup}{0.0168802390235}
+\goldrow{kpi}{column}{V\_top}{0.0178290201573}
+\goldmore{29}
+\end{tutgolden}
+
+\clearpage
+\tutentry{trayEfficiency02\_yanagi08}{tutorials/steady/distillation/trayEfficiency02\_yanagi08}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Sieve-tray efficiency computed from the internals (AIChE + eddy diffusion + entrainment), FRI 8 \% hole-area tray of Yanagi \& Sakata 1982 at total reflux, cyclohexane/n-heptane at 34 kPa, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS GEOMETRY, held against a commercial-scale measurement it was not fitted to (DEV.md 4c C329). Cyclohexane / n-heptane at 34 kPa, total reflux.
+
+THE TRAY: FRI's 8 \% hole-area sieve tray, the one the paper compares against (Sakata \& Yanagi 1979): IDENTICAL to the 14 \% tray (same column, 12.7 mm holes, weir, downcomers) except the panels -- holes on 38.1 mm pitch, about 8 \% of the bubbling area. ONLY holeAreaFraction and the orifice coefficient that follows from it differ from the 14 \% case. Source: Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712. The pair of this case is trayEfficiency01\_yanagi14 (14 \%): the two differ in the open area and in nothing else.
+
+THE MODEL. The stages stay equilibrium stages; each tray's Murphree efficiency is computed from its geometry, its own traffic and the transport properties of its two phases -- the AIChE Bubble-Tray Manual correlations for sieve trays (Treybal 3ed Eqs 6.38, 6.51-6.64), eddy diffusion along the liquid path, and the entrainment loss near flood (Colburn with Fair's median entrainment, Perry 9ed Eqs 14-98, 14-99) at the tray's approach to flood (Fair / Lygeros, with Perry's open-area correction below 10 \%). The tray pressure drop is Bolles \& Fair's (Perry 9ed Eqs 14-100..14-109).
+
+MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid viscosity 0.37 mPa s (Table II, 34 kPa -- the package carries no liquid viscosity for these components, so the paper's own average enters Wilke-Chang); the column pressure. ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives 0.284 and 0.294 for the two runs it lists; the other points' compositions are not published); every point of the sweep uses it. ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the case's own component records), liquid diffusivity (Wilke-Chang at infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid density (Rackett on the record's Vliq), surface tension (Brock-Bird). FITTED PARAMETERS: NONE. HELD-OUT POINTS: all -- the eight 8 \% points at \textasciitilde{}30 kPa of Figure 12 and the six of Figure 13 (DIGITISED; the 8 \% tray's own tables are in Sakata \& Yanagi 1979, IChemE Symp. Ser. 56, which is not in hand). The comparison table is in docs/design/c329-ratebased-first-delivery.md. WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route. The default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured 0.393; Bolles \& Fair was then implemented from Perry and gives 0.41. No number inside either correlation was touched. IN-SAMPLE OR NOT: the AIChE correlations were built from the AIChE research programme of the 1950s; Perry 9ed p. 13-38 notes FRI data were then available only to FRI members, so these points are out of the correlation's sample. (Zuiderweg 1982 would NOT be: his interfacial area was fitted to these very FRI data -- Klemola \& Ilme 1996, p. 4581.)
+
+WHAT THE MODEL CANNOT SEE: hole area. The AIChE transfer units carry none, so the open area reaches the efficiency only through the flood approach (entrainment) and the pressure drop. Weeping is not modelled, so the low-load fall-off of the measured efficiency is not predicted. The sweep stops below the load at which Fair's entrainment correlation passes psi = 1 (the model's own entrainment flood).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_dry\_mean}{0.798491636107}
+\goldrow{kpi}{column}{E\_MV\_max}{0.906168288015}
+\goldrow{kpi}{column}{E\_MV\_mean}{0.792286781606}
+\goldrow{kpi}{column}{E\_MV\_min}{0.749942574236}
+\goldrow{kpi}{column}{E\_OG\_mean}{0.651786793227}
+\goldrow{kpi}{column}{Pe\_mean}{22.019648437}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.0018484792898}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-523.835282542}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{523.835282542}
+\goldrow{kpi}{column}{T\_bottom}{332.544796542}
+\goldrow{kpi}{column}{T\_reflux}{321.705070585}
+\goldrow{kpi}{column}{T\_top}{321.779597426}
+\goldrow{kpi}{column}{V\_boilup}{0.0155817590986}
+\goldrow{kpi}{column}{V\_top}{0.0164583897893}
+\goldmore{29}
+\end{tutgolden}
+
+\clearpage
+\tutentry{trayEfficiency03\_yanagi14\_165kPa}{tutorials/steady/distillation/trayEfficiency03\_yanagi14\_165kPa}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Sieve-tray efficiency computed from the internals (AIChE + eddy diffusion + entrainment), FRI 14 \% hole-area tray of Yanagi \& Sakata 1982 at total reflux, cyclohexane/n-heptane at 165 kPa, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS GEOMETRY, held against a commercial-scale measurement it was not fitted to (DEV.md 4c C329). Cyclohexane / n-heptane at 165 kPa, total reflux.
+
+THE TRAY: FRI's 14 \% hole-area sieve tray (Table I): 1.2 m column, 610 mm spacing, 12.7 mm holes on 30.2 mm triangular pitch, 1.5 mm plate, outlet weir 50.8 mm x 940 mm, downcomer 0.14 m2, hole area 0.118 m2. Source: Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712. The pair of this case is trayEfficiency04\_yanagi08\_165kPa (8 \%): the two differ in the open area and in nothing else.
+
+THE MODEL. The stages stay equilibrium stages; each tray's Murphree efficiency is computed from its geometry, its own traffic and the transport properties of its two phases -- the AIChE Bubble-Tray Manual correlations for sieve trays (Treybal 3ed Eqs 6.38, 6.51-6.64), eddy diffusion along the liquid path, and the entrainment loss near flood (Colburn with Fair's median entrainment, Perry 9ed Eqs 14-98, 14-99) at the tray's approach to flood (Fair / Lygeros, with Perry's open-area correction below 10 \%). The tray pressure drop is Bolles \& Fair's (Perry 9ed Eqs 14-100..14-109).
+
+MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid viscosity 0.23 mPa s (Table II, 165 kPa -- the package carries no liquid viscosity for these components, so the paper's own average enters Wilke-Chang); the column pressure. ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives 0.284 and 0.294 for the two runs it lists; the other points' compositions are not published); every point of the sweep uses it. ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the case's own component records), liquid diffusivity (Wilke-Chang at infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid density (Rackett on the record's Vliq), surface tension (Brock-Bird). FITTED PARAMETERS: NONE. HELD-OUT POINTS: all -- the eight 14 \% points at 165 kPa of Figure 12 and the six of Figure 13 (DIGITISED). The comparison table is in docs/design/c329-ratebased-first-delivery.md. WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route. The default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured 0.393; Bolles \& Fair was then implemented from Perry and gives 0.41. No number inside either correlation was touched. IN-SAMPLE OR NOT: the AIChE correlations were built from the AIChE research programme of the 1950s; Perry 9ed p. 13-38 notes FRI data were then available only to FRI members, so these points are out of the correlation's sample. (Zuiderweg 1982 would NOT be: his interfacial area was fitted to these very FRI data -- Klemola \& Ilme 1996, p. 4581.)
+
+WHAT THE MODEL CANNOT SEE: hole area. The AIChE transfer units carry none, so the open area reaches the efficiency only through the flood approach (entrainment) and the pressure drop. Weeping is not modelled, so the low-load fall-off of the measured efficiency is not predicted. The sweep stops below the load at which Fair's entrainment correlation passes psi = 1 (the model's own entrainment flood).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_dry\_mean}{0.962611135819}
+\goldrow{kpi}{column}{E\_MV\_max}{1.09064953489}
+\goldrow{kpi}{column}{E\_MV\_mean}{0.953792056594}
+\goldrow{kpi}{column}{E\_MV\_min}{0.895239461687}
+\goldrow{kpi}{column}{E\_OG\_mean}{0.730548663106}
+\goldrow{kpi}{column}{Pe\_mean}{47.3247065135}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.00370032640966}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-906.29305844}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{906.29305844}
+\goldrow{kpi}{column}{T\_bottom}{383.05331419}
+\goldrow{kpi}{column}{T\_reflux}{371.365202903}
+\goldrow{kpi}{column}{T\_top}{371.479984863}
+\goldrow{kpi}{column}{V\_boilup}{0.0292290357746}
+\goldrow{kpi}{column}{V\_top}{0.0307412934666}
+\goldmore{29}
+\end{tutgolden}
+
+\clearpage
+\tutentry{trayEfficiency04\_yanagi08\_165kPa}{tutorials/steady/distillation/trayEfficiency04\_yanagi08\_165kPa}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Sieve-tray efficiency computed from the internals (AIChE + eddy diffusion + entrainment), FRI 8 \% hole-area tray of Yanagi \& Sakata 1982 at total reflux, cyclohexane/n-heptane at 165 kPa, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS GEOMETRY, held against a commercial-scale measurement it was not fitted to (DEV.md 4c C329). Cyclohexane / n-heptane at 165 kPa, total reflux.
+
+THE TRAY: FRI's 8 \% hole-area sieve tray, the one the paper compares against (Sakata \& Yanagi 1979): IDENTICAL to the 14 \% tray (same column, 12.7 mm holes, weir, downcomers) except the panels -- holes on 38.1 mm pitch, about 8 \% of the bubbling area. ONLY holeAreaFraction and the orifice coefficient that follows from it differ from the 14 \% case. Source: Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712. The pair of this case is trayEfficiency03\_yanagi14\_165kPa (14 \%): the two differ in the open area and in nothing else.
+
+THE MODEL. The stages stay equilibrium stages; each tray's Murphree efficiency is computed from its geometry, its own traffic and the transport properties of its two phases -- the AIChE Bubble-Tray Manual correlations for sieve trays (Treybal 3ed Eqs 6.38, 6.51-6.64), eddy diffusion along the liquid path, and the entrainment loss near flood (Colburn with Fair's median entrainment, Perry 9ed Eqs 14-98, 14-99) at the tray's approach to flood (Fair / Lygeros, with Perry's open-area correction below 10 \%). The tray pressure drop is Bolles \& Fair's (Perry 9ed Eqs 14-100..14-109).
+
+MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid viscosity 0.23 mPa s (Table II, 165 kPa -- the package carries no liquid viscosity for these components, so the paper's own average enters Wilke-Chang); the column pressure. ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives 0.284 and 0.294 for the two runs it lists; the other points' compositions are not published); every point of the sweep uses it. ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the case's own component records), liquid diffusivity (Wilke-Chang at infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid density (Rackett on the record's Vliq), surface tension (Brock-Bird). FITTED PARAMETERS: NONE. HELD-OUT POINTS: all -- the eight 8 \% points at 165 kPa of Figure 12 and the six of Figure 13 (DIGITISED; see trayEfficiency02 for where the 8 \% tables are). The comparison table is in docs/design/c329-ratebased-first-delivery.md. WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route. The default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured 0.393; Bolles \& Fair was then implemented from Perry and gives 0.41. No number inside either correlation was touched. IN-SAMPLE OR NOT: the AIChE correlations were built from the AIChE research programme of the 1950s; Perry 9ed p. 13-38 notes FRI data were then available only to FRI members, so these points are out of the correlation's sample. (Zuiderweg 1982 would NOT be: his interfacial area was fitted to these very FRI data -- Klemola \& Ilme 1996, p. 4581.)
+
+WHAT THE MODEL CANNOT SEE: hole area. The AIChE transfer units carry none, so the open area reaches the efficiency only through the flood approach (entrainment) and the pressure drop. Weeping is not modelled, so the low-load fall-off of the measured efficiency is not predicted. The sweep stops below the load at which Fair's entrainment correlation passes psi = 1 (the model's own entrainment flood).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_dry\_mean}{0.95931310961}
+\goldrow{kpi}{column}{E\_MV\_max}{1.08738866769}
+\goldrow{kpi}{column}{E\_MV\_mean}{0.950459357987}
+\goldrow{kpi}{column}{E\_MV\_min}{0.891897976988}
+\goldrow{kpi}{column}{E\_OG\_mean}{0.728503752197}
+\goldrow{kpi}{column}{Pe\_mean}{47.2340865169}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.00336420858359}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-823.9027804}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{823.9027804}
+\goldrow{kpi}{column}{T\_bottom}{383.05331419}
+\goldrow{kpi}{column}{T\_reflux}{371.369260402}
+\goldrow{kpi}{column}{T\_top}{371.485506845}
+\goldrow{kpi}{column}{V\_boilup}{0.0265718507042}
+\goldrow{kpi}{column}{V\_top}{0.0279458601588}
+\goldmore{29}
+\end{tutgolden}
+
+\clearpage
+\tutentry{trayEfficiency05\_chanFair\_yanagi14}{tutorials/steady/distillation/trayEfficiency05\_chanFair\_yanagi14}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Sieve-tray efficiency computed from the internals (ChanFair + eddy diffusion + entrainment), FRI 14 \% hole-area tray of Yanagi \& Sakata 1982 at total reflux, cyclohexane/n-heptane at 34 kPa, swept over the F-factor; nothing fitted here, the correlation is in-sample on these FRI trays}
+\begin{tutnarrative}
+the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS GEOMETRY, held against a commercial-scale measurement it was not fitted to (DEV.md 4c C329). Cyclohexane / n-heptane at 34 kPa, total reflux.
+
+THE TRAY: FRI's 14 \% hole-area sieve tray (Table I): 1.2 m column, 610 mm spacing, 12.7 mm holes on 30.2 mm triangular pitch, 1.5 mm plate, outlet weir 50.8 mm x 940 mm, downcomer 0.14 m2, hole area 0.118 m2. Source: Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712. The pair of this case is trayEfficiency02\_yanagi08 (8 \%): the two differ in the open area and in nothing else.
+
+THE MODEL. The stages stay equilibrium stages; each tray's Murphree efficiency is computed by Chan \& Fair, Ind. Eng. Chem. Process Des. Dev. 23 (1984) 814, Eqs 9-26 (pp. 816-817): Bennett's clear liquid, the vapour-side volumetric coefficient k\_V a\_i = D\_V\textasciicircum{}0.5 (1030 f - 867 f\textasciicircum{}2)/h\_L\textasciicircum{}0.5 at the tray's approach to flood f, Foss-Gerster's liquid side, Barker \& Self's eddy diffusion; then the entrainment loss (Colburn with Fair's median psi, Perry 9ed 14-98/14-99), with the dry curve held flat above f = 0.6 as the paper prescribes. The tray pressure drop is Bolles \& Fair's (Perry 9ed 14-100..14-109).
+
+MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid viscosity 0.37 mPa s (Table II, 34 kPa -- the package carries no liquid viscosity for these components, so the paper's own average enters Wilke-Chang); the column pressure. ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives 0.284 and 0.294 for the two runs it lists; the other points' compositions are not published); every point of the sweep uses it. ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the case's own component records), liquid diffusivity (Wilke-Chang at infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid density (Rackett on the record's Vliq), surface tension (Brock-Bird). FITTED PARAMETERS: NONE. HELD-OUT POINTS: all -- Table III runs 628 (F 1.47, E\_o 70.8 \%, dP 0.393 kPa) and 625 (F 2.36, 41.1 \%, 0.858 kPa) -- TABULATED -- and the five 14 \% points at \textasciitilde{}30 kPa of Figure 12 and of Figure 13 (DIGITISED). The comparison table is in docs/design/c329-ratebased-first-delivery.md. WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route. The default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured 0.393; Bolles \& Fair was then implemented from Perry and gives 0.41. No number inside either correlation was touched. IN-SAMPLE: YES. Chan \& Fair's data bank (Table I, p. 816) lists the FRI trays of Yanagi \& Sakata 1982 (14 \%) and Sakata \& Yanagi 1979 (8 \%); the 14 \% runs at 165 and 1138 kPa are shown apart as not fitting (p. 818, Fig. 3). Nothing in this case was fitted HERE, but the correlation saw these trays.
+
+WHAT THE MODEL SEES OF THE OPEN AREA: only the approach to flood f (Perry's open-area capacity correction makes the 8 \% tray's f larger). Weeping is not modelled. The sweep stops below the model's own entrainment flood (Fair's psi = 1).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_dry\_mean}{0.915554100149}
+\goldrow{kpi}{column}{E\_MV\_max}{1.01892340122}
+\goldrow{kpi}{column}{E\_MV\_mean}{0.907781165066}
+\goldrow{kpi}{column}{E\_MV\_min}{0.869745306094}
+\goldrow{kpi}{column}{E\_OG\_mean}{0.768381591033}
+\goldrow{kpi}{column}{Pe\_mean}{5.44604064994}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.00199923054724}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-567.488222754}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{567.488222754}
+\goldrow{kpi}{column}{T\_bottom}{332.544796542}
+\goldrow{kpi}{column}{T\_reflux}{321.628257622}
+\goldrow{kpi}{column}{T\_top}{321.668585176}
+\goldrow{kpi}{column}{V\_boilup}{0.0168802390235}
+\goldrow{kpi}{column}{V\_top}{0.0178411204908}
+\goldmore{30}
+\end{tutgolden}
+
+\clearpage
+\tutentry{trayEfficiency06\_syedaChuang\_yanagi14}{tutorials/steady/distillation/trayEfficiency06\_syedaChuang\_yanagi14}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Sieve-tray efficiency computed from the internals (SyedaChuang + eddy diffusion + entrainment), FRI 14 \% hole-area tray of Yanagi \& Sakata 1982 at total reflux, cyclohexane/n-heptane at 34 kPa, swept over the F-factor; nothing fitted here, the correlation is in-sample on these FRI trays}
+\begin{tutnarrative}
+the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS GEOMETRY, held against a commercial-scale measurement it was not fitted to (DEV.md 4c C329). Cyclohexane / n-heptane at 34 kPa, total reflux.
+
+THE TRAY: FRI's 14 \% hole-area sieve tray (Table I): 1.2 m column, 610 mm spacing, 12.7 mm holes on 30.2 mm triangular pitch, 1.5 mm plate, outlet weir 50.8 mm x 940 mm, downcomer 0.14 m2, hole area 0.118 m2. Source: Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712. The pair of this case is trayEfficiency02\_yanagi08 (8 \%): the two differ in the open area and in nothing else.
+
+THE MODEL. The stages stay equilibrium stages; each tray's Murphree efficiency is computed by Syeda, Afacan \& Chuang, Chem. Eng. Res. Des. 85 (2007) 269, Eqs 1-35: a bubbling zone (large bubbles from the hole velocity, small bubbles at equilibrium, their fraction from turbulent break-up) and a jetting zone (Zuiderweg's spray model, which reads the open area and the hole pitch), weighted by the jetting fraction; converted to Murphree by Garcia \& Fair's eddy diffusion (IECR 39 (2000) 1809, Eq 12); then the entrainment loss (Colburn with Fair's median psi). Eq 28 is read with t\_GLB and Eq 33 with h\_w\textasciicircum{}0.5 (the thesis prints both as the paper does; why) -- see src/unitOperations/distillation/TrayEfficiency.H. The tray pressure drop is Bolles \& Fair's (Perry 9ed 14-100..14-109).
+
+MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid viscosity 0.37 mPa s (Table II, 34 kPa -- the package carries no liquid viscosity for these components, so the paper's own average enters Wilke-Chang); the column pressure. ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives 0.284 and 0.294 for the two runs it lists; the other points' compositions are not published); every point of the sweep uses it. ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the case's own component records), liquid diffusivity (Wilke-Chang at infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid density (Rackett on the record's Vliq), surface tension (Brock-Bird). FITTED PARAMETERS: NONE. HELD-OUT POINTS: all -- Table III runs 628 (F 1.47, E\_o 70.8 \%, dP 0.393 kPa) and 625 (F 2.36, 41.1 \%, 0.858 kPa) -- TABULATED -- and the five 14 \% points at \textasciitilde{}30 kPa of Figure 12 and of Figure 13 (DIGITISED). The comparison table is in docs/design/c329-ratebased-first-delivery.md. WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route. The default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured 0.393; Bolles \& Fair was then implemented from Perry and gives 0.41. No number inside either correlation was touched. IN-SAMPLE: YES, BY CONSTRUCTION. The paper's one constant, C'' = 0.16, was fitted (p. 273) to seven FRI data sets: Sakata \& Yanagi 1979 and Yanagi \& Sakata 1982 -- these trays. Nothing was fitted HERE.
+
+WHAT THE MODEL SEES OF THE OPEN AREA: the hole velocity (the large-bubble diameter), the open-area ratio and the hole pitch (the spray interfacial area), besides the flood approach. Weeping is not modelled. The sweep stops below the model's own entrainment flood (Fair's psi = 1).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_dry\_mean}{0.655838931404}
+\goldrow{kpi}{column}{E\_MV\_max}{0.67983186499}
+\goldrow{kpi}{column}{E\_MV\_mean}{0.651784795031}
+\goldrow{kpi}{column}{E\_MV\_min}{0.636960508632}
+\goldrow{kpi}{column}{E\_OG\_mean}{0.546388394327}
+\goldrow{kpi}{column}{FSB\_mean}{0.0196944847296}
+\goldrow{kpi}{column}{Pe\_mean}{38.1271291965}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.00201141574093}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-567.488222754}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{567.488222754}
+\goldrow{kpi}{column}{T\_bottom}{332.544796542}
+\goldrow{kpi}{column}{T\_reflux}{321.912004299}
+\goldrow{kpi}{column}{T\_top}{322.059307405}
+\goldrow{kpi}{column}{V\_boilup}{0.0168802390235}
+\goldmore{32}
+\end{tutgolden}
+
+\clearpage
+\tutentry{trayEfficiency07\_syedaChuang\_yanagi08}{tutorials/steady/distillation/trayEfficiency07\_syedaChuang\_yanagi08}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Sieve-tray efficiency computed from the internals (SyedaChuang + eddy diffusion + entrainment), FRI 8 \% hole-area tray of Yanagi \& Sakata 1982 at total reflux, cyclohexane/n-heptane at 34 kPa, swept over the F-factor; nothing fitted here, the correlation is in-sample on these FRI trays}
+\begin{tutnarrative}
+the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS GEOMETRY, held against a commercial-scale measurement it was not fitted to (DEV.md 4c C329). Cyclohexane / n-heptane at 34 kPa, total reflux.
+
+THE TRAY: FRI's 8 \% hole-area sieve tray, the one the paper compares against (Sakata \& Yanagi 1979): IDENTICAL to the 14 \% tray (same column, 12.7 mm holes, weir, downcomers) except the panels -- holes on 38.1 mm pitch, about 8 \% of the bubbling area. ONLY holeAreaFraction and the orifice coefficient that follows from it differ from the 14 \% case. Source: Yanagi \& Sakata, Ind. Eng. Chem. Process Des. Dev. 21 (1982) 712. The pair of this case is trayEfficiency01\_yanagi14 (14 \%): the two differ in the open area and in nothing else.
+
+THE MODEL. The stages stay equilibrium stages; each tray's Murphree efficiency is computed by Syeda, Afacan \& Chuang, Chem. Eng. Res. Des. 85 (2007) 269, Eqs 1-35: a bubbling zone (large bubbles from the hole velocity, small bubbles at equilibrium, their fraction from turbulent break-up) and a jetting zone (Zuiderweg's spray model, which reads the open area and the hole pitch), weighted by the jetting fraction; converted to Murphree by Garcia \& Fair's eddy diffusion (IECR 39 (2000) 1809, Eq 12); then the entrainment loss (Colburn with Fair's median psi). Eq 28 is read with t\_GLB and Eq 33 with h\_w\textasciicircum{}0.5 (the thesis prints both as the paper does; why) -- see src/unitOperations/distillation/TrayEfficiency.H. The tray pressure drop is Bolles \& Fair's (Perry 9ed 14-100..14-109).
+
+MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid viscosity 0.37 mPa s (Table II, 34 kPa -- the package carries no liquid viscosity for these components, so the paper's own average enters Wilke-Chang); the column pressure. ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives 0.284 and 0.294 for the two runs it lists; the other points' compositions are not published); every point of the sweep uses it. ESTIMATED PROPERTIES: vapour pressure (Antoine fits to CoolProp), ideal liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the case's own component records), liquid diffusivity (Wilke-Chang at infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid density (Rackett on the record's Vliq), surface tension (Brock-Bird). FITTED PARAMETERS: NONE. HELD-OUT POINTS: all -- the eight 8 \% points at \textasciitilde{}30 kPa of Figure 12 and the six of Figure 13 (DIGITISED; the 8 \% tray's own tables are in Sakata \& Yanagi 1979, IChemE Symp. Ser. 56, which is not in hand). The comparison table is in docs/design/c329-ratebased-first-delivery.md. WHAT WAS CHOSEN AFTER SEEING DATA, said so: the pressure-drop route. The default (Sinnott) gave 0.79 kPa per tray on run 628 against the measured 0.393; Bolles \& Fair was then implemented from Perry and gives 0.41. No number inside either correlation was touched. IN-SAMPLE: YES, BY CONSTRUCTION. The paper's one constant, C'' = 0.16, was fitted (p. 273) to seven FRI data sets: Sakata \& Yanagi 1979 and Yanagi \& Sakata 1982 -- these trays. Nothing was fitted HERE.
+
+WHAT THE MODEL SEES OF THE OPEN AREA: the hole velocity (the large-bubble diameter), the open-area ratio and the hole pitch (the spray interfacial area), besides the flood approach. Weeping is not modelled. The sweep stops below the model's own entrainment flood (Fair's psi = 1).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{E\_MV\_dry\_mean}{0.703736788806}
+\goldrow{kpi}{column}{E\_MV\_max}{0.739766711094}
+\goldrow{kpi}{column}{E\_MV\_mean}{0.698901506625}
+\goldrow{kpi}{column}{E\_MV\_min}{0.679730022319}
+\goldrow{kpi}{column}{E\_OG\_mean}{0.581436747}
+\goldrow{kpi}{column}{FSB\_mean}{0.0191930492465}
+\goldrow{kpi}{column}{Pe\_mean}{34.8234274797}
+\goldrow{kpi}{column}{Q\_condensate\_m3\_s}{0.00185311805785}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-523.835282542}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{523.835282542}
+\goldrow{kpi}{column}{T\_bottom}{332.544796542}
+\goldrow{kpi}{column}{T\_reflux}{321.82219012}
+\goldrow{kpi}{column}{T\_top}{321.941977175}
+\goldrow{kpi}{column}{V\_boilup}{0.0155817590986}
+\goldmore{32}
 \end{tutgolden}
 
 \subsection{drying}

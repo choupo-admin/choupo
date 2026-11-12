@@ -156,6 +156,7 @@ Decanter (two liquids, no vapour): needs a `gammaGamma` package as in §5 (or a 
 6. FUG → rigorous: take `nStages = ceil(N_theoretical)`, `feedStage = round(feed_stage)`, `refluxRatio = R`, `distillateRate = recoveryLK·F·z_LK + recoveryHK·F·z_HK`. The rigorous purity differs slightly (FUG is approximate); iterate on `refluxRatio` or `nStages` until the specification is met.
 7. Sanity: `Q_condenser ≈ (R+1)·D·λ`; distillate T ≈ pure-LK boiling point at P; bottoms T ≈ HK's. Check `massBalance` closes (it does; the energy plug in the reboiler is not a check).
 8. Real trays: ideal stages / overall efficiency (50–80 %); or declare `murphreeEfficiency` (WangHenke) and `nStages` counts real trays.
+9. To predict efficiency, pressure drop and flooding from the internals of a test column (binary, total reflux): `model totalReflux;` with `efficiency { model AIChE|ChanFair|SyedaChuang; }` on trays or `packing { model RochaBravoFair|Delft; }` for a packed bed -- `docs/ai/unit-ops.md`, witnesses `trayEfficiency01_yanagi14`, `packing03_schulz_delft_0p10bar`.
 
 ## 8. Example: benzene/toluene, shortcut then rigorous
 

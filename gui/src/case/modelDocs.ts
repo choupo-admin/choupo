@@ -384,7 +384,38 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "poreTransport.transportParameters.activity:ideal":              { guide: "theory", dest: "eq:dspmde-partition" },
   "poreTransport.transportParameters.activity:wallDavies":         { guide: "theory", dest: "eq:dspmde-partition" },
   "poreTransport.transportParameters.activity:bulkOverPoreDavies": { guide: "theory", dest: "eq:dspmde-partition" },
+  // THE COLUMN'S SELECTABLES (DEV.md 4c C329).  A distillation column's
+  // block opens ch:distillation (THEORY_DEST); each word chosen INSIDE it
+  // opens the section that derives that choice.  Keyed
+  // "<unit type>.<dict path>:<token>", the path as the case writes it
+  // (`model` is the unit-level slot; the rest sit under `operation`).
+  "distillationColumn.model:totalReflux":                          { guide: "theory", dest: "sec:total-reflux" },
+  "distillationColumn.operation.efficiency.model:AIChE":           { guide: "theory", dest: "sec:eff-aiche" },
+  "distillationColumn.operation.efficiency.model:ChanFair":        { guide: "theory", dest: "sec:eff-chanfair" },
+  "distillationColumn.operation.efficiency.model:SyedaChuang":     { guide: "theory", dest: "sec:eff-syeda" },
+  "distillationColumn.operation.hydraulics.pressureDropModel:BollesFair": { guide: "theory", dest: "sec:bolles-fair" },
+  "distillationColumn.operation.hydraulics.pressureDropModel:Sinnott": { guide: "theory", dest: "ch:hydraulics" },
+  "distillationColumn.operation.packing.model:RochaBravoFair":     { guide: "theory", dest: "sec:packing-rbf" },
+  "distillationColumn.operation.packing.model:Delft":              { guide: "theory", dest: "sec:packing-delft" },
+  "column.model:totalReflux":                                      { guide: "theory", dest: "sec:total-reflux" },
+  "column.operation.efficiency.model:AIChE":                       { guide: "theory", dest: "sec:eff-aiche" },
+  "column.operation.efficiency.model:ChanFair":                    { guide: "theory", dest: "sec:eff-chanfair" },
+  "column.operation.efficiency.model:SyedaChuang":                 { guide: "theory", dest: "sec:eff-syeda" },
+  "column.operation.hydraulics.pressureDropModel:BollesFair":      { guide: "theory", dest: "sec:bolles-fair" },
+  "column.operation.hydraulics.pressureDropModel:Sinnott":         { guide: "theory", dest: "ch:hydraulics" },
+  "column.operation.packing.model:RochaBravoFair":                 { guide: "theory", dest: "sec:packing-rbf" },
+  "column.operation.packing.model:Delft":                          { guide: "theory", dest: "sec:packing-delft" },
 };
+
+// The theory link of a word chosen INSIDE a unit block -- `model
+// totalReflux`, `efficiency { model ChanFair; }`, ... -- or the unit's own
+// section when the word has no section of its own.  `path` is the dotted
+// dict path of the key that holds the word (e.g. "operation.efficiency.model").
+// The unit's block link (theoryLink) is unchanged by this.
+export function unitSlotTheoryLink(type: string, path: string, token: string): string {
+  const m = SLOT_MODEL_DEST[`${type}.${path}:${token}`];
+  return m ? guideUrl(m.guide === "props" ? "propsGuide" : "theoryGuide", m.dest) : theoryLink(type);
+}
 
 // A link that opens the theory at the section deriving a given property MODEL
 // (activity / EOS / vapour-pressure / transport / reference-state token), or
