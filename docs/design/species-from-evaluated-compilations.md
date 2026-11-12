@@ -11,7 +11,7 @@ the table and page, what is still missing (sections 2 to 5); (3) every number re
 refusal.
 
 **Rule that bounds it.**  A value enters a record only from a table that was READ, cited with table and page;
-nothing from memory, the web, DECHEMA / DWSIM / ChemSep or a NonCommercial compilation; the CRC Handbook is a second
+nothing from memory, the web, a third-party databank or a NonCommercial compilation; the CRC Handbook is a second
 reading that enters no value.  Where a table is a scan, the number was read from the page image and the evidence table
 says so (`image yes`), for a later human check.
 
