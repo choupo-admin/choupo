@@ -4239,7 +4239,7 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
 \goldrow{stream}{vapour}{F}{0.00789027945038}
 \goldrow{kpi}{evap}{A}{20}
 \goldrow{kpi}{evap}{A\_m2}{20}
-\goldrow{kpi}{evap}{BPE}{5.19956015536}
+\goldrow{kpi}{evap}{BPE}{4.88457261559}
 \goldrow{kpi}{evap}{F\_conc}{0.0198874983274}
 \goldrow{kpi}{evap}{F\_conc\_kmol\_h}{71.5949939786}
 \goldrow{kpi}{evap}{F\_conc\_mass}{0.414419115701}
@@ -4274,7 +4274,7 @@ Constraints: productConc.F\_mass = 0.3125 kg/s (40 wt\%) effect3.P = 13.5 kPa (t
 \goldrow{stream}{vapour}{F}{0.00814027080581}
 \goldrow{kpi}{evap}{A}{20}
 \goldrow{kpi}{evap}{A\_m2}{20}
-\goldrow{kpi}{evap}{BPE}{3.94504785681}
+\goldrow{kpi}{evap}{BPE}{3.71832264007}
 \goldrow{kpi}{evap}{F\_conc}{0.019637506972}
 \goldrow{kpi}{evap}{F\_conc\_kmol\_h}{70.6950250991}
 \goldrow{kpi}{evap}{F\_conc\_mass}{0.409915521433}
@@ -4315,7 +4315,7 @@ Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS N
 \goldrow{stream}{vapour}{F}{0.0163956916432}
 \goldrow{kpi}{evap}{A}{20}
 \goldrow{kpi}{evap}{A\_m2}{20}
-\goldrow{kpi}{evap}{BPE}{6.7542776432}
+\goldrow{kpi}{evap}{BPE}{6.36789487997}
 \goldrow{kpi}{evap}{F\_conc}{0.0113820861346}
 \goldrow{kpi}{evap}{F\_conc\_kmol\_h}{40.9755100845}
 \goldrow{kpi}{evap}{F\_conc\_mass}{0.226419670604}
@@ -4350,7 +4350,7 @@ Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS N
 \goldrow{stream}{vapour}{F}{0.00742485456904}
 \goldrow{kpi}{evap}{A}{20}
 \goldrow{kpi}{evap}{A\_m2}{20}
-\goldrow{kpi}{evap}{BPE}{5.04671954326}
+\goldrow{kpi}{evap}{BPE}{4.74289696456}
 \goldrow{kpi}{evap}{F\_conc}{0.0206862565421}
 \goldrow{kpi}{evap}{F\_conc\_kmol\_h}{74.4705235515}
 \goldrow{kpi}{evap}{F\_conc\_mass}{0.536902744939}
@@ -4388,7 +4388,7 @@ WHAT IT IS. A forward-feed triple-effect NaOH evaporator: live steam heats effec
 
 THE SPECIFICATION (system/outerDict, the structure of evaporator03). Two unknowns, the common area A and the live-steam flow, against two targets: the product mass flow 2.1 kg/s (= 1360.8 kg/h NaOH at 18 wt \%) and the last-effect pressure 6.76 kPa. Every effect's liquid outlet is inside the window, which is what the run's [electrolyte] lines let you check.
 
-THE RESULT (converged; mass, element and energy closures gated). effect T\_boil P m BPE duty heat of dilution [C] [kPa] [mol/kg] [K] [kW] [kW] [\% of duty] 1 95.6 75.7 3.22 3.57 1880.6 +18.1 +1.0 2 77.0 35.3 3.96 4.07 1076.1 -5.5 -0.5 3 43.4 6.76 5.49 5.08 1293.6 -5.2 -0.4 A = 16.98 m2 per effect; live steam 2981 kg/h; water evaporated 6048 kg/h; steam economy 2.03 kg vapour per kg steam. The BPE is the Pitzer water activity at each effect's outlet molality. It can be held against measured vapour pressures INSIDE the window: Perry's Chemical Engineers' Handbook (9th ed.), Table 2-19 (p. 2-83), tabulates the partial pressure of water over NaOH solutions; read at each effect's pressure and wt \% (log-pressure interpolated in 1/T and in concentration; about 0.3 K uncertainty) it gives BPE 3.25 / 3.79 / 4.88 K against the engine's 3.57 / 4.07 / 5.08 K (+0.3, +0.3, +0.2 K).
+THE RESULT (converged; mass, element and energy closures gated). effect T\_boil P m BPE duty heat of dilution [C] [kPa] [mol/kg] [K] [kW] [kW] [\% of duty] 1 95.6 75.9 3.22 3.48 1880.3 +18.1 +1.0 2 76.9 35.4 3.96 4.00 1075.9 -5.5 -0.5 3 43.4 6.76 5.49 5.02 1293.6 -5.2 -0.4 A = 16.97 m2 per effect; live steam 2981 kg/h; water evaporated 6048 kg/h; steam economy 2.03 kg vapour per kg steam. The BPE is the Pitzer water activity at each effect's outlet molality. It can be held against measured vapour pressures INSIDE the window: Perry's Chemical Engineers' Handbook (9th ed.), Table 2-19 (p. 2-83), tabulates the partial pressure of water over NaOH solutions; read at each effect's pressure and wt \% (log-pressure interpolated in 1/T and in concentration; about 0.3 K uncertainty) it gives BPE 3.25 / 3.79 / 4.88 K against the engine's 3.48 / 4.00 / 5.02 K (+0.2, +0.2, +0.1 K). The engine solves the exact relation a\_w Psat(T) = Psat(T - BPE) (C377); the linearised form it replaced gave 3.57 / 4.07 / 5.08 K.
 
 WHERE THE HEAT OF DILUTION ENTERS EACH EFFECT. The unit's duty is the heat the chest gives up condensing, F\_chest [h(chest) - h(condensate)], and the process side is balanced on the SAME enthalpy surface: Q = L h(L, T\_out, m\_out) + V H\_v - F h(F, T\_in, m\_in). The liquor's h carries, for a calorimetrically fitted salt, the term n\_salt L\_phi(m, T). So the heat of dilution is a REPORTED PART of the duty Q, never a term added to it. The line printed per effect, heat of dilution = X kW (L\_phi: m a $\to$ b mol/kg), is n\_salt [L\_phi(m\_out, T\_out) - L\_phi(m\_in, T\_in)]: the concentration step AND the change of L\_phi with temperature between the inlet and outlet states (the liquor is flashed from the previous effect's temperature to the next one's), which is why it is positive in effect 1 (cold feed heated to 95 C) and slightly negative downstream. Beside the latent heat it is small here -- about 1 \% of each duty -- and that is the lesson of keeping inside the window: it is the 6 to 25 mol/kg range of real caustic concentration that makes the heat of dilution large (next paragraph).
 
@@ -4398,20 +4398,20 @@ THE WATER ROUTE. The Antoine fit of the catalogue's water record is +2.5 \% at 3
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{L1to2}{F}{0.172442345779}
-\goldrow{stream}{L1to2}{T}{368.721521636}
-\goldrow{stream}{L2to3}{F}{0.141941185351}
-\goldrow{stream}{L2to3}{T}{350.124338908}
-\goldrow{stream}{V1}{F}{0.0258409875543}
-\goldrow{stream}{V1}{T}{368.721521636}
-\goldrow{stream}{V2}{F}{0.0305011604278}
-\goldrow{stream}{V2}{T}{350.124338908}
-\goldrow{stream}{V3}{F}{0.0369073727164}
-\goldrow{stream}{V3}{T}{316.58458393}
-\goldrow{stream}{cond1}{F}{0.045967634104}
+\goldrow{stream}{L1to2}{F}{0.17244647571}
+\goldrow{stream}{L1to2}{T}{368.709196505}
+\goldrow{stream}{L2to3}{F}{0.141945884768}
+\goldrow{stream}{L2to3}{T}{350.098590835}
+\goldrow{stream}{V1}{F}{0.0258368576233}
+\goldrow{stream}{V1}{T}{368.709196505}
+\goldrow{stream}{V2}{F}{0.030500590942}
+\goldrow{stream}{V2}{T}{350.098590835}
+\goldrow{stream}{V3}{F}{0.0369126631403}
+\goldrow{stream}{V3}{T}{316.529455119}
+\goldrow{stream}{cond1}{F}{0.0459596295612}
 \goldrow{stream}{cond1}{T}{386.45}
-\goldrow{stream}{cond2}{F}{0.0258409875543}
-\goldrow{stream}{cond2}{T}{368.721521636}
+\goldrow{stream}{cond2}{F}{0.0258368576233}
+\goldrow{stream}{cond2}{T}{368.709196505}
 \goldmore{101}
 \end{tutgolden}
 
@@ -13079,7 +13079,7 @@ Pedagogical caveat: the stream that crosses from the turbine (SRK) into the flas
   \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{thermoTest model 1 -- NaCl as a LUMPED molecular component: the boiling-point elevation is the IDEAL K\_b$\ast$m (van't Hoff), BPE \textasciitilde{} 2.11 K. Compare model2 (same evaporator, Pitzer a\_w $\to$ BPE \textasciitilde{} 5.07 K): the REPRESENTATION axis, lumped vs dissociated, on one operation.}
+\tutwhat{thermoTest model 1 -- NaCl as a LUMPED molecular component: the boiling-point elevation is the IDEAL K\_b$\ast$m (van't Hoff), BPE \textasciitilde{} 2.11 K. Compare model2 (same evaporator, Pitzer a\_w $\to$ BPE \textasciitilde{} 4.88 K): the REPRESENTATION axis, lumped vs dissociated, on one operation.}
 \begin{tutnarrative}
 thermoTest model1\_lumped\_evaporator / flowsheetDict NaCl treated as a LUMPED molecular component: the boiling-point elevation is the IDEAL van't Hoff K\_b$\ast$m (\textasciitilde{}2.11 K). Model 1 of the thermoTest ladder -- the deliberately-too-simple baseline the pitzer (model 2) and eNRTL rungs correct. Same evaporator, climbing thermo.
 
@@ -13114,9 +13114,9 @@ thermoTest model1\_lumped\_evaporator / flowsheetDict NaCl treated as a LUMPED m
   \draw[->] ($(evap.east)+(0,0.34)$) -- ($(evap.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {condensate};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{thermoTest model 2 -- NaCl as a PITZER electrolyte (Na+ + Cl-, aqueous-inf-dilution reference): the boiling-point elevation comes from the real water activity a\_w, BPE \textasciitilde{} 5.07 K vs the ideal 2.11 K of model1.}
+\tutwhat{thermoTest model 2 -- NaCl as a PITZER electrolyte (Na+ + Cl-, aqueous-inf-dilution reference): the boiling-point elevation comes from the real water activity a\_w, BPE \textasciitilde{} 4.88 K (the exact a\_w Psat(T) = Psat(T - BPE) relation) vs the ideal 2.11 K of model1.}
 \begin{tutnarrative}
-BPE NOTE (2026-07-02, a story in three acts): (1) frozen 25 C surface $\to$ BPE 5.07 K; (2) LINEAR calorimetric T-slots (Parker fit) $\to$ 5.58 K -- the 25 C derivative extrapolated straight to the boil; (3) the FULL Silvester \& Pitzer 1977 T-functions (eqs 30-32, Table IV verbatim in Na-Cl.dat) + A\_phi(T) curated against their Table II $\to$ BPE 5.06 K. beta0(T) has a MAXIMUM near 150 C (their Fig 4): the linear slope overshoots where the real curve has already bent over. The lesson: a first derivative is not a function -- validity windows are data.
+BPE NOTE (2026-07-02, a story in three acts): (1) frozen 25 C surface $\to$ BPE 5.07 K; (2) LINEAR calorimetric T-slots (Parker fit) $\to$ 5.58 K -- the 25 C derivative extrapolated straight to the boil; (3) the FULL Silvester \& Pitzer 1977 T-functions (eqs 30-32, Table IV verbatim in Na-Cl.dat) + A\_phi(T) curated against their Table II $\to$ BPE 5.06 K. beta0(T) has a MAXIMUM near 150 C (their Fig 4): the linear slope overshoots where the real curve has already bent over. The lesson: a first derivative is not a function -- validity windows are data. (C377, 2026-11-12: the three figures above were read on the linearised rise; the exact relation a\_w Psat(T) = Psat(T - BPE) gives 4.88 K for the same surface.)
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -13127,7 +13127,7 @@ BPE NOTE (2026-07-02, a story in three acts): (1) frozen 25 C surface $\to$ BPE 
 \goldrow{stream}{vapour}{F}{0.00789027945038}
 \goldrow{kpi}{evap}{A}{20}
 \goldrow{kpi}{evap}{A\_m2}{20}
-\goldrow{kpi}{evap}{BPE}{5.19956015536}
+\goldrow{kpi}{evap}{BPE}{4.88457261559}
 \goldrow{kpi}{evap}{F\_conc}{0.0198874983274}
 \goldrow{kpi}{evap}{F\_conc\_kmol\_h}{71.5949939786}
 \goldrow{kpi}{evap}{F\_conc\_mass}{0.414419115701}

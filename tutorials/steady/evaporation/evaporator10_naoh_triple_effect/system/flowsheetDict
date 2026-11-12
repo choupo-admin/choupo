@@ -36,10 +36,10 @@ the window of the heat-of-dilution fit
   THE RESULT (converged; mass, element and energy closures gated).
     effect   T_boil    P        m          BPE    duty      heat of dilution
               [C]     [kPa]   [mol/kg]    [K]     [kW]     [kW]   [% of duty]
-      1       95.6    75.7     3.22       3.57   1880.6     +18.1    +1.0
-      2       77.0    35.3     3.96       4.07   1076.1      -5.5    -0.5
-      3       43.4     6.76    5.49       5.08   1293.6      -5.2    -0.4
-    A = 16.98 m2 per effect; live steam 2981 kg/h; water evaporated
+      1       95.6    75.9     3.22       3.48   1880.3     +18.1    +1.0
+      2       76.9    35.4     3.96       4.00   1075.9      -5.5    -0.5
+      3       43.4     6.76    5.49       5.02   1293.6      -5.2    -0.4
+    A = 16.97 m2 per effect; live steam 2981 kg/h; water evaporated
     6048 kg/h; steam economy 2.03 kg vapour per kg steam.
   The BPE is the Pitzer water activity at each effect's outlet molality.  It
   can be held against measured vapour pressures INSIDE the window: Perry's
@@ -47,7 +47,9 @@ the window of the heat-of-dilution fit
   partial pressure of water over NaOH solutions; read at each effect's
   pressure and wt % (log-pressure interpolated in 1/T and in concentration;
   about 0.3 K uncertainty) it gives BPE 3.25 / 3.79 / 4.88 K against the
-  engine's 3.57 / 4.07 / 5.08 K (+0.3, +0.3, +0.2 K).
+  engine's 3.48 / 4.00 / 5.02 K (+0.2, +0.2, +0.1 K).  The engine solves
+  the exact relation a_w Psat(T) = Psat(T - BPE) (C377); the linearised form
+  it replaced gave 3.57 / 4.07 / 5.08 K.
 
   WHERE THE HEAT OF DILUTION ENTERS EACH EFFECT.  The unit's duty is the heat
   the chest gives up condensing, F_chest [h(chest) - h(condensate)], and the

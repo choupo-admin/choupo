@@ -13,7 +13,10 @@
    Na-Cl.dat) + A_phi(T) curated against their Table II -> BPE 5.06 K.
    beta0(T) has a MAXIMUM near 150 C (their Fig 4): the linear slope
    overshoots where the real curve has already bent over.  The lesson:
-   a first derivative is not a function -- validity windows are data. */
+   a first derivative is not a function -- validity windows are data.
+   (C377, 2026-11-12: the three figures above were read on the linearised
+   rise; the exact relation a_w Psat(T) = Psat(T - BPE) gives 4.88 K for the
+   same surface.) */
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
 units
 (

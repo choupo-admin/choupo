@@ -8,7 +8,7 @@ stream  saturatedSteam130C     F                0.0125           1e-4
 stream  vapour                 F                0.00742485456904 1e-4
 kpi     evap                   A                20               1e-4
 kpi     evap                   A_m2             20               1e-4
-kpi     evap                   BPE              5.04671954326    1e-4
+kpi     evap                   BPE              4.74289696456    1e-4
 kpi     evap                   F_conc           0.0206862565421  1e-4
 kpi     evap                   F_conc_kmol_h    74.4705235515    1e-4
 kpi     evap                   F_conc_mass      0.536902744939   1e-4
@@ -21,10 +21,10 @@ kpi     evap                   F_steam_kg_h     810.675          1e-4
 kpi     evap                   F_vap            0.00742485456904 1e-4
 kpi     evap                   F_vap_kmol_h     26.7294764485    1e-4
 kpi     evap                   F_vap_mass       0.133758755061   1e-4
-kpi     evap                   P                152225.343943    1e-4
+kpi     evap                   P                153810.197907    1e-4
 kpi     evap                   Q_dilution_kW    10.105524598     1e-4
 kpi     evap                   T_boil           389.038999625    1e-4
-kpi     evap                   T_sat_pure       383.992280082    1e-4
+kpi     evap                   T_sat_pure       384.296102661    1e-4
 kpi     evap                   T_steam          401.6288333      1e-4
 kpi     evap                   U                2000             1e-4
 kpi     evap                   U_W_m2_K         2000             1e-4
