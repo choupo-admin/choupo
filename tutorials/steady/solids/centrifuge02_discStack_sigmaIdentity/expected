@@ -1,0 +1,73 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  A DECLARED ILLUSTRATION (C361 slice 4).  NO PRINTED OR MEASURED RESULT
+#  HOLDS THIS CASE: a search of the literature folder found no worked
+#  example of a disc-stack centrifuge (see system/controlDict).
+#
+#  THE TWO ROWS BELOW ARE IDENTITIES, not validation: the printed formula
+#  (de Haan, Eral & Schuur 2nd ed. eq. 9.52, p. 311) evaluated by hand in
+#  the case header with the same inputs, against the engine's own number.
+#  They check the arithmetic of the equation as implemented, not the
+#  equation against a machine.
+#
+#      quantity                  by hand      Choupo        gap      row
+#      Sigma [m2]                9405.03      9405.0258     0.00 %   identity (hand: 9405.025845)
+#      cut size d50 [um]         0.37543      0.375433      0.00 %   identity (same mu, Q, rho)
+#
+#  NOT ANCHORED, the unit's own: the split (80.5 % of the solids to the
+#  sediment) rests on a DECLARED size distribution, a DECLARED sediment
+#  solids fraction and a grade curve DERIVED here (no source prints one).
+# =============================================================================
+kpi     stack                  sigma_m2         9405.03          1e-5     anchor
+kpi     stack                  cutSize_d50_um   0.37543          1e-4     anchor
+stream  centrate               F                0.146454797423   1e-4
+stream  centrate               T                298.15           1e-4
+stream  feed                   F                0.153489194444   1e-4
+stream  feed                   T                298.15           1e-4
+stream  sediment               F                0.00703439702099 1e-4
+stream  sediment               T                298.15           1e-4
+kpi     stack                  Re_cut           0.000250309170206 1e-4
+kpi     stack                  bypass           0                1e-4
+kpi     stack                  centrate_Sv_m2_m3 27464010.1196    1e-4
+kpi     stack                  centrate_d10_um  0.0521091755009  1e-4
+kpi     stack                  centrate_d32_um  0.21846773191    1e-4
+kpi     stack                  centrate_d50_um  0.233936779121   1e-4
+kpi     stack                  centrate_d80_um  0.357989389268   1e-4
+kpi     stack                  centrate_d90_um  0.423077648235   1e-4
+kpi     stack                  centrate_solids_kg_s 0.00732128339601 1e-4
+kpi     stack                  d50_um           0.365345351694   1e-4
+kpi     stack                  d50c_um          0.365345351694   1e-4
+kpi     stack                  feed_Sv_m2_m3    11541765.9131    1e-4
+kpi     stack                  feed_d10_um      0.219080169896   1e-4
+kpi     stack                  feed_d32_um      0.519851125484   1e-4
+kpi     stack                  feed_d50_um      0.779611933777   1e-4
+kpi     stack                  feed_d80_um      1.37709895389    1e-4
+kpi     stack                  feed_d90_um      1.78872083333    1e-4
+kpi     stack                  feed_m3_s        0.00278064306724 1e-4
+kpi     stack                  fluidMassClosure 0                1e-4
+kpi     stack                  fluidMassFlow_kg_s 2.75833319708    1e-4
+kpi     stack                  fluidTo_sediment 0.0439641612832  1e-4
+kpi     stack                  gForce_wall      4025.67824939    1e-4
+kpi     stack                  gradeEfficiency_at_d50 0.5              1e-4
+kpi     stack                  imperfection     0.291488627302   1e-4
+kpi     stack                  mu_liquid_Pa_s   0.000889868799082 1e-4
+kpi     stack                  omega_rad_s      628.318530718    1e-4
+kpi     stack                  rho_liquid       996.956281129    1e-4
+kpi     stack                  rho_solid        2710             1e-4
+kpi     stack                  sedimentSolids   0.2              1e-4
+kpi     stack                  sediment_Sv_m2_m3 7696680.67854    1e-4
+kpi     stack                  sediment_d10_um  0.445214895469   1e-4
+kpi     stack                  sediment_d32_um  0.779556831133   1e-4
+kpi     stack                  sediment_d50_um  0.93643479643    1e-4
+kpi     stack                  sediment_d80_um  1.5139041578     1e-4
+kpi     stack                  sediment_d90_um  1.88628408559    1e-4
+kpi     stack                  sediment_solids_kg_s 0.0303169513873  1e-4
+kpi     stack                  sizeMassClosure  0                1e-4
+kpi     stack                  solidsMassFlow_kg_s 0.0376382347833  1e-4
+kpi     stack                  solidsTo_sediment 0.80548281719    1e-4
+kpi     stack                  vWall_cut_m_s    0.000595105983753 1e-4
+boundary global                 H_feeds_kW       -44305.971382    1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -44305.971382    1e-4

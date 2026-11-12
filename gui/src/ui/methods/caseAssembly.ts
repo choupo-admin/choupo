@@ -76,7 +76,7 @@ export const CITES = {
     contains: 'LOG="$CASE_ABS/log.$APP"' },
   registerUnits: { file: MAIN, line: 525,
     contains: "UnitOperation   ::registerBuiltins();" },
-  registerFlash: { file: "src/unitOperations/UnitOperation.cpp", line: 163,
+  registerFlash: { file: "src/unitOperations/UnitOperation.cpp", line: 166,
     contains: 'reg("isothermalFlash"' },
   flowsheetWhere: { file: MAIN, line: 640,
     contains: 'fs::exists("flowsheetDict") ? "flowsheetDict" : "system/flowsheetDict"' },

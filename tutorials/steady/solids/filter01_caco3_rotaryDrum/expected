@@ -1,0 +1,57 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# =============================================================================
+#  THE GEANKOPLIS EXAMPLE 24.2-4 ANCHORS (C361 slice 4), pp. 1089-1090, a
+#  printed worked example (arithmetic on a slurry measured in Example 24.2-1).
+#
+#      quantity                      book        Choupo        gap       row
+#      alpha [m/kg]                  1.225e11    1.22547e11    +0.04 %   anchor (the print's 4 figures)
+#      c_S [kg/m3 filtrate]          308.1       308.107       +0.00 %   anchor
+#      filtrate V/t_c [m3/s]         4.823e-4    4.82294e-4    -0.00 %   anchor
+#      area A [m2]                   6.60        6.6434        +0.66 %   anchor (1.5 %: see below)
+#
+#  THE AREA'S GAP HAS TWO PARTS, both stated, nothing tuned:
+#    * the print itself: Geankoplis's own inputs (mu 0.8937e-3, alpha 1.225e11,
+#      c_S 308.1, f 0.33, t_c 250 s, dp 67.0 kPa) give 6.660 m2 by his eq.
+#      24.2-24, not 6.60 -- the printed answer is 0.9 % below its arithmetic;
+#    * the viscosity: the package's (Vogel, water's record) is 8.889e-4 Pa s
+#      against the book's 8.937e-4, and A scales with sqrt(mu): -0.27 %.
+#  6.660 x sqrt(8.889/8.937) = 6.642 -> Choupo 6.6434.  Against the printed
+#  6.60 the gap is +0.66 %, inside the 1.5 % the two parts span.
+kpi     drum                   alpha_m_kg       1.225e11         1e-3     anchor
+kpi     drum                   cS_kg_m3         308.1            1e-3     anchor
+kpi     drum                   filtrate_m3_s    4.823e-4         1e-3     anchor
+kpi     drum                   area_m2          6.60             1.5e-2   anchor
+# =============================================================================
+stream  cake                   F                0.00973326044667 1e-4
+stream  cake                   T                298.2            1e-4
+stream  filtrate               F                0.0266890924144  1e-4
+stream  filtrate               T                298.2            1e-4
+stream  slurry                 F                0.0364223528611  1e-4
+stream  slurry                 T                298.2            1e-4
+kpi     drum                   B_s_m3           0                1e-4
+kpi     drum                   Kp_s_m6          11349.5827054    1e-4
+kpi     drum                   cS_eq24_2_10_kg_m3 308.106562087    1e-4
+kpi     drum                   cakeLiquor_kg_s  0.1485980001     1e-4
+kpi     drum                   cakePorosity     0.731067068546   1e-4
+kpi     drum                   cakeSolidsPerArea_kg_m2 5.59193627243    1e-4
+kpi     drum                   cakeThickness_mm 7.67271270136    1e-4
+kpi     drum                   componentMassClosure 0                1e-4
+kpi     drum                   cycleTime_s      250              1e-4
+kpi     drum                   filtratePerCycle_m3 0.12057354369    1e-4
+kpi     drum                   filtrationFlux_m_s 7.25974316749e-05 1e-4
+kpi     drum                   filtrationTime_s 82.5             1e-4
+kpi     drum                   formationTimeClosure 3.44505568853e-16 1e-4
+kpi     drum                   liquidMassFlow_kg_s 0.629401999946   1e-4
+kpi     drum                   mediumResistance_1_m 0                1e-4
+kpi     drum                   mu_liquid_Pa_s   0.00088885596324 1e-4
+kpi     drum                   pressureDrop_Pa  67000            1e-4
+kpi     drum                   rho_liquid       996.910236552    1e-4
+kpi     drum                   rho_solid        2710             1e-4
+kpi     drum                   solidsMassFlow_kg_s 0.1485980001     1e-4
+kpi     drum                   solidsMassFraction 0.191000000117   1e-4
+kpi     drum                   submergence      0.33             1e-4
+boundary global                 H_feeds_kW       -11798.9756263   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -11798.9756263   1e-4

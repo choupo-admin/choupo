@@ -1,0 +1,6 @@
+componentMolarFlows
+{
+    water 1e-9 kmol/h;   // a zero-flow inlet is refused: molarComposition sums to zero
+}
+T 298.15 K;
+P 250000 Pa;

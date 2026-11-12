@@ -1,0 +1,30 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thickener01_settlingTest_talmageFitch / thermoPhysPropDict
+
+  THE SOLID IS CALCITE'S RECORD STANDING IN FOR AN UNNAMED SLURRY.  The
+  settling test (Geankoplis Problem 30.1-11) names no solid; a thickener
+  sized from a settling curve reads only the solid's particle density (for
+  the feed's concentration and the underflow's liquid) and the liquid's
+  density, and does no work.  CaCO3 (rho_p 2710 kg/m3) in water is taken,
+  and the substitution is said here.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( CaCO3 water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

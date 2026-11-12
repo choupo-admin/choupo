@@ -1,0 +1,4 @@
+[panel] treatedInBand: ED.kpi_kappa_dil_out_S_m outside the band [0.374, 0.392] at 0 of 21 written instants (min 0.3831, max 0.3831)
+[panel] brineCycle: shows BRINE.kappa, which this run does NOT publish
+[panel] abnormal: shows BRINE.pH, which this run does NOT publish
+[panel] abnormal: ED.kpi_i_over_ilim never approaches its limit 0.8 (max 0.05958) -- a limit nothing exercises

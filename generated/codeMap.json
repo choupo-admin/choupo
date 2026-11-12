@@ -297,6 +297,9 @@
   "CSTR": [
    "src/unitOperations/reactor/CSTR.H"
   ],
+  "CakeFilter": [
+   "src/unitOperations/solids/CakeFilter.H"
+  ],
   "CashFlowYear": [
    "src/core/ResultRecords.H"
   ],
@@ -1936,6 +1939,9 @@
   "Screen": [
    "src/unitOperations/solids/Screen.H"
   ],
+  "SedimentingCentrifuge": [
+   "src/unitOperations/solids/SedimentingCentrifuge.H"
+  ],
   "Selection": [
    "src/thermo/PricedDensity.H"
   ],
@@ -1983,6 +1989,9 @@
   ],
   "Slot": [
    "src/propertyOps/PropsPlan.H"
+  ],
+  "SlurryState": [
+   "src/unitOperations/solids/SolidLiquidCore.H"
   ],
   "SolidCandidate": [
    "src/thermo/solidEquilibrium/SolidEquilibrium.H"
@@ -2195,6 +2204,9 @@
   ],
   "ThermoResolutionLog": [
    "src/core/ThermoResolution.H"
+  ],
+  "Thickener": [
+   "src/unitOperations/solids/Thickener.H"
   ],
   "ThielePellet": [
    "src/propertyOps/ThielePellet.H"
@@ -3220,6 +3232,18 @@
    {
     "key": "hydrocyclone",
     "type": "Hydrocyclone"
+   },
+   {
+    "key": "cakeFilter",
+    "type": "CakeFilter"
+   },
+   {
+    "key": "thickener",
+    "type": "Thickener"
+   },
+   {
+    "key": "sedimentingCentrifuge",
+    "type": "SedimentingCentrifuge"
    },
    {
     "key": "ionExchanger",

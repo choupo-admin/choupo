@@ -1,0 +1,12 @@
+decision	minimum information	engine quantity (exact published name, unit, file) or gap
+1 is the treated wine in band	treated conductivity against the declared band	ED.kpi_kappa_dil_out_S_m [S/m], trajectory.csv (choupoSemiContinuous, target mode only); band = declared target -> GAP: absolute setpoint not declarable (only targetConductivityRemoval, relative)
+1 (context)	the wine's own conductivity entering	ED.kpi_kappa_dil_in_S_m [S/m], trajectory.csv
+2 how far is the voltage from 2 V per cell pair, how fast is it rising	U / N_cellpairs, its slope, time-to-limit	ED.kpi_U [V], ED.kpi_N_cellpairs [-], trajectory.csv; U/N, slope and time-to-limit NOT published (derived); the rise from FOULING is not modelled (gap); the limit is operator-stated, not in the stack record
+2 (stop signal)	is the current still held	ED.kpi_I [A]; the held current = the solved current (target mode); a current falling below it at the voltage limit cannot occur in the engine today (no voltage limit)
+3 when does the vat finish	untreated volume left, circulation flow, end detection on the inlet conductivity	VAT.volume [m3], VAT.F_out [kmol/s] (workaround A); predicted end = V/Q NOT published; inlet-conductivity fall not modelled
+4 brine conductivity against its drain set point, cycle state	brine conductivity, set point, state word (concentrating / draining / refilling)	NOT published (gap); proxy BRINE.n_<ion>; cycle state does not exist (no event logic)
+5 abnormal: current not reached	held current vs required current	no distinction today (the stack always reaches its target or refuses); gap
+5 abnormal: flow	circulation flow	VAT.F_out [kmol/s] (declared, constant); no flow measurement on the brine side
+5 abnormal: temperature	wine temperature vs membrane limit	VAT.T [K] (constant, isothermal); limit T_max exists on the bench record only
+5 abnormal: brine pH / acid dosing	brine pH	NOT published, citric acid not in the tree (gap)
+5 abnormal: approach to limiting current	i / i_lim	ED.kpi_i_over_ilim [-] (0.06 at the design point: second tier)

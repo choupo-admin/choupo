@@ -197,6 +197,12 @@ const THEORY_DEST: Record<string, string> = {
   classifier: "sec:classifier",
   screen: "sec:screen",
   hydrocyclone: "sec:hydrocyclone",
+  // solid-liquid separation (DEV.md 4c C361 slice 4): the three units, each
+  // its own section; every selectable word opens its own through
+  // SLOT_MODEL_DEST below.
+  cakeFilter: "sec:cakeFilter",
+  thickener: "sec:thickener",
+  sedimentingCentrifuge: "sec:sedimentingCentrifuge",
   // liquid-liquid extraction column: each theoretical stage IS one LL Gibbs-
   // minimisation flash; the cascade just tears the counter-current stages.
   // The dedicated chapter (ch:extractor) extends the LL-flash chapter
@@ -449,6 +455,16 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "hydrocyclone.operation.partition.model:whiten":           { guide: "theory", dest: "sec:partition-whiten" },
   "hydrocyclone.operation.partition.model:rosinRammler":     { guide: "theory", dest: "sec:partition-rr" },
   "hydrocyclone.operation.partition.model:tabulated":        { guide: "theory", dest: "sec:partition-tab" },
+  //  Solid-liquid separation (DEV.md 4c C361 slice 4): the unit's `model` word
+  //  and the washing law of a cake filter.
+  "cakeFilter.model:rotaryDrum":            { guide: "theory", dest: "sec:cakeFilter-rotaryDrum" },
+  "cakeFilter.model:batchPress":            { guide: "theory", dest: "sec:cakeFilter-batchPress" },
+  "cakeFilter.operation.washing.model:displacement": { guide: "theory", dest: "sec:wash-displacement" },
+  "cakeFilter.operation.washing.model:tabulated":    { guide: "theory", dest: "sec:wash-tabulated" },
+  "thickener.model:talmageFitch":           { guide: "theory", dest: "sec:thickener-talmageFitch" },
+  "thickener.model:coeClevenger":           { guide: "theory", dest: "sec:thickener-coeClevenger" },
+  "sedimentingCentrifuge.model:tubularBowl": { guide: "theory", dest: "sec:centrifuge-tubularBowl" },
+  "sedimentingCentrifuge.model:discStack":   { guide: "theory", dest: "sec:centrifuge-discStack" },
 };
 
 // The theory link of a word chosen INSIDE a unit block -- `model

@@ -3446,6 +3446,27 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C369 (Vitor, 2026-11-12, relayed by the cloud session in SESSIONS.md and
+> consistent with what he asked the laptop the same day -- the list of works
+> of C368 came from it).**  Two rulings.  (1) EVERYTHING THAT NEEDS THE
+> LITERATURE IS THE LAPTOP'S: the folder is on this machine and the cloud
+> cannot read it.  Each EduTool branch the cloud prepares carries a table
+> "to check against the source" (one row per equation, constant or number
+> stated from a published work, written from memory and marked unchecked);
+> the laptop checks every row against the file when it reviews the page and
+> corrects it in the integration.  The reviews' open caveats of that kind are
+> the laptop's too: the Chan-Fair liquid-side term, the measured points of
+> Yanagi & Sakata, the Rocha-Bravo-Fair equations, Archer's NaCl values
+> behind the finding that eNRTL is wrong off 25 C.  (2) An exception to C364
+> (one writer): the cloud PREPARES EduTools on branches, GUI and guides
+> only, one at a time, scope agreed with Vitor; the laptop reviews, checks
+> the sources and lands them.  Announced so far: `adsorption-isotherms`
+> (044f9e7571; computes its fits in the page, a declared departure from "no
+> physics in TypeScript", with a proposal for the engine: a concentration
+> basis, a `freundlich` model, a concentration column in the fit) and
+> `electrolyte-models` (7b07476e9c; 25 rows to check); to follow: batch
+> adsorption in a stirred tank, chromatography peaks and resolution.
+
 > **C368 (Vitor, 2026-11-12: "ve se ja temos estes artigos e livros todos ...
 > organiza-me a literatura toda, por pastas, e da nomes intuitivos aos
 > artigos").**  Two parts.  (A) Twenty works checked against the literature
@@ -3486,6 +3507,19 @@ accepts today, and that is a policy call.
 > boiling points (median 462.19 K, 11 articles) and boiling points inside
 > four vapour-liquid studies (463.3-463.9 K) disagree by 1.4 K, and only a
 > reading of the articles can say why.  Branch c367-vp-window.
+> LANDED 2026-11-12 (34d81eaf1): `fitWindow { pressureMax|pressureMin;
+> reason; }` in the curation case; rule: refit up to 200 kPa when the
+> full-range fit is worse than clean AND a point exceeds 2 bar.  It does NOT
+> cure the gate by itself: methylDiEthanolAmine's laboratories disagree by
+> 30 % at one temperature (still severe; Trange now ends at 543 K instead of
+> 738 K), ethylLactate's by 6-10 %, squalane spans 10.8 decades; those three
+> and dimethylSulfoxide are PINNED with reason and remedy (the pin fails on a
+> move of 0.5 points either way).  New origin word `derived` (a value
+> computed from named measured values by a stated method; must carry method
+> and inputs with DOI): dimethylethanolamine Tb = 407.25 K from 406.8 K at
+> 100 kPa and 413.1 K at 120 kPa.  26 golden rows of the two refitted
+> curation cases re-recorded (list in commit 07b4aac7f).  check_tb_antoine
+> green with four pinned.
 
 > **C366 (2026-11-12; a branch prepared by the cloud session before C364 took
 > effect, its scope agreed with Vitor there; the architect's decisions).**

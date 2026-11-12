@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter02_caco3_pressWashing / flowsheetDict
+
+  One press, two inlets (the slurry, the wash water), three outlets (the
+  washed cake, the filtrate, the spent wash).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        press;
+        type        cakeFilter;
+        model       batchPress;
+        inputs      ( slurry washWater );
+        outputs     ( cake filtrate spentWash );
+        operation
+        {
+            pressureDrop            338 kPa;          // Example 24.2-1
+            //  Example 24.2-1, from the t/V vs V line of the laboratory test.
+            specificCakeResistance  [-1 1 0 0 0] 1.863e11;
+            mediumResistance        [0 -1 0 0 0] 10.63e10;
+            wetToDryCakeRatio       2.0;              // Example 24.2-4 (see controlDict)
+            area                    17.46 m2;         // 20 frames x 0.873 m2
+            filtratePerCycle        3.37 m3;          // Example 24.2-2
+            cleaningTime            20 min;           // Example 24.2-3
+            //  "through-washing in the plate-and-frame press": twice the
+            //  cake, half the area, one quarter of the final rate (eq. 24.2-20).
+            washFlowPath            throughWashing;
+            washing
+            {
+                model       displacement;
+            }
+        }
+    }
+);

@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  centrifuge02_discStack_sigmaIdentity / thermoPhysPropDict
+
+  CaCO3 particles (calcite's record, rho_p 2710 kg/m3) in water.  The
+  centrifuge reads the particles' density from their record and the liquid's
+  density and viscosity (Vogel, water's record) from this package; it does
+  no work and reads no enthalpy.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( CaCO3 water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { model Vogel; }
+    }
+}

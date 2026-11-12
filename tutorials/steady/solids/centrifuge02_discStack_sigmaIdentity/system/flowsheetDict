@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  centrifuge02_discStack_sigmaIdentity / flowsheetDict
+
+  One disc-stack clarifier: 100 disc spaces, half angle 40 deg, 6000 rev/min.
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S SIZE AXIS: a sqrt-2 series from 4 um down (0.177 um is the
+//  pan's top edge), fine enough to see the grade curve below 0.6 um.
+sizeGrid
+{
+    xMax      4 um;
+    ratio     1.41421356;
+    nClasses  10;
+}
+
+units
+(
+    {
+        name        stack;
+        type        sedimentingCentrifuge;
+        model       discStack;
+        in          feed;
+        outputs     ( sediment centrate );
+        operation
+        {
+            discSpaces      100;           // n
+            outerRadius     0.10 m;        // r_2
+            innerRadius     0.04 m;        // r_1
+            discHalfAngle   40 deg;        // theta
+            speed           6000 rpm;      // N
+            //  DECLARED: the sludge leaves at 20 % solids by mass.
+            sedimentSolids  0.2;
+        }
+    }
+);
