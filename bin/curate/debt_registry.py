@@ -215,10 +215,6 @@ NC_COMPILATION = {
 NO_GRANT_CASE_LOCAL = {
     "tutorials/plant/greenAmmonia03_basicDesign/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/plant/greenAmmonia02_feasibility150bar/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/plant/greenAmmonia02_feasibility50bar/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/plant/greenAmmoniaPEQ_baseCase/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
 }
