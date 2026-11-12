@@ -3536,8 +3536,27 @@ accepts today, and that is a policy call.
 > before the lesson -- a disturbance is first a second run of a varied
 > case, the simplest thing that works, and a mid-run `setParameter` on the
 > batch electrodialysis is built only if the lesson shows it is missed.
-> Still open with him: the bounded exception that lets the GUI write
-> `panelDict` (explained to him again; no answer yet).
+> THE GUI-WRITES QUESTION: left to the architect by Vitor (2026-11-12: "ve
+> tu qual e a forma mais util e escalavel de fazer isso").  DECIDED, as a
+> rule that scales rather than as one exception for one file: the GUI may
+> write a case file only if that file is a VIEW FILE -- read by the engine
+> strictly after the solve, never by anything that computes -- and every
+> view file is one row of ONE registry (file name, the reader that consumes
+> it, the gate arm proving a run with and without it is byte-identical
+> outside its own block).  Today the registry has two rows: the `.cho`
+> marker and `system/panelDict`.  A future view file (a saved flowsheet
+> arrangement, a report layout) enters by adding a row and its proof, not
+> by a new argument.  Mechanics, the same for every row: edits live in a
+> browser working copy; ONE explicit "Save to case" writes the file where a
+> local bridge exists, and "Download" hands it over where none does (the
+> public site); the bridge's write endpoint accepts registry rows only (it
+> accepts any path inside a case today: this NARROWS it) and a gate holds
+> both the endpoint's refusal and each row's proof.  A locked file is drawn
+> as written; the GUI can set a lock and never remove one.  The flowsheet,
+> the thermodynamics, the streams and every dict a solver reads stay
+> outside the registry for good: that is the line that keeps the GUI a
+> runner and visualiser.  Built in slice S4, with the credo amended in the
+> same commit; S2 (read-only drawing) and S3 (the draft) need none of it.
 
 > **C370 (2026-11-12; three proposals the cloud says Vitor left to the two
 > sessions' judgement; the architect's answers).**  (a) SOLIDS, simple
