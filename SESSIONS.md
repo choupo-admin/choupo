@@ -32,7 +32,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c373-species-campaign (general running) | `data/standards/{species,chemistry,components}`, `metadata/aqueous-navigation.dat`, `data/curation/batches/`, the guides' aqueous-family sections | 2026-11-12 |
+| fix/ledger-rb-po (general running) | `src/unitOperations/distillation/`, `src/thermo/PairAudit.H`, the distillation cases' headers, their guide sections | 2026-11-12 |
+| c371-panel-s1 (general running) | `src/postProcessing/panel/`, the time-integrated binaries' mains, `tutorials/batch/electrodialysis/edbatch01_constant_current` | 2026-11-12 |
 | (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
 
 ## Cloud session
