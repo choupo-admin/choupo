@@ -3567,6 +3567,29 @@ accepts today, and that is a policy call.
 > Residual exposure outside every pin, named there: the compilation mirrors
 > of those five cases, nox01's adopted N/NH, four methylAcetate mirrors,
 > thirteen case-local DECHEMA pair records.
+> (6) RE-RECORD, authorised by Vitor ("Autorizo, grava nos tres passos"),
+> branch `c335-rerecord`.  Importer fix first: `bin/choupo-import`'s golden
+> check read `energyClosures` as a dict (it is a list keyed by unit) and
+> crashed; fixed, basis01_two_unit_chain re-imported, no row moved.  Step 1:
+> ignition01_h2o2, ignition02_h2air_slack, nox01_zeldovich_postflame,
+> claus01_thermal_stage, gibbs06_h2_flame_radicals -- 40 rows, each the
+> listed value.  Step 2: greenAmmonia02_feasibility150bar (257) and _50bar
+> (243) -- 500 rows, each the listed value; plant first-law residual 1.7532
+> kW and 0.0817 kW, unchanged.  In both steps only the listed rows were
+> re-pinned (rows --record moved inside their own tolerance were put back).
+> Import route, as for letdown01 in C112: the golden set aside during the
+> import (kept as its utility rows at a non-refusing tolerance, because the
+> importer reads its utility closure from them), restored, then --record.
+> Step 3 NOT LANDED: greenAmmonia03_basicDesign matched its 497 listed rows,
+> but greenAmmoniaPEQ_baseCase's record added two rows nobody listed
+> (`layout bundCapacity:tankFarm: value 20672 / limit 23055.33`), the
+> announcement of the listed verdict flip `bund:tankFarm adequate ->
+> inadequate` (the corrected NH3 liquid volume raises the tank farm's
+> required bund volume 20492.6 -> 23055.3 m3, +12.5 %); the working tree
+> was restored and both pins stay.  Pins now: NC_COMPILATION 7,
+> SOURCE_LICENCE 3, NO_GRANT_CASE_LOCAL 2 (greenAmmonia03, PEQ); were
+> 20 / 4 / 25 before C335.  Still outside every pin: nox01's adopted N/NH,
+> four methylAcetate mirrors, thirteen case-local DECHEMA pair records.
 
 > **C333 (Vitor, 2026-11-12, in the cloud session, after reading where the
 > plan leaves Choupo short of breadth-first simulators: "equacoes de estado
