@@ -38,6 +38,7 @@ License
 #include "DistillationColumn.H"
 #include "TrayHydraulics.H"
 #include "TrayEfficiency.H"
+#include "PackingRBF.H"
 #include "core/Constants.H"
 #include "thermo/transport/WilkeChang.H"
 #include "solver/NewtonRaphson.H"
@@ -4914,6 +4915,7 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
                                          int verbosity)
 {
     auto operDict = dict->subDict("operation");
+    if (operDict->found("packing")) return solveTotalRefluxPacked(dict, thermo, verbosity);
     const std::string unit = dict->name();
     const std::size_t n = thermo.n();
 
@@ -5002,14 +5004,20 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
     bool entrainment = false;
     scalar muLdecl = 0.0;
     TrayEfficiency::Geometry tg;
+    TrayEfficiency::Model effModel = TrayEfficiency::Model::AIChE;
+    std::string effModelName = "AIChE";
     if (computedE)
     {
         auto ed = operDict->subDict("efficiency");
         const std::string model = ed->lookupWordOrDefault("model", "AIChE");
-        if (model != "AIChE")
+        if (model == "AIChE")            effModel = TrayEfficiency::Model::AIChE;
+        else if (model == "ChanFair")    effModel = TrayEfficiency::Model::ChanFair;
+        else if (model == "SyedaChuang") effModel = TrayEfficiency::Model::SyedaChuang;
+        else
             throw std::runtime_error("DistillationColumn '" + unit + "': "
                 + registryRefusal::message("tray efficiency model", model,
-                    {"AIChE"}, "Accepted"));
+                    {"AIChE", "ChanFair", "SyedaChuang"}, "Accepted"));
+        effModelName = model;
         if (n != 2)
             throw std::runtime_error("DistillationColumn '" + unit + "': the AIChE"
                 " tray efficiency is implemented for a BINARY (one key pair, one"
@@ -5043,6 +5051,12 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         tg.weirHeight = geo.weirHeight;
         tg.flowPath   = TrayEfficiency::flowPathLength(geo.diameter, lw);
         tg.flowWidth  = 0.5 * (geo.diameter + lw);
+        tg.towerArea  = A_T;
+        tg.weirLength = lw;
+        tg.holeDiameter = geo.holeDiameter;
+        tg.holeAreaFrac = geo.holeAreaFrac;
+        if (effModel == TrayEfficiency::Model::SyedaChuang)
+            tg.holePitch = ed->lookupScalar("holePitch", Dims::length);
     }
 
     const ColumnEnthalpy hs = columnEnthalpySurface(thermo, P, {{350.0, xN}});
@@ -5153,11 +5167,20 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         st.vapourVolFlow = V[j] * vapourMW(y[j]) / rhoV;
         st.liquidVolFlow = L[j] * MWL / rhoL;
         st.rhoV   = rhoV;
+        st.rhoL   = rhoL;
         st.ScV    = muV / (rhoV * DV);
+        st.DV     = DV;
         st.DL     = DL;
+        st.muL    = muL;
+        st.sigma  = thermo.hasSurfaceTension() ? thermo.surfaceTension(T[j], x[j]) : geo.sigma;
+        st.m      = m;
         st.lambda = m * V[j] / L[j];
+        //  Molar densities: c_G = rho_V/M_V, c_L = rho_L/M_L.
+        st.cGoverCL = (rhoV / vapourMW(y[j])) / (rhoL / MWL);
+        st.GoverL   = (V[j] * vapourMW(y[j])) / (L[j] * MWL);
         st.floodApproach = Phi;
-        return TrayEfficiency::evaluate(tg, st);
+        st.entrainment   = entrainment;
+        return TrayEfficiency::evaluate(effModel, tg, st);
     };
 
     int passes = 0;
@@ -5168,7 +5191,7 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         for (passes = 1; passes <= 100; ++passes)
         {
             std::vector<scalar> Phi(N, -1.0);
-            if (entrainment)
+            if (entrainment || effModel == TrayEfficiency::Model::ChanFair)
             {
                 std::vector<scalar> Vt(V);
                 Vt[N-1] = 0.0;
@@ -5233,8 +5256,12 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         rep << thermo.comp(i).name() << "=" << std::setprecision(5) << xN[i] << " ";
     rep << "; boil-up " << std::setprecision(6) << V[N-1] * 3600.0 << " kmol/h"
               << (hasF ? " (from the declared F-factor)" : "") << "\n"
-              << "  Efficiency: " << (computedE ? "COMPUTED, AIChE (Treybal 3ed Eqs 6.38, 6.51-6.64)"
-                                                 : "declared E_MV")
+              << "  Efficiency: " << (!computedE ? std::string("declared E_MV")
+                    : effModel == TrayEfficiency::Model::AIChE
+                        ? std::string("COMPUTED, AIChE (Treybal 3ed Eqs 6.38, 6.51-6.64)")
+                    : effModel == TrayEfficiency::Model::ChanFair
+                        ? std::string("COMPUTED, Chan & Fair 1984 (Eqs 9-26) + Barker-Self eddy diffusion")
+                        : std::string("COMPUTED, Syeda, Afacan & Chuang 2007 (Eqs 1-35) + Garcia-Fair eddy diffusion"))
               << (computedE && entrainment ? " + Colburn/Fair entrainment (Perry 9ed 14-98, 14-99 median)" : "")
               << "\n\n    stage     T [K]   x(" << thermo.comp(lk).name() << ")   y("
               << thermo.comp(lk).name() << ")    V [kmol/h]   E_MV\n";
@@ -5250,10 +5277,19 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
               << "\n  Q_reboiler = " << QR << " kW   Q_condenser = " << QC << " kW\n"
               << "  Overall tray efficiency (Fenske slope over the trays, alpha = "
               << alphaMean << "): " << Eo << "\n";
-    if (computedE)
+    if (computedE && effModel == TrayEfficiency::Model::AIChE)
         rep << "  NOT SEEN by the AIChE correlations: hole area, hole diameter, tray"
                      " spacing; open area acts only through the hydraulics (flood approach"
                      " -> entrainment, pressure drop).  Weeping is not modelled.\n";
+    if (computedE && effModel == TrayEfficiency::Model::ChanFair)
+        rep << "  Chan & Fair: open area acts only through the approach to flood f;"
+                     " fitted (1984, Table I) on a data bank that INCLUDES the FRI trays of"
+                     " Yanagi & Sakata.  Weeping is not modelled.\n";
+    if (computedE && effModel == TrayEfficiency::Model::SyedaChuang)
+        rep << "  Syeda-Afacan-Chuang: sees the hole velocity, the open area and the"
+                     " hole pitch; its constant C'' = 0.16 was FITTED to FRI data that include"
+                     " Yanagi & Sakata (in-sample).  Eq 28 read WITH t_GLB, Eq 33 with h_w^0.5"
+                     " (see TrayEfficiency.H).  Weeping is not modelled.\n";
     rep << "=======================================================================\n\n";
     std::cout << rep.str();
     }
@@ -5308,6 +5344,21 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
             kpis_["E_MV_dry_mean"] = sDry / nt;
             kpis_["Pe_mean"]       = sPe / nt;
             if (entrainment) kpis_["psi_mean"] = sPsi / nt;
+            if (effModel == TrayEfficiency::Model::SyedaChuang)
+            {
+                scalar sF = 0.0, sJ = 0.0, nOut = 0.0;
+                for (std::size_t j = 0; j + 1 < N; ++j)
+                { sF += eff[j].FSB; sJ += eff[j].fj; nOut += eff[j].ShOutOfRange ? 1.0 : 0.0; }
+                kpis_["FSB_mean"] = sF / nt;
+                kpis_["fj_mean"]  = sJ / nt;
+                kpis_["trays_ShBelowPe40"] = nOut;
+            }
+            if (effModel == TrayEfficiency::Model::ChanFair)
+            {
+                scalar nPlug = 0.0;
+                for (std::size_t j = 0; j + 1 < N; ++j) nPlug += eff[j].plugFlow ? 1.0 : 0.0;
+                kpis_["trays_plugFlowLiquid"] = nPlug;
+            }
         }
     }
 
@@ -5357,6 +5408,324 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         hydraulicsPass(operDict, unit, thermo, P, T, x, y, Vt, L, 0, verbosity);
     }
     return bubbleOk ? 0 : 1;
+}
+
+
+// ===========================================================================
+//   TOTAL REFLUX OVER A PACKED BED (`model totalReflux;` + `packing {}`).
+//
+//   The same closed column as above, with the trays replaced by a bed of
+//   structured packing of height H.  On every cross-section of the bed the
+//   component balances give y = x (total reflux), so the vapour composition
+//   obeys the transfer-unit equation
+//
+//       dy/dz = (y*(x = y) - y) / H_OG(z)
+//
+//   with y* the vapour in equilibrium with the liquid crossing the same
+//   section and H_OG from the Rocha-Bravo-Fair model (PackingRBF.H).  The
+//   pressure falls up the bed by the bed's own pressure drop, and the TOP
+//   pressure is the specification (a test report gives the head pressure),
+//   so the bottom pressure is found by a secant on the march.  The vapour
+//   molar flow is taken constant up the bed (stated; the two xylenes have
+//   latent heats within a few per cent); the reboiler is an equilibrium
+//   stage below the bed.  The DOF argument is the one above: boil-up +
+//   reboiler liquid.
+//
+//   What a test report computes is published as the KPI `HETP`: the bed
+//   height over the Fenske stages between the liquid at the top of the bed
+//   (the reflux) and the liquid leaving its bottom, alpha the geometric mean
+//   of the two ends (Schulz et al. 2018, section 2).
+// ===========================================================================
+int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
+                                               const ThermoPackage& thermo,
+                                               int verbosity)
+{
+    auto operDict = dict->subDict("operation");
+    const std::string unit = dict->name();
+    const std::size_t n = thermo.n();
+    for (const char* k : {"feed", "inputStreams", "reaction"})
+        if (dict->found(k))
+            throw std::runtime_error("DistillationColumn '" + unit + "': a packed"
+                " column at total reflux has no feed and no products (found `"
+                + std::string(k) + "`).");
+    for (const char* k : {"nStages", "feeds", "sideDraws", "refluxRatio", "distillateRate",
+                          "feedStage", "murphreeEfficiency", "efficiency", "hydraulics"})
+        if (operDict->found(k))
+            throw std::runtime_error("DistillationColumn '" + unit + "': `" + k
+                + "` belongs to a TRAY column; a packed bed is declared by"
+                  " `packing {}` alone.");
+    if (n != 2)
+        throw std::runtime_error("DistillationColumn '" + unit + "': the packed"
+            " total-reflux bed is implemented for a BINARY.");
+    const scalar Ptop = operDict->lookupScalar("P", Dims::pressure);
+    if (readCondenserType(operDict, unit, verbosity) != CondenserType::total)
+        throw std::runtime_error("DistillationColumn '" + unit + "': total reflux"
+            " is modelled with a TOTAL condenser.");
+
+    auto tr = operDict->subDict("totalReflux");
+    if (tr->lookupWordOrDefault("specifiedAt", "reboiler") != "reboiler")
+        throw std::runtime_error("DistillationColumn '" + unit + "': "
+            + registryRefusal::message("total-reflux composition location",
+                tr->lookupWordOrDefault("specifiedAt", "reboiler"), {"reboiler"}, "Accepted"));
+    sVector xN(n, 0.0);
+    {
+        auto comp = tr->subDict("composition");
+        scalar s = 0.0;
+        for (const auto& key : comp->keys())
+        { const std::size_t i = thermo.indexOf(key); xN[i] = comp->lookupScalar(key); s += xN[i]; }
+        if (!(s > 0.0))
+            throw std::runtime_error("DistillationColumn '" + unit + "': totalReflux.composition is empty");
+        for (auto& v : xN) v /= s;
+    }
+    if (!tr->found("fFactor") || tr->found("boilupRate"))
+        throw std::runtime_error("DistillationColumn '" + unit + "': a packed bed"
+            " takes the boil-up as `fFactor` (the reboiler vapour on the tower"
+            " area), and only that.");
+    const scalar Fspec = tr->lookupScalar("fFactor");
+
+    auto pk = operDict->subDict("packing");
+    const std::string pmodel = pk->lookupWordOrDefault("model", "RochaBravoFair");
+    if (pmodel != "RochaBravoFair")
+        throw std::runtime_error("DistillationColumn '" + unit + "': "
+            + registryRefusal::message("packing model", pmodel, {"RochaBravoFair"}, "Accepted"));
+    const scalar Dcol = pk->lookupScalar("diameter", Dims::length);
+    const scalar Hbed = pk->lookupScalar("height", Dims::length);
+    PackingRBF::Geometry pg;
+    pg.ap    = pk->lookupScalar("specificArea");
+    pg.eps   = pk->lookupScalar("voidFraction");
+    pg.theta = pk->lookupScalar("corrugationAngle") * constant::pi / 180.0;
+    pg.S     = pk->lookupScalar("corrugationSide", Dims::length);
+    const std::string surf = pk->lookupWordOrDefault("surface", "gauze");
+    if (surf != "gauze" && surf != "sheetMetal")
+        throw std::runtime_error("DistillationColumn '" + unit + "': "
+            + registryRefusal::message("packing surface", surf, {"gauze", "sheetMetal"}, "Accepted"));
+    pg.gauze = (surf == "gauze");
+    if (!pg.gauze) pg.FSE = pk->lookupScalar("surfaceEnhancement");
+    const std::size_t lk = pk->found("lightKey") ? thermo.indexOf(pk->lookupWord("lightKey")) : 0;
+    const std::size_t hk = 1 - lk;
+    const scalar muLdecl = pk->found("liquidViscosity")
+        ? pk->lookupScalar("liquidViscosity", Dims::viscosity) : 0.0;
+    if (!(muLdecl > 0.0) && !thermo.hasLiquidViscosity())
+        throw std::runtime_error("DistillationColumn '" + unit + "': the packing"
+            " model needs a liquid viscosity -- a liquidViscosity model in the"
+            " package or a measured `liquidViscosity <Pa s>;` in `packing {}`.");
+    if (!thermo.hasTransport() || !thermo.hasDiffusivity() || !thermo.hasSurfaceTension())
+        throw std::runtime_error("DistillationColumn '" + unit + "': the packing"
+            " model needs the vapour viscosity and diffusivity and the surface"
+            " tension from the package (`transport {}`).");
+    const int nSeg = static_cast<int>(pk->lookupScalarOrDefault("segments", 200.0));
+    const scalar A_T = 0.25 * constant::pi * Dcol * Dcol;
+    const WilkeChang wilkeChang(nullptr);
+
+    auto bubbleAt = [&](const sVector& xl, scalar P, scalar Tg)
+    { bool ok = true; return bubbleTWithItsVapour(thermo, xl, P, Tg, 1.0e-12, &ok); };
+    auto eqVap = [&](const sVector& xl, scalar T, scalar P)
+    { return normalisedVapour(stageVapourK(thermo, T, P, xl), xl); };
+    auto MWof = [&](const sVector& z)
+    { scalar m = 0.0; for (std::size_t i = 0; i < n; ++i) m += z[i] * thermo.comp(i).MW(); return m; };
+    auto composition = [&](scalar ylk)
+    { sVector v(n, 0.0); v[lk] = ylk; v[hk] = 1.0 - ylk; return v; };
+
+    struct Point { scalar z, y, P, T, ystar, HOG, HETP, dP, hL, beta, F, uL, lambda, flood; };
+    std::vector<Point> prof;
+    scalar Vmol = 0.0, TN = 0.0;
+
+    //  Local state of the bed at liquid = vapour composition y.
+    auto local = [&](scalar y, scalar P, scalar Tg, Point& p)
+    {
+        const sVector x = composition(y);
+        p.y = y; p.P = P;
+        p.T = bubbleAt(x, P, Tg);
+        const sVector ys = eqVap(x, p.T, P);
+        p.ystar = ys[lk];
+        //  lambda = m G/L = m at total reflux; m from the local slope.
+        const scalar h = std::min({1.0e-4, 0.5 * y, 0.5 * (1.0 - y)});
+        auto ystarOf = [&](scalar xv) { const sVector xx = composition(xv);
+            return eqVap(xx, bubbleAt(xx, P, p.T), P)[lk]; };
+        p.lambda = (h > 0.0) ? (ystarOf(y + h) - ystarOf(y - h)) / (2.0 * h) : 1.0;
+        const sVector yv = composition(y);
+        const scalar rhoG = thermo.density(p.T, P, yv, DensityPhase::Vapour);
+        const scalar rhoL = TrayHydraulics::liquidDensity(thermo, p.T, P, x).rho;
+        const scalar MV = MWof(yv), ML = MWof(x);
+        PackingRBF::State st;
+        st.UGs = Vmol * MV / (rhoG * A_T);
+        st.ULs = Vmol * ML / (rhoL * A_T);
+        st.rhoG = rhoG; st.rhoL = rhoL;
+        st.muG = thermo.viscosityGas(p.T, yv);
+        st.muL = (muLdecl > 0.0) ? muLdecl : thermo.viscosityLiquid(p.T, x);
+        st.sigma = thermo.surfaceTension(p.T, x);
+        st.DG = thermo.diffusivityGas(p.T, P, 0, 1);
+        const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), p.T, st.muL);
+        const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), p.T, st.muL);
+        st.DL = x[0] * D10 + x[1] * D01;
+        st.lambda = p.lambda;
+        const PackingRBF::Result r = PackingRBF::evaluate(pg, st);
+        if (r.flooded)
+        {
+            std::ostringstream o;
+            o << "DistillationColumn '" << unit << "': the packed bed FLOODS (no"
+                 " Rocha-Bravo-Fair holdup below " << pg.dPflood << " Pa/m) at F = "
+              << st.UGs * std::sqrt(rhoG) << " (m/s)(kg/m3)^0.5, P = " << P * 1.0e-5
+              << " bar.";
+            throw std::runtime_error(o.str());
+        }
+        p.HOG = r.HOG; p.HETP = r.HETP; p.dP = r.dP; p.hL = r.hL;
+        p.beta = r.ae / pg.ap;
+        p.F = st.UGs * std::sqrt(rhoG);
+        p.uL = st.ULs * 3600.0;                 // m3/(m2 h)
+        p.flood = r.dP / pg.dPflood;
+    };
+
+    //  One march from the reboiler up the bed, given the bottom pressure.
+    auto march = [&](scalar Pb)
+    {
+        prof.clear();
+        TN = bubbleAt(xN, Pb, 350.0);
+        const sVector yb = eqVap(xN, TN, Pb);
+        const scalar rhoV = thermo.density(TN, Pb, yb, DensityPhase::Vapour);
+        Vmol = Fspec * A_T * std::sqrt(rhoV) / MWof(yb);
+        const scalar dz = Hbed / nSeg;
+        scalar y = yb[lk], P = Pb, T = TN;
+        for (int k = 0; k <= nSeg; ++k)
+        {
+            Point p; p.z = k * dz;
+            local(y, P, T, p);
+            prof.push_back(p);
+            if (k == nSeg) break;
+            //  Midpoint (RK2) on (y, P).
+            Point q; q.z = p.z + 0.5 * dz;
+            const scalar ym = y + 0.5 * dz * (p.ystar - y) / p.HOG;
+            const scalar Pm = P - 0.5 * dz * p.dP;
+            local(ym, Pm, p.T, q);
+            y += dz * (q.ystar - ym) / q.HOG;
+            P -= dz * q.dP;
+            T = q.T;
+        }
+        return prof.back().P;
+    };
+
+    //  The bottom pressure is found by BISECTION between the declared top
+    //  pressure and the top plus the flooding drop over the whole bed.  The
+    //  top pressure a march reaches rises with the bottom one; a trial whose
+    //  bed floods is a bottom pressure that is too LOW (lower pressure, faster
+    //  vapour), so it is bracketed rather than abandoned.  A secant could step
+    //  below the declared top and flood a trial bed the real one never sees.
+    scalar Plo = Ptop, Phi = Ptop + pg.dPflood * Hbed;
+    auto topGap = [&](scalar Pb, bool& flooded)
+    {
+        flooded = false;
+        try { return march(Pb) - Ptop; }
+        catch (const std::exception&) { flooded = true; return -1.0; }
+    };
+    bool fl = false;
+    if (topGap(Phi, fl) < 0.0 || fl)
+        throw std::runtime_error("DistillationColumn '" + unit + "': the packed bed"
+            " floods at this boil-up even with the flooding pressure drop over its"
+            " whole height -- no steady bed exists.");
+    int it = 0;
+    scalar g1 = 1.0;
+    for (; it < 80; ++it)
+    {
+        const scalar Pm = 0.5 * (Plo + Phi);
+        g1 = topGap(Pm, fl);
+        if (g1 < 0.0 || fl) Plo = Pm; else Phi = Pm;
+        if (!fl && std::abs(g1) <= 1.0e-9 * Ptop) break;
+        if (Phi - Plo <= 1.0e-10 * Ptop) break;
+    }
+    g1 = topGap(Phi, fl);                   // publish a converged, unflooded bed
+    if (fl || std::abs(g1) > 1.0e-6 * Ptop)
+        throw std::runtime_error("DistillationColumn '" + unit + "': the bed's"
+            " bottom pressure did not settle so that its top is at the declared P.");
+
+    //  ---- What the test report computes --------------------------------
+    const Point& top = prof.back();
+    const Point& bot = prof.front();
+    auto alphaAt = [&](const Point& p)
+    { const sVector K = stageVapourK(thermo, p.T, p.P, composition(p.y)); return K[lk] / K[hk]; };
+    const scalar alpha = std::sqrt(alphaAt(top) * alphaAt(bot));
+    const scalar xT = top.y, xB = bot.y;      // reflux; liquid leaving the bed
+    const scalar Nt = std::log((xT / (1.0 - xT)) / (xB / (1.0 - xB))) / std::log(alpha);
+    const scalar HETP = Hbed / Nt;
+    scalar sHETP = 0.0, sdP = 0.0, sBeta = 0.0, sHL = 0.0, sUL = 0.0, maxFlood = 0.0;
+    for (const auto& p : prof)
+    { sHETP += p.HETP; sdP += p.dP; sBeta += p.beta; sHL += p.hL; sUL += p.uL; maxFlood = std::max(maxFlood, p.flood); }
+    const scalar np = static_cast<scalar>(prof.size());
+
+    //  Duties: constant molar boil-up through the bed, total condenser.
+    const sVector yb = composition(bot.y);
+    const ColumnEnthalpy hs = columnEnthalpySurface(thermo, bot.P, {{TN, xN}});
+    const scalar QR = Vmol * (hs.hV(yb, TN) - hs.hL(yb, bubbleAt(yb, bot.P, TN)));
+
+    std::ostringstream rep;
+    rep << "\n=============  DistillationColumn (total reflux, packed bed)  =============\n"
+        << "  Rocha-Bravo-Fair (IECR 32 (1993) 641; 35 (1996) 1660), "
+        << (pg.gauze ? "gauze area (1996 Eq 14)" : "sheet-metal area (1996 Eq 10)") << "\n"
+        << std::fixed << std::setprecision(4)
+        << "  bed " << Hbed << " m, D " << Dcol << " m, a_p " << pg.ap << ", eps " << pg.eps
+        << ", S " << pg.S * 1000.0 << " mm, theta " << pg.theta * 180.0 / constant::pi << " deg\n"
+        << "  top " << top.P * 1.0e-5 << " bar (declared), bottom " << bot.P * 1.0e-5
+        << " bar (" << it + 1 << " marches)\n\n"
+        << "      z [m]    P [mbar]   T [K]    y(" << thermo.comp(lk).name()
+        << ")   F      u_L[m/h]  HETP[m]  dP[mbar/m]  a_e/a_p\n";
+    for (std::size_t k = 0; k < prof.size(); k += std::max<std::size_t>(1, prof.size() / 10))
+    {
+        const auto& p = prof[k];
+        rep << "    " << std::setw(7) << std::setprecision(3) << p.z << "  "
+            << std::setw(9) << std::setprecision(3) << p.P * 1.0e-2 << "  "
+            << std::setw(7) << std::setprecision(2) << p.T << "  "
+            << std::setw(8) << std::setprecision(5) << p.y << "  "
+            << std::setw(6) << std::setprecision(3) << p.F << "  "
+            << std::setw(7) << std::setprecision(3) << p.uL << "  "
+            << std::setw(7) << std::setprecision(4) << p.HETP << "  "
+            << std::setw(8) << std::setprecision(3) << p.dP * 0.01 << "  "
+            << std::setw(7) << std::setprecision(3) << p.beta << "\n";
+    }
+    rep << std::defaultfloat << std::setprecision(6)
+        << "\n  HETP (bed height / Fenske stages, alpha " << alpha << "): " << HETP << " m\n"
+        << "  Pressure drop " << (bot.P - top.P) * 1.0e-2 / Hbed << " mbar/m; highest dP/dP_flood "
+        << maxFlood << "\n"
+        << "  Vapour molar flow taken constant up the bed; liquid in plug flow.\n"
+        << "==========================================================================\n\n";
+    std::cout << rep.str();
+
+    produced_.clear();
+    kpis_.clear();
+    kpis_["HETP"] = HETP;
+    kpis_["HETP_local_mean"] = sHETP / np;
+    kpis_["theoreticalStages_bed"] = Nt;
+    kpis_["alpha_mean"] = alpha;
+    kpis_["dP_bed_mbar_per_m"] = (bot.P - top.P) * 1.0e-2 / Hbed;
+    kpis_["dP_over_dPflood_max"] = maxFlood;
+    kpis_["P_bottom_bar"] = bot.P * 1.0e-5;
+    kpis_["fFactor_bedBottom"] = bot.F;
+    kpis_["fFactor_bedTop"] = top.F;
+    kpis_["uL_mean_m3_m2h"] = sUL / np;
+    kpis_["holdup_mean"] = sHL / np;
+    kpis_["aeOverAp_mean"] = sBeta / np;
+    kpis_["T_top"] = top.T;
+    kpis_["T_bottom"] = TN;
+    kpis_["x_reflux_LK"] = xT;
+    kpis_["x_belowBed_LK"] = xB;
+    kpis_["x_reboiler_LK"] = xN[lk];
+    kpis_["V_boilup"] = Vmol;
+    kpis_["Q_reboiler_kW"] = QR;
+    kpis_["Q_condenser_kW"] = -QR;
+
+    profile_ = UnitProfile{};
+    profile_.xAxis = "z";
+    for (const auto& p : prof)
+    {
+        profile_.columns["z"].push_back(p.z);
+        profile_.columns["P"].push_back(p.P);
+        profile_.columns["T"].push_back(p.T);
+        profile_.columns["y_" + thermo.comp(lk).name()].push_back(p.y);
+        profile_.columns["HETP"].push_back(p.HETP);
+        profile_.columns["dP_Pa_per_m"].push_back(p.dP);
+        profile_.columns["F"].push_back(p.F);
+    }
+    closures_.clear();
+    (void)verbosity;
+    return 0;
 }
 
 } // namespace Choupo

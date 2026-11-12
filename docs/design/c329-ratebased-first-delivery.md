@@ -77,8 +77,8 @@ All from PDFs in `~/Choupo-Literature`:
   efficiencies are identical (y and y* both sum to one), so per-component vs
   averaged is moot; a multicomponent mixture is refused by name.
 
-Chan & Fair (1984) is NOT in the folder, and neither Perry 9ed nor Treybal
-3ed prints its equations (Perry 14-50 only discusses it), so it was not used.
+(First pass:) Chan & Fair (1984) was NOT in the folder, and neither Perry 9ed nor Treybal
+3ed prints its equations (Perry 14-50 only discusses it).  It was added later and is implemented: section 9.
 
 ## 4. Yanagi & Sakata 1982 -- what the paper holds
 
@@ -240,19 +240,10 @@ particular runs were among them cannot be read from the folder.  Zuiderweg
 (1982) -- not used -- fitted his interfacial area to these very FRI data
 (Klemola & Ilme 1996, p. 4581), so a Zuiderweg comparison would be in-sample.
 
-## 7. Schulz et al. 2018 (step 4) -- STOPPED
+## 7. Schulz et al. 2018 (step 4)
 
-The paper (128.pdf) gives its HETP and dP only as Figure 2 and 3 curves and
-a property table (Table 1).  The brief's condition for the packed-section
-model is a published structured-packing correlation whose PDF is in the
-folder.  None is: Billet & Schultes 1999 (Trans IChemE 77A), Rocha, Bravo &
-Fair 1993/1996 (IECR 32:641, 35:1660), the Delft model the paper itself uses
-(Fair et al. IECR 39 (2000) 1788; Olujic et al. CABEQ 18 (2004) 89) and
-Verschoof et al. IECR 38 (1999) 3663 (loading point) are all absent.  Perry
-9ed Table 5-24 transcribes the Rocha-Bravo-Fair mass-transfer relations; it
-was not used because the brief asks for the primary PDF.  Needed to proceed:
-the Delft-model papers (they are what Schulz compares against) or Rocha-
-Bravo-Fair 1996.
+First pass: stopped (no structured-packing PDF).  Second pass (2026-11-12,
+the PDFs added): see section 11.
 
 ## 8. Open
 
@@ -268,3 +259,296 @@ Bravo-Fair 1996.
 * Pressure profile not fed back into the total-reflux march.
 * `efficiency { model AIChE; }` is implemented only under `model totalReflux;`
   (the Wang-Henke path keeps the declared E_MV).
+
+## 9. Second pass (2026-11-12): two more tray-efficiency models
+
+Built: `efficiency { model ChanFair; }` and `efficiency { model SyedaChuang;
+holePitch <m>; }` beside AIChE (TrayEfficiency.{H,cpp}; the header carries
+every equation number and page).  Witness cases, sealed, goldens recorded:
+`trayEfficiency05_chanFair_yanagi14`, `trayEfficiency06_syedaChuang_yanagi14`,
+`trayEfficiency07_syedaChuang_yanagi08` (34 kPa).  The full matrix -- both
+models on all four Yanagi cases -- was run from scratch copies of cases 01-04
+with only the model word (and the pitch) changed; the tables below are that
+matrix, read against the same digitised and tabulated points as section 5.
+
+**IN-SAMPLE, both.**  Chan & Fair 1984 Table I (p. 816) lists Yanagi & Sakata
+1982 (14 %: 34.5 kPa at two weir heights, 165 kPa, 1138 kPa) and Sakata &
+Yanagi 1979 (8 %: 165, 34.5, 27.6, 1138, 2068, 2758 kPa) in the data bank
+the model was regressed on; p. 818 says the 14 % pressure runs (165 and 1138
+kPa) did NOT fit and are plotted apart (Fig. 3).  Syeda, Afacan & Chuang's
+one constant, C'' = 0.16, was fitted (p. 273) to "seven sets of FRI data
+(Sakata and Yanagi, 1979; Yanagi and Sakata, 1982)" -- these trays.  Garcia
+& Fair 2000 part 1 Table 3 lists the same FRI sets (ref 31: 8 % at 27.6,
+165, 1138, 2068, 2758 kPa; ref 32: 14 % at 34 kPa x2 weirs, 165, 1138 kPa).
+So every comparison in this section is in-sample for the correlation, though
+nothing was fitted here.
+
+**Garcia & Fair 2000 part 2 (ie0000966.pdf) is NOT implementable from the
+folder**: p. 1819 says the zone equations "are presented in detail in the
+above-cited reference [Prado & Fair, IECR 29 (1990) 1031] or in the
+dissertation of Prado"; part 2 prints only the modified parameters (Eqs
+5-17).  Needed: Prado & Fair 1990.
+
+**Syeda: the readings.**  The thesis (NQ82172, pp. 123, 125, Eqs 5.26 and
+5.31; OCR + page render) prints Eqs 28 and 33 exactly as the paper.
+Implemented: Eq 28 WITH t_GLB, Eq 33 with h_w^0.5 -- the reasons are the
+papers' own statements and dimensions, not data (TrayEfficiency.H).  The
+as-printed form was run too: mean error at 34 kPa 14 % +5.9 pts, 34 kPa 8 %
++14.9, 165 kPa 14 % +40.9 (predicted 131.7 % at Fs 0.26), 165 kPa 8 % +23.8;
+its efficiency FALLS from weeping to flood, the opposite of the trend the
+paper describes.
+
+### Overall tray efficiency, mean / max error (points), nothing fitted here
+| tray, P | AIChE | ChanFair | SyedaChuang |
+|---|---|---|---|
+| 14 %, 34 kPa | +2.7 / 14.3 | +18.8 / 21.7 | -8.9 / 12.6 |
+| 8 %, 34 kPa | -0.3 / 32.8 | +8.2 / 18.8 | -12.7 / 17.9 |
+| 14 %, 165 kPa | +21.4 / 41.7 | +29.0 / 36.7 | -10.3 / 17.2 |
+| 8 %, 165 kPa | +10.2 / 17.8 | +18.6 / 24.2 | -19.9 / 26.4 |
+
+### The open-area effect, 14 % -> 8 % at equal F-factor (pts)
+| P | Fs | measured | AIChE | ChanFair | SyedaChuang |
+|---|---|---|---|---|---|
+| 34 kPa | 1.2 | +10.0 | -0.1 | +1.1 | +5.8 |
+| 34 kPa | 1.4 | +10.8 | -0.2 | -0.2 | +6.2 |
+| 34 kPa | 1.6 | +8.1 | -0.6 | -1.0 | +6.2 |
+| 34 kPa | 1.8 | +5.0 | -1.8 | -3.0 | +5.1 |
+| 34 kPa | 2.0 | +3.4 | -6.5 | -10.4 | +0.1 |
+| 165 kPa | 0.6 | +20.3 | +0.0 | +3.9 | +2.8 |
+| 165 kPa | 0.8 | +8.9 | -0.0 | +2.9 | +4.2 |
+| 165 kPa | 1.0 | +4.1 | -0.1 | +1.3 | +5.3 |
+| 165 kPa | 1.2 | +5.1 | -0.4 | -0.5 | +5.9 |
+| 165 kPa | 1.4 | +8.0 | -1.5 | -2.0 | +5.7 |
+| 165 kPa | 1.6 | +9.7 | -6.3 | -7.9 | +2.2 |
+
+**SyedaChuang predicts the measured SIGN across the range (+2 to +6 pts
+against +3 to +11, smaller in size), ChanFair only at low load (f < ~0.5,
+where its k_V a_i rises with f and the 8 % tray's f is larger), AIChE never.**
+SyedaChuang sees the open area through the hole velocity (large-bubble
+size) and the spray interfacial area (F^-0.3); and it is in-sample on these
+very trays.  All three put the 8 % tray at 165 kPa beyond the model's flood
+above Fs ~1.7, where it was measured at 93-96 %.
+
+### Secondary point (8 % tray, 165 kPa)
+Sakata & Yanagi 1979 as quoted by Sun, Yu, Yuan & Liu, Chem. Eng. Sci. 62
+(2007) 1839, p. 1846 -- SECONDARY: liquid 30.66 m3/h, vapour 5.75 kg/s,
+measured overall tray efficiency 89.4 %.  At rho_V 4.8 (Yanagi Table II)
+on the 1.131 m2 tower, Fs = 5.75/(1.131 x 4.8^0.5) = 2.32.  Digitised Fig. 12
+(8 %, 165 kPa): 90.2 % at Fs 2.30, 64.5 % at 2.42 -- consistent with 89.4 %
+at 2.32 at the knee.  Every model here predicts that tray flooded at Fs 2.32.
+
+### Van Sinderen, Wijn & Zanting 2003 (026387603321158249.pdf)
+Read, not implemented.  Its entrainment and maximum-vapour relations come
+from a 0.20 m x 0.20 m air-water column: the ejection-velocity distribution
+and layer densities are fitted on one system (sigma 72 mN/m, rho_G 1.2), and
+the paper compares with FRI data qualitatively ("differences owing to the
+difference in scale").  It cannot replace Fair's median psi for
+cyclohexane/n-heptane at 165 kPa (sigma 13.5 mN/m, rho_G 4.8) without a
+property scaling the paper does not establish; at most it is a qualitative
+check of the liquid-height effect.
+
+'''
+## 10. Full tables of the second pass
+
+(ChanFair, then SyedaChuang as implemented; the as-printed SyedaChuang
+summary is in section 9.)
+
+#### ChanFair
+
+##### 34 kPa, 14 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 1.007 | 63.3 | 85.0 | +21.7 | 0.43 | Fig. 12, digitised |
+| 1.440 | 71.1 | 90.0 | +18.9 | 0.61 | Fig. 12, digitised |
+| 1.472 | 70.8 | 90.1 | +19.3 | 0.63 | Table III run 628 |
+| 1.825 | 74.3 | 89.4 | +15.1 | 0.78 | Fig. 12, digitised |
+| 2.030 | 67.5 | 86.4 | +18.9 | 0.87 | Fig. 12, digitised |
+| 2.305 | 41.3 | out of sweep | - | - | Fig. 12, digitised |
+| 2.356 | 41.1 | out of sweep | - | - | Table III run 625 |
+max |error| 21.7 pts, mean error +18.8 pts, mean |error| 18.8 pts over 5 points
+
+
+##### 34 kPa, 08 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 0.477 | 48.5 | 67.3 | +18.8 | 0.23 | Fig. 12, digitised |
+| 0.706 | 68.1 | 79.0 | +10.9 | 0.33 | Fig. 12, digitised |
+| 1.047 | 73.5 | 87.8 | +14.3 | 0.49 | Fig. 12, digitised |
+| 1.430 | 81.8 | 89.7 | +7.9 | 0.67 | Fig. 12, digitised |
+| 1.840 | 78.8 | 85.3 | +6.5 | 0.87 | Fig. 12, digitised |
+| 1.970 | 73.5 | 78.8 | +5.3 | 0.93 | Fig. 12, digitised |
+| 2.100 | 66.6 | 60.7 | -5.9 | 1.00 | Fig. 12, digitised |
+| 2.160 | 52.6 | out of sweep | - | - | Fig. 12, digitised |
+max |error| 18.8 pts, mean error +8.2 pts, mean |error| 9.9 pts over 7 points
+
+
+##### 165 kPa, 14 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 0.260 | 29.4 | 59.2 | +29.8 | 0.13 | Fig. 12, digitised |
+| 0.533 | 51.3 | 88.0 | +36.7 | 0.27 | Fig. 12, digitised |
+| 0.814 | 72.9 | 103.1 | +30.2 | 0.42 | Fig. 12, digitised |
+| 1.053 | 82.7 | 108.2 | +25.5 | 0.54 | Fig. 12, digitised |
+| 1.528 | 84.3 | 106.9 | +22.6 | 0.79 | Fig. 12, digitised |
+| 2.123 | 84.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.362 | 74.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.649 | 58.0 | out of sweep | - | - | Fig. 12, digitised |
+max |error| 36.7 pts, mean error +29.0 pts, mean |error| 29.0 pts over 5 points
+
+
+##### 165 kPa, 08 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 0.525 | 75.2 | 91.6 | +16.4 | 0.30 | Fig. 12, digitised |
+| 0.734 | 79.4 | 103.1 | +23.7 | 0.42 | Fig. 12, digitised |
+| 1.007 | 84.8 | 109.0 | +24.2 | 0.57 | Fig. 12, digitised |
+| 1.496 | 93.6 | 103.7 | +10.1 | 0.85 | Fig. 12, digitised |
+| 1.934 | 95.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.199 | 91.9 | out of sweep | - | - | Fig. 12, digitised |
+| 2.301 | 90.2 | out of sweep | - | - | Fig. 12, digitised |
+| 2.416 | 64.5 | out of sweep | - | - | Fig. 12, digitised |
+max |error| 24.2 pts, mean error +18.6 pts, mean |error| 18.6 pts over 4 points
+
+
+#### SyedaChuang (implemented readings)
+
+##### 34 kPa, 14 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 1.007 | 63.3 | 57.3 | -6.0 | 0.43 | Fig. 12, digitised |
+| 1.440 | 71.1 | 61.8 | -9.3 | 0.62 | Fig. 12, digitised |
+| 1.472 | 70.8 | 61.9 | -8.9 | 0.63 | Table III run 628 |
+| 1.825 | 74.3 | 61.7 | -12.6 | 0.78 | Fig. 12, digitised |
+| 2.030 | 67.5 | 59.6 | -7.9 | 0.87 | Fig. 12, digitised |
+| 2.305 | 41.3 | out of sweep | - | - | Fig. 12, digitised |
+| 2.356 | 41.1 | out of sweep | - | - | Table III run 625 |
+max |error| 12.6 pts, mean error -8.9 pts, mean |error| 8.9 pts over 5 points
+
+
+##### 34 kPa, 08 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 0.477 | 48.5 | 41.4 | -7.1 | 0.23 | Fig. 12, digitised |
+| 0.706 | 68.1 | 52.9 | -15.2 | 0.33 | Fig. 12, digitised |
+| 1.047 | 73.5 | 63.2 | -10.3 | 0.50 | Fig. 12, digitised |
+| 1.430 | 81.8 | 68.0 | -13.8 | 0.68 | Fig. 12, digitised |
+| 1.840 | 78.8 | 66.1 | -12.7 | 0.87 | Fig. 12, digitised |
+| 1.970 | 73.5 | 61.6 | -11.9 | 0.93 | Fig. 12, digitised |
+| 2.100 | 66.6 | 48.7 | -17.9 | 1.00 | Fig. 12, digitised |
+| 2.160 | 52.6 | out of sweep | - | - | Fig. 12, digitised |
+max |error| 17.9 pts, mean error -12.7 pts, mean |error| 12.7 pts over 7 points
+
+
+##### 165 kPa, 14 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 0.260 | 29.4 | 27.5 | -1.9 | 0.14 | Fig. 12, digitised |
+| 0.533 | 51.3 | 47.1 | -4.2 | 0.28 | Fig. 12, digitised |
+| 0.814 | 72.9 | 59.5 | -13.4 | 0.42 | Fig. 12, digitised |
+| 1.053 | 82.7 | 65.5 | -17.2 | 0.55 | Fig. 12, digitised |
+| 1.528 | 84.3 | 69.3 | -15.0 | 0.79 | Fig. 12, digitised |
+| 2.123 | 84.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.362 | 74.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.649 | 58.0 | out of sweep | - | - | Fig. 12, digitised |
+max |error| 17.2 pts, mean error -10.3 pts, mean |error| 10.3 pts over 5 points
+
+
+##### 165 kPa, 08 % tray: overall tray efficiency vs F-factor
+| Fs | measured E_o % | predicted E_o % | error (pts) | flood approach | source |
+|---|---|---|---|---|---|
+| 0.525 | 75.2 | 48.8 | -26.4 | 0.30 | Fig. 12, digitised |
+| 0.734 | 79.4 | 60.4 | -19.0 | 0.42 | Fig. 12, digitised |
+| 1.007 | 84.8 | 70.0 | -14.8 | 0.58 | Fig. 12, digitised |
+| 1.496 | 93.6 | 74.2 | -19.4 | 0.86 | Fig. 12, digitised |
+| 1.934 | 95.6 | out of sweep | - | - | Fig. 12, digitised |
+| 2.199 | 91.9 | out of sweep | - | - | Fig. 12, digitised |
+| 2.301 | 90.2 | out of sweep | - | - | Fig. 12, digitised |
+| 2.416 | 64.5 | out of sweep | - | - | Fig. 12, digitised |
+max |error| 26.4 pts, mean error -19.9 pts, mean |error| 19.9 pts over 4 points
+
+
+## 11. Schulz et al. 2018 -- the packed bed (second pass)
+
+**Billet & Schultes 1999 (026387699526520.pdf) has no constants for this
+packing**: Table 2b (p. 502) gives Montz B1-200, B2-300, C1-200, C2-200 and
+no gauze packing at all.  So the packed section is Rocha, Bravo & Fair:
+hydraulics IECR 32 (1993) 641 Eqs 20-29 (pp. 646-647; flooding at 1025 Pa/m,
+p. 649), mass transfer IECR 35 (1996) 1660 Eqs 5-17 with the GAUZE area of Eq
+14 (p. 1665).  Built: `PackingRBF.{H,cpp}` and
+`DistillationColumn::solveTotalRefluxPacked` (`packing {}` under `model
+totalReflux;`): dy/dz = (y*(x = y) - y)/H_OG integrated up the bed (midpoint,
+100 segments), the pressure falling by the bed's own drop, the bottom
+pressure found by bisection so that the TOP is the declared pressure.
+
+Inputs (Schulz section 2 and Table 1): D 1.22 m, bed 2.2 m, a_p 478
+(installed), eps 0.92, 60 deg, top 0.10 / 0.02 bar, liquid viscosity 0.391 /
+0.539 mPa s.  ESTIMATED: the corrugation side S = 9 mm (Schulz does not
+print it; Sulzer BX's, RBF 1993 Table IV) -- HETP scales roughly with it.
+ASSUMED: reboiler liquid 0.20 / 0.17 p-xylene (bed-mean near Table 1's 0.54
+/ 0.49).  Checks against Table 1: alpha 1.241 vs 1.240 (0.10 bar); u_L at
+F 1.5 4.0 vs 4.18 m3/(m2 h).  Abscissa: the bed-mean F-factor.
+
+DIGITISATION (Fig. 2b): the figure is a 1098 x 347 raster at 180 ppi
+(pdfimages); frame by pixel scan (x 613-1039 = F 0-4, y 291-10.5 = HETP
+0-0.6 m / dp 0-12 mbar/m); markers read on a 4x enlargement; about +-0.03
+in F, +-0.005 m in HETP, +-0.1 mbar/m.  All points "digitised".
+
+NOTHING FITTED at 0.10 bar (RBF has no per-packing constant to fit), so
+0.02 bar is a prediction exactly as 0.10 bar is.
+
+IN-SAMPLE OR NOT: RBF 1996 Table 2 holds Sulzer BX with o-/p-xylenes at
+0.021, 0.39, 1.0 bar (Sakata 1972) -- same system, same gauze class, not this
+packing, not these runs.
+
+### Measured vs predicted
+
+#### 0.10 bar: HETP and pressure drop vs F-factor (bed mean)
+| F_G | HETP measured m | HETP predicted m | error % | dp/dz measured mbar/m | predicted | error % |
+|---|---|---|---|---|---|---|
+| 0.42 | 0.125 | 0.099 | -21 | 0.13 | 0.14 | 7 |
+| 0.56 | 0.133 | 0.108 | -19 | 0.24 | 0.21 | -11 |
+| 0.69 | 0.140 | 0.116 | -17 | 0.26 | 0.30 | 17 |
+| 1.03 | 0.156 | 0.134 | -14 | 0.39 | 0.60 | 55 |
+| 1.37 | 0.171 | 0.150 | -12 | 0.49 | 1.02 | 108 |
+| 1.72 | 0.187 | 0.164 | -12 | 0.64 | 1.57 | 145 |
+| 2.04 | 0.203 | 0.177 | -13 | 0.94 | 2.21 | 135 |
+| 2.69 | 0.220 | 0.202 | -8 | 1.71 | 4.04 | 136 |
+| 3.00 | 0.247 | 0.214 | -13 | 2.50 | 5.25 | 110 |
+| 3.30 | 0.295 | beyond the model flood | beyond the model flood | 3.47 | beyond the model flood | beyond the model flood |
+| 3.58 | 0.535 | beyond the model flood | beyond the model flood | 5.13 | beyond the model flood | beyond the model flood |
+HETP: mean -14 %, max |21| % over 9; dp: mean +78 %, max |145| % over 9
+model hydraulic flood beyond F_G (bed mean) = 3.08
+
+#### 0.02 bar: HETP and pressure drop vs F-factor (bed mean)
+| F_G | HETP measured m | HETP predicted m | error % | dp/dz measured mbar/m | predicted | error % |
+|---|---|---|---|---|---|---|
+| 0.58 | 0.120 | 0.091 | -24 | 0.40 | 0.31 | -23 |
+| 0.86 | 0.126 | 0.102 | -19 | 0.45 | 0.55 | 22 |
+| 1.13 | 0.133 | 0.112 | -16 | 0.58 | 0.86 | 48 |
+| 1.40 | 0.142 | 0.121 | -15 | 0.72 | 1.21 | 68 |
+| 2.04 | 0.173 | 0.140 | -19 | 1.43 | 2.34 | 64 |
+| 2.60 | 0.245 | 0.156 | -36 | 1.99 | 3.71 | 86 |
+| 3.12 | 0.263 | 0.172 | -35 | 2.84 | 5.41 | 90 |
+| 3.53 | 0.479 | beyond the model flood | beyond the model flood | 4.24 | beyond the model flood | beyond the model flood |
+HETP: mean -23 %, max |36| % over 7; dp: mean +51 %, max |90| % over 7
+model hydraulic flood beyond F_G (bed mean) = 3.14
+
+### What the model gets
+* HETP: low by 8-24 % at 0.10 bar (mean -14 %) and 15-36 % at 0.02 bar
+  (mean -23 %).  The PRESSURE EFFECT in the preloading region has the right
+  sign and size: at F 1.4, measured 0.142 (0.02) vs ~0.170 (0.10), -17 %;
+  predicted 0.121 vs 0.150, -19 %.
+* Pressure drop: over-predicted, +78 % mean at 0.10 bar (up to +145 %),
+  +51 % at 0.02; the sign of the pressure effect (higher at 0.02 bar at
+  equal F) is right.  RBF's dry and irrigated constants come from
+  sheet-metal Flexipac / Gempak air-water data (part 1, Table II); no gauze.
+* Flooding, by the authors' criterion: Schulz separates the EFFICIENCY
+  flood (HETP leaves the curve: F ~3.3-3.5 at 0.10 bar at ~3.5 mbar/m, a
+  little lower at 0.02 bar at < 3 mbar/m) from the HYDRAULIC flood (loss of
+  operability, "close to or above 10 mbar/m").  The model has no
+  efficiency-flood mechanism (its HETP rises smoothly); its hydraulic flood
+  (no holdup with g_eff > 0 below 1025 Pa/m) arrives at a bed-mean F of
+  3.08 (0.10 bar) and 3.14 (0.02 bar), at a computed 5-6 mbar/m -- i.e. near
+  the measured efficiency flood, below the measured hydraulic flood.  The
+  "anomaly" Schulz reports (no capacity gain at 0.02 bar) is reproduced in
+  the sense that the model also puts both floods at nearly the same F.

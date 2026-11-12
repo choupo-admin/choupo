@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Sweep the vapour load -- the boil-up as an F-factor on the tower area, the
+  abscissa of Yanagi & Sakata's Figure 12 -- and read what the paper
+  measured: the overall tray efficiency (the Fenske slope over the trays),
+  the pressure drop (Figure 13 plots it against the superficial velocity,
+  `u_bottomTray`), and the approach to flood.  The upper end stops below the
+  model's own entrainment flood for this tray at this pressure.
+\*---------------------------------------------------------------------------*/
+
+type        sweep;
+
+parameter
+{
+    target    units[0].operation.totalReflux.fFactor;
+    range     ( 0.3  2.1 );
+    nPoints   19;
+}
+
+responses
+(
+    column.overallTrayEfficiency
+    column.E_MV_mean
+    column.E_MV_dry_mean
+    column.floodApproach_max
+    column.dP_column_kPa
+    column.u_bottomTray
+);
+
+report
+{
+    format    csv;
+    file      sweep_fFactor.csv;
+}

@@ -1219,6 +1219,21 @@ flow path (6.57-6.59), then Colburn's entrainment loss with Fair's median psi at
 tray's approach to flood (Perry 9ed 14-98/14-99).  The correlations carry NO hole
 area: open area acts only through the hydraulics.  Examples:
 `trayEfficiency01_yanagi14`, `trayEfficiency02_yanagi08` (FRI data, Yanagi & Sakata 1982).
+`model ChanFair;` (Chan & Fair 1984, Eqs 9-26; open area only through the approach to
+flood) and `model SyedaChuang; holePitch <m>;` (Syeda, Afacan & Chuang 2007, Eqs 1-35;
+sees hole velocity, open area and pitch) are selectable beside it; both were fitted on
+data that include these FRI trays (in-sample).  Examples: `trayEfficiency05_chanFair_yanagi14`,
+`trayEfficiency06_syedaChuang_yanagi14`, `trayEfficiency07_syedaChuang_yanagi08`.
+
+**Packed bed at total reflux** (`model totalReflux;` + `operation { packing { model
+RochaBravoFair; diameter; height; specificArea; voidFraction; corrugationAngle;
+corrugationSide; surface gauze|sheetMetal; [surfaceEnhancement]; lightKey;
+[liquidViscosity]; } }`, no `nStages`): the composition is integrated up the bed,
+dy/dz = (y* - y)/H_OG, with Rocha-Bravo-Fair holdup, pressure drop and flooding
+(IECR 32 (1993) 641) and HETP (IECR 35 (1996) 1660); the top pressure is the
+specification and the bed's own pressure drop sets the bottom.  KPI `HETP` = bed
+height / Fenske stages.  Binary only.  Examples: `packing01_schulz_0p10bar`,
+`packing02_schulz_0p02bar` (Montz-Pak A3-500M, Schulz et al. 2018).
 
 **Sieve-tray hydraulics** (optional `operation { hydraulics { ... } }`, works with BOTH
 methods).  The MESH equations contain no diameter — a column of any width converges to

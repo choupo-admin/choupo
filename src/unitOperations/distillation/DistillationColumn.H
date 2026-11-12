@@ -203,6 +203,14 @@ private:
                          const ThermoPackage& thermo,
                          int verbosity);
 
+    //  The same physical mode over a PACKED bed (`packing { model
+    //  RochaBravoFair; ... }`): the composition is integrated up the bed,
+    //  dy/dz = (y*(x = y) - y)/H_OG, with the pressure falling by the bed's
+    //  own pressure drop (PackingRBF.H).
+    int solveTotalRefluxPacked(const DictPtr& dict,
+                               const ThermoPackage& thermo,
+                               int verbosity);
+
     // Sieve-tray hydraulics: an optional RATING pass over the converged
     // profile.  A column that floods separates nothing, and the MESH
     // equations never notice.  Absent an `operation { hydraulics {} }`
