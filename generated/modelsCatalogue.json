@@ -1071,19 +1071,19 @@
         "key": "components",
         "name": "Pure-component property records",
         "source": "data/standards/components/",
-        "count": 687
+        "count": 696
       },
       {
         "key": "species",
         "name": "Aqueous / gas / solid model-species records",
         "source": "data/standards/species/",
-        "count": 74
+        "count": 250
       },
       {
         "key": "chemistry",
         "name": "Equilibrium reaction records (dissolution, association, gas-liquid)",
         "source": "data/standards/chemistry/",
-        "count": 78
+        "count": 229
       },
       {
         "key": "conventions",
@@ -1149,7 +1149,7 @@
         "key": "parameters.solution",
         "name": "Solution-property parameter records",
         "source": "data/standards/parameters/solution/",
-        "count": 2
+        "count": 11
       },
       {
         "key": "mixtures",
