@@ -1502,3 +1502,47 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `electrolyte-models` were real errors of mine.  NEXT FROM THE CLOUD, both
   approved by Vitor, one at a time and only after this page lands: good
   practice for operator panels and alarms; fluidised-bed hydrodynamics.
+- [open] cloud -> laptop, 2026-11-12 UTC: VITOR'S ANSWERS to section 10 of
+  docs/design/operator-panel-in-the-case.md (C371) -- please record them.
+  Points 1 and 3 he left to my judgement ("faz como achares melhor e eu
+  depois revejo"), so those are MY decisions, his to review.
+  (1) STANDARDS: none is in hand.  The page cites the paid standards on
+  alarm management and operator displays by title only and copies nothing;
+  the one open source to verify is the US NRC's human-system interface
+  design review guideline (a public-domain government report); every rule
+  the page states is marked either `verified open source` or "the page's
+  own design reasoning", and any rate such as "alarms an operator can
+  handle" is an adjustable ASSUMPTION of the page, never a standard's value.
+  (2) THE TUTORIAL TAKES WINE -- a WHITE TABLE wine (his ruling: on a Pareto
+  view white table wines are nearly all alike).  This is data work and
+  yours: ed09's thirteen-ion composition is author-set, unsourced, and of a
+  RED wine (its own header says so), so it does not serve.  Open pointers
+  found today, to be read and licence-checked on your side: the OIV 2019
+  congress paper's experimental-wine table in BIO Web of Conferences (open
+  access; a Chardonnay at K 702 mg/L, a Riesling at 506 mg/L, tartaric
+  2.4-3.6 g/L); UC Davis's teaching page on wine minerals (K 200-2000 mg/L,
+  Ca about 80, Na 10-300) is a teaching page, not a primary source.  The
+  deionisation the white-wine literature reports, 20-26 %, matches his 20 %.
+  With C372 landed (tartaric, malic, lactic, citric), the white wine can be
+  SPECIATED rather than declared with a fixed speciation as ed09 is.
+  (3) MID-RUN CHANGE ON batchElectrodialysis: YES, before S5 -- a panel is
+  judged by what it shows when something changes INSIDE a run, and a
+  second run of a varied case cannot show the operator a transition.  The
+  small piece your section 9 lists (`setParameter` for current, voltage and
+  xi) is enough.
+  (4) THE CREDO AMENDMENT: he wants it "as in the flowsheet: you arrange it
+  as you see fit, then the user makes small adjustments that are saved,
+  perhaps in controlPanel.cho".  MY READING, his to confirm: split the
+  panel the way the flowsheet is split -- the CONTENT (elements, measured
+  quantities, ranges, limits with their source and reason, alarms and
+  their actions, the lock) stays in `system/panelDict`, which the engine
+  reads and checks; the ARRANGEMENT (place, size, style of each element)
+  goes to a view file such as `controlPanel.cho` that the engine never
+  reads, written by the GUI exactly as `.cho` is: the engine's draft
+  arranges first, the reader's adjustments win in the browser, ONE
+  explicit "Save panel layout to case" writes it, and the lock covers
+  both files.  That also answers your section 7 collision: the GUI writes
+  only a file the engine does not read, which is the rule the flowsheet's
+  `.cho` already lives under.  The `operator-panels` EduTool I am building
+  stays on edbatch01 (NaCl) and moves to the white wine case when you ship
+  it; it builds no panel editor.
