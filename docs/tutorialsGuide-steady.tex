@@ -4360,6 +4360,61 @@ Contrast evaporator06 (whose CASE-LOCAL pair overlay omits the T-slots, so ITS N
 \goldmore{29}
 \end{tutgolden}
 
+\clearpage
+\tutentry{evaporator10\_naoh\_triple\_effect}{tutorials/steady/evaporation/evaporator10\_naoh\_triple\_effect}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (effect1) at (0.0,-0.0) {\textbf{effect1}\\[-1pt]{\tiny evaporator}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (effect2) at (2.9,-0.0) {\textbf{effect2}\\[-1pt]{\tiny evaporator}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (effect3) at (5.8,-0.0) {\textbf{effect3}\\[-1pt]{\tiny evaporator}};
+  \draw[->] ($(effect1.west)+(-1.05,-0.17)$) -- ($(effect1.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {feed};
+  \draw[->] ($(effect1.west)+(-1.05,0.17)$) -- ($(effect1.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {liveSteam};
+  \draw[->] (effect1) -- (effect2) node[midway, above, font=\tiny] {L1to2};
+  \draw[->] (effect1) -- (effect2) node[midway, above, font=\tiny] {V1};
+  \draw[->] (effect2) -- (effect3) node[midway, above, font=\tiny] {L2to3};
+  \draw[->] (effect2) -- (effect3) node[midway, above, font=\tiny] {V2};
+  \draw[->] ($(effect1.east)+(0,0.00)$) -- ($(effect1.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {cond1};
+  \draw[->] ($(effect2.east)+(0,0.00)$) -- ($(effect2.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {cond2};
+  \draw[->] ($(effect3.east)+(0,-0.34)$) -- ($(effect3.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {productConc};
+  \draw[->] ($(effect3.east)+(0,0.00)$) -- ($(effect3.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {V3};
+  \draw[->] ($(effect3.east)+(0,0.34)$) -- ($(effect3.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {cond3};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Triple-effect forward-feed NaOH evaporator: the heat of dilution in each effect, inside the fitted window (6 mol/kg)}
+\begin{tutnarrative}
+caustic soda in three effects, kept INSIDE the window of the heat-of-dilution fit
+
+WHAT IT IS. A forward-feed triple-effect NaOH evaporator: live steam heats effect 1, the vapour of effect i is the heating chest of effect i+1, the vapour of effect 3 leaves to a condenser outside the model. It is an ILLUSTRATION, not a reproduction: the hardware, the feed and the operating pressures are those of the forced-circulation triple-effect NaOH problem in Geankoplis, Hersel \& Lepek, Transport Processes and Separation Process Principles, 5th ed., problem 32.5-4 (p. 1529) -- feed 13 608 kg/h of 10 wt \% NaOH at 37.8 C, steam at 58.6 kPa gauge (160 kPa abs, 113.3 C), 6.76 kPa in the last effect, U = 6246 / 3407 / 2271 W/(m2 K), one common area -- but the product is 18 wt \% (5.5 mol/kg), not the book's 50 wt \%. The reason is the window: the calorimetric L\_phi fit of the Na-OH Pitzer record is valid to `lphiValidityMax 6.0` mol/kg (19.4 wt \%), and 50 wt \% is 25 mol/kg. The printed answers of that problem (A = 97.3 m2, S = 5284 kg/h) belong to the 50 wt \% target and are NOT comparable to this run; no printed multi-effect NaOH example inside the window was found in the books in hand (the only printed single-effect caustic example, Example 32.4-3, goes to 50 wt \%).
+
+THE SPECIFICATION (system/outerDict, the structure of evaporator03). Two unknowns, the common area A and the live-steam flow, against two targets: the product mass flow 2.1 kg/s (= 1360.8 kg/h NaOH at 18 wt \%) and the last-effect pressure 6.76 kPa. Every effect's liquid outlet is inside the window, which is what the run's [electrolyte] lines let you check.
+
+THE RESULT (converged; mass, element and energy closures gated). effect T\_boil P m BPE duty heat of dilution [C] [kPa] [mol/kg] [K] [kW] [kW] [\% of duty] 1 95.6 75.7 3.22 3.57 1880.6 +18.1 +1.0 2 77.0 35.3 3.96 4.07 1076.1 -5.5 -0.5 3 43.4 6.76 5.49 5.08 1293.6 -5.2 -0.4 A = 16.98 m2 per effect; live steam 2981 kg/h; water evaporated 6048 kg/h; steam economy 2.03 kg vapour per kg steam. The BPE is the Pitzer water activity at each effect's outlet molality. It can be held against measured vapour pressures INSIDE the window: Perry's Chemical Engineers' Handbook (9th ed.), Table 2-19 (p. 2-83), tabulates the partial pressure of water over NaOH solutions; read at each effect's pressure and wt \% (log-pressure interpolated in 1/T and in concentration; about 0.3 K uncertainty) it gives BPE 3.25 / 3.79 / 4.88 K against the engine's 3.57 / 4.07 / 5.08 K (+0.3, +0.3, +0.2 K).
+
+WHERE THE HEAT OF DILUTION ENTERS EACH EFFECT. The unit's duty is the heat the chest gives up condensing, F\_chest [h(chest) - h(condensate)], and the process side is balanced on the SAME enthalpy surface: Q = L h(L, T\_out, m\_out) + V H\_v - F h(F, T\_in, m\_in). The liquor's h carries, for a calorimetrically fitted salt, the term n\_salt L\_phi(m, T). So the heat of dilution is a REPORTED PART of the duty Q, never a term added to it. The line printed per effect, heat of dilution = X kW (L\_phi: m a $\to$ b mol/kg), is n\_salt [L\_phi(m\_out, T\_out) - L\_phi(m\_in, T\_in)]: the concentration step AND the change of L\_phi with temperature between the inlet and outlet states (the liquor is flashed from the previous effect's temperature to the next one's), which is why it is positive in effect 1 (cold feed heated to 95 C) and slightly negative downstream. Beside the latent heat it is small here -- about 1 \% of each duty -- and that is the lesson of keeping inside the window: it is the 6 to 25 mol/kg range of real caustic concentration that makes the heat of dilution large (next paragraph).
+
+WHAT HAPPENS WHEN THE PRODUCT IS PUSHED PAST 6 mol/kg. The same engine run on a single effect (feed 4536 kg/h of 20 wt \% at 60 C, 11.7 kPa in the vapour space, so pure water boils at 48.9 C -- the setting of Geankoplis Example 32.4-3, only the product target changed) returns, announced as [electrolyte] ... EXTRAPOLATED, a BPE that stops following the measurement and a heat of dilution that climbs from 14 to 464 kW: product m BPE [K] heat of dilution [wt \%] [mol/kg] engine Perry T2-19 Geankoplis Fig.32.4-2 engine [kW] 25 8.3 10.0 9.6 9 (+-2) 14.5 30 10.7 14.6 14.2 13 (+-2) 43.3 40 16.7 24.6 27.6 27 (+-2) 169.4 50 25.0 27.8 47.3 40.6 (printed) 464.4 Perry's column is computed as above; Geankoplis's is read off the Duhring lines of Fig. 32.4-2 (p. 1500) at a water boiling point of 120 F, reading uncertainty about 2 K, except the 50 \% value, which Example 32.4-3 prints (89.5 - 48.9 = 40.6 K, p. 1504). Up to 30 wt \% the engine follows both; at 40 \% it is 2-3 K low and at 50 \% 13-20 K low (a boiling liquid at 76.7 C against the book's 89.5 C). No printed value of the heat of dilution alone was found; the closest printed number is the example's duty. Run on the example's own specification (steam at 172.4 kPa, U = 1560 W/(m2 K), 50 wt \% product, designSpec on the area and the steam rate) the engine gives 2307 kW, 3665 kg/h of steam, A = 38.0 m2, economy 0.74, against the book's 2002 kW, 3255 kg/h, 49.2 m2, 0.836 (chart readings of the enthalpy- concentration chart, Fig. 32.4-3, p. 1503: h = 214 and 505 kJ/kg). The gap mixes two causes that cannot be separated from these numbers -- the BPE (the engine's smaller BPE leaves a larger temperature difference, hence the smaller area) and the extrapolated L\_phi (464 kW of the 2307 kW) -- and neither is tuned away. This is why caustic to 50 wt \% is NOT served by this record: it needs a property model fitted to that range (DEV.md 4c C377 b).
+
+THE WATER ROUTE. The Antoine fit of the catalogue's water record is +2.5 \% at 373 K and +6 \% at 423 K against IAPWS SR1-86, and evaporator08 runs water at 130 C on it and announces it. This case carries an ADOPTED case-local `constant/components/water.dat` identical to the catalogue's except the vapour-pressure block, which is the IAPWS saturation equation itself (`model Wagner`; Table 1 check values reproduced to 1.5e-7), so the vessel pressures and the Pitzer BPE are on the reference saturation curve and the run raises no Antoine-window advisory. Two limits remain and are announced: the liquid Cp of water is the record's constant 75.5 J/(mol K) (window 273-373 K; -0.6 \% at 373 K, -1 to -2 \% near 400 K) and the latent heat of the enthalpy surface is about 2 \% above the steam table's near 390 K. The fundamental-equation route `pureFluids \{ water \{ method IF97; \} \}` cannot be used with a dissolved salt: the electrolyte formulation does not accept it, and a mixed liquid phase is refused by the pure-fluid router.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{L1to2}{F}{0.172442345779}
+\goldrow{stream}{L1to2}{T}{368.721521636}
+\goldrow{stream}{L2to3}{F}{0.141941185351}
+\goldrow{stream}{L2to3}{T}{350.124338908}
+\goldrow{stream}{V1}{F}{0.0258409875543}
+\goldrow{stream}{V1}{T}{368.721521636}
+\goldrow{stream}{V2}{F}{0.0305011604278}
+\goldrow{stream}{V2}{T}{350.124338908}
+\goldrow{stream}{V3}{F}{0.0369073727164}
+\goldrow{stream}{V3}{T}{316.58458393}
+\goldrow{stream}{cond1}{F}{0.045967634104}
+\goldrow{stream}{cond1}{T}{386.45}
+\goldrow{stream}{cond2}{F}{0.0258409875543}
+\goldrow{stream}{cond2}{T}{368.721521636}
+\goldmore{101}
+\end{tutgolden}
+
 \subsection{flash}
 \grouptheory{flash}
 \clearpage

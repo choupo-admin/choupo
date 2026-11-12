@@ -225,7 +225,6 @@ KNOWN_UNCITED = {
     "ch:dyn-cstr",
     "ch:dyn-cstr-level",
     "ch:dyn-tank",
-    "ch:evap-mode2",
     "ch:extractor",
     "ch:gas-kinetics",
     "ch:gentle",

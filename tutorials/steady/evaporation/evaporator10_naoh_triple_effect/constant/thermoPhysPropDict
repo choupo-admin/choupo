@@ -1,0 +1,54 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- T7 electrolyteGammaPhi: aqueous electrolyte
+  (Pitzer) x ideal vapour; the REAL solid equilibrium rides in the inline
+  chemistry{} block (TRANSITIONAL: the chemistryDict grammar is not ratified).
+  Rigorous NaOH Pitzer package (calorimetrically fitted Na-OH pair -> heat-of-dilution L_phi).
+  Pitzer pair resolved by cation-anion name: data/standards/parameters/Pitzer/pairs/Na-OH.dat
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water NaOH );
+
+equilibrium
+{
+    formulation electrolyteGammaPhi;    // aqueous electrolyte x ideal vapour
+
+    aqueous
+    {
+        activityModel
+        {
+            model Pitzer;
+        }
+        compositionBasis molality;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+
+caloric
+{
+    energyBasis elementsDatum;          // ONE datum: the elements at 298.15 K
+
+    aqueous
+    {
+        enthalpyRoute ionicReferencePlusExcess;   // aqueous inf-dilution ion
+    }                                             //   datum + L_phi excess
+    vapour
+    {
+        enthalpyRoute idealGasCp;
+    }
+}

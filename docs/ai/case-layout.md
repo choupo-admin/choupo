@@ -501,6 +501,7 @@ starters to compare against when answering "write me a case for X":
 | DesignSpec (size area) | `designSpec01_triple_equal_areas` |
 | Triple-effect evaporator | `evaporator02_triple_effect_sugar` |
 | Counter-current evaporator | `evaporator05_counter_current` |
+| Triple-effect evaporator, electrolyte (NaOH, inside the L_phi window; water on the IAPWS saturation curve) | `evaporator10_naoh_triple_effect` |
 | Gibbs reactor (WGS) | `gibbs01_water_gas_shift` |
 | Membrane (RO seawater) | `membrane01_RO_NaCl_seawater` |
 | Membrane train (3 elements) | `membrane05_train` |

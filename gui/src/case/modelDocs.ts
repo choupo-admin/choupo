@@ -339,6 +339,7 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   // -- vapour pressure (VaporPressureModel.cpp) ---------------------------
   Antoine:       { guide: "theory", dest: "ch:vap" },     // log10 P = A - B/(C+T)
   AmbroseWalton: { guide: "theory", dest: "ch:vap" },     // corresponding-states, needs Tc/Pc/omega
+  Wagner:        { guide: "theory", dest: "sec:evap-dilution-window" }, // IAPWS SR1-86 Eq. 1 as implemented (water above 373 K)
   // -- reference-state / pure-component correlations ----------------------
   Rackett:     { guide: "theory", dest: "ch:rackett" },        // saturated-liquid molar volume
   sublimation: { guide: "theory", dest: "ch:sublimation" },    // solid-vapour curve, triple point
