@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "TrayHydraulics.H"
+#include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 
 #include "core/Constants.H"
@@ -245,7 +246,11 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
             throw std::runtime_error(o.str());
         }
 
-        if (geo.sigma > 0.0) s.sigma = geo.sigma;
+        if (geo.sigma > 0.0)
+        {
+            s.sigma = geo.sigma;
+            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared");
+        }
         else if (thermo.hasSurfaceTension()) s.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T[j], 0.0, x[j]).value;
         else
             throw std::runtime_error("TrayHydraulics: the flooding correlation needs the "

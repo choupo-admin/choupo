@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Crystalliser.H"
+#include "core/PropertySourceLog.H"
 #include "streams/PsdOnGrid.H"
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "CrystallisationHeat.H"
@@ -508,6 +509,7 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
         throw std::runtime_error("Crystalliser(MSMPR): zero volumetric flow"
             " (components need a `Vliq` to size the residence time).");
     const scalar tau = V / Q;                              // s
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero, "bypass", "not applied");
 
     const scalar c_sat        = sat.c_sat;                 // kg solute / kg solvent (helper)
     const scalar solvent_mass = sat.solvent_mass;          // kg/s (reference OR total solvent)
@@ -804,6 +806,7 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
         throw std::runtime_error("Crystalliser(FVM): zero volumetric flow"
             " (components need a `Vliq`).");
     const scalar tau = V / Q;
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero, "bypass", "not applied");
 
     const scalar c_sat        = sat.c_sat;                 // helper (electrolyte OR curve)
     const scalar solvent_mass = sat.solvent_mass;

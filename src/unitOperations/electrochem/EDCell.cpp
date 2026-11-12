@@ -37,6 +37,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "EDCell.H"
+#include "core/PropertySourceLog.H"
 #include "Electrochem.H"
 
 #include "core/Constants.H"
@@ -155,7 +156,7 @@ ChannelState buildChannel(const std::string& who,
     //   lambda_i = z_i^2 F^2 D0_i / (R T)   [S m2/mol]   (equivalent conductance)
     //   kappa    = sum c_i lambda_i,  c_i [mol/m3] ~ m_i * rho_water
     // (dilute approximation rho ~ 1000 kg/m3; the unit ANNOUNCES it).
-    const scalar rho_w = 1000.0;                 // kg/m3 (dilute carrier approx)
+    const scalar rho_w = liquidSource::diluteCarrierDensity.value;   // kg/m3 (dilute carrier approx)
     scalar kappa = 0.0, c_eq = 0.0;
     for (std::size_t k = 0; k < ch.m.size(); ++k)
     {

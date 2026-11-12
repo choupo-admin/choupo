@@ -34,6 +34,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "BatchElectrodialysis.H"
+#include "core/PropertySourceLog.H"
 
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -319,6 +320,7 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
     // ---- the solvent, resolved ONCE (the rig is isothermal) ---------------
     //  ONE home for the factor since C148 (thermo/transport/StokesEinstein.H),
     //  the same arithmetic in the same order.
+    PropertySourceLog::instance().use(type(), name(), "liquidDensity", liquidSource::diluteCarrierDensity);
     const stokesEinstein::Factor se = stokesEinstein::factorFor(thermo, iWater_, state_.T);
     if (se.priced)
     {

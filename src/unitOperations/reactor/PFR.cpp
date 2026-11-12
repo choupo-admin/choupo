@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PFR.H"
+#include "core/PropertySourceLog.H"
 #include "CatalystPellet.H"
 #include "PolymerKPIs.H"
 #include "ReactorOutlet.H"
@@ -196,6 +197,7 @@ int PFR::solve(const DictPtr& dict,
         V_mol_in += z_in[i] * thermo.comp(i).Vliq();
     }
     const scalar Q = F_in_mol_s * V_mol_in;          // m³/s
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, "bypass", "not applied");
 
     // -- Initial molar flow vector ---------------------------------------
     sVector F_i(n);
@@ -693,6 +695,8 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             V_mol_in += z_in[i] * thermo.comp(i).Vliq();
         }
     const scalar Q   = anyConcLaw ? F_in * V_mol_in : 0.0;
+    if (anyConcLaw)
+        PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, "bypass", "not applied");
     const scalar tau = anyConcLaw ? V_R / Q : 0.0;
 
     // ---- THE BED'S GEOMETRY AND AN OPT-IN ERGUN PRESSURE DROP (C66) -------

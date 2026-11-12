@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SpiralWoundModule.H"
+#include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "BulkConversion.H"
 #include "AqueousSplit.H"
@@ -315,7 +316,11 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const scalar P_perm     = opDict->lookupScalar("P_permeate", Dims::pressure);
 
     const int    nNodes     = static_cast<int>(opDict->lookupScalarOrDefault("nNodes", 100.0));
-    const scalar rho        = opDict->lookupScalarOrDefault("rho_feed", 1000.0); // kg/m³
+    const scalar rho        = opDict->lookupScalarOrDefault("rho_feed", liquidSource::rhoFeedDefault.value); // kg/m³
+    if (opDict->found("rho_feed"))
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared");
+    else
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::rhoFeedDefault);
 
     // ---- Channel hydraulics: k_film + dP selectable models --------
     //  The feed-channel GEOMETRY (channelHeight, spacerPorosity, viscosity)
@@ -325,7 +330,8 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  velocity u = Q_b(z)/A_channel (so both fall along the channel).  With
     //  NO sub-block the legacy constants are used (k_film / dP_feed_total ---
     //  membrane01/02/03 unchanged).
-    scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 1.0e-3, D_solute = 1.6e-9;
+    scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = liquidSource::waterViscosityKnob.value,
+           D_solute = liquidSource::soluteDiffusivityLegacy.value;
     bool muDeclared = false, DDeclared = false;
     auto readGeom = [&](const DictPtr& b)
     {
@@ -392,6 +398,10 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  (announced with the model); else the legacy default, announced as
     //  such with the remedy.  No case in the corpus declares liquid
     //  transport, so the model route moves no golden -- checked.
+    if (muDeclared)
+        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
+    else if (!thermo.hasLiquidViscosity())
+        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::waterViscosityKnob);
     if (!muDeclared)
     {
         if (thermo.hasLiquidViscosity())

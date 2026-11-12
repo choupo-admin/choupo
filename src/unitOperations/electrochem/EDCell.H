@@ -76,6 +76,7 @@ Description
 #pragma once
 
 #include "LimitingCurrent.H"
+#include "core/PropertySourceLog.H"
 
 #include "core/Identifiers.H"
 #include "core/Types.H"
@@ -99,7 +100,7 @@ constexpr scalar MW_WATER_KG = 0.0180153;
 //- kg/m3.  The DILUTE-CARRIER density that turns a molality into a
 //  concentration.  Announced by every consumer; it is the same constant the
 //  conductivity and the limiting current are both built on.
-constexpr scalar RHO_CARRIER = 1000.0;
+inline const scalar RHO_CARRIER = liquidSource::diluteCarrierDensity.value;
 
 // ---------------------------------------------------------------------------
 //  One IEM (cation- or anion-exchange) membrane's read-in properties.

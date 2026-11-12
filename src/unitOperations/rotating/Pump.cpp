@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Pump.H"
+#include "core/PropertySourceLog.H"
 #include "solver/NewtonRaphson.H"
 #include "core/Advisory.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE inlet-phase reading
@@ -131,6 +132,9 @@ int Pump::solve(const DictPtr& dict,
 
     const scalar F_mol_s = F * 1000.0;                  // mol/s
     const scalar Q_vol   = F_mol_s * v_mix;             // m^3/s  (set by the feed)
+    PropertySourceLog::instance().useHere("liquidDensity", x_ions > 0.0
+        ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
+        "bypass", "not applied");
 
     // ---- Specification: EXACTLY ONE of W_shaft | P_out | dP -------------
     //   For an incompressible liquid the pump relation is invertible in
@@ -319,7 +323,9 @@ int Pump::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i) MW_mix += x[i] * thermo.comp(i).MW();
     const scalar rho = (v_mix > 0.0)
         ? (MW_mix / 1000.0) / v_mix                     // kg/m^3
-      : 1000.0;
+      : liquidSource::pumpHeadDensityFallback.value;
+    if (!(v_mix > 0.0))
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::pumpHeadDensityFallback);
     const scalar head_m = dP / (rho * 9.80665);
 
     if (verbosity >= 2)

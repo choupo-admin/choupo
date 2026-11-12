@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SprayDryer.H"
+#include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "streams/PsdOnGrid.H"
 #include "atomizer/Atomizer.H"
@@ -122,7 +123,12 @@ int SprayDryer::solve(const DictPtr& dict,
     // (its mixing rule -> a concentrated/viscous feed gives COARSER droplets),
     // when a liquidViscosity model is declared; else the operation knob (default
     // water, byte-stable for cases without a transport model).
-    scalar muL = oper->lookupScalarOrDefault("liquidViscosity", 1.0e-3);
+    scalar muL = oper->lookupScalarOrDefault("liquidViscosity", liquidSource::waterViscosityKnob.value);
+    if (!thermo.hasLiquidViscosity())
+        PropertySourceLog::instance().useHere("liquidViscosity", oper->found("liquidViscosity")
+            ? liquidSource::declaredByCase : NamedSource{ liquidSource::waterViscosityKnob.id,
+                                                          liquidSource::waterViscosityKnob.label },
+            oper->found("liquidViscosity") ? "declared" : "bypass");
     std::string muLSource = "operation.liquidViscosity knob (default water 1e-3; no liquidViscosity model)";
     if (thermo.hasLiquidViscosity())
     {
@@ -386,11 +392,12 @@ int SprayDryer::solve(const DictPtr& dict,
     //        0.072 N/m water fallback, so cases WITHOUT a sigma model stay
     //        byte-stable.
     // -------------------------------------------------------------------
-    scalar sigma = 0.072;
+    scalar sigma = liquidSource::waterSurfaceTensionFallback.value;
     std::string sigmaSource = "default (0.072 N/m, water)";
     if (oper->found("surfaceTension"))
     {
         sigma = oper->lookupScalar("surfaceTension");
+        PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared");
         sigmaSource = "operation{} knob";
     }
     else
@@ -407,7 +414,8 @@ int SprayDryer::solve(const DictPtr& dict,
         }
         catch (const std::exception&)
         {
-            sigma = 0.072;                       // no sigma model -> byte-stable fallback
+            sigma = liquidSource::waterSurfaceTensionFallback.value;   // no sigma model -> byte-stable fallback
+            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::waterSurfaceTensionFallback);
             sigmaSource = "default (0.072 N/m, water -- no surfaceTension model)";
         }
     }
@@ -578,7 +586,12 @@ int SprayDryer::solve(const DictPtr& dict,
     //  shrinks to the powder particle as solvent leaves:
     //      d_p = d32 · (x_solid,mass · ρ_L / ρ_solid)^(1/3)
     // -------------------------------------------------------------------
-    scalar rho_L = (solv.Vliq() > 0.0) ? (MW_w / 1000.0) / solv.Vliq() : 1000.0;
+    scalar rho_L = (solv.Vliq() > 0.0) ? (MW_w / 1000.0) / solv.Vliq()
+                                       : liquidSource::dropletDensityFallback.value;
+    if (!multiSolvent)
+        PropertySourceLog::instance().useHere("liquidDensity", solv.Vliq() > 0.0 ? liquidSource::recordVliqFlat
+            : NamedSource{ liquidSource::dropletDensityFallback.id, liquidSource::dropletDensityFallback.label },
+            "bypass", solv.Vliq() > 0.0 ? "not applied" : "");
     if (multiSolvent)
     {
         //  The solvent liquid's density at its feed composition: molar
@@ -592,7 +605,11 @@ int SprayDryer::solve(const DictPtr& dict,
             if (thermo.comp(i).Vliq() > 0.0) V += xs[i] * thermo.comp(i).Vliq();
             else all = false;
         }
-        rho_L = (all && V > 0.0) ? (MW_w / 1000.0) / V : 1000.0;
+        rho_L = (all && V > 0.0) ? (MW_w / 1000.0) / V : liquidSource::dropletDensityFallback.value;
+        if (!(all && V > 0.0))
+            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::dropletDensityFallback);
+        else
+            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::recordVliqFlat, "bypass", "not applied");
         if (!all)
             AdvisoryLog::instance().add("model", "warning",
                 "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'",

@@ -34,6 +34,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "BatchDiafilter.H"
+#include "core/PropertySourceLog.H"
 
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
@@ -142,10 +143,16 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
     //  module takes 1000 silently, which is a crutch this unit does not
     //  inherit.
     if (op->found("rho"))
+    {
         rho_ = op->lookupScalar("rho", Dims::density);
+        PropertySourceLog::instance().use(type(), name(), "liquidDensity",
+            liquidSource::declaredByCase, "declared");
+    }
     else
     {
-        rho_ = 1000.0;
+        rho_ = liquidSource::batchDiafilterRhoDefault.value;
+        PropertySourceLog::instance().use(type(), name(), "liquidDensity",
+            liquidSource::batchDiafilterRhoDefault);
         const std::string msg =
             "no `rho` declared -- the solution mass density every"
             " concentration in this vessel is closed on DEFAULTS to 1000"

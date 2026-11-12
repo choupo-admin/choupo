@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "RatedTestInversion.H"
+#include "core/PropertySourceLog.H"
 #include "SpiralWoundModule.H"
 
 #include "core/Advisory.H"
@@ -220,7 +221,11 @@ ModuleAtConditions runModuleAt(const DictPtr& unitDict,
     //  toBulk reads), so the probe's volumetric feed is exactly `feedFlow`.
     const std::size_t iW = thermo.aqueousSolventIndex();
     const std::size_t iS = thermo.indexOf(solute);
-    const scalar rho  = op->lookupScalarOrDefault("rho_feed", 1000.0);
+    const scalar rho  = op->lookupScalarOrDefault("rho_feed", liquidSource::rhoFeedDefault.value);
+    if (op->found("rho_feed"))
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared");
+    else
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::rhoFeedDefault);
     const scalar w    = feedMassFraction;
     const scalar nS   = w / thermo.comp(iS).MW();             // kmol/kg
     const scalar nW   = (1.0 - w) / thermo.comp(iW).MW();

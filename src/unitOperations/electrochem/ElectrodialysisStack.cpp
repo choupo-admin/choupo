@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ElectrodialysisStack.H"
+#include "core/PropertySourceLog.H"
 #include "Electrochem.H"
 #include "EDCell.H"
 #include "LimitingCurrent.H"
@@ -344,7 +345,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     //  run side by side in one hydraulic pass.  A declared velocity could
     //  contradict the flow and nothing noticed -- while it sets k and
     //  therefore i_lim.
-    const scalar rho_carrier = 1000.0;      // kg/m3, the dilute-carrier value this unit already uses
+    const scalar rho_carrier = liquidSource::diluteCarrierDensity.value;   // kg/m3, the dilute-carrier value this unit already uses
+    PropertySourceLog::instance().useHere("liquidDensity", liquidSource::diluteCarrierDensity);
     const scalar Q_dil_in = dil.F * dil.z[iWater] * 1000.0 * MW_WATER_KG / rho_carrier;  // m3/s
     scalar u_superficial = 0.0, u_interstitial = 0.0, channelsPerPass = 0.0;
     scalar pathLength = 0.0, sectionEmpty = 0.0;

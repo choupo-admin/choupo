@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Pipe.H"
+#include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "core/Advisory.H"                          // the transition-band announcement
 #include "core/Constants.H"
@@ -241,6 +242,7 @@ int Pipe::solve(const DictPtr& dict,
             if (operDict->found("viscosity"))
             {
                 muL = operDict->lookupScalar("viscosity", Dims::viscosity);
+                PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
                 std::cout << "  [pipe] liquid viscosity: USER OVERRIDE from"
                              " operation.viscosity = " << muL << " Pa.s"
                              " (the thermoPackage liquidViscosity model is"
@@ -451,6 +453,7 @@ int Pipe::solve(const DictPtr& dict,
     if (operDict->found("viscosity"))
     {
         mu = operDict->lookupScalar("viscosity", Dims::viscosity);
+        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared");
         muSource = "operation override";
     }
     else if (thermo.hasLiquidViscosity())
