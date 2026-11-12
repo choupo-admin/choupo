@@ -270,9 +270,34 @@ LAYERING_ACCEPTED_CYCLES = {
 #  stay until a curator opens the primaries.  Remedy: fix Tb or the Antoine
 #  coefficients from a primary source and remove the pin (the stale-pin arm
 #  in check_tb_antoine fails a pin that heals).  Blocker: literature access.
-TB_ANTOINE_PINNED = {}   # emptied 2026-08-23: all 13 records fixed from
-#  properly-licensed sources (Poling App. A / Landolt-Boernstein / curation
-#  fits to McGarry and Perry curves); H2S's Tb was the wrong half there.
+#  dimethylSulfoxide (registered 2026-11-12, DEV.md 4c C367; -3.8 %: the
+#  record's Tb 462.15 K, a ChemSep value, against its fitted Antoine, whose own
+#  normal boiling point is 463.63 K).  The archive holds TWO POPULATIONS of
+#  measurements that disagree by about 1.4 K.  (a) Eleven articles report a
+#  normal boiling temperature or a boiling temperature at about 1 atm,
+#  461.92-463.85 K, median 462.19 K: 10.1016/j.fluid.2008.09.010 (461.92 K),
+#  j.fluid.2014.04.025 (462.18), j.fluid.2015.08.014 (462.24 at 101.3 kPa),
+#  j.jct.2007.04.004 (462.19), j.jct.2019.05.005 (463.17), j.tca.2007.08.008
+#  (462.19), 10.1021/acs.jced.7b00241 (463.85), acs.jced.8b00225 (462.16),
+#  je100033s (462.06), je4006739 (462.25), je700408x (462.19); two more give
+#  462.19 K at 95.3 kPa (j.fluid.2007.10.017) and 461.55 K at 96.6 kPa
+#  (j.tca.2017.05.005).  (b) The pure-DMSO end of the vapour-liquid studies at
+#  101.3 kPa, 463.17-464.0 K, median 463.38 K: 10.1016/j.fluid.2015.07.029
+#  (464.0), j.fluid.2015.09.039 (463.75, at x = 0.011), j.jct.2019.03.036
+#  (463.27), j.jct.2019.05.005 (463.17), 10.1021/acs.jced.6b00040 (463.38);
+#  and the Psat points of 10.1021/je400531a at 463.43-463.45 K / 101.3 kPa,
+#  which the record's clean fit (max 0.79 %, 49 points) follows.  Why
+#  tolerated: which population is the pure liquid's boiling point depends on
+#  the purity (water lowers it) and the method of each article, which only a
+#  reading of the articles settles; the fit is NOT redone to meet the gate and
+#  Tb is NOT changed to meet the fit.  Remedy: a human reads the articles'
+#  purity and method statements, then fixes Tb or the curve and removes the pin
+#  (the stale-pin arm fails a pin that heals).  Blocker: reading the articles.
+TB_ANTOINE_PINNED = {   # 13 records fixed 2026-08-23 from properly-licensed
+    #  sources (Poling App. A / Landolt-Boernstein / curation fits to McGarry
+    #  and Perry curves); H2S's Tb was the wrong half there.
+    "dimethylSulfoxide": -3.8,
+}
 
 #  SPECIFICATION-SHEET UNIT WORDS CHOUPO'S OWN PARSER CANNOT READ (2026-09-07).
 #
