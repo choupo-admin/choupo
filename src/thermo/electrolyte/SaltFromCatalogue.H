@@ -45,6 +45,7 @@ License
 #include "thermo/Database.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoAnnounce.H"
+#include "thermo/PairAudit.H"
 #include "thermo/electrolyte/PitzerSingleSalt.H"
 #include "thermo/electrolyte/ENRTLSingleSalt.H"
 #include "core/Advisory.H"
@@ -280,6 +281,19 @@ inline DictPtr findIon(const std::string& species)
 // beta0/beta1/Cphi are REQUIRED (lookupScalar throws if absent); beta2/alpha1/
 // alpha2 + the optional T-slots/lphiValidityMax are emitted when present (faithful,
 // NOT defaulted); calorimetricFit is a WORD.  setprecision(17) -> bit-exact.
+// A salt record Choupo REGRESSED (DEV.md 4c C311) carries a `provenance {}`
+// block: its review status, its `review {}` block and its fit grade are voiced
+// through the SAME reader the molecular pairs use (PairAudit.H -- one
+// sentence, one once-per-process channel).  A record with no provenance block
+// (every literature record before C311) is not touched: nothing is printed and
+// nothing is read that was not read before.
+inline void auditRegressedSaltRecord(const DictPtr& raw, const std::string& label)
+{
+    if (!raw || !raw->found("provenance")) return;
+    PairResolution r;
+    fillPairAudit(r, raw->subDict("provenance"), label, /*requireOrigin=*/true);
+}
+
 inline DictPtr bridgePitzerPair(const DictPtr& r)
 {
     auto pr = r->subDict("parameters");
@@ -428,7 +442,10 @@ inline DictPtr findPitzerPair(const std::string& cation, const std::string& anio
     const fs::path tp = records::resolveRecord(
         "parameters/Pitzer/pairs/" + cation + "-" + anion + ".dat");
     if (!tp.empty() && fs::exists(tp))
+    {
+        auditRegressedSaltRecord(parsedOnce(tp), "Pitzer " + cation + "-" + anion);
         return memo(bridgePitzerPair(parsedOnce(tp)));
+    }
     return nullptr;
 }
 
@@ -627,7 +644,10 @@ inline DictPtr findENRTLPair(const std::string& cation, const std::string& anion
     const fs::path tp = records::resolveRecord(
         "parameters/eNRTL/" + cation + "-" + anion + ".dat");
     if (!tp.empty() && fs::exists(tp))
+    {
+        auditRegressedSaltRecord(parsedOnce(tp), "eNRTL " + cation + "-" + anion);
         return bridgeENRTLPair(parsedOnce(tp));
+    }
     return nullptr;
 }
 

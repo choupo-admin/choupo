@@ -1,0 +1,57 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  electrolyteFit01_nacl
+  =====================
+
+  ONE SALT, TWO MODELS, ONE TABLE.  The parameters of NaCl(aq) are regressed
+  to the evaluated mean ionic activity coefficient gamma_pm and osmotic
+  coefficient phi of Hamer & Wu, J. Phys. Chem. Ref. Data 1 (1972) 1047,
+  doi:10.1063/1.3253108, Table 16 (constant/experiments/Na-Cl.dat, the same
+  file as the catalogue's curation case data/curation/electrolytes/Na-Cl),
+  0.1-6 mol/kg at 25 C -- first by Pitzer (beta0, beta1, Cphi), then by
+  eNRTL (two taus, alpha 0.2 fixed).
+
+  WHAT TO READ IN THE OUTPUT.  The per-point table: Pitzer misses nowhere by
+  more than 0.2 %; two-parameter eNRTL misses by about 3 % at 6 mol/kg --
+  the same data, two model shapes.  Compare the fitted values with the
+  literature: Pitzer & Mayorga (1973) give 0.0765 / 0.2664 / 0.00127, Chen &
+  Evans (1986) 8.885 / -4.549.  Every 4th point is HELD OUT and printed
+  beside the fit: interleaved points of the SAME table, so they show
+  interpolation, not a validation against an independent source.
+
+  The rules the catalogue campaign applies (window, grade, cap) are stated
+  in bin/curate/electrolytes_c311.py (DEV.md 4c C311).
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name      fit_pitzer;
+        type      electrolyteFit;
+        cation    Na;   anion Cl;
+        model     pitzer;
+        dataset   "constant/experiments/Na-Cl.dat";
+        heldOut   { every 4; offset 3; }
+        pitzer    { alpha1 2.0; alpha2 12.0; fitBeta2 false; }
+        grade     { limits_pct ( 2 5 10 ); }
+        proposal  { file "Na-Cl.pitzer.proposal.dat"; }
+    }
+    {
+        name      fit_eNRTL;
+        type      electrolyteFit;
+        cation    Na;   anion Cl;
+        model     eNRTL;
+        dataset   "constant/experiments/Na-Cl.dat";
+        heldOut   { every 4; offset 3; }
+        eNRTL     { alpha 0.2; }
+        grade     { limits_pct ( 2 5 10 ); }
+        proposal  { file "Na-Cl.eNRTL.proposal.dat"; }
+    }
+);
