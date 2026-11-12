@@ -7022,6 +7022,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/speciesc373.$$
+    # liquid-property ratchet gate (2026-11-12, DEV.md 4c C378 slice 0).  No NEW unit or sizing pass reads a component's 25 C liquid volume or writes a liquid density, viscosity, surface tension or diffusivity as a literal: it asks liquidProperty::evaluate.  The debt the inventory found is pinned per file in bin/curate/liquid_property_ratchet_debt.tsv and may only shrink.
+    if gate_exec "$ROOT/bin/curate/check_liquid_property_ratchet.py" > /tmp/lpratchet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "liquid-property-ratchet-gate" "$(head -1 /tmp/lpratchet.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_liquid_property_ratchet.py)\n" "liquid-property-ratchet-gate"
+        cat /tmp/lpratchet.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lpratchet.$$
     # property-route bench gate (2026-11-12, DEV.md 4c C378 slice 0, TR-16).  Every liquid-property route the kernel has (density incl. the reference equations, flat and bare Rackett; viscosity; surface tension; diffusivity), for every component record and the manifest's binaries, over 11 T x 3 P, answers bit for bit what it answered when recorded; a moved record is NAMED.  Goldens cannot show it: no stream table prints a density and most routes no case walks.
     if gate_exec "$ROOT/bin/curate/check_property_route_bench.py" > /tmp/routebench.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$)"

@@ -293,6 +293,17 @@ SABOTAGES += [
                "water-methanol mixture block, and the gate must NAME them "
                "-- a hash of the total would only say that something moved.",
     },
+    {
+        "gate": "check_liquid_property_ratchet.py",
+        "kind": "detection",
+        "file": "bin/curate/liquid_property_ratchet_debt.tsv",
+        "find": "src/unitOperations/rotating/Pump.cpp\tvliq\t2",
+        "replace": "src/unitOperations/rotating/Pump.cpp\tvliq\t1",
+        "why": "the ratchet must see a unit pricing a liquid property itself "
+               "beyond its pin (C378 slice 0).  Lowering the pump's pin below "
+               "the two `.Vliq()` reads its source holds is the same as one "
+               "new raw read: the gate must NAME the file, not pass.",
+    },
 ]
 
 SOURCE_SABOTAGES = [
