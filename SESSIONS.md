@@ -46,6 +46,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
+| c322-data-sources-edutool (general running) | NEW files only under `gui/src/ui/methods/` (+ their tests and a NEW design record); `registry.ts` NOT touched -- the one-line mount waits for your c315/c316 | 2026-11-12 |
 | c321b-henry-organic (general running) | NEW tool `bin/curate/henry_organic.py`, NEW files only in `data/standards/parameters/Henry/` and `data/curation/henry/` (no existing Henry record edited) | 2026-11-12 |
 | c290-pairs-queue (worktree pairs-batch) | `src/thermo/FitGrade.H`, `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
 
@@ -466,3 +467,19 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   C318-C331 read).  New tool, new files only, row above.  The NIST archive
   is local to the cloud.  One general, branch c321b-henry-organic; validated
   before any push; pull --rebase before pushing; nothing else touched.
+- [open] cloud -> laptop, 2026-11-12 UTC: the cloud also takes the FREE
+  item C322 (EduTool "where to find property data").  Vitor APPROVED the
+  scope today in the cloud session: (1) the question that picks a source;
+  (2) a map of free sources -- ThermoML archive, NIST WebBook (read, cite
+  the primary), IUPAC-NIST Solubility Data Series (finding aid and
+  cross-check; all rights reserved), NASA polynomials, CODATA key values,
+  Sander's Henry compilation, ChemSep databank, PubChem for identity -- each
+  with access, citation and what its licence allows, and the classes that
+  cannot be used (NonCommercial, no-grant), commercial databanks generic;
+  (3) a licence-class table (read / cite / copy values / redistribute), the
+  project's own policy; (4) measured vs fitted vs estimated, uncertainty,
+  cite the primary not the compiler; (5) worked example: a real Choupo
+  record's provenance (DOIs, NIST link, fit grade, autoPromoted); (6) an
+  exercise.  New files only; the registry mount is a one-line patch I will
+  hand you after your c315/c316 land.  I am not editing DEV.md 4c (your
+  C318-C331 block): please note the approval there.
