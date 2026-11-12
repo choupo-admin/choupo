@@ -3563,7 +3563,7 @@ accepts today, and that is a policy call.
 > green-ammonia plants, all from the NH3 record's own C65 correction
 > (measured: NH3 alone moves the same rows to the same values), 40 in five
 > combustion/Gibbs cases from the C170 radical re-sourcing.  Vitor's list.
-> (5) Jurist sheet: `docs/reviews/2026-11-12-source-licence-sheet.md`.
+> (5) The jurist sheet was written and then DELETED at Vitor's order (2026-11-12: no budget for a jurist's review); the per-source facts stay in the thirdParty/ cards and in check_source_licence.
 > Residual exposure outside every pin, named there: the compilation mirrors
 > of those five cases, nox01's adopted N/NH, four methylAcetate mirrors,
 > thirteen case-local DECHEMA pair records.
