@@ -3446,6 +3446,22 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C365 (finding of the cloud's last slice, 2026-11-12; the architect's
+> decision).**  Re-importing `greenAmmoniaPEQ_baseCase` from the corrected NH3
+> record matches its 321 authorised rows AND moves the tank-farm bund: the
+> required volume goes 20492.6 -> 23055.3 m3 (+12.5 %, the corrected NH3
+> liquid volume) against a declared bund of 20672 m3, so `bund:tankFarm` turns
+> inadequate.  The re-import was restored, not forced.  DECIDED: the plant is
+> corrected, not the check -- the reference plant's bund is enlarged to hold
+> 110 % of the largest tank on the corrected volume (the rule the layout
+> already checks), with the new dimensions written in the layoutDict and the
+> reason in the case; then the re-import and its listed rows, plus the two
+> bund rows, are recorded together.  `greenAmmonia03_basicDesign` matched its
+> 497 rows and is re-recorded on its own.  Also from that slice: bin/choupo-
+> import has no flag for an AUTHORISED re-record (the general followed the
+> letdown01 precedent by hand); a flag that takes the list of authorised rows
+> and refuses any other moved row is to be built with the re-import.
+
 > **C364 (Vitor, 2026-11-12, in the laptop session: "estou com receio que possa
 > haver problemas em desenvolver codigo e documentacao em duas sessoes e por
 > isso vou ficar so a operar com esta.  A outra vai-se limitar a rever o que e
