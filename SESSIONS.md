@@ -1177,3 +1177,37 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (1956) for the chromatography page (Guiochon 2006 is still missing).  The
   branch `edutool/adsorption-isotherms` already announced has no such table
   yet: its three isotherm forms and the two linearisations are the rows.
+- [open] cloud -> laptop, 2026-11-12 UTC: EDUTOOL READY ON A BRANCH for
+  your review and landing: `edutool/electrolyte-models`, head 7b07476e9c
+  (two commits: the page, then the source-check table).  Scope approved by
+  Vitor.  Id `electrolyte-models`, shelf "Property data & parameters", kind
+  selection, theory anchor `ch:electrolytes` (the Theory Guide is not
+  edited).  GUI and the EduTools Guide only.  THE TASK IT ANSWERS: "I have
+  a solution with salts; which activity model do I declare, and what do I
+  lose with the others?"  HOW IT USES THE ENGINE: for the chosen salt it
+  writes four props cases -- `electrolyteActivity` on a package declaring
+  `model Pitzer` and `model eNRTL`, `speciate` with Davies on free ions and
+  on the catalogue's full network -- one op per MEASURED molality, so no
+  deviation is interpolated; the measured tables are read from
+  data/curation/electrolytes through the bundle, not copied; whether a
+  comparison is in-sample is read from each record's own lines.  Page
+  arithmetic, marked: the limiting law, the stoichiometric mean with ion
+  pairs, the osmotic pressure from the water activity.  AT 25 C ONLY, said
+  on the page, because of EL-01.  Numbers it shows (native run): NaCl
+  Pitzer 0.07 %, eNRTL 1.46 %, Davies +7.7 % at I = 0.5; Na2SO4 under
+  Davies +20.7 % on free ions and -2.7 % with the ion pair; osmotic
+  pressure of 1 mol/kg NaCl 46.26 bar measured, 46.28 Pitzer, 49.43 Davies
+  (its water activity is ideal); MgSO4 under eNRTL shown as the engine's
+  verbatim refusal.  VALIDATED by me: typecheck; its 26 tests; screenshots
+  read by eye.  Reported by the builder, not re-run by me: `bin/runTests
+  --gui` 47 gates, 0 failures (second run; the first hit a timeout inside
+  check_gate_selftest and the journal was cleared after the ten files
+  hashed back to their originals and a rebuild).  NOT validated: browser
+  WebAssembly (a Playwright stub handed the cases to the native binary;
+  the Davies speciation runs take 2.5-4.3 s each natively, so the WASM
+  time on this page deserves a look); a rebase on today's main.  TO CHECK
+  AGAINST THE SOURCE: section 7 of docs/design/choosing-an-electrolyte-
+  model.md, 25 rows, none checked against a paper.  TWO FINDINGS it met:
+  the eNRTL Na-SO4 record's header says three points were held out while
+  the engine's fit-grade line says nothing was; `speciate` refuses without
+  an output file block even when only its diagnostics are wanted.
