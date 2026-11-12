@@ -1,0 +1,53 @@
+quantity	value	value2
+A unordered catalogue pairs tested (any model)	12	
+A (pair, model) records tested	18	
+A points / articles	142	11
+A inside span: records / points	11	57
+A inside span: median |d ln gamma| (factor)	0.1205	1.128
+A inside span: p90 |d ln gamma| (factor)	0.3481	1.416
+A inside span: NEGATIVE control (ij<->ji swapped) median / p90 |d ln gamma|	0.7925	2.2892
+A outside span: records / points	18	85
+A outside span: median |d ln gamma| (factor)	0.5854	1.796
+A outside span: p90 |d ln gamma| (factor)	1.0199	2.773
+A outside span: NEGATIVE control (ij<->ji swapped) median / p90 |d ln gamma|	1.1017	1.8080
+A all: records / points	18	142
+A all: median |d ln gamma| (factor)	0.3157	1.371
+A all: p90 |d ln gamma| (factor)	0.8937	2.444
+A all: NEGATIVE control (ij<->ji swapped) median / p90 |d ln gamma|	0.9801	2.0965
+A NEGATIVE control: records whose swapped median error is LARGER	17	18
+A POSITIVE control NRTL ethanol-water (DECHEMA set; 3 articles): points / in span	22	20
+A POSITIVE control median |d ln gamma| all / in span	0.0797	0.0774
+A POSITIVE control p90 |d ln gamma| all / in span	0.2689	0.1274
+A inside span, C283/C291 pipeline records only: points / median |d ln gamma|	6	0.2901
+A all points, C283/C291 pipeline records only: points / median |d ln gamma| / p90	54	0.6252 / 1.0208
+B isobaric bubble T [K] all: blocks / points	20	1699
+B isobaric bubble T [K] all: (block, model) / systems	32	20
+B isobaric bubble T [K] all: median / p90 |err|	0.2400	0.9866
+B isobaric bubble T [K] all: NEGATIVE control median / p90	0.6751	2.5798
+B isobaric bubble T [K] all: points with y / median / p90 of max|y_pred - y|	729	0.0106 / 0.0942
+B isobaric bubble T [K] all three pairs in span: blocks / points	8	495
+B isobaric bubble T [K] all three pairs in span: (block, model) / systems	10	8
+B isobaric bubble T [K] all three pairs in span: median / p90 |err|	0.2353	0.6543
+B isobaric bubble T [K] all three pairs in span: NEGATIVE control median / p90	0.5381	1.1930
+B isobaric bubble T [K] all three pairs in span: points with y / median / p90 of max|y_pred - y|	54	0.0192 / 0.0429
+B isobaric bubble T [K] independent article: blocks / points	2	95
+B isobaric bubble T [K] independent article: (block, model) / systems	2	2
+B isobaric bubble T [K] independent article: median / p90 |err|	0.3533	1.1379
+B isobaric bubble T [K] independent article: NEGATIVE control median / p90	0.6496	5.8625
+B isobaric bubble T [K] independent article: points with y / median / p90 of max|y_pred - y|	53	0.0510 / 0.0949
+B isothermal bubble P [relative] all: blocks / points	11	1711
+B isothermal bubble P [relative] all: (block, model) / systems	23	11
+B isothermal bubble P [relative] all: median / p90 |err|	0.0097	0.0446
+B isothermal bubble P [relative] all: NEGATIVE control median / p90	0.0287	0.1310
+B isothermal bubble P [relative] all: points with y / median / p90 of max|y_pred - y|	244	0.0039 / 0.0070
+B isothermal bubble P [relative] all three pairs in span: blocks / points	7	1083
+B isothermal bubble P [relative] all three pairs in span: (block, model) / systems	14	7
+B isothermal bubble P [relative] all three pairs in span: median / p90 |err|	0.0082	0.0198
+B isothermal bubble P [relative] all three pairs in span: NEGATIVE control median / p90	0.0232	0.0876
+B isothermal bubble P [relative] all three pairs in span: points with y / median / p90 of max|y_pred - y|	234	0.0038 / 0.0065
+B isothermal bubble P [relative] independent article: blocks / points	1	234
+B isothermal bubble P [relative] independent article: (block, model) / systems	3	1
+B isothermal bubble P [relative] independent article: median / p90 |err|	0.0088	0.0188
+B isothermal bubble P [relative] independent article: NEGATIVE control median / p90	0.0107	0.0261
+B isothermal bubble P [relative] independent article: points with y / median / p90 of max|y_pred - y|	234	0.0038 / 0.0065
+B NEGATIVE control: (block, model) whose swapped median error is LARGER	40	55
