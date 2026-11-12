@@ -8,12 +8,21 @@
   declares nonvolatility locally, and its dissociation (H3PO4 -> H+ + H2PO4- ->
   ...) is electrolyte chemistry, not a universal component role.
 
-  PRIMARY: Wagman et al., NBS Tables of Chemical Thermodynamic Properties,
-  J. Phys. Chem. Ref. Data 11, Suppl. 2 (1982) -- PUBLIC DOMAIN.
-  NOTE on dHf_298: the crystalline-H3PO4 formation enthalpy is tabulated as
-  -1284.4 kJ/mol (CRC / commonly tabulated; used here); some NBS printings
-  list -1279.0 -- a ~5 kJ/mol spread.  Flag before a precise heat-of-reaction
-  hinges on it.
+  SOURCE (re-sourced 2026-11-12, DEV.md 4c C335): NASA/TP-2002-211556
+  (McBride, Zehe & Gordon 2002), a US government work in the public domain,
+  Table B2 p. 35, entry H3PO4(cr): dfH(298.15) -1284.488 kJ/mol, S(298.15)
+  110.544 J/(mol K), Cp(298.15) 106.064 J/(mol K); the report's own source
+  is Chase 1998 pp. 1345-7.  Appendix D p. 233 carries the crystal's Cp
+  polynomial over 200-315.5 K; it is not transcribed (the constant Cp(298)
+  below is what this record has always carried).
+  CROSS-CHECK, entering no value: the NBS Tables (Wagman et al., J. Phys.
+  Chem. Ref. Data 11, Suppl. 2 (1982), Table 19P p. 2-73, read 2026-11-12
+  at https://srd.nist.gov/JPCRD/jpcrdS2Vol11.pdf) print dfH -1279.0 kJ/mol,
+  S 110.50 and Cp 106.06 for the crystal -- the ~5 kJ/mol spread on dfH is
+  between two primaries, and a precise heat of reaction hinging on it
+  should say which one it took.  (That journal issue is NOT public domain:
+  it carries a 1982 copyright of the U.S. Secretary of Commerce, assigned to
+  AIP and ACS, with permission to quote with acknowledgement.)
 \*---------------------------------------------------------------------------*/
 
 name        H3PO4;
@@ -30,23 +39,25 @@ solid
 
 standardThermochemistry
 {
-    dHf_298   -1284400;        // J/mol  crystalline [CRC; NBS printings -1279.0, see header]
-    s_298     110.5;           // J/(mol*K) [Wagman et al. NBS Tables 1982]
+    dHf_298   -1284488;        // J/mol  crystalline; NASA/TP-2002-211556 Table B2, p. 35, entry H3PO4(cr)
+    s_298     110.544;         // J/(mol*K); Table B2, p. 35
     referenceState     pureSolid;
 }
 
 solidHeatCapacity
 {
     model         polynomial;          // Cp = a0  [J/(mol*K)], constant
-    coefficients  ( 106.06 );          // Cp(298) [Wagman et al. NBS Tables 1982]
+    coefficients  ( 106.064 );         // Cp(298.15); NASA/TP-2002-211556 Table B2, p. 35
     Trange        ( 298  315 );        // constant-Cp validity flag (solid; melts ~315 K)
 }
 
 provenance
 {
-    standardThermochemistry { origin literature; method "dHf_298: CRC Handbook (crystalline H3PO4, -1284.4 kJ/mol; NBS printings -1279.0); s_298: Wagman et al. NBS Tables 1982"; }
-    solidHeatCapacity { origin literature; method "Wagman et al. NBS Tables 1982 (Cp298, carried constant)"; }
+    standardThermochemistry { origin literature; method "NASA/TP-2002-211556 Table B2, p. 35, entry H3PO4(cr): dfH(298.15) and S(298.15) as printed (the report's source: Chase 1998 pp. 1345-7)"; notes "cross-checked against Wagman et al. 1982 Table 19P, which prints dfH -1279.0 kJ/mol -- see the header"; }
+    solidHeatCapacity { origin literature; method "NASA/TP-2002-211556 Table B2, p. 35, entry H3PO4(cr): Cp(298.15), carried constant"; }
     rho_p { origin literature; method "crystalline H3PO4 density ~1.834 g/cm3"; }
+    source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
+    licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105 -- the thermochemistry and Cp above
 }
 
 cosmo

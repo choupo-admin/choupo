@@ -65,12 +65,11 @@ SPECIES_WITHOUT_CITATION = {
 
 #  Records whose SOURCE does not meet the project's licence/provenance
 #  protocol.  Each names what is wrong and what removing it costs.
+#  H3PO4.dat LEFT 2026-11-12 (DEV.md 4c C335): its dHf_298, s_298 and Cp(298)
+#  are now NASA/TP-2002-211556 Table B2's (public domain; -1284.488 kJ/mol,
+#  0.09 kJ/mol from the CRC number it held), with Wagman et al. 1982's
+#  -1279.0 kept as a cross-check that enters no value.  No case reads it.
 SOURCE_LICENCE = {
-    "data/standards/components/H3PO4.dat":
-        "dHf_298 is taken FROM CRC (-1284.4 kJ/mol).  The file's own header "
-        "names the primary (Wagman et al., NBS Tables 1982) and records that "
-        "it gives -1279.0 -- a DIFFERENT number, so this is not a re-citation "
-        "but a value change, and it moves a golden.  Needs Vitor.",
     "data/standards/components/methylAcetate.dat":
         "calls NIST WebBook / DIPPR-class compilations 'Primary data' -- the "
         "aggregator AS the authority, and no primary is named for Tc/Pc/omega/"
