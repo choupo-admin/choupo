@@ -200,6 +200,15 @@ NC_COMPILATION = {
 #  and their pins left.  letdown02's re-import moved no number; letdown01's
 #  moved the twelve valve density / volumetric-flow KPIs its golden pins,
 #  listed for Vitor before any record.
+#  DISCHARGED 2026-11-12 (DEV.md 4c C335): twenty more cases were re-imported
+#  with bin/choupo-import, each validated against its own golden by the
+#  importer and then by `bin/runTests --scope` (PASS, nothing re-recorded).
+#  The five left REFUSED: the four green-ammonia plants because their
+#  re-import moves golden rows (listed in
+#  docs/reviews/2026-11-12-licence-debts-moved-rows.md, Vitor's list), and
+#  basis01_two_unit_chain because the importer's own validator crashes on
+#  its `closure` rows (AttributeError: `energyClosures` is a list there),
+#  so nothing could be staged.
 NO_GRANT_CASE_LOCAL = {
     "tutorials/plant/greenAmmonia03_basicDesign/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
@@ -208,46 +217,6 @@ NO_GRANT_CASE_LOCAL = {
     "tutorials/plant/greenAmmonia02_feasibility50bar/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/plant/greenAmmoniaPEQ_baseCase/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/compare/compare_visc_liquid_ammonia/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/gibbs/landscape01_ammonia_synthesis/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/gibbs/landscape06_nitrogen_fixation_routes/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/gibbs/nh3_equilibrium_map/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/kinetics/ammoniaRate01_dyson_simon/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/props/safety/relief01_ammonia_loop_gas/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/absorption/absorber01_NH3_water/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/absorption/stripper01_NH3_water/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/distillation/column13_sour_water_stage_identity/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/distillation/stripper01_sour_water/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/distillation/stripper02_sour_water_h2s/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/flash/flash09_nh3_water_reactive/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/flash/flash12_nh3_acetic_ethanol_reactive/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/flash/flash13_acetic_ethanol_vacuum_flash/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/gibbs/gibbs10_ammonia_fugacity/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/gibbs/gibbs12_element_potential_newton/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction/constant/components/NH3.dat":
-        "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
-    "tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
     "tutorials/steady/thermo/basis01_two_unit_chain/constant/components/NH3.dat":
         "sealed NH3 mirror; Engineering Toolbox viscosity fit -- re-import.",
