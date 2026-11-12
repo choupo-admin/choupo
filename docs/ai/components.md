@@ -297,7 +297,7 @@ level up.)
 | `dimethylacetylene` | 54.09044 | (volatile) | 287-424 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylCarbonate` | 90.0779 | (volatile) | 278-546 | ✓ | ✓ | — | — | — | — | ✓ | μ_L |
 | `dimethylDisulfide` | 94.19904 | (volatile) | 364-525 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `dimethylethanolamine` | 89.13624 | fit | 273-448 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
+| `dimethylethanolamine` | 89.13624 | fit | 273-432 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylEther` | 46.0684 | (volatile) | 180-392 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylSulfide` | 62.13404 | (volatile) | 304-451 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `dimethylSulfoxide` | 78.13344 | fit | 293-463 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
@@ -395,7 +395,7 @@ level up.)
 | `methylcyclohexane` | 98.18607 | (volatile) | 344-511 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylcyclopentane` | 84.15948 | (volatile) | 320-478 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
 | `methylDecanoate` | 186.2950 | fit | 273-433 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
-| `methylDiEthanolAmine` | 119.1622 | fit | 410-738 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
+| `methylDiEthanolAmine` | 119.1622 | fit | 410-543 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
 | `methylethanolamine` | 75.10966 | fit | 275-451 | ✓ | — | ✓ | — | — | — | ✓ | μ_L |
 | `methylEthylCarbonate` | 104.1045 | (volatile) | ✓ | ✓ | — | ✓ | — | — | — | — |   |
 | `methylEthylEther` | 60.09502 | (volatile) | 265-394 | ✓ | ✓ | ✓ | — | — | — | ✓ | μ_L |
