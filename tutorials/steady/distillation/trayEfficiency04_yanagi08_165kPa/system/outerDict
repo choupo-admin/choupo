@@ -11,8 +11,9 @@
   abscissa of Yanagi & Sakata's Figure 12 -- and read what the paper
   measured: the overall tray efficiency (the Fenske slope over the trays),
   the pressure drop (Figure 13 plots it against the superficial velocity,
-  `u_bottomTray`), and the approach to flood.  The upper end stops below the
-  model's own entrainment flood for this tray at this pressure.
+  `u_bottomTray`), and the approach to flood.  The upper end is a sweep limit, not the model's flood: measured loads above it
+  are reported in the case header (run by hand where the model reaches them, counted as
+  model misses where it refuses, psi >= 1).
 \*---------------------------------------------------------------------------*/
 
 type        sweep;

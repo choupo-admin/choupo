@@ -58,9 +58,12 @@
   WHAT THE MODEL CANNOT SEE: hole area.  The AIChE transfer units carry none,
   so the open area reaches the efficiency only through the flood approach
   (entrainment) and the pressure drop.  Weeping is not modelled, so the
-  low-load fall-off of the measured efficiency is not predicted.  The sweep
-  stops below the load at which Fair's entrainment correlation passes psi = 1
-  (the model's own entrainment flood).
+  low-load fall-off of the measured efficiency is not predicted.  MEASURED POINTS THE MODEL CANNOT REACH ARE MODEL MISSES.  The model refuses
+  (psi >= 1) beyond Fs 1.967 at 165 kPa, and the 14 % tray was measured
+  operating at Fs 2.123 (84.6 %), 2.362 (74.6 %) and 2.649 (58.0 %) (Fig. 12,
+  digitised): 8 %, 20 % and 35 % beyond the model's flood.  No prediction exists
+  there, so the error statistics exclude them for that reason alone, and each
+  counts as a miss: the model floods this tray too early.
 \*---------------------------------------------------------------------------*/
 
 units

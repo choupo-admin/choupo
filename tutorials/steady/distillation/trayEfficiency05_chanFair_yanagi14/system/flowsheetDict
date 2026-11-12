@@ -59,8 +59,14 @@
 
   WHAT THE MODEL SEES OF THE OPEN AREA: only the approach to flood f
   (Perry's open-area capacity correction makes the 8 % tray's f larger).
-  Weeping is not modelled.  The sweep stops below the model's own
-  entrainment flood (Fair's psi = 1).
+  Weeping is not modelled.  THE TWO HIGHEST MEASURED LOADS ARE NOT SET ASIDE.  The sweep stops at Fs 2.3, but the
+  model runs to Fs 2.380 (beyond it Fair's entrainment correlation gives psi >= 1
+  and the column refuses), so the two highest measured loads are PREDICTED
+  (run by hand, fFactor overridden): Fs 2.305 (Fig. 12, digitised, 41.3 %) and
+  Fs 2.356 (Table III run 625, 41.1 %; the paper's own FLOODING run: type A,
+  spray height 610 mm = the tray spacing).  ChanFair predicts 63.6 / 44.7 %, i.e.
+  +22.3 / +3.6 points; the model's own hydraulics put these loads at 99.5 % and 102 %
+  of flood.  Both are counted in the error statistics of the design record.
 \*---------------------------------------------------------------------------*/
 
 units
