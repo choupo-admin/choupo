@@ -3493,6 +3493,18 @@ accepts today, and that is a policy call.
 > voltage drive with a limit, a displacement vessel, conditional events)
 > are separate later slices, each decided on its own.  An EduTool on good
 > practice for panels and alarms waits for the page queue to clear.
+> VITOR'S ANSWERS to the design record's questions (2026-11-12): he holds
+> no alarm-management or operator-display standard -- "usa apenas boas
+> praticas": the alarm rules are written as good practice and SAID to be
+> unverified against a standard; the tutorial is on WINE, "uma composicao
+> tipica de vinho de mesa" -- a declared typical composition, labelled as
+> such in the case, with a citable source sought for it (none is in the
+> folder yet); mid-run parameter changes are the architect's call: NOT
+> before the lesson -- a disturbance is first a second run of a varied
+> case, the simplest thing that works, and a mid-run `setParameter` on the
+> batch electrodialysis is built only if the lesson shows it is missed.
+> Still open with him: the bounded exception that lets the GUI write
+> `panelDict` (explained to him again; no answer yet).
 
 > **C370 (2026-11-12; three proposals the cloud says Vitor left to the two
 > sessions' judgement; the architect's answers).**  (a) SOLIDS, simple
