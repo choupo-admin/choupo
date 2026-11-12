@@ -235,3 +235,12 @@ What then stands, and with what weight:
 
 Sections 9 and 10 are to be read with this one; their arithmetic on 50 A
 describes a point that does not exist.
+
+## 13. One more declared limit: the power supply
+
+The unit's direct-current supply is rated at 2 kW.  That bounds the current
+at 20 A at 100 V and at about 13 A at the 150 V stop, which rules out the
+withdrawn 50 A (5 kW) by itself and is consistent with the 5 to 10 A of
+section 12 (0.5 to 1.0 kW clean, 0.17 to 0.33 kWh per cubic metre of wine).
+For the panel it is an equipment limit like the voltage limit: a declared
+rating the power drawn is shown against, second tier.
