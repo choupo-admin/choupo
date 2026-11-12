@@ -76,6 +76,7 @@ Description
 
 #include "thermo/electrolyte/SolventProperties.H"
 #include "thermo/electrolyte/PitzerForm.H"
+#include "thermo/electrolyte/ElectrolyteTemperatureSpan.H"
 
 #include <cmath>
 
@@ -121,6 +122,12 @@ public:
     double spB1[3] = {0,0,0};        // q6,q9,q10        (eq 31)
     double spCp[4] = {0,0,0,0};      // q11,q12,q13,q14  (eq 32)
     double TvalidLo = 273.15, TvalidHi = 573.15;
+
+    // The temperature validity the RECORD supports (declared span, else the
+    // T-function window, else 25 C) -- read by every route through
+    // span.check(T); see ElectrolyteTemperatureSpan.H.  Inactive until loadSalt
+    // sets it, so a hand-built kernel is silent.
+    electrolyte::TemperatureSpan span;
 
     static double spEval30(const double q[5], double T)
     {

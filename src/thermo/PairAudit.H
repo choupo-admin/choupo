@@ -265,26 +265,48 @@ private:
         //  sentence is built -- the Henry site's early exit, for the same
         //  reason (gamma is asked for on every K evaluation).
         if (AdvisoryLog::instance().passHas(s.key)) return;
+        announceOutside(s.key, s.tag, s.locus, T, s.lo, s.hi,
+            "outside the span of its evidence the"
+            " pair may predict phase behaviour that evidence does not show"
+            " (a two-parameter b/T pair can split a liquid miscible in every"
+            " proportion), and every activity coefficient computed from it"
+            " inherits that");
+    }
 
-        const bool   above = (T > s.hi);
-        const scalar edge  = above ? s.hi : s.lo;
+public:
+    //  THE ONE SENTENCE for "this pair is being used outside its temperature
+    //  validity" (EL-01 / EL-02, 2026-11-12).  The molecular families above and
+    //  the electrolyte kernels (Pitzer on all three of its routes, eNRTL) call
+    //  it, so the prefix, the channel (`[pair-span]`, category `validity`) and
+    //  the once-per-pair-per-run rule are one thing, and only `consequence` --
+    //  what the extrapolation costs for THAT model -- differs.  `spanWord` is
+    //  "declared validity span" when the record declares one and "validity
+    //  span" when the span is the engine's reading of a record that declares
+    //  none (the consequence sentence then says so).  Moves no number.
+    //  Returns true when the line was printed.
+    static bool announceOutside(const std::string& key, const std::string& tag,
+                                const std::string& locus, scalar T,
+                                scalar lo, scalar hi,
+                                const std::string& consequence,
+                                const std::string& spanWord
+                                    = "declared validity span")
+    {
+        const bool   above = (T > hi);
+        const scalar edge  = above ? hi : lo;
         std::ostringstream m;
         m << "used at T = " << T << " K, " << (above ? "ABOVE" : "BELOW")
-          << " its declared validity span (" << s.lo << " " << s.hi
+          << " its " << spanWord << " (" << lo << " " << hi
           << " K) by " << std::abs(T - edge) << " K -- the parameters are"
-             " extrapolated, still used; outside the span of its evidence the"
-             " pair may predict phase behaviour that evidence does not show"
-             " (a two-parameter b/T pair can split a liquid miscible in every"
-             " proportion), and every activity coefficient computed from it"
-             " inherits that";
+             " extrapolated, still used; " << consequence;
 
-        if (!AdvisoryLog::instance().addAnnouncedOnce(s.key, "validity",
-                                                       "warning", s.locus,
+        if (!AdvisoryLog::instance().addAnnouncedOnce(key, "validity",
+                                                       "warning", locus,
                                                        m.str()))
-            return;
-        std::cerr << "[pair-span] " << s.tag << ": " << m.str()
+            return false;
+        std::cerr << "[pair-span] " << tag << ": " << m.str()
                   << ".  Read the record's validity block and header before"
                      " the result is cited.\n";
+        return true;
     }
 };
 

@@ -69,12 +69,15 @@ struct Pair
     double spCp[4] = {0,0,0,0};
     double TvalidLo = 273.15, TvalidHi = 573.15;
     std::string name;                       // "cation|anion" for advisories
+    TemperatureSpan span;                   // the record's temperature validity (EL-02)
 
     // Shift the virials to T (mutating: applied ONCE on cache insert).
     // The formulas are the single-salt kernel's own statics -- ONE source.
     void applyT(double T)
     {
-        if (T == 298.15 || !found) return;
+        if (!found) return;
+        span.check(T);                      // the shared line, once per pair per run
+        if (T == 298.15) return;
         if (spForm)
         {
             beta0 += PitzerSingleSalt::spEval30(spB0, T)
@@ -90,16 +93,6 @@ struct Pair
             beta1 += dbeta1_dT * (T - 298.15);
             Cphi  += dCphi_dT  * (T - 298.15);
         }
-        // Validity is EVIDENCE, never console-only (#101: `silent` may mute
-        // presentation, never the record): an out-of-window evaluation
-        // lands in the result's advisories, deduped per pair.
-        if (T < TvalidLo || T > TvalidHi)
-            AdvisoryLog::instance().add("validity", "warning",
-                "pitzerHMW " + name,
-                "virial T-correction evaluated at " + std::to_string(T)
-                + " K outside the declared window ["
-                + std::to_string(TvalidLo) + ", " + std::to_string(TvalidHi)
-                + "] K -- EXTRAPOLATED");
     }
 };
 
@@ -143,6 +136,7 @@ Pair readPair(const std::string& cation, const std::string& anion)
     }
     p.TvalidLo = d->lookupScalarOrDefault("TvalidLo", 273.15);
     p.TvalidHi = d->lookupScalarOrDefault("TvalidHi", 573.15);
+    p.span     = pitzerSpan(d, cation + "-" + anion);   // the SAME span loadSalt reads (EL-02)
     return p;
 }
 

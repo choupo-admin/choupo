@@ -47,6 +47,32 @@
 namespace Choupo
 {
 
+//  What the record says it HELD OUT, read from the record (EL review, 2026-11-12):
+//  the cap sentence used to say "with nothing held out" for every capped record,
+//  including those that DID hold points out (eNRTL Na-SO4: 10 fitted, 3 held out).
+//  A held-out block is read as a count; the points are still of the same source,
+//  so no INDEPENDENT measurement could have contradicted the record either way.
+inline std::string heldOutClause(const DictPtr& entry)
+{
+    long n = 0;
+    if (entry->found("heldOut"))
+    {
+        //  `heldOut none;` (a word, the molecular records' form) is the
+        //  "nothing held out" statement; `heldOut { nPoints N; }` is a block.
+        try
+        {
+            auto h = entry->subDict("heldOut");
+            if (h->found("nPoints")) n = static_cast<long>(h->lookupScalar("nPoints"));
+        }
+        catch (const std::exception&) { n = 0; }
+    }
+    if (n <= 0)
+        return " with nothing held out, so no measurement could have contradicted it";
+    return " with " + std::to_string(n) + " point" + (n == 1 ? "" : "s")
+         + " held out of the same source, so no independent measurement could have"
+           " contradicted it";
+}
+
 //  subject: who is spoken about, as the advisory locus prints it
 //           ("component 'water'", "pair acetone-methanol");
 //  key:     the provenance entry the grade sits in ("vaporPressure"), or
@@ -126,8 +152,8 @@ inline void announceFitGrade(const std::string& subject, const std::string& key,
             + (T1 ? "ONE stated temperature" : "")
             + (T1 && L1 ? " and " : "")
             + (L1 ? "ONE laboratory" : "")
-            + " with nothing held out, so no measurement could have contradicted"
-              " it (DEV.md 4c C300);";
+            + heldOutClause(entry)
+            + " (DEV.md 4c C300);";
     }
     const std::string msg = (key.empty() ? std::string() : "`" + key + "` ")
         + "fitGrade " + (severe ? "SEVERE" : "warning") + " --" + capped
