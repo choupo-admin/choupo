@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/parameters/NRTL/2Ethoxyethanol-chloroform.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*---------------------------------------------------------------------------*\
   NRTL binary interaction parameters --- chloroform(i) + 2Ethoxyethanol(j)
 
@@ -15,16 +16,18 @@
   FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
   vapour-pressure records for both pure components.
 
-  reviewStatus interim: a case-local record, regressed and not read back.
-  Fitted on EVERY laboratory (C291), so the `validation {}` block says, truthfully,
-  that nothing was held out; the acceptance is the `curation {}` block.
-  NOT PROMOTED (max |dP|/P 10.39 % over the 20 kept points, one liquid
-  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
-  severe pair does not enter the default catalogue; its record stays in
-  this curation case's constant/, and a case that needs it carries it in
-  its own constant/ SINGLE TEMPERATURE: b/T was fitted at one
-  temperature; its extrapolation is untested. SINGLE LABORATORY: one
-  article's data, nothing to cross-check it.
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted to the bubble pressure, outliers beyond
+  20 % discarded by name, max |P_model - P|/P over the kept points GRADED
+  clean / warning / severe at 5 / 10 / 20 % -- DEV.md 4c C283 amended, C285, C291;
+  THIS fit: severe in-sample, 10.3930 %; one liquid across its validity span), and NO
+  HUMAN HAS REVIEWED IT.  The engine says so on every run that reads it, and
+  voices a warning or a severe grade beside it.
+  CAUTION: this record rests on ONE temperature and ONE laboratory.
+  Nothing was held out: the `validation {}` block says so, and the acceptance
+  is the `curation {}` block.  A curator who reads the series back against the
+  articles records it in the `review {}` block (DEV.md 4c C297).  Revert with
+  `bin/choupo-curate revert 2Ethoxyethanol-chloroform`.
 
   REPRODUCE: run data/curation/pairs/2Ethoxyethanol-chloroform (after `bin/choupo-curate fetch` on it); its fit
   writes 2Ethoxyethanol-chloroform.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -56,7 +59,14 @@ provenance
     method        "fitParameters(P_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
     fittedInCase  "data/curation/pairs/2Ethoxyethanol-chloroform";
-    reviewStatus  interim;
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      severe;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxRelativeError_pct 10.3930;
+    fitGradeIdealMaxRelativeError_pct 81.0722;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 10.3930 % < 81.0722 %
+    promotedBy    "bin/curate/pairs_px.py promote";
+    promotedDate  "2026-11-12";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
     fitDate       "2026-11-11";

@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/R32.dat"
         {
             type          imported;
-            sha256        "5491156fac09b4fbce81854da7bb003a62d0bb2e1b6b29cfff01319723438196";
-            computationalSha256 "753f60fb0dec87e6e9d9df12fbfa5c903e0e7e2d6c24dda16ec6c06fbece9fa4";
+            sha256        "e3d2783d35d404e4ef143937d01405145a261e55bd45dd9e6e71af8c5db6d2d7";
+            computationalSha256 "a9b8d6e653f9e6b6e1c599fad2b305963faf13ce0f5fdad1faea77259aaa903b";
             origin        "data/standards/components/R32.dat";
-            originSha256  "300275313fff9aeb9e195d228555810ab783edd1695f4d7521880f78088a45e3";
+            originSha256  "fb506deeb1621c69e19f5c5d68612d146f1350537dccbd4302678b6dc2342a3f";
             release       Choupo-2608;
         }
         "components/benzene.dat"
         {
             type          imported;
-            sha256        "2c20d6d671dd5884ed8e3668529ddaad20bf3c2a02d1a5130aac02dd790aa62c";
-            computationalSha256 "d710160da938e1163f77e26b0cc49af7c2a2e4563b37f914ce4bb001500decc4";
+            sha256        "34549cda3bccf7c3fcd588c3214c8e64eeb82ad04fa98e937d0a0d0e78bec79c";
+            computationalSha256 "0bc5933b55cb37454fbe448c32d812467a6d596a55f769d2458f74c45e19aaf1";
             origin        "data/standards/components/benzene.dat";
-            originSha256  "dc7869a494c8e333ed57af66fa4086592b32ac5330960750b5d2775030c9b6bc";
+            originSha256  "eedcd4d99e2834d35d50986465798362cf7096e6ed29c789716c21d1333e8574";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/R32-benzene.dat"
+        {
+            type          imported;
+            sha256        "a939c9eb9aae417ada0c60e2f8402c8520e303e2b874e6c07c48ee091e8f1272";
+            computationalSha256 "8954b234a4b679a4233be2275d7973b314ff0152b67d4761ca89d64b5342607a";
+            origin        "data/standards/parameters/NRTL/R32-benzene.dat";
+            originSha256  "76e1141ba1fd41991df7b61a68b4f36e3f63615dbb7e64d94c96f28b51f94fe0";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/R32-benzene.dat"
+        {
+            type          imported;
+            sha256        "7eec99630969f77f973eaf2a5123f59fa99ad75f4d0d4b8c7db106e03a6b0778";
+            computationalSha256 "8715a7bab8e2317be36c793294ab6dc85286099d2e49afc7eaae47964101a685";
+            origin        "data/standards/parameters/Wilson/R32-benzene.dat";
+            originSha256  "fe62fc158870d4e8bd33a704896d96242a361c0f7d84e93d5a8f3ba6dcb10088";
             release       Choupo-2608;
         }
     }

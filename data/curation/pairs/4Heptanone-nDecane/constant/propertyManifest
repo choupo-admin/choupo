@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,10 +37,28 @@ propertyManifest
         "components/nDecane.dat"
         {
             type          imported;
-            sha256        "dc134490f41e3a8ac612df6c816894cd5d48d78c8de8e358d5d002bc1c168d16";
-            computationalSha256 "db998ca1a7ce1794eeb761efa4f902ab545998f122c5a40a55500321745de919";
+            sha256        "c2efdc318ce9b5bba917d70c65976c28c18ee6eba2667a87e2caa79cbb4c6221";
+            computationalSha256 "261750ad82607c8ed22155f11a8d3e23adeb0327ae976cfdd7974933828939fa";
             origin        "data/standards/components/nDecane.dat";
-            originSha256  "d3eb0769d43d0e76ccbdb97d3a106719a4635b848be11342b1d17f9231985544";
+            originSha256  "e825708595bddfd2ee36e5d605dafbfe7bbc538188911d732eae37fed86a3baa";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/4Heptanone-nDecane.dat"
+        {
+            type          imported;
+            sha256        "6e86823a029b8fa8339918a7a2e13e9266e90b5bd15a1d8eff7359d29fd77a25";
+            computationalSha256 "08235d06f80f07f540cfc36d66041a35565ea6b773b59d3c401d333905445c0b";
+            origin        "data/standards/parameters/NRTL/4Heptanone-nDecane.dat";
+            originSha256  "3adcdb6814f6b933d933a5c6bdd61c000d67b7b3470a55ad87758ee07fd018b8";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/4Heptanone-nDecane.dat"
+        {
+            type          imported;
+            sha256        "ada92373d674b975ccd163c9838e70a0ccd16dcf996e077db7f6c43d5680cd1a";
+            computationalSha256 "2c5ec581f694f0a86b0fa8668911ca03f9c21fde93343ee193ce1223bacf2128";
+            origin        "data/standards/parameters/Wilson/4Heptanone-nDecane.dat";
+            originSha256  "2cb490d9835f46aa57cdb27f89dd2bcb904cde2b53612364a1e8809071374ba8";
             release       Choupo-2608;
         }
     }

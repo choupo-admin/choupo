@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "7d0057b911a77802c128aa5bb4d32cd68ef6d33f4e93cbd647809a929789e686";
             origin        "data/standards/components/furfural.dat";
             originSha256  "a22381d24ba39a150781e235fc42f1ac68db528c7c3461eb6d9e0ee4dc82a13c";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/furan-furfural.dat"
+        {
+            type          imported;
+            sha256        "ef1a4d05ad87f628c0c2d9ff558e8d8868414adfa1caf3663e74aa6a2862dcc2";
+            computationalSha256 "8c524008f707b308c29a2f89381e0e61c18ac45574db43aefca4c247573d0d24";
+            origin        "data/standards/parameters/Wilson/furan-furfural.dat";
+            originSha256  "951e93b9c35688df12087638336385cb3fb6300f8ce16b34c181e313845e0310";
             release       Choupo-2608;
         }
     }

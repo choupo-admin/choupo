@@ -63,6 +63,7 @@ provenance
     fitGrade      severe;   // DEV.md 4c C285 (C291): max |P_model - P|/P over the kept points, graded 5 / 10 / 20 %
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
     fitGradeMaxRelativeError_pct 11.2471;
+    fitGradeIdealMaxRelativeError_pct 57.5252;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 11.2471 % < 57.5252 %
     promotedBy    "bin/curate/pairs_px.py promote";
     promotedDate  "2026-11-10";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";

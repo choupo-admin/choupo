@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "7b21fd4ae50ba2e5a7814a1f5d50e63c69c4c2fc67363876560153820e8575a6";
             origin        "data/standards/components/mesitylene.dat";
             originSha256  "097d37ca691ade025db9807559b33daa66cc6d0d5f46de467986bdccc1c72bc1";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethylthiophene-mesitylene.dat"
+        {
+            type          imported;
+            sha256        "ba73d65b37e4880a294ee4c3518f5d7fa839b28495be32204a67017d8ba53707";
+            computationalSha256 "6fe24626c333efacfaf342e85dc0ce36d82d4cb581cef2caa47e947656afd0fc";
+            origin        "data/standards/parameters/NRTL/2Ethylthiophene-mesitylene.dat";
+            originSha256  "fe97fbe1ed005adf25f6f404bb8d9d72f27ed2f57fdddc54d741c72f80e2ac50";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

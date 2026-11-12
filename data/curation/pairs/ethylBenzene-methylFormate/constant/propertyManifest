@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,37 @@ propertyManifest
         "components/ethylBenzene.dat"
         {
             type          imported;
-            sha256        "a3770fc80542ebef6c1e967abe82aa77f1772855e3873575603dc3ec1c54ce74";
-            computationalSha256 "99065feb74f678d5fdc677c7b2f450910efa7af9990f15e931738055b6bda9ae";
+            sha256        "281986d8699976dacc4075b5f1cf39c0afb9f528a4d9a8ab8f8c240c589d6fe3";
+            computationalSha256 "6464e1bf592481198bc2c0511993f8dae16a4e63e783219fe11150a800a959ac";
             origin        "data/standards/components/ethylBenzene.dat";
-            originSha256  "eb0e3c4909ad9a0859b769f78ba184bc73174b779765f33d3e2876a4600b2d0f";
+            originSha256  "75a9d87bea16679e2c9e462c1526f66464d2b0473d11dff115935f8a8ea363e3";
             release       Choupo-2608;
         }
         "components/methylFormate.dat"
         {
             type          imported;
-            sha256        "c5e9cd0cf30f8664590c7e8066909f2f9c1438139a86b0c36a98fbe3be6f4a96";
-            computationalSha256 "5068200af02eb42f56750b96df43f6d46ec552e1872684b3291d5c4c84093efa";
+            sha256        "3e93d486d0ecaf1ee3ee9656ab4c356dd30236bbe48168a9cca15c6a83503c6a";
+            computationalSha256 "39f0df16bb4434011fdeaf5099c381c79a4bbdb21d66d83247ce613d53a94c1c";
             origin        "data/standards/components/methylFormate.dat";
-            originSha256  "1750df760cd7fc5d6d966f4c19c824f6ad0ec93c9e312ba3e83fd13ca413e7ff";
+            originSha256  "ff423e3a2b7d22ba31e75a8108a22c7d3d2c790328006f59f0f01f5b4d5be752";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethylBenzene-methylFormate.dat"
+        {
+            type          imported;
+            sha256        "dcba2e815b5c820dda4824117135d02501da6570306c782655c86f6e8da78f0f";
+            computationalSha256 "6df7b555bb5ef305e78930729b713529fd56f27bff2458e3591205ada0a4eb5f";
+            origin        "data/standards/parameters/NRTL/ethylBenzene-methylFormate.dat";
+            originSha256  "f12e15138b05493b3c3f49001473795c16d151f4eeec4db136453efe54796932";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylBenzene-methylFormate.dat"
+        {
+            type          imported;
+            sha256        "538dca598bde047558d36b9d03be1419943baf096ff2f657dd0ca93bb1e66ac9";
+            computationalSha256 "1b8a9aaa45c9b9c5374558be57436daaae102b5469f8ea68b535543fd7804d47";
+            origin        "data/standards/parameters/Wilson/ethylBenzene-methylFormate.dat";
+            originSha256  "e69816f8add8f7e5eb28bd6301573eedf0acb82eb04da10111d956c7b308a106";
             release       Choupo-2608;
         }
     }

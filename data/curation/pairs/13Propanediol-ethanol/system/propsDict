@@ -87,19 +87,21 @@
   not argued). Beside fit_nrtl's max |dT| 2.705 K (severe) on the same
   kept points. fit_uniquac: a_ij = -216.0, a_ji = 403.8 K over 16 kept
   points: max |dT| 2.565 K, mean 0.420 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (-216.0, 403.8). NOT PROMOTED
-  (max |dT| 2.565 K over the 16 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 4063.2, A_ji = -2098.5 J/mol over 16
-  kept points: max |dT| 2.834 K, mean 0.517 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (4063.2, -2098.5). NOT
-  PROMOTED (max |dT| 2.834 K over the 16 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on the same pair (-216.0, 403.8). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/13Propanediol-ethanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.565 K over the 16 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.5651 K against ideal
+  8.3834 K. fit_wilson: A_ij = 4063.2, A_ji = -2098.5 J/mol over 16 kept
+  points: max |dT| 2.834 K, mean 0.517 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (4063.2, -2098.5). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/13Propanediol-ethanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.834 K over the 16 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.8343 K against ideal
+  8.3834 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -107,11 +109,12 @@
   fit_nrtl: b_ij = -279.0 K, b_ji = 532.5 K over 16 kept points of 1
   laboratories (1 discarded): max |dT| 2.705 K, mean 0.488 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (-279.0, 532.5). NOT PROMOTED (max |dT| 2.705 K over the 16
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (-279.0, 532.5). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/13Propanediol-ethanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.705 K over the 16 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.7048 K against ideal
+  8.3834 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

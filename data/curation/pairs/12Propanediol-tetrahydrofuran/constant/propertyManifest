@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "b633485a1530fbce2ea54dbf94e8faaf87ca5f2ab20e7373f330bb259e2a9737";
             origin        "data/standards/components/tetrahydrofuran.dat";
             originSha256  "7bec4038f718899fb69683b24810aab1698dd594462b92c0220ac081e1b3a2bc";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/12Propanediol-tetrahydrofuran.dat"
+        {
+            type          imported;
+            sha256        "2d99e176714b3efbfc34ea4dee1b0972b0b3a05c7e887ce2f1dcd75e76955f85";
+            computationalSha256 "9b3067e36e0d77943c571b982faa5c56c3c76193293f4c78b713ab73d2934b3b";
+            origin        "data/standards/parameters/NRTL/12Propanediol-tetrahydrofuran.dat";
+            originSha256  "9533d418e767fe52bfe9ef7be68ae4130c98c2576381a31f965c7dab92472fd2";
             release       Choupo-2608;
         }
     }

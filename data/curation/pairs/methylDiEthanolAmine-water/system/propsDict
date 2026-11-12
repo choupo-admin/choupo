@@ -119,11 +119,12 @@
   fit_nrtl: b_ij = 338.2 K, b_ji = -363.3 K over 29 kept points of 2
   laboratories (13 discarded): max |dT| 2.604 K, mean 0.874 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (338.2, -363.3). NOT PROMOTED (max |dT| 2.604 K over the 29
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (338.2, -363.3). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/methylDiEthanolAmine-water.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.604 K over the 29 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.6042 K against ideal
+  8.8525 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

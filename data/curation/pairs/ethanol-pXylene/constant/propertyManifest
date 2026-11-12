@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,19 @@ propertyManifest
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
-            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
+            sha256        "60415935fd9d4b63d8f3219f07fc04b1383809b4195320d67c412b8343dacef8";
+            computationalSha256 "50989011ee1bdba21c140a91dfc510ae7ad3e35b454e59c435bacadaa6d21a3f";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
+            originSha256  "8b4435dbd10e1b894f0579e848612d6a50d21422dae1532c879a22463a754cb1";
             release       Choupo-2608;
         }
         "parameters/NRTL/ethanol-pXylene.dat"
         {
             type          imported;
-            sha256        "59328e36b61d4d0f36a45ecb9b71c3d288e34db3d2e27fc8988656822213d48b";
-            computationalSha256 "9c2c37a1d16da7383b6d3b6a225102e009fd3ec13d14dfc925bc5beead452de7";
+            sha256        "2bec93a24c29e8c8bedf454a5ea108da4134d9c4525b526c073b109943f139a2";
+            computationalSha256 "6f3501311e479d15cd0103c36fcfe66f2a301f830c961d83955afe91fa6eb766";
             origin        "data/standards/parameters/NRTL/ethanol-pXylene.dat";
-            originSha256  "56516670dc6a08f32af5eb320af31c21b82107deec3f734e81e6c4337f6a6333";
+            originSha256  "10e8ee551c1376fb226eca8b6b9fb98fdc5aa46f5bf72ff291fffa466f84d530";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -68,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethanol-pXylene.dat"
+        {
+            type          imported;
+            sha256        "93cdf6e65e45cfa5d52832d8bf66c8669ca5dfd689de53883d90e639d989466e";
+            computationalSha256 "0c34ab8c0e2704fc41304070cf52b3166d6a15934e8b5705bd0fcf8e16f29e9a";
+            origin        "data/standards/parameters/UNIQUAC/ethanol-pXylene.dat";
+            originSha256  "99b05aeb1cffc11037f6d328264d9a39d8ddd4dad2320ec9310cf403a45d3cf7";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethanol-pXylene.dat"
+        {
+            type          imported;
+            sha256        "e3d041df1e91cd2cb5b55e0929389580ad7703ee39164f03239a05fb54c3d777";
+            computationalSha256 "e5ce7f2135dd40ba7442f0d8f02fccf2f6fecc84f7ddb3e05faf400b0da24581";
+            origin        "data/standards/parameters/Wilson/ethanol-pXylene.dat";
+            originSha256  "decffde77b6f3621126626a3231f32af0b51a19f340eb0922c3ffb48597495f7";
             release       Choupo-2608;
         }
     }

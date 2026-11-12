@@ -91,15 +91,16 @@
   not argued). Beside fit_nrtl's max |dT| 2.356 K (severe) on the same
   kept points. fit_wilson: A_ij = -2419.9, A_ji = -111.1 J/mol over 26
   kept points: max |dT| 2.341 K, mean 0.687 K, graded severe -> accepted;
-  fit_wilson_start2 lands on A DIFFERENT pair (30000.0, -5569.1). NOT
-  PROMOTED (max |dT| 2.341 K over the 26 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- 2Methoxyethanol and
-  dimethylSulfoxide carry no UNIQUAC r and q (no tabulated value, and no
-  UNIFAC groups to sum them from, bin/curate/uniquac_rq_from_groups.py)
-  -- UNIQUAC is not fitted; nothing is estimated silently.
+  fit_wilson_start2 lands on A DIFFERENT pair (30000.0, -5569.1).
+  PROMOTED on 2026-11-12 into
+  data/standards/parameters/Wilson/2Methoxyethanol-dimethylSulfoxide.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dT| 2.341 K over the 26 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3406 K against ideal
+  9.8576 K. UNIQUAC: not fitted -- 2Methoxyethanol and dimethylSulfoxide
+  carry no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
+  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
+  fitted; nothing is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -107,11 +108,12 @@
   fit_nrtl: b_ij = 44.4 K, b_ji = -345.6 K over 26 kept points of 2
   laboratories (0 discarded): max |dT| 2.356 K, mean 0.694 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
-  DIFFERENT pair (1130.2, -825.3). NOT PROMOTED (max |dT| 2.356 K over
-  the 26 kept points, one liquid across the validity span): fit grade
-  severe -- DEV.md 4c C300 rule 3: a severe pair does not enter the
-  default catalogue; its record stays in this curation case's constant/,
-  and a case that needs it carries it in its own constant/
+  DIFFERENT pair (1130.2, -825.3). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/2Methoxyethanol-dimethylSulfoxide.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.356 K over the 26 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3560 K against ideal
+  9.8576 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

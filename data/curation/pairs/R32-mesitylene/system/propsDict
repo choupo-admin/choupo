@@ -107,11 +107,11 @@
   fit_nrtl: b_ij = 114.8 K, b_ji = 170.1 K over 7 kept points of 1
   laboratories (2 discarded): max |dT| 2.119 K, mean 1.125 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (114.8, 170.1). NOT PROMOTED (max |dT| 2.119 K over the 7
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (114.8, 170.1). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/R32-mesitylene.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade severe -- max |dT|
+  2.119 K over the 7 kept points, one liquid across the validity span;
+  BEATS THE IDEAL MIXTURE (C334): 2.1185 K against ideal 37.4998 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

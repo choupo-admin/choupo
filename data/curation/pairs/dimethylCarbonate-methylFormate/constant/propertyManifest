@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -37,19 +37,37 @@ propertyManifest
         "components/dimethylCarbonate.dat"
         {
             type          imported;
-            sha256        "82aaa1f6328a7ed9424fae60b37cae2ff1bafb8753132f84e5c7466d4287c6c2";
-            computationalSha256 "4e75d782f46cb42b368ec6e5e09250045bd4349540011fbc882cfeb3e7a27e8d";
+            sha256        "4be4fe8aaf660cad0eb5af7c50824b449c947ecfa3624411275e4ed3fbe1a954";
+            computationalSha256 "d1ce227e9f6035734bb597c6ed3456667048e05d09f1b8b37b390d8bca08653e";
             origin        "data/standards/components/dimethylCarbonate.dat";
-            originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
+            originSha256  "00b7cd53761950a5e794e19202e03b9e4d61d019224051fb75aeeba5701ea7b7";
             release       Choupo-2608;
         }
         "components/methylFormate.dat"
         {
             type          imported;
-            sha256        "c5e9cd0cf30f8664590c7e8066909f2f9c1438139a86b0c36a98fbe3be6f4a96";
-            computationalSha256 "5068200af02eb42f56750b96df43f6d46ec552e1872684b3291d5c4c84093efa";
+            sha256        "3e93d486d0ecaf1ee3ee9656ab4c356dd30236bbe48168a9cca15c6a83503c6a";
+            computationalSha256 "39f0df16bb4434011fdeaf5099c381c79a4bbdb21d66d83247ce613d53a94c1c";
             origin        "data/standards/components/methylFormate.dat";
-            originSha256  "1750df760cd7fc5d6d966f4c19c824f6ad0ec93c9e312ba3e83fd13ca413e7ff";
+            originSha256  "ff423e3a2b7d22ba31e75a8108a22c7d3d2c790328006f59f0f01f5b4d5be752";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylCarbonate-methylFormate.dat"
+        {
+            type          imported;
+            sha256        "a602349c0be4c144688d308aa45c1d7c3daf050524618667a5b86e59a80dd310";
+            computationalSha256 "cc9f72217191c667f6a267f446944aeb47947a1eba39fa5a7d6c9faf642b866b";
+            origin        "data/standards/parameters/NRTL/dimethylCarbonate-methylFormate.dat";
+            originSha256  "6c01f2b24eadb3db159d99674011ff24f5fcbe4d62258699727b7b45a7c20b03";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylCarbonate-methylFormate.dat"
+        {
+            type          imported;
+            sha256        "baf8c16b4ba4e5b163769b7fd1c0a954e41ca74446adf33d97df418aec50c59d";
+            computationalSha256 "ffd8428734c5a7db00ef7ee9128114bd5885cb74c7f2bf6a5f354dd9bc813406";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-methylFormate.dat";
+            originSha256  "ed11f6065682a3eb06a22f67fde56cf377fab939e6e24771b3a70a6bd4bfde3f";
             release       Choupo-2608;
         }
     }

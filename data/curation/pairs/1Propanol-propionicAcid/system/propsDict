@@ -113,7 +113,8 @@
   fit_nrtl: b_ij = -384.8 K, b_ji = 632.4 K over 42 kept points of 2
   laboratories (5 discarded): max |dT| 2.916 K, mean 0.557 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (-384.8, 632.4). PROMOTED on 2026-11-10 into
+  same pair (-384.8, 632.4). PROMOTED (and since REVERTED by
+  `choupo-curate revert`) on 2026-11-10 into
   data/standards/parameters/NRTL/1Propanol-propionicAcid.dat as
   reviewStatus autoPromoted, humanReviewed false, because: fit grade
   severe -- max |dT| 2.916 K over the 42 kept points (limits 1 / 2 / 4

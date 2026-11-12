@@ -89,15 +89,16 @@
   not argued). Beside fit_nrtl's max |dT| 2.016 K (severe) on the same
   kept points. fit_uniquac: a_ij = 15.4, a_ji = 141.6 K over 49 kept
   points: max |dT| 2.041 K, mean 0.520 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (15.4, 141.6). NOT PROMOTED
-  (max |dT| 2.041 K over the 49 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 2677.1, A_ji = 1462.7 J/mol over 49
-  kept points: max |dT| 1.969 K, mean 0.537 K, graded warning ->
-  accepted; fit_wilson_start2 lands on the same pair (2677.1, 1462.7).
-  PROMOTED on 2026-11-11 into
+  fit_uniquac_start2 lands on the same pair (15.4, 141.6). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/14Dioxane-cyclohexane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.041 K over the 49 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.0414 K against ideal
+  11.2121 K. fit_wilson: A_ij = 2677.1, A_ji = 1462.7 J/mol over 49 kept
+  points: max |dT| 1.969 K, mean 0.537 K, graded warning -> accepted;
+  fit_wilson_start2 lands on the same pair (2677.1, 1462.7). PROMOTED on
+  2026-11-11 into
   data/standards/parameters/Wilson/14Dioxane-cyclohexane.dat as
   reviewStatus autoPromoted, review by none, because: fit grade warning
   -- max |dT| 1.969 K over the 49 kept points, one liquid across the

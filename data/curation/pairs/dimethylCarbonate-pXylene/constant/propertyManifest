@@ -21,35 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylCarbonate.dat"
         {
             type          imported;
-            sha256        "82aaa1f6328a7ed9424fae60b37cae2ff1bafb8753132f84e5c7466d4287c6c2";
-            computationalSha256 "4e75d782f46cb42b368ec6e5e09250045bd4349540011fbc882cfeb3e7a27e8d";
+            sha256        "4be4fe8aaf660cad0eb5af7c50824b449c947ecfa3624411275e4ed3fbe1a954";
+            computationalSha256 "d1ce227e9f6035734bb597c6ed3456667048e05d09f1b8b37b390d8bca08653e";
             origin        "data/standards/components/dimethylCarbonate.dat";
-            originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
+            originSha256  "00b7cd53761950a5e794e19202e03b9e4d61d019224051fb75aeeba5701ea7b7";
             release       Choupo-2608;
         }
         "components/pXylene.dat"
         {
             type          imported;
-            sha256        "d6c1a35adcc2ecfb7fdd547613d094985aa02b5154eb86e2136893e5eb2b1081";
-            computationalSha256 "a12f3f6479aa3d4be6d976ca090188ab3b10b5671bb1a3fe568b547431a64d02";
+            sha256        "60415935fd9d4b63d8f3219f07fc04b1383809b4195320d67c412b8343dacef8";
+            computationalSha256 "50989011ee1bdba21c140a91dfc510ae7ad3e35b454e59c435bacadaa6d21a3f";
             origin        "data/standards/components/pXylene.dat";
-            originSha256  "ef3dffe3f5b93e45435a0e2b3d13566b4bd2a5c67451a02e52e75a55ac9de26b";
+            originSha256  "8b4435dbd10e1b894f0579e848612d6a50d21422dae1532c879a22463a754cb1";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylCarbonate-pXylene.dat"
         {
             type          imported;
-            sha256        "1db3502b3cdfc0a5b3d65d9358e127a2e731d2a15540881f1593ce5640a3fbc6";
-            computationalSha256 "6e68d64e46ef38d35bcc2c946db18c049b9d166425aa982dcc1e9716c4079fb5";
+            sha256        "65f8f2e0fa891584b192d6e8b3d84a9342a1ccd27637746aaf9ee792d70bcff9";
+            computationalSha256 "de3a164344d1736d611cc2f23885d8fa6c569449d7c01b70f787e4ebbeec86a6";
             origin        "data/standards/parameters/NRTL/dimethylCarbonate-pXylene.dat";
-            originSha256  "388bae9aa35cd6f6c12eb0e70f6a171cc3d443e5e6890b105480cfb182aa4847";
+            originSha256  "ef0e8c3b18ca317cdb40377f2fc32bffb79edd12e98905ec62f495b18322931b";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylCarbonate-pXylene.dat"
+        {
+            type          imported;
+            sha256        "0823ad40bbf2386338a6cd5b78a204127824ce15a9d7ee81a515e6f26a29a2bf";
+            computationalSha256 "6d93f96464cbff715cec40b7686304e065d11b761fa76c0294d65d52f186bd12";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-pXylene.dat";
+            originSha256  "9d057d2089207c98cf9d072ed7f2e3a434e7cd0b12b1d486443a7d3e88a7b094";
             release       Choupo-2608;
         }
     }

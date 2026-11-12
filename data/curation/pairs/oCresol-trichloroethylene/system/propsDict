@@ -90,14 +90,15 @@
   not argued). Beside fit_nrtl's max |dT| 1.806 K (warning) on the same
   kept points. fit_wilson: A_ij = -1861.2, A_ji = 14491.5 J/mol over 11
   kept points: max |dT| 2.350 K, mean 1.163 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (-1861.2, 14491.5). NOT
-  PROMOTED (max |dT| 2.350 K over the 11 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- trichloroethylene and oCresol
-  carry no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to
-  sum them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
+  fit_wilson_start2 lands on the same pair (-1861.2, 14491.5). PROMOTED
+  on 2026-11-12 into
+  data/standards/parameters/Wilson/oCresol-trichloroethylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.350 K over the 11 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3499 K against ideal
+  11.2344 K. UNIQUAC: not fitted -- trichloroethylene and oCresol carry
+  no UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum
+  them from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not
   fitted; nothing is estimated silently.
   @@MODELS-RESULT-END@@
 

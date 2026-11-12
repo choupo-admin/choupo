@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylDisulfide.dat"
         {
             type          imported;
-            sha256        "f426242e62951a5d5ec36757f9455c4645af005f07d220dd90fd07b7369c21fc";
-            computationalSha256 "1111d561995268960399eeff9fd1f31ccecaadcc9c5b189bb52f816449da64b5";
+            sha256        "89da35ff8e21d212bb2f1a1d77d134585b4342ba5f8c0fac2dd72f970f75b0ae";
+            computationalSha256 "650a760feafa880dbfd5aef5241edda125708b6c20708fe201e9dadd9a2dc6ad";
             origin        "data/standards/components/dimethylDisulfide.dat";
-            originSha256  "dbd1511cacfbd9aed9deeb323c7ff2c1131727d8520991a55808e3a51431a5a3";
+            originSha256  "33c9817f90a0c8e6abd943c5d741dd7bdf6818ca3e3f9f87c45530652b1c5ab7";
             release       Choupo-2608;
         }
         "components/ethanol.dat"
@@ -41,6 +41,24 @@ propertyManifest
             computationalSha256 "f2710ae8622b1abc118f9a68c47702e2e2324453ed27c71e0760eb23d799c481";
             origin        "data/standards/components/ethanol.dat";
             originSha256  "7c6b2bedb149e1165145d6bedce8fb5588519bb6b1d575caca76236a0d809074";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylDisulfide-ethanol.dat"
+        {
+            type          imported;
+            sha256        "cec9c15595a92a4e4c7ff7e839910bc372f7271f1d67c8b2e3386f73b88338b4";
+            computationalSha256 "3885878f7ae6bf52d16cb6324eeed1129f5284e722c8e380e953805348dcc2d5";
+            origin        "data/standards/parameters/NRTL/dimethylDisulfide-ethanol.dat";
+            originSha256  "3965f4b69dca8fb7f6bd87610b87239955cd95938e54a59a94a56dacb5643dde";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylDisulfide-ethanol.dat"
+        {
+            type          imported;
+            sha256        "6163b6673e4865082dd304ea6255fcbbf77a8073bb6ce59b5ebaed4af020f076";
+            computationalSha256 "a769a0aa8f4dc49edf4cdbc4919b538f089bb3397218a4ac8101559e0cd4799f";
+            origin        "data/standards/parameters/Wilson/dimethylDisulfide-ethanol.dat";
+            originSha256  "9f07ea8bfa6d5291dcaca3ad04eb4f8b0208fb66aa7ed2b691642b3716d3f5ac";
             release       Choupo-2608;
         }
     }

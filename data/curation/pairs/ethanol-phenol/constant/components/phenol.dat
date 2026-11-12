@@ -144,3 +144,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file PHENOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey ISWSIDIOOBJBQZ-UHFFFAOYSA-N (full match); formula C6H6O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        130.374661;   // sum of the profile below; GAMESS prints 130.37
+        volume      120.20;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.346672
+               1.040321     0.875875     0.803027     0.653426     1.031890     1.143692
+               0.655409     0.172847     0.742348     1.022656     1.520246     2.921134
+               8.068468    10.767516     7.051538     6.346208     4.261969     5.774613
+               5.240141     4.919057     4.310992     7.484212     8.785175     6.688480
+              10.441050    11.041026     5.746797     1.001709     2.487004     1.371610
+               0.535923     0.540052     2.103431     1.885470     0.592677     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

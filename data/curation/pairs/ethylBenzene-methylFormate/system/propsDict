@@ -100,13 +100,14 @@
   not argued). Beside fit_nrtl's max |dT| 3.543 K (severe) on the same
   kept points. fit_wilson: A_ij = 3223.9, A_ji = 3877.9 J/mol over 11
   kept points: max |dT| 2.300 K, mean 1.104 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (3223.9, 3877.9). NOT PROMOTED
-  (max |dT| 2.300 K over the 11 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- methylFormate carries no UNIQUAC
-  r and q (no tabulated value, and no UNIFAC groups to sum them from,
+  fit_wilson_start2 lands on the same pair (3223.9, 3877.9). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/Wilson/ethylBenzene-methylFormate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.300 K over the 11 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3005 K against ideal
+  43.9754 K. UNIQUAC: not fitted -- methylFormate carries no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
   bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
   is estimated silently.
   @@MODELS-RESULT-END@@
@@ -116,11 +117,12 @@
   fit_nrtl: b_ij = 670.4 K, b_ji = 42.8 K over 11 kept points of 1
   laboratories (9 discarded): max |dT| 3.543 K, mean 1.631 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (670.4, 42.8). NOT PROMOTED (max |dT| 3.543 K over the 11
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (670.4, 42.8). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/ethylBenzene-methylFormate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.543 K over the 11 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.5431 K against ideal
+  43.9754 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

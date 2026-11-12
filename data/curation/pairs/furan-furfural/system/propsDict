@@ -96,15 +96,15 @@
   not argued). Beside fit_nrtl's max |dT| 4.248 K (refused) on the same
   kept points. fit_wilson: A_ij = -721.5, A_ji = 3109.2 J/mol over 19
   kept points: max |dT| 3.935 K, mean 0.952 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (-721.5, 3109.2). NOT PROMOTED
-  (max |dT| 3.935 K over the 19 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. UNIQUAC: not fitted -- furan and furfural carry no
-  UNIQUAC r and q (no tabulated value, and no UNIFAC groups to sum them
-  from, bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted;
-  nothing is estimated silently.
+  fit_wilson_start2 lands on the same pair (-721.5, 3109.2). PROMOTED on
+  2026-11-12 into data/standards/parameters/Wilson/furan-furfural.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.935 K over the 19 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.9346 K against ideal
+  14.0240 K. UNIQUAC: not fitted -- furan and furfural carry no UNIQUAC r
+  and q (no tabulated value, and no UNIFAC groups to sum them from,
+  bin/curate/uniquac_rq_from_groups.py) -- UNIQUAC is not fitted; nothing
+  is estimated silently.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

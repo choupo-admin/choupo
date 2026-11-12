@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "7c6b2bedb149e1165145d6bedce8fb5588519bb6b1d575caca76236a0d809074";
             release       Choupo-2608;
         }
+        "parameters/NRTL/13Propanediol-ethanol.dat"
+        {
+            type          imported;
+            sha256        "7eae5813296a7d8669b82470234c95112d13fd01456b50b5173ccfcfc750fcc1";
+            computationalSha256 "9ab8e280a600e378d772539a632b3850945f469ac8e1bd90384a56e7a9bd74fa";
+            origin        "data/standards/parameters/NRTL/13Propanediol-ethanol.dat";
+            originSha256  "63c9d0c9c7b7ed7d3764121c7dd6d6fc9fce185c655acf9e2402e478d94b8648";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;
@@ -59,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/13Propanediol-ethanol.dat"
+        {
+            type          imported;
+            sha256        "44da36ea0cef7c9e7613e31986406ad869b781a0e23d5581dfabbd737ee4a19c";
+            computationalSha256 "b708d488fdffff1bb5707d954245001fc7be8cead4747ee3eb4d07fb63778bd0";
+            origin        "data/standards/parameters/UNIQUAC/13Propanediol-ethanol.dat";
+            originSha256  "48a93d0323bc60345162dff39c46efe747a86f611056ca88d9875afb09e921b4";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/13Propanediol-ethanol.dat"
+        {
+            type          imported;
+            sha256        "981c3ce19217d13e822aac60f00413fde0e8785a4175f7bb10779f3ba52ba143";
+            computationalSha256 "c6abfcdfcaf0d5029e76405e491b20eca7e3d50b7abbc424e2e3acc649ac86a5";
+            origin        "data/standards/parameters/Wilson/13Propanediol-ethanol.dat";
+            originSha256  "4f95625811fccd6d94810df947a9b9ffdc898011eb676017956f0c3d1f80bb5d";
             release       Choupo-2608;
         }
     }

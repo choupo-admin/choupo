@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "78e6a0e3179fd99a5824633e8fef9dc6823849a78e96d903d6893e322892b97a";
             origin        "data/standards/components/propionicAcid.dat";
             originSha256  "b9662f0c5dd4216942e9a3db544171e1e1562beed4cc442c9e0c23f729d0dcf6";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/pentanoicAcid-propionicAcid.dat"
+        {
+            type          imported;
+            sha256        "a4d01d86ae9980981a163f249b403ead1216f1418ee752e3d94d4310138c8a72";
+            computationalSha256 "1bdbc78e33fa5fcf422dacb2afce569b3d5c225d77e299fd54052e670971d2b4";
+            origin        "data/standards/parameters/NRTL/pentanoicAcid-propionicAcid.dat";
+            originSha256  "80aa2c2a08c657f678535835d176c69b2eb108391716c3527b193c014904e50f";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

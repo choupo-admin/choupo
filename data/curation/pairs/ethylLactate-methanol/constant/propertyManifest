@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
             release       Choupo-2608;
         }
+        "parameters/NRTL/ethylLactate-methanol.dat"
+        {
+            type          imported;
+            sha256        "12fa0c1f896c1d4a4b879c0011f5be10f3433c3351f30c6a5fac54dfa4e2f1fd";
+            computationalSha256 "e6eaa432a9392b5c28d55b89b621bce2e248ff18af02ca15ffe460d4db0ef4b6";
+            origin        "data/standards/parameters/NRTL/ethylLactate-methanol.dat";
+            originSha256  "644509471d7378661612d4acbd0b25748171acc8e15d9fd0aa4c72cf4e002068";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;
@@ -59,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/ethylLactate-methanol.dat"
+        {
+            type          imported;
+            sha256        "dcd7dea3df1eae0e4d3e805549189fa39b769b841e151a600065d9fb96f0db43";
+            computationalSha256 "906d0b870c7273878263aace24a0781f8e753f7e3edd1452085577317252d83f";
+            origin        "data/standards/parameters/UNIQUAC/ethylLactate-methanol.dat";
+            originSha256  "a468cefd6dd9b88c5bfe6569d00328196f6d89c4fa7f276d7b01f1c4758c3c18";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethylLactate-methanol.dat"
+        {
+            type          imported;
+            sha256        "0f27bf868534327e99f5a5d304f303fb94471d370b8113f42cff0faba46b33f9";
+            computationalSha256 "12ed3297eed4e419f73d82c913e8284002e7f5bd3633094fd5cef6ec16d741bd";
+            origin        "data/standards/parameters/Wilson/ethylLactate-methanol.dat";
+            originSha256  "74e3640decfa98a8b61eceafa4b9e265f07e3f6f39ac90d358053cf7e3ce25aa";
             release       Choupo-2608;
         }
     }

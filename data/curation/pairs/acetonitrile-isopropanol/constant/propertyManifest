@@ -21,35 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/acetonitrile.dat"
         {
             type          imported;
-            sha256        "82f930c3a7f7b34ce170c7f8f26afbca4fa1b04a23eb603e1a8dd30074ace302";
-            computationalSha256 "6ab3ef667c9f265ab09fdf84c4f111a6ddb8ed8cdfc6fa4bb18b17e801f51492";
+            sha256        "1648c3e6159adeb40051fa6b622de5ac06367d838d5e29c6c8d2cc5b7e16811d";
+            computationalSha256 "6bf2a55b8cf4c013cb4b9998ffee32b981017af473f039714cd4536f58d46b9f";
             origin        "data/standards/components/acetonitrile.dat";
-            originSha256  "adb8c7d917c6094738a2f22df356534cac882fae333945f33a71a850ad233381";
+            originSha256  "41ad3f70fe71ab5138b8c5c0e56a6ad7edecf567cb1ae3a64dda50c04e266e6e";
             release       Choupo-2608;
         }
         "components/isopropanol.dat"
         {
             type          imported;
-            sha256        "61118a4a99021492caf6ad77788bb2bd987dab2f1160ad21534ae7ce688dae8a";
-            computationalSha256 "5c4f956b35dd2eaa9db4947f8fe641dea0228bf8ba7301d2369f0790871f65da";
+            sha256        "1d2cd015fb92886a9ff57473efcd1b8b8399c0db14df16056f6b4e7f41417a3d";
+            computationalSha256 "6b71a304e15a7bd72cccc98edae61265a75a73516bab6ba0aba5a3b4ea5ae1dc";
             origin        "data/standards/components/isopropanol.dat";
-            originSha256  "7338879f6f351e08c4ec91a02c86117d7f56faef9906c7e3174f954a4000d0d7";
+            originSha256  "0b7c68a64e289e03c57e59d22924394920fc2bfc69d44fbbb11a74712d453af1";
             release       Choupo-2608;
         }
         "parameters/NRTL/acetonitrile-isopropanol.dat"
         {
             type          imported;
-            sha256        "7dcfda766622f06c4159ce60e202e3c1c1b56b3393e2c8da05cd46e3733f6409";
-            computationalSha256 "d0a7c3e1686d9e6ce783b76394c598dafe34c3d111b3d5271ebcf565cfc9ddc1";
+            sha256        "9d988b2c3e7010490b565d048c62a40a8a7a414c41a7c412e4563bbadf2f20f6";
+            computationalSha256 "dc0d8ede8cc573a5b32f7f7cf4b6598a02a57f9817440381007b3524a5f126f2";
             origin        "data/standards/parameters/NRTL/acetonitrile-isopropanol.dat";
-            originSha256  "47cfb8d44af6233fb5c90a8a86a8b41d6dadc650227a0e8d5e7796fac5ba03b6";
+            originSha256  "c91ed0352abb9de32e63a91afb58b0b7da4bad8cc407906c4339a901c3cae908";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/acetonitrile-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "c6b2970e9da58e5639123ef77630ed863d3da8580269ecbbe8109b02138c5018";
+            computationalSha256 "6c97247cdeaaf6558886e952fe2b37f0cc124d3a33ee16f7ad4f968967b36c5a";
+            origin        "data/standards/parameters/Wilson/acetonitrile-isopropanol.dat";
+            originSha256  "f7a54ce8384bb172a58335c08c262b44de5e1502d145681b6d8ea77f95f56a94";
             release       Choupo-2608;
         }
     }

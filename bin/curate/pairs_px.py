@@ -68,7 +68,7 @@ PMAX_KPA = 110.0          # stated default: the vapour is the ideal gas
 OUTLIER_PCT = 20.0        # blatant outlier: relative pressure error after least squares
 MAJORITY = 0.5            # a study with more than this share of blatant points is discarded whole
 GRADES = ("clean", "warning", "severe", "refused")
-GRADE_PCT = (5.0, 10.0, 20.0)
+GRADE_PCT = pc.GRADE_PCT   # ONE home (pairs_c283)
 MARK = "THE RULE (DEV.md 4c C291, bubble-pressure pairs)"
 RULE = "DEV.md 4c C291 (bubble-pressure pairs; every laboratory, graded by C285)"
 MIN_INTERIOR = cc.MIN_INTERIOR
@@ -866,7 +866,11 @@ def promote(a, b):
     dest = cc.STD_NRTL / f"{rp.stem}.dat"
     if dest.exists():
         refuse(f"{dest.relative_to(ROOT)} exists -- never overwritten")
-    dest.write_text(promoted_text(text, case, rp.stem, rf["i"], rf["j"]))
+    mxg = crp.num(cur, "maxRelError_pct")
+    blk = ("@@RESULT-BEGIN@@", "@@RESULT-END@@", "bin/curate/pairs_px.py promote")
+    ideal = pc.ideal_guard(case, "px", crp.word(cur, "grade"), mxg, rp.stem, blk)
+    dest.write_text(pc.stamp_ideal(promoted_text(text, case, rp.stem, rf["i"], rf["j"]),
+                                   "px", mxg, ideal))
     rp.unlink()
     try:
         cc.seal(case)
@@ -875,6 +879,7 @@ def promote(a, b):
         rp.write_text(text)
         cc.seal(case)
         raise
+    pc.restate_severe_result(case, *blk, kind="px", mx=mxg, ideal=ideal)
     cc.mark_result(case, "PROMOTABLE by `bin/curate/pairs_px.py promote`:",
                    f"PROMOTED on {date.today().isoformat()} into {dest.relative_to(ROOT).as_posix()} "
                    "as reviewStatus autoPromoted, review by none, because:")

@@ -107,11 +107,12 @@
   fit_nrtl: b_ij = 1420.5 K, b_ji = -438.9 K over 17 kept points of 1
   laboratories (0 discarded): max |dT| 2.234 K, mean 1.452 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (1420.5, -438.9). NOT PROMOTED (max |dT| 2.234 K over the 17
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (1420.5, -438.9). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/2Ethylthiophene-nDecane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.234 K over the 17 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.2344 K against ideal
+  8.2423 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

@@ -1,0 +1,143 @@
+/*---------------------------------------------------------------------------*\
+  Wilson binary interaction parameters --- 2Methyl2Propanol(i) + nNDimethylformamide(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate pairs --models, DEV.md 4c C294 on C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: Wilson, Lambda_ij = (V_j / V_i) exp(-A_ij / (R T)) [A in J/mol],
+  V the components' own Vliq (src/thermo/activityCoefficient/Wilson.cpp).
+  Two parameters A_ij, A_ji (DEV.md 4c C294).  Wilson cannot represent
+  two liquids.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (the NRTL case's own evidence and kept points, the
+  max |T_model - T| over the kept points, graded 1 / 2 / 4 K -- DEV.md 4c C285, C294;
+  THIS fit: severe in-sample, 2.4968 K; one liquid across its
+  validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
+  run that reads it, and voices a warning or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (DEV.md 4c
+  C297).  Revert by reverting the commit that promoted it.
+
+  REPRODUCE: run data/curation/pairs/2Methyl2Propanol-nNDimethylformamide (after `bin/choupo-curate fetch` on it); its fit_wilson
+  writes 2Methyl2Propanol-nNDimethylformamide.Wilson.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i 2Methyl2Propanol; j nNDimethylformamide; }
+
+components  ( 2Methyl2Propanol  nNDimethylformamide );
+model       Wilson;
+
+parameters
+{
+    i           2Methyl2Propanol;
+    j           nNDimethylformamide;
+    A_ij        -3047.45625800;   // J/mol
+    A_ji        4975.55498911;   // J/mol
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/2Methyl2Propanol-nNDimethylformamide";
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      severe;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxTemperatureError_K 2.4968;
+    fitGradeIdealMaxTemperatureError_K 2.8390;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.4968 K < 2.8390 K
+    promotedBy    "bin/choupo-curate pairs --models --promote";
+    promotedDate  "2026-11-12";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-nNDimethylformamide-bubble-j.fluid.2006.08.018.dat";
+            doi       "10.1016/j.fluid.2006.08.018";
+            sha256    "efd075a1a7973909792b56e5f48979fc69b4de7609c3c07c261b8ab7be59e044";
+            provenance measured;
+            archiveFile "j.fluid.2006.08.018.xml";
+            system    "2Methyl2Propanol + nNDimethylformamide";
+            pressure  "95500.000000 Pa";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/2Methyl2Propanol-nNDimethylformamide-bubble-je7001336.dat";
+            doi       "10.1021/je7001336";
+            sha256    "e5b4a5a0d0cff415699f9598464bb6018560c185e8d911108843c4bc344a2a77";
+            provenance measured;
+            archiveFile "je7001336.xml";
+            system    "2Methyl2Propanol + nNDimethylformamide";
+            pressure  "94400.000000 Pa";
+        }
+    );
+    fingerprint "17e04b8d2e5f0e5e";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          125.33411945;
+    rms_K         1.58556055;
+    nDataPoints   24;
+    identifiable  true;
+    maxAbsCorr    0.99435507;
+
+    validity
+    {
+        temperature { min 355.35 K; max 411.55 K; }
+        pressure    { min 94400 Pa; max 95500 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C294 (the NRTL case's own evidence and kept points, another activity model) on DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    model           Wilson;
+    discardsFrom    fit_nrtl;   // the outliers were decided ONCE, on the NRTL least-squares stage, and reused (C294)
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // the NRTL least-squares stage's, reused
+    outliersDropped 5;
+    pointsKept      24;
+    noBubblePoint   0;
+    maxAbsError     2.4968 K;
+    meanAbsError    1.3969 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           severe;
+    oneLiquid       true;   // arm (f) on this model's own equation over the validity span
+    temperatures    24;   // distinct stated temperatures in the kept evidence
+    laboratories    2;   // distinct articles in the kept evidence
+    singleTemperature false;
+    singleLaboratory  false;
+    verdict         accepted;
+}

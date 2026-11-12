@@ -21,26 +21,26 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylCarbonate.dat"
         {
             type          imported;
-            sha256        "82aaa1f6328a7ed9424fae60b37cae2ff1bafb8753132f84e5c7466d4287c6c2";
-            computationalSha256 "4e75d782f46cb42b368ec6e5e09250045bd4349540011fbc882cfeb3e7a27e8d";
+            sha256        "4be4fe8aaf660cad0eb5af7c50824b449c947ecfa3624411275e4ed3fbe1a954";
+            computationalSha256 "d1ce227e9f6035734bb597c6ed3456667048e05d09f1b8b37b390d8bca08653e";
             origin        "data/standards/components/dimethylCarbonate.dat";
-            originSha256  "4364b5ed2f6a4ccf01a7fe01b0939072b8747fbf150e92362a4030c825ea8eba";
+            originSha256  "00b7cd53761950a5e794e19202e03b9e4d61d019224051fb75aeeba5701ea7b7";
             release       Choupo-2608;
         }
         "components/nNonane.dat"
         {
             type          imported;
-            sha256        "8eb22a21343cc0d31c90a9cb14c5afa3c97168ac52fcbc4991b8b99771e08fed";
-            computationalSha256 "57fbdc20edd02c1ad7de179afe514d5dec7797c85be368066ca248a7cd9c1bdb";
+            sha256        "37a9862c9d1c6526ceceb91d427d44345adae4e2889ff451273aaf544a4ceab3";
+            computationalSha256 "a8c9f50fc516254e070731870c69c8e69401c3ff79d8d34c6e746daa55b14f3c";
             origin        "data/standards/components/nNonane.dat";
-            originSha256  "b6375e78f76e6dca07a13fcb69894971e9a05f5d1c94352bd2772f10a067bf2f";
+            originSha256  "446d9a3d9a03d6cef6023e8816d5d5ad0ad54b17e8e05c3e1bd00c1d18ee5049";
             release       Choupo-2608;
         }
         "parameters/NRTL/dimethylCarbonate-nNonane.dat"
@@ -50,6 +50,15 @@ propertyManifest
             computationalSha256 "73d0ed69c3c3aeecf637bcfa48625b964d32ded36bf8a65b36fe24c45aaa5a26";
             origin        "data/standards/parameters/NRTL/dimethylCarbonate-nNonane.dat";
             originSha256  "6143c67faa03422689e5f5f6f1c139f3d0b6893f01225bb958a7ceaea3152f2d";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/dimethylCarbonate-nNonane.dat"
+        {
+            type          imported;
+            sha256        "6982e2072200d66bcf39783b849092ddef9e43bec5d296fc995291b482c4eabe";
+            computationalSha256 "b077ac9b94368e977271cbc529f0664041ffc9d469b004216c7037c564f08730";
+            origin        "data/standards/parameters/Wilson/dimethylCarbonate-nNonane.dat";
+            originSha256  "0c26246e4b29f0b52d7397c98109158f5c8552f6defbefb23dc3ae28374ebe55";
             release       Choupo-2608;
         }
     }

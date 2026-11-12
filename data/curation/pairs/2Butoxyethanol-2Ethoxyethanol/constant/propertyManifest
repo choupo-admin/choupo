@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "98e5caef249c63cbb2cd7b95d48e9e54cf81cb40ddeacbf7a1845271d8fc0c6a";
             release       Choupo-2608;
         }
+        "parameters/NRTL/2Butoxyethanol-2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "b7516db105e83c2f37a0bd8e42881d61c989c13adc5c4b5bcd99927cdf7a5d8b";
+            computationalSha256 "b12463448badc81a2b658668463f3fe32a076ae07403d8b37f814a85af0c522d";
+            origin        "data/standards/parameters/NRTL/2Butoxyethanol-2Ethoxyethanol.dat";
+            originSha256  "3002919eb46f5d6b3fa6cae19bd63e8d29f8a5bf8e9c1307af18303fe09adce4";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;
@@ -59,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Butoxyethanol-2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "0c9cc0d8fb9705eb07fbec236decba41b296eb59507accc63a95fabeeecc3ab2";
+            computationalSha256 "256ad0ab8b396ee890549328376beee662e09f31d4cedce3c353df924aa54794";
+            origin        "data/standards/parameters/UNIQUAC/2Butoxyethanol-2Ethoxyethanol.dat";
+            originSha256  "cd04990445a1e6f2b27a544c1a3790a1fa1d0339e9479a0a0e5da25883d532dd";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Butoxyethanol-2Ethoxyethanol.dat"
+        {
+            type          imported;
+            sha256        "0d213b99be807fc580b3ca2ad505df6301ca70c74429ee9b5ba89b56ef52ac4a";
+            computationalSha256 "db4b8048eb96e1d3c90b2485245030998ffd319348f91cfe733525720689b610";
+            origin        "data/standards/parameters/Wilson/2Butoxyethanol-2Ethoxyethanol.dat";
+            originSha256  "f80ec07b2edd4cf8572c216fdbb707ddc522675562ef968b99b6a83af38d3b5d";
             release       Choupo-2608;
         }
     }

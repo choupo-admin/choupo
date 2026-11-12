@@ -21,17 +21,17 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/methylDiEthanolAmine.dat"
         {
             type          imported;
-            sha256        "a6589b36aa49310cdb02a0535585481289b1f8099ddc59f4df3d27d7a17a8b11";
-            computationalSha256 "38b43886e6cc2dd7da699d5a8dfdce6eb441e8fae987bff01c1ca8cc51e48692";
+            sha256        "d6dfe527c3886d2549f163db803657c1f142018d015a4d6d624cdc3a6afda83a";
+            computationalSha256 "be0dfcb95ebe99d71c803539e99faef1ec0bdf0310b9f4b028b496952a035e46";
             origin        "data/standards/components/methylDiEthanolAmine.dat";
-            originSha256  "40cbce50d282e7b68cffe3c715a4fbc06a62b228c0e5ede3867731f06831040c";
+            originSha256  "cfd4331ccf0a7ae72d217482b7ab109ef566a9a5422f7a14735a808126fcace3";
             release       Choupo-2608;
         }
         "components/water.dat"
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
             origin        "data/standards/components/water.dat";
             originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/methylDiEthanolAmine-water.dat"
+        {
+            type          imported;
+            sha256        "7a33ff780b9b36c49515795203126c52f2eae81d45af04ce99de5856d90f5b3a";
+            computationalSha256 "44e42cb1afa69695a830a89d9c77c2c9768467e115df9db8292fa0772cf12ade";
+            origin        "data/standards/parameters/NRTL/methylDiEthanolAmine-water.dat";
+            originSha256  "6bdf4c27bedd91517e9e6d41826583fc5e4e15954e6a7c09408b100f933383d6";
             release       Choupo-2608;
         }
     }

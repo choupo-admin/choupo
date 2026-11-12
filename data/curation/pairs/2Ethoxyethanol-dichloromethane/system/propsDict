@@ -81,12 +81,13 @@
   not argued). Beside fit_nrtl's max |dP|/P 12.998 % (severe) on the same
   kept points. fit_uniquac: a_ij = -147.8, a_ji = 147.8 K over 21 kept
   points: max |dP|/P 16.353 %, mean 10.232 %, graded severe -> accepted;
-  fit_uniquac_start2 lands on A DIFFERENT pair (3000.0, -349.4). NOT
-  PROMOTED (max |dP|/P 16.353 % over the 21 kept points, one liquid
-  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
-  severe pair does not enter the default catalogue; its record stays in
-  this curation case's constant/, and a case that needs it carries it in
-  its own constant/.
+  fit_uniquac_start2 lands on A DIFFERENT pair (3000.0, -349.4). PROMOTED
+  on 2026-11-12 into
+  data/standards/parameters/UNIQUAC/2Ethoxyethanol-dichloromethane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dP|/P 16.353 % over the 21 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 16.3534 % against ideal
+  48.9174 %.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -94,14 +95,14 @@
   fit_nrtl: b_ij = -300.2 K, b_ji = 262.5 K over 21 kept points of 1
   block(s), 1 laboratory(ies), 1 temperature(s) (1 discarded): max |dP|/P
   13.00 %, mean 8.28 %, graded severe -> accepted. fit_nrtl_start2 lands
-  on A DIFFERENT pair (1337.4, -520.1). NOT PROMOTED (max |dP|/P 13.00 %
-  over the 21 kept points, one liquid across the validity span): fit
-  grade severe -- DEV.md 4c C300 rule 3: a severe pair does not enter the
-  default catalogue; its record stays in this curation case's constant/,
-  and a case that needs it carries it in its own constant/ SINGLE
-  TEMPERATURE: b/T was fitted at one temperature; its extrapolation is
-  untested. SINGLE LABORATORY: one article's data, nothing to cross-check
-  it.
+  on A DIFFERENT pair (1337.4, -520.1). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/2Ethoxyethanol-dichloromethane.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dP|/P 13.00 % over the 21 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 12.9975 % against ideal
+  48.9174 % SINGLE TEMPERATURE: b/T was fitted at one temperature; its
+  extrapolation is untested. SINGLE LABORATORY: one article's data,
+  nothing to cross-check it.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this
@@ -454,6 +455,18 @@ operations
         }
         properties  ( T_bubble  y_eq_dichloromethane );
         output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[dichloromethane];  from 0.0;  to 1.0;  n 101; }
+        state       { P 42.332 kPa;  composition { dichloromethane 0.5;  2Ethoxyethanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_dichloromethane );
+        output      { file txy_wilson.csv; }
     }
     // @@C294-READBACK-END@@
 );

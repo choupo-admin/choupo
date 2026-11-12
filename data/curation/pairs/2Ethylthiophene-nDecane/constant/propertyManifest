@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "261750ad82607c8ed22155f11a8d3e23adeb0327ae976cfdd7974933828939fa";
             origin        "data/standards/components/nDecane.dat";
             originSha256  "e825708595bddfd2ee36e5d605dafbfe7bbc538188911d732eae37fed86a3baa";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethylthiophene-nDecane.dat"
+        {
+            type          imported;
+            sha256        "a4501a846b1fac7ae1cfc552ce18f7991058c48d77bcf22cb8cd34ce5f937379";
+            computationalSha256 "64b4905b6078ee0d93d590d9324e7eba327b56304e978eca7340c2482d89a783";
+            origin        "data/standards/parameters/NRTL/2Ethylthiophene-nDecane.dat";
+            originSha256  "002e64580f683bc218dd4e62ab897ebbe3a5859535a662868893319549fe7352";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

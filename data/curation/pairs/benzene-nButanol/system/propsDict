@@ -84,19 +84,19 @@
   not argued). Beside fit_nrtl's max |dP|/P 11.247 % (severe) on the same
   kept points. fit_uniquac: a_ij = 32.7, a_ji = 103.6 K over 37 kept
   points: max |dP|/P 11.256 %, mean 5.029 %, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (32.7, 103.6). NOT PROMOTED
-  (max |dP|/P 11.256 % over the 37 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 1250.2, A_ji = 5298.6 J/mol over 37
-  kept points: max |dP|/P 11.364 %, mean 5.136 %, graded severe ->
-  accepted; fit_wilson_start2 lands on the same pair (1250.2, 5298.6).
-  NOT PROMOTED (max |dP|/P 11.364 % over the 37 kept points, one liquid
-  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
-  severe pair does not enter the default catalogue; its record stays in
-  this curation case's constant/, and a case that needs it carries it in
-  its own constant/.
+  fit_uniquac_start2 lands on the same pair (32.7, 103.6). PROMOTED on
+  2026-11-12 into data/standards/parameters/UNIQUAC/benzene-nButanol.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dP|/P 11.256 % over the 37 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 11.2557 % against ideal
+  57.5252 %. fit_wilson: A_ij = 1250.2, A_ji = 5298.6 J/mol over 37 kept
+  points: max |dP|/P 11.364 %, mean 5.136 %, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (1250.2, 5298.6). PROMOTED on
+  2026-11-12 into data/standards/parameters/Wilson/benzene-nButanol.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dP|/P 11.364 % over the 37 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 11.3645 % against ideal
+  57.5252 %.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -46,10 +46,19 @@ propertyManifest
         "parameters/NRTL/ethyleneGlycol-water.dat"
         {
             type          imported;
-            sha256        "1f6a5596ece71c9f5f152de0715a3e58c987aaec4df21e9aa9589f49c447af05";
-            computationalSha256 "dcad178ce36f8c287b5429c96dae1d3a6604a88a758606d63e8fcab79f91d51f";
+            sha256        "8f253cdad3772db01d576e7c38a563ee8c7e0df6c32ff3cdd5c7b4c5f40e0c80";
+            computationalSha256 "b0c25236be4c361f4710431c9eb1b43d5ffbf07623105edc0b44afe89053c64c";
             origin        "data/standards/parameters/NRTL/ethyleneGlycol-water.dat";
-            originSha256  "0b8e2d82ee8e8b683c0474aee53ef8c74212439ccdfa3bbfda1bf892f4abb889";
+            originSha256  "4d0e59d730b4a64fec5adde647a605a0a21de5cda7c859bb3e2ad85c03e6c4cd";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/ethyleneGlycol-water.dat"
+        {
+            type          imported;
+            sha256        "8ffab7f90e0e59e3249071310e8349f6d1b7259ef2ebd3f40652abc2b87d9ab1";
+            computationalSha256 "aa677b8f765d4591ed1b7f3e7dc23153a681d22c268eda78757b0f7251c90d7e";
+            origin        "data/standards/parameters/Wilson/ethyleneGlycol-water.dat";
+            originSha256  "6a4128d852a0d560511c1e33107f939df9f3b7e2d296597189ad391e182ab3fa";
             release       Choupo-2608;
         }
     }

@@ -1,3 +1,4 @@
+// [imported] origin "data/standards/parameters/NRTL/ethylLactate-methylAcetate.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*---------------------------------------------------------------------------*\
   NRTL binary interaction parameters --- methylAcetate(i) + ethylLactate(j)
 
@@ -15,14 +16,19 @@
   FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
   vapour-pressure records for both pure components.
 
-  reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
-  `validation {}` block below says, truthfully, that nothing
-  was held out; the acceptance is the `curation {}` block.
-  NOT PROMOTED (max |dT| 2.873 K over the 70 kept points, one liquid
-  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
-  severe pair does not enter the default catalogue; its record stays in
-  this curation case's constant/, and a case that needs it carries it in
-  its own constant/
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points GRADED
+  clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
+  amended, C285, C286; THIS fit: severe in-sample, 2.8734 K; one liquid
+  across its validity span), and NO HUMAN HAS REVIEWED IT.  The
+  engine says so on every run that reads it, and voices a warning
+  or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (by,
+  reviewer, date, checked, verdict; DEV.md 4c C297).  Revert with
+  `bin/choupo-curate revert ethylLactate-methylAcetate`.
 
   REPRODUCE: run data/curation/pairs/ethylLactate-methylAcetate (after `bin/choupo-curate fetch` on it); its fit
   writes ethylLactate-methylAcetate.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -54,7 +60,14 @@ provenance
     method        "fitParameters(T_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
     fittedInCase  "data/curation/pairs/ethylLactate-methylAcetate";
-    reviewStatus  interim;
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxTemperatureError_K 2.8734;
+    fitGradeIdealMaxTemperatureError_K 7.8133;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.8734 K < 7.8133 K
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-12";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
     fitDate       "2026-11-11";

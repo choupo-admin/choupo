@@ -103,11 +103,11 @@
   fit_nrtl: b_ij = -411.8 K, b_ji = 1029.7 K over 5 kept points of 1
   laboratories (3 discarded): max |dT| 3.249 K, mean 1.575 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
-  DIFFERENT pair (153.1, -139.9). NOT PROMOTED (max |dT| 3.249 K over the
-  5 kept points, one liquid across the validity span): fit grade severe
-  -- DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  DIFFERENT pair (153.1, -139.9). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/acetonitrile-diethylSuccinate.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.249 K over the 5 kept points, one liquid across the validity
+  span; BEATS THE IDEAL MIXTURE (C334): 3.2494 K against ideal 6.1777 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

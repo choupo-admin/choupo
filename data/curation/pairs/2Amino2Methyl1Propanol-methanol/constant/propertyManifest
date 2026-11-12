@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,24 @@ propertyManifest
             computationalSha256 "d51b98bd9ea6675087f0be387bcb63782ea8fc394f1962cb648ad92e39752faa";
             origin        "data/standards/components/methanol.dat";
             originSha256  "3e584446eb5b5ffd4ee5547099679b01254cc19dad31a8db909a2068fe9cad43";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Amino2Methyl1Propanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "ee2b060155f7c111a78dedbf8d722dad521522e2ca98aa5b52209d432eb5e65c";
+            computationalSha256 "5ac12c07a1a7477b96816fd1c3e05d78b5d96c5064364629d6e3e1ee3c8ebfdc";
+            origin        "data/standards/parameters/NRTL/2Amino2Methyl1Propanol-methanol.dat";
+            originSha256  "52d78ad61c7036805b1f4ef28e91154fbccddaf8d6cedd3517d5225f7c394517";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Amino2Methyl1Propanol-methanol.dat"
+        {
+            type          imported;
+            sha256        "4a51c1a58a8918ebbf0e004d671e5f300a3b23ae3c308df3b2de917b9df7031e";
+            computationalSha256 "507c53cb3053f3f0273a5fee96dd4f3bf2f9ca69fbd4bbb2b981b1a09b7dacfe";
+            origin        "data/standards/parameters/Wilson/2Amino2Methyl1Propanol-methanol.dat";
+            originSha256  "8da43b850c41abb1b8ef17a3836d5bbb44b97f2dd5b66ea3ab1b138fca4db50d";
             release       Choupo-2608;
         }
     }

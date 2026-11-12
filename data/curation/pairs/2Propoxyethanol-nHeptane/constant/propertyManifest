@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -43,6 +43,15 @@ propertyManifest
             originSha256  "c4efb38aaf4080cff55dfda4017e9bc8d4911ccad74c28b2daf7194cc6922c76";
             release       Choupo-2608;
         }
+        "parameters/NRTL/2Propoxyethanol-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "4f13fb41297b13512de3c81248aa9d3dc056ec215c393bb7c742073c6cac7ef6";
+            computationalSha256 "2d7e41caeb23862a208ab80d929b58421cba1a1286c1b8fb2531daf62fe43964";
+            origin        "data/standards/parameters/NRTL/2Propoxyethanol-nHeptane.dat";
+            originSha256  "ccbbee49abe021a12c36469bc3d97e6155e72079f5ac019ef6f6e3527e3a556f";
+            release       Choupo-2608;
+        }
         "parameters/UNIFAC/groups.dat"
         {
             type          imported;
@@ -59,6 +68,24 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Propoxyethanol-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "00ea8b0fa7406d66c112878c6ade2e4a78b3ef42d6c75528f9f00ef83a9c6f4a";
+            computationalSha256 "6f69b478bceb08ae43e4c0e3e7664e15d9929041bfd628875d7950a160f16259";
+            origin        "data/standards/parameters/UNIQUAC/2Propoxyethanol-nHeptane.dat";
+            originSha256  "aa13d7b14d3c7f446fbd562490d5484a00b1d9033b42accc50fb3ac0ae582185";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Propoxyethanol-nHeptane.dat"
+        {
+            type          imported;
+            sha256        "13e8b8e10223ef76422cf171ef12fa0e4347f717df7430ce84b118de044be16e";
+            computationalSha256 "1feca028a85f152e0a053decd180f17534f3f6677d27eab57c7880746a99c6e3";
+            origin        "data/standards/parameters/Wilson/2Propoxyethanol-nHeptane.dat";
+            originSha256  "279b7cb2e27322005fc635d39bb770a11e94c2c67ffda445bd724d6581f266f2";
             release       Choupo-2608;
         }
     }

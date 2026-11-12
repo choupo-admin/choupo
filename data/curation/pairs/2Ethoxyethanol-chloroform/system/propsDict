@@ -100,14 +100,14 @@
   fit_nrtl: b_ij = -509.3 K, b_ji = 419.4 K over 20 kept points of 1
   block(s), 1 laboratory(ies), 1 temperature(s) (1 discarded): max |dP|/P
   10.39 %, mean 6.59 %, graded severe -> accepted. fit_nrtl_start2 lands
-  on A DIFFERENT pair (1889.2, -626.7). NOT PROMOTED (max |dP|/P 10.39 %
-  over the 20 kept points, one liquid across the validity span): fit
-  grade severe -- DEV.md 4c C300 rule 3: a severe pair does not enter the
-  default catalogue; its record stays in this curation case's constant/,
-  and a case that needs it carries it in its own constant/ SINGLE
-  TEMPERATURE: b/T was fitted at one temperature; its extrapolation is
-  untested. SINGLE LABORATORY: one article's data, nothing to cross-check
-  it.
+  on A DIFFERENT pair (1889.2, -626.7). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/2Ethoxyethanol-chloroform.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dP|/P 10.39 % over the 20 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 10.3930 % against ideal
+  81.0722 % SINGLE TEMPERATURE: b/T was fitted at one temperature; its
+  extrapolation is untested. SINGLE LABORATORY: one article's data,
+  nothing to cross-check it.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these temperatures in this

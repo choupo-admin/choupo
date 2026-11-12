@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,24 @@ propertyManifest
             computationalSha256 "b030c46222f31439cbe4aa4c88da815302d75a8b328af83991ee4a7948a10ce5";
             origin        "data/standards/components/tertButylAcetate.dat";
             originSha256  "f97c77cfda5f49ef0cf089ed36280919ba78d2f91ac2f17e7c39d8d794ac3cd8";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/monochlorobenzene-tertButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "62ee4bd62095cfb8d8a009faee43346a28925314c0f8917189cdb7093ae620c5";
+            computationalSha256 "0bc00d39b8e3a2abaa5f23165f44b63ae0e2cdc96954dd8ce77e0f0e5168162a";
+            origin        "data/standards/parameters/NRTL/monochlorobenzene-tertButylAcetate.dat";
+            originSha256  "bad52bd7e7ca07cdb41885256aa1fd26db83df6f6a46060850df4b4b233a1c25";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/monochlorobenzene-tertButylAcetate.dat"
+        {
+            type          imported;
+            sha256        "5d4d0a2f012ca7ab28536f2d5749b4105523995ef5bcd74fc50881f0dcd2e007";
+            computationalSha256 "1d1d04c5d29ee833fc278b659fa333d38904325debc4f0c90cd30dd3af9f858e";
+            origin        "data/standards/parameters/Wilson/monochlorobenzene-tertButylAcetate.dat";
+            originSha256  "193b5176cc72a2a8b0c4227edf4045d61c0e546767547185fb0b312f10937f3c";
             release       Choupo-2608;
         }
     }

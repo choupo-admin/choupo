@@ -89,19 +89,20 @@
   not argued). Beside fit_nrtl's max |dT| 2.699 K (severe) on the same
   kept points. fit_uniquac: a_ij = -210.6, a_ji = 298.5 K over 15 kept
   points: max |dT| 2.456 K, mean 0.381 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on A DIFFERENT pair (211.9, -165.0). NOT
-  PROMOTED (max |dT| 2.456 K over the 15 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = -3472.2, A_ji = 4449.6 J/mol over 15
-  kept points: max |dT| 2.258 K, mean 0.431 K, graded severe -> accepted;
-  fit_wilson_start2 lands on the same pair (-3472.2, 4449.6). NOT
-  PROMOTED (max |dT| 2.258 K over the 15 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on A DIFFERENT pair (211.9, -165.0). PROMOTED
+  on 2026-11-12 into
+  data/standards/parameters/UNIQUAC/nDecane-oXylene.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade severe -- max |dT|
+  2.456 K over the 15 kept points, one liquid across the validity span;
+  BEATS THE IDEAL MIXTURE (C334): 2.4555 K against ideal 3.1657 K.
+  fit_wilson: A_ij = -3472.2, A_ji = 4449.6 J/mol over 15 kept points:
+  max |dT| 2.258 K, mean 0.431 K, graded severe -> accepted;
+  fit_wilson_start2 lands on the same pair (-3472.2, 4449.6). PROMOTED on
+  2026-11-12 into data/standards/parameters/Wilson/nDecane-oXylene.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.258 K over the 15 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.2584 K against ideal
+  3.1657 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -59,6 +59,15 @@ propertyManifest
             computationalSha256 "58b8a28cb19921dbdf4cdcd2865350af9c9d3fff6b0509c4b256236f5179b80b";
             origin        "data/standards/parameters/UNIQUAC/2Ethoxyethanol-nPropylAcetate.dat";
             originSha256  "5418eec4c91a339ace26558f31a091c8b14bbc75a67e3df5c704c59887e85a02";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Ethoxyethanol-nPropylAcetate.dat"
+        {
+            type          imported;
+            sha256        "5059494c5a84e2413e8ed3d3b9b581d7c240a1d62f7c41e7432b8809f6e3ca03";
+            computationalSha256 "a60ca2d343475913a00bb35f32b113d60e1ee79f9cd748f4a7f86f570638f094";
+            origin        "data/standards/parameters/Wilson/2Ethoxyethanol-nPropylAcetate.dat";
+            originSha256  "6af7517d7cfaa40a8a00cddd0508e6251978006d76ae6a0f01054c2224ec7c04";
             release       Choupo-2608;
         }
     }

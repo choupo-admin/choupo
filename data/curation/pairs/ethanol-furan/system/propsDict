@@ -105,11 +105,11 @@
   fit_nrtl: b_ij = 753.7 K, b_ji = -55.5 K over 14 kept points of 1
   laboratories (0 discarded): max |dT| 3.279 K, mean 0.808 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (753.7, -55.5). NOT PROMOTED (max |dT| 3.279 K over the 14
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (753.7, -55.5). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/ethanol-furan.dat as reviewStatus
+  autoPromoted, review by none, because: fit grade severe -- max |dT|
+  3.279 K over the 14 kept points, one liquid across the validity span;
+  BEATS THE IDEAL MIXTURE (C334): 3.2790 K against ideal 17.5760 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

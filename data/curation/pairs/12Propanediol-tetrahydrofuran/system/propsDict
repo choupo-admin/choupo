@@ -103,11 +103,12 @@
   fit_nrtl: b_ij = -306.2 K, b_ji = 471.2 K over 19 kept points of 1
   laboratories (1 discarded): max |dT| 2.420 K, mean 1.270 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (-306.2, 471.2). NOT PROMOTED (max |dT| 2.420 K over the 19
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (-306.2, 471.2). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/12Propanediol-tetrahydrofuran.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.420 K over the 19 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.4202 K against ideal
+  5.8407 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

@@ -102,10 +102,10 @@
   laboratories (0 discarded): max |dT| 3.050 K, mean 1.214 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
   same pair (1223.8, -539.9). NOT PROMOTED (max |dT| 3.050 K over the 46
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  kept points, one liquid across the validity span): fit grade severe,
+  and a severe fit is promoted only if it BEATS THE IDEAL MIXTURE on its
+  own kept points (DEV.md 4c C334): fit max 3.0497 K, ideal (gamma = 1)
+  max 2.7327 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

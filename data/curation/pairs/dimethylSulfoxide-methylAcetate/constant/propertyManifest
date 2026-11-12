@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/dimethylSulfoxide.dat"
         {
             type          imported;
-            sha256        "146549d6b5fff7a0e57a607bd5f78f88f22f2fdc676aea18421963252b02137c";
-            computationalSha256 "f965b44ef5ea770b90f8e5d5263a5322ef24cd12c9fa213806688a4ccdb73e12";
+            sha256        "17f9b99ac0c913e567614c63c159770bbc0a1913df97026d01fffbe3b04cf774";
+            computationalSha256 "d843f0b7b938772a1d29d5515b33b2c59fadc96f846788d5aded7916bf16c994";
             origin        "data/standards/components/dimethylSulfoxide.dat";
-            originSha256  "705eb8c5af775aa597b0b092d2e795e71a47ee20518b93b04cdd533103253f17";
+            originSha256  "a9b5f0fee39f8c1914eedda69137802495adf06e015450e16ae426392208ba86";
             release       Choupo-2608;
         }
         "components/methylAcetate.dat"
         {
             type          imported;
-            sha256        "2a853f9536c2e28bb0ff43384237e6bf552a62e4f4e5ab2b93bcf2f75ce80870";
-            computationalSha256 "984a3255e049d782ee122f64c337e80aee21d6e71f0e494d074cd23318bb6fa4";
+            sha256        "8fd7e9ac0a66c9ace23e7112a6ceb5f131545a1ca8e7d81488cfe77614ad3954";
+            computationalSha256 "8daaabfc00987a030a4324c496d7e25e5915a77d7c036da66c2f4f4b7346cb15";
             origin        "data/standards/components/methylAcetate.dat";
-            originSha256  "03876631024ae93115fdb03586ab95e3720389bc0e68f5f8cf0b2b5aae74789e";
+            originSha256  "6fec117f381040a52b8564f664430f482315703da51f662403a70e8c323326d5";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/dimethylSulfoxide-methylAcetate.dat"
+        {
+            type          imported;
+            sha256        "8ebaf27c32cfd6b4cd67872b9b2f3c53d1187b37ded3899de800000bf54ec5d7";
+            computationalSha256 "eb5a4405086cb33d341a50a34df766d47cb30d7c697902111b96515368294003";
+            origin        "data/standards/parameters/NRTL/dimethylSulfoxide-methylAcetate.dat";
+            originSha256  "ececff10cb6d12768da6d03bc05f209d51ad4389a6ff84e67707fcb1f187c060";
             release       Choupo-2608;
         }
         "parameters/Wilson/dimethylSulfoxide-methylAcetate.dat"

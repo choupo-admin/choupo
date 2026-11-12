@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "be9cf3e63603613c99083b7636381c48048f906abe56b1e872a61b0294684d86";
             origin        "data/standards/components/furan.dat";
             originSha256  "656d31d92867385d6e0897a73306e3e467ecf5f0c8b50c8ea462aeda36e83cb4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/ethanol-furan.dat"
+        {
+            type          imported;
+            sha256        "eb427c4f8a6cca7eee4f86d1eb821fc6cc193423e892f9d5833eb3b572edd22d";
+            computationalSha256 "aa562e7f3e407ca4f62d0d9d3ec783eee8327799bf66398cf355d6baf7f81267";
+            origin        "data/standards/parameters/NRTL/ethanol-furan.dat";
+            originSha256  "09a64eb793bc74f03362493972855941f19256d03828edd9d5a027f14c4f2e86";
             release       Choupo-2608;
         }
         "parameters/Wilson/ethanol-furan.dat"

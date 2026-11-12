@@ -88,12 +88,13 @@
   not argued). Beside fit_nrtl's max |dT| 3.747 K (severe) on the same
   kept points. fit_uniquac: a_ij = -250.9, a_ji = 381.4 K over 33 kept
   points: max |dT| 3.371 K, mean 1.418 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on A DIFFERENT pair (161.4, -136.8). NOT
-  PROMOTED (max |dT| 3.371 K over the 33 kept points, one liquid across
-  the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on A DIFFERENT pair (161.4, -136.8). PROMOTED
+  on 2026-11-12 into
+  data/standards/parameters/UNIQUAC/methylDecanoate-methylOctanoate.dat
+  as reviewStatus autoPromoted, review by none, because: fit grade severe
+  -- max |dT| 3.371 K over the 33 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.3711 K against ideal
+  3.6251 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -102,10 +103,10 @@
   laboratories (0 discarded): max |dT| 3.747 K, mean 1.510 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
   DIFFERENT pair (269.0, -244.6). NOT PROMOTED (max |dT| 3.747 K over the
-  33 kept points, one liquid across the validity span): fit grade severe
-  -- DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  33 kept points, one liquid across the validity span): fit grade severe,
+  and a severe fit is promoted only if it BEATS THE IDEAL MIXTURE on its
+  own kept points (DEV.md 4c C334): fit max 3.7469 K, ideal (gamma = 1)
+  max 3.6251 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

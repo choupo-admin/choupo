@@ -1,0 +1,132 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- nButanol(i) + aniline(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points GRADED
+  clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
+  amended, C285, C286; THIS fit: severe in-sample, 2.2392 K; one liquid
+  across its validity span), and NO HUMAN HAS REVIEWED IT.  The
+  engine says so on every run that reads it, and voices a warning
+  or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (by,
+  reviewer, date, checked, verdict; DEV.md 4c C297).  Revert with
+  `bin/choupo-curate revert aniline-nButanol`.
+
+  REPRODUCE: run data/curation/pairs/aniline-nButanol (after `bin/choupo-curate fetch` on it); its fit
+  writes aniline-nButanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i nButanol; j aniline; }
+
+components  ( nButanol  aniline );
+model       NRTL;
+
+parameters
+{
+    i           nButanol;
+    j           aniline;
+    a_ij        0.00000000;
+    b_ij        537.13033179;
+    a_ji        0.00000000;
+    b_ji        -287.54000346;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/aniline-nButanol";
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxTemperatureError_K 2.2392;
+    fitGradeIdealMaxTemperatureError_K 5.1526;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.2392 K < 5.1526 K
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-12";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/nButanol-aniline-bubble-acs.jced.7b00766.dat";
+            doi       "10.1021/acs.jced.7b00766";
+            sha256    "1603298266c9c5710f1f4f6d7d99632c831b9bafa464765e8c608255fcca8d53";
+            provenance measured;
+            archiveFile "acs.jced.7b00766.xml";
+            system    "nButanol + aniline";
+            pressure  "85000.000000 Pa";
+        }
+    );
+    fingerprint "20ba3698f289cc0c";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          2.11555948;
+    rms_K         0.82850801;
+    nDataPoints   19;
+    identifiable  true;
+    maxAbsCorr    0.99441719;
+
+    validity
+    {
+        temperature { min 386.00 K; max 447.25 K; }
+        pressure    { min 85000 Pa; max 85000 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 0;
+    pointsKept      19;
+    noBubblePoint   0;
+    maxAbsError     2.2392 K;
+    meanAbsError    0.6276 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           severe;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         accepted;
+}

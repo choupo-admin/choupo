@@ -87,15 +87,16 @@
   not argued). Beside fit_nrtl's max |dT| 1.799 K (warning) on the same
   kept points. fit_uniquac: a_ij = 8.6, a_ji = 167.7 K over 8 kept
   points: max |dT| 2.071 K, mean 1.175 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (8.6, 167.7). NOT PROMOTED
-  (max |dT| 2.071 K over the 8 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/. fit_wilson: A_ij = 4477.6, A_ji = 2679.2 J/mol over 8
-  kept points: max |dT| 1.501 K, mean 1.002 K, graded warning ->
-  accepted; fit_wilson_start2 lands on the same pair (4477.6, 2679.2).
-  PROMOTED on 2026-11-11 into
+  fit_uniquac_start2 lands on the same pair (8.6, 167.7). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/1Heptanol-1Propanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.071 K over the 8 kept points, one liquid across the validity
+  span; BEATS THE IDEAL MIXTURE (C334): 2.0712 K against ideal 26.9421 K.
+  fit_wilson: A_ij = 4477.6, A_ji = 2679.2 J/mol over 8 kept points: max
+  |dT| 1.501 K, mean 1.002 K, graded warning -> accepted;
+  fit_wilson_start2 lands on the same pair (4477.6, 2679.2). PROMOTED on
+  2026-11-11 into
   data/standards/parameters/Wilson/1Heptanol-1Propanol.dat as
   reviewStatus autoPromoted, review by none, because: fit grade warning
   -- max |dT| 1.501 K over the 8 kept points, one liquid across the

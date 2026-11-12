@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -77,6 +77,15 @@ propertyManifest
             computationalSha256 "b0ecb93eda7f3ec094377aa56bf03b0e8b98f0daddcdc5a7bcc4f5bf7ccdfae9";
             origin        "data/standards/parameters/UNIQUAC/13Propanediol-isopropanol.dat";
             originSha256  "1d01b28fb05edcee505ea16ae8fd5a31bae472fd82b7d9f5ce36333423f0c6cd";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/13Propanediol-isopropanol.dat"
+        {
+            type          imported;
+            sha256        "d91bae3c6ac0b095e3e07739e44b9028f43059e1a36bfdacc76db77ad4c4ec13";
+            computationalSha256 "5257ef546c5d0d5b73bc11d6718dcb445b3fe76abd68921dd608df16c8458076";
+            origin        "data/standards/parameters/Wilson/13Propanediol-isopropanol.dat";
+            originSha256  "c7b10f05b0968d6f0a6ba7944671cf8f067e9d02c86b319b25d1aca96d09044a";
             release       Choupo-2608;
         }
     }

@@ -1254,6 +1254,31 @@ VP_GRADE_COUNT = {}
 C286_GRADE_COUNT = {}
 
 
+def ideal_failures(prov, applied, mx, kind, case, tag, fails):
+    """DEV.md 4c C334: a SEVERE record in the catalogue carries the ideal
+    mixture's max error on the same kept points (`fitGradeIdealMax...`), the
+    fit beats it, and the number is the one the case's own fit op gives with
+    its parameters at zero and no iteration (recomputed here)."""
+    if applied != "severe":
+        return
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import pairs_c283 as pc
+    key = ("fitGradeIdealMaxRelativeError_pct" if kind == "px"
+           else "fitGradeIdealMaxTemperatureError_K")
+    ideal = num(prov, key)
+    if ideal is None:
+        fails.append(f"{tag}: a SEVERE record in the catalogue carries no provenance {key} "
+                     "(C334: the ideal mixture on the same kept points)")
+        return
+    if not mx < ideal:
+        fails.append(f"{tag}: severe fit max {mx:.4f} does not beat the ideal mixture's "
+                     f"{ideal:.4f} (C334) -- it must not be in the catalogue")
+    got = pc.ideal_max(case, kind)
+    if abs(got - ideal) > 5e-5 * max(1.0, ideal) + 1e-4:
+        fails.append(f"{tag}: provenance {key} {ideal}, the case's own fit op at zero "
+                     f"parameters gives {got:.6f}")
+
+
 def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
     """Arm (j): a pair fitted on every laboratory (C283) against its case."""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -1323,6 +1348,7 @@ def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
         if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
             fails.append(f"{tag}: provenance fitGradeMaxTemperatureError_K {g_mx}, the run's "
                          f"max |dT| {mx:.6f} K")
+        ideal_failures(prov, applied, mx, "tx", case, tag, fails)
         rf = facts(rec)
         gword = {"warning": "warning", "severe": "SEVERE"}.get(applied)
         names = (f"{rf['i']}-{rf['j']}", f"{rf['j']}-{rf['i']}")
@@ -1455,6 +1481,7 @@ def c291_failures(rec, cur, case, out, tag, fails, in_std=False):
         g_mx = num(prov, "fitGradeMaxRelativeError_pct")
         if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
             fails.append(f"{tag}: provenance fitGradeMaxRelativeError_pct {g_mx}, the run's {mx:.6f} %")
+        ideal_failures(prov, applied, mx, "px", case, tag, fails)
         rf = facts(rec)
         gword = {"warning": "warning", "severe": "SEVERE"}.get(applied)
         names = (f"{rf['i']}-{rf['j']}", f"{rf['j']}-{rf['i']}")
@@ -1519,7 +1546,7 @@ def check_model_records(tmp, runs, fetched, fails, not_run):
         case's component records, temperatures / laboratories recounted;
       * a UNIQUAC r/q of `origin definition` reproduced from the component's
         UNIFAC groups (bin/curate/uniquac_rq_from_groups.py --check);
-      * in the CATALOGUE: accepted, never severe or refused (C300 rule 3), one
+      * in the CATALOGUE: accepted, never refused (C333: severe stays), one
         liquid across the span, fitGrade / basis / cap by C300, its number, the
         review block, promotedBy, and the loader voicing autoPromoted and a
         warning or SEVERE grade.
@@ -1680,7 +1707,7 @@ def check_model_records(tmp, runs, fetched, fails, not_run):
             if in_std:
                 if word(cur, "verdict") != "accepted" or pc.promotion_refusal(grade):
                     fails.append(f"{tag}: grade {grade} / verdict {word(cur, 'verdict')} in the "
-                                 "CATALOGUE -- severe and refused stay in their case (C300 rule 3)")
+                                 "CATALOGUE -- only a refused fit is discarded (C333)")
                 fails.extend(split)
                 applied, lf = grade_label_failures(prov, grade, nT, nL, tag)
                 fails.extend(lf)
@@ -1692,6 +1719,7 @@ def check_model_records(tmp, runs, fetched, fails, not_run):
                 g_mx = num(prov, key)
                 if g_mx is None or abs(g_mx - mx) > 5e-5 * max(1.0, mx) + 1e-4:
                     fails.append(f"{tag}: provenance {key} {g_mx}, the run's {mx:.6f}")
+                ideal_failures(prov, applied, mx, kind, case, tag, fails)
                 if status != "autoPromoted" or word(rec, "promotedBy") != pc.MODELS_PROMOTED_BY:
                     fails.append(f"{tag}: a C294 catalogue record must be `reviewStatus "
                                  f"autoPromoted` promoted by `{pc.MODELS_PROMOTED_BY}`")
@@ -1945,7 +1973,7 @@ def main():
           "grade recomputed ("
           + ", ".join(f"{m} {g} {n}" for (m, g), n in sorted(MODEL_GRADE_COUNT.items()))
           + "), oneLiquid on each model's own equation, r/q of `origin definition` equal to "
-          "the UNIFAC group sum, and in the catalogue never severe, fitGrade/basis/cap by C300, "
+          "the UNIFAC group sum, and in the catalogue never refused (severe stays, C333), fitGrade/basis/cap by C300, "
           "voiced; "
           f"{span_held} water pair(s) used BELOW their span announce it once "
           "per run, into the caveat block, say nothing inside it, and publish "

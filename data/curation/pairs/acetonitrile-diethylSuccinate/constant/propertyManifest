@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "b650975a74426db3cfc316daac8816f3d1cf90d242438d9594c68124bedb77ed";
             origin        "data/standards/components/diethylSuccinate.dat";
             originSha256  "0caff482e34022007a57ccc01d2f681e95f7afa0576b42e3e25bf5237eafe7ad";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/acetonitrile-diethylSuccinate.dat"
+        {
+            type          imported;
+            sha256        "2585503048a508d7a8bf2473bd33b729a8dd35c6e739801a4b46f87f9e810ebd";
+            computationalSha256 "bacb4da924bad7307ecd31f6d373a8e65d45e22e4bb9ae4114e052f1615b16c0";
+            origin        "data/standards/parameters/NRTL/acetonitrile-diethylSuccinate.dat";
+            originSha256  "5fa2f0b99e2a351e1c588a5c655e9ba5a2315ae7cafa5794efe0b9ce3cc89450";
             release       Choupo-2608;
         }
     }

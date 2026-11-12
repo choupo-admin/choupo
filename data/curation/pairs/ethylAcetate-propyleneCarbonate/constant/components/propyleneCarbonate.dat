@@ -144,3 +144,30 @@ provenance
         notes         "computed from ChemSep Tc/Pc/omega";
     }
 }
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file PROPYLENE_CARBONATE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey connectivity block RUOJZAUFBMNUDX matches; the LVPP geometry is one stereoisomer (RUOJZAUFBMNUDX-GSVOUGTGSA-N), the catalogue record carries no stereo layer; formula C4H6O3; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        126.394799;   // sum of the profile below; GAMESS prints 126.39
+        volume      114.51;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.156592     0.662790     2.296791    12.945977    12.021131
+               6.990503     7.887950    11.458116     6.755144     4.039801     4.757619
+               6.984851     3.522103     2.137812     2.394794     2.098634     1.902430
+               1.881055     1.481087     3.395202     1.349421     3.705130     5.690839
+               3.237234     2.634300     1.627994     5.679384     4.404738     2.295377
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

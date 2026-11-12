@@ -90,12 +90,13 @@
   not argued). Beside fit_nrtl's max |dT| 2.310 K (severe) on the same
   kept points. fit_uniquac: a_ij = -183.0, a_ji = 419.1 K over 55 kept
   points: max |dT| 2.121 K, mean 0.447 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (-183.0, 419.1). NOT PROMOTED
-  (max |dT| 2.121 K over the 55 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on the same pair (-183.0, 419.1). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/1Methoxy2Propanol-water.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.121 K over the 55 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.1208 K against ideal
+  9.7879 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -103,11 +104,12 @@
   fit_nrtl: b_ij = 681.9 K, b_ji = -108.9 K over 55 kept points of 2
   laboratories (0 discarded): max |dT| 2.310 K, mean 0.513 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (681.9, -108.9). NOT PROMOTED (max |dT| 2.310 K over the 55
-  kept points, one liquid across the validity span): fit grade severe --
-  DEV.md 4c C300 rule 3: a severe pair does not enter the default
-  catalogue; its record stays in this curation case's constant/, and a
-  case that needs it carries it in its own constant/
+  same pair (681.9, -108.9). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/1Methoxy2Propanol-water.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 2.310 K over the 55 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3098 K against ideal
+  9.7879 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this

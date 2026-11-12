@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -59,6 +59,15 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/methylDecanoate-methylOctanoate.dat"
+        {
+            type          imported;
+            sha256        "f09c1d668bd7900c2cae5e65958e14bdef54778c2f6861fef01c9999bd1cc71a";
+            computationalSha256 "43e87a798cc5686a796503b5a941be4d6b2fb98096b95c5eed3652415a8bbc1e";
+            origin        "data/standards/parameters/UNIQUAC/methylDecanoate-methylOctanoate.dat";
+            originSha256  "dcf2f59deaf4b1f2fcc08ed8ffa78e8f01a296077365a07083ac5f3ec85432e5";
             release       Choupo-2608;
         }
     }

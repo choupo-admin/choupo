@@ -1,5 +1,5 @@
 /*---------------------------------------------------------------------------*\
-  NRTL binary interaction parameters --- 1Propanol(i) + propionicAcid(j)
+  NRTL binary interaction parameters --- methylPhenylCarbonate(i) + dimethylCarbonate(j)
 
   REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
   record docs/design/binary-pairs-from-open-measurements.md) to measured
@@ -15,40 +15,41 @@
   FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
   vapour-pressure records for both pure components.
 
-  reviewStatus autoPromoted; humanReviewed false: PROMOTED AUTOMATICALLY by
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
   its fitting pipeline (every laboratory fitted, outliers beyond 3 K
   discarded by name, max |T_model - T| over the kept points GRADED
   clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
-  amended, C285, C286; THIS fit: severe, 2.9158 K; one liquid
+  amended, C285, C286; THIS fit: severe in-sample, 2.6485 K; one liquid
   across its validity span), and NO HUMAN HAS REVIEWED IT.  The
   engine says so on every run that reads it, and voices a warning
   or a severe grade beside it.
   Nothing was held out: the `validation {}` block says so, and the
   acceptance is the `curation {}` block.  A curator who reads the series
-  back against the articles marks it `reviewStatus reviewed; humanReviewed
-  true;`.  Revert with `bin/choupo-curate revert 1Propanol-propionicAcid`.
+  back against the articles records it in the `review {}` block (by,
+  reviewer, date, checked, verdict; DEV.md 4c C297).  Revert with
+  `bin/choupo-curate revert dimethylCarbonate-methylPhenylCarbonate`.
 
-  REPRODUCE: run data/curation/pairs/1Propanol-propionicAcid (after `bin/choupo-curate fetch` on it); its fit
-  writes 1Propanol-propionicAcid.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  REPRODUCE: run data/curation/pairs/dimethylCarbonate-methylPhenylCarbonate (after `bin/choupo-curate fetch` on it); its fit
+  writes dimethylCarbonate-methylPhenylCarbonate.proposal.dat, which bin/curate/check_regressed_pairs.py holds
   equal to this record.
 \*---------------------------------------------------------------------------*/
 
 recordType binaryInteractionParameters;
 schemaVersion 1;
 
-pair { i 1Propanol; j propionicAcid; }
+pair { i methylPhenylCarbonate; j dimethylCarbonate; }
 
-components  ( 1Propanol  propionicAcid );
+components  ( methylPhenylCarbonate  dimethylCarbonate );
 model       NRTL;
 
 parameters
 {
-    i           1Propanol;
-    j           propionicAcid;
+    i           methylPhenylCarbonate;
+    j           dimethylCarbonate;
     a_ij        0.00000000;
-    b_ij        -384.77274357;
+    b_ij        -439.92905882;
     a_ji        0.00000000;
-    b_ji        632.43369032;
+    b_ji        1126.21085752;
     alpha       0.30000000;
 }
 
@@ -57,56 +58,47 @@ provenance
     origin        fitted;
     method        "fitParameters(T_bubble), Levenberg-Marquardt";
     methodVersion "choupoProps Choupo-dev";
-    fittedInCase  "data/curation/pairs/1Propanol-propionicAcid";
+    fittedInCase  "data/curation/pairs/dimethylCarbonate-methylPhenylCarbonate";
     reviewStatus  autoPromoted;
-    humanReviewed false;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
     fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxTemperatureError_K 2.9158;
+    fitGradeMaxTemperatureError_K 2.6485;
+    fitGradeIdealMaxTemperatureError_K 8.1463;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 2.6485 K < 8.1463 K
     promotedBy    "bin/choupo-curate pair --promote";
-    promotedDate  "2026-11-10";
+    promotedDate  "2026-11-12";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-10";
+    fitDate       "2026-11-11";
 
     evidence
     (
         {
             role      fit;
-            dataset   "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je100912t.dat";
-            doi       "10.1021/je100912t";
-            sha256    "9dd0d7c46ce840db7866a192b89ba927de74d3c18a20ff4b5353030aafa66d1b";
+            dataset   "constant/archiveExtracts/methylPhenylCarbonate-dimethylCarbonate-bubble-j.fluid.2013.09.030.dat";
+            doi       "10.1016/j.fluid.2013.09.030";
+            sha256    "dcd83b2435e42302101082ca9ada31b56c359380dbe780654670e6cc97972506";
             provenance measured;
-            archiveFile "je100912t.xml";
-            system    "1Propanol + propionicAcid";
-            pressure  "101325.000000 Pa";
-        }
-        {
-            role      fit;
-            dataset   "constant/archiveExtracts/1Propanol-propionicAcid-bubble-je101302p.dat";
-            doi       "10.1021/je101302p";
-            sha256    "bdc86ef24b356f9bfdd0ea861f4f3c7cabdceddf281b88c512e7e37c3758e967";
-            provenance measured;
-            archiveFile "je101302p.xml";
-            system    "1Propanol + propionicAcid";
+            archiveFile "j.fluid.2013.09.030.xml";
+            system    "methylPhenylCarbonate + dimethylCarbonate";
             pressure  "101300.000000 Pa";
         }
     );
-    fingerprint "b5b29d5ad8bba770";   // of the declaration, frozen before the fit
+    fingerprint "ee191a4458f5fcf3";   // of the declaration, frozen before the fit
 
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          131.37785174;
-    rms_K         0.89317714;
-    nDataPoints   42;
+    chi2          1257.50509488;
+    rms_K         1.10972563;
+    nDataPoints   18;
     identifiable  true;
-    maxAbsCorr    0.98472064;
+    maxAbsCorr    0.94472296;
 
     validity
     {
-        temperature { min 371.27 K; max 413.55 K; }
-        pressure    { min 101300 Pa; max 101325 Pa; }
+        temperature { min 366.04 K; max 480.55 K; }
+        pressure    { min 101300 Pa; max 101300 Pa; }
         note        "the span of the FIT evidence; outside it the pair is an extrapolation";
     }
 }
@@ -127,11 +119,11 @@ curation
     evidence        allLaboratories;   // every study fitted, none held out
     objective       twoStage;
     outlierLimit    3 K;   // |T_model - T| after the least-squares stage
-    outliersDropped 5;
-    pointsKept      42;
+    outliersDropped 2;
+    pointsKept      18;
     noBubblePoint   0;
-    maxAbsError     2.9158 K;
-    meanAbsError    0.5574 K;
+    maxAbsError     2.6485 K;
+    meanAbsError    0.8838 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           severe;

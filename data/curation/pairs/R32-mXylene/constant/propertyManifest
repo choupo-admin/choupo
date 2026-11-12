@@ -21,26 +21,44 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/R32.dat"
         {
             type          imported;
-            sha256        "5491156fac09b4fbce81854da7bb003a62d0bb2e1b6b29cfff01319723438196";
-            computationalSha256 "753f60fb0dec87e6e9d9df12fbfa5c903e0e7e2d6c24dda16ec6c06fbece9fa4";
+            sha256        "e3d2783d35d404e4ef143937d01405145a261e55bd45dd9e6e71af8c5db6d2d7";
+            computationalSha256 "a9b8d6e653f9e6b6e1c599fad2b305963faf13ce0f5fdad1faea77259aaa903b";
             origin        "data/standards/components/R32.dat";
-            originSha256  "300275313fff9aeb9e195d228555810ab783edd1695f4d7521880f78088a45e3";
+            originSha256  "fb506deeb1621c69e19f5c5d68612d146f1350537dccbd4302678b6dc2342a3f";
             release       Choupo-2608;
         }
         "components/mXylene.dat"
         {
             type          imported;
-            sha256        "c24a6c9ac4d388af9f8c2bf739601e19ef9c8d71b2be2683e845e2bbe02d3342";
-            computationalSha256 "6be7c972c0aa573b6dac04f2ee3b608577af2926c9509b2580627a2d55915b1b";
+            sha256        "4c52078dcdfe69e76efba61b0e9b578586bf8416c66d47658eefe95a84b708e8";
+            computationalSha256 "e7a7d7ae417ca1c5504410c7f8c54f1ac66af95689e1354fbe1c97de912849f7";
             origin        "data/standards/components/mXylene.dat";
-            originSha256  "4d3c5a24e214e3030771078a8aa4d959e837268baf8b491e8a43ed61f0d00e90";
+            originSha256  "021fa9765d1fa336a59638eb082153708b4efc4bc5560086ff85c0ad7b0dc581";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/R32-mXylene.dat"
+        {
+            type          imported;
+            sha256        "c37f7f992e319f3e67f0722bd5c5d3a00f2b671a8591bc1dfcac0705d0ae4e1f";
+            computationalSha256 "36591b97c63b12ca8ce2dd2333b6bcb0005544c260cc17382cd815dbfe5818cb";
+            origin        "data/standards/parameters/NRTL/R32-mXylene.dat";
+            originSha256  "34759e9b12a1b5e98c1ea909f9eb9da9cbb0e40bc5d224260e1055702126d427";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/R32-mXylene.dat"
+        {
+            type          imported;
+            sha256        "16f6ede0292a792c632d52454d13fcf5b0f934848f7e69a58ab18ed032239508";
+            computationalSha256 "bf3572d2373914e20f9b87a9c03f3fbcfaa17f16fe991627fd3bf3e6a76be27e";
+            origin        "data/standards/parameters/Wilson/R32-mXylene.dat";
+            originSha256  "31c6d7cae7d20433699e68717cc3810f7f64977131422ff47e6a23600a4aa8dd";
             release       Choupo-2608;
         }
     }

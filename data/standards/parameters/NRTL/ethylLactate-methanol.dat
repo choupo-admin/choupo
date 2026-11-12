@@ -1,0 +1,141 @@
+/*---------------------------------------------------------------------------*\
+  NRTL binary interaction parameters --- methanol(i) + ethylLactate(j)
+
+  REGRESSED BY CHOUPO'S CURATION PIPELINE (bin/choupo-curate, DEV.md 4c C282;
+  record docs/design/binary-pairs-from-open-measurements.md) to measured
+  bubble temperatures.  The articles named under `evidence` are the
+  SOURCE of the measurements; the NIST/TRC ThermoML Archive located them.
+  NO MEASURED POINT IS IN THIS RECORD OR THIS TREE: the case regenerates
+  them from the DOIs and sha256 sums it declares (constant/archiveDatasets).
+  The PARAMETERS are Choupo's own work.
+
+  EQUATION: tau_ij = a_ij + b_ij / T [b in K], G_ij = exp(-alpha tau_ij),
+  Renon & Prausnitz direction (src/thermo/activityCoefficient/NRTL.cpp).
+  a_ij = a_ji = 0 and alpha = 0.30 FIXED, not fitted.
+  FRAME: ideal-gas vapour, no Poynting term, the catalogue's own
+  vapour-pressure records for both pure components.
+
+  reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
+  its fitting pipeline (every laboratory fitted, outliers beyond 3 K
+  discarded by name, max |T_model - T| over the kept points GRADED
+  clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
+  amended, C285, C286; THIS fit: severe in-sample, 3.0346 K; one liquid
+  across its validity span), and NO HUMAN HAS REVIEWED IT.  The
+  engine says so on every run that reads it, and voices a warning
+  or a severe grade beside it.
+  Nothing was held out: the `validation {}` block says so, and the
+  acceptance is the `curation {}` block.  A curator who reads the series
+  back against the articles records it in the `review {}` block (by,
+  reviewer, date, checked, verdict; DEV.md 4c C297).  Revert with
+  `bin/choupo-curate revert ethylLactate-methanol`.
+
+  REPRODUCE: run data/curation/pairs/ethylLactate-methanol (after `bin/choupo-curate fetch` on it); its fit
+  writes ethylLactate-methanol.proposal.dat, which bin/curate/check_regressed_pairs.py holds
+  equal to this record.
+\*---------------------------------------------------------------------------*/
+
+recordType binaryInteractionParameters;
+schemaVersion 1;
+
+pair { i methanol; j ethylLactate; }
+
+components  ( methanol  ethylLactate );
+model       NRTL;
+
+parameters
+{
+    i           methanol;
+    j           ethylLactate;
+    a_ij        0.00000000;
+    b_ij        -263.92014400;
+    a_ji        0.00000000;
+    b_ji        168.92860852;
+    alpha       0.30000000;
+}
+
+provenance
+{
+    origin        fitted;
+    method        "fitParameters(T_bubble), Levenberg-Marquardt";
+    methodVersion "choupoProps Choupo-dev";
+    fittedInCase  "data/curation/pairs/ethylLactate-methanol";
+    reviewStatus  autoPromoted;
+    review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
+    fitGrade      severe;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
+    fitGradeMaxTemperatureError_K 3.0346;
+    fitGradeIdealMaxTemperatureError_K 8.7841;   // DEV.md 4c C334: the ideal mixture (gamma = 1) on the SAME kept points; a severe fit is promoted only if 3.0346 K < 8.7841 K
+    promotedBy    "bin/choupo-curate pair --promote";
+    promotedDate  "2026-11-12";
+    reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
+    reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
+    fitDate       "2026-11-11";
+
+    evidence
+    (
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-ethylLactate-bubble-j.fluid.2015.12.029.dat";
+            doi       "10.1016/j.fluid.2015.12.029";
+            sha256    "8b4e8cfbfb31555d50ad40600466408a2c58ab3223317dbf12b22208576eb72c";
+            provenance measured;
+            archiveFile "j.fluid.2015.12.029.xml";
+            system    "methanol + ethylLactate";
+        }
+        {
+            role      fit;
+            dataset   "constant/archiveExtracts/methanol-ethylLactate-bubble-je900481e.dat";
+            doi       "10.1021/je900481e";
+            sha256    "489fc61a2f8557726ad685881ef8de5f8557a003b3beb4a5fef1912c4e7351a2";
+            provenance measured;
+            archiveFile "je900481e.xml";
+            system    "methanol + ethylLactate";
+            pressure  "101330.000000 Pa";
+        }
+    );
+    fingerprint "20cd6547ea40cdf2";   // of the declaration, frozen before the fit
+
+    //  IN-SAMPLE: the model reproducing the very points it was
+    //  fitted to.  It is NOT a validation; see the block below.
+    weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
+    chi2          3196.35327832;
+    rms_K         1.08707382;
+    nDataPoints   65;
+    identifiable  false;
+    maxAbsCorr    0.99961383;
+
+    validity
+    {
+        temperature { min 317.57 K; max 420.65 K; }
+        pressure    { min 40000 Pa; max 101330 Pa; }
+        note        "the span of the FIT evidence; outside it the pair is an extrapolation";
+    }
+}
+
+validation
+{
+    verdict     validationRefused;
+
+    heldOut     none;   // every declared dataset carried `role fit`
+
+    acceptance  none;   // no band was declared before the fit, so no
+                        // pass/fail may be read out of the residual above
+}
+
+curation
+{
+    rule            "DEV.md 4c C283 (amended) + C284, graded by C285 (C286)";
+    evidence        allLaboratories;   // every study fitted, none held out
+    objective       twoStage;
+    outlierLimit    3 K;   // |T_model - T| after the least-squares stage
+    outliersDropped 15;
+    pointsKept      65;
+    noBubblePoint   0;
+    maxAbsError     3.0346 K;
+    meanAbsError    0.8651 K;
+    acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
+    gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
+    grade           severe;
+    oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
+    verdict         accepted;
+}

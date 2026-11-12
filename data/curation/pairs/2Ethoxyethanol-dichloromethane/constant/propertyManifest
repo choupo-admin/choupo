@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,33 @@ propertyManifest
             computationalSha256 "db652ed78ab67a1c63e3745f372cd7e9f47e081d6a3caf3fdfc8dd08f7034c50";
             origin        "data/standards/components/dichloromethane.dat";
             originSha256  "0f35222ac2105f02df21450bb857e60cc5d15bdcbbe5b981a491e24f2261dcbc";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/2Ethoxyethanol-dichloromethane.dat"
+        {
+            type          imported;
+            sha256        "1207e11fdc40d7afca3d6347ee9e8b53482a44b5d874c22b5c29cf5b0e0fc950";
+            computationalSha256 "ca5747f05211b0a1969240886261a5e7cfde918b7bb83423df8bc3210a72547e";
+            origin        "data/standards/parameters/NRTL/2Ethoxyethanol-dichloromethane.dat";
+            originSha256  "f2aa3dce50100ad2b1eb715af9984aff323675fb2eea76898cde0750358a78ea";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/2Ethoxyethanol-dichloromethane.dat"
+        {
+            type          imported;
+            sha256        "9720d0ee422ecfbeed3650c75c99dc329525d022646beb4b859fdd0f513fd422";
+            computationalSha256 "49209a7a8f249e2ed53e16cc4b9e1598fb49ea92c6d5fc686e4e5d6e9519c03d";
+            origin        "data/standards/parameters/UNIQUAC/2Ethoxyethanol-dichloromethane.dat";
+            originSha256  "0be727881c0435d973bc457ecc9f4f37eca367ebb123294732e46fd4d56abd3f";
+            release       Choupo-2608;
+        }
+        "parameters/Wilson/2Ethoxyethanol-dichloromethane.dat"
+        {
+            type          imported;
+            sha256        "1a672db82ee858aff27cbc2358876df86e583ad27adec053fac82c126bec5fa9";
+            computationalSha256 "e6f908ed886941770daec77a119b4cdf6fb214b895b2ed0554322ab1cfa1a4fb";
+            origin        "data/standards/parameters/Wilson/2Ethoxyethanol-dichloromethane.dat";
+            originSha256  "10e7e14a0fd444ed6541c2e2fc2736db4312290ef6580243aececafdb593556b";
             release       Choupo-2608;
         }
     }

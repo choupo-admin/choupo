@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "839a878e112542d94846d1ff834ed249928fb8296974cf6892adcea7724bf8c8";
             origin        "data/standards/components/morpholine.dat";
             originSha256  "72d7fb4243b617f26781f92a741ed8cad851b5c1ceae47ad5a556c528344fdf4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Decanol-morpholine.dat"
+        {
+            type          imported;
+            sha256        "c1af8e3fbcbcf1279408fc71f278f52fe9e8dd531011aaab5b0084bdd81e9b7e";
+            computationalSha256 "20b1c6e9dba78a852be61aabdd9245d09d5beff15961b2643a718e2d505d53be";
+            origin        "data/standards/parameters/NRTL/1Decanol-morpholine.dat";
+            originSha256  "f9e2ac5cfa71ecfba2065596bb4bd79838943db74cb03ca78f4ec8544a07aea2";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"

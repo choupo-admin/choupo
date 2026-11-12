@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "de3f1162278fc2d5ee4995ee4887b3f1c0f3669920483a314461b227ac825867";
-            computationalSha256 "d50d84215a5e98b6539bb27d9c7d0d58bb7fc2a8cf3f66c2f943a76cd6b6d056";
+            sha256        "13f21aa546fa0847052f0158a65b23979145b7033a791e9508d9410ef9684e8b";
+            computationalSha256 "95cecd58a68b3db6dc9e540a083c8a167127cf8781e836662598dcc0ebbe0b7d";
             origin        "data/standards/components/1Propanol.dat";
-            originSha256  "ddcf4f1180bb27e9b6dfa2adb55a9ac88396a36d6a68cb8c48df90d2f04bcfd1";
+            originSha256  "c195e55f4a94e4a58aca3703d644f362c546f295ca510a80bf926ae0c53ecff7";
             release       Choupo-2608;
         }
         "components/nDodecane.dat"
         {
             type          imported;
-            sha256        "c7228038bd9f2dc282e4c95377a8b778afda5bb7873f6647fa9658b97dc79155";
-            computationalSha256 "8a4d59bf4d118a9ff410164db4f946a8d7d0db674721139612307a1c4e5f821c";
+            sha256        "11571a86c648c411ef94baf16d02af5f49bd5257314ea64784c330972adc272c";
+            computationalSha256 "a734114b6284ce91955acc05f5412cb22b284615ed6f67eeeb73bd9d446fd750";
             origin        "data/standards/components/nDodecane.dat";
-            originSha256  "9d405c55385de50af77aa7f33666cea3e162b9eb19c03842c0f8279e6da3d1b4";
+            originSha256  "6c2800e32ba6d9eaf11fa872a23de39839387597536d8487c01998b89862cb4b";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Propanol-nDodecane.dat"
+        {
+            type          imported;
+            sha256        "18872d4dc17c0f538e4be3594939eacec3e49875c6d182820572dc21916a55a1";
+            computationalSha256 "b2b734b6e2bd7081c8f04220e1f8343ce92202605f675d9ceee328872f515fd8";
+            origin        "data/standards/parameters/NRTL/1Propanol-nDodecane.dat";
+            originSha256  "5e18bfea924cfb9f1899c707757369e8db24a814a56a6c71863f4c2a22ca3a71";
             release       Choupo-2608;
         }
         "parameters/Wilson/1Propanol-nDodecane.dat"

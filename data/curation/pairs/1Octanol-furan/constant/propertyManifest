@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
@@ -41,6 +41,15 @@ propertyManifest
             computationalSha256 "be9cf3e63603613c99083b7636381c48048f906abe56b1e872a61b0294684d86";
             origin        "data/standards/components/furan.dat";
             originSha256  "656d31d92867385d6e0897a73306e3e467ecf5f0c8b50c8ea462aeda36e83cb4";
+            release       Choupo-2608;
+        }
+        "parameters/NRTL/1Octanol-furan.dat"
+        {
+            type          imported;
+            sha256        "1cc34fbcd2bdb5d73285035b2924787df2c42806d1d97932cae29812536bca82";
+            computationalSha256 "619a18ba4d569f4a97d249a43c8636eebe9ba56de54e8e16bab302d3eca97c69";
+            origin        "data/standards/parameters/NRTL/1Octanol-furan.dat";
+            originSha256  "1ca96e896cb8ea832f64261eb51d5171ffef248d355e95a1f6fe4b877b812d83";
             release       Choupo-2608;
         }
     }

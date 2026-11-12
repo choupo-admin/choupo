@@ -21,35 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-12";
     importerVersion    "3";
     records
     {
         "components/14Dioxane.dat"
         {
             type          imported;
-            sha256        "aa55552c69f5c4f2f833e57ed19fadde932fd35ce70f7c547fa9f8c34407c5f8";
-            computationalSha256 "7493f320929e8c93885ac0fbfea3ddb5b6d796346c09b563980294104dcd473c";
+            sha256        "b4a154c172ccece7277e5514b338380e6e37e0175ae652dd6af3466fe5b0ee55";
+            computationalSha256 "aede3c35fa6da3606f4448a548b0b8f5d0f58b83ebeb3ac3c42ffb1ceaca5d11";
             origin        "data/standards/components/14Dioxane.dat";
-            originSha256  "280f4901e2b4cf57d51eb8e252737e5acdd4212a342d7b52e4be7c93b6b50211";
+            originSha256  "a35cf193048135597d346a2971dfa2563d3ee4a57ac2b359e8753935f3c399ed";
             release       Choupo-2608;
         }
         "components/cyclohexane.dat"
         {
             type          imported;
-            sha256        "04e20a9c3a1368072059505adbe555b180a674e96087a4c92af04cf5e42245b7";
-            computationalSha256 "e5dadd80ead0f1d8f44482b2596d2a2b5e7c060e9ed1181dbf1712af989938ef";
+            sha256        "6e9c77d143be165e7f62c31dfda1de7fc130983a69186068273126f2bb968285";
+            computationalSha256 "04364dec902d4e12d65dadb6aa208108b37ad08210b3ec980b8e4ef259f64cdc";
             origin        "data/standards/components/cyclohexane.dat";
-            originSha256  "9f3b642c76b10c5867f604ce4d741c21b1c8b9b25e700707e9cc49fdbcf079f5";
+            originSha256  "0115ae582f156445955d331ea388b9ac1a51f226207a24f74fe9ab3cc14b4d69";
             release       Choupo-2608;
         }
         "parameters/NRTL/14Dioxane-cyclohexane.dat"
         {
             type          imported;
-            sha256        "f79b516fe8ccf449e80d6b39185cc0136bf4dd0a19998da5a3069e56926ea4ba";
-            computationalSha256 "599c52f33e439db37ef8c408c24b46e771eafa48cc71c29a2f77accb5428fc0e";
+            sha256        "64c353d9ac6ac84ee0f16087c5cef07f50fb688a81fc2bce49309b2e0f10f612";
+            computationalSha256 "f70ec81239aa3af40a69c0b441188148711e54204498fdcf57210da6493cb0de";
             origin        "data/standards/parameters/NRTL/14Dioxane-cyclohexane.dat";
-            originSha256  "7a61e0fa7fb8f193701615b48414530daa437fd815201d3fc0361c84e3430604";
+            originSha256  "c64c4ad25203cdba45b08e941317a03865652b3d43d070f5369e8ad746c3c61f";
             release       Choupo-2608;
         }
         "parameters/UNIFAC/groups.dat"
@@ -68,6 +68,15 @@ propertyManifest
             computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
             origin        "data/standards/parameters/UNIFAC/interactions.dat";
             originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIQUAC/14Dioxane-cyclohexane.dat"
+        {
+            type          imported;
+            sha256        "a8aa5c5ee25eee3b58f1dfeba23d9081ad56b79b9c7250266d429a83e308c2a8";
+            computationalSha256 "8a0c2642280f3da7c67261848030f077c0e1ada9e4e3e4b10f7f8c97c7b5e4ea";
+            origin        "data/standards/parameters/UNIQUAC/14Dioxane-cyclohexane.dat";
+            originSha256  "960f170529d75ae44b12e947c6f58e0b0a448cc9ef44703e21a07e4fde8e89a3";
             release       Choupo-2608;
         }
         "parameters/Wilson/14Dioxane-cyclohexane.dat"

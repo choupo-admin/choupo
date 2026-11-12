@@ -108,12 +108,13 @@
   not argued). Beside fit_nrtl's max |dT| 3.035 K (severe) on the same
   kept points. fit_uniquac: a_ij = 185.7, a_ji = -86.2 K over 65 kept
   points: max |dT| 3.004 K, mean 0.949 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (185.7, -86.2). NOT PROMOTED
-  (max |dT| 3.004 K over the 65 kept points, one liquid across the
-  validity span): fit grade severe -- DEV.md 4c C300 rule 3: a severe
-  pair does not enter the default catalogue; its record stays in this
-  curation case's constant/, and a case that needs it carries it in its
-  own constant/.
+  fit_uniquac_start2 lands on the same pair (185.7, -86.2). PROMOTED on
+  2026-11-12 into
+  data/standards/parameters/UNIQUAC/ethylLactate-methanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.004 K over the 65 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.0036 K against ideal
+  8.7841 K.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
@@ -121,11 +122,12 @@
   fit_nrtl: b_ij = -263.9 K, b_ji = 168.9 K over 65 kept points of 2
   laboratories (15 discarded): max |dT| 3.035 K, mean 0.865 K, graded
   severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on A
-  DIFFERENT pair (1149.3, -618.4). NOT PROMOTED (max |dT| 3.035 K over
-  the 65 kept points, one liquid across the validity span): fit grade
-  severe -- DEV.md 4c C300 rule 3: a severe pair does not enter the
-  default catalogue; its record stays in this curation case's constant/,
-  and a case that needs it carries it in its own constant/
+  DIFFERENT pair (1149.3, -618.4). PROMOTED on 2026-11-12 into
+  data/standards/parameters/NRTL/ethylLactate-methanol.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade severe --
+  max |dT| 3.035 K over the 65 kept points, one liquid across the
+  validity span; BEATS THE IDEAL MIXTURE (C334): 3.0346 K against ideal
+  8.7841 K
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
