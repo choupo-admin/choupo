@@ -1,0 +1,26 @@
+rule	count
+three-compound blocks with a liquid mole fraction	7347
+T2 three catalogue compounds, but no model holds all three pairs	2122
+T1 a compound not in the catalogue	5170
+accepted VLE blocks	31
+T3 property 'Molar heat capacity at constant pressure, J/K/mol' is not VLE	1
+T3 property 'Excess molar enthalpy (molar enthalpy of mixing), kJ/mol' is not VLE	4
+T3 not a ternary VLE block (two liquid mole fractions, T and P needed)	5
+T3b a pressure above 500 kPa (outside the records' ideal-gas frame; here an archive entry of 10264.2 kPa at an atmospheric boiling T)	1
+T3 property 'Surface tension liquid-gas, N/m' is not VLE	2
+T3 property 'Mass density, kg/m3' is not VLE	4
+T3 property 'Viscosity, Pa*s' is not VLE	1
+T3 two liquid phases named (LLE or VLLE)	3
+T3 property 'Mass fraction' is not VLE	1
+T3c the block's rows repeat a block of OTHER compounds in another article (10.1021/acs.jced.6b00905 block 17: 37/42 rows also in 10.1021/je100776x)	1
+T3c the block's rows repeat a block of OTHER compounds in another article (10.1021/je100776x block 13: 37/42 rows also in 10.1021/acs.jced.6b00905)	1
+T4 NRTL: the article's BINARY blocks are in a record's own evidence (the ternary block itself was not fitted; kept, reported apart)	26
+span: NRTL blocks with a point outside a pair's span, announced	21
+T4 UNIQUAC: the article's BINARY blocks are in a record's own evidence (the ternary block itself was not fitted; kept, reported apart)	8
+span: UNIQUAC blocks with a point outside a pair's span, announced	7
+T4 Wilson: the article's BINARY blocks are in a record's own evidence (the ternary block itself was not fitted; kept, reported apart)	16
+span: Wilson blocks with a point outside a pair's span, announced	12
+span: NRTL blocks with every point inside, silent	7
+span: Wilson blocks with every point inside, silent	5
+span: UNIQUAC blocks with every point inside, silent	2
+span: NRTL blocks with every point inside, announced	1

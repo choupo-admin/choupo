@@ -1,0 +1,3 @@
+set	nComparisons	nSystems	median_abs_dlngamma	p90_abs_dlngamma	median_factor	p90_factor
+different articles, |dT| <= 1 K	57	21	0.1037	0.2555	1.109	1.291
+different articles sharing no author surname, |dT| <= 1 K	57	21	0.1037	0.2555	1.109	1.291

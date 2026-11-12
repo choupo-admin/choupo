@@ -1,0 +1,19 @@
+pair	model	record	status	nArticles	nPoints	Tmin_K	Tmax_K	inSpanFraction	median_abs_dlngamma	max_abs_dlngamma	median_abs_dlngamma_inSpan	median_factor	bias_dlngamma	median_abs_dlngamma_swapped	fitGrade	inSampleGrade	caps	pipeline	evidenceDOIs	span_K	aqueous	associating	spanAnnounced
+ethylBenzene+1Hexanol	NRTL	1Hexanol-ethylBenzene.dat	tested	1	5	368.15	409.15	0.200	0.6543	0.8562	0.4509	1.924	-0.6626	0.7598	warning	clean	singleLaboratory	bubbleT	1	407.75-425.95	False	True	False
+1Propanol+water	NRTL	1Propanol-water.dat	tested	2	19	273.35	372.15	0.105	0.3752	1.3039	0.3399	1.455	+0.2964	1.6354	none			earlyCase	2	360.49-368.64	True	True	False
+acetonitrile+water	NRTL	acetonitrile-water.dat	tested	1	2	298.15	298.15	0.000	0.1764	0.1860	nan	1.193	+0.1764	0.6344	none			earlyCase	2	349.95-367.56	True	True	False
+ethanol+water	NRTL	ethanol-water.dat	tested	3	22	273.35	372.15	0.909	0.0797	0.4783	0.0774	1.083	+0.0276	0.6642	none			literature	0	298.0-373.0	True	True	False
+nButanol+ethylBenzene	NRTL	ethylBenzene-nButanol.dat	tested	1	5	303.15	409.15	0.200	0.7524	1.1093	0.1144	2.122	-0.4925	0.8466	warning	clean	singleLaboratory	bubbleT	1	389.28-404.97	False	True	False
+isopropanol+water	NRTL	isopropanol-water.dat	tested	1	6	283.15	371.15	0.500	0.4417	1.4738	0.0942	1.555	+0.5104	1.3498	none			earlyCase	2	353.11-371.44	True	True	False
+methanol+water	NRTL	methanol-water.dat	tested	1	14	273.35	372.15	0.571	0.1987	0.4494	0.1142	1.220	-0.0785	0.2076	none			earlyCase	2	297.4-361.2	True	True	False
+nHeptane+nButanol	NRTL	nButanol-nHeptane.dat	tested	1	5	303.15	343.15	0.000	0.8490	1.2001	nan	2.337	-0.8321	1.3461	warning	warning		bubbleT	1	349.0-386.85	False	True	False
+nButanol+water	NRTL	nButanol-water.dat	tested	2	20	273.35	338.15	0.900	0.2049	0.8408	0.1990	1.227	+0.2299	2.1609	none			earlyCase	23	288.2-365.85	True	True	False
+toluene+sulfolane	NRTL	sulfolane-toluene.dat	tested	1	5	333.15	373.15	0.000	0.4904	0.5061	nan	1.633	+0.4859	1.1502	warning	warning		bubbleT	1	385.62-401.27	False	True	False
+ethylBenzene+1Hexanol	UNIQUAC	1Hexanol-ethylBenzene.dat	tested	1	5	368.15	409.15	0.200	0.6964	0.9143	0.4776	2.006	-0.7049	0.6986	warning	clean	singleLaboratory	bubbleT	1	407.75-425.95	False	True	False
+ethylAcetate+nDecane	UNIQUAC	ethylAcetate-nDecane.dat	tested	1	4	303.16	333.16	0.000	0.2374	0.2502	nan	1.268	-0.2386	0.1804	warning	warning		bubbleT	1	350.37-433.02	False	False	False
+nButanol+ethylBenzene	UNIQUAC	ethylBenzene-nButanol.dat	tested	1	5	303.15	409.15	0.200	0.8242	1.2031	0.1086	2.280	-0.5428	0.9063	warning	clean	singleLaboratory	bubbleT	1	389.28-404.97	False	True	False
+methylAcetate+water	UNIQUAC	methylAcetate-water.dat	tested	1	5	303.25	343.25	0.000	0.0842	0.1415	nan	1.088	-0.0759	1.0640	none			literature	0	-	True	True	False
+nHeptane+nButanol	UNIQUAC	nButanol-nHeptane.dat	tested	1	5	303.15	343.15	0.000	0.7170	1.0747	nan	2.048	-0.7006	1.8405	warning	warning		bubbleT	1	349.0-386.85	False	True	False
+ethylBenzene+1Hexanol	Wilson	1Hexanol-ethylBenzene.dat	tested	1	5	368.15	409.15	0.200	0.6498	0.8496	0.4483	1.915	-0.6581	0.7391	warning	clean	singleLaboratory	bubbleT	1	407.75-425.95	False	True	False
+nButanol+ethylBenzene	Wilson	ethylBenzene-nButanol.dat	tested	1	5	303.15	409.15	0.200	0.7124	1.0606	0.1319	2.039	-0.4594	1.2600	warning	clean	singleLaboratory	bubbleT	1	389.28-404.97	False	True	False
+nHeptane+nButanol	Wilson	nButanol-nHeptane.dat	tested	1	5	303.15	343.15	0.000	0.6010	0.9252	nan	1.824	-0.5832	2.0987	warning	warning		bubbleT	1	349.0-386.85	False	True	False
