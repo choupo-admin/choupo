@@ -144,10 +144,13 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    Tutorials Guide, `docs/tutorials-catalogue.md`, `docs/ai/unit-ops.md` (or
    the matching `docs/ai` file) and the capability index carry it; (4) the
    PDFs are rebuilt.  EVERY BRIEF to a general lists these four as acceptance
-   criteria; a report that does not show them is a partial report.  A gate is
-   being built for it (DEV.md 4c C338: a registered name with no guide
-   section fails; the debt that exists is pinned and may only shrink) -- until
-   it lands this rule is held by reading the report, which is weaker.
+   criteria; a report that does not show them is a partial report.  The gate
+   `check_feature_documented` holds the half a machine can see (DEV.md 4c
+   C338): a name a factory registers with no labelled guide section or no
+   docs/ai entry fails; the debt that existed is pinned in
+   `bin/curate/feature_documented_debt.tsv` and may only shrink.  It does NOT
+   check that the equations match the code, that the link opens the section,
+   or that the PDFs were rebuilt -- those are held by reading the report.
 
 5. **Do not change a permanent rule as a reflex to criticism.**  Change it
    when Vítor asks, or when there is a durable technical reason -- and
