@@ -5789,7 +5789,18 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         profile_.columns["dP_Pa_per_m"].push_back(p.dP);
         profile_.columns["F"].push_back(p.F);
     }
+    //  Q_condenser = -Q_reboiler is ASSIGNED above (constant molar vapour up
+    //  the bed, stated in the report), so the energy closure holds by
+    //  construction here too; the tray path publishes that classification and
+    //  the packed bed now does (RB-05, 2026-11-12).  The two duties are not
+    //  independent: the real condenser sees latent heats at the top
+    //  composition, which differ from the bottom's.
     closures_.clear();
+    closures_.push_back(reboilerClosure(QR, std::nullopt, /*fullMesh=*/true, 0.0,
+        "the packed bed takes the vapour molar flow constant up the bed and sets"
+        " Q_condenser = -Q_reboiler by assignment, so the closure holds for any"
+        " Q_reboiler; the condenser's own latent heat at the top composition is"
+        " not computed"));
     (void)verbosity;
     return 0;
 }

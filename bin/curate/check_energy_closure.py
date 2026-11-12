@@ -885,7 +885,7 @@ BY_CONSTRUCTION_WITNESSES = {
     ("tutorials/steady/reactors/pfr05_cooled_multitubular", "reactor"),
     ("tutorials/steady/separation/tsa01_co2_twin_bed", "co2tsa"),
 }
-#  RB-02 (2026-11-12).  A total-reflux column has no port, so the
+#  RB-02 / RB-05 (2026-11-12).  A total-reflux column has no port, so the
 #  per-unit `energyClosures` row the arm above reads does not exist for it (the
 #  report prints "n/a"); its classification is read from the result's
 #  `closuresByConstruction` record directly.  The record must say NOT VERIFIED
@@ -895,6 +895,7 @@ BY_CONSTRUCTION_WITNESSES = {
 #  at all fails as well (the packed bed published none before RB-05).
 TOTAL_REFLUX_WITNESSES = {
     "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
+    "tutorials/steady/distillation/packing01_schulz_0p10bar",
 }
 
 
