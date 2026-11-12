@@ -108,6 +108,10 @@ int BagFilter::solve(const DictPtr& dict,
     }
     std::vector<scalar> d  = sol->lookupList("diameters");      // m
     std::vector<scalar> mf = sol->lookupList("massFractions");
+    //  The case's size-grid edges (C361), carried through unchanged: a
+    //  separator classifies particles, it does not re-bin them.
+    const std::vector<scalar> sizeEdges = sol->found("sizeEdges")
+        ? sol->lookupList("sizeEdges") : std::vector<scalar>{};
     if (d.empty() || d.size() != mf.size())
         throw std::runtime_error("BagFilter: PSD diameters / massFractions "
             "missing or mismatched.");
@@ -139,6 +143,8 @@ int BagFilter::solve(const DictPtr& dict,
         sEsc[i] = sin[i] * (1.0 - etaGlobal);
     }
     ParticleSizeDistribution psdCap, psdEsc;
+    psdCap.edges = sizeEdges;   // every bin is kept (below), so the edges hold
+    psdEsc.edges = sizeEdges;
     for (int k = 0; k < nb; ++k)
     {
         if (sumCap > 0.0)

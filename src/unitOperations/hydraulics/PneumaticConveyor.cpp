@@ -134,6 +134,10 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     }
     std::vector<scalar> d  = sol->lookupList("diameters");      // m
     std::vector<scalar> mf = sol->lookupList("massFractions");
+    //  The case's size-grid edges (C361), carried through unchanged: a
+    //  separator classifies particles, it does not re-bin them.
+    const std::vector<scalar> sizeEdges = sol->found("sizeEdges")
+        ? sol->lookupList("sizeEdges") : std::vector<scalar>{};
     if (d.empty() || d.size() != mf.size())
         throw std::runtime_error("pneumaticConveyor: PSD diameters / massFractions "
             "missing or mismatched.");
@@ -287,6 +291,7 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     out.F = F; out.T = T; out.P = Pout; out.z = y; out.vf = 1.0;
     out.s = sin;
     ParticleSizeDistribution psd; psd.diameter = d; psd.massFrac = mf;
+    psd.edges = sizeEdges;
     out.psd = psd;
     produced_.push_back(out);
 

@@ -1,0 +1,20 @@
+# Reference KPIs (golden master, written BY EXPLICIT LIST -- DEV.md 4c C361).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  powderA                F                0.00277536611111 1e-4
+stream  powderA                T                298.15 1e-4
+stream  powderB                F                0.00138768305556 1e-4
+stream  powderB                T                298.15 1e-4
+stream  blend                  F                0.00416304916667 1e-4
+stream  blend                  T                298.15 1e-4
+kpi     blender                psd_d10_um       52.1803096432 1e-4
+kpi     blender                psd_d50_um       188.138562465 1e-4
+kpi     blender                psd_d80_um       366.469817627 1e-4
+kpi     blender                psd_d90_um       487.362374151 1e-4
+kpi     blender                psd_d32_um       95.4269772629 1e-4
+kpi     blender                psd_Sv_m2_m3     62875.3018496 1e-4
+kpi     blender                psd_massFractionSum 1 1e-12
+kpi     blender                T_out            298.15 1e-4
+boundary global                 H_feeds_kW       -5027.29817367 1e-4
+boundary global                 Q_boundary_kW    0 1e-9
+boundary global                 H_products_kW    -5027.29817367 1e-4

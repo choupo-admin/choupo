@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SprayDryer.H"
+#include "streams/PsdOnGrid.H"
 #include "atomizer/Atomizer.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
@@ -1372,6 +1373,17 @@ int SprayDryer::solve(const DictPtr& dict,
     powder.s = nSolidOf;                 // every solid of the feed
     powder.psd.diameter = dCen;          // Rosin-Rammler spread, not a single d32
     powder.psd.massFrac = mf;
+
+    //  On the case's size grid when it declares one (C361): the population
+    //  balance keeps its own classes for the profile; the STREAM hands the
+    //  case's classes on.  No grid: untouched.
+    if (dict->found("sizeGrid"))
+    {
+        const std::string why = putPsdOnGrid(powder.psd,
+            SizeGrid::fromDict(dict->subDict("sizeGrid")));
+        if (!why.empty() && verbosity >= 1)
+            std::cout << "  [psd-grid] powder: " << why << "\n";
+    }
     produced_.push_back(powder);
 
     ProcessStream exhaust;

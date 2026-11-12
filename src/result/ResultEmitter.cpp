@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "result/ResultEmitter.H"
+#include "core/distribution/SizeGrid.H"
 #include "result/BatchPlanJson.H"
 #include "result/BuildingJson.H"
 #include "result/EquipmentList.H"
@@ -332,7 +333,31 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             os << "], \"massFrac\": [";
             for (std::size_t k = 0; k < s.psd.massFrac.size(); ++k)
                 os << (k ? ", " : "") << num(s.psd.massFrac[k]);
-            os << "] }";
+            os << "]";
+            //  The class edges, when the distribution lives on the case's
+            //  size grid (C361), and the moments from their ONE home
+            //  (`psdMoments`) -- so the GUI draws them and never recomputes
+            //  them.  `edgesInferred` says when the moments were taken on
+            //  edges inferred from a unit's own bins.
+            if (s.psd.onGrid())
+            {
+                os << ", \"edges\": [";
+                for (std::size_t k = 0; k < s.psd.edges.size(); ++k)
+                    os << (k ? ", " : "") << num(s.psd.edges[k]);
+                os << "]";
+            }
+            const PsdMoments mo = psdMoments(s.psd.edges, s.psd.diameter,
+                                             s.psd.massFrac);
+            if (mo.valid)
+                os << ", \"moments\": { \"d10\": " << num(mo.d10)
+                   << ", \"d50\": " << num(mo.d50)
+                   << ", \"d80\": " << num(mo.d80)
+                   << ", \"d90\": " << num(mo.d90)
+                   << ", \"d32\": " << num(mo.d32)
+                   << ", \"Sv\": " << num(mo.Sv)
+                   << ", \"edgesInferred\": "
+                   << (s.psd.onGrid() ? "false" : "true") << " }";
+            os << " }";
         }
         //  The SECOND LIQUID, per component [kmol/s].  Only the ORGANIC side,
         //  exactly as the stream file stores it: the aqueous is the liquid

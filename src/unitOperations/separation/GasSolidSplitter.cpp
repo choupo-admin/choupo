@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "GasSolidSplitter.H"
+#include "streams/PsdOnGrid.H"
 
 #include "core/distribution/SizeDistribution.H"
 #include "thermo/ThermoPackage.H"
@@ -103,6 +104,8 @@ int GasSolidSplitter::solve(const DictPtr& dict,
         {
             psd.diameter = sol->lookupList("diameters");
             psd.massFrac = sol->lookupList("massFractions");
+            //  The case's size-grid edges (C361) pass through unchanged.
+            if (sol->found("sizeEdges")) psd.edges = sol->lookupList("sizeEdges");
         }
         else if (hasModel)
         {
@@ -121,6 +124,15 @@ int GasSolidSplitter::solve(const DictPtr& dict,
         }
         for (std::size_t i = 0; i < n; ++i)
             if (sin[i] > 0.0) sMassTot += sin[i] * thermo.comp(i).MW();   // kg/s
+        //  On the case's size grid when it declares one (C361).  No grid:
+        //  untouched, so every case written before it is byte-identical.
+        if (dict->found("sizeGrid") && !psd.empty())
+        {
+            const std::string why = putPsdOnGrid(psd,
+                SizeGrid::fromDict(dict->subDict("sizeGrid")));
+            if (!why.empty() && verbosity >= 1)
+                std::cout << "  [psd-grid] solids: " << why << "\n";
+        }
     }
 
     // ---- Apply the split: solids by etaS, gas by gC --------------------

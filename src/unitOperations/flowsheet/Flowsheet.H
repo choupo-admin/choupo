@@ -436,6 +436,11 @@ private:
     DictPtr reactionsDict_;
     DictPtr dryingKineticsDict_;   // constant/dryingKinetics (drying-curve library)
     DictPtr crystallisationDict_;  // constant/crystallisation (crystal-kinetics library)
+    //  The case's ONE size axis (`sizeGrid {}` in system/flowsheetDict,
+    //  DEV.md 4c C361): null when the case declares none.  Handed to every
+    //  unit's augmented dict so a unit that WRITES a distribution writes it
+    //  on these classes.  docs/design/c361-solids-processing.md.
+    DictPtr sizeGridDict_;
 
     // Per-unit thermo overrides.
     const Database*                                        db_ = nullptr;

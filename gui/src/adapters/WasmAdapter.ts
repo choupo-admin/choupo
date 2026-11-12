@@ -1278,7 +1278,18 @@ interface ResultPayload {
       utilityCircuit?: string;
       composition: { [comp: string]: number };
       solids?: { [comp: string]: number };
-      psd?: { diameter: number[]; massFrac: number[] };
+      psd?: {
+    diameter: number[];
+    massFrac: number[];
+    /** Class edges [m] (n+1, the first 0 = the pan) when the stream lives on
+     *  the case's size grid (`sizeGrid {}`, DEV.md 4c C361). */
+    edges?: number[];
+    /** The moments, computed by the ENGINE from one home (`psdMoments`):
+     *  mass-passing sizes and the Sauter mean [m], S_v [m2/m3].  The GUI
+     *  draws them and never recomputes them. */
+    moments?: { d10: number; d50: number; d80: number; d90: number;
+                d32: number; Sv: number; edgesInferred: boolean };
+  };
       H_missing?: string[];
       speciation?: {
         network: string;
@@ -1583,7 +1594,12 @@ export function shapeStreams(payload: ResultPayload,
       composition: {...s.composition },
       solids: s.solids ? {...s.solids } : undefined,
       psd: s.psd
-        ? { diameter: [...s.psd.diameter], massFrac: [...s.psd.massFrac] }
+        ? {
+            diameter: [...s.psd.diameter],
+            massFrac: [...s.psd.massFrac],
+            ...(s.psd.edges ? { edges: [...s.psd.edges] } : {}),
+            ...(s.psd.moments ? { moments: { ...s.psd.moments } } : {}),
+          }
         : undefined,
       H_missing: s.H_missing ? [...s.H_missing] : undefined,
       speciation: s.speciation

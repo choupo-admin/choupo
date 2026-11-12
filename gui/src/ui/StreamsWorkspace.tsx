@@ -794,7 +794,13 @@ export function Detail({
 function PSDBlock({
   psd,
 }: {
-  psd: { diameter: number[]; massFrac: number[] } | null;
+  psd: {
+    diameter: number[];
+    massFrac: number[];
+    edges?: number[];
+    moments?: { d10: number; d50: number; d80: number; d90: number;
+                d32: number; Sv: number; edgesInferred: boolean };
+  } | null;
 }) {
   if (!psd || psd.diameter.length === 0) {
     return (
@@ -816,22 +822,11 @@ function PSDBlock({
       </Stack>
     );
   }
-  // Compute moments for a one-line summary: d10, d50, d90 (volume basis).
-  const cumulative = (() => {
-    const out: number[] = [];
-    let sum = 0;
-    for (const f of psd.massFrac) { sum += f; out.push(sum); }
-    return out;
-  })();
-  const quantile = (q: number): number => {
-    for (let i = 0; i < cumulative.length; i++) {
-      if (cumulative[i]! >= q) return psd.diameter[i]! * 1e6; // micron
-    }
-    return psd.diameter[psd.diameter.length - 1]! * 1e6;
-  };
-  const d10 = quantile(0.1);
-  const d50 = quantile(0.5);
-  const d90 = quantile(0.9);
+  // The moments are the ENGINE's (`psdMoments`, one home -- DEV.md 4c
+  // C361); this panel draws them and computes none.  A result written
+  // before the engine published them shows none.
+  const m = psd.moments;
+  const um = (v: number): string => (v * 1e6).toFixed(1);
 
   return (
     <Stack gap={4}>
@@ -840,8 +835,9 @@ function PSDBlock({
         Particle-size distribution
       </Text>
       <Text size="xs" c="dimmed" ff="monospace">
-        {psd.diameter.length} bins  ·  d10 = {d10.toFixed(1)} µm
-        ·  d50 = {d50.toFixed(1)} µm  ·  d90 = {d90.toFixed(1)} µm
+        {psd.diameter.length} {psd.edges ? "classes on the case's size grid" : "bins"}
+        {m ? `  ·  d10 = ${um(m.d10)} µm  ·  d50 = ${um(m.d50)} µm  ·  d90 = ${um(m.d90)} µm  ·  Sauter d32 = ${um(m.d32)} µm` : ""}
+        {m && m.edgesInferred ? "  (edges inferred from the bin sizes)" : ""}
       </Text>
       <Table verticalSpacing={3} fz="xs" mt={4}>
         <Table.Thead>

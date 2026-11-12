@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  psd01_grid_and_moments / flowsheetDict
+
+  A mixer of two dry powders.  The `sizeGrid` below is the ONLY place the
+  classes are declared; both feeds are put on it before the mixer runs, and
+  the mixer blends on it exactly (mass-weighted, class by class).
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S ONE SIZE AXIS (DEV.md 4c C361): both feeds are mapped onto it before the first unit runs.
+sizeGrid
+{
+    xMax      2 mm;
+    ratio     1.41421356;    // sqrt 2, the Tyler sieve series
+    nClasses  18;            // including the pan
+}
+
+units
+(
+    {
+        name        blender;
+        type        mixer;
+        inputs      ( powderA powderB );
+        outputs     ( blend );
+    }
+);

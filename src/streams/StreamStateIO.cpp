@@ -557,7 +557,17 @@ void writeStreamState(const ProcessStream&  s,
                 for (const auto d : s.psd.diameter) out << " " << d;
                 out << " );\n            massFrac  (";
                 for (const auto m : s.psd.massFrac) out << " " << m;
-                out << " );\n        }\n";
+                out << " );\n";
+                //  The class edges ride only on a distribution that lives
+                //  on the case's size grid (C361); a unit's own bins have
+                //  none, and nothing is written for them.
+                if (s.psd.onGrid())
+                {
+                    out << "            edges     (";
+                    for (const auto e : s.psd.edges) out << " " << e;
+                    out << " );\n";
+                }
+                out << "        }\n";
             }
             out << "    }\n";
         };
@@ -966,7 +976,14 @@ void writeStreamState(const ProcessStream&  s,
         for (const auto d : s.psd.diameter) out << " " << d;
         out << " );\n    massFrac  (";
         for (const auto m : s.psd.massFrac) out << " " << m;
-        out << " );\n}\n";
+        out << " );\n";
+        if (s.psd.onGrid())
+        {
+            out << "    edges     (";
+            for (const auto e : s.psd.edges) out << " " << e;
+            out << " );\n";
+        }
+        out << "}\n";
     }
 }
 
@@ -3317,11 +3334,29 @@ ProcessStream readStreamState(const fs::path&       file,
             const int nBins = static_cast<int>(
                 psdDict->lookupScalarOrDefault("bins", 20));
             law->toTabular(nBins, s.psd.diameter, s.psd.massFrac);
+            //  Kept, so a case that declares a size grid has the LAW
+            //  integrated on the grid's classes (Flowsheet, C361) instead of
+            //  this first discretisation re-binned.  Unused otherwise.
+            s.psd.declaredLaw = psdDict;
         }
         else
         {
             if (psdDict->found("diameter")) s.psd.diameter = psdDict->lookupList("diameter");
             if (psdDict->found("massFrac")) s.psd.massFrac = psdDict->lookupList("massFrac");
+            //  A measured table may carry its sieve EDGES (one more than its
+            //  fractions; a first edge of 0 is the pan).  Read as declared;
+            //  whether they are the case's grid is the flowsheet's question.
+            if (psdDict->found("edges"))
+            {
+                s.psd.edges = psdDict->lookupList("edges");
+                if (s.psd.edges.size() != s.psd.massFrac.size() + 1)
+                    throw std::runtime_error("stream state '" + name + "': the"
+                        " particleSizeDistribution carries " + std::to_string(
+                        s.psd.edges.size()) + " `edges` for "
+                        + std::to_string(s.psd.massFrac.size()) + " classes --"
+                        " a class has two edges, so a table of n fractions has"
+                        " n+1 edges.");
+            }
         }
     }
     return s;

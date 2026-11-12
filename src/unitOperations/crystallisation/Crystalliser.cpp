@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Crystalliser.H"
+#include "streams/PsdOnGrid.H"
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "CrystallisationHeat.H"
 #include "core/Advisory.H"
@@ -615,6 +616,17 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
         magma.psd.massFrac.resize(NB);
         for (int kbin = 0; kbin < NB; ++kbin) magma.psd.massFrac[kbin] = binMass[kbin] / massSum;
     }
+
+    //  On the case's size grid when it declares one (C361): the population
+    //  balance keeps its own classes for the profile; the STREAM hands the
+    //  case's classes on.  No grid: untouched.
+    if (dict->found("sizeGrid"))
+    {
+        const std::string why = putPsdOnGrid(magma.psd,
+            SizeGrid::fromDict(dict->subDict("sizeGrid")));
+        if (!why.empty() && verbosity >= 1)
+            std::cout << "  [psd-grid] magma: " << why << "\n";
+    }
     //  THE AXIS THE PROFILE DECLARES IS A COLUMN OF IT.  `prof.xAxis` says
     //  `L_micron`, so `L_micron` must be here: every surface that draws this
     //  record -- the result JSON, `profile.csv`, the spreadsheet, the GUI
@@ -937,6 +949,17 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
         magma.psd.massFrac.resize(Nbins);
         for (std::size_t kbin = 0; kbin < Nbins; ++kbin)
             magma.psd.massFrac[kbin] = binMass[kbin] / massSum;
+    }
+
+    //  On the case's size grid when it declares one (C361): the population
+    //  balance keeps its own classes for the profile; the STREAM hands the
+    //  case's classes on.  No grid: untouched.
+    if (dict->found("sizeGrid"))
+    {
+        const std::string why = putPsdOnGrid(magma.psd,
+            SizeGrid::fromDict(dict->subDict("sizeGrid")));
+        if (!why.empty() && verbosity >= 1)
+            std::cout << "  [psd-grid] magma: " << why << "\n";
     }
     prof.columns["L_micron"]        = Lcol;     // the axis (see the MSMPR note)
     prof.columns["number_density"]  = ncol;
