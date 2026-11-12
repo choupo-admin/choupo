@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for isoButane in liquid 2Butanol (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori] (2004) J. Chem. Eng. Data 49, 1285-1289, doi:10.1021/je034265f
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/isoButane-2Butanol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  5 kept points, 249.97-330 K; max relative error
+  4.55 % in-sample (graded 5 / 10 / 20 %).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 249-330 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      isoButane;
+solvent     2Butanol;
+
+gasSpecies        isoButane;
+dissolvedSpecies  isoButane;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       1.25882e+06 Pa;
+T_ref       298.15 K;
+enthalpy    -19275  J/mol;
+Trange      ( 249  330 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1021/je034265f (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           75-28-5;
+    fittedInCase  "data/curation/henry/isoButane-2Butanol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 4.5544;
+    pointsKept    5;
+    pointsDiscarded 0;
+    fingerprint   "3bff33621a5aea74";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1021/je034265f";
+            block         23;
+            archiveFile   "je034265f.xml";
+            articleSha256 "ab848132b30950401a393e0a808e38cb29f0ff43e0f9bedbe37955154bbd470b";
+            sha256        "02ff10e46e8c1ebea0da0e406d73be341ac9a28094b2a9c75af3ebb0c948fe32";
+        }
+    );
+}

@@ -43,7 +43,13 @@
   constant/parameters/Henry/ (C300 rule 3); refused writes nothing.
 
   @@RESULT-BEGIN@@
-  (the fit has not run)
+  4 points of 1 laboratory(ies); 4 kept,
+  0 discarded after the least-squares stage (> 20 %):
+  H_ref = 7.66637e+05 Pa at 298.15 K, enthalpy = -19527 J/mol;
+  kept span 299.99-329.99 K; max relative error
+  0.5732 % (least squares 0.6014 %); in-sample
+  grade clean, CAPPED to warning (singleLaboratory).
+  PROMOTED into data/standards/parameters/Henry/.
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the

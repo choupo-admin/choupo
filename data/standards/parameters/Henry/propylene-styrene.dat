@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for propylene in liquid styrene (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori]; Kimura, A.[Arisa]; Kuroda, M.[Mikiko] et al. (2007) J. Chem. Eng. Data 52, 291-297, doi:10.1021/je060395n
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/propylene-styrene
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  4 kept points, 249.95-329.99 K; max relative error
+  1.68 % in-sample (graded 5 / 10 / 20 %).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 249-330 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      propylene;
+solvent     styrene;
+
+gasSpecies        propylene;
+dissolvedSpecies  propylene;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       2.49434e+06 Pa;
+T_ref       298.15 K;
+enthalpy    -15759  J/mol;
+Trange      ( 249  330 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1021/je060395n (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           115-07-1;
+    fittedInCase  "data/curation/henry/propylene-styrene";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 1.6808;
+    pointsKept    4;
+    pointsDiscarded 0;
+    fingerprint   "7f4b53446ffd987a";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1021/je060395n";
+            block         23;
+            archiveFile   "je060395n.xml";
+            articleSha256 "c8dbf4b67525bda235e5fc270c069687bc1c2c4c1f6823169d7137f705520a90";
+            sha256        "7cb8e4b1808bd662d5069ff4bfea24b3b8f4fd74a9c8b241fb615e8fa74c3a83";
+        }
+    );
+}

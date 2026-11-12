@@ -1648,8 +1648,8 @@
     },
     "check_henry_records": {
       "exit": 0,
-      "claim": "check_henry_records: OK -- 45 Henry records from Sander 2015 reproduce from rows.tsv (1851 M/L rows, no Q or E row; NOT CHECKED: the values of the thermo-library records)",
-      "seconds": 0.1
+      "claim": "check_henry_records: OK -- 45 Henry records from Sander 2015 reproduce from rows.tsv (1851 M/L rows, no Q or E row); 235 organic-solvent Henry records refitted from their 235 ThermoML cases equal their fit and grade (3 built negatives refused; NOT CHECKED: the values of the thermo-library records, and the voicing of a Henry fitGrade, which no loader does)",
+      "seconds": 6.4
     }
   }
 }

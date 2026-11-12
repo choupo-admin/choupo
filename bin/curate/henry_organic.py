@@ -494,7 +494,7 @@ def fit_points(series):
     res.update(ls=p2, p=p3, maxRel_pct=mx, lsMaxRel_pct=100.0 * maxabs(p2, kp),
                grade_in=g, grade=("warning" if caps else g), caps=caps,
                labsKept=labs, Tmin=min(T for T, _ in kp), Tmax=max(T for T, _ in kp),
-               why=("" if g != "refused" else f"max relative error {mx:.2f} % above 20 %"))
+               why=("" if g != "refused" else f"max relative error {mx:.2f} % above {LIMITS[2]:g} %"))
     return res
 
 
@@ -542,6 +542,9 @@ def parse_decl(case):
     return sol, sv, out
 
 
+_DOWNLOADED = {}
+
+
 def fetch(case, quiet=False):
     """0 = every extract present and verified; 1 = refused; 2 = NOT RUN."""
     sol, sv, decl = parse_decl(case)
@@ -552,11 +555,17 @@ def fetch(case, quiet=False):
         src = cache_root() / (d["doi"] + ".xml")
         if src.exists():
             data = src.read_bytes()
+        elif d["url"] in _DOWNLOADED:
+            data = _DOWNLOADED[d["url"]]
+            src = None
         else:
             try:
+                #  A generic client name (NIST refuses the library's default
+                #  agent); one download per article per process.
                 req = urllib.request.Request(d["url"], headers={"User-Agent": "choupo-curate"})
                 with urllib.request.urlopen(req, timeout=60) as r:
                     data = r.read()
+                _DOWNLOADED[d["url"]] = data
             except Exception as ex:  # noqa: BLE001
                 print(f"henry_organic fetch: NOT RUN -- NIST ThermoML unreachable for doi "
                       f"{d['doi']} ({ex}) and the archive cache does not hold it")
@@ -620,10 +629,12 @@ def declare(write):
     pairs = pairs_from(out)
     made = 0
     for (s, v), recs in sorted(pairs.items()):
+        case = case_dir(s, v)
+        if (case / DECL).exists():
+            continue                    # declared already: a declaration is never rewritten
         if list(HENRY.glob(f"{s}-{v}.dat")):
             print(f"  {s}-{v}: a catalogue record already exists -- not declared")
             continue
-        case = case_dir(s, v)
         ds, studies = [], []
         for r in sorted(recs, key=lambda r: (r["doi"], r["block"])):
             art = cache_root() / r["file"]

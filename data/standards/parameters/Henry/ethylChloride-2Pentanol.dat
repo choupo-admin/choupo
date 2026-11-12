@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for ethylChloride in liquid 2Pentanol (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori]; Kobashi, T.[Takahiro]; Shinjo, H.[Hiroshi] et al. (2006) J. Chem. Thermodyn. 38, 724-731, doi:10.1016/j.jct.2005.08.004
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/ethylChloride-2Pentanol
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  5 kept points, 249.95-330.01 K; max relative error
+  6.66 % in-sample (graded 5 / 10 / 20 %).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 249-331 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      ethylChloride;
+solvent     2Pentanol;
+
+gasSpecies        ethylChloride;
+dissolvedSpecies  ethylChloride;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       3.99101e+05 Pa;
+T_ref       298.15 K;
+enthalpy    -19831  J/mol;
+Trange      ( 249  331 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1016/j.jct.2005.08.004 (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           75-00-3;
+    fittedInCase  "data/curation/henry/ethylChloride-2Pentanol";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeMaxRelativeError_pct 6.6632;
+    pointsKept    5;
+    pointsDiscarded 0;
+    fingerprint   "ec4f9328e70e9335";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1016/j.jct.2005.08.004";
+            block         59;
+            archiveFile   "j.jct.2005.08.004.xml";
+            articleSha256 "2cddafa400020ad25de0cdd268c4459946a784d079aa4b9a444e869715d79228";
+            sha256        "5ca95865b98a7710237dd605766ad9a3b49e0b7613067c43d6b54ea8840a1284";
+        }
+    );
+}

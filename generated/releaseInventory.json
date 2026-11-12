@@ -8,7 +8,7 @@
     "nrtlPairs": 558,
     "wilsonPairs": 524,
     "uniquacPairs": 220,
-    "henryPairs": 251,
+    "henryPairs": 486,
     "pitzerPairs": 55,
     "enrtlPairs": 3,
     "materials": 4,
@@ -39,6 +39,6 @@
     }
   },
   "totals": {
-    "mixtureParameterRecords": 1611
+    "mixtureParameterRecords": 1846
   }
 }
