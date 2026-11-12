@@ -3485,6 +3485,18 @@ accepts today, and that is a policy call.
 > equation where the package can reach it.  Validated against the paper's
 > own tables and the enthalpy-concentration chart of a book in hand.
 > Branch c377-naoh-olsson.
+> DENSITY AND VISCOSITY (Vitor asked the same day how the kernel handles
+> them; MEASURED: it does not -- the liquid density mixes pure-liquid molar
+> volumes ideally and refuses, the NaOH record having neither Vliq nor
+> critical constants; the liquid viscosity mixes pure-liquid viscosities and
+> refuses for want of a NaOH model; the aqueousAnalysis reader's volumetric
+> slot is a separate, ideal estimate).  DECIDED, added to the same slice:
+> the electrolyte interface gains optional `solutionDensity(m,T)` and
+> `solutionViscosity(m,T)`, the Olsson model provides them from the same
+> paper, and the package's liquid density and viscosity use them when the
+> liquid is that electrolyte solution, announced; every other model and
+> case byte-identical.  Other salts (a general correlation fitted across
+> many salts) are a later slice.
 
 > **C376 (Vitor, 2026-11-12: "A maior parte das especies novas nao tem dados
 > de formacao?! Podes ver online como vamos resolver isto? Se for preciso
