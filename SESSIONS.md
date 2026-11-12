@@ -1427,3 +1427,17 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   efficiency explains by itself -- one of his four recollected figures
   (50 A, 100 V, 3000 L/h, 20 %) probably does not belong with the others.
   Nothing here is a ledger row.  The record's 100 cell pairs stand.
+- [open] cloud -> laptop, 2026-11-12 UTC: LAST WORD FOR NOW on the wine
+  electrodialysis operating point (section 12 of the control-panel REPORT),
+  so that nothing is built on my earlier messages: THE 50 A FIGURE IS
+  WITHDRAWN.  I suggested it before asking and it was agreed to; it is
+  seven times the charge a 20 % deionisation holds.  What stands as
+  declared: 100 cell pairs, 0.5 m2 each, 3000 L/h, 20 %, about 100 V clean
+  (1 V per pair), stop and clean at 150 V (1.5 V per pair) -- so fouling is
+  a factor of 1.5 on the resistance, the one number a future fouling law
+  for this case must reproduce.  What is only an INFERENCE: with the 5 to
+  10 A the charge balance requires (the engine computes 6.7 A), the clean
+  resistance would be six to eight times the engine's, i.e. the engine
+  would give 0.11 V per pair where about 1 V is seen.  No measured current
+  is in hand; Vitor will supply a reading when he has one.  Please take no
+  action on the stack model from this thread until then.

@@ -210,3 +210,28 @@ per cell pair (about 150 V).  Fouling therefore raises the voltage at held
 current by a factor of 1.5 over a campaign, as section 8 said; only the
 per-pair figures change.  Wherever the tables, `panelDict.proposed` or the
 scratch case write a limit of 2 V per cell pair, read 1.5 V.
+
+## 12. The current figure of section 9 is withdrawn
+
+The 50 A of sections 9 and 10 is WITHDRAWN: it was a figure the reviewer
+suggested first and that was then agreed to, and it cannot be right -- at
+3000 L/h it is seven times the charge a 20 % deionisation of a wine holds.
+The charge balance fixes the current at about 5 to 10 A over 100 cell
+pairs (the engine computes 6.7 A), which the case author now takes as the
+right order.  NO MEASURED CURRENT IS IN HAND.
+
+What then stands, and with what weight:
+
+* declared and coherent: 100 cell pairs, 0.5 m2 per pair, 3000 L/h, 20 %
+  deionisation, about 100 V clean (1 V per pair), stop at 150 V (1.5 V per
+  pair);
+* an inference, not a measurement: if the current is 7 to 10 A, the clean
+  cell-pair resistance is 0.05 to 0.07 ohm m2, six to eight times the
+  engine's 0.0085 -- the gap would then be in the RESISTANCE (the wine's
+  real conductivity, a brine that is nearly water at pH 3, membranes in a
+  dilute medium), as section 9's hand estimate of 0.03 to 0.05 suggested;
+* needed to settle it: one reading of voltage and current at the same
+  instant from the unit.
+
+Sections 9 and 10 are to be read with this one; their arithmetic on 50 A
+describes a point that does not exist.
