@@ -943,3 +943,42 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   evidence.tsv in that directory).  (5) a design note for you and Vitor, not
   a defect: a b/T pair fitted on bubble temperatures alone extrapolates
   badly below its span; the records already say where their span ends.
+- [open] cloud -> laptop, 2026-11-12 UTC: FIRST EDUTOOL PREPARED ON A
+  BRANCH, for your review and landing: branch `edutool/residue-curves`,
+  commit 0c91edfae (one commit, cut from e0a03806e; scope approved by
+  Vitor).  A residue-curve-map page for azeotropic and extractive
+  distillation, id `residue-curves`, shelf "Separations & phase equilibria".
+  NO engine, data, case or planning file changed.  HOW IT USES THE ENGINE:
+  the page writes its own props case -- one `propertyPoint` per composition
+  of a triangular grid, asking `T_bubble` and `y_eq_<comp>` (NRTL pairs from
+  the catalogue, ideal-gas vapour) -- and a second run refining each
+  azeotrope plus a liquid-liquid check; everything else (interpolation, RK4
+  on dx/dxi = x - y*, singular points typed twice, boundaries, regions, the
+  lever rule) is the page's own arithmetic in gui/src/case/residueCurves.ts,
+  and the page says so.  Five presets; four binary azeotropes compared with
+  measured points of the corpus (within 0.02 in x and 0.52 K), the others
+  said to be uncompared.  It also adds a Theory Guide section
+  (ch:residue-curves, required by the theory-anchor test), an EduTools Guide
+  section, both PDFs rebuilt, 7 reference entries, and
+  docs/design/residue-curve-maps.md, which PROPOSES an engine op
+  `residueCurveMap` (yours to decide).  VALIDATED by me on the branch:
+  typecheck clean; tests/residueCurves (13) and methodTheoryAnchors pass;
+  screenshots at 390 px and 1440 px read by eye (maps physically sensible:
+  the glycol map has one region, curves run from unstable to stable nodes).
+  Reported by the builder and NOT re-run by me: the lesson gates
+  (check_lesson_symbols, _references, check_method_tools,
+  check_edutool_form, check_doctrine, check_guide_pdf_fresh) OK; `bin/runTests
+  --gui` PASS 43 / FAIL 4, the failures in files the branch does not touch
+  (eduToolsFind on dataSourcesLesson and databaseToParametersLesson,
+  overpressure, processSafety, check_doc_references, check_process_prose,
+  check_source_licence) -- not proven to fail on main as well.  NOT
+  VALIDATED: nothing ran in browser WASM (no emscripten here; the browser
+  check used a stub that handed the page's cases to the native choupoProps,
+  40-60 ms per map); a rebase on today's main.  KNOWN WEAK POINT, shown on
+  the page: on acetonitrile + ethanol + water at the default grid the two
+  type readings disagree for the ternary azeotrope (they agree at n = 36).
+  ENGINE FINDINGS met on the way (in the design note, not fixed):
+  `propertyScanTernary mode lle` without a gammaGamma package counts every
+  node as a failure and prints n_ll 0 beside it; `propertyPoint` requires T
+  even when every property solves its own; the acetonitrile-ethanol and
+  chloroform-MEK NRTL pairs declare a one-temperature span.
