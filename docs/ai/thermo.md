@@ -355,6 +355,10 @@ from Miller & Smith-Magowan 1990: glycine `HGly` (`H2Gly`, `Gly`), alanine `HAla
 `glycine`, `alanine` (L), `asparticAcid`, `glutamicAcid` with heat-of-solution pairs.  The neutral amine species and the
 volatile component of the same name (monoethanolamine, diethanolamine, triethanolamine, triethylamine, methylamine,
 piperazine) are two identities, not linked by any gas-liquid record.  Case: `aminoBuffers01_tris_glycine`.
+C376 route 2a: the four histidine species (`H3His`..`His`) and the four cysteine species (`H3Cys`..`Cys`) carry `hfAq`/`sAq` from
+Amend & Helgeson 1997 Table 1 (kcal x 4.184; histidine on Goldberg's steps to 0.7 kJ/mol, cysteine's differ by up to 6.9 and the family is
+held at tolerance 7.0, both stated in the design note); glycine, alanine, aspartic and glutamic acids keep Miller's values (Amend's
+compared, differences listed); glycylglycine and triglycine have no formation datum in any work in hand.
 Phase 4 (C373): **laboratory buffers**, every other section of Goldberg 2002 (ACES, ADA, AMPSO, APSA, barbital, BES, Bicine,
 Bis-tris, Bis-tris propane, cacodylate, CAPS, CAPSO, CHES, diglycolate, 3,3-dimethylglutarate, DIPSO, glycerol 2-phosphate,
 HEPES, HEPPS, HEPPSO, 2-mercaptoethanol, MES, MOPS, MOPSO, phthalate, PIPES, POPSO, TAPS, TAPSO, TES, Tricine): species

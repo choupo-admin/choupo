@@ -3,7 +3,8 @@
   Made by bin/curate/species_c373.py from data/curation/batches/species_c373/*.tsv, which holds every
   reading (source, table, page, whether read from a page image).  Standard state: ideal solution at
   1 mol/kg, 298.15 K, H+ = 0.
-  NO `aqueousThermo` ON PURPOSE: the ionisation (pK, dH) of this family is evaluated in a work in hand and is in chemistry/, so the SPECIATION is complete; the evaluated compilation prints ionisation quantities only (no formation enthalpy or entropy), and none was entered from another work in this pass, so a balance that needs the enthalpy of this species REFUSES BY NAME instead of borrowing a value.
+  The formation values are the PRINTED numbers of the source; the table, page and row are in the
+  source line below and in formation.tsv.
 \*-----------------------------------------------------------------------------*/
 recordType modelSpecies;
 schemaVersion 1;
@@ -12,3 +13,9 @@ name    H3Cys;
 formula     "C3H8NO2S+";
 charge  +1;
 MW { value 122.162; unit g/mol;}
+aqueousThermo
+{
+source "hfAq [kJ/mol] -521.37: printed dfH(aq) Cys+ -124.61 kcal/mol x 4.184 -- Amend & Helgeson, Calculation of the standard molal thermodynamic properties of aqueous biomolecules at elevated temperatures and pressures. Part 1. L-alpha-Amino acids, J. Chem. Soc., Faraday Trans. 93 (1997) 1927-1941, Table 1, p. 1929, row Cys+, Amend & Helgeson state this value as calculated from the crystal's formation enthalpy and heat of solution (neutral) or from the neutral and the printed ionisation enthalpy (charged), Table 1 footnotes d-s ## sAq [J/mol/K] 218.91: printed S Cys+ 52.32 cal/mol/K x 4.184 -- Amend & Helgeson, Calculation of the standard molal thermodynamic properties of aqueous biomolecules at elevated temperatures and pressures. Part 1. L-alpha-Amino acids, J. Chem. Soc., Faraday Trans. 93 (1997) 1927-1941, Table 1, p. 1929, row Cys+, calculated by the authors from the printed DfG and DfH with the elements' entropies (Table 1 footnote c), H+ = 0";
+hfAq { value -521370; unit J/mol;}
+sAq  { value 218.91; unit J/mol/K;}
+}

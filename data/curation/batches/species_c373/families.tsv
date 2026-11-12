@@ -33,8 +33,8 @@ asparticacid	aspartate	L-aspartic acid	build	-	0.1		Table 3 prints the second io
 glutamicacid	glutamate	L-glutamic acid	build	-	0.05			1
 glycylglycine	peptide	glycylglycine	build	-				1
 triglycine	peptide	glycylglycylglycine	build	-				1
-histidine	histidine	L-histidine	build	-				2
-cysteine	cysteine	L-cysteine	build	-				1
+histidine	histidine	L-histidine	build	-	0.8			2
+cysteine	cysteine	L-cysteine	build	-	7.0			1
 aces	buffer	ACES	build	-			Goldberg gives no formation data for a buffer.  The species are the acid form(s) and the conjugate base(s) of the section, charges as the section states them, the formula the section's own empirical formula.	
 ampso	buffer	AMPSO	build	-			Goldberg gives no formation data for a buffer.  The species are the acid form(s) and the conjugate base(s) of the section, charges as the section states them, the formula the section's own empirical formula.	
 apsa	buffer	3-amino-1-propanesulfonic acid	build	-			Goldberg gives no formation data for a buffer.  The species are the acid form(s) and the conjugate base(s) of the section, charges as the section states them, the formula the section's own empirical formula.	

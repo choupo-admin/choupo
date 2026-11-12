@@ -29,3 +29,31 @@ H3AsO4	hfAq	-901.76	-902.5	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H3
 H3AsO4	sAq	187.4	184.	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row H3AsO4 ao	yes	NOT entered, as above
 AsO4	hfAq	-890.44	-888.14	kJ/mol	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row AsO4 ao	yes	NOT entered: one scale with the existing H2AsO4 and HAsO4 (see formation.tsv)
 AsO4	sAq	-176.2	-162.8	J/mol/K	NBS82	Table 20:As, p. 2-77 (PDF p. 85), row AsO4 ao	yes	NOT entered, as above
+H2Gly	hfAq	-518.37	-526.01	kJ/mol	AMEND97	Table 1, p. 1929, row Gly+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Gly	sAq	189.95	196.27	J/mol/K	AMEND97	Table 1, p. 1929, row Gly+	no	catalogue Miller; not entered
+HGly	hfAq	-514.36	-522.08	kJ/mol	AMEND97	Table 1, p. 1929, row Gly	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HGly	sAq	158.45	164.39	J/mol/K	AMEND97	Table 1, p. 1929, row Gly	no	catalogue Miller; not entered
+Gly	hfAq	-470.26	-477.77	kJ/mol	AMEND97	Table 1, p. 1929, row Gly-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Gly	sAq	119.25	125.81	J/mol/K	AMEND97	Table 1, p. 1929, row Gly-	no	catalogue Miller; not entered
+H2Ala	hfAq	-556.76	-556.81	kJ/mol	AMEND97	Table 1, p. 1929, row Ala+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Ala	sAq	194.5	199.20	J/mol/K	AMEND97	Table 1, p. 1929, row Ala+	no	catalogue Miller; not entered
+HAla	hfAq	-553.75	-554.38	kJ/mol	AMEND97	Table 1, p. 1929, row Ala	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HAla	sAq	159.8	162.46	J/mol/K	AMEND97	Table 1, p. 1929, row Ala	no	catalogue Miller; not entered
+Ala	hfAq	-508.52	-508.23	kJ/mol	AMEND97	Table 1, p. 1929, row Ala-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Ala	sAq	122.6	128.49	J/mol/K	AMEND97	Table 1, p. 1929, row Ala-	no	catalogue Miller; not entered
+H3Aspt	hfAq	-954.96	-950.35	kJ/mol	AMEND97	Table 1, p. 1929, row Asp+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H3Aspt	sAq	242.49	257.94	J/mol/K	AMEND97	Table 1, p. 1929, row Asp+	no	catalogue Miller; not entered
+H2Aspt	hfAq	-947.5	-947.01	kJ/mol	AMEND97	Table 1, p. 1929, row Asp	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Aspt	sAq	229.49	231.04	J/mol/K	AMEND97	Table 1, p. 1929, row Asp	no	catalogue Miller; not entered
+HAspt	hfAq	-942.86	-939.48	kJ/mol	AMEND97	Table 1, p. 1929, row Asp-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HAspt	sAq	170.09	181.33	J/mol/K	AMEND97	Table 1, p. 1929, row Asp-	no	catalogue Miller; not entered
+Aspt	hfAq	-905.1	-874.87	kJ/mol	AMEND97	Table 1, p. 1929, row Asp2-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Aspt	sAq	105.19	206.44	J/mol/K	AMEND97	Table 1, p. 1929, row Asp2-	no	catalogue Miller; not entered
+H3Glu	hfAq	-980.45	-983.20	kJ/mol	AMEND97	Table 1, p. 1929, row Glu+	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H3Glu	sAq	289.2	295.10	J/mol/K	AMEND97	Table 1, p. 1929, row Glu+	no	catalogue Miller; not entered
+H2Glu	hfAq	-980.72	-982.49	kJ/mol	AMEND97	Table 1, p. 1929, row Glu	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+H2Glu	sAq	246.9	256.06	J/mol/K	AMEND97	Table 1, p. 1929, row Glu	no	catalogue Miller; not entered
+HGlu	hfAq	-979.16	-979.68	kJ/mol	AMEND97	Table 1, p. 1929, row Glu-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+HGlu	sAq	170.3	183.51	J/mol/K	AMEND97	Table 1, p. 1929, row Glu-	no	catalogue Miller; not entered
+Glu	hfAq	-939.09	-909.10	kJ/mol	AMEND97	Table 1, p. 1929, row Glu2-	no	catalogue value is Miller & Smith-Magowan's; Amend & Helgeson differ (differences and the choice: design note section 6.2)
+Glu	sAq	114.59	241.04	J/mol/K	AMEND97	Table 1, p. 1929, row Glu2-	no	catalogue Miller; not entered

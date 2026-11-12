@@ -506,3 +506,57 @@ combustion of one of them, none of which is in hand.
   `hfAq` would be used silently.  A small engine slice is needed first: read `aqueousThermo.provenance.hfAq.origin`, list it in
   the property-origins block, and let `PackageAudit` treat an `estimated` species datum the way it treats a component's.
   Until then an estimated record must not be written.
+
+### 6.2 Route 2a: Amend & Helgeson (1997) and Dick, LaRowe & Helgeson (2006): the amino acids
+
+Amend & Helgeson (J. Chem. Soc., Faraday Trans. 93 (1997) 1927-1941, text layer, Table 1 p. 1929) print DfG, DfH (kcal/mol)
+and S (cal/mol/K) of 20 neutral amino acids and their charged forms at 25 C, 1 bar, H+ = 0, converted here at 4.184 exactly.
+The table's footnotes say how each number was made: the neutral DfG from the crystal's DfG and the solubility, the neutral
+DfH from the crystal's DfH and the heat of solution, the charged forms from the neutral and the printed ionisation Gibbs
+energy and enthalpy (ref. 69 of the paper), and S from DfG and DfH with the elements' entropies (so every value is a
+cited table value, origin `literature`; none is a group-additivity estimate in this table).  The values are in the text
+layer; the sign (a bracket in the layer) was read against the paper's own relation DfG = DfH - T(DfS) for three rows.
+Dick, LaRowe & Helgeson (Biogeosciences 3 (2006) 311-336) Table 2 reproduces the same amino-acid values ("taken from Amend and
+Helgeson", e.g. Ala -88.81 / -132.50 / 38.83 identical) and adds the sidechain and backbone GROUP contributions (Tables 1,
+6, 7) and the Gly-X-Gly tripeptides in Table 5, which print only HKF parameters, Cp and V: **neither work prints a formation
+datum of glycylglycine or triglycine**, so those two ladders stay without formation data (a group-additivity estimate from
+Dick's backbone groups would be origin `estimated`, subject to the announcement slice of section 7.3).
+
+**Entered** (rows `AMEND97` of `formation.tsv`; kJ/mol and J/mol/K after conversion; the ladder as the catalogue names it):
+
+| species | Amend label | DfH (kJ/mol) | S (J/mol/K) |
+|---|---|---|---|
+| H3His (2+) | His2+ | -484.93 | 315.06 |
+| H2His (+) | His+ | -482.00 | 292.29 |
+| HHis (0) | His | -452.71 | 276.14 |
+| His (-) | His- | -408.78 | 245.85 |
+| H3Cys (+) | Cys+ | -521.37 | 218.91 |
+| H2Cys (0) | Cys | -519.11 | 193.80 |
+| HCys (-) | Cys- | -489.86 | 132.47 |
+| Cys (2-) | Cys2- | -452.04 | 52.93 |
+
+**One scale, per family.**  Histidine: the hf differences along the ladder (+2.93, +29.29, +43.93 kJ/mol) reproduce Goldberg's
+step enthalpies (3.6, 29.5, 43.8) to 0.67, 0.21 and 0.13: one scale, family tolerance 0.8.  Cysteine: Amend's differences
+(+2.26, +29.25, +37.82) differ from Goldberg's (-0.6 printed as approximate, 36.1, 34.1; grades CD, BBD, BBD) by 2.9,
+6.9 and 3.7 kJ/mol.  Amend's set is internally consistent (the Gibbs identity of `check_logk_crosscheck` holds on it: no
+record fails) and Goldberg's cysteine enthalpies are low grade, so Amend's printed values are kept as one scale and the
+family tolerance is 7.0 kJ/mol, stated here: a heat of ionisation computed from the formation enthalpies of cysteine's second
+step is 29.3 kJ/mol while the speciation record carries 36.1.
+
+**Amend against Miller & Smith-Magowan, where both print values** (`species_c373.py fcompare`; the catalogue keeps Miller's,
+which carry the steps of the evaluation the ladders were written from):
+
+| family | species | Miller | Amend | difference (Amend - Miller) kJ/mol, J/mol/K |
+|---|---|---|---|---|
+| glycine | H2Gly, HGly, Gly | -518.37, -514.36, -470.26 | -526.01, -522.08, -477.77 | -7.6, -7.7, -7.5 (S +6.3, +5.9, +6.6) |
+| alanine | H2Ala, HAla, Ala | -556.76, -553.75, -508.52 | -556.81, -554.38, -508.23 | -0.05, -0.63, +0.29 (S +4.7, +2.7, +5.9) |
+| aspartic | H3Aspt, H2Aspt, HAspt, Aspt | -954.96, -947.50, -942.86, -905.10 | -950.35, -947.01, -939.48, -874.87 | +4.6, +0.5, +3.4, +30.2 |
+| glutamic | H3Glu, H2Glu, HGlu, Glu | -980.45, -980.72, -979.16, -939.09 | -983.20, -982.49, -979.68, -909.10 | -2.8, -1.8, -0.5, +30.0 |
+
+Glycine's enthalpy sits 7.6 kJ/mol lower in Amend (and in Alberty's Table 3.2, section 6.5) than in Miller and the NBS tables
+(which agree with each other to 0.4); alanine agrees to 0.6.  The dianions of aspartic and glutamic acids differ by 30 kJ/mol and
+100 to 126 J/mol/K: Amend's dianion is the amino-deprotonated form reached by an ionisation enthalpy of +64.6 (Asp) and
++70.6 (Glu) from the monoanion where Miller's third step is +37.8 and +40.1.  No resolution is in hand; Miller's are kept for these
+four families, as the C373 ladders and their step enthalpies are Miller's (the one-scale rule), and nothing was overwritten.
+
+Species that gained formation data in this route: H3His, H2His, HHis, His, H3Cys, H2Cys, HCys, Cys (8, each with DfH and S).
