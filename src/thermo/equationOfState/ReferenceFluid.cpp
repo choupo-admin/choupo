@@ -312,7 +312,19 @@ scalar ReferenceFluid::densityOnBranch(scalar T, scalar p, bool liquid) const
             + ": no liquid/vapour branch above T_c = " + g9(Tc_) + " K");
     scalar dV = 0.0, dL = 0.0;
     spinodals(T, dV, dL);
-    return branchRoot(T, p, liquid, dV, dL);
+    const scalar rho = branchRoot(T, p, liquid, dV, dL);
+    // A root that is mechanically stable (dp/drho > 0) but thermally not
+    // (cv <= 0, or w^2 < 0) sits on a stretch of the isotherm the equation
+    // was never fitted to (nitrogen at 120 K has one between its spinodals):
+    // it is not a state, metastable or otherwise.
+    const State s = at(T, rho);
+    if (!(s.cv > 0.0) || !std::isfinite(s.w))
+        throw std::runtime_error("reference equation " + equation_ + ": the "
+            + std::string(liquid ? "liquid" : "vapour") + " root at T = " + g9(T)
+            + " K, p = " + g9(p) + " Pa (rho = " + g9(rho) + " kg/m3) is not a "
+              "thermally stable state (cv = " + g9(s.cv) + " J/(kg K)) -- the "
+              "isotherm there is outside anything the equation was fitted to");
+    return rho;
 }
 
 scalar ReferenceFluid::branchRoot(scalar T, scalar p, bool liquid,
@@ -494,8 +506,12 @@ namespace {
 // Pass when |computed - published| is within half a unit in the last
 // printed significant digit (a published exact zero must come out exactly
 // zero to round-off).
+//  `scale`: a value converted from the unit the publication printed it in
+//  (a molar-basis paper: rho x M, h x 1000/M) is judged on the PRINTED
+//  number's last digit -- the record states the factor as `printedScale`,
+//  so pub/scale is the number on the page.
 CheckResult judge(const std::string& table, const std::string& label,
-                  scalar pub, scalar calc, int digits)
+                  scalar pub, scalar calc, int digits, scalar scale = 1.0)
 {
     CheckResult c;
     c.table = table; c.label = label;
@@ -507,8 +523,8 @@ CheckResult judge(const std::string& table, const std::string& label,
         return c;
     }
     c.relDev = std::fabs(calc - pub) / std::fabs(pub);
-    const scalar e   = std::floor(std::log10(std::fabs(pub)));
-    const scalar ulp = std::pow(10.0, e - digits + 1);
+    const scalar e   = std::floor(std::log10(std::fabs(pub / scale)));
+    const scalar ulp = std::pow(10.0, e - digits + 1) * std::fabs(scale);
     c.ok = std::fabs(calc - pub) <= 0.5 * ulp * (1.0 + 1.0e-9);
     return c;
 }
@@ -527,6 +543,7 @@ std::vector<CheckResult> ReferenceFluid::verify() const
             const scalar T   = e->lookupScalar("T", Dims::temperature);
             const scalar rho = e->lookupScalar("rho", Dims::density);
             const int dig = int(e->lookupScalar("digits"));
+            const scalar sc = e->lookupScalarOrDefault("printedScale", 1.0);
             const State s = at(T, rho);
             const std::string at_ = "T = " + g9(T) + " K, rho = " + g9(rho) + " kg/m3: ";
             const std::pair<const char*, scalar> v[] = {
@@ -537,7 +554,7 @@ std::vector<CheckResult> ReferenceFluid::verify() const
             for (const auto& kv : v)
                 if (e->found(kv.first))
                     out.push_back(judge(tab, at_ + kv.first,
-                        e->lookupScalar(kv.first), kv.second, dig));
+                        e->lookupScalar(kv.first), kv.second, dig, sc));
         }
 
     if (cv->found("singlePhase"))
@@ -547,14 +564,16 @@ std::vector<CheckResult> ReferenceFluid::verify() const
             const scalar T   = e->lookupScalar("T", Dims::temperature);
             const scalar rho = e->lookupScalar("rho", Dims::density);
             const int dig = int(e->lookupScalar("digits"));
+            const scalar sc = e->lookupScalarOrDefault("printedScale", 1.0);
             const State s = at(T, rho);
             const std::string at_ = "T = " + g9(T) + " K, rho = " + g9(rho) + " kg/m3: ";
-            if (e->found("p"))  out.push_back(judge(tab, at_ + "p",  e->lookupScalar("p",  Dims::pressure),     s.p,  dig));
-            if (e->found("cv")) out.push_back(judge(tab, at_ + "cv", e->lookupScalar("cv", Dims::heatCapacity), s.cv, dig));
-            if (e->found("cp")) out.push_back(judge(tab, at_ + "cp", e->lookupScalar("cp", Dims::heatCapacity), s.cp, dig));
-            if (e->found("w"))  out.push_back(judge(tab, at_ + "w",  e->lookupScalar("w",  Dims::velocity),     s.w,  dig));
-            if (e->found("s"))  out.push_back(judge(tab, at_ + "s",  e->lookupScalar("s",  Dims::heatCapacity), s.s,  dig));
-            if (e->found("h"))  out.push_back(judge(tab, at_ + "h",  e->lookupScalar("h",  Dims::specificEnergy), s.h, dig));
+            if (e->found("p"))  out.push_back(judge(tab, at_ + "p",  e->lookupScalar("p",  Dims::pressure),     s.p, dig, sc));
+            if (e->found("cv")) out.push_back(judge(tab, at_ + "cv", e->lookupScalar("cv", Dims::heatCapacity), s.cv, dig, sc));
+            if (e->found("cp")) out.push_back(judge(tab, at_ + "cp", e->lookupScalar("cp", Dims::heatCapacity), s.cp, dig, sc));
+            if (e->found("w"))  out.push_back(judge(tab, at_ + "w",  e->lookupScalar("w",  Dims::velocity),     s.w, dig, sc));
+            if (e->found("s"))  out.push_back(judge(tab, at_ + "s",  e->lookupScalar("s",  Dims::heatCapacity), s.s, dig, sc));
+            if (e->found("h"))  out.push_back(judge(tab, at_ + "h",  e->lookupScalar("h",  Dims::specificEnergy), s.h, dig, sc));
+            if (e->found("u"))  out.push_back(judge(tab, at_ + "u",  e->lookupScalar("u",  Dims::specificEnergy), s.u, dig, sc));
         }
 
     if (cv->found("saturation"))
@@ -563,15 +582,43 @@ std::vector<CheckResult> ReferenceFluid::verify() const
             const std::string tab = e->lookupWord("table");
             const scalar T = e->lookupScalar("T", Dims::temperature);
             const int dig = int(e->lookupScalar("digits"));
+            const scalar sc = e->lookupScalarOrDefault("printedScale", 1.0);
             const Saturation s = saturation(T);
             const std::string at_ = "saturation at T = " + g9(T) + " K: ";
-            if (e->found("psat")) out.push_back(judge(tab, at_ + "psat", e->lookupScalar("psat", Dims::pressure), s.psat, dig));
-            if (e->found("rhoL")) out.push_back(judge(tab, at_ + "rhoL", e->lookupScalar("rhoL", Dims::density), s.rhoL, dig));
-            if (e->found("rhoV")) out.push_back(judge(tab, at_ + "rhoV", e->lookupScalar("rhoV", Dims::density), s.rhoV, dig));
-            if (e->found("hL"))   out.push_back(judge(tab, at_ + "hL", e->lookupScalar("hL", Dims::specificEnergy), s.liquid.h, dig));
-            if (e->found("hV"))   out.push_back(judge(tab, at_ + "hV", e->lookupScalar("hV", Dims::specificEnergy), s.vapour.h, dig));
-            if (e->found("sL"))   out.push_back(judge(tab, at_ + "sL", e->lookupScalar("sL", Dims::heatCapacity), s.liquid.s, dig));
-            if (e->found("sV"))   out.push_back(judge(tab, at_ + "sV", e->lookupScalar("sV", Dims::heatCapacity), s.vapour.s, dig));
+            if (e->found("psat")) out.push_back(judge(tab, at_ + "psat", e->lookupScalar("psat", Dims::pressure), s.psat, dig, sc));
+            if (e->found("rhoL")) out.push_back(judge(tab, at_ + "rhoL", e->lookupScalar("rhoL", Dims::density), s.rhoL, dig, sc));
+            if (e->found("rhoV")) out.push_back(judge(tab, at_ + "rhoV", e->lookupScalar("rhoV", Dims::density), s.rhoV, dig, sc));
+            if (e->found("hL"))   out.push_back(judge(tab, at_ + "hL", e->lookupScalar("hL", Dims::specificEnergy), s.liquid.h, dig, sc));
+            if (e->found("hV"))   out.push_back(judge(tab, at_ + "hV", e->lookupScalar("hV", Dims::specificEnergy), s.vapour.h, dig, sc));
+            if (e->found("sL"))   out.push_back(judge(tab, at_ + "sL", e->lookupScalar("sL", Dims::heatCapacity), s.liquid.s, dig, sc));
+            if (e->found("sV"))   out.push_back(judge(tab, at_ + "sV", e->lookupScalar("sV", Dims::heatCapacity), s.vapour.s, dig, sc));
+            if (e->found("cvL"))  out.push_back(judge(tab, at_ + "cvL", e->lookupScalar("cvL", Dims::heatCapacity), s.liquid.cv, dig, sc));
+            if (e->found("cvV"))  out.push_back(judge(tab, at_ + "cvV", e->lookupScalar("cvV", Dims::heatCapacity), s.vapour.cv, dig, sc));
+            if (e->found("cpL"))  out.push_back(judge(tab, at_ + "cpL", e->lookupScalar("cpL", Dims::heatCapacity), s.liquid.cp, dig, sc));
+            if (e->found("cpV"))  out.push_back(judge(tab, at_ + "cpV", e->lookupScalar("cpV", Dims::heatCapacity), s.vapour.cp, dig, sc));
+            if (e->found("wL"))   out.push_back(judge(tab, at_ + "wL", e->lookupScalar("wL", Dims::velocity), s.liquid.w, dig, sc));
+            if (e->found("wV"))   out.push_back(judge(tab, at_ + "wV", e->lookupScalar("wV", Dims::velocity), s.vapour.w, dig, sc));
+        }
+
+    //  A published property table on (T, p): the density is SOLVED (the
+    //  stable root), so these check the root search as well as the equation.
+    if (cv->found("pTState"))
+        for (const DictPtr& e : cv->lookupDictList("pTState"))
+        {
+            const std::string tab = e->lookupWord("table");
+            const scalar T = e->lookupScalar("T", Dims::temperature);
+            const scalar p = e->lookupScalar("p", Dims::pressure);
+            const int dig = int(e->lookupScalar("digits"));
+            const scalar sc = e->lookupScalarOrDefault("printedScale", 1.0);
+            const State s = at(T, density(T, p));
+            const std::string at_ = "T = " + g9(T) + " K, p = " + g9(p) + " Pa: ";
+            if (e->found("rho")) out.push_back(judge(tab, at_ + "rho", e->lookupScalar("rho", Dims::density), s.rho, dig, sc));
+            if (e->found("u"))   out.push_back(judge(tab, at_ + "u",  e->lookupScalar("u",  Dims::specificEnergy), s.u, dig, sc));
+            if (e->found("h"))   out.push_back(judge(tab, at_ + "h",  e->lookupScalar("h",  Dims::specificEnergy), s.h, dig, sc));
+            if (e->found("s"))   out.push_back(judge(tab, at_ + "s",  e->lookupScalar("s",  Dims::heatCapacity), s.s, dig, sc));
+            if (e->found("cv"))  out.push_back(judge(tab, at_ + "cv", e->lookupScalar("cv", Dims::heatCapacity), s.cv, dig, sc));
+            if (e->found("cp"))  out.push_back(judge(tab, at_ + "cp", e->lookupScalar("cp", Dims::heatCapacity), s.cp, dig, sc));
+            if (e->found("w"))   out.push_back(judge(tab, at_ + "w",  e->lookupScalar("w",  Dims::velocity), s.w, dig, sc));
         }
 
     if (cv->found("virial"))
@@ -580,9 +627,10 @@ std::vector<CheckResult> ReferenceFluid::verify() const
             const std::string tab = e->lookupWord("table");
             const scalar T = e->lookupScalar("T", Dims::temperature);
             const int dig = int(e->lookupScalar("digits"));
+            const scalar sc = e->lookupScalarOrDefault("printedScale", 1.0);
             const std::string at_ = "virial at T = " + g9(T) + " K: ";
-            if (e->found("B")) out.push_back(judge(tab, at_ + "B", e->lookupScalar("B"), B(T), dig));
-            if (e->found("C")) out.push_back(judge(tab, at_ + "C", e->lookupScalar("C"), C(T), dig));
+            if (e->found("B")) out.push_back(judge(tab, at_ + "B", e->lookupScalar("B"), B(T), dig, sc));
+            if (e->found("C")) out.push_back(judge(tab, at_ + "C", e->lookupScalar("C"), C(T), dig, sc));
         }
 
     if (out.empty())

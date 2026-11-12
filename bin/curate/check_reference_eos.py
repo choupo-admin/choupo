@@ -26,6 +26,11 @@ WHAT IS CHECKED
       record is an exit != 0), and the state/saturation CSVs it writes (12
       significant digits) must agree with this file's recomputation of the
       same states to 1e-9 relative.
+  (d) A GENERATED RECORD IS ITS TRANSCRIPTION: every record built from a
+      page-image transcription under bin/curate/helmholtz/<fluid>/ is
+      byte-identical to what bin/curate/helmholtz/gen_record.py makes of it
+      (a hand edit of the record, or a transcription edit not regenerated,
+      fails here).
   (c) A RECORD IS A COMPLETE CLAIM: every record under
       data/standards/parameters/Helmholtz/ names its equation as its file
       stem, its fluid, a citation, a url, the date it was read, a licence
@@ -46,6 +51,16 @@ SABOTAGES (by hand, 2026-11-12; recorded in docs/design/reference-equations-of-s
   S2  the exponential term's a_dd made to drop its -c^2 delta^c term in
       HelmholtzEnergy.cpp -- the engine refuses (Table 6 ar_dd and Table 7
       cv/w fail); arm (a) still passes, so arm (b) names the engine.
+  Slice 2 (2026-11-12), one coefficient per new fluid, changed in its
+  TRANSCRIPTION in the 5th digit and regenerated:
+  S3  CO2 Span-Wagner n_10 -- engine refuses (Table 34, 220 K psat); arm (a)
+      misses 41 of 67.
+  S4  N2 Span et al. n_10 -- engine refuses (saturation 70 K psat); arm (a)
+      misses 11 of 67.
+  S5  CH4 Setzmann-Wagner n_9 -- engine refuses (Table 39, 100 K psat); arm
+      (a) misses 29 of 74.
+  The same edit WITHOUT regenerating the record leaves the engine green and
+  is caught by arm (d) alone.
 """
 import math
 import os
@@ -266,7 +281,10 @@ class Equation:
         num_ = 1 + de * r[1] - de * ta * r[5]
         den = 1 + 2 * de * r[1] + de * de * r[2]
         s["cp"] = s["cv"] + R * num_ ** 2 / den
-        s["w"] = math.sqrt(RT * (den - num_ ** 2 / (ta * ta * (o[4] + r[4]))))
+        w2 = RT * (den - num_ ** 2 / (ta * ta * (o[4] + r[4])))
+        # inside the unstable region a trial root may have w^2 < 0 (cv < 0):
+        # not a state, and only its g is read there
+        s["w"] = math.sqrt(w2) if w2 >= 0 else float("nan")
         s["phi"] = math.exp(r[0] + de * r[1] - math.log(1 + de * r[1]))
         s["dpdrho"] = RT * den
         return s
@@ -295,22 +313,53 @@ class Equation:
         if T not in self._sat: self._sat[T] = self._saturation(T)
         return self._sat[T]
 
+    def spinodals(self, T):
+        if not hasattr(self, "_spin"): self._spin = {}
+        if T in self._spin: return self._spin[T]
+        rc = self.rhoc
+        rho = 1e-12 * rc
+        while self.dpdrho(T, rho * 1.01) > 0: rho *= 1.01
+        rV = self._bisect(lambda r: self.dpdrho(T, r), rho, rho * 1.01)
+        rho = 4 * rc
+        while self.dpdrho(T, rho / 1.001) > 0 and rho > rV: rho /= 1.001
+        rL = self._bisect(lambda r: -self.dpdrho(T, r), rho / 1.001, rho)
+        self._spin[T] = (rV, rL)
+        return rV, rL
+
+    def density(self, T, p):
+        """The stable root of p(T, rho) = p.  Below T_c: the branch this
+        file's own Maxwell psat names, bisected inside the spinodal bracket.
+        Above T_c: every crossing of a geometric scan, the lowest g taken."""
+        rc = self.rhoc
+        if T < self.Tc:
+            psat = self.saturation(T)[0]
+            rV, rL = self.spinodals(T)
+            if p < psat:
+                return self._bisect(lambda r: self.p(T, r) - p, 1e-15 * rc, rV * (1 - 1e-12))
+            hi = 4 * rc
+            while self.p(T, hi) < p: hi *= 1.1
+            return self._bisect(lambda r: self.p(T, r) - p, rL * (1 + 1e-12), hi)
+        grid = [rc * 1e-12 * (5e12) ** (i / 3000) for i in range(3001)]
+        best = None
+        for x, y in zip(grid, grid[1:]):
+            fx, fy = self.p(T, x) - p, self.p(T, y) - p
+            if (fx > 0) != (fy > 0):
+                r = self._bisect(lambda z: self.p(T, z) - p, x, y)
+                if self.dpdrho(T, r) > 0:
+                    g = self.state(T, r)["g"]
+                    if best is None or g < best[0]: best = (g, r)
+        return best[1]
+
     def _saturation(self, T):
         """Maxwell: equal p and g.  An INDEPENDENT route from the C++: the
         vapour spinodal is found by walking DOWN in density from the ideal-gas
         side on a geometric grid, and the equal-g pressure by plain bisection
         in ln p (no Newton)."""
         rc = self.rhoc
-        # vapour spinodal: first density where dp/drho <= 0, walking up from 1e-12 rc
-        rho = 1e-12 * rc
-        while self.dpdrho(T, rho * 1.01) > 0: rho *= 1.01
-        lo, hi = rho, rho * 1.01
-        rV_sp = self._bisect(lambda r: self.dpdrho(T, r), lo, hi)
+        # spinodals: the vapour one walking UP from 1e-12 rc, the liquid one
+        # walking DOWN from 4 rc (never through the unstable stretch)
+        rV_sp, rL_sp = self.spinodals(T)
         pTop = self.p(T, rV_sp)
-        # liquid spinodal: walk DOWN from 4 rc until dp/drho <= 0
-        rho = 4 * rc
-        while self.dpdrho(T, rho / 1.001) > 0 and rho > rV_sp: rho /= 1.001
-        rL_sp = self._bisect(lambda r: -self.dpdrho(T, r), rho / 1.001, rho)
         pBot = max(self.p(T, rL_sp), 1e-12 * pTop)
 
         def roots(p):
@@ -336,11 +385,13 @@ class Equation:
         return r[1] / self.rhoc, r[2] / self.rhoc ** 2
 
 
-def judge(pub, calc, digits):
+def judge(pub, calc, digits, scale=1.0):
+    """Half a unit in the last digit PRINTED; `scale` (the record's
+    printedScale) maps a converted value back to the number on the page."""
     if pub == 0.0:
         return abs(calc) < 1e-12, abs(calc)
-    e = math.floor(math.log10(abs(pub)))
-    ulp = 10.0 ** (e - digits + 1)
+    e = math.floor(math.log10(abs(pub / scale)))
+    ulp = 10.0 ** (e - digits + 1) * abs(scale)
     return abs(calc - pub) <= 0.5 * ulp * (1 + 1e-9), abs(calc - pub) / abs(pub)
 
 
@@ -351,27 +402,38 @@ def recompute(eq, cv):
     AR = ["ar", "ar_d", "ar_dd", "ar_t", "ar_tt", "ar_dt"]
     for e in cv.get("reducedHelmholtz", []):
         T, rho, dig = num(e["T"]), num(e["rho"]), int(num(e["digits"]))
+        sc = num(e["printedScale"]) if "printedScale" in e else 1.0
         s = eq.state(T, rho)
         for k, name in enumerate(A0):
-            if name in e: out.append((f"{word(e['table'])} {name}",) + judge(num(e[name]), s["a0"][k], dig))
+            if name in e: out.append((f"{word(e['table'])} {name}",) + judge(num(e[name]), s["a0"][k], dig, sc))
         for k, name in enumerate(AR):
-            if name in e: out.append((f"{word(e['table'])} {name}",) + judge(num(e[name]), s["ar"][k], dig))
+            if name in e: out.append((f"{word(e['table'])} {name}",) + judge(num(e[name]), s["ar"][k], dig, sc))
     for e in cv.get("singlePhase", []):
         T, rho, dig = num(e["T"]), num(e["rho"]), int(num(e["digits"]))
+        sc = num(e["printedScale"]) if "printedScale" in e else 1.0
         s = eq.state(T, rho)
-        for k in ("p", "cv", "cp", "w", "s", "h"):
-            if k in e: out.append((f"{word(e['table'])} T={T} rho={rho} {k}",) + judge(num(e[k]), s[k], dig))
+        for k in ("p", "cv", "cp", "w", "s", "h", "u"):
+            if k in e: out.append((f"{word(e['table'])} T={T} rho={rho} {k}",) + judge(num(e[k]), s[k], dig, sc))
+    for e in cv.get("pTState", []):
+        T, p, dig = num(e["T"]), num(e["p"]), int(num(e["digits"]))
+        sc = num(e["printedScale"]) if "printedScale" in e else 1.0
+        s = eq.state(T, eq.density(T, p))
+        for k in ("rho", "u", "h", "s", "cv", "cp", "w"):
+            if k in e: out.append((f"{word(e['table'])} T={T} p={p} {k}",) + judge(num(e[k]), s[k], dig, sc))
     for e in cv.get("saturation", []):
         T, dig = num(e["T"]), int(num(e["digits"]))
+        sc = num(e["printedScale"]) if "printedScale" in e else 1.0
         p, L, V = eq.saturation(T)
-        got = {"psat": p, "rhoL": L["rho"], "rhoV": V["rho"], "hL": L["h"], "hV": V["h"], "sL": L["s"], "sV": V["s"]}
+        got = {"psat": p, "rhoL": L["rho"], "rhoV": V["rho"], "hL": L["h"], "hV": V["h"], "sL": L["s"], "sV": V["s"],
+               "cvL": L["cv"], "cvV": V["cv"], "cpL": L["cp"], "cpV": V["cp"], "wL": L["w"], "wV": V["w"]}
         for k, v in got.items():
-            if k in e: out.append((f"{word(e['table'])} T={T} {k}",) + judge(num(e[k]), v, dig))
+            if k in e: out.append((f"{word(e['table'])} T={T} {k}",) + judge(num(e[k]), v, dig, sc))
     for e in cv.get("virial", []):
         T, dig = num(e["T"]), int(num(e["digits"]))
+        sc = num(e["printedScale"]) if "printedScale" in e else 1.0
         B, C = eq.virial(T)
-        if "B" in e: out.append((f"{word(e['table'])} B",) + judge(num(e["B"]), B, dig))
-        if "C" in e: out.append((f"{word(e['table'])} C",) + judge(num(e["C"]), C, dig))
+        if "B" in e: out.append((f"{word(e['table'])} B",) + judge(num(e["B"]), B, dig, sc))
+        if "C" in e: out.append((f"{word(e['table'])} C",) + judge(num(e["C"]), C, dig, sc))
     return out
 
 
@@ -406,6 +468,12 @@ def main():
         print(f"[check_reference_eos] {f[:-4]}: {len(res) - len(bad)}/{len(res)} check values "
               f"reproduced independently, worst relative deviation {worst:.2e}")
         total += len(res)
+
+    # (d) every generated record is the generation of its committed transcription
+    gen = subprocess.run([sys.executable, os.path.join(ROOT, "bin", "curate", "helmholtz", "gen_record.py"), "--check"],
+                         capture_output=True, text=True)
+    if gen.returncode != 0:
+        fail("d", gen.stdout.strip() or gen.stderr.strip())
 
     # (b) the engine
     exe = os.path.join(ROOT, "choupoProps")

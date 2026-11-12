@@ -1,0 +1,112 @@
+# Span2000 -- nitrogen, the reference equation of state of
+#   R. Span, E. W. Lemmon, R. T Jacobsen, W. Wagner and A. Yokozeki, "A
+#   Reference Equation of State for the Thermodynamic Properties of Nitrogen
+#   for Temperatures from 63.151 to 1000 K and Pressures to 2200 MPa",
+#   J. Phys. Chem. Ref. Data 29(6) (2000) 1361-1433, doi 10.1063/1.1349047.
+# Source read: https://srd.nist.gov/jpcrdreprint/1.1349047.pdf (the NIST
+#   JPCRD reprint; a digital PDF WITH a text layer), read on 2026-11-12.
+# HOW THIS FILE WAS MADE: two independent readings of every table -- the
+#   PDF's own text layer (pdftotext -layout, parsed) and the page images
+#   (rendered at 250-300 dpi and read) -- diffed before a digit was accepted.
+#   They agreed everywhere except where the text layer had dropped a
+#   superscript onto the line above (Table 17, k = 19: x10^-1, read from the
+#   image).  The images are not committed.  The record
+#   data/standards/parameters/Helmholtz/Span2000.dat is GENERATED from this
+#   file by bin/curate/helmholtz/gen_record.py -- never edit it by hand.
+# The paper is written on a MOLAR basis (mol/dm3, J/mol); the record keeps it
+#   (`basis molar;`) with the paper's own molar mass, and the engine converts.
+
+[identity]
+equation Span2000
+fluid N2
+citation R. Span, E. W. Lemmon, R. T Jacobsen, W. Wagner and A. Yokozeki, A Reference Equation of State for the Thermodynamic Properties of Nitrogen for Temperatures from 63.151 to 1000 K and Pressures to 2200 MPa, J. Phys. Chem. Ref. Data 29 (2000) 1361-1433
+url https://srd.nist.gov/jpcrdreprint/1.1349047.pdf
+read 2026-11-12
+basis molar
+M 28.01348 g/mol
+
+[constants] page=1365 (Physical Constants and Characteristic Properties of Nitrogen)
+Tc 126.192 K
+rhoc 11.1839 mol/dm3
+R 8.314510 J/mol/K
+
+[triplePoint] page=1365
+T 63.151 K
+
+[validity] page=1361 (title and abstract)
+Tmin 63.151 K
+Tmax 1000 K
+pMax 2200 MPa
+extrapolation Span et al. 2000, abstract (p. 1361): from 1000 to 1800 K the equation was validated with data of limited accuracy; the extrapolation behavior beyond 1800 K is reasonable up to the limits of chemical stability of nitrogen, as indicated by comparison to experimental shock tube data
+uncertainty Span et al. 2000, abstract (p. 1361): density from 0.02 % at pressures below 30 MPa up to 0.6 % at very high pressures, except 270 to 350 K below 12 MPa where it is 0.01 %
+
+[ideal] page=1382 Eq. 53
+# alpha0 = ln delta + a1 ln tau + a2 + a3 tau + a4/tau + a5/tau^2 + a6/tau^3 + a7 ln[1 - exp(-a8 tau)]
+logTau 2.5
+lead0 -12.76952708
+lead1 -0.00784163
+power -1.934819e-4 -1
+power -1.247742e-5 -2
+power 6.678326e-8 -3
+planckEinstein 1.012941 26.65788
+
+[residual-power] page=1385 table=17 (k = 1-6, l_k = 0)
+# i n d t
+1 0.924803575275e0 1.0 0.25
+2 -0.492448489428e0 1.0 0.875
+3 0.661883336938e0 2.0 0.5
+4 -0.192902649201e1 2.0 0.875
+5 -0.622469309629e-1 3.0 0.375
+6 0.349943957581e0 3.0 0.75
+
+[residual-exponential] page=1385 table=17 (k = 7-32)
+# i n d t c   (c = l_k)
+7 0.564857472498e0 1.0 0.5 1
+8 -0.161720005987e1 1.0 0.75 1
+9 -0.481395031883e0 1.0 2.0 1
+10 0.421150636384e0 3.0 1.25 1
+11 -0.161962230825e-1 3.0 3.5 1
+12 0.172100994165e0 4.0 1.0 1
+13 0.735448924933e-2 6.0 0.5 1
+14 0.168077305479e-1 6.0 3.0 1
+15 -0.107626664179e-2 7.0 0.0 1
+16 -0.137318088513e-1 7.0 2.75 1
+17 0.635466899859e-3 8.0 0.75 1
+18 0.304432279419e-2 8.0 2.5 1
+19 -0.435762336045e-1 1.0 4.0 2
+20 -0.723174889316e-1 2.0 6.0 2
+21 0.389644315272e-1 3.0 6.0 2
+22 -0.212201363910e-1 4.0 3.0 2
+23 0.408822981509e-2 5.0 3.0 2
+24 -0.551990017984e-4 8.0 6.0 2
+25 -0.462016716479e-1 4.0 16.0 3
+26 -0.300311716011e-2 5.0 11.0 3
+27 0.368825891208e-1 5.0 15.0 3
+28 -0.255856846220e-2 8.0 12.0 3
+29 0.896915264558e-2 3.0 12.0 4
+30 -0.441513370350e-2 5.0 7.0 4
+31 0.133722924858e-2 6.0 4.0 4
+32 0.264832491957e-3 9.0 16.0 4
+
+[residual-gaussian] page=1385 tables=17,18 (k = 33-36; Eq. 55 has no exp(-delta^l) factor on these terms, the l_k = 2 printed in Table 17 for them enters nothing; epsilon = 1 in Eq. 55)
+# i n d t alpha(phi_k) beta gamma epsilon
+33 0.196688194015e2 1.0 0.0 20 325 1.16 1
+34 -0.209115600730e2 1.0 1.0 20 325 1.16 1
+35 0.167788306989e-1 3.0 2.0 15 300 1.13 1
+36 0.262767566274e4 2.0 3.0 25 275 1.25 1
+
+[saturation] page=1402-1405 table=Appendix (saturation line as a function of temperature)
+# liquid then vapour, as the table prints them on two lines
+columns T psat rhoL rhoV hL hV sL sV cvL cvV cpL cpV wL wV
+units K MPa mol/dm3 mol/dm3 J/mol J/mol J/mol/K J/mol/K J/mol/K J/mol/K J/mol/K J/mol/K m/s m/s
+70 0.03854 29.933 0.06768 -3837.0 1991.7 73.735 157.00 31.65 21.24 56.43 30.30 925.7 168.4
+100 0.77827 24.608 1.1409 -2050.8 2458.6 94.576 139.67 27.54 23.95 64.93 42.09 605.2 183.3
+120 2.51058 18.682 4.4653 -500.60 2077.8 107.89 129.38 28.31 30.77 126.3 129.7 317.3 172.6
+
+[singlePhase] table=Appendix (thermodynamic properties of nitrogen)
+columns p T rho u h s cv cp w
+units MPa K mol/dm3 J/mol J/mol J/mol/K J/mol/K J/mol/K m/s
+0.1 300 0.040098 6223.8 8717.7 191.77 20.82 29.17 353.2
+10 100 26.188 -2339.8 -1958.0 91.882 28.00 56.65 734.2
+10 150 14.963 690.91 1359.2 118.44 25.30 79.94 331.2
+100 300 20.379 3539.1 8446.2 128.37 23.98 38.01 841.5

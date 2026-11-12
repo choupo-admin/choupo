@@ -30,6 +30,12 @@
       own words on extrapolating it.
   Each writes its CSV (12 significant digits, SI) that
   bin/curate/check_reference_eos.py recomputes independently.
+
+  The SAME kernel then carries three more fluids whose records are
+  generated from page-image transcriptions (bin/curate/helmholtz/<fluid>/):
+  carbon dioxide (Span & Wagner 1996), nitrogen (Span et al. 2000) and
+  methane (Setzmann & Wagner 1991), each held at load to every value of its
+  own property tables the transcription carries.
 \*---------------------------------------------------------------------------*/
 operations
 (
@@ -67,5 +73,64 @@ operations
         equation IAPWS95;
         state    { T 1500 K; p 1 MPa; }
         output   { file IAPWS95_extrapolated1500.csv; }
+    }
+
+    // --- carbon dioxide, Span & Wagner (1996), the same kernel ---------------
+    //  the record is GENERATED from the page-image transcription
+    //  bin/curate/helmholtz/CO2/SpanWagner1996.txt; one state from the
+    //  paper's own Table 34 (saturation, 280 K) and one from Table 35
+    //  (8 MPa, 350 K, supercritical) -- both are among its check values.
+    {
+        name     co2Sat280;
+        type     referenceEoS;
+        equation SpanWagner1996;
+        saturation { T 280 K; }
+        output   { file SpanWagner1996_sat280.csv; }
+    }
+    {
+        name     co2Supercritical350;
+        type     referenceEoS;
+        equation SpanWagner1996;
+        state    { T 350 K; p 8 MPa; }
+        output   { file SpanWagner1996_supercritical350.csv; }
+    }
+
+    // --- nitrogen, Span, Lemmon, Jacobsen, Wagner & Yokozeki (2000) ----------
+    //  generated from bin/curate/helmholtz/N2/Span2000.txt (the paper is on a
+    //  molar basis; the generator converted it with the paper's own M).  One
+    //  saturation state (100 K) and one compressed liquid (10 MPa, 100 K) from
+    //  its Appendix tables -- both among its check values.
+    {
+        name     n2Sat100;
+        type     referenceEoS;
+        equation Span2000;
+        saturation { T 100 K; }
+        output   { file Span2000_sat100.csv; }
+    }
+    {
+        name     n2Liquid100;
+        type     referenceEoS;
+        equation Span2000;
+        state    { T 100 K; p 10 MPa; }
+        output   { file Span2000_liquid100.csv; }
+    }
+
+    // --- methane, Setzmann & Wagner (1991) ----------------------------------
+    //  generated from bin/curate/helmholtz/CH4/SetzmannWagner1991.txt; one
+    //  saturation state (150 K, Table 39) and one dense gas (10 MPa, 200 K,
+    //  Table 40) -- both among its check values.
+    {
+        name     ch4Sat150;
+        type     referenceEoS;
+        equation SetzmannWagner1991;
+        saturation { T 150 K; }
+        output   { file SetzmannWagner1991_sat150.csv; }
+    }
+    {
+        name     ch4Dense200;
+        type     referenceEoS;
+        equation SetzmannWagner1991;
+        state    { T 200 K; p 10 MPa; }
+        output   { file SetzmannWagner1991_dense200.csv; }
     }
 );

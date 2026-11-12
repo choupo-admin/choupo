@@ -1,0 +1,114 @@
+# SetzmannWagner1991 -- methane, the reference equation of state of
+#   U. Setzmann and W. Wagner, "A New Equation of State and Tables of
+#   Thermodynamic Properties for Methane Covering the Range from the Melting
+#   Line to 625 K at Pressures up to 1000 MPa", J. Phys. Chem. Ref. Data
+#   20(6) (1991) 1061-1155, doi 10.1063/1.555898.
+# Source read: https://srd.nist.gov/jpcrdreprint/1.555898.pdf (the NIST JPCRD
+#   reprint: a SCANNED image with an OCR text layer), read on 2026-11-12.
+# HOW THIS FILE WAS MADE: two readings of every table -- the OCR text layer
+#   (pdftotext -layout, its visible glitches noted) and the page images
+#   (rendered at 200-400 dpi and read) -- diffed before a digit was accepted.
+#   They disagreed ONCE: Table 39, 180 K, the liquid speed of sound, OCR
+#   "491.01", the page image "497.01" (italic print; read at 400 dpi; the
+#   neighbouring rows 531.94 and 459.94 bracket 497).  497.01 is taken.  The
+#   images are not committed.  The record
+#   data/standards/parameters/Helmholtz/SetzmannWagner1991.dat is GENERATED
+#   from this file by bin/curate/helmholtz/gen_record.py -- never edit it by hand.
+
+[identity]
+equation SetzmannWagner1991
+fluid methane
+citation U. Setzmann and W. Wagner, A New Equation of State and Tables of Thermodynamic Properties for Methane Covering the Range from the Melting Line to 625 K at Pressures up to 1000 MPa, J. Phys. Chem. Ref. Data 20 (1991) 1061-1155
+url https://srd.nist.gov/jpcrdreprint/1.555898.pdf
+read 2026-11-12
+
+[constants] page=1092 table=35-footer
+Tc 190.564 K
+rhoc 162.66 kg/m3
+R 0.5182705 kJ/kg/K
+
+[triplePoint] page=1091 (Sec. 5: the fitted range starts at 90.6941 K, the triple point)
+T 90.6941 K
+
+[validity] page=1091 (Sec. 5) and page=1061 (title and abstract)
+Tmin 90.6941 K
+Tmax 625 K
+pMax 1000 MPa
+extrapolation Setzmann and Wagner 1991, abstract (p. 1061): the new equation of state is extrapolable up to pressures of 20000 MPa; the data it was fitted to cover 90.6941 K to 625 K and 0.011696 MPa to 1000 MPa or the melting pressure (Sec. 5, p. 1091)
+uncertainty Setzmann and Wagner 1991, abstract (p. 1061): density +-0.03 % below 12 MPa and 350 K, +-0.03 % to +-0.15 % at higher pressures and temperatures; speed of sound +-0.03 % to +-0.3 %; heat capacities generally within +-1 %
+
+[ideal] page=1091 table=33 (Eq. 5.2; theta_i are the reduced Theta_i/Tc as printed)
+lead0 9.91243972
+lead1 -6.33270087
+logTau 3.0016
+planckEinstein 0.008449 3.40043240
+planckEinstein 4.6942 10.26951575
+planckEinstein 3.4865 20.43932747
+planckEinstein 1.6572 29.93744884
+planckEinstein 1.4115 79.13351945
+
+[residual-power] page=1092 table=35 (i = 1-13)
+# i n d t
+1 0.4367901028e-1 1 -0.5
+2 0.6709236199e0 1 0.5
+3 -0.1765577859e1 1 1.0
+4 0.8582330241e0 2 0.5
+5 -0.1206513052e1 2 1.0
+6 0.5120467220e0 2 1.5
+7 -0.4000010791e-3 2 4.5
+8 -0.1247842423e-1 3 0.0
+9 0.3100269701e-1 4 1.0
+10 0.1754748522e-2 4 3.0
+11 -0.3171921605e-5 8 1.0
+12 -0.2240346840e-5 9 3.0
+13 0.2947056156e-6 10 3.0
+
+[residual-exponential] page=1092 table=35 (i = 14-36)
+# i n d t c
+14 0.1830487909e0 1 0.0 1
+15 0.1511883679e0 1 1.0 1
+16 -0.4289363877e0 1 2.0 1
+17 0.6894002446e-1 2 0.0 1
+18 -0.1408313996e-1 4 0.0 1
+19 -0.3063054830e-1 5 2.0 1
+20 -0.2969906708e-1 6 2.0 1
+21 -0.1932040831e-1 1 5.0 2
+22 -0.1105739959e0 2 5.0 2
+23 0.9952548995e-1 3 5.0 2
+24 0.8548437825e-2 4 2.0 2
+25 -0.6150555662e-1 4 4.0 2
+26 -0.4291792423e-1 3 12.0 3
+27 -0.1813207290e-1 5 8.0 3
+28 0.3445904760e-1 5 10.0 3
+29 -0.2385919450e-2 8 10.0 3
+30 -0.1159094939e-1 2 10.0 4
+31 0.6641693602e-1 3 14.0 4
+32 -0.2371549590e-1 4 12.0 4
+33 -0.3961624905e-1 4 18.0 4
+34 -0.1387292044e-1 4 22.0 4
+35 0.3389489599e-1 5 18.0 4
+36 -0.2927378753e-2 6 14.0 4
+
+[residual-gaussian] page=1092 table=35 (i = 37-40; Delta_i = epsilon)
+# i n d t alpha beta gamma epsilon
+37 0.9324799946e-4 2 2.0 20 200 1.07 1
+38 -0.6287171518e1 0 0.0 40 250 1.11 1
+39 0.1271069467e2 0 1.0 40 250 1.11 1
+40 -0.6423953466e1 0 2.0 40 250 1.11 1
+
+[saturation] page=1117-1119 table=39
+# liquid then vapour, as the table prints them on two lines
+columns T psat rhoL rhoV hL hV sL sV cvL cvV cpL cpV wL wV
+units K MPa kg/m3 kg/m3 kJ/kg kJ/kg kJ/kg/K kJ/kg/K kJ/kg/K kJ/kg/K kJ/kg/K kJ/kg/K m/s m/s
+100 0.034376 438.89 0.67457 -951.21 -420.73 -7.0562 -1.7514 2.1136 1.5887 3.4084 2.1458 1452.0 260.09 page=1117
+150 1.0400 357.90 16.328 -768.30 -355.71 -5.6007 -2.8502 1.9186 1.7727 4.0474 2.9083 920.85 285.97 page=1118
+180 3.2852 276.23 61.375 -625.00 -378.11 -4.7778 -3.4062 1.9669 2.1404 7.2923 7.5740 497.01 266.04 page=1119
+
+[singlePhase] table=40
+columns p T rho u h s cv cp w
+units MPa K kg/m3 kJ/kg kJ/kg kJ/kg/K kJ/kg/K kJ/kg/K m/s
+0.101325 105 431.95 -934.23 -934.00 -6.8897 2.0883 3.4363 1404.3 page=1125
+0.101325 300 0.65281 -152.07 3.1433 0.01141 1.7129 2.2359 449.74 page=1125
+0.101325 400 0.48900 33.448 240.66 0.69264 2.0134 2.5340 510.56 page=1125
+10.000 200 266.19 -589.61 -552.04 -4.5238 1.8780 5.3036 567.92 page=1148
+10.000 400 49.736 -13.262 187.80 -1.7996 2.0509 2.8187 522.58 page=1148

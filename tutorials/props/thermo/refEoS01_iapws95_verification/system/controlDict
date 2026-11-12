@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
-description   "IAPWS-95 (R6-95(2018)) from the reference-equation kernel: every check value of the release reproduced at the printed precision at load, states on (T, p) and (T, rho), saturation by the Maxwell criterion.";
+description   "Reference (multiparameter Helmholtz) equations of state through one kernel: water IAPWS-95 (R6-95(2018)), carbon dioxide (Span and Wagner 1996), nitrogen (Span et al. 2000) and methane (Setzmann and Wagner 1991) -- every check value of each publication reproduced at the printed precision at load; states on (T, p) and (T, rho), saturation by the Maxwell criterion.";
 verbosity     3;
