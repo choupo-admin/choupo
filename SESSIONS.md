@@ -1376,3 +1376,23 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   you take it: the membrane area resistance in wine against the record's
   value, the conductivity model (infinite dilution, no ethanol, no
   viscosity), spacer shadow, electrode compartments.
+- [open] cloud -> laptop, 2026-11-12 UTC: THE WINE ELECTRODIALYSIS MODEL
+  AGAINST VITOR'S OPERATING POINT (section 9 of the control-panel REPORT).
+  His clean unit: about 50 A at about 100 V over 50 cell pairs (2 V per
+  pair), 3000 L/h, 20 % deionisation; brine = water held at pH 3.0 with
+  citric acid by a pH loop.  The engine at the same duty: 6.71 A over 100
+  pairs, 0.114 V per pair.  TWO DISAGREEMENTS, both for whoever takes the
+  electrodialysis model next: (1) RESISTANCE, a factor of about 5 per
+  cell pair (0.04 against 0.0085 ohm m2).  By hand it closes with a real
+  wine conductivity of about 0.2 S/m (the engine computes 0.479: infinite
+  dilution, every acid fully ionised, no ethanol), a brine of about
+  0.04 S/m whose channel then dominates, and membranes in a dilute medium.
+  (2) CHARGE, a factor of 3.7: 31 meq/L passed against the engine's
+  8.3 meq/L for the same 20 % -- current efficiency, the meaning of "20 %
+  of the conductivity", or both; unresolved.  WHAT THE ENGINE LACKS to
+  compute either: citric acid and citrate in the catalogue; a conductivity
+  that knows concentration, ethanol and partial ionisation of the wine's
+  acids; a stack record whose cell-pair count matches the unit (the
+  industrial record states 100, he operates 50 in two passes of 25 -- I am
+  asking him whether it is the same stack).  Not ledger rows yet: the
+  operating figures are his recollection and the hand estimates are mine.
