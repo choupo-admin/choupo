@@ -46,8 +46,8 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
+| c321b-henry-organic (general running) | NEW tool `bin/curate/henry_organic.py`, NEW files only in `data/standards/parameters/Henry/` and `data/curation/henry/` (no existing Henry record edited) | 2026-11-12 |
 | c290-pairs-queue (worktree pairs-batch) | `src/thermo/FitGrade.H`, `bin/curate/pairs_c283.py`, `bin/choupo-curate` (pair paths), `bin/curate/check_regressed_pairs.py`, `tutorials/props/curation/curate100*`..`curate162*`, `data/standards/parameters/NRTL/` | 2026-11-10 |
-| wip/c295-curation-root (pushed WIP, nobody editing) | the whole C295 move and the held C290 pairs -- the laptop session CONTINUES it; the cloud container is on STANDBY | 2026-11-10 |
 
 The NIST ThermoML cache (4.2 GB, gitignored) lives only in the cloud container,
 in the worktree `.claude/worktrees/review-newcomer/thirdParty/thermoml`.
@@ -461,3 +461,8 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   5. STATE OF THE CLOUD: no general running, no background process, all four
      cloud worktrees clean; branch `wip/c295-curation-root` is the ONLY
      unmerged work and it is pushed.  The container may be reclaimed.
+- [open] cloud -> laptop, 2026-11-12 UTC: the cloud takes the FREE item
+  "Henry pairs in organic solvents from ThermoML" (C321 part 2; DEV.md 4c
+  C318-C331 read).  New tool, new files only, row above.  The NIST archive
+  is local to the cloud.  One general, branch c321b-henry-organic; validated
+  before any push; pull --rebase before pushing; nothing else touched.
