@@ -8,7 +8,8 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   trayEfficiency07_syedaChuang_yanagi08  --  the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS
-  GEOMETRY, held against a commercial-scale measurement it was not fitted to
+  GEOMETRY, compared with a commercial-scale measurement that is IN-SAMPLE for this
+  model (its one constant C'' was fitted to these FRI trays; nothing was fitted HERE)
   (DEV.md 4c C329).  Cyclohexane / n-heptane at 34 kPa, total reflux.
 
   THE TRAY: FRI's 8 % hole-area sieve tray, the one the paper compares against
