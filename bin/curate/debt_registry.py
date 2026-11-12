@@ -150,47 +150,32 @@ SOURCE_LICENCE = {
 #  sealed MIRRORS of these records under tutorials/ (31 files) are outside
 #  `check_source_licence`'s scan and still carry the old values; refreshing
 #  them is a re-import and moves goldens (Vitor's list).
+#  DISCHARGED FURTHER 2026-11-12 (DEV.md 4c C335).  Thirteen of the twenty
+#  were re-sourced from the same report, this time INCLUDING the ones that
+#  disagree: C2O, C3H3, C4H2, C6H5, CH3CO, ClO, HOCl, HONO (the report's HNO2),
+#  N2H2, NO3, SH, NH2, O3.  Two disagreements were the RECORD's fault (C3H3 and
+#  N2H2 held another isomer's value under their own name); C2O's is the
+#  report's (a JANAF-era dHf about 88 kJ/mol below modern determinations) and
+#  is kept, marked interim with that reason.  No shipped case reads any of the
+#  twenty, so no golden moved.  ATcT was NOT used: neither its site nor its
+#  OSTI dataset records (DOI 10.17038/CSE/3703591) state any licence, and the
+#  authors are contractor staff, so 17 U.S.C. 105 does not apply -- silence is
+#  not a grant (CLAUDE.md 6, the sigma-profile rule).  The seven left:
 NC_COMPILATION = {
-    "data/standards/components/C2O.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/C3H3.dat":
-        "the card was read out of BURCAT.THR itself.",
     "data/standards/components/C3H5.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/C4H2.dat":
-        "the card was read out of BURCAT.THR itself.",
+        "the report has an allyl entry (`C3H5,allyl`), but its OWN source line for it is 'Burcat,2001 p58' -- the NonCommercial compiler's earlier report; taking the value through NASA would launder it (C335, 2026-11-12).  Remedy: a primary for allyl outside that compilation, or Vitor's ruling on whether a public-domain republication frees it.",
     "data/standards/components/C4H4.dat":
-        "the card was read out of BURCAT.THR itself.",
+        "the record is VINYLACETYLENE; the report's only C4H4 entry is 1,3-cyclobutadiene, a different molecule (C335, 2026-11-12).  Remedy: a clean primary for vinylacetylene, or removal (no shipped case reads this record).",
     "data/standards/components/C5H5.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/C6H5.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/CH3CO.dat":
-        "the card was read out of BURCAT.THR itself.",
+        "the report has no C5H5 entry (C335, 2026-11-12).  Remedy: a clean primary for cyclopentadienyl, or removal (no shipped case reads this record).",
     "data/standards/components/CH3O2.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/ClO.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/HOCl.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/HONO.dat":
-        "the card was read out of BURCAT.THR itself.",
+        "the report has no CH3O2 (methylperoxy) entry, only CH3OOH (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
     "data/standards/components/HSO.dat":
-        "the card was read out of BURCAT.THR itself.",
+        "the report has no HSO entry (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
     "data/standards/components/HSO3.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/N2H2.dat":
-        "the card was read out of BURCAT.THR itself.",
+        "the report has no HSO3 entry (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
     "data/standards/components/N2H3.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/NO3.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/SH.dat":
-        "the card was read out of BURCAT.THR itself.",
-    "data/standards/components/NH2.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
-    "data/standards/components/O3.dat":
-        "cites 'Burcat 2005 / JANAF' -- the publication, not the file; whether that is a citable paper or the database under another name is the ruling reserved above.",
+        "the report has no N2H3 entry (C335, 2026-11-12).  Remedy: a clean primary, or removal (no shipped case reads this record).",
 }
 
 #  NO_GRANT_CASE_LOCAL -- case-local records naming a no-grant compilation
