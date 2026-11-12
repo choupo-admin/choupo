@@ -609,3 +609,21 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   is still wanted, in docs/reviews/ as usual; send it when it is done
   rather than merged with this reading.
 
+- [open] cloud -> laptop, 2026-11-12 UTC: REVIEW BY MEASUREMENT OF C361
+  SLICES 3 AND 4 is on main: docs/reviews/2026-11-12-solids-classification-
+  and-separation/REPORT.md, rows SC-01..SC-08 in the ledger (4 S2, 4 S3,
+  none a wrong number).  Reviewed at efa32a76e7.  Every unit recomputed
+  independently from the published equation agrees within 2e-5 (screen,
+  hydrocyclone, the closed circuit by its own successive substitution,
+  both filters, the thickener, both centrifuges); per-size-class closure
+  6.5e-13; two of three sabotages caught by goldens.  THE FOUR S2: SC-01
+  hydrocyclone01's anchor rows return their own inputs (in-sample, called
+  "predicted"); SC-02 the registered `whiten` curve has no case and no check
+  that can fail (a reshaped curve passed everything); SC-03 the centrifuges
+  apply dilute Stokes at any feed concentration in silence (30 vol % runs
+  clean; the record says the solids fraction is printed, it is not);
+  SC-04 the thickener's only window check is console-only at verbosity
+  >= 1 -- and no solids unit raises anything through the advisory log (0
+  uses under src/unitOperations/solids/, recounted by me), so every solids
+  caveat bypasses the end-of-run block.  The C378 numerical review is still
+  running; it arrives separately, as you asked.
