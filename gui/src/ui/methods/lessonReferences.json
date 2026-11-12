@@ -2488,6 +2488,79 @@
           }
         }
       ]
+    },
+    "adsorption-isotherms": {
+      "references": [
+        {
+          "text": "Langmuir, I. (1918). The adsorption of gases on plane surfaces of glass, mica and platinum. Journal of the American Chemical Society 40(9), 1361–1403.",
+          "doi": "10.1021/ja02242a004",
+          "note": "The site balance behind the Langmuir isotherm of step 2.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja02242a004: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Freundlich, H. (1907). Über die Adsorption in Lösungen. Zeitschrift für Physikalische Chemie 57U(1), 385–470.",
+          "doi": "10.1515/zpch-1907-5723",
+          "note": "The power-law isotherm of step 2, proposed for adsorption from solution.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1515/zpch-1907-5723: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Kinniburgh, D. G. (1986). General purpose adsorption isotherms. Environmental Science & Technology 20(9), 895–904.",
+          "doi": "10.1021/es00151a008",
+          "note": "Fitting isotherms by nonlinear least squares, and what the linearised forms do to the errors.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/es00151a008: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Bolster, C. H.; Hornberger, G. M. (2007). On the Use of Linearized Langmuir Equations. Soil Science Society of America Journal 71(6), 1796–1806.",
+          "doi": "10.2136/sssaj2006.0304",
+          "note": "How each linearised Langmuir form weights the points, against the direct fit (step 3).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.2136/sssaj2006.0304: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Foo, K. Y.; Hameed, B. H. (2010). Insights into the modeling of adsorption isotherm systems. Chemical Engineering Journal 156(1), 2–10.",
+          "doi": "10.1016/j.cej.2009.09.013",
+          "note": "A review of the isotherm models met in liquid-phase work and of the error functions used to choose between them.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.cej.2009.09.013: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Marquardt, D. W. (1963). An algorithm for least-squares estimation of nonlinear parameters. Journal of the Society for Industrial and Applied Mathematics 11(2), 431–441.",
+          "doi": "10.1137/0111030",
+          "note": "The damped step of step 3, with Marquardt's diagonal scaling.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/0111030: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "The adsorption monograph: isotherms, their assumptions, and the batch and column balances.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471866067: author Douglas M. Ruthven, title, Wiley, 1984 (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
     }
   }
 }

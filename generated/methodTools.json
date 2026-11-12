@@ -251,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 81,
-  "registryTools": 81,
+  "liveTools": 82,
+  "registryTools": 82,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -805,6 +805,18 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=drying"
+    },
+    {
+      "id": "adsorption-isotherms",
+      "label": "Adsorption isotherms from laboratory data",
+      "blurb": "Fit linear, Langmuir and Freundlich isotherms to your own equilibrium points.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "Which isotherm describes a set of measured (c, q) points and how far to trust it: the linear, Langmuir and Freundlich models and what each assumes; the classical straight-line fits (1/q against 1/c, log q against log c) beside a direct least-squares fit on q, and why they give different parameters; residuals, RMS and maximum relative error, the standard errors from s²(JᵀWJ)⁻¹, and whether the measured range can tell the models apart; then the single-stage batch balance as an operating line on the fitted isotherm -- on synthetic examples with stated generating parameters, or on points you paste.",
+      "origins": [
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=adsorption-isotherms"
     },
     {
       "id": "breakthrough",

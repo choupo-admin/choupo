@@ -22065,6 +22065,51 @@ blowdown with its first law closed (\file{batch25}). \\
 equilibrium shortcut in a steady flowsheet.
 \end{tutoriallink}
 
+\subsection{Liquid-phase isotherms fitted to laboratory points}\label{sec:adsorption-isotherm-fitting}
+
+Everything above is written for a gas, in partial pressure, because that is
+what the engine's isotherm records carry.  A laboratory course meets the
+other half first: flasks of solution shaken with a weighed dose of adsorbent,
+one equilibrium point $(c, q)$ per flask, with $q = V(c_0 - c)/M$ read from
+what the liquid lost.  Three single-solute models are fitted to such points:
+\begin{equation}
+q = K c, \qquad
+q = \frac{q_{\max}\, c}{K_L + c}, \qquad
+q = K_F\, c^{1/n} .
+\label{eq:ads-liquid-isotherms}
+\end{equation}
+The first is the Henry limit \eqref{eq:ads-henry} in concentration.  The
+second is the Langmuir site balance of Eq.~\eqref{eq:langmuir} with the
+affinity written as a half-saturation concentration, $K_L = 1/b$; at
+$c \ll K_L$ it tends to the first with $K = q_{\max}/K_L$, so data confined to
+that region fix the ratio and not the two parameters.  The third is
+Freundlich's power law\cite{Freundlich1907}, which has neither a Henry limit
+(its slope diverges as $c\to 0$ for $1/n<1$) nor a plateau.
+
+The classical fits are straight lines in transformed variables:
+$1/q = 1/q_{\max} + (K_L/q_{\max})(1/c)$ and
+$\log q = \log K_F + (1/n)\log c$.  They minimise the scatter of the
+TRANSFORMED variable, so the double-reciprocal form gives the smallest
+loadings the largest leverage, and the parameters differ from a direct fit
+that minimises $S(\beta)=\sum_i w_i^2[q^*(c_i;\beta)-q_i]^2$ on what was
+measured\cite{Kinniburgh1986,BolsterHornberger2007}.  The direct fit is
+nonlinear in $\beta$ and is solved by damped Gauss--Newton
+(Levenberg--Marquardt\cite{Marquardt63}); near its minimum the parameter
+covariance is approximately $s^2(J^{\mathsf T}WJ)^{-1}$ with
+$s^2 = S(\hat\beta)/(N-p)$, which assumes independent errors of equal size
+after weighting and a model close to linear in $\beta$ over the
+uncertainty.  The single-stage batch balance $V c_0 + M q_0 = V c + M q$ is
+then an operating line of slope $-V/M$ on the isotherm, and the dose for a
+target $c$ is $M = V(c_0-c)/(q^*(c)-q_0)$.
+
+None of this is the engine's arithmetic today: the engine has no
+liquid-phase isotherm record and no Freundlich model, and its isotherm
+regression (\code{fitParameters} with \code{residual.kind isotherm}) reads
+partial pressures.  The EduTool \code{adsorption-isotherms} carries these
+fits on the page and says so; the design record
+\file{docs/design/adsorption-isotherms-from-laboratory-data.md} proposes the
+engine side.
+
 % ---------------------------------------------------------------------
 \section{Rotating equipment: compressors, turbines, pumps}\label{ch:rotating}
 
@@ -27073,6 +27118,21 @@ boiling dispatch refuses to design above.
 \bibitem{Langmuir1918} Langmuir, I., ``The adsorption of gases on plane
 surfaces of glass, mica and platinum'', \emph{J.\ Am.\ Chem.\ Soc.} \textbf{40}
 (1918) 1361.  The isotherm Eq.~\eqref{eq:langmuir} rests on.
+
+\bibitem{Freundlich1907} Freundlich, H., ``\"Uber die Adsorption in
+L\"osungen'', \emph{Z.\ Phys.\ Chem.} \textbf{57U} (1907) 385--470,
+doi:10.1515/zpch-1907-5723.  The power-law isotherm of
+Eq.~\eqref{eq:ads-liquid-isotherms}.
+
+\bibitem{Kinniburgh1986} Kinniburgh, D.G., ``General purpose adsorption
+isotherms'', \emph{Environ.\ Sci.\ Technol.} \textbf{20} (1986) 895--904,
+doi:10.1021/es00151a008.  Nonlinear least squares for isotherms, and what
+the linearised forms do to the errors.
+
+\bibitem{BolsterHornberger2007} Bolster, C.H., Hornberger, G.M., ``On the use
+of linearized Langmuir equations'', \emph{Soil Sci.\ Soc.\ Am.\ J.} \textbf{71}
+(2007) 1796--1806, doi:10.2136/sssaj2006.0304.  How each linearised form
+weights the points.
 
 \bibitem{Hinshelwood1940} Hinshelwood, C.N., \emph{The Kinetics of Chemical
 Change}, Oxford University Press, 1940.  Surface reaction between adsorbed
