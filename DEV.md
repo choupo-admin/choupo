@@ -3446,6 +3446,18 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C382 (Vitor, 2026-11-12, night, asked whether water and other
+> prevalent fluids have a special place; told the open point, he answered
+> "faz como achares melhor").**  DECIDED BY THE ARCHITECT: a fluid is
+> special by its DATA, never by its name -- one that carries a reference
+> equation gets the reference method, above the generic correlations.
+> Whether that method becomes the DEFAULT for water (today the case must
+> select it, and without it the liquid density is 3.5 % low at 100 C) is
+> decided after the C378 pilot, on the list of cases and rows it moves;
+> the architect's intention is yes, as its own listed change.  The same
+> change covers the liquids that have a reference equation and are refused
+> or misread today (review row TR-12).
+
 > **C381 (Vitor, 2026-11-12, night: "nao te esquecas de fazer as
 > instrucoes para agentes de AI para lhes explicares como a arquitetura de
 > propriedades termofisicas esta organizada").**  TWO AUDIENCES, both owed
