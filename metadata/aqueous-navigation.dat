@@ -50,11 +50,15 @@ speciesNavigation
     SO4   { familyRoots ( sulfate );    }
     HSO4  { familyRoots ( sulfate );    }
     HS    { familyRoots ( sulfide );    }
+    Sulfite   { familyRoots ( sulfite ); }
+    Bisulfite { familyRoots ( sulfite ); }
 
     // --- phosphate --------------------------------------------------------
     PO4   { familyRoots ( phosphate );  }
     HPO4  { familyRoots ( phosphate );  }
     H2PO4 { familyRoots ( phosphate );  }
+    H2AsO4 { familyRoots ( arsenate ); }
+    HAsO4  { familyRoots ( arsenate ); }
 
     // --- silicate / borate ------------------------------------------------
     H4SiO4   { familyRoots ( silicate ); }
@@ -70,12 +74,20 @@ speciesNavigation
     F     { familyRoots ( fluoride );   }
     Br    { familyRoots ( bromide );    }
     I     { familyRoots ( iodide );     }
+    // oxyanions follow their central element, as NO3 follows nitrogen
+    ClO3  { familyRoots ( chloride );   }
+    ClO4  { familyRoots ( chloride );   }
+    BrO3  { familyRoots ( bromide );    }
+    IO3   { familyRoots ( iodide );     }
+    SCN   { familyRoots ( thiocyanate ); }
 
     // --- nitrogen ---------------------------------------------------------
     NH4   { familyRoots ( ammonia );    }
     Acetate { familyRoots ( acetate );  }
+    Formate { familyRoots ( formate );  }
     NO3   { familyRoots ( nitrogen );   }
     NO2   { familyRoots ( nitrogen );   }
+    HNO2  { familyRoots ( nitrogen );   }
 
     // --- alkali / alkaline earth ------------------------------------------
     Na    { familyRoots ( sodium );     }
@@ -94,6 +106,16 @@ speciesNavigation
     FeIII  { familyRoots ( iron );       }
     MnII    { familyRoots ( manganese );  }
     MnIII  { familyRoots ( manganese );  }
+    MnO4   { familyRoots ( manganese );  }
+    CrO4   { familyRoots ( chromium );   }
+    Cr2O7  { familyRoots ( chromium );   }
+    MoO4   { familyRoots ( molybdenum ); }
+    CoII   { familyRoots ( cobalt );     }
+    NiII   { familyRoots ( nickel );     }
+    Ag     { familyRoots ( silver );     }
+    HgII   { familyRoots ( mercury );    }
+    SnII   { familyRoots ( tin );        }
+    TlI    { familyRoots ( thallium );   }
     CuII    { familyRoots ( copper );     }
     CuI   { familyRoots ( copper );     }
     Zn    { familyRoots ( zinc );       }
