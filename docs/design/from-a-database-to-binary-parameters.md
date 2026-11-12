@@ -183,3 +183,7 @@ The y column (`_vapour_series`), multi-file fits (all laboratories of a pair),
 the one-liquid check in the browser, an overlay of the catalogue record's
 curve on the student's points (C289 will draw it with this reader), and the
 WASM run.
+
+## Review is not validation
+
+Review is not validation (DEV.md 4c C296/C297, cited here because the dated register moves every day and a line number into it does not hold): a record says WHO reviewed it; what a reviewer cannot change stays in the record as fitted.

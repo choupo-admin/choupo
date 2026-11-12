@@ -223,7 +223,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "does not prove the pair predicts another laboratory, another "
       + "pressure or a third component.  A review, by a person or a model, is "
       + "not a validation.",
-    note: "DEV.md:3767 (review is not validation).  The counts below were "
+    note: "docs/design/from-a-database-to-binary-parameters.md:189 (review is not validation).  The counts below were "
       + "measured on the catalogue at one commit.",
   },
 ];
@@ -267,7 +267,7 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "bin/curate/pairs_c283.py", line: 162, contains: "NOT_PROMOTED_GRADES" },
   { file: "docs/design/binary-pairs-from-open-measurements.md", line: 1335, contains: "Rule 3 (severe records out" },
   { file: "bin/curate/check_regressed_pairs.py", line: 36, contains: "ONE LIQUID WHERE THE EVIDENCE SAYS ONE" },
-  { file: "DEV.md", line: 3767, contains: "Review is not validation" },
+  { file: "docs/design/from-a-database-to-binary-parameters.md", line: 189, contains: "Review is not validation" },
   { file: "src/propertyOps/FitParameters.cpp", line: 406, contains: "\"P_bubble\"" },
   { file: "src/propertyOps/LleResidual.H", line: 101, contains: "T_bubble+LLE" },
   { file: "data/standards/parameters/NRTL/nButanol-water.dat", line: 26, contains: "tie lines" },
