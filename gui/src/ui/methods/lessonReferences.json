@@ -2879,6 +2879,60 @@
           }
         }
       ]
+    },
+    "operator-panels": {
+      "references": [
+        {
+          "text": "O'Hara, J. M.; Fleger, S.; Hughes Green, N.; Morrow, S. (2026). Human-System Interface Design Review Guidelines. NUREG-0700, Revision 4. U.S. Nuclear Regulatory Commission, Office of Nuclear Regulatory Research.",
+          "url": "https://www.nrc.gov/reading-rm/doc-collections/nuregs/staff/sr0700/r4/index.html",
+          "note": "An open (US-government) set of review guidelines whose sections include information displays and alarm systems.  Listed as further reading: no rule, number or figure on this page is taken from it, and its content was not read for this page.",
+          "verified": {
+            "method": "official",
+            "evidence": "nrc.gov NUREG-0700 collection page and the Revision 4 page fetched 2026-11-12: title, number, Revision 4, publication date January 2026, the four authors and the abstract's list of fifteen sections (1 information displays, 4 alarm systems) read; the report body was not read",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "ISA (2016). ISA-18.2-2016, Management of Alarm Systems for the Process Industries. International Society of Automation.",
+          "url": "https://www.isa.org/standards-and-publications/isa-standards/isa-18-series-of-standards",
+          "note": "A paid standard on alarm management, listed as further reading only.  The standard was not read; no table, threshold or figure from it is on this page.",
+          "verified": {
+            "method": "official",
+            "evidence": "isa.org ISA-18 series page fetched 2026-11-12: number and title read as listed; the standard itself was not read",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "IEC (2022). IEC 62682:2022, Management of alarm systems for the process industries, Edition 2.0. International Electrotechnical Commission.",
+          "url": "https://webstore.iec.ch/publication/65543",
+          "note": "The international counterpart of the alarm-management standard, listed as further reading only; not read, nothing taken from it.",
+          "verified": {
+            "method": "official",
+            "evidence": "IEC webstore publication page fetched 2026-11-12: number, edition 2.0, publication date 2022-12-08 and title read; the standard itself was not read",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "ISA (2015). ISA-101.01-2015, Human Machine Interfaces for Process Automation Systems. International Society of Automation.",
+          "url": "https://www.isa.org/standards-and-publications/isa-standards/isa-101-standards",
+          "note": "A paid standard on operator displays, listed as further reading only; not read, nothing taken from it.",
+          "verified": {
+            "method": "official",
+            "evidence": "isa.org ISA-101 standards page fetched 2026-11-12: number and title read as listed; the standard itself was not read",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Gall, J. (1977). Systemantics. New York: Quadrangle/The New York Times Book Co.",
+          "url": "https://openlibrary.org/works/OL5286182W",
+          "note": "The source of the rule that a complex system that works grew from a simple system that worked (step 6).  The page paraphrases it; the wording was not checked against the book.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library search and work record OL5286182W fetched 2026-11-12: title Systemantics, author John Gall, publishers Quadrangle/New York Times Book Co. and General Systemantics Press, publish years 1977 and 1986; the book was not read",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }

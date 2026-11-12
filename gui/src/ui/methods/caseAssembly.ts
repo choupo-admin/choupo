@@ -185,7 +185,7 @@ export const CITES = {
     contains: 'entry.readme = files["README.md"]' },
   guiNoExpected: { file: "gui/src/cases/tutorials.ts", line: 124,
     contains: '"!../../../tutorials/**/expected"' },
-  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 408,
+  guiVerbatim: { file: "gui/src/adapters/WasmAdapter.ts", line: 410,
     contains: "if (caseFiles.extraFiles) {" },
 } as const satisfies { [name: string]: Cite };
 

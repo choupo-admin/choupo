@@ -80,7 +80,8 @@ export type MethodToolId =
   | "sines-pta" | "ip-strategy" | "tree-of-chemistry" | "patent-expiry"
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
-  | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography";
+  | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
+  | "operator-panels";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -1538,6 +1539,32 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "phase margins.  The page states which half Choupo computes and which "
       + "half it does not.",
     theory: "ch:pid",
+  },
+  //  OPERATOR PANELS AND ALARMS (DEV.md 4c C371, slice S5: the lesson on
+  //  good practice; scope approved by the project owner).  The ENGINE runs
+  //  the batch electrodialysis rig (choupoBatch, the shipped
+  //  edbatch01_constant_current with at most one declared value changed) and
+  //  reports FACTS about the panelDict the page writes; the page draws the
+  //  worked panel and four display forms as lesson-local illustrations and
+  //  counts alarm onsets over the engine's intervals against an assumption
+  //  it labels.  Not the panel workspace (slices S2-S4, not built).  Record:
+  //  docs/design/operator-panels-good-practice.md.
+  {
+    id: "operator-panels", blurb: "Choose what an operator sees, in what form, and which alarms.",
+    label: "Operator panels and alarms",
+    discipline: "Hydraulics & control", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    theory: "sec:operatorPanels",
+    teaches: "How to design what an operator sees from a process that "
+      + "publishes dozens of variables: start from the operator's questions "
+      + "(is it normal, where is it heading, what do I do) and give each the "
+      + "least information that answers it; show a value against its range "
+      + "and limits, as a trend when the direction matters, with colour kept "
+      + "for the abnormal and always doubled by a word or a shape; arrange "
+      + "overview, unit and detail; give every alarm an action, one cause one "
+      + "alarm, and watch the flood; and let a panel grow from the simplest "
+      + "one that works -- on a batch electrodialysis rig the engine runs, "
+      + "with the facts the engine reports about each panel.",
   },
   {
     //  DATA RECONCILIATION, AND HOW BAYES HELPS (2026-10-20, DEV.md 4c C121,
