@@ -175,6 +175,7 @@ PRE  | PAR    | bin/curate/check_rodas4_order.py                   | writes only
 PRE  | SERIAL | bin/curate/check_held_out_pressure.py              | writes generated/probes/heldOutPressure (+117 more)
 PRE  | SERIAL | bin/curate/check_promoted_pair_record.py           | writes curation/ethanol.dossier (+12 more)
 PRE  | SERIAL | bin/curate/check_regressed_pairs.py                | writes 1Propanol-water.proposal.dat (+66 more)
+PRE  | PAR    | bin/curate/check_transport_records.py              | traced: reads the tree and the ThermoML cache, writes nothing, no make, no node, no pool
 PRE  | SERIAL | bin/curate/check_lle_residual.py                   | new gate, not yet traced for its writes (copies the witness into a /tmp directory; treated as SERIAL until traced)
 PRE  | PAR    | bin/curate/check_evidence_records.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_solubility_parameter.py           | writes generated/probes/solubility (+72 more)

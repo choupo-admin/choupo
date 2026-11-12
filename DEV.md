@@ -3417,6 +3417,79 @@ accepts today, and that is a policy call.
 > (check by grep) are listed, not silently left.  Status: recorded, general to
 > be dispatched (gui only; `--gui` is its validation).  Owner: architect.
 
+> **C340 (was written as C338 by the cloud; renumbered, the laptop's C338 is the guides rule) (Vitor, 2026-11-12, in the cloud session, after asking what the
+> simulator lacks for biotechnology and biorefineries: "Poe os pontos 1 a 4
+> na agenda e da-me os DOIs dos artigos").  BIOPROCESSES, THE FIRST FOUR.**
+> Measured today: the tree has the reactors (cstr, batch, fed-batch on
+> choupoSemiContinuous, dynamicCSTR), the written rate law, campaign plans,
+> GMP layout, the downstream separations and glucose / sucrose / glycerol /
+> ethanol / furfural; it has NO cell component, NO oxygen transfer, NO
+> validated fermentation case, NO lignocellulosic component.  On the agenda,
+> each with its sources (every DOI below resolved on Crossref 2026-11-12):
+> (1) THE CELL AS A COMPONENT -- elemental formula, formation enthalpy from
+> the heat of combustion, element and degree-of-reduction balances: Roels
+> 1980 (10.1002/bit.260221202); Cordier et al. 1987 (10.1007/BF00252538);
+> heat from oxygen uptake, Cooney, Wang & Mateles 1969
+> (10.1002/bit.260110302).  (2) OXYGEN TRANSFER -- kLa, OTR against OUR,
+> gassed power: Van't Riet 1979 (10.1021/i260071a001); Garcia-Ochoa & Gomez
+> 2009 (10.1016/j.biotechadv.2008.10.006); Michel & Miller 1962
+> (10.1002/aic.690080226).  (3) A VALIDATED FERMENTATION CASE (C217 step 2)
+> -- Mazzoleni et al. 2015, open access (10.1186/s12934-015-0295-4);
+> Sonnleitner & Kappeli 1986 (10.1002/bit.260280620).  (4) BIOREFINERY
+> COMPONENTS AND A FIRST KINETICS -- cellulose, xylan, lignin, xylose and
+> the acids: NREL/MP-425-20685, Wooley & Putsche 1996 (10.2172/257362; its
+> reuse terms to be READ before a value enters); the reference plant,
+> NREL/TP-5100-47764, Humbird et al. 2011 (10.2172/1013269); enzymatic
+> saccharification kinetics, Kadam, Rydholm & McMillan 2004
+> (10.1021/bp034316x).  The pedagogical scope of (1) and (2) -- what a
+> student is told a cell and an aerated tank are -- goes to Vitor before
+> any engine slice.  Only Mazzoleni and the two NREL reports are freely
+> readable; the others need Vitor's copies.
+
+> **C340 SCOPE APPROVED (Vitor, 2026-11-12, "aprovo", on the scope put to
+> him in the cloud session).**  (1) THE CELL: biomass is a component the
+> CASE declares -- a measured elemental formula with its source, its
+> formation enthalpy DERIVED from the heat of combustion and the derivation
+> shown; growth is a reaction with declared yield coefficients, and the
+> engine checks the carbon, nitrogen and degree-of-reduction balances and
+> REFUSES a stoichiometry that does not close; the heat of fermentation
+> comes from the formation-enthalpy balance, with the oxygen-uptake rule
+> (about 460 kJ per mol O2) printed beside it as a cross-check, never in its
+> place; said on screen as not modelled: internal metabolism, a varying
+> cell composition, maintenance unless declared.  (2) OXYGEN TRANSFER: an
+> aerated fermenter whose liquid is limited by oxygen -- OTR = kLa (C* - C)
+> set beside the cells' uptake rate; kLa from a correlation chosen in the
+> case (Van't Riet: power per volume and superficial gas velocity), its
+> validity window checked and its source cited, or a measured kLa declared;
+> gassed power by Michel & Miller; the result says WHICH limits growth,
+> oxygen or kinetics (the lesson); said on screen as not modelled: gradients
+> in the tank, foam, non-Newtonian broths.
+
+> **C339 (was written as C337 by the cloud; renumbered, the laptop's C337 is the column sheet) (Vitor, 2026-11-12, in the cloud session, after asking what the
+> kinetics lack: "Implementa ou poe na agenda o que achares que e razoavel do
+> ponto de vista de Pareto").  KINETICS, THE PARETO.**  Measured: the rate
+> forms are complete for teaching (Arrhenius power law, LHHW, the written
+> `expression` law with units and tables, a case's own C++ law); what is
+> missing is around them.  ON THE AGENDA, in this order: (1) THE PELLET --
+> the effectiveness factor inside cstr / pfr / batchReactor / dynamicCSTR
+> (today eta = 1, announced; scope in
+> docs/design/edutools-curriculum-survey.md section 6.1: a `kind catalyst`
+> asset record, the Thiele modulus from a declared D_eff, the rate
+> multiplied in ONE home).  WAITS ON VITOR for one ruling: where D_eff lives
+> (the catalyst record, or the case).  (2) A LIBRARY OF PUBLISHED KINETICS
+> AS REFERENCE CASES -- one `rateLawBench` witness per reaction, the law
+> written in the case's `constant/reactions` (axiom 3 keeps a rate law's
+> numbers in the case, so the library is a set of cases a student copies,
+> not a new data home), each held to the primary's own printed rates:
+> methanol synthesis, steam methane reforming, water-gas shift, ethylbenzene
+> dehydrogenation, a liquid esterification, thermal cracking (C228).  Each
+> needs its primary READ: the laptop's literature folder holds them; the
+> cloud takes those whose primary is open access.  (3) LATER, each with its
+> own case first: catalyst deactivation; Michaelis-Menten / Monod examples
+> (C217); Butler-Volmer for the electrolyser (C214 W7); a kinetic-parameter
+> fit from rate data.  NOT planned: package activities or fugacities as
+> formula symbols (C67's decision stands).
+
 > **C336 (Vitor, 2026-11-12, in the cloud session: he proposed stretching
 > "severe" to 29 % and asked whether that is reasonable for a process
 > simulator; the cloud answered "by property kind, not for all", and he
@@ -3476,6 +3549,39 @@ accepts today, and that is a policy call.
 > architect schedules them; the cloud takes Beggs-Brill if the paper is made
 > readable to it.  What Vitor said does NOT worry him: the drawn flowsheet
 > editor, compound count, interoperability.
+
+> **C338 (Vitor, 2026-11-12: "poe isso num sitio bem visivel para ti, porque eu
+> estou a assumir que estas a documentar tudo o que fazes nos guias").**  The
+> rule is now CLAUDE.md section 0 rule 4d and the first lines of BRAIN.md:
+> a capability is not done until the Theory Guide section, the block's Theory
+> link, the Tutorials Guide / catalogue / docs-ai entries and the rebuilt PDFs
+> exist, and every brief carries them as acceptance criteria.  A sentence is
+> not a contract (this file's own lesson), so a gate follows:
+> `check_feature_documented` -- every name a factory registers (unit
+> operations, props operations, activity / EoS / transport / mixing-rule /
+> efficiency / packing models) must appear in a guide section with a label
+> and in the docs/ai catalogue; today's undocumented names are counted and
+> pinned as debt that may only shrink.  Known debt to pay first: C329 (in
+> progress), C328 StoredCorrelation, C311 electrolyteFit, C327 transport
+> records, C321 Henry from Sander, C331 (did its guides).
+
+> **C337 (Vitor, 2026-11-12: "a destilacao deve ter uma visualizacao detalhada
+> se for pedido o design da coluna ... parecido ao que se fez para o
+> permutador").**  Measured: gui/src/ui/ColumnDatasheet.tsx
+> (`columnDatasheetHtml`, :84) already prints an HTML specification sheet of
+> tables (items sized, design basis, trays rated, worst tray, weeping trays,
+> declared geometry), but it has NO drawing, while HeatExchangerDatasheet.tsx
+> draws its bundle as an SVG (:156).  DECIDED: the column sheet gains (1) an
+> elevation to scale (shell, trays or packed beds, feed and draw nozzles,
+> condenser and reboiler), (2) a tray plan view (active area, downcomers, weir,
+> hole pattern at the declared pitch and open area), (3) the operating window
+> of the worst tray (flood, entrainment, weeping, downcomer backup, with the
+> operating point), (4) per-stage profiles: T, composition, vapour and liquid
+> traffic, approach to flood, pressure drop, and -- from C329 -- the computed
+> tray efficiency or the packing HETP.  Everything drawn from the engine's
+> published KPIs and the declared geometry, nothing recomputed in the GUI; a
+> quantity the engine does not publish is listed as missing, not invented.
+> Built on top of the C329 branch (general dispatched).
 
 > **C334 (Vitor, 2026-11-12: "vou estender o severo ate 29 %"; AMENDED the same
 > hour).**  The architect first agreed for pair fits (29 % / 8 K) and then

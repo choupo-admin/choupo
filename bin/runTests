@@ -5221,6 +5221,19 @@ PYEOF
     fi
     rm -f /tmp/regpairs.$$
 
+    # transport-records gate (2026-11-11, DEV.md 4c C327).  The liquid
+    # viscosity / thermal-conductivity records fitted from the ThermoML archive
+    # are held to their dataset (parameters, window, labels, grade limits) and,
+    # where the archive cache is reachable, refit from it.
+    if gate_exec "$ROOT/bin/curate/check_transport_records.py" > /tmp/transrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "transport-records-gate" "$(head -1 /tmp/transrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_transport_records.py)\n" "transport-records-gate"
+        cat /tmp/transrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/transrec.$$
     # regressed-electrolytes gate (2026-11-11, DEV.md 4c C311).  The sibling
     # of the regressed-pairs gate for the SALT records: every Pitzer / eNRTL
     # record carrying `fittedInCase` is reproduced by re-running its case

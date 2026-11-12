@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1562,
+  "cases": 1564,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 15
@@ -63,6 +63,22 @@
    "application": "choupoProps",
    "ops": [
     "estimateComponent",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "curationTrace"
+   ],
+   "hasGolden": true
+  },
+  "data/curation/batches/transport_c327": {
+   "application": "choupoProps",
+   "ops": [
     "propertyScan1D"
    ],
    "thermo": {
@@ -20249,6 +20265,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/surfacetension01_stored_vs_brockbird": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/transport01_gas_bench": {
    "application": "choupoProps",
    "ops": [
@@ -24831,6 +24861,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
@@ -26000,6 +26031,7 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
@@ -27816,6 +27848,7 @@
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/components/1122Tetrachloroethane",
     "data/curation/components/11Diethoxyethane",
     "data/curation/components/12Butanediol",
@@ -28941,6 +28974,7 @@
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -30021,12 +30055,14 @@
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/temperature01_gas_thermometer",
-    "tutorials/props/thermo/temperature02_engineers_ladder"
+    "tutorials/props/thermo/temperature02_engineers_ladder",
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird"
    ],
    "propertyScan1D": [
     "data/curation/batches/new_components",
     "data/curation/batches/new_components_c309",
     "data/curation/batches/new_components_estimated",
+    "data/curation/batches/transport_c327",
     "data/curation/pairs/124Trimethylbenzene-1Pentanol",
     "data/curation/pairs/124Trimethylbenzene-2Pentanol",
     "data/curation/pairs/124Trimethylbenzene-mEthyltoluene",
