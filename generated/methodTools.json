@@ -251,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 80,
-  "registryTools": 80,
+  "liveTools": 81,
+  "registryTools": 81,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -653,6 +653,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=rayleigh"
+    },
+    {
+      "id": "residue-curves",
+      "label": "Residue curve maps (azeotropic and extractive distillation)",
+      "blurb": "Map where a boiling ternary goes and which products a column reaches.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "The residue curve as the path of a simple still's pot, dx/dxi = x - y*, with the boiling temperature rising along it; the singular points (pure components and azeotropes) as unstable nodes, stable nodes and saddles, read from the temperatures around them and from the eigenvalues of the Jacobian; the distillation boundaries out of the saddles and the regions they separate; the lever rule and the direct and indirect limiting splits of a feed you place; and how a heavy entrainer, a decanter, a pressure change or a recycle gets round a boundary -- on NRTL maps the engine computes for five ternaries, with each pair's fit grade shown, a pressure control, and published azeotropes beside the engine's.",
+      "origins": [
+        "engine",
+        "page",
+        "reference"
+      ],
+      "href": "/app/?workspace=methods&tool=residue-curves"
     },
     {
       "id": "levenspiel",

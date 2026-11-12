@@ -122,7 +122,9 @@ export const RAYLEIGH_LIMITS: readonly { id: string; title: string; body: string
     title: "Binary, like every construction in this family.",
     body: "The Rayleigh integral and the staircase both live in an x-y plane "
       + "that exists only for two components. Multicomponent batch "
-      + "distillation is solved as equations, not drawn.",
+      + "distillation is solved as equations; the one picture that survives "
+      + "a third component is the path of the pot itself, drawn on a "
+      + "triangle on the Residue curve maps page.",
   },
   {
     id: "holdup",

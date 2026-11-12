@@ -343,6 +343,9 @@ const OverpressureTool = lazy(() =>
 const StackDispersionTool = lazy(() =>
   import("./methods/StackDispersionTool.js")
     .then((m) => ({ default: m.StackDispersionTool })));
+const ResidueCurvesTool = lazy(() =>
+  import("./methods/ResidueCurvesTool.js")
+    .then((m) => ({ default: m.ResidueCurvesTool })));
 const PoolFireTool = lazy(() =>
   import("./methods/PoolFireTool.js")
     .then((m) => ({ default: m.PoolFireTool })));
@@ -651,6 +654,7 @@ export function MethodsWorkspace() {
             : tool === "overpressure" ? <OverpressureTool />
             : tool === "pool-fire" ? <PoolFireTool />
             : tool === "stack-dispersion" ? <StackDispersionTool />
+            : tool === "residue-curves" ? <ResidueCurvesTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />
