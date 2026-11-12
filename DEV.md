@@ -3446,6 +3446,110 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C378 (Vitor, 2026-11-12, on learning that the kernel refuses the density
+> and the viscosity of a caustic solution: "precisamos de sistematizar a
+> forma como a viscosidade e calculada! E a massa especifica (o inverso dos
+> volumes molares) e a tensao superficial!! Achas que podemos ir buscar
+> inspiracao na literatura" and in the property systems of the two
+> simulators he names).**  A STUDY FIRST, written, before any architecture
+> (his standing rule of 2026-07-16: never design properties without studying
+> first; the deliverable is the study).  Scope: liquid molar volume /
+> density, liquid and gas viscosity, surface tension (thermal conductivity
+> and diffusivity noted where the same structure serves them), for the four
+> kinds of liquid Choupo meets: molecular mixtures, aqueous electrolytes,
+> solutions with dissolved gases or supercritical components, and slurries.
+> It maps (1) what the kernel does today, route by route, with what refuses
+> and what silently estimates; (2) how a large commercial property system
+> organises these properties (its methods-and-models manual is in the
+> literature folder) and how an open-source simulator does (its public
+> source); (3) the literature's own hierarchy (the standard monograph on
+> the properties of gases and liquids, the handbook, the electrolyte
+> correlations for density and viscosity fitted across many salts); and
+> proposes ONE systematic structure -- a route per property and per kind of
+> liquid, each a named, selectable object with its window and source, a
+> declared default, and a refusal where no route applies -- with a
+> migration that moves no golden silently.  The comparative study names its
+> sources and is kept OUTSIDE the tracked tree; the repository gets the
+> design record, which describes the other systems by what they are.
+> Branch c378-thermophysical-study; no code in this slice.
+> VITOR'S GUIDANCE the same hour, binding on the proposal: the method may
+> depend on how the COMPOUND IS CLASSIFIED, so the study finds the smallest
+> classification that changes which method is right (from what the records
+> already carry where possible); "muito bom senso e Pareto": few simple
+> routes that cover most of what a flowsheet meets, not a method for every
+> cell -- "todos os modelos sao errados, mas ha alguns que sao uteis"; and
+> some liquid-phase properties are hard to predict, so each route SAYS its
+> expected error at the point of use and a measured value from the case
+> always overrides an estimate.
+> AND A HARD CONSTRAINT (Vitor, the same hour: "isso tem de ser feito de
+> forma elegante! Porque a forma como se organiza os componentes e a
+> informacao vai depender disso! Martelar isto a bruta e exigir correcoes
+> brutas para componentes caso a caso pode dar super confusao").  BINDING:
+> (1) NOTHING is built for liquid density, viscosity or surface tension
+> until he has read the study and the design is ratified; (2) the
+> NaOH-only density and viscosity seam that had been added to the C377
+> slice is WITHDRAWN (the paper's correlations are transcribed as evidence
+> for the study, not implemented); (3) the proposal is judged by: no
+> component name and no per-component special case in code; the record's
+> organisation designed, each fact in one home (a solution property belongs
+> to the salt-solvent system, like a Pitzer pair, not to a component); few
+> concepts; exceptions as declared data with a reason; no big-bang edit of
+> records; a pilot on one property first, reversible.  Declared
+> hypotheses, if adopted, extend the existing `approximations {}` block
+> under a closed vocabulary -- never a new free-form dictionary.
+
+> **C377 (Vitor, 2026-11-12: "se eu fizer evaporacao multi-efeito de
+> agua+NaOH o Choupo ja lida com o calor de dissolucao de forma elegante?").**
+> MEASURED the same turn on evaporator08_naoh_dilution_heat (single effect):
+> yes within its window -- the duty climbs the calorimetric L_phi curve and
+> prints the heat of dilution as its own line (3.54 kW of 839 kW, m 2.0 ->
+> 5.2 mol/kg), the boiling-point elevation comes from the Pitzer water
+> activity (6.75 K), and leaving the fit is announced.  THREE LIMITS: (1) the
+> Na-OH pair's L_phi is fitted to Parker only up to 6 mol/kg (about 19 wt %),
+> while caustic is concentrated to 50 wt % (25 mol/kg): beyond 6 the duty,
+> the dilution heat and the BPE are extrapolated, announced, and not to be
+> trusted; (2) no multi-effect NaOH case ships (the multi-effect cases are
+> sugar and NaCl); (3) in that case the water's Cp polynomial and Antoine are
+> used above their 373 K window (steam at 130 C): announced, but water
+> should be priced on its reference equation in an electrolyte package
+> too.  DECIDED: (a) a triple-effect NaOH case inside the fit window, with
+> the heat of dilution per effect printed and held by the balances, and
+> the water route fixed if the package can reach the reference equation;
+> (b) for real caustic duty (to 50 wt %) a property model valid to that
+> concentration, from a measured high-concentration correlation, beside
+> Pitzer and selectable, validated against the classical
+> enthalpy-concentration chart; the source asked of Vitor.  Branch
+> c377-naoh-multieffect for (a).
+> SLICE (b) AUTHORISED by Vitor ("avanca", 2026-11-12) after the kernel was
+> explained to him: a NaOH-water electrolyte model from Olsson, Jernqvist &
+> Aly (1997, Int. J. Thermophys. 18, 779; in the literature folder) that
+> implements the SAME electrolyte interface the evaporator already reads
+> (`waterActivity(m,T)` for the boiling-point rise,
+> `apparentMolarEnthalpy(m,T)` for the dilution heat, `lphiValidityMax()`
+> for the window), selectable beside Pitzer, with the evaporator, balances
+> and reports unchanged.  Conditions: (1) the paper's vapour-pressure and
+> enthalpy correlations are checked against each other through
+> Gibbs-Helmholtz before use, and any inconsistency is reported, not hidden;
+> (2) in the same slice the evaporator solves the EXACT boiling-point
+> relation a_w Psat(T) = Psat(T - BPE) instead of the linearised
+> Clausius-Clapeyron form (identical for small rises; the change is measured
+> on the shipped evaporator cases); (3) water above 373 K on its reference
+> equation where the package can reach it.  Validated against the paper's
+> own tables and the enthalpy-concentration chart of a book in hand.
+> Branch c377-naoh-olsson.
+> DENSITY AND VISCOSITY (Vitor asked the same day how the kernel handles
+> them; MEASURED: it does not -- the liquid density mixes pure-liquid molar
+> volumes ideally and refuses, the NaOH record having neither Vliq nor
+> critical constants; the liquid viscosity mixes pure-liquid viscosities and
+> refuses for want of a NaOH model; the aqueousAnalysis reader's volumetric
+> slot is a separate, ideal estimate).  DECIDED, added to the same slice:
+> the electrolyte interface gains optional `solutionDensity(m,T)` and
+> `solutionViscosity(m,T)`, the Olsson model provides them from the same
+> paper, and the package's liquid density and viscosity use them when the
+> liquid is that electrolyte solution, announced; every other model and
+> case byte-identical.  Other salts (a general correlation fitted across
+> many salts) are a later slice.
+
 > **C376 (Vitor, 2026-11-12: "A maior parte das especies novas nao tem dados
 > de formacao?! Podes ver online como vamos resolver isto? Se for preciso
 > pede-me mais bibliografia").**  Formation data (DfH, S, DfG of the aqueous
