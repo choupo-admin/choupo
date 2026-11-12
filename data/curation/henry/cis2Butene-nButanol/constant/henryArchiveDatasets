@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Curation case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*  constant/henryArchiveDatasets -- WHERE the Henry constants of cis2Butene in nButanol
+    come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+    (C282).  `bin/curate/henry_organic.py fetch <case>` writes each dataset into
+    constant/archiveExtracts/ (gitignored) from the local ThermoML cache or the
+    NIST URL, checking BOTH sha256 sums; a mismatch refuses, an unreachable NIST
+    is reported NOT RUN, never a pass.  Not named `archiveDatasets`: that file
+    is fetched by bin/choupo-curate, which has no Henry extractor.  */
+
+recordType    archiveDatasets;
+
+solute        cis2Butene;
+solvent       nButanol;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/cis2Butene-nButanol-henry-j.jct.2005.08.004-b33.dat";
+        role          fit;   // C283 amended: every laboratory is fitted
+        extractor     henryConstant;
+        doi           "10.1016/j.jct.2005.08.004";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2005.08.004.xml";
+        articleFile   "j.jct.2005.08.004.xml";
+        articleSha256 "2cddafa400020ad25de0cdd268c4459946a784d079aa4b9a444e869715d79228";
+        block         33;
+        sha256        "439f36660e1479bb2b50d24f7591830544c0ccfce6092cb0b217cd0c67155698";
+    }
+);

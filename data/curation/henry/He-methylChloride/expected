@@ -1,0 +1,6 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    h_He_methylChloride    budget_bytes     2048               1e-4
+diag    h_He_methylChloride    card_bytes       792                1e-4
+diag    h_He_methylChloride    n_records        1                  1e-4

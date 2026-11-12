@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Henry's-law constant for cis2Butene in liquid tetrahydropyran (infinite dilution).
+
+  Source DATA: the measurements of
+    Miyano, Y.[Yoshimori]; Uno, S.[Shigemichi]; Tochigi, K.[Katsumi] et al. (2007) J. Chem. Eng. Data 52, 2245-2249, doi:10.1021/je700270d
+  located through the NIST/TRC ThermoML Archive (doi 10.18434/mds2-2422);
+  the values belong to those articles.  NO measured point is reproduced here
+  or anywhere in this tree; data/curation/henry/cis2Butene-tetrahydropyran
+  declares each dataset by DOI, block and sha256 and regenerates it.
+
+  FIT (DEV.md 4c C321 part 2): van't Hoff in 1/T, every laboratory together,
+  least squares then minimax on the relative residual of H; points above
+  20 % after the least-squares stage discarded by name (0 here).
+  5 kept points, 250-330 K; max relative error
+  1.61 % in-sample (graded 10 / 20 / 30 %, C336 class B).
+  Regressed by Choupo, NOT read by a human; the archive's transcription has
+  not been read back against the articles.
+
+  NOTE: INFINITE-DILUTION coefficient at the solvent's own vapour pressure;
+  validity 250-330 K (the measured span; outside it an extrapolation).
+\*---------------------------------------------------------------------------*/
+
+solute      cis2Butene;
+solvent     tetrahydropyran;
+
+gasSpecies        cis2Butene;
+dissolvedSpecies  cis2Butene;
+convention        Sander-Hxp-v1;
+
+model       vantHoff;
+H_ref       2.60853e+05 Pa;
+T_ref       298.15 K;
+enthalpy    -23058  J/mol;
+Trange      ( 250  330 );
+
+reviewStatus autoPromoted;
+review      { by none; }
+
+provenance
+{
+    origin        fitted;
+    source        "doi:10.1021/je700270d (located through ThermoML, doi 10.18434/mds2-2422)";
+    method        "van't Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";
+    CAS           590-18-1;
+    fittedInCase  "data/curation/henry/cis2Butene-tetrahydropyran";
+    fitGrade      warning;   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 10 / 20 / 30 % (C336 class B)
+    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2
+    fitGradeMaxRelativeError_pct 1.6093;
+    pointsKept    5;
+    pointsDiscarded 0;
+    fingerprint   "eb0fd23afa488a43";   // of the declaration, frozen before the fit
+    evidence
+    (
+        {
+            doi           "10.1021/je700270d";
+            block         16;
+            archiveFile   "je700270d.xml";
+            articleSha256 "f7967975b3a192763335c4cd4016617b06f704a5404e0cf426076989a83013bc";
+            sha256        "69c9c16b7edb1fdd85b85c831590e99d3a049799cd5457417e082aaf1a016d55";
+        }
+    );
+}

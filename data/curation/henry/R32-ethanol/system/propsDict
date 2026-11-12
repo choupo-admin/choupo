@@ -1,0 +1,68 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  R32-ethanol -- A HENRY'S-LAW CONSTANT FROM EVERY LABORATORY'S MEASUREMENTS.
+
+  WRITTEN BY bin/curate/henry_organic.py declare (DEV.md 4c C321 part 2).
+
+  THE DECLARATION -- WRITTEN AND COMMITTED BEFORE ANY FIT RAN (the
+  declarations of the run share one commit).
+
+  IDENTITY.  Solute R32 (CAS 75-10-5) in solvent ethanol (CAS 64-17-5),
+  joined to the archive by InChIKey through identity.json -- never by name.
+  The solute is the compound the block's Henry property names.
+  CLASS: R32: Tb 221.4987 K, Tc 351.255 K; ethanol: Tb 351.44 K, Tc 513.92 K.
+
+  NO MEASURED SERIES IN THIS TREE.  constant/henryArchiveDatasets names each
+  dataset (DOI, NIST URL, article sha256, block, extract sha256);
+  `bin/curate/henry_organic.py fetch` writes the points into
+  constant/archiveExtracts/, which is gitignored.
+
+  STUDIES: every mole-fraction-scale Henry block of the pair with a stated
+  uncertainty on every point (1 block(s)).  FITTED, ALL OF THEM:
+      10.1016/j.fluid.2011.01.003    block 10    7 pts  287.75-313.00 K   Sousa, J. M. M. V.; Almeida, J. P. B.; Ferreira, A. G. M. et al. (2011) Fluid Phase Equilib. 303, 115-119, doi:10.1016/j.fluid.2011.01.003
+
+  THE RULE (DEV.md 4c C283 amended, C285, C300; C321 part 2).  The van't Hoff
+  form the loader reads, ln H = ln H_ref + (enthalpy/R)(1/T - 1/298.15 K):
+  two parameters.  Stage 1, least squares on the relative residual
+  H_model/H - 1 (equal weights); a point above 20 % is DISCARDED BY NAME and
+  stage 1 repeated -- ONLY when two or more laboratories are fitted: with ONE
+  laboratory no point is discarded (no second series to call it an outlier
+  against; C321 part 2 amended) and the grade is the series' real error.  Stage 2, minimax on
+  the same residual over the kept points; its coefficients are the record's.  GRADE on the max relative
+  error over the kept points (C336 class B, Henry): clean up to 10 %,
+  warning up to 20 %, severe up to 30 %, refused above.  An in-sample
+  clean resting on ONE laboratory is
+  capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.
+  clean, warning and severe are promoted (autoPromoted, review by none)
+  into data/standards/parameters/Henry/ (C285; Vitor's ruling of
+  2026-11-12; C336 class B: only above 30 % is refused); refused writes
+  nothing.
+
+  @@RESULT-BEGIN@@
+  7 points of 1 laboratory(ies); 7 kept,
+  0 discarded after the least-squares stage (> 20 %):
+  ONE laboratory: no point was discarded (C321 part 2 amended).
+  H_ref = 5.05071e+06 Pa at 298.15 K, enthalpy = -18918 J/mol;
+  kept span 287.75-313 K; max relative error
+  2.5613 % (least squares 2.9823 %); in-sample
+  grade clean, CAPPED to warning (singleLaboratory).
+  PROMOTED into data/standards/parameters/Henry/.
+  @@RESULT-END@@
+
+  WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the
+  solvent's own vapour pressure, in the measured range only; the archive's
+  transcription has NOT been read back against the articles.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    { name h_R32_ethanol; type pairLookup; components ( R32 ethanol ); }
+);

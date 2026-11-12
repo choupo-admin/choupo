@@ -125,6 +125,27 @@ measured value into the tree.  The short form:
   see; *falsely sourced* is one nobody can.  Verify author names, journal and
   year against the file you actually have — do not write them from memory.
 
+### 1.5 How a curated catalogue record is graded (DEV.md 4c C285, C300, C336)
+
+A record Choupo's pipeline fitted and promoted carries `fitGrade` with its
+number in its `provenance` (`fitGradeMaxRelativeError_pct`, or
+`fitGradeMaxTemperatureError_K` for a pair fitted to bubble temperatures): the
+LARGEST error over the measurements it kept, graded by property class:
+
+| Property class | clean | warning | severe | refused |
+|---|---|---|---|---|
+| (A) vapour pressure, liquid density, liquid Cp, bubble pressure | ≤ 5 % | 5–10 % | 10–20 % | > 20 % |
+| (B) Henry constant, gamma-infinity, transport properties | ≤ 10 % | 10–20 % | 20–30 % | > 30 % |
+| (C) bubble temperature (binary pairs) | ≤ 1 K | 1–2 K | 2–4 K | > 4 K |
+
+clean, warning and severe records are in the catalogue; refused is not
+shipped.  The grade is in-sample (`fitGradeBasis inSample;`); one laboratory
+or one temperature caps a clean to warning (`fitGradeCap`), and with one
+laboratory no point is discarded as an outlier.  A curation case may declare
+its own band, with a reason.  When you tell a user a result rests on a
+`warning` or `severe` record, quote the number.  The Props Guide, section
+"How a curated catalogue record is graded", has the reasons.
+
 ---
 
 ## 2. Where the data goes in the case

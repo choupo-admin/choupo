@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Curation case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*  constant/henryArchiveDatasets -- WHERE the Henry constants of isoButene in 1Propanol
+    come from, and how to regenerate them.  NO MEASURED POINT IS IN THIS TREE
+    (C282).  `bin/curate/henry_organic.py fetch <case>` writes each dataset into
+    constant/archiveExtracts/ (gitignored) from the local ThermoML cache or the
+    NIST URL, checking BOTH sha256 sums; a mismatch refuses, an unreachable NIST
+    is reported NOT RUN, never a pass.  Not named `archiveDatasets`: that file
+    is fetched by bin/choupo-curate, which has no Henry extractor.  */
+
+recordType    archiveDatasets;
+
+solute        isoButene;
+solvent       1Propanol;
+
+archive
+{
+    tarball   "ThermoML.v2020-09-30.tgz";
+    doi       "10.18434/mds2-2422";
+}
+
+datasets
+(
+    {
+        file          "constant/archiveExtracts/isoButene-1Propanol-henry-j.jct.2003.08.018-b7.dat";
+        role          fit;   // C283 amended: every laboratory is fitted
+        extractor     henryConstant;
+        doi           "10.1016/j.jct.2003.08.018";
+        url           "https://trc.nist.gov/ThermoML/10.1016/j.jct.2003.08.018.xml";
+        articleFile   "j.jct.2003.08.018.xml";
+        articleSha256 "e8e963199f3d54ff7077b9dfe335da211f615c47185523bf9a8a1d60542bacad";
+        block         7;
+        sha256        "d2983a3870bdeed1b2d93b61e8c24117f367ba0fdd42ee10e4f394ec7bae306c";
+    }
+);
