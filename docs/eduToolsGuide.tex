@@ -1266,6 +1266,73 @@ stage: no multistage dosing and no column.  The standard errors rest on the
 chosen error model and on local linearity.
 
 % ---------------------------------------------------------------------
+\subsection{Batch adsorption in a stirred tank}\label{sec:edu-batch-adsorption}
+
+\declaredanchor{sec:batch-adsorption-stirred-tank}
+
+\noindent\textit{\small Tool:} \code{tool=batch-adsorption}.
+\textit{\small Case it starts from:} none --- the page works on an isotherm
+you choose and runs no engine.
+
+\subsubsection*{The question}
+
+\emph{I have a tank of solution and an adsorbent with a known isotherm; how
+much adsorbent do I need, is it better split into stages, and how long does
+it take?}
+
+The isotherm is one of three example systems with the page's own
+illustrative numbers (a Langmuir dye on powdered carbon, a Freundlich
+aromatic on granular carbon, a linear trace solute), or any linear, Langmuir
+or Freundlich isotherm you type --- for instance the one fitted on the
+\code{adsorption-isotherms} page.  One basis throughout: $c$ in mg/L, $q$ in
+mg/g, $V$ in L, $M$ in g.
+
+\subsubsection*{What the page computes, and what it does not}
+
+Everything is the page's own arithmetic, marked \emph{page}.  The engine's
+batch adsorber and fixed bed contact a gas, in partial pressure, with Henry or
+Langmuir isotherms; it has no liquid-phase adsorption and no Freundlich model.
+The isotherm functions are the \code{adsorption-isotherms} page's, imported,
+not copied.  Step by step: the equilibrium of one stage as the crossing of the
+operating line (slope $-V/M$) with the isotherm, found by bisection on a
+bracket that always holds and printed beside the closed form where one exists
+(linear, Langmuir); the dose for a target removal, drawn against the removal on
+a logarithmic axis, with a pre-loaded adsorbent's equilibrium floor refused by
+name; one to four stages in crossflow and in countercurrent, each with its
+mass balance recomputed, and the best split of a fixed total between two
+crossflow stages; the uptake in time with the whole resistance in a liquid
+film, $k_L$ from $\mathit{Sh} = 2$ (a stagnant bound, which the student may
+replace), $a$ from the particle density, in closed form for a linear isotherm
+and integrated numerically (fourth-order Runge--Kutta) otherwise, with the time
+to a target at five particle sizes; and the Biot number with Glueckauf's
+series resistance, with a warning when diffusion inside the particle makes the
+film-only times too short.  The design record
+\file{docs/design/batch-adsorption-in-a-stirred-tank.md} holds the
+measurements and a proposal for the engine side.
+
+\begin{tryit}
+On the dye example with 50~g in 100~L, read the best two-stage split: about
+69\,\% of the carbon in the first stage, leaving 0.92~mg/L against 1.15~mg/L for
+half and half.  Switch to the linear example and watch the optimum return to
+exactly one half.  Then, in the kinetic step, halve the particle diameter and
+check that every time falls by four.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{Reading $\mathit{Sh}=2$ as a stirred tank.}  It is a sphere in still
+liquid.  And the Biot number does not fall as the particle shrinks while
+$\mathit{Sh}$ is fixed: at $\mathit{Sh} = 2$ it is $D_{AB}/D_e$, larger than one
+for every porous particle, so the internal resistance is never negligible
+there.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+One temperature and no heat of adsorption; one solute; a perfectly mixed
+tank; no diffusion solved inside the particle (only flagged); no
+continuous column, which is the \code{breakthrough} page.
+
+% ---------------------------------------------------------------------
 \subsection{Adsorption: sizing a bed from a breakthrough curve (LUB)}\label{sec:edu-lub-scaleup}
 
 \declaredanchor{ch:adsorption}

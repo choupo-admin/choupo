@@ -140,3 +140,20 @@ by running the page):
   check_edutool_form, check_doctrine, check_guide_pdf_fresh, check_feature_documented.
 * NOT validated: any comparison with measured isotherms (none is shipped); the page's
   diagnostic thresholds are rules of thumb, not tests of significance.
+
+## 7. To check against the source
+
+Added 2026-11-12 by the builder of the `batch-adsorption` page, at the
+coordinator's request.  One row per equation the page states from a published
+work.  `unchecked` means written from the published form as remembered; no
+row here has been read back against the work it names.  The reviewing session
+holds the books and checks each row.
+
+| What | Published work | Where on the page | Status |
+|---|---|---|---|
+| Langmuir isotherm, site balance `k_a c (1 - θ) = k_d θ` and `q = q_max c/(K_L + c)` (equivalently `q_max b c/(1 + b c)`, `b = 1/K_L`) | Langmuir, J. Am. Chem. Soc. 40 (1918) 1361-1403, doi:10.1021/ja02242a004 (written there for gases, in pressure) | `gui/src/ui/methods/adsorptionIsothermsLesson.ts` step 2; `gui/src/case/adsorptionIsotherms.ts` `isothermQ` | unchecked |
+| Freundlich isotherm `q = K_F c^(1/n)` | Freundlich, Z. Phys. Chem. 57U (1907) 385-470, doi:10.1515/zpch-1907-5723 | lesson step 2; `isothermQ` | unchecked |
+| Linear (Henry) isotherm `q = K c` and the Langmuir low-c limit `q_max/K_L` | Ruthven, *Principles of Adsorption and Adsorption Processes*, Wiley 1984 | lesson step 2 | unchecked (the limit is also derived on the page) |
+| Double-reciprocal linearisation `1/q = 1/q_max + (K_L/q_max)(1/c)` | Bolster & Hornberger, Soil Sci. Soc. Am. J. 71 (2007) 1796-1806, doi:10.2136/sssaj2006.0304 | lesson step 3; `linearisedFit` | unchecked (also derived on the page; the noise-free recovery test holds the algebra) |
+| Logarithmic linearisation `log q = log K_F + (1/n) log c` | Kinniburgh, Environ. Sci. Technol. 20 (1986) 895-904, doi:10.1021/es00151a008 | lesson step 3; `linearisedFit` | unchecked (the noise-free recovery test holds the algebra) |
+| Levenberg-Marquardt step with Marquardt's diagonal scaling | Marquardt, J. SIAM 11 (1963) 431-441, doi:10.1137/0111030 | lesson step 3; `directFit` | unchecked |

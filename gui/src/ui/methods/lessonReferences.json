@@ -2561,6 +2561,77 @@
           }
         }
       ]
+    },
+    "batch-adsorption": {
+      "references": [
+        {
+          "text": "Langmuir, I. (1918). The adsorption of gases on plane surfaces of glass, mica and platinum. Journal of the American Chemical Society 40(9), 1361–1403.",
+          "doi": "10.1021/ja02242a004",
+          "note": "The site balance behind the Langmuir isotherm used in every step.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja02242a004: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Freundlich, H. (1907). Über die Adsorption in Lösungen. Zeitschrift für Physikalische Chemie 57U(1), 385–470.",
+          "doi": "10.1515/zpch-1907-5723",
+          "note": "The power-law isotherm, proposed for adsorption from solution; it has no closed-form crossing with the operating line.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1515/zpch-1907-5723: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Glueckauf, E. (1955). Theory of chromatography. Part 10. Formulae for diffusion into spheres and their application to chromatography. Trans. Faraday Soc. 51, 1540–1551.",
+          "doi": "10.1039/TF9555101540",
+          "note": "The linear-driving-force approximation for a sphere, R/(5 D_e), behind the Biot-number estimate of step 5.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1039/TF9555101540: author, title, container, volume 51, pages 1540-1551 and year 1955 matched (batch-adsorption EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Harriott, P. (1962). Mass transfer to particles: Part I. Suspended in agitated tanks. AIChE Journal 8(1), 93–101.",
+          "doi": "10.1002/aic.690080122",
+          "note": "Further reading: measured film coefficients for particles in a stirred tank, above the Sh = 2 bound the page uses by default.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690080122: author, title, container, volume 8, issue 1, pages 93-101 and year 1962 matched (batch-adsorption EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2011). Separation Process Principles: Chemical and Biochemical Operations, 3rd ed. Wiley. ISBN 978-0-470-48183-7.",
+          "note": "Further reading: Chapter 15, section 15.5, slurry (stirred-tank) and fixed-bed adsorption systems.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 9780470481837 (openlibrary.org/isbn/9780470481837.json): title, '3rd ed.', Wiley, 2011, by-statement 'J. D. Seader, Ernest J. Henley, D. Keith Roper', table of contents with the section numbers cited (C259 separations/heat/control audit; by-statement and sections re-read 2026-11-09)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 978-0-07-065176-0.",
+          "note": "Further reading: crossflow and countercurrent multistage contact of a liquid with an adsorbent.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0070651760 (openlibrary.org/isbn/0070651760.json): title 'Mass-transfer operations', McGraw-Hill, 1980, '3d ed.', by-statement 'Robert E. Treybal.' (batch-adsorption EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "The adsorption monograph: isotherms, the batch balance, and film and particle resistances.",
+          "verified": {
+            "method": "catalogue",
+            "evidence": "Open Library ISBN 0471866067: author Douglas M. Ruthven, title, Wiley, 1984 (C259 thermodynamics-and-reaction audit; C259 separations/heat/control audit)",
+            "date": "2026-11-09"
+          }
+        }
+      ]
     }
   }
 }

@@ -349,6 +349,9 @@ const ResidueCurvesTool = lazy(() =>
 const AdsorptionIsothermsTool = lazy(() =>
   import("./methods/AdsorptionIsothermsTool.js")
     .then((m) => ({ default: m.AdsorptionIsothermsTool })));
+const BatchAdsorptionTool = lazy(() =>
+  import("./methods/BatchAdsorptionTool.js")
+    .then((m) => ({ default: m.BatchAdsorptionTool })));
 const PoolFireTool = lazy(() =>
   import("./methods/PoolFireTool.js")
     .then((m) => ({ default: m.PoolFireTool })));
@@ -659,6 +662,7 @@ export function MethodsWorkspace() {
             : tool === "stack-dispersion" ? <StackDispersionTool />
             : tool === "residue-curves" ? <ResidueCurvesTool />
             : tool === "adsorption-isotherms" ? <AdsorptionIsothermsTool />
+            : tool === "batch-adsorption" ? <BatchAdsorptionTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

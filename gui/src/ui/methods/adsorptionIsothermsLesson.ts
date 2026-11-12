@@ -260,6 +260,12 @@ export const ISO_STEPS: readonly LessonStep[] = [
       + "the measured range; the page says when it does not.  One stage only: two smaller "
       + "doses in two stages, or a column, use less adsorbent for the same removal, which "
       + "this page does not compute.",
+    leadsTo: {
+      tool: "batch-adsorption", toolLabel: "Batch adsorption in a stirred tank",
+      stepTitle: "Stages: split the adsorbent, or send it the other way",
+      body: "The same balance on several stages -- crossflow and countercurrent -- the dose "
+        + "against the removal, and how long the tank takes to get there.",
+    },
   },
 ];
 
