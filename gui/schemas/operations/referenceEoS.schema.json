@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://choupo.org/schemas/operations/referenceEoS.schema.json",
+  "title": "referenceEoS operation",
+  "x-choupo": {"discipline": "Thermodynamics", "activity": "evaluate", "models": [{"fixed": "reference Helmholtz equation of state", "role": "pure fluid"}]},
+  "description": "A pure fluid from its REFERENCE (multiparameter Helmholtz-energy) equation of state, read from data/standards/parameters/Helmholtz/<equation>.dat (case-local constant/parameters/Helmholtz/ first). This is a propsDict operation under choupoProps, NOT a flowsheet unit (a flowsheet reaches the same equation through `pureFluids { <component> { method Helmholtz; equation <name>; } }`). Loading a record evaluates EVERY check value its publication prints (IAPWS-95: 81) at the printed precision and REFUSES the run on a single miss. Give exactly ONE mode block: state (T with p, or T with rho) or saturation (T, by the Maxwell criterion). A (T, p) state lists every density root of the isotherm with its branch; the stable one is taken unless `branch` names one. A (T, p) outside the publication's validity window is announced as an extrapolation. Diagnostics are SI per unit mass. Tutorial: tutorials/props/thermo/refEoS01_iapws95_verification.",
+  "type": "object",
+  "properties": {
+    "equation": {
+      "type": "string",
+      "title": "Reference equation",
+      "description": "The record name, e.g. IAPWS95 (data/standards/parameters/Helmholtz/IAPWS95.dat)."
+    },
+    "state": {
+      "type": "object",
+      "title": "Single state (T, p) or (T, rho)",
+      "description": "One state. With p the density is SOLVED: every root of the isotherm is listed (below T_c one per branch; crossings inside the unstable region are counted and never taken). With rho the equation is evaluated directly. Reports rho, p, h, u, s, g, cp, cv, w and the fugacity coefficient phi.",
+      "properties": {
+        "T": {"type": "number", "exclusiveMinimum": 0, "title": "Temperature", "unit": "K"},
+        "p": {"type": "number", "exclusiveMinimum": 0, "title": "Pressure", "unit": "Pa"},
+        "rho": {"type": "number", "exclusiveMinimum": 0, "title": "Density", "unit": "kg/m3"},
+        "branch": {"type": "string", "enum": ["liquid", "vapour"], "title": "Root branch (with p only; may be metastable)"}
+      },
+      "required": ["T"],
+      "oneOf": [{"required": ["p"]}, {"required": ["rho"]}],
+      "additionalProperties": false
+    },
+    "saturation": {
+      "type": "object",
+      "title": "Saturation state",
+      "description": "psat, rhoL, rhoV, h and s of both phases and hLV at T, by the Maxwell criterion (equal p and g), from the triple point to the critical point.",
+      "properties": {
+        "T": {"type": "number", "exclusiveMinimum": 0, "title": "Temperature", "unit": "K"}
+      },
+      "required": ["T"],
+      "additionalProperties": false
+    },
+    "output": {
+      "type": "object",
+      "title": "CSV output",
+      "description": "`{ file <name>.csv; }` -- optional; writes a one-row CSV of the state (12 significant digits, SI).",
+      "properties": {
+        "file": {"type": "string", "title": "CSV file name"}
+      },
+      "required": ["file"]
+    }
+  },
+  "required": ["equation"],
+  "oneOf": [{"required": ["state"]}, {"required": ["saturation"]}],
+  "additionalProperties": false
+}

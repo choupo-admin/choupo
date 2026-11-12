@@ -69,7 +69,7 @@ const std::map<std::string, OpSlots>& table()
                                 "lleTieLines", "phaseSplitScan", "propertyScan1D",
                                 "propertyScan2D", "propertyScanBinary",
                                 "propertyScanTernary", "psychrometricChart",
-                                "purePhaseDiagram", "scalingScan",
+                                "purePhaseDiagram", "referenceEoS", "scalingScan",
                                 "solubilityParameter", "speciate",
                                 "steamTables" })
             m[ty] = { {}, outFile };

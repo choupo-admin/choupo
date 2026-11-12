@@ -17,7 +17,7 @@ person.  For prose, groupings and worked examples instead of an
 alphabetical dump, read [`unit-ops.md`](unit-ops.md) beside it; to be
 taught rather than to look something up, read the User Guide.
 
-*111 of 111 registered operations carry a schema and are documented below.*
+*112 of 112 registered operations carry a schema and are documented below.*
 
 ## `FUG`  (FUG operation)
 
@@ -1185,6 +1185,17 @@ The standard reaction thermochemistry of declared reactions -- dH, dS, dG and ln
 | `phases` | ✓ | object | — | `{ glucose pureSolid; water pureLiquid; N2 idealGas; ... }` -- the standard state EACH species of every listed reaction is priced on. Req… |
 | `temperatures` | ✓ | array[number] | K | The temperatures at which each reaction is priced. 298.15 K is the datum temperature, where a declared rung answers without a heat capacity. |
 | `output` | ✓ | object | — | `{ file <name>.csv; }` -- one row per (reaction, temperature): dH_kJ_mol, dS_J_molK, dG_kJ_mol, lnK, and the route each species was price… |
+
+## `referenceEoS`  (referenceEoS operation)
+
+A pure fluid from its REFERENCE (multiparameter Helmholtz-energy) equation of state, read from data/standards/parameters/Helmholtz/<equation>.dat (case-local constant/parameters/Helmholtz/ first). This is a propsDict operation under choupoProps, NOT a flowsheet unit (a flowsheet reaches the same equation through `pureFluids { <component> { method Helmholtz; equation <name>; } }`). Loading a record evaluates EVERY check value its publication prints (IAPWS-95: 81) at the printed precision and REFUSES the run on a single miss. Give exactly ONE mode block: state (T with p, or T with rho) or saturation (T, by the Maxwell criterion). A (T, p) state lists every density root of the isotherm with its branch; the stable one is taken unless `branch` names one. A (T, p) outside the publication's validity window is announced as an extrapolation. Diagnostics are SI per unit mass. Tutorial: tutorials/props/thermo/refEoS01_iapws95_verification.
+
+| Field | Required | Type | Unit | Description |
+|---|:-:|---|---|---|
+| `equation` | ✓ | string | — | The record name, e.g. IAPWS95 (data/standards/parameters/Helmholtz/IAPWS95.dat). |
+| `state` |   | object | — | One state. With p the density is SOLVED: every root of the isotherm is listed (below T_c one per branch; crossings inside the unstable re… |
+| `saturation` |   | object | — | psat, rhoL, rhoV, h and s of both phases and hLV at T, by the Maxwell criterion (equal p and g), from the triple point to the critical po… |
+| `output` |   | object | — | `{ file <name>.csv; }` -- optional; writes a one-row CSV of the state (12 significant digits, SI). |
 
 ## `scalingScan`  (scalingScan operation)
 

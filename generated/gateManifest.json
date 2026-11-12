@@ -1650,6 +1650,11 @@
       "exit": 0,
       "claim": "check_henry_records: OK -- 45 Henry records from Sander 2015 reproduce from rows.tsv (1851 M/L rows, no Q or E row; NOT CHECKED: the values of the thermo-library records)",
       "seconds": 0.1
+    },
+    "check_reference_eos": {
+      "exit": 0,
+      "claim": "check_reference_eos: OK -- 1 reference equation(s) (IAPWS95); 81 published check values reproduced at the printed precision by an independent implementation and by the engine; 5 engine states agree with the recomputation to 1e-9.  NOT checked: whether an equation is right (its uncertainty is the publication's), the flowsheet route, states nearer the critical point than the check values.",
+      "seconds": 16.4
     }
   }
 }

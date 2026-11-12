@@ -28,6 +28,7 @@ License
 
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/pureFluid/IF97WaterFluid.H"
+#include "thermo/equationOfState/ReferencePureFluid.H"
 #include "thermo/iapws/IF97.H"
 #include "thermo/iapws/IAPWSTransport.H"
 
@@ -197,6 +198,9 @@ void PureFluidModel::registerBuiltins()
     registerType("IF97",
         [](const DictPtr&, scalar mw) -> std::unique_ptr<PureFluidModel>
         { return std::make_unique<IF97WaterFluid>(mw); });
+    registerType("Helmholtz",
+        [](const DictPtr& d, scalar mw) -> std::unique_ptr<PureFluidModel>
+        { return std::make_unique<HelmholtzPureFluid>(d, mw); });
 }
 
 } // namespace Choupo
