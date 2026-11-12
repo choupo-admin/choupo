@@ -687,8 +687,8 @@ export function AdsorptionIsothermsTool(): JSX.Element {
                     ]} />
                   <Text size="xs" c="dimmed">
                     This is the one-stage balance only.  Several stages, the dose against a curve
-                    of removals and the contact time are on the Batch adsorption page, which takes
-                    an isotherm from here.
+                    of removals and the contact time are on the Batch adsorption page, where you type
+                    in the isotherm fitted here.
                   </Text>
                 </>
               )}
