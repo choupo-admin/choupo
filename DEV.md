@@ -3446,6 +3446,38 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C366 (2026-11-12; a branch prepared by the cloud session before C364 took
+> effect, its scope agreed with Vitor there; the architect's decisions).**
+> `edutool/residue-curves` (0c91edfae): a residue-curve-map EduTool (id
+> `residue-curves`), GUI and guides only.  An independent reading found no
+> physics defect (ODE and direction, RK4 on the simplex, the typing of
+> singular points, the lever rule; the isopropanol-water azeotrope recomputed
+> by hand from the catalogue records, 0.675 / 353.63 K, as stated) and all six
+> new DOIs resolve.  DECIDED: it is integrated by the laptop with (a) the
+> reviewer's two text corrections (a tenth of a cell, not a twentieth; the
+> published-azeotrope panel says which comparison is in-sample and which
+> series are transcribed and unchecked), (b) the "not every pair is clean"
+> alert widened to a pair fitted at ONE temperature and used far from it
+> (acetonitrile-ethanol at 333.15 K, chloroform-methylEthylKetone at
+> 303.15 K), (c) two sentences of physics reworded (a single-region map shows
+> that no boundary blocks the split, not why the entrainer works; curves do
+> not cross by uniqueness of the ODE solution).  NOT decided here: the engine
+> op `residueCurveMap` its design note proposes (docs/design/
+> residue-curve-maps.md) -- the page's own arithmetic stays until a second
+> consumer needs it.  ENGINE FINDINGS it met, confirmed by reading and open:
+> (1) `propertyScanTernary mode lle` on a package without two liquid phases
+> fails every node inside a catch-all and publishes `n_ll 0` beside the
+> failure count with no warning (PropertyScanTernary.cpp :217, :263-267;
+> IsothermalFlash.cpp :567-571) -- it must refuse once, by name, before the
+> scan; (2) `propertyPoint` demands `T` even when every requested property
+> solves its own temperature (PropertyPoint.cpp :55); (3) a pair record with
+> a one-temperature validity span carries the grade "clean" -- the grade
+> describes the fit, so the engine's advisory must speak when the pair is
+> used outside its span.  Also from the same day's integration: four gates
+> were red on main (species-identity `HNO2aq`, `familyRoots` missing on 13
+> species of C320, six components whose Tb contradicts their vapour-pressure
+> curve); corrected on fix/data-gates-1112 from the evidence in the tree.
+
 > **C365 (finding of the cloud's last slice, 2026-11-12; the architect's
 > decision).**  Re-importing `greenAmmoniaPEQ_baseCase` from the corrected NH3
 > record matches its 321 authorised rows AND moves the tank-farm bund: the
