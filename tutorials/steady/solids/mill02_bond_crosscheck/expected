@@ -1,0 +1,41 @@
+# Reference KPIs (golden master, written BY EXPLICIT LIST -- DEV.md 4c C361).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feedPF                 F                0.00277536611111 1e-4
+stream  feedPF                 T                298.15 1e-4
+stream  feedPM                 F                0.00277536611111 1e-4
+stream  feedPM                 T                298.15 1e-4
+stream  productPF              F                0.00277536611111 1e-4
+stream  productPF              T                305.948239497 1e-4
+stream  productPM              F                0.00277536611111 1e-4
+stream  productPM              T                305.948239497 1e-4
+kpi     millPlugFlow           topClassRemaining 0.210135330015 1e-4
+kpi     millPlugFlow           sizeMassClosure  0 1e-9
+kpi     millPlugFlow           product_d50_um   849.52929756 1e-4
+kpi     millPlugFlow           product_d80_um   1696.90177714 1e-4
+kpi     millPlugFlow           product_d32_um   268.401408121 1e-4
+kpi     millPlugFlow           reductionRatio80 1.29763424756 1e-4
+kpi     millPlugFlow           W_shaft_kW       1.82000008287 1e-4
+kpi     millPlugFlow           T_out            305.948239497 1e-4
+kpi     millPlugFlow           bond_specificEnergy_kWh_t 0.416402559921 1e-4
+kpi     millPlugFlow           bond_ratio       4.3707704399 1e-4
+kpi     millPlugFlow           bond_operatingWorkIndex_kWh_t 61.3806790933 1e-4
+kpi     millPlugFlow           bond_workIndex_kWh_t 14.0434461012 1e-4
+kpi     millPlugFlow           anchor_selection_dev 0 1e-9
+kpi     millMixed              topClassRemaining 0.390624461796 1e-4
+kpi     millMixed              sizeMassClosure  0 1e-9
+kpi     millMixed              product_d50_um   1179.03969336 1e-4
+kpi     millMixed              product_d80_um   1976.27882905 1e-4
+kpi     millMixed              product_d32_um   283.241757022 1e-4
+kpi     millMixed              reductionRatio80 1.11419392264 1e-4
+kpi     millMixed              W_shaft_kW       1.82000008287 1e-4
+kpi     millMixed              T_out            305.948239497 1e-4
+kpi     millMixed              bond_specificEnergy_kWh_t 0.16625829547 1e-4
+kpi     millMixed              bond_ratio       10.9468222013 1e-4
+kpi     millMixed              bond_operatingWorkIndex_kWh_t 153.731107563 1e-4
+kpi     millMixed              bond_workIndex_kWh_t 14.0434461012 1e-4
+kpi     millMixed              anchor_selection_dev 0 1e-9
+boundary global                 H_feeds_kW       -6703.06423156 1e-4
+boundary global                 Q_boundary_kW    3.64000016574 1e-4
+boundary global                 H_products_kW    -6699.42423139 1e-4
+boundary global                 W_shaft_kW       3.64000016574 1e-4

@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  mill03_impact_vogelPeukert / flowsheetDict
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S ONE SIZE AXIS (DEV.md 4c C361): sqrt 2 from 4 mm down to 5.5 um, plus the pan.
+sizeGrid
+{
+    xMax      4 mm;
+    ratio     1.41421356;    // sqrt 2, the Tyler sieve series
+    nClasses  20;            // including the pan
+}
+
+units
+(
+    {
+        name        impactMill;
+        type        mill;
+        model       vogelPeukert;
+        in          feed;
+        outputs     ( product );
+        operation
+        {
+            specificEnergy  10000 J/kg;      // = f tau Wm,kin (ours)
+            residence       perfectlyMixed;
+            residenceTime   5 s;
+            selection
+            {
+                fMat            [0 -3 2 0 0] 0.318;   // kg/(J m), V&P Fig. 6, limestone
+                xWmMin          [0 3 -2 0 0] 0.5;     // J m/kg,   V&P Fig. 6, limestone
+                Wkin            2000 J/kg;            // per impact (ours)
+                stressFrequency 1 1/s;                // stress events per second (ours)
+                impacts         1;
+            }
+            breakage
+            {
+                model   austin;
+                phi     0.456;
+                gamma   0.75;
+                beta    2.2;
+            }
+        }
+    }
+);

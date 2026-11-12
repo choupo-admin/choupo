@@ -248,6 +248,14 @@ const std::map<std::string, UnitSpec>& table()
         //   read, and the heat flux a reboiler is held to.  Spellings made of
         //   tokenizer word characters only, like the two above.
         { "J/kg",       UnitSpec{ 1.0,      Dims::specificEnergy } },
+        //   Comminution (2026-11-12, DEV.md 4c C361): a mill's specific
+        //   energy in the unit the literature quotes it in (kWh per metric
+        //   tonne), Bond's work index in its OWN unit (kWh per SHORT ton,
+        //   907.18474 kg -- Wills & Napier-Munn p. 111), and the
+        //   Herbst-Fuerstenau energy-specific rate S^E in t/kWh.
+        { "kWh/t",        UnitSpec{ 3.6e6 / 1000.0,       Dims::specificEnergy } },
+        { "kWh/shortTon", UnitSpec{ 3.6e6 / 907.18474,    Dims::specificEnergy } },
+        { "t/kWh",        UnitSpec{ 1000.0 / 3.6e6,       Dimensions{ 0, -2, 2, 0, 0 } } },
         { "J/kg/K",     UnitSpec{ 1.0,      Dims::heatCapacity } },
         { "N/m",        UnitSpec{ 1.0,      Dims::surfaceTension } },
         { "W/m2",       UnitSpec{ 1.0,      Dims::heatFlux } },

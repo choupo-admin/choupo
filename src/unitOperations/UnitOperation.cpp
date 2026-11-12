@@ -69,6 +69,8 @@ License
 #include "separation/Absorber.H"
 #include "separation/Stripper.H"
 #include "separation/Cyclone.H"
+#include "solids/Mill.H"
+#include "solids/millModel/MillModels.H"
 #include "separation/BagFilter.H"
 #include "separation/GasSolidSplitter.H"
 #include "separation/IonExchanger.H"
@@ -195,6 +197,9 @@ void UnitOperation::registerBuiltins()
     reg("cyclone",            []{ return std::make_unique<Cyclone>();            });
     reg("bagFilter",          []{ return std::make_unique<BagFilter>();          });
     reg("gasSolidSplitter",   []{ return std::make_unique<GasSolidSplitter>();   });
+    //  SIZE REDUCTION (2026-11-12, DEV.md 4c C361 slice 2): a breakage
+    //  population balance on the case's size grid.
+    reg("mill",               []{ return std::make_unique<Mill>();               });
     reg("ionExchanger",       []{ return std::make_unique<IonExchanger>();       });
     reg("psa",                []{ return std::make_unique<PSA>();                });
     reg("tsaTwinBed",         []{ return std::make_unique<TSATwinBed>();         });
@@ -217,6 +222,11 @@ void UnitOperation::registerBuiltins()
     // Spray-dryer atomizer registry (rotary / pressure-swirl / twin-fluid),
     // selected via the SprayDryer `operation { atomiser { model …; } }` block.
     Atomizer::registerBuiltins();
+
+    // Mill sub-model registries: the selection function (the `model` word of
+    // a `mill` unit) and the breakage function (`breakage { model ...; }`).
+    SelectionFunction::registerBuiltins();
+    BreakageFunction::registerBuiltins();
 }
 
 } // namespace Choupo

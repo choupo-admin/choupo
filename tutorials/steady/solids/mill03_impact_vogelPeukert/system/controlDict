@@ -1,0 +1,29 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  mill03_impact_vogelPeukert
+
+  Vogel & Peukert (2003) measured, particle by particle in a rotor impact
+  device, the probability that a particle of size x breaks under k impacts of
+  mass-specific energy Wm,kin:  P_B = 1 - exp(-fMat x k (Wm,kin - Wm,min)),
+  with x Wm,min a material constant (their eq. 14).
+
+  MEASURED (theirs):  limestone fMat = 0.318 kg/(J m), x Wm,min = 0.5 J m/kg
+    (the table in their Fig. 6).
+  PARAMETERS (ours, stated):  one impact per stress event at Wm,kin =
+    2000 J/kg (about 63 m/s), stress frequency 1 1/s, residence 5 s, perfectly
+    mixed -- an impact mill as a well-stirred chamber;  S(x) = f P_B(x) is OUR
+    transfer of a single-particle law to a mill (V&P p. 109 report such a
+    transfer as work in progress);  the breakage function of mill01 (H&F's
+    limestone).  Feed 1 t/h, Rosin-Rammler d63 = 1 mm, n = 2.
+  PREDICTED:  the threshold size 0.5/2000 m = 0.25 mm below which nothing
+    breaks (the extent column of the profile is zero there), the product.
+  ENERGY:  the declared 10 kJ/kg is f tau Wm,kin, the energy the stress events
+    deliver per kg (ours); it is priced as heat.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "An impact mill whose selection function is the single-particle breakage probability of Vogel & Peukert (2003) with their material parameters for limestone (fMat = 0.318 kg/(J m), x Wm,min = 0.5 J m/kg): particles below about 0.25 mm are below the threshold energy and do not break at 2 kJ/kg, which no power-law selection function can show.";
+verbosity     3;
+citations
+(
+    "Austin, L.G. (1971) Introduction to the mathematical description of grinding as a rate process. Powder Technol. 5, 1-17. doi:10.1016/0032-5910(71)80064-5"
+    "Herbst, J.A.; Fuerstenau, D.W. (1980) Scale-up procedure for continuous grinding mill design using population balance models. Int. J. Miner. Process. 7, 1-31. doi:10.1016/0301-7516(80)90034-4"
+);

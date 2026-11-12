@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+componentMolarFlows
+{
+    CaCO3    9.991318 kmol/h;     // 1.0 t/h of calcite
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3    9.991318 kmol/h;
+        }
+        //  8x10 mesh, as in mill01.
+        particleSizeDistribution
+        {
+            edges     ( 1.70e-3  2.36e-3 );
+            diameter  ( 2.003e-3 );
+            massFrac  ( 1.0 );
+        }
+    }
+}

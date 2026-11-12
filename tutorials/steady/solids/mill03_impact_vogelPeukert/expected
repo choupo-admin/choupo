@@ -1,0 +1,23 @@
+# Reference KPIs (golden master, written BY EXPLICIT LIST -- DEV.md 4c C361).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.00277536611111 1e-4
+stream  feed                   T                298.15 1e-4
+stream  product                F                0.00277536611111 1e-4
+stream  product                T                310.01380966 1e-4
+kpi     impactMill             sizeMassClosure  0 1e-9
+kpi     impactMill             feed_d50_um      825.416538864 1e-4
+kpi     impactMill             feed_d80_um      1284.28280957 1e-4
+kpi     impactMill             product_d10_um   96.3953324497 1e-4
+kpi     impactMill             product_d50_um   404.173221915 1e-4
+kpi     impactMill             product_d80_um   804.936100355 1e-4
+kpi     impactMill             product_d32_um   132.009368539 1e-4
+kpi     impactMill             reductionRatio80 1.59550902115 1e-4
+kpi     impactMill             W_shaft_kW       2.77777790426 1e-4
+kpi     impactMill             T_out            310.01380966 1e-4
+kpi     impactMill             residenceTime_s  5 1e-4
+kpi     impactMill             anchor_selection_dev 0.00336596639454 1e-4
+boundary global                 H_feeds_kW       -3351.53211578 1e-4
+boundary global                 Q_boundary_kW    2.77777790426 1e-4
+boundary global                 H_products_kW    -3348.75433787 1e-4
+boundary global                 W_shaft_kW       2.77777790426 1e-4
