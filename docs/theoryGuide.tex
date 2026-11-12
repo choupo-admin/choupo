@@ -18468,7 +18468,9 @@ the magma (suspension) density
 \end{equation}
 ($k_v$ the volume shape factor, $\rho_c$ the crystal density --- the
 \emph{number$\leftrightarrow$mass bridge} on the component's
-\dict{solid \{ rho\_p; k\_v; \}} block), and a coefficient of variation
+\dict{solid \{ rho\_p; k\_v; \}} block; a record without $k_v$ gets the sphere,
+$\pi/6$, which is a shape \emph{assumption} and is announced by the unit
+naming the component and the value), and a coefficient of variation
 that is a pure number:
 \begin{equation}
    \mathrm{CV} = \sqrt{\frac{\mu_0\mu_2}{\mu_1^2}-1}
@@ -22823,7 +22825,10 @@ The solids friction factor is the hard part --- particles differ in size,
 shape and charge, and there is no universal Reynolds number.  Choupo uses the
 correlation of Yang (1974)\cite{Yang1974}, which ties $f_p$ to the voidage
 $\varepsilon$
-($1-\varepsilon = \rho_s^*/\rho_p$, the solids holdup) and the terminal-to-
+($1-\varepsilon = \rho_s^*/\rho_p$, the solids holdup; for several solids
+$\rho_p$ is the volume-additive harmonic mean of their densities, and a
+solid without a declared $\rho_p$ is refused by name, exactly as for the
+cyclone) and the terminal-to-
 particle Reynolds ratio $(Re)_t/(Re)_p = u_t/u_p$:
 \begin{align}
   \text{vertical:}\quad & f_p\,\frac{\varepsilon^3}{1-\varepsilon}
@@ -22975,6 +22980,16 @@ the grade-efficiency curve
 \begin{equation}
    \eta(d) = \frac{1}{1 + (d_{50}/d)^2}.
 \end{equation}
+\emph{Several solids in one stream.}  The solids are a mechanical mixture,
+so their volumes add and the particle density is the mass-weighted
+\emph{harmonic} mean,
+$1/\rho_p=\sum_i w_i/\rho_{p,i}$ ($w_i$ the mass fractions among the
+solids); one solid keeps its own density exactly.  One function
+(\code{solidMixture::particleDensity}) computes it for the cyclone, the
+pneumatic conveyor and the spray dryer, and announces the mixture the same
+way in each.  A solid whose record declares no $\rho_p$ is \emph{refused by
+name} (component, unit, the key to declare and where) --- no density is
+assumed, since a density is a material datum that needs a source.
 The collection efficiency follows by integrating $\eta(d)$ over the
 feed PSD.  The pressure drop is a few velocity heads, $\Delta P = N_H
 \rho_g v_i^2/2$ (Shepherd--Lapple).
@@ -24412,7 +24427,10 @@ droplet then shrinks to the powder particle by the solid fraction,
 \begin{equation}
    d_p = d_{32}\,(x_{\text{solid}}\,\rho_L/\rho_{\text{solid}})^{1/3},
 \end{equation}
-so the powder carries a PSD.
+so the powder carries a PSD.  $\rho_{\text{solid}}$ is the solid's declared
+$\rho_p$ (for a powder of several solids, the volume-additive harmonic mean
+of theirs); a solid with no $\rho_p$ in its record is refused by name --- the
+unit no longer assumes $1500\,$kg/m$^3$.
 
 \paragraph{Wet-bulb temperature.}  While the surface is wet the droplet
 sits at the psychrometric wet-bulb temperature (a Lewis-number-$\approx
@@ -24443,6 +24461,9 @@ its KPI of the same name is the inlet's),
 \begin{equation}
    X_e = \frac{X_m\,C\,K\,a_w}{(1-K a_w)(1-K a_w + C K a_w)}.
 \end{equation}
+All three of $X_m$, $C$ and $K$ are required: a \dict{sorption \{\}} block
+missing any one is refused by name (a missing $C$ or $K$ used to read as zero
+and give $X_e=0$).
 
 \emph{Kinetics} (in \file{constant/dryingKinetics}, axiom 3): below the
 critical moisture $X_c$ the rate falls; the Lewis falling-rate model

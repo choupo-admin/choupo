@@ -1675,6 +1675,11 @@
       "exit": 0,
       "claim": "check_species_records: OK -- 21 aqueous species reproduce from species.tsv (NBS 1982 read against the CRC reprint and the Gibbs identity, 8 CODATA-chosen quantities, 6 held; NOT CHECKED: any radius or D0 -- none is carried)",
       "seconds": 0.1
+    },
+    "check_solid_property_refusals": {
+      "exit": 0,
+      "claim": "check_solid_property_refusals: OK -- the five witnesses still run; a solid with no rho_p is refused by name in the cyclone, the pneumatic conveyor and the spray dryer (no zero, no 1500 kg/m3); an absent k_v runs the MSMPR on the sphere and ANNOUNCES it; a sorption block missing C or K is refused naming the key.  NOT CHECKED: that the harmonic mean suits a real powder, the hydrocyclone, the batch dryer and the time-integrated binaries, the equilibrium crystalliser.",
+      "seconds": 0.3
     }
   }
 }

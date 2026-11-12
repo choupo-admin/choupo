@@ -2001,6 +2001,10 @@ stands in for the blend, and no curation verdict is claimed.  Witnesses
 PSD-aware centrifugal classifier.  Five selectable `model`s:
 `Lapple` (default), `LeithLicht`, `IoziaLeith`, `Barth`,
 `Muschelknautz` (the last adds the solids-loading effect).
+Every solid of the feed MUST declare `solid { rho_p; }` (refused by name
+otherwise); several solids give the volume-additive (harmonic) particle density,
+announced.  Same rule in `pneumaticConveyor` and `sprayDryer` (one home,
+`thermo/SolidMixture`).
 
 ```
 operation
@@ -2040,7 +2044,8 @@ saltation velocity and **warns aloud if `u_g` falls below it** (settling /
 blockage risk) — never a silent clip.  Hardware-only operation block;
 every velocity, the suspended density and ΔP are results.  Needs a
 `transport { viscosity { model Chung; } }` block (gas viscosity) and the solid
-component's `solid { rho_p; }`.
+component's `solid { rho_p; }` (a missing density refuses by name; several
+solids: volume-additive mean).
 ```
 type      pneumaticConveyor;
 operation { geometry { D 0.1 m;  L 50 m;  dz 10 m;       // diameter, length, rise
@@ -2362,7 +2367,8 @@ identity, the printed Sigma formula evaluated by hand).
 ### `sprayDryer`
 Hardware: wheel atomiser geometry + chamber.  Atomisation by
 Friedman, drying kinetics by Ranz-Marshall + Lewis falling rate,
-equilibrium by GAB sorption isotherm.
+equilibrium by GAB sorption isotherm.  A solid with no `rho_p` REFUSES by name
+(no 1500 kg/m3 default); a `sorption {}` block must carry Xm, C and K.
 
 Selectable chamber `model`s (an unrecognised word REFUSES, naming these):
 - `marshall` (**default**, alias `lumped`).  The inlet/outlet short-cut plus a
@@ -2485,7 +2491,8 @@ Three selectable `model`s (an unrecognised word REFUSES, naming these):
 - `MSMPR`.  Steady continuous, method of moments → the crystal-size
   distribution n(L) (mean sizes, CV, magma PSD).  S is a RESULT (Newton-1D
   on the solute balance); needs kinetics in `constant/crystallisation` and a
-  `solid { rho_p; k_v; }` block on the solute.
+  `solid { rho_p; k_v; }` block on the solute.  A record with no `k_v` gets the
+  sphere (pi/6), ANNOUNCED naming the component; no `rho_p` refuses.
 - `FVM`.  Discretised population balance n(L) on a size grid (size-dependent
   growth); same inputs as MSMPR.
 

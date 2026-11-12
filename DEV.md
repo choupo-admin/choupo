@@ -3446,6 +3446,27 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C372 (Vitor, 2026-11-12: "ha uma lacuna que para mim importa: faltam as
+> especies dos acidos organicos mais comuns! Acido citrico, malico,
+> tartarico, lactico, etc.").**  MEASURED the same turn: the tartrate family
+> is in the catalogue (component, H2Tart / HTart / Tart, heat of solution,
+> all from Kochergina et al. 2006); acetate, formate, oxalic, maleic,
+> propionic, butyric and benzoic acids exist as components; citric, malic,
+> lactic and succinic acids are in NO form.  The ThermoML mirror holds
+> articles naming citric acid (24), hydroxybutanedioic = malic (9),
+> 2-hydroxypropanoic = lactic (19), butanedioic = succinic (30),
+> propanedioic = malonic (16), tartaric (8), and the salts (citrates 79,
+> tartrates 24) -- mostly solubilities, densities and activity data, which
+> give the components and the solution behaviour but NOT the ionisation
+> constants.  Those need an evaluated source: Kochergina (2006, in the
+> folder) carries citric and tartaric; for malic, lactic, succinic and the
+> rest the evaluated compilation of buffer ionisation thermodynamics
+> (Goldberg, Kishore & Lennen 2002, J. Phys. Chem. Ref. Data 31, 231) is the
+> candidate and is not in the folder.  Campaign on branch c372-organic-acids:
+> components and species with their ionisation chemistry for citric first,
+> then every acid whose constants a source in hand carries; a list of the
+> exact works still needed for the others.
+
 > **C371 (2026-11-12; a proposal relayed by the cloud session as Vitor's;
 > CONFIRMED by him in the laptop session the same day: "Sim avanca").**
 > AN OPERATOR CONTROL PANEL KEPT IN THE CASE: declared like the flowsheet
@@ -3472,6 +3493,18 @@ accepts today, and that is a policy call.
 > voltage drive with a limit, a displacement vessel, conditional events)
 > are separate later slices, each decided on its own.  An EduTool on good
 > practice for panels and alarms waits for the page queue to clear.
+> VITOR'S ANSWERS to the design record's questions (2026-11-12): he holds
+> no alarm-management or operator-display standard -- "usa apenas boas
+> praticas": the alarm rules are written as good practice and SAID to be
+> unverified against a standard; the tutorial is on WINE, "uma composicao
+> tipica de vinho de mesa" -- a declared typical composition, labelled as
+> such in the case, with a citable source sought for it (none is in the
+> folder yet); mid-run parameter changes are the architect's call: NOT
+> before the lesson -- a disturbance is first a second run of a varied
+> case, the simplest thing that works, and a mid-run `setParameter` on the
+> batch electrodialysis is built only if the lesson shows it is missed.
+> Still open with him: the bounded exception that lets the GUI write
+> `panelDict` (explained to him again; no answer yet).
 
 > **C370 (2026-11-12; three proposals the cloud says Vitor left to the two
 > sessions' judgement; the architect's answers).**  (a) SOLIDS, simple

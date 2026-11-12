@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 233 records already exist
+## 1. Why an index, when 234 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 233 design records, **162 state a rejected alternative and 71 do not** —
+- Of 234 design records, **163 state a rejected alternative and 71 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -150,6 +150,7 @@ direction is an error.
 
 | record | kind | alt | status |
 |---|---|---|---|
+| [`operator-panel-in-the-case.md`](../design/operator-panel-in-the-case.md) | ADR | yes | **CONTRACT 2026-11-12 (DEV.md 4c C371), not built** -- an operator panel is declared in the case (`system/panelDict`, optional, byte-identical when absent): elements `number`/`bar`/`trend`/`lamp` naming a published trajectory column with the controller's own `measurement { unit; cv; }` (or `{ controller; cv SP|PV|MV; }`), one `limit { low; high; source; reason; }` per element, one `alarm` naming its action, a required `reason` and `origin draft|edited`; `lock {}` by presence.  Read only after the solve from the series the run already writes (`src/postProcessing/panel/`), so it cannot move a number; the engine reports FACTS, never a grade (not published, constant, out of range, violated k of n, never approached, controller without element, alarms on one quantity, alarm count, draft differs), in a `panel` JSON block, `[panel]` lines and a golden kind `panel`; a malformed panel refuses.  `--panel-draft` / `bin/choupo-panel` drafts from each unit's `panelHints()` and the controllers, keeping edited elements on `--force`.  GUI: a Panel workspace and pop-out drawn from the run; tuning in a browser working copy, ONE explicit Save to `system/panelDict` -- a bounded exception to the credo, ruled as "the GUI writes a file only if the engine reads it after the solve and never into it", the bridge narrowed to `.cho` + `panelDict`.  REJECTED: the panel in the `.cho` marker; a `recordType`, `locked true|false`, `displayUnit`, a separate `band`, a pre-alarm fraction and a panel `expression` (from the proposed grammar); inferring roles from column names; reading `trajectory.csv` back; facts inside the time loop; facts in the caveat block; rearranging a locked panel.  Slices S1-S5; the four wine-process engine pieces listed, not designed |
 | [`provenance-semantics-five-axes.md`](../design/provenance-semantics-five-axes.md) | ADR | yes | **RATIFIED 2026-08-12, contract only** — `origin` / `method`(+`methodVersion`) / `from` / `provenance` / `reviewStatus`+`validation`, one responsibility each.  Retires `derived` AS AN ORIGIN (it only ever said a value has parents — that is `from`) and the scalar `provenance <word>;` shorthand (6 of its 22 uses answered the question the axis is named for; the BLOCK form already did this right).  The calculated/predicted line is *would perfect inputs give an exact result?*, with `K_f` kept as the permanent exhibit: exact arithmetic, inexact physical model.  Rejects storing a confidence tag (compute it from the graph) and rejects re-encoding input status into `origin`.  No implementation authorised |
 | [`standard-state-transfer-adr.md`](../design/standard-state-transfer-adr.md) | ADR | no | CONTRACT ONLY — D3, no implementation authorised |
 | [`model-declared-record-homes.md`](../design/model-declared-record-homes.md) | ADR | yes | **RATIFIED 2026-08-08** (queue ruling D2) — direction + recommended shape approved; build sequenced after the validation work |
@@ -387,7 +388,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**71 of 233 records state no rejected alternative.**  For a FORUM or a STUDY
+**71 of 234 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
