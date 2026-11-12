@@ -725,7 +725,7 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
         {
             const scalar rho = uCrystal->lookupScalarOrDefault("rho_p", 0.0);
             const scalar kv  = uCrystal->lookupScalarOrDefault("k_v", 0.5235987756);
-            comps[soluteIdx].setSolid(rho, kv);
+            comps[soluteIdx].setSolid(rho, kv, uCrystal->found("k_v"));
         }
         else
         {
@@ -737,9 +737,13 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
                 const scalar rho = sd->found("rho_p")
                     ? sd->subDict("rho_p")->lookupScalar("value") : 0.0;
                 scalar kv = 0.5235987756;   // sphere default (matches readFromDict)
+                bool kvDecl = false;
                 if (sd->found("shape") && sd->subDict("shape")->found("k_v"))
+                {
                     kv = sd->subDict("shape")->subDict("k_v")->lookupScalar("value");
-                comps[soluteIdx].setSolid(rho, kv);
+                    kvDecl = true;
+                }
+                comps[soluteIdx].setSolid(rho, kv, kvDecl);
                 if (thermoAnnounce()
                     && announceOnce("legacyCrystal:" + phaseName))
                     std::cout << "[legacy] crystal properties of '" << phaseName

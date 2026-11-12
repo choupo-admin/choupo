@@ -2488,6 +2488,115 @@
           }
         }
       ]
+    },
+    "adsorption-isotherms": {
+      "references": [
+        {
+          "text": "Langmuir, I. (1918). The adsorption of gases on plane surfaces of glass, mica and platinum. Journal of the American Chemical Society 40(9), 1361–1403.",
+          "doi": "10.1021/ja02242a004",
+          "note": "The site balance behind the Langmuir isotherm of step 2.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ja02242a004: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Freundlich, H. (1907). Über die Adsorption in Lösungen. Zeitschrift für Physikalische Chemie 57U(1), 385–470.",
+          "doi": "10.1515/zpch-1907-5723",
+          "note": "The power-law isotherm of step 2, proposed for adsorption from solution.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1515/zpch-1907-5723: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Kinniburgh, D. G. (1986). General purpose adsorption isotherms. Environmental Science & Technology 20(9), 895–904.",
+          "doi": "10.1021/es00151a008",
+          "note": "Fitting isotherms by nonlinear least squares, and what the linearised forms do to the errors.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/es00151a008: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Bolster, C. H.; Hornberger, G. M. (2007). On the Use of Linearized Langmuir Equations. Soil Science Society of America Journal 71(6), 1796–1806.",
+          "doi": "10.2136/sssaj2006.0304",
+          "note": "How each linearised Langmuir form weights the points, against the direct fit (step 3).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.2136/sssaj2006.0304: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Foo, K. Y.; Hameed, B. H. (2010). Insights into the modeling of adsorption isotherm systems. Chemical Engineering Journal 156(1), 2–10.",
+          "doi": "10.1016/j.cej.2009.09.013",
+          "note": "A review of the isotherm models met in liquid-phase work and of the error functions used to choose between them.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.cej.2009.09.013: authors, title, container, volume, pages and year matched (adsorption-isotherms EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Marquardt, D. W. (1963). An algorithm for least-squares estimation of nonlinear parameters. Journal of the Society for Industrial and Applied Mathematics 11(2), 431–441.",
+          "doi": "10.1137/0111030",
+          "note": "The damped step of step 3, with Marquardt's diagonal scaling.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1137/0111030: authors, title, container, volume, pages and year matched (C259 numerics audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Ruthven, D. M. (1984). Principles of Adsorption and Adsorption Processes. Wiley. ISBN 978-0-471-86606-0.",
+          "note": "The adsorption monograph: the Langmuir isotherm and both of its linear forms (Eqs. 2.27 to 2.32, p. 50), and adsorption from the liquid phase (sec. 4.7, p. 121).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/ruthven-principles-of-adsorption-and-adsorption-processes-1ed.pdf (a scan): copyright page read as an image: John Wiley & Sons, 1984, ISBN 0-471-86606-7 (= 978-0-471-86606-0), a Wiley-Interscience publication; Eqs. 2.27 to 2.32 read on p. 50 (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Geankoplis, C. J.; Hersel, A. A.; Lepek, D. H. (2018). Transport Processes and Separation Process Principles, 5th ed. Pearson (Prentice Hall). ISBN 978-0-13-418102-8.",
+          "note": "The course text: Eqs. 28.1-1 to 28.1-3 (linear, Freundlich q = K c^n, Langmuir q = q_o c/(K + c)), the 1/q against 1/c and log q against log c plots, and the batch balance of Eq. 28.2-1 (pp. 1348-1350).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/geankoplis-transport-processes-separation-process-principles-5ed.pdf: authors, title, edition, publisher, year and ISBNs read from the title and copyright pages; Eqs. 28.1-1 to 28.1-3 and 28.2-1 read as page images (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Wankat, P. C. (2007). Separation Process Engineering, 2nd ed. Prentice Hall (Pearson Education). ISBN 0-13-084789-5.",
+          "note": "The liquid-phase Langmuir isotherm, Eqs. 17-5a to 17-6c, and Example 17-1, which fits p/q against p (ch. 17).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/wankat-separation-process-engineering-2ed.pdf: author, title, edition, publisher, year and ISBN read from the title and copyright pages; equations read in the text layer (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "de Haan, A. B.; Eral, H. B.; Schuur, B. (2020). Industrial Separation Processes: Fundamentals, 2nd ed. De Gruyter. ISBN 978-3-11-065473-8.",
+          "note": "Langmuir isotherm in pressure and in concentration (Eqs. 6.6, 6.11) and its c/q against c line (Eq. 6.12); for a liquid, q_max and b' are empirical constants (pp. 164-167).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/dehaan-industrial-separation-processes-2ed.pdf: authors, title, edition, publisher, year and ISBN read from the title and copyright pages; equations read in the text layer (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
+          "note": "Freundlich q = k p^(1/n) (Eqs. 15-19, 15-20) and Langmuir with its p/q against p line (Eqs. 15-24, 15-25), with a worked fit of both (Example 15.4, ch. 15).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; chapter 15 present and read in the text layer (adsorption-isotherms integration review)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }

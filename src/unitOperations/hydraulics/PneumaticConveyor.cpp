@@ -28,6 +28,7 @@ License
 
 #include "PneumaticConveyor.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/SolidMixture.H"
 #include "core/RegistryRefusal.H"
 
 #include <algorithm>
@@ -162,19 +163,18 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     const scalar mu = thermo.viscosityGas(T, y);
 
     // ---- Solids: mass flow, particle density, Sauter mean diameter ------
-    scalar rho_p = 0.0, mDotS = 0.0;
+    scalar mDotS = 0.0;
     for (std::size_t i = 0; i < n; ++i)
-    {
-        if (sin[i] <= 0.0) continue;
-        const scalar mi = sin[i] * thermo.comp(i).MW();
-        rho_p += mi * (thermo.comp(i).rho_p() > 0.0 ? thermo.comp(i).rho_p() : 0.0);
-        mDotS += mi;
-    }
+        if (sin[i] > 0.0) mDotS += sin[i] * thermo.comp(i).MW();
     if (mDotS <= 0.0)
         throw std::runtime_error("pneumaticConveyor: no solids mass flow reached the "
             "unit --- check the `solids { solidMolarFlows {...} }` block / the upstream "
             "stream actually carries solids.");
-    rho_p = rho_p / mDotS;
+    //  ONE home (thermo/SolidMixture): volumes add; a solid with no density
+    //  REFUSES by name instead of entering as zero.
+    const scalar rho_p = solidMixture::particleDensity(thermo, sin,
+        "pneumaticConveyor '" + (dict->name().empty() ? std::string("pneumaticConveyor") : dict->name()) + "'",
+        verbosity);
     if (rho_p <= 0.0)
         throw std::runtime_error("pneumaticConveyor: the solid has no particle "
             "density --- add `solid { rho_p <kg/m^3>; }` to its component.dat.");

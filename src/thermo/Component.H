@@ -324,7 +324,11 @@ public:
     // The ThermoPackageBuilder loads these from the substance record's linked
     // phases/solid record into the identity salt (the MSMPR/PSD crystalliser reads
     // them); for a readFromDict component they come from the `solid {}` block.
-    void   setSolid(scalar rho_p, scalar k_v) { rho_p_ = rho_p; k_v_ = k_v; }
+    void   setSolid(scalar rho_p, scalar k_v, bool kvDeclared = true)
+    { rho_p_ = rho_p; k_v_ = k_v; kvDeclared_ = kvDeclared; }
+    //  false when the record declared no k_v and the sphere pi/6 stands in
+    //  (a shape ASSUMPTION; units that use k_v announce it, solidMixture).
+    bool   kvDeclared() const { return kvDeclared_; }
     // Set the liquid heat capacity from a `liquidHeatCapacity {}` dict (the
     // builder loads it from the substance record into the identity salt -- needed
     // by the liquid sensible-enthalpy path in mixed-solvent / recycle cases).
@@ -817,6 +821,7 @@ private:
     bool        hasSolid_ = false;
     scalar      rho_p_    = 0.0;          // particle density [kg/m^3]
     scalar      k_v_      = 0.5235987756; // volume shape factor (sphere = π/6)
+    bool        kvDeclared_ = false;      // k_v read from a record (else sphere, announced)
 
     // Sublimation reference state: optional `sublimation { tripleT; tripleP;
     // Hfus; Hsub; }` block (solid-vapour P-T anchor).  Absent => unaffected.
