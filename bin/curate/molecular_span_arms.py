@@ -176,8 +176,27 @@ def arm_q(tmp, fails):
     return 1
 
 
+def arm_r(tmp, fails):
+    comps = ["methylAcetate", "water"]
+    rc, out = _case(tmp, "r", comps, "UNIQUAC",
+                    [_gamma_op("g", 500.0, {"methylAcetate": 0.5, "water": 0.5})])
+    if rc:
+        fails.append(f"arm (r): the UNIQUAC probe exited {rc}")
+        return 0
+    ls = _span_lines(out, "UNIQUAC pair")
+    if len(ls) != 1 or "declares no validity span" not in ls[0]:
+        fails.append("arm (r): a record with no declared span, used at 500 K, must print "
+                     "ONE `[pair-span]` line saying it declares none; got "
+                     f"{len(ls)}: {(ls[0] if ls else '')[:160]}")
+    rc2, out2 = _case(tmp, "r2", ["isopropanol", "water"], "NRTL",
+                      [_gamma_op("g", 298.15, {"isopropanol": 0.5, "water": 0.5})])
+    if rc2 == 0 and "declares no validity span" in out2:
+        fails.append("arm (r): a record that DECLARES a span printed the no-span sentence")
+    return 1
+
+
 def run_arms(tmp, fails):
-    return arm_p(tmp, fails) + arm_q(tmp, fails)
+    return arm_p(tmp, fails) + arm_q(tmp, fails) + arm_r(tmp, fails)
 
 
 def main():

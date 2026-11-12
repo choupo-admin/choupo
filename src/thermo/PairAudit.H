@@ -224,6 +224,13 @@ inline void fillPairAudit(PairResolution&    r,
 //  The scope is explicit at the call site and thread-local: no flash, column
 //  or stream evaluation opens one, so the rule above is unchanged for them.
 //
+//  A RECORD THAT DECLARES NO SPAN SAYS SO (PO-03, 2026-11-12).  Silence from a
+//  span guard reads as "inside the span".  A catalogue record whose provenance
+//  carries no validity temperature (three UNIQUAC records of Popken et al.,
+//  2000) cannot be checked, and the engine does not invent a span for it: the
+//  first use of the pair in a run (both components present) is announced once,
+//  naming the record and saying that an out-of-span use cannot be detected.
+//
 //  ONCE PER PAIR PER RUN, as ruled: the key is the pair, not the side, so a
 //  run that walks both below and above a span reports its FIRST excursion.
 //  The log holds the key (`addAnnouncedOnce`, core/Advisory.H, "THE LOG IS
@@ -249,20 +256,24 @@ public:
         static int& depth() { static thread_local int d = 0; return d; }
     };
 
-    //  Register the span a resolved pair record declares, if it declares one.
+    //  Register the span a resolved pair record declares; a record that
+    //  declares none is registered as such (PO-03) so its use can say so.
     void add(const std::string&    model,
              std::size_t           i,
              std::size_t           j,
              const std::string&    pairName,
              const PairResolution& r)
     {
-        if (!r.validity.temperature) return;
         Span s;
         s.i = i;  s.j = j;
-        s.lo = r.validity.temperature->lo;
-        s.hi = r.validity.temperature->hi;
+        s.declared = static_cast<bool>(r.validity.temperature);
+        if (s.declared)
+        {
+            s.lo = r.validity.temperature->lo;
+            s.hi = r.validity.temperature->hi;
+        }
         s.locus = model + " pair '" + pairName + "'";
-        s.key   = "pairSpan:" + model + ":" + pairName;
+        s.key   = "pairSpan:" + model + ":" + pairName + (s.declared ? "" : ":undeclared");
         s.tag   = model + " pair " + pairName;
         spans_.push_back(std::move(s));
     }
@@ -274,12 +285,12 @@ public:
         const bool zeroIsSubject = InfiniteDilutionScope::active();
         for (const auto& s : spans_)
         {
-            if (T >= s.lo && T <= s.hi) continue;
+            if (s.declared && T >= s.lo && T <= s.hi) continue;
             if (s.i >= x.size() || s.j >= x.size()) continue;
             const bool used = zeroIsSubject ? (x[s.i] > 0.0 || x[s.j] > 0.0)
                                             : (x[s.i] > 0.0 && x[s.j] > 0.0);
             if (!used) continue;
-            announce(s, T);
+            if (s.declared) announce(s, T); else announceUndeclared(s);
         }
     }
 
@@ -287,10 +298,27 @@ private:
     struct Span
     {
         std::size_t i = 0, j = 0;
+        bool        declared = true;
         scalar      lo = 0.0, hi = 0.0;
         std::string locus, key, tag;
     };
     std::vector<Span> spans_;
+
+    static void announceUndeclared(const Span& s)
+    {
+        if (AdvisoryLog::instance().passHas(s.key)) return;
+        const std::string m =
+            "the record declares no validity span, so the temperatures of the"
+            " data its parameters were fitted to are not known to the engine and"
+            " a use outside them -- at this temperature or any other -- cannot be"
+            " announced; silence from this guard is NOT evidence that the pair is"
+            " inside its data";
+        if (!AdvisoryLog::instance().addAnnouncedOnce(s.key, "validity", "warning",
+                                                       s.locus, m))
+            return;
+        std::cerr << "[pair-span] " << s.tag << ": " << m
+                  << ".  Read the record's provenance before the result is cited.\n";
+    }
 
     static void announce(const Span& s, scalar T)
     {
