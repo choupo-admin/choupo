@@ -2196,6 +2196,80 @@
           }
         }
       ]
+    },
+    "residue-curves": {
+      "references": [
+        {
+          "text": "Doherty, M. F.; Perkins, J. D. (1978). On the dynamics of distillation processes—I. Chemical Engineering Science 33(3), 281–301.",
+          "doi": "10.1016/0009-2509(78)80086-4",
+          "note": "The residue curve equation dx/dξ = x − y*, and the classification of its singular points.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/0009-2509(78)80086-4: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Fien, G.-J. A. F.; Liu, Y. A. (1994). Heuristic Synthesis and Shortcut Design of Separation Processes Using Residue Curve Maps: A Review. Industrial & Engineering Chemistry Research 33(11), 2505–2522.",
+          "doi": "10.1021/ie00035a001",
+          "note": "A review of what residue curve maps are used for: regions, boundaries, entrainer selection.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie00035a001: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Renon, H.; Prausnitz, J. M. (1968). Local compositions in thermodynamic excess functions for liquid mixtures. AIChE Journal 14(1), 135–144.",
+          "doi": "10.1002/aic.690140124",
+          "note": "NRTL, the liquid model every map on this page is computed with.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "~/Choupo-Literature/renon1968-nrtl.pdf, p. 139 read (recommended alpha_12 and tabulated alphas); Crossref 10.1002/aic.690140124 matched (C259 thermodynamics-and-reaction audit)",
+            "date": "2026-11-09"
+          }
+        },
+        {
+          "text": "Kamihama, N.; Matsuda, H.; Kurihara, K.; Tochigi, K.; Oba, S. (2012). Isobaric Vapor–Liquid Equilibria for Ethanol + Water + Ethylene Glycol and Its Constituent Three Binary Systems. Journal of Chemical & Engineering Data 57, 339–344.",
+          "doi": "10.1021/je2008704",
+          "note": "Measured ethanol-water bubble points at 101.3 kPa: the published azeotrope of the first preset.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/je2008704: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Orchillés, A. V.; Miguel, P. J.; González-Alfaro, V.; Llopis, F. J.; Vercher, E.; Martínez-Andreu, A. (2017). Isobaric vapor-liquid equilibria for the extractive distillation of 2-propanol + water mixtures using 1-ethyl-3-methylimidazolium dicyanamide ionic liquid. The Journal of Chemical Thermodynamics 110, 16–24.",
+          "doi": "10.1016/j.jct.2017.02.005",
+          "note": "Measured isopropanol-water VLE at 100 kPa: the published azeotrope of the second preset.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.jct.2017.02.005: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Zhang, Z.; Hu, A.; Zhang, T.; Zhang, Q.; Sun, M.; Sun, D.; Li, W. (2015). Separation of methyl acetate + methanol azeotropic mixture using ionic liquids as entrainers. Fluid Phase Equilibria 401, 1–8.",
+          "doi": "10.1016/j.fluid.2015.04.018",
+          "note": "Measured methyl acetate-methanol VLE at 101.3 kPa: the published azeotrope of the fourth preset.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.fluid.2015.04.018: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "Li, J.; Li, J.; Zheng, Y.; Peng, C.; Liu, H. (2019). Measurement and correlation of isobaric vapour-liquid equilibrium for the (acetonitrile + water) system containing different ionic liquids at atmospheric pressure. The Journal of Chemical Thermodynamics 138, 366–373.",
+          "doi": "10.1016/j.jct.2019.07.006",
+          "note": "Measured acetonitrile-water VLE at 101.3 kPa: the published azeotrope of the fifth preset.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/j.jct.2019.07.006: authors, title, container, volume, pages and year matched (residue-curves EduTool)",
+            "date": "2026-11-12"
+          }
+        }
+      ]
     }
   }
 }

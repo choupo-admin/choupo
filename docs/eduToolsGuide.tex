@@ -2127,6 +2127,93 @@ statistic on the page.  The three disagreeing is the finding.
 Only the volume is forecast, not the price; the history on the page is invented
 and must be replaced by a series you can cite.
 
+\subsection{Residue curve maps: azeotropic and extractive distillation}\label{sec:edu-residue-curves}
+
+\noindent\textit{\small Tool:} \code{tool=residue-curves}.  \textit{\small
+Case it starts from:} none in the corpus --- the page writes a props case of its
+own and runs it with \code{choupoProps} in the browser.
+
+\subsubsection*{The question}
+
+\emph{Which products can a simple column make from a three-component feed that
+has azeotropes, and why does adding a heavy solvent, changing the pressure or
+splitting the liquid let a column do what it otherwise cannot?}
+
+The page starts from the batch still of the Rayleigh page with a third
+component: the pot liquid of a simple still follows a residue curve,
+$\mathrm{d}x_i/\mathrm{d}\xi = x_i - y_i^{*}(x)$ with $\xi=\ln(W_0/W)$, and its
+bubble temperature rises along it.  A preset (ethanol + water + ethylene glycol,
+isopropanol + methanol + water, chloroform + methanol + methyl ethyl ketone,
+benzene + methanol + methyl acetate, acetonitrile + ethanol + water), a pressure
+and a grid are chosen; the page draws the map with arrows towards rising
+temperature, the singular points (pure components and azeotropes) as unstable
+nodes, stable nodes and saddles in a table with their temperatures and
+compositions, the distillation boundaries out of the saddles, and the regions
+they separate.  A click places a feed: its own residue curve, its region, and
+the direct and indirect limiting splits on a straight mass-balance line, with
+$D/F$ from the lever rule.  The page ends with the ways round a boundary (a heavy
+entrainer that adds none, a heterogeneous entrainer and a decanter, a pressure
+change, a recycle) and with published azeotropes beside the engine's.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The engine computes every equilibrium number: one \code{propertyPoint} per
+composition of a triangular grid asks for \code{T\_bubble} and
+\code{y\_eq\_<component>} at the chosen pressure, with NRTL for the liquid (each
+pair resolved from the catalogue) and an ideal-gas vapour.  The pair table shows
+where the engine found each pair, its fit grade, and every sentence the engine
+said about it, including each use outside its validity span.  A second run asks
+again at finer compositions around each azeotrope the page located, and runs the
+engine's liquid-liquid flash (\code{propertyScanTernary}, mode \code{lle}) over
+the triangle at the lowest bubble temperature of the map.
+
+The page computes the rest, and says so beside each figure: linear interpolation
+inside each grid cell, fourth-order Runge--Kutta on the normalised direction of
+$x-y^{*}$, the singular points (located to one grid cell, or to a twentieth of
+one on an edge after the refinement), their type read twice --- from the boiling
+temperatures around them and from the eigenvalues of
+$\partial(x-y^{*})/\partial x$ --- the boundaries, the regions and the lever
+rule.  It reports its own checks: how many curves start and end at a node,
+whether any two drawn curves cross, and the largest fall in temperature along a
+curve that the interpolation leaves.  The design record
+\file{docs/design/residue-curve-maps.md} holds the arithmetic, the checks
+measured on every preset, the reading of the published azeotropes, and a
+proposal for an engine operation that would make the page a pure drawing.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Open the glycol preset: one region, the ethanol--water azeotrope the unstable
+node and the glycol the stable node --- every residue curve runs from the
+azeotrope towards the glycol, which is why glycol can carry the water away in
+an extractive column.  Switch to isopropanol + methanol + water and place a feed
+on each side of the red boundary: the region, and the bottoms the direct split
+can reach, change.  On chloroform + methanol + methyl ethyl ketone, change the
+pressure from 1.01325 to 5\,bar and watch an azeotrope disappear from the
+model's map.  On acetonitrile + ethanol + water, compare the two grids: the
+model's ternary azeotrope lies a few hundredths of a kelvin below a binary one,
+and the coarse grid does not agree with itself about its type.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a boundary on the map is a boundary in the plant.}  The map is the
+model's: many catalogue pairs are regressions to one laboratory over a narrow
+range, used here outside it, and the page prints the engine's own sentences
+about each.  An azeotrope that appears or vanishes on the map may not do so in
+the mixture.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+No liquid--liquid split is drawn: every bubble point is for one liquid, and the
+split is checked at one temperature only.  No column is solved; the splits drawn
+are the limits the rule of thumb allows, and a curved boundary can be crossed by
+a straight mass-balance line.  Residue curves stand in for column profiles,
+which they approximate at total reflux.  The vapour is ideal and the vapour
+pressures are the catalogue's correlations, extrapolated at the higher
+pressures, as the engine announces.  Measured azeotropes are compared for four
+binaries only, read from measured points the corpus carries.
+
 \section{Constructions not yet documented here}\label{sec:edu-stubs}
 
 %  No count here.  This sentence used to say "Six live tools", against a

@@ -27901,6 +27901,42 @@ the still's unrouted distillate recorded as an external outlet
 independently balanced.
 \end{tutoriallink}
 
+\section{Residue curve maps}\label{ch:residue-curves}
+
+A simple batch still on a mixture of three components obeys the same
+balance as the Rayleigh still of Section~\ref{ch:rayleigh}, one equation per
+component.  Over an instant the pot holding $W$ moles loses $\mathrm{d}W<0$ as
+vapour $y^{*}(x)$ in equilibrium with the liquid $x$, so
+$W\,\mathrm{d}x_i = (y_i^{*}-x_i)\,\mathrm{d}W$, and with the warped time
+$\xi=\ln(W_0/W)$,
+\begin{equation}
+\frac{\mathrm{d}x_i}{\mathrm{d}\xi} = x_i - y_i^{*}(x), \qquad i = 1,2,3,
+\label{eq:residue-curve}
+\end{equation}
+of which two are independent.  A solution is a \emph{residue curve}; the
+bubble temperature rises monotonically along it (Doherty and Perkins, Chem.\
+Eng.\ Sci.\ 33 (1978) 281--301), so no two curves cross.  Its fixed points,
+$x^{\star}=y^{*}(x^{\star})$, are the pure components and the azeotropes, and
+the eigenvalues of $J=\partial(x-y^{*})/\partial x$ there classify each as an
+unstable node (both positive: the curves start there, a local minimum of the
+boiling temperature), a stable node (both negative: they end there, a local
+maximum) or a saddle.  The curves that leave or enter a saddle across the
+triangle are the simple distillation boundaries; they separate regions whose
+curves share a start and an end.  A simple column's distillate and bottoms
+lie, approximately, in the region of its feed, on a straight line through it
+($F x_F = D x_D + B x_B$).
+
+\emph{What Choupo computes.}  No operation integrates
+Eq.~\eqref{eq:residue-curve} today.  The engine supplies its right-hand side:
+\code{propertyPoint} returns $T_\mathrm{b}$ and $y^{*}$ at any liquid
+composition and pressure through \code{BubblePoint::compute}.  The EduTool
+\code{residue-curves} asks for them on a triangular grid and does the
+integration, the location and classification of the singular points, the
+boundaries and the lever rule as its own arithmetic over that field; the
+design record \file{docs/design/residue-curve-maps.md} states that arithmetic,
+the checks measured on it, and a proposed \code{residueCurveMap} operation
+that would move it into the engine.
+
 % ---------------------------------------------------------------------
 \section{Continuous dynamic CSTR with finite hold-up}\label{ch:dyn-cstr}
 
