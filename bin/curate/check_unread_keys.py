@@ -228,6 +228,87 @@ if missing:
     print("  note: %d explained key(s) no longer reported -- if the plant was"
           " fixed, trim EXPECTED above." % len(missing))
 
+# --- 5 + 6. a block ONLY `totalReflux` reads is REFUSED, not announced -------
+#  RB-03 / RB-07 of docs/reviews/2026-11-12-rate-based-columns.  `efficiency {}`
+#  and `packing {}` are read by `model totalReflux;` and by no other column
+#  model.  Declared on a Wang-Henke column they used to leave ONE "[dict] key
+#  written and never read" line mid-log and run on ideal stages at exit 0 --
+#  the author received E_MV = 1.  The generic mechanism above announces (and
+#  the measurement in the docstring says ANNOUNCE is right for a hardware key a
+#  unit may lawfully leave unread); a block whose ONLY reader is one named model
+#  is a different case: the author asked for a computation that cannot happen,
+#  so the engine REFUSES, naming the model that reads it and the word that
+#  selects it.
+tmp5 = tempfile.mkdtemp(prefix="unreadkeys-rb03-")
+try:
+    for blk, text_block, must in (
+        ("efficiency", "efficiency { model AIChE; }",
+         ("model totalReflux", "efficiency", "murphreeEfficiency")),
+        ("packing", "packing { model RochaBravoFair; }",
+         ("model totalReflux", "packing")),
+    ):
+        dst5 = os.path.join(tmp5, blk)
+        shutil.copytree(WITNESS, dst5)
+        fs5 = os.path.join(dst5, "system", "flowsheetDict")
+        t5 = open(fs5, errors="replace").read()
+        t5n = re.sub(r"murphreeEfficiency\s+[\d.]+\s*;[^\n]*", text_block, t5, count=1)
+        if t5n == t5:
+            fail("RB-03: the witness's murphreeEfficiency line was not found --"
+                 " the arm would test nothing")
+            continue
+        open(fs5, "w").write(t5n)
+        r5 = run(dst5)
+        o5 = r5.stdout + r5.stderr
+        if r5.returncode == 0:
+            fail("RB-03: a Wang-Henke column declaring `%s {}` RAN (exit 0) --"
+                 " the block is ignored and the column solves on ideal stages"
+                 % blk)
+        elif not all(w in o5 for w in must):
+            fail("RB-03: the `%s {}` refusal does not name %s: %s"
+                 % (blk, must, o5.strip().splitlines()[-1][:200]))
+        elif "written and never read" in o5:
+            fail("RB-03: the `%s {}` refusal came AFTER a never-read line --"
+                 " it must be refused before solving" % blk)
+        else:
+            ok("RB-03: `%s {}` on a Wang-Henke column is REFUSED before solving,"
+               " naming model totalReflux" % blk)
+
+    #  RB-07: the multicomponent refusal names the model that was declared.
+    src6 = os.path.join(ROOT, "tutorials", "steady", "distillation",
+                        "trayEfficiency05_chanFair_yanagi14")
+    dst6 = os.path.join(tmp5, "ternary")
+    shutil.copytree(src6, dst6)
+    shutil.rmtree(os.path.join(dst6, "expected"), ignore_errors=True)
+    for f in ("outerDict",):
+        try:
+            os.remove(os.path.join(dst6, "system", f))
+        except OSError:
+            pass
+    shutil.copy(os.path.join(ROOT, "data", "standards", "components", "toluene.dat"),
+                os.path.join(dst6, "constant", "components", "toluene.dat"))
+    tp = os.path.join(dst6, "constant", "thermoPhysPropDict")
+    t6 = open(tp).read().replace("components ( cyclohexane nHeptane );",
+                                 "components ( cyclohexane nHeptane toluene );")
+    open(tp, "w").write(t6)
+    fp = os.path.join(dst6, "system", "flowsheetDict")
+    f6 = open(fp).read()
+    f6n = re.sub(r"(\n\s*)cyclohexane(\s+)0\.29;", r"\1cyclohexane\g<2>0.29; toluene 0.1;", f6, count=1)
+    if f6n == f6:
+        fail("RB-07: the ternary probe edit changed nothing -- the arm would test nothing")
+    else:
+        open(fp, "w").write(f6n)
+        r6 = run(dst6)
+        o6 = r6.stdout + r6.stderr
+        if r6.returncode == 0:
+            fail("RB-07: a ternary package under efficiency ChanFair RAN")
+        elif "the ChanFair tray efficiency is implemented for a BINARY" not in o6:
+            fail("RB-07: the multicomponent refusal does not name the declared model"
+                 " (ChanFair): " + o6.strip().splitlines()[-1][:200])
+        else:
+            ok("RB-07: the multicomponent refusal names the declared model (ChanFair)")
+finally:
+    shutil.rmtree(tmp5, ignore_errors=True)
+
 print()
 if fails:
     print("check_unread_keys: %d FAILURE(S)" % len(fails))

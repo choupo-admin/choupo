@@ -8,7 +8,8 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   trayEfficiency07_syedaChuang_yanagi08  --  the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS
-  GEOMETRY, held against a commercial-scale measurement it was not fitted to
+  GEOMETRY, compared with a commercial-scale measurement that is IN-SAMPLE for this
+  model (its one constant C'' was fitted to these FRI trays; nothing was fitted HERE)
   (DEV.md 4c C329).  Cyclohexane / n-heptane at 34 kPa, total reflux.
 
   THE TRAY: FRI's 8 % hole-area sieve tray, the one the paper compares against
@@ -60,8 +61,11 @@
 
   WHAT THE MODEL SEES OF THE OPEN AREA: the hole velocity (the large-bubble
   diameter), the open-area ratio and the hole pitch (the spray interfacial
-  area), besides the flood approach.  Weeping is not modelled.  The sweep
-  stops below the model's own entrainment flood (Fair's psi = 1).
+  area), besides the flood approach.  Weeping is not modelled.  A MEASURED POINT THE MODEL CANNOT REACH IS A MODEL MISS.  The sweep stops
+  below Fs 2.1; the model refuses (psi >= 1) beyond Fs 2.150, and the 8 % tray
+  was measured operating at Fs 2.160 (52.6 %, Fig. 12 digitised), 0.5 % beyond
+  that limit.  No prediction exists there, so the error statistics exclude the
+  point for that reason alone, and it counts as a miss of the model's flood limit.
 \*---------------------------------------------------------------------------*/
 
 units

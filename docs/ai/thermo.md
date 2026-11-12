@@ -305,6 +305,18 @@ NOT a fitted law -- against Archer (1992) NaCl it is off by tens of per cent at
 273 K and 373 K at 3-6 mol/kg while Pitzer stays within 2.1 % (Theory Guide,
 eNRTL "Temperature dependence").  For NaCl-water off 25 C use Pitzer.
 
+**Temperature validity of a molecular pair (NRTL, Wilson, UNIQUAC; PO-01..03, 2026-11-12).**
+A catalogue pair outside its declared span prints ONE `[pair-span]` line per pair per run
+and is recorded in the caveat block; no number changes.  Three rules: (i) a pair is "used"
+when both components are present, except in `activityCoefficients`, whose subject is the
+value at exactly the composition given -- a component at zero is the infinite-dilution
+coefficient and the pair is announced when either component is present; (ii) a
+bubble-point search's advisories at the temperatures it VISITS (its start is the
+mole-weighted normal boiling point) are filed as the solver's path, and only the converged
+state speaks as a caveat about the answer; (iii) a record that declares NO span (three
+UNIQUAC records of Popken et al.) says so when it is used -- silence there would read as
+"inside the span".
+
 **Weak organic acids (carboxylic) in aqueous chemistry** (C372, 2026-11-12).
 Families that exist, each a neutral master plus its ions and one ionisation record
 per ion (declare the neutral master, or the fully dissociated ion, as the analytical

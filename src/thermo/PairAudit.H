@@ -207,8 +207,29 @@ inline void fillPairAudit(PairResolution&    r,
 //  (x_i > 0 and x_j > 0) in the evaluated phase.  A pair whose components
 //  are absent shapes nothing a run publishes; announcing it would fill the
 //  caveat block of a big flowsheet with pairs that were never in play.  (An
-//  infinite-dilution gamma of an ABSENT component does read the pair, and is
-//  deliberately not announced: no stream carries that component.)
+//  infinite-dilution gamma of an ABSENT component does read the pair, and in a
+//  FLASH or a column stage is deliberately not announced: no stream carries
+//  that component.)
+//
+//  THE ONE PLACE WHERE ZERO COMPOSITION IS THE EVALUATION (PO-01, 2026-11-12).
+//  The `activityCoefficients` operation publishes gamma_i for every component,
+//  and for a component at exactly zero that number IS the infinite-dilution
+//  coefficient -- the subject of the operation, not a by-product of a stream
+//  that does not carry it.  Reproducer of the review: nButanol + nHeptane,
+//  NRTL, 303.15 K (below the span), {nButanol 0; nHeptane 1}: gamma 9.4268
+//  printed with no `[pair-span]`, and the same number with nButanol at 1e-9
+//  WITH it.  That operation opens an `InfiniteDilutionScope`; inside it a
+//  pair is used when EITHER component is present (gamma_i of an absent i reads
+//  tau_ij of every present j; a pair with both absent is still not read).
+//  The scope is explicit at the call site and thread-local: no flash, column
+//  or stream evaluation opens one, so the rule above is unchanged for them.
+//
+//  A RECORD THAT DECLARES NO SPAN SAYS SO (PO-03, 2026-11-12).  Silence from a
+//  span guard reads as "inside the span".  A catalogue record whose provenance
+//  carries no validity temperature (three UNIQUAC records of Popken et al.,
+//  2000) cannot be checked, and the engine does not invent a span for it: the
+//  first use of the pair in a run (both components present) is announced once,
+//  naming the record and saying that an out-of-span use cannot be detected.
 //
 //  ONCE PER PAIR PER RUN, as ruled: the key is the pair, not the side, so a
 //  run that walks both below and above a span reports its FIRST excursion.
@@ -219,20 +240,40 @@ inline void fillPairAudit(PairResolution&    r,
 class PairSpanGuard
 {
 public:
-    //  Register the span a resolved pair record declares, if it declares one.
+    //  While one of these is alive on this thread, a component at EXACTLY zero
+    //  composition counts as present for the guard: the caller's subject is the
+    //  infinite-dilution value (PO-01, see the rationale above).  Opened by the
+    //  `activityCoefficients` operation and by nothing else.
+    class InfiniteDilutionScope
+    {
+    public:
+        InfiniteDilutionScope()  { ++depth(); }
+        ~InfiniteDilutionScope() { --depth(); }
+        InfiniteDilutionScope(const InfiniteDilutionScope&)            = delete;
+        InfiniteDilutionScope& operator=(const InfiniteDilutionScope&) = delete;
+        static bool active() { return depth() > 0; }
+    private:
+        static int& depth() { static thread_local int d = 0; return d; }
+    };
+
+    //  Register the span a resolved pair record declares; a record that
+    //  declares none is registered as such (PO-03) so its use can say so.
     void add(const std::string&    model,
              std::size_t           i,
              std::size_t           j,
              const std::string&    pairName,
              const PairResolution& r)
     {
-        if (!r.validity.temperature) return;
         Span s;
         s.i = i;  s.j = j;
-        s.lo = r.validity.temperature->lo;
-        s.hi = r.validity.temperature->hi;
+        s.declared = static_cast<bool>(r.validity.temperature);
+        if (s.declared)
+        {
+            s.lo = r.validity.temperature->lo;
+            s.hi = r.validity.temperature->hi;
+        }
         s.locus = model + " pair '" + pairName + "'";
-        s.key   = "pairSpan:" + model + ":" + pairName;
+        s.key   = "pairSpan:" + model + ":" + pairName + (s.declared ? "" : ":undeclared");
         s.tag   = model + " pair " + pairName;
         spans_.push_back(std::move(s));
     }
@@ -241,12 +282,15 @@ public:
     //  comparison per guarded pair, no string built.
     void check(scalar T, const sVector& x) const
     {
+        const bool zeroIsSubject = InfiniteDilutionScope::active();
         for (const auto& s : spans_)
         {
-            if (T >= s.lo && T <= s.hi) continue;
+            if (s.declared && T >= s.lo && T <= s.hi) continue;
             if (s.i >= x.size() || s.j >= x.size()) continue;
-            if (!(x[s.i] > 0.0 && x[s.j] > 0.0)) continue;
-            announce(s, T);
+            const bool used = zeroIsSubject ? (x[s.i] > 0.0 || x[s.j] > 0.0)
+                                            : (x[s.i] > 0.0 && x[s.j] > 0.0);
+            if (!used) continue;
+            if (s.declared) announce(s, T); else announceUndeclared(s);
         }
     }
 
@@ -254,10 +298,27 @@ private:
     struct Span
     {
         std::size_t i = 0, j = 0;
+        bool        declared = true;
         scalar      lo = 0.0, hi = 0.0;
         std::string locus, key, tag;
     };
     std::vector<Span> spans_;
+
+    static void announceUndeclared(const Span& s)
+    {
+        if (AdvisoryLog::instance().passHas(s.key)) return;
+        const std::string m =
+            "the record declares no validity span, so the temperatures of the"
+            " data its parameters were fitted to are not known to the engine and"
+            " a use outside them -- at this temperature or any other -- cannot be"
+            " announced; silence from this guard is NOT evidence that the pair is"
+            " inside its data";
+        if (!AdvisoryLog::instance().addAnnouncedOnce(s.key, "validity", "warning",
+                                                       s.locus, m))
+            return;
+        std::cerr << "[pair-span] " << s.tag << ": " << m
+                  << ".  Read the record's provenance before the result is cited.\n";
+    }
 
     static void announce(const Span& s, scalar T)
     {
@@ -270,7 +331,9 @@ private:
             " pair may predict phase behaviour that evidence does not show"
             " (a two-parameter b/T pair can split a liquid miscible in every"
             " proportion), and every activity coefficient computed from it"
-            " inherits that");
+            " inherits that",
+            "declared validity span",
+            /*echoUnderTrial=*/false);     // PO-02: a visited state is not the answer
     }
 
 public:
@@ -289,7 +352,8 @@ public:
                                 scalar lo, scalar hi,
                                 const std::string& consequence,
                                 const std::string& spanWord
-                                    = "declared validity span")
+                                    = "declared validity span",
+                                bool echoUnderTrial = true)
     {
         const bool   above = (T > hi);
         const scalar edge  = above ? hi : lo;
@@ -301,7 +365,7 @@ public:
 
         if (!AdvisoryLog::instance().addAnnouncedOnce(key, "validity",
                                                        "warning", locus,
-                                                       m.str()))
+                                                       m.str(), echoUnderTrial))
             return false;
         std::cerr << "[pair-span] " << tag << ": " << m.str()
                   << ".  Read the record's validity block and header before"

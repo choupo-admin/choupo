@@ -1323,6 +1323,31 @@ int DistillationColumn::solve(const DictPtr& dict,
     const std::string method = dict->lookupWordOrDefault(
         "model", operDict->lookupWordOrDefault("method", "WangHenke"));
 
+    //  A BLOCK ONLY `totalReflux` READS IS REFUSED ELSEWHERE (RB-03, 2026-11-12).
+    //  `efficiency { model AIChE|ChanFair|SyedaChuang; }` and `packing { ... }`
+    //  are read by `model totalReflux;` and by nothing else.  On a Wang-Henke,
+    //  simultaneous or recovery column they were ignored: the column ran on
+    //  IDEAL stages at exit 0 and the only notice was one "[dict] key written
+    //  and never read" line mid-log, absent from the caveat block -- a student
+    //  who declared a computed efficiency received E_MV = 1.
+    if (method != "totalReflux")
+        for (const char* blk : {"efficiency", "packing"})
+            if (operDict->found(blk))
+                throw std::runtime_error("DistillationColumn '" + dict->name()
+                    + "': `" + blk + " { ... }` is read ONLY by `model totalReflux;`"
+                      " (a binary column at total reflux, C329) and this column"
+                      " runs `model " + method + ";`, which would ignore it and"
+                      " solve on ideal stages.  Select `model totalReflux;` to"
+                      " compute the "
+                    + (std::string(blk) == "efficiency"
+                           ? std::string("tray efficiency (`efficiency { model"
+                                         " AIChE|ChanFair|SyedaChuang; }`)")
+                           : std::string("packed-bed HETP and pressure drop"
+                                         " (`packing { model RochaBravoFair|Delft; }`)"))
+                    + ", or remove the block; for a fixed Murphree efficiency on"
+                      " this column declare `murphreeEfficiency <E>;` where the"
+                      " model reads it.");
+
     //  A recovery specification wraps whichever method is selected: it drives
     //  the RATE those methods already take.  See DistillationColumn.H.
     if (method == "totalReflux") return solveTotalReflux(dict, thermo, verbosity);
@@ -4916,7 +4941,15 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
                                          int verbosity)
 {
     auto operDict = dict->subDict("operation");
-    if (operDict->found("packing")) return solveTotalRefluxPacked(dict, thermo, verbosity);
+    if (operDict->found("packing"))
+    {
+        if (operDict->found("efficiency"))
+            throw std::runtime_error("DistillationColumn '" + dict->name() + "': `packing {}`"
+                " (a packed bed) and `efficiency {}` (a tray efficiency) are two"
+                " different columns; the packed route does not read `efficiency`."
+                "  Declare one of them.");
+        return solveTotalRefluxPacked(dict, thermo, verbosity);
+    }
     const std::string unit = dict->name();
     const std::size_t n = thermo.n();
 
@@ -5020,9 +5053,9 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
                     {"AIChE", "ChanFair", "SyedaChuang"}, "Accepted"));
         effModelName = model;
         if (n != 2)
-            throw std::runtime_error("DistillationColumn '" + unit + "': the AIChE"
-                " tray efficiency is implemented for a BINARY (one key pair, one"
-                " liquid and one gas diffusivity); this package has "
+            throw std::runtime_error("DistillationColumn '" + unit + "': the "
+                + model + " tray efficiency is implemented for a BINARY (one key"
+                " pair, one liquid and one gas diffusivity); this package has "
                 + std::to_string(n) + " components.");
         if (!hasHyd || !(geo.diameter > 0.0))
             throw std::runtime_error("DistillationColumn '" + unit + "': a computed"
@@ -5390,16 +5423,27 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         }
     }
 
-    //  The first law, by two routes that are independent here: the
-    //  reboiler's own envelope (Q_R) and the condenser's (the column's plug,
-    //  -Q_C, since no stream crosses the boundary).  Every stage energy
-    //  balance is solved by the march, so they must agree.
+    //  THE FIRST LAW HERE IS CONSISTENT BY CONSTRUCTION, NOT VERIFIED (RB-02,
+    //  2026-11-12).  This block used to pass the reboiler's own envelope as a
+    //  "second route" and print VERIFIED.  It is not one: the march defines
+    //  every vapour rate V_j from Q_R (V_j = Q_R / (h_V - h_L) on the cut), so
+    //  each cut -- the reboiler's included -- carries Q_R by definition and the
+    //  condenser duty -Q_C = Q_R holds identically, for ANY Q_R.  Reviewed by
+    //  inflating Q_R 10 %: the envelope was then violated by 64 kW and the
+    //  report still said VERIFIED with a gap of 1e-13 kW.  No route that does
+    //  not start from the march's own definition exists in this model, so the
+    //  closure is published with NO second route and says why; the numbers are
+    //  held by the case's golden and by an independent recomputation, never
+    //  by this closure (result/ClosureVariable.H: "by construction -- not
+    //  verified").
     {
-        const scalar terms = std::abs(V[N-1] * hs.hV(y[N-1], T[N-1]))
-                           + std::abs(L[N-2] * hs.hL(x[N-2], T[N-2]));
         closures_.clear();
-        closures_.push_back(reboilerClosure(-QC, QR, /*fullMesh=*/true, terms,
-                                            "a column of fewer than two stages"));
+        closures_.push_back(reboilerClosure(-QC, std::nullopt, /*fullMesh=*/true, 0.0,
+            "the total-reflux march defines every vapour rate V_j from Q_R, so"
+            " every cut carries Q_R and -Q_C = Q_R holds identically; the"
+            " reboiler's own envelope on the same traffic is Q_R again, so it"
+            " is not a second route (a Q_R inflated by 10 % still closes to"
+            " rounding)"));
     }
 
     //  ---- The hydraulics of the trays (flood approach, pressure drop) ---
@@ -5745,7 +5789,18 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         profile_.columns["dP_Pa_per_m"].push_back(p.dP);
         profile_.columns["F"].push_back(p.F);
     }
+    //  Q_condenser = -Q_reboiler is ASSIGNED above (constant molar vapour up
+    //  the bed, stated in the report), so the energy closure holds by
+    //  construction here too; the tray path publishes that classification and
+    //  the packed bed now does (RB-05, 2026-11-12).  The two duties are not
+    //  independent: the real condenser sees latent heats at the top
+    //  composition, which differ from the bottom's.
     closures_.clear();
+    closures_.push_back(reboilerClosure(QR, std::nullopt, /*fullMesh=*/true, 0.0,
+        "the packed bed takes the vapour molar flow constant up the bed and sets"
+        " Q_condenser = -Q_reboiler by assignment, so the closure holds for any"
+        " Q_reboiler; the condenser's own latent heat at the top composition is"
+        " not computed"));
     (void)verbosity;
     return 0;
 }

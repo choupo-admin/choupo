@@ -3446,6 +3446,31 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C376 (Vitor, 2026-11-12: "A maior parte das especies novas nao tem dados
+> de formacao?! Podes ver online como vamos resolver isto? Se for preciso
+> pede-me mais bibliografia").**  Formation data (DfH, S, DfG of the aqueous
+> species) for what C372/C373 entered for pH only.  Four routes, in order:
+> (1) IN HAND, not yet read for this: the NBS tables (Wagman 1982) carry the
+> inorganic ladders (phosphate, pyrophosphate, sulfite, arsenate,
+> hydrazine) and the C1-C2 organics (methylamine, ethanolamine, glycine,
+> glycolate); (2) FETCHED TODAY, open: Shock (1995, Am. J. Sci. 295, 496;
+> journal open access) -- formation data and entropies of the aqueous
+> carboxylic acids, hydroxyacids and their anions; Domalski & Hearing
+> (1993, J. Phys. Chem. Ref. Data 22, 805) -- measured condensed-phase
+> enthalpies of formation with the group-additivity method fitted to them;
+> Dick, LaRowe & Helgeson (2006, Biogeosciences 3, 311) -- aqueous amino
+> acids and side-chain groups; (3) TO ASK VITOR: Alberty, Thermodynamics of
+> Biochemical Reactions (2003, the species table pp. 52-55); Amend &
+> Helgeson (1997, J. Chem. Soc. Faraday Trans. 93, 1927); Shock & Helgeson
+> (1990, Geochim. Cosmochim. Acta 54, 915); (4) the laboratory buffers have
+> NO measured formation data anywhere found: DECIDED, their neutral form's
+> aqueous DfH may be ESTIMATED (group additivity, Domalski & Hearing for the
+> condensed phase plus a stated solution step), origin `estimated`, flagged
+> on every use, and the ions follow from the MEASURED ionisation enthalpies
+> of Goldberg et al. -- so a balance in which the buffer's total amount is
+> conserved depends only on measured quantities, and the estimate cancels.
+> Branch c376-formation-data: routes 1 and 2 first.
+
 > **C375 (2026-11-12; three engine findings met by the chromatography page,
 > confirmed by run and by reading; the architect's decisions).**  (a) THE
 > FIXED BED ADDS ITS OWN DISPERSION: `FixedBedAdsorber` takes first-order
@@ -3453,8 +3478,9 @@ accepts today, and that is a policy call.
 > the shipped batch13 (100 cells): the numerical term is 3.1e-4 m2/s against
 > a physical 2.5e-4; the 5-95 % front is 314 s wide where the converged
 > front is about 219 s (30 % of the width is the grid); the pinned
-> breakthrough time 2890.7 s is the grid's, the converged one about 2935 s;
-> the unused-bed length reads 0.0247 m against about 0.0172 m.  The mean
+> breakthrough time 2890.7 s is the grid's, the converged one 2939.3 s (corrected by the
+> slice's own mesh study);
+> the unused-bed length reads 0.0247 m against 0.0167 m.  The mean
 > (stoichiometric time) is exact at every grid.  All 14 fixed-bed tutorials
 > and the pages `breakthrough` and `lub-scaleup` rest on it; the second
 > carries the widened unused length to full scale.  DECIDED: (1) now, the

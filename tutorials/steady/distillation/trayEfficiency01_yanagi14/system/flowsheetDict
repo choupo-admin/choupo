@@ -8,7 +8,8 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   trayEfficiency01_yanagi14  --  the EFFICIENCY OF A SIEVE TRAY COMPUTED FROM ITS
-  GEOMETRY, held against a commercial-scale measurement it was not fitted to
+  GEOMETRY, compared with a commercial-scale measurement that is OUT-OF-SAMPLE for the
+  AIChE correlations (they predate these trays; nothing was fitted to them)
   (DEV.md 4c C329).  Cyclohexane / n-heptane at 34 kPa, total reflux.
 
   THE TRAY: FRI's 14 % hole-area sieve tray (Table I): 1.2 m column, 610 mm spacing,
@@ -58,9 +59,14 @@
   WHAT THE MODEL CANNOT SEE: hole area.  The AIChE transfer units carry none,
   so the open area reaches the efficiency only through the flood approach
   (entrainment) and the pressure drop.  Weeping is not modelled, so the
-  low-load fall-off of the measured efficiency is not predicted.  The sweep
-  stops below the load at which Fair's entrainment correlation passes psi = 1
-  (the model's own entrainment flood).
+  low-load fall-off of the measured efficiency is not predicted.  THE TWO HIGHEST MEASURED LOADS ARE NOT SET ASIDE.  The sweep stops at Fs 2.3, but the
+  model runs to Fs 2.380 (beyond it Fair's entrainment correlation gives psi >= 1
+  and the column refuses), so the two highest measured loads are PREDICTED
+  (run by hand, fFactor overridden): Fs 2.305 (Fig. 12, digitised, 41.3 %) and
+  Fs 2.356 (Table III run 625, 41.1 %; the paper's own FLOODING run: type A,
+  spray height 610 mm = the tray spacing).  AIChE predicts 48.0 / 34.8 %, i.e.
+  +6.7 / -6.3 points; the model's own hydraulics put these loads at 99.5 % and 102 %
+  of flood.  Both are counted in the error statistics of the design record.
 \*---------------------------------------------------------------------------*/
 
 units

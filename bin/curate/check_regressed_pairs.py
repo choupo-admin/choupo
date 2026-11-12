@@ -2063,6 +2063,8 @@ def main():
         span_held = check_span_announcement(tmp, fails)
         import electrolyte_span_arms   # arms (m)-(o): electrolyte pairs, EL-01/EL-02
         el_rec, el_routes, el_grade = electrolyte_span_arms.run_arms(tmp, fails)
+        import molecular_span_arms     # arms (p)-(r): PO-01 / PO-02 / PO-03
+        mol_arms = molecular_span_arms.run_arms(tmp, fails)
         ll_held = check_ll_arm(tmp, fails)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
@@ -2136,7 +2138,10 @@ def main():
           f"{el_rec} eNRTL record(s) declare their temperature validity and an eNRTL "
           f"pair off it is announced once (arm m); {el_routes} Pitzer routes print ONE "
           "identical line for a pair with no temperature dependence (arm n); the "
-          "fit-grade sentence reads the record's held-out points (arm o).  NOT "
+          "fit-grade sentence reads the record's held-out points (arm o); "
+          f"{mol_arms} molecular arms: an infinite-dilution gamma off its span is announced "
+          "(p), a bubble-point announcement describes its answer and not its starting "
+          "guess (q), a record that declares no span says so when used (r).  NOT "
           "checked: whether the transcribed measurements agree with the "
           "articles (a curator's read-back), whether the band was well "
           "chosen, or phase stability below a validity span (it is "

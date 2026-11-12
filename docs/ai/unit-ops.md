@@ -1207,7 +1207,12 @@ every stage energy balance is solved (the vapour flow follows the latent heat); 
 condenser is total, `fFactor` needs `hydraulics { diameter; }`.  KPI
 `overallTrayEfficiency` is a test report's definition: the Fenske slope of
 ln(x/(1-x)) per tray over ln(alpha).  Pressure drop is not fed back (every stage at
-`P`).  Example: `totalReflux01_c6c7_yanagiRun628`.
+`P`).  The energy closure is published as CONSISTENT BY CONSTRUCTION, NOT VERIFIED:
+the march defines every V_j from Q_R, so -Q_C = Q_R identically and there is no second
+route (the packed bed assigns Q_C = -Q_R, same word).  Example: `totalReflux01_c6c7_yanagiRun628`.
+`efficiency {}` and `packing {}` are read ONLY under `model totalReflux;`: on any other
+column model they are REFUSED before solving (the column would otherwise run on ideal
+stages), and `packing {}` with `efficiency {}` on one column is refused too.
 ```
 { name column; type distillationColumn; model totalReflux;
   operation {
@@ -1231,7 +1236,9 @@ area: open area acts only through the hydraulics.  Examples:
 `model ChanFair;` (Chan & Fair 1984, Eqs 9-26; open area only through the approach to
 flood) and `model SyedaChuang; holePitch <m>;` (Syeda, Afacan & Chuang 2007, Eqs 1-35;
 sees hole velocity, open area and pitch) are selectable beside it; both were fitted on
-data that include these FRI trays (in-sample).  Examples: `trayEfficiency05_chanFair_yanagi14`,
+data that include these FRI trays (in-sample), whereas AIChE is out-of-sample on them.
+A measured load the model cannot reach (Fair's psi >= 1: the column refuses) is a MODEL
+MISS and is counted as one in the design record, not set aside.  Examples: `trayEfficiency05_chanFair_yanagi14`,
 `trayEfficiency06_syedaChuang_yanagi14`, `trayEfficiency07_syedaChuang_yanagi08`.
 ```
 efficiency { model SyedaChuang;      // or AIChE | ChanFair

@@ -885,6 +885,44 @@ BY_CONSTRUCTION_WITNESSES = {
     ("tutorials/steady/reactors/pfr05_cooled_multitubular", "reactor"),
     ("tutorials/steady/separation/tsa01_co2_twin_bed", "co2tsa"),
 }
+#  RB-02 / RB-05 (2026-11-12).  A total-reflux column has no port, so the
+#  per-unit `energyClosures` row the arm above reads does not exist for it (the
+#  report prints "n/a"); its classification is read from the result's
+#  `closuresByConstruction` record directly.  The record must say NOT VERIFIED
+#  and why: the march defines every V_j from Q_R, so -Q_C = Q_R is an identity
+#  and a "verified" there is a claim no second route backs (RB-02); the packed
+#  bed sets Q_C = -Q_R by assignment (RB-05).  A case that publishes no record
+#  at all fails as well (the packed bed published none before RB-05).
+TOTAL_REFLUX_WITNESSES = {
+    "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
+    "tutorials/steady/distillation/packing01_schulz_0p10bar",
+}
+
+
+def judge_total_reflux(rel: str, txt: str, seen: set, bad: list):
+    """RB-02 / RB-05: a total-reflux witness publishes its energy closure as
+    NOT verified, with a note, and never as verified."""
+    if rel not in TOTAL_REFLUX_WITNESSES:
+        return
+    recs = [c for c in (json_block(txt, "closuresByConstruction") or [])
+            if c.get("balance") == "energy"]
+    if not recs:
+        return
+    seen.add(rel)
+    for c in recs:
+        if c.get("status") == "verified" or c.get("mustAgree"):
+            bad.append(
+                "%s: unit '%s' (a total-reflux column) publishes its energy "
+                "closure as VERIFIED / must-agree, but its second route is the "
+                "march's own definition (every V_j is built from Q_R, so -Q_C = "
+                "Q_R identically; the packed bed assigns Q_C = -Q_R): a closure "
+                "by construction is never a verification (RB-02 / RB-05)."
+                % (rel, c.get("unit")))
+        elif "no second route" not in (c.get("note") or ""):
+            bad.append(
+                "%s: unit '%s' publishes the total-reflux closure as not "
+                "verified but gives no reason (`note` must say there is no second "
+                "route and why)." % (rel, c.get("unit")))
 
 
 def judge_by_construction(rel: str, txt: str, seen: set, stats: dict,
@@ -1219,6 +1257,7 @@ def main() -> int:
     unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0, "tearFed": [],
                                   "bcHeld": 0, "bc": [], "judgedUnits": set()}
     bcSeen = set()
+    trSeen = set()
     ranClean = set()
 
     for case in steady_cases():
@@ -1234,6 +1273,7 @@ def main() -> int:
         ranClean.add(rel)
         judge_units(rel, txt, unitSeen, unitStats, bad)
         judge_by_construction(rel, txt, bcSeen, unitStats, bad)
+        judge_total_reflux(rel, txt, trSeen, bad)
         m = LINE.search(txt)
         if m is None:
             mk = LINE_KW.search(txt)
@@ -1383,6 +1423,14 @@ def main() -> int:
             "among the units whose closure is evidence.  THIS IS A DEFECT IN "
             "THE GATE: a closure the unit computed from the balance proves "
             "nothing about the balance (DEV.md 4c C174)." % (rel, unit))
+    for rel in sorted(TOTAL_REFLUX_WITNESSES):
+        if rel in ranClean and rel not in trSeen:
+            bad.append(
+                "%s: the total-reflux arm did not READ its witness -- the case ran "
+                "clean but published no `closuresByConstruction` energy record for "
+                "its column.  THIS IS A DEFECT IN THE GATE (or the witness was "
+                "renamed), or the engine stopped classifying the closure (RB-05)."
+                % rel)
     for rel, unit in sorted(BY_CONSTRUCTION_WITNESSES):
         if rel in ranClean and (rel, unit) not in bcSeen:
             bad.append(

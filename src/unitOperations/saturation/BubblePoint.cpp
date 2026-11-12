@@ -29,6 +29,7 @@ License
 #include "BubblePoint.H"
 #include "unitOperations/flash/IncipientPhase.H"
 #include "solver/NewtonRaphson.H"
+#include "core/Advisory.H"
 #include "thermo/SaturationCurves.H"
 
 #include <algorithm>
@@ -101,6 +102,17 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
 {
     const std::size_t n = thermo.n();
 
+    //  THE T SEARCH WALKS, AND SAYS SO (PO-02, 2026-11-12).  The starting guess
+    //  (the mole-weighted normal boiling point) and every Newton step are
+    //  temperatures this solve INVENTED; a pair-span or vapour-pressure-window
+    //  excursion raised at one of them describes the path, not the published
+    //  bubble temperature (the ethanol + ethylene glycol + water reproducer
+    //  announced "used at T = 387.9 K" for an answer at 365.3 K, inside every
+    //  span).  The frame closes before the evaluation at the converged T,
+    //  which IS the answer and speaks in full: the contract of
+    //  core/Advisory.H, "which state is this advisory about".
+    AdvisoryFrame walk("bubble-point temperature search");
+
     // Initial T guess: mole-fraction-weighted normal boiling point.
     scalar T0 = T_init;
     if (T0 <= 0.0)
@@ -132,6 +144,7 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     nro.maxStep            = 25.0;
 
     auto r = solver::newton1D(f, df, T0, nro);
+    walk.close();                       // the search is over; what follows is the answer
 
     const scalar Tbub = r.x;
     auto K = K_at(Tbub);
@@ -291,6 +304,7 @@ int BubblePoint::solve(const DictPtr& dict,
     {
         // Re-implement the Newton with trace echoing.  Same options as
         // compute() --- keep them in sync if compute() changes.
+        AdvisoryFrame walk("bubble-point temperature search");   // PO-02: see compute()
         scalar T0 = (Tinit > 0.0) ? Tinit : 0.0;
         if (T0 <= 0.0) T0 = weightedBoilingGuess(thermo, x, P);
 
@@ -332,6 +346,7 @@ int BubblePoint::solve(const DictPtr& dict,
                       << "  " << std::setw(13) << tr.dx << "\n";
         };
         auto raw = solver::newton1D(f, df, T0, nro);
+        walk.close();
         const scalar Tbub = raw.x;
         auto K = K_at(Tbub);
         r.T = Tbub;
