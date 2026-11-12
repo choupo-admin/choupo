@@ -162,6 +162,18 @@ SABOTAGES = [
                "fail the gate, on every entry it touches.",
     },
     {
+        "gate": "check_feature_documented.py",
+        "kind": "detection",
+        "file": "bin/curate/feature_documented_debt.tsv",
+        "find": "VaporPressureModel\tWagner\t",
+        "replace": "VaporPressureModel\tWagner_DISABLED_BY_SELFTEST\t",
+        "why": "the debt pin is a ratchet (DEV.md 4c C338).  Rename a pinned "
+               "row and the registered name Wagner is undocumented AND "
+               "unpinned (a NEW undocumented name) while the renamed row "
+               "names nothing registered: the gate must fail on both, rather "
+               "than pass over a pin list that no longer matches the tree.",
+    },
+    {
         "gate": "check_lesson_references.py",
         "kind": "vacuity",
         "file": "gui/src/ui/methods/lessonReferences.json",
