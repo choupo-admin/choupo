@@ -11,5 +11,5 @@
     C321 part 2).  See system/propsDict for the declaration and the result.  */
 
 application   choupoProps;
-description   "Henry trans2Butene in nButanol, van't Hoff fitted by the curation pipeline to every laboratory's measured Henry constants (ThermoML locates, the articles source), graded by max relative error (clean 5 %, warning 10 %, severe 20 %, refused above; C285)";
+description   "Henry trans2Butene in nButanol, van't Hoff fitted by the curation pipeline to every laboratory's measured Henry constants (ThermoML locates, the articles source), graded by max relative error (clean 10 %, warning 20 %, severe 30 %, refused above; C285, C336 class B)";
 verbosity     1;

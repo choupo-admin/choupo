@@ -52,7 +52,9 @@ r = H_model/H - 1 (equal weights); a point with |r| > 20 % is DISCARDED BY
 NAME (doi, block, T) and stage 1 repeated without it.  Stage 2, minimax on
 the same residual over the kept points, started from stage 1; its
 coefficients are the record's.  GRADE on max |r| over the kept points:
-<= 5 % clean, (5, 10] warning, (10, 20] severe, > 20 % refused.  An
+<= 10 % clean, (10, 20] warning, (20, 30] severe, > 30 % refused -- the
+limits of property class (B), Henry constants (DEV.md 4c C336; class (A),
+5 / 10 / 20 %, was used until C336).  An
 in-sample clean resting on one laboratory is capped at warning with
 `fitGradeCap ( singleLaboratory );` (C300 rule 2).  A pair whose kept points
 lie at ONE temperature cannot give the enthalpy, and the loader refuses a
@@ -60,7 +62,8 @@ Henry record without one: such a pair is REFUSED, never given an invented
 enthalpy.  clean and warning are promoted into data/standards/parameters/
 Henry/ (`reviewStatus autoPromoted; review { by none; }`), and so is a severe
 one, voiced as severe (Vitor's ruling of 2026-11-12, C285 over C300 rule 3:
-"com 19 % ainda pode ficar; so acima de 20 % e que nao"); refused writes
+"com 19 % ainda pode ficar; so acima de 20 % e que nao"; C336 class (B):
+only above 30 % is refused); refused writes
 nothing.  An existing record for the same (solute, solvent) is never
 overwritten.
 """
@@ -84,7 +87,11 @@ TREF = 298.15
 WATER_KEY = "XLYOFNOQVPJJNP-UHFFFAOYSA-N"
 ARCHIVED = ("aceticAcid",)
 OUTLIER = 0.20
-LIMITS = (5.0, 10.0, 20.0)          # % -- clean / warning / severe; above: refused
+#  DEV.md 4c C336, property class (B) -- Henry constants, gamma-infinity,
+#  transport: laboratories disagree by 10-30 % on these.  Max relative error
+#  over the kept points, %: clean / warning / severe; above the last, refused.
+HENRY_CLASS_B_LIMITS = (10.0, 20.0, 30.0)
+LIMITS = HENRY_CLASS_B_LIMITS
 NIST = "https://trc.nist.gov/ThermoML/"
 
 KINDS = {
@@ -695,7 +702,7 @@ def declare(write):
               "application   choupoProps;\n"
               f'description   "Henry {s} in {v}, van\'t Hoff fitted by the curation pipeline to every '
               'laboratory\'s measured Henry constants (ThermoML locates, the articles source), graded '
-              'by max relative error (clean 5 %, warning 10 %, severe 20 %, refused above; C285)";\n'
+              'by max relative error (clean 10 %, warning 20 %, severe 30 %, refused above; C285, C336 class B)";\n'
               "verbosity     1;\n")
         (case / "constant" / "thermoPhysPropDict").write_text(
             "/*  Placeholder the bench requires; no operation reads it.  The case asks the\n"
@@ -732,12 +739,14 @@ def declare(write):
                  "  against; C321 part 2 amended) and the grade is the series' real error.",
                  "  Stage 2, minimax on the same residual over the kept points; its",
                  "  coefficients are the record's.  GRADE on the max relative",
-                 "  error over the kept points: clean up to 5 %, warning up to 10 %, severe up",
-                 "  to 20 %, refused above.  An in-sample clean resting on ONE laboratory is",
+                 "  error over the kept points (C336 class B, Henry): clean up to 10 %,",
+                 "  warning up to 20 %, severe up to 30 %, refused above.  An in-sample",
+                 "  clean resting on ONE laboratory is",
                  "  capped at warning (C300 rule 2).  One temperature gives no enthalpy: refused.",
                  "  clean, warning and severe are promoted (autoPromoted, review by none)",
                  "  into data/standards/parameters/Henry/ (C285; Vitor's ruling of",
-                 "  2026-11-12: only above 20 % is refused); refused writes nothing.", "",
+                 "  2026-11-12; C336 class B: only above 30 % is refused); refused writes",
+                 "  nothing.", "",
                  "  @@RESULT-BEGIN@@", "  (the fit has not run)", "  @@RESULT-END@@", "",
                  "  WHAT IS NOT CLAIMED.  The constant is the infinite-dilution H_xp at the",
                  "  solvent's own vapour pressure, in the measured range only; the archive's",
@@ -761,7 +770,7 @@ def result_text(s, v, res):
     if res["labs"] < 2:
         lines.append("  ONE laboratory: no point was discarded (C321 part 2 amended).")
         if res["grade_in"] != "clean":
-            lines.append(f"  THE SERIES DOES NOT FOLLOW VAN'T HOFF within 5 %: the two-parameter")
+            lines.append(f"  THE SERIES DOES NOT FOLLOW VAN'T HOFF within {LIMITS[0]:g} %: the two-parameter")
             lines.append(f"  form misses its own measurements by up to {res['maxRel_pct']:.2f} %.")
     lines += [f"  H_ref = {Href:.5e} Pa at 298.15 K, enthalpy = {dH} J/mol;",
               f"  kept span {res['Tmin']:g}-{res['Tmax']:g} K; max relative error",
@@ -797,9 +806,9 @@ def record_text(case, s, v, decl, res, fingerprint):
           "  least squares then minimax on the relative residual of H; points above",
           f"  20 % after the least-squares stage discarded by name ({len(res['discarded'])} here).",
           f"  {len(res['kept'])} kept points, {res['Tmin']:g}-{res['Tmax']:g} K; max relative error",
-          f"  {res['maxRel_pct']:.2f} % in-sample (graded 5 / 10 / 20 %).",
+          f"  {res['maxRel_pct']:.2f} % in-sample (graded {LIMITS[0]:g} / {LIMITS[1]:g} / {LIMITS[2]:g} %, C336 class B).",
           ] + ([f"  ONE laboratory: no point discarded (C321 part 2 amended); the series does not",
-                f"  follow van't Hoff within 5 % -- it misses its own points by up to {res['maxRel_pct']:.2f} %."]
+                f"  follow van't Hoff within {LIMITS[0]:g} % -- it misses its own points by up to {res['maxRel_pct']:.2f} %."]
                if res["labs"] < 2 and res["grade_in"] != "clean" else []) + [
           "  Regressed by Choupo, NOT read by a human; the archive's transcription has",
           "  not been read back against the articles.", "",
@@ -816,7 +825,7 @@ def record_text(case, s, v, decl, res, fingerprint):
           '    method        "van\'t Hoff fit, least squares then minimax on H_model/H - 1, bin/curate/henry_organic.py";',
           f"    CAS           {fs['CAS']};",
           f'    fittedInCase  "{case_rel}";',
-          f"    fitGrade      {res['grade']};   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded 5 / 10 / 20 %",
+          f"    fitGrade      {res['grade']};   // DEV.md 4c C285: max |H_model - H|/H over the kept points, graded {LIMITS[0]:g} / {LIMITS[1]:g} / {LIMITS[2]:g} % (C336 class B)",
           "    fitGradeBasis inSample;   // DEV.md 4c C300 rule 1"]
     if res["caps"]:
         h.append(f"    fitGradeCap   ( {' '.join(res['caps'])} );   // DEV.md 4c C300 rule 2")
