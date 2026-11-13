@@ -216,6 +216,10 @@ int Pump::solve(const DictPtr& dict,
         //  (flashState::heldPhaseBeyondBandRefusal, review TD-04 / TD-17).
         const scalar h_target = thermo.H_real(T_in, P_in, x, DensityPhase::Liquid) + w_real;
         const std::string who = dict->name().empty() ? type() : dict->name();
+        //  The liquid branch's upper end at P_out: T_sat(P_out) when the
+        //  pure fluid has a saturation line there (set below), else the
+        //  search's old ceiling.
+        scalar T_liquidTop = 620.0;
         //  THE PUMP NEVER PUBLISHES AN OUTLET IT DID NOT FIND (2026-05-30
         //  rule, TD-04 follow-up).  Its model publishes a LIQUID: when the
         //  enthalpy the balance asks for lies above the saturated liquid's at
@@ -231,6 +235,7 @@ int Pump::solve(const DictPtr& dict,
                 && P_out <= pm.p_sat(w.second - 1.0e-9))
             {
                 const scalar hL = thermo.H_real(Ts, P_out, x, DensityPhase::Liquid);
+                T_liquidTop = Ts;
                 if (h_target > hL)
                 {
                     char b[900];
@@ -253,14 +258,31 @@ int Pump::solve(const DictPtr& dict,
             }
         }
         auto f  = [&](scalar T){ return thermo.H_real(T, P_out, x, DensityPhase::Liquid) - h_target; };
+        //  The central difference of 0.25 K as before; within 0.25 K of
+        //  T_sat(P_out) a BACKWARD one, so the slope never asks the liquid
+        //  above the search's upper bracket.
         auto df = [&](scalar T){
             const scalar d = 0.25;
+            if (T + d > T_liquidTop) return (f(T) - f(T - d)) / d;
             return (f(T + d) - f(T - d)) / (2.0 * d);
         };
+        //  THE SEARCH STAYS ON THE LIQUID BRANCH (C378 pilot round 2, the
+        //  merge with the phase branch): the root lies in [T_in, T_sat(P_out)]
+        //  -- f(T_in) < 0 because the shaft work exceeds v dP, f(T_sat) >= 0
+        //  because the refusal above did not fire -- so that is the bracket.
+        //  With the old bracket [274, 620] K and a start at T_in + 0.5 K, a
+        //  discharge 0.9 K below its saturation line (550 K, dP 1 bar) sent
+        //  the Newton across the line and the search did not converge, though
+        //  the liquid root exists.  The finite-difference step is kept inside
+        //  the bracket too.
+        const scalar Tlo = T_in - 1.0e-6;
+        const scalar Thi = T_liquidTop;
         solver::NROptions o;
-        o.tolerance = 1.0e-4; o.maxIter = 60; o.lower = 274.0; o.upper = 620.0;
+        o.tolerance = 1.0e-4; o.maxIter = 60;
+        o.lower = Tlo < Thi ? Tlo : 274.0; o.upper = Thi;
         o.bracket = true; o.monotoneIncreasing = true; o.maxStep = 50.0;
-        auto r = solver::newton1D(f, df, T_in + 0.5, o);
+        const scalar T0 = std::min(T_in + 0.5, 0.5 * (T_in + Thi));
+        auto r = solver::newton1D(f, df, T0, o);
         if (!r.converged)
             throw std::runtime_error("pump '" + who + "': the discharge "
                 "search H_real(T_out, P_out) = h_in + w did not converge on "
