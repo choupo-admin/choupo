@@ -2,14 +2,17 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 # =============================================================================
-#  THE WILLS TABLE 9.1 ANCHORS (C361 slice 3).  Wills & Napier-Munn 2006
+#  THE WILLS TABLE 9.1 RECONSTRUCTION (C361 slice 3; the two rows once called anchors were relabelled 2026-11-13, SC-01).  Wills & Napier-Munn 2006
 #  pp. 215-216, a printed worked example (arithmetic on measured sieve data).
 #
-#      quantity                    Wills    Choupo     gap       row
-#      underflow dilution (w/s)    0.34     0.33904    -0.3 %    anchor (1.5 % = the 2-figure print)
-#      d50 (actual curve), um      177.5    176.01     -0.8 %    anchor (1 %: see below)
-#      solids to underflow U/F     0.652    0.65568    +0.56 %   GAP, not anchored
-#      overflow dilution (w/s)     1.00     1.00982    +1.0 %    GAP, not anchored
+#      quantity                    Wills    Choupo     gap       what it is
+#      underflow dilution (w/s)    0.34     0.33904    -0.3 %    the book's INPUT read back (R_f was computed from it)
+#      d50 (actual curve), um      177.5    176.01     -0.8 %    the book's INPUT read back (the curve makes 148-209 um 0.49998)
+#      solids to underflow U/F     0.652    0.65568    +0.56 %   computed: the zeroed -74 um class, measured
+#      overflow dilution (w/s)     1.00     1.00982    +1.0 %    follows from U/F
+#
+#  IN SAMPLE: both declared inputs come from Table 9.1, so this case is a
+#  reconstruction.  Its rows are self-recorded goldens; none is an anchor.
 #
 #  d50: Wills plots column 8 at the ARITHMETIC mean of each sieve interval
 #  (177.5 um for 147-208, where the partition is exactly 50.0 %); the grid's
@@ -29,8 +32,8 @@
 #      +1168 14.7/14.64   589-1168 21.8/21.66   295-589 25.0/24.58
 #      208-295 7.4/7.33   147-208 6.3/6.25   104-147 4.8/4.74   74-104 2.9/2.90
 #      -74 17.1/17.90  (the pan: the gap above)
-kpi     cyclone                underflow_dilution 0.34               1.5e-2   anchor
-kpi     cyclone                d50_um           177.5              1e-2     anchor
+kpi     cyclone                underflow_dilution 0.33903727174    1e-4
+kpi     cyclone                d50_um           176.012254259      1e-4
 # =============================================================================
 stream  feed                   F                1.34124372222      1e-4
 stream  feed                   T                298.15             1e-4

@@ -25,7 +25,8 @@
     (Wills eq. 9.15 written forward).
   WHAT THIS CASE IS, AND IS NOT: a RECONSTRUCTION, not a prediction and not
     a validation.  Both declared inputs were derived from Table 9.1 itself,
-    so the two `anchor` rows of `expected` return the book's own inputs:
+    so the two rows of `expected` once called anchors (now plain
+    self-recorded rows, none is an anchor) return the book's own inputs:
     the underflow dilution 0.34 is the number R = 0.39 was computed from
     (through U/F), and the declared curve puts the actual partition of the
     148-209 um class at 0.39 + 0.61 x 0.1803 = 0.49998, so d50 lands in that
