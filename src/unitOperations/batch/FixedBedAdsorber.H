@@ -181,7 +181,9 @@ Description
     `solutionControl { write false; }` (no <t>/ directories at all); KPIs t_breakthrough_5pct / t_50 /
     t_breakthrough_95pct / integral_anchor (trapezoid of (1 - c_out/c_in)
     over the internal <= samplingInterval samples, gate G5) /
-    t_stoichiometric (analytic) / mass_closure per component; with
+    t_stoichiometric (analytic) / mass_closure per component in play
+    (one the case neither feeds nor holds is held at zero and publishes
+    mass_residual_<i>_mol instead: no ratio without a scale); with
     `schemeDiagnostics true;` (C375) also outlet_m0 / outlet_mean /
     outlet_variance (moments of c_out about t = 0) and the field extremes
     c_max_over_feed / c_min / q_max_over_qstar_feed / q_min.
@@ -432,6 +434,13 @@ private:
     //  crossings/integral keep describing the PRE-switch feed step
     //  (announced), and the live feed-referenced diagnostics retire.
     std::vector<bool> feedSwitched_;
+    //  CI-00 (2026-11-13): per COMPONENT, whether the case puts material of
+    //  it in play -- fed now or ever, in the initial gas, or in the initial
+    //  loading.  A component that is not has the exact solution zero; its
+    //  rows are held there after every accepted chunk (holdAbsentAtZero_),
+    //  said once, and it gets no relative closure (no scale to divide by)
+    //  until a recipe feeds it, which releases it from then on.
+    std::vector<bool> inPlay_;
 
     // ---- A5 feed-switch amendments awaiting the driver ------------------
     std::vector<DatumAmendment> pendingAmendments_;
@@ -452,6 +461,15 @@ private:
     void    commit_(const sVector& y);       // y_ <- y, refresh state_.n
     void    sample_(scalar t);               // crossings + G5 integral update
     void    rk4Step_(scalar dt);
+    //  CI-00: rows of a component not in play back to exactly zero (its gas,
+    //  loading and two ledger rows): the W solve's pivoting leaves round-off.
+    void    holdAbsentAtZero_(sVector& y) const;
+    void    releaseIfFed_(std::size_t ci);   // a recipe fed component ci
+    //  CI-00: THE per-species ledger closure, one home for the KPI and the
+    //  trajectory column: residual M_in + hold0 - holdup - M_out [mol], its
+    //  scale M_in + hold0 [mol], and whether the species is in play.
+    struct LedgerClosure { scalar residual; scalar scale; bool inPlay; };
+    LedgerClosure ledgerClosure_(std::size_t a) const;
     //  C375: the advected (face) concentration at face f (1 <= f <= N-1)
     //  of the concentration row starting at y[row0], for a face velocity of
     //  sign uf, with cIn the inlet ghost (the feed) -- the ONE home of the

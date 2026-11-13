@@ -748,9 +748,15 @@ if (flowsheetDict->found("cycle"))
             for (auto v : unit->state().n) csv << "," << v;
         for (const auto& unit : units)
             csv << "," << unit->state().T;
+        //  A non-finite extra is a value the unit WITHHOLDS at this instant
+        //  (CI-00: a closure ratio with no scale yet): an EMPTY cell, so the
+        //  file stays rectangular and nobody reads a number that is not one.
         for (const auto& unit : units)
             for (const auto& [k, v] : unit->trajectoryExtras())
-                csv << "," << v;
+            {
+                csv << ",";
+                if (std::isfinite(v)) csv << v;
+            }
         csv << "\n";
 
         if (panelOn)

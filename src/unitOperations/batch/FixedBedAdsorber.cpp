@@ -47,6 +47,7 @@ License
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <sstream>
 #include <stdexcept>
@@ -670,6 +671,33 @@ void FixedBedAdsorber::initialise(const DictPtr&       unitDict,
             y_[qOffset_() + a * N_ + j] = q0_[a];
         }
         hold0_[a] = eps_ * A_ * L_ * c0_[a] + rhoB_ * A_ * L_ * q0_[a];
+    }
+    //  CI-00: what is in play by DECLARATION (never by the state, which is
+    //  what round-off moves).  A component that has rows of its own and is
+    //  neither fed nor held is announced once and held at zero.
+    inPlay_.assign(n, false);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        auto ait = std::find(adsIdx_.begin(), adsIdx_.end(), i);
+        const bool adsorbing = (ait != adsIdx_.end());
+        const scalar held = adsorbing
+            ? hold0_[static_cast<std::size_t>(ait - adsIdx_.begin())]
+            : c0All_[i];
+        inPlay_[i] = cInAll_[i] > 0.0 || held > 0.0;
+        if (inPlay_[i] || (!ergun_ && !adsorbing)) continue;
+        const std::string msg = "component '" + compNames_[i] + "' is"
+            " neither fed nor held (zero feed, zero initial gas, zero"
+            " initial loading): its amount is exactly zero, and its rows"
+            " are held at exactly zero after every accepted step until a"
+            " recipe feeds it (the integrator's linear solve would"
+            " otherwise leave round-off there); it gets no relative"
+            " closure, its residual is published in mol";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "fixedBed-absent:" + name_ + ":" + compNames_[i],
+                "numerics", "info", "fixedBedAdsorber '" + name_ + "'", msg)
+            && verbosity_ >= 1)
+            std::cout << "  [fixedBedAdsorber '" << name_ << "'] " << msg
+                      << ".\n";
     }
     shedMark_.assign(nFlow, 0.0);
     shedMarkCarrier_ = 0.0;
@@ -2063,6 +2091,48 @@ void FixedBedAdsorber::rk4Step_(scalar dt)
         y[i] += dt / 6.0 * (k1[i] + 2.0 * k2[i] + 2.0 * k3[i] + k4[i]);
 }
 
+void FixedBedAdsorber::holdAbsentAtZero_(sVector& y) const
+{
+    //  CI-00 (2026-11-13).  A component nothing feeds or holds has the exact
+    //  answer zero, and every term of its own rows is exactly zero; but the
+    //  Rosenbrock W solve pivots by magnitude, and on some math libraries a
+    //  last-bit change in one pow() leaves 1e-25 mol of it in the bed and in
+    //  the outlet ledger.  Its gas, loading and two ledger rows are put back
+    //  on the exact answer after every accepted chunk (announced once at
+    //  initialise); the round-off they carried is far below eps of the rows
+    //  in play, so no other row is touched.
+    for (std::size_t i = 0; i < compNames_.size(); ++i)
+    {
+        if (inPlay_[i]) continue;
+        auto ait = std::find(adsIdx_.begin(), adsIdx_.end(), i);
+        const bool adsorbing = (ait != adsIdx_.end());
+        const std::size_t a = adsorbing
+            ? static_cast<std::size_t>(ait - adsIdx_.begin()) : 0;
+        if (!ergun_ && !adsorbing) continue;     // the by-difference carrier
+        const std::size_t g = ergun_ ? i : a;
+        for (std::size_t j = 0; j < N_; ++j)
+        {
+            y[g * N_ + j] = 0.0;
+            if (adsorbing) y[qOffset_() + a * N_ + j] = 0.0;
+        }
+        y[inOffset_() + g]  = 0.0;
+        y[outOffset_() + g] = 0.0;
+    }
+}
+
+void FixedBedAdsorber::releaseIfFed_(std::size_t ci)
+{
+    //  CI-00: a recipe that feeds a held component releases it -- from this
+    //  instant it is integrated, and its closure has a scale.
+    if (inPlay_[ci] || !(cInAll_[ci] > 0.0)) return;
+    inPlay_[ci] = true;
+    if (verbosity_ >= 1)
+        std::cout << "  [fixedBedAdsorber '" << name_ << "'] component '"
+                  << compNames_[ci] << "' is fed from t = " << tNow_
+                  << " s on: released from the zero hold, integrated from"
+                     " here.\n";
+}
+
 void FixedBedAdsorber::step(scalar t, scalar dt)
 {
     if (dt <= 0.0) return;
@@ -2072,6 +2142,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         // Fixed explicit RK4 at the case deltaT (validated against the
         // Gershgorin bound at start-up); sampling = every step.
         rk4Step_(dt);
+        holdAbsentAtZero_(y_);         // CI-00 (exact already: no solve)
         commit_(y_);
         sample_(t + dt);
         return;
@@ -2098,6 +2169,25 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
         ctrl.rtol      = rtol_;
         ctrl.hInit     = (hCarry_ > 0.0) ? std::min(hCarry_, sub) : 0.0;
         ctrl.positiveRows.assign((ergun_ ? compNames_.size() + nAds : 2 * nAds) * N_, true);
+        //  CI-00: a row held at zero is not guarded (its round-off is reset
+        //  after the chunk; rejecting a step for it would let round-off
+        //  steer the step sequence of the species that ARE in play).
+        for (std::size_t i = 0; i < compNames_.size(); ++i)
+        {
+            if (inPlay_[i]) continue;
+            auto ait = std::find(adsIdx_.begin(), adsIdx_.end(), i);
+            const bool adsorbing = (ait != adsIdx_.end());
+            const std::size_t a = adsorbing
+                ? static_cast<std::size_t>(ait - adsIdx_.begin()) : 0;
+            if (!ergun_ && !adsorbing) continue;
+            const std::size_t g = ergun_ ? i : a;
+            for (std::size_t j = 0; j < N_; ++j)
+            {
+                ctrl.positiveRows[g * N_ + j] = false;
+                if (adsorbing)
+                    ctrl.positiveRows[qOffset_() + a * N_ + j] = false;
+            }
+        }
         //  C375: the van Leer flux is nonlinear, and the Rosenbrock stages
         //  put the clean bed ahead of a front a round-off below zero; that
         //  is accepted (unclipped: the ledger stays exact) down to -atol,
@@ -2152,6 +2242,7 @@ void FixedBedAdsorber::step(scalar t, scalar dt)
             if (verbosity_ >= 1) std::cout << os.str();
         }
         tl  += sub;
+        holdAbsentAtZero_(y_);         // CI-00: before T is re-projected
         if (thermal_) projectT_(y_);   // C258: T back onto the conserved U
         commit_(y_);
         sample_(tl);
@@ -2935,6 +3026,7 @@ void FixedBedAdsorber::setOperationParameter(const std::string& key,
             cInAll_[ci]    = cNew;
             cInCarrier_    = cTot_ - sumNew;
             cInAll_[carrierIdx_] = cInCarrier_;
+            releaseIfFed_(ci);
 
             amend(ci, cNew - cOld, sayWhy(comp, cOld, cNew));
             amend(carrierIdx_, cInCarrier_ - carOld,
@@ -2967,6 +3059,7 @@ void FixedBedAdsorber::setOperationParameter(const std::string& key,
         if (cNew == cOld) return;
         cInAll_[ci] = cNew;
         cFeedTot_  += cNew - cOld;
+        releaseIfFed_(ci);
         auto ait = std::find(adsIdx_.begin(), adsIdx_.end(), ci);
         if (ait != adsIdx_.end())
         {
@@ -3081,27 +3174,38 @@ FixedBedAdsorber::trajectoryExtras() const
     }
     for (std::size_t a = 0; a < nAds; ++a)
     {
-        // Ledger closure (spec 4d, generalised for a pre-loaded bed):
-        // |M_in + hold0 - (holdup + M_out)| / (M_in + hold0).
-        scalar cs = 0.0, qs = 0.0;
-        for (std::size_t j = 0; j < N_; ++j)
-        {
-            cs += y_[(ergun_ ? adsIdx_[a] : a) * N_ + j];
-            qs += y_[qOffset_() + a * N_ + j];
-        }
-        const scalar holdup = eps_ * A_ * dz_ * cs + rhoB_ * A_ * dz_ * qs;
-        const std::size_t fi = ergun_ ? adsIdx_[a] : a;
-        const scalar mIn    = y_[inOffset_() + fi];
-        const scalar mOut   = y_[outOffset_() + fi];
-        const scalar den    = std::max(mIn + hold0_[a], 1.0e-30);
         // MODEL-EQUATION closure (telescopic, forum #119): this tests the
         // DISCRETISATION identity of the solved equations, not physical
         // conservation -- the physical residual of the constant-(u, P, T)
-        // assumption lives in carrier_makeup_rel, where it BITES.
+        // assumption lives in carrier_makeup_rel, where it BITES.  CI-00:
+        // a species not in play has no scale, so its cell is EMPTY (NaN
+        // here; the CSV writes nothing) until a recipe feeds it.
+        const LedgerClosure lc = ledgerClosure_(a);
         ex.emplace_back("model_closure_" + compNames_[adsIdx_[a]],
-                        std::abs(mIn + hold0_[a] - holdup - mOut) / den);
+            lc.inPlay ? std::abs(lc.residual)
+                        / std::max(lc.scale, scalar(1.0e-30))
+                      : std::numeric_limits<scalar>::quiet_NaN());
     }
     return ex;
+}
+
+FixedBedAdsorber::LedgerClosure
+FixedBedAdsorber::ledgerClosure_(std::size_t a) const
+{
+    // Ledger closure (spec 4d, generalised for a pre-loaded bed):
+    // M_in + hold0 - (holdup + M_out), over M_in + hold0.
+    scalar cs = 0.0, qs = 0.0;
+    for (std::size_t j = 0; j < N_; ++j)
+    {
+        cs += y_[(ergun_ ? adsIdx_[a] : a) * N_ + j];
+        qs += y_[qOffset_() + a * N_ + j];
+    }
+    const scalar holdup = eps_ * A_ * dz_ * cs + rhoB_ * A_ * dz_ * qs;
+    const std::size_t fi = ergun_ ? adsIdx_[a] : a;
+    const scalar mIn    = y_[inOffset_() + fi];
+    const scalar mOut   = y_[outOffset_() + fi];
+    return { mIn + hold0_[a] - holdup - mOut, mIn + hold0_[a],
+             bool(inPlay_[adsIdx_[a]]) };
 }
 
 std::map<std::string, scalar> FixedBedAdsorber::kpis() const
@@ -3223,20 +3327,18 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
                     qMaxField_[a] / qStarFeedMax_[a];
             k["q_min_" + nm] = qMinField_[a];
         }
-        // closure + qbar (same expressions as the trajectory columns)
-        scalar cs = 0.0, qs = 0.0;
+        //  Closure (the trajectory column's home, ledgerClosure_).  CI-00:
+        //  no ratio where there is no scale -- a species not in play
+        //  publishes its residual in mol, never a residual over a floor.
+        const LedgerClosure lc = ledgerClosure_(a);
+        if (lc.inPlay)
+            k["mass_closure_" + nm] = std::abs(lc.residual)
+                / std::max(lc.scale, scalar(1.0e-30));
+        else
+            k["mass_residual_" + nm + "_mol"] = lc.residual;
+        scalar qs = 0.0;
         for (std::size_t j = 0; j < N_; ++j)
-        {
-            cs += y_[(ergun_ ? adsIdx_[a] : a) * N_ + j];
             qs += y_[qOffset_() + a * N_ + j];
-        }
-        const scalar holdup = eps_ * A_ * dz_ * cs + rhoB_ * A_ * dz_ * qs;
-        const std::size_t fi = ergun_ ? adsIdx_[a] : a;
-        const scalar mIn    = y_[inOffset_() + fi];
-        const scalar mOut   = y_[outOffset_() + fi];
-        k["mass_closure_" + nm] =
-            std::abs(mIn + hold0_[a] - holdup - mOut)
-            / std::max(mIn + hold0_[a], 1.0e-30);
         k["qbar_" + nm + "_final"] = qs / static_cast<scalar>(N_);
     }
     return k;
