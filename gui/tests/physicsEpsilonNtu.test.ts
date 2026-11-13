@@ -50,9 +50,9 @@ describe("the page separates what the method allows from what the unit models", 
     const lines = readFileSync(new URL(
       "../../src/unitOperations/heatTransfer/HeatExchanger.cpp", import.meta.url),
       "utf-8").split("\n");
-    expect(lines[1013 - 1]).toContain("bool phaseChanged = false");
-    expect(lines.slice(1038 - 1, 1038 + 6).join(" ")).toContain("a side changed phase: ");
-    expect(lines.slice(1207 - 1, 1210).join(" ")).toContain("U.A.LMTD is NOT a check here");
+    expect(lines[1028 - 1]).toContain("bool phaseChanged = false");
+    expect(lines.slice(1053 - 1, 1053 + 6).join(" ")).toContain("a side changed phase: ");
+    expect(lines.slice(1222 - 1, 1225).join(" ")).toContain("U.A.LMTD is NOT a check here");
     expect(note).toContain("HeatExchanger.cpp:1028-1053, 1222-1225");
   });
 });
