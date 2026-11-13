@@ -2092,29 +2092,60 @@ operation { solidsRecovery 0.9; gasCarryover 0.01; }
 Dilute-phase pneumatic conveying of solids in a gas (the conveying LINE).
 Total pressure drop = sum of contributions (gas + solids acceleration,
 gas + solids wall friction, gas + solids static head over the vertical
-rise `dz`); particle velocity by Hinkle (slip), gas friction Fanning,
-solids friction Hinkle (C_D Schiller–Naumann).  REPORTS the Rizk
+rise `dz`, plus one re-acceleration term per bend).  The particle velocity
+comes from a FORCE BALANCE, not a fitted slip: in developed flow the gas drag
+on a particle (Schiller–Naumann `C_D` at the slip Reynolds number, iterated)
+balances its wall friction plus the gravity component along the pipe,
+`slip² C_D = (4/3) d_p ρ_p g (sin θ + μ_w cos θ)/ρ_g` with `sin θ = dz/L` and
+`u_p = u_g − slip` (≈ `u_t` vertical, ≈ `u_t √μ_w` horizontal).  `μ_w` is
+`operation.particleWallFriction`; undeclared, the unit uses 0.4 and
+ANNOUNCES it as an assumption (site line, end-of-run caveat block, result
+JSON) — a declared value announces nothing.  It is published as a KPI and
+printed in the verbosity ≥ 2 banner.  Gas friction Fanning (Blasius above
+Re 2100, 16/Re below); solids friction Yang (1974), on the voidage
+`1−ε = ρ*/ρ_p` and `u_t/u_p` — his vertical equation when `|dz/L| > 0.5`,
+else the horizontal one, which adds the Froude number `u_g/√(gD)`; a voidage
+outside the window the unit applies (0.994 ≤ ε ≤ 0.9995, printed with the
+message) is announced as an extrapolation on the advisory log at every
+verbosity.  REPORTS the Rizk
 saltation velocity and **warns aloud if `u_g` falls below it** (settling /
 blockage risk) — never a silent clip.  Hardware-only operation block;
-every velocity, the suspended density and ΔP are results.  Needs a
-`transport { viscosity { model Chung; } }` block (gas viscosity) and the solid
-component's `solid { rho_p; }` (a missing density refuses by name; several
-solids: volume-additive mean).
+every velocity, the suspended density and ΔP are results.  The particle size
+is the Sauter mean of the inlet PSD.  Needs a gas viscosity,
+`transport { vapour { viscosity { model Chung; } } }` in the
+thermoPhysPropDict (absent, the run refuses naming that block), and the solid component's `solid { rho_p; }` (a missing
+density refuses by name; several solids: volume-additive mean).
 ```
 type      pneumaticConveyor;
-operation { geometry { D 0.1 m;  L 50 m;  dz 10 m;       // diameter, length, rise
-                       bends ( { RoverD 8; type longRadius; } ) } }
-// feed stream declares solids as solidFlows (mass) + a PSD:
-//   solids { solidFlows { silica 282 kg/h; } diameters (...); massFractions (...); }
+operation { geometry { D 0.1 m;  L 8 m;  dz 2 m;          // diameter, length, rise
+                       bends ( { type longRadius; } ) } }
+// the feed stream (0/<stream>) carries the solids as a phase of its overall
+// componentMolarFlows, plus a PSD:
+//   phases { vapour { componentMolarFlows { N2 50 kmol/h; } }
+//            solid  { componentMolarFlows { silica 46.6 kmol/h; } } }
+//   particleSizeDistribution { diameter ( 0.0001 0.0002 0.0005 ); massFrac ( 0.3 0.5 0.2 ); }
 ```
 Each `bends` entry takes a `type` — `longRadius` (**default**, exit ratio
 0.75), `shortRadius` (0.50) or `blindTee` (0.25, the solids nearly stop: high
-dP, near-zero erosion) — or an explicit `exitRatio`.  An unrecognised `type`
-REFUSES, naming the three; the word is checked even when `exitRatio` overrides
-the ratio, because the run PRINTS it beside the bend's loss.
+dP, near-zero erosion) — and, optionally, an `exitRatio` that overrides the
+type's ratio.  An unrecognised `type` REFUSES, naming the three; the word is
+checked even when `exitRatio` overrides the ratio, because the run PRINTS it
+beside the bend's loss.  Any OTHER key in a bend entry (a radius `RoverD`, an
+angle) REFUSES by name: no bend geometry enters the re-acceleration loss, so
+such a key would do nothing.
 
 KPIs: `deltaP` (+ the five-way breakdown), `u_gas`, `u_particle`,
 `u_terminal`, `u_saltation`, `solidsLoading`, `suspensionDensity`.
+
+The terminal velocity is found by substitution on the Schiller-Naumann drag
+(stopping rule: relative change of a pass below 1e-6, at most 60 passes); a run
+that does not meet it is ANNOUNCED on the advisory log with the last pass's
+relative change.  The drag law has a STEP at Re = 1000: `24/Re (1 + 0.15
+Re^0.687)` is 0.43829 there and the Newton branch is 0.44, a jump of 0.39 %
+(measured).  A sweep across Re ~ 1000 can therefore show a small kink, and a
+particle whose u_t sits there can make the substitution cycle between the two
+branches (measured: sand in N2 at 3 bar, d_p near 1.056 mm -- the announcement
+fires).
 
 _(Solid–liquid separation lives in the `crystalliser`: declare two
 outputs and it discharges a wet cake + the drained mother liquor —
@@ -2235,7 +2266,8 @@ population; no work, no heat; a liquid needs `fluidToOversize`.
   capacity A times the oversize, half-size, deck, wet-screening, bulk-density
   and near-size factors B C D E F G_c, loading K, cut size `d50 = h_T G_c / K^0.148`,
   partition `rosinRammler` with m = 5.9.  Publishes the area utilisation factor
-  (`areaUtilisationFactor`: above 1 the screen is overloaded), the theoretical
+  (`areaUtilisationFactor`: above 1 the screen is overloaded, and the run
+  ANNOUNCES it on the advisory log with the number), the theoretical
   and the transmitted undersize, the screening efficiency and every factor
   (`karra_A .. karra_Gc`, `karra_K`, `karra_d50_um`).  Keys `aperture`,
   `wireDiameter`, `inclination` (write `20 deg`), `area`, `deck` (1 = top),
@@ -2299,7 +2331,10 @@ on the finest class).
 A cake filter on a SLURRY (a liquid carrying solids; not a gas-borne powder),
 constant pressure, the two-resistance law of Geankoplis, Hersel & Lepek 5th ed.
 section 24.2: `t/V = K_p V/2 + B`, `K_p = mu alpha c_S/(A^2 dp)`,
-`B = mu R_m/(A dp)`; a compressible cake `alpha = alpha0 dp^s`.  Inlets
+`B = mu R_m/(A dp)`; a compressible cake `alpha = alpha0 dp^s`.  A negative
+`compressibility` is REFUSED by name (alpha would fall as dp rises); s above 1
+runs and is ANNOUNCED (K_p then grows as dp^(s-1): where the cake dominates the
+medium, a higher pressure drop gives LESS filtrate); 0 <= s <= 1 is silent.  Inlets
 `( slurry [wash] )`, outlets `( cake filtrate [spentWash] )`.  `model rotaryDrum`
 is continuous (declare `cycleTime` XOR `area`; the other is the result, eq.
 24.2-26); `model batchPress` is cyclic (declare `area`, `filtratePerCycle`,
@@ -2363,7 +2398,11 @@ A = W t_u/(C_0 H_0) (Talmage & Fitch 1955 eqs. 7-10; Wills & Napier-Munn 2006
 eq. 15.6).  `model coeClevenger`: the largest over the test's layers of
 W (1/C - 1/C_u)/v (Wills eq. 15.5) with (C, v) from Kynch's construction.  The
 underflow carries every solid; the overflow is the difference.  A C_u outside what
-the test reached is refused.
+the test reached is refused.  A test run more than 5 % away from the feed's own
+concentration is used as declared and ANNOUNCED on the advisory log at every
+verbosity (both concentrations and the deviation; Talmage & Fitch p. 40).  The
+printed compression slope names its method: the derivative at t of the parabola
+through the test point nearest t and its two neighbours.
 ```
 type      thickener;
 model     talmageFitch;
@@ -2404,7 +2443,11 @@ with Geankoplis's half-layer `D_pc` beside it (`cutSizeHalfLayer_Dpc_um`, the
 `innerRadius`, `discHalfAngle` (`deg` accepted); Sigma = 2 pi n w^2
 (r_2^3 - r_1^3)/(3 g tan theta) (de Haan et al. eq. 9.52, Ambler's flow factor
 C = 1).  Both need `speed` (`rpm` accepted) and the declared `sedimentSolids`
-(the sludge's solids mass fraction).  No hindered settling, no drive power.
+(the sludge's solids mass fraction).  No hindered settling, no drive power: the
+feed's solids volume fraction is printed, published (`solidsVolumeFraction_feed`)
+and ANNOUNCED with its number on the advisory log -- unhindered (dilute) Stokes
+settling is assumed at that fraction; no threshold is set and the engine does not
+judge whether the feed is dilute.
 ```
 type      sedimentingCentrifuge;
 model     discStack;
@@ -2417,7 +2460,7 @@ operation
 ```
 KPIs: every classifier KPI (`sediment_`/`centrate_` names, the actual-curve d50 in um, the closures)
 plus `omega_rad_s`, `gForce_wall`, `sigma_m2`, `cutSize_d50_um`, `Re_cut`,
-`vWall_cut_m_s`, `gradeEfficiency_at_d50`, and for the tubular bowl
+`vWall_cut_m_s`, `gradeEfficiency_at_d50`, `solidsVolumeFraction_feed`, and for the tubular bowl
 `bowlVolume_m3`, `residenceTime_s`, `sigmaHalfLayer_m2`,
 `cutSizeHalfLayer_Dpc_um`, `gradeEfficiency_at_Dpc`.
 Theory: `sec:sedimentingCentrifuge` (`sec:centrifuge-tubularBowl`,

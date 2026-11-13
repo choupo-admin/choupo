@@ -91,6 +91,15 @@ legacy key is `method`, not `model`, so an operation-level `model` there
 is unread (and flagged by the dict audit) while the column runs
 `WangHenke`.
 
+**A key nothing read is announced, at any depth of `operation {}`**
+(2026-11-13).  After a unit solves, every key of its `operation {}` block that
+no lookup consulted is listed on stderr (`[dict] ... written and never read`),
+with the key the model looked for when the two are a letter apart, and the run
+continues on the defaults.  The audit now walks the block's sub-dictionaries
+and lists of dictionaries too: `geometry { dZ 6 m; }` for `dz` is reported as
+`operation{} geometry: \`dZ\`` (it used to stop at the first level).  A
+sub-block that is itself unread is reported once and not descended into.
+
 **A `model` word the unit does not recognise now REFUSES** (2026-09-07), naming
 the word, the closest match and every word the slot accepts.  Before that the
 last branch of each `if`-chain answered for every unrecognised word, so a

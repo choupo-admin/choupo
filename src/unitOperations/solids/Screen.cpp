@@ -29,6 +29,7 @@ License
 #include "unitOperations/solids/Screen.H"
 #include "unitOperations/solids/ClassifierCore.H"
 #include "unitOperations/solids/classifierModel/PartitionCurves.H"
+#include "core/Advisory.H"
 #include "core/Dimensions.H"
 #include "thermo/ThermoPackage.H"
 
@@ -274,6 +275,21 @@ int Screen::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosit
         kpis_["undersizeTransmitted_t_h"] = U;
         kpis_["areaUtilisationFactor"]    = AUF;
         kpis_["screeningEfficiency"]      = eff;
+        //  An overloaded deck (AUF > 1) is computed as declared and ANNOUNCED:
+        //  the console marker alone did not reach the caveat block or the JSON.
+        if (AUF > 1.0)
+        {
+            std::ostringstream m;
+            m << std::defaultfloat << std::setprecision(5)
+              << "the screen is OVERLOADED: area utilisation factor AUF = " << AUF
+              << " > 1 -- it transmits " << U << " t/h of undersize against a "
+                 "theoretical capacity of " << Th << " t/h for its declared area "
+                 "(King eq. 4.48).  The split is computed as declared; a larger "
+                 "`area` brings AUF to 1 or below.";
+            const std::string unitName = dict->name().empty()
+                ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
+            AdvisoryLog::instance().add("validity", "warning", me + " " + unitName, m.str());
+        }
         rep << "  Model:        karra (Karra 1979; King 2001 sec. 4.2.1-4.2.2, eqs. "
                "4.30-4.48, pp. 87-90)\n"
             << "  Aperture:     h = " << h * 1e3 << " mm, d_w = " << dw * 1e3

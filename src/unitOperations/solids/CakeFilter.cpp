@@ -28,6 +28,7 @@ License
 
 #include "unitOperations/solids/CakeFilter.H"
 #include "unitOperations/solids/SolidLiquidCore.H"
+#include "core/Advisory.H"
 #include "core/Dimensions.H"
 #include "thermo/ThermoPackage.H"
 
@@ -181,6 +182,42 @@ int CakeFilter::solve(const DictPtr& dict, const ThermoPackage& thermo, int verb
         //  integer exponents: it is read in SI, with dp in Pa and alpha in m/kg.
         alpha0 = oper->lookupScalar("alpha0");
         sComp  = oper->lookupScalar("compressibility", Dims::dimensionless);
+        //  The range of s.  s < 0 says the cake gets MORE permeable as it is
+        //  squeezed harder: no reading in this law, so it is refused.  s = 0
+        //  is the incompressible cake and 0 < s <= 1 the usual range, both
+        //  silent.  s > 1 is a legal law with a consequence a student should
+        //  see: K_p = mu alpha c_s / (A^2 dp) = mu alpha0 c_s dp^(s-1) / A^2
+        //  (eq. 24.2-14) GROWS with dp, so where the cake term dominates the
+        //  medium's a higher pressure drop gives LESS filtrate -- announced.
+        if (sComp < 0.0)
+        {
+            std::ostringstream m;
+            m << me << ": `compressibility` s = " << sComp << " is negative -- the "
+                 "cake resistance alpha = alpha0 dp^s would FALL as the pressure "
+                 "drop rises, a cake that opens as it is squeezed, which this law "
+                 "has no reading for (Geankoplis eq. 24.2-11).  Declare s >= 0 "
+                 "from the slope of log(alpha) against log(dp) measured on this "
+                 "slurry, or `specificCakeResistance` for an incompressible cake.";
+            throw std::runtime_error(m.str());
+        }
+        if (sComp > 1.0)
+        {
+            std::ostringstream m;
+            m << std::defaultfloat << std::setprecision(5)
+              << "`compressibility` s = " << sComp << " is above 1: the cake "
+                 "constant K_p = mu alpha0 c_s dp^(s-1) / A^2 (Geankoplis eqs. "
+                 "24.2-11, 24.2-14) grows with the pressure drop as dp^"
+              << sComp - 1.0 << ", so where the cake resistance dominates the "
+                 "medium's a HIGHER pressure drop gives LESS filtrate.  The "
+                 "filter is computed as declared at dp = " << dp << " Pa; the "
+                 "engine does not judge whether this s describes the slurry.";
+            const std::string unitName = dict->name().empty()
+                ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
+            if (AdvisoryLog::instance().add("model", "warning", me + " " + unitName,
+                                            m.str())
+                && verbosity >= 1)
+                std::cout << "  [" << me << "] " << unitName << ": " << m.str() << "\n";
+        }
         alpha  = alpha0 * std::pow(dp, sComp);
     }
     else

@@ -1212,9 +1212,9 @@ scalar Component::h_formation(scalar T, const std::string& targetPhase) const
         //  ANNOUNCED, never silent: for an electrolyte solute the liquid
         //  block can be the aqueous APPARENT-MOLAL Cp -- possibly negative
         //  -- so a crystal duty priced through it can be wrong in sign at
-        //  exit 0.  All 16 curated pureSolid records carry a real
-        //  solidHeatCapacity{} (2026-08-22 census), so this branch serves
-        //  only user-authored records, which is exactly who must hear it.
+        //  exit 0.  ANY record without the block reaches it, curated pureSolid
+        //  ones included (several lack it; no count is kept here -- list them
+        //  with docs/reviews/2026-11-12-solid-properties/solid_catalogue_census.py).
         //  Its announced sibling was 200 lines away in this same file.
         if (AdvisoryLog::instance().add("thermo", "warning",
                 "solidEnthalpy " + name_,
