@@ -138,3 +138,24 @@ campaign-ledger gate reads as a new published quantity.
   (`/ max(fedTot, 1e-30)`); it was not exercised.  29 expressions under
   `src/` divide by `std::max(<quantity>, 1e-30)`; they were counted, not
   classified.
+
+## 8. After the fix branch (`fix/absent-species-closure` at fb6ebba3e7)
+
+The coordinator ruled all three candidates of section 6 into one branch.
+The reviewing session ran `probe.sh` again on a build of that head
+(`after_fix_table.tsv`): all fourteen runs exit 0, none publishes
+`mass_closure_CO2` or an element closure for carbon or oxygen, and
+`n_CO2_final` is exactly 0 in every one.  The species is held at exactly
+zero after every accepted step and the run says so once; its residual is
+published in mol.  The two golden rows that pinned the ratio at 0
+(batch24_blowdown_inert and batch25_blowdown_thermal) are deleted on the
+branch with their KPI.  CI-00d became a ratchet
+(`bin/curate/check_floor_scale_ratchet.py`): 32 divisions by a floored
+quantity in 20 files, pinned, none classified.
+
+Still open after it, from the builder's report and not re-measured here:
+the time-integrated flowsheet driver forms an element ratio over a floor
+of 1e-30 behind the same exact test (no verdict depends on it there); a
+species declared at a tiny non-zero amount is in play and its ratio is
+then large (1e-30 mol of carbon dioxide in the initial gas publishes up to
+8e11 under the shim); `carrier_makeup_rel` is unchanged.

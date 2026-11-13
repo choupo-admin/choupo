@@ -2560,3 +2560,62 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   COLUMNS SIDE BY SIDE under one gas velocity, not mixed in one column,
   because the page computes each kind alone and a mixed bed has rules it
   does not have.
+- [open] cloud -> laptop, 2026-11-13 UTC (19:32): CI-00 IS READY:
+  `fix/absent-species-closure` at fb6ebba3e (seven commits on main
+  3a053b6a8), all three forms as ruled, with the ratchet.  (c) THE SOURCE: a
+  component the case neither feeds nor holds (zero feed now and ever, zero
+  initial gas, zero initial loading: decided by declaration, kept per
+  component) has its gas rows, its loading rows and both ledger rows set
+  back to exactly 0 after every accepted chunk, and is left out of the
+  positivity rows so its round-off cannot reject steps of the others; the
+  integrator is NOT changed; the run says it once; a recipe that feeds it
+  later releases it (shown: a variant of batch19 that starts on helium and
+  feeds 15 % carbon dioxide at 20 s: both lines announced, closure 3.7e-13
+  afterwards).  (a) ONE helper for the KPI and the trajectory column: a
+  ratio only where the species is in play and its scale is positive (the
+  same bits as before there); otherwise no `mass_closure_<species>`, and
+  `mass_residual_<species>_mol` published; the trajectory column stays, with
+  an EMPTY cell where there is no ratio (the campaign's CSV writer writes a
+  non-finite extra as an empty cell; the app's reader draws a gap).  (b) THE
+  CAMPAIGN: an element whose total is not above machine epsilon times the
+  campaign's total atoms gets no ratio, publishes
+  `element_<X>_residual_kmolatom`, stays out of the worst closure and of the
+  leak verdict, and the run names it; proved alone on a fixture (1e-30 of
+  carbon dioxide declared in the initial gas) under five patterns.  MY PROBE
+  on the rebased head: the fourteen runs of the review's table all exit 0,
+  none publishes the ratio or an element closure for C or O, `n_CO2_final`
+  is exactly 0 (`after_fix_table.tsv` and a section 8 in the review).  THE
+  CORPUS: the 15 cases with a fixed bed, result JSON before and after: every
+  number identical except batch24 and batch25, where `mass_closure_CO2` (0)
+  becomes `mass_residual_CO2_mol` (0); in the trajectories only the closure
+  cell of the t = 0 row of a clean bed is now empty (it was 0 over the
+  floor).  GOLDEN ROWS: DELETED on the branch, in one dedicated commit, the
+  two rows whose KPI no longer exists: `kpi bed mass_closure_CO2 0` in
+  batch24_blowdown_inert and in batch25_blowdown_thermal; NO row moves in
+  value; FOR YOU TO APPEND: `kpi bed mass_residual_CO2_mol 0` in the same
+  two cases.  THE GATE: `check_feed_switch.py` gains three arms (held under
+  nine moved-pow patterns; released by a recipe; the element rule alone),
+  builds the shim itself (`bin/curate/ulp_shim.c`) and REFUSES where it
+  cannot be built or preloaded; five by-hand sabotages.  THE RATCHET you
+  accepted: `bin/curate/check_floor_scale_ratchet.py` with
+  `floor_scale_ratchet_debt.tsv`: 32 divisions by a quantity floored with a
+  literal at or below 1e-12 in 20 files (35 before this branch removed
+  three), two-sided, 17 fixtures, two sabotages; it classifies nothing and
+  says so.  NOT WIRED: wire it as the liquid-property ratchet is wired
+  (`gate_exec`, label `floor-scale-ratchet-gate`, claim line
+  `^check_floor_scale_ratchet: OK`); no manifest entry yet.  VALIDATED by
+  the builder: --scope over tutorials/batch 63 / 0; --gui 46 / 1 before the
+  last two commits (the self-test's platform target, nothing else); the
+  campaign, fixed-bed, caveat, state-layout, compile, dialect, layering,
+  guide and text gates.  By me on the rebased head: build, both gates, the
+  probe, the guide PDF rebuilt after a rebase conflict.  NOT RUN: --gui on
+  the final head, a full sweep, `make wasm`.  FOUND AND LEFT, in the
+  review's section 8: the time-integrated flowsheet driver has the same
+  exact test and an element ratio over 1e-30 (`DynamicDriver.cpp` about
+  2117-2135; no verdict depends on it; one pinned site of the ratchet); a
+  species DECLARED at a tiny non-zero amount is in play and its ratio is
+  then large (up to 8e11 under the shim for 1e-30 mol); the campaign's mass
+  closure floors its scale at 1e-12 kg through a named variable, which the
+  ratchet cannot see.  TWO CORRECTIONS to my own brief, for the record: the
+  trajectory column is `model_closure_<species>`, and 14 rows, not 13, pin a
+  closure of a species in play (none moved).

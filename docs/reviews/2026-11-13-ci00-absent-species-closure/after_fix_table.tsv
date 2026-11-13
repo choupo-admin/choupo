@@ -1,0 +1,15 @@
+function	every	exit	mass_closure_CO2	n_CO2_final_kmol	element_C_closure_rel	element_O_closure_rel
+none	0	0		0		
+pow	1	0		0		
+pow	2	0		0		
+pow	3	0		0		
+pow	7	0		0		
+pow	101	0		0		
+pow	1009	0		0		
+pow	10007	0		0		
+pow	99991	0		0		
+pow	500009	0		0		
+exp	1	0		0		
+exp	3	0		0		
+exp	101	0		0		
+exp	10007	0		0		
