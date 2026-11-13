@@ -463,6 +463,11 @@ def artefact_stamp(bdir):
                default=0.0)
 
 
+def has_no_subject(out):
+    """True when the gate's own output says NO SUBJECT (exit 0, nothing observed)."""
+    return any(l.startswith("NO SUBJECT") or ": NO SUBJECT --" in l for l in out.splitlines())
+
+
 def run_gate(name):
     p = subprocess.run([sys.executable, str(ROOT / "bin" / "curate" / name)],
                        capture_output=True, text=True, timeout=900, cwd=ROOT)
@@ -537,7 +542,14 @@ def main() -> int:
                   "than every check this gate performs.")
             return 1
 
-        if rc == 0:
+        if rc == 0 and has_no_subject(out):
+            #  A gate that answers NO SUBJECT (the route bench on a platform other
+            #  than the one its pins were recorded on, C384) observed NOTHING, so
+            #  the sabotage was neither detected nor missed here.  Said by name,
+            #  never silently skipped, never counted as a detection.
+            results.append(f"{s['gate']} [{s['kind']}] -> NO SUBJECT on this "
+                           "platform (the arm was NOT observed)")
+        elif rc == 0:
             fail.append(
                 f"{s['gate']} [{s['kind']}] PASSED under sabotage.  "
                 f"{s['why']}\n      The gate exited 0 over a tree where the "
@@ -587,8 +599,12 @@ def main() -> int:
                             f"no newer artefact, so the sabotage never reached "
                             f"the binary the gate runs")
             else:
-                rc, _ = run_gate(src["gate"])
-                if rc == 0:
+                rc, gate_out = run_gate(src["gate"])
+                if rc == 0 and has_no_subject(gate_out):
+                    src_results.append(f"{src['gate']} [{src['kind']}] -> NO "
+                                       "SUBJECT on this platform (the arm was "
+                                       "NOT observed)")
+                elif rc == 0:
                     fail.append(f"{src['gate']} [{src['kind']}]: PASSED with "
                                 f"the sabotage in the ENGINE and built into "
                                 f"the binary.  {src['why']}")
