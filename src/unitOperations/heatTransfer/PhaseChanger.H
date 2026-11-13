@@ -82,6 +82,7 @@ SourceFiles
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
 
+#include <limits>
 #include <map>
 #include <string>
 #include <vector>
@@ -110,8 +111,9 @@ public:
     }
 
 private:
-    // `qInPinned` (both geometry modes): the quality a PURE two-phase feed
-    // DECLARES, or -1 -- its pin is its state (C36 item 3), read in solve().
+    // `H_inDeclared` (both geometry modes): the per-mole enthalpy of a feed
+    // that DECLARES its phase (`flashState::declaredInletEnthalpy`), or NaN
+    // when the feed is unpinned and is resolved -- read in solve().
     //
     // The `model geometry;` resolution: a film-condensation HTC drives the
     // duty from the surface geometry + a coolant (the wall-T inner iteration),
@@ -121,7 +123,9 @@ private:
                       const ThermoPackage& thermo,
                       int verbosity,
                       scalar F, scalar T_in, scalar P_in, scalar P_out,
-                      const sVector& z, scalar qInPinned = -1.0);
+                      const sVector& z,
+                      scalar H_inDeclared =
+                          std::numeric_limits<scalar>::quiet_NaN());
 
     // The `model geometry;` BOILING branch: a Rohsenow nucleate-boiling flux
     // (with a student-supplied surface-fluid C_sf + citation) drives the duty
@@ -132,7 +136,9 @@ private:
                              const ThermoPackage& thermo,
                              int verbosity,
                              scalar F, scalar T_in, scalar P_in, scalar P_out,
-                             const sVector& z, scalar qInPinned = -1.0);
+                             const sVector& z,
+                      scalar H_inDeclared =
+                          std::numeric_limits<scalar>::quiet_NaN());
 
     inline static const std::string type_ = "phaseChanger";
     std::vector<ProcessStream>      produced_;

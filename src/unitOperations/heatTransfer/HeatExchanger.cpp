@@ -68,9 +68,12 @@ int HeatExchanger::solve(const DictPtr& dict,
     //  not fix the split; `resolvedInletVaporFraction` returns the pin as the
     //  inlet's vf (the one home, DEV.md C37 item 1), and this unit keeps it
     //  besides to PRICE the inlet at it (`inletH` below, C36 item 3).
+    //  `Hdeclared`: the per-mole enthalpy of an inlet that DECLARES its phase
+    //  (`flashState::declaredInletEnthalpy`), NaN for an unpinned inlet.
     struct Stream
     { std::string name; sVector z; scalar F = 0, T = 0, P = 0, vf = 0;
-      scalar qPinned = -1.0; };
+      scalar qPinned = -1.0;
+      scalar Hdeclared = std::numeric_limits<scalar>::quiet_NaN(); };
     auto readStream = [&](const DictPtr& sd) -> Stream
     {
         Stream s;
@@ -93,6 +96,14 @@ int HeatExchanger::solve(const DictPtr& dict,
             "heatExchanger inlet '" + s.name + "'");
         if (const auto q = flashState::pinnedPureQuality(sd, s.z))
             s.qPinned = *q;
+        try
+        {
+            if (const auto h = flashState::declaredInletEnthalpy(
+                    sd, s.T, s.P, s.z, thermo,
+                    "heatExchanger inlet '" + s.name + "'"))
+                s.Hdeclared = *h;
+        }
+        catch (const std::exception&) { /* no datum: `Hinlet` says so */ }
         return s;
     };
     Stream s0 = readStream(ins[0]);
@@ -868,17 +879,21 @@ int HeatExchanger::solve(const DictPtr& dict,
       }
     };
 
-    //  The enthalpy of an INLET at its own state.  A pure two-phase inlet's
-    //  declared quality IS its state (see `Stream::qPinned`): priced on the
-    //  same blend the energy report prices it with, never re-resolved.
+    //  The enthalpy of an INLET at its own state.  An inlet that DECLARES its
+    //  phase is priced at the declaration (`Stream::Hdeclared`, the one home
+    //  the energy report's rule lives in): a pure two-phase pin at its
+    //  quality, a pinned single phase on the branch it names -- never
+    //  re-resolved.  `Hmol` is an EQUILIBRIUM search, right for the outlet
+    //  and for an unpinned inlet, and it flashed a pinned pure inlet at
+    //  (T, P): inside the saturation band its side was the last digits of P,
+    //  and this unit's own `H_closure_gap_kW` read 0 at P = p_sat and
+    //  -36.82 kW at p_sat (1 - 5e-7) for a declared liquid at 446.5 K
+    //  (review TD-02, 2026-11-13).
     auto Hinlet = [&](const Stream& s) -> scalar
     {
+        if (std::isfinite(s.Hdeclared)) return s.Hdeclared;
         if (s.qPinned > 0.0)
-        {
-            try { return thermo.H_stream_formation(s.T, s.P, s.qPinned, s.z); }
-            catch (const std::exception&)
-            { return std::numeric_limits<scalar>::quiet_NaN(); }
-        }
+            return std::numeric_limits<scalar>::quiet_NaN();  // no datum
         return Hmol(s, s.T, nullptr);
     };
 

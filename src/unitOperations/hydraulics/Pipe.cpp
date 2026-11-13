@@ -38,6 +38,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 
@@ -137,11 +138,34 @@ int Pipe::solve(const DictPtr& dict,
         //  split, and must not switch the two-phase correlations on: the one
         //  home discards it and the feed is the single fluid phase (DEV.md
         //  §5 2026-09-26, named there; C34).  Said once, here.
+        //
+        //  AN INLET THAT DECLARES A SINGLE PHASE IS NOT FLASHED: its regime IS
+        //  the declaration (`flashState::declaredSinglePhase`), as the energy
+        //  report prices it.  On a pure fluid's saturation curve a flash at
+        //  (T, P) returns the side the last digits of P fall on, so a
+        //  `phase liquid;` IF97 water at 550 K was refused as an all-vapour
+        //  feed or for a missing liquid viscosity according to the 1e-9 of P
+        //  (review TD-03, 2026-11-13).
+        const std::optional<scalar> declared =
+            flashState::declaredSinglePhase(feedDict);
         std::string scDiscarded;
-        const FlashSolution fs = flashState::flashDiscardingSupercriticalSplit(
-            fin, thermo, fo, scDiscarded);
-        flashState::reportSupercriticalDiscard(scDiscarded, "pipe",
-                                               "pipe inlet regime", verbosity);
+        FlashSolution fs;
+        if (declared)
+        {
+            fs.converged = true;
+            fs.V_over_F  = *declared;
+            fs.x = z;  fs.y = z;
+            fs.regime = *declared > 0.5 ? "declared vapour"
+                                        : "declared liquid";
+        }
+        else
+        {
+            fs = flashState::flashDiscardingSupercriticalSplit(
+                fin, thermo, fo, scDiscarded);
+            flashState::reportSupercriticalDiscard(scDiscarded, "pipe",
+                                                   "pipe inlet regime",
+                                                   verbosity);
+        }
         const scalar VF = (fs.converged && std::isfinite(fs.V_over_F))
             ? std::min(1.0, std::max(0.0, fs.V_over_F)) : 0.0;
 
