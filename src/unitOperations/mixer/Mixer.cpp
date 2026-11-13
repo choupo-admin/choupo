@@ -114,7 +114,7 @@ int Mixer::solve(const DictPtr& dict,
     //  vfw's job) but so the unit can say whether the dominant label was a
     //  choice at all.  See the announcement below the phase decision.
     std::size_t nVapIn = 0, nLiqIn = 0;
-    int     nLiquidInlets = 0;          // vf < 0.5 count (the emulsion line)
+    int     nLiquidInlets = 0;          // fluid-bearing vf < 0.5 count (the emulsion line)
     scalar  P_out     = std::numeric_limits<scalar>::infinity();
     scalar  T_first   = 0.0;
     scalar  FT        = 0.0;            // Σ F_k · T_k  (a SEED for the T-solve)
@@ -268,8 +268,14 @@ int Mixer::solve(const DictPtr& dict,
         if (P < P_out) P_out = P;
         if (!isothermal) Hin_total += F * hInlet(T, P, vf, z);
         vfw       += F * vf;
-        (vf >= 0.5 ? nVapIn : nLiqIn)++;
-        if (vf < 0.5) ++nLiquidInlets;
+        //  An inlet with NO fluid (a powder: F = 0, its vf a default) is
+        //  neither a vapour nor a liquid inlet -- counting it as a liquid
+        //  made two powders print "2 liquid inlets merged ... emulsion".
+        if (F > 0.0)
+        {
+            (vf >= 0.5 ? nVapIn : nLiqIn)++;
+            if (vf < 0.5) ++nLiquidInlets;
+        }
         FT        += F * T;
         if (!haveFirst) { T_first = T; haveFirst = true; }
     }
