@@ -25,7 +25,7 @@ kpi     column16               x_D_LK           0.951017317641   1e-4
 boundary global                 H_feeds_kW       1779.54082551    1e-4
 boundary global                 Q_boundary_kW    -635.7773153     1e-4
 boundary global                 H_products_kW    1143.76351021    1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.01995
 utility column16               heating.steamLP.duty_kW 679.510517779    1e-4
 utility column16               heating.steamLP.T 381.514100298    1e-4
 utility column16               heating.steamLP.kg_s 0.310846531463   1e-4

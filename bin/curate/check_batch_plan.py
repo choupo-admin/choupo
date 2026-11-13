@@ -1414,7 +1414,8 @@ def arm_golden(work):
     out, err, rc = run([str(ROOT / "bin/runTests"), "--record", str(d)], timeout=1200)
     exp = d / "expected"
     if rc != 0 or not exp.exists():
-        fail(f"(g) runTests --record on the witness copy exited {rc}")
+        fail(f"(g) runTests --record on the witness copy exited {rc}; its last output lines follow (the exit alone told nothing on the CI runner):\n"
+             + "\n".join((out + err).splitlines()[-25:]))
         return
     rows = [l for l in exp.read_text().splitlines() if l.startswith("batch ")]
     ids = set(l.split()[1].split(":")[0] for l in rows)
@@ -1705,7 +1706,8 @@ def arm_multi_golden(work):
     out, err, rc = run([str(ROOT / "bin/runTests"), "--record", str(d)], timeout=1200)
     exp = d / "expected"
     if rc != 0 or not exp.exists():
-        fail(f"(l) runTests --record on the multiproduct probe exited {rc}")
+        fail(f"(l) runTests --record on the multiproduct probe exited {rc}; its last output lines follow (the exit alone told nothing on the CI runner):\n"
+             + "\n".join((out + err).splitlines()[-25:]))
         return
     rows = [l for l in exp.read_text().splitlines() if l.startswith("batch ")]
     ids = set(l.split()[1].split(":")[0] for l in rows)

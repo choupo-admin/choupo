@@ -14,7 +14,7 @@ stream  wetSteam               T                572.172481734      1e-4
 kpi     boilerHX               C_cold           2097.22222222      1e-4
 kpi     boilerHX               C_hot            1016.46772691      1e-4
 kpi     boilerHX               C_r              0.484673353227     1e-4
-kpi     boilerHX               H_closure_gap_kW -8.24229573482e-13 1e-4
+kpi     boilerHX               H_closure_gap_kW -8.24229573482e-13 abs:1.729e-06
 kpi     boilerHX               LMTD             133.007049666      1e-4
 kpi     boilerHX               NTU              1.96759813131      1e-4
 kpi     boilerHX               Q                172897.339532      1e-4

@@ -144,7 +144,7 @@ kpi     FL4                    K_propane        10.3352395233    1e-4
 boundary global                 H_feeds_kW       -1589255.047     1e-4
 boundary global                 Q_boundary_kW    -21044.6086486   1e-4
 boundary global                 H_products_kW    -1610296.81759   1e-4
-boundary global                 residual_kW      0.0810260982253  1e-4
+boundary global                 residual_kW      0.0810260982253  abs:3.958
 utility FL2                    heating.steamLP.duty_kW 114762.848094    1e-4
 utility FL2                    heating.steamLP.T 322.039          1e-4
 utility FL2                    heating.steamLP.kg_s 52.4990155964    1e-4

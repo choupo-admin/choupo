@@ -31,4 +31,4 @@ stream  feed                   T                360              1e-4
 boundary global                 H_feeds_kW       -7704.27044651   1e-4
 boundary global                 Q_boundary_kW    20.4840094204    1e-4
 boundary global                 H_products_kW    -7683.78643709   1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.001322

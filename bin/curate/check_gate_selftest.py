@@ -221,6 +221,30 @@ RETIRED_PROBE = "species" + "Map"
 
 SABOTAGES += [
     {
+        "gate": "check_golden_bands.py",
+        "kind": "detection",
+        "file": "bin/curate/golden_bands.tsv",
+        "find": "\titer|.*iterations|.*evaluations\trel\t2.0\t",
+        "replace": "\titer|.*iterations|.*evaluations\trel\t1e-4\t",
+        "why": "the class table is what the cross-platform comparison is made "
+               "of (C384): a count class that no longer gives 2.0 leaves the "
+               "runner red on the rows it cannot reproduce, and the gate's "
+               "transformation arm must fail it.",
+    },
+    {
+        "gate": "check_golden_bands.py",
+        "kind": "detection",
+        "file": "tutorials/steady/flowsheets/proxy01_gas_loop/expected",
+        "find": "H_closure_gap_kW 1.16937215466e-09 abs:7.012e-08\n",
+        "replace": "H_closure_gap_kW 1.16937215466e-09 1e-4\n",
+        "why": "a closure RESIDUAL with a relative band is a golden over "
+               "round-off (C384): it must carry an absolute band written in "
+               "the row, and the gate must fail the relative one.",
+    },
+]
+
+SABOTAGES += [
+    {
         "gate": "check_workspace_truth.py",
         "kind": "detection/poisoned-overlay",
         "file": "src/propertyOps/EvidencePartition.H",

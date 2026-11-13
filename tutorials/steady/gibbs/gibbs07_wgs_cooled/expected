@@ -29,7 +29,7 @@ kpi     wgs                    Q_kW             2.24929156612    1e-4
 boundary global                 H_feeds_kW       -64.2741918385   1e-4
 boundary global                 Q_boundary_kW    2.24929156612    1e-4
 boundary global                 H_products_kW    -62.0249002724   1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:2.249e-05
 utility wgs                    heating.steamLP.duty_kW 2.24929156612    1e-4
 utility wgs                    heating.steamLP.T 350              1e-4
 utility wgs                    heating.steamLP.kg_s 0.00102895314095 1e-4

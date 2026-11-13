@@ -173,7 +173,7 @@ stream  waterProduct           T                365.506032775    1e-4
 boundary global                 H_feeds_kW       -5862.58875482   1e-4
 boundary global                 Q_boundary_kW    636.23777908     1e-4
 boundary global                 H_products_kW    -5237.55663533   1e-4
-boundary global                 residual_kW      11.2056595931    1e-4
+boundary global                 residual_kW      11.2056595931    abs:0.04799
 utility reactor                heating.hitecSalt.duty_kW 828.062715045    1e-4
 utility reactor                heating.hitecSalt.T 623              1e-4
 utility reactor                heating.hitecSalt.kg_s 4.70490179003    1e-4

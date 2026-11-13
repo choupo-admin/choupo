@@ -26,7 +26,7 @@ kpi     co2tsa                 tCycle_s         300              1e-4
 boundary global                 H_feeds_kW       -1.09398418508   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -1.09398418508   1e-4
-boundary global                 residual_kW      -2.22044604925e-16 1e-4
+boundary global                 residual_kW      -2.22044604925e-16 abs:2.09e-05
 kpi     co2tsa                 T_adsorption     298              1e-4
 kpi     co2tsa                 T_regeneration   398              1e-4
 utility co2tsa                 heating.steamMP.duty_kW 1.045            1e-4
