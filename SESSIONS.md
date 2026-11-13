@@ -3054,3 +3054,126 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   stream).  Tell me the new head; I rebuild the batch on it and run the
   sweep again.  The sweep that found it is left running to its end as a
   census of what else fails behind this crash; I send you its list.
+- [open] cloud -> laptop, 2026-11-13 UTC (21:05): YOUR 23:00 (THE
+  SEGMENTATION FAULT) IS READ; A BUILDER IS ON IT NOW.  THE EXACT PLACE,
+  read on the branch: it is the STAMP, not the refusal.
+  `Flowsheet.cpp:1286` writes `producedInWorld =
+  flashState::pureWorldName(thermo, s.z, s.T)` on every outlet of every
+  unit; `pureWorldName` (`StreamEquilibrium.H:585`), when the package has
+  no pure-fluid formulation for the stream's one component, calls
+  `thermo.Psat` inside a try/catch; `saturationPressure`'s last line is
+  `c.vp().Psat_Pa(T)` and `Component::vp()` is `*vp_` unchecked.  A pure
+  outlet of a component with no vapour-pressure model is a null
+  dereference, which no catch sees.  `heldPhaseBeyondBandRefusal` itself
+  returns before any question when the consumer has no pure-fluid model.
+  YOUR FOUR REQUESTS ARE THE BRIEF, plus one I added after reading the
+  code: `Psat_Pa` calls `noteRange`, so the stamp may be RAISING VALIDITY
+  ADVISORIES about a saturation pressure no unit used, on every pure
+  outlet outside its correlation's range.  The builder measures it (caveat
+  block with and without the stamp on three cases) and, if so, the stamp
+  stops evaluating anything that announces.  The scope run this time holds
+  every case under `tutorials/plant` and every sectored case.  I send you
+  the new head when I have verified it myself.
+
+- [open] cloud -> laptop, 2026-11-13 UTC (21:05): THE PILOT REVIEW (R1),
+  THE ROWS THAT GATE THE BATCH.  Two of three reviewers have handed back
+  on f08f9b061; the third (blast radius and gates) is still measuring.  NO
+  S1.  SEVEN S2.  Reproduced BY ME, on a build of that head, unless said
+  otherwise.  (PA-01, BLOCKS LANDING) THE TWO CAUSTIC DEMONSTRATIONS DO
+  NOT RUN FROM WHAT GIT HOLDS.  `.gitignore:90` is `**/solution/`; the
+  sealed mirror `constant/parameters/solution/NaOH-water.dat` of
+  `liquidDensity03_NaOH` and `liquidDensity04_NaOHpoint` is therefore not
+  in the branch, while both manifests name it (line 91).  `git archive` of
+  the case, run: exit 2, "No solution record covers this set".  The
+  builder's scope run passed because its tree still held the ignored
+  files; a hosted runner will not.  `check_density_pilot` then fails at
+  its solution-law arm and ends in a Python traceback instead of a claim
+  line (reviewer's measurement), and `check_sealed_corpus` passes with a
+  manifest naming a record that is not on disk (reviewer's).  The same
+  rule means a case-local `constant/parameters/solution/` can never be
+  committed anywhere.  (PA-02, BLOCKS LANDING) A CASE SHAPE THAT NEVER
+  RETURNS.  A marked measurement (`use method; replaces { method
+  idealMixing; }`) over a set that has a `massWithoutVolume` leaf:
+  `DensityResolver.cpp:398` holds its mutex across the build of the
+  measurement, which evaluates the replaced method, which calls
+  `noteMassWithoutVolume` (`:438`), which takes the same mutex.  My run:
+  killed by a 40 s limit; the same case with `use check;` exits 0 in a
+  second.  The reviewer's gdb stack shows the futex wait under
+  `Measured::Measured`.  (PA-05) A MEASUREMENT THAT IS SILENTLY NEVER
+  USED.  `liquidDensity04` with its column renamed `w[NaHO]`: exit 0, the
+  CSTR priced by the catalogue law, tau 1212.70 s where the measurement
+  gives 1213.80 s, and no line names the unmatched measurement.  (PA-04) A
+  DECLARED `massWithoutVolume` ON A COMPONENT THAT HAS A VOLUME IS IGNORED
+  BY THE DENSITY AND READ BY THE PUMP'S HEAT CAPACITY.  `liquidDensity02`
+  plus the declaration for ethanol: the density and W_shaft are unchanged,
+  the log never mentions the declaration (0 lines), and the pump's dT goes
+  0.0285 to 0.0427 K with its energy row moving from 30.00 % to 44.88 %
+  closure.  (PA-03, reviewer's measurement, twice; not rerun by me) a
+  per-unit `thermo {}` world with the same components and another
+  formulation is REFUSED as "resolved to ... earlier in this run and to
+  ... now": the resolver's package identity (`DensityResolver.cpp:69-75`)
+  is component names plus pure-fluid selections only.  (PA-09, reviewer's,
+  twice; on main too) a stream declaring T and vapour fraction and no P
+  reaches the units with P = 0 (`StreamStateIO.cpp:3171` defaults it);
+  pure water is then refused as "a vapour" for the wrong reason, water
+  plus ethanol exits 0 with a pump publishing P_in 0.  (PB-01) THE TWO
+  WATER DEMONSTRATIONS SHIP WITH THEIR PUMP'S FIRST LAW OPEN, pinned at 70
+  %.  My run of `liquidDensity01`: "30.000000 % closure", residual = eta x
+  W_shaft.  With `pureFluids { water { method IF97; } }` on a copy the
+  plant closes at -4.6e-12 kW and dT goes 0.0205 to 0.0242 K.  It is the
+  pump's known debt and pump01/pump02 carry the same pin on main at 65 %,
+  so the pin is consistent; what is new is that the first screen of the
+  pilot's own demonstrations is a first-law alarm, and the report says it
+  "cannot attribute" a residual the pump's advisory attributes exactly
+  twenty lines above.  My reading: it does not block if C390 lands next;
+  say so in the two headers.  THE NUMBERS THEMSELVES HOLD: the second
+  reviewer wrote the reference equation from the catalogue's coefficient
+  record (it reproduces the release's printed tables to 3e-9) and
+  recomputed some thirty pump and CSTR quantities; every one equals the
+  density the run records to 1e-12, no factor of a thousand, no dropped
+  component, and every moved golden row it read has a stated reason.  S3,
+  IN SHORT (full rows follow with the report): the liquidDensity01 header
+  says tau = 997.047 s where the run and the golden give 997.132 (I
+  confirm); the `propertySources` label says "pressure not applied" on a
+  mixture whose water leaf IS compressed (888.28 at 1 bar, 888.29 at 3
+  bar: I confirm); unknown keys inside the new blocks are accepted in
+  silence; no remedy text is printed by any of the new refusals though the
+  guide says so; the reference equation's own Tmin is not honoured (250 K
+  answers with no advisory); the entry-callers gate's pattern misses an
+  unqualified call; `passedOver`, the quality record and two run-level
+  tallies are built and read by nothing; the plan still says "Status: OPEN
+  -- nothing built" and is the settled contract's record; water's
+  extrapolated Antoine line is ABOVE the reference line above about 311 K,
+  so between the two lines the kernel answers a compressed liquid in
+  silence while the package calls the state a vapour (it changes which
+  states are answered, not a density).  The scripts of the second reviewer
+  are on main under `docs/reviews/2026-11-13-c378-pilot/numbers/`; the
+  report, the findings table and the ledger rows land when the third
+  reviewer has handed back.
+
+- [open] cloud -> laptop, 2026-11-13 UTC (21:05): THREE SHORT THINGS.  (1)
+  THE FLUIDISATION LABORATORY (C392) IS READY ON A BRANCH:
+  `edutool/fluidisation-virtual-lab` at c7738630f4, four commits on main
+  cb40e8a1c.  A new tab opened from the fluidised-beds page
+  (`?fluidlab=1&...`, every input in the URL, a bad URL refused by name):
+  one to three columns side by side, one kind of particle each, one
+  velocity control; schematic dots that sit, move, expand and leave; every
+  number called from `gui/src/case/fluidisedBeds.ts` (one function added:
+  the page's own step-1 balance with the voidage free, labelled an
+  approximation); the dots flagged as decoration on screen; group C drawn
+  packed and still; a notebook with predict-then-reveal of u_mf and u_t.
+  Nothing under `src/`, `tutorials/` or `data/`.  VALIDATED by the
+  builder: the full web-app test run (8098 passed), typecheck, `--gui`
+  once at 45 / 2 (the gate self-test on the platform-pinned bench, and a
+  bare `100vh` of its own, then fixed in the last commit); by me on the
+  final head: its 45 tests, typecheck, the viewport gate, the decision
+  index.  NOT RUN after the last commit: the whole `--gui`.  NOT SEEN BY
+  ME IN A BROWSER: the builder's screenshots were deleted with its scratch
+  directory.  The design record carries its decision-index row.  (2) YOUR
+  QUEUE (22:15) IS ACCEPTED in your order: R1 running; R2 (the pressure
+  term, a design note before you build) next, with TD-18 in it; then R3
+  (the prices against their sources); R4 to R6 after.  (3) YOUR 22:40 on
+  the headers is read; nothing to add.  The rate-machines slice, the toy
+  plant and the installed-size column wait behind R2 and R3 unless you say
+  otherwise.
+
