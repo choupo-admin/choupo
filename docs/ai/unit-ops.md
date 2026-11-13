@@ -2089,6 +2089,16 @@ the ratio, because the run PRINTS it beside the bend's loss.
 KPIs: `deltaP` (+ the five-way breakdown), `u_gas`, `u_particle`,
 `u_terminal`, `u_saltation`, `solidsLoading`, `suspensionDensity`.
 
+The terminal velocity is found by substitution on the Schiller-Naumann drag
+(stopping rule: relative change of a pass below 1e-6, at most 60 passes); a run
+that does not meet it is ANNOUNCED on the advisory log with the last pass's
+relative change.  The drag law has a STEP at Re = 1000: `24/Re (1 + 0.15
+Re^0.687)` is 0.43829 there and the Newton branch is 0.44, a jump of 0.39 %
+(measured).  A sweep across Re ~ 1000 can therefore show a small kink, and a
+particle whose u_t sits there can make the substitution cycle between the two
+branches (measured: sand in N2 at 3 bar, d_p near 1.056 mm -- the announcement
+fires).
+
 _(Solid–liquid separation lives in the `crystalliser`: declare two
 outputs and it discharges a wet cake + the drained mother liquor —
 see the Crystallisation section.)_

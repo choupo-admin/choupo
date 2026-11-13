@@ -56,6 +56,13 @@ Description
     RESULTS.  Particle density comes from the solid component's `solid{rho_p}`;
     the size from the inlet PSD (Sauter mean for the drag).
 
+    The single-particle drag is Schiller-Naumann, C_D = 24/Re (1 + 0.15
+    Re^0.687) below Re = 1000 and 0.44 above: the two branches do not meet
+    (0.43829 against 0.44, a step of 0.39 %), so a sweep across Re ~ 1000 can
+    show a small kink.  The terminal velocity is found by substitution (relative
+    change below 1e-6, at most 60 passes); a particle sitting on the step can
+    make it cycle, and a run that misses the rule says so on the advisory log.
+
     Inputs (feed );   outputs (conveyed );
 \*---------------------------------------------------------------------------*/
 
