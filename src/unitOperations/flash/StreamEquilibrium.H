@@ -66,7 +66,9 @@ Description
 #include "core/Advisory.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/pureFluid/PureFluidModel.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
 
@@ -508,6 +510,72 @@ inline std::string undeterminedStreamsMessage(
         + " authored stream(s) sit on a pure component's saturation "
           "curve with no phase declared:";
     for (const auto& u : undetermined) msg += "\n  * " + u;
+    return msg;
+}
+
+//  ---- A DECLARED PHASE THAT ITS OWN (T, P) CONTRADICT (review TD-04) -----
+//
+//  The mirror of the rule above.  A PURE stream priced by a pure-fluid
+//  formulation (`pureFluids { <c> { method ...; } }`) that DECLARES one
+//  phase -- `phase liquid;` / `vaporFraction 0;`, or `phase gas;` /
+//  `vaporFraction 1;` -- while its (T, P) lie on the OTHER side of its
+//  saturation line by more than the band (`pureFluidSaturationBand`, 1e-6 of
+//  p_sat(T)) is over-specified AND inconsistent: the stream functions price
+//  it at (T, P), on the other branch, while a unit that holds the declared
+//  phase priced the saturated state (TD-04: +40.65 kW left on the boundary of
+//  a pump at 373.15 K, at exit 0).  The decision is `pureFluidPhaseState`'s
+//  `farAcross`, the same one the phase-taking property calls read -- ONE
+//  rule, not a second band.  Inside the band the pin decides (the saturated
+//  state, C378); a T with no saturation line (at or above Tc, below the
+//  triple point) is not judged.  Only the pure-fluid route has the band; any
+//  other package is left as it was (its declared phase is honoured as before).
+inline std::optional<std::string>
+declaredPhaseBeyondBandRefusal(const std::string&   name,
+                               const std::string&   file,
+                               const ProcessStream& s,
+                               const ThermoPackage& thermo)
+{
+    if (!s.phasePinned || !(s.vf <= 0.0 || s.vf >= 1.0)) return std::nullopt;
+    const auto i = soleComponent(s.z);
+    if (!i || *i >= thermo.n()) return std::nullopt;
+    const PureFluidModel* m = thermo.pureFluidModel(*i);
+    if (!m) return std::nullopt;
+    const bool liquid = s.vf <= 0.0;
+    const PureFluidPhaseState st = pureFluidPhaseState(*m, s.T, s.P, liquid);
+    if (!st.farAcross) return std::nullopt;
+    const scalar ps = m->p_sat(s.T);
+    char buf[1400];
+    std::snprintf(buf, sizeof buf,
+        "stream '%s' (%s) is PURE %s on the pure-fluid formulation %s and "
+        "DECLARES the %s phase (`%s` / `vaporFraction %d;`), but its T and P "
+        "lie on the OTHER side of the saturation line, beyond the band: "
+        "T = %.10g K, P = %.10g Pa, p_sat(T) = %.10g Pa, P/p_sat - 1 = "
+        "%+.3e (the band is %.0e).  The stream is over-specified and "
+        "inconsistent: the stream functions price it at (T, P), a %s, while a "
+        "unit holding the declared phase would price the saturated %s.  Say "
+        "one state: delete the phase word and let T and P decide (the stream "
+        "is then a %s at T = %.10g K, P = %.10g Pa); or, if the saturated %s "
+        "is meant, write `P %.10g Pa;` (p_sat(T), to the digits printed).",
+        name.c_str(), file.c_str(), thermo.comp(*i).name().c_str(),
+        m->type().c_str(), liquid ? "LIQUID" : "VAPOUR",
+        liquid ? "phase liquid;" : "phase gas;", liquid ? 0 : 1,
+        s.T, s.P, ps, s.P / ps - 1.0, pureFluidSaturationBand,
+        liquid ? "vapour" : "compressed liquid", liquid ? "liquid" : "vapour",
+        liquid ? "VAPOUR" : "LIQUID", s.T, s.P, liquid ? "liquid" : "vapour",
+        ps);
+    return std::string(buf);
+}
+
+inline std::string contradictedStreamsMessage(
+    const std::vector<std::string>& contradicted,
+    const std::string&              who = "")
+{
+    std::string msg = (who.empty() ? std::string() : who + ": ")
+        + "DECLARED PHASE CONTRADICTED BY T AND P -- "
+        + std::to_string(contradicted.size())
+        + " authored pure stream(s) declare a phase their own (T, P) place on "
+          "the other side of the saturation line:";
+    for (const auto& c : contradicted) msg += "\n  * " + c;
     return msg;
 }
 

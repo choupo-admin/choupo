@@ -3064,17 +3064,31 @@ int Flowsheet::solve(const DictPtr& dict,
     //  (DEV.md C37 item 5).  A unit's own world is asked only for a PURE,
     //  authored, unpinned inlet -- the only stream the rule can refuse --
     //  and `thermoFor` builds that world once and caches it for the solve.
-    //  Every offender is collected before refusing.
+    //  Every offender is collected before refusing.  Its mirror rides the
+    //  same walk: a pure-fluid stream whose DECLARED phase its own (T, P)
+    //  contradict beyond the band (`declaredPhaseBeyondBandRefusal`, TD-04).
     {
-        std::vector<std::string> undetermined;
+        std::vector<std::string> undetermined, contradicted;
         std::set<std::string> refusedGlobally;
         auto isCandidate = [&](const std::string& nm, const ProcessStream& s)
         {
             return s.authoredInlet && !s.phasePinned && s.F > 0.0
                 && canonicalPaths.count(nm);
         };
+        auto isPinnedInlet = [&](const std::string& nm, const ProcessStream& s)
+        {
+            return s.authoredInlet && s.phasePinned && s.F > 0.0
+                && canonicalPaths.count(nm);
+        };
         for (const auto& [nm, s] : streams_)
         {
+            if (isPinnedInlet(nm, s))
+                if (auto why = flashState::declaredPhaseBeyondBandRefusal(
+                        nm, "0/" + statePathOf(nm), s, thermo))
+                {
+                    contradicted.push_back(*why);
+                    refusedGlobally.insert(nm);
+                }
             if (!isCandidate(nm, s)) continue;
             if (auto why = flashState::undeterminedSaturationRefusal(
                     nm, "0/" + statePathOf(nm), s.T, s.P, s.z, thermo))
@@ -3093,7 +3107,8 @@ int Flowsheet::solve(const DictPtr& dict,
             {
                 const auto st = streams_.find(in);
                 if (st == streams_.end() || refusedGlobally.count(in)
-                    || !isCandidate(in, st->second)
+                    || !(isCandidate(in, st->second)
+                         || isPinnedInlet(in, st->second))
                     || !flashState::soleComponent(st->second.z)) continue;
                 pureInlets.push_back(in);
             }
@@ -3104,16 +3119,26 @@ int Flowsheet::solve(const DictPtr& dict,
             for (const auto& in : pureInlets)
             {
                 const auto& s = streams_.at(in);
-                if (auto why = flashState::undeterminedSaturationRefusal(
+                const std::string own = "  (Checked in the OWN thermophysical"
+                    " world of unit '" + fu.name + "', which consumes it.)";
+                if (s.phasePinned)
+                {
+                    if (auto why = flashState::declaredPhaseBeyondBandRefusal(
+                            in, "0/" + statePathOf(in), s, world))
+                        contradicted.push_back(*why + own);
+                }
+                else if (auto why = flashState::undeterminedSaturationRefusal(
                         in, "0/" + statePathOf(in), s.T, s.P, s.z, world))
-                    undetermined.push_back(*why + "  (Checked in the OWN "
-                        "thermophysical world of unit '" + fu.name
-                        + "', which consumes it.)");
+                    undetermined.push_back(*why + own);
             }
         }
+        std::string refusal;
         if (!undetermined.empty())
-            throw std::runtime_error(
-                flashState::undeterminedStreamsMessage(undetermined));
+            refusal = flashState::undeterminedStreamsMessage(undetermined);
+        if (!contradicted.empty())
+            refusal += (refusal.empty() ? "" : "\n")
+                     + flashState::contradictedStreamsMessage(contradicted);
+        if (!refusal.empty()) throw std::runtime_error(refusal);
     }
     checkAuthoredInletAcceptance(units, thermo, planFindings);   // C188: FlowsheetAcceptance.cpp
 
