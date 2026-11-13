@@ -321,7 +321,10 @@ Theory Guide's paragraph "Which vapour the latent heat speaks").
 Three levels, engine-owned: total MASS, per-ELEMENT atoms (the true
 invariant of a reacting system), and energy.  Steady: the `elementBalance`
 report (plant boundary, kmol-atom/h; `spreadsheet` carries the sheet).
-Batch: `kpis.campaign` (mass/elements/energy with availability).  Dynamic
+Batch: `kpis.campaign` (mass/elements/energy with availability; an element
+whose total is not above machine epsilon times the campaign's total atoms
+publishes `element_<X>_residual_kmolatom` instead of a closure and stays out
+of the worst element and the verdict -- a floor never decides).  Dynamic
 (choupoCtrl / choupoSemiContinuous, one driver): the accepted-step ledger writes `balanceTrajectory.csv` +
 `.meta`; the dynamicCSTR's physical-energy claim honestly refuses (its ODE
 is not the derivative of a canonical U/H).  All three ride ONE formula
