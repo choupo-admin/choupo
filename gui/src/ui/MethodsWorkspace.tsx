@@ -361,6 +361,9 @@ const ChromatographyTool = lazy(() =>
 const OperatorPanelsTool = lazy(() =>
   import("./methods/OperatorPanelsTool.js")
     .then((m) => ({ default: m.OperatorPanelsTool })));
+const FluidisedBedsTool = lazy(() =>
+  import("./methods/FluidisedBedsTool.js")
+    .then((m) => ({ default: m.FluidisedBedsTool })));
 const PoolFireTool = lazy(() =>
   import("./methods/PoolFireTool.js")
     .then((m) => ({ default: m.PoolFireTool })));
@@ -675,6 +678,7 @@ export function MethodsWorkspace() {
             : tool === "batch-adsorption" ? <BatchAdsorptionTool />
             : tool === "chromatography" ? <ChromatographyTool />
             : tool === "operator-panels" ? <OperatorPanelsTool />
+            : tool === "fluidised-beds" ? <FluidisedBedsTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

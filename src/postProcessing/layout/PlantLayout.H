@@ -193,6 +193,32 @@ Description
     Structures, a pipe against another pipe, rotation other than the two
     plan axes, and any distance taken from a standard are NOT here.
 
+    UTILITY LINES (2026-11-13, DEV.md 4c C268 slice 2).  A utility is not a
+    flowsheet stream, so the engine routes nothing for one by itself: the case
+    DECLARES each line, `utilityLines ( { name; service; from; to; [fromPort
+    {}] [toPort {}]; [carries { unit; utility; }]; reason; } )`, from a placed
+    item to a placed item (the flow runs from `from` to `to`), `service` one of
+    coolingWaterSupply | coolingWaterReturn | refrigerantSupply |
+    refrigerantReturn | flareHeader.  The line is routed on the SAME rack by
+    the same rule as a process pipe and its ends land on the SAME ports
+    (`portGeometry`), with three differences: its lane is on a tier ABOVE every
+    process pipe's (`lanesUsed`), one block of tiers per service family, so no
+    process route moves; several lines on one item are spread across its cross
+    extent instead of standing off by a fifth of its narrow dimension; and it
+    is NOT SIZED -- no process pipe is, the layout carries no diameter,
+    velocity or pressure drop, so the line is published `unsized` and says
+    why.  `carries { unit; utility; }` reads THAT row of the run's
+    `utilityAllocation` (kg/s) as the line's flow and is REFUSED if the run
+    does not carry it; nothing is inferred from a service word.  REFUSED: an
+    unknown service, a name twice, `from` equal `to`, an item not placed, a
+    face that is not one, an `elevation` off the item or on a top/bottom face.
+    ANNOUNCED, as findings: `utilityClash` (through an item), `utilityCrossesRoad`
+    (below the headroom over paved ground), `utilityThroughBund` and
+    `utilityNotRouted` (an end indoors).  Published as `layout.utilityLines`
+    (and the summary's `utilityLines`/`utilityLength`) only when declared, so
+    no earlier result moves; enters the plot's envelope.  A line against
+    another line is NOT checked, as for process pipes.
+
     THE PLOT (2026-10-17, DEV.md 4c C82).  After the pipes, the ground the
     layout occupies is published by ONE rule (`plotOf`): the axis-aligned
     ENVELOPE of every declared sector area, every placed footprint (process

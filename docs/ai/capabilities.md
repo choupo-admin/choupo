@@ -191,14 +191,19 @@ batch plan, sizing, clean utilities, costing and economics on top
   column's feed at its stage's height on the shell, bottoms at the sump,
   distillate on the reflux drum; an exchanger's tube and shell nozzles; a
   drum's inlet, vapour and liquid; movable with `key:ports`), the plot area,
-  the paved road area.
+  the paved road area; the cooling-water, refrigerant and flare-header lines
+  the case DECLARES in `key:utilityLines` (a utility is not a stream), routed
+  on the same rack above the process pipes, each UNSIZED, carrying the flow of
+  the run's own utility allocation where the case names a unit and a utility.
 * Checks: overlaps are refused; short separations, ignition sources in a
   hazardous zone or downwind of a release, roads without a gate, items out of
   reach of a road are announced; truck routes walked against a design
   vehicle; a fence derived from the plot.
-* Missing: pipe pressure drop and cost from the layout, structures; no
+* Missing: pipe sizing, pressure drop and cost from the layout (process or
+  utility), steam and nitrogen lines, structures; no
   spacing or zoning table is shipped (every distance is the case's).
 * Witnesses: `tutorials/plant/aceticAcid02_plant`,
+  `tutorials/plant/greenAmmoniaPEQ_baseCase` (the utility lines),
   `tutorials/batch/plant/apalutamide01_tablets` (`pack:layout`).
 
 ### Equipment list and tags (equipment register, tag numbers)

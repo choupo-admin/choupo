@@ -224,6 +224,31 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
     // Wilson reach this default by the same route and answer for it the same
     // way.  See thermo/ApproximationAuthorisation.H.
     resolveIdealPairSubstitution("Wilson", idealDefaulted);
+
+    //  THE VOLUME RATIO NEEDS ONE TEMPERATURE (C378, TR-12).  Lambda_ij =
+    //  (V_j / V_i) exp(-A_ij / R T) reads the records' `Vliq` as volumes at
+    //  25 C, the convention a Wilson pair is regressed under.  A record that
+    //  states its datum at another temperature (`VliqT`) would enter the
+    //  ratio at a different temperature from its partner, and a cryogen has
+    //  no liquid at 25 C at all.  An ideal-defaulted pair never reads the
+    //  ratio (Lambda = 1), so only a pair that carries parameters is
+    //  refused -- by name, with the remedy.  No shipped Wilson record names
+    //  a component that states `VliqT`.
+    for (std::size_t i = 0; i < n_; ++i)
+        for (std::size_t j = 0; j < n_; ++j)
+        {
+            if (i == j || idealPair_[i*n_ + j]) continue;
+            for (const std::size_t k : { i, j })
+                if (comps[k].hasVliqT() && comps[k].VliqT() != 298.15)
+                    throw std::runtime_error("Wilson: pair " + names[i] + "-"
+                        + names[j] + " reads the molar-volume ratio at 25 C,"
+                        " but component '" + names[k] + "' states its Vliq at"
+                        " VliqT = " + std::to_string(comps[k].VliqT()) + " K."
+                        "  A volume ratio between two temperatures is not"
+                        " the one the pair was regressed with.  Use NRTL or"
+                        " UNIQUAC for this pair, or give the record a 25 C"
+                        " volume from a measurement.");
+        }
 }
 
 

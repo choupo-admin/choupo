@@ -2443,10 +2443,14 @@ ThermoPackage& ThermoPackage::stampAqueousSolvent(const DictPtr& aq)
 //  line an EduTool lesson cites above it moved twice.
 scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
 {
-    constexpr scalar Tref_Vliq = 298.15;                        // `Vliq` datum
     static bool announcedAnchored = false, announcedBare = false,
                 announcedFlat     = false;
+    static std::map<std::string, bool> announcedDatumT;
     const Component& c = components_[i];
+    //  THE DATUM'S OWN TEMPERATURE (C378, TR-12): `VliqT` when the record
+    //  states it, 298.15 K when it does not -- so a record without the key
+    //  computes exactly what it computed before.
+    const scalar Tref_Vliq = c.VliqT();                         // `Vliq` datum
     const scalar Tc = c.Tc(), Pc_Pa = c.Pc() * 1.0e5, omega = c.omega();
     const scalar Vdecl = c.Vliq();
     const bool   hasCrit = (Tc > 0.0 && Pc_Pa > 0.0);
@@ -2460,11 +2464,30 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
         const scalar Vr0 = closures::rackettVliq(Tref_Vliq, Tc, Pc_Pa, omega);
         if ((!(Vr0 > 0.0) || !std::isfinite(Vr0)) && T < Tc)
             throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::density: Rackett"
-                " cannot anchor component '" + c.name() + "''s 25 C `Vliq`"
-                " (its reference volume at 298.15 K is not a finite"
-                " positive number; Tc = " + std::to_string(Tc) + " K).");
+                " cannot anchor component '" + c.name() + "''s "
+                + (c.hasVliqT() ? "`Vliq` at its VliqT = "
+                                  + std::to_string(Tref_Vliq) + " K"
+                                : std::string("25 C `Vliq`"))
+                + " (its reference volume at "
+                + (c.hasVliqT() ? std::to_string(Tref_Vliq) + " K"
+                                : std::string("298.15 K"))
+                + " is not a finite positive number; Tc = "
+                + std::to_string(Tc) + " K).");
         Vi = Vdecl * (Vr / Vr0);
-        if (!announcedAnchored)
+        if (c.hasVliqT())
+        {
+            bool& said = announcedDatumT[c.name()];
+            if (!said)
+            {
+                said = true;
+                std::cout << "liquid density: component '" << c.name()
+                          << "' -- the record's own Vliq at "
+                          << c.VliqT() << " K (its VliqT), with Rackett"
+                             " supplying only the temperature dependence"
+                             " (V = Vliq * Rackett(T)/Rackett(VliqT))\n";
+            }
+        }
+        else if (!announcedAnchored)
         {
             std::cout << "liquid density: the record's own Vliq at 25 C,"
                          " with Rackett supplying only the temperature"
@@ -2481,8 +2504,10 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
         {
             std::cout << "liquid density: component '" << c.name()
                       << "' declares Vliq but no critical constants, so its"
-                         " molar volume is held CONSTANT at the 25 C datum"
-                         " -- no thermal expansion is modelled for it\n";
+                         " molar volume is held CONSTANT at the "
+                      << (c.hasVliqT() ? std::to_string(c.VliqT()) + " K"
+                                       : std::string("25 C"))
+                      << " datum -- no thermal expansion is modelled for it\n";
             announcedFlat = true;
         }
     }

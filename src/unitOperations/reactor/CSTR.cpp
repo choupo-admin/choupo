@@ -28,6 +28,7 @@ License
 
 #include "CSTR.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "CatalystPellet.H"
 #include "ReactorOutlet.H"
 #include "core/Advisory.H"
@@ -168,7 +169,7 @@ FeedFlow feedVolumetricFlow(const ThermoPackage& thermo, scalar F_in /*mol/s*/,
         f.vMol += z_in[i] * thermo.comp(i).Vliq();
     }
     f.Q = F_in * f.vMol;
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, "bypass", took(f.vMol), "not applied");
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(f.vMol), "not applied");
     if (f.basis == FeedBasis::twoPhaseOnLiquid)
     {
         std::ostringstream m;

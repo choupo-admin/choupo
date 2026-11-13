@@ -31,6 +31,7 @@ CAS         "n/a";              // mixture, no single CAS
 MW          87.4;
 Tb          0;                   // does not boil (decomposes above ~538 C)
 Vliq        4.50e-5;             // m^3/mol at 465 K (MW / ρ(465))
+VliqT       465;         // K -- the temperature Vliq belongs to: the record's own statement ("at 465 K", MW / rho(465)); the salt is solid at 25 C
 
 role        nonvolatile;         // molten salt, never enters VLE
 

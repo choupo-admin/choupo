@@ -53,9 +53,9 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "plus a fourth: the centre of the cloud of solvents observed to "
       + "dissolve it, and the radius of that cloud.  Choupo reads the triple "
       + "from a hansen block on each record, and requires the temperature the "
-      + "placement was made at beside it (Component.cpp:247): a triple with "
+      + "placement was made at beside it (Component.cpp:268): a triple with "
       + "no temperature is a number from an unstated state.  The radius is "
-      + "optional, because a solvent has none (Component.cpp:263).",
+      + "optional, because a solvent has none (Component.cpp:284).",
     formula: String.raw`\delta^2 = \delta_d^2 + \delta_p^2 + \delta_h^2`,
     where: [
       { sym: "\\delta", means: "the Hildebrand solubility parameter, the square root of the cohesive energy density", unit: "MPa½" },
@@ -68,7 +68,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "keep the thesis's own digits in a comment beside each value.  The "
       + "temperature is not decorative: no correction exists in this engine, "
       + "so the parameters are held constant at their reference temperature "
-      + "as an approximation and the run says so (HansenMixture.cpp:282); "
+      + "as an approximation and the run says so (HansenMixture.cpp:288); "
       + "the declared T decides one thing only, the phase check of page 3.",
   },
   {
@@ -99,7 +99,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
     n: 3,
     title: "Two solvents, one line between them",
     body: "A blend of two solvents is placed by the volume-fraction average of "
-      + "each parameter (HansenMixture.cpp:396-398): as the fraction of the "
+      + "each parameter (HansenMixture.cpp:402-404): as the fraction of the "
       + "second solvent runs from zero to one, the blend's point runs along "
       + "the straight line between the two pure points, and its distance to "
       + "the solute changes along the way.  This is a rule of thumb, not a "
@@ -127,7 +127,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
     note: "A composition declared by mass or by mole is converted to volume "
       + "fractions through each solvent's molar volume -- the record's Vliq "
       + "at 25 C, which carries that approximation too -- and the run prints "
-      + "both fractions beside every point (HansenMixture.cpp:434).  The "
+      + "both fractions beside every point (HansenMixture.cpp:440).  The "
       + "synthetic example of this page is built so the arithmetic is "
       + "checkable by hand: the two solvents share their dispersion "
       + "parameter and differ by 8 in both the polar and the hydrogen-bonding "
@@ -142,7 +142,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "publishes one row per point: the composition in the declared basis "
       + "and as volume fractions, the blended triple, Ra, RED where the "
       + "target has a radius, and a phase word.  The minimum of Ra over the "
-      + "points that have one is marked (HansenMixture.cpp:504); your guess "
+      + "points that have one is marked (HansenMixture.cpp:510); your guess "
       + "is marked beside it.  On the synthetic example both pure solvents "
       + "sit at Ra = 6 and the midpoint at Ra = 2, so the blend is three "
       + "times closer than either of its parts -- the whole reason mixtures "
@@ -168,17 +168,17 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "engine asks the case's own activity model whether the solvent pair "
       + "is stable as one liquid, through Michelsen's tangent-plane test -- "
       + "the same test the flash's phaseSet auto runs "
-      + "(HansenMixture.cpp:410-412; a negative minimum tangent-plane "
+      + "(HansenMixture.cpp:416-418; a negative minimum tangent-plane "
       + "distance means a second liquid, StabilityTest.cpp:221) -- and "
       + "publishes a word.  Homogeneous: one liquid, the rule applies with "
       + "its assumptions.  Two-phase: a second liquid; the engine refuses to "
       + "represent the pair as one homogeneous solvent there -- no averaged "
-      + "triple, no Ra, no RED for that point (HansenMixture.cpp:415).  A "
+      + "triple, no Ra, no RED for that point (HansenMixture.cpp:421).  A "
       + "two-phase pair is not useless, it may serve an extraction; it is "
       + "only not one solvent.  Not verified: nothing in the case can "
       + "decide -- an ideal liquid has no excess Gibbs energy and can never "
       + "demix, so its answer would be homogeneous for every pair ever "
-      + "asked (HansenMixture.cpp:349).  The synthetic example runs on an "
+      + "asked (HansenMixture.cpp:355).  The synthetic example runs on an "
       + "ideal liquid on purpose, so every blend point on this page carries "
       + "that third word honestly.",
     formula: String.raw`\mathrm{tm}(Y) = 1 + \sum_i Y_i \left(\ln Y_i + \ln\gamma_i(y) - h_i - 1\right), \qquad \mathrm{tm}_{\min} < 0 \;\Rightarrow\; \text{two liquids}`,
@@ -276,7 +276,7 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "observed to dissolve or swell -- a compatibility indicator in this "
       + "approach.  No saturation concentration in grams per litre follows "
       + "from it: the engine publishes none and says so on every run "
-      + "(HansenMixture.cpp:549).  Nor does the distance know how fast "
+      + "(HansenMixture.cpp:555).  Nor does the distance know how fast "
       + "dissolution is, what the solution's viscosity will be, whether the "
       + "solvent evaporates at a useful rate, or what it costs -- the "
       + "thesis itself lists those as the reasons a formulator rejects most "

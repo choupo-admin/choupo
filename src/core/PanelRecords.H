@@ -66,6 +66,19 @@ struct PublishedSeries
 {
     std::vector<std::string>         labels;   // "t", "<owner>.<key>", ...
     std::vector<std::vector<scalar>> rows;     // rows[k][labels index]
+    //  The unit of a column where the WRITER itself knows it as a fact of
+    //  the code that writes it ("s" for `t`, "K" for a vessel's `.T`, "kmol"
+    //  for its `.n_<component>`), else "".  Parallel to `labels` when
+    //  filled; a writer that fills none leaves it empty.  Never inferred from
+    //  a label: no unit declares the unit of a key it publishes today.
+    std::vector<std::string>         units;
+
+    //- The writer's unit of column i, "" when it states none.
+    std::string unitOf(int i) const
+    {
+        return (i >= 0 && static_cast<std::size_t>(i) < units.size())
+            ? units[static_cast<std::size_t>(i)] : std::string();
+    }
 
     //- Index of a label, -1 when the run did not publish it.
     int column(const std::string& label) const
@@ -84,6 +97,11 @@ struct PanelRow
     std::vector<std::pair<std::string, std::string>> words;      // short words
     bool                                             hasIntervals = false;
     std::vector<std::pair<scalar, scalar>>           intervals;  // [t0, t1] s
+    //  An element's LIMIT-violation periods on the write grid (no delay), a
+    //  list apart from `intervals` (its alarm's active periods, the delay
+    //  applied) so neither is read for the other.
+    bool                                             hasLimitIntervals = false;
+    std::vector<std::pair<scalar, scalar>>           limitIntervals;
     //  The case's own sentences and the engine's explanation, written last on
     //  the line inside `"text": {}` so a golden reads no number out of them.
     std::vector<std::pair<std::string, std::string>> text;

@@ -80,10 +80,11 @@ import { canPopOutLayout, type LayoutPopOutStash } from "./layoutPopOut.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_PHASES, LEGEND_PIPES,
   LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister, PLOT_CAPTION, plotSummary,
+  UTILITY_REGISTER_CAPTION, utilityRegister,
   ROADS_CAPTION, roadSummary, FENCE_CAPTION, fenceSummary, BUNDS_CAPTION, bundSummary,
 } from "./layoutTables.js";
 import { layoutSection, type LayoutSectionId } from "./layoutPanels.js";
-import { phaseCss, PHASE_WORDS, QUALITY_TITLE } from "./plantLayout.js";
+import { phaseCss, PHASE_WORDS, QUALITY_TITLE, utilityCss } from "./plantLayout.js";
 import type { RunInputs, Staleness } from "./staleness.js";
 import { GMP_LEGEND } from "./gmpBuilding.js";
 
@@ -386,6 +387,21 @@ export function buildLayoutExport(input: LayoutExportInput): { fileName: string;
       notRoutedHtml += `<h3>Inside the building (indoor piping is not routed)</h3><ul>`
         + reg.indoor.map((n) => `<li><code>${esc(n.stream)}</code>: ${esc(n.reason)}</li>`)
           .join("") + `</ul>`;
+  }
+
+  //  UTILITY LINES (C268 slice 2): the same rows the app draws, under the pipes.
+  const ureg = utilityRegister(layout);
+  if (ureg) {
+    const urows: [string, boolean][][] = ureg.rows.map((r) => [
+      [esc(r.name), false],
+      [`<span class="swatch" style="background:${utilityCss(r.family)}"></span>${esc(r.service)}`, false],
+      [esc(r.ends), false], [esc(r.tier), true], [esc(r.flow), true], [esc(r.size), false],
+      [esc(r.length), true]]);
+    urows.push([[esc(ureg.total.label), false], ["", false], ["", false], ["", true], ["", true],
+                ["", false], [esc(ureg.total.length), true]]);
+    pipesHtml += table(UTILITY_REGISTER_CAPTION,
+      [["Line", false], ["Service", false], ["From → to", false], ["Rack tier", true],
+       ["Flow (kg/s)", true], ["Size", false], ["Length (m)", true]], urows, 760);
   }
 
   const items = table(null, [["Item", false], ["Kind", false], ["Sector", false], ["Shape", false],

@@ -53,7 +53,7 @@ License
 
 import { spawn } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readdir, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import WebSocket from "ws";
@@ -312,8 +312,64 @@ export class Page {
   }
 }
 
+/**
+ * Kill the browsers an earlier harness left behind.
+ *
+ * A harness killed before its `finally` runs (a tool timeout sends SIGKILL
+ * to node, which no handler sees) leaves its Chromium re-parented and
+ * running: seven of them, one spinning three cores for four hours, were
+ * found on 2026-11-13 and kept every build of that night waiting.  The
+ * launcher below kills its browser on every exit it CAN see; this reaps,
+ * at the next launch, what an unseen exit left.  An orphan is a main
+ * browser process on a `checkGui-` profile whose parent is no longer a
+ * node process; a browser a live harness still owns is never touched.
+ * Linux only (it reads /proc); elsewhere it does nothing.  Returns the
+ * number of browsers reaped.
+ */
+export async function reapOrphans() {
+  if (process.platform !== "linux") return 0;
+  //  Chromium rewrites its own command line into ONE string (spaces, no NUL
+  //  separators), so the line is read as text, never split into an argv.
+  const profile = join(tmpdir(), "checkGui-");
+  const lineOf = async (pid) =>
+    (await readFile(`/proc/${pid}/cmdline`, "utf8")).replaceAll("\0", " ");
+  const dirIn = (line) => {
+    const at = line.indexOf(`--user-data-dir=${profile}`);
+    return at < 0 ? null : line.slice(at + "--user-data-dir=".length).split(" ")[0];
+  };
+  let pids = [];
+  try { pids = (await readdir("/proc")).filter((d) => /^\d+$/.test(d)); }
+  catch { return 0; }
+  const orphanDirs = new Set();
+  for (const pid of pids) {
+    try {
+      const line = await lineOf(pid);
+      const dir = dirIn(line);
+      if (!dir || line.includes(" --type=")) continue;   // not ours, or a child
+      const stat = await readFile(`/proc/${pid}/stat`, "utf8");
+      const ppid = stat.slice(stat.lastIndexOf(")") + 2).split(" ")[1];
+      let parent = "";
+      try { parent = (await lineOf(ppid)).split(" ")[0]; } catch { /* gone */ }
+      if (/(^|\/)node$/.test(parent)) continue;          // a live harness owns it
+      orphanDirs.add(dir);
+    } catch { /* raced with its own exit, or not ours to read */ }
+  }
+  if (orphanDirs.size === 0) return 0;
+  for (const pid of pids) {
+    try {
+      const dir = dirIn(await lineOf(pid));
+      if (dir && orphanDirs.has(dir)) process.kill(Number(pid), "SIGKILL");
+    } catch { /* already gone */ }
+  }
+  for (const d of orphanDirs)
+    await rm(d, { recursive: true, force: true }).catch(() => {});
+  console.error(`checkGui: reaped ${orphanDirs.size} orphaned browser(s) left by an earlier run that was killed`);
+  return orphanDirs.size;
+}
+
 /** Launch Chromium with remote debugging on an ephemeral port. */
 export async function launch(binary, extraArgs = []) {
+  await reapOrphans();
   //  extraArgs: a consumer's own Chromium switches, appended AFTER the
   //  fixed set.  drive-app needs `--host-resolver-rules` so a LOCAL mirror
   //  can be reached under a non-localhost name -- the app takes the
@@ -338,6 +394,14 @@ export async function launch(binary, extraArgs = []) {
   if (!binary.endsWith("headless_shell")) args.unshift("--headless=new");
 
   const proc = spawn(binary, args, { stdio: ["ignore", "pipe", "pipe"] });
+  //  The browser never outlives the harness on an exit the harness can see:
+  //  a normal exit, an uncaught throw, Ctrl-C, a TERM or a hang-up.  (An
+  //  uncatchable KILL is what reapOrphans() is for.)
+  const killBrowser = () => { try { proc.kill("SIGKILL"); } catch { /* gone */ } };
+  process.once("exit", killBrowser);
+  for (const sig of ["SIGINT", "SIGTERM", "SIGHUP"])
+    process.once(sig, () => { killBrowser(); process.exit(1); });
+  proc.once("exit", () => process.removeListener("exit", killBrowser));
   let stderr = "";
   const wsUrl = await new Promise((resolve, reject) => {
     const timer = setTimeout(

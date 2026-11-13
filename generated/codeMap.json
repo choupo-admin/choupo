@@ -1187,6 +1187,9 @@
   "LayoutTypical": [
    "src/core/ResultRecords.H"
   ],
+  "LayoutUtilityLine": [
+   "src/core/ResultRecords.H"
+  ],
   "LayoutWind": [
    "src/core/ResultRecords.H"
   ],
@@ -10357,6 +10360,7 @@
    "src/streams/PsdOnGrid.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SolidMixture.H",
@@ -11762,6 +11766,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -11893,6 +11898,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -12248,6 +12254,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -12272,6 +12279,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -18953,6 +18961,7 @@
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/VariableVolumeHoldup.cpp",
@@ -18961,6 +18970,10 @@
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/rotating/PressureExchanger.cpp",
+   "src/unitOperations/rotating/Pump.cpp",
    "src/unitOperations/solids/Hydrocyclone.cpp",
    "src/unitOperations/solids/SolidLiquidCore.cpp",
    "src/unitOperations/storage/StorageTank.cpp",

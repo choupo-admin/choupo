@@ -153,6 +153,9 @@ scalar liquidReferenceFactor(const EquationOfState& eos, const Component& c,
         return v;
     }
     { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Poynting correction of the liquid reference fugacity", "exp(V (P - Psat) / RT)"); }
+    //  The constant-volume Poynting form reads the record's datum as stored,
+    //  at whatever `VliqT` it belongs to (C378): at the system temperature a
+    //  25 C volume is no better a constant, and a cryogen has none.
     return v * std::exp(c.Vliq() * (P - Psat) / (constant::R * T));
 }
 

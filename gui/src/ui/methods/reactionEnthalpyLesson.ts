@@ -226,7 +226,7 @@ K(T)`,
       + "when a reactor announces a reaction enthalpy it evaluates it at the "
       + "reactor's own temperature, never at 25 °C (`reactionHeat`, "
       + "ReactionHeat.cpp:41, called with the local temperature — for a plug "
-      + "flow reactor at PFR.cpp:466).",
+      + "flow reactor at PFR.cpp:467).",
     formula: String.raw`\dot{Q} = \sum_i \dot{n}_i^\mathrm{out}\, h_i(T_\mathrm{out})
 - \sum_i \dot{n}_i^\mathrm{in}\, h_i(T_\mathrm{in})`,
     where: [

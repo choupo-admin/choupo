@@ -1562,6 +1562,73 @@ low side of the published values, so the page's peaks are somewhat narrower
 than a real column's), and gradient elution, extra-column broadening and the simulated moving bed
 are not covered.
 
+\subsection{Fluidised beds: minimum fluidisation, regimes and bubbles}\label{sec:edu-fluidised-beds}
+
+\declaredanchor{sec:fluidised-bed}
+
+\noindent\textit{\small Tool:} \code{tool=fluidised-beds}.  \textit{\small
+Case it starts from:} none --- Choupo's engine has no fluidised-bed model, and
+every number on the page is the page's own arithmetic.
+
+\subsubsection*{The question}
+
+\emph{I have a bed of particles and a gas: at what velocity does it fluidise,
+what regime will it be in, how much does it expand, and how much gas bypasses
+the particles?}
+
+The page draws the bed's pressure drop against the gas velocity: Ergun's line
+through the packed bed rises until it meets the bed's weight per unit area, and
+the crossing is the minimum fluidisation velocity, found by bisection and set
+beside Wen and Yu's correlation with the difference printed.  It places the
+powder in Geldart's groups on a straight-line approximation of the published
+map, marks the velocities that bound the regimes on a velocity axis (minimum
+bubbling for a group A powder, the terminal velocity of one particle from its
+drag balance, and the onsets of turbulent fluidisation and of transport),
+expands the bed with growing bubbles in the two-phase picture and integrates
+the bubble-to-cloud exchange to show how much gas bypasses the solid, and lists
+which size classes of a distribution the gas can carry out to a cyclone.  A
+closing exercise asks the reader to refute three planted statements with the
+page.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The engine has no fluidised bed.  The page writes two laws in the same form as
+the engine: Ergun's gradient of the plug-flow reactor's packed bed, and the
+single-particle terminal velocity of the pneumatic conveyor on Schiller and
+Naumann's drag coefficient.  Everything else --- the correlations of Wen and Yu,
+Abrahamsen and Geldart, Bi and Grace, Mori and Wen, and Kunii and Levenspiel's
+exchange coefficient --- is evaluated by the page, and every one of their
+constants is listed in \file{docs/design/fluidised-bed-hydrodynamics.md} as
+still to be checked against its source.  The gas is declared: its density from
+the ideal-gas law, its viscosity typed.  The design record also proposes what
+an engine unit for a fluidised bed would need; none is built.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+At the defaults (sand-like particles of 200\,\textmu m in air) the bed fluidises
+near 5\,cm/s and is a group B powder that bubbles at once.  Change the voidage
+from 0.42 towards 0.415 and watch the gap to Wen and Yu shrink, then to 0.48
+and watch it grow: $\varepsilon^3$ sits in both of Ergun's terms.  Choose the
+fine catalyst: a window without bubbles opens between $u_{\mathrm{mf}}$ and
+$u_{\mathrm{mb}}$.  In step 4 raise the velocity and the bed diameter and watch
+the bypassed share grow as the bubbles grow; compare the row with the bubbles
+frozen at their size at the distributor.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a fluidised bed's pressure drop grows with the gas flow.}  Once
+the bed is fluidised the gas carries its weight and nothing more; the extra gas
+goes into bubbles, and the pressure drop across the bed stays where it was.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Spherical, smooth particles of nearly one size (except in the size table); one
+gas, isothermal; no wall, no distributor pressure drop, no jets; no elutriation
+rate and no freeboard; no reactor model.  Every correlation is empirical, and
+the published accuracies are not quoted because they have not been checked.
+
 \subsection{Operator panels and alarms}\label{sec:edu-operator-panels}
 
 \declaredanchor{sec:operatorPanels}

@@ -28,6 +28,7 @@ License
 
 #include "PressureExchanger.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "core/Advisory.H"
 
 #include <cmath>
@@ -216,9 +217,12 @@ int PressureExchanger::solve(const DictPtr& dict,
     };
     const scalar v_hp = molarVolume(hp);
     const scalar v_lp = molarVolume(lp);
+    sVector zBoth(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i) zBoth[i] = hp.z[i] + lp.z[i];
     for (const scalar v : { v_hp, v_lp })
         PropertySourceLog::instance().useHere("liquidVolume", x_ions_total > 0.0
             ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
+            liquidProperty::statedDatumTemperatures(thermo, zBoth), "",
             "bypass", took(v), "not applied");
     if (x_ions_total > 0.0)
     {

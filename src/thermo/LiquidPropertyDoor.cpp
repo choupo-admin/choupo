@@ -18,9 +18,12 @@
 #include "thermo/ThermoPackage.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 
+#include <cstdio>
 #include <limits>
+#include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 namespace liquidProperty {
@@ -43,12 +46,40 @@ const char* routeId(Route r)
     return "?";
 }
 
-const char* routeLabel(Route r)
+//  "CH4 at 111.66 K": a component and the temperature its `Vliq` belongs to.
+std::string datumOf(const Component& c)
 {
+    if (!c.hasVliqT()) return c.name() + " at 25 C";
+    char b[32];
+    std::snprintf(b, sizeof b, "%.6g K", c.VliqT());
+    return c.name() + " at " + b;
+}
+
+//  THE ONE HOME of a liquid-volume route's words, fed by the route and by
+//  the temperature each component's `Vliq` belongs to (C378).  `statedAt`
+//  names the components on the route whose record states `VliqT` ("CH4 at
+//  111.66 K"); empty, the words are the 25 C ones, byte for byte.  One stated
+//  temperature replaces "25 C"; several are named with their components.
+std::string routeLabel(Route r, const std::vector<std::string>& statedAt = {})
+{
+    std::string where = "25 C molar volume";
+    if (!statedAt.empty() && (r == Route::anchoredRackett || r == Route::flatVliq))
+    {
+        std::set<std::string> temps;
+        for (const auto& w : statedAt) temps.insert(w.substr(w.find(" at ") + 4));
+        if (temps.size() == 1) where = "molar volume at " + *temps.begin();
+        else
+        {
+            where = "molar volume at its datum temperature (";
+            for (std::size_t k = 0; k < statedAt.size(); ++k)
+                where += (k ? ", " : "") + statedAt[k];
+            where += ")";
+        }
+    }
     switch (r)
     {
-        case Route::anchoredRackett: return "each component's 25 C molar volume scaled to temperature by Rackett";
-        case Route::flatVliq:        return "each component's 25 C molar volume, with no temperature effect (its record has no critical constants)";
+        case Route::anchoredRackett: return "each component's " + where + " scaled to temperature by Rackett";
+        case Route::flatVliq:        return "each component's " + where + ", with no temperature effect (its record has no critical constants)";
         case Route::bareRackett:     return "an estimate by Rackett from the critical constants (no measured volume in the record)";
         case Route::none:            return "no route";
     }
@@ -68,6 +99,14 @@ const char* routeOrigin(Route r)
 }
 
 } // namespace
+
+std::vector<std::string> statedDatumTemperatures(const ThermoPackage& thermo, const sVector& x)
+{
+    std::vector<std::string> out;
+    for (std::size_t k = 0; k < x.size() && k < thermo.n(); ++k)
+        if (x[k] > 0.0 && thermo.comp(k).hasVliqT()) out.push_back(datumOf(thermo.comp(k)));
+    return out;
+}
 
 const char* name(Property p)
 {
@@ -161,11 +200,22 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         scalar zs = 0.0;
         for (std::size_t k = 0; k < x.size(); ++k) if (x[k] > 0.0) zs += x[k];
         std::set<Route> routes;
+        //  The datum temperature of every component on a route that reads
+        //  `Vliq`; handed to routeLabel only when one of them states `VliqT`,
+        //  so a request at 25 C keeps its words byte for byte.
+        std::map<Route, std::vector<std::string>> datumT;
+        std::set<Route> stated;
         for (std::size_t k = 0; k < x.size() && k < thermo.n(); ++k)
             if (x[k] > 0.0)
             {
                 const Route rt = thermo.liquidVolumeRouteOf(k);
                 routes.insert(rt);
+                const Component& ck = thermo.comp(k);
+                if (rt == Route::anchoredRackett || rt == Route::flatVliq)
+                {
+                    datumT[rt].push_back(datumOf(ck));
+                    if (ck.hasVliqT()) stated.insert(rt);
+                }
                 r.leaves.push_back({ thermo.comp(k).name(),
                                      std::string("liquidVolume.") + routeId(rt),
                                      zs > 0.0 ? x[k] / zs : 0.0 });
@@ -176,7 +226,7 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         for (const Route rt : routes)
         {
             r.methodId += std::string(first ? "" : "+") + routeId(rt);
-            r.label    += std::string(first ? "" : "; ") + routeLabel(rt);
+            r.label    += std::string(first ? "" : "; ") + routeLabel(rt, stated.count(rt) ? datumT[rt] : std::vector<std::string>{});
             if (r.quality.origin.empty() || std::string(routeOrigin(rt)) == "estimated")
                 r.quality.origin = routeOrigin(rt);
             first = false;

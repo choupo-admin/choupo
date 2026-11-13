@@ -55,8 +55,12 @@ Every run prints, just before its result block, one line per unit:
 
 ## 3. What the engine accepts, and what it refuses
 
-* Liquid density needs, per component, a `Vliq` (25 C) or the critical
-  constants; with neither it refuses by name.  Above a component's critical
+* Liquid density needs, per component, a `Vliq` (at `VliqT`, 25 C when the
+  record writes none) or the critical constants; with neither it refuses
+  by name.  With both, the record's volume is anchored at `VliqT` and
+  Rackett carries it in temperature.  `VliqT` without `Vliq`, at or
+  above `Tc`, below `triplePoint.T`, or written in another dimension, is
+  refused at load.  Above a component's critical
   temperature it refuses; several kernel consumers then leave that component
   out of the volume and keep its mass, and the table says so.
 * `pureFluids { water { method IF97; } }` (or `method Helmholtz; equation
@@ -93,9 +97,18 @@ Every run prints, just before its result block, one line per unit:
 Measured (docs/design/thermophysical-property-routes.md section 1.2 and its
 numerical review):
 
-* a record whose `Vliq` is not a 25 C liquid value is read as one: CO2
-  +31.8 % at 298.15 K, ethane +71 %, HCl +45 %; liquid N2 at 90 K and CH4 at
-  120 K are refused;
+* CLOSED in the catalogue (C378, 2026-11-13): twenty records whose `Vliq`
+  is a boiling-point (or 273 K, 465 K) volume now carry `VliqT`; CO2 at
+  298.15 K went from +31.8 % to +2.1 % against its reference equation,
+  liquid N2 at 90 K (+0.5 %) and CH4 at 120 K (+1.5 %) are priced instead of
+  refused.  STILL OPEN: a SEALED case keeps its frozen copy of each record
+  until its seal is refreshed; propane, propylene, H2O2, HCHO, HCN and NO2
+  carry a `Vliq` whose temperature no source states (pinned debt);
+* the units that read `Vliq` themselves (pump, pressure exchanger, CSTR,
+  liquid PFR, crystallisers, spray dryer) take the stored datum flat, at
+  whatever `VliqT` it belongs to; their table line names the records that
+  state one ("molar volume at the temperature its record states (CH4 at
+  111.66 K; any other at 25 C)") and says "25 C" only when none does;
 * water without `pureFluids`: +2.0 % at 273.16 K, -3.5 % at 373.16 K,
   -6.5 % at 573.16 K, no 4 C maximum, -2.1 % at 500 bar;
 * water-ethanol viscosity with no interaction parameter: -59.7 % at

@@ -73,11 +73,28 @@
   labelled point.  Drawn since 2026-11-10 (DEV.md 4c C268): the UTILITIES BLOCK -- cooling
   tower, refrigeration package and flare, in the north-east corner, each
   a non-process box sized on a number the run publishes (see `items`).
-  Not drawn, said rather than invented: the cooling-water, refrigerant
-  and flare-header PIPES (a utility is not a flowsheet stream, so the engine
-  routes nothing for it), the steam system, the electrolysers and the air
-  separation unit -- all outside this battery limit, and named
-  as such where their streams cross the fence.
+  Drawn since 2026-11-13 (DEV.md 4c C268, slice 2): the UTILITY LINES
+  (`utilityLines` at the end of this file).  A utility is not a flowsheet
+  stream, so the engine routes nothing for one by itself; this file DECLARES
+  each line, from an item to an item with a service word, and the engine
+  routes it on the pipe rack, on the tiers above the process pipes', and
+  checks it like a process pipe.  Declared here: cooling water from the
+  cooling tower to each of the four coolers and back (eight lines), the
+  refrigerant from the refrigeration package to the Chiller and back (two),
+  and a flare header from each of the three loop vessels that vent (the
+  separator and the two let-down drums) to the flare (three).  EVERY LINE IS
+  UNSIZED, and says so: the layout sizes no pipe, process or utility.  The
+  cooling-water and refrigerant lines carry the flow the run's own utility
+  allocation publishes for the exchanger they serve; the flare lines carry
+  none, because the case declares no relief valve and its three vent gases
+  are already piped to the fence as process streams -- what a line to the
+  flare would carry has no number in this run.
+  Not drawn, said rather than invented: a steam line (the run draws 0.04
+  kg/s of low-pressure steam for the separator and the let-down drum, 82 kW
+  in all, from a steam system outside this battery limit that has no item on
+  this plot to start a line from), the electrolysers, the air separation
+  unit and the cooling-water make-up and blowdown -- all outside this battery
+  limit, and named as such where their streams cross the fence.
 
   THE STORES ARE ON THEIR STREAMS (2026-11-09, DEV.md 4c C268).  The ten
   hydrogen-buffer vessels and the two ammonia tanks are stores ATTACHED to a
@@ -826,6 +843,132 @@ bunds
         }
         source      "author-set assumption for this exercise; not a civil design";
         reason      "the loop's three liquid vessels stand on one kerbed slab, sloped to a pit 6 m north of it, outside the slab";
+    }
+);
+
+//  THE UTILITY LINES (2026-11-13; DEV.md 4c C268, slice 2).  Every line is
+//  DECLARED: a name, a service word, the item the flow leaves and the item it
+//  reaches (both placed above), and the case's reason.  The engine routes it
+//  on the pipe rack, on tiers ABOVE the process pipes' (the tower's and the
+//  chiller's lines on their own tier each, a supply beside its return), lands
+//  each end on a port of its item (the item's top unless a face is declared:
+//  the flare's lines enter its base, on the west face 2 m up), and checks it
+//  as it checks a process pipe -- through an item, over a road below the
+//  headroom, through a bund wall.  NO LINE IS SIZED (the layout sizes no pipe).
+//  `carries` names the unit and the utility whose allocation row of the run
+//  is the flow the line carries; the engine reads that row and refuses a
+//  name the run does not carry.  The flare lines carry nothing (see the header).
+//  AUTHOR-SET like every position in this file: a real project routes these
+//  on its own site, round its own equipment.
+utilityLines
+(
+    //  ---- cooling water, tower to cooler (supply) -------------------------
+    {
+        name      "CW-N2Cooler-supply";
+        service   coolingWaterSupply;
+        from      "coolingTower";
+        to        "N2Cooler";
+        carries   { unit N2Cooler; utility coolingWater; }
+        reason    "the nitrogen cooler's cooling water, from the tower";
+    }
+    {
+        name      "CW-Intercooler-supply";
+        service   coolingWaterSupply;
+        from      "coolingTower";
+        to        "Intercooler";
+        carries   { unit Intercooler; utility coolingWater; }
+        reason    "the make-up intercooler's cooling water, from the tower";
+    }
+    {
+        name      "CW-Aftercooler-supply";
+        service   coolingWaterSupply;
+        from      "coolingTower";
+        to        "Aftercooler";
+        carries   { unit Aftercooler; utility coolingWater; }
+        reason    "the make-up aftercooler's cooling water, from the tower";
+    }
+    {
+        name      "CW-WaterCooler-supply";
+        service   coolingWaterSupply;
+        from      "coolingTower";
+        to        "WaterCooler";
+        carries   { unit WaterCooler; utility coolingWater; }
+        reason    "the loop's water cooler, from the tower";
+    }
+    //  ---- cooling water, cooler to tower (return) -------------------------
+    {
+        name      "CW-N2Cooler-return";
+        service   coolingWaterReturn;
+        from      "N2Cooler";
+        to        "coolingTower";
+        carries   { unit N2Cooler; utility coolingWater; }
+        reason    "the nitrogen cooler's warm water back to the tower";
+    }
+    {
+        name      "CW-Intercooler-return";
+        service   coolingWaterReturn;
+        from      "Intercooler";
+        to        "coolingTower";
+        carries   { unit Intercooler; utility coolingWater; }
+        reason    "the make-up intercooler's warm water back to the tower";
+    }
+    {
+        name      "CW-Aftercooler-return";
+        service   coolingWaterReturn;
+        from      "Aftercooler";
+        to        "coolingTower";
+        carries   { unit Aftercooler; utility coolingWater; }
+        reason    "the make-up aftercooler's warm water back to the tower";
+    }
+    {
+        name      "CW-WaterCooler-return";
+        service   coolingWaterReturn;
+        from      "WaterCooler";
+        to        "coolingTower";
+        carries   { unit WaterCooler; utility coolingWater; }
+        reason    "the loop's water cooler, warm water back to the tower";
+    }
+    //  ---- refrigerant: the package and the Chiller ------------------------
+    {
+        name      "NH3-Chiller-supply";
+        service   refrigerantSupply;
+        from      "refrigerationPackage";
+        to        "Chiller";
+        carries   { unit Chiller; utility refrigerationNH3; }
+        reason    "liquid refrigerant ammonia from the package to the Chiller, where it boils at 1 atm";
+    }
+    {
+        name      "NH3-Chiller-return";
+        service   refrigerantReturn;
+        from      "Chiller";
+        to        "refrigerationPackage";
+        carries   { unit Chiller; utility refrigerationNH3; }
+        reason    "the refrigerant vapour from the Chiller back to the package's compressors";
+    }
+    //  ---- the flare header: the three loop vessels that vent --------------
+    {
+        name      "Flare-Separator";
+        service   flareHeader;
+        from      "Separator";
+        to        "flare";
+        toPort    { side west; elevation 2 m; }
+        reason    "the separator's relief and vent connection to the flare header (no relief valve is declared in this case: the line has no flow to carry)";
+    }
+    {
+        name      "Flare-LetdownHP";
+        service   flareHeader;
+        from      "LetdownHP";
+        to        "flare";
+        toPort    { side west; elevation 2 m; }
+        reason    "the high-pressure let-down drum's relief and vent connection to the flare header";
+    }
+    {
+        name      "Flare-StorageFlash";
+        service   flareHeader;
+        from      "StorageFlash";
+        to        "flare";
+        toPort    { side west; elevation 2 m; }
+        reason    "the storage flash drum's relief and vent connection to the flare header";
     }
 );
 
