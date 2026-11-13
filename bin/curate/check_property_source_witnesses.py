@@ -216,7 +216,9 @@ def run(case: Path):
     blocks = RESULT.findall(p.stdout)
     if not blocks:
         return None, f"no result block (exit {p.returncode})"
-    return (json.loads(blocks[-1]).get("propertySources") or {}).get("used", []), None
+    #  The whole block: `used` (each entry with its id and words) and what
+    #  each unit `declared` at assembly (review DX-06).
+    return (json.loads(blocks[-1]).get("propertySources") or {}), None
 
 
 def at_datum_pattern(words):
@@ -295,10 +297,10 @@ def main() -> int:
     for case, unit, prop, sid in rows:
         if case not in cases:
             cases[case] = run(ROOT / case)
-            used, err = cases[case]
+            ps, err = cases[case]
             if err:
                 continue
-            for u in used:
+            for u in ps.get("used", []):
                 pats = by_id.get(u.get("sourceId"))
                 if pats is None:
                     continue
@@ -307,13 +309,22 @@ def main() -> int:
                     bad.append(f"(c) {case}: {u['unit']} {u['property']} published "
                                f"{u['sourceId']!r} with the words {u.get('label')!r}, "
                                "not that tag's")
-        used, err = cases[case]
+        ps, err = cases[case]
         if err:
             bad.append(f"(b) {case}: {err}")
             continue
-        got = {(u["unit"], u["property"]): u["sourceId"] for u in used}
-        if got.get((unit, prop)) != sid:
-            bad.append(f"(b) {case}: {unit} {prop} published {got.get((unit, prop))!r}, "
+        used = ps.get("used", [])
+        #  A unit may take one property from several sources (a pore-model
+        #  module: the case's declared film diffusivity AND the ions' D0), so
+        #  the witness holds a SET per (unit, property); a row whose fourth
+        #  column reads `declared:<class>` holds what the unit declared.
+        got = {}
+        for u in used:
+            got.setdefault((u["unit"], u["property"]), set()).add(u["sourceId"])
+        for d in ps.get("declared", []):
+            got.setdefault((d["unit"], d["property"]), set()).add("declared:" + d["class"])
+        if sid not in got.get((unit, prop), set()):
+            bad.append(f"(b) {case}: {unit} {prop} published {sorted(got.get((unit, prop), set()))!r}, "
                        f"the witness says {sid!r}")
     if bad:
         print(f"{NAME}: FAIL -- {len(bad)} finding(s)")

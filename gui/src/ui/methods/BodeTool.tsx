@@ -478,7 +478,7 @@ export function BodeTool(): JSX.Element {
             to the outlet. The amplitude is{" "}
             <Text span ff="monospace" size="xs">hypot(b, c)</Text> and the
             phase is <Text span ff="monospace" size="xs">atan2(c, b)</Text>{" "}
-            (src/dynamicDriver/DynamicDriver.cpp:2004-2006). Seven runs, seven points.
+            (src/dynamicDriver/DynamicDriver.cpp:2005-2007). Seven runs, seven points.
           </Text>
           <Text size="sm" mt={6}>
             The line through them is the first-order closed form derived in

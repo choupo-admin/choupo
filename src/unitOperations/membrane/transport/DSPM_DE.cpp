@@ -539,6 +539,9 @@ TransportSolution DSPM_DE::localFluxes(const TransportContext& ctx) const
     const stokesEinstein::Factor se = stokesEinstein::factor(thermo, T);
     stokesEinstein::announce(se, "transport DSPM-DE", "ion D0 of the pore and"
                              " the film", 2);
+    //  The unit's table says what this law did to the species records' D0
+    //  (review DX-07), by the same decision the polarisation builder uses.
+    stokesEinstein::recordIonD0(se);
     for (std::size_t s = 0; s < Ns; ++s)
     {
         const auto& comp = thermo.comp(soluteIdx[s]);

@@ -75,6 +75,8 @@ Description
 
 #include "DynamicUnitOperation.H"
 
+#include <atomic>
+
 namespace Choupo {
 
 class WilliamsOttoPlant : public DynamicUnitOperation
@@ -118,6 +120,10 @@ private:
     inline static const std::string type_ = "williamsOttoPlant";
 
     const ThermoPackage* thermo_ = nullptr;
+
+    //- The liquid-property table's once-per-run counter of THIS plant
+    //  (PropertySourceLog::useOnce); mutable: rates_ is const.
+    mutable std::atomic<unsigned> propertySeen_{0};
 
     //- Reactor masses [klb == kmol under the declared MW], paper order
     //  (A, B, C, E, P, G) -- matched to the case's component order at

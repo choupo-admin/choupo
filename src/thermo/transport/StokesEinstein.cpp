@@ -33,6 +33,7 @@ License
 #include "thermo/LiquidPropertyDoor.H"
 
 #include <cstdio>
+#include <limits>
 #include <iostream>
 
 namespace Choupo {
@@ -71,6 +72,20 @@ Factor factor(const ThermoPackage& thermo, scalar T_K)
     f.T = T_K;
     f.solvent = solvent;
     return f;
+}
+
+const NamedSource& ionD0Source(Basis b)
+{
+    return b == Basis::stokesEinstein ? liquidSource::speciesRecordD0
+         : b == Basis::atCuration     ? liquidSource::speciesRecordD0AtCuration
+                                      : liquidSource::speciesRecordD0Uncorrected;
+}
+
+void recordIonD0(const Factor& f)
+{
+    PropertySourceLog::instance().useHere("liquidDiffusivity",
+        ionD0Source(basis(f)), "record",
+        took(std::numeric_limits<double>::quiet_NaN()));
 }
 
 void announce(const Factor& f, const std::string& locus,

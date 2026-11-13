@@ -36,6 +36,15 @@ Every run prints, just before its result block, one line per unit:
 * A pure-fluid line names the formulation behind THAT property: IAPWS-IF97
   gives the density, IAPWS R12-08 the viscosity (on the IF97 density), IAPWS
   R1-76 the surface tension.
+* The time-integrated binaries (choupoCtrl, choupoSemiContinuous) declare and
+  check exactly as choupoSolve does: a `[mismatch]` can appear there, and a
+  steady unit wrapped by `quasiSteady` is declared under its own type.  Each
+  line names the case's unit (a `dynamicTank`, a `dynamicCSTR` with
+  `volumeMode variable`, a Williams-Otto plant), never a message text.
+* A pore-model membrane (`transport DSPM-DE`) reads each ion's D0 from its
+  species record: the table shows that read as a `liquid diffusivity` line of
+  the unit, scaled by Stokes-Einstein, left at its 25 C curation value (the
+  unit runs at 25 C), or marked NOT temperature-corrected (no viscosity model).
 * The result JSON carries the same in `propertySources` (`used`,
   `declared`, `declaredNotUsed`, `mismatches`, `pricedTwice`); a golden pins
   each unit's source with a row of kind `source`.

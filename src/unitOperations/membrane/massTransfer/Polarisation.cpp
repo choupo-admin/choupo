@@ -777,12 +777,7 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
     //  What was done to the ions' D0, in the same three cases
     //  stokesEinstein::announce distinguishes (DX-01).
     if (readD0)
-        built.setIonD0Temperature(
-            se.T == stokesEinstein::referenceTemperature
-                ? Polarisation::IonD0Temperature::atCuration
-          : se.priced
-                ? Polarisation::IonD0Temperature::stokesEinstein
-                : Polarisation::IonD0Temperature::uncorrected);
+        built.setIonD0Basis(stokesEinstein::basis(se));
     return built;
 }
 

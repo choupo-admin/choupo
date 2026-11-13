@@ -23,4 +23,4 @@ kpi     plant                  wo_E_final       21.3907805309      1e-4
 kpi     plant                  wo_G_final       0.642928031189     1e-4
 kpi     plant                  wo_P_final       3.6371827957       1e-4
 kpi     plant                  yield_klb_final  819.282975123      1e-4
-source  williamsOttoPlant      liquidDensity    constant.benchmark.WilliamsOtto exact
+source  plant                  liquidDensity    constant.benchmark.WilliamsOtto exact

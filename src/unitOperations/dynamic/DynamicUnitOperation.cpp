@@ -31,6 +31,7 @@ License
 #include "DynamicTank.H"
 #include "WilliamsOttoPlant.H"
 #include "QuasiSteadyUnit.H"
+#include "unitOperations/PropertySourceDeclarations.H"
 
 #include <map>
 #include <memory>
@@ -102,6 +103,11 @@ bool DynamicUnitOperation::holdupRecord(HoldupRecord& h) const
     h.notRestored = "any state of a " + type() + " beyond T and the inventory"
                     " (the type has not declared its holdup record complete)";
     return true;
+}
+
+void DynamicUnitOperation::declarePropertySources() const
+{
+    propertySourceDeclarations::declareFor(type(), name_);
 }
 
 void DynamicUnitOperation::registerBuiltins()
