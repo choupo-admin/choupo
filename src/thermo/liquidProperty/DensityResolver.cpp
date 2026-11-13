@@ -96,9 +96,8 @@ struct RunState
     std::map<std::pair<unsigned long long, std::vector<std::size_t>>, DensityResolution> bySerial;
     //  The first resolution of each (identity, set) in the run.
     std::map<Key, DensityResolution> first;
-    std::vector<Key> order;
-    //  The hypothesis' use (component list -> largest mass-fraction sum).
-    std::map<std::string, double> massless;
+    //  The resolution lines already printed (method id + site), once each.
+    std::set<std::string> printed;
 };
 
 //  WHAT THE MUTEX PROTECTS: the RunState above (the caches and the lines
@@ -286,14 +285,31 @@ DensityResolution resolveCatalogue(const ThermoPackage& thermo, const std::vecto
         std::string msg = "liquid density of the constituent set " + r.setName
             + ": no method applies.  ";
         if (set.size() >= 2)
-            msg += "No solution record covers this set (the kind of record that would:"
-                   " parameters/solution/" + setFileName(thermo, set) + ".dat, a"
-                   " `liquidDensity` law for exactly these constituents); and ";
+            msg += set.size() == 2
+                ? "No solution record covers this set (the kind of record that would:"
+                  " parameters/solution/" + setFileName(thermo, set) + ".dat, a"
+                  " `liquidDensity` law for exactly these constituents); and "
+                //  A SET OF THREE HAS NO RECORD KIND YET (C378 pilot review,
+                //  PA-08): the solution record holds one solute and one
+                //  solvent, so naming one as the remedy named a file nobody
+                //  can write.
+                : "No solution record covers this set: the solution record holds one"
+                  " solute and one solvent, so a law for these " + std::to_string(set.size())
+                  + " constituents (parameters/solution/" + setFileName(thermo, set)
+                  + ".dat) has no record kind yet; and ";
         msg += "idealMixing (additive volumes) needs a volume for every constituent: ";
         for (std::size_t k = 0; k < missing.size(); ++k)
             msg += (k ? "; " : "") + missing[k];
-        msg += ".  Remedy: a solution record for this set (from measured densities of"
-               " the mixture), a liquid volume in each such component's record (`Vliq`,"
+        if (!r.passedOver.empty())
+        {
+            msg += ".  Passed over: ";
+            for (std::size_t k = 0; k < r.passedOver.size(); ++k)
+                msg += (k ? "; " : "") + r.passedOver[k];
+        }
+        msg += std::string(".  Remedy: ")
+             + (set.size() == 2 ? "a solution record for this set (from measured densities"
+                                  " of the mixture), " : "")
+             + "a liquid volume in each such component's record (`Vliq`,"
                " or Tc and Pc), or the declared hypothesis `approximations {"
                " massWithoutVolume { components ( ... ); maxMassFraction <w>; reason"
                " \"...\"; } }`.";
@@ -466,33 +482,8 @@ DensityResolution resolveDensity(const ThermoPackage& thermo, const sVector& x)
     else
     {
         run().first.emplace(key, r);
-        run().order.push_back(key);
     }
     return run().bySerial.emplace(sk, std::move(r)).first->second;
-}
-
-std::vector<DensityResolution> densityResolutionsOfRun()
-{
-    std::lock_guard<std::mutex> lk(mtx());
-    freshRun();
-    std::vector<DensityResolution> out;
-    for (const auto& k : run().order) out.push_back(run().first.at(k));
-    return out;
-}
-
-void noteMassWithoutVolume(const std::string& components, double w)
-{
-    std::lock_guard<std::mutex> lk(mtx());
-    freshRun();
-    double& m = run().massless[components];
-    m = std::max(m, w);
-}
-
-std::map<std::string, double> massWithoutVolumeOfRun()
-{
-    std::lock_guard<std::mutex> lk(mtx());
-    freshRun();
-    return run().massless;
 }
 
 //  THE PRESSURE ABOVE WHICH A METHOD THAT TAKES NONE IS ANNOUNCED [Pa].  A
@@ -507,7 +498,21 @@ Result density(const Request& q)
 {
     if (!q.thermo)
         throw std::logic_error("liquidProperty::density: a request names its package");
-    const DensityResolution res = resolveDensity(*q.thermo, q.x);
+    //  EVERY REFUSAL PRINTS ITS REMEDY (C378 pilot review, S3; the Theory
+    //  Guide's sec:liquid-density-domain-error says so): the remedy rides
+    //  with the message, unless the message already states one.
+    const auto withRemedy = [](const PropertyDomainError& e)
+    {
+        const std::string m = e.what();
+        if (e.remedy.empty() || m.find("Remedy:") != std::string::npos) return m;
+        return m + "  Remedy: " + e.remedy + ".";
+    };
+    DensityResolution res;
+    try { res = resolveDensity(*q.thermo, q.x); }
+    catch (const PropertyDomainError& e)
+    {
+        throw PropertyDomainError(e.kind, withRemedy(e), e.remedy);
+    }
     DensityAnswer a;
     try { a = build(res, *q.thermo)->evaluate(q.T, q.P, q.x); }
     catch (const PropertyDomainError& e)
@@ -516,8 +521,29 @@ Result density(const Request& q)
         //  TRIAL (plan section 7): a solver that can reject a step does; a
         //  converged or final state fails the run with the remedy.  A missing
         //  datum is a resolution failure, never a property of the state.
-        if (e.kind == PropertyDomainError::Kind::missingDatum) throw;
-        throw PropertyDomainTrial(e.kind, e.what(), e.remedy);
+        if (e.kind == PropertyDomainError::Kind::missingDatum)
+            throw PropertyDomainError(e.kind, withRemedy(e), e.remedy);
+        //  THE TRIAL SAYS WHY (C378 pilot review, PA-10): a solver that
+        //  rejects the step reports only "every trial infeasible"; the reason
+        //  is printed here, once per method and unit, the first time a state
+        //  outside the domain is met.
+        {
+            std::string type, unit;
+            const bool site = q.who ? (type = q.who->type, unit = q.who->unit, true)
+                                    : PropertySourceLog::instance().current(type, unit);
+            const std::string where = site ? type + " " + unit : std::string("no unit");
+            bool fresh = false;
+            {
+                std::lock_guard<std::mutex> lk(mtx());
+                freshRun();
+                fresh = run().printed.insert("trial|" + res.setName + "|" + where).second;
+            }
+            if (fresh)
+                std::cout << "  [liquid density] " << where << ": a state outside the method's"
+                             " domain was met (a solver that can reject the step does; a"
+                             " final state fails): " << withRemedy(e) << "\n";
+        }
+        throw PropertyDomainTrial(e.kind, withRemedy(e), e.remedy);
     }
 
     Result r;
@@ -531,6 +557,36 @@ Result density(const Request& q)
     std::string type, unit;
     const bool site = q.who ? (type = q.who->type, unit = q.who->unit, true)
                             : PropertySourceLog::instance().current(type, unit);
+
+    //  THE RESOLUTION, SAID ONCE PER METHOD AND SITE (C378 pilot review,
+    //  S3: the methods passed over and the answer's quality were built and
+    //  read by nothing).  The glass box: which method, how good the answer
+    //  says it is, and every method the order passed over and why.
+    {
+        const std::string where = site ? type + " " + unit : std::string("no unit");
+        bool fresh = false;
+        {
+            std::lock_guard<std::mutex> lk(mtx());
+            freshRun();
+            fresh = run().printed.insert(r.methodId + "|" + where).second;
+        }
+        if (fresh)
+        {
+            std::string line = "  [liquid density] " + where + ": " + res.setName + " by "
+                + r.methodId + " (origin " + (a.quality.origin.empty() ? "-" : a.quality.origin)
+                + "; " + a.quality.evidence + ")";
+            std::vector<std::string> passed = res.passedOver;
+            for (const auto& u : res.under)
+                passed.insert(passed.end(), u.passedOver.begin(), u.passedOver.end());
+            if (!passed.empty())
+            {
+                line += "; passed over: ";
+                for (std::size_t k = 0; k < passed.size(); ++k)
+                    line += (k ? "; " : "") + passed[k];
+            }
+            std::cout << line << "\n";
+        }
+    }
 
     //  THE CASE'S CHECK-ONLY MEASUREMENTS OF THIS SET: printed beside the
     //  value, never used (plan section 5).
@@ -579,7 +635,9 @@ Result density(const Request& q)
         std::cout << "  [liquid density] " << type << " " << unit << ": " << r.methodId
                   << " carries no pressure term; pressure not applied\n";
     PropertySourceLog::instance().use(type, unit, name(Property::density),
-        r.methodId, r.label, "kernel", r.pressureApplied ? "applied" : "not applied", "",
+        r.methodId, r.label, "kernel",
+        !a.pressureWords.empty() ? a.pressureWords
+                                 : (r.pressureApplied ? std::string("applied") : std::string("not applied")), "",
         took(r.value, q.T, q.P > 0.0 ? q.P : std::numeric_limits<double>::quiet_NaN(),
              compositionKey(q.x)));
     return r;

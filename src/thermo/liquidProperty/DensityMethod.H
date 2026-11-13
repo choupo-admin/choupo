@@ -72,6 +72,10 @@ struct DensityAnswer
     std::string       label;
     std::vector<Leaf> leaves;
     bool              pressureApplied = false;
+    //  The pressure column's words when they differ by leaf ("applied to
+    //  water; not applied to ethanol"); "" means "applied" or "not applied"
+    //  as pressureApplied says (C378 pilot review, S3).
+    std::string       pressureWords;
     Quality           quality;
 };
 

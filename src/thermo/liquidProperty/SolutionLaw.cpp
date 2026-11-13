@@ -161,7 +161,11 @@ SolutionLaw::SolutionLaw(const Binding& b)
     }
     std::sort(recSet.begin(), recSet.end());
     if (recSet != set_)
-        throw std::logic_error("SolutionLaw: the record's set differs from the request's");
+        throw std::runtime_error(where + ": the record states the set "
+            + setDisplayName(*thermo_, recSet) + " (one solute, one solvent) and was found"
+            " for the set " + setName_ + ".  The solution record holds a binary only;"
+            " a law for a set of three or more has no record kind yet (C378 pilot"
+            " review, PA-08).");
 
     const DictPtr ld = r->subDict("liquidDensity");
     const std::string w = where + " liquidDensity";

@@ -119,7 +119,6 @@ DensityAnswer IdealMixing::evaluate(scalar T, scalar P, const sVector& x) const
                 "a liquid within the declared bound, a larger bound with its reason,"
                 " or a volume for the component (a record `Vliq` or a solution record)");
         }
-        noteMassWithoutVolume(listed, wMassless);
         PropertySourceLog::instance().hypothesisHere("massWithoutVolume", listed, wMassless, wMax);
     }
     if (!(Vmix > 0.0) || !std::isfinite(Vmix))
@@ -131,6 +130,20 @@ DensityAnswer IdealMixing::evaluate(scalar T, scalar P, const sVector& x) const
     a.methodId          = id_;
     a.label             = label_;
     a.pressureApplied   = pressureApplied_;
+    //  THE PRESSURE COLUMN, PER LEAF (C378 pilot review, S3): a mixture whose
+    //  water leaf IS compressed was labelled "pressure not applied" because
+    //  one other leaf carries no pressure term.  The words now say which.
+    {
+        std::string on, off;
+        for (std::size_t k = 0; k < set_.size(); ++k)
+        {
+            if (x[set_[k]] <= 0.0 || leaves_[k]->isMassless()) continue;
+            std::string& w = leaves_[k]->pressureApplied() ? on : off;
+            w += (w.empty() ? "" : ", ") + thermo_->comp(set_[k]).name();
+        }
+        if (!on.empty() && !off.empty())
+            a.pressureWords = "applied to " + on + "; not applied to " + off;
+    }
     a.quality.origin    = origin_;
     a.quality.provenance = "the component records' Vliq, Tc, Pc, omega";
     a.quality.domain    = "not declared";
