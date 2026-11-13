@@ -791,7 +791,7 @@ get_aad() {
     local model prop stat
     model=${key%%.*}; stat=${key##*.}
     prop=${key#*.}; prop=${prop%.*}
-    printf '%s\n' "$out" | awk -v ds="$dataset" -v m="$model" -v p="$prop" -v s="$stat" '
+    awk -v ds="$dataset" -v m="$model" -v p="$prop" -v s="$stat" '
         /"dataset":/ { cur = ""; if (match($0, /"dataset": "[^"]*"/))
                        { cur = substr($0, RSTART+12, RLENGTH-13) } }
         cur == ds && index($0, "\"model\": \"" m "\"") \
@@ -800,7 +800,7 @@ get_aad() {
                 v = substr($0, RSTART, RLENGTH); sub(/^"[^"]*": */, "", v)
                 print v; exit
             }
-        }'
+        }' <<< "$out"
 }
 
 # --- pull one field out of the top-level `"energyClosures": [...]` ledger
@@ -1112,7 +1112,7 @@ get_ledger() {
     rest=${key#*.};  [ "$rest"  = "$key"  ] && return 0
     rkind=${rest%%.*}
     field=${rest#*.}; [ "$field" = "$rest" ] && return 0
-    printf '%s\n' "$out" | awk -v n="$name" -v b="$blk" -v k="$rkind" -v f="$field" '
+    awk -v n="$name" -v b="$blk" -v k="$rkind" -v f="$field" '
         function norm(s) { gsub(/[ \t]+/, "_", s); return s }
         $0 ~ "^  \"" b "\": \\[$" { inb = 1; next }
         inb && /^  \]/ { inb = 0 }
@@ -1174,7 +1174,7 @@ get_ledger() {
                 exit
             }
             if (got) printf "%.12g\n", sum        # 12 sig figs: jsonNumber s
-        }'
+        }' <<< "$out"
 }
 
 # --- pull one field out of the top-level `"layout": {...}` block (2026-10-17,

@@ -1725,6 +1725,11 @@
       "exit": 0,
       "claim": "check_property_sources_pinned: OK -- 16 case(s) publishing liquid-property sources, every (unit, property) pinned by a `source` row (the --fast set, run live (no suite cache)).",
       "seconds": 42.7
+    },
+    "check_golden_bands": {
+      "exit": 0,
+      "claim": "check_golden_bands: OK -- 55994 classed golden row(s) hold the band of their class (condition 4109, count 8294, objective 42715, parameter 752, residual_boundary 77, residual_hx 18, residual_ledger 29); 77 boundary residual row(s) were held on FORM alone (no cached output carried the term); the comparator failed a wrong value and passed a right one in all three forms (relative, abs:, exact: 6 runs); the checker rejected a count hand-pinned at 1e-4, a residual with a relative band, a wrong absolute value and a band under the 1e-9 floor.  NOT CHECKED: that a band is physically right, rows of no class, anchor and exact rows.",
+      "seconds": 12.3
     }
   }
 }
