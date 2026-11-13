@@ -59,9 +59,9 @@ export const ENGINE_FACTS = {
     says: "waste treatment C_WT is set to zero: not costed, and the run says so.",
   },
   positions: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 3281,
-    needle: "constexpr scalar positionsPerOperatorPerShift = 4.5;",
-    says: "about 4.5 shift-positions cover one operating position round the clock; the operators per shift come from Turton's N_OL or from a declared `operatingCrew`.",
+    file: "src/postProcessing/EconomicsPass.cpp", line: 3285,
+    needle: "scalar positionsPerOperatorPerShift = 4.5;",
+    says: "about 4.5 shift-positions cover one operating position round the clock (the default; a case declares its own with `operatorCover`); the operators per shift come from Turton's N_OL or from a declared `operatingCrew`.",
   },
   operatorHours: {
     file: "src/postProcessing/EconomicsPass.cpp", line: 1724,
@@ -109,7 +109,7 @@ export const ENGINE_FACTS = {
     says: "an IRR above 200 % is printed with a warning: the cash flow dwarfs the investment, which points to a scale error.",
   },
   breakEven: {
-    file: "src/postProcessing/EconomicsPass.cpp", line: 4106,
+    file: "src/postProcessing/EconomicsPass.cpp", line: 4302,
     needle: "x = F / (R - V) = ",
     says: "with `breakEven {}` declared, the engine prints the operating break-even x = F/(R - V) (fixed: 0.180 FCI + 2.73 C_OL + depreciation; variable: 1.23 (C_RM + C_UT + C_WT)) and the NPV break-even, the production fraction at which `appraise` on a copy returns NPV = 0; the two are published separately.",
   },

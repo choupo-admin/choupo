@@ -251,7 +251,8 @@ batch plan, sizing, clean utilities, costing and economics on top
 ### Labour (operators per shift, crew)
 * Computes: Turton's operators per shift with its particulate-step term
   (`key:particulateSteps`), or a crew you declare by area
-  (`key:operatingCrew`), priced by your wage.
+  (`key:operatingCrew`), priced by your wage, with the shift cover (default
+  4.5, round the clock) a declared judgement (`key:operatorCover`).
 * Missing: labour scheduled from the batch plan.
 * Witness: `tutorials/batch/plant/donepezil01_tablets`.
 
@@ -262,7 +263,8 @@ batch plan, sizing, clean utilities, costing and economics on top
   `key:land`, `key:financing`, start-up years.
 * Also computes, each opt-in and declared with its source: a building cost
   from the GMP interior's room areas priced by grade (`key:buildings`), the
-  operating and the NPV break-even capacity (`key:breakEven`), a royalty
+  operating and the NPV break-even capacity and, per priced stream, the
+  price at which NPV = 0 (`key:breakEven`), a royalty
   inside a declared patent window (`key:royalty`) and the working capital by
   three methods side by side (`key:workingCapitalMethods`).  Not computed:
   depreciation by asset class (straight line only).

@@ -321,6 +321,24 @@ announces it, with the KPIs `lossYears`, `taxCreditOnLoss` and
 `taxOnLoss none;` in the `economics` block for that reading, and the NPV
 falls by that amount. Neither reading carries a loss forward.
 
+**At what price does it pay?** "Never" teaches little, so the `economics`
+block declares `breakEven { price ( ProductNH3 H2Feed ); }` and the run
+prints, beside the NPV, the price of one stream at which the NPV is zero with
+every other price held (found by pricing the same appraisal again). The
+**minimum selling price of ammonia** is **1.175 EUR/kg**, 17.5 % above the
+assumed 1.00 (KPI `breakEven_price_ProductNH3`); the **highest price of
+hydrogen the plant can bear** is **3.72 EUR/kg**, 17.3 % below the assumed 4.50
+(`breakEven_price_H2Feed`). The first is above the cost of making a kilogram
+(`productionCostPerKg` 1.1195 EUR/kg, which is COM_d over the year's
+ammonia) because a price that only covered COM_d would leave nothing to
+recover the 149 MEUR of total capital: pre-tax, at the 10 % discount rate
+over 15 years, that capital charge alone adds about 0.05 EUR/kg. Both numbers
+inherit every assumption of the case (the other prices, the capital, the
+utility bill that is a lower bound) and say how far from the author-set
+prices the plant stands, not what the market will pay. At those prices every
+operating year has a positive taxable income, so the two break-evens are the
+same under either tax reading above.
+
 ### Utilities: what serves each duty, and the converter's steam credit
 
 Every heat duty a unit publishes is served by a plant utility, carried by

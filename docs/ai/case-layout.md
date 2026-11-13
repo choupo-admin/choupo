@@ -1403,6 +1403,30 @@ labour), `operatingPositions`, `C_OL`; beside a declared crew also
 `operatorsPerShift_correlation` and `C_OL_correlation` -- all pinned by the
 `kpi` kind.  Worked case: `tutorials/batch/plant/apalutamide01_tablets`.
 
+**THE COVER OF A SHIFT POSITION IS A DECLARED JUDGEMENT (2026-11-13, review
+row PH-01).**  The 4.5 above is the people one shift position takes through a
+plant that never stops (8760 h / the 1960 h one person works).  A suite on two
+day shifts needs about two.  In the same `economics {}` block:
+
+```
+operatorCover
+{
+    positionsPerShift  2.0;     // 1 or more; the engine's default is 4.5
+    source  "...";
+    reason  "...";
+}
+```
+
+Declared, it replaces the 4.5 on BOTH routes (the crew and the correlation) and
+the crew line prints it with its source and reason; `kpis.economics.
+operatorCover_positionsPerShift` is published only then.  A declared crew with
+the cover left at the default beside a batch plan whose longest train is
+available under 7884 h a year is ANNOUNCED once (class `assumed`): the 4.5, the
+hours and this remedy.  REFUSED by name: a cover below 1, a missing
+`source`/`reason` or `positionsPerShift`, an unknown key.  Absent the block,
+nothing changes.  Worked case: `tutorials/batch/plant/donepezil01_tablets`
+(which keeps the default and is told so).
+
 **A DECLARED QUOTE FOR AN ITEM NO CORRELATION PRICES (2026-10-19, DEV.md 4c
 C98).**  In the postDict's `costing {}` block, beside the price index:
 

@@ -57,6 +57,7 @@ License
   never silently skipped.
 \*---------------------------------------------------------------------------*/
 
+import { breakEvenPriceLine } from "../case/breakEvenLine.js";
 import { Fragment, useMemo, useState } from "react";
 import { useReducedMotion } from "@mantine/hooks";
 import { IconExternalLink } from "@tabler/icons-react";
@@ -662,6 +663,11 @@ function EconomicsBody({ econ }: { econ: NonNullable<RunResult["economics"]> }) 
         Discount rate {(econ.discountRate * 100).toFixed(1)}%, tax {(econ.taxRate * 100).toFixed(0)}%.
         {econ.irrAmbiguous ? "  IRR has multiple sign changes — interpret with care." : ""}
       </Text>
+      {econ.breakEvenPrices?.map((b) => (
+        <Text key={b.stream} size="xs" mb={4} data-testid={`breakEvenPrice-${b.stream}`}>
+          {breakEvenPriceLine(econ.currency, b)}
+        </Text>
+      ))}
       {land && (
         <Text size="xs" c="dimmed" mb={6}>
           Land: {land.price} {econ.currency}/m² × {land.area.toFixed(0)} m²

@@ -20,6 +20,8 @@ reason:
   variable costs it used printed, and the NPV break-even (the production
   fraction at which NPV = 0, found by pricing the same appraisal again).
   They differ, and the run says why.
+  `price ( powder )` adds a third answer: the powder's minimum selling price
+  (NPV = 0 with every other price held; 15.44 EUR/kg against the declared 20).
 * `royalty` -- 3 % of sales for operating years 1-6 of the 10; nothing after
   the patent window.  A royalty with no declared window is refused.
 * `workingCapitalMethods` -- 10 % of sales and 20 % of the fixed capital beside

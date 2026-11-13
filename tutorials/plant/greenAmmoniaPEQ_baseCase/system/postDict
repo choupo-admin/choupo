@@ -501,6 +501,16 @@ economics
     accuracyBand        ( -30 50 );  // the wide corner of Class 4 -- chosen
     refuseOnMissingPrice 1;
 
+    //  THE BREAK-EVEN IN PRICE: at what price of the product does the NPV
+    //  reach zero (the minimum selling price of ammonia), and what is the
+    //  highest price of hydrogen the plant can bear, every other price held.
+    //  The declared prices are author-set assumptions (constant/economics);
+    //  these two numbers say how far from them the plant pays.
+    breakEven
+    {
+        price ( ProductNH3 H2Feed );
+    }
+
     //  THE WORKING CAPITAL, built up (see the header).  Every key needs its
     //  unit: a bare number would be read as SECONDS.
     workingCapital
