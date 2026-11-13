@@ -30,6 +30,7 @@ License
 #include "result/ResultEmitter.H"   // jsonNumber, jsonEscape: one formatter
 
 #include <cstddef>
+#include <map>
 #include <string>
 #include <vector>
 

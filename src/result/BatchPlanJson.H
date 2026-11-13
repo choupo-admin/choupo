@@ -46,6 +46,7 @@ Description
 #include "core/BatchPlanRecords.H"
 #include "core/ResultRecords.H"
 
+#include <map>
 #include <ostream>
 
 namespace Choupo {
