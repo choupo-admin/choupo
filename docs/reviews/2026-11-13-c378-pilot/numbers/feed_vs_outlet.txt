@@ -1,0 +1,8 @@
+tutorials_steady_reactors_cstr08_furusawa_bistable reactor
+  feed: T 284.300 F 5.742531e-05 kmol/s m 1.213249e-03 kg/s rho 946.616 Q 1.281670e-06 m3/s
+  reactorOut: T 336.551 F 5.491131e-05 kmol/s m 1.213254e-03 kg/s rho 939.641 Q 1.291189e-06 m3/s
+  Q_out/Q_feed - 1 = +0.0074;  tau published 987.8909
+tutorials_plant_ChemicalPlantTutorial Fermentor
+  FERMENTATION.Mixed: T 314.942 F 7.397241e-02 kmol/s m 1.964075e+00 kg/s rho 967.076 Q 2.030942e-03 m3/s
+  FERMENTATION.Out: T 310.000 F 7.890859e-02 kmol/s m 1.964079e+00 kg/s rho 967.421 Q 2.030221e-03 m3/s
+  Q_out/Q_feed - 1 = -0.0004;  tau published 2461.9115
