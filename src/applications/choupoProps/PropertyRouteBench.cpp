@@ -574,15 +574,16 @@ int run(const std::string& manifestPath, const std::string& outPath)
     {
         Silence quiet;
         const sVector pure { 1.0 };
+        const std::string if97 = "pureFluids { " + solvent + " { method IF97; } }\n";
         const std::vector<std::pair<std::string, std::string>> runs = {
-            { "pureFluids { water { method IF97; } }\n", "pureFluid.IF97" },
+            { if97, "pureFluid.IF97" },
             { "", "referenceEquation.IAPWS95" },
-            { "pureFluids { water { method IF97; } }\n", "pureFluid.IF97" } };
+            { if97, "pureFluid.IF97" } };
         const void* prev = nullptr;
         int sameAddress = 0;
         for (const auto& rn : runs)
         {
-            const DictPtr d = Dictionary::fromString(systemText({ "water" }, rn.first),
+            const DictPtr d = Dictionary::fromString(systemText({ solvent }, rn.first),
                                                      "<address-reuse check>");
             auto pk = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(d, db));
             if (prev == pk.get()) ++sameAddress;
@@ -601,7 +602,7 @@ int run(const std::string& manifestPath, const std::string& outPath)
         //  a step -- and a missing datum does not (it fails the run).  NaOH
         //  at 40 wt % and 285 K lies outside the law's Table III; NaCl in
         //  water has no method at all.
-        const DictPtr dn = Dictionary::fromString(systemText({ "NaOH", "water" }, ""),
+        const DictPtr dn = Dictionary::fromString(systemText({ "NaOH", solvent }, ""),
                                                   "<domain-trial check>");
         ThermoPackage pn = ThermoPackageBuilder::build(dn, db);
         liquidProperty::Request q;
@@ -612,7 +613,7 @@ int run(const std::string& manifestPath, const std::string& outPath)
         try { (void)liquidProperty::density(q); }
         catch (const InfeasibleTrial&) { trial = true; }
         catch (...) {}
-        const DictPtr dc = Dictionary::fromString(systemText({ "NaCl", "water" }, ""),
+        const DictPtr dc = Dictionary::fromString(systemText({ "NaCl", solvent }, ""),
                                                   "<domain-trial check>");
         ThermoPackage pc = ThermoPackageBuilder::build(dc, db);
         liquidProperty::Request qc;

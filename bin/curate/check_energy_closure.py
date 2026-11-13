@@ -604,6 +604,12 @@ KNOWN_OPEN = {
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
+    #  The C378 pilot's two demonstrations with a pump (2026-11-13): the same
+    #  announced debt as pump01 -- on a surface whose liquid enthalpy has no
+    #  pressure term the useful work eta W_shaft is not carried, so the plant's
+    #  residual is exactly the pump's eta (0.7).  They demonstrate the density.
+    "tutorials/steady/thermo/liquidDensity01_water": 70.0000,
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol": 70.0000,
     "tutorials/steady/thermo/basis01_two_unit_chain": 7.4630,
 }
 

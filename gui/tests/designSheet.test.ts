@@ -99,10 +99,10 @@ inlets
     {
         global      "FERMENTATION.Mixed";
         bc          interior;
-        T           314.94228 K;
+        T           314.94242 K;
         P           100000 Pa;
-        F           0.073972945 kmol/s;
-        mdot        1.9639713 kg/s;
+        F           0.073972409 kmol/s;
+        mdot        1.9640754 kg/s;
         vapourFraction 0;
     }
 }
@@ -115,9 +115,9 @@ outlets
         bc          interior;
         T           310 K;
         P           100000 Pa;
-        F           0.078909884 kmol/s;
-        mdot        1.9639746 kg/s;
-        vapourFraction 0.045195372;
+        F           0.078908592 kmol/s;
+        mdot        1.9640787 kg/s;
+        vapourFraction 0.045189014;
     }
 }
 
