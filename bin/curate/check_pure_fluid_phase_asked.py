@@ -126,6 +126,18 @@ so the band's own edge would test the last bit of the refusal:
       the inlet, T_in, P_out, T_sat(P_out), the enthalpy asked against the
       saturated liquid's, eta and both remedies (before: T_out = T_in,
       published silently, +0.18 kW on the plant boundary at exit 0).
+  (l) a PURE stream of a component with NO vapour-pressure model, in a world
+      with no pure-fluid formulation, runs: a pump on pure dowthermA (the
+      record of utility01_dowtherm_preheat, which declares no vaporPressure)
+      exits 0, and a negative return code is reported as a crash (a signal),
+      never as a refusal.  By SOURCE, and it says so: the outlet stamp
+      (flashState::pureWorldName) asks no saturation curve outside a
+      pure-fluid formulation -- it once did, so it dereferenced the absent
+      model (SIGSEGV on lithiumBrinePlant and utility01-03) and, where a
+      correlation existed, announced excursions outside its Trange about a
+      p_sat the run never used (evaporator01_brine, water at 374.546 K);
+      and saturationPressure refuses by name before dereferencing an absent
+      correlation.
 p_sat(T) is IAPWS-IF97 region 4 (Wagner et al. 2000, Eq. 30), the same
 closed form the engine evaluates.  Each run must also announce the pure-fluid
 route (`pureFluids override (water)`), so a template that lost its IF97
@@ -142,7 +154,14 @@ fails; Sk1 the pump's enthalpy refusal disabled (the search then fails and
 raises its non-convergence, which does not name the cause) -> (k) fails;
 Sk2 the old code (no refusal, `T_out = r.converged ? r.x : T_in`) -> (k)
 fails.  Restoring the fallback line ALONE is not caught: the enthalpy
-refusal fires before the search in every case the arm builds.
+refusal fires before the search in every case the arm builds.  Arm (l),
+the same day: Sl1 the branch's code restored (the stamp asks thermo.Psat in a
+generic world AND saturationPressure dereferences without its guard) -> (l)
+fails, the pump run reported as a CRASH with signal 11; Sl2 the stamp's Psat
+call restored alone (the guard then throws and the stamp's catch absorbs it,
+exit 0) -> (l) fails by source only; Sl3 the guard removed alone -> (l) fails
+by source only (no run reaches saturationPressure for a component with no
+model once the stamp asks nothing).
 
 WHAT IT DOES NOT CHECK.  The values to more than the bounds of arm (d)
 and (f) (rankine02's golden pins them); the turbine's BEHAVIOUR (arm (e)
@@ -167,6 +186,8 @@ law is open by that fallback, not by the inlet).
     reads: src/thermo/ThermoPackage.cpp
     reads: src/unitOperations/flowsheet/Flowsheet.cpp
     reads: src/dynamicDriver/DynamicDriver.cpp
+    reads: src/thermo/pureFluid/SaturationCurve.cpp
+    reads: tutorials/steady/utilities/utility01_dowtherm_preheat
 """
 import json
 import math
@@ -625,6 +646,70 @@ def dynamic_source(fail: list) -> None:
                     "flashState::declaredPhaseBeyondBandRefusal on its authored inlets")
 
 
+INVOLATILE = ROOT / "tutorials" / "steady" / "utilities" / "utility01_dowtherm_preheat"
+
+
+def involatile_arm(tmp: Path, fail: list) -> int:
+    """Arm (l): a PURE stream of a component with NO vapour-pressure model, in
+    a world with no pure-fluid formulation, runs.  Every unit outlet is stamped
+    with the world it was computed in (TD-17); the stamp once asked that
+    component's saturation curve, dereferenced the absent model and killed the
+    run with SIGSEGV (lithiumBrinePlant, utility01-03).  Behaviour: a pump
+    (liquid held) on pure dowthermA, whose record declares no vaporPressure,
+    must exit 0 -- a negative return code is a SIGNAL and is reported as a
+    crash, never as a refusal.  Source, and it says so: pureWorldName asks no
+    saturation curve outside a pure-fluid formulation (the record's
+    correlation announces excursions, so the stamp raised advisories about a
+    p_sat the run never used), and saturationPressure refuses by name before
+    dereferencing an absent correlation."""
+    d = tmp / "l_involatile"
+    (d / "system").mkdir(parents=True)
+    (d / "0").mkdir()
+    shutil.copytree(INVOLATILE / "constant", d / "constant")
+    shutil.copy(INVOLATILE / "system" / "controlDict", d / "system" / "controlDict")
+    tp = (d / "constant" / "thermoPhysPropDict").read_text()
+    if "pureFluids" in tp:
+        fail.append("(l) the template's world declares pureFluids: it no longer probes a "
+                    "world with no pure-fluid formulation")
+    rec = (d / "constant" / "components" / "dowthermA.dat").read_text()
+    if re.search(r"^\s*vaporPressure\b", rec, re.M):
+        fail.append("(l) dowthermA.dat now declares a vaporPressure: the arm no longer "
+                    "probes a component with no vapour-pressure model")
+    (d / "system" / "flowsheetDict").write_text(
+        "units\n(\n    { name U; type pump; in probe; outputs ( out ); "
+        "operation { dP 2 bar; eta 0.8; } }\n);\n")
+    oil = "componentMolarFlows\n{{\n    dowthermA    150 kmol/h;\n}}\n\nT {T} K;\nP {P} Pa;\nphase liquid;\n"
+    (d / "0" / "probe").write_text(oil.format(T=450.0, P=5.0e5))
+    (d / "0" / "out").write_text(oil.format(T=451.0, P=7.0e5))
+    rc, res, out = run_raw(d)
+    if rc < 0:
+        fail.append(f"(l) a pump on pure dowthermA (no vapour-pressure model, no pure-fluid "
+                    f"formulation) CRASHED with signal {-rc} -- a stamp or a saturation "
+                    "query dereferenced an absent model")
+    elif rc != 0 or res is None:
+        tail = next((ln for ln in out.splitlines() if "rror" in ln), "")
+        fail.append(f"(l) a pump on pure dowthermA did not run (exit {rc}): {tail[:300]}")
+    src = (ROOT / "src" / "unitOperations" / "flash" / "StreamEquilibrium.H").read_text()
+    code = "\n".join(ln.split("//")[0] for ln in src.splitlines())
+    body = re.search(r"inline std::string pureWorldName\(.*?\n\}", code, re.S)
+    if body is None:
+        fail.append("(l) source: flashState::pureWorldName not found")
+    elif "Psat(" in body.group(0) or "saturationPressure(" in body.group(0):
+        fail.append("(l) source: pureWorldName asks a saturation curve outside a pure-fluid "
+                    "formulation -- the stamp runs on every outlet and must neither announce "
+                    "nor touch an absent model")
+    sc = (ROOT / "src" / "thermo" / "pureFluid" / "SaturationCurve.cpp").read_text()
+    sc = "\n".join(ln.split("//")[0] for ln in sc.splitlines())
+    tail = sc[sc.rfind("if (pf)"):] if "if (pf)" in sc else ""
+    after = tail[tail.find("\n    }"):] if "\n    }" in tail else ""
+    guard = after.find("hasVaporPressure()")
+    deref = after.find("c.vp().Psat_Pa(T_K)")
+    if not (0 <= guard < deref):
+        fail.append("(l) source: saturationPressure no longer refuses before dereferencing "
+                    "an absent vapour-pressure correlation when no pure-fluid method answers")
+    return rc
+
+
 def main() -> int:
     if not (ROOT / "choupoSolve").exists():
         print(f"{NAME}: FAIL -- {ROOT / 'choupoSolve'} does not exist; build the tree")
@@ -669,6 +754,7 @@ def main() -> int:
         own_world_arm(tmp, fail)
         computed_inlet_arm(tmp, fail)
         disch = discharge_arm(tmp, fail)
+        involatile_arm(tmp, fail)
     dynamic_source(fail)
     overload_source(fail)
     for term in ("H_feeds_kW", "H_products_kW"):
@@ -737,7 +823,10 @@ def main() -> int:
           "the band by SOURCE (no flowsheet run reaches it); "
           f"a pump discharge: eta 0.5 and 0.03 close (dT = {disch.get(0.5, float('nan')):.4f} "
           f"and {disch.get(0.03, float('nan')):.4f} K), eta 0.01 heated past T_sat(P_out) "
-          "refused by name.  "
+          "refused by name; a pump on pure dowthermA (no vapour-pressure model) in a "
+          "world with no pure-fluid formulation runs to exit 0, the outlet stamp asking "
+          "no saturation curve there and saturationPressure refusing before an absent "
+          "model (both by source).  "
           "NOT CHECKED: the values beyond those bounds, the overloads' (T, P) branch "
           "by behaviour, the time-integrated refusal's behaviour, the pump's search "
           "failing for another cause, a wet turbine exhaust, a heatExchanger fed a "
