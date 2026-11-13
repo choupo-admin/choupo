@@ -57,6 +57,7 @@ Display displayOf(const std::string& property)
     if (property == "liquidViscosity")   return { "liquid viscosity",    "mPa s",   1.0e3,  "%.4g" };
     if (property == "surfaceTension")    return { "surface tension",     "mN/m",    1.0e3,  "%.4g" };
     if (property == "liquidDiffusivity") return { "liquid diffusivity",  "m2/s",    1.0,    "%.3g" };
+    if (property == "liquidKinematicViscosity") return { "liquid kinematic viscosity", "m2/s", 1.0, "%.3g" };
     return { "?", "", 1.0, "%.4g" };
 }
 
@@ -149,6 +150,8 @@ void PropertySourceLog::clear()
     std::lock_guard<std::mutex> g(mutex_);
     used_.clear();
     declared_.clear();
+    parameters_.clear();
+    generation_.fetch_add(1, std::memory_order_relaxed);
 }
 
 PropertySourceLog::Scope::Scope(const std::string& type, const std::string& unit)
@@ -253,6 +256,16 @@ void PropertySourceLog::useHere(const std::string& property, const ConstantSourc
     if (current(type, unit)) use(type, unit, property, s, sourceClass);
 }
 
+void PropertySourceLog::useHere(const std::string& property, const NamedSource& s,
+                                const std::string& addendum, const std::string& sourceClass,
+                                const Taken& taken, const std::string& pressureNote)
+{
+    std::string type, unit;
+    if (current(type, unit))
+        use(type, unit, property, s.id, std::string(s.label) + addendum, sourceClass,
+            pressureNote, "", taken);
+}
+
 std::vector<std::string> PropertySourceLog::mismatches() const
 {
     std::vector<std::string> out;
@@ -320,9 +333,47 @@ std::vector<std::string> PropertySourceLog::pricedTwice() const
     return out;
 }
 
+//  A CONSTANT WHERE ANOTHER UNIT COMPUTED (review DR-08): a unit that took a
+//  constant liquid density while another consumer of the same run priced a
+//  liquid at a state.  Not claimed to be the same stream: the table does not
+//  know the streams; the pilot will.
+std::vector<std::string> PropertySourceLog::constantBesideComputed() const
+{
+    std::vector<std::string> out;
+    std::vector<const Used*> constants, computed;
+    for (const auto& kv : used_)
+    {
+        const Used& u = kv.second;
+        if (u.property != "liquidDensity" || u.nValued == 0) continue;
+        const bool constant = u.sourceId.rfind("constant.", 0) == 0
+                           || u.sourceId.rfind("default.", 0) == 0
+                           || u.sourceId.rfind("fallback.", 0) == 0;
+        (constant ? constants : computed).push_back(&u);
+    }
+    for (const Used* c : constants)
+    {
+        std::string line = c->unit + " (" + c->type + ") took a constant "
+            + number("%.2f", c->vMin) + " kg/m3 for a liquid density, while ";
+        bool first = true;
+        int shown = 0;
+        for (const Used* k : computed)
+        {
+            if (k->unit == c->unit) continue;
+            if (shown == 3) { line += ", ..."; break; }
+            line += std::string(first ? "" : ", ") + k->unit + " (" + k->type + ") computed "
+                  + valueText(*k);
+            first = false;
+            ++shown;
+        }
+        if (shown == 0) continue;
+        out.push_back(line + " (whether they price the same liquid is not checked here)");
+    }
+    return out;
+}
+
 void PropertySourceLog::printUsed(std::ostream& os) const
 {
-    if (used_.empty()) return;
+    if (used_.empty() && parameters_.empty()) return;
     os << "\n[liquid properties] Where each unit took its liquid properties from in"
           " this run (values as used; nothing is changed by this table)\n";
     //  Units of one type that share the property, the source AND the value
@@ -350,11 +401,19 @@ void PropertySourceLog::printUsed(std::ostream& os) const
     }
     for (const auto& m : mismatches()) os << "  [mismatch] " << m << "\n";
     for (const auto& p : pricedTwice()) os << "  [twice] " << p << "\n";
+    for (const auto& c : constantBesideComputed()) os << "  [constant] " << c << "\n";
+    if (!parameters_.empty())
+    {
+        os << "  Parameters of thermodynamic models that read a component's 25 C"
+              " liquid volume (not a liquid property of any unit, the same datum):\n";
+        for (const auto& p : parameters_)
+            os << "    " << p.first << ": " << p.second << "\n";
+    }
 }
 
 std::string PropertySourceLog::json() const
 {
-    if (used_.empty() && declared_.empty()) return "";
+    if (used_.empty() && declared_.empty() && parameters_.empty()) return "";
     std::ostringstream o;
     o << ",\n  \"propertySources\": {\n    \"used\": [";
     bool first = true;
@@ -405,7 +464,16 @@ std::string PropertySourceLog::json() const
     list("declaredNotUsed", idle());
     list("mismatches", mismatches());
     list("pricedTwice", pricedTwice());
-    o << "]\n  }";
+    list("constantBesideComputed", constantBesideComputed());
+    o << "],\n    \"modelParameters\": [";
+    first = true;
+    for (const auto& p : parameters_)
+    {
+        o << (first ? "\n      " : ",\n      ") << "{ \"model\": " << jsonString(p.first)
+          << ", \"reads\": " << jsonString(p.second) << " }";
+        first = false;
+    }
+    o << (first ? "" : "\n    ") << "]\n  }";
     return o.str();
 }
 

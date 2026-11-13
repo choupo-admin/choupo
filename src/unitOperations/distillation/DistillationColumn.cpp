@@ -5212,6 +5212,8 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         st.DL     = DL;
         st.muL    = muL;
         st.sigma  = thermo.hasSurfaceTension() ? liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T[j], P, x[j]).value : geo.sigma;
+        if (!thermo.hasSurfaceTension())
+            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(geo.sigma, T[j], P));
         st.m      = m;
         st.lambda = m * V[j] / L[j];
         //  Molar densities: c_G = rho_V/M_V, c_L = rho_L/M_L.

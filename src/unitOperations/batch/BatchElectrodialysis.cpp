@@ -328,6 +328,12 @@ void BatchElectrodialysis::initialise(const DictPtr&       unitDict,
         seFactor_ = se.value;
         muPriced_ = true;
     }
+    if (muPriced_)
+        PropertySourceLog::instance().use(type(), name(), "liquidKinematicViscosity",
+            liquidSource::stokesEinsteinSolvent, "kernel", took(nu_, state_.T));
+    else
+        PropertySourceLog::instance().use(type(), name(), "liquidKinematicViscosity",
+            liquidSource::waterKinematicViscosity);
 
     // ---- the counter-ions ------------------------------------------------
     //  Until C35 (2026-10-05) a diluate with more than one cation or one

@@ -305,6 +305,8 @@ int Pipe::solve(const DictPtr& dict,
                 // flux flowing as liquid; needs surface tension (Weber number).
                 const scalar sigma = (tpDict && tpDict->found("surfaceTension"))
                     ? tpDict->lookupScalar("surfaceTension") : liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
+                if (tpDict && tpDict->found("surfaceTension"))
+                    PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(sigma));
                 if (sigma <= 0.0) throw std::runtime_error("Pipe(Friedel): non-physical surface tension.");
                 const scalar G    = Wtot / area;                         // mass flux kg/m2.s
                 const scalar rhoH = 1.0 / (quality / rhoG + (1.0 - quality) / rhoL);
@@ -331,6 +333,8 @@ int Pipe::solve(const DictPtr& dict,
                 // + a two-phase friction-factor ratio.  Needs surface tension.
                 const scalar sigma = (tpDict && tpDict->found("surfaceTension"))
                     ? tpDict->lookupScalar("surfaceTension") : liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, Pin, xlp).value;
+                if (tpDict && tpDict->found("surfaceTension"))
+                    PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(sigma));
                 if (sigma <= 0.0) throw std::runtime_error("Pipe(BeggsBrill): non-physical surface tension.");
                 const scalar vm   = jG + jL;                    // mixture velocity
                 const scalar lamL = jL / vm;                    // no-slip liquid holdup

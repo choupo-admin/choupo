@@ -27,8 +27,10 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "WilkeChang.H"
+#include "core/PropertySourceLog.H"
 #include "thermo/Component.H"
 
+#include <atomic>
 #include <cmath>
 #include <stdexcept>
 
@@ -42,6 +44,7 @@ scalar WilkeChang::diffusivityLiquidBinary(const Component& solute,
     const scalar phi   = solvent.associationFactor();       // [-]
     const scalar Mb    = solvent.MW();                       // g/mol
     const scalar etaB  = muSolvent_PaS * 1.0e3;              // Pa·s -> cP
+    { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Wilke-Chang liquid diffusivity", "the solute volume V_A, which the correlation defines at the normal boiling point"); }
     const scalar Va_m3 = solute.Vliq();                      // m³/mol
     if (Va_m3 <= 0.0)
         throw std::runtime_error("WilkeChang: solute '" + solute.name()

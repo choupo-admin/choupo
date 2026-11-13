@@ -28,6 +28,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "unitOperations/dynamic/QuasiSteadyUnit.H"
+#include "core/PropertySourceLog.H"
 #include "unitOperations/flowsheet/UnitInputs.H"
 #include "streams/Composition.H"
 
@@ -161,6 +162,8 @@ void QuasiSteadyUnit::refresh()
     //  The unit's own report is printed once, on the first solve; on every
     //  later instant it would be the same page with moved numbers.
     const int verbosity = (nSolves_ == 0) ? 2 : 0;
+    //  The wrapped unit is the consumer (C378 slice 0, review DR-04).
+    PropertySourceLog::Scope propertyScope(steady_->type(), name_);
     const int rc = steady_->solve(augmented, *thermo_, verbosity);
     ++nSolves_;
     if (rc != 0)

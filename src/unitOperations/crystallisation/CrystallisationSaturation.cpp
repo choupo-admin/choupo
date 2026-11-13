@@ -15,6 +15,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
+#include "core/PropertySourceLog.H"
 
 #include "thermo/ThermoPackage.H"
 //  The electrolyte route calls gammaPM / saturationKsp / relativePermittivity
@@ -23,6 +24,7 @@ License
 #include "thermo/electrolyte/ElectrolyteModel.H"
 #include "thermo/electrolyte/UnmodelledSolutes.H"
 
+#include <atomic>
 #include <cmath>
 #include <vector>
 #include <stdexcept>
@@ -122,6 +124,7 @@ SatState crystSaturation(const ThermoPackage& thermo, const sVector& z, scalar F
             const scalar nSolv = z[r.iSolv], nAnti = z[r.iAnti];
             r.xAnti = (nSolv + nAnti > 0.0) ? nAnti / (nSolv + nAnti) : 0.0;
             MwAnti = anti.MW();  epsAnti = anti.relativePermittivity();  vAnti = anti.Vliq();
+            { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "mixed-solvent electrolyte activity (antisolvent crystallisation)", "the antisolvent molar volume"); }
             r.solvent_mass = F * (z[r.iSolv] * r.MW_solv + z[r.iAnti] * MwAnti);
         }
         const scalar Ksp = thermo.electrolyte().saturationKsp(T_op);

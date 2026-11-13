@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "WilliamsOttoPlant.H"
+#include "core/PropertySourceLog.H"
+#include <atomic>
 #include "streams/Composition.H"
 #include "thermo/Component.H"
 
@@ -139,6 +141,12 @@ sVector WilliamsOttoPlant::rates_(const sVector& m) const
     for (auto v : m) mt += std::max<scalar>(v, 0.0);
     if (mt <= 0.0) return sVector(6, 0.0);
     const scalar V = mt / RHO0;                       // Sum m_i/rho0, equal rho0
+    {
+        static std::atomic<unsigned> seen{0};
+        PropertySourceLog::instance().useOnce(seen, type_, type_, "liquidDensity",
+            liquidSource::benchmarkConstantDensity, "bypass",
+            took(RHO0 * 16.01846337));            // lb/ft3 -> kg/m3, for the table only
+    }
 
     const scalar k1 = kA[0] / RHO0 * std::exp(-kB[0] / T_R_);
     const scalar k2 = kA[1] / RHO0 * std::exp(-kB[1] / T_R_);
