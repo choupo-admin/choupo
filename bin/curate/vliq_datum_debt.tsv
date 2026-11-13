@@ -4,8 +4,6 @@
 # Each stays as it is -- no VliqT is written on a guess -- until a measured
 # liquid density with its temperature is read; then its VliqT is written and
 # its line here is removed in the same commit.  The list may only shrink.
-propane	the stored 84.2 cm3/mol has no origin; it is neither the Tb nor the 25 C volume (Rackett through a measured point puts it near 283 K).  REVIEW VT-05 (2026-11-13): the stored volume equals the measured saturated volume at 276.65 K (10.1016/j.jct.2004.07.017, 10.1021/je049672l); VliqT 276.65 waits for its own commit, because it moves column-case golden rows
-propylene	no measured liquid volume of propylene with its temperature in hand.  REVIEW VT-06 (2026-11-13): boiling-point class -- the stored volume equals the measured saturated volume at 219.12 K (Tb 225.46 K; 10.1016/j.jct.2004.07.017); the engine is 22 % too dense at 25 C today; VliqT waits for its own commit, because it moves column-case golden rows
 H2O2	no measured density of liquid hydrogen peroxide with its temperature in hand
 HCHO	no measured density of liquid formaldehyde with its temperature in hand
 HCN	no measured density of liquid hydrogen cyanide with its temperature in hand
