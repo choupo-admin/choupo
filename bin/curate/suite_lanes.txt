@@ -259,6 +259,7 @@ PRE  | PAR    | bin/curate/check_pair_names.py                     | reads data/
 PRE  | PAR    | bin/curate/check_henry_records.py                  | reads data/ only; writes nothing; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_species_records.py                | reads data/ only; writes nothing; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_species_c373.py                  | reads data/ only; writes nothing; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_estimated_species_announced.py   | runs choupoProps on copies under a unique /tmp dir; writes nothing in the tree; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_feature_documented.py             | reads src/, docs/*.tex, docs/ai and one TSV; writes nothing; no make, no node, no nested walk, no pool
 PRE  | SERIAL | bin/curate/check_model_default_registered.py       | writes reports/utilities/utilityDemand.csv (+2 more)
 PRE  | PAR    | bin/curate/check_electrolyte_records.py            | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool

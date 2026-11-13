@@ -50,6 +50,7 @@ License
 #include "thermo/electrolyte/ENRTLSingleSalt.H"
 #include "thermo/electrolyte/ElectrolyteTemperatureSpan.H"
 #include "core/Advisory.H"
+#include "core/Origin.H"
 #include "core/Dictionary.H"
 
 #include <cstdlib>
@@ -169,6 +170,27 @@ inline DictPtr bridgeTrueIon(const DictPtr& r, const std::string& species)
         if (a->found("hfAq")) os << "hfAq " << a->subDict("hfAq")->lookupScalar("value") << "; ";
         if (a->found("sAq"))  os << "sAq "  << a->subDict("sAq")->lookupScalar("value")  << "; ";
         if (a->found("cpAq")) os << "cpAq " << a->subDict("cpAq")->lookupScalar("value") << "; ";
+        //  THE REDUCED-IDENTITY RULE, fifth encounter (C376): the per-datum
+        //  provenance of the formation data rides as flat keys
+        //  (<datum>origin, <datum>method) so ionAqReference() can announce
+        //  an estimate when a run consumes it.  No provenance, no keys.
+        if (a->found("provenance"))
+        {
+            auto pv = a->subDict("provenance");
+            for (const char* datum : { "hfAq", "sAq", "cpAq" })
+            {
+                if (!pv->found(datum)) continue;
+                auto d = pv->subDict(datum);
+                if (d->found("origin"))
+                    os << datum << "origin " << d->lookupWord("origin") << "; ";
+                if (d->found("method"))
+                {
+                    std::string m = d->lookupWord("method");
+                    for (auto& c : m) if (c == '"') c = '\'';
+                    os << datum << "method \"" << m << "\"; ";
+                }
+            }
+        }
     }
     if (r->found("transport"))
     {
@@ -555,6 +577,35 @@ inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& a
     return s;
 }
 
+// A species datum that is NOT a measurement and is USED is ANNOUNCED (C376,
+// 2026-11-13).  `datum` is hfAq, sAq or cpAq; `usedFor` says what in the run
+// depends on it.  Reading a record is not consuming it: callers invoke this
+// only where the number enters a result.  Once per species and datum per run
+// (the entry rides every pass; the console line is printed once), console
+// tag [estimate], AdvisoryLog category "provenance" -- the same channel as
+// the ion D0 estimate, so it reaches the caveat block and the result record.
+inline void announceEstimatedSpeciesDatum(const std::string& species,
+                                          const std::string& datum,
+                                          const std::string& usedFor)
+{
+    auto row = findAqueousSpecies(species);
+    if (!row) return;
+    const std::string origin = row->lookupWordOrDefault(datum + "origin", "");
+    const Origin o = originFromWord(origin);
+    if (o != Origin::estimated && o != Origin::predictive
+        && o != Origin::assumed && o != Origin::placeholder)
+        return;
+    const std::string method = row->lookupWordOrDefault(datum + "method", "");
+    std::string msg = "`" + datum + "` of the aqueous species is "
+        + std::string(originToWord(o)) + ", not measured"
+        + (method.empty() ? "" : " (" + method + ")")
+        + "; used by " + usedFor;
+    if (AdvisoryLog::instance().addAnnouncedOnce(
+            "estimatedSpeciesDatum:" + species + ":" + datum,
+            "provenance", "warning", "species '" + species + "'", msg))
+        std::cerr << "[estimate] species '" << species << "': " << msg << "\n";
+}
+
 // Aqueous infinite-dilution ion reference for a salt: Sum nu_i * (hfAq_i +
 // cpAq_i (T-298.15)) [J/mol salt], on the H+(aq)=0 convention (the convention
 // cancels for any neutral salt, so the sum sits on the ELEMENTS datum --
@@ -566,6 +617,10 @@ inline bool ionAqReference(const std::string& cation, const std::string& anion,
 {
     auto c = findIon(cation), a = findIon(anion);
     if (!c || !a || !c->found("hfAq") || !a->found("hfAq")) return false;
+    for (const std::string& sp : { cation, anion })
+        announceEstimatedSpeciesDatum(sp, "hfAq",
+            "the aqueous ion reference of the salt (sum nu*hfAq: the energy"
+            " balance's enthalpy datum for the electrolyte)");
     hfAqSum = nu_c * c->lookupScalar("hfAq") + nu_a * a->lookupScalar("hfAq");
     cpAqSum = nu_c * c->lookupScalarOrDefault("cpAq", 0.0)
             + nu_a * a->lookupScalarOrDefault("cpAq", 0.0);

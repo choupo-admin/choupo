@@ -1,0 +1,7 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    gamma_naoh             aw_1m            0.966452157165     1e-4
+diag    gamma_naoh             gamma_pm_1m      0.667882588628     1e-4
+diag    gamma_naoh             gamma_pm_3m      0.783816277339     1e-4
+diag    gamma_naoh             phi_1m           0.947085281204     1e-4

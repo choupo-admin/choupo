@@ -813,6 +813,13 @@ static ThermoPackage buildElectrolyte(const std::vector<std::string>& compNames,
         {
             assembly.ccAvail = electrolyte::crissCobbleNodes(
                 catName, anName, nuC, nuA, assembly.ccNodes);
+            //  The constant cpAq tier extends the ion reference away from
+            //  25 C; an estimated cpAq enters the result only on that tier.
+            if (!assembly.ccAvail)
+                for (const std::string& sp : { catName, anName })
+                    electrolyte::announceEstimatedSpeciesDatum(sp, "cpAq",
+                        "the constant ion Cp tier of the aqueous reference"
+                        " (the enthalpy at T away from 25 C)");
             if (thermoAnnounce())
                 std::cout << "[builder] ion Cp(T) for " << saltName << ": "
                           << (assembly.ccAvail

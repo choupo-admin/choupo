@@ -1815,6 +1815,23 @@ constant/experiments/phiL\_25C\_parker1965.dat carries the MEASURED Phi\_L (Park
 \end{tutgolden}
 
 \clearpage
+\tutentry{estimatedSpecies01\_announced}{tutorials/props/electrolyte/estimatedSpecies01\_announced}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{gamma\_naoh}\\[-1pt]{\tiny electrolyteActivity}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{WITNESS: a run that consumes an ESTIMATED species datum announces it (C376)}
+\begin{tutnarrative}
+A species record may mark a formation datum (hfAq, sAq, cpAq) with an origin that is not a measurement (estimated, predictive, assumed, placeholder). The engine announces such a datum ONCE per species and datum per run, on the [estimate] channel and in the result's provenance, when the run CONSUMES it -- here, when the aqueous ion reference of NaOH (sum nu$\ast$hfAq, the enthalpy datum of the electrolyte) is assembled. Reading a record is not consuming it.
+
+No shipped catalogue case consumes an estimated formation datum (the 14 catalogue species that carry one are organic acid ions no electrolyte case reaches yet), so this case MAKES one on purpose: its case-local constant/species/OH.dat is the catalogue record with ONE addition, a `provenance \{ hfAq \{ origin estimated; ... \} \}` block. The VALUES are the catalogue's, unchanged, so NaOH's activity surface is the one of enthalpy\_naoh\_water; the case is an announcement witness, not a claim that the hydroxide enthalpy is estimated (it is a measured NBS value).
+
+Held by the gate check\_estimated\_species\_announced: it runs this case and requires the announcement text and the provenance entry; a run that did not consume the datum must say nothing.
+
+\end{tutnarrative}
+
+\clearpage
 \tutentry{farelo\_licl\_range}{tutorials/props/electrolyte/farelo\_licl\_range}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

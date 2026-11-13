@@ -575,9 +575,10 @@ inherits it (footnote s), and the enthalpies of the diprotic anions are computed
 Every such value is recorded with `origin estimated;` and its method in a per-value `provenance {}` block of the species
 record (the first species records to carry one; `check_origin_census` recounted, section 6.3 of this note and
 `provenance-semantics-five-axes.md`); the experimental values (acid enthalpies from heats of solution, benzoic acid's S) carry
-none (the source line says `literature`).  DEV.md rule: an `estimated` species value is not yet announced on use by the engine
-(section 7.3): these records are for the ionisation families' energy route and are flagged on their face; nothing in the
-tree consumes them.
+none (the source line says `literature`).  Since C376 (2026-11-13) a non-measured species value is ANNOUNCED on use: where the aqueous ion reference of a salt (hfAq) or the
+constant ion-Cp tier (cpAq) consumes it, the run prints `[estimate] species '<name>'` once per species and datum and records the
+sentence in the result advisories; an entropy has no consumer yet.  No catalogue case consumes these records; the witness
+`estimatedSpecies01_announced` and the gate `check_estimated_species_announced` hold the mechanism.
 
 **Checks before entering anything.**  Convention: the same H+ = 0 aqueous scale as the catalogue (Shock states it, and his
 anion values for oxalate, hydrogenoxalate and succinate are NBS and Miller's: H-oxalate -195600 cal = -818.4 kJ/mol and oxalate
