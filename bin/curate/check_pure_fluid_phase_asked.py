@@ -25,10 +25,11 @@ pressures P = p_sat(T) (1 + e), e in (-5e-7, -1e-9, -1e-12, 0, +1e-12,
 since TD-04 a declared phase 1e-6 or more across the line is REFUSED (arm (g)),
 so the band's own edge would test the last bit of the refusal:
   (a) the feed pump alone, inlet declared `phase liquid;`, to 80 bar --
-      the seven pump dT must agree to 1e-6 K;
+      the five pump dT with |e| <= 1e-9 must agree to 1e-6 K and the two at
+      |e| = 5e-7 must stay on the same branch (within 0.01 K);
   (b) the mirror: a compressor fed the same water declared `phase gas;`
-      (saturated steam), P_out 20 bar, eta 0.8 -- the seven discharge
-      temperatures must agree to 1e-6 K;
+      (saturated steam), P_out 20 bar, eta 0.8 -- the discharge
+      temperatures held the same way;
   (c) the energy REPORT of the pump case: its plant-boundary terms
       (globalEnergyBoundary H_feeds_kW and H_products_kW) must agree across
       the FIVE runs strictly inside the band (|e| <= 1e-9) to 1e-6
@@ -164,13 +165,16 @@ TEMPLATE = ROOT / "tutorials" / "steady" / "power" / "rankine02_water"
 T_IN = 446.5158944
 EPS = (-5e-7, -1e-9, -1e-12, 0.0, 1e-12, 1e-9, 5e-7)
 TOL = 1.0e-6                     # K
-#  The two points AT the band's edge (|e| = 1e-6) fall inside the band on one
-#  platform and outside it on another (seen on the CI runner, 2026-11-13: the
-#  compressor's T_out moved by 1.6e-4 K at e = -1e-6, the honest effect of
-#  1e-6 in pressure on a state priced at its own (T, P)).  They are held to the
+#  The two OUTER points (|e| = 5e-7).  The band's edge itself (|e| = 1e-6)
+#  fell inside the band on one platform and outside it on another (seen on the
+#  CI runner, 2026-11-13: the compressor's T_out moved by 1.6e-4 K at
+#  e = -1e-6, the honest effect of 1e-6 in pressure on a state priced at its
+#  own (T, P)); since TD-04 a declared phase beyond the edge is REFUSED, so the
+#  edge is no longer run at all.  The outer points are still held to the
 #  BRANCH, not to the last digit: a phase flip moves the pump's dT by 124 K and
 #  the compressor's T_out by 114 K.
 EDGE_TOL = 1.0e-2                # K
+OUTER = 1.0e-7                   # |e| at or above this is an outer point
 RESULT = re.compile(r"<<<Choupo:result-begin>>>\n(.*?)\n<<<Choupo:result-end>>>", re.S)
 
 
@@ -565,10 +569,10 @@ def main() -> int:
                         bound.append((e, r[1]))
             got[kind] = vals
             if len(vals) == len(EPS):
-                inside = [v for e, v in vals if abs(e) < 1.0e-6]
+                inside = [v for e, v in vals if abs(e) < OUTER]
                 centre = [v for e, v in vals if e == 0.0][0]
                 lo, hi = min(inside), max(inside)
-                edge = max(abs(v - centre) for e, v in vals if abs(e) >= 1.0e-6)
+                edge = max(abs(v - centre) for e, v in vals if abs(e) >= OUTER)
                 if hi - lo > TOL:
                     fail.append(f"{kind}: {unit}.{key} depends on the last bits of the "
                                 f"inlet pressure -- " + ", ".join(
@@ -577,7 +581,7 @@ def main() -> int:
                                   "the unit's inlet phase is decided by the formulation's "
                                   "router, not by the phase the unit holds")
                 elif edge > EDGE_TOL:
-                    fail.append(f"{kind}: {unit}.{key} changes branch at the band's edge "
+                    fail.append(f"{kind}: {unit}.{key} changes branch at |e| = 5e-7 "
                                 f"-- " + ", ".join(f"{e:+.0e}: {v:.9g}" for e, v in vals)
                                 + f" ({edge:.3g} K from the centre > {EDGE_TOL:g} K)")
         shown = unit_arms(tmp, fail)
@@ -626,7 +630,7 @@ def main() -> int:
           f"(liquid, to 80 bar) gives dT = {pd:.9g} K and the compressor fed saturated "
           f"steam (vapour, to 20 bar) T_out = {ct:.9g} K, each the same to {TOL:g} K over "
           f"the five pressures inside the band and on the same branch (within {EDGE_TOL:g} K) "
-          "at the two on its edge, "
+          "at the two outer ones (|e| = 5e-7), "
           f"and the pump case's plant-boundary H_feeds_kW = {bound[3][1]['H_feeds_kW']:.9g} "
           "and H_products_kW the same to 1e-6 relative over the five runs inside the "
           "band, every run on the pure-fluid route; the branch held outside the engine: "
