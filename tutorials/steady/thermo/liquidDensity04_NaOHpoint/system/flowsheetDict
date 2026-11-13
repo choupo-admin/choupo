@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  liquidDensity04_NaOHpoint -- D3b of the liquid-density pilot (C378).
+  The case's OWN measured density of its caustic (constant/experiments/
+  NaOH20_303K.dat, 1213.8 kg/m3 at 303.15 K, w[NaOH] 0.20), marked as the
+  method of {NaOH, water} and replacing the solution record's law.  1 kg/s of
+  the caustic passes the CSTR (V_R 1 m3).  By hand, from the point alone:
+      Q   = 1 / 1213.8      = 8.2386e-4 m3/s
+      tau = 1 x 1213.8 / 1  = 1213.8 s
+  The run prints the law's value beside the point (1212.70, -0.09 %, inside
+  the record's stated 2.41 kg/m3).  Move the feed to 333.15 K and the run
+  REFUSES: the point stands only in its box; a check-only variant
+  (`use check;`) prints "not at its conditions" and prices by the law.
+  ONCE THROUGH, NO PUMP: the plan's recycle (a mixer) and a pump both need
+  the caustic's liquid heat capacity, which NaOH's record does not carry --
+  a gap outside this pilot, reported with it.
+  Theory Guide: sec:liquid-density-measured.  Gate: check_density_pilot.
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        R1;
+        type        cstr;
+        in          feed;
+        outputs     ( product );
+        operation   { V_R 1; }
+        reactions   ( absentSucrose );
+    }
+);

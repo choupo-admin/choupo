@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  liquidDensity01_water -- D1 of the liquid-density pilot (DEV.md 4c C378).
+  Pure water at 298.15 K and 1 bar.  No `pureFluids` is selected: the
+  kernel prices {water} by the IAPWS-95 reference equation BECAUSE a record
+  (parameters/Helmholtz/IAPWS95.dat) names the fluid, with pressure, on its
+  liquid branch.  Expected: rho = 997.047 kg/m3 (Wagner and Pruss print
+  997.05 near 298 K); tau = 997.047 s; Q = 1.002962e-3 m3/s; W = 286.56 W.
+  Run it again at 500 bar (0/feed P) and the density rises to 1018.4 --
+  the flat 25 C volume the pump read before the pilot gave 996.96 at every
+  state.  At 373.15 K and 1 bar water is a VAPOUR: the kernel refuses, naming
+  p_sat(T) = 101418 Pa.
+
+  The flowsheet of every liquid-density demonstration: feed (1 kg/s) ->
+  pump P1 (dP 2 bar, eta 0.7) -> CSTR R1 (V_R 1 m3, the reaction's reactant
+  absent, see constant/reactions) -> product.  By hand, with rho the
+  property kernel's liquid density printed in the run's table:
+      Q   = m_dot / rho                 (the pump's volumetric flow)
+      W   = Q dP / eta                  (its shaft power)
+      h   = dP / (rho g)                (its head)
+      tau = V_R rho / m_dot             (the CSTR's residence time, at its
+                                         feed, the pump's outlet state)
+  The pump prices its INLET state, the CSTR its FEED (the pump's outlet).
+  Theory Guide: sec:liquid-density-methods.  Gate: check_density_pilot.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        P1;
+        type        pump;
+        in          feed;
+        outputs     ( pumped );
+        operation   { dP 2 bar; eta 0.7; }
+    }
+    {
+        name        R1;
+        type        cstr;
+        in          pumped;
+        outputs     ( product );
+        operation   { V_R 1; }
+        reactions   ( absentAcid );
+    }
+);

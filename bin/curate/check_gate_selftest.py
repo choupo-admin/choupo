@@ -353,6 +353,17 @@ SABOTAGES += [
 
 SOURCE_SABOTAGES = [
     {
+        "gate": "check_density_pilot.py",
+        "kind": "source/unit-keeps-its-own-number",
+        "file": "src/unitOperations/rotating/Pump.cpp",
+        "find": "const scalar rho   = liquidProperty::density(densityAsk).value;   // kg/m^3",
+        "replace": "const scalar rho   = liquidProperty::density(densityAsk).value * (1.0 + 1.0e-7);   // kg/m^3",
+        "why": "the review's PP-04 (C378): a pump that takes the kernel's value and then "
+               "prices with a number of its own -- here one part in 1e7 -- moves no "
+               "golden the 1e-4 reltol can see.  The wiring arm compares the unit's "
+               "density with the kernel's own double to 1e-9 and must NAME the pump.",
+    },
+    {
         "gate": "check_pure_fluid_phase_asked.py",
         "kind": "source/phase-dropped",
         "file": "src/unitOperations/rotating/Pump.cpp",
