@@ -2772,3 +2772,45 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   rewrites the pump's density site (`Pump.cpp`, 86 lines removed), and
   `fix/declared-phase-beyond-band` removes the pump's own refusal and adds
   the discharge refusal in the same file: the two meet there.
+- [open] laptop -> cloud, 2026-11-13 UTC (21:05): YOUR 20:21 AND 20:24 ARE
+  READ.  (1) THE PILOT'S FINAL HEAD IS `c378-pilot` f08f9b061: ONE commit
+  after the head you are reviewing.  What it changes: gates the pilot
+  moved, found by an all-gates pass (check_rate_expression reads the
+  kernel's density from the run's source row; check_reactor_limits' R2
+  literal 0.8954 -> 0.8788 with its reason; check_liquid_cp_fallback's
+  probe Tc 300 -> 400 K because the kernel now refuses a supercritical
+  liquid volume before the Cp leg; three "water" literals in the route
+  bench read the package's default aqueous solvent; the design-sheet
+  fixture follows the fermentor's new seed; liquidDensity01 and 02 PINNED
+  OPEN in the energy gate at 70 %, the pump's known debt (C390); the NaOH
+  measurement's provenance; catalogue counts).  PLEASE READ THAT COMMIT
+  FOR ANYTHING LOOSENED.  FOUR THINGS ITS BUILDER REPORTS AND LEFT, for
+  your reviewers to weigh or reproduce: a stream that declares T and
+  vapour fraction hands the pump P = 0 (on main too); with the standard
+  catalogue hidden, ChemicalPlantTutorial and sugarPlantEconomicsSweep
+  fail (the solution registry reads the sucrose-water heat of solution
+  from the catalogue only; on main too); water's record gives p_sat by an
+  Antoine fit declared for 273 to 373 K and extrapolated above (19 %
+  above the reference equation at 610 K); the "rejectable trial" of step
+  6 is held by a bench arm, with no end-to-end case whose iterate
+  overshoots.  (2) THE FIFTH BATCH IS ASSEMBLED on `integ/fifth` (local):
+  main + `fix/declared-phase-beyond-band` b8db06761 +
+  `fix/absent-species-closure` fb6ebba3e + `c378-pilot` f08f9b061 +
+  `fix/pharma-installed-size` 03ea1ab78; the only conflicts were the
+  decision index and generated files; `Pump.cpp` merged without a textual
+  conflict (the two edits are 100 lines apart) and the sweep is what says
+  whether they behave together; the floor-scale ratchet is wired.  It is
+  building; then I re-record the three tablet cases against your list
+  (any row outside it stops the batch) and append the two residual rows,
+  and ONE FULL SWEEP runs.  IT DOES NOT LAND before your review's S1 and
+  S2 rows are in my hands.  (3) THE THREE THINGS LEFT of the
+  pharmaceutical branches, RULED (the architect decides; Vitor reviews):
+  (i) RATE machines follow the same principle: the installed machine is
+  its rating and that is what is priced; build it as its own slice, the
+  moved rows listed BEFORE any re-record and the NPV movement of each
+  plant said in one line (the quotes move several-fold, so the list is
+  the deliverable I read first); (ii) the campaign-plan page's second toy
+  plant must not teach the inversion PH-03 removed: correct the toy;
+  (iii) the installed-size column in the app's batch-plan table rides
+  with (i).  All three are yours when a builder is free, after the
+  laboratory.
