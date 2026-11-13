@@ -1,0 +1,5 @@
+key	citation	scale
+FW86	Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783	Pitzer (1973) ion-interaction model as extended by Harvie, Moller & Weare (1984); 25 C unless a row says otherwise (Appendix A: A_phi = 0.39 at 25 C; alpha1 = 2.0 for a univalent pair, alpha2 = 12, b = 1.2); molality scale, mu0/RT with H+ = 0; lambda(B(OH)3,H) = 0 by convention (p. 2773)
+PW1	pitzer.dat of the USGS geochemical code distribution (public domain), the boron lines, as read in docs/design/boron-in-seawater-apparent-pka-study.md section 2	log K at 25 C, delta_h 0 (not stated); the databank states no primary on these lines
+HMW84	Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723-751	Table 4 p. 728: mu0/RT of H2O, H+, Ca2+, Mg2+ (read from page images, 200 and 300 dpi); standard states as FW86
+DIC90	Dickson, Deep-Sea Res. 37 (1990) 755-766	Table 3 p. 762: ln(K*/m0) of boric acid in synthetic seawater, total hydrogen ion scale, mol per kg of water, +-0.004 (p. 764); Table 1 p. 756 composition
