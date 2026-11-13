@@ -674,20 +674,36 @@ then.
     column15 the full MESH with a SATURATED reflux gives 8095 kW, closure
     `verified` (1.5).  The duty is a quantity the full MESH could address
     independently of any efficiency, once it carries the subcooled reflux.
-* Pelkonen 2001: **nothing**.  The only occurrence in the tree is PLAN.md's
-  C329 row.  No case, no transcription, no record.
+* Pelkonen 2001: **nothing in the tree**: no case, no transcription, no
+  record.  The paper itself was read by the coordinating session on
+  2026-11-13 (amendment below); it is not in the repository.
 
 **Not here, and what a reader of each paper would have to supply:**
 
-* Pelkonen 2001 (as named in PLAN.md; the full citation is not in the tree):
-  the column geometry and packing or tray data; the systems (the plan says two
-  ternaries, one held for prediction); for each run the feed or total-reflux
-  specification, the pressure, the boil-up or F-factor, and the reboiler or
-  any fixed composition; the MEASURED axial profiles (composition, and
-  temperature if published) with their positions and uncertainty; which
-  properties the authors used.  Whether the runs are at total reflux or at a
-  general reflux is not known here and decides whether they test A/B at a
-  general reflux at all.
+* Pelkonen 2001 (Pelkonen, Gorak, Ohligschlaeger and Kaesemann, Chem. Eng.
+  Process. 40 (2001) 235-243, doi 10.1016/S0255-2701(00)00117-3, the DOI
+  confirmed on Crossref): the column geometry and packing data; for each run
+  the total-reflux specification, the pressure, the boil-up or F-factor, and
+  the reboiler or any fixed composition; the MEASURED axial profiles with
+  their positions and uncertainty; which properties the authors used.
+  **AMENDED 2026-11-13.**  This record first said that whether the runs are
+  at total reflux "is not known here".  The coordinating session has since
+  read the paper (its page images; this session has not), and reports:
+  every run is at TOTAL reflux at atmospheric pressure (the paper's section
+  6); its Tables 3 to 5 give composition profiles along the packing for
+  methanol + 2-propanol + water (Sulzer BX and Platte K, 1.79 m), methanol
+  + acetonitrile + water (Montz-Pak A3-500, 3 m) and acetone + methanol +
+  2-propanol + water (Rombopak 6M, 3 m), in 100 mm columns.  So the paper
+  is NOT a general-reflux measurement.  What it offers is a MULTICOMPONENT
+  total-reflux validation, and the tree's total-reflux path is binary
+  today (3.2).  Nothing is transcribed from the paper here.
+* A general-reflux measurement, named and NOT read by anyone in this
+  project: Mori, Oda, Aragaki and Kunimoto, "Packed column distillation
+  simulation with a rate-based method", J. Chem. Eng. Japan 29 (1996)
+  307-314, doi 10.1252/jcej.29.307 (the DOI and the four authors confirmed
+  on Crossref).  The coordinating session reports that Pelkonen's Table 1
+  lists it as methanol + ethanol + water in a 210 mm column, 3 m of
+  packing, at partial reflux, with six compositions along the column.
 * Klemola & Ilme 1996: the valve-tray data a correlation would need (valve
   lift, valve mass and orifice details beyond Table 1), and the paper's Table
   4 (the record says it lists ten methods disagreeing across a factor of
@@ -782,8 +798,14 @@ B1 does not depend on S1-S8 and can be built in parallel with them.
   a two-pass valve-tray efficiency correlation, and (c) acceptance that the
   comparison is against the paper's back-calculated E_MV/E_OV/NTU_OV, not
   the products.  (b) has no source in the tree.
-* **The Pelkonen 2001 paper** must be supplied before it can be planned
-  against (section 6).
+* **What Pelkonen 2001 is used for** (amended 2026-11-13, section 6).  The
+  paper is at total reflux, so it cannot test a general-reflux efficiency.
+  Two separate decisions replace "supply the paper": (a) whether the
+  total-reflux path is extended from binary to multicomponent so that its
+  profiles can be held against Pelkonen's (the paper must then be
+  transcribed from a copy the transcriber reads); (b) whether a
+  general-reflux measurement is obtained: the one named candidate is Mori
+  et al. 1996 (section 6), which nobody here has read.
 
 ### 7.3 Rejected alternatives
 
