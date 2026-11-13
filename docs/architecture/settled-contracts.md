@@ -3766,11 +3766,22 @@ reference equation that names the fluid, a solution record); `idealMixing`
 over one leaf per constituent; refusal naming every method passed over and
 the remedy -- never by T, P or the amounts.  A method's domain is HARD: a
 state outside it (a measurement's box, a law's bands, the hypothesis
-`massWithoutVolume`'s bound, the vapour side of a pure fluid's band) is a
-typed domain error (`PropertyDomainTrial`, rejectable by a solver), never a
-hand-over to another method.  The decision is keyed on the package's serial,
-never its address; a set that would resolve differently later in the run is
-refused.  The method's words are written by the method that computed.
+`massWithoutVolume`'s bound, a pure set below both its formulation's and the
+package's saturation lines, a reference record's own `Tmin`) is a typed
+domain error (`PropertyDomainTrial`, rejectable by a solver), never a
+hand-over to another method.  Two conventions are NOT errors and are
+announced once per method and unit: a leaf inside a mixture below its own
+p_sat is its saturated liquid at T; a pure reference set between the
+formulation's line and the package's is the formulation's saturated (or, on
+the other side, compressed) liquid.  The refusal of a set no method prices
+names every method passed over, with its reason, and the remedy.  The decision is cached on the package's
+serial, never its address, and kept per WORLD (the per-component facts the
+resolution reads: name, pure-fluid selection, Henry status, volume route):
+a unit's own `thermo {}` is a second world and a second recipe; a set of ONE
+world that would resolve differently later in the run is refused.  Every
+declared measurement is used, checked or refused, and an unknown key in any
+of the pilot's blocks is refused.  The method's words are written by the
+method that computed.
 Today the pump and the CSTR use it (`liquidProperty::density`, migration
 scaffolding whose callers `check_liquid_density_entry_callers` counts); every
 other consumer stays on the slice-0 door until it moves.  Gates:
