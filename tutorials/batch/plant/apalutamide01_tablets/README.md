@@ -495,10 +495,13 @@ indoors and none outdoors that the layout reaches: listed with that reason.
 dispersion, the blends, granules and tablet cores are listed as "solids
 only: moved in containers or by conveyor".
 
-**One finding is left on purpose**: the site has ONE entrance
+**The run publishes three layout findings** (`[layout] ... 3 finding(s)`),
+and all three are left for you on purpose.  One: the site has ONE entrance
 (`singleEntrance`: a fire brigade arriving while that road is blocked has no
 second way in — where would you put a second gate, and which road serves
-it?).  The earlier exercise (a coating-suspension tank 4 m outside the
+it?).  Two and three: the fresh-acetone and the recovered-acetone tanks
+stand in no declared bund (`unbundedLiquid`, one finding per tank), the
+tank-farm row above says why and leaves the bund for you to size.  The earlier exercise (a coating-suspension tank 4 m outside the
 building) is gone: the tank now stands in its room, where it belongs.  In
 its place, **a question the engine does not check**: the spray dryer's
 explosion vent discharges through the north wall of its suite, 1 m from the
