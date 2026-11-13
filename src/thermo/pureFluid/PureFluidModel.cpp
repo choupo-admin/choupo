@@ -190,6 +190,17 @@ PureFluidPhaseState pureFluidPhaseState(const PureFluidModel& m, scalar T_K,
     return s;
 }
 
+scalar pureFluidStreamPressure(const PureFluidModel& m, scalar T_K,
+                               scalar p_Pa, scalar vapFrac)
+{
+    if (vapFrac > 0.0 && vapFrac < 1.0) return p_Pa;    // not this rule's case
+    const PureFluidPhaseState s = pureFluidPhaseState(m, T_K, p_Pa, vapFrac <= 0.0);
+    const bool onLine = (s.branch == PureFluidPhaseBranch::saturatedLiquid
+                      || s.branch == PureFluidPhaseBranch::saturatedVapour)
+                     && !s.farAcross;
+    return onLine ? s.pEval : p_Pa;
+}
+
 // ===========================================================================
 //  Explicit factory (no auto-registration macros)
 // ===========================================================================

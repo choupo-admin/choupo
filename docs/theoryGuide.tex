@@ -2581,8 +2581,24 @@ did it on its own.  \code{check\_pure\_fluid\_phase\_asked} runs that pump,
 and a compressor fed saturated steam, at seven suction pressures
 $p_{\mathrm{sat}}(1+e)$ with $|e|\le10^{-6}$ and demands one answer.  The
 turbine's discharge and any state whose phase the unit does not hold (a wet
-exhaust) keep the formulation's stable phase at $(T,P)$, and so does the
-energy report's pricing of a pure stream at a vapour fraction of 0 or 1.
+exhaust) keep the formulation's stable phase at $(T,P)$.
+
+The energy report prices every stream through the package's stream
+functions (\code{H\_stream\_formation}, \code{S\_stream\_formation},
+\code{H\_blendPerNaturalPhase}), which take the stream's carried vapour
+fraction $\beta$.  On the saturation line $T$ and $P$ are one variable and do
+not fix the branch; $\beta$ is the only information the stream holds about
+it --- an author's declaration, the run's own flash, or a default, and inside
+the band it is all there is.  So for a pure fluid below its critical
+temperature and \emph{inside} the band, $\beta=0$ is priced on the saturated
+liquid and $\beta=1$ on the saturated vapour (\code{pureFluidStreamPressure},
+the same decision).  Outside the band the stream is priced at $(T,P)$ as
+before, whatever $\beta$ says, and $0<\beta<1$ keeps its split on the line.
+Without this the report priced \code{rankine02\_water}'s condensate on
+whichever root the last bit of $P$ chose, while the pump, asking with its
+phase, priced it as liquid; the gate's third arm holds the plant-boundary
+enthalpy terms of the pump case equal across the perturbed suctions inside
+the band.
 
 \paragraph{The table.}  Just before the result block every run prints one
 line per unit, property and source:

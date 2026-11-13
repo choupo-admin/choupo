@@ -74,9 +74,11 @@ Every run prints, just before its result block, one line per unit:
   The same rule serves the ENTHALPY and ENTROPY a unit asks with the phase
   it holds (`H_real` / `S_real` with a phase: the pump's suction as liquid,
   the compressor's and turbine's inlets as vapour); without a phase, or on a
-  route that is not a pure fluid, nothing changes.  A wet turbine exhaust and
-  the energy report's pure streams at vf 0 or 1 still read the stable phase
-  at (T, P).  Theory Guide `sec:pure-fluid-caloric-phase`; witness gate
+  route that is not a pure fluid, nothing changes.  A wet turbine exhaust
+  still reads the stable phase at (T, P).  The energy report's pure streams
+  at a carried vf of exactly 0 or 1 are priced, INSIDE the band only, on the
+  saturated branch that vf names (outside the band: (T, P) as before;
+  0 < vf < 1: the existing split).  Theory Guide `sec:pure-fluid-caloric-phase`; witness gate
   `check_pure_fluid_phase_asked`.
 * Viscosity, surface tension and diffusivity need a `transport {}` model;
   a unit without one either refuses or uses the default the table names.

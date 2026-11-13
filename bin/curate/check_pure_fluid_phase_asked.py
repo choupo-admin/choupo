@@ -26,7 +26,20 @@ pressures P = p_sat(T) (1 + e), e in (-1e-6, -1e-9, -1e-12, 0, +1e-12,
       the seven pump dT must agree to 1e-6 K;
   (b) the mirror: a compressor fed the same water declared `phase gas;`
       (saturated steam), P_out 20 bar, eta 0.8 -- the seven discharge
-      temperatures must agree to 1e-6 K.
+      temperatures must agree to 1e-6 K;
+  (c) the energy REPORT of the pump case: its plant-boundary terms
+      (globalEnergyBoundary H_feeds_kW and H_products_kW) must agree across
+      the FIVE runs strictly inside the band (|e| <= 1e-9) to 1e-6
+      relative (tighter than the goldens' 1e-4).  e = +-1e-6 is the band's
+      own edge, where by the rule the carried fraction stops naming the
+      branch and the stream is priced at (T, P): a witness there would test
+      the last bit of the edge, the very coin toss this gate exists to
+      remove.
+      The report prices the suction through H_stream_formation at the
+      stream's carried vf = 0; since the fourth item of C378's pilot a pure
+      stream inside the band is priced on the branch its vf names
+      (pureFluidStreamPressure), so the report cannot price as vapour the
+      liquid the pump priced as liquid.
 p_sat(T) is IAPWS-IF97 region 4 (Wagner et al. 2000, Eq. 30), the same
 closed form the engine evaluates.  Each run must also announce the pure-fluid
 route (`pureFluids override (water)`), so a template that lost its IF97
@@ -34,15 +47,15 @@ declaration cannot pass by agreeing on the incompressible pump.
 
 WHAT IT DOES NOT CHECK.  Whether the value is right (rankine02's golden pins
 it); the turbine (its inlet in the shipped case is superheated, far from the
-line); the energy report's own pricing of a pure stream at vf = 0 or 1,
-which is still the formulation's router (H_stream_formation, listed in the
-defect-3 commit as not changed); a wet turbine exhaust (the unit does not
-hold that phase).
+line); a pure stream BEYOND the band whose vapour fraction contradicts its
+T and P (priced at (T, P), not this gate's subject); a wet turbine exhaust
+(the unit does not hold that phase).
 
     reads: tutorials/steady/power/rankine02_water
     reads: src/unitOperations/rotating/Pump.cpp
     reads: src/unitOperations/rotating/Compressor.cpp
     reads: src/thermo/pureFluid/PureFluidModel.cpp
+    reads: src/thermo/ThermoPackage.cpp
 """
 import json
 import math
@@ -131,10 +144,12 @@ def run(case: Path, unit: str, key: str):
     blocks = RESULT.findall(p.stdout)
     if p.returncode != 0 or not blocks:
         return None, f"exit {p.returncode}, no result block: " + out[-400:].replace("\n", " | ")
-    k = json.loads(blocks[-1]).get("kpis", {}).get(unit, {})
+    res = json.loads(blocks[-1])
+    k = res.get("kpis", {}).get(unit, {})
     if key not in k:
         return None, f"kpi {unit}.{key} not published"
-    return float(k[key]), None
+    geb = res.get("globalEnergyBoundary") or {}
+    return (float(k[key]), geb), None
 
 
 def main() -> int:
@@ -145,18 +160,20 @@ def main() -> int:
         print(f"{NAME}: FAIL -- the template {TEMPLATE.relative_to(ROOT)} is missing")
         return 1
     ps = psat_if97(T_IN)
-    fail, got = [], {}
+    fail, got, bound = [], {}, []
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
         for kind, unit, key in (("pump", "feedPump", "dT"),
                                 ("compressor", "steamCompressor", "T_out")):
             vals = []
             for e in EPS:
-                v, err = run(build(tmp, kind, ps * (1.0 + e)), unit, key)
+                r, err = run(build(tmp, kind, ps * (1.0 + e)), unit, key)
                 if err:
                     fail.append(f"{kind} at P = p_sat (1 {e:+.0e}): {err}")
                 else:
-                    vals.append((e, v))
+                    vals.append((e, r[0]))
+                    if kind == "pump":
+                        bound.append((e, r[1]))
             got[kind] = vals
             if len(vals) == len(EPS):
                 lo = min(v for _, v in vals)
@@ -168,6 +185,19 @@ def main() -> int:
                                 + f" (spread {hi - lo:.3g} K > {TOL:g} K): the unit's "
                                   "inlet phase is decided by the formulation's router, "
                                   "not by the phase the unit holds")
+    for term in ("H_feeds_kW", "H_products_kW"):
+        vs = [(e, g.get(term)) for e, g in bound if abs(e) < 1.0e-6]
+        if any(v is None for _, v in vs) or len(vs) != 5:
+            fail.append(f"report: globalEnergyBoundary.{term} not published by every pump run")
+            continue
+        ref = [v for e, v in vs if e == 0.0][0]
+        spread = max(abs(v - ref) for _, v in vs)
+        if spread > 1.0e-6 * max(abs(ref), 1.0e-12):
+            fail.append(f"report: the plant-boundary {term} of the pump case depends on "
+                        "the last bits of the suction pressure -- " + ", ".join(
+                            f"{e:+.0e}: {v:.9g}" for e, v in vs)
+                        + ": the report prices a pure stream on the line by the "
+                          "router, not by its carried vapour fraction")
     if fail:
         print(f"{NAME}: FAIL")
         for f in fail:
@@ -179,9 +209,12 @@ def main() -> int:
           f"+1e-6 including 0 and +-1e-12, T = {T_IN} K on IF97 water: the feed pump "
           f"(liquid, to 80 bar) gives dT = {pd:.9g} K and the compressor fed saturated "
           f"steam (vapour, to 20 bar) T_out = {ct:.9g} K, each the same to {TOL:g} K, "
-          "every run on the pure-fluid route.  NOT CHECKED: whether those values are "
-          "right, the turbine, the energy report's pricing of a pure stream at vf = 0 or 1, "
-          "a wet turbine exhaust.")
+          f"and the pump case's plant-boundary H_feeds_kW = {bound[3][1]['H_feeds_kW']:.9g} "
+          "and H_products_kW the same to 1e-6 relative over the five runs inside the "
+          "band, every run on the pure-fluid "
+          "route.  NOT CHECKED: whether those values are right, the turbine, a pure "
+          "stream beyond the band whose vapour fraction contradicts its T and P, a wet "
+          "turbine exhaust.")
     return 0
 
 

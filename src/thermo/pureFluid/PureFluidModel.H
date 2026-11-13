@@ -246,4 +246,18 @@ constexpr scalar pureFluidSaturationBand = 1.0e-6;
 PureFluidPhaseState pureFluidPhaseState(const PureFluidModel& m, scalar T_K,
                                             scalar p_Pa, bool liquidAsked);
 
+//  THE PRESSURE A PURE STREAM AT vf = 0 OR 1 IS PRICED AT (C378 pilot, the
+//  fourth item; read by H_stream_formation, S_stream_formation and
+//  H_blendPerNaturalPhase).  On the saturation line T and P are ONE variable
+//  and do not fix the branch; the stream's CARRIED vapour fraction is the
+//  only information it holds about its branch -- a declaration, the run's
+//  own flash, or a default, and inside the band it is still all there is.
+//  So INSIDE the band (pureFluidPhaseState's, not farAcross) vf = 0 is the
+//  saturated liquid and vf = 1 the saturated vapour; OUTSIDE it the stream
+//  is priced at (T, P) as before, bit for bit, whatever the fraction says
+//  (a fraction that contradicts T and P away from the line is not this
+//  rule's business).  0 < vf < 1 is not handled here (the callers' split).
+scalar pureFluidStreamPressure(const PureFluidModel& m, scalar T_K,
+                               scalar p_Pa, scalar vapFrac);
+
 } // namespace Choupo

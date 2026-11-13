@@ -1842,7 +1842,7 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
         {
             const PureFluidModel& m = *pureFluid_.at(*i);
             if (vapFrac <= 0.0 || vapFrac >= 1.0)
-                return m.h_molar(T, P_Pa);
+                return m.h_molar(T, pureFluidStreamPressure(m, T, P_Pa, vapFrac));
             // Two-phase pure water: split on the saturation line.
             return (1.0 - vapFrac) * m.h_molar(T, m.p_sat(T))
                  +        vapFrac  * m.h_molar(T, m.p_sat(T) * (1.0 - 1.0e-9));
@@ -1963,7 +1963,7 @@ scalar ThermoPackage::S_stream_formation(scalar T, scalar P_Pa,
         {
             const PureFluidModel& m = *pureFluid_.at(*i);
             if (vapFrac <= 0.0 || vapFrac >= 1.0)
-                return m.s_molar(T, P_Pa);
+                return m.s_molar(T, pureFluidStreamPressure(m, T, P_Pa, vapFrac));
             //  Two-phase pure fluid: split on the saturation line, the same
             //  two evaluation points H_stream_formation uses.
             return (1.0 - vapFrac) * m.s_molar(T, m.p_sat(T))
@@ -1999,7 +1999,7 @@ scalar ThermoPackage::H_blendPerNaturalPhase(scalar T, scalar P_Pa,
         {
             const PureFluidModel& m = *pureFluid_.at(*i);
             if (vapFrac <= 0.0 || vapFrac >= 1.0)
-                return m.h_molar(T, P_Pa);
+                return m.h_molar(T, pureFluidStreamPressure(m, T, P_Pa, vapFrac));
             return (1.0 - vapFrac) * m.h_molar(T, m.p_sat(T))
                  +        vapFrac  * m.h_molar(T, m.p_sat(T) * (1.0 - 1.0e-9));
         }
