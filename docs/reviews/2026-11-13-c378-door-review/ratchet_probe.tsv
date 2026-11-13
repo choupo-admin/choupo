@@ -1,0 +1,19 @@
+probe	result	line
+p01_vliq	caught	scalar v = thermo.comp(i).Vliq();
+p02_ptr_vliq	not_caught	scalar v = c->Vliq();
+p03_literal	caught	const scalar rho_w = 1000.0;
+p04_ternary	not_caught	const scalar rho = ok ? a : 1000.0;
+p05_comma	not_caught	scalar h = 0.7e-3, mu_feed = 1.0e-3, x = 2;
+p06_brace	not_caught	const scalar rhoL{998.2};
+p07_othername	not_caught	const scalar waterKgPerM3 = 1000.0;
+p08_direct_visc	not_caught	const scalar mu = thermo.viscosityLiquid(T, x);
+p09_direct_dens	not_caught	const scalar r = thermo.density(T, P, x, DensityPhase::Liquid);
+p10_direct_sigma	not_caught	const scalar s = thermo.surfaceTension(T, x);
+p11_direct_diff	not_caught	const scalar D = thermo.diffusivityLiquid(T, i, j);
+p12_lookup_default	caught	const scalar r = op->lookupScalarOrDefault("rho_feed", 1000.0);
+p13_lookup_othername	not_caught	const scalar r = op->lookupScalarOrDefault("liquidDensity", 1000.0);
+p14_stokes	not_caught	const auto f = stokesEinstein::factorFor(thermo, iW, T);
+p15_constexpr	not_caught	constexpr double kRhoWater = 1000.0;
+p16_sigma_lit	caught	scalar sigma = 0.072;
+p17_kinematic	not_caught	scalar nu_solvent = 1.0e-6;
+p18_bare_division	not_caught	const scalar Q = F * 1000.0 * MW / 1000.0;

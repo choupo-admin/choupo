@@ -66,6 +66,13 @@ public:
     explicit IF97WaterFluid(scalar mw_g_per_mol) : mw_(mw_g_per_mol) {}
 
     std::string type() const override { return "IF97"; }
+    std::string densityFormulation() const override { return "IAPWS-IF97"; }
+    std::string viscosityFormulation() const override
+    { return "IAPWS R12-08 (industrial, critical enhancement off) on the IF97 density"; }
+    std::string conductivityFormulation() const override
+    { return "IAPWS R15-11 (background, critical enhancement off) on the IF97 density"; }
+    std::string surfaceTensionFormulation() const override
+    { return "IAPWS R1-76 (saturation line)"; }
 
     scalar h_molar (scalar T_K, scalar p_Pa) const override;
     scalar s_molar (scalar T_K, scalar p_Pa) const override;

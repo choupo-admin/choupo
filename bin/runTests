@@ -7042,6 +7042,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/vliqdatum.$$
+    # property-source witnesses gate (2026-11-13, DEV.md 4c C378 slice 0, door review DR-11).  One witness case per liquid-property source class, run live: each unit publishes the tag its code takes; a site that picks another tag of the same class (no value moves) is caught here until the goldens carry `source` rows.
+    if gate_exec "$ROOT/bin/curate/check_property_source_witnesses.py" > /tmp/srcwit.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "property-source-witnesses-gate" "$(head -1 /tmp/srcwit.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_property_source_witnesses.py)\n" "property-source-witnesses-gate"
+        cat /tmp/srcwit.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/srcwit.$$
     # property-route bench gate (2026-11-12, DEV.md 4c C378 slice 0, TR-16).  Every liquid-property route the kernel has (density incl. the reference equations, flat and bare Rackett; viscosity; surface tension; diffusivity), for every component record and the manifest's binaries, over 11 T x 3 P, answers bit for bit what it answered when recorded; a moved record is NAMED.  Goldens cannot show it: no stream table prints a density and most routes no case walks.
     if gate_exec "$ROOT/bin/curate/check_property_route_bench.py" > /tmp/routebench.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$)"

@@ -177,7 +177,10 @@ batch plan, sizing, clean utilities, costing and economics on top
   instants and from when, a limit the run never approached, a controller no
   element shows, several alarms on one quantity, the count of active alarms,
   the instants a message would fire.  Never a grade.
-* Missing: drawing it (a later slice), a draft tool, the driver binaries
+* Seen in the GUI: the Panel view (read-only: number, bar, trend, lamp at a
+  time cursor, limits drawn, colour only for an alarm the engine reports, the
+  facts as written; `?panel=` pop-out; User Guide `sec:panelWorkspace`).
+* Missing: editing it in the GUI (a later slice), a draft tool, the driver binaries
   (`choupoCtrl`, `choupoSemiContinuous`), a dimension per column; alarm
   practice is good practice, not verified against a standard.
 * Witness: `tutorials/batch/electrodialysis/edbatch01_constant_current`.

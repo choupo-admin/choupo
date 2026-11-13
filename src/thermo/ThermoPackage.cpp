@@ -2071,8 +2071,8 @@ scalar ThermoPackage::viscosityGas(scalar T, const sVector& y) const
             static bool announced = false;
             if (!announced)
             {
-                std::cout << "water viscosity: IAPWS R12-08 (industrial,"
-                             " critical enhancement off)\n";
+                std::cout << components_[*i].name() << " viscosity: "
+                          << m.viscosityFormulation() << "\n";
                 announced = true;
             }
             return m.mu(T, m.p_sat(T));
@@ -2111,8 +2111,8 @@ scalar ThermoPackage::thermalConductivityGas(scalar T, const sVector& y) const
             static bool announced = false;
             if (!announced)
             {
-                std::cout << "water thermal conductivity: IAPWS R15-11"
-                             " (background, critical enhancement off)\n";
+                std::cout << components_[*i].name() << " thermal conductivity: "
+                          << m.conductivityFormulation() << "\n";
                 announced = true;
             }
             return m.lambda(T, m.p_sat(T));
@@ -2168,8 +2168,8 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
             static bool announced = false;
             if (!announced)
             {
-                std::cout << "water viscosity: IAPWS R12-08 (industrial,"
-                             " critical enhancement off)\n";
+                std::cout << components_[*i].name() << " viscosity: "
+                          << m.viscosityFormulation() << "\n";
                 announced = true;
             }
             return m.mu(T, m.p_sat(T));   // saturated-liquid state
@@ -2198,8 +2198,8 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
             static bool announced = false;
             if (!announced)
             {
-                std::cout << "water thermal conductivity: IAPWS R15-11"
-                             " (background, critical enhancement off)\n";
+                std::cout << components_[*i].name() << " thermal conductivity: "
+                          << m.conductivityFormulation() << "\n";
                 announced = true;
             }
             return m.lambda(T, m.p_sat(T));   // saturated-liquid state
@@ -2247,8 +2247,8 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
             static bool announced = false;
             if (!announced)
             {
-                std::cout << "water surface tension: IAPWS R1-76 (saturation"
-                             " line)\n";
+                std::cout << components_[*i].name() << " surface tension: "
+                          << m.surfaceTensionFormulation() << "\n";
                 announced = true;
             }
             return m.sigma(T);
@@ -2291,7 +2291,7 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
             if (!announced)
             {
                 std::cout << "density: the pure-fluid formulation "
-                          << m.type() << " (rho = MW / v_molar)\n";
+                          << m.densityFormulation() << " (rho = MW / v_molar)\n";
                 announced = true;
             }
             const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
@@ -2580,6 +2580,12 @@ std::string ThermoPackage::pureFluidMethod(std::size_t i) const
 {
     const auto it = pureFluid_.find(i);
     return it == pureFluid_.end() ? std::string() : it->second->type();
+}
+
+const PureFluidModel* ThermoPackage::pureFluidModel(std::size_t i) const
+{
+    const auto it = pureFluid_.find(i);
+    return it == pureFluid_.end() ? nullptr : it->second.get();
 }
 
 std::string ThermoPackage::liquidViscosityMethod() const

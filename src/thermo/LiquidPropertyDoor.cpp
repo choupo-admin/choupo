@@ -16,6 +16,7 @@
 
 #include "core/PropertySourceLog.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/pureFluid/PureFluidModel.H"
 
 #include <cstdio>
 #include <limits>
@@ -114,8 +115,28 @@ const char* name(Property p)
     return "?";
 }
 
+namespace {
+Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
+                    const sVector& x, const Consumer* who, const std::string& leftOut,
+                    bool record);
+}
+
 Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                 const sVector& x, const Consumer* who, const std::string& leftOut)
+{
+    return evaluateImpl(thermo, p, T, P, x, who, leftOut, true);
+}
+
+Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T,
+                          scalar P, const sVector& x)
+{
+    return evaluateImpl(thermo, p, T, P, x, nullptr, "", false);
+}
+
+namespace {
+Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
+                    const sVector& x, const Consumer* who, const std::string& leftOut,
+                    bool record)
 {
     Result r;
     //  THE VALUE FIRST, through the package's own method: the same double,
@@ -137,20 +158,27 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
     if (const auto i = thermo.pureFluidCarrying(x))
     {
         const std::string m = thermo.pureFluidMethod(*i);
+        const PureFluidModel* model = thermo.pureFluidModel(*i);
         r.methodId = "pureFluid." + m;
         r.leaves.push_back({ thermo.comp(*i).name(), r.methodId, 1.0 });
         r.quality.origin     = "regressed";
         r.quality.provenance = "the case's pureFluids selection (" + m + ")";
         if (p == Property::density)
         {
-            r.label = "property kernel: the pure-fluid formulation " + m + " at the temperature and pressure";
+            r.label = "property kernel: the pure-fluid formulation "
+                    + model->densityFormulation() + " at the temperature and pressure";
             r.pressureApplied = true;
             pressure = "applied";
         }
         else
         {
-            r.label = "property kernel: the pure-fluid formulation " + m
-                    + " on the saturation line";
+            //  The formulation that gives THIS property, named by the model
+            //  that computed it (DR-01): IF97 gives no viscosity and no
+            //  surface tension.
+            r.label = "property kernel: "
+                    + (p == Property::viscosity ? model->viscosityFormulation()
+                                                : model->surfaceTensionFormulation())
+                    + (p == Property::viscosity ? ", at saturation" : "");
             pressure = (p == Property::viscosity) ? "not applied (saturated liquid)"
                                                   : "";
         }
@@ -211,6 +239,7 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                 r.leaves.push_back({ thermo.comp(k).name(), m, zs > 0.0 ? x[k] / zs : 0.0 });
     }
 
+    if (!record) return r;
     std::string type, unit;
     if (who) { type = who->type; unit = who->unit; }
     else if (!PropertySourceLog::instance().current(type, unit)) return r;
@@ -220,6 +249,7 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
              compositionKey(x)));
     return r;
 }
+} // namespace
 
 } // namespace liquidProperty
 } // namespace Choupo

@@ -68,6 +68,8 @@ public:
     HelmholtzPureFluid(const DictPtr& dict, scalar mw_g_per_mol);
 
     std::string type() const override { return "Helmholtz"; }
+    std::string densityFormulation() const override
+    { return "Helmholtz reference equation " + f().equation(); }
 
     scalar h_molar (scalar T_K, scalar p_Pa) const override;
     scalar s_molar (scalar T_K, scalar p_Pa) const override;

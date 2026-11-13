@@ -98,6 +98,12 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K, scalar P_Pa
                 const sVector& x, const Consumer* who = nullptr,
                 const std::string& leftOut = "");
 
+//  The same, RECORDING NOTHING: for a value the caller computes into a
+//  context its model may not read (a condensing film's surface tension),
+//  so the table never prints a number as used that was not.
+Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T_K,
+                          scalar P_Pa, const sVector& x);
+
 inline Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K,
                        scalar P_Pa, const sVector& x, const Consumer& who,
                        const std::string& leftOut = "")

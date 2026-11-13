@@ -509,7 +509,22 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
         throw std::runtime_error("Crystalliser(MSMPR): zero volumetric flow"
             " (components need a `Vliq` to size the residence time).");
     const scalar tau = V / Q;                              // s
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero, "bypass", took(Q / (F * 1000.0)), "not applied");
+    {
+        //  Which components were taken at zero volume, and how much of the
+        //  liquor they are (review DR-05).
+        std::string zeroed;
+        scalar xZero = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+            if (z[i] > 0.0 && !(thermo.comp(i).Vliq() > 0.0))
+            { zeroed += (zeroed.empty() ? "" : ", ") + thermo.comp(i).name(); xZero += z[i]; }
+        char b[64];
+        std::snprintf(b, sizeof(b), "%.3g", static_cast<double>(xZero));
+        PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero,
+            zeroed.empty() ? std::string()
+                           : "; taken at zero volume here: " + zeroed + ", mole fraction "
+                             + b + " of the liquor",
+            "bypass", took(Q / (F * 1000.0)), "not applied");
+    }
 
     const scalar c_sat        = sat.c_sat;                 // kg solute / kg solvent (helper)
     const scalar solvent_mass = sat.solvent_mass;          // kg/s (reference OR total solvent)
@@ -806,7 +821,22 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
         throw std::runtime_error("Crystalliser(FVM): zero volumetric flow"
             " (components need a `Vliq`).");
     const scalar tau = V / Q;
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero, "bypass", took(Q / (F * 1000.0)), "not applied");
+    {
+        //  Which components were taken at zero volume, and how much of the
+        //  liquor they are (review DR-05).
+        std::string zeroed;
+        scalar xZero = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+            if (z[i] > 0.0 && !(thermo.comp(i).Vliq() > 0.0))
+            { zeroed += (zeroed.empty() ? "" : ", ") + thermo.comp(i).name(); xZero += z[i]; }
+        char b[64];
+        std::snprintf(b, sizeof(b), "%.3g", static_cast<double>(xZero));
+        PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero,
+            zeroed.empty() ? std::string()
+                           : "; taken at zero volume here: " + zeroed + ", mole fraction "
+                             + b + " of the liquor",
+            "bypass", took(Q / (F * 1000.0)), "not applied");
+    }
 
     const scalar c_sat        = sat.c_sat;                 // helper (electrolyte OR curve)
     const scalar solvent_mass = sat.solvent_mass;

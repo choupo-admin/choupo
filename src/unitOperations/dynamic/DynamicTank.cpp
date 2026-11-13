@@ -195,7 +195,8 @@ void DynamicTank::announceSteadyLevel_() const
     if (!(F_in_ > 0.0) || !(opening_ > 0.0)) return;
     //  At steady state the tank holds the feed (composition, and T = T_in
     //  with no jacket), so the density is the feed's at T_in.
-    const auto lf = VVH::liquidState(*thermo_, nDotIn_, T_in_, P_, "dynamicTank");
+    const auto lf = VVH::liquidState(*thermo_, nDotIn_, T_in_, P_,
+                                     "dynamicTank '" + name_ + "'");
     const scalar Q  = F_in_ * lf.meanMW / lf.density;             // m3/s
     const scalar hs = VVH::valveSteadyLevel(valve_, opening_, Q, lf.density, P_);
     std::cout << "  [dynamicTank] '" << name_ << "': closed-form steady level"

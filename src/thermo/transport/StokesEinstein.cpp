@@ -30,6 +30,7 @@ License
 
 #include "core/Advisory.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/LiquidPropertyDoor.H"
 
 #include <cstdio>
 #include <iostream>
@@ -45,8 +46,12 @@ Factor factorFor(const ThermoPackage& thermo, std::size_t iSolvent, scalar T_K)
     if (!thermo.hasLiquidViscosity()) return f;
     sVector xSolvent(thermo.n(), 0.0);
     xSolvent[iSolvent] = 1.0;
-    f.mu     = thermo.viscosityLiquid(T_K, xSolvent);
-    f.muRef  = thermo.viscosityLiquid(referenceTemperature, xSolvent);
+    //  Through the door (C378 slice 0): the same double, recorded under the
+    //  unit being solved; the 25 C reference is not a value the unit uses.
+    f.mu     = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity,
+                                        T_K, 0.0, xSolvent).value;
+    f.muRef  = liquidProperty::evaluateUnrecorded(thermo, liquidProperty::Property::viscosity,
+                                                  referenceTemperature, 0.0, xSolvent).value;
     //  The electrodialysis stack's expression, in its order (bit for bit).
     f.value  = (T_K / referenceTemperature) * (f.muRef / f.mu);
     f.priced = true;

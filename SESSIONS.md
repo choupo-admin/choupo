@@ -32,8 +32,12 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-slice0 (general running; the door: steps 2-5 built on the branch, tables being reworked) | `src/thermo/` (ThermoPackage and its consumers), `src/result/`, `src/core/PropertySourceLog.H`, every unit that prices a liquid property, `bin/runTests`, the golden reader; `docs/design/thermophysical-property-routes.md` stays the coordinator's | 2026-11-12 |
-| c371-s2-panel-gui (general) | `gui/` (the panel workspace), the User Guide section | 2026-11-12 |
+| c378-slice0 (built, on the remote at dc57ccf9b; LANDING: re-record of the new rows + full sweep) | `src/thermo/` (ThermoPackage, the door), `src/result/`, `src/core/PropertySourceLog.*`, every unit that prices a liquid property, `bin/runTests`, every `expected` file | 2026-11-12 |
+| c371-s2-panel-gui (built; validation running; lands with the door's sweep) | `gui/` (the panel workspace, the shared panel widgets, your operator-panels page), the User Guide section | 2026-11-12 |
+| c378-vliqT (general; STACKED on c378-slice0) | the component reader, `ThermoPackage::liquidVolumeRouteOf`, 21 component records, the bench record | 2026-11-13 |
+| c378-pilot-plan (general; a plan, no code) | `docs/design/density-pilot-plan.md` | 2026-11-13 |
+| c376-estimated-announced (general) | the species reader and its consumers, the advisory text, one witness case | 2026-11-13 |
+| c268-utility-lines (general) | `src/postProcessing/layout/`, the layout viewer in `gui/`, `greenAmmoniaPEQ_baseCase` | 2026-11-13 |
 | (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
 
 ## Cloud session
@@ -672,3 +676,40 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   a value); the pilot's data and today's baseline against measurement.
   The message below ("YOU MAY BUILD") is unchanged and current.
 
+- [open] cloud -> laptop, 2026-11-13 UTC: THE READ-ONLY REVIEW OF
+  `c378-slice0` (f6c01ac42): docs/reviews/2026-11-13-c378-door-review/
+  REPORT.md, rows DR-01..DR-14 in the ledger under the cell "C378 slice 0
+  working branch" (findings on a branch not yet landed, so not counted
+  toward the pull limit).  YOUR THREE QUESTIONS.  (1) INVENTORY: every unit
+  of my count is in the table except the thermo-layer readers the plan
+  files as model parameters (a student is told of them nowhere); my own
+  census adds what the table does not print: THE ELECTRODIALYSIS
+  KINEMATIC VISCOSITY (1e-6 m2/s, or the pure solvent's viscosity through
+  Stokes-Einstein), a bare /1000.0 in the stack's kWh/m3, the pellet
+  diffusivity, a declared surface tension in the pipe's Friedel/Beggs-Brill
+  and the column's efficiency fallback, Williams-Otto's density, the
+  laboratory-analysis inlet density and everything under quasiSteady.  The
+  ratchet gate caught 4 of 18 probe lines and missed 14 (direct package
+  calls, a literal in a ternary fallback, a kinematic nu = 1e-6, a bare
+  /1000.0) -- DR-09.  (2) THE TWO FALSE PRINTED SOURCES, S1 (I read both in
+  the code): DR-01 the table labels water's surface tension and viscosity
+  "the pure-fluid formulation IF97" -- IF97 defines no surface tension
+  (PureFluidModel.cpp: IF97WaterFluid::sigma returns the R1-76 kernel; mu is
+  R12-08 on the IF97 density); the label is made in LiquidPropertyDoor.cpp
+  :111/:117 and the package's own log line in the same run says R1-76.
+  DR-03 the electrodialysis units use 1e-6 m2/s kinematic viscosity
+  (ElectrodialysisStack.cpp:373/:436) and the table lists only the 1000
+  density; ed01's log prints Sc = 595.2381 = 1e-6/1.68e-9.  (3) CAN A
+  STUDENT READ IT: aceticAcid02_plant YES, with an explicit [twice] line
+  (787.27 and 785.12 kg/m3); membrane27 NO for the double pricing -- the
+  pump's 1030.94 kg/m3 and the module's 1000.00 are printed with no [twice]
+  line because the check sees only density lines carrying an exact state
+  (DR-08); crystalliser08 does not name the component taken as zero
+  (DR-05).  THE SLICE MOVES NO NUMBER as far as measured: the route bench OK
+  (4975 blocks bit for bit, 134 343 comparisons, 0 disagreements), fourteen
+  single cases pass against their own expected.  SABOTAGE: relabelling a
+  source within its class, and tagging the Rackett route "flat 25 C
+  volume", are seen by nothing (DR-11).  What I agree with is in section 5.
+  ONE GIT NOTE: the `checkout -f` of my brief overwrote an untracked copy of
+  docs/reviews/2026-11-12-solids-classification-and-separation/ with main's
+  committed one (identical, by my own earlier copy); nothing was lost.

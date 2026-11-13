@@ -57,6 +57,7 @@ Description
 #pragma once
 
 #include <cstddef>
+#include <atomic>
 #include <limits>
 #include <map>
 #include <mutex>
@@ -114,7 +115,7 @@ inline const ConstantSource diluteCarrierDensity
       "a constant of the unit, 1000 kg/m3: the dilute-carrier density the whole unit is built on" };
 inline const ConstantSource rhoFeedDefault
     { 1000.0, "default.rhoFeed1000",
-      "a constant of the unit, 1000 kg/m3, used because the case declares no feed density (rho_feed); the unit does not say so" };
+      "a constant of the unit, 1000 kg/m3, used because the case declares no feed density (rho_feed)" };
 inline const ConstantSource batchDiafilterRhoDefault
     { 1000.0, "default.rho1000.announced",
       "a constant of the unit, 1000 kg/m3, used because the case declares no solution density (rho); announced" };
@@ -141,7 +142,28 @@ inline const NamedSource recordVliqIonsMassKept
       "computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a dissolved ion keeps its mass and adds no volume" };
 inline const NamedSource recordVliqSilentZero
     { "bypass.recordVliq25C.missingIsZero",
-      "computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a component without one adds no volume, and the unit does not say so" };
+      "computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a component without one adds no volume" };
+inline const NamedSource solventVliqFlat
+    { "bypass.solventVliq25C",
+      "computed by the unit itself, not by the property kernel: the solvent's 25 C molar volume alone (the dissolved solids are not counted), with no temperature or pressure effect" };
+inline const NamedSource solventsVliqIdealMix
+    { "bypass.solventsVliq25C.idealMix",
+      "computed by the unit itself, not by the property kernel: the solvents' 25 C molar volumes mixed ideally (the dissolved solids are not counted), with no temperature or pressure effect" };
+inline const ConstantSource waterKinematicViscosity
+    { 1.0e-6, "constant.waterKinematic1e-6",
+      "a constant of the unit, 1e-6 m2/s: the kinematic viscosity of water near 20 C (no viscosity model is declared)" };
+inline const NamedSource stokesEinsteinSolvent
+    { "kernel.solventViscosity.StokesEinstein",
+      "property kernel: the pure solvent's viscosity (the case's model), divided by the unit's 1000 kg/m3 carrier density" };
+inline const NamedSource kernelLiquidDiffusivity
+    { "kernel.liquidDiffusivity",
+      "property kernel: the case's liquid-diffusivity model (solute at infinite dilution in the medium)" };
+inline const NamedSource analysisDensity
+    { "derived.laboratoryAnalysis",
+      "derived from the laboratory analysis the case authorises: water's density at the sample temperature (Kell) plus the dissolved solids" };
+inline const NamedSource benchmarkConstantDensity
+    { "constant.benchmark.WilliamsOtto",
+      "a constant of the published benchmark the unit reproduces: 50 lb/ft3 (800.9 kg/m3), equal for every species" };
 inline const NamedSource declaredByCase
     { "declared.case", "the value the case declares for this unit" };
 inline const NamedSource ownWilkeChang
@@ -199,6 +221,35 @@ public:
                  const std::string& pressureNote = "");
     void useHere(const std::string& property, const ConstantSource& s,
                  const std::string& sourceClass = "bypass");
+    //  ... with the words completed by a fact only the site knows (the
+    //  crystalliser's zeroed components); the start is still the tag's.
+    void useHere(const std::string& property, const NamedSource& s,
+                 const std::string& addendum, const std::string& sourceClass,
+                 const Taken& taken, const std::string& pressureNote);
+
+    //  A THERMODYNAMIC MODEL THAT READS A COMPONENT'S 25 C LIQUID VOLUME AS A
+    //  PARAMETER (Poynting, Wilson, Wilke-Chang, the mixed-solvent activity
+    //  model, the solubility parameters): not a liquid property of a unit,
+    //  but the same datum, so the table names it once per run.  `seen` is a
+    //  site-local counter: the site records once per run at the cost of one
+    //  relaxed load (the Poynting term sits on the K-value hot path).
+    void useOnce(std::atomic<unsigned>& seen, const std::string& type, const std::string& unit,
+                 const std::string& property, const NamedSource& s,
+                 const std::string& sourceClass, const Taken& taken)
+    {
+        const unsigned g = generation_.load(std::memory_order_relaxed);
+        if (seen.load(std::memory_order_relaxed) == g) return;
+        seen.store(g, std::memory_order_relaxed);
+        use(type, unit, property, s, sourceClass, taken);
+    }
+    void parameterOnce(std::atomic<unsigned>& seen, const char* model, const char* what)
+    {
+        const unsigned g = generation_.load(std::memory_order_relaxed);
+        if (seen.load(std::memory_order_relaxed) == g) return;
+        seen.store(g, std::memory_order_relaxed);
+        std::lock_guard<std::mutex> lk(mutex_);
+        parameters_[model] = what;
+    }
 
     //  THE CONSUMER BEING SOLVED.  The flowsheet sets it around each unit's
     //  solve, so the door records a use without every helper (tray
@@ -218,7 +269,7 @@ public:
     //  False when no consumer is being solved (a props bench, a probe).
     bool current(std::string& type, std::string& unit) const;
 
-    bool empty() const { return used_.empty() && declared_.empty(); }
+    bool empty() const { return used_.empty() && declared_.empty() && parameters_.empty(); }
 
     //  The table the log prints, with the mismatches; nothing when empty.
     void printUsed(std::ostream& os) const;
@@ -241,6 +292,8 @@ private:
     PropertySourceLog() = default;
     mutable std::mutex mutex_;
     std::string currentType_, currentUnit_;
+    std::atomic<unsigned> generation_{1};
+    std::map<std::string, std::string> parameters_;   // model -> what it reads
     //  (unit, property, source id) -> what the unit took from it
     std::map<std::tuple<std::string, std::string, std::string>, Used> used_;
     //  (type, unit, property) -> declared source classes
@@ -250,6 +303,7 @@ private:
     std::vector<std::string> mismatches() const;
     std::vector<std::string> idle() const;
     std::vector<std::string> pricedTwice() const;
+    std::vector<std::string> constantBesideComputed() const;
 };
 
 } // namespace Choupo

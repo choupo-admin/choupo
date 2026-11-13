@@ -60,6 +60,9 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "bin" / "curate" / "property_route_bench.manifest"
 HASHES = ROOT / "bin" / "curate" / "property_route_bench.sha256.tsv"
 OUT = ROOT / "build" / "propertyRouteBench" / "bench.tsv"
+#  The door's method id and label per state (review DR-11), hashed apart.
+LABEL_HASHES = ROOT / "bin" / "curate" / "property_route_labels.sha256.tsv"
+LABELS = ROOT / "build" / "propertyRouteBench" / "labels.tsv"
 NAME = "check_property_route_bench"
 
 
@@ -117,9 +120,9 @@ def blocks(path: Path):
     return out, order
 
 
-def read_hashes():
+def read_hashes(path=HASHES):
     pinned = {}
-    for line in HASHES.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if not line or line.startswith("#"):
             continue
         rec, prop, digest = line.split("\t")
@@ -136,7 +139,12 @@ def main() -> int:
               "catalogue to vouch for it")
         return 1
 
+    labels, lorder = blocks(LABELS)
     if record:
+        llines = ["# record\tproperty route\tsha256 of the door's method id and label per state "
+                  "(build/propertyRouteBench/labels.tsv); review DR-11"]
+        llines += [f"{k[0]}\t{k[1]}\t{labels[k]}" for k in lorder]
+        LABEL_HASHES.write_text("\n".join(llines) + "\n", encoding="utf-8")
         lines = ["# record\tproperty route\tsha256 of its block in build/propertyRouteBench/bench.tsv",
                  "# written by bin/curate/check_property_route_bench.py --record; "
                  "DEV.md 4c C378 slice 0 (TR-16)"]
@@ -150,6 +158,21 @@ def main() -> int:
         print(f"{NAME}: FAIL -- {HASHES.relative_to(ROOT)} is missing; nothing to compare with")
         return 1
     pinned = read_hashes()
+    if not LABEL_HASHES.exists():
+        print(f"{NAME}: FAIL -- {LABEL_HASHES.relative_to(ROOT)} is missing")
+        return 1
+    lpinned = read_hashes(LABEL_HASHES)
+    relabelled = [k for k in lorder if lpinned.get(k) != labels[k]]
+    relabelled += [k for k in lpinned if k not in labels]
+    if relabelled:
+        print(f"{NAME}: FAIL -- {len(relabelled)} route block(s) are DESCRIBED differently by "
+              "the door (method id or label), whatever their values "
+              f"(full output: {LABELS.relative_to(ROOT)})")
+        for k in relabelled[:25]:
+            print(f"  RELABELLED  {k[0]}\t{k[1]}")
+        print("  A label is generated from the route the kernel took; a change here is a "
+              "change of words or of route.  If intended, re-record with --record and say why.")
+        return 1
     moved = [k for k in order if k in pinned and pinned[k] != got[k]]
     new = [k for k in order if k not in pinned]
     gone = [k for k in pinned if k not in got]
@@ -166,7 +189,7 @@ def main() -> int:
               "--record and list the moved blocks in the commit.")
         return 1
     print(f"{NAME}: OK -- {len(got)} (record, route) blocks of the liquid-property kernel "
-          f"answer bit for bit as recorded (" + "; ".join(summary) + ").  "
+          f"answer bit for bit as recorded, and the door describes each as recorded (" + "; ".join(summary) + ").  "
           "NOT CHECKED: whether any value is right, states off the grid, mixtures other than "
           "the manifest's binaries, activity-model effects, per-unit overrides.")
     return 0

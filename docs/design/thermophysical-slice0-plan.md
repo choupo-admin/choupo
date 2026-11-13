@@ -466,3 +466,38 @@ is what ran; a tag declared and not used, or used and not declared, is a
 reported mismatch.  And the full sweep in section 5 is the price of the
 contract that a result block is pinned in its commit; I see no honest way
 around it.
+
+## 10. The inventory as it is now (after the door review, 2026-11-13)
+
+The door review (`docs/reviews/2026-11-13-c378-door-review/`, DR-01..DR-14)
+re-derived the inventory with its own patterns.  This section SUPERSEDES the
+totals of 1.5 and the "not consumers" of 1.6 where they differ; the greps of
+section 1 plus the four classes of `check_liquid_property_ratchet`
+(`vliq`, `direct`, `literal`, `conversion`) re-derive it.
+
+| added by the review | site | how it is printed now |
+|---|---|---|
+| kinematic viscosity of the ED stack and the batch rig | ElectrodialysisStack.cpp (`nu_solvent`, legacy `nu`), BatchElectrodialysis.H (`nu_`) | `liquid kinematic viscosity`: the constant 1e-6 m2/s (a `ConstantSource`), or the solvent's kernel viscosity over 1000 kg/m3 |
+| the solvent viscosity through Stokes-Einstein | StokesEinstein.cpp (ED stack, batch ED, polarisation, DSPM-DE) | through the door, under the unit being solved |
+| the stack's kWh/m3 volume | ElectrodialysisStack.cpp (was a bare `/ 1000.0`) | divides by `diluteCarrierDensity` |
+| the pellet's liquid diffusivity | EffectiveDiffusivity.cpp | `liquid diffusivity`, the case's model |
+| a declared surface tension in Friedel / Beggs-Brill and the column's efficiency fallback | Pipe.cpp, DistillationColumn.cpp | `the value the case declares for this unit` |
+| the Williams-Otto benchmark density | WilliamsOttoPlant.cpp | `liquid density` 800.9 kg/m3, the benchmark's constant |
+| the laboratory-analysis inlet density | StreamStateIO.cpp | consumer `laboratoryAnalysis`, the derived density |
+| every unit wrapped by `quasiSteady` | QuasiSteadyUnit.cpp | solved under a Scope; unsteady03 prints its table |
+| the thermo-layer readers of the 25 C volume | Wilson.cpp, SaturatedVapour.cpp (Poynting), WilkeChang.cpp, CrystallisationSaturation.cpp, SolubilityParameter.cpp, HansenMixture.cpp | once per run, under "Parameters of thermodynamic models that read a component's 25 C liquid volume", and `modelParameters` in the block |
+
+**Totals now** (`check_liquid_property_ratchet`, 377 files of
+src/unitOperations and src/postProcessing): 85 raw liquid-property sites
+outside the door -- 23 `Vliq()` reads, 12 direct package calls, 18 literals,
+32 conversions on volume lines -- pinned per (file, class) in
+`bin/curate/liquid_property_ratchet_debt.tsv`.  Each constant among them is
+a `ConstantSource`; each one a unit uses is printed with its value.
+
+**What the review corrected in this plan.**  The pure-fluid route was
+described as "the IF97 formulation" for every property; IF97 gives the
+density, and the viscosity and surface tension are IAPWS R12-08 (on the IF97
+density) and R1-76 -- each model now names the formulation behind each
+property, and the door and the package read the same name (DR-01).  The
+"model parameter" readers of 1.6 are not unit consumers, but a student was
+told of them nowhere; they are now printed (above).

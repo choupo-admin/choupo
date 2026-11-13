@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Wilson.H"
+#include "core/PropertySourceLog.H"
 #include "core/Advisory.H"
 #include "thermo/ApproximationAuthorisation.H"
 #include "core/Constants.H"
@@ -34,6 +35,7 @@ License
 #include "thermo/PairAudit.H"
 #include "thermo/Database.H"
 
+#include <atomic>
 #include <cmath>
 #include <filesystem>
 #include <iostream>
@@ -109,6 +111,7 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
             throw std::runtime_error("Wilson: component '" + comps[i].name()
                 + "' has Vliq <= 0 -- add 'Vliq' to its data/components/*.dat");
         V_[i] = comps[i].Vliq();
+        { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Wilson activity model", "the molar-volume ratio V_j/V_i in Lambda_ij"); }
     }
 
     std::vector<bool> covered(n_*n_, false);

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "streams/StreamStateIO.H"
+#include "core/PropertySourceLog.H"
 #include "streams/AnalysisReconciler.H"
 #include "core/Advisory.H"
 #include "core/distribution/SizeDistribution.H"
@@ -2733,6 +2734,8 @@ ProcessStream readStreamState(const fs::path&       file,
                 rec->densitySoluteMass = res.soluteMass;
                 rec->densityVolumeFrac = res.soluteVolumeFrac;
                 rec->density           = res.rho;
+                PropertySourceLog::instance().use("laboratoryAnalysis", name, "liquidDensity",
+                    liquidSource::analysisDensity, "derived", took(res.rho, rec->sampleT));
                 for (const auto& t : res.terms)
                     rec->densityTerms.push_back(
                         { t.master, t.molPerL, t.V0_cm3mol, t.MW_gmol, t.z,

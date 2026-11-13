@@ -27,11 +27,13 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SolubilityParameter.H"
+#include "core/PropertySourceLog.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "thermo/ThermoPackage.H"
 
 #include "thermo/RecordResolver.H"
+#include <atomic>
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -149,6 +151,7 @@ int SolubilityParameter::run(const DictPtr& dict,
                 ? thermo.liquidMolarVolumeOf(
                       static_cast<std::size_t>(&c - thermo.components().data()), T)
                 : c.Vliq();                      // m3/mol
+        { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Hildebrand solubility parameter", "the molar volume in delta = sqrt((dHvap - RT)/V)"); }
 
         //  R T is the vaporisation work against the surroundings: what is
         //  left after subtracting it is the ENERGY OF VAPORISATION, which is

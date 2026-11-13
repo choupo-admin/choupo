@@ -26,6 +26,16 @@ Every run prints, just before its result block, one line per unit:
   so to the student; do not average them, and do not size on one silently.
 * `[mismatch]`: a unit took a number from a kind of source its type does not
   declare.  It is an engine finding; report it.
+* `[constant]`: a unit took a CONSTANT liquid density (1000 kg/m3) while
+  another unit of the run computed one; the line names both.  It does not
+  say they price the same stream -- check the flowsheet.
+* "Parameters of thermodynamic models ...": models that read a component's
+  stored 25 C volume as a parameter (Wilson, the Poynting correction,
+  Wilke-Chang, the mixed-solvent activity model, Hildebrand, Hansen).  The
+  volume a record stores is the same datum, with the same caveats (section 4).
+* A pure-fluid line names the formulation behind THAT property: IAPWS-IF97
+  gives the density, IAPWS R12-08 the viscosity (on the IF97 density), IAPWS
+  R1-76 the surface tension.
 * The result JSON carries the same in `propertySources` (`used`,
   `declared`, `declaredNotUsed`, `mismatches`, `pricedTwice`); a golden pins
   each unit's source with a row of kind `source`.
@@ -40,7 +50,7 @@ Every run prints, just before its result block, one line per unit:
 | cstr, pfr (liquid), crystalliser (MSMPR, FVM) | the unit's own: 25 C molar volumes, no T or P (crystalliser: a component without one adds nothing, unannounced) | -- |
 | sprayDryer | the unit's own: the solvent's 25 C molar volume, else 1000 kg/m3 | kernel if the case selects a model, else its own defaults (1 mPa s, 72 mN/m) |
 | spiralWoundModule | `rho_feed` if declared, else 1000 kg/m3 | declared, else kernel, else 1 mPa s and 1.6e-9 m2/s |
-| electrodialysisStack, batchElectrodialysis | 1000 kg/m3 (the dilute carrier) | -- |
+| electrodialysisStack, batchElectrodialysis | 1000 kg/m3 (the dilute carrier) | kinematic viscosity: the solvent's kernel viscosity / 1000 kg/m3 if a model is declared, else the constant 1e-6 m2/s |
 | batchDiafilter | `rho` if declared, else 1000 kg/m3 (announced) | -- |
 
 ## 3. What the engine accepts, and what it refuses

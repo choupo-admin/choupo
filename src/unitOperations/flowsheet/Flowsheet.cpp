@@ -1153,7 +1153,7 @@ void runUnit(const DictPtr&                                          udict,
     // Silence inner logs during outer Wegstein iterations except the last one
     int vUsed = quiet ? 0 : verbosity;
     //  The unit being solved, for the liquid-property sources (C378).
-    PropertySourceLog::Scope propertyScope(utype, uname);
+    PropertySourceLog::Scope propertyScope(unit->type(), uname);
     int rc = unit->solve(augmented, thermo, vUsed);
     if (rc != 0)
         throw std::runtime_error("Flowsheet: unit '" + uname

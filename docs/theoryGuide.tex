@@ -2621,6 +2621,10 @@ volume; a refusal when it has neither.  The mixture is ideal mixing of these
 volumes.  A case that selects \code{pureFluids \{ water \{ method IF97; \} \}}
 prices pure water by that formulation instead, at the temperature
 \emph{and pressure}; it is the only liquid route that applies pressure.
+IF97 gives the density only: the viscosity is IAPWS R12-08 evaluated on the
+IF97 density, the surface tension IAPWS R1-76, and each line of the run names
+the formulation behind its own property (every pure-fluid model states one
+per property, read by both the kernel's announcement and the door).
 
 \paragraph{The table.}  Just before the result block every run prints one
 line per unit, property and source:
@@ -2640,7 +2644,12 @@ unit computed with; when a unit took several in the run (a column's trays,
 an iteration) the line gives the range and the count.  A \code{[mismatch]}
 line appears when a unit took a number from a kind of source its type does
 not declare; a \code{[twice]} line when two consumers gave one liquid state
-two densities.  The same content, with what each unit declared at assembly,
+two densities; a \code{[constant]} line when a unit took a constant density
+while another computed one (both named, the stream not claimed).  The
+thermodynamic models that read a component's stored 25\,$^\circ$C volume as a
+parameter --- Wilson, the Poynting correction, Wilke--Chang, the mixed-solvent
+electrolyte activity, the Hildebrand and Hansen solubility parameters --- are
+named once, under a line that says so.  The same content, with what each unit declared at assembly,
 is the result block \code{propertySources}; its golden row kind is
 \code{source}.
 
@@ -2663,7 +2672,9 @@ is the result block \code{propertySources}; its golden row kind is
   electrodialysis cell, stack and batch rig (the dilute carrier they are
   built on), in the spiral-wound module when the case declares no
   \code{rho\_feed}, in the batch diafilter when it declares no \code{rho}
-  (announced); 1\,mPa\,s, 72\,mN/m and $1.6\times10^{-9}$\,m$^2$/s as the
+  (announced); a kinematic viscosity of $10^{-6}$\,m$^2$/s in the
+  electrodialysis stack and batch rig when no viscosity model is declared;
+  1\,mPa\,s, 72\,mN/m and $1.6\times10^{-9}$\,m$^2$/s as the
   spray dryer's and the module's defaults.
 \item \textbf{Declared by the case} --- a viscosity or surface tension a pipe,
   a column or a module reads from its own block.
@@ -29974,6 +29985,14 @@ frequency, and Laplace domains'', \emph{Can.\ J.\ Chem.\ Eng.}\
 \textbf{56}, 257--262 (1978).  The two-point reaction-curve construction
 (Eq.~\ref{eq:rc-twopoint}).
 
+\bibitem{NUREG0700r3} O'Hara, J. M., and Fleger, S., \emph{Human-System
+Interface Design Review Guidelines}, NUREG-0700, Revision~3, U.S. Nuclear
+Regulatory Commission, Washington, DC (2020).
+
+\bibitem{HSE_CHIS6} Health and Safety Executive, \emph{Better alarm
+handling}, Chemicals Sheet No.~6 (CHIS6), printed and published by the
+Health and Safety Executive (March 2000).
+
 \bibitem{ShampineReichelt1997} Shampine and Reichelt, \emph{SIAM J.\
 Sci.\ Comput.}\ \textbf{18}, 1, 1997.  The ``ode23s'' embedded 2(3)
 Rosenbrock pair Choupo's \code{Rosenbrock23} implements
@@ -32160,6 +32179,78 @@ they will misapply the first time the conditions differ.
 paragraphs above quote published relative gains; the engine publishes no
 gain matrix, at any frequency, and the EduTool says so on its own face.
 Do not read a number here as something this simulator checked.
+\end{pitfall}
+
+% ---------------------------------------------------------------------
+\section{Operator panels and alarms: what a person at the rig should see}\label{sec:operatorPanels}
+
+A time-integrated run publishes every quantity its units compute, at every
+written instant: the batch electrodialysis rig of
+\file{edbatch01\_constant\_current} publishes 25 series at 41 instants.  A
+person standing at that rig cannot read a thousand numbers to decide whether
+the batch is normal.  An \emph{operator panel} is the answer to that
+problem, and designing one is a design exercise like any other: it has a
+purpose, it has a cost (the operator's attention), and a good one is
+recognised by whether a person can tell from it what the process is doing.
+No engine can grade that, and Choupo does not try.
+
+\textbf{Start from the operator's questions.}  A person at a running unit
+asks, in order: is it normal?  where is it heading?  what do I do?  A panel
+is designed backwards from those questions: for each task, the least
+information that answers it, and the display element that shows it.
+Everything else stays on a detail level the engineer reaches when he has to
+diagnose.  A value shown as a bare number says nothing about normality; the
+same value on its scale with its limit marked says how close it is; a trend
+says where it is heading; a lamp says only whether it is normal.  Colour is
+kept for the abnormal and is always doubled by a word or a shape.  The
+closest approach of a run to a high limit, as a fraction of the element's
+scale, is
+\begin{equation}
+d \;=\; \frac{x_{\text{high}} - \max_k x_k}{x_{\max} - x_{\min}},
+\label{eq:panel-closest-approach}
+\end{equation}
+where $x_k$ is the published value at the $k$-th written instant and
+$[x_{\min},x_{\max}]$ the element's declared range; $d<0$ when the limit is
+crossed.
+
+\textbf{Alarms.}  An alarm interrupts a person, so it must ask for an action
+he can take; a quantity that only needs watching is a trend, and an event
+someone should know of (a normal end of batch) is a message.  One cause
+earns one alarm.  A person can act on only a limited number of alarms in a
+given time, and an upset that sets off many at once --- a flood --- hides
+the one that matters.  These rules were first written from reasoning and
+then read against two public documents: the US review guide for
+human-system interfaces \cite{NUREG0700r3} (Revision~3, read in full; the
+alarm guidelines of its Section~4 and the display guidelines of Sections~1
+and~6) and a guidance sheet of the UK safety regulator on alarm handling
+\cite{HSE_CHIS6}.  None is contradicted; three are stated here more
+strongly than the guide states them: it lets the alarm of a consequence be
+\emph{suppressed} and stay retrievable rather than removed, it asks for
+conservative and consistent colour rather than a grey display (grey when
+normal is this panel's own choice), and it says a status message
+``generally should not'' go through the alarm display.  The only alarm
+rates in hand are the sheet's: about one alarm in ten minutes in normal
+operation, and no more than ten in the first ten minutes after a major
+upset.  The alarm-management and display standards sold by their
+publishers (ISA-18.2, IEC~62682, ISA-101.01) were not read, and Revision~4
+of the review guide could not be obtained.
+
+\textbf{What the engine does.}  A case may declare its panel in
+\file{system/panelDict}; \code{choupoBatch} reads it after the time loop
+and reports \emph{facts} about it --- which limit is crossed and when, which
+element never moves, which limit is never approached, how many alarms are
+active at once --- in the result's \code{panel} block and its
+\code{[panel]} log lines.  The grammar and the exact definition of every
+fact are in the Design Guide, section ``The operator panel of a batch
+run''.  The EduTool \emph{Operator panels and alarms} works this section on
+the rig.
+
+\begin{pitfall}
+\textbf{A fact is not a mark.}  The engine reports that an element never
+moved; it does not say the element is wrong.  At constant current the
+current density never moves, and that is a statement about the mode of
+operation.  Deciding what a fact means is the student's part of the
+exercise.
 \end{pitfall}
 
 % ====================================================================

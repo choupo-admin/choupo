@@ -75,14 +75,15 @@ void Flowsheet::checkAuthoredInletAcceptance(
     };
     for (const auto& fu : topology_)
     {
-        //  What the unit says it will use for a liquid property (C378).
-        propertySourceDeclarations::declareFor(fu.type, fu.name);
         //  The DECLARATION is asked of the class.  An unknown type is not this
         //  pass's finding: lint reports it by name, and the solve refuses it
         //  at the unit's turn.
         std::unique_ptr<UnitOperation> probe;
         try { probe = UnitOperation::New(fu.type); }
         catch (const std::exception&) { continue; }
+        //  What the unit says it will use for a liquid property (C378), under
+        //  the class's own type: an alias (condenser, column) declares too.
+        propertySourceDeclarations::declareFor(probe->type(), fu.name);
         const UnitAcceptance acc = probe->acceptance();
 
         const auto ud = unitDictOf.find(fu.name);

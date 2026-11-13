@@ -1,0 +1,10 @@
+# case	unit	property	sourceId -- check_property_source_witnesses (C378 slice 0, review DR-11): one witness per source class
+tutorials/steady/rotating/pump01_water	pump01	liquidDensity	bypass.recordVliq25C
+tutorials/steady/membranes/membrane27_swro_energy_recovery	HPpump	liquidDensity	bypass.recordVliq25C.ionsNoVolume
+tutorials/steady/membranes/membrane27_swro_energy_recovery	RO	liquidDensity	default.rhoFeed1000
+tutorials/steady/membranes/membrane27_swro_energy_recovery	RO	liquidViscosity	declared.case
+tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr	cryst	liquidVolume	bypass.recordVliq25C.missingIsZero
+tutorials/steady/drying/sprayDryer01_sugar	dryer	liquidDensity	bypass.solventVliq25C
+tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidKinematicViscosity	constant.waterKinematic1e-6
+tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidDensity	constant.diluteCarrier
+tutorials/plant/aceticAcid02_plant	methanolTank	liquidDensity	liquidVolume.idealMix[anchoredRackett]

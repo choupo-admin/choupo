@@ -1,0 +1,26 @@
+case	unit	property	printed_source	actual_call	true
+aceticAcid02_plant	methanolPump (pump)	liquidDensity	computed by the unit itself ... each component's 25 C molar volume, with no temperature or pressure effect (787.27 kg/m3)	Pump.cpp:104,:322 MW/sum z Vliq	true
+aceticAcid02_plant	lightsColumn (distillationColumn)	liquidDensity	property kernel: ideal mixing ... scaled to temperature by Rackett; pressure not applied; CO and dimethylEther left out	TrayHydraulics.cpp:101 door over pricedDensity selection; ThermoPackage.cpp:2271-2353	true
+aceticAcid02_plant	lightsColumn (distillationColumn)	surfaceTension	the value the case declares for this unit (19 mN/m)	TrayHydraulics.cpp:249-252 geo.sigma	true
+aceticAcid02_plant	letdown (valve), methanolTank/acidTank (storageTank), sizing inventory/storage	liquidDensity	property kernel: ideal mixing ... Rackett; pressure not applied	Valve.cpp / StorageTank.cpp:184 / PhaseDensity.cpp:126 door	true
+membrane27_swro_energy_recovery	HPpump, Booster (pump)	liquidDensity	25 C molar volume; a dissolved ion keeps its mass and adds no volume	Pump.cpp:104-118	true
+membrane27_swro_energy_recovery	RO (spiralWoundModule)	liquidDensity	a constant of the unit, 1000 kg/m3, ... no rho_feed; the unit does not say so	SpiralWoundModule.cpp:320	true
+membrane27_swro_energy_recovery	RO (spiralWoundModule)	liquidViscosity	the value the case declares (0.95 mPa s)	SpiralWoundModule.cpp:341 massTransfer.viscosity	true
+membrane27_swro_energy_recovery	RO (spiralWoundModule)	liquidDiffusivity	a constant 1.6e-9 m2/s	SpiralWoundModule.cpp:335, legacy branch (no model, one lumped salt)	true
+membrane27_swro_energy_recovery	PX (pressureExchanger)	liquidVolume	25 C molar volume; ions add no volume	PressureExchanger.cpp:192	true
+crystalliser08_nacl_antisolvent_msmpr	cryst (crystalliser)	liquidVolume	25 C molar volume; a component without one adds no volume, and the unit does not say so (32.11 cm3/mol)	Crystalliser.cpp:505-507 (NaCl has no Vliq)	true but the component is not named (DR-05)
+pump01_water	pump01 (pump)	liquidDensity	25 C molar volume (996.96 kg/m3)	Pump.cpp:322	true
+cstr01_first_order, cstr07_lhhw_methylAcetate	reactor (cstr)	liquidVolume	25 C molar volume (58.01 / 49.11 cm3/mol)	CSTR.cpp:245-251	true
+sprayDryer07_design	dryer (sprayDryer)	liquidDensity	each component's 25 C molar volume (996.96 kg/m3)	SprayDryer.cpp:594 the SOLVENT's Vliq alone (feed water+air+sucrose)	partly: one component, not each (DR-10)
+sprayDryer07_design	dryer (sprayDryer)	liquidViscosity	a constant 1 mPa s, no viscosity and no model	SprayDryer.cpp:126-131	true
+sprayDryer07_design	dryer (sprayDryer)	surfaceTension	property kernel: BrockBird/Butler (106.5 mN/m)	SprayDryer.cpp:410 door on the solvent liquid	true
+column09_tray_hydraulics	column09 (distillationColumn)	liquidDensity, surfaceTension	property kernel: Rackett-scaled ideal mix; BrockBird/Butler	TrayHydraulics.cpp:101, :254	true
+condenser01_film_nusselt, reboiler_water_copper, heatExchanger02_geometry_U	condenser / reboiler / hx	liquidDensity	property kernel: the pure-fluid formulation IF97 at the temperature and pressure	ThermoPackage.cpp:2288-2304 IF97 v_molar(T,P)	true
+condenser01_film_nusselt, reboiler_water_copper, heatExchanger02_geometry_U	condenser / reboiler / hx	liquidViscosity	property kernel: the pure-fluid formulation IF97 on the saturation line	PureFluidModel.cpp:89-93 IAPWS R12-08 on the IF97 density at p_sat	partly: the correlation is IAPWS R12-08, not IF97 (DR-01)
+condenser01_film_nusselt, reboiler_water_copper	condenser / reboiler	surfaceTension	property kernel: the pure-fluid formulation IF97 on the saturation line	PureFluidModel.cpp:101-104 IAPWS R1-76; IF97 defines no surface tension	false (DR-01)
+condenser01_film_nusselt	condenser	surfaceTension	printed as used (58.99 mN/m)	PhaseChanger.cpp:861-868 value goes into a context NusseltFilm does not read	the number was not used (DR-02)
+edbatch01_constant_current, edbatch02_constant_voltage	rig (batchElectrodialysis)	liquidDensity	a constant 1000 kg/m3, the dilute carrier	BatchElectrodialysis.cpp:323, :604	true; viscosity line missing (DR-03)
+ed01, ed03, ed04	edStack / ED1..ED6 (electrodialysisStack)	liquidDensity	a constant 1000 kg/m3, the dilute carrier	ElectrodialysisStack.cpp:348	true; viscosity line missing (DR-03)
+unsteady05_tank_valve_drain	dynamicTank 'tank' and 'dynamicTank' (dynamicVessel)	liquidDensity	two consumers printed	VariableVolumeHoldup.cpp:91; DynamicTank.cpp:198 passes the literal "dynamicTank"	one unit printed as two; the second name is not a unit (DR-06)
+unsteady03_nf_feed_and_bleed_startup	NF (quasiSteady spiralWoundModule)	all	nothing printed, no propertySources block	SpiralWoundModule.cpp:320, :399-415 useHere() with no Scope	missing (DR-04)
+probe (pipe02 with Friedel and a declared sigma)	P1 (pipe)	surfaceTension	nothing printed	Pipe.cpp:306-307 tpDict surfaceTension	missing (DR-07)

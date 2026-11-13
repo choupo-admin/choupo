@@ -59,6 +59,8 @@ import { useStore, hasCaseOpen } from "../state/store.js";
 import { useCaseMode } from "../state/useCaseMode.js";
 import { useStaleResult } from "../state/useStaleResult.js";
 import { useLayoutPopOutFollow } from "../state/useLayoutPopOut.js";
+import { usePanelPopOutFollow } from "../state/usePanelPopOut.js";
+import { panelKeyOf } from "../case/panelPopOut.js";
 import { layoutKeyOf } from "../case/layoutPopOut.js";
 import { RESULT_WORKSPACES } from "./workspaces.js";
 import { AgentConsole } from "./AgentConsole.js";
@@ -108,6 +110,12 @@ const ExploreWorkspace = lazy(() =>
 const MethodsWorkspace = lazy(() =>
   import("./MethodsWorkspace.js").then((m) => ({ default: m.MethodsWorkspace })),
 );
+const PanelWorkspace = lazy(() =>
+  import("./PanelWorkspace.js").then((m) => ({ default: m.PanelWorkspace })),
+);
+const PanelPopOutTab = lazy(() =>
+  import("./PanelPopOutTab.js").then((m) => ({ default: m.PanelPopOutTab })),
+);
 const PinchView = lazy(() =>
   import("./PinchView.js").then((m) => ({ default: m.PinchView })),
 );
@@ -151,6 +159,8 @@ export function AppShell() {
   // Keep an open ?layout= tab current with this tab's run and declared case
   // (writes only where such a tab was opened; state/useLayoutPopOut.ts).
   useLayoutPopOutFollow();
+  //  ... and an open ?panel= tab (state/usePanelPopOut.ts)
+  usePanelPopOutFollow();
   const setActiveWorkspace = useStore((s) => s.setActiveWorkspace);
   const tutorialName = useStore((s) => s.tutorialName);
   // When the Assistant console is DOCKED + open it takes a grid row, so the
@@ -365,6 +375,17 @@ export function AppShell() {
     );
   }
 
+  // The operator panel popped out full-window (?panel=<key>, DEV.md 4c C371):
+  // the layout tab's twin -- re-reads its stash, follows its parent, refuses
+  // honestly when the stash is gone; no flowsheet/menu shell.
+  if (typeof window !== "undefined" && panelKeyOf(window.location.search) !== null) {
+    return (
+      <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+        <PanelPopOutTab />
+      </Suspense>
+    );
+  }
+
   // The Component Inspector full-window (?component=<name>): a real tab that
   // re-derives from the NAME rather than re-hydrating a stash, so it is
   // bookmarkable, shareable and has nothing to expire.  It must sit BEFORE the
@@ -554,6 +575,10 @@ export function AppShell() {
         ) : activeWorkspace === "methods" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
             <MethodsWorkspace />
+          </Suspense>
+        ) : activeWorkspace === "panel" ? (
+          <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+            <PanelWorkspace />
           </Suspense>
         ) : activeWorkspace === "pinch" ? (
           <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>

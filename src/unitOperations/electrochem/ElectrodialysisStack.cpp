@@ -370,7 +370,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     //  corrected through Stokes-Einstein.  So is this, from the SAME
     //  viscosity model at both temperatures -- and when the case declares no
     //  liquid-viscosity model there is no correction and the run SAYS so.
-    scalar mu_solvent = 0.0, nu_solvent = 1.0e-6, seFactor = 1.0;
+    scalar mu_solvent = 0.0, nu_solvent = liquidSource::waterKinematicViscosity.value, seFactor = 1.0;
     bool   muPriced = false;
     //  ONE home for the factor since C148: thermo/transport/StokesEinstein.H,
     //  the same arithmetic in the same order (the membrane units call it too).
@@ -383,6 +383,12 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
             seFactor   = se.value;
             muPriced   = true;
         }
+        if (muPriced)
+            PropertySourceLog::instance().useHere("liquidKinematicViscosity",
+                liquidSource::stokesEinsteinSolvent, "kernel", took(nu_solvent, T));
+        else
+            PropertySourceLog::instance().useHere("liquidKinematicViscosity",
+                liquidSource::waterKinematicViscosity);
     }
 
     scalar D_eff = 0.0, k_c_eff = 0.0, Sh_lc = 0.0, Re_lc = 0.0, Sc_lc = 0.0;
@@ -433,7 +439,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
         for (const auto& nm : chD.ion) D_mean += electrolyte::ionD0(nm);
         D_mean /= static_cast<scalar>(chD.ion.size());
         const scalar d_h   = 2.0 * h_ch;                     // slit hydraulic diameter [m]
-        const scalar nu    = 1.0e-6;                         // m2/s (water, 25 C, announced)
+        const scalar nu    = liquidSource::waterKinematicViscosity.value;   // m2/s (water, announced)
+        PropertySourceLog::instance().useHere("liquidKinematicViscosity", liquidSource::waterKinematicViscosity);
         const scalar L_ch  = op->lookupScalarOrDefault("channelLength", 0.5, Dims::length); // m
         const scalar Re    = vel * d_h / nu;
         const scalar Sc    = nu / D_mean;
@@ -834,7 +841,8 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
     // specific energy [kWh / m3 of diluate product].  Diluate volumetric flow ~
     // water molar flow * MW_water / rho.
     const scalar Fwater_kmol_s = outD.F * outD.z[iWater];      // kmol/s water in diluate
-    const scalar Q_dil_m3_s = Fwater_kmol_s * 1000.0 * MW_WATER_KG / 1000.0; // m3/s
+    const scalar Q_dil_m3_s = Fwater_kmol_s * 1000.0 * MW_WATER_KG
+                            / liquidSource::diluteCarrierDensity.value;   // m3/s
     const scalar specEnergy = (Q_dil_m3_s > 0.0)
         ? (W_electric / 1000.0) / (Q_dil_m3_s * 3600.0)        // kW / (m3/h) = kWh/m3
         : 0.0;

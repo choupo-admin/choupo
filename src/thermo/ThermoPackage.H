@@ -818,6 +818,7 @@ public:
     //  property methods do).
     std::optional<std::size_t> pureFluidCarrying(const sVector& z) const;
     std::string pureFluidMethod(std::size_t i) const;      // "" when none
+    const PureFluidModel* pureFluidModel(std::size_t i) const;   // nullptr when none
     std::string liquidViscosityMethod() const;             // "model/rule" or ""
     std::string surfaceTensionMethod() const;              // "model/rule" or ""
 

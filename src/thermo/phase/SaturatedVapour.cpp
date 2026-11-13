@@ -27,11 +27,13 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SaturatedVapour.H"
+#include "core/PropertySourceLog.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "thermo/Component.H"
 #include "thermo/equationOfState/EquationOfState.H"
 
+#include <atomic>
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -150,6 +152,7 @@ scalar liquidReferenceFactor(const EquationOfState& eos, const Component& c,
         poyntingOne(eos, c);
         return v;
     }
+    { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Poynting correction of the liquid reference fugacity", "exp(V (P - Psat) / RT)"); }
     //  The constant-volume Poynting form reads the record's datum as stored,
     //  at whatever `VliqT` it belongs to (C378): at the system temperature a
     //  25 C volume is no better a constant, and a cryogen has none.

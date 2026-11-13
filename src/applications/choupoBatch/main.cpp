@@ -51,6 +51,7 @@ Description
 
 #include "core/Advisory.H"
 #include "core/PropertySourceLog.H"
+#include "unitOperations/PropertySourceDeclarations.H"
 #include "core/AdvisorySummary.H"
 #include "core/DivergenceSummary.H"
 #include "core/distribution/SizeDistribution.H"
@@ -420,6 +421,7 @@ try
         const std::string utype = uDict->lookupWord("type");
         auto u = BatchUnitOperation::New(utype);
         u->setName(uname);
+        propertySourceDeclarations::declareFor(utype, uname);   // C378 slice 0
         u->initialise(uDict, thermo, reactionsDict);
         u->attachThermo(&thermo);   // phase (b): H-equality chargeFrom
         unitNames.push_back(uname);

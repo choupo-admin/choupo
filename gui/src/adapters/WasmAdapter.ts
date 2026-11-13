@@ -59,6 +59,7 @@ import { shapeBuilding, type GmpBuilding } from "./buildingPayload.js";
 import { shapePhaseSplitScans, type PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import { shapePostProcessing, type PostProcessingBlock } from "../case/postProcessing.js";
 import { shapeBatchPlan, type BatchPlan } from "./batchPlanPayload.js";
+import { shapePanel, type PanelReport } from "./panelPayload.js";
 import { readEdges } from "../case/toGraph.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
@@ -196,7 +197,7 @@ export class WasmAdapter implements SolverAdapter {
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, equipmentList, kpis,
           utilityAllocation, globalEnergyBoundary, globalMassBoundary, engine, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, closuresByConstruction, recycleLoops, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics, layout, building, phaseSplitScans,
-          postProcessing, batchPlan, converged } =
+          postProcessing, batchPlan, panel, converged } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence, ...(converged !== undefined ? { converged } : {}) };
         if (streamAliases) result.streamAliases = streamAliases;
@@ -237,6 +238,7 @@ export class WasmAdapter implements SolverAdapter {
         if (phaseSplitScans && phaseSplitScans.length > 0) result.phaseSplitScans = phaseSplitScans;
         if (postProcessing) result.postProcessing = postProcessing;
         if (batchPlan) result.batchPlan = batchPlan;
+        if (panel) result.panel = panel;
         if (trajectoryCsv) {
           const parsed = parseTrajectoryCsv(trajectoryCsv);
           if (parsed) result.trajectory = parsed;
@@ -496,6 +498,8 @@ export function extractStructured(log: string,
   postProcessing?: PostProcessingBlock;
   /** The batch plan (`batchPlan {}`, DEV.md 4c C99, C110 G2), as published. */
   batchPlan?: BatchPlan;
+  /** The operator panel's facts (`system/panelDict`, DEV.md 4c C371), as published. */
+  panel?: PanelReport;
 } {
   const beginIdx = log.lastIndexOf(BEGIN_MARK);
   const endIdx = log.lastIndexOf(END_MARK);
@@ -768,6 +772,8 @@ export function extractStructured(log: string,
       ? { postProcessing: shapePostProcessing(parsed.postProcessing)! } : {}),
 ...(parsed.batchPlan && shapeBatchPlan(parsed.batchPlan)
       ? { batchPlan: shapeBatchPlan(parsed.batchPlan)! } : {}),
+//  The operator panel (DEV.md 4c C371 S1): the TYPES policed, no fact derived.
+...(shapePanel(parsed.panel) ? { panel: shapePanel(parsed.panel)! } : {}),
   };
 }
 
@@ -1246,6 +1252,8 @@ interface ResultPayload {
   postProcessing?: unknown;
   /** The batch plan (DEV.md 4c C99, C110 G2), shaped by adapters/batchPlanPayload. */
   batchPlan?: unknown;
+  /** The operator panel (DEV.md 4c C371 S1), shaped by adapters/panelPayload. */
+  panel?: unknown;
   version: number;
   converged: boolean;
   components: string[];

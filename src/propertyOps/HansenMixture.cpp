@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HansenMixture.H"
+#include "core/PropertySourceLog.H"
 #include "core/Advisory.H"
 #include "solver/StabilityTest.H"
 #include "thermo/ApproximationAuthorisation.H"
@@ -36,6 +37,7 @@ License
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/phase/Phase.H"
 
+#include <atomic>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -209,6 +211,7 @@ int HansenMixture::run(const DictPtr& dict,
         //  record keeps its stored 25 C datum, as before.
         s.Vliq = c->hasVliqT() ? thermo.liquidMolarVolumeOf(idx, s.Tref)
                                : c->Vliq();
+        { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Hansen solubility parameters of a mixture", "the volume fractions of the solvents"); }
         s.MW   = c->MW();
         solvents.push_back(s);
     }
