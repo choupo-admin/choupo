@@ -7472,9 +7472,10 @@ equation gives every ion a defensible $\gamma_i$ from its charge alone,
 with the correct $\sqrt I$ electrostatic limit and a sensible turn-up at
 moderate $I$ --- the ideal teaching rung between ``ideal solution''
 ($\gamma_i=1$) and a fully fitted Pitzer.  \emph{Limit:} the $-0.3I$ tail
-is empirical, so Davies is trustworthy only to $I\approx 0.5$\,mol/kg;
+is empirical, so Davies is trustworthy only to $I\approx 0.5$\,mol/kg,
+in the measured sense of \S\ref{sec:davies-band};
 the speciation solver therefore raises an explicit advisory once
-$I$ exceeds $\approx 0.7$\,mol/kg and points the student at the
+$I$ exceeds that band and points the student at the
 multi-ion Pitzer HMW kernel (\S\ref{ch:pitzer-hmw},
 \cite{Pitzer1973}), which carries the salt-specific virial coefficients
 Davies lacks.  Neutral species are ideal ($\gamma=1$), and the
@@ -7482,14 +7483,105 @@ calorimetric ($T$-derivative) accuracy of the slope is only as good as
 the solvent correlations \eqref{eq:davies-AT}.  The model is honest about
 all three.
 
+\subsubsection{What ``trustworthy to \texorpdfstring{$I\approx 0.5$}{I ~ 0.5} mol/kg'' means}
+\label{sec:davies-band}
+
+A band needs a criterion, and this one is measured in the tree, not
+quoted.  A single-ion $\gamma_i$ cannot be measured on its own; what an
+experiment reaches is the \emph{mean ionic activity coefficient} of a
+salt that releases $\nu_+$ cations and $\nu_-$ anions,
+\[
+   \gamma_\pm=\bigl(\gamma_+^{\nu_+}\gamma_-^{\nu_-}\bigr)^{1/(\nu_++\nu_-)} .
+\]
+The criterion is an error limit on that quantity: \emph{Davies is
+trustworthy where its $\gamma_\pm$ is within 10\,\% of the measured
+value.}  The measured values are the evaluated 298.15\,K tables under
+\file{data/curation/electrolytes}: 67 tables, each opening with a
+\code{provenance} block that names the evaluation it was transcribed
+from --- four critical evaluations in the Journal of Physical and
+Chemical Reference Data: Hamer and Wu (1972) for 41 uni-univalent salts,
+Goldberg and Nuttall (1978) for 12 alkaline-earth halides, and Goldberg
+(1981) for 6 zinc and cadmium salts and, in a second evaluation, for 8
+uni-bivalent salts.  Davies is evaluated with $A=0.51$ and the
+\emph{stoichiometric} ionic strength $I=\tfrac12\,m\sum_i\nu_i z_i^2$
+(every ion free, no ion pairs), and for each table the ionic strength at
+which the error reaches 10\,\% is read by linear interpolation between
+rows.  The gate \file{bin/curate/check\_activity\_domain.py} (its arm~(c))
+repeats this arithmetic on every run of the suite and fails if the
+declared band lies more than 0.1\,mol/kg from either median below.
+
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \textbf{1-1 salts} (41 tables, e.g.\ NaCl, KCl): the median salt
+        reaches 10\,\% at $I=0.52$\,mol/kg.  The spread is wide, from
+        $I=0.14$ (KH$_2$PO$_4$) to beyond $I=6$ (LiBr stays inside 10\,\%
+        to the end of its table); KCl reaches it at 0.40, NaCl at 0.60.
+  \item \textbf{2-1 salts} (18 tables: a divalent cation with two
+        monovalent anions, e.g.\ CaCl$_2$, MgCl$_2$): the median salt
+        reaches 10\,\% at $I=0.56$\,mol/kg; the range runs from the first
+        tabulated row, $I=0.30$ (Cd(NO$_2$)$_2$ and ZnI$_2$ are already
+        beyond 10\,\% there), to 0.88 (MgI$_2$).
+  \item \textbf{1-2 salts} (8 tables: two monovalent cations with a
+        divalent anion --- five sulfates and three hydrogen phosphates,
+        e.g.\ Na$_2$SO$_4$, K$_2$HPO$_4$): already 15 to 47\,\% off at the
+        first tabulated row, $m=0.1$\,mol/kg ($I=0.30$).
+\end{itemize}
+
+So the number $0.5$ does not depend on the charge of the cation: the
+median 1-1 salt and the median 2-1 salt reach 10\,\% at nearly the same
+$I$, and the spread inside one class (a factor of 40 among the 1-1 salts)
+is far larger than the difference between the two classes.  The band
+describes a \emph{typical} salt; a given salt can leave it sooner or
+later, and its table says when.
+
+What does depend on charge is a doubly charged \emph{anion}.
+Stoichiometric Davies counts every Na$^+$ and every SO$_4^{2-}$ as a free
+ion, while in a real sulfate solution part of the sulfate is bound in ion
+pairs (NaSO$_4^-$, CaSO$_4^0$, MgSO$_4^0$).  The pairs carry the specific
+short-range interaction that Davies, a charge-only equation, has no
+parameter for.  When the speciation network contains the pair, the free
+ions are fewer, their activities lower, and the $\gamma_\pm$ referred to
+the salt's total molality,
+$\bigl(a_{\rm Na}^2\,a_{\rm SO_4}/((2m)^2 m)\bigr)^{1/3}$ --- the quantity
+the table reports --- comes back towards the table.  The evidence in the
+tree covers one salt.  For Na$_2$SO$_4$ with the catalogue's NaSO$_4^-$ in
+the network, Davies' $\gamma_\pm$ is $-2.7$\,\% off the table at
+$m=0.1$, $+2.3$\,\% at $m=0.2$ and $+7.1$\,\% at $m=0.3$\,mol/kg, against
+$+21$, $+50$ and $+87$\,\% without the pair; at $m=0.4$ the paired value
+leaves the band ($+11.6$\,\%).  These rows are the table
+\file{docs/reviews/2026-11-12-electrolyte-models/item3b\_davies\_with\_ion\_pairs.tsv}
+of the 2026 electrolyte-model review.  The other seven 1-2 salts have not
+been run with their pairs, so nothing here is claimed for them; the gate
+lists the ion pairs of a 2- anion among the things it does NOT check.
+
+\paragraph{A reading you can check.}  Run
+\file{tutorials/props/electrolyte/davies01\_band\_edge} and open
+\file{davies\_m0p5.csv}: for NaCl at $m=0.5$\,mol/kg Davies gives
+$\gamma_{\rm Na}=\gamma_{\rm Cl}=0.7332$, so $\gamma_\pm=0.733$.  The
+Hamer--Wu row at the same molality, in
+\file{data/curation/electrolytes/Na-Cl/constant/experiments/Na-Cl.dat},
+is $0.681$: $+7.7$\,\%, inside the 10\,\% criterion.  At $m=1.0$
+(\file{davies\_m1p0.csv}) the same reading is $0.791$ against $0.657$,
+$+20.3$\,\%, outside it.  The run prints the model's advisory at both
+molalities: the solved $I$ at $m=0.5$ includes the water's own H$^+$ and
+OH$^-$ and sits a hair above $0.5$.  For a sulfate, run
+\file{tutorials/props/electrolyte/scaling\_ro\_brackish} and open
+\file{speciation\_feed.csv}: at $I=0.027$\,mol/kg, far inside the band,
+the free SO$_4^{2-}$ is $2.13\times10^{-3}$\,mol/kg of a
+$2.60\times10^{-3}$\,mol/kg total, so 18\,\% of the sulfate is already
+held as CaSO$_4^0$, MgSO$_4^0$ and NaSO$_4^-$ (about
+$1.6\times10^{-4}$\,mol/kg each).  A network without those pairs would
+count that sulfate as free --- the stoichiometric treatment the 1-2
+tables above reject.
+
 \subsection{Activity model and water activity}
 
 The default single-ion $\gamma$ is the Davies equation
 \eqref{eq:davies} of \S\ref{sec:davies}, with $A\approx 0.51$ at
 25\,\textdegree C and the $\varepsilon_w(T),\rho_w(T)$ scaling
 \eqref{eq:davies-AT} shared with the Pitzer kernel; it is trustworthy to
-$I\approx 0.5$\,mol/kg, the solver raises an advisory above $I\approx
-0.7$, and Pitzer HMW \cite{Pitzer1973} is the documented replacement.
+$I\approx 0.5$\,mol/kg in the sense of \S\ref{sec:davies-band}, the solver
+raises the model's advisory above that band, and Pitzer HMW
+\cite{Pitzer1973} is the documented replacement.
 Neutral species take $\gamma=1$.  The water activity is
 \begin{equation}
    \ln a_w \;=\; -\,M_w\,\phi\sum_i m_i,
@@ -7837,8 +7929,8 @@ not by a stale measurement), and the saturation state of every candidate
 scale mineral --- the same calculation a regulatory water-chemistry
 report rests on, with every $\log K$, every $\gamma$, and every Newton
 iteration visible.  The limits are deliberate and announced: the Davies
-default is trustworthy only to $I\approx 0.5$\,mol/kg (use Pitzer
-beyond); the water activity uses the $\phi=1$ dilute approximation;
+default is trustworthy only to $I\approx 0.5$\,mol/kg, in the sense of
+\S\ref{sec:davies-band} (use Pitzer beyond); the water activity uses the $\phi=1$ dilute approximation;
 neutral species are ideal ($\gamma=1$); a solved pH is no better than the
 charge balance of its input, which is precisely why $\varepsilon_{\rm
 CB}$ is reported and gated before the answer is offered.
@@ -22449,7 +22541,8 @@ bound: real leakage $\ge$ this equilibrium leakage --- if the
 equilibrium effluent is already hard, no bed will soften it.  The bed
 volume, if given, is announced but does not enter the per-pass
 equilibrium (it sets the cycle length, not the limiting composition).
-The Davies $\gamma$ is trusted only to $I\lesssim 0.5\,\mathrm{mol/kg}$;
+The Davies $\gamma$ is trusted only to $I\lesssim 0.5\,\mathrm{mol/kg}$
+(\S\ref{sec:davies-band} says what that band means);
 beyond that the equilibrium is flagged \emph{indicative}.  Choupo prints
 all of this as a non-suppressible honesty banner --- the limiting-case
 caveat is part of the answer, not a footnote.
