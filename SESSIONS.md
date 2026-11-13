@@ -2953,3 +2953,48 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   reviewers on f08f9b061); its S1 and S2 rows come to you as soon as I
   have reproduced them myself.  The laboratory builder is still running.
 
+- [open] laptop -> cloud, 2026-11-13 UTC (22:15): A REVIEW QUEUE, AT
+  VITOR'S REQUEST ("diz a outra sessao para rever o que achares
+  importante").  Four batches landed today and no new number was read by
+  a second pair of eyes; this is what I judge worth yours, in order.  The
+  first two BLOCK work here; the others are reviews of what is on main.
+  (R1, running) THE PILOT, as you have it; its S1 and S2 rows gate the
+  fifth batch.  (R2, BEFORE I BUILD) C390, the pressure term of the
+  generic liquid enthalpy.  I want your reading of the design before a
+  line is written: today H_liq(T) has no pressure term, so a pump's
+  useful work appears in no stream (pump01: 1.3 kW of 2.0 unclosed).
+  The questions: v dP alone or v (1 - alpha T) dP, and from which volume
+  (the kernel's density at the state, or the record's); whether it must
+  be consistent with the Poynting factor the liquid reference fugacity
+  already carries since C235 (same v, same reference pressure: p_sat(T)
+  or the datum's 1 bar?); what it does to a flash's energy balance and to
+  a column's enthalpy at 10 to 100 bar; which goldens it must move and by
+  how much on three cases you choose; TD-18 with it (the pump's generic
+  route never checks its discharge against the bubble point).  A short
+  note under docs/reviews/ with a recommendation is the deliverable.
+  (R3) THE PRICES OF C389, on main (18c81e145): the three provenance
+  blocks of `greenAmmoniaPEQ_baseCase/constant/economics` against their
+  sources, which you can fetch (the trade-statistics query and its
+  arithmetic, the regulators' report p. 5 and p. 40, the paper's Table
+  2 and the exchange rate); whether any sentence of the four READMEs or
+  of the generated stage comparison claims more than its source or more
+  than the goldens; and the JUDGEMENT itself: a cost read as a fence
+  price for hydrogen, an import unit value as the selling price; say if
+  you would have ruled otherwise.  (R4) THE PROPERTY-SOURCES PANEL, on
+  main: the adapter's numbers against the engine's `propertySources`
+  block on two cases of your choice, and what a student understands from
+  the words `kernel` and `bypass` (I think nothing; the remedy is
+  engine-side).  (R5) THE POOLED REGRESSED-PAIRS GATE
+  (`bin/curate/check_regressed_pairs.py` on main): the shared state under
+  threads (the per-case lock, the tallies, the first-import order), and
+  one sabotage of your own that the serial and the pooled run must fail
+  identically.  (R6) A SAMPLE OF TODAY'S MOVED GOLDEN ROWS, by hand: five
+  of the 124 economics rows of C389, and after the fifth batch lands,
+  ten of the 151 tablet rows as landed against your own list (I restored
+  to the committed line every row the recorder had rewritten inside its
+  tolerance: 113, 840 and 3 rows; check that nothing real hid in them).
+  (R7, when it exists) the tool and the gate of C393, not the files.
+  WHAT I DO NOT ASK: anything in a browser (your server answers with a
+  mock); Vitor walks the demonstration path himself tomorrow on a fresh
+  WASM build.  If the queue is more than your builders carry, R2 and R3
+  come before R4 to R6.
