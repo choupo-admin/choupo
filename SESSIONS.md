@@ -3243,3 +3243,55 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   when a row needs a builder's eye on a number, give the minimal case
   and the two numbers; that is what made PA-01 and PA-02 actionable in
   one message.
+- [open] cloud -> laptop, 2026-11-13 UTC (21:30): R2, THE PRESSURE TERM'S
+  DESIGN, IS READ AND MEASURED:
+  `docs/reviews/2026-11-13-c390-pressure-term-design/REPORT.md` (tables,
+  scripts and run outputs beside it).  Done on the pilot's head with a
+  throwaway prototype, reverted.  THE RECOMMENDATION IN FIVE LINES.  (1)
+  THE FORM IS `v (1 - alpha T) dP`, NOT `v dP`: from each component's own
+  p_sat,i(T) to P, with the kernel's pure-component volume and its
+  temperature slope.  Against the engine's own IF97 route for water at
+  298.15 K and 100 bar: reference 166.127 J/mol, this form 166.117, `v dP`
+  180.233; at 450 K and 100 bar 86.110, 85.327 and 181.207.  (2) ONE HOME:
+  the liquid leg of `H_stream_formation`, with the entropy partner in
+  `S_stream_formation` in the same slice; the report, `priceState`, the
+  valve, the heater, the flash and the column gain it with no edit;
+  nothing in `speciesPhaseEnthalpy`, so no heat of reaction moves.  (3)
+  THE PUMP SOLVES THE STREAM BALANCE and reads its outlet phase: TD-18
+  closes by construction.  THE NUMBER THAT TELLS THE TWO FORMS APART, for
+  your gate: the pump of `liquidDensity01_water` publishes dT 0.020513 K
+  today, 0.024238 K with IF97 selected, 0.024201 K with the recommended
+  form and 0.020520 K with `v dP`.  BOTH FORMS CLOSE THE PLANT below 4e-11
+  kW; only one has the right outlet temperature, so closure alone cannot
+  hold this slice.  (4) SAME REFERENCE PRESSURE AS THE K-VALUE; do NOT tie
+  the enthalpy to the Poynting factor's constant record volume (that pair
+  is consistent and wrong), and leave the factor alone in this slice: it
+  is off whenever the vapour is an ideal gas and moving it moves K-values.
+  (5) IT NEEDS THE FULL SWEEP AND A LIST FOR VITOR: measured, pump01 moves
+  5 rows, `letdown01_ammonia_flashing` 46 of 98 (the valve's dT from
+  -0.136 to +1.890 K, low-pressure flash gas +16.4 %),
+  `ammonia02_full_plant` 20 of 204 (the letdown flash duty from +13.80 to
+  -225.06 kW, net present value +1.02 %, pinch candidates 5 to 2),
+  `column14` 9 of 35 in the fourth digit, and a liquid-liquid split none.
+  MY RESERVATION, and it is about the cases that move most: for every
+  liquid no reference equation names, the slope is Rackett's, and the term
+  is a DIFFERENCE (1 - alpha T).  Measured against the three other
+  reference equations in the tree (methane, nitrogen, carbon dioxide):
+  within 1 % at a reduced temperature of 0.6, 7 to 13 % too large near
+  0.75, wrong by a third at 0.9 where the term has changed sign; water on
+  the Rackett route is 19 to 22 % too small everywhere.  AMMONIA CANNOT BE
+  CHECKED IN THE TREE (no reference equation; it is polar and associating,
+  and the one associating fluid in the table is the one that is 20 % off).
+  So: the run should say per component which slope the term used; a term
+  that has changed sign on the Rackett route deserves its own line; and
+  the ammonia plants' goldens are either re-recorded after an ammonia
+  reference equation is curated or shown to Vitor as resting on an
+  unverified slope.  HOLES THE BUILD WILL MEET (section 7): 17 unit sites
+  still call the T-only `Hliquid` and 9 `speciesPhaseEnthalpy`;
+  `StreamEquilibrium.H:629` would leave the liquid's pressure term on a
+  precipitate; the dynamic holdups store a T-only enthalpy; a brine pump
+  has no heat capacity for its salt and must keep its closed form,
+  announced; `H_real(..., Liquid)` on a generic package returns the vapour
+  route.  NEXT ON MY SIDE: the crash fix's head when verified; the third
+  pilot reviewer; then R3.
+

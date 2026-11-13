@@ -1,0 +1,164 @@
+=== letdown01_ammonia_flashing mode=base rc=0
+   plant residual_kW=7.72217827034e-05 pct=None
+   unit ValveHP: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit DrumHP: dH=-0.0001 items=0.0000 closure%=0.00 remaining=-0.0001
+   unit ValveLP: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit DrumLP: dH=-0.0000 items=0.0000 closure%=0.00 remaining=-0.0000
+   unit PurgeValve: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   kpi PurgeValve.dT=-4.83972183133 T_out=248.310278169
+   kpi ValveHP.dT=-0.135793819725 T_out=253.01420618
+   kpi ValveLP.dT=-13.8292604779 T_out=239.184945702
+   golden rows checked=98 moved=0
+=== letdown01_ammonia_flashing mode=Avliq rc=0
+   plant residual_kW=0.000109073451313 pct=None
+   unit ValveHP: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit DrumHP: dH=-0.0001 items=0.0000 closure%=0.00 remaining=-0.0001
+   unit ValveLP: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit DrumLP: dH=-0.0000 items=0.0000 closure%=0.00 remaining=-0.0000
+   unit PurgeValve: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   kpi PurgeValve.dT=-4.83972183133 T_out=248.310278169
+   kpi ValveHP.dT=4.08339879517 T_out=257.233398795
+   kpi ValveLP.dT=-17.9934510796 T_out=239.239947716
+   golden rows checked=98 moved=45
+     stream   FlashGas               F                  0.04073076881 -> 0.05469882427  rel +3.429e-01
+     stream   FlashGas               T                  239.1849457 -> 239.2399477  rel +2.300e-04
+     stream   LetdownGas             F                  0.00353308844 -> 0.003566438662  rel +9.439e-03
+     stream   LetdownGas             T                  253.0142062 -> 257.2333988  rel +1.668e-02
+     stream   LetdownLiquid          T                  253.0142062 -> 257.2333988  rel +1.668e-02
+     stream   ProductNH3             F                  0.7725019092 -> 0.7585005035  rel -1.812e-02
+     stream   ProductNH3             T                  239.1849457 -> 239.2399477  rel +2.300e-04
+     stream   ThrottledHP            T                  253.0142062 -> 257.2333988  rel +1.668e-02
+     stream   ThrottledLP            T                  239.1849457 -> 239.2399477  rel +2.300e-04
+     kpi      DrumHP                 F_beta             0.00353308844 -> 0.003566438662  rel +9.439e-03
+     kpi      DrumHP                 K_Ar               502.030667 -> 465.5938494  rel -7.258e-02
+     kpi      DrumHP                 K_H2               1576.516843 -> 1415.431326  rel -1.022e-01
+     kpi      DrumHP                 K_N2               968.8499807 -> 887.6563351  rel -8.380e-02
+     kpi      DrumHP                 K_NH3              0.1058761948 -> 0.126369869  rel +1.936e-01
+     kpi      DrumHP                 T                  253.0142062 -> 257.2333988  rel +1.668e-02
+     kpi      DrumHP                 V_over_F           0.004325705833 -> 0.004366537884  rel +9.439e-03
+     kpi      DrumLP                 F_alpha            0.7725019092 -> 0.7585005035  rel -1.812e-02
+     kpi      DrumLP                 F_beta             0.04073076881 -> 0.05469882427  rel +3.429e-01
+     kpi      DrumLP                 K_Ar               12309.20765 -> 12295.22275  rel -1.136e-03
+     kpi      DrumLP                 K_H2               44504.75006 -> 44432.56641  rel -1.622e-03
+     kpi      DrumLP                 K_N2               25017.46083 -> 24984.52531  rel -1.317e-03
+     kpi      DrumLP                 K_NH3              0.9866413699 -> 0.9892618062  rel +2.656e-03
+     kpi      DrumLP                 T                  239.1849457 -> 239.2399477  rel +2.300e-04
+     kpi      DrumLP                 V_over_F           0.05008501245 -> 0.06726373523  rel +3.430e-01
+     kpi      ValveHP                Q_out              0.02459032215 -> 0.02484639243  rel +1.041e-02
+     kpi      ValveHP                T_out              253.0142062 -> 257.2333988  rel +1.668e-02
+     kpi      ValveHP                dT                 -0.1357938197 -> 4.083398795  rel -3.107e+01
+     kpi      ValveHP                rho_L_out          662.9928358 -> 657.7460707  rel -7.914e-03
+     kpi      ValveHP                rho_out            564.5315151 -> 558.7133771  rel -1.031e-02
+     kpi      ValveHP                vf                 0.004325705833 -> 0.004366537884  rel +9.439e-03
+     kpi      ValveHP                volumeRatio        1.174115058 -> 1.186341655  rel +1.041e-02
+     kpi      ValveHP                x_mass_out         0.002542852477 -> 0.002605212106  rel +2.452e-02
+     kpi      ValveLP                Q_in               0.02088516069 -> 0.0210504431  rel +7.914e-03
+     kpi      ValveLP                Q_out              0.8072961737 -> 1.077346731  rel +3.345e-01
+     kpi      ValveLP                T_in               253.0142062 -> 257.2333988  rel +1.668e-02
+     kpi      ValveLP                T_out              239.1849457 -> 239.2399477  rel +2.300e-04
+     kpi      ValveLP                dT                 -13.82926048 -> -17.99345108  rel +3.011e-01
+     kpi      ValveLP                rho_V_out          0.8769728184 -> 0.8773935337  rel +4.797e-04
+     kpi      ValveLP                rho_in             662.9928358 -> 657.7460707  rel -7.914e-03
+     kpi      ValveLP                rho_out            17.15196029 -> 12.85180141  rel -2.507e-01
+=== letdown01_ammonia_flashing mode=Akern rc=0
+   plant residual_kW=0.000105671439087 pct=None
+   unit ValveHP: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit DrumHP: dH=-0.0001 items=0.0000 closure%=0.00 remaining=-0.0001
+   unit ValveLP: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit DrumLP: dH=-0.0000 items=0.0000 closure%=0.00 remaining=-0.0000
+   unit PurgeValve: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   kpi PurgeValve.dT=-4.83972183133 T_out=248.310278169
+   kpi ValveHP.dT=3.69723261286 T_out=256.847232613
+   kpi ValveLP.dT=-17.6110715681 T_out=239.236161045
+   golden rows checked=98 moved=46
+     stream   FlashGas               F                  0.04073076881 -> 0.05343405335  rel +3.119e-01
+     stream   FlashGas               T                  239.1849457 -> 239.236161  rel +2.141e-04
+     stream   LetdownGas             F                  0.00353308844 -> 0.00356279069  rel +8.407e-03
+     stream   LetdownGas             T                  253.0142062 -> 256.8472326  rel +1.515e-02
+     stream   LetdownLiquid          T                  253.0142062 -> 256.8472326  rel +1.515e-02
+     stream   ProductNH3             F                  0.7725019092 -> 0.7597689224  rel -1.648e-02
+     stream   ProductNH3             T                  239.1849457 -> 239.236161  rel +2.141e-04
+     stream   ThrottledHP            T                  253.0142062 -> 256.8472326  rel +1.515e-02
+     stream   ThrottledLP            T                  239.1849457 -> 239.236161  rel +2.141e-04
+     kpi      DrumHP                 F_beta             0.00353308844 -> 0.00356279069  rel +8.407e-03
+     kpi      DrumHP                 K_Ar               502.030667 -> 468.7690276  rel -6.625e-02
+     kpi      DrumHP                 K_H2               1576.516843 -> 1429.272927  rel -9.340e-02
+     kpi      DrumHP                 K_N2               968.8499807 -> 894.6934569  rel -7.654e-02
+     kpi      DrumHP                 K_NH3              0.1058761948 -> 0.1243708095  rel +1.747e-01
+     kpi      DrumHP                 T                  253.0142062 -> 256.8472326  rel +1.515e-02
+     kpi      DrumHP                 V_over_F           0.004325705833 -> 0.004362071522  rel +8.407e-03
+     kpi      DrumLP                 F_alpha            0.7725019092 -> 0.7597689224  rel -1.648e-02
+     kpi      DrumLP                 F_beta             0.04073076881 -> 0.05343405335  rel +3.119e-01
+     kpi      DrumLP                 K_Ar               12309.20765 -> 12296.1849  rel -1.058e-03
+     kpi      DrumLP                 K_H2               44504.75006 -> 44437.53139  rel -1.510e-03
+     kpi      DrumLP                 K_N2               25017.46083 -> 24986.79104  rel -1.226e-03
+     kpi      DrumLP                 K_NH3              0.9866413699 -> 0.9890812233  rel +2.473e-03
+     kpi      DrumLP                 T                  239.1849457 -> 239.236161  rel +2.141e-04
+     kpi      DrumLP                 V_over_F           0.05008501245 -> 0.06570813799  rel +3.119e-01
+     kpi      ValveHP                Q_out              0.02459032215 -> 0.02482216183  rel +9.428e-03
+     kpi      ValveHP                T_out              253.0142062 -> 256.8472326  rel +1.515e-02
+     kpi      ValveHP                dT                 -0.1357938197 -> 3.697232613  rel -2.823e+01
+     kpi      ValveHP                rho_L_out          662.9928358 -> 658.2289446  rel -7.185e-03
+     kpi      ValveHP                rho_V_out          9.527225335 -> 9.526207802  rel -1.068e-04
+     kpi      ValveHP                rho_out            564.5315151 -> 559.258775  rel -9.340e-03
+     kpi      ValveHP                vf                 0.004325705833 -> 0.004362071522  rel +8.407e-03
+     kpi      ValveHP                volumeRatio        1.174115058 -> 1.185184716  rel +9.428e-03
+     kpi      ValveHP                x_mass_out         0.002542852477 -> 0.002598757932  rel +2.199e-02
+     kpi      ValveLP                Q_in               0.02088516069 -> 0.0210351367  rel +7.181e-03
+     kpi      ValveLP                Q_out              0.8072961737 -> 1.052894453  rel +3.042e-01
+     kpi      ValveLP                T_in               253.0142062 -> 256.8472326  rel +1.515e-02
+     kpi      ValveLP                T_out              239.1849457 -> 239.236161  rel +2.141e-04
+     kpi      ValveLP                dT                 -13.82926048 -> -17.61107157  rel +2.735e-01
+     kpi      ValveLP                rho_V_out          0.8769728184 -> 0.8773649661  rel +4.472e-04
+     kpi      ValveLP                rho_in             662.9928358 -> 658.2289446  rel -7.185e-03
+=== letdown01_ammonia_flashing mode=Bkern rc=0
+   plant residual_kW=9.08224174054e-05 pct=None
+   unit ValveHP: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit DrumHP: dH=-0.0001 items=0.0000 closure%=0.00 remaining=-0.0001
+   unit ValveLP: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit DrumLP: dH=-0.0000 items=0.0000 closure%=0.00 remaining=-0.0000
+   unit PurgeValve: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   kpi PurgeValve.dT=-4.83972183133 T_out=248.310278169
+   kpi ValveHP.dT=1.89009346852 T_out=255.040093469
+   kpi ValveLP.dT=-15.8247711746 T_out=239.215322294
+   golden rows checked=98 moved=46
+     stream   FlashGas               F                  0.04073076881 -> 0.04742622594  rel +1.644e-01
+     stream   FlashGas               T                  239.1849457 -> 239.2153223  rel +1.270e-04
+     stream   LetdownGas             F                  0.00353308844 -> 0.003547377074  rel +4.044e-03
+     stream   LetdownGas             T                  253.0142062 -> 255.0400935  rel +8.007e-03
+     stream   LetdownLiquid          T                  253.0142062 -> 255.0400935  rel +8.007e-03
+     stream   ProductNH3             F                  0.7725019092 -> 0.7657921635  rel -8.686e-03
+     stream   ProductNH3             T                  239.1849457 -> 239.2153223  rel +1.270e-04
+     stream   ThrottledHP            T                  253.0142062 -> 255.0400935  rel +8.007e-03
+     stream   ThrottledLP            T                  239.1849457 -> 239.2153223  rel +1.270e-04
+     kpi      DrumHP                 F_beta             0.00353308844 -> 0.003547377074  rel +4.044e-03
+     kpi      DrumHP                 K_Ar               502.030667 -> 484.0458902  rel -3.582e-02
+     kpi      DrumHP                 K_H2               1576.516843 -> 1496.396476  rel -5.082e-02
+     kpi      DrumHP                 K_N2               968.8499807 -> 928.6547138  rel -4.149e-02
+     kpi      DrumHP                 K_NH3              0.1058761948 -> 0.1153515292  rel +8.949e-02
+     kpi      DrumHP                 T                  253.0142062 -> 255.0400935  rel +8.007e-03
+     kpi      DrumHP                 V_over_F           0.004325705833 -> 0.004343199997  rel +4.044e-03
+     kpi      DrumLP                 F_alpha            0.7725019092 -> 0.7657921635  rel -8.686e-03
+     kpi      DrumLP                 F_beta             0.04073076881 -> 0.04742622594  rel +1.644e-01
+     kpi      DrumLP                 K_Ar               12309.20765 -> 12301.48155  rel -6.277e-04
+     kpi      DrumLP                 K_H2               44504.75006 -> 44464.86681  rel -8.962e-04
+     kpi      DrumLP                 K_N2               25017.46083 -> 24999.26446  rel -7.273e-04
+     kpi      DrumLP                 K_NH3              0.9866413699 -> 0.9880879085  rel +1.466e-03
+     kpi      DrumLP                 T                  239.1849457 -> 239.2153223  rel +1.270e-04
+     kpi      DrumLP                 V_over_F           0.05008501245 -> 0.05831917546  rel +1.644e-01
+     kpi      ValveHP                Q_out              0.02459032215 -> 0.02471097103  rel +4.906e-03
+     kpi      ValveHP                T_out              253.0142062 -> 255.0400935  rel +8.007e-03
+     kpi      ValveHP                dT                 -0.1357938197 -> 1.890093469  rel -1.492e+01
+     kpi      ValveHP                rho_L_out          662.9928358 -> 660.4814768  rel -3.788e-03
+     kpi      ValveHP                rho_V_out          9.527225335 -> 9.523779057  rel -3.617e-04
+     kpi      ValveHP                rho_out            564.5315151 -> 561.7752457  rel -4.882e-03
+     kpi      ValveHP                vf                 0.004325705833 -> 0.004343199997  rel +4.044e-03
+     kpi      ValveHP                volumeRatio        1.174115058 -> 1.179875684  rel +4.906e-03
+     kpi      ValveHP                x_mass_out         0.002542852477 -> 0.002570623752  rel +1.092e-02
+     kpi      ValveLP                Q_in               0.02088516069 -> 0.02096398896  rel +3.774e-03
+     kpi      ValveLP                Q_out              0.8072961737 -> 0.936742506  rel +1.603e-01
+     kpi      ValveLP                T_in               253.0142062 -> 255.0400935  rel +8.007e-03
+     kpi      ValveLP                T_out              239.1849457 -> 239.2153223  rel +1.270e-04
+     kpi      ValveLP                dT                 -13.82926048 -> -15.82477117  rel +1.443e-01
+     kpi      ValveLP                rho_V_out          0.8769728184 -> 0.8772060662  rel +2.660e-04
+     kpi      ValveLP                rho_in             662.9928358 -> 660.4814768  rel -3.788e-03

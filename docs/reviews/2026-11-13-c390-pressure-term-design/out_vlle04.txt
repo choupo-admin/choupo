@@ -1,0 +1,8 @@
+=== vlle04_two_liquids_decanter mode=base rc=0
+   plant residual_kW=0 pct=None
+   unit decanter01: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   golden rows checked=19 moved=0
+=== vlle04_two_liquids_decanter mode=Bkern rc=0
+   plant residual_kW=0 pct=None
+   unit decanter01: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   golden rows checked=19 moved=0
