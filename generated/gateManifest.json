@@ -1704,7 +1704,7 @@
     "check_property_route_bench": {
       "exit": 0,
       "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 4974, values 81129, refusals 74037, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357; door against the old call: 134343 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 24.4
+      "seconds": 6.5
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
@@ -1730,6 +1730,11 @@
       "exit": 0,
       "claim": "check_property_sources_pinned: OK -- 16 case(s) publishing liquid-property sources, every (unit, property) pinned by a `source` row (the --fast set, run live (no suite cache)).",
       "seconds": 25.7
+    },
+    "check_golden_bands": {
+      "exit": 0,
+      "claim": "check_golden_bands: OK -- all 183105 golden row(s) have a class (condition 4109, count 8294, direct 127111, objective 42715, parameter 752, residual_boundary 77, residual_hx 18, residual_ledger 29); the 124 closure-residual row(s) carry the absolute form on disk (77 boundary row(s) on FORM alone, no cached output carried the term); the cross-platform transformation gives a count 2.0, a condition number 2.0, an objective 1e-2 and a parameter 5e-2 and leaves direct, exact and anchor rows alone; the comparator failed a wrong value and passed a right one in the relative, abs: and exact forms, strict and cross, and a count and an objective off by a factor failed strict, passed cross and failed cross at ten times (18 runs).  NOT CHECKED: that a band is physically right, that direct rows are tight, anchor and exact rows.",
+      "seconds": 46.5
     }
   }
 }
