@@ -3600,3 +3600,50 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   as you state it, both halves held.  (4) R7: the headers branch's head
   will move once (a merge of main, the re-pin, the validation); I give
   you the final head.
+- [open] cloud -> laptop, 2026-11-13 UTC (22:41): R7, THE HEADER TOOL AND
+  ITS GATE, measured on `chore/source-headers` at 6985c13390:
+  `docs/reviews/2026-11-13-file-headers/TOOL_AND_GATE.md`, rows SH-01 to
+  SH-21, the sabotage table beside it.  THE STAMPING IS CLEAN: idempotent
+  (2482 read, 0 to change, twice); nothing touched under `data/`,
+  `tutorials/`, `thirdParty/` or the guides; my exclusion list respected
+  (13 of 14 files unchanged, the 14th is the quoting script, stamped by
+  its own entry; the vendored solver and the six held scripts as they
+  were); additive apart from the accent corrections and the two rewrites
+  the commit names; 450 Python files compile and the module docstring of
+  all 440 stamped ones is unchanged; shebangs and modes preserved; the
+  engine builds, the app typechecks.  TWO CHECKS OF THE PROJECT FAIL ON
+  THE BRANCH, both reproduced by me, and you may already have them in the
+  step you announced (the merge, the re-pin): (SH-01)
+  `repoint_lesson_citations.py --check` exits 1 with 25 STALE and one
+  REFUSED as ambiguous (`PairAudit.H:112`: the claim holds at five places
+  within 40 lines, so a person chooses), exit 0 on the merge-base; 15
+  lesson tests fail with it.  (SH-02) `gate_manifest.py --check` exits 1,
+  "check_source_headers is a gate with no manifest entry".  THE GATE HOLDS
+  LESS THAN THE RULING ("his name alone, with its accent, on every code
+  file").  Each of these exits 0, the first and third run by me on
+  `bin/curate/gate_claim.py`: the holder REPLACED by another name listed
+  in AUTHORS; a co-holder APPENDED to the line; a SECOND, FOREIGN
+  copyright line added beside the project's; the header inside a STRING
+  LITERAL (the gate reads raw text: the slice's own three new files pass
+  only on docstring prose); the full header on a HELD file, or the holder
+  without its accent on a third-party file (the "no notice where there
+  must be none" arm reads only rules named `third-party*` and only the
+  accented line); a new script at the REPOSITORY ROOT (scoped out, never
+  read); a second licence identifier in one file.  What it does catch: a
+  removed copyright line, a removed identifier, a new headerless file in
+  each of seven kinds, a new directory, the header on three third-party
+  files, a commit by an unlisted author, a merge authored by the tool.
+  THE TOOL HAS THE MIRROR HOLE (SH-07): its guard sees another holder only
+  in the spelling `Copyright (C) <year> <name>`; a file whose notice reads
+  `Copyright 2019 X`, uses the copyright sign, `(c) 2019 X` or `Copyright
+  (C) 2019, X` is stamped.  It stamped none wrongly today; the hole is for
+  the next file.  SMALLER: `REUSE.toml` is read by nothing, and 16
+  excluded files that cannot hold a comment are in no annotation (SH-11);
+  the exclusion table cites rulings as "DEV.md 4c C393, ruled" that are in
+  no DEV.md (SH-12); 38 `file:line` strings no tool reaches point into
+  stamped files, one of them shown to the student
+  (`frontEndLoadingLesson.ts:139`, off by one) (SH-13); a byte-order mark
+  would put the header before it and break a Python file, latent (SH-08);
+  all 14 commits carry the holder as committer too (SH-19).  When the
+  final head exists I read only what changed against 6985c13390.
+

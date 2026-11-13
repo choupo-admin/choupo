@@ -1,0 +1,33 @@
+S1 engine copyright line removed	1	  NO-COPYRIGHT  src/core/Dictionary.cpp  (kind engine-cpp)
+S2 SPDX line removed from bin/header	1	  NO-SPDX  bin/header  (kind script-hash)
+S3 accent dropped in bin/header	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S4 year 2026->2025 in bin/header	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S4b year 1999 in bin/header	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S5 new headerless src/core/ZzNew.cpp	1	  NO-COPYRIGHT  src/core/ZzNew.cpp  (kind engine-cpp)
+S5 new headerless gui/src/zzNew.ts	1	  NO-COPYRIGHT  gui/src/zzNew.ts  (kind web-src)
+S5 new headerless gui/tests/zzNew.test.ts	1	  NO-COPYRIGHT  gui/tests/zzNew.test.ts  (kind web-tests)
+S5 new headerless bin/curate/zz_new.py	1	  NO-COPYRIGHT  bin/curate/zz_new.py  (kind script-hash)
+S5 new headerless bin/zz_new.sh	1	  NO-COPYRIGHT  bin/zz_new.sh  (kind script-hash)
+S5 new headerless gui/scripts/zz.mjs	1	  NO-COPYRIGHT  gui/scripts/zz.mjs  (kind web-script)
+S5 new headerless .github/workflows/zz.yml	1	  NO-COPYRIGHT  .github/workflows/zz.yml  (kind script-hash)
+S6 new root dir newroot/x.py	1	  UNCLASSIFIED  newroot/x.py  (under a code root; give it a kind or an exclusion rule in bin/curate/source_headers_kinds.py)
+S6b root-level zz_root.py	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S6c src/zz.h (lower-case .h)	1	  UNCLASSIFIED  src/zz.h  (under a code root; give it a kind or an exclusion rule in bin/curate/source_headers_kinds.py)
+S7 header on third-party IDAES enrtl.py	1	  THIRD-PARTY-STAMPED  bin/curate/enrtl_ref/enrtl.py  (rule third-party-idaes, carries the project's holder line)
+S7b holder WITHOUT accent on enrtl.py	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S7c SPDX only on enrtl.py	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S7d header on HELD enrtl_proto.py	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S7e header on nanofiltran bin/curate/nanofiltran/LICENSE-LAPACK.txt	1	  THIRD-PARTY-STAMPED  bin/curate/nanofiltran/LICENSE-LAPACK.txt  (rule third-party-as-received, carries the project's holder line)
+S7f header on gui/public THIRD_PARTY_NOTICES	1	  THIRD-PARTY-STAMPED  gui/public/THIRD_PARTY_NOTICES  (rule third-party-gui-public, carries the project's holder line)
+S8 header below line 48 (within 4000 chars)	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S8b header after ~4800 chars	1	  NO-COPYRIGHT  bin/header  (kind script-hash)
+S9 header in a string literal (gate_claim.py)	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S9b both strings in one disclaiming comment	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S10 foreign notice without (C) added	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S10b foreign (C) notice added beside ours	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S10c a second SPDX identifier (MIT)	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S10d co-holder appended to the holder line	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S10e holder replaced by another AUTHORS name	0	source-headers: OK -- 2482 code files in 9 kinds carry the copyright line and the licence 
+S11 site/sw.js untracked (site-js kind emptied)	0	source-headers: OK -- 2481 code files in 8 kinds carry the copyright line and the licence 
+S11b every .bat untracked (batch kind emptied)	0	source-headers: OK -- 2478 code files in 8 kinds carry the copyright line and the licence 
+S12 git not on PATH	1	FileNotFoundError: [Errno 2] No such file or directory: 'git'
