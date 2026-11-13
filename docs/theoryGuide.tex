@@ -7547,11 +7547,13 @@ tree covers one salt.  For Na$_2$SO$_4$ with the catalogue's NaSO$_4^-$ in
 the network, Davies' $\gamma_\pm$ is $-2.7$\,\% off the table at
 $m=0.1$, $+2.3$\,\% at $m=0.2$ and $+7.1$\,\% at $m=0.3$\,mol/kg, against
 $+21$, $+50$ and $+87$\,\% without the pair; at $m=0.4$ the paired value
-leaves the band ($+11.6$\,\%).  These rows are the table
-\file{docs/reviews/2026-11-12-electrolyte-models/item3b\_davies\_with\_ion\_pairs.tsv}
-of the 2026 electrolyte-model review.  The other seven 1-2 salts have not
+leaves the band ($+11.6$\,\%).  These rows are recomputed by
+\file{bin/curate/check\_activity\_domain.py} (its arm~(d)) on every run of
+the suite, from the engine's own speciation and the evaluated table
+\file{data/curation/electrolytes/Na-SO4/constant/experiments/Na-SO4.dat}.
+The other seven 1-2 salts have not
 been run with their pairs, so nothing here is claimed for them; the gate
-lists the ion pairs of a 2- anion among the things it does NOT check.
+lists their ion pairs among the things it does NOT check.
 
 \paragraph{A reading you can check.}  Run
 \file{tutorials/props/electrolyte/davies01\_band\_edge} and open
