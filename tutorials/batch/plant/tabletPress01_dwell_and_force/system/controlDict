@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application  choupoSolve;
+
+//  AUDIENCE.  A TUTORIAL: one machine, narrated in README.md -- the tablet
+//  press of a plant that runs in lots, checked on the dwell time its
+//  formulation needs and on the force a tablet of a target strength needs,
+//  from the compaction bench's own fitted curves (DEV.md 4c C270).
+tier         tutorial;
+description  "THE TABLET PRESS, RATED ON DWELL TIME AND ON COMPACTION FORCE (DEV.md 4c C270). One rotary press makes placebo tablets of microcrystalline cellulose for a plant that runs in lots: the flowsheet is a mass split (99 % cores, 1 % rejects), a BATCH PLAN gives the lot and the press's operating time, and the `ratedMachine` sizer checks the press three ways -- its catalogue speed against the formulation's minimum dwell time (the dwell limit binds: 51 rpm, not the catalogue's 75), a declared overall equipment effectiveness, and the compaction pressure and punch force a 2 MPa tablet needs, found by inverting the Heckel and Ryshkewitch-Duckworth curves that tutorials/props/powder/compaction01_mcc FITTED to open measurements of MCC. The press geometry, speed, maximum force and the plant's year are author-set assumptions.";
+verbosity    2;
+
+// ************************************************************************* //
