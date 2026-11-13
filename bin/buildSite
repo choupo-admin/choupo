@@ -215,14 +215,27 @@ try:
         "cases": "{:,}".format(inv["tutorials"]["runnableCases"]),
         "components": "{:,}".format(inv["catalogue"]["components"]),
         "groupEstimates": "{:,}".format(round(lc["groupEstimateCompounds"], -3)),
+        #  The hero's four boxes (2026-11-13): the development line's own
+        #  counts, large, above the release's (data-inv) in small.
+        "mixtureParameterRecords": "{:,}".format(inv["totals"]["mixtureParameterRecords"]),
+        "unitOperations": "{:,}".format(inv["engine"]["unitOperations"]),
+        "runnableCases": "{:,}".format(inv["tutorials"]["runnableCases"]),
     }
 except Exception as ex:
     src = re.sub(r'\s*<p class="hero-meta" id="sizeLine">.*?</p>', "", src, count=1, flags=re.S)
+    #  The boxes fall back to the RELEASE's number alone, large: a build
+    #  that cannot count the development line must not show a placeholder.
+    src = re.sub(r'<strong data-size="\w+">…</strong>(<span>.*?</span>)'
+                 r'<small data-release-line><span data-inv="(\w+)">([^<]*)</span>.*?</small>',
+                 r'<strong data-inv="\2">\3</strong>\1', src, flags=re.S)
     open(page, "w", encoding="utf-8").write(src)
     print("size line: REMOVED -- could not count (%s)" % ex)
     sys.exit(0)
 for k, v in vals.items():
-    src = src.replace('<span data-size="%s">…</span>' % k, '<span data-size="%s">%s</span>' % (k, v))
+    #  Any element may carry the hook (a <span> in the size line, a <strong>
+    #  in the hero's boxes).
+    src = re.sub(r'(<(\w+) data-size="%s">)…(</\2>)' % k,
+                 lambda m, v=v: m.group(1) + v + m.group(3), src)
 open(page, "w", encoding="utf-8").write(src)
 print("size line: " + ", ".join("%s %s" % kv for kv in vals.items()))
 PY

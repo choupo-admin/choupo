@@ -182,6 +182,8 @@
   .proof:first-child { border-left: 0; }
   .proof strong { display: block; color: var(--white); font-size: 27px; line-height: 1.1; }
   .proof span { display: block; margin-top: 6px; color: #adbbb5; font-size: 13px; }
+  .proof small { display: block; margin-top: 5px; color: #8fa39b; font-size: 12px; }
+  .proof small span { display: inline; margin-top: 0; color: inherit; font-size: inherit; }
 
   .principle-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 64px; align-items: start; }
   .principle-copy p { color: var(--muted); font-size: 17px; }
@@ -449,10 +451,18 @@
   </div>
   <div class="hero-proof">
     <div class="wrap proof-grid">
-      <div class="proof"><strong data-inv="components">603</strong><span>curated pure-component records</span></div>
-      <div class="proof"><strong data-inv="mixtureParameterRecords">268</strong><span>mixture-parameter records — NRTL, Wilson, UNIQUAC, Henry, Pitzer, eNRTL</span></div>
-      <div class="proof"><strong data-inv="unitOperations">50</strong><span>unit-operation models across four engines</span></div>
-      <div class="proof"><strong data-inv="runnableCases">393</strong><span>runnable tutorial cases</span></div>
+      <!--  TWO LINES, TWO HOMES (2026-11-13).  The large number is the
+           DEVELOPMENT LINE's, counted from the tree being published and
+           injected by bin/buildSite (the size line's mechanism: nothing is
+           typed, and a build that cannot count falls back to the release's
+           number alone).  The small line is the stable RELEASE's, from its
+           own artefact (data-inv, held by check_release_identity).  The boxes
+           used to show the release alone, so a visitor read 603 components
+           above a button that opens an app with more.  -->
+      <div class="proof"><strong data-size="components">…</strong><span>curated pure-component records</span><small data-release-line><span data-inv="components">603</span> in <span data-inv="release">Choupo-2608</span></small></div>
+      <div class="proof"><strong data-size="mixtureParameterRecords">…</strong><span>mixture-parameter records — NRTL, Wilson, UNIQUAC, Henry, Pitzer, eNRTL</span><small data-release-line><span data-inv="mixtureParameterRecords">268</span> in <span data-inv="release">Choupo-2608</span></small></div>
+      <div class="proof"><strong data-size="unitOperations">…</strong><span>unit-operation models</span><small data-release-line><span data-inv="unitOperations">50</span> in <span data-inv="release">Choupo-2608</span></small></div>
+      <div class="proof"><strong data-size="runnableCases">…</strong><span>runnable tutorial cases</span><small data-release-line><span data-inv="runnableCases">393</span> in <span data-inv="release">Choupo-2608</span></small></div>
     </div>
   </div>
 </header>
