@@ -84,30 +84,36 @@ before any capital (`grossMargin_RM`, `grossMargin_RM_UT`, DEV.md 4c C57):
 
 | | M EUR/yr |
 |---|---|
-| revenue R (ammonia at 1.00 EUR/kg) | 387.73 |
-| raw materials C_RM (H₂ at 4.50 EUR/kg, N₂ at 0.05 EUR/kg) | 331.65 |
-| **R − C_RM** — the margin of stage 1 | **56.08** |
-| utilities C_UT, of which: | 31.50 |
+| revenue R (ammonia at 0.530 EUR/kg) | 206.09 |
+| raw materials C_RM (H₂ at 8.0 EUR/kg, N₂ at 0.0175 EUR/kg) | 566.43 |
+| **R − C_RM** — the margin of stage 1 | **−360.33** |
+| utilities C_UT, of which: | 32.42 |
 | · electricity for the four compressors | 11.35 |
-| · molten salt for the feed preheater | 25.91 |
-| · ammonia refrigeration for the chiller | 9.10 |
-| · cooling water | 0.91 |
+| · molten salt for the feed preheater | 26.40 |
+| · ammonia refrigeration for the chiller | 9.41 |
+| · cooling water | 0.92 |
 | · LP steam on two flash drums | 0.03 |
-| · HP steam raised by the converter (a **credit**) | −15.81 |
-| **R − C_RM − C_UT** — the margin with the energy priced | **24.58** |
+| · HP steam raised by the converter (a **credit**) | −15.69 |
+| **R − C_RM − C_UT** — the margin with the energy priced | **−392.75** |
 
 Hydrogen is priced **as the base case prices it**, as a purchased raw
-material at an author-set 4.50 EUR/kg. The base data carry no electrolyser
-specific consumption, so the hydrogen is not priced through electricity
-here; the electrolyser and its power are outside this battery limit, inside
-that price.
+material at the 8.0 EUR/kg ACER gives as the average cost of renewable
+(RFNBO) hydrogen in the EU (cited in `constant/economics`; the source states
+a cost, and that the plant pays it at its fence is the case's reading). The
+base data carry no electrolyser specific consumption, so the hydrogen is not
+priced through electricity here; the electrolyser and its power are outside
+this battery limit, inside that price.
 
 The margin with the energy is an **upper bound**, and the run says so: the
 `StorageFlash` must cool to −35 °C and the coldest catalogue utility boils
 at −33.3 °C, so that 0.74 MW is listed as unserved, as in the base case.
-And every price is an author-set assumption (`constant/economics`), chosen
-so the appraisal runs: read the margins as the shape of the problem, not
-as a market forecast.
+Every price is a cited public figure (`constant/economics`): the ammonia is
+sold at the EU's 2025 import unit value of conventional ammonia (0.530
+EUR/kg), the hydrogen bought at ACER's 8.0 EUR/kg. At those prices the
+margin is **negative before any energy is bought** (−360 M EUR/yr, the
+hydrogen alone costing 2.7 times the ammonia's price): the margins show
+the shape of the problem, not a market forecast, and say what price the
+product would need, not what the market pays.
 
 ### The pinch: what the next stage can recover
 
@@ -121,7 +127,7 @@ as a market forecast.
 | pinch | at the hot end: 733.15 K hot / 723.15 K cold, ΔT_min 10 K |
 
 The converter effluent is hot enough to preheat the converter's own feed
-entirely: the 25.91 M EUR/yr of molten salt is the duty a process-to-process
+entirely: the 26.40 M EUR/yr of molten salt is the duty a process-to-process
 match can carry instead. That match is the feed/effluent exchanger the
 basic-design case installs, and the margin it reaches is that case's.
 
@@ -134,7 +140,7 @@ METHOD HYPOTHESES). It is served by the declared steam generation instead.
 
 Sized on assumed U values (the base case's own, from before its
 exchangers were designed) and costed by Turton, the fixed capital is
-41.4 M EUR and the NPV −493 M EUR at the base case's appraisal knobs. The
+42.1 M EUR and the NPV −3 325 M EUR at the base case's appraisal knobs. The
 estimate is Class 4 (−30 % / +50 %), and with this hydrogen price there is
 no IRR: the base case's README says why that is a price, not a defect.
 
@@ -145,50 +151,61 @@ economics pass moves each input **alone** to two ends and prices the same
 converged run again, through the same cash flow — a tornado, printed sorted
 by NPV swing and written to `reports/economics/sensitivity.csv`. The FCI's
 ends are the declared accuracy band itself (`relative accuracyBand;`), so
-the −30 % / +50 % finally reaches the NPV; every other end is an author-set
-assumption, said so in the postDict: the prices and the three utility bills
-±20 %, the discount rate 8 % / 12 %, the stream factor 0.85 / 0.95.
+the −30 % / +50 % finally reaches the NPV. The three **prices' ends are
+cited**: the lowest and highest figure the sources span (ammonia 0.439,
+USGS US Gulf Coast FOB 2025, to 0.726 EUR/kg, the EU import unit value in
+January-September 2026; hydrogen 4.95, the price ammonia producers said they
+would pay in the second European Hydrogen Bank auction, to 10.0 EUR/kg, the
+top of ACER's 7-10 range; nitrogen 0.0159 to 0.0175, OIES Table 2's six
+"Present" values), each with its arithmetic in `constant/economics`. The
+three utility bills ±20 %, the discount rate 8 % / 12 % and the stream
+factor 0.85 / 0.95 are the customary round figures, not cited.
 
 | input (low / high end) | NPV at low | NPV at high | swing |
 |---|---|---|---|
-| H₂ price (3.60 / 5.40 EUR/kg) | −24.60 | −961.60 | 937.00 |
-| NH₃ price (0.80 / 1.20 EUR/kg) | −954.22 | −31.99 | 922.23 |
-| discount rate (8 % / 12 %) | −540.94 | −452.88 | 88.06 |
-| molten-salt bill, `hitecSalt` (×0.8 / ×1.2) | −454.29 | −531.91 | 77.62 |
-| **FCI, the accuracy band** (28.97 / 62.08 M EUR) | −468.75 | −533.69 | 64.94 |
-| N₂ price (0.04 / 0.06 EUR/kg) | −468.99 | −517.21 | 48.22 |
-| HP-steam credit, `steamGenerationHP` (×0.8 / ×1.2) | −516.78 | −469.42 | 47.35 |
-| stream factor (0.85 / 0.95) | −472.48 | −513.72 | 41.24 |
-| electricity bill (×0.8 / ×1.2) | −476.10 | −510.11 | 34.01 |
+| H₂ price (4.95 / 10.0 EUR/kg) | −1 737.26 | −4 366.05 | 2 628.79 |
+| discount rate (8 % / 12 %) | −3 728.31 | −2 988.21 | 740.10 |
+| NH₃ price (0.439 / 0.726 EUR/kg) | −3 535.36 | −2 871.74 | 663.62 |
+| stream factor (0.85 / 0.95) | −3 147.86 | −3 502.03 | 354.18 |
+| molten-salt bill, `hitecSalt` (×0.8 / ×1.2) | −3 285.40 | −3 364.49 | 79.09 |
+| **FCI, the accuracy band** (29.44 / 63.09 M EUR) | −3 300.20 | −3 366.19 | 66.00 |
+| HP-steam credit, `steamGenerationHP` (×0.8 / ×1.2) | −3 348.45 | −3 301.44 | 47.01 |
+| electricity bill (×0.8 / ×1.2) | −3 307.94 | −3 341.95 | 34.01 |
+| N₂ price (0.0159 / 0.0175 EUR/kg) | −3 321.18 | −3 325.04 | 3.86 |
 
-M EUR; the base NPV is −493.10 M EUR. What it teaches:
+M EUR; the base NPV is −3 324.94 M EUR. What it teaches:
 
-* **The two prices decide, the capital does not.** A ±20 % move of either
-  the hydrogen or the ammonia price swings the NPV by about 0.93 G EUR —
-  fourteen times the whole −30 / +50 % capital band. At this stage a better
-  capital estimate cannot rescue or sink the project; the margin R − C_RM
-  can. The capital band also moves the NPV about twice as far as the
-  capital itself, because 0.180 FCI rides inside COM_d every year.
-* **No single input flips the sign.** Hydrogen at 3.60 EUR/kg leaves the
-  NPV at −24.6 M EUR (an IRR of 5.84 %, below the 10 % rate); ammonia at
-  1.20 EUR/kg at −32.0 M EUR (IRR 5.15 %). The NPV is linear in each price,
-  so the two break-evens read straight off the table: hydrogen at about
-  3.55 EUR/kg with ammonia at 1.00, or ammonia at about 1.21 EUR/kg with
-  hydrogen at 4.50. Both moving together is a different question — a
-  one-at-a-time sensitivity does not ask it, by construction.
+* **The hydrogen price decides, the capital does not.** The hydrogen range
+  the sources span swings the NPV by 2.6 G EUR — forty times the whole
+  −30 / +50 % capital band (66 M EUR) — and the ammonia range by 0.66 G EUR,
+  ten times. At this stage a better capital estimate cannot rescue or sink
+  the project; the margin R − C_RM can. The capital band also moves the NPV
+  about twice as far as the capital itself (66 M EUR for a 33.6 M EUR spread
+  of FCI), because 0.180 FCI rides inside COM_d every year.
+* **No single input flips the sign, and no end of any price comes close.**
+  Hydrogen at 4.95 EUR/kg leaves the NPV at −1 737 M EUR, ammonia at 0.726
+  at −2 872 M EUR; neither has an IRR. This case declares no `breakEven`;
+  the base case prints the exact ones (its README: ammonia at 1.93 EUR/kg,
+  3.6 times the market price, or hydrogen at 1.79 EUR/kg), and a reading
+  across this table would not be exact, because the tax credit on losses
+  changes slope where the plant starts to pay tax. Both moving together is
+  a different question — a one-at-a-time sensitivity does not ask it, by
+  construction.
 * **Two bars point the "wrong" way, and both say the same thing.** A higher
   discount rate makes the NPV *less* negative, and more hours on stream make
   it *worse*: the plant loses money on every hour it runs (R − COM_d =
-  −69.4 M EUR/yr), so discounting those losses harder, or running fewer
-  hours, helps.
-* **The molten-salt bill outranks the capital band** — the 25.9 M EUR/yr
+  −541.1 M EUR/yr), so discounting those losses harder, or running fewer
+  hours, helps. Both bars are now larger than the capital band's.
+* **The molten-salt bill outranks the capital band** — the 26.4 M EUR/yr
   that the pinch says a feed/effluent match can avoid (the basic-design
   case installs it).
 
 It is a **sensitivity, not an uncertainty analysis**: no probability is
 attached to any end, and inputs that move together in a market (the
 hydrogen and the electricity prices) are moved one at a time. The table's
-own header says so.
+own header says so. And the NPV includes the engine's assumed tax credit on
+losses (869.9 M EUR of it here: the base case's README says what that
+reading assumes).
 
 ## What this case does NOT claim
 
