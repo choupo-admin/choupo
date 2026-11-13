@@ -1616,6 +1616,40 @@ the bypassed share grow as the bubbles grow; compare the row with the bubbles
 frozen at their size at the distributor.
 \end{tryit}
 
+\subsubsection*{The laboratory}
+
+A button near the top of the page, \emph{Open the laboratory}, opens a second
+tab in which the same arithmetic is drawn as one to three columns side by side,
+one kind of particle in each, under the same gas and one velocity control.
+Its task, in one sentence: \emph{I turn up the gas on a bed of particles, I
+watch what the bed does and I read the instruments, and from my own readings I
+find the velocity at which it fluidises and the one at which it is carried
+away.}  Below the minimum fluidisation velocity the dots sit still at the
+packed height; above it the bed is drawn at the page's computed height, with
+voids of Mori and Wen's diameter rising at the computed bubble velocity, as
+many as the computed bubble fraction asks for; above a particle's terminal
+velocity the dots leave through the top and the column empties.  Each column
+carries its instruments (pressure drop, bed height, regime), and a notebook
+records the readings going up and coming down and plots them.  The minimum
+fluidisation velocity and the terminal velocity stay hidden until the reader
+types the values read off his own points; then the page's values appear, with
+the difference.  The dots are a drawing, not a simulation: their number, size
+and motion are not to scale, and how fast a column empties is not computed.
+The kinds of particle are not mixed in one column, because the page computes
+each alone and a mixed bed has rules (segregation, a mixture's minimum
+fluidisation velocity) it does not have.  A cohesive group C powder is drawn
+packed at every velocity, with the page's sentence on why.  The record is
+\file{docs/design/fluidisation-virtual-laboratory.md}.
+
+\begin{tryit}
+In the laboratory, raise the gas slowly and record a reading at each step:
+the pressure drop of the sand-like column climbs and then stops climbing
+while its bed starts to swell.  Read the knee off your points, type it, and
+compare with the page.  Go on to above the catalyst-like particles' terminal
+velocity, watch that column empty, then come back down and record again: the
+pressure drop no longer returns to where it was, because the bed has gone.
+\end{tryit}
+
 \begin{pitfall}
 \textbf{That a fluidised bed's pressure drop grows with the gas flow.}  Once
 the bed is fluidised the gas carries its weight and nothing more; the extra gas
