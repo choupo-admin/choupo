@@ -26,7 +26,7 @@ what slices 1 and 2 built.
   (`SizeDistribution.cpp:203-247`): every stream's bins were its OWN.
 * Readers and writers of `psd`: `Cyclone.cpp:87-193`, `BagFilter.cpp:109-159`,
   `GasSolidSplitter.cpp:72-143` (table or inline law), `SprayDryer.cpp:1373`
-  (its own Rosin-Rammler bins), `PneumaticConveyor.cpp:135-290`,
+  (its own Rosin-Rammler bins), `PneumaticConveyor.cpp:139-334`,
   `Crystalliser.cpp:614` and `:936` (its own population-balance bins),
   `UnitInputs.cpp:74-84` and `:283-293` (the stream -> unit dict bridge),
   `StreamStateIO.cpp:553`, `:963` (write) and `:3259-3326` (read),
