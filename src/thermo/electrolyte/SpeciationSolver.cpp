@@ -1150,7 +1150,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         const double dev = PitzerHMW::verify(0, &stateIons);
         if (!(dev < 1.0e-9))
             throw std::runtime_error("speciation: PitzerHMW self-check FAILED "
-                "(single-salt reduction vs PitzerSingleSalt max rel deviation "
+                "(single-salt reduction vs PitzerSingleSalt, max rel deviation"
+                " of gamma_pm and phi, "
                 + std::to_string(dev) + " > 1e-9) -- the multi-ion summation has "
                 "a bug; fix the index/sum, do not loosen the tolerance");
     }

@@ -1,0 +1,29 @@
+// [imported] origin "data/standards/parameters/Pitzer/psi/B3O3OH4-Cl-Na.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer ternary mixing parameter psi(B3O3OH4,Cl|Na) --- the two anions B3O3OH4 and Cl with the common cation Na.
+  Role: the triple-ion correction, active in the pitzerHMW engine only when the three ions coexist; it refines theta and the binary sets.
+  Source: Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 4, p. 2773, read from the page image.
+  Fitted by the authors at 25 C: in-sample.  No temperature dependence is given.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind psi;
+a B3O3OH4;
+b Cl;
+c Na;
+value -0.024;
+source "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 4, p. 2773 (25 C)";
+
+provenance
+{
+    origin        literature;
+    source        "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 4, p. 2773";
+    method        "value transcribed from the paper's table; no calculation";
+    readings      "psi03: read three times (text layer, page image at 200 dpi, page image at 300 dpi), data/curation/batches/boron_c198/readings.tsv";
+    fitBasis      inSample;   // the paper's own fit: these values reproduce the paper, they do not test it
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "25 C: the paper gives no temperature dependence for any of these terms";
+    }
+}

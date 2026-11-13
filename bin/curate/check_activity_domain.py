@@ -55,9 +55,19 @@ WHAT IT CHECKS.
           it with the Edwards sentence, edwards02_table7_vle (I <= 1.55)
           does not.
 
-WHAT IT DOES NOT CHECK.  Whether a declared band is TRUE of its model (that
-is the source the declaration cites, and the measured band edge in
-davies01_band_edge); a temperature domain (checked where a model's
+ (c) DAVIES' BAND AGAINST MEASUREMENTS (EL-09, 2026-11-13).  The band's
+     criterion is a stated error limit: 10 % in gamma_pm for the MEDIAN 1-1
+     and 2-1 salt of the evaluated 298.15 K tables in
+     data/curation/electrolytes.  The arm recomputes both medians (Davies at
+     A = 0.51, stoichiometric I, no ion pairs) and holds Davies' declared
+     I_max within 0.1 of each, and requires the banner to state the
+     criterion.  Sabotage by hand: I_max 0.5 -> 0.3 in the source (no
+     rebuild needed, the arm reads the declaration) -> FAIL (c) twice,
+     naming 0.52 and 0.56.
+WHAT IT DOES NOT CHECK.  Whether a declared band is TRUE of any model other
+than Davies (that is the source the declaration cites; for Edwards, its
+paper), or Davies' claim about a 2- anion's ion pairs (it cites the review
+table, which no gate recomputes); a temperature domain (checked where a model's
 PARAMETERS are read, e.g. each Edwards record's Trange); the
 dominant-solvent criterion of the mixed-solvent composite (`ionic davies;
 molecular NRTL`), which no source in the tree states and is therefore NOT
@@ -187,6 +197,85 @@ if subclasses < 3:
                 ">= 3 (davies, pitzerHMW, edwardsPitzer) -- the scan went blind")
 
 
+# ------------------------------------------- (c) Davies' band vs measurements
+# EL-09 (2026-11-12 electrolyte review): the band's criterion is a stated
+# error limit -- 10 % in gamma_pm for the MEDIAN 1-1 and 2-1 salt of the
+# evaluated 298.15 K tables in data/curation/electrolytes.  Recompute both
+# medians here (Davies at A = 0.51, stoichiometric I, linear interpolation in
+# I between table rows) and hold the declared I_max to them (|diff| <= 0.1),
+# so a band re-declared without re-measuring, or a table set that moves the
+# medians, fails.  This is the one place a declared band is checked TRUE.
+DAV_CPP = SRC / "thermo/electrolyte/AqueousActivity.cpp"
+CURATION = ROOT / "data/curation/electrolytes"
+ZION = {"Ba": 2, "Ca": 2, "Mg": 2, "Sr": 2, "Zn": 2, "Cd": 2, "Cs": 1,
+        "H": 1, "K": 1, "Li": 1, "Na": 1, "NH4": 1, "Rb": 1,
+        "Br": 1, "Cl": 1, "I": 1, "F": 1, "NO3": 1, "NO2": 1, "OH": 1,
+        "Acetate": 1, "H2PO4": 1, "HPO4": 2, "SO4": 2}
+
+
+def davies_lg(z, I):
+    s = I ** 0.5
+    return -0.51 * z * z * (s / (1.0 + s) - 0.3 * I)
+
+
+def crossing_10pct(rows, zc, za):
+    import math
+    g = math.gcd(zc, za)
+    nc, na = za // g, zc // g
+    pts = []
+    for m, gmeas in rows:
+        I = 0.5 * (nc * zc * zc + na * za * za) * m
+        lgpm = (nc * davies_lg(zc, I) + na * davies_lg(za, I)) / (nc + na)
+        pts.append((I, abs(100.0 * (10.0 ** lgpm - gmeas) / gmeas)))
+    if pts[0][1] > 10.0:
+        return pts[0][0]                     # already beyond: the first I
+    for (I0, e0), (I1, e1) in zip(pts, pts[1:]):
+        if e1 > 10.0:
+            return I0 + (I1 - I0) * (10.0 - e0) / (e1 - e0)
+    return pts[-1][0]                        # never crosses inside the table
+
+
+m_imax = re.search(r"class\s+DaviesActivity\b.*?d\.I_max\s*=\s*([0-9.]+)\s*;",
+                   code[DAV_CPP], re.S)
+classes = {"1-1": [], "2-1": []}
+for d in sorted(CURATION.glob("*-*")) if CURATION.is_dir() else []:
+    cat, an = d.name.split("-", 1)
+    if cat not in ZION or an not in ZION:
+        continue
+    for f in (d / "constant/experiments").glob("*.dat"):
+        t = f.read_text(errors="replace")
+        if not re.search(r"^temperature\s+298\.15\s*;", t, re.M):
+            continue
+        blk = re.search(r"\ndata\s*\((.*?)\);", t, re.S)
+        if not blk:
+            continue
+        rows = [tuple(map(float, ln.split()[:2]))
+                for ln in blk.group(1).strip().splitlines()
+                if ln.strip() and not ln.strip().startswith("//")]
+        key = f"{ZION[cat]}-{ZION[an]}"
+        if rows and key in classes:
+            classes[key].append(crossing_10pct(rows, ZION[cat], ZION[an]))
+medians = {}
+if not m_imax:
+    fail.append("(c) Davies' I_max could not be read from AqueousActivity.cpp"
+                " -- the arm cannot run, and a check that cannot run must not"
+                " pass")
+elif len(classes["1-1"]) < 30 or len(classes["2-1"]) < 12:
+    fail.append(f"(c) only {len(classes['1-1'])} 1-1 and {len(classes['2-1'])}"
+                " 2-1 evaluated 298.15 K tables found (floors 30 / 12) --"
+                " collapsed scan")
+else:
+    import statistics
+    imax = float(m_imax.group(1))
+    for k, v in classes.items():
+        medians[k] = statistics.median(v)
+        if abs(medians[k] - imax) > 0.1:
+            fail.append(f"(c) Davies declares I_max = {imax} but the median"
+                        f" {k} salt reaches 10 % in gamma_pm at I ="
+                        f" {medians[k]:.2f} -- re-measure the band, or restate"
+                        " its criterion")
+
+
 # ------------------------------------------------------------- (b) behaviour
 def run(case):
     r = subprocess.run([str(PROPS), str(case)], capture_output=True,
@@ -225,6 +314,10 @@ else:
     elif want not in out:
         fail.append("(b1) Davies at I = 1.00 did not announce the model's "
                     f"sentence verbatim: '{want}'")
+    elif "trustworthy to I ~ 0.5 mol/kg (gamma_pm within 10 % of measured" \
+            not in out:
+        fail.append("(c) the Davies banner no longer states what"
+                    " 'trustworthy' means (its measured 10 % criterion)")
     rc, out = probe(op("d025", "davies", "0.25"))
     if rc != 0 or "beyond its" in out:
         fail.append("(b2) Davies at 0.25 mol/kg (inside its band) announced a "
@@ -271,6 +364,10 @@ print(f"[activity-domain] OK the activity models declare their own domain "
       "name branch or inline band in SpeciationSolver/ScalingScan/Exchange); "
       "Davies announces beyond I = 0.5 with its own sentence and not inside "
       "it, PitzerHMW states no bound and announces nothing, Edwards announces "
-      "beyond its paper's ~6 mol/kg; NOT checked: whether a declared band is "
-      "true, temperature domains, the mixed-solvent dominant-solvent "
+      "beyond its paper's ~6 mol/kg; Davies' I_max is within 0.1 of the "
+      f"median 10 %-in-gamma_pm crossing of the evaluated 25 C tables (1-1 "
+      f"{medians.get('1-1', float('nan')):.2f}, 2-1 "
+      f"{medians.get('2-1', float('nan')):.2f}) and its banner states that "
+      "criterion; NOT checked: whether the Edwards band is true, temperature "
+      "domains, a 2- anion's ion pairs, the mixed-solvent dominant-solvent "
       "criterion (no source states one)")

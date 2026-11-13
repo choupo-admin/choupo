@@ -77,3 +77,23 @@ VERIFIED can be filled for single-salt Pitzer and Davies (the independent
 script) and for the two round-off identities.  VALIDATED can be filled for
 Pitzer on NaCl and KCl at 25 C and NaCl over temperature; it stays empty for
 eNRTL (in-sample at 25 C, failing off it).
+
+## 6. Note on `enrtl_kernel_probe.cpp` after the fixes (2026-11-13)
+
+The probe is the record of the measurements of items 2b and 5, taken at
+56ccdb41ce.  It is NOT maintained and is not to be repaired.  Measured against
+branch `fix/el-03-09` (7d7c8dfa4e), which answers EL-03..09:
+
+* it still compiles, and its `salt` mode still prints the same numbers;
+* its `mixed` mode prints `nan` in the two columns of the segment route
+  (`gpm_segment_mixedRef`, `gpm_segment_yAlc0_Aphi0.3915`).  The probe builds
+  `ENRTLMixedSolvent` with its default parameters, and the fix of EL-06 removed
+  the default of the aqueous pair (`tau_OH_ca`, `tau_ca_OH`): its one home is
+  now the catalogue record `parameters/eNRTL/Na-Cl.dat`, read by the
+  `ENRTLMixedSolvent` operation, and the kernel carries a quiet NaN until a
+  caller fills it.
+
+So `item5_mixed_solvent_kernels.tsv` cannot be regenerated with `run_all.sh`
+once that branch is on main.  The table stands as measured at 56ccdb41ce; a
+new measurement of the segment route goes through the operation
+(`ENRTLMixedSolvent` in a propsDict), which is what a case runs.

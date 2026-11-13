@@ -3446,6 +3446,62 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C378, THE PILOT'S THRESHOLDS CORRECTED BEFORE IT RUNS (2026-11-13,
+> night; the reviewing session's rows PP-01..PP-04 on the plan, all
+> taken).**  MEASURED on the points (water on the reference route, ethanol
+> on the engine's own scaled 25 C volume, the pilot's method): additive
+> volumes are 1.76 % low on average at 298.15 K and 2.06 % at 323.15 K
+> against the first laboratory (2.11 and 2.52 % against the second), so
+> the 2.0 % written yesterday FAILED before any run -- it had been computed
+> with a MEASURED ethanol leaf.  The ethanol leaf itself is +0.23, -0.85
+> and -1.91 % at 298, 323 and 348 K; the rest is the excess volume the
+> rule cannot have (about -1 cm3/mol at x = 0.4).  A MASS-FRACTION AVERAGE
+> of the two densities scores 1.0 to 1.4 %, BETTER than the right rule, so
+> an accuracy score cannot tell the mixing rule apart.  REWRITTEN, final:
+> (1) accuracy, additive volumes at 0.1 MPa: first laboratory AAD <= 1.9 %
+> and maximum <= 3.5 % at 298.15 K, <= 2.2 % and <= 3.7 % at 323.15 K;
+> second laboratory <= 2.3 % and <= 3.5 %, <= 2.7 % and <= 3.6 % (each the
+> measured figure rounded up to the next tenth plus a tenth; the two
+> laboratories differ by 0.2 point between themselves, so nothing tighter
+> is meaningful; the table says the figure is the missing excess volume);
+> 348.15 K is reported with the leaf's error and NOT scored; (2) the leaf:
+> pure ethanol at 298.15 K within 0.3 % of the measured 785.7 kg/m3; (3)
+> THE MECHANISM, separate from accuracy: at x = 0.5 and 298.15 K the kernel
+> reproduces the additive-volume density computed from the two leaves it
+> reads (836.95 kg/m3 with today's leaves) to 1e-9 and differs from the
+> mass-fraction average (846.41) by more than 1 kg/m3; (4) the saturated
+> water anchors are asked at the saturation pressure of their temperature,
+> not at the rounded pressure the table prints; (5) the behavioural witness
+> runs for EACH method a pump or a CSTR can receive (the pure reference,
+> ideal mixing, the solution law, the measurement).  The other thresholds
+> of the block below stand.
+
+> **C384 (Vitor, 2026-11-13: "o EduTools ainda nao foi update?").**
+> MEASURED the same turn: THE SITE HAS NOT PUBLISHED SINCE 2026-11-12
+> 11:22 UTC (4a3d79cca), fourteen hours and every landing of the day.  TWO
+> CAUSES, both in the publication workflow: (1) of its last 60 runs, 54
+> were CANCELLED by the next push (`cancel-in-progress: true` on a
+> ten-minute job, and the laptop pushed every few minutes) and (2) the
+> ones that finished FAILED the browser smoke on ONE page,
+> `electrolyte-models`: one of the six engine runs it starts on open exits
+> 1 in the WebAssembly build, while its native tests pass.  The architect
+> had been telling him the site publishes itself and had not once looked
+> at the workflow's verdict.  ALSO FOUND: the `ci` workflow has NOT PASSED
+> ONCE in its last 300 runs (since 11-10): its `--fast` fails on rows that
+> differ between the runner and the laptop -- energy-closure residuals of
+> a few microwatts held to a relative 1e-4, iteration counts of a fit, and
+> since yesterday the property-route bench, which is bit-for-bit by design
+> and was wired into `--fast`.  A CI that is always red reports nothing.
+> DECIDED: (a) a general finds and fixes the WASM failure and adds the
+> native test that would have caught it (every engine run a page starts on
+> open); the workflow lets a publication in progress finish; (b) after
+> every landing the architect reads `gh run list` for the publication's
+> verdict and says it; (c) CI is made green honestly in its own slice
+> after the door lands (the golden reader is in that branch): a residual
+> is compared on an absolute scale tied to the conservation tolerance, an
+> iteration count is not a golden, and the bench declares the platform it
+> was recorded on and says NO SUBJECT elsewhere.
+
 > **C378, THE PILOT'S PLAN IS WRITTEN AND RULED (2026-11-13; branch
 > `c378-pilot-plan`, c48786fd3; its document, the density pilot plan,
 > lands with the door, whose files it cites).**  MEASURED REACH: 32 shipped

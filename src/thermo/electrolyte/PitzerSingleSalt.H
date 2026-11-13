@@ -66,10 +66,16 @@ Description
     (PHREEQC's pitzer.dat, USGS public domain, is a convenient compilation
     CHANNEL for the same values; the citation is the primary paper.)
 
-    SCOPE: single salt, 0-6 mol/kg, 25 C -- now 1:1, 2:1, 1:2 AND 2:2 (the
-    beta2/alpha2 term).  NOT yet covered (honest gaps, flagged for later slices):
-    temperature dependence of the parameters; multi-salt mixing terms (theta,
-    psi).  Those arrive with the multi-ion model.
+    SCOPE: single salt, 0-6 mol/kg -- 1:1, 2:1, 1:2 AND 2:2 (the beta2/alpha2
+    term).  TEMPERATURE: A_phi(T) always follows the solvent (the Born-Bjerrum
+    factor, aPhi() below); beta0, beta1 and Cphi follow T ONLY where the pair
+    record declares a T-correlation form (`tCorrelationForm linearSlopes` --
+    the calorimetric dbeta*_dT slots -- or `silvesterPitzer1977` -- the SP77
+    eqs 30-32 as a deviation from the 25 C values); a record with neither
+    (`constant298`) keeps its 25 C virials at every T, and the declared span
+    (ElectrolyteTemperatureSpan.H) announces a run outside it.  beta2 has no
+    T-extension.  NOT covered here: multi-salt mixing terms (theta, psi) --
+    those live in the multi-ion PitzerHMW engine.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -103,7 +109,8 @@ public:
     // -> byte-identical at every T to the frozen-beta form; the 25 C
     // activity anchor is NEVER moved (the correction vanishes at 298.15 K).
     // Fitted at curation time (bin/curate/fit_lphi_pitzer.py) against the
-    // Parker NSRDS-NBS 2 Phi_L dataset; carried per pair in pairs.dat.
+    // Parker NSRDS-NBS 2 Phi_L dataset; carried per pair in the pair record
+    // (parameters/Pitzer/pairs/<cation>-<anion>.dat).
     double dbeta0_dT = 0.0;  // [1/K]
     double dbeta1_dT = 0.0;  // [1/K]
     double dCphi_dT  = 0.0;  // [1/K]
@@ -113,8 +120,8 @@ public:
     // the catalogue's 25 C surface -- the same doctrine as the linear slots
     // (the T-extension never touches the validated 25 C values):
     //   beta0(T) = beta0_25 + [f0_SP(T) - f0_SP(298.15)]
-    // Present when the pair record carries a tFunction block; overrides the
-    // linear slots.  (Cross-check: the SP77 d beta0/dT at 25 C is 7.15e-4,
+    // Read when the pair record declares `tCorrelationForm
+    // silvesterPitzer1977;` (its sp_q* fields); overrides the linear slots.  (Cross-check: the SP77 d beta0/dT at 25 C is 7.15e-4,
     // the Parker-calorimetric linear fit gave 7.58e-4 -- 6 % apart, two
     // independent data families.)
     bool   spForm = false;
@@ -158,9 +165,10 @@ public:
 
     // A_phi(T): the 25 C osmotic Debye-Huckel slope scaled by the Born-Bjerrum
     // factor (eps_w(T), rho_w(T)); = 0.3915 at 25 C.  The virial parameters
-    // (beta0, beta1, Cphi) are kept at their 25 C values -- their temperature
-    // derivatives (Silvester-Pitzer 1977) are a later slice; A_phi(T) carries the
-    // dominant long-range temperature dependence.
+    // follow T through beta0T/beta1T/CphiT below -- the record's declared
+    // linear slots or SP77 functions, as a deviation that vanishes at
+    // 298.15 K; a record declaring neither keeps them at their 25 C values,
+    // and then A_phi(T) is the ONLY temperature dependence of the model.
     double aPhi(double T) const { return A_phi * SolventProperties::debyeHuckelFactor(T); }
 
     // Virial parameters at T (linear Silvester-Pitzer correction; see above).

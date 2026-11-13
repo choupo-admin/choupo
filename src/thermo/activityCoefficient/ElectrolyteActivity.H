@@ -27,10 +27,22 @@ License
 \*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*\
-  ElectrolyteActivity -- the electrolyte (ionic) activity model, registered in
-  the SAME ActivityModel factory as ideal/NRTL/Wilson and selected the SAME way:
+  ElectrolyteActivity -- the electrolyte (ionic) activity model, an
+  ActivityModel like ideal/NRTL/Wilson, selected in the case's
+  constant/thermoPhysPropDict through the aqueous activity slot:
 
-        activityModel { model pitzer; }      // (eNRTL is the next option)
+        equilibrium
+        {
+            formulation electrolyteGammaPhi;
+            aqueous { activityModel { model Pitzer; } }  // or eNRTL | OlssonNaOH
+            ...
+        }
+
+  The spelling is the BUILDER's and is case-sensitive: ThermoPackageBuilder
+  accepts exactly `Pitzer | eNRTL | OlssonNaOH` and refuses any other word by
+  name (`pitzer` included).  It is not a registered factory key -- the builder
+  constructs this model from the resolved assembly; the lower-case "pitzer"
+  is only the name the built model reports (model_ below).
 
   This is the classical, OpenFOAM-style organization: ONE liquid-activity slot,
   one named model, no parallel `electrolyteModel{}` block.  The salt's ions and
@@ -199,7 +211,7 @@ public:
 private:
     std::size_t n_;
     std::vector<std::string> names_;
-    std::string      model_;           // "pitzer" or "eNRTL"
+    std::string      model_;           // "pitzer", "eNRTL" or "OlssonNaOH" (reported name)
     bool             isENRTL_ = false;
     PitzerSingleSalt salt_;            // used when !isENRTL_
     ENRTLSingleSalt  enrtl_;           // used when  isENRTL_

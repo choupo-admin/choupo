@@ -60,8 +60,14 @@ License
     * Molal conversion: ln gamma_pm,m = ln gamma_pm,x - ln(1 + nu m M_s/1000)
       (Eq 74), M_s the mole-average solvent MW.
 
-  PARAMETERS (25 C, defaults = water-ethanol-NaCl):
-    tau_OH_ca / tau_ca_OH   hydrophilic(=water) <-> salt   [Table 2, aqueous]
+  PARAMETERS (25 C; defaults = water-ethanol-NaCl, except the aqueous pair):
+    tau_OH_ca / tau_ca_OH   hydrophilic(=water) <-> salt   [the AQUEOUS pair:
+                            OH == water, so these ARE the salt's water-eNRTL
+                            taus.  NO default here: their home is the
+                            catalogue record parameters/eNRTL/<c>-<a>.dat
+                            (the same record ENRTLSingleSalt/ENRTLMultiSalt
+                            read); ENRTLMixedSolventOp fills them from it
+                            unless the case declares its own.]
     tau_C2_ca / tau_ca_C2   hydrophobic segment <-> salt   [Table 7, fit to
                             Esteso et al., J. Solution Chem. 18 (1989) 277]
     tau_C2_OH / tau_OH_C2   segment binary (water-hexane LLE)      [Table 4]
@@ -85,6 +91,7 @@ License
 #pragma once
 
 #include <cmath>
+#include <limits>
 
 namespace Choupo {
 namespace electrolyte {
@@ -93,7 +100,11 @@ class ENRTLMixedSolvent
 {
 public:
     // ---- published parameters (25 C); defaults = water-ethanol-NaCl --------
-    double tau_OH_ca = 8.886,  tau_ca_OH = -4.549;  // Table 2 (OH == water)
+    // The aqueous pair has NO default (a quiet NaN): its one home is the
+    // catalogue's eNRTL record, read by ENRTLMixedSolventOp (EL-06, the
+    // 2026-11-12 review: this line carried 8.886 beside the catalogue's 8.885).
+    double tau_OH_ca = std::numeric_limits<double>::quiet_NaN();
+    double tau_ca_OH = std::numeric_limits<double>::quiet_NaN();
     double tau_C2_ca = 15.526, tau_ca_C2 =  0.759;  // Table 7 (fit to Esteso)
     double tau_C2_OH = 6.562,  tau_OH_C2 =  3.364;  // Table 4 (water-hexane LLE)
     double alphaIon  = 0.2,    alphaSeg  =  0.3;

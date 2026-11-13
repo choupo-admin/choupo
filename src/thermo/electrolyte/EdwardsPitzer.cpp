@@ -41,9 +41,11 @@ constexpr double kAlpha = 2.0;
 constexpr double kMw_kg = 0.018015;
 
 //  A_phi = 2.303 A_gamma / 3.  A_gamma is 0.5108 at 25 C (Lewis et al. 1961,
-//  App. 4 -- the same anchor the Davies and Pitzer kernels use), and its T
-//  dependence rides the shared solvent factor so no two electrolyte models in
-//  one case can disagree about rho_w(T) and eps_w(T).
+//  App. 4) -- the paper's own anchor, NOT the one the Davies (A = 0.51) or the
+//  Pitzer (A_phi = 0.3915) kernels carry: 0.39213 here, +0.16 % on Pitzer's
+//  (the four anchors are listed in PitzerForm.H).  Its T dependence rides the
+//  shared solvent factor, so the models agree about how rho_w(T) and
+//  eps_w(T) move.
 double aPhi(double T)
 {
     return 2.303 * 0.5108 * SolventProperties::debyeHuckelFactor(T) / 3.0;
