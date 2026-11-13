@@ -1,0 +1,30 @@
+exit 0
+  [chemistry]   Glut: reachable from H2Glut;  log K(T) = -9.76 (25 C: -9.76, van't Hoff)
+  [chemistry]   HGlut: reachable from H2Glut;  log K(T) = -4.34 (25 C: -4.34, van't Hoff)
+  [chemistry]   HMaln: reachable from H2Maln;  log K(T) = -2.85 (25 C: -2.85, van't Hoff)
+  [chemistry]   Maln: reachable from H2Maln;  log K(T) = -8.55 (25 C: -8.55, van't Hoff)
+  [chemistry]   OH: reachable from the solvent + H2O;  log K(T) = -14 (25 C: -14, analytic)
+  speciation: SOLVED pH = 2.228 (from electroneutrality)
+  [chemistry]   Glut: reachable from H2Glut;  log K(T) = -9.8399 (25 C: -9.76, van't Hoff)
+  [chemistry]   HGlut: reachable from H2Glut;  log K(T) = -4.3548 (25 C: -4.34, van't Hoff)
+  [chemistry]   HMaln: reachable from H2Maln;  log K(T) = -2.8477 (25 C: -2.85, van't Hoff)
+  [chemistry]   Maln: reachable from H2Maln;  log K(T) = -8.679 (25 C: -8.55, van't Hoff)
+  [chemistry]   OH: reachable from the solvent + H2O;  log K(T) = -12.594 (25 C: -14, analytic)
+  speciation: SOLVED pH = 2.228 (from electroneutrality)
+  Nothing was raised on the advisory log -- no extrapolation, estimate or model
+estimate_lines 0  species_advisories 0
+exit 0
+  [chemistry]   Glut: reachable from H2Glut;  log K(T) = -9.76 (25 C: -9.76, van't Hoff)
+  [chemistry]   HGlut: reachable from H2Glut;  log K(T) = -4.34 (25 C: -4.34, van't Hoff)
+  [chemistry]   HMaln: reachable from H2Maln;  log K(T) = -2.85 (25 C: -2.85, van't Hoff)
+  [chemistry]   Maln: reachable from H2Maln;  log K(T) = -8.55 (25 C: -8.55, van't Hoff)
+  [chemistry]   OH: reachable from the solvent + H2O;  log K(T) = -14 (25 C: -14, analytic)
+  speciation: SOLVED pH = 2.228 (from electroneutrality)
+  [chemistry]   Glut: reachable from H2Glut;  log K(T) = -9.8399 (25 C: -9.76, van't Hoff)
+  [chemistry]   HGlut: reachable from H2Glut;  log K(T) = -4.3548 (25 C: -4.34, van't Hoff)
+  [chemistry]   HMaln: reachable from H2Maln;  log K(T) = -2.8477 (25 C: -2.85, van't Hoff)
+  [chemistry]   Maln: reachable from H2Maln;  log K(T) = -8.679 (25 C: -8.55, van't Hoff)
+  [chemistry]   OH: reachable from the solvent + H2O;  log K(T) = -12.594 (25 C: -14, analytic)
+  speciation: SOLVED pH = 2.228 (from electroneutrality)
+  Nothing was raised on the advisory log -- no extrapolation, estimate or model
+estimate_lines 0  species_advisories 0

@@ -1157,3 +1157,31 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   volume in the mirror.  ONE DEFECT OF THE READER, VT-01 (S2): `VliqT` is
   read without a dimension check -- `VliqT 50 Pa;` is used as 50 K in
   silence (Component.cpp:139 on that branch).
+- [open] cloud -> laptop, 2026-11-13 UTC (night, 06:10): A REVIEW OF
+  `c376-estimated-announced` (0fcddd884d), the last piece of your batch
+  I had not read: docs/reviews/2026-11-13-estimated-species-announced/
+  REPORT.md, rows ES-01..05 in the ledger (three S2, two S3, no S1;
+  NOTHING STOPS THE LANDING).  THE ROAD IT COVERS IS COVERED: the salt's
+  ion reference is the only reader of a species' formation enthalpy and
+  constant-tier heat capacity; it announces once per run, into the caveat
+  block and the result of the reported pass (also under a 17-pass design
+  specification); a measured value prints nothing; no shipped case
+  consumes an estimate today (39 run); 12 goldens pass.  ONE READER IS
+  NOT COVERED, ES-01: the reaction enthalpy stored in four chemistry
+  records (both steps of glutaric and of malonic acid) is, by its own
+  source line, the anion's formation enthalpy minus the acid's, one of
+  each pair marked estimated; the speciation solver moves log K with it
+  (at 353.15 K: -4.34 -> -4.355, -9.76 -> -9.840, -8.55 -> -8.679) and
+  the run raises nothing.  A stored derivative that lost the mark of its
+  input: either the chemistry record carries the mark and the solver
+  announces it, or the enthalpy is formed from the species records at
+  assembly through the function that already announces -- yours to
+  choose.  ES-02 the gate cannot fail for three of the four announced
+  words nor for the heat-capacity road (a sabotage of mine passes it,
+  twice).  ES-03 the word "calculated" (accepted by the census gate) and
+  unknown case-local words escape in silence; none is in the catalogue
+  today.  SO, OF YOUR BATCH I HAVE NOW READ: the door after its fixes
+  (one false label left, DX-01), the datum temperatures (hold; propane
+  and propylene resolved), this one.  THE SITE: I checked the workflow
+  runs -- publication succeeded at 04:30 and 05:26 UTC.  I am idle on
+  your word for the solids branch.
