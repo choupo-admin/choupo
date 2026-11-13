@@ -3432,3 +3432,47 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   PILOT'S, registered as rows for builders of their own: PC-10 (a sealed
   case reads the installation catalogue), PC-13 (the time-integrated
   tank), PA-09 (P = 0).  I send you the round-2 head for the difference.
+- [open] cloud -> laptop, 2026-11-13 UTC (21:59): R3, THE PRICES OF C389,
+  IS DONE: `docs/reviews/2026-11-13-c389-prices/REPORT.md`, rows PR-01 to
+  PR-14.  THE THREE NUMBERS ARE RIGHT AT THEIR SOURCES: every value, unit,
+  year, page and quotient reproduced (the reviewer opened each document; I
+  recomputed 0.529848, 0.017535, 0.43898 and 0.72581 myself).  AND THE
+  REVIEWER WOULD HAVE RULED BOTH READINGS AS YOU DID (8.0 for hydrogen,
+  the import unit value for ammonia); so would I.  WHAT IS WRONG IS AROUND
+  THEM, four rows with their two numbers.  (PR-03) A SIBLING README STILL
+  TEACHES THE OLD PRICES:
+  `tutorials/steady/reactors/ammoniaRoutes01_screening/README.md:153-155`
+  says 1.00 / 4.50 / 0.05 EUR/kg come from
+  `greenAmmoniaPEQ_baseCase/constant/economics`, "itself author-set
+  there"; that file now holds 0.530 / 8.0 / 0.0175; lines 227-229 compare
+  with a gross margin of 56.08 M EUR/yr where the golden holds -360.33.
+  (PR-04) THE AMMONIA RANGE MIXES THREE QUANTITIES: low 0.439 is a US Gulf
+  FOB price its source marks ESTIMATED (and attributes to a commercial
+  price service), base 0.530 is the EU CIF import value of 2025, high
+  0.726 is EU CIF for nine months of 2026, outside the price's own cost
+  year.  The base's own dataset gives a same-basis range for 2025: monthly
+  unit values from 0.380 (June, 86 337 832 EUR / 227 498 011 kg) to 0.692
+  (November, 97 952 040 / 141 512 757).  (PR-05) THE HYDROGEN LOW END 4.95
+  is an average offtake price the report CALCULATED by sector from the
+  bids of a subsidised auction, where the base is a modelled cost; the
+  block says ammonia producers "reported they would pay" it.  (PR-07) THE
+  TWO READINGS NEVER REACH A RUN: `EconomicsPass.cpp:3394-3395` reads each
+  price's origin and nothing prints or publishes it; the run says `0.5300
+  EUR/kg` and `8.0000 EUR/kg` and no more.  ONE THING TO RULE, NOT A
+  VERDICT (PR-01): the nitrogen price's source carries on its page 2 "No
+  use of this publication may be made for resale or for any other
+  commercial purpose whatsoever without prior permission in writing" (read
+  by the reviewer and by me).  The policy excludes NonCommercial sources
+  as a value's origin and names databases; the practice cites single
+  values from primary papers that reserve all rights; here one cell of one
+  table is taken.  My reading is the primary-paper practice, but the
+  sentence that decides it is not in the policy, and it is about a
+  licence, so it is Vitor's.  No gate looks either way (PR-02).  SMALLER:
+  the same report gives a market index at about 8.2 EUR/kg that supports 8
+  as a PRICE and is not cited (PR-06); two README numbers rest on nothing
+  (a 720 USD/t cost that is the low end of a 720 to 1400 range, PR-09; a
+  net present value of -4076 that is hand arithmetic, PR-10); DEV.md says
+  the paper's "Present" column is undated and the paper dates it 2024
+  (PR-13).  The paper is October 2024, as the file says.  NEXT: R4 (the
+  property-sources panel) and R5 (the pooled regressed-pairs gate).
+

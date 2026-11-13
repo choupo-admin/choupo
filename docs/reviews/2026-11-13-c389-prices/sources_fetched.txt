@@ -1,0 +1,13 @@
+eurostat API https://ec.europa.eu/eurostat/api/comext/dissemination/statistics/1.0/data/DS-045409?format=JSON&reporter=EU27_2020&partner=EXT_EU27_2020&product=28141000&flow=1&indicators=VALUE_IN_EUROS&indicators=QUANTITY_IN_100KG&sinceTimePeriod=2024-01 fetched 2026-11-13 sha256 54e5b7a6685d9c8a297c1ac56a6c4f9e996cd144c3ece12df07b422397fa6aad  r_EU27_2020.json
+fetched 2026-11-13
+f81dc13621ee94a907b8e5d6525618ab8f91b544a5661b713c9fd4e716d096fc  acer/acer.pdf
+8cfdff1b3754a375e9bac2d7ecd6643ce84bdcec7537802939ba66d67d146612  irena/i.pdf
+66df533fb340397d21bb947d29d17ccecc44f952fc78967db3e62c89f6660064  econstor_pdf/et40.pdf
+5d405858aadef2982f6de705059dfd7f9dc0cd408088113f0e8cef7445edac58  usgs/n.pdf
+37b380b4f97d3955fc8a2280450f7f71307458fd39ac7928634825be4a4456fa  ecb/a.csv
+54e5b7a6685d9c8a297c1ac56a6c4f9e996cd144c3ece12df07b422397fa6aad  eurostat/r_EU27_2020.json
+acer https://www.acer.europa.eu/sites/default/files/documents/Publications/ACER-2025-European-hydrogen-markets.pdf
+irena https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2022/May/IRENA_Innovation_Outlook_Ammonia_2022.pdf
+et40 https://www.econstor.eu/bitstream/10419/306636/1/1907335161.pdf (OIES URL returned 403)
+usgs https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-nitrogen.pdf
+ecb https://data-api.ecb.europa.eu/service/data/EXR/A.USD.EUR.SP00.A?startPeriod=2023&format=csvdata
