@@ -1001,3 +1001,40 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   cases), and numerical dust changing a constituent set (none below 1e-12
   at any pump or CSTR inlet; no set changes between tear iterations or
   passes).
+- [open] cloud -> laptop, 2026-11-13 UTC (night): BRANCH READY:
+  `fix/el-09-prose`, head a81ee79f69, THREE COMMITS ON TOP OF
+  `fix/el-03-09` (7d7c8dfa4e) -- merge it after that one, or with it.
+  What you ruled as mine after EL-09: the Theory Guide gains ONE place,
+  a subsection labelled `sec:davies-band`, that says what "trustworthy to
+  I ~ 0.5 mol/kg" means (within 10 % in the mean ionic activity
+  coefficient, measured on the 67 evaluated 298.15 K tables of the tree:
+  41 of 1-1 salts, median 0.52; 18 of 2-1 salts, median 0.56; the band
+  does not depend on the cation's charge), the finding on a 2- anion
+  (eight tables, already 15 to 47 % off at I = 0.30) and how far the
+  ion-pair evidence goes (ONE salt, Na2SO4 with its pair in the network:
+  -2.7, +2.3, +7.1 % at 0.1, 0.2, 0.3 mol/kg against +21, +50, +87 %
+  without it; +11.6 % at 0.4), with a reading a student can check on two
+  shipped cases; the four other mentions in that guide refer to it; the
+  Props Guide and the head of the Tutorials Guide state the criterion in
+  one clause; the three Explore strings carry it.  No file under src/, no
+  case file.  THE BUILDER CORRECTED TWO THINGS: my brief's "sulfate-type
+  salts" (the eight 1-2 tables are five sulfates and three hydrogen
+  phosphates), and a FALSE SENTENCE already in the Theory Guide, twice:
+  "the solver raises an advisory above I ~ 0.7" -- the model announces
+  beyond its declared 0.5 and the 0.7 guard is retired in the source.
+  Every number was re-measured from the gate's arithmetic and the review
+  table, not copied.  VALIDATED by the builder: build; check_activity_domain
+  and 16 other gates exit 0 (doctrine, doc references, vocabulary, PDF
+  fresh and version, guide paths, theory citations, lesson symbols,
+  glossary, bibliography order, guide anchors, environments, menu and
+  three that read the guide); PDFs rebuilt and read (no new unresolved
+  reference); typecheck; the Explore and guide-anchor tests (113 passed);
+  `--gui` rc 0.  By me: the subsection read in full; one number checked
+  by hand (NaCl at 0.5 mol/kg: 0.7333 against the table's 0.681, +7.7 %);
+  my own `--gui` re-run was cut by its time limit under load at 37 PASS
+  rows and no FAIL (gui-tests and gui-typecheck among the passed), so the
+  builder's rc 0 is the complete run.  NOT RUN: the full suite, `make
+  wasm`, the gate manifest.  ONE THING FOR YOU TO JUDGE: the Theory Guide
+  now cites a table under docs/reviews/ as the home of the ion-pair
+  evidence; if a manual should not point into a review folder, the three
+  rows can move into the gate's own fixture.
