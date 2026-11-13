@@ -100,6 +100,7 @@ Description
 #include <variant>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -1842,15 +1843,51 @@ if (flowsheetDict->found("cycle"))
                 }
             }
             scalar elemWorst = 0.0;
+            //  CI-00b (2026-11-13): A FLOOR NEVER DECIDES A VERDICT.  An
+            //  element whose total is not above what the campaign's own
+            //  arithmetic resolves -- machine epsilon times the campaign's
+            //  total atoms, the size of the round-off any row of the state
+            //  carries -- has no relative closure: its absolute residual is
+            //  published (kmol of atoms) and printed, and it stays out of
+            //  element_worst_closure_rel.  (It used to divide by a floor of
+            //  1e-15 kmol, so 7e-22 kmol of a round-off species read as an
+            //  oxygen closure of 1.4e-6 and a correct run was NON-CONVERGED.)
+            std::vector<std::pair<std::string, scalar>> belowResolution;
+            scalar elemResolution = 0.0;
             if (unparsed.empty())
             {
+                scalar atomsTotal = 0.0;
+                for (const auto& [sym, a0] : elem0)
+                    atomsTotal += std::max(a0, elemF[sym]);
+                elemResolution =
+                    std::numeric_limits<scalar>::epsilon() * atomsTotal;
                 for (const auto& [sym, a0] : elem0)
                 {
                     const scalar aF = elemF[sym];
+                    if (!(std::max(a0, aF) > elemResolution))
+                    {
+                        ck["element_" + sym + "_residual_kmolatom"] = aF - a0;
+                        belowResolution.emplace_back(sym, aF - a0);
+                        continue;
+                    }
                     const scalar r  = std::abs(aF - a0)
                                     / std::max({ a0, aF, 1.0e-15 });
                     ck["element_" + sym + "_closure_rel"] = r;   // RAW, shown
                     elemWorst = std::max(elemWorst, r);
+                }
+                if (!belowResolution.empty() && verbosity >= 1)
+                {
+                    std::cout << "[campaign] element(s) below the campaign's"
+                                 " resolution (total not above eps x "
+                              << std::scientific << elemResolution
+                                 / std::numeric_limits<scalar>::epsilon()
+                              << " kmol of atoms = " << elemResolution
+                              << " kmol):";
+                    for (const auto& [sym, res] : belowResolution)
+                        std::cout << " " << sym << " (residual " << res
+                                  << " kmol)";
+                    std::cout << std::fixed << " -- no relative closure, not"
+                                 " in the worst element, not in the verdict.\n";
                 }
                 ck["element_worst_closure_rel"] = elemWorst;
                 for (const auto ci : partialRelevant)
@@ -1936,6 +1973,9 @@ if (flowsheetDict->found("cycle"))
                           << (unparsed.empty()
                                 ? ", worst element " : ", elements n/a ")
                           << (unparsed.empty() ? elemWorst : 0.0) << std::fixed
+                          << (belowResolution.empty() ? ""
+                                : " (" + std::to_string(belowResolution.size())
+                                  + " element(s) below resolution, not in it)")
                           << (leak ? "  <-- LEAK: reported NON-CONVERGED"
                                    : "  (closed)")
                           << "\n";
