@@ -1,0 +1,6 @@
+check	result
+check_property_route_bench	OK: 4975 (record, route) blocks bit for bit; door against the old call 134343 compared, 0 disagreements
+bin/runTests single cases (checked vs reference)	PASS: aceticAcid02_plant, membrane27_swro_energy_recovery, crystalliser08_nacl_antisolvent_msmpr, pump01_water, cstr01_first_order, cstr07_lhhw_methylAcetate, sprayDryer07_design, column09_tray_hydraulics, edbatch01_constant_current, ed04_limiting_current_multiionic, unsteady05_tank_valve_drain, unsteady03_nf_feed_and_bleed_startup, condenser01_film_nusselt, pumpSystem01_operating_point
+expected files	no 'source' row exists yet in any tutorials/**/expected (goldens not re-recorded)
+check_property_sources_pinned	FAIL as designed for this stage: 89 published source rows unpinned in 16 cases of the --fast set, 0 pinned rows disagree
+check_liquid_property_ratchet	OK: 23 sites (21 Vliq reads, 2 literals) within pins
