@@ -884,9 +884,20 @@ int SpiralWoundModule::solve(const DictPtr& dict,
             PropertySourceLog::instance().useHere("liquidDiffusivity",
                 liquidSource::soluteDiffusivityLegacy);
     }
-    if (opDict->found("massTransfer") && polar.nIons() > 0)
-        PropertySourceLog::instance().useHere("liquidDiffusivity",
-            liquidSource::speciesRecordD0, "record", took(std::numeric_limits<double>::quiet_NaN()));
+    //  The ions' own D0, with the truth about its temperature (review
+    //  ledger DX-01): the tag follows what the builder did, so a run that
+    //  announces "NOT temperature-corrected" cannot print "scaled by
+    //  Stokes-Einstein" in its table.  No ion D0 read, no row.
+    {
+        using IonT = membrane::Polarisation::IonD0Temperature;
+        const IonT how = polar.ionD0Temperature();
+        if (how != IonT::notRead)
+            PropertySourceLog::instance().useHere("liquidDiffusivity",
+                how == IonT::stokesEinstein ? liquidSource::speciesRecordD0
+              : how == IonT::atCuration     ? liquidSource::speciesRecordD0AtCuration
+                                            : liquidSource::speciesRecordD0Uncorrected,
+                "record", took(std::numeric_limits<double>::quiet_NaN()));
+    }
     if (!dSoluteAdvisory.empty() && polar.nIons() < polar.solutes().size())
         AdvisoryLog::instance().add("model", dSoluteSeverity,
             "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
