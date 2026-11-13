@@ -412,6 +412,9 @@ int SprayDryer::solve(const DictPtr& dict,
                 + (multiSolvent ? "the solvent liquid (" + solventNames + ")" : solv.name())
                 + " (" + (thermo.surfaceTensionMethod().empty() ? std::string("the pure-fluid formulation")
                                                                 : thermo.surfaceTensionMethod())
+                + (thermo.surfaceTensionMethod().rfind("BrockBird", 0) == 0
+                       ? "; Brock-Bird OVERPREDICTS hydrogen-bonded liquids, +49 % on water at 25 C"
+                       : "")
                 + "; d32 varies with sigma^0.6)";
         }
         catch (const std::exception&)
@@ -626,8 +629,7 @@ int SprayDryer::solve(const DictPtr& dict,
     const scalar d32 = drop.d32;
     if (verbosity >= 2)
         std::cout << "  [atomiser] " << atomiser->name() << ":  " << drop.note << "\n"
-                  << "  [atomiser mu_L] " << muLSource << "\n"
-                  << "  [atomiser sigma] " << sigmaSource << "\n";
+                  << "  [atomiser mu_L] " << muLSource << "\n";
     //  The particle density of the powder: ONE home (thermo/SolidMixture),
     //  volumes additive (harmonic mean); one solid keeps its own density
     //  exactly; a solid with no rho_p REFUSES by name (it used to take
