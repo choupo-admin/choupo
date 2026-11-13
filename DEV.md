@@ -3476,6 +3476,193 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **THE SINGLE INTEGRATION OF 2026-11-13 IS ON MAIN (d0e3bfab0): ELEVEN
+> BRANCHES, ONE FULL SWEEP.**  THE SWEEP'S WRITTEN REASON: the golden
+> comparator and thirteen value-extraction helpers of `bin/runTests`
+> changed (C384), which every case's check goes through; the same run
+> is the corpus-wide confirmation of the pure-fluid corrections, which
+> touch `ThermoPackage`.  ITS RESULT: 2197 PASS, 3 FAIL, 6 EXPECTED-FAIL, 95 min walked; no case failed.  The three failures were generated artefacts (the decision index lacked one proposal note; the Tutorials Guide and the Theory Guide's bibliography were one regeneration behind the integration's own commits): regenerated, re-rendered, each gate re-run alone.  BALANCES HELD:
+> mass on 299 steady cases, elements on 279 (1 pinned), energy on 122 (5 pinned), campaigns on 81; the interface's tests and typecheck inside the same run.  WHAT IT CARRIES:
+> (1) C378, THE FOUR CORRECTIONS BEFORE THE PILOT (`c378-two-defects`)
+> AND THE REVIEWING SESSION'S FIX ON TOP (`fix/pure-inlet-pins`, its
+> review rows TD-01..09).  The pure-fluid branch of the package's
+> density never read the phase it was asked: water on IF97 at 446.52 K
+> gave 4.45 kg/m3 one part in 1e7 below p_sat and 893.99 above.  RULE,
+> ONE decision function (`pureFluidPhaseState`), one band (1e-6 of
+> p_sat): below the critical temperature a liquid asked inside the band
+> or below it is the saturated liquid at T, a vapour asked inside it or
+> above the saturated vapour; a unit that holds its inlet's phase asks
+> the enthalpy and the entropy WITH it (pump, compressor, turbine
+> inlets); inside the band a stream's carried vapour fraction names its
+> branch; and a stream that DECLARES its phase is priced by the phase
+> changer, the heat exchanger and the pipe as the energy report prices
+> it (ONE home, `declaredInletEnthalpy`).  WHAT MOVED: five density
+> blocks of the route bench (liquids asked below p_sat) and ONE SHIPPED
+> CASE THAT WAS WRONG AND GREEN: condenser01's Nusselt film asked the
+> vapour density at (Tsat, P) and received the liquid's; h 2865.3 ->
+> 9693.1 W/m2K (recomputed from the kernel's own properties by the
+> reviewer: 9693.15), Q -506.6 -> -928.0 kW; every row in the commit.
+> The CSTR prices a vapour feed through the equation of state: cstr02
+> was 186 times off in space time and is re-authored (V_R 1e-3 -> 1e-2
+> m3; X 0.8386 against X_eq 0.8414).  REPRODUCED before the fix: the
+> feed pump alone, suction on the saturation line, dT 125.46 K at a
+> relative -1e-12 of p_sat against 1.1721 K at 0: the cause of
+> rankine02's other fixed point on GitHub's runner.  And, found by the
+> review on the corrections themselves: a cooler taking 1 kW from steam
+> declared `phase gas;` fully condensed it and left +36.70 kW at exit 0,
+> because the report followed the pin and the unit did not.  A permanent
+> gate, check_pure_fluid_phase_asked, holds the BRANCH against numbers
+> computed outside the engine.  RULED TODAY, NOT YET BUILT: TD-04, a
+> declared phase that contradicts its T and P BEYOND the band is refused
+> by name (today the pump takes the saturated branch and the stream
+> functions price (T, P); no shipped stream is in that state).  OPEN,
+> OLDER THAN ALL OF IT: TD-15, a heat exchanger fed a pure saturated
+> vapour declared `phase gas;` leaves a latent heat unclosed at exit 0.
+> (2) C384 (`ci/green`): A GOLDEN IS TWO CLAIMS.  On the platform that
+> recorded it, "this has not moved", compared as written; elsewhere,
+> "this reproduces as well as this kind of number can", compared on the
+> band of its class in a temporary stream never written to the tree (a
+> count 2.0, a condition number 2.0, a fit's objective 1e-2, a fitted
+> parameter 5e-2).  On disk only the closure residuals changed form: 124
+> rows carry an absolute band on the scale of their balance.  One
+> fingerprint function, shared with the route bench, which says NO
+> SUBJECT off its platform.  ON THE RUNNER: fast tier green; the full
+> tier from 817 failures to 24 (11 gates, 13 cases); what still differs
+> is pinned by name in a table that may only shrink (a second, small
+> landing).  FOUND THERE AND ANSWERED THE SAME DAY BY THE REVIEWING
+> SESSION (ledger CI-00a..d): batch25_blowdown_thermal publishes a CO2
+> mass closure of 4e7 on the runner where the golden holds 0, for a
+> species the bed never held: the closure divides a residual of 4e-23
+> mol by a floor of 1e-30 (FixedBedAdsorber.cpp:3237-3239), reproduced
+> locally by moving single `pow` results by one unit in the last place;
+> one such pattern ends the run at exit 1 through the campaign's element
+> closure, whose floor decides a verdict.  RULED: no ratio where there
+> is no scale (the rule of 2026-09-08 for the energy boundary): a
+> species with no material in play gets no closure KPI and no trajectory
+> column, in the bed AND in the campaign's element closure, and its
+> residual is published in mol; and a species nothing feeds or holds is
+> held at exactly zero, said once, until a recipe feeds it.  The
+> reviewing session builds it (`fix/absent-species-closure`); the batch25
+> row `mass_closure_CO2 0` goes, listed.  Also fixed here: the recorder's
+> source-row join gave the first id a leading comma under mawk.
+> (3) THE DOOR'S TABLE: `c378-door-followup` (DX-04..07: the
+> Williams-Otto plant and the variable-volume vessels name their case
+> unit and real type; the dynamic driver declares and checks as the
+> steady path does; the pore model's ion diffusivities appear) and
+> `fix/door-ratchet-words` (DX-02, DX-03: the ratchet's eight missed
+> spellings; each tag's WORDS pinned and held).
+> (4) SOLIDS (`fix/operation-audit-tree`, a stack of four): what a
+> solids unit assumes is said where a run can read it (SC-03..07, SP-07,
+> SP-09, the conveyor's undeclared wall friction and its stale prose);
+> a key nothing reads INSIDE a sub-dictionary a unit read is reported
+> (one line on a shared path, measured on 324 cases before it was kept:
+> zero new reports).  SP-08 and SP-10 are delivered as a proposal.
+> (5) `fix/estimated-species-vant-hoff` (ES-01..03): the generator
+> writes the origin word on a reaction enthalpy formed from an estimated
+> formation value (six records), and the speciation solver announces
+> where the van 't Hoff term moves log K.
+> (6) `fix/vliq-three-records` (VT-05, VT-06): propane 276.65 K
+> (inferred from the measured saturated curve, said so), propylene its
+> boiling point; acetylene kept, its sentence corrected.  NO GOLDEN
+> MOVED, and the architect's expectation was wrong: the ten cases that
+> list propane are sealed and carry their own copy without the key, so
+> they still price liquid propane 6.4 % too dense until re-sealed.
+> (7) C385 (`econ-breakeven-price`), C270 with the part Vitor added
+> today (`feat/c270-press-dwell-and-compaction`; its own entry is
+> edited in place), the design record for C329's second part, and the
+> landing page (below).
+
+> **C386 (Vitor, 2026-11-13, to the reviewing session, which holds it:
+> "Eu acho que isto é tremendamente importante e devia de ser dado de
+> uma forma tão compelling com case studies que os alunos deviam de
+> querer ler mais aquilo que um livro de aventura!").**  AN EDUTOOL ON
+> THE SEPARATION OF SCALES (working id `fast-and-slow`, shelf "Modelling
+> & scale-up", beside `correlation-simplicity` and `thiele`).  Phase 1:
+> three case studies in which the ENGINE runs both the full model and
+> the reduced one, with a slider on the ratio of the two time scales
+> that breaks the reduction (two vessels through the `quasiSteady`
+> adapter; a fast reversible step feeding a slow one; a reactive
+> intermediate against its quasi-steady-state law); six new cases, no
+> engine change expected.  His addition the same day: the page returns
+> to WHY correlations are usually so simple (each reduced model written
+> as the simple law it is).  Branch in construction:
+> `edutool/fast-and-slow`.
+
+> **C388 (Vitor, 2026-11-13, to the reviewing session, which holds it,
+> after asking whether sizing real distillation columns requires
+> rate-based models: "Podes fazer um Edutool com estas recomedações e
+> Heuristicas? Isto é tremendamente importante!").**  AN EDUTOOL FOR THE
+> QUESTION "is an equilibrium-stage column with one efficiency enough,
+> or do I need a rate-based model, and how wrong can the simple one
+> be?" (working id `equilibrium-or-rate-based`): two engine
+> demonstrations (a declared Murphree efficiency on the Wang-Henke
+> column against a trace specification; the computed tray efficiency
+> against load on the cases that carry Yanagi's points) and a decision
+> table in which EVERY ROW CARRIES ITS ORIGIN, an engine run or a source
+> that was read; a recommendation with neither is not written, and the
+> candidates dropped are listed in its design note.  No engine change.
+> Branch in construction: `edutool/equilibrium-or-rate-based`.
+
+> **C387 (Vitor, 2026-11-13: "a landing page não está atualizada!  Já
+> há mais componentes!").**  MEASURED by the reviewing session: the site
+> was published on every push; the hero's four boxes showed the STABLE
+> release's numbers by the rule of 2026-08-08 (603 components, 393
+> cases, 50 unit operations) above a button that opens the development
+> app (696, 579, 60).  LANDED the same day (`site/landing-dev-line`,
+> 390b304a3): each box shows the development line's count large,
+> injected at build, and the release's beneath in small, still held by
+> check_release_identity; a build that cannot count falls back to the
+> release's number alone.
+
+> **C329, SECOND PART (Vitor, 2026-11-13, asked whether rate-based
+> distillation at a GENERAL reflux is in the plan).**  A DESIGN RECORD,
+> NO CODE, is on main (the reviewing session's
+> c329-ratebased-at-general-reflux.md under docs/design): what the
+> column solvers are, where a Murphree efficiency exists today (declared
+> only, on Wang-Henke only), that NO measurement in the tree is at a
+> general reflux, eight proposed slices, and FOUR DECISIONS THAT ARE
+> HIS (the multicomponent efficiency; whether the explicit interfacial
+> model is a new model word; whether Klemola stays the target; the
+> Pelkonen paper).  Nobody builds from it before he has read it.  Five
+> stale texts it found are the architect's to correct.
+
+> **C385 (the architect, 2026-11-13, on the browser rehearsal's finding
+> that the reference plant shows NPV -404.8 M EUR and "payback: never").**
+> A BREAK-EVEN IN PRICE, beside the two in volume the engine has: inside
+> `breakEven {}`, `price ( <stream> ... );` solves, for each priced stream
+> (a product or a raw material), the price at which NPV = 0, every other
+> price held, by the same `appraise`-on-a-copy route as the NPV fraction.
+> WHY: the plant's prices are author-set round figures (NH3 1.00, H2 4.50
+> EUR/kg) and its cost of production is 1.12 EUR/kg, so the NPV is
+> negative by construction and "never" teaches nothing; the number an
+> engineer asks next is the price at which it pays, and it belongs on the
+> page beside the NPV.  The prices themselves stay as declared: they are
+> Vitor's to replace with the project brief's.  WITH IT, ledger PH-01: the
+> 4.5 positions per operator per shift (round-the-clock cover) becomes a
+> declared judgement with source and reason, default unchanged, and is
+> announced when a case declares a crew and a calendar that is not round
+> the clock; no shipped case's value is changed.  One general, two
+> commits, branch `econ-breakeven-price`.
+
+> **C378, FOUND AT THE TWO LANDINGS OF 2026-11-13 AND NOT YET FIXED
+> (each with its owner).**  (a) `check_guide_pdf_fresh` accepts a PDF
+> that is newer than its sources by file time: a render kept from ONE
+> side of a merge passes in the tree that merged and fails in a clean
+> checkout (three guides on main's tree; rebuilt before the push).  The
+> landing script now re-renders every guide; the gate itself should judge
+> by ancestry alone.  (b) `code_map --check` reads the compiler's
+> dependency files of the local build directory, so leftovers of an older
+> build in a long-lived checkout make it report STALE against a correct
+> tracked map.  (c) cstr02's mass closure is 100.002 %: CO 28.010 + water
+> 18.015 = 46.025 against CO2 44.010 + H2 2.016 = 46.026 g/mol; molar
+> masses stored to three decimals disagree with their own formulas at
+> 2e-5, so a reaction creates mass at that level.  The molar mass has two
+> homes (the record, and the formula on the element table).  (d) flash20's
+> boundary residual had drifted to 9.99e-5 of its golden without ever
+> failing: a census of rows beyond half their band is asked of C384's
+> general.  (e) DX-04..07 of the door's table are with a general on
+> `c378-door-followup`.
+
 > **THE SECOND BATCH OF 2026-11-13 IS ON MAIN (d329618ec).**  FOUR BRANCHES
 > AND ONE TOOL FIX, validated together.  (1) C378, `VliqT`: a record's
 > liquid molar volume belongs to a stated temperature (20 records; the

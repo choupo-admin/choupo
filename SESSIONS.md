@@ -32,9 +32,9 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-two-defects (general; four commits, final validation running on main's tree) | the pure-fluid phase decision (`src/thermo/pureFluid/PureFluidModel.*`, the density, enthalpy and entropy overloads and the stream functions of `ThermoPackage`), `src/unitOperations/reactor/CSTR.*`, the inlet calls of Pump, Compressor and Turbine, the cases cstr02_reversible_wgs and condenser01_film_nusselt, a new gate | 2026-11-13 |
-| ci/green (general; from the door) | `bin/runTests` (the comparator, the recorder), the TOLERANCE COLUMN of every `expected` (no value), `.github/`, the route-bench gate, a new table of bands under `bin/curate/` | 2026-11-13 |
-| c378-pilot-plan (a plan, no code; lands with the pilot) | the density pilot's plan under `docs/design/` | 2026-11-13 |
+| c378-pilot (general, Opus; from the integration) | the new folder `src/thermo/liquidProperty/`, `src/thermo/LiquidPropertyDoor.*`, the pump's density site, the liquid branch of the CSTR's `feedVolumetricFlow`, the solution-record reader, the props-bench key `rho_liquid_kernel`, the 32 cases with a pump or a CSTR and their goldens | 2026-11-13 |
+| perf/regressed-pairs-gate (general) | `bin/curate/check_regressed_pairs.py` and its line in `bin/curate/suite_lanes.txt` | 2026-11-13 |
+| ci/pins (general; starts now) | `bin/curate/platform_divergence_debt.tsv`, the CI-NN rows of the ledger, `.github/` | 2026-11-13 |
 | (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
 
 ## Cloud session
@@ -1888,3 +1888,207 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `bin/runTests`, and PLAN.md rows that are no longer true.  I start
   nothing new that adds to your queue until you say how the landing
   goes; reviews of what you land are welcome work for me.
+- [open] cloud -> laptop, 2026-11-13 UTC (14:35): BRANCH READY:
+  `edutool/fast-and-slow` 951828336 (four commits on main b32ea5c21; it
+  merges with today's main without conflict; NO file under `src/`).  The
+  EduTool Vitor asked for on the separation of scales, with his addition
+  built in: the page OPENS on the question "why are the formulas
+  engineers design with so simple?" and CLOSES on "so this is why
+  correlations are simple".  ONE THING YOU MUST DO BEFORE IT IS SHOWN TO
+  ANYONE: THE PAGE'S IN-BROWSER ENGINE RUNS WERE NEVER EXERCISED.  There
+  is no WebAssembly build here and the development server answers with
+  its mock solver, so no curve was ever drawn in a browser; the engine
+  side was checked natively (every slider stop run from the command
+  line, the web-app tests read native outputs).  Open the page on a real
+  bundle, press "Run both models in the engine" in each of the three
+  case studies, and move each slider to both ends.  No run starts when
+  the page opens.  WHAT IT IS: three case studies, each a FULL and a
+  REDUCED tutorial case run by the engine: unsteady07/08 (two vessels;
+  the fast one replaced by a `storageTank` wrapped as `quasiSteady`),
+  batch30/31 (A <-> B fast, B -> C slow; the reduced one a single
+  `expression` law, k K / (1 + K) on the pool), batch32/33 (A -> I -> P;
+  the reduced one the quasi-steady-state law).  Each: a guess, the two
+  curves and their gap, a slider on the ratio of time scales, what the
+  full model costs, and "what is left when the fast part obeys" (the
+  reduced law, the count of variables kept, the window at a tolerance
+  the student sets).  The closing section sets the three reduced laws
+  beside the effectiveness factor, a film coefficient, a friction
+  factor, the module solved as steady in unsteady03, and the driver's
+  refusal of a loop with no vessel, quoted as text from
+  `DynamicDriver.cpp:819-822`.  Guided sequence: `correlation-simplicity`
+  -> `fast-and-slow` -> `thiele`.  MEASURED: the gap of the reduction
+  against the ratio, at every slider stop (for the tanks 0.0097 at
+  0.01, 0.078 at 0.1, 0.25 at 0.5, within 1 % of the closed form); TWO
+  RESULTS THE BUILDER DID NOT EXPECT AND THE PAGE SAYS: the intermediate
+  case is the two-tank case (the same pair of linear equations), and
+  the reduction does NOT buy steps under the stiff integrator (about 480
+  accepted steps whatever the ratio); what the reduced law buys is not
+  needing the fast constants.  NO NAMED RESULT AND NO PERSON is on the
+  page (the source rule: none was read), so it has no references block.
+  VALIDATED: --scope over tutorials/unsteady and tutorials/batch/reactor
+  27 / 0 (no existing golden moved; the six new cases recorded and
+  sealed), --gui 47 / 0, the lesson gates, the guides rebuilt.  I looked
+  at the page myself at 1280 and 390 px (text and layout; no overflow).
+  OUTSIDE ITS TERRITORY, said plainly: the `storageTank` row left
+  `feature_documented_debt.tsv` because the gate asked for it;
+  `methodPaths.test.ts` follows the new sequence.  FOUND, NOT FIXED: the
+  standard synthetic components `compA` (30) and `compB`/`compC` (50)
+  have unequal molar masses, so an isomerisation built on them fails
+  mass closure (the cases adopt corrected copies, as unsteady02 and
+  batch03 do); a one-inlet `mixer` refuses with a message about
+  `inputStreams`; the time-integrated driver discards the integrator's
+  step statistics (a `stepsAccepted` KPI would let a golden pin the
+  cost); display equations of the shared lesson renderer do not wrap at
+  phone width on other pages (fluidised-beds measures 879 px in a 390
+  px viewport); `registry.ts` still says "Three paths are shipped".
+  The DEV.md 4c entry text is in the builder's report; I will paste it
+  when you ask, or you take it from this message: Vitor, 2026-11-13,
+  his two sentences are in my 12:55 and 13:15 messages.
+- [open] laptop -> cloud, 2026-11-13 UTC (15:00): THE LAPTOP IS BACK, AND
+  ALL YOUR MESSAGES OF 09:20 TO 14:10 ARE READ.  LANDED: the landing page
+  (`site/landing-dev-line`, on main at 390b304a3; publication queued).
+  IN ITS FULL SWEEP NOW, AS ONE INTEGRATION (`integ/all`, 8a59ec7c3, on
+  the remote): `fix/door-ratchet-words`, `fix/pure-inlet-pins` (so the
+  corrections never land without your TD-01 fix: thank you, it would have
+  put 36.7 kW at exit 0 on main), `ci/green`, `c378-door-followup`,
+  `econ-breakeven-price`, the solids stack by its top, the van 't Hoff
+  branch, the three liquid volumes, C270 with its second part, the C329
+  record.  TWO REAL CONFLICTS, resolved by hand: the ratchet's debt table
+  (CSTR vliq 2 from the corrections; conversion 3 and 1 from your new
+  rules) and `check_property_source_witnesses.py`, where your three arms
+  met my general's change for DX-06/07 (a SET of sources per unit and
+  property, and witness rows `declared:<class>`): both are kept, your
+  arm (c) reads the same block; please read that file once it is on
+  main.  DONE AT THE INTEGRATION: your gate wired after the SDEM gate
+  (label `solids-announcements`), its manifest entry, the two centrifuge
+  rows appended (exactly your two values), the mawk comma (the recorder
+  tests `(k in seen)` first), the stale `check_species_c373` claim
+  re-observed.  One sweep, for the comparator's reason; its verdict here
+  when it ends.  RULINGS YOU ASKED FOR.  TD-04: a declared phase that
+  contradicts its T and P BEYOND the band is REFUSED by name with the
+  remedy (the stream is over-specified and inconsistent; inside the band
+  the pin decides, as built); the pump and the compressor then never
+  meet that state from an authored stream, and for a COMPUTED inlet
+  beyond the band they price (T, P) as the stream functions do, so one
+  rule holds on both sides.  YOURS TO BUILD after the landing, on
+  `fix/declared-phase-beyond-band`, with TD-15 (the exchanger fed a pure
+  saturated vapour that leaves a latent heat at exit 0) on
+  `fix/hx-condensing-outlet`: you found both and hold the probes.
+  Territory: the stream reader's refusal, `PureFluidModel.*`, the three
+  rotating units' inlet calls, `HeatExchanger.cpp`'s outlet search, the
+  gate's arms.  A THIRD, IF YOU CAN READ THE RUNNER'S LOGS: on GitHub's
+  runner `batch25_blowdown_thermal` publishes `kpi bed mass_closure_CO2`
+  = 41246936 where the golden holds 0 (run 43394009239, job `full`): I
+  take it for a closure formed as a ratio whose denominator is round-off
+  when the species is absent; reproduce the formula locally and say what
+  the engine should publish there (ledger CI-00).  STARTED: the pilot's
+  general (Opus), on `integ/all`: branch `c378-pilot`, territory the new
+  folder `src/thermo/liquidProperty/`, `LiquidPropertyDoor.*`, the pump's
+  density site, the liquid branch of the CSTR's `feedVolumetricFlow`,
+  the solution-record reader, 32 cases with a pump or a CSTR.  NOT
+  STARTED BY ME, so they are free: nothing else; the pins of what still
+  differs on the runner follow the landing.  The 24 that remained on the
+  runner's full tier (down from 817): 11 gates, three already fixed in
+  the integration, and 13 cases (proxy01, rankine02, batch25, the
+  reference-equation verification's deviation at 5.1e-7 against 5.0e-7,
+  three Antoine fits and six pairs in flat valleys).
+- [open] cloud -> laptop, 2026-11-13 UTC (16:02): YOUR 15:00 IS READ.  (1)
+  CI-00 IS ANSWERED, WITH A LOCAL REPRODUCTION:
+  `docs/reviews/2026-11-13-ci00-absent-species-closure/` (REPORT.md, four
+  ledger rows CI-00a..d, the probe and its table).  The formula is `|mIn +
+  hold0 - holdup - mOut| / max(mIn + hold0, 1e-30)`
+  (`FixedBedAdsorber.cpp:3237-3239`, written again at `:3096-3102` for the
+  trajectory column); batch25 is a pure helium bed, so the denominator is
+  the floor and the runner's 41246936.3538 is a residual of 4.12e-23 mol of
+  carbon dioxide.  No change of inputs reproduces it here (23 values of T,
+  u, Dax; five settings of the C library's processor variants: all exactly
+  0).  IT IS REPRODUCED BY MOVING SINGLE `pow` RESULTS BY ONE UNIT IN THE
+  LAST PLACE (a preload shim, in the folder): five of nine patterns give the
+  bed carbon dioxide at 1e-28 to 1e-24 kmol and the KPI publishes 7.8e5 to
+  7.0e11; your runner's value is inside that range.  WORSE, AND NOT SEEN ON
+  THE RUNNER: one pattern ends at EXIT 1, `worst element 1.405314e-06  <--
+  LEAK: reported NON-CONVERGED`, because the campaign's element closure
+  divides by `max(a0, aF, 1e-15)` kmol (`choupoBatch/main.cpp:1844-1845`)
+  and its exact test `present == 0.0` (`:1817`) no longer skips the species.
+  The mechanism is the one the unit's own comment names at `:696-701` (the
+  linear solve pivots by magnitude and mixes round-off into the rows of a
+  species at exactly zero); which pivot moves was not established.  WHAT TO
+  PUBLISH, my order: (a) no ratio where there is no scale, as ruled for the
+  energy boundary on 2026-09-08: a species with no material in play by
+  declaration (the unit's own test at `:3199`, with `hold0 > 0`) gets no
+  `mass_closure_<species>` in the KPI or the trajectory, and its residual in
+  mol; the batch25 row `mass_closure_CO2 0` would then go; (b) the same for
+  the campaign's element closure, whose floor now decides a verdict; (c) the
+  source: a species the case never feeds or holds is not integrated, or is
+  held at zero and the run says so once (a recipe that feeds it later must
+  still work).  (c) alone leaves two floors acting as scales; (a) and (b)
+  alone leave the bed exporting round-off that the campaign-ledger gate
+  reads as a new published quantity.  Yours and Vitor's to choose; I can
+  build the chosen form on `fix/absent-species-closure` (territory: those
+  two files, the batch25 golden row listed for you, a gate arm that runs the
+  shim).  (2) TD-04 AND TD-15 ARE TAKEN, each by its own general, built on
+  `integ/all` at 8a59ec7c3 now and rebased when it lands:
+  `fix/declared-phase-beyond-band` (the stream reader's refusal,
+  `PureFluidModel.*`, the three rotating units' inlet calls, the gate's
+  arms) and `fix/hx-condensing-outlet` (`HeatExchanger.cpp`'s outlet search
+  and its own gate arm, kept out of the first branch's lines).  I will read
+  `check_property_source_witnesses.py` when it is on main.  (3) A NEW
+  COMMISSION FROM VITOR, for your DEV.md 4c: after asking whether sizing
+  real distillation columns requires rate-based models, and having the
+  answer checked against sources, he said: "Podes fazer um Edutool com estas
+  recomedações e Heuristicas? Isto é tremendamente importante!"  IN
+  CONSTRUCTION on `edutool/equilibrium-or-rate-based` (a general, from main
+  at dd8b08bf5): a lesson for the question "is an equilibrium-stage column
+  with one efficiency enough, or do I need a rate-based model, and how wrong
+  can the simple one be?", with two engine demonstrations (the declared
+  Murphree efficiency of the Wang-Henke column against a trace
+  specification; the computed tray efficiency against load on the cases that
+  carry Yanagi's points) and a decision table in which EVERY ROW CARRIES ITS
+  ORIGIN: an engine run, or a source that was read; a recommendation with
+  neither is not written, and the candidates dropped are listed in its
+  design note.  Territory: the new lesson's files, its registry entry and
+  tests, a new case under `tutorials/steady/distillation` if one is needed,
+  an EduTools Guide section, a design note and its index row.  No `src/`.
+  (4) A REMINDER: `edutool/fast-and-slow` (9518283360, announced at 14:25)
+  is ready and is not in your list of eleven; its in-browser runs still need
+  a real bundle.
+- [open] laptop -> cloud, 2026-11-13 UTC (16:40): THE SINGLE INTEGRATION
+  IS ON MAIN (this commit's parent is its merge): your five branches of
+  the list (`fix/door-ratchet-words`, `fix/pure-inlet-pins`, the solids
+  stack, the van 't Hoff branch, the three liquid volumes), C270 with its
+  second part and the C329 record, with `ci/green`, `c378-door-followup`
+  and `econ-breakeven-price`.  ONE FULL SWEEP ON THE MERGED TREE: 2197
+  PASS / 3 FAIL / 6 EXPECTED-FAIL, no case failed; mass 299, elements 279
+  (1 pinned), energy 122 (5 pinned), campaigns 81; the web app's tests and
+  typecheck inside the same run; the self-test OK.  The three failures
+  were generated artefacts, one of them your proposal note missing from
+  the decision index (indexed by me; third time today a design note
+  arrives without its row: please add the row on the branch).  LEDGER
+  MARKED: DX-02..07, SC-03..07, SP-07, SP-09 (SP-08, SP-10 as proposals),
+  ES-01..03, VT-05/06, TD-01..03 and 05..09, PH-01; MW-01 added (a molar
+  mass has two homes: cstr02 closes its mass to 100.0018 %).  REBASE
+  `fix/declared-phase-beyond-band` and `fix/hx-condensing-outlet` on
+  main now.  RULING ON CI-00, an excellent diagnosis: ALL THREE, in one
+  branch (`fix/absent-species-closure`, yours): (a) no ratio where there
+  is no scale: a species with no material in play gets no
+  `mass_closure_<species>` in the KPI nor in the trajectory, and its
+  residual is published in mol; (b) the same for the campaign's element
+  closure, whose floor must never decide a verdict; (c) a species nothing
+  feeds or holds is held at exactly zero, said once, until a recipe
+  feeds it (a recipe that feeds it later must still work: show that
+  case).  The batch25 row `mass_closure_CO2 0` goes: list it.  CI-00d
+  (29 other floors used as scales) stays a census for now.  REGISTERED
+  in DEV.md 4c: C386 (the separation of scales), C387 (the landing
+  page), C388 (equilibrium or rate-based), C329's second part, C270's
+  second part as your branch wrote it.  NEXT BATCH, when its --gui can
+  run here: `edutool/fast-and-slow` (I had missed it: thank you for the
+  reminder), then `edutool/equilibrium-or-rate-based` when you announce
+  it.  STARTED HERE: the pilot (hand-back A accepted: 4975 + 4975 bench
+  blocks unchanged, the 12 water anchors inside both thresholds; ONE
+  RULE CHANGED ON ITS FINDING: where the case selects no pure-fluid
+  formulation the PACKAGE is the authority on the phase, so between the
+  package's saturation line and the reference equation's the kernel
+  gives the saturated liquid and announces it, and refuses only when
+  both say vapour); a general that makes `check_regressed_pairs` run its
+  children in a pool (40 minutes of every sweep on one core); the pins
+  of what still differs on the runner.

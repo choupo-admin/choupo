@@ -29580,6 +29580,37 @@ and activity-coefficient models. Chapters 6 (vapour pressure), 8
 \emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
 correlation.
 
+\bibitem{IAPWS_R797} IAPWS R7-97(2012).  Every coefficient table in
+\file{src/thermo/iapws/IF97.cpp} is transcribed from this release at
+full published precision, and its \code{verify()} cross-checks them
+against the release's own computer-program verification tables.  The region-3 coefficients (the near-critical Helmholtz equation) were
+read from Wagner, W.\ et al., ``The IAPWS Industrial Formulation 1997 for
+the Thermodynamic Properties of Water and Steam'', \emph{J.\ Eng.\ Gas
+Turbines Power} \textbf{122}, 150--182, 2000, Table~A9, and are held by its
+Table~A10.
+
+\bibitem{IAPWS_R695} IAPWS R6-95(2018), Revised Release on the IAPWS
+  Formulation 1995 for the Thermodynamic Properties of Ordinary Water
+  Substance for General and Scientific Use (2018); W.~Wagner and A.~Pru\ss,
+  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 31 (2002) 387--535.
+
+\bibitem{SpanWagner1996} R.~Span and W.~Wagner, A New Equation of State for
+  Carbon Dioxide Covering the Fluid Region from the Triple-Point Temperature
+  to 1100\,K at Pressures up to 800\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\
+  Data} 25 (1996) 1509--1596.
+
+\bibitem{SetzmannWagner1991} U.~Setzmann and W.~Wagner, A New Equation of
+  State and Tables of Thermodynamic Properties for Methane Covering the Range
+  from the Melting Line to 625\,K at Pressures up to 1000\,MPa,
+  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 20 (1991) 1061--1155.
+
+\bibitem{OlssonJernqvistAly1997} Olsson, J., Jernqvist, \AA., \& Aly, G.,
+``Thermophysical Properties of Aqueous NaOH--H$_2$O Solutions at High
+Concentrations'', \emph{Int.\ J.\ Thermophys.}, 18(3), 779--793 (1997).
+Vapour pressure (Eqs.~(1)--(5), Tables~II--III) and enthalpy (Eqs.~(12)--(16),
+Tables~VI--VII) of NaOH(aq), 0--200$^\circ$C, water mass fraction 0.2--1;
+the coefficients of the \code{OlssonNaOH} model.
+
 \bibitem{Renon} Renon, H., \& Prausnitz, J. M., ``Local Compositions in
 Thermodynamic Excess Functions for Liquid Mixtures'', \emph{AIChE J.},
 14, 135--144 (1968). Original NRTL paper.
@@ -29778,25 +29809,10 @@ association contribution Choupo implements (Wertheim TPT1, after Chapman
 et al.\ 1990), with the $\sigma_{ij}^3$ convention under which the
 published $\kappa^{AB}$ were fitted.
 
-\bibitem{IAPWS_R695} IAPWS R6-95(2018), Revised Release on the IAPWS
-  Formulation 1995 for the Thermodynamic Properties of Ordinary Water
-  Substance for General and Scientific Use (2018); W.~Wagner and A.~Pru\ss,
-  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 31 (2002) 387--535.
-
-\bibitem{SpanWagner1996} R.~Span and W.~Wagner, A New Equation of State for
-  Carbon Dioxide Covering the Fluid Region from the Triple-Point Temperature
-  to 1100\,K at Pressures up to 800\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\
-  Data} 25 (1996) 1509--1596.
-
 \bibitem{Span2000N2} R.~Span, E.~W.~Lemmon, R.~T Jacobsen, W.~Wagner and
   A.~Yokozeki, A Reference Equation of State for the Thermodynamic Properties
   of Nitrogen for Temperatures from 63.151 to 1000\,K and Pressures to
   2200\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 29 (2000) 1361--1433.
-
-\bibitem{SetzmannWagner1991} U.~Setzmann and W.~Wagner, A New Equation of
-  State and Tables of Thermodynamic Properties for Methane Covering the Range
-  from the Melting Line to 625\,K at Pressures up to 1000\,MPa,
-  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 20 (1991) 1061--1155.
 
 \bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
 \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
@@ -29983,15 +29999,6 @@ operator can change in real time) and \emph{design constraints}
 that live on a higher control layer.  Same conceptual split as
 Choupo's unit-op vs DesignSpec layering.
 
-\bibitem{IAPWS_R797} IAPWS R7-97(2012).  Every coefficient table in
-\file{src/thermo/iapws/IF97.cpp} is transcribed from this release at
-full published precision, and its \code{verify()} cross-checks them
-against the release's own computer-program verification tables.  The region-3 coefficients (the near-critical Helmholtz equation) were
-read from Wagner, W.\ et al., ``The IAPWS Industrial Formulation 1997 for
-the Thermodynamic Properties of Water and Steam'', \emph{J.\ Eng.\ Gas
-Turbines Power} \textbf{122}, 150--182, 2000, Table~A9, and are held by its
-Table~A10.
-
 \bibitem{Nusselt1916} Nusselt, W., ``Die Oberfl\"achenkondensation des
 Wasserdampfes'', \emph{Z. Ver. Dt. Ing.}\ \textbf{60}, 541--575, 1916.
 Laminar film-condensation theory; Choupo's \code{NusseltFilm}
@@ -30071,13 +30078,6 @@ publication allowed.
 pp.~1348--1350 of the 5th edition).  The linear, Freundlich and Langmuir forms,
 the log--log and $1/q$ against $1/c$ plots, and the batch balance whose plot
 against $c$ meets the isotherm.
-
-\bibitem{OlssonJernqvistAly1997} Olsson, J., Jernqvist, \AA., \& Aly, G.,
-``Thermophysical Properties of Aqueous NaOH--H$_2$O Solutions at High
-Concentrations'', \emph{Int.\ J.\ Thermophys.}, 18(3), 779--793 (1997).
-Vapour pressure (Eqs.~(1)--(5), Tables~II--III) and enthalpy (Eqs.~(12)--(16),
-Tables~VI--VII) of NaOH(aq), 0--200$^\circ$C, water mass fraction 0.2--1;
-the coefficients of the \code{OlssonNaOH} model.
 
 \bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
 Uni-univalent Electrolytes}, National Standard Reference Data Series
@@ -30456,6 +30456,12 @@ sintered alumina and zirconia'', \emph{J.\ Am.\ Ceram.\ Soc.}, 36, 65--68
 \bibitem{Duckworth1953} Duckworth, W., ``Discussion of Ryshkewitch paper'',
 \emph{J.\ Am.\ Ceram.\ Soc.}, 36, 68 (1953).  Located, not read.
 
+\bibitem{FellNewton1970} Fell, J. T., \& Newton, J. M., ``Determination of
+tablet strength by the diametral-compression test'', \emph{J.\ Pharm.\
+Sci.}, 59, 688--691 (1970), DOI 10.1002/jps.2600590523.  Located, not read:
+Eq.~(\ref{eq:fellnewton}) is the elastic disc solution as the open sources
+quote it.
+
 \bibitem{Mohylyuk2024} Mohylyuk, V., Paulausks, A., Radzins, O., \&
 Lauberte, L., ``The effect of microcrystalline cellulose--CaHPO$_4$ mixtures
 in different volume ratios on the compaction and structural--mechanical
@@ -30469,12 +30475,6 @@ thickness, and the 2\,MPa minimum tensile strength.
 rotary presses --- mind the sub-processes'', \emph{Pharmaceutics}, 12(4),
 310 (2020), DOI 10.3390/pharmaceutics12040310, CC BY 4.0.  Read (full text,
 Europe PMC): section 3 on dwell time, MCC and starch.
-
-\bibitem{FellNewton1970} Fell, J. T., \& Newton, J. M., ``Determination of
-tablet strength by the diametral-compression test'', \emph{J.\ Pharm.\
-Sci.}, 59, 688--691 (1970), DOI 10.1002/jps.2600590523.  Located, not read:
-Eq.~(\ref{eq:fellnewton}) is the elastic disc solution as the open sources
-quote it.
 
 \bibitem{Austin1971} Austin, L. G., ``Introduction to the mathematical
 description of grinding as a rate process'', \emph{Powder Technology}
