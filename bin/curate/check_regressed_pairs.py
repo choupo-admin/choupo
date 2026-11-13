@@ -186,7 +186,25 @@ Phase stability below a record's validity span, or for a case-local record.
 
 SABOTAGES (by hand): docs/design/binary-pairs-from-open-measurements.md
 section 4 (2026-09-28, arms a-e) and section 6.4 (2026-10-05, arm f).
+
+SPEED AND THE SERIAL SWITCH (2026-11-13).  About 90 % of the gate's wall
+clock is child processes (one `choupo-curate fetch` and several choupoProps
+fits per record, each in its own scratch copy), so the per-record work of the
+main loop and of arm (i) runs through a bounded thread pool, and the results
+are judged IN THE ORIGINAL ORDER: every finding, every `NOT RUN` line and the
+claim line are byte-identical to the serial gate's.  Width: min(8, cpus - 2),
+or CHOUPO_GATE_JOBS=N.  CHOUPO_GATE_JOBS=1 is the serial path (the old loop,
+no pool, no CHOUPO_THREADS), to bisect a failure.  Each pooled child gets
+CHOUPO_THREADS=1 unless the caller set it.  What the children share, and how
+it is held: a case named by two records is fetched and run ONCE (a per-case
+lock, `_once`); `fetch` writes only inside its own case's archiveExtracts
+(idempotent: it skips an extract whose sha256 matches, and rewrites the
+CHECKLIST.txt beside it with identical bytes); every fit runs in its own
+mkdtemp or tmp/<case> copy; the module's tallies are updated under
+COUNT_LOCK.  Because it has a pool of its own the gate is SERIAL in
+bin/curate/suite_lanes.txt.
 """
+import concurrent.futures
 import json
 import math
 import os
@@ -195,6 +213,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -211,6 +230,58 @@ def fetch_case(case):
                        capture_output=True, text=True, timeout=900,
                        env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
     return p.returncode, (p.stdout + p.stderr).strip()
+
+
+#  THE POOL (perf, 2026-11-13).  The gate is ~90 % child processes -- one
+#  `choupo-curate fetch` and several choupoProps fits per regressed record --
+#  that used to run one after another on one core.  `_pool_map` runs the
+#  per-record work through a bounded thread pool and hands the results back IN
+#  THE ORIGINAL ORDER, so every finding and the claim line are what the serial
+#  gate prints.  CHOUPO_GATE_JOBS=1 is the serial path, exactly the old loop.
+def gate_jobs():
+    raw = os.environ.get("CHOUPO_GATE_JOBS", "")
+    if raw.isdigit() and int(raw) >= 1:
+        return int(raw)
+    return max(1, min(8, (os.cpu_count() or 1) - 2))
+
+
+_GUARD = threading.Lock()
+_KEY_LOCKS = {}
+COUNT_LOCK = threading.Lock()   # the module's tally dicts are updated under it
+
+
+def _once(cache, key, fn):
+    """cache[key], computed by fn() once even when two records name the same
+    case at the same moment (the second waits for the first, as in the serial
+    loop it would have found the entry already made)."""
+    with _GUARD:
+        lock = _KEY_LOCKS.setdefault((id(cache), key), threading.Lock())
+    with lock:
+        if key not in cache:
+            cache[key] = fn()
+        return cache[key]
+
+
+def _prime_imports():
+    """Import what the workers import lazily, once, here: pairs_c283 loads
+    choupo-curate, which imports this gate by path (a circular first import
+    must not happen on two threads at once)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import pairs_c283   # noqa: F401
+    import pairs_px     # noqa: F401
+    import uniquac_rq_from_groups   # noqa: F401
+
+
+def _pool_map(fn, items):
+    items = list(items)
+    jobs = gate_jobs()
+    if jobs <= 1 or len(items) <= 1:
+        for it in items:
+            yield fn(it)
+        return
+    os.environ.setdefault("CHOUPO_THREADS", "1")    # one thread per engine run, as the sweep
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as ex:
+        yield from ex.map(fn, items)
 
 
 def strip_comments(t):
@@ -880,10 +951,11 @@ def grade_label_failures(prov, grade_in_sample, nT, nL, tag, what="provenance"):
         out.append(f"{tag}: {what} `fitGradeBasis {word(prov, 'fitGradeBasis')}` -- every "
                    "graded record says `fitGradeBasis inSample;` (DEV.md 4c C300 rule 1)")
     applied, caps = pc.cap_grade(grade_in_sample, nT, nL)
-    for c in caps:
-        CAP_COUNT[c] = CAP_COUNT.get(c, 0) + 1
-    if caps:
-        CAP_COUNT["capped"] = CAP_COUNT.get("capped", 0) + 1
+    with COUNT_LOCK:
+        for c in caps:
+            CAP_COUNT[c] = CAP_COUNT.get(c, 0) + 1
+        if caps:
+            CAP_COUNT["capped"] = CAP_COUNT.get("capped", 0) + 1
     if caps_of(prov) != caps:
         out.append(f"{tag}: {what} fitGradeCap {caps_of(prov) or 'absent'}, the rule gives "
                    f"{caps or 'none'} (in-sample {grade_in_sample}, {nT} temperature(s), "
@@ -1016,7 +1088,8 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                      f"under {STD_COMP.relative_to(ROOT)} -- {VP_FLOOR} were promoted "
                      "by C281 step 3; the scan surface has collapsed or the "
                      "records lost their `fittedInCase`")
-    for p in recs:
+    def _one(p):
+        fails, not_run = [], []
         comp, text = p.stem, p.read_text()
         tag = f"arm (i) {p.relative_to(ROOT).as_posix()}"
         ent = vp_entry(text)
@@ -1044,7 +1117,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                 or not rf["Trange"]:
             fails.append(f"{tag}: the vaporPressure block is not a fitted Antoine "
                          "with coefficients and a Trange")
-            continue
+            return fails, not_run, None, None
         if rf["verdict"] != "accepted":
             fails.append(f"{tag}: acceptance.verdict `{rf['verdict']}` in the CATALOGUE "
                          "-- only an accepted fit is promoted (DEV.md 4c C283)")
@@ -1054,17 +1127,15 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
                 or not (case / ARCHIVE_DECL).exists():
             fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case declaring "
                          f"{ARCHIVE_DECL}")
-            continue
-        if case_rel not in fetched:
-            fetched[case_rel] = fetch_case(case)
-        code, msg = fetched[case_rel]
+            return fails, not_run, None, None
+        code, msg = _once(fetched, case_rel, lambda: fetch_case(case))
         if code == 2:
             not_run.append(f"{tag}: {msg.splitlines()[-1] if msg else 'fetch could not run'}")
-            continue
+            return fails, not_run, None, None
         if code != 0:
             fails.append(f"{tag}: its case's declared datasets could not be "
                          f"regenerated: {msg[-400:]}")
-            continue
+            return fails, not_run, None, None
         decl = (case / ARCHIVE_DECL).read_text()
         pts = []            # (doi, T K, P kPa) of every declared fit dataset
         for ds in sorted((case / "constant" / "archiveExtracts").glob("*.dat")):
@@ -1087,7 +1158,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         if pr.returncode != 0 or op is None:
             fails.append(f"{tag}: its case {case.name} exited {pr.returncode} / "
                          "published no `fit_antoine` result")
-            continue
+            return fails, not_run, None, None
         d, cu = op.get("diagnostics", {}), op.get("curation", {})
         run = {"coef": [d.get("A"), d.get("B"), d.get("C")]}
         for k, (x, y) in zip("ABC", zip(rf["coef"], run["coef"])):
@@ -1123,7 +1194,7 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         if len(kept) != int(d.get("n_points", -1)) or not kept:
             fails.append(f"{tag}: {len(kept)} kept points by the run's outlier list, the "
                          f"run fitted {d.get('n_points')}")
-            continue
+            return fails, not_run, None, None
         A_, B_, C_ = rf["coef"]
         rel = [abs(100.0 * 10 ** (A_ - B_ / (t + C_)) / pk - 1.0) for t, pk in kept]
         aw = [abs(AW.psat(t, *AW_ARGS(text)) / 1e3 / pk - 1.0) for t, pk in kept]
@@ -1269,8 +1340,17 @@ def check_vapour_pressures(tmp, fails, not_run, fetched):
         if not adv:
             fails.append(f"{tag}: the autoPromoted status is not in the result JSON "
                          "advisories (the end-of-run caveat block)")
-        done.append(comp)
-        VP_GRADE_COUNT[rf["fitGrade"]] = VP_GRADE_COUNT.get(rf["fitGrade"], 0) + 1
+        return fails, not_run, comp, rf["fitGrade"]
+        return fails, not_run, None, None
+
+    _prime_imports()
+    outer_fails, outer_not_run = fails, not_run
+    for f_, n_, comp_, grade_ in _pool_map(_one, recs):
+        outer_fails.extend(f_)
+        outer_not_run.extend(n_)
+        if comp_ is not None:
+            done.append(comp_)
+            VP_GRADE_COUNT[grade_] = VP_GRADE_COUNT.get(grade_, 0) + 1
     return done
 
 
@@ -1469,7 +1549,8 @@ def c283_failures(rec, cur, case, out, tag, fails, in_std=False):
         fails.append(f"{tag}: curation gradeLimits_K {lims.groups() if lims else None} are not "
                      f"the rule's {pc.GRADE_K} K (C285's temperature limits)")
     grade = pc.grade_of(mx, nan)
-    C286_GRADE_COUNT[grade] = C286_GRADE_COUNT.get(grade, 0) + 1
+    with COUNT_LOCK:
+        C286_GRADE_COUNT[grade] = C286_GRADE_COUNT.get(grade, 0) + 1
     if word(cur, "grade") != grade:
         fails.append(f"{tag}: curation grade `{word(cur, 'grade')}`, recomputed `{grade}` "
                      f"from the run's max |dT| {mx:.4f} K (limits {pc.GRADE_K} K"
@@ -1596,7 +1677,8 @@ def c291_failures(rec, cur, case, out, tag, fails, in_std=False):
                      f"the rule's {px.GRADE_PCT} % (C285's factors)")
     nan = num(cur, "noBubblePoint") or 0
     grade = px.grade_of(mx, nan)
-    C291_GRADE_COUNT[grade] = C291_GRADE_COUNT.get(grade, 0) + 1
+    with COUNT_LOCK:
+        C291_GRADE_COUNT[grade] = C291_GRADE_COUNT.get(grade, 0) + 1
     if word(cur, "grade") != grade:
         fails.append(f"{tag}: curation grade `{word(cur, 'grade')}`, recomputed `{grade}` from "
                      f"the run's max |dP|/P {mx:.4f} % (limits {px.GRADE_PCT} %"
@@ -1929,132 +2011,147 @@ def main():
                      "the scan surface has collapsed or the records lost their "
                      "`fittedInCase`")
 
+    def _check_record(rec_path):
+        """One regressed record against its case.  Returns the lists this record
+        contributes, in the order the serial loop would have appended them."""
+        fails, checked, stable_checked, ll_checked, c283_checked = [], [], [], [], []
+        c291_checked, not_run = [], []
+        ret = (fails, not_run, checked, stable_checked, ll_checked, c283_checked,
+               c291_checked)
+        #  Fields are read from the COMMENT-STRIPPED record: the header
+        #  prose says "reviewStatus interim: ..." and a regex over the raw
+        #  text read that sentence as the field -- S2 and S4 SURVIVED on
+        #  it (a pattern that matches prose is a check prose can satisfy).
+        rec = strip_comments(rec_path.read_text())
+        tag = rec_path.relative_to(ROOT).as_posix()
+        in_std = rec_path.parent == STD
+        case_rel = word(rec, "fittedInCase")
+        for k in PROMOTION_FIELDS:
+            if not word(rec, k):
+                fails.append(f"{tag}: no `{k}` -- a proposal moved, not promoted")
+        if not re.search(r"^\s*recordType\s+binaryInteractionParameters\s*;", rec, re.M) \
+                or block(strip_comments(rec), "pair") is None:
+            fails.append(f"{tag}: no `recordType binaryInteractionParameters;` "
+                         "and `pair {}` -- the catalogue form")
+        rf = facts(rec)
+        cur = block(rec, "curation")
+        c283 = cur is not None and "C283" in (word(cur, "rule") or "")
+        c291 = cur is not None and "C291" in (word(cur, "rule") or "")
+        if in_std and (c283 or c291):
+            if word(cur, "verdict") != "accepted":
+                fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` in "
+                             "the CATALOGUE -- only an accepted fit (C283) is promoted")
+        elif in_std and rf["verdict"] != "validated":
+            fails.append(f"{tag}: verdict `{rf['verdict']}` in the CATALOGUE -- "
+                         "only a validated fit is promoted; a fit that missed its "
+                         "band lives in its own case")
+        if in_std:
+            case_dir = (ROOT / case_rel) if case_rel else None
+            if check_liquid_liquid(rec, rf, case_dir, tag, fails):
+                ll_checked.append(rec_path.stem)
+            else:
+                fails.extend(one_liquid_failures(rf, tag))
+                stable_checked.append(rec_path.stem)
+        if not case_rel or not (ROOT / case_rel / "system" / "propsDict").exists():
+            fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case")
+            return ret
+        case = ROOT / case_rel
+        if (case / ARCHIVE_DECL).exists():
+            code, msg = _once(fetched, case_rel, lambda: fetch_case(case))
+            if code == 2:
+                not_run.append(f"{tag}: {msg.splitlines()[-1] if msg else 'fetch could not run'}")
+                return ret
+            if code != 0:
+                fails.append(f"{tag}: its case's declared datasets could not be "
+                             f"regenerated: {msg[-400:]}")
+                return ret
+        for ds in sorted((case / "constant" / "experiments").glob("*.dat")) + \
+                sorted((case / "constant" / "archiveExtracts").glob("*.dat")):
+            check_dataset(ds, fails, tag)
+        #  ONE RUN PER NAMED CASE.  Two records may name the same case:
+        #  a witness that carries an unchanged COPY of a case-local
+        #  regression (vlle04_two_liquids_decanter carries curate12's,
+        #  2026-10-05) is held to the fit exactly as the original is.
+        #  Copying the case twice into one work directory collided, so the
+        #  run is made once and each record is compared against it.
+        #  Named by the case's whole path: two sibling cases of one pair share
+        #  a leaf name in every pair that has two (`Tx`, C296).
+        work = tmp / case.relative_to(ROOT).as_posix().replace("/", "__")
+        def _run_case():
+            shutil.copytree(case, work)
+            for stale in work.glob("*.proposal.dat"):
+                stale.unlink()
+            p = subprocess.run([str(PROPS), "."], cwd=str(work),
+                               capture_output=True, text=True, timeout=900)
+            return (p.returncode, p.stdout + p.stderr)
+        rc, out = _once(runs, case_rel, _run_case)
+        if rc != 0:
+            fails.append(f"{tag}: its case {case.name} exited {rc}")
+            return ret
+        prop = work / (rec_path.stem + ".proposal.dat")
+        if not prop.exists():
+            fails.append(f"{tag}: {case.name} wrote no {prop.name} -- its fit "
+                         "must declare `proposal`, or this gate is vacuous")
+            return ret
+        pf = facts(prop.read_text())
+        for k in ("i", "j", "verdict", "evidence", "T", "P"):
+            if rf[k] != pf[k]:
+                fails.append(f"{tag}: `{k}` differs from what its case regresses "
+                             f"now -- record {rf[k]!r}, run {pf[k]!r}")
+        for k in ("a_ij", "b_ij", "a_ji", "b_ji", "alpha", "points",
+                  "aad_pct", "maxAAD"):
+            if not close(rf[k], pf[k]):
+                fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {pf[k]} "
+                             "from its case -- the record has drifted from its "
+                             "evidence")
+        if c291:
+            c291_failures(rec, cur, case, out, tag, fails, in_std)
+            c291_checked.append(rec_path.stem)
+        elif c283:
+            c283_failures(rec, cur, case, out, tag, fails, in_std)
+            c283_checked.append(rec_path.stem)
+        #  The loader names a pair in its OWN i-j order, which is not the
+        #  file's alphabetical one (ethylAcetate-ethanol lives in
+        #  ethanol-ethylAcetate.dat), so either spelling is the pair.
+        said = [f"[unreviewed] pair {rf['i']}-{rf['j']}",
+                f"[unreviewed] pair {rf['j']}-{rf['i']}"]
+        status = word(rec, "reviewStatus")
+        if status == "autoPromoted":
+            fails.extend(review_failures(block(rec, "provenance") or "", tag,
+                                         "the record"))
+            if not word(rec, "promotedBy"):
+                fails.append(f"{tag}: `reviewStatus autoPromoted` names no "
+                             "`promotedBy` -- the pipeline that promoted it")
+            if not any(f"{x}: reviewStatus autoPromoted" in out for x in said):
+                fails.append(f"{tag}: marked `reviewStatus autoPromoted` and its "
+                             "case printed no `[unreviewed] pair ...: reviewStatus "
+                             "autoPromoted` line -- the engine does not voice it")
+        elif word(rec, "humanReviewed") == "false" and status not in ("interim",):
+            fails.append(f"{tag}: `humanReviewed false;` beside `reviewStatus "
+                         f"{status}` -- only an interim or autoPromoted record can "
+                         "say no human reviewed it")
+        if status == "interim" and \
+                not any(x in out for x in said):
+            fails.append(f"{tag}: marked `reviewStatus interim` and its case "
+                         "printed no `[unreviewed] pair` line -- the engine "
+                         "does not voice the field")
+        where = ("catalogue" if in_std
+                 else "case-local in " + rec_path.parents[3].name)
+        checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
+        return ret
+
     tmp = Path(tempfile.mkdtemp(prefix="choupo-regressed-"))
     runs = {}   # fittedInCase -> (exit code, output): one run per named case
     try:
-        for rec_path in std + local:
-            #  Fields are read from the COMMENT-STRIPPED record: the header
-            #  prose says "reviewStatus interim: ..." and a regex over the raw
-            #  text read that sentence as the field -- S2 and S4 SURVIVED on
-            #  it (a pattern that matches prose is a check prose can satisfy).
-            rec = strip_comments(rec_path.read_text())
-            tag = rec_path.relative_to(ROOT).as_posix()
-            in_std = rec_path.parent == STD
-            case_rel = word(rec, "fittedInCase")
-            for k in PROMOTION_FIELDS:
-                if not word(rec, k):
-                    fails.append(f"{tag}: no `{k}` -- a proposal moved, not promoted")
-            if not re.search(r"^\s*recordType\s+binaryInteractionParameters\s*;", rec, re.M) \
-                    or block(strip_comments(rec), "pair") is None:
-                fails.append(f"{tag}: no `recordType binaryInteractionParameters;` "
-                             "and `pair {}` -- the catalogue form")
-            rf = facts(rec)
-            cur = block(rec, "curation")
-            c283 = cur is not None and "C283" in (word(cur, "rule") or "")
-            c291 = cur is not None and "C291" in (word(cur, "rule") or "")
-            if in_std and (c283 or c291):
-                if word(cur, "verdict") != "accepted":
-                    fails.append(f"{tag}: curation verdict `{word(cur, 'verdict')}` in "
-                                 "the CATALOGUE -- only an accepted fit (C283) is promoted")
-            elif in_std and rf["verdict"] != "validated":
-                fails.append(f"{tag}: verdict `{rf['verdict']}` in the CATALOGUE -- "
-                             "only a validated fit is promoted; a fit that missed its "
-                             "band lives in its own case")
-            if in_std:
-                case_dir = (ROOT / case_rel) if case_rel else None
-                if check_liquid_liquid(rec, rf, case_dir, tag, fails):
-                    ll_checked.append(rec_path.stem)
-                else:
-                    fails.extend(one_liquid_failures(rf, tag))
-                    stable_checked.append(rec_path.stem)
-            if not case_rel or not (ROOT / case_rel / "system" / "propsDict").exists():
-                fails.append(f"{tag}: fittedInCase `{case_rel}` is not a case")
-                continue
-            case = ROOT / case_rel
-            if (case / ARCHIVE_DECL).exists():
-                if case_rel not in fetched:
-                    fetched[case_rel] = fetch_case(case)
-                code, msg = fetched[case_rel]
-                if code == 2:
-                    not_run.append(f"{tag}: {msg.splitlines()[-1] if msg else 'fetch could not run'}")
-                    continue
-                if code != 0:
-                    fails.append(f"{tag}: its case's declared datasets could not be "
-                                 f"regenerated: {msg[-400:]}")
-                    continue
-            for ds in sorted((case / "constant" / "experiments").glob("*.dat")) + \
-                    sorted((case / "constant" / "archiveExtracts").glob("*.dat")):
-                check_dataset(ds, fails, tag)
-            #  ONE RUN PER NAMED CASE.  Two records may name the same case:
-            #  a witness that carries an unchanged COPY of a case-local
-            #  regression (vlle04_two_liquids_decanter carries curate12's,
-            #  2026-10-05) is held to the fit exactly as the original is.
-            #  Copying the case twice into one work directory collided, so the
-            #  run is made once and each record is compared against it.
-            #  Named by the case's whole path: two sibling cases of one pair share
-            #  a leaf name in every pair that has two (`Tx`, C296).
-            work = tmp / case.relative_to(ROOT).as_posix().replace("/", "__")
-            if case_rel not in runs:
-                shutil.copytree(case, work)
-                for stale in work.glob("*.proposal.dat"):
-                    stale.unlink()
-                p = subprocess.run([str(PROPS), "."], cwd=str(work),
-                                   capture_output=True, text=True, timeout=900)
-                runs[case_rel] = (p.returncode, p.stdout + p.stderr)
-            rc, out = runs[case_rel]
-            if rc != 0:
-                fails.append(f"{tag}: its case {case.name} exited {rc}")
-                continue
-            prop = work / (rec_path.stem + ".proposal.dat")
-            if not prop.exists():
-                fails.append(f"{tag}: {case.name} wrote no {prop.name} -- its fit "
-                             "must declare `proposal`, or this gate is vacuous")
-                continue
-            pf = facts(prop.read_text())
-            for k in ("i", "j", "verdict", "evidence", "T", "P"):
-                if rf[k] != pf[k]:
-                    fails.append(f"{tag}: `{k}` differs from what its case regresses "
-                                 f"now -- record {rf[k]!r}, run {pf[k]!r}")
-            for k in ("a_ij", "b_ij", "a_ji", "b_ji", "alpha", "points",
-                      "aad_pct", "maxAAD"):
-                if not close(rf[k], pf[k]):
-                    fails.append(f"{tag}: `{k}` = {rf[k]} in the record, {pf[k]} "
-                                 "from its case -- the record has drifted from its "
-                                 "evidence")
-            if c291:
-                c291_failures(rec, cur, case, out, tag, fails, in_std)
-                c291_checked.append(rec_path.stem)
-            elif c283:
-                c283_failures(rec, cur, case, out, tag, fails, in_std)
-                c283_checked.append(rec_path.stem)
-            #  The loader names a pair in its OWN i-j order, which is not the
-            #  file's alphabetical one (ethylAcetate-ethanol lives in
-            #  ethanol-ethylAcetate.dat), so either spelling is the pair.
-            said = [f"[unreviewed] pair {rf['i']}-{rf['j']}",
-                    f"[unreviewed] pair {rf['j']}-{rf['i']}"]
-            status = word(rec, "reviewStatus")
-            if status == "autoPromoted":
-                fails.extend(review_failures(block(rec, "provenance") or "", tag,
-                                             "the record"))
-                if not word(rec, "promotedBy"):
-                    fails.append(f"{tag}: `reviewStatus autoPromoted` names no "
-                                 "`promotedBy` -- the pipeline that promoted it")
-                if not any(f"{x}: reviewStatus autoPromoted" in out for x in said):
-                    fails.append(f"{tag}: marked `reviewStatus autoPromoted` and its "
-                                 "case printed no `[unreviewed] pair ...: reviewStatus "
-                                 "autoPromoted` line -- the engine does not voice it")
-            elif word(rec, "humanReviewed") == "false" and status not in ("interim",):
-                fails.append(f"{tag}: `humanReviewed false;` beside `reviewStatus "
-                             f"{status}` -- only an interim or autoPromoted record can "
-                             "say no human reviewed it")
-            if status == "interim" and \
-                    not any(x in out for x in said):
-                fails.append(f"{tag}: marked `reviewStatus interim` and its case "
-                             "printed no `[unreviewed] pair` line -- the engine "
-                             "does not voice the field")
-            where = ("catalogue" if in_std
-                     else "case-local in " + rec_path.parents[3].name)
-            checked.append(f"{rec_path.stem} ({where}, {rf['verdict']})")
+        _prime_imports()
+        for r in _pool_map(_check_record, std + local):
+            fails.extend(r[0])
+            not_run.extend(r[1])
+            checked.extend(r[2])
+            stable_checked.extend(r[3])
+            ll_checked.extend(r[4])
+            c283_checked.extend(r[5])
+            c291_checked.extend(r[6])
         model_done = check_model_records(tmp, runs, fetched, fails, not_run)
         vp_done = check_vapour_pressures(tmp, fails, not_run, fetched)
         check_vp_grade_channel(tmp, fails)
