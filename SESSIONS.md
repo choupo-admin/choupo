@@ -2232,3 +2232,44 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   count per file the divisions by `std::max(<quantity>, 1e-30)` (29 today),
   pin the counts, and fail on a new one, as the liquid-property ratchet
   does; it stops the family growing while nobody has classified it.
+- [open] cloud -> laptop, 2026-11-13 UTC (18:06): C388 IS READY:
+  `edutool/equilibrium-or-rate-based` at e8f2e77d9 (five commits on main
+  2c80c784a; no `src/` line changes: one comment table in
+  column11_murphree's dictionary, whose header quoted x_D 0.9505 and 0.98125
+  from an older engine and now quotes today's 0.9179 and 0.9510).  THE PAGE
+  ("Equilibrium stages or rate-based?", shelf Separations, kind selection):
+  the student's question; DEMONSTRATION 1 on column11_murphree with the
+  declared efficiency on a slider: toluene in the distillate from 0.147 to
+  0.049 on the shipped column and from 1.05 % to 1.39 ppm on a 30-stage
+  trace column, so 0.1 of efficiency is a factor 1.2 on a per-cent
+  specification and 4.2 on a ppm one, and the trays a 10 ppm target needs go
+  from 27 at E = 1 to 63 at 0.4 (231 native runs, all converged; the page
+  runs 33 per button press, none on opening); DEMONSTRATION 2 on
+  trayEfficiency01, 05 and 06 beside the measured points the tree carries;
+  FIVE REFERENCE CARDS (four open proceedings papers read by the builder and
+  again by me, statement by statement; your Pelkonen 2001 reading as the
+  fifth, paraphrased, with the entry saying it was read by you and not
+  opened for the page); A DECISION TABLE OF SIX ROWS, each with its origin;
+  the costs of each choice.  DROPPED FOR LACK OF A SOURCE, and listed in its
+  design note: "five times the unknowns per stage", "the equilibrium and
+  efficiency uncertainty usually dominates", any superlative about reactive
+  absorption, non-ideal multicomponent systems in general, and HETP as
+  common practice.  THE ONE ARTICLE THAT WOULD COMPLETE THE TABLE could not
+  be opened here: Taylor, Krishna and Kooijman, Chem. Eng. Prog., July 2003,
+  pp. 28-39; if it is in your literature folder, rows read from it can enter
+  exactly as the Pelkonen one did.  VALIDATED: `--gui` 47 / 0 on bfa436fb7
+  (before the rebase and the second round); on the final head the full `npm
+  test` (321 files, 8028 tests), typecheck, --scope over the four cases it
+  runs 8 / 0, and the edutool-form, lesson-symbols, lesson-references,
+  method-tools, theory-citations, guide-freshness, guide-paths,
+  decision-index, sealed-corpus, fastset, feature-documented,
+  source-licence, doctrine, glossary and doc-references gates; I re-ran its
+  18 tests and recomputed five engine points.  NOT RUN: `--gui` on the final
+  head, `make wasm`; and, as for `fast-and-slow`, the in-browser runs were
+  never seen with a real engine (the development server answers with a
+  mock).  WHEN BOTH PAGES LAND: `generated/methodTools.json` and the
+  decision index will conflict; regenerate the first, re-add the row in the
+  second.  Its design note has the DEV.md entry text for C388.  ALSO: a
+  general has started the two pharmaceutical branches, stacked
+  (`fix/pharma-product-clean`, then `fix/pharma-installed-size`), from main;
+  neither re-records a golden, each lists its rows.
