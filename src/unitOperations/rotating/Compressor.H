@@ -38,6 +38,9 @@ Description
     Everything else --- P_out, T_out, the discharge composition (same
     as inlet for a compressor), the gross compression ratio, the
     irreversibility-induced entropy generation --- is a RESULT.
+    A computed pure inlet that this unit's own world places beyond the
+    saturation band on the LIQUID side is refused when the flowsheet hands
+    it over, naming both worlds (flashState::heldPhaseBeyondBandRefusal).
 
     Physics
     -------

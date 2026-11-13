@@ -1139,6 +1139,32 @@ void runUnit(const DictPtr&                                          udict,
 
     auto unit = UnitOperation::New(utype);
 
+    //  A COMPUTED INLET THIS UNIT'S OWN WORLD PLACES ACROSS THE LINE (review
+    //  TD-17).  Judged HERE, at the hand-over, because only here are both
+    //  worlds known: `thermo` is the unit's own, and the producer's is
+    //  stamped on the stream (below, on every outlet).  A unit that declares
+    //  ONE inlet phase (its acceptance, per port where it declares ports)
+    //  refuses a pure stream its world puts beyond the band on the other
+    //  side; the sentence has one home, flashState::heldPhaseBeyondBandRefusal.
+    //  An authored inlet was refused before any unit ran.
+    {
+        const UnitAcceptance acc = unit->acceptance();
+        std::vector<std::string> ins;
+        if (udict->found("inputs")) ins = udict->lookupWordList("inputs");
+        else if (udict->found("in")) ins.push_back(udict->lookupWord("in"));
+        for (std::size_t k = 0; acc.declared && k < ins.size(); ++k)
+        {
+            const auto& ph = (k < acc.ports.size()) ? acc.ports[k].phases
+                                                    : acc.phases;
+            if (ph.liquid == ph.vapour) continue;       // holds no one phase
+            const auto st = streams.find(ins[k]);
+            if (st == streams.end() || st->second.authoredInlet) continue;
+            if (auto why = flashState::heldPhaseBeyondBandRefusal(
+                    utype + " '" + uname + "'", st->second, ph.liquid, thermo))
+                throw std::runtime_error(*why);
+        }
+    }
+
     //  WHAT THE CASE DECLARES THIS UNIT STARTS FROM
     //  (0/internalStates/<SECTOR>/<unit>, one block per kind).
     //  Handed over BEFORE solve so the unit can seed its own interior from it
@@ -1256,6 +1282,8 @@ void runUnit(const DictPtr&                                          udict,
             }
         }
         if (s.P <= 0.0) s.P = P_inherit;
+        s.producedBy      = uname;                       // TD-17: who, and
+        s.producedInWorld = flashState::pureWorldName(thermo, s.z, s.T);  // where
         streams[outputs[k]] = s;
     }
 
@@ -3064,17 +3092,31 @@ int Flowsheet::solve(const DictPtr& dict,
     //  (DEV.md C37 item 5).  A unit's own world is asked only for a PURE,
     //  authored, unpinned inlet -- the only stream the rule can refuse --
     //  and `thermoFor` builds that world once and caches it for the solve.
-    //  Every offender is collected before refusing.
+    //  Every offender is collected before refusing.  Its mirror rides the
+    //  same walk: a pure-fluid stream whose DECLARED phase its own (T, P)
+    //  contradict beyond the band (`declaredPhaseBeyondBandRefusal`, TD-04).
     {
-        std::vector<std::string> undetermined;
+        std::vector<std::string> undetermined, contradicted;
         std::set<std::string> refusedGlobally;
         auto isCandidate = [&](const std::string& nm, const ProcessStream& s)
         {
             return s.authoredInlet && !s.phasePinned && s.F > 0.0
                 && canonicalPaths.count(nm);
         };
+        auto isPinnedInlet = [&](const std::string& nm, const ProcessStream& s)
+        {
+            return s.authoredInlet && s.phasePinned && s.F > 0.0
+                && canonicalPaths.count(nm);
+        };
         for (const auto& [nm, s] : streams_)
         {
+            if (isPinnedInlet(nm, s))
+                if (auto why = flashState::declaredPhaseBeyondBandRefusal(
+                        nm, "0/" + statePathOf(nm), s, thermo))
+                {
+                    contradicted.push_back(*why);
+                    refusedGlobally.insert(nm);
+                }
             if (!isCandidate(nm, s)) continue;
             if (auto why = flashState::undeterminedSaturationRefusal(
                     nm, "0/" + statePathOf(nm), s.T, s.P, s.z, thermo))
@@ -3093,7 +3135,8 @@ int Flowsheet::solve(const DictPtr& dict,
             {
                 const auto st = streams_.find(in);
                 if (st == streams_.end() || refusedGlobally.count(in)
-                    || !isCandidate(in, st->second)
+                    || !(isCandidate(in, st->second)
+                         || isPinnedInlet(in, st->second))
                     || !flashState::soleComponent(st->second.z)) continue;
                 pureInlets.push_back(in);
             }
@@ -3104,16 +3147,26 @@ int Flowsheet::solve(const DictPtr& dict,
             for (const auto& in : pureInlets)
             {
                 const auto& s = streams_.at(in);
-                if (auto why = flashState::undeterminedSaturationRefusal(
+                const std::string own = "  (Checked in the OWN thermophysical"
+                    " world of unit '" + fu.name + "', which consumes it.)";
+                if (s.phasePinned)
+                {
+                    if (auto why = flashState::declaredPhaseBeyondBandRefusal(
+                            in, "0/" + statePathOf(in), s, world))
+                        contradicted.push_back(*why + own);
+                }
+                else if (auto why = flashState::undeterminedSaturationRefusal(
                         in, "0/" + statePathOf(in), s.T, s.P, s.z, world))
-                    undetermined.push_back(*why + "  (Checked in the OWN "
-                        "thermophysical world of unit '" + fu.name
-                        + "', which consumes it.)");
+                    undetermined.push_back(*why + own);
             }
         }
+        std::string refusal;
         if (!undetermined.empty())
-            throw std::runtime_error(
-                flashState::undeterminedStreamsMessage(undetermined));
+            refusal = flashState::undeterminedStreamsMessage(undetermined);
+        if (!contradicted.empty())
+            refusal += (refusal.empty() ? "" : "\n")
+                     + flashState::contradictedStreamsMessage(contradicted);
+        if (!refusal.empty()) throw std::runtime_error(refusal);
     }
     checkAuthoredInletAcceptance(units, thermo, planFindings);   // C188: FlowsheetAcceptance.cpp
 
