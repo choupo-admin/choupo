@@ -2232,3 +2232,160 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   count per file the divisions by `std::max(<quantity>, 1e-30)` (29 today),
   pin the counts, and fail on a new one, as the liquid-property ratchet
   does; it stops the family growing while nobody has classified it.
+- [open] cloud -> laptop, 2026-11-13 UTC (18:06): C388 IS READY:
+  `edutool/equilibrium-or-rate-based` at e8f2e77d9 (five commits on main
+  2c80c784a; no `src/` line changes: one comment table in
+  column11_murphree's dictionary, whose header quoted x_D 0.9505 and 0.98125
+  from an older engine and now quotes today's 0.9179 and 0.9510).  THE PAGE
+  ("Equilibrium stages or rate-based?", shelf Separations, kind selection):
+  the student's question; DEMONSTRATION 1 on column11_murphree with the
+  declared efficiency on a slider: toluene in the distillate from 0.147 to
+  0.049 on the shipped column and from 1.05 % to 1.39 ppm on a 30-stage
+  trace column, so 0.1 of efficiency is a factor 1.2 on a per-cent
+  specification and 4.2 on a ppm one, and the trays a 10 ppm target needs go
+  from 27 at E = 1 to 63 at 0.4 (231 native runs, all converged; the page
+  runs 33 per button press, none on opening); DEMONSTRATION 2 on
+  trayEfficiency01, 05 and 06 beside the measured points the tree carries;
+  FIVE REFERENCE CARDS (four open proceedings papers read by the builder and
+  again by me, statement by statement; your Pelkonen 2001 reading as the
+  fifth, paraphrased, with the entry saying it was read by you and not
+  opened for the page); A DECISION TABLE OF SIX ROWS, each with its origin;
+  the costs of each choice.  DROPPED FOR LACK OF A SOURCE, and listed in its
+  design note: "five times the unknowns per stage", "the equilibrium and
+  efficiency uncertainty usually dominates", any superlative about reactive
+  absorption, non-ideal multicomponent systems in general, and HETP as
+  common practice.  THE ONE ARTICLE THAT WOULD COMPLETE THE TABLE could not
+  be opened here: Taylor, Krishna and Kooijman, Chem. Eng. Prog., July 2003,
+  pp. 28-39; if it is in your literature folder, rows read from it can enter
+  exactly as the Pelkonen one did.  VALIDATED: `--gui` 47 / 0 on bfa436fb7
+  (before the rebase and the second round); on the final head the full `npm
+  test` (321 files, 8028 tests), typecheck, --scope over the four cases it
+  runs 8 / 0, and the edutool-form, lesson-symbols, lesson-references,
+  method-tools, theory-citations, guide-freshness, guide-paths,
+  decision-index, sealed-corpus, fastset, feature-documented,
+  source-licence, doctrine, glossary and doc-references gates; I re-ran its
+  18 tests and recomputed five engine points.  NOT RUN: `--gui` on the final
+  head, `make wasm`; and, as for `fast-and-slow`, the in-browser runs were
+  never seen with a real engine (the development server answers with a
+  mock).  WHEN BOTH PAGES LAND: `generated/methodTools.json` and the
+  decision index will conflict; regenerate the first, re-add the row in the
+  second.  Its design note has the DEV.md entry text for C388.  ALSO: a
+  general has started the two pharmaceutical branches, stacked
+  (`fix/pharma-product-clean`, then `fix/pharma-installed-size`), from main;
+  neither re-records a golden, each lists its rows.
+- [open] cloud -> laptop, 2026-11-13 UTC (18:11): TD-15 IS READY:
+  `fix/hx-condensing-outlet` at 6e54a2489 (four commits on main d5704ddc4).
+  THE CAUSE, traced: the outlet bracket moved BOTH ends at every step and
+  one non-finite evaluation ended the search; with a condensing IF97 steam
+  the eps-NTU guess is the cold inlet's 300 K, the LOW end walks below the
+  IF97 window on its second or third step while the HIGH end is still two
+  steps short of the saturation temperature that brackets the root, and the
+  unit fell back to the sensible temperature.  THE FIX: an end the package
+  cannot price is a wall; it keeps its last finite evaluation, the other end
+  goes on, and the fallback is taken only when no finite bracket exists;
+  where every evaluation is finite the trial sequence is the old one.
+  MEASURED: the builder's table at 373.15, 446.5 and 550 K (gap from -43.69,
+  -42.86, -39.34 kW to below 1e-9; outlet on the plateau at vf 0.939, 0.863,
+  0.692, pinned; Q unchanged), and my own probe again on the rebased build
+  (446.5158944 K at e = -5e-7, 0, +1e-9: gap 7.7e-10 kW at all three).  THE
+  CORPUS: the 18 cases that name the type, result JSON against a build of
+  the branch point: every kpi, stream and boundary number identical;
+  utility01/02/03 gain one advisory each (the no-datum fallback,
+  console-only until now; both fallbacks ride the advisory log now).  A
+  SEPARATE COMMIT (cd366e850, droppable) frames the bracket walk as a TRIAL:
+  11 cases re-stamp entries from accepted to trial, 9 gain trial entries the
+  per-pass latch used to swallow, and ONE THING SURFACES:
+  greenAmmonia03_basicDesign's accepted Henry-pair extrapolation (Ar-NH3 at
+  238.15 K) had been hidden because the walk's raise at 207.2 K held that
+  advisory's key; not investigated further.  THE GATE:
+  `check_energy_closure`'s unit arm now judges every heatExchanger's own
+  `H_closure_gap_kW` (above 1e-4 kW fails unless pinned by `--seed`; no pin
+  needed: every priced gap in the corpus is below 6e-6 kW; the three
+  unpriceable ones are counted and named; three witnesses must be read),
+  sabotage U11 in its docstring.  ITS MANIFEST CLAIM WAS NOT RE-OBSERVED
+  here (your integration tool does it).  A NEW CASE:
+  `tutorials/steady/heat/hx02_condensing_steam` (IF97 steam at 8 bar and 450
+  K against 300 K water; Q 5.138 kW, the sensible model's and the README
+  says so; outlet at 443.5635 K with vf 0.86868 pinned), sealed, 29 golden
+  rows recorded by the builder.  Lesson citation re-pointed
+  (`HeatExchanger.cpp:1073-1098, 1267-1270`) with the hand-kept test.
+  VALIDATED by the builder on the head before the last rebase: --scope over
+  the heat directory and the 18 cases 33 / 0, no existing golden moved; the
+  web app's tests 320 files, typecheck; the caveat, layering, compile-clean,
+  dialect, guide and text gates; --gui 46 / 1.  On the rebased head, by me:
+  build, --scope over four cases 8 / 0.  THE ONE --gui FAILURE IS NOT THIS
+  BRANCH'S AND WILL REPEAT ON EVERY --gui RUN OFF YOUR LAPTOP:
+  `check_gate_selftest` sabotages `check_property_route_bench`, which since
+  C384 answers NO SUBJECT on any platform other than the recording one
+  (confirmed here standalone; your runner's log shows the same line), so the
+  sabotage "passes" and the self-test fails.  The self-test should treat a
+  target with no subject as not judged here, and say so.  NOT RUN: a full
+  sweep, `make wasm`, `check_energy_closure` standalone over the whole
+  steady corpus.  NOT FIXED, recorded: on the IF97 cases the low end still
+  prices one point below 273.15 K before it becomes a wall (eight such trial
+  advisories, now filed as the path).
+- [open] cloud -> laptop, 2026-11-13 UTC (18:22): TD-04 IS READY:
+  `fix/declared-phase-beyond-band` at 09a9c92db (six commits on main
+  9165c8efe), WITH ONE DEPARTURE FROM YOUR RULING THAT NEEDS YOUR WORD.
+  BUILT AS RULED: an authored pure-fluid stream whose declared single phase
+  its own T and P contradict beyond the band is refused by name before any
+  unit runs (one home beside `undeterminedSaturationRefusal`, decided by
+  `pureFluidPhaseState(...).farAcross`, so there is no second band; applied
+  in the case's world, in each consuming unit's own world and to the
+  time-integrated binaries' authored inlets; the message prints T, P, p_sat,
+  the distance and both remedies with their values).  NO CORPUS CASE IS HIT
+  (the 15 steady pure-fluid cases run unchanged), and the wider count you
+  may want: of 33 pinned pure authored streams on ANY package (28 cases),
+  none is contradicted beyond 1e-6 of its own package's saturation pressure.
+  THE COMPUTED-INLET RULE lives in the two caloric overloads (`H_real` and
+  `S_real` with a phase now evaluate at `pureFluidStreamPressure`, the
+  stream functions' own rule; their only callers are the three rotating
+  units), announced through the advisory log; the DENSITY overload keeps the
+  saturated branch of the phase asked, because the door, the column and the
+  sizing code read it as a property of that phase.  THE DEPARTURE: a PUMP
+  fed a computed inlet beyond the band REFUSES by name instead of pricing
+  (T, P): priced there the inlet is a vapour, no liquid discharge carries
+  its enthalpy, and the discharge search fell back in silence.  YOUR WORD,
+  PLEASE, ON THE MIRROR (ledger TD-17): the COMPRESSOR as built follows the
+  ruling: on the builder's cross-world fixture (a producer in an IAPWS-95
+  world, the case on IF97, 1.37e-4 across the line) it prices the
+  vapour-labelled inlet as the compressed liquid its own world finds, its
+  own first law closes, and the 37.97 kW of latent heat appears as the
+  producer's model-boundary step where it was hidden inside the unit before;
+  but it is then a compressor compressing a liquid (dT 0.087 K).  I would
+  refuse it as the pump does (the unit's declared acceptance, read in its
+  own world), and the turbine with it, which today fails its inner Newton on
+  such an inlet; say and it is one small commit.  A SECOND FINDING, BEING
+  FIXED as a separate commit at the tip (droppable): TD-16, the pump's
+  discharge: `T_out = r.converged ? r.x : T_in` replaces a failed search by
+  the inlet temperature in silence; reproduced by me at 550 K with eta 0.01:
+  T_out = T_in and +0.1816 kW of residual (the whole shaft work) at exit 0;
+  eta 0.03 and 0.5 close.  The commit makes the pump refuse a discharge that
+  is not a liquid and raise a typed non-convergence otherwise.  THE GATE:
+  arms (g) to (j) with six by-hand sabotages; arms (a) and (b) now probe at
+  e = +-5e-7 instead of the band's edge, because at the edge the new refusal
+  decides by the last bit; your edge rule of 7e1b3e8bf is kept for the outer
+  points.  VALIDATED by the builder: --scope over the rotating, heat and
+  power directories and ten pure-fluid cases 42 / 0, no golden moved; the
+  web app's tests; the text, caveat, dialect and compile gates; 43 lesson
+  citations re-pointed (two by hand); --gui 46 / 1, the one failure the
+  self-test's platform-pinned target.  By me on the rebased head: build, the
+  gate, and a probe of 21 runs (refused at 2e-6 on the wrong side for both
+  units at the three temperatures; residual below 1e-6 kW at 5e-7 and on the
+  declared side).  Review rows TD-16 and TD-17 and a section 10 are in the
+  two-defects review.  (2) FROM VITOR, a moment ago: he has put three papers
+  in the literature folder for the C388 page, each DOI confirmed by me on
+  Crossref today: Taylor and Kooijman, "Mass Transfer in Distillation", in
+  Distillation: Fundamentals and Principles (2014), pp. 97-143, doi
+  10.1016/B978-0-12-386547-2.00003-X; Taylor and Krishna, "Modelling
+  reactive distillation", Chem. Eng. Sci. 55 (2000) 5183-5229, doi
+  10.1016/S0009-2509(00)00120-2; Krishnamurthy and Taylor, "A nonequilibrium
+  stage model of multicomponent separation processes. Part I", AIChE J. 31
+  (1985) 449-456, doi 10.1002/aic.690310312.  The article he was first asked
+  for (Taylor, Krishna and Kooijman, Chem. Eng. Prog., July 2003, pp. 28-39)
+  has NO DOI: Crossref holds no record of it.  I cannot read that folder
+  from here.  If you or a study general read them, what the page needs is
+  short: for each situation in which the authors say an equilibrium-stage
+  model with efficiencies is not enough (or is enough), one paraphrased
+  sentence with the section or page it rests on; I add the rows to the page
+  with the entry saying who read them, as for Pelkonen.
