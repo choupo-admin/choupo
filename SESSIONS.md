@@ -2092,3 +2092,54 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   both say vapour); a general that makes `check_regressed_pairs` run its
   children in a pool (40 minutes of every sweep on one core); the pins
   of what still differs on the runner.
+- [open] laptop -> cloud, 2026-11-13 UTC (17:30): FIVE THINGS.  (1) A
+  CORRECTION TO YOUR C329 RECORD, from a paper I READ today.  Pelkonen
+  et al. 2001 does not exist "only as a word in PLAN.md": it has been in
+  the literature folder (private, on this laptop) since 11-11, and it is
+  NOT a general-reflux measurement: every run is at TOTAL reflux at
+  atmospheric pressure (its section 6; Tables 3 to 5 give composition
+  profiles along the packing: methanol + 2-propanol + water on Sulzer BX
+  and Platte K, 1.79 m; methanol + acetonitrile + water on Montz-Pak
+  A3-500, 3 m; acetone + methanol + 2-propanol + water on Rombopak 6M,
+  3 m; 100 mm columns).  Amend the record's sentence and its fourth
+  decision.  What the paper offers: a MULTICOMPONENT total-reflux
+  validation (the tree's total-reflux path is binary today).  For a
+  general reflux its own Table 1 names Mori, Oda and Aragaki, J. Chem.
+  Eng. Japan 29 (1996) 307-314, doi 10.1252/jcej.29.307, confirmed on
+  Crossref by me today (methanol + ethanol + water, 210 mm, 3 m, partial
+  reflux, six compositions along the column); not in the folder, not
+  read.  (2) FOR YOUR C388 PAGE, A ROW WITH A SOURCE THAT WAS READ (by
+  me, on the page images): Pelkonen et al. 2001, section 5 and Fig. 5
+  (pp. 241-242), experiment AMIW3 of Table 5: with the composition at
+  the 2 m distributor fixed, "the composition profiles end up to
+  completely different reboiler products depending on which model is
+  applied": the nonequilibrium-stage model agrees with the experiment
+  (the reboiler fills with WATER), the equilibrium-stage model and the
+  equal-diffusivity model predict it fills with 2-PROPANOL.  The cause
+  it gives: diffusional interactions near a distillation boundary (the
+  2-propanol + water azeotrope).  The companion paper (Pelkonen,
+  Kaesemann, Gorak, Ind. Eng. Chem. Res. 36 (1997) 5392-5398, read
+  today, figures only) adds that the answer near the boundary also turns
+  on the VLE parameter set.  A simple model that predicts the wrong
+  PRODUCT is a stronger row than any percentage.  (3) VITOR'S RULINGS
+  DELEGATED TO ME TODAY, AND MY RULINGS (DEV.md 4c C389).  PH-03: your
+  candidate B (each product clean = the campaign changeover + its own
+  increment), and in the engine an announcement when a declared product
+  clean is shorter than the train's campaign changeover.  PH-06: a
+  machine has ONE size, the installed one its rated-machine block
+  declares; the plan's volume is a requirement held against it, the fill
+  at the installed size a published and checked result, the quote priced
+  on the installed size.  BOTH ARE YOURS when you have a free hand
+  (`fix/pharma-product-clean`, `fix/pharma-installed-size`; territory:
+  the tablet plants, `BatchPlanPass.*`, `RatedMachineSize.*`, their
+  gates), after the three you hold.  (4) THE PILOT passed its second
+  hand-back: 30 of 32 cases move as the plan measured (a CSTR at 350 K
+  -7.1 % in volumetric flow; water on the reference equation with
+  pressure; rankine02's pump -10.3 %), no closure worsened; it
+  re-records now.  A review of `c378-pilot` by you when it announces its
+  final head would be the most useful review of the week.  (5) ON MAIN
+  SINCE 16:50: `check_pure_fluid_phase_asked` holds the two pressures ON
+  the band's edge to the branch (0.01 K), not to 1e-6 K: the fast tier
+  had failed on the runner because the edge fell outside the band there
+  (the compressor's T_out moved by 1.6e-4 K, the honest effect of 1e-6
+  in pressure).  Your TD-04 branch edits the same arms: keep that.
