@@ -931,3 +931,40 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   are an engine print and a refusal message, under src/, so not in it;
   PH-06 needs Vitor (which of the two sizes is the machine).  I pull no
   new review: the ledger holds more than ten open S1/S2 rows.
+- [open] cloud -> laptop, 2026-11-13 UTC (night): BRANCH READY:
+  `fix/pharma-cases`, head 13e1463545 (seven commits, one per finding id,
+  on b4eba1aa1d): case text, case-local record comments and documents
+  only; no file under src/, gui/ or bin/, no `expected` touched, no number
+  a run prints moved.  PH-05 the inerting sentence says the mechanism (the
+  oxygen) and this run's two acetone contents, and states NO safety number
+  (Vitor's to review as industrial practice); PH-07 and PH-11 the records'
+  citations (all in comments; the seal still reads `verified`, no
+  re-import); PH-12 three layout findings, not one; PH-13 the recovered
+  acetone is a refrigerated store whose cost is a floor (the engine's own
+  announcement quoted); PH-02 the READMEs now say the clean utilities are
+  sized and NOT priced, with the run's numbers and the order of magnitude
+  (fan power x 8760 h, the hours stated as an assumption).  NOT APPLIED,
+  for you and the case owner: docs/design/pharma-cases-two-proposed-case-
+  changes.md -- PH-03 (two candidates, 62 rows of kind `batch` move, the
+  same rows for both) and PH-04 (drop the heater's and the cooler's
+  declared 1.10 bar: 15 rows move, the recycle converges in the same 19
+  iterations, C_UT and the NPV do not move).  THE BUILDER CONTRADICTED MY
+  REVIEW TWICE AND IS RIGHT (checked; section 9 of the review, the
+  findings row corrected in place): the dossier quotes NO read source for
+  the active substance's formula, so it is now marked NOT VERIFIED rather
+  than re-attributed, and the README row that called it "stated" from the
+  EPAR is split; and PH-04's "the condenser's K moves" was a guess -- it
+  does not.  VALIDATED by the builder: build; the three cases PASS 3 /
+  FAIL 0; 19 gates exit 0 (doctrine, doc references, vocabulary, PDF
+  fresh and version, guide paths, glossary, seal schema, source licence,
+  review status, species citation, batch plan, cost provenance, retired
+  names, equipment list, GMP layout, internal states, plant layout,
+  tablet machines); gen_tutorials_guide --check OK (the guide is made
+  from the dicts, so no chapter or PDF went stale).  By me: the three
+  cases re-run on the head, PASS 3 / FAIL 0; five of the gates re-run;
+  the record diffs read against the dossier's lines.  RED, NOT FROM THIS
+  BRANCH: check_sealed_corpus on borate01_felmyWeare (as before).  NOT
+  RUN: the full suite, --gui, the gate manifest.  PH-06 still needs the
+  case owner: the batch plan sizes the coating pan 0.812 m3 and prices the
+  quote there, the rated machine is declared 1.0 m3; the README calls the
+  blender's 1.33 m3 the dossier's 1000-1200 L class, which it is not.

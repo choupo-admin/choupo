@@ -127,3 +127,43 @@ design record; every primary source (patent, assessment reports, labels,
 sales report): cited, unread.  The statements about industrial practice
 (flammable limit, excipient moisture, staffing patterns, changeover times)
 are for the owner to correct.
+
+## 9. Corrections to this review, found when the fixes were built (2026-11-13)
+
+The builder of branch `fix/pharma-cases` re-measured each finding before
+touching a file and contradicted this review twice.  Both contradictions were
+checked against the tree and stand.
+
+* **PH-07 was half wrong.**  The finding is right that two records cited an
+  assessment report nobody had opened.  It was wrong to add that "the dossier
+  sources the same facts to the EPAR".  The design-basis dossier quotes NO
+  read document for the molecular formula of the active substance (a search of
+  the dossier for the formula and for the molar mass finds nothing), and its
+  section 1.3 says the spray drying with HPMCAS is "Not stated" by the
+  regulators' reports: it is stated by a secondary review and by a patent
+  example.  The README's own row attributed the formula to the EPAR as
+  "stated", which the dossier does not support either.  So the honest fix was
+  not a re-attribution: the formula is now marked NOT VERIFIED against a source
+  read by the curator, and the spray drying is attributed to the two sources
+  the dossier names.  The row in `findings.tsv` is corrected in place.
+* **PH-04's last clause was a guess.**  The finding says "the condenser's
+  K = Psat/1.0 bar does" move.  Measured on a scratch copy with the heater's
+  and the cooler's declared 1.10 bar removed and the condenser's and the pot's
+  1.0 bar kept: 15 golden rows move (the two declared pressures and the spray
+  dryer's gas-side numbers that follow from the gas density), the recycle
+  converges in the same 19 iterations, and the condenser's K, the utility bill
+  and the NPV do not move.  The K would move only if the condenser's own
+  declared pressure changed.
+
+Also measured by the builder and added here because the review missed it:
+the ten excipient records of PH-11 could be re-attributed to the primary
+label, because the dossier lists it among the documents read; and one of them
+said the label does not state which iron oxides are used, while the dossier's
+own row names two.
+
+What the branch does and does not close: PH-05, PH-07, PH-11, PH-12 and PH-13
+are answered in the case text; PH-02 is answered in the READMEs only (the run
+still prints the bill without saying what it omits); PH-03 and PH-04 have a
+proposal with the moved golden rows listed and nothing applied
+(`docs/design/pharma-cases-two-proposed-case-changes.md` on the branch);
+PH-01, PH-06, PH-08, PH-09, PH-10 and PH-14..18 are untouched.
