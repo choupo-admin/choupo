@@ -59,3 +59,9 @@ kpi     RO                     ratedTest_recovery 0.08             1e-4
 kpi     RO                     solute_closure_rel 6.33538940232e-16 1e-4
 kpi     RO                     u_crossflow_inlet 0.318043615679   1e-4
 kpi     RO                     water_recovery   0.0801667357101  1e-4
+source  NF                     liquidDensity    default.rhoFeed1000 exact
+source  NF                     liquidDiffusivity declared.case    exact
+source  NF                     liquidViscosity  declared.case    exact
+source  RO                     liquidDensity    default.rhoFeed1000 exact
+source  RO                     liquidDiffusivity declared.case    exact
+source  RO                     liquidViscosity  declared.case    exact

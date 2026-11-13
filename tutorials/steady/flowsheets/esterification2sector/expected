@@ -60,3 +60,4 @@ kpi     SEPARATION.flash       Q_kW             -211.579232905   1e-4
 kpi     SEPARATION.flash       T                355              1e-4
 kpi     SEPARATION.flash       V_over_F         0.50799110608    1e-4
 kpi     SEPARATION.flash       phaseSet         0                1e-4
+source  REACTION.reactor       liquidVolume     bypass.recordVliq25C exact

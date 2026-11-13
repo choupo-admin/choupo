@@ -15,3 +15,6 @@ kpi     RO                     mass_closure_rel 3.55268001518e-16 1e-4
 kpi     RO                     u_crossflow_inlet 0.318043615679   1e-4
 kpi     RO                     water_recovery   0.159516951325   1e-4
 kpi     RO                     solute_closure_rel 2.11179646744e-16 1e-4
+source  RO                     liquidDensity    default.rhoFeed1000 exact
+source  RO                     liquidDiffusivity default.legacy1.6e-9 exact
+source  RO                     liquidViscosity  declared.case    exact

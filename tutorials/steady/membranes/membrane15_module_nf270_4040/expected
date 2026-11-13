@@ -15,3 +15,6 @@ kpi     NF                     mass_closure_rel 4.61155269823e-16 1e-4
 kpi     NF                     u_crossflow_inlet 0.282091538818   1e-4
 kpi     NF                     water_recovery   0.199151845893   1e-4
 kpi     NF                     solute_closure_rel 0                1e-4
+source  NF                     liquidDensity    default.rhoFeed1000 exact
+source  NF                     liquidDiffusivity default.legacy1.6e-9 exact
+source  NF                     liquidViscosity  declared.case    exact

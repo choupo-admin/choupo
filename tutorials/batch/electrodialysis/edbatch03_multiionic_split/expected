@@ -71,3 +71,5 @@ kpi     rig                    t_transfer_final_SO4 0.500462786792     1e-4
 kpi     rig                    totalMoles_final 0.277853708184     1e-4
 kpi     rig                    u_superficial    0.0791119212172    1e-4
 kpi     rig                    xi_eff_final     0.9                1e-4
+source  rig                    liquidDensity    constant.diluteCarrier exact
+source  rig                    liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact

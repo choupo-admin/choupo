@@ -669,3 +669,9 @@ kpi     pinch                  problem_class    3                1e-4
 kpi     economics              lossYears        15               1e-4
 kpi     economics              taxCreditOnLoss  227961885.426    1e-4
 kpi     economics              taxCreditOnLoss_NPV 116766131.817    1e-4
+source  inventory_'LetdownHP'  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'NH3Storage/tank1' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'NH3Storage/tank2' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'Separator'  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'StorageFlash' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  storage_'NH3Storage'   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

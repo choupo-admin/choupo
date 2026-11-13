@@ -16,3 +16,5 @@ kpi     NFunit                 solute_closure_rel 6.11698818479e-16 1e-4
 boundary global                 H_feeds_kW       -15965.9347526   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -15965.9347526   1e-4
+source  NFunit                 liquidDensity    default.rhoFeed1000 exact
+source  NFunit                 liquidViscosity  default.water1e-3 exact

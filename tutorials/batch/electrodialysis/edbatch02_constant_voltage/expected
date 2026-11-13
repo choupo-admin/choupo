@@ -59,3 +59,5 @@ kpi     rig                    Sh               19.2923991459    1e-4
 kpi     rig                    film_thickness   3.99120915018e-05 1e-4
 kpi     rig                    k_c_eff          4.02655754901e-05 1e-4
 kpi     rig                    u_superficial    0.0791119212172  1e-4
+source  rig                    liquidDensity    constant.diluteCarrier exact
+source  rig                    liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact

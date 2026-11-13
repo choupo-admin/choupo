@@ -66,3 +66,4 @@ kpi     retentate              c_bMeanPerm_MgSO4 0.0198483454632  1e-4
 kpi     retentate              c_bMeanPerm_NaCl 0.0144024289789  1e-4
 kpi     retentate              c_permPooled_MgSO4 2.87438608734e-05 1e-4
 kpi     retentate              c_permPooled_NaCl 0.00182693130445 1e-4
+source  retentate              liquidDensity    declared.case    exact

@@ -52,3 +52,6 @@ kpi     edStack                C_ion_Na         100.000000017    1e-4
 kpi     edStack                D_ion_Cl         2.03e-09         1e-4
 kpi     edStack                D_ion_Na         1.33e-09         1e-4
 kpi     edStack                stokesEinsteinFactor 1                1e-4
+source  edStack                liquidDensity    constant.diluteCarrier exact
+source  edStack                liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact
+source  edStack                liquidViscosity  Vogel/GrunbergNissan exact

@@ -71,3 +71,5 @@ kpi     stack                  vWall_cut_m_s    0.000595105983753 1e-4
 boundary global                 H_feeds_kW       -44305.971382    1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -44305.971382    1e-4
+source  stack                  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  stack                  liquidViscosity  Vogel/GrunbergNissan exact

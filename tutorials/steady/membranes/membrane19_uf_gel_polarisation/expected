@@ -14,3 +14,5 @@ kpi     UF                     dP_feed          0                  1e-4
 kpi     UF                     mass_closure_rel 3.97205898188e-16  1e-4
 kpi     UF                     solute_closure_rel 1.58180682192e-16  1e-4
 kpi     UF                     water_recovery   0.560896239275     1e-4
+source  UF                     liquidDensity    default.rhoFeed1000 exact
+source  UF                     liquidViscosity  default.water1e-3 exact

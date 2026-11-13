@@ -17,3 +17,4 @@ kpi     reactor                xi_b_to_c_mol_per_s 0.0126884461066  1e-4
 stream  feed                   T                350              1e-4
 stream  product                T                350              1e-4
 kpi     reactor                T_out            350              1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

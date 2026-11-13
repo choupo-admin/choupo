@@ -73,3 +73,11 @@ kpi     NF_NaCl_BsWall         mass_closure_rel 0                1e-4
 kpi     NF_NaCl_BsWall         pore_nodes       101              1e-4
 kpi     NF_NaCl_BsWall         solute_closure_rel 1.69406589451e-16 1e-4
 kpi     NF_NaCl_BsWall         water_recovery   0.383660777954   1e-4
+source  NF_MgSO4_BsWall        liquidDensity    default.rhoFeed1000 exact
+source  NF_MgSO4_BsWall        liquidViscosity  default.water1e-3 exact
+source  NF_MgSO4_pore          liquidDensity    default.rhoFeed1000 exact
+source  NF_MgSO4_pore          liquidViscosity  default.water1e-3 exact
+source  NF_NaCl_BsWall         liquidDensity    default.rhoFeed1000 exact
+source  NF_NaCl_BsWall         liquidViscosity  default.water1e-3 exact
+source  NF_NaCl_pore           liquidDensity    default.rhoFeed1000 exact
+source  NF_NaCl_pore           liquidViscosity  default.water1e-3 exact

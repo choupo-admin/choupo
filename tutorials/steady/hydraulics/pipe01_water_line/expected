@@ -21,3 +21,5 @@ stream  feed                   T                300              1e-4
 boundary global                 H_feeds_kW       -159034.398185   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -159034.398185   1e-4
+source  P1                     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  P1                     liquidViscosity  Vogel/GrunbergNissan exact

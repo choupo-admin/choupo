@@ -57,3 +57,4 @@ utility reactor                heating.steamLP.duty_kW 4.57859398411    1e-4
 utility reactor                heating.steamLP.T 324.526031397    1e-4
 utility reactor                heating.steamLP.kg_s 0.00209450776949 1e-4
 utility reactor                heating.steamLP.eur_h 0.197795260114   1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

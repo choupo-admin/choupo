@@ -99,3 +99,4 @@ kpi     economics              operatorsPerShift 2.64196896272    1e-4
 kpi     economics              lossYears        10               1e-4
 kpi     economics              taxCreditOnLoss  426183722.215    1e-4
 kpi     economics              taxCreditOnLoss_NPV 261873559.341    1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

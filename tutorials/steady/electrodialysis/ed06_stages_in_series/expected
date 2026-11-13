@@ -193,3 +193,15 @@ utility R4                     power.electricity_(generated).duty_kW 0.051802309
 utility R4                     power.electricity_(generated).T -1                 1e-4
 utility R4                     power.electricity_(generated).kg_s 0                  1e-4
 utility R4                     power.electricity_(generated).eur_h -0.00518437516606  1e-4
+source  ST1                    liquidDensity    constant.diluteCarrier exact
+source  ST1                    liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact
+source  ST1                    liquidViscosity  Vogel/GrunbergNissan exact
+source  ST2                    liquidDensity    constant.diluteCarrier exact
+source  ST2                    liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact
+source  ST2                    liquidViscosity  Vogel/GrunbergNissan exact
+source  ST3                    liquidDensity    constant.diluteCarrier exact
+source  ST3                    liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact
+source  ST3                    liquidViscosity  Vogel/GrunbergNissan exact
+source  ST4                    liquidDensity    constant.diluteCarrier exact
+source  ST4                    liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact
+source  ST4                    liquidViscosity  Vogel/GrunbergNissan exact

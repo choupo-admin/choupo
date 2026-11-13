@@ -175,3 +175,9 @@ utility HPpump                 power.electricity.duty_kW 15.2347981207      1e-4
 utility HPpump                 power.electricity.T -1                 1e-4
 utility HPpump                 power.electricity.kg_s 0                  1e-4
 utility HPpump                 power.electricity.eur_h 1.52469859592      1e-4
+source  Booster                liquidDensity    bypass.recordVliq25C.ionsNoVolume exact
+source  HPpump                 liquidDensity    bypass.recordVliq25C.ionsNoVolume exact
+source  PX                     liquidVolume     bypass.recordVliq25C.ionsNoVolume exact
+source  RO                     liquidDensity    default.rhoFeed1000 exact
+source  RO                     liquidDiffusivity default.legacy1.6e-9 exact
+source  RO                     liquidViscosity  declared.case    exact

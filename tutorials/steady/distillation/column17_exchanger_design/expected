@@ -201,3 +201,10 @@ utility column17               cooling.coolingWater.T 355.689111404    1e-4
 utility column17               cooling.coolingWater.kg_s 31.4662161178    1e-4
 utility column17               cooling.coolingWater.eur_h 1.89401448056    1e-4
 kpi     column17               Q_reboiler_ownEnvelope_kW 772.668768681    1e-4
+source  column17               liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  column17               surfaceTension   BrockBird/Butler exact
+source  ShellTubeHX:_column_'column17'_condenser_(design) liquidDensity    liquidVolume.idealMix[anchoredRackett],pureFluid.IF97 exact
+source  ShellTubeHX:_column_'column17'_condenser_(design) liquidViscosity  Andrade/GrunbergNissan,pureFluid.IF97 exact
+source  ShellTubeHX:_column_'column17'_reboiler_(design) liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  ShellTubeHX:_column_'column17'_reboiler_(design) liquidViscosity  Andrade/GrunbergNissan exact
+source  ShellTubeHX:_column_'column17'_reboiler_(design) surfaceTension   BrockBird/Butler exact

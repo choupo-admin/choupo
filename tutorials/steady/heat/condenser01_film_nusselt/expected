@@ -32,3 +32,5 @@ stream  steam                  T                372.76           1e-4
 boundary global                 H_feeds_kW       1338.59362263    1e-4
 boundary global                 Q_boundary_kW    -506.617311982    1e-4
 boundary global                 H_products_kW    831.97631065    1e-4
+source  condenser              liquidDensity    pureFluid.IF97   exact
+source  condenser              liquidViscosity  pureFluid.IF97   exact

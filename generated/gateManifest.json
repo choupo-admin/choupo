@@ -1720,6 +1720,11 @@
       "exit": 0,
       "claim": "check_estimated_species_announced: OK an estimated hfAq consumed by the aqueous ion reference is announced once per run (console + result advisory), a record without provenance and an unconsumed estimated sAq stay silent, diagnostics identical; arms (a)-(d); NOT checked: the cpAq route, physical correctness of any catalogue estimate",
       "seconds": 0.3
+    },
+    "check_property_sources_pinned": {
+      "exit": 0,
+      "claim": "check_property_sources_pinned: OK -- 16 case(s) publishing liquid-property sources, every (unit, property) pinned by a `source` row (the --fast set, run live (no suite cache)).",
+      "seconds": 42.7
     }
   }
 }

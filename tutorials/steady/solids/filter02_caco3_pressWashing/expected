@@ -65,3 +65,5 @@ kpi     press                  wash_m3_s        0.000202546303629 1e-4
 boundary global                 H_feeds_kW       -36640.1948166   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -36640.1948166   1e-4
+source  press                  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  press                  liquidViscosity  Vogel/GrunbergNissan exact

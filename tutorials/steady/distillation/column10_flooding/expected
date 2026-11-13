@@ -47,3 +47,5 @@ kpi     column10               diameter_stripping 0.969443381345   1e-4
 kpi     column10               nTrays           14               1e-4
 kpi     column10               diameterDesigned 0                1e-4
 kpi     column10               Q_reboiler_ownEnvelope_kW 772.668768681    1e-4
+source  column10               liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  column10               surfaceTension   BrockBird/Butler exact

@@ -100,3 +100,4 @@ utility stoich                 cooling.coolingWater.duty_kW -1.94705353668   1e-
 utility stoich                 cooling.coolingWater.T 600              1e-4
 utility stoich                 cooling.coolingWater.kg_s 0.0465802281501  1e-4
 utility stoich                 cooling.coolingWater.eur_h 0.00280375709281 1e-4
+source  kinetic                liquidVolume     bypass.recordVliq25C exact

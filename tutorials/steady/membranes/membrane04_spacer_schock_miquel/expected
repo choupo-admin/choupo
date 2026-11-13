@@ -13,3 +13,6 @@ stream  retentate              T                298.15           1e-4
 kpi     ROunit                 mass_closure_rel 3.01635071855e-16 1e-4
 kpi     ROunit                 Gamma_NaCl_avg   0.268477357047   1e-4
 kpi     ROunit                 solute_closure_rel 2.6107878401e-16 1e-4
+source  ROunit                 liquidDensity    default.rhoFeed1000 exact
+source  ROunit                 liquidDiffusivity declared.case    exact
+source  ROunit                 liquidViscosity  declared.case    exact

@@ -61,3 +61,4 @@ utility Mixer                  heating.steamHP.duty_kW 2.14451604828    1e-4
 utility Mixer                  heating.steamHP.T 450              1e-4
 utility Mixer                  heating.steamHP.kg_s 0.0012511762242  1e-4
 utility Mixer                  heating.steamHP.eur_h 0.138964639929   1e-4
+source  Reactor                liquidVolume     bypass.recordVliq25C exact

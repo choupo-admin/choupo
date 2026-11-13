@@ -24,3 +24,4 @@ utility wgs                    cooling.coolingWater.duty_kW -4.55086962331   1e-
 utility wgs                    cooling.coolingWater.T 600              1e-4
 utility wgs                    cooling.coolingWater.kg_s 0.108872479026   1e-4
 utility wgs                    cooling.coolingWater.eur_h 0.00655325225756 1e-4
+source  wgs                    liquidVolume     bypass.recordVliq25C exact

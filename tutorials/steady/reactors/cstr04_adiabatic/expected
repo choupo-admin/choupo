@@ -22,3 +22,4 @@ kpi     reactor                steadyStates     1                1e-4
 boundary global                 H_feeds_kW       -104.131976653   1e-4
 boundary global                 Q_boundary_kW    -9.63495949691e-12 1e-4
 boundary global                 H_products_kW    -104.131976653   1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

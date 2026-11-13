@@ -22,3 +22,4 @@ kpi     reactor                xi_hydration_PO_mol_per_s 0.00251078136915 1e-4
 boundary global                 H_feeds_kW       -15.8230109853   1e-4
 boundary global                 Q_boundary_kW    1.03561603737e-12 1e-4
 boundary global                 H_products_kW    -15.8230109853   1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

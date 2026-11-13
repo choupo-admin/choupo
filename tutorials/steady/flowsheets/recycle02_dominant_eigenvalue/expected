@@ -58,3 +58,4 @@ utility reactor                heating.steamLP.T 324.526031731    1e-4
 utility reactor                heating.steamLP.kg_s 0.00209450775591 1e-4
 utility reactor                heating.steamLP.eur_h 0.19779525883    1e-4
 kpi     column                 Q_reboiler_ownEnvelope_kW 8.22132757968    1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

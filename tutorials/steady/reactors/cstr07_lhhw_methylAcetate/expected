@@ -24,3 +24,4 @@ utility reactor                cooling.coolingWater.duty_kW -0.0517242743531 1e-
 utility reactor                cooling.coolingWater.T 333.15           1e-4
 utility reactor                cooling.coolingWater.kg_s 0.00123742283141 1e-4
 utility reactor                cooling.coolingWater.eur_h 7.44829550685e-05 1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

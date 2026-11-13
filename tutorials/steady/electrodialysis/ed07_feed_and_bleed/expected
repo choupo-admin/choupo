@@ -63,3 +63,6 @@ utility rectifier              power.electricity_(generated).duty_kW 0.137851553
 utility rectifier              power.electricity_(generated).T -1                 1e-4
 utility rectifier              power.electricity_(generated).kg_s 0                  1e-4
 utility rectifier              power.electricity_(generated).eur_h -0.0137961834242   1e-4
+source  ED                     liquidDensity    constant.diluteCarrier exact
+source  ED                     liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact
+source  ED                     liquidViscosity  Vogel/GrunbergNissan exact

@@ -63,3 +63,5 @@ boundary global               H_feeds_kW       2291.57912765      1e-4
 boundary global               Q_boundary_kW    0                  1e-4
 boundary global               H_products_kW    2291.57912756      1e-4
 utility hx                     heating.-.carried 1                  1e-4
+source  hx                     liquidDensity    pureFluid.IF97   exact
+source  hx                     liquidViscosity  pureFluid.IF97   exact

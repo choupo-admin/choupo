@@ -49,3 +49,5 @@ kpi     vessel                 Gamma_Mg_avg     0.542664684953   1e-4
 kpi     vessel                 Gamma_Na_avg     0.540882675071   1e-4
 kpi     vessel                 Gamma_SO4_avg    0.542713011224   1e-4
 kpi     vessel                 solute_closure_rel 1.306956041e-15  1e-4
+source  vessel                 liquidDensity    default.rhoFeed1000 exact
+source  vessel                 liquidViscosity  default.water1e-3 exact

@@ -55,3 +55,5 @@ kpi     drum                   submergence      0.33             1e-4
 boundary global                 H_feeds_kW       -11798.9756263   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -11798.9756263   1e-4
+source  drum                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  drum                   liquidViscosity  Vogel/GrunbergNissan exact

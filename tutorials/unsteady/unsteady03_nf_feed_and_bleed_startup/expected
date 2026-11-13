@@ -40,3 +40,5 @@ kpi     balance                mass_kg_initial  1000.7139824       1e-4
 kpi     balance                mass_kg_out_cum  580831.857161      1e-4
 kpi     balance                mass_residual_kg -0.000445609858502 1e-4
 kpi     balance                material_available 1                  1e-4
+source  NF                     liquidDensity    default.rhoFeed1000 exact
+source  NF                     liquidViscosity  default.water1e-3 exact

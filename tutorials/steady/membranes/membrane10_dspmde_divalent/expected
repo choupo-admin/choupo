@@ -54,3 +54,9 @@ kpi     NF_NaCl                solute_closure_rel 6.77626357803e-16 1e-4
 kpi     NF_CaCl2               pore_nodes       101              1e-4
 kpi     NF_MgSO4               pore_nodes       101              1e-4
 kpi     NF_NaCl                pore_nodes       101              1e-4
+source  NF_CaCl2               liquidDensity    default.rhoFeed1000 exact
+source  NF_CaCl2               liquidViscosity  default.water1e-3 exact
+source  NF_MgSO4               liquidDensity    default.rhoFeed1000 exact
+source  NF_MgSO4               liquidViscosity  default.water1e-3 exact
+source  NF_NaCl                liquidDensity    default.rhoFeed1000 exact
+source  NF_NaCl                liquidViscosity  default.water1e-3 exact

@@ -58,3 +58,5 @@ kpi     drum                   wash_m3_s        0.000200616749605 1e-4
 boundary global                 H_feeds_kW       -14978.4745451   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -14978.4745451   1e-4
+source  drum                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  drum                   liquidViscosity  Vogel/GrunbergNissan exact

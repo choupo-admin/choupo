@@ -313,3 +313,6 @@ layout flow:rejects         steps            4                  1e-4
 boundary global               H_feeds_kW       -265.683731381     1e-4
 boundary global               Q_boundary_kW    0                  1e-4
 boundary global               H_products_kW    -265.68373138      1e-4
+source  dryer                  liquidDensity    bypass.solventVliq25C exact
+source  dryer                  liquidViscosity  default.water1e-3 exact
+source  dryer                  surfaceTension   BrockBird/Butler exact

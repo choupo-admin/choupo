@@ -28,3 +28,7 @@ kpi     NF_noBorn              Gamma_NaCl_avg   0.375465647199   1e-4
 kpi     NF_noBorn              solute_closure_rel 0                1e-4
 kpi     NF_born                pore_nodes       101              1e-4
 kpi     NF_noBorn              pore_nodes       101              1e-4
+source  NF_born                liquidDensity    default.rhoFeed1000 exact
+source  NF_born                liquidViscosity  default.water1e-3 exact
+source  NF_noBorn              liquidDensity    default.rhoFeed1000 exact
+source  NF_noBorn              liquidViscosity  default.water1e-3 exact

@@ -560,3 +560,13 @@ layout  unbundedLiquid:acidTank/tank1: value            963.473631734    1e-4
 layout  unbundedLiquid:acidTank/tank1: limit            0                1e-4
 kpi     lightsColumn           Q_condensate_m3_s 0.000105676849934 1e-4
 kpi     lightsColumn           Q_reboiler_ownEnvelope_kW 41.5994350969    1e-4
+source  acidTank               liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'acidTank/tank1' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'methanolTank/tank1' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  letdown                liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  lightsColumn           liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  lightsColumn           surfaceTension   declared.case    exact
+source  methanolPump           liquidDensity    bypass.recordVliq25C exact
+source  methanolTank           liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  storage_'acidTank'     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  storage_'methanolTank' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

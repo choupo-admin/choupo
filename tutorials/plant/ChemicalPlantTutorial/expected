@@ -305,3 +305,8 @@ kpi     economics              revenue          9116736.15861    1e-4
 kpi     economics              lossYears        9                1e-4
 kpi     economics              taxCreditOnLoss  6257918.21565    1e-4
 kpi     economics              taxCreditOnLoss_NPV 4004388.8938     1e-4
+source  CONCENTRATION.Cryst    liquidVolume     bypass.recordVliq25C.missingIsZero exact
+source  DRYING.SD              liquidDensity    bypass.solventVliq25C exact
+source  DRYING.SD              liquidViscosity  default.water1e-3 exact
+source  DRYING.SD              surfaceTension   fallback.water0.072 exact
+source  FERMENTATION.Fermentor liquidVolume     bypass.recordVliq25C exact

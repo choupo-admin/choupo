@@ -31,3 +31,5 @@ stream  concentrate            T                298.15           1e-4
 stream  concentrateFeed        T                298.15           1e-4
 stream  diluate                T                298.15           1e-4
 stream  diluateFeed            T                298.15           1e-4
+source  edStack                liquidDensity    constant.diluteCarrier exact
+source  edStack                liquidKinematicViscosity constant.waterKinematic1e-6 exact

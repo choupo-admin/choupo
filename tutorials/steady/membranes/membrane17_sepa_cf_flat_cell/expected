@@ -22,3 +22,6 @@ kpi     cell                   membranePotential_mV_avg 33.4400418532      1e-4
 kpi     cell                   u_crossflow_inlet 0.200114903384     1e-4
 kpi     cell                   water_recovery   0.025449426419     1e-4
 kpi     cell                   xi_V_per_m_avg   34.4185802208      1e-4
+source  cell                   liquidDensity    default.rhoFeed1000 exact
+source  cell                   liquidDiffusivity record.speciesD0.StokesEinstein exact
+source  cell                   liquidViscosity  declared.case    exact

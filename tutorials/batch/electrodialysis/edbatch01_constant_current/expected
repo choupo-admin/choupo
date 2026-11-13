@@ -130,3 +130,5 @@ panel   summary                elements         6                1e-4
 panel   summary                facts            6                1e-4
 panel   summary                messages         2                1e-4
 panel   summary                instants         41               1e-4
+source  rig                    liquidDensity    constant.diluteCarrier exact
+source  rig                    liquidKinematicViscosity kernel.solventViscosity.StokesEinstein exact

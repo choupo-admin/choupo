@@ -55,3 +55,4 @@ ledger  retentate->(external_boundary) material.external.dn.MgSO4 6.11887755185e
 ledger  retentate->(external_boundary) material.external.dn.NaCl 7.93581390892e-05  1e-4
 ledger  retentate->(external_boundary) material.external.dn.water 0.414341005817     1e-4
 ledger  retentate->(external_boundary) material.external.valid invalid            exact
+source  retentate              liquidDensity    declared.case    exact

@@ -51,3 +51,6 @@ stream  dryingAir              T                473.15           1e-4
 stream  exhaustAir             T                366.288022771    1e-4
 stream  feed                   T                298.15           1e-4
 stream  powder                 T                366.288022771    1e-4
+source  dryer                  liquidDensity    bypass.solventVliq25C exact
+source  dryer                  liquidViscosity  default.water1e-3 exact
+source  dryer                  surfaceTension   fallback.water0.072 exact

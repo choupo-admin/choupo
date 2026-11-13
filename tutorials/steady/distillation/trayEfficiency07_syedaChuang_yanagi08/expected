@@ -47,3 +47,7 @@ utility column                 cooling.coolingWater.duty_kW -523.835282542   1e-
 utility column                 cooling.coolingWater.T 321.938502558    1e-4
 utility column                 cooling.coolingWater.kg_s 12.5319445584    1e-4
 utility column                 cooling.coolingWater.eur_h 0.754322806861   1e-4
+source  column                 liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  column                 liquidDiffusivity own.WilkeChang.mixtureViscosity exact
+source  column                 liquidViscosity  declared.case    exact
+source  column                 surfaceTension   BrockBird/Butler exact

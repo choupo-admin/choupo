@@ -27,3 +27,6 @@ stream  wetVapour              T                372.755918611    1e-4
 boundary global                 H_feeds_kW       207.29749354     1e-4
 boundary global                 Q_boundary_kW    111.836570636    1e-4
 boundary global                 H_products_kW    319.134064176    1e-4
+source  reboiler               liquidDensity    pureFluid.IF97   exact
+source  reboiler               liquidViscosity  pureFluid.IF97   exact
+source  reboiler               surfaceTension   pureFluid.IF97   exact

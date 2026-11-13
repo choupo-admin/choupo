@@ -36,3 +36,4 @@ utility cryst                  cooling.chilledWater.duty_kW -269.660031771   1e-
 utility cryst                  cooling.chilledWater.T 293.15           1e-4
 utility cryst                  cooling.chilledWater.kg_s 12.8409538938    1e-4
 utility cryst                  cooling.chilledWater.eur_h 3.8831044575     1e-4
+source  cryst                  liquidVolume     bypass.recordVliq25C.missingIsZero exact

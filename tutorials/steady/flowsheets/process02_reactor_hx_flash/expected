@@ -59,3 +59,4 @@ utility separator              heating.steamLP.duty_kW 0.4359626683     1e-4
 utility separator              heating.steamLP.T 363.644080563    1e-4
 utility separator              heating.steamLP.kg_s 0.00019943397452 1e-4
 utility separator              heating.steamLP.eur_h 0.0188335872706  1e-4
+source  reactor                liquidVolume     bypass.recordVliq25C exact

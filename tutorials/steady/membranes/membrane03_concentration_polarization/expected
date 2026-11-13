@@ -14,3 +14,5 @@ stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
 kpi     ROunit                 Gamma_NaCl_avg   0.185043964393   1e-4
 kpi     ROunit                 solute_closure_rel 2.6107878401e-16 1e-4
+source  ROunit                 liquidDensity    default.rhoFeed1000 exact
+source  ROunit                 liquidViscosity  default.water1e-3 exact

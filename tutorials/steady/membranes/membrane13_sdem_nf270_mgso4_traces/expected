@@ -18,3 +18,5 @@ kpi     NF                     dP_feed          5000             1e-4
 kpi     NF                     mass_closure_rel 0                1e-4
 kpi     NF                     membranePotential_mV_avg 24.1684692844    1e-4
 kpi     NF                     water_recovery   0.00893429434337 1e-4
+source  NF                     liquidDensity    default.rhoFeed1000 exact
+source  NF                     liquidViscosity  default.water1e-3 exact

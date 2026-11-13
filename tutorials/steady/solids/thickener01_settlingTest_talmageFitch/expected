@@ -53,3 +53,4 @@ kpi     thickener              unitArea_m2_per_tpd 0.980253212396   1e-4
 boundary global                 H_feeds_kW       -696119.686374   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -696119.686374   1e-4
+source  thickener              liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

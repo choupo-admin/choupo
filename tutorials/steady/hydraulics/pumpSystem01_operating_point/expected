@@ -38,3 +38,6 @@ utility pump01                 power.electricity.eur_h 0.210694736842   1e-4
 stream  delivered              T                298.159271523    1e-4
 stream  feed                   T                298.15           1e-4
 stream  mid                    T                298.159271523    1e-4
+source  P1                     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  P1                     liquidViscosity  Vogel/GrunbergNissan exact
+source  pump01                 liquidDensity    bypass.recordVliq25C exact

@@ -42,3 +42,9 @@ kpi     NFnaive                mass_closure_rel 1.51457797267e-16 1e-4
 kpi     NFnaive                solute_closure_rel 1.39091297333e-16 1e-4
 kpi     NFnaive                u_crossflow_inlet 0.286301975524   1e-4
 kpi     NFnaive                water_recovery   0.43383619829    1e-4
+source  NFderived              liquidDensity    default.rhoFeed1000 exact
+source  NFderived              liquidDiffusivity declared.case    exact
+source  NFderived              liquidViscosity  declared.case    exact
+source  NFnaive                liquidDensity    default.rhoFeed1000 exact
+source  NFnaive                liquidDiffusivity declared.case    exact
+source  NFnaive                liquidViscosity  declared.case    exact

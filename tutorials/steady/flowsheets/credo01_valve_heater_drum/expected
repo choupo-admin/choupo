@@ -56,3 +56,4 @@ kpi     V1                     rho_in           746.670604379    1e-4
 kpi     V1                     rho_out          13.9106873884    1e-4
 kpi     V1                     volumeRatio      53.6760394028    1e-4
 kpi     V1                     x_mass_out       0.194046204136   1e-4
+source  V1                     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

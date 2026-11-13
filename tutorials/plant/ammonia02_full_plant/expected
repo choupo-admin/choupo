@@ -1064,3 +1064,5 @@ layout  pipe:productStored@T201/vessel7 length           10.8429936894    1e-4
 layout  pipe:productStored@T201/vessel8 from             T201/vessel8     exact
 layout  pipe:productStored@T201/vessel8 to               T201             exact
 layout  pipe:productStored@T201/vessel8 length           10.8429936894    1e-4
+source  liquefied_gas_store_'T201' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  T201                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

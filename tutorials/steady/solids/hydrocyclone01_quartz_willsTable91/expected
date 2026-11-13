@@ -80,3 +80,4 @@ kpi     cyclone                underflow_solids_kg_s 18.2133368908      1e-4
 boundary global               H_feeds_kW       -672776.520965     1e-4
 boundary global               Q_boundary_kW    0                  1e-4
 boundary global               H_products_kW    -672776.520965     1e-4
+source  cyclone                liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

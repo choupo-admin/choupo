@@ -1499,3 +1499,12 @@ kpi     economics              breakEven_operating_fixed 18803452.7875    1e-4
 kpi     economics              breakEven_operating_fraction 0.395558234297   1e-4
 kpi     economics              breakEven_operating_sales 55998152.8       1e-4
 kpi     economics              breakEven_operating_variable 8461655.87713    1e-4
+source  acetoneTank            liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'acetoneTank/tank1' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  inventory_'recoveredTank/tank1' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  recoveredTank          liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  SD                     liquidDensity    bypass.solventVliq25C exact
+source  SD                     liquidViscosity  declared.case    exact
+source  SD                     surfaceTension   BrockBird/Butler exact
+source  storage_'acetoneTank'  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  storage_'recoveredTank' liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

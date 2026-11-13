@@ -323,3 +323,4 @@ kpi     economics              sens_financing_rate_value_low 0.04             1e
 kpi     economics              lossYears        1                1e-4
 kpi     economics              taxCreditOnLoss  1188731.20366    1e-4
 kpi     economics              taxCreditOnLoss_NPV 1080664.7306     1e-4
+source  T201                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

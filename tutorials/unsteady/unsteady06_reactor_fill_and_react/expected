@@ -32,3 +32,4 @@ kpi     reactor                t_end            1500               1e-4
 kpi     reactor                volume_final     0.145337639045     1e-4
 kpi     reactor                z_in_2Butanol_final 0                  1e-4
 kpi     reactor                z_in_2Methyl1Propanol_final 1                  1e-4
+source  dynamicCSTR_'reactor'  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
