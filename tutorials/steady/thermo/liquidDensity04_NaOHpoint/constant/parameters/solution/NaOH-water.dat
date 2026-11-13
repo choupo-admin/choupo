@@ -1,0 +1,80 @@
+// [imported] origin "data/standards/parameters/solution/NaOH-water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution properties: SODIUM HYDROXIDE dissolved in liquid WATER -- the
+  solution's own DENSITY law (DEV.md 4c C378 pilot; the plan's section 4,
+  docs/design/density-pilot-plan.md).
+
+  A solution's density is a property of the constituent SET {NaOH, water},
+  not of either component: it lives here, in the solution tier, named by the
+  set sorted case-insensitively.  The liquid-density kernel
+  (src/thermo/liquidProperty/SolutionLaw) reads it for a liquid whose
+  constituents are exactly NaOH and water, whatever activity model the case
+  chooses.  It is NOT the coefficient record of the activity model
+  `OlssonNaOH` (parameters/OlssonNaOH/NaOH-water.dat), which carries the
+  same paper's vapour pressure and enthalpy for that model alone: two
+  records of two kinds for one set, by ruling (DEV.md 4c, C378 "the pilot's
+  plan is written and ruled").
+
+  This file carries no heat of solution (`dHsoln`): the paper gives none in
+  this form, so the enthalpy tier (SolutionRegistry) does not register it.
+
+  How the numbers were read: the 18 coefficients of Table IV and the six
+  bands of Table III were read off the PAGE IMAGES of the paper (150 dpi
+  page, 300 dpi crop, twice; docs/design/naoh-water-olsson1997.md 1.2) and
+  checked digit by digit against the page image of p. 785 a second time for
+  the pilot's thresholds (docs/design/density-pilot-thresholds.md 3.3): all
+  agree.
+
+  Variables, AS THE PAPER WRITES THEM (nomenclature pp. 792-793): x is the
+  mass fraction of WATER [kg water / kg solution], t the temperature in
+  degC; rho in kg/m3.  The paper's b1, b2, b3 of Eq. (6) are the rows below;
+  its Table IV columns k_rho, l_rho, m_rho give them, i = 0..5 the
+  coefficients of x^(i/2) (Eqs. 7-9).
+
+  Licence of the numbers: the coefficients of a published correlation are
+  facts, cited to their paper.
+\*---------------------------------------------------------------------------*/
+
+solute      NaOH;
+solvent     water;
+
+liquidDensity
+{
+    returns           solutionDensity;     // kg/m3 of the solution
+    form              polynomialTSqrtX;    // rho = b1 + b2 t + b3 t^2, b_j = sum_i c_ji x^(i/2)
+    variable          w[water];            // kg water / kg solution (the paper's x)
+    temperatureOrigin 273.15 K;            // t = T - 273.15 K: the paper writes t in degC
+
+    //  Table IV, p. 785 (Eqs. 7-9): x^0, x^(1/2), x^1, x^(3/2), x^2, x^(5/2)
+    b1 ( 5007.2279636  -25131.164248  74107.692582  -104657.48684  69821.773186  -18145.911810 );
+    b2 ( -64.786269079  525.34360564  -1608.4471903  2350.9753235  -1660.9035108  457.64374355 );
+    b3 ( 0.24436776978  -1.9737722344  6.04601497138  -8.9090614947  6.37146769397  -1.7816083111 );
+
+    //  Table III, p. 783: the lowest water fraction per temperature band
+    //  (the law holds from there to pure water).  T in K, raw SI (a list
+    //  carries no unit suffix in this grammar; the unit is this comment).
+    domain
+    (
+        { T ( 273.15 283.15 ); w[water] ( 0.800 1 ); }
+        { T ( 283.15 293.15 ); w[water] ( 0.700 1 ); }
+        { T ( 293.15 333.15 ); w[water] ( 0.500 1 ); }
+        { T ( 333.15 343.15 ); w[water] ( 0.400 1 ); }
+        { T ( 343.15 423.15 ); w[water] ( 0.300 1 ); }
+        { T ( 423.15 473.15 ); w[water] ( 0.200 1 ); }
+    );
+
+    //  No P in Eqs. (6)-(9); the data the law was fitted to are near
+    //  atmospheric.  Against the 2-10 MPa set of Hnedkovsky et al. (2007)
+    //  the law is 0.12 % low at 2 MPa and 0.45 % low at 10 MPa (the pilot's
+    //  thresholds note 3.3): the run says "no pressure term" once per unit.
+    pressure          notCarried;
+
+    provenance
+    {
+        origin        literature;
+        citation      "J. Olsson, A. Jernqvist and G. Aly, Int. J. Thermophys. 18 (1997) 779-793, Eqs. (6)-(9) p. 785, Table IV p. 785, Table III p. 783";
+        uncertainty   "in sample: 156 points of Krey (1972), mean 0.48 kg/m3 (0.04 %), max 2.41 kg/m3 (0.23 %), pp. 785-786; out of sample: Galindo-Luna et al. 2019 (186 points, 303-353 K, 0.1 MPa) AAD 0.055 %, max 0.206 % (docs/design/density-pilot-thresholds.md 3.3)";
+        maxDeviation  2.41 kg/m3;          // the number a disagreement is counted against
+        read          "page images, 150 and 300 dpi, twice (docs/design/naoh-water-olsson1997.md 1.2)";
+    }
+}

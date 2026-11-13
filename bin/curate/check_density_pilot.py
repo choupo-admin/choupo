@@ -423,6 +423,16 @@ def main():
         arm("R3 below both", isinstance(below, str) and "both say vapour" in below,
             "5 % below the package's line: the kernel refuses, naming both pressures"
             if isinstance(below, str) else f"answered {below}")
+    except Exception as e:                                        # noqa: BLE001
+        #  A GATE ENDS IN ITS VERDICT LINE, NEVER IN A TRACEBACK (C378 pilot
+        #  review, PA-01): with the caustic mirror missing, an arm downstream
+        #  of the failed solution-law run indexed a result that did not exist
+        #  and the gate died in Python.  The arms already printed stand; this
+        #  one names where the walk stopped, and the verdict follows.
+        import traceback
+        where = traceback.extract_tb(e.__traceback__)[-1]
+        arm("internal", False, f"the gate stopped at line {where.lineno} ({type(e).__name__}: "
+            f"{str(e)[:200]}) after {len(results)} arm(s); every arm after it was NOT run")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     bad = results.count(False)
