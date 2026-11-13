@@ -1737,6 +1737,9 @@
   "PureFluidModel": [
    "src/thermo/pureFluid/PureFluidModel.H"
   ],
+  "PureFluidPhaseState": [
+   "src/thermo/pureFluid/PureFluidModel.H"
+  ],
   "PureParams": [
    "src/thermo/equationOfState/CubicEoS.H"
   ],

@@ -66,6 +66,30 @@ Every run prints, just before its result block, one line per unit:
 * `pureFluids { water { method IF97; } }` (or `method Helmholtz; equation
   IAPWS95;`) prices PURE water by that formulation, with pressure.  A liquid
   that mixes water with anything else is refused while it is selected.
+  The phase asked is honoured (every pure-fluid formulation: IF97 and the
+  Helmholtz records of water, CO2, N2, CH4): below the critical
+  temperature, a LIQUID density asked at P > p_sat(T) (1 + 1e-6) is the
+  liquid branch at (T, P); asked at or below that, it is the SATURATED
+  LIQUID at T, never the vapour root, and a liquid asked more than 1e-6
+  below p_sat is announced (once on the console, and in every pass's
+  result JSON `advisories` and caveat block).  A VAPOUR density is symmetric
+  (at or above p_sat (1 - 1e-6): the saturated vapour at T).  At or above
+  the critical temperature, and below the triple point, the phase asked
+  changes nothing.  Theory Guide `sec:pure-fluid-density-phase`.
+  The same rule serves the ENTHALPY and ENTROPY a unit asks with the phase
+  it holds (`H_real` / `S_real` with a phase: the pump's suction as liquid,
+  the compressor's and turbine's inlets as vapour); without a phase, or on a
+  route that is not a pure fluid, nothing changes.  A wet turbine exhaust
+  still reads the stable phase at (T, P).  The energy report's pure streams
+  at a carried vf of exactly 0 or 1 are priced, INSIDE the band only, on the
+  saturated branch that vf names (outside the band: (T, P) as before;
+  0 < vf < 1: the existing split).  The units that price or classify an
+  AUTHORED inlet with their own flash -- `phaseChanger`, `heatExchanger`,
+  `pipe` -- take a DECLARED phase as the state (one home,
+  `flashState::declaredInletEnthalpy` / `declaredSinglePhase`): a pinned
+  inlet is priced on the branch its vf names, exactly as the report prices
+  it, and never re-flashed at (T, P).  Theory Guide `sec:pure-fluid-caloric-phase`; witness gate
+  `check_pure_fluid_phase_asked`.
 * Viscosity, surface tension and diffusivity need a `transport {}` model;
   a unit without one either refuses or uses the default the table names.
 * `approximations {}`: the words are `idealBinaryPair`,

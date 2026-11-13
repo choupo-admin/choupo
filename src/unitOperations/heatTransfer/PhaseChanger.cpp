@@ -42,6 +42,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 #include "thermo/pureFluid/PureFluidModel.H"
@@ -168,18 +169,25 @@ int PhaseChanger::solve(const DictPtr& dict,
     //  of the six outlet-coordinate specs.  Gated behind the model word so
     //  the six existing spec modes (and their goldens) stay byte-stable.
     // =====================================================================
-    //  A PURE two-phase feed DECLARES its quality (pinned, 0 < vf < 1, one
-    //  component): on its curve (T, P) do not fix the split, and the flash
-    //  below would hand back one side of it by the last digits of T.  Its
-    //  pin is its state (C36 item 3); every mode prices the feed at it.
-    const auto qInPinned = flashState::pinnedPureQuality(feedDict, z);
+    //  A feed that DECLARES its phase is priced at the declaration, by the
+    //  one home the energy report's rule lives in
+    //  (`flashState::declaredInletEnthalpy`): a pure two-phase pin at its
+    //  quality (C36 item 3), a pinned single phase on the branch it names.
+    //  The flash below would hand back one side of a pure fluid's curve by
+    //  the last digits of P: a `phase gas;` IF97 steam at 446.5 K, cooled by
+    //  1 kW, left fully condensed at P = p_sat and 97 % vapour at
+    //  p_sat (1 - 5e-7), the report disagreeing by 36.70 kW (review TD-01,
+    //  2026-11-13).  NaN when the feed is unpinned: then it is resolved.
+    const auto H_inDecl = flashState::declaredInletEnthalpy(
+        feedDict, T_in, P_in, z, thermo, "phaseChanger inlet");
+    const scalar H_inDeclared = H_inDecl
+        ? *H_inDecl : std::numeric_limits<scalar>::quiet_NaN();
 
     const std::string model = dict->lookupWordOrDefault("model", "");
     if (model == "geometry")
     {
         return solveGeometry(operDict, thermo, verbosity,
-                             F, T_in, P_in, P_out, z,
-                             qInPinned ? *qInPinned : -1.0);
+                             F, T_in, P_in, P_out, z, H_inDeclared);
     }
 
     // ---- Pick EXACTLY ONE outlet coordinate (DOF guard) ------------------
@@ -240,8 +248,8 @@ int PhaseChanger::solve(const DictPtr& dict,
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
         FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
-        if (qInPinned)       // a pure two-phase feed: its pin is its state
-            H_in = thermo.H_stream_formation(T_in, P_in, *qInPinned, z);
+        if (H_inDecl)        // a declared phase: the declaration is the state
+            H_in = *H_inDecl;
     }
 
     // ---- Resolve the single coordinate -> (T_out, mode label) ------------
@@ -691,7 +699,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
                                 int verbosity,
                                 scalar F, scalar T_in, scalar P_in,
                                 scalar P_out, const sVector& z,
-                                scalar qInPinned)
+                                scalar H_inDeclared)
 {
     const std::size_t n = thermo.n();
 
@@ -702,7 +710,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
     //    (NusseltFilm) continues below for a `coolant{}` block.
     if (operDict->found("boiling"))
         return solveBoilingGeometry(operDict, thermo, verbosity,
-                                    F, T_in, P_in, P_out, z, qInPinned);
+                                    F, T_in, P_in, P_out, z, H_inDeclared);
 
     if (!operDict->found("geometry"))
         throw std::runtime_error("phaseChanger(geometry): a `geometry { ... }` "
@@ -954,8 +962,8 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
         FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
-        if (qInPinned > 0.0) // a pure two-phase feed: its pin is its state
-            H_in = thermo.H_stream_formation(T_in, P_in, qInPinned, z);
+        if (std::isfinite(H_inDeclared))   // a declared phase is its state
+            H_in = H_inDeclared;
     }
     const scalar F_mol_s   = F * 1000.0;                 // kmol/s -> mol/s
     const scalar Q_per_mol = -Q_cond_W / F_mol_s;        // heat REMOVED < 0
@@ -1144,7 +1152,7 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
                                        int verbosity,
                                        scalar F, scalar T_in, scalar P_in,
                                        scalar P_out, const sVector& z,
-                                       scalar qInPinned)
+                                       scalar H_inDeclared)
 {
     const std::size_t n = thermo.n();
 
@@ -1445,8 +1453,8 @@ int PhaseChanger::solveBoilingGeometry(const DictPtr& operDict,
         FlashInput fin; fin.F = 1.0; fin.T = T_in; fin.P = P_in; fin.z = z;
         FlashSolution fsol = resolveAt(fin, thermo, scDiscarded);
         H_in = streamEnthalpy(thermo, fsol, T_in, P_in, z);
-        if (qInPinned > 0.0) // a pure two-phase feed: its pin is its state
-            H_in = thermo.H_stream_formation(T_in, P_in, qInPinned, z);
+        if (std::isfinite(H_inDeclared))   // a declared phase is its state
+            H_in = H_inDeclared;
     }
     const scalar F_mol_s   = F * 1000.0;
     const scalar Q_per_mol = +Q_boil_W / F_mol_s;    // heat ADDED > 0

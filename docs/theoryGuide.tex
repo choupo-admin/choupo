@@ -2633,6 +2633,90 @@ IF97 density, the surface tension IAPWS R1-76, and each line of the run names
 the formulation behind its own property (every pure-fluid model states one
 per property, read by both the kernel's announcement and the door).
 
+\paragraph{The phase a pure fluid is asked for.}\label{sec:pure-fluid-density-phase}
+A pure-fluid formulation (IF97~\cite{IAPWS_R797}, or a reference Helmholtz
+equation for water~\cite{IAPWS_R695}, CO$_2$~\cite{SpanWagner1996}, N$_2$ or
+CH$_4$~\cite{SetzmannWagner1991}) draws both phases with one surface and, at a state
+$(T,P)$ below its critical temperature, answers with the phase that is stable
+there: the liquid for $P\ge p_{\mathrm{sat}}(T)$, the vapour below.  A
+consumer that asks for a \emph{liquid} density wants the liquid even when the
+state it carries sits on the saturation line --- a pump suction is saturated
+liquid by construction, and the last bit of a pressure computed from
+$T_{\mathrm{sat}}$ can fall either side of $p_{\mathrm{sat}}(T)$.  Until
+2026-11 the route ignored the phase asked: water on IF97 at 446.52\,K, asked
+for its liquid density one part in $10^{7}$ below $p_{\mathrm{sat}}$
+(8.587\,bar), returned 4.45\,kg/m$^3$, the vapour, for 893.98.  The kernel now
+honours the phase asked (\code{pureFluidPhaseState},
+\code{src/thermo/pureFluid/PureFluidModel.H}):
+\begin{equation}
+  \rho_L(T,P) \;=\;
+  \begin{cases}
+    M / v(T, P)                         & P > p_{\mathrm{sat}}(T)\,(1+\epsilon),\\[2pt]
+    M / v\bigl(T, p_{\mathrm{sat}}(T)\bigr) = M / v'(T) & \text{otherwise},
+  \end{cases}
+  \qquad \epsilon = 10^{-6},
+  \label{eq:pure-fluid-liquid-branch}
+\end{equation}
+where $v'(T)$ is the saturated-liquid volume of the same formulation (IF97
+region~1, or region~3's liquid branch above 623.15\,K; a Helmholtz equation's
+liquid root at its own Maxwell saturation pressure) --- the state at which the
+liquid viscosity and thermal conductivity of a pure fluid were already
+evaluated.  A liquid asked more than $\epsilon$ below $p_{\mathrm{sat}}$ is a
+state the liquid does not have; the saturated liquid at $T$ is returned and
+the run says so once.  A \emph{vapour} density is symmetric: at
+$P \ge p_{\mathrm{sat}}(T)(1-\epsilon)$ it is the saturated vapour at $T$.  At
+or above the critical temperature, and below the triple point, there is no
+saturation line and the phase asked changes nothing.  The door's label says
+which: ``liquid branch at the temperature and pressure; at or below the
+saturation pressure, the saturated liquid at T''.
+
+\subparagraph{The same rule for the enthalpy and the entropy.}\label{sec:pure-fluid-caloric-phase}
+A unit that \emph{holds} the phase of the state it prices --- the pump's
+suction is liquid, the compressor's and the turbine's inlets are vapour, by
+their declared acceptance --- asks the package's real enthalpy and entropy
+\emph{with} that phase: \code{H\_real(T, P, y, phase)} and
+\code{S\_real(T, P, y, phase)}.  On a pure-fluid route they evaluate the
+formulation at the pressure the same decision gives,
+\begin{equation}
+  h_L(T,P) \;=\;
+  \begin{cases}
+    h(T, P)                         & P > p_{\mathrm{sat}}(T)\,(1+\epsilon),\\[2pt]
+    h\bigl(T, p_{\mathrm{sat}}(T)\bigr) = h'(T) & \text{otherwise},
+  \end{cases}
+  \label{eq:pure-fluid-caloric-phase}
+\end{equation}
+and symmetrically for the vapour and for $s$; the package has no separate
+pure-fluid heat capacity (it is the temperature derivative of the same $h$).
+On any other route the phase is ignored and the value is the generic one, bit
+for bit.  Without it, the pump of \code{rankine02\_water} --- whose suction is
+the condenser's saturated liquid, $P = p_{\mathrm{sat}}(T)$ to the last bit
+--- read the vapour enthalpy whenever that bit fell below the line, and its
+discharge Newton, $h(T_{\mathrm{out}}, P_{\mathrm{out}}) = h_{\mathrm{in}} +
+w$, then found a ``liquid'' 125\,K hotter than its suction: a suction pressure
+moved by $-10^{-12}$ of itself was enough, and another compiler's arithmetic
+did it on its own.  \code{check\_pure\_fluid\_phase\_asked} runs that pump,
+and a compressor fed saturated steam, at seven suction pressures
+$p_{\mathrm{sat}}(1+e)$ with $|e|\le10^{-6}$ and demands one answer.  The
+turbine's discharge and any state whose phase the unit does not hold (a wet
+exhaust) keep the formulation's stable phase at $(T,P)$.
+
+The energy report prices every stream through the package's stream
+functions (\code{H\_stream\_formation}, \code{S\_stream\_formation},
+\code{H\_blendPerNaturalPhase}), which take the stream's carried vapour
+fraction $\beta$.  On the saturation line $T$ and $P$ are one variable and do
+not fix the branch; $\beta$ is the only information the stream holds about
+it --- an author's declaration, the run's own flash, or a default, and inside
+the band it is all there is.  So for a pure fluid below its critical
+temperature and \emph{inside} the band, $\beta=0$ is priced on the saturated
+liquid and $\beta=1$ on the saturated vapour (\code{pureFluidStreamPressure},
+the same decision).  Outside the band the stream is priced at $(T,P)$ as
+before, whatever $\beta$ says, and $0<\beta<1$ keeps its split on the line.
+Without this the report priced \code{rankine02\_water}'s condensate on
+whichever root the last bit of $P$ chose, while the pump, asking with its
+phase, priced it as liquid; the gate's third arm holds the plant-boundary
+enthalpy terms of the pump case equal across the perturbed suctions inside
+the band.
+
 \paragraph{The table.}  Just before the result block every run prints one
 line per unit, property and source:
 \begin{verbatim}
@@ -15354,6 +15438,44 @@ equation in one number.}
 
 A single non-linear equation in a single unknown $\xi$: \textbf{Newton-1D
 in one variable}, with damping. Convergence is typically 3--5 iterations.
+
+\subsection{The volumetric flow, by the phase of the feed}\label{sec:cstr-volumetric-basis}
+
+The rate is written in concentrations, $c_i = F_i/Q$, and the model holds the
+volumetric flow $Q$ constant at its feed value (constant density); the space
+time is $\tau = V_R/Q$.  $Q$ depends on what the feed \emph{is}: the vapour
+fraction $\beta$ the unit already holds, from the one home every unit and the
+energy report use (\code{flashState::resolvedInletVaporFraction}).  An
+unpinned feed is resolved at its own $(T,P,\zv)$; a feed that declares its
+phase (\code{phase liquid;}, \code{phase gas;}, a \code{vaporFraction}) is
+taken at its declaration and not re-solved, so a gas declared
+\code{phase liquid;} is put on the liquid basis:
+\begin{equation}
+  Q \;=\;
+  \begin{cases}
+    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}) & \beta = 0
+      \ \text{(liquid feed)},\\[3pt]
+    F \, \bar M / \rho_V(T,P,\zv) = F\, v_V(T,P,\zv) & \beta = 1
+      \ \text{(vapour feed)},\\[3pt]
+    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}),\ \text{announced}
+      & 0 < \beta < 1,
+  \end{cases}
+  \label{eq:cstr-feed-volumetric-flow}
+\end{equation}
+with $V_i^{\mathrm{liq}}$ each component record's 25\,$^\circ$C liquid volume
+(no temperature or pressure effect; the liquid-property reorganisation of
+\S\ref{sec:liquid-property-sources} moves it later) and $\rho_V$ the package's
+vapour density from the equation of state the case declares ($v_V=RT/P$ for
+the ideal gas).  A two-phase feed keeps the liquid basis --- this unit is a
+stirred liquid, and a trace of dissolved gas flashing at the feed (the
+fermentors' CO$_2$) is what it still means --- and the run says so once per
+unit with the vapour fraction.  Until 2026-11 the liquid line applied to every
+feed: \code{cstr02\_reversible\_wgs}, CO and steam at 600\,K and 10\,bar, got
+$Q = 7.44\times10^{-6}$\,m$^3$/s and $\tau = 134$\,s, where the gas's own
+$Q = FRT/P = 1.386\times10^{-3}$\,m$^3$/s gives $\tau = 0.72$\,s for the
+same $V_R$, 186 times less.  On the gas basis the reversible rate's detailed
+balance $k_{\mathrm{rev}} = k/K_c$ reads concentrations on the basis $K_c$ is
+defined on.
 
 \subsection{First-order kinetics --- analytic check}
 

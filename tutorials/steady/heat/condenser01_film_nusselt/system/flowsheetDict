@@ -25,13 +25,19 @@
 
       steam (saturated vapour, 1 bar, declared `phase gas;`)
         -> condenser (model geometry: NusseltFilm + cooling-water film)
-        -> condensate (two-phase, vf ~ 0.55)   + Q (RESULT)
+        -> condensate (two-phase, vf ~ 0.18)   + Q (RESULT)
 
-  PARTIAL CONDENSATION: with this tube area the duty Q ~ -507 kW removes
+  PARTIAL CONDENSATION: with this tube area the duty Q ~ -928 kW removes
   only part of the latent heat, so the outlet is NOT fully condensed --- it
-  leaves at the dome as a wet two-phase stream, vf ~ 0.55 (about 45 % of the
+  leaves at the dome as a wet two-phase stream, vf ~ 0.18 (about 82 % of the
   vapour condensed) at Tsat.  Fully condensing it would need more area; here
-  the area is fixed and the outlet quality is the result.
+  the area is fixed and the outlet quality is the result.  The film
+  coefficient is ~9.7 kW/(m2.K) at dT_film ~ 25 K, so the COOLANT-side
+  film controls.  (Until 2026-11-13 the film read rho_v as IF97's LIQUID
+  root at (Tsat, 1 bar) -- 958.6 kg/m3, the last bit of P on the liquid side
+  of the line -- which shrank rho_l - rho_v to ~16 kg/m3 and the coefficient
+  to ~2.9 kW/(m2.K); the vapour density asked is now the saturated vapour,
+  DEV.md 4c C378 pilot, defect 1.)
 
   Method (glass-box):
     * h_cond : Nusselt film, horizontal tube, coefficient 0.729
@@ -76,8 +82,8 @@ units
                 tubeOD        0.025 m;          // 25 mm OD tubes
                 tubeID        0.021 m;          // 2 mm wall
                 tubeL         2.0   m;
-                nTubes        24;               // deliberately UNDERSIZED: ~45% condenses
-                                              // (vf_out ~ 0.53) -- the partial-condensation lesson
+                nTubes        24;               // deliberately UNDERSIZED: ~82% condenses
+                                              // (vf_out ~ 0.18) -- the partial-condensation lesson
                 wall          carbonSteel;      // -> k = 50 W/(m.K)
             }
 

@@ -878,6 +878,58 @@ inline scalar priceState(scalar                    T,
     return F * thermo.H_stream_formation(T, P, vfCarried, z);
 }
 
+//  ---- THE ENTHALPY OF AN INLET THAT DECLARES ITS PHASE ----------------------
+//
+//  Per mole [J/mol] of a stream dict whose state is a DECLARATION
+//  (`phasePinned`), priced exactly as the energy report prices the same stream
+//  (`reporting/BalanceMath.H::streamH_elements`): a pure two-phase pin at its
+//  quality; a pinned single phase on the branch its `vf` names, never
+//  re-resolved; a pinned two-phase MIXTURE at its own equilibrium split.
+//  `std::nullopt` for an UNPINNED stream -- the caller resolves it as before.
+//
+//  WHY A UNIT MUST ASK THIS AND NOT FLASH (T, P).  On a pure fluid's
+//  saturation curve (T, P) are one condition: inside the band a flash returns
+//  whichever side the last digits of P fall on, while the report, since the
+//  package's stream functions read the carried `vf`, prices the declared
+//  branch.  phaseChanger, heatExchanger and pipe flashed a pinned inlet, so a
+//  `phase gas;` IF97 steam at 446.5 K, cooled by 1 kW, left fully condensed
+//  at 433.78 K at P = p_sat and 97 % vapour at p_sat (1 - 5e-7), with a
+//  36.70 kW plant residual on one side (review TD-01/02/03, 2026-11-13).
+inline std::optional<scalar> declaredInletEnthalpy(const DictPtr&       streamDict,
+                                                   scalar               T,
+                                                   scalar               P,
+                                                   const sVector&       z,
+                                                   const ThermoPackage& thermo,
+                                                   const std::string&   locus)
+{
+    if (!streamDict) return std::nullopt;
+    if (streamDict->lookupScalarOrDefault("phasePinned", 0.0) < 0.5)
+        return std::nullopt;
+    //  `resolveStreamThermalState` is the one reading of a pinned dict: a
+    //  pure two-phase pin comes back as its quality with no split, a pinned
+    //  single phase as its carried vf, a pinned two-phase mixture as its
+    //  equilibrium split.
+    const auto st = resolveStreamThermalState(streamDict, T, P, z, thermo,
+                                              locus, "duty");
+    if (st.split) return hOfState(*st.split, T, P, z, thermo);
+    return thermo.H_stream_formation(T, P, st.vf, z);
+}
+
+//  The phase an inlet DECLARES as single, or `std::nullopt`: 0 for a pinned
+//  liquid, 1 for a pinned vapour.  A unit that picks a REGIME from its inlet
+//  (the pipe's liquid / two-phase / refused-gas paths) reads the declaration
+//  instead of flashing (T, P) -- the same reason as above.
+inline std::optional<scalar> declaredSinglePhase(const DictPtr& streamDict)
+{
+    if (!streamDict) return std::nullopt;
+    if (streamDict->lookupScalarOrDefault("phasePinned", 0.0) < 0.5)
+        return std::nullopt;
+    const scalar vf = streamDict->lookupScalarOrDefault("vf", 0.0);
+    if (vf <= 1.0e-9)       return 0.0;
+    if (vf >= 1.0 - 1.0e-9) return 1.0;
+    return std::nullopt;
+}
+
 //  The CRYSTALLINE phase a stream carries in `s[]` (kmol/s), on the solid
 //  formation rung -- the leg `reporting/BalanceMath.H::solidH_elements` adds
 //  to every stream it prices.  kW.  A unit whose streams carry crystals must

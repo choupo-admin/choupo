@@ -35,7 +35,7 @@ src/unitOperations/membrane/osmotic/OsmoticModel.H	literal	1
 src/unitOperations/membrane/transport/DSPM_DE.cpp	direct	1
 src/unitOperations/reactor/CSTR.cpp	conversion	1
 src/unitOperations/reactor/CSTR.cpp	literal	3
-src/unitOperations/reactor/CSTR.cpp	vliq	4
+src/unitOperations/reactor/CSTR.cpp	vliq	2
 src/unitOperations/reactor/ConversionReactor.cpp	conversion	3
 src/unitOperations/reactor/EquilibriumReactor.cpp	conversion	1
 src/unitOperations/reactor/PFR.cpp	conversion	2

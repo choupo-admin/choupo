@@ -7706,9 +7706,9 @@ A horizontal-tube steam condenser whose duty is NOT specified -- it EMERGES from
 
 Saturated steam at 1 bar enters a bundle of horizontal tubes cooled by cooling water. The `phaseChanger` runs in `model geometry;` (the seventh resolution): a Nusselt (1916) LAMINAR FILM coefficient h\_cond is computed on the tube, the wall conducts, and the cooling-water film carries the heat away. Because the condensing-film coefficient itself depends on the driving dT\_film = Tsat - T\_wall, the unit solves a 1-D energy balance at the wall (q\_cond == q\_cool) -- the wall temperature is the unknown. Then the duty is Q = h\_cond $\ast$ A $\ast$ dT\_film and the outlet is the dome-flash at that duty.
 
-steam (saturated vapour, 1 bar, declared `phase gas;`) $\to$ condenser (model geometry: NusseltFilm + cooling-water film) $\to$ condensate (two-phase, vf \textasciitilde{} 0.55) + Q (RESULT)
+steam (saturated vapour, 1 bar, declared `phase gas;`) $\to$ condenser (model geometry: NusseltFilm + cooling-water film) $\to$ condensate (two-phase, vf \textasciitilde{} 0.18) + Q (RESULT)
 
-PARTIAL CONDENSATION: with this tube area the duty Q \textasciitilde{} -507 kW removes only part of the latent heat, so the outlet is NOT fully condensed --- it leaves at the dome as a wet two-phase stream, vf \textasciitilde{} 0.55 (about 45 \% of the vapour condensed) at Tsat. Fully condensing it would need more area; here the area is fixed and the outlet quality is the result.
+PARTIAL CONDENSATION: with this tube area the duty Q \textasciitilde{} -928 kW removes only part of the latent heat, so the outlet is NOT fully condensed --- it leaves at the dome as a wet two-phase stream, vf \textasciitilde{} 0.18 (about 82 \% of the vapour condensed) at Tsat. Fully condensing it would need more area; here the area is fixed and the outlet quality is the result. The film coefficient is \textasciitilde{}9.7 kW/(m2.K) at dT\_film \textasciitilde{} 25 K, so the COOLANT-side film controls. (Until 2026-11-13 the film read rho\_v as IF97's LIQUID root at (Tsat, 1 bar) -- 958.6 kg/m3, the last bit of P on the liquid side of the line -- which shrank rho\_l - rho\_v to \textasciitilde{}16 kg/m3 and the coefficient to \textasciitilde{}2.9 kW/(m2.K); the vapour density asked is now the saturated vapour, DEV.md 4c C378 pilot, defect 1.)
 
 Method (glass-box): h\_cond : Nusselt film, horizontal tube, coefficient 0.729 h = 0.729 [k\_l\textasciicircum{}3 rho\_l (rho\_l-rho\_v) g h\_fg' /(mu\_l D dT\_film)]\textasciicircum{}1/4 h\_fg' = h\_fg + 0.68 cp\_l dT\_film (Rohsenow subcooling corr.) (Incropera \& DeWitt, Fund. of Heat \& Mass Transfer, Ex. 10.4) wall : carbon-steel cylindrical resistance r\_o ln(r\_o/r\_i)/k coolant: a cooling-water film coefficient h (Dittus-Boelter order) the three resistances + which CONTROLS are printed; the duty is cross-checked against U$\ast$A$\ast$dT.
 
@@ -7720,16 +7720,16 @@ All film/saturation properties are IAPWS-IF97 water. The case carries its own co
 \goldrow{stream}{steam}{F}{0.0277777777778}
 \goldrow{kpi}{condenser}{F}{0.0277777777778}
 \goldrow{kpi}{condenser}{P}{100000}
-\goldrow{kpi}{condenser}{Q}{-506617.311982}
-\goldrow{kpi}{condenser}{Q\_UAdT\_kW}{506.617311982}
-\goldrow{kpi}{condenser}{Q\_kW}{-506.617311982}
+\goldrow{kpi}{condenser}{Q}{-928001.272355}
+\goldrow{kpi}{condenser}{Q\_UAdT\_kW}{928.001272398}
+\goldrow{kpi}{condenser}{Q\_kW}{-928.001272355}
 \goldrow{kpi}{condenser}{R\_coolant}{0.00014880952381}
-\goldrow{kpi}{condenser}{R\_film}{0.000349003587291}
+\goldrow{kpi}{condenser}{R\_film}{0.000103165680291}
 \goldrow{kpi}{condenser}{R\_wall}{4.35883467862e-05}
-\goldrow{kpi}{condenser}{Re\_film}{15.1166609728}
+\goldrow{kpi}{condenser}{Re\_film}{32.4459796889}
 \goldrow{kpi}{condenser}{T\_in}{372.76}
 \goldrow{kpi}{condenser}{T\_out}{372.755918611}
-\goldrow{kpi}{condenser}{T\_wall}{325.855275434}
+\goldrow{kpi}{condenser}{T\_wall}{347.360656523}
 \goldmore{19}
 \end{tutgolden}
 
@@ -11287,9 +11287,9 @@ water-gas-shift reaction in a CSTR with reverse rate from thermodynamic K\_eq.
 
 Feed: equimolar CO + H2O at 600 K, 10 bar. The forward Arrhenius kinetics drives a high conversion in the early residence times; the reverse term (auto-derived from g\_pure\_ig of the four species at T = 600 K) caps the conversion at the Le Chatelier equilibrium.
 
-At T = 600 K: dG\_rxn = g\_CO2 + g\_H2 - g\_CO - g\_H2O $\approx$ -16.3 kJ/mol K\_eq = exp(16300 / (R $\cdot$ 600)) $\approx$ 26.5 For equimolar CO + H2O, K\_eq = X\textasciicircum{}2 / (1-X)\textasciicircum{}2 -$\to$ X\_eq $\approx$ 0.84
+At T = 600 K (the run prints Kp(T) from the same g\_pure\_ig): dG\_rxn = g\_CO2 + g\_H2 - g\_CO - g\_H2O $\approx$ -16.65 kJ/mol K\_eq = exp(16650 / (R $\cdot$ 600)) $\approx$ 28.2 For equimolar CO + H2O (sum nu = 0, so Kc = Kp), K\_eq = X\textasciicircum{}2 / (1-X)\textasciicircum{}2 -$\to$ X\_eq = sqrt(K)/(1 + sqrt(K)) $\approx$ 0.841
 
-V\_R is picked large enough (1e-3 m\textasciicircum{}3 for a 1 kmol/h feed) that the kinetics are fast relative to residence; we see the conversion approach (but not exceed) X\_eq $\approx$ 0.84 --- the thermodynamic ceiling.
+THE FEED IS A GAS, AND THE SPACE TIME IS THE GAS'S. The cstr takes the feed's phase from its declaration -- `phase gas;` in 0/ here; an undeclared feed would be resolved at its own (T, P, z), all vapour too -- and the volumetric flow from the case's equation of state (ideal gas). The declaration decides: the same feed declared `phase liquid;` is put on the liquid basis, tau about 1344 s, at exit 0. Q = F R T / P = (1/3.6 mol/s)(8.314)(600)/(1e6) $\approx$ 1.386e-3 m\textasciicircum{}3/s C0 = P / (2 R T) $\approx$ 100.2 mol/m\textasciicircum{}3 of each reactant tau = V\_R / Q $\approx$ 7.22 s for V\_R = 1e-2 m\textasciicircum{}3 The design equation X = k tau C0 [(1-X)\textasciicircum{}2 - X\textasciicircum{}2/K] with k tau C0 $\approx$ 785 puts X about 0.003 below X\_eq: the conversion approaches (but does not exceed) the thermodynamic ceiling, X $\approx$ 0.839 against 0.841. (Until 2026-11-13 the unit priced this gas on its components' 25 C LIQUID volumes, Q 186 times too small, and V\_R was 1e-3 m\textasciicircum{}3; on the gas basis that volume gives tau $\approx$ 0.72 s and X $\approx$ 0.816.)
 
 \end{tutnarrative}
 \begin{tutgolden}
@@ -11297,15 +11297,15 @@ V\_R is picked large enough (1e-3 m\textasciicircum{}3 for a 1 kmol/h feed) that
 \goldrow{stream}{feed}{vf}{1}
 \goldrow{stream}{products}{F}{0.000277777777778}
 \goldrow{stream}{products}{vf}{1}
-\goldrow{kpi}{wgs}{Da\_kTau}{145.857299066}
+\goldrow{kpi}{wgs}{Da\_kTau}{7.83130940019}
 \goldrow{kpi}{wgs}{F\_in\_kmol\_h}{1}
 \goldrow{kpi}{wgs}{F\_out\_kmol\_h}{1}
 \goldrow{kpi}{wgs}{T}{600}
-\goldrow{kpi}{wgs}{V\_R}{0.001}
-\goldrow{kpi}{wgs}{X\_limiting}{0.841431955275}
+\goldrow{kpi}{wgs}{V\_R}{0.01}
+\goldrow{kpi}{wgs}{X\_limiting}{0.838618253443}
 \goldrow{kpi}{wgs}{k}{1.08521882096}
-\goldrow{kpi}{wgs}{tau\_s}{134.403584096}
-\goldrow{kpi}{wgs}{xi\_mol\_per\_s}{0.116865549344}
+\goldrow{kpi}{wgs}{tau\_s}{7.2163413027}
+\goldrow{kpi}{wgs}{xi\_mol\_per\_s}{0.116474757423}
 \goldrow{stream}{feed}{T}{600}
 \goldmore{11}
 \end{tutgolden}

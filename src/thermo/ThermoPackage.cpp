@@ -1842,7 +1842,7 @@ scalar ThermoPackage::H_stream_formation(scalar T, scalar P_Pa,
         {
             const PureFluidModel& m = *pureFluid_.at(*i);
             if (vapFrac <= 0.0 || vapFrac >= 1.0)
-                return m.h_molar(T, P_Pa);
+                return m.h_molar(T, pureFluidStreamPressure(m, T, P_Pa, vapFrac));
             // Two-phase pure water: split on the saturation line.
             return (1.0 - vapFrac) * m.h_molar(T, m.p_sat(T))
                  +        vapFrac  * m.h_molar(T, m.p_sat(T) * (1.0 - 1.0e-9));
@@ -1963,7 +1963,7 @@ scalar ThermoPackage::S_stream_formation(scalar T, scalar P_Pa,
         {
             const PureFluidModel& m = *pureFluid_.at(*i);
             if (vapFrac <= 0.0 || vapFrac >= 1.0)
-                return m.s_molar(T, P_Pa);
+                return m.s_molar(T, pureFluidStreamPressure(m, T, P_Pa, vapFrac));
             //  Two-phase pure fluid: split on the saturation line, the same
             //  two evaluation points H_stream_formation uses.
             return (1.0 - vapFrac) * m.s_molar(T, m.p_sat(T))
@@ -1999,7 +1999,7 @@ scalar ThermoPackage::H_blendPerNaturalPhase(scalar T, scalar P_Pa,
         {
             const PureFluidModel& m = *pureFluid_.at(*i);
             if (vapFrac <= 0.0 || vapFrac >= 1.0)
-                return m.h_molar(T, P_Pa);
+                return m.h_molar(T, pureFluidStreamPressure(m, T, P_Pa, vapFrac));
             return (1.0 - vapFrac) * m.h_molar(T, m.p_sat(T))
                  +        vapFrac  * m.h_molar(T, m.p_sat(T) * (1.0 - 1.0e-9));
         }
@@ -2268,6 +2268,35 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
     return surfaceTensionMixing_->mix(T, x, sig, liquidMixingContext());   // N/m
 }
 
+namespace {
+//  A pure-fluid state asked beyond the saturation band on the OTHER side of
+//  the line from the phase the caller holds (C378, `pureFluidPhaseState`'s
+//  `farAcross`): the saturated branch of the phase asked is used.  The fact
+//  rides `AdvisoryLog::addAnnouncedOnce`, keyed by function, component and
+//  phase, so it reaches the result JSON and the end-of-run caveat block of
+//  every pass that meets it; the console line is printed once per process.
+//  It was a private static latch on `std::cout` and reached neither (review
+//  TD-07, 2026-11-13).
+void announceAcross(const char* what, const std::string& comp,
+                    DensityPhase ph, scalar T, scalar P, scalar ps)
+{
+    const bool liq = (ph == DensityPhase::Liquid);
+    const std::string key = std::string("pureFluidAcross:") + what + ":"
+                          + comp + (liq ? ":liquid" : ":vapour");
+    AdvisoryLog& log = AdvisoryLog::instance();
+    if (log.passHas(key)) return;
+    std::ostringstream m;
+    m << "a pure-fluid " << (liq ? "LIQUID" : "VAPOUR") << " " << what
+      << " was asked at T = " << T << " K, P = " << P
+      << " Pa, on the other side of the saturation pressure (" << ps
+      << " Pa, beyond the 1e-6 band); the saturated "
+      << (liq ? "liquid" : "vapour") << " at T is used";
+    if (log.addAnnouncedOnce(key, "thermo", "warning",
+                             "component '" + comp + "'", m.str()))
+        std::cout << what << ": " << m.str() << "\n";
+}
+} // namespace
+
 scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
                               DensityPhase ph) const
 {
@@ -2294,8 +2323,16 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
                           << m.densityFormulation() << " (rho = MW / v_molar)\n";
                 announced = true;
             }
+            //  THE PHASE ASKED IS HONOURED (C378 pilot, defect 1): on or
+            //  across the saturation line, the saturated branch of the phase
+            //  asked, never the other root (pureFluid/PureFluidModel.H).
+            const PureFluidPhaseState st = pureFluidPhaseState(
+                m, T, P_Pa, ph == DensityPhase::Liquid);
+            if (st.farAcross)
+                announceAcross("density", components_[*i].name(), ph, T,
+                               P_Pa, m.p_sat(T));
             const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
-            const scalar vm = m.v_molar(T, P_Pa);             // m³/mol
+            const scalar vm = m.v_molar(T, st.pEval);         // m³/mol
             if (!(vm > 0.0) || !std::isfinite(vm))
                 throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: pure-fluid"
                     " v_molar is not a finite positive number");
@@ -2598,6 +2635,44 @@ std::string ThermoPackage::surfaceTensionMethod() const
 {
     if (!surfaceTension_) return "";
     return surfaceTension_->modelName() + "/" + surfaceTensionMixing_->ruleName();
+}
+
+// ---- THE CALORIC FUNCTIONS AT A PHASE THE CALLER HOLDS (C378 defect 3) ------
+//  Placed at the end of the file so that no line an EduTool lesson cites by
+//  `file:line` above it moved.  The decision is pureFluidPhaseState's, the
+//  same one density() reads; the generic route ignores the phase.
+scalar ThermoPackage::H_real(scalar T, scalar P_Pa, const sVector& y,
+                             DensityPhase ph) const
+{
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, y))
+        {
+            const PureFluidModel& m = *pureFluid_.at(*i);
+            const PureFluidPhaseState st = pureFluidPhaseState(
+                m, T, P_Pa, ph == DensityPhase::Liquid);
+            if (st.farAcross)
+                announceAcross("enthalpy", components_[*i].name(), ph, T, P_Pa,
+                               m.p_sat(T));
+            return m.h_molar(T, st.pEval);
+        }
+    return H_real(T, P_Pa, y);
+}
+
+scalar ThermoPackage::S_real(scalar T, scalar P_Pa, const sVector& y,
+                             DensityPhase ph) const
+{
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, y))
+        {
+            const PureFluidModel& m = *pureFluid_.at(*i);
+            const PureFluidPhaseState st = pureFluidPhaseState(
+                m, T, P_Pa, ph == DensityPhase::Liquid);
+            if (st.farAcross)
+                announceAcross("entropy", components_[*i].name(), ph, T, P_Pa,
+                               m.p_sat(T));
+            return m.s_molar(T, st.pEval);
+        }
+    return S_real(T, P_Pa, y);
 }
 
 } // namespace Choupo
