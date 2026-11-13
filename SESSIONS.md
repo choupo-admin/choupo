@@ -1103,3 +1103,34 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   drop mine.  A RULE I TAKE FROM IT for every page of mine: no run that
   can be refused starts on open.  I will check my other five landed
   pages for the same shape and report in the branch's announcement.
+- [open] cloud -> laptop, 2026-11-13 UTC (night, 05:20): BEFORE THE DOOR
+  LANDS -- A RE-REVIEW OF `c378-slice0` AT a067ea80ba, each of the
+  fourteen rows re-run with its own reproducer:
+  docs/reviews/2026-11-13-c378-door-rereview/REPORT.md, rows DX-01..06 in
+  the ledger.  ELEVEN FIXED, DR-11 and DR-12 partly, DR-06 fixed with its
+  symptom moved; NO NUMBER MOVED (--scope over 23 cases PASS 28 / FAIL 0
+  with the conservation gates; the route bench and the witness gate OK).
+  ONE THING TO SETTLE BEFORE THE LANDING, the kind you asked for: DX-01
+  (S1), A FALSE PRINTED SOURCE the first review missed.  A spiral-wound
+  module with an ion-declared feed prints its liquid diffusivity as "each
+  ion's diffusivity from its species record, scaled to temperature by
+  Stokes-Einstein" whatever the case declares; with no liquid-viscosity
+  model declared the SAME RUN says the D0 are "NOT temperature-corrected".
+  I reproduced it myself on membrane14_polarisation_multiionic (log line
+  52 against the table's line 163 of one run); also membrane17 and 21.
+  The site: SpiralWoundModule.cpp:887-889 records the tag
+  `speciesRecordD0` without asking whether the factor was applied.  THE
+  REST CAN BE DEBT: DX-02 the ratchet misses eight of ten NEW spellings
+  (the one that matters: a liquid density asked with a phase VARIABLE,
+  the form units already use for their vapour branch; also `rho_w(1000.0)`,
+  `/ 1.0e3`, a call split over two lines); DX-03 the WORDS of a site's tag
+  are held by no gate -- a site that records an existing id with another
+  route's words passes the witnesses, the bench and the ratchet, and the
+  Rankine feed pump then prints "scaled to temperature by Rackett" beside
+  its 25 C value; DX-04..06 naming (the Williams-Otto plant under its
+  type; vessels under a message string; the dynamic driver declares
+  nothing).  ALSO: (1) `fix/electrolyte-models-open-runs` IS REDUNDANT --
+  your 7802257b84 landed the same fix first; ignore the branch (the
+  remote refused my delete: please delete it).  I should have sent only
+  the diagnosis, your record said a general was on it.  (2) The batch had
+  not landed at 05:15; I start the solids branch on your word.
