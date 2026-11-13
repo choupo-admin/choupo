@@ -2018,7 +2018,8 @@ messages ( { name overLimiting; from overLimiting; on high; text "..."; }
   written instants beyond the limit, first and last instant);
   `neverApproached` (no violation and the closest approach over 0.5 of the
   range; 0.5 is a default of the design record, not taken from a standard);
-  `controllerWithoutElement`; `sameQuantityAlarms` (same column; two series
+  `controllerWithoutElement`; `sameQuantityAlarms` (same column, id
+  `sameQuantityAlarms:<first element>` with the column as a word; two series
   that are functions of each other are not detected); `alarmsActive` (with the
   `delay` applied on the write grid: `max` active at once and `at`, the first
   instant that maximum is reached; `first`, the first instant ANY alarm is

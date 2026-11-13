@@ -451,10 +451,22 @@ def arm_facts(work):
     need("alwaysViolated:alwaysLow" in ids
          and F["alwaysViolated:alwaysLow"]["violated"] == n,
          "`alwaysViolated` was not reported")
-    # sameQuantityAlarms on rig.i_over_ilim: lamp, lampDelayed, lampLate
-    need("sameQuantityAlarms:rig.i_over_ilim" in ids
-         and F["sameQuantityAlarms:rig.i_over_ilim"]["count"] == 3,
-         "three alarms on one column were not reported as `sameQuantityAlarms`")
+    # sameQuantityAlarms on rig.i_over_ilim: lamp, lampDelayed, lampLate.
+    # (note 3, 2026-11-13) the id names an ELEMENT, like every other fact --
+    # the first in declaration order -- and the column rides as a word.
+    SQ = F.get("sameQuantityAlarms:lamp", {})
+    need(SQ.get("count") == 3 and SQ.get("column") == "rig.i_over_ilim"
+         and SQ.get("elements") == "lamp lampDelayed lampLate",
+         "three alarms on one column were not reported as"
+         " `sameQuantityAlarms:lamp` (the first element) with the column and"
+         f" the elements as words: {SQ or sorted(i for i in ids if i.startswith('sameQ'))}")
+    need(all(i.split(":", 1)[1] in {e.split(":", 1)[1] for e in E}
+             for i in ids if ":" in i
+             and not i.startswith(("notPublished:", "controllerWithoutElement:"))),
+         "a fact id (other than notPublished:<e>:reference and"
+         " controllerWithoutElement:<controller>) carries something other than"
+         " an element name after the colon:"
+         f" {sorted(i for i in ids if ':' in i and not i.startswith(('notPublished:', 'controllerWithoutElement:')) and i.split(':', 1)[1] not in {e.split(':', 1)[1] for e in E})}")
 
     # alarms active with the delay on the write grid
     def active(delay):

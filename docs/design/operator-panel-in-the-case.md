@@ -285,7 +285,7 @@ would sit beside the integrator).
 | `violated` | count `k` of `n` written instants beyond a limit (strictly), first and last instant | always published when a limit exists; `k = 0` is reported as `neverViolated`, `k = n` as `alwaysViolated` |
 | `neverApproached` | `k = 0` and the closest approach, `(high - max)/(range.max - range.min)` (or the `low` mirror), exceeds 0.5 | a limit in the far half of its own scale from every point was not exercised; 0.5 is a stated default of this record, not taken from any practice, and the closest approach is always published so a student can judge with another number |
 | `controllerWithoutElement` | a PID in the flowsheet whose `PV` is shown by no element (`measurement { controller C; cv PV; }`, or the same `unit`/`cv` as its measurement block) | a declared loop the operator cannot see |
-| `sameQuantityAlarms` | more than one `alarm` whose elements resolve to the same column | one cause, one alarm; two series that are functions of each other (`I_A`, `i_A_per_m2`) are NOT detected, and this is said in the gate |
+| `sameQuantityAlarms` | more than one `alarm` whose elements resolve to the same column.  Id `sameQuantityAlarms:<the first of those elements in declaration order>`, like every other fact naming an element; the column rides as the word `column`, all the elements as `elements`, their number as `count` | one cause, one alarm; two series that are functions of each other (`I_A`, `i_A_per_m2`) are NOT detected, and this is said in the gate |
 | `alarmsActive` | per instant, the count of elements in alarm (`delay` applied on the write grid).  Published: `alarms` (declared), `max` (the largest count at one written instant) and `at` (the first instant that maximum is reached -- it can be the last written instant, so it is NOT the start of the alarms), `first` (the first written instant with at least one alarm active; absent when none ever is), `count` (the number of written instants with at least one alarm active) and, as the row's `intervals`, the periods with at least one alarm active.  The per-instant count itself is not published: it is derivable from each alarmed element's own `intervals` | the count of active alarms is always shown, and when and for how long any alarm was active is published, not left to be inferred from the maximum |
 | `message:<name>` | first instant each message's trigger holds, as `fired` 0 or 1 and `t` when it fires | a message that never fires is published with `fired` 0 and no `t` |
 | `draftDiffers` | an element marked `authored draft` whose fields differ from what the draft rules (§6) give on this run | NOT built (S3): the file was hand-edited without saying so, or the draft rules moved |
@@ -312,8 +312,10 @@ never reads a number out of a sentence.  As built:
 `closestApproachFraction` with a range), with an alarm `intervals`
 `[[t0, t1], ...]` (the instants the alarm is active, its delay applied), and
 in `text` the `title`, `reason`, `limitSource`, `limitReason`, `action` and
-the lamp's words; `{"id": "<fact>:<name>", ...}` per fact, its numbers and its
-`explanation`; `{"id": "message:<name>"}` with `on`, `from`, `fired` and `t`;
+the lamp's words; `{"id": "<fact>:<element>", ...}` per fact, its numbers and its
+`explanation` -- the part after the colon is an element name, except
+`notPublished:<element>:reference` and `controllerWithoutElement:<controller>`,
+and `alarmsActive`, which has no colon; `{"id": "message:<name>"}` with `on`, `from`, `fired` and `t`;
 `{"id": "summary"}` with `elements`, `facts`, `messages`, `alarms`,
 `alarmsMax`, `alarmsMaxAt`, `instants`, `locked`, the grid, the style and the
 lock's sentences.  The GUI therefore parses no dict to draw.  (b) A `[panel]` line family on stdout at verbosity >= 1, one line per

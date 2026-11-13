@@ -839,11 +839,13 @@ PanelRecord evaluate(const Dictionary&      d,
     }
 
     //  sameQuantityAlarms (the same published column only: two series that
-    //  are functions of each other are NOT detected)
+    //  are functions of each other are NOT detected).  The id names an
+    //  ELEMENT, like every other fact: the first of them in declaration
+    //  order; the column is the word `column` and all of them `elements`.
     for (const auto& [col, names] : alarmsOnColumn)
         if (names.size() > 1)
         {
-            PanelRow f = row("sameQuantityAlarms:" + col);
+            PanelRow f = row("sameQuantityAlarms:" + names.front());
             word(f, "column", col);
             word(f, "elements", join(names, " "));
             num(f, "count", static_cast<scalar>(names.size()));
