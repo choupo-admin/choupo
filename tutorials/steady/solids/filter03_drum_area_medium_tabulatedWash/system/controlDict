@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter03_drum_area_medium_tabulatedWash
+
+  A ROTARY VACUUM DRUM SIZED BY ITS AREA, WITH A MEDIUM RESISTANCE AND A
+  TABULATED WASH.  filter01's slurry and cake (Geankoplis, Hersel & Lepek
+  5th ed., Example 24.2-4: 0.778 kg/s, c_x = 0.191, m = 2.0, alpha =
+  4.37e9 dp^0.3, 67 kPa, 33 % submergence), run through the three drum
+  branches filter01 does not reach:
+    * the AREA is declared (6.0 m2) and the cycle time is the result --
+      Geankoplis eq. 24.2-25 with V = Q_f t_c, solved for t_c;
+    * the medium carries a resistance, R_m = 1.0e10 1/m, so Ruth's B V term
+      (eq. 24.2-17) is not zero: dropping it changes this case's answer;
+    * the cake is WASHED on the drum by 0.2 kg/s of water at the final
+      filtration rate (eq. 24.2-19), with the solute left in the cake read
+      off a TABULATED wash test, interpolated linearly in (N, ln R) -- the
+      coordinates of Perry's log R vs N correlation (9th ed., eq. 18-71).
+
+  HELD TO (the hand-written rows at the top of `expected`): t_c, the
+  filtration time, K_p, B, the wash time, the wash ratio N and the solute
+  remaining R, recomputed by an independent script
+  (verification/drumClosedForm.py, Python standard library, written from
+  Geankoplis's equations and the declared wash table, not from the C++),
+  with the water's viscosity and density the package publishes as its
+  inputs.  The formation-time closure (eq. 24.2-17 against f t_c) is an
+  identity the unit itself prints.
+
+  WHAT ITS NUMBERS ARE NOT: a validation, and not Geankoplis's example.
+  The area, R_m, the wash flow and the wash test are ILLUSTRATIVE values
+  chosen for this case; no book prints this drum.  The liquor is pure
+  water (the case's sealed records carry no solute), so the wash's
+  componentwise displacement is not visible here: the published R is the
+  wash law's answer, and the mass balance closes on water alone.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A rotary vacuum drum with a declared area (cycle time the result), a medium resistance R_m = 1e10 1/m and a cake wash read off a tabulated wash test, on Geankoplis Example 24.2-4's CaCO3 slurry: illustrative values, held to an independent recomputation of Ruth's law.";
+verbosity     3;
+citations
+(
+    "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall (year not read on the page). Section 24.2, eqs. 24.2-10 to 24.2-26, Example 24.2-4, pp. 1078-1090."
+    "Perry's Chemical Engineers' Handbook, 9th ed. McGraw-Hill. Section 18, wash ratio and eq. 18-71, p. 18-76 (the log R vs N coordinates of a wash test; no constants)."
+);

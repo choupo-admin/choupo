@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter04_leafFilter_sameAsFiltrateWash
+
+  A BATCH LEAF FILTER WASHED ALONG THE FILTRATE'S PATH.  filter02's press,
+  slurry and cycle (Geankoplis, Hersel & Lepek 5th ed., Examples 24.2-1 to
+  24.2-3: alpha = 1.863e11 m/kg, R_m = 10.63e10 1/m, 338 kPa, 17.46 m2,
+  3.37 m3 of filtrate per cycle, 20 min to clean, wash water 10 % of the
+  filtrate), with ONE change: `washFlowPath sameAsFiltrate`.  The wash
+  follows the filtrate's own path, as in a leaf filter, so it runs at the
+  FINAL FILTRATION RATE, 1/(K_p V_f + B) (eq. 24.2-19), and not at the
+  quarter of it a plate-and-frame press's through-washing gets (eq.
+  24.2-20, filter02).  That branch had no case.
+
+  HELD TO (the hand-written rows at the top of `expected`): K_p, B, the
+  filtration time, the wash time, the cycle time and the presses needed,
+  recomputed by an independent script (verification/leafClosedForm.py,
+  Python standard library, written from Geankoplis's equations, not from
+  the C++), with the water's viscosity and density the package publishes
+  as its inputs.  The wash time is one quarter of filter02's on the same
+  inputs, which the same script prints.
+
+  WHAT ITS NUMBERS ARE NOT: a validation, and not one of Geankoplis's
+  answers -- his Example 24.2-3 washes THROUGH the press.  The feed is
+  still the one sized for filter02's longer cycle, so fewer than one press
+  passes it here (`pressesRequired` < 1), which is a consequence of the
+  change, not a design.  Water washes water (the sealed records carry no
+  solute), with the `displacement` law.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A batch leaf filter washed along the filtrate's path (washFlowPath sameAsFiltrate, Geankoplis eq. 24.2-19) on filter02's CaCO3 slurry and press: the wash at the final filtration rate, held to an independent recomputation.";
+verbosity     3;
+citations
+(
+    "Geankoplis, C.J.; Hersel, A.A.; Lepek, D.H. Transport Processes and Separation Process Principles, 5th ed. Prentice Hall (year not read on the page). Section 24.2, eqs. 24.2-13 to 24.2-20, Examples 24.2-1 to 24.2-4, pp. 1078-1090."
+);

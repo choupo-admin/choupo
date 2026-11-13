@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  filter03_drum_area_medium_tabulatedWash / flowsheetDict
+
+  One drum, two inlets (the slurry, the wash water), three outlets (the
+  washed cake, the filtrate, the spent wash).  Area declared, medium
+  resistance non-zero, a tabulated wash test (illustrative; see controlDict).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        drum;
+        type        cakeFilter;
+        model       rotaryDrum;
+        inputs      ( slurry washWater );
+        outputs     ( cake filtrate spentWash );
+        operation
+        {
+            pressureDrop        67.0 kPa;     // Example 24.2-4
+            submergence         0.33;         // Example 24.2-4
+            area                6.0 m2;       // DECLARED: t_c is the result
+            alpha0              4.37e9;       // Example 24.2-4, SI (m/kg/Pa^0.3)
+            compressibility     0.3;
+            mediumResistance    [0 -1 0 0 0] 1.0e10;   // illustrative
+            wetToDryCakeRatio   2.0;          // Example 24.2-4
+            washing
+            {
+                model       tabulated;
+                //  An ILLUSTRATIVE wash test: N (wash volume / cake liquor
+                //  volume) and R (fraction of the solute left in the cake).
+                washRatio   ( 0.0  0.5   1.0   1.5   2.0   3.0  );
+                remaining   ( 1.0  0.60  0.30  0.14  0.07  0.02 );
+            }
+        }
+    }
+);

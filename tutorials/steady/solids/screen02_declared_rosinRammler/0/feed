@@ -1,0 +1,48 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- Choupo stream state.  Every DIMENSIONAL value carries its unit; the parser converts to SI.
+     componentMolarFlows is the OVERALL material (all phases); a phases{} block, when present,
+     is a decomposition that sums back to it exactly. ---*/
+
+//  King (2001) Example 10.1: 99.4 short tons/h of dry dolomite (Fig. 10.3),
+//  carried on the catalogue's CALCITE record (see constant/thermoPhysPropDict),
+//  with the MEASURED feed analysis of Table 10.1 (% passing 3, 2, 1.5, 1.25,
+//  1.0, 0.75, 0.5, 0.375, 0.25 in: 100, 95.52, 88.58, 81.87, 72.73, 61.00,
+//  44.47, 36.36, 25.40) written as the mass in each sieve interval on the
+//  test's OWN edges; the run re-bins it onto the case's grid (uniform in
+//  ln x inside each interval) and prints the mapping's closure.
+
+componentMolarFlows
+{
+    CaCO3       900.9587 kmol/h;     // 90.17 t/h on calcite's MW 100.0869
+}
+
+T               298.15 K;
+P               101325 Pa;
+
+phases
+{
+    solid
+    {
+        componentMolarFlows
+        {
+            CaCO3       900.9587 kmol/h;
+        }
+        particleSizeDistribution
+        {
+            //  ON THE CASE'S OWN GRID (system/flowsheetDict sizeGrid), pan
+            //  first, so nothing is re-mapped and the closed-form check
+            //  (verification/screenClosedForm.py) reads the same classes.
+            //  An ILLUSTRATIVE feed: nothing here is compared with a test.
+            edges     ( 0  4.762500e-03  6.735192e-03  9.525000e-03  1.347038e-02  1.905000e-02  2.694077e-02  3.810000e-02  5.388154e-02  7.620000e-02 );
+            diameter  ( 4.004769e-03 5.663599e-03 8.009538e-03 1.132720e-02 1.601908e-02 2.265440e-02 3.203815e-02 4.530879e-02 6.407631e-02 );
+            massFrac  ( 0.20 0.08 0.10 0.12 0.15 0.13 0.10 0.07 0.05 );
+        }
+    }
+}

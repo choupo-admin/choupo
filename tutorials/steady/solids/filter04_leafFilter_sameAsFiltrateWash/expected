@@ -1,0 +1,60 @@
+# Reference KPIs (golden master).  The rows ABOVE the second rule are written by
+# hand from an INDEPENDENT recomputation; the rows below it were appended by
+# `bin/runTests --record-append` (self-recorded: they pin that the answer has
+# not moved, nothing more).
+# units: stream F is kmol/s (canonical SI, as in the result JSON).
+# kind   name      key         expected        reltol
+# =============================================================================
+#  A WASH ALONG THE FILTRATE'S PATH (eq. 24.2-19), held to
+#  verification/leafClosedForm.py (Python, standard library, written from
+#  Geankoplis section 24.2, not from the C++; the package's water viscosity
+#  and density are its inputs).  Measured agreement when written: 1e-11 or
+#  better on every row.  The wash time is one quarter of the 192.93 s that
+#  filter02's through-washing takes on the same inputs.
+#  NOT a validation and not a book answer: Geankoplis's Example 24.2-3 washes
+#  THROUGH the press, and the feed is still the one sized for that cycle.
+kpi     leaf                   Kp_s_m6          37.7186910595      1e-6
+kpi     leaf                   B_s_m3           16.0104565113      1e-6
+kpi     leaf                   filtrationTime_s 268.13893969       1e-6
+kpi     leaf                   washTime_s       48.2322641462      1e-6
+kpi     leaf                   cycleTime_s      1516.37120384      1e-6
+kpi     leaf                   pressesRequired  0.911380955288     1e-6
+# =============================================================================
+stream  cake                   F                0.00311377514992 1e-4
+stream  cake                   T                298.2            1e-4
+stream  filtrate               F                0.112084642378   1e-4
+stream  filtrate               T                298.2            1e-4
+stream  slurry                 F                0.115198417528   1e-4
+stream  slurry                 T                298.2            1e-4
+stream  spentWash              F                0.01120846425    1e-4
+stream  spentWash              T                298.2            1e-4
+stream  washWater              F                0.01120846425    1e-4
+stream  washWater              T                298.2            1e-4
+kpi     leaf                   alpha_m_kg       186300000000     1e-4
+kpi     leaf                   area_m2          17.46            1e-4
+kpi     leaf                   cS_eq24_2_10_kg_m3 23.4702408789    1e-4
+kpi     leaf                   cS_kg_m3         23.4702408789    1e-4
+kpi     leaf                   cakeLiquor_kg_s  0.0475381053013  1e-4
+kpi     leaf                   cakePorosity     0.731067068546   1e-4
+kpi     leaf                   cakeSolidsPerArea_kg_m2 4.53005222004    1e-4
+kpi     leaf                   cakeThickness_mm 6.21569837587    1e-4
+kpi     leaf                   cleaningTime_s   1200             1e-4
+kpi     leaf                   componentMassClosure 0                1e-4
+kpi     leaf                   filtratePerCycle_m3 3.37             1e-4
+kpi     leaf                   filtrate_m3_s    0.00202546303409 1e-4
+kpi     leaf                   filtrationFlux_m_s 0.00011600590115 1e-4
+kpi     leaf                   liquidMassFlow_kg_s 2.06674293774    1e-4
+kpi     leaf                   mediumResistance_1_m 106300000000     1e-4
+kpi     leaf                   mu_liquid_Pa_s   0.00088885596324 1e-4
+kpi     leaf                   pressureDrop_Pa  338000           1e-4
+kpi     leaf                   rho_liquid       996.910236552    1e-4
+kpi     leaf                   rho_solid        2710             1e-4
+kpi     leaf                   solidsMassFlow_kg_s 0.0475381053013  1e-4
+kpi     leaf                   solidsMassFraction 0.02248428867    1e-4
+kpi     leaf                   soluteRemaining  0                1e-4
+kpi     leaf                   washFractionOfCycle 0.0318076893205  1e-4
+kpi     leaf                   washRatio        4.24755009027    1e-4
+kpi     leaf                   wash_m3_s        0.000202546303629 1e-4
+boundary global                 H_feeds_kW       -36640.1948166   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -36640.1948166   1e-4

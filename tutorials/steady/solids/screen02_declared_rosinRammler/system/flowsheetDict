@@ -1,0 +1,43 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  screen02_declared_rosinRammler / flowsheetDict
+
+  One screen, model `declared`: the case's Rosin-Rammler curve and bypass
+  (illustrative values; see controlDict).
+\*---------------------------------------------------------------------------*/
+
+sizeGrid
+{
+    xMax      3 in;
+    ratio     1.41421356;
+    nClasses  9;               // 3 in down to 0.1875 in, plus the pan
+}
+
+units
+(
+    {
+        name        screen;
+        type        screen;
+        model       declared;
+        in          feed;
+        outputs     ( oversize undersize );
+        operation
+        {
+            partition
+            {
+                model   rosinRammler;   // King 2001 eq. 4.41
+                d50     22 mm;          // illustrative
+                m       5.9;            // King p. 89, a vibrating screen
+            }
+            bypass      0.05;           // fines to the oversize, every class
+            aperture    1 in;           // checked against the grid only
+        }
+    }
+);

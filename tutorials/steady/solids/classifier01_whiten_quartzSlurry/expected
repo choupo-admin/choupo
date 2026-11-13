@@ -1,0 +1,56 @@
+# Reference KPIs (golden master).  The rows ABOVE the second rule are written by
+# hand from an INDEPENDENT closed-form recomputation; the rows below it were
+# appended by `bin/runTests --record-append` (self-recorded: they pin that the
+# answer has not moved, nothing more).
+# units: stream F is kmol/s (canonical SI, as in the result JSON).
+# kind   name      key         expected        reltol
+# =============================================================================
+#  THE WHOLE WHITEN CURVE, held to verification/whitenClosedForm.py (Python,
+#  standard library, written from eq. 21 of Nageswararao, Wiseman & Napier-Munn
+#  2004 and the grid's stated rules, not from the C++).  The curve's built-in
+#  anchor (anchor_partition_dev, the identity c(d50c) = 1/2) holds for ANY
+#  curve shape; these rows do not: the split sums the curve over every class
+#  and the cut sizes read it at the classes around 1/2.  Measured agreement
+#  when written: solidsTo_coarse 6e-9 (the engine's feed fractions carry the
+#  grid's ratio to 9 figures), the cut sizes to 1e-11, the product F (water share + solids share) to 1e-8.
+#  NOT a validation: the parameters are illustrative and nothing is measured.
+kpi     classifier             solidsTo_coarse  0.680624162457     1e-6
+kpi     classifier             d50c_um          198.194324003      1e-6
+kpi     classifier             d50_um           140.256034619      1e-6
+kpi     classifier             fluidTo_coarse   0.35               1e-9
+stream  coarse                 F                0.622298227105     1e-6
+stream  fine                   F                0.718945495117     1e-6
+# =============================================================================
+stream  coarse                 T                298.15           1e-4
+stream  feed                   F                1.34124372222    1e-4
+stream  feed                   T                298.15           1e-4
+stream  fine                   T                298.15           1e-4
+kpi     classifier             anchor_partition_dev 0                1e-4
+kpi     classifier             bypass           0.3              1e-4
+kpi     classifier             coarse_Sv_m2_m3  29453.1399675    1e-4
+kpi     classifier             coarse_d10_um    47.4877531182    1e-4
+kpi     classifier             coarse_d32_um    203.713424328    1e-4
+kpi     classifier             coarse_d50_um    400.459417485    1e-4
+kpi     classifier             coarse_d80_um    973.395884708    1e-4
+kpi     classifier             coarse_d90_um    1448.62648003    1e-4
+kpi     classifier             coarse_solids_kg_s 18.9062265769    1e-4
+kpi     classifier             feed_Sv_m2_m3    44293.0928474    1e-4
+kpi     classifier             feed_d10_um      24.5847178386    1e-4
+kpi     classifier             feed_d32_um      135.461301397    1e-4
+kpi     classifier             feed_d50_um      210.223833604    1e-4
+kpi     classifier             feed_d80_um      712.654483056    1e-4
+kpi     classifier             feed_d90_um      1161.10630618    1e-4
+kpi     classifier             fine_Sv_m2_m3    75918.6233791    1e-4
+kpi     classifier             fine_d10_um      12.1237228952    1e-4
+kpi     classifier             fine_d32_um      79.0319915317    1e-4
+kpi     classifier             fine_d50_um      60.6186144761    1e-4
+kpi     classifier             fine_d80_um      140.545729754    1e-4
+kpi     classifier             fine_d90_um      193.225714845    1e-4
+kpi     classifier             fine_solids_kg_s 8.87155114307    1e-4
+kpi     classifier             fluidMassClosure 0                1e-4
+kpi     classifier             fluidMassFlow_kg_s 15.8333334583    1e-4
+kpi     classifier             sizeMassClosure  0                1e-4
+kpi     classifier             solidsMassFlow_kg_s 27.77777772      1e-4
+boundary global                 H_feeds_kW       -672776.520965   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -672776.520965   1e-4

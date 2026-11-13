@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1834,
+  "cases": 1839,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 25
@@ -23127,6 +23127,21 @@
    ],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/estimatedSpecies01_announced": {
+   "application": "choupoProps",
+   "ops": [
+    "electrolyteActivity"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "Pitzer"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/farelo_licl_range": {
    "application": "choupoProps",
    "roles": [],
@@ -29066,6 +29081,23 @@
    ],
    "hasGolden": true
   },
+  "tutorials/steady/solids/classifier01_whiten_quartzSlurry": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "classifier"
+   ],
+   "unitModels": [
+    "whiten"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/solids/filter01_caco3_rotaryDrum": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29103,6 +29135,42 @@
    "roles": [
     "anchored"
    ],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cakeFilter"
+   ],
+   "unitModels": [
+    "rotaryDrum",
+    "tabulated"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cakeFilter"
+   ],
+   "unitModels": [
+    "batchPress",
+    "displacement"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
    "hasGolden": true
   },
   "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91": {
@@ -29227,6 +29295,24 @@
    ],
    "unitModels": [
     "karra"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/solids/screen02_declared_rosinRammler": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "screen"
+   ],
+   "unitModels": [
+    "declared",
+    "rosinRammler"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -30934,6 +31020,7 @@
     "tutorials/props/electrolyte/enrtl_mixed_nacl_ethanol_esteso",
     "tutorials/props/electrolyte/enrtl_multisalt_nacl_kcl",
     "tutorials/props/electrolyte/enthalpy_naoh_water",
+    "tutorials/props/electrolyte/estimatedSpecies01_announced",
     "tutorials/props/electrolyte/farelo_licl_range",
     "tutorials/props/electrolyte/farelo_nacl_nh4cl",
     "tutorials/props/electrolyte/fpd01_nacl_freezing",
@@ -31364,8 +31451,11 @@
     "tutorials/steady/solids/centrifuge01_tubularBowl_geankoplis",
     "tutorials/steady/solids/centrifuge02_discStack_sigmaIdentity",
     "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
+    "tutorials/steady/solids/classifier01_whiten_quartzSlurry",
     "tutorials/steady/solids/filter01_caco3_rotaryDrum",
     "tutorials/steady/solids/filter02_caco3_pressWashing",
+    "tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash",
+    "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash",
     "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91",
     "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
     "tutorials/steady/solids/mill02_bond_crosscheck",
@@ -31374,6 +31464,7 @@
     "tutorials/steady/solids/pneumaticConveyor02_bends",
     "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/steady/solids/screen01_dolomite_karra",
+    "tutorials/steady/solids/screen02_declared_rosinRammler",
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/basis01_two_unit_chain",
@@ -31516,10 +31607,13 @@
    ],
    "cakeFilter": [
     "tutorials/steady/solids/filter01_caco3_rotaryDrum",
-    "tutorials/steady/solids/filter02_caco3_pressWashing"
+    "tutorials/steady/solids/filter02_caco3_pressWashing",
+    "tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash",
+    "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash"
    ],
    "classifier": [
-    "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit"
+    "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
+    "tutorials/steady/solids/classifier01_whiten_quartzSlurry"
    ],
    "componentSplitter": [
     "tutorials/steady/userops/userOp02_component_splitter"
@@ -32007,7 +32101,8 @@
     "tutorials/ctrl/ctrl17_signal_shapes"
    ],
    "screen": [
-    "tutorials/steady/solids/screen01_dolomite_karra"
+    "tutorials/steady/solids/screen01_dolomite_karra",
+    "tutorials/steady/solids/screen02_declared_rosinRammler"
    ],
    "sedimentingCentrifuge": [
     "tutorials/steady/solids/centrifuge01_tubularBowl_geankoplis",
@@ -33051,6 +33146,7 @@
     "tutorials/batch/crystallisation/batch14_nacl_pitzer_antisolvent",
     "tutorials/ctrl/ctrl10_brine_concentration",
     "tutorials/props/electrolyte/enthalpy_naoh_water",
+    "tutorials/props/electrolyte/estimatedSpecies01_announced",
     "tutorials/props/electrolyte/pitzer02_nacl_package",
     "tutorials/steady/crystallisation/crystalliser05_nacl_pitzer",
     "tutorials/steady/crystallisation/crystalliser12_nacl_pitzer_antisolvent",
@@ -34717,8 +34813,11 @@
     "tutorials/steady/solids/centrifuge01_tubularBowl_geankoplis",
     "tutorials/steady/solids/centrifuge02_discStack_sigmaIdentity",
     "tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit",
+    "tutorials/steady/solids/classifier01_whiten_quartzSlurry",
     "tutorials/steady/solids/filter01_caco3_rotaryDrum",
     "tutorials/steady/solids/filter02_caco3_pressWashing",
+    "tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash",
+    "tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash",
     "tutorials/steady/solids/hydrocyclone01_quartz_willsTable91",
     "tutorials/steady/solids/mill01_limestone_herbstFuerstenau",
     "tutorials/steady/solids/mill02_bond_crosscheck",
@@ -34727,6 +34826,7 @@
     "tutorials/steady/solids/pneumaticConveyor02_bends",
     "tutorials/steady/solids/psd01_grid_and_moments",
     "tutorials/steady/solids/screen01_dolomite_karra",
+    "tutorials/steady/solids/screen02_declared_rosinRammler",
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
@@ -34771,6 +34871,7 @@
     "tutorials/props/reconciliation/reconcile01_recycle_loop"
    ],
    "electrolyteActivity": [
+    "tutorials/props/electrolyte/estimatedSpecies01_announced",
     "tutorials/props/electrolyte/olsson01_naoh_high_concentration",
     "tutorials/props/electrolyte/pitzer02_nacl_package"
    ],

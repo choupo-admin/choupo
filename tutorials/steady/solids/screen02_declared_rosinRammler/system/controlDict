@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  screen02_declared_rosinRammler
+
+  A SCREEN ON A DECLARED CURVE.  The `screen` unit's second model,
+  `declared`: no correlation predicts the cut, the case DECLARES the
+  partition curve -- here the Rosin-Rammler form King (2001) eq. 4.41 prints
+  for a vibrating screen,
+
+      c(d) = 1 - exp[-0.693 (d/d50)^m]       (0.693 as printed),
+
+  with d50 = 22 mm and m = 5.9 (King's value for a vibrating screen, p. 89),
+  a bypass of 0.05 (fines misplaced to the oversize, every class) and the
+  aperture (1 in), which is only checked against the grid.  Dry calcite.
+
+  WHAT IT DEMONSTRATES: two branches no other case ran -- the `declared`
+  screen and a Rosin-Rammler curve whose d50 and m the CASE supplies
+  (screen01 reaches the same curve object only through Karra's d50 and
+  King's fixed m).  Its curve's built-in check is the identity
+  c(d50) = 1 - e^-0.693, true for ANY m; this case holds the whole curve:
+  the oversize split, the cut sizes and the imperfection are recomputed by
+  an independent closed-form script (verification/screenClosedForm.py,
+  Python standard library, written from King's equations, not from the
+  C++), and those values are the hand-written rows at the top of `expected`.
+
+  WHAT ITS NUMBERS ARE NOT: a validation.  The feed and the curve's
+  parameters are illustrative; nothing is measured.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A screen on a declared Rosin-Rammler partition curve (King 2001 eq. 4.41, d50 = 22 mm, m = 5.9, bypass 0.05) on an illustrative dry calcite feed: the whole curve held to an independent closed-form recomputation.";
+verbosity     3;
+citations
+(
+    "King, R.P. (2001) Modeling and Simulation of Mineral Processing Systems. Butterworth-Heinemann, Oxford. Section 4.2, eqs. 4.20-4.29 and 4.41 (p. 89)."
+);

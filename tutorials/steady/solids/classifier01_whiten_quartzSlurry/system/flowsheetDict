@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  classifier01_whiten_quartzSlurry / flowsheetDict
+
+  One classifier on the `whiten` partition curve with a bypass, on a slurry:
+  the water split is declared (`fluidToCoarse`), because a partition curve
+  says nothing about the liquid.  Illustrative parameters; the whole curve
+  is held to an independent closed form (see controlDict).
+\*---------------------------------------------------------------------------*/
+
+//  THE CASE'S SIZE AXIS: the sqrt-2 series 74 x 2^(k/2) um, 74 um to
+//  2368 um, plus the pan (the same grid as hydrocyclone01).
+sizeGrid
+{
+    xMax      2368 um;
+    ratio     1.41421356;
+    nClasses  11;
+}
+
+units
+(
+    {
+        name        classifier;
+        type        classifier;
+        in          feed;
+        outputs     ( coarse fine );
+        operation
+        {
+            partition
+            {
+                model       whiten;     // eq. 21, Nageswararao et al. 2004 p. 681
+                d50c        200 um;     // illustrative
+                alpha       3.0;        // illustrative sharpness a
+            }
+            bypass          0.30;       // every class, to the coarse product
+            fluidToCoarse   0.35;       // the water's split, declared
+        }
+    }
+);

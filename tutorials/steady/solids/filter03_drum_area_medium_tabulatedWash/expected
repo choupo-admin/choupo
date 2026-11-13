@@ -1,0 +1,60 @@
+# Reference KPIs (golden master).  The rows ABOVE the second rule are written by
+# hand from an INDEPENDENT recomputation; the rows below it were appended by
+# `bin/runTests --record-append` (self-recorded: they pin that the answer has
+# not moved, nothing more).
+# units: stream F is kmol/s (canonical SI, as in the result JSON).
+# kind   name      key         expected        reltol
+# =============================================================================
+#  RUTH'S LAW WITH A MEDIUM, A DECLARED AREA AND A TABULATED WASH, held to
+#  verification/drumClosedForm.py (Python, standard library, written from
+#  Geankoplis section 24.2 and the declared wash test, not from the C++; the
+#  package's water viscosity and density are its inputs).  Measured agreement
+#  when written: 1e-11 or better on every row.  The B V term is visible here:
+#  without it the same drum would turn in 203.92 s, not 197.33 s.
+#  NOT a validation: the area, R_m, the wash flow and the wash test are
+#  illustrative, and no book prints this drum.
+kpi     drum                   cycleTime_s      197.330866947      1e-6
+kpi     drum                   filtrationTime_s 65.1191860927      1e-6
+kpi     drum                   Kp_s_m6          13914.2215059      1e-6
+kpi     drum                   B_s_m3           22.1108448567      1e-6
+kpi     drum                   washTime_s       53.2990814119      1e-6
+kpi     drum                   washRatio        1.3458922137       1e-6
+kpi     drum                   soluteRemaining  0.177070127586     1e-6
+# =============================================================================
+stream  cake                   F                0.00973326044667 1e-4
+stream  cake                   T                298.2            1e-4
+stream  filtrate               F                0.0266890924144  1e-4
+stream  filtrate               T                298.2            1e-4
+stream  slurry                 F                0.0364223528611  1e-4
+stream  slurry                 T                298.2            1e-4
+stream  spentWash              F                0.011101687      1e-4
+stream  spentWash              T                298.2            1e-4
+stream  washWater              F                0.011101687      1e-4
+stream  washWater              T                298.2            1e-4
+kpi     drum                   alpha_m_kg       122547336851     1e-4
+kpi     drum                   area_m2          6                1e-4
+kpi     drum                   cS_eq24_2_10_kg_m3 308.106562087    1e-4
+kpi     drum                   cS_kg_m3         308.106562087    1e-4
+kpi     drum                   cakeLiquor_kg_s  0.1485980001     1e-4
+kpi     drum                   cakePorosity     0.731067068546   1e-4
+kpi     drum                   cakeSolidsPerArea_kg_m2 4.88716203105    1e-4
+kpi     drum                   cakeThickness_mm 6.7056898295     1e-4
+kpi     drum                   componentMassClosure 0                1e-4
+kpi     drum                   filtratePerCycle_m3 0.0951715276288  1e-4
+kpi     drum                   filtrate_m3_s    0.000482294174759 1e-4
+kpi     drum                   filtrationFlux_m_s 8.03823624598e-05 1e-4
+kpi     drum                   formationTimeClosure 2.1822838349e-16 1e-4
+kpi     drum                   liquidMassFlow_kg_s 0.629401999946   1e-4
+kpi     drum                   mediumResistance_1_m 10000000000      1e-4
+kpi     drum                   mu_liquid_Pa_s   0.00088885596324 1e-4
+kpi     drum                   pressureDrop_Pa  67000            1e-4
+kpi     drum                   rho_liquid       996.910236552    1e-4
+kpi     drum                   rho_solid        2710             1e-4
+kpi     drum                   solidsMassFlow_kg_s 0.1485980001     1e-4
+kpi     drum                   solidsMassFraction 0.191000000117   1e-4
+kpi     drum                   submergence      0.33             1e-4
+kpi     drum                   washFractionOfCycle 0.27010007221    1e-4
+kpi     drum                   wash_m3_s        0.000200616749605 1e-4
+boundary global                 H_feeds_kW       -14978.4745451   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -14978.4745451   1e-4

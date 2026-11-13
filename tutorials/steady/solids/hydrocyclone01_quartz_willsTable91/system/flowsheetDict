@@ -11,7 +11,10 @@
 
   One hydrocyclone, Wills & Napier-Munn (2006) Table 9.1 run FORWARD: the
   book derives the partition curve from the two products; here the curve
-  and the water split are given and the products are predicted.
+  and the water split are given and the products are recomputed from them.
+  Both inputs come from the same table, so this is a reconstruction (an
+  identity check of the bookkeeping), not a prediction: the underflow
+  dilution and d50 read the book's own inputs back (see controlDict).
 \*---------------------------------------------------------------------------*/
 
 //  THE CASE'S SIZE AXIS: the sqrt-2 series 74 x 2^(k/2) um (the Tyler
