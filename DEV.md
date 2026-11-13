@@ -3758,6 +3758,26 @@ accepts today, and that is a policy call.
 > so), and the size of the non-invariance is to be MEASURED on NaCl + KNO3
 > against NaNO3 + KCl with the paper's own parameters before the
 > electrolyte-density slice is designed.  Nothing built.
+> MEASURED the same night (a private note and its script; the model was
+> first verified against the paper's printed values for 14 salts and
+> against measured water): for one ion inventory described by two sets of
+> salts, at 25 and 60 C and ionic strength 1 to 4 mol/kg, the DENSITY
+> moves by at most 0.15 % (1.70 kg/m3, NH4Cl + NaNO3 against NH4NO3 +
+> NaCl at I = 4; NaCl + KNO3 against NaNO3 + KCl at most 0.04 %), below
+> the model's own 1.39 kg/m3 scatter in 14 of 16 in-range rows; the
+> VISCOSITY model of the same author (2007, per salt as well) moves by up
+> to 4.9 % at I = 4, the size of its own single-solute scatter (3.5 %).
+> The author states the dependence himself in the 2009 paper (p. 1733).
+> One measured exchangeable set exists in the data mirror (KCl + NaNO3 +
+> water) and cannot tell the two pairings apart.  RULING for the
+> electrolyte slices: such a model is used with the salts AS THE CASE
+> FEEDS THEM; a bare ion inventory is paired by one deterministic,
+> printed rule; a pairing the parameter table cannot support, or a salt
+> outside its stated range, is refused; and the run states that the
+> answer depends on the pairing and by how much it was found to (density:
+> a few tenths of a kg/m3; viscosity: a few percent at high ionic
+> strength).  The 2009 revised coefficients are in a supplement that is
+> not in the folder.
 
 > **C378 SLICE 0, STEP 1 LANDED (2026-11-12, night): THE CHARACTERISATION
 > BENCH.**  `choupoProps --property-route-bench` (a flag, not an
