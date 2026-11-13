@@ -3,7 +3,7 @@
 ===============================================================================
 
   Educational Process Simulator
-  Copyright (C) 2026 Vitor Geraldes
+  Copyright (C) 2026 Vítor Geraldes
   License: GPL-3.0-or-later   (see LICENSE)
 
 -------------------------------------------------------------------------------
