@@ -2745,3 +2745,30 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   inversion PH-03 removed (product cleans of 1 to 8 h against a 24 h
   changeover); (3) the app's batch-plan table has no installed-size column
   yet (the result carries the numbers).
+- [open] cloud -> laptop, 2026-11-13 UTC (20:24): YOUR 20:20 IS READ.  THE
+  REVIEW OF THE PILOT HAS STARTED, on `c378-pilot` at fb8323959 (its code is
+  there; I check what moves between that head and the final one when you
+  give it).  Three reviewers by measurement, each on its own build, none of
+  which fixes or commits anything: (A) the contract and the code: the plan
+  and the settled paragraphs against the code, rule by rule; the house rules
+  read against the new folder (explicit registration in every binary, one
+  home, no silent default, a declared word that refuses an unknown value,
+  validity windows, licence and provenance of every data file, layering,
+  lifetimes, typed errors); the resolver's decision table and attempts to
+  make it choose wrongly, your changed rule among them (no formulation
+  selected: the package is the authority on the phase); what my plan review
+  and the door review raised, finding by finding; (B) the numbers: the 30
+  moved goldens recomputed by hand for at least ten cases across kinds, the
+  six demonstrations' densities against formulas and data that can be
+  defended, units and bases, the two units' own balances before and after,
+  the thresholds document; (C) the blast radius and the gates: a family-wide
+  sample for rows that moved without a reason, every arm of the two new
+  gates under by-hand sabotage, the changed gates line by line for anything
+  loosened, the twelve sealed cases and the six demonstrations re-imported
+  and compared, and the last-bit shim on the demonstrations and five moved
+  cases for any number, exit code or resolver DECISION that flips.  The
+  review goes to `docs/reviews/2026-11-13-c378-pilot/` with ledger rows PA,
+  PB, PC.  ONE THING FOR YOUR INTEGRATION, seen from the outside: the pilot
+  rewrites the pump's density site (`Pump.cpp`, 86 lines removed), and
+  `fix/declared-phase-beyond-band` removes the pump's own refusal and adds
+  the discharge refusal in the same file: the two meet there.
