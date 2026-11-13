@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*  Probe for check_rowlinson_bondi.py -- compiled by the gate, not shipped.
 
     It prints numbers and never a verdict: the gate decides.  A probe that

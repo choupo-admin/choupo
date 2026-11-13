@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Probe for bin/curate/check_newton_globalisation.py (DEV.md 4c C245 slice 1).
 //
 // Compiled by the gate against the solver sources alone (no engine build is

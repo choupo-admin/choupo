@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 //  Driver for check_ice_freezing.py -- asks SolidPhase for the pure-crystal
 //  fugacity and asks Component for the cryoscopic constant it now DERIVES.
 //  Kept beside the gate rather than in src/ because it is curation tooling.

@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Probe for bin/curate/check_psat_continuity.py (DEV.md 4c C245 slice 5a).
 //
 // Links the REAL vapour-pressure classes (via the library objects of the

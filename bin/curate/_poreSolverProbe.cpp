@@ -1,3 +1,4 @@
+// Copyright (C) 2026 Vítor Geraldes
 // SPDX-License-Identifier: GPL-3.0-or-later
 //
 // Probe for bin/curate/check_pore_solver.py -- compiled by the gate against

@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 //  Driver for check_reference_rung.py -- builds Components from synthetic
 //  records and asks each for the surfaces that assume the IDEAL-GAS rung.
 //  Kept beside the gate rather than in src/ because it is curation tooling.
