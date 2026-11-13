@@ -136,7 +136,7 @@ export const FEL_STEPS: readonly LessonStep[] = [
       + "worst.  A ranking of classes is not a ranking of projects.  "
       + "Choupo's economics pass, when a case declares no band, uses the "
       + "class's pessimistic corner and announces that it did "
-      + "(src/postProcessing/EstimateClass.H:45-52), because understating an "
+      + "(src/postProcessing/EstimateClass.H:46-53), because understating an "
       + "interval of confidence is the one error that is not conservative.",
   },
   {

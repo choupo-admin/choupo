@@ -27,7 +27,7 @@
   THE AACE TABLE IS A TRANSCRIPTION, AND IT IS HELD TO ITS ONE HOME.  The
   engine's single home for AACE 18R-97 Table 1 is
   src/postProcessing/EstimateClass.H (`estimateClass::table()`, lines
-  96-116).  The browser cannot include a C++ header, so `AACE_CLASSES` copies
+  97-117).  The browser cannot include a C++ header, so `AACE_CLASSES` copies
   it -- and the test parses the header and requires every field to agree,
   the same move bin/curate/check_estimate_class.py makes for the prose copy
   in docs/design-heuristics.md.  A third home held by a test is a mirror; a
@@ -60,7 +60,7 @@ export interface AaceClass {
 }
 
 /** AACE 18R-97 Table 1, least-defined first as the standard prints it.
- *  TRANSCRIBED from src/postProcessing/EstimateClass.H:98-114; the test
+ *  TRANSCRIBED from src/postProcessing/EstimateClass.H:99-115; the test
  *  holds every field to that file. */
 export const AACE_CLASSES: readonly AaceClass[] = [
   { cls: 5, maturityLo: 0, maturityHi: 2,
@@ -86,7 +86,7 @@ export const AACE_CLASSES: readonly AaceClass[] = [
 ];
 
 /** Which end of the range of ranges a band is drawn at.  `pessimistic` is
- *  the engine's announced default (EstimateClass.H:45-52). */
+ *  the engine's announced default (EstimateClass.H:46-53). */
 export type Corner = "optimistic" | "pessimistic";
 
 /** The high-range multiplier the 2020 revision allows for "weak project
