@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoBatch;
+description   "A -> I -> P with the intermediate I consumed fast, BOTH rates integrated: the full model batch33 is compared with";
+
+//  Verbosity 3 prints the adaptive step history: one line per accepted
+//  step, which is how the EduTool page "When the fast obeys the slow"
+//  counts what the integration cost.
+verbosity     3;
+
+startTime       0;        // s
+endTime         5000;     // s
+deltaT          10.0;     // s  (not used for the plant step below: the
+                          //     adaptive integrator sets its own)
+writeInterval   20;       // s  (trajectory.csv rows; the integrator lands
+                          //     on each, so it takes at least 250 steps)
+
+//  The stiff Rosenbrock23 integrator, its step set by the local error.
+//  A fixed explicit RK4 step would have to stay below 2.785 divided by the
+//  fastest rate constant; this one does not, and the step history shows
+//  what it spends instead.
+timeStepping    adaptive;
+timeSteppingControl
+{
+    rtol        1.0e-6;
+    atol        1.0e-12;  // kmol
+    deltaT0     1.0e-3;   // s
+    deltaTmax   20;       // s
+}
+
+solutionControl
+{
+    write           false;
+}

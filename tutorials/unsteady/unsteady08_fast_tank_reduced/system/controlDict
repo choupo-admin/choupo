@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSemiContinuous;
+description   "The same two tanks with the small one replaced by its quasi-steady relation (a storageTank wrapped as quasiSteady, outlet = inlet): the reduced model of unsteady07";
+
+verbosity     2;
+
+startTime       0;        // s
+endTime         5000;     // s  (5 time constants of the big tank)
+deltaT          0.25;     // s  (a 40th of the small tank's 10 s at the
+                          //     smallest ratio the EduTool page asks for)
+writeInterval   10;       // s  (trajectory.csv rows)
+
+//  trajectory.csv carries everything this case is read for; no <t>/
+//  time directories are written.
+solutionControl
+{
+    write           false;
+}

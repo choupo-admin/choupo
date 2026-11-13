@@ -1,0 +1,45 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch31_fast_equilibrium_reduced -- the REDUCED twin of
+  batch30_fast_equilibrium_full.
+
+  THE REDUCTION.  When A <-> B is fast against B -> C, A and B stay at
+  equilibrium with each other, n_B = K n_A, and only their sum moves:
+
+      d(pool)/dt = -k K/(1+K) pool,     pool = n_A + n_B
+
+  So this case runs ONE reaction, pool -> C, at that rate, written as an
+  `expression` law in constant/reactions.  Here compA STANDS FOR THE POOL:
+  at t = 0 it holds the whole charge, and at any time the share that is B
+  is K/(1+K) = 0.8 of it.  compB stays declared (the two cases share one
+  component list) and stays at zero.
+
+  WHAT IS KEPT.  Two numbers, k and K.  The fast rate constants kf and kr
+  do not appear at all: any pair with the same ratio gives this answer.
+  That is the reduction's real gain -- it needs one parameter fewer, and it
+  is the parameter that is hardest to measure.  What is lost is the first
+  moment, while B forms from A: batch30 measures it.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reactions  ( pool_to_C );
+    }
+);

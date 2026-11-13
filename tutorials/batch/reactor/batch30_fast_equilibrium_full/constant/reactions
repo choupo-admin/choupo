@@ -1,0 +1,62 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Three first-order steps, mass action, Ea = 0 so k(T) = A directly.  The
+  forward and the reverse of A <-> B are written as two reactions, each the
+  plain rate of one direction.  All numbers are author-set for the lesson,
+  not anybody's measurement.
+\*---------------------------------------------------------------------------*/
+
+A_to_B
+{
+    limitingReactant   compA;
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      0.1;            // 1/s   kf
+        Ea     0.0;
+    }
+}
+
+B_to_A
+{
+    limitingReactant   compB;
+    stoichiometry
+    (
+        { component compB;  nu -1;  order 1; }
+        { component compA;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      0.025;          // 1/s   kr = kf / K, K = 4
+        Ea     0.0;
+    }
+}
+
+B_to_C
+{
+    limitingReactant   compB;
+    stoichiometry
+    (
+        { component compB;  nu -1;  order 1; }
+        { component compC;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e-3;         // 1/s   k, the slow step
+        Ea     0.0;
+    }
+}

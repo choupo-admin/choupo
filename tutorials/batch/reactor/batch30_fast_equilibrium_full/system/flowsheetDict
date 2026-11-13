@@ -1,0 +1,58 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch30_fast_equilibrium_full -- a fast reversible step feeding a slow
+  one, every rate integrated:
+
+      A  <-->  B      kf = 0.1 1/s, kr = 0.025 1/s   (K = kf/kr = 4, fast)
+      B  --->  C      k  = 0.001 1/s                 (slow)
+
+  Isothermal at 350 K, first order throughout, Ea = 0 so each rate constant
+  is exactly the number written in constant/reactions.
+
+  THE QUESTION.  A and B interconvert a hundred times faster than B leaves
+  for C.  After a short first moment they sit at equilibrium with each
+  other, n_B = K n_A, and the pair behaves as ONE pool that drains into C
+  at the rate of the B it contains:
+
+      d(n_A + n_B)/dt = -k n_B = -k K/(1+K) (n_A + n_B)
+
+  That is partial equilibrium, and batch31_fast_equilibrium_reduced runs
+  exactly that law, on one pool, with no kf and no kr.  The two answers
+  for n_C differ by the delay of the first moment, while B is still
+  forming: measured with these numbers the largest gap is 0.62 % of the
+  charge, and it falls as kf/k grows.  The EduTool page "When the fast
+  obeys the slow" changes kf and kr together (K held at 4) and draws the
+  gap.
+
+  THE COST.  The fast pair sets a rate constant of kf + kr = 0.125 1/s.  An
+  explicit fixed RK4 step would have to stay below 2.785/0.125 = 22 s, and
+  below 0.0028 s at the page's largest ratio; the adaptive Rosenbrock23
+  integrator declared in controlDict prints every step it takes.
+
+  No species carries formation data and none is needed: isothermal mode
+  holds T, so the heat of reaction is not used (the run says so), the same
+  posture as batch03_consecutive.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reactions  ( A_to_B  B_to_A  B_to_C );
+    }
+);

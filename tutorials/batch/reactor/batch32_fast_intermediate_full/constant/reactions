@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Two first-order steps in series, mass action, Ea = 0 so k(T) = A.
+  compB is the intermediate I, compC the product P.  Author-set numbers.
+\*---------------------------------------------------------------------------*/
+
+A_to_I
+{
+    limitingReactant   compA;
+    stoichiometry
+    (
+        { component compA;  nu -1;  order 1; }
+        { component compB;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e-3;         // 1/s   k1, the slow step that makes I
+        Ea     0.0;
+    }
+}
+
+I_to_P
+{
+    limitingReactant   compB;
+    stoichiometry
+    (
+        { component compB;  nu -1;  order 1; }
+        { component compC;  nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      0.1;            // 1/s   k2, the fast step that uses I up
+        Ea     0.0;
+    }
+}

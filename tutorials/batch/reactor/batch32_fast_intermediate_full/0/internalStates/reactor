@@ -1,0 +1,19 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/reactor -- the initial HOLDUP of 'reactor': 10 mol of
+  compA in one litre at 350 K, nothing else.  The `holdup {}` block is the
+  vessel's starting state.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "reactor";
+equipment   batchReactor;
+
+holdup
+{
+    T            350.0 K;
+    P            1.013 bar;
+    V            0.001;            // m^3
+    totalMoles   0.0100;           // kmol
+    molarComposition  { compA 1.0;  compB 0.0;  compC 0.0; }
+}
