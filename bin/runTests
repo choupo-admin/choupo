@@ -7099,8 +7099,15 @@ PYEOF
     rm -f /tmp/estspecies.$$
     # property-route bench gate (2026-11-12, DEV.md 4c C378 slice 0, TR-16).  Every liquid-property route the kernel has (density incl. the reference equations, flat and bare Rackett; viscosity; surface tension; diffusivity), for every component record and the manifest's binaries, over 11 T x 3 P, answers bit for bit what it answered when recorded; a moved record is NAMED.  Goldens cannot show it: no stream table prints a density and most routes no case walks.
     if gate_exec "$ROOT/bin/curate/check_property_route_bench.py" > /tmp/routebench.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$)"
-        pass=$((pass+1))
+        #  A bench pinned bit for bit is a claim about ONE platform (C384): on
+        #  another the gate says NO SUBJECT, by name, with both fingerprints,
+        #  and exits 0.  That is not a pass and is not counted as one.
+        if head -1 /tmp/routebench.$$ | grep -q '^NO SUBJECT'; then
+            printf "NOSUBJ %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$ | cut -c1-400)"
+        else
+            printf "PASS  %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$)"
+            pass=$((pass+1))
+        fi
     else
         printf "FAIL  %-40s  (run bin/curate/check_property_route_bench.py)\n" "property-route-bench-gate"
         cat /tmp/routebench.$$
@@ -8970,8 +8977,15 @@ fi
 #  it by the paths its source names.
 if [ -n "${FAST:-}" ]; then
     if gate_exec "$ROOT/bin/curate/check_property_route_bench.py" > /tmp/routebench.$$ 2>&1; then
-        printf "PASS  %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$)"
-        pass=$((pass+1))
+        #  A bench pinned bit for bit is a claim about ONE platform (C384): on
+        #  another the gate says NO SUBJECT, by name, with both fingerprints,
+        #  and exits 0.  That is not a pass and is not counted as one.
+        if head -1 /tmp/routebench.$$ | grep -q '^NO SUBJECT'; then
+            printf "NOSUBJ %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$ | cut -c1-400)"
+        else
+            printf "PASS  %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$)"
+            pass=$((pass+1))
+        fi
     else
         printf "FAIL  %-40s  (run bin/curate/check_property_route_bench.py)\n" "property-route-bench-gate"
         cat /tmp/routebench.$$
