@@ -1,0 +1,7 @@
+component	inchikey	M	stored_Vliq_cm3	T_where_measured_equals_stored_K	bracketing_points	Tb_record_K	measured_V_at_Tb_cm3	stored_vs_Tb_pct	measured_V_at_298.15_cm3	measured_rho_at_298.15	engine_rho_at_298.15	engine_vs_measured_pct	max_stated_U_cm3	dois	status
+propane	ATUOYWHBWRKTHZ-UHFFFAOYSA-N	44.096	84.2	276.65	270.00K:82.769;280.00K:84.931;290.00K:87.358;300.00K:90.089	231.02	75.907	+10.92	89.577	492.27	523.705463183	+6.39	0.0534	10.1016/j.jct.2004.07.017,10.1021/je049672l	transcribedNotCheckedAgainstArticle
+propylene	QQONPFPTGQHPMA-UHFFFAOYSA-N	42.081	68.1	219.12	210.00K:66.906;220.00K:68.216;290.00K:80.927;300.00K:83.650	225.46	68.975	-1.27	83.139	506.15	617.929515419	+22.08	0.0203	10.1016/j.jct.2004.07.017	transcribedNotCheckedAgainstArticle
+H2O2	MHAJPDPJQMAIIY-UHFFFAOYSA-N	34.0147	40	no measured liquid volume in the mirror	-	423.35	-	-	-	-	850.3675	-	-	-	-
+HCHO	WSFSSNUMVMOOMR-UHFFFAOYSA-N	30.026	35	no measured liquid volume in the mirror	-	254.05	-	-	-	-	857.885714286	-	-	-	-
+HCN	LELOWRISYMNNSU-UHFFFAOYSA-N	27.026	39.1	no measured liquid volume in the mirror	-	298.85	-	-	-	-	691.202046036	-	-	-	-
+NO2	JCXJVPUVTGWSNB-UHFFFAOYSA-N	46.006	37.9	no measured liquid volume in the mirror	-	294.3	-	-	-	-	1213.87862797	-	-	-	-

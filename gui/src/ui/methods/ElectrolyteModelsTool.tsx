@@ -19,7 +19,8 @@
   The ENGINE computes every model value: four props cases per salt (Pitzer
   and eNRTL through the package a process unit declares, Davies through the
   speciation solver on free ions and with the catalogue's ion pairs), run
-  with choupoProps in the browser, plus two cases for step 6 on MgSO4.  The
+  with choupoProps in the browser on open, plus two cases for step 6 on MgSO4
+  that run when the student presses its button (one is refused by design).  The
   PAGE draws them beside the measured tables of the tree and does the small
   closed-form arithmetic gui/src/case/electrolyteModels.ts holds (the limiting
   law, a mean from activities, phi from a_w, Pi from a_w, deviations); every
@@ -29,15 +30,15 @@
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
-  Alert, Badge, Box, Code, Group, Loader, SegmentedControl, Select, Stack, Table, Text, Title,
+  Alert, Badge, Box, Button, Code, Group, Loader, SegmentedControl, Select, Stack, Table, Text, Title,
 } from "@mantine/core";
 
 import { useCaseFilesRun } from "../../case/methodRun.js";
 import { filesToCaseFiles } from "../../cases/tutorials.js";
 import {
-  A_PHI_25, DAVIES_I_MAX, EM_CASE_NAME, EM_REFUSAL_SALT, EM_SALTS, M_WATER, R_GAS, T_25, V_WATER_25,
+  A_PHI_25, DAVIES_I_MAX, EM_CASE_NAME, EM_REFUSAL_MS, EM_REFUSAL_SALT, EM_SALTS, M_WATER, R_GAS, T_25, V_WATER_25,
   awFromPhi, chooseModel, daviesMolalities, debyeHuckelLimit, deviation, deviationNearI,
-  emDaviesCaseFiles, emMolalities, emPackageCaseFiles, emPackageThermo, ionicStrength, nuOf,
+  emMolalities, emOnOpenCaseFiles, emPackageCaseFiles, emPackageThermo, ionicStrength, nuOf,
   osmoticPressureBar, pairedSpecies, readDaviesRun, readPackageRun, saltById,
   type ChoiceAnswers, type MeasuredTable, type ModelPoint, type SaltDef,
 } from "../../case/electrolyteModels.js";
@@ -195,7 +196,6 @@ function Status({ busy, err, what }: { busy: boolean; err: string | null; what: 
 
 const step = lessonStepper(EM_STEPS);
 const SALT_SHORT: Record<string, string> = { NaCl: "NaCl", KCl: "KCl", CaCl2: "CaCl₂", Na2SO4: "Na₂SO₄" };
-const REFUSAL_MS = [0.1, 0.5, 1.0] as const;
 
 interface ModelRow {
   key: string; label: string; style: SeriesStyle; pts: ModelPoint[];
@@ -211,14 +211,16 @@ export function ElectrolyteModelsTool(): JSX.Element {
   const ms = useMemo(() => emMolalities(table), [table]);
   const dms = useMemo(() => daviesMolalities(s, ms), [s, ms]);
 
+  //  The four runs on open (EM_ON_OPEN): built by the same function the
+  //  native test runs, so what the test holds to exit 0 is what is sent here.
   const runP = useCaseFilesRun(
-    () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(s, "Pitzer", ms)), `P|${s.id}`, "choupoProps");
+    () => filesToCaseFiles(EM_CASE_NAME, emOnOpenCaseFiles(s, ms, "Pitzer")), `P|${s.id}`, "choupoProps");
   const runE = useCaseFilesRun(
-    () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(s, "eNRTL", ms)), `E|${s.id}`, "choupoProps");
+    () => filesToCaseFiles(EM_CASE_NAME, emOnOpenCaseFiles(s, ms, "eNRTL")), `E|${s.id}`, "choupoProps");
   const runD = useCaseFilesRun(
-    () => filesToCaseFiles(EM_CASE_NAME, emDaviesCaseFiles(s, dms, false)), `D|${s.id}`, "choupoProps");
+    () => filesToCaseFiles(EM_CASE_NAME, emOnOpenCaseFiles(s, ms, "Davies")), `D|${s.id}`, "choupoProps");
   const runDP = useCaseFilesRun(
-    () => filesToCaseFiles(EM_CASE_NAME, emDaviesCaseFiles(s, dms, true)), `DP|${s.id}`, "choupoProps");
+    () => filesToCaseFiles(EM_CASE_NAME, emOnOpenCaseFiles(s, ms, "DaviesPairs")), `DP|${s.id}`, "choupoProps");
 
   const pitzer = useMemo(() => readPackageRun(runP.result, s, "Pitzer", ms), [runP.result, s, ms]);
   const enrtl = useMemo(() => readPackageRun(runE.result, s, "eNRTL", ms), [runE.result, s, ms]);
@@ -297,12 +299,21 @@ export function ElectrolyteModelsTool(): JSX.Element {
   const pit05 = deviationNearI(pitzer, table, s, 0.5);
 
   // ---- step 6 ---------------------------------------------------------------------------
+  //  The two MgSO4 runs start when the student asks, never on open: one of
+  //  them is DESIGNED to be refused (no eNRTL record for Mg-SO4), and a run a
+  //  page starts on open must finish -- the site smoke counts every run that
+  //  exits non-zero as a failure of the page, and it cannot tell a refusal
+  //  the lesson wants from an engine that broke.  The refusal the student
+  //  sees is the same engine's, one click away.
   const mg = EM_REFUSAL_SALT;
-  const runRP = useCaseFilesRun(
-    () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(mg, "Pitzer", REFUSAL_MS)), "R|Pitzer|MgSO4", "choupoProps");
-  const runRE = useCaseFilesRun(
-    () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(mg, "eNRTL", REFUSAL_MS)), "R|eNRTL|MgSO4", "choupoProps");
-  const mgPitzer = readPackageRun(runRP.result, mg, "Pitzer", REFUSAL_MS);
+  const [askMg, setAskMg] = useState(false);
+  const runRP = useCaseFilesRun(askMg
+    ? () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(mg, "Pitzer", EM_REFUSAL_MS)) : null,
+  "R|Pitzer|MgSO4", "choupoProps");
+  const runRE = useCaseFilesRun(askMg
+    ? () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(mg, "eNRTL", EM_REFUSAL_MS)) : null,
+  "R|eNRTL|MgSO4", "choupoProps");
+  const mgPitzer = readPackageRun(runRP.result, mg, "Pitzer", EM_REFUSAL_MS);
   const refusalLine = (runRE.log ?? "").split("\n").map((l) => l.trim())
     .find((l) => /fatal error|no parameters/i.test(l)) ?? null;
 
@@ -533,6 +544,12 @@ export function ElectrolyteModelsTool(): JSX.Element {
         {step(6)}
         <Panel title="MgSO4 under both models" origin={["engine", "reference"]}
           originNote="two runs of choupoProps in this browser; the record list is the catalogue's files as bundled">
+          {!askMg && (
+            <Button size="xs" variant="default" data-engine-run="electrolyteModels-MgSO4"
+              onClick={() => setAskMg(true)} style={{ alignSelf: "flex-start" }}>
+              Run MgSO4 under Pitzer and under eNRTL
+            </Button>
+          )}
           <Status busy={runRP.busy} err={null} what="running Pitzer on MgSO4…" />
           <Status busy={runRE.busy} err={null} what="running eNRTL on MgSO4…" />
           <Box>
