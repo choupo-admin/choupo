@@ -205,7 +205,7 @@ before the UNIFAC matrix.  UNIFAC itself: 52x on column19 from one string-keyed 
 | todo | Two EduTools in Pareto mode: liquid effluent treatment and gaseous emission treatment (the Pareto first, against the corpus plants' boundary streams; then the scope to Vitor) | C206 |
 | todo | C199 leftovers: the vessel port positions, the pressure-centre alternative case and the pump curves | C199 |
 | todo | Release Choupo-2612, the first since 2608 | ROADMAP S4 |
-| LANDED 11-13; open from it: run the seawater case with the 1984 major-ion set case-locally and see whether the 0.044 gap to Dickson closes; re-attribute to the 1984 primary the 15 pair records that print its numbers | Seawater boron on Pitzer, from Felmy & Weare 1986, Harvie et al. 1984 and Dickson 1990 | C198 |
+| LANDED 11-13 (the 1984 major-ion set measured: it does not close the gap to Dickson, it widens it by 0.011); open from it: re-attribute to the 1984 primary the 15 pair records that print its numbers; a bisulfate constant read from a primary for seawater | Seawater boron on Pitzer, from Felmy & Weare 1986, Harvie et al. 1984 and Dickson 1990 | C198 |
 | todo | Boron Stage 2: the pH along the channel, the seawater feed as major ions, a dosing unit, and a recycle solver that refuses the trivial fixed point by name | C198 |
 | todo | The methanation reactor EduTool and a Power-to-Gas plant case (pedagogical scope written first) | C191 (B) |
 | todo | A cumene case (the graph's three cumene routes link nothing) | C191 |

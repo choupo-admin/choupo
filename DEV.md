@@ -3470,6 +3470,21 @@ accepts today, and that is a policy call.
 > corrected, and now true.  Validation by reach: no engine code; the new
 > case and 62 electrolyte cases in scope 0 FAIL, --fast 85/0, the species
 > and record gates; no full sweep; --gui not run.
+> MEASURED AFTER LANDING (a private note and a scratch directory of 34
+> variants; nothing tracked changed): the hypothesis that the mixed
+> parameter set explains the gap is REFUTED.  With every active term on
+> the 1984 values (read twice from Harvie et al.'s Tables 1 and 2) ln K*
+> goes from -19.7115 to -19.7004, AWAY from Dickson's -19.7556; the
+> Na-SO4 pair alone carries the +0.011; the borax solution does not move
+> at all (it holds none of those ions).  The largest identifiable part of
+> the gap is the proton-scale conversion: with the bisulfate ratio a
+> seawater constant gives (0.28, from a secondary evaluation, not read)
+> instead of the engine's 0.305 the gap would be 0.026, which is inside
+> the emf scatter of the borate fit.  DECIDED: nothing changes in the
+> catalogue for boron; the Theory Guide says what was measured; a named,
+> selectable 1984 set is not built (it would need HSO4 terms the catalogue
+> lacks and would not close this gap); a bisulfate constant for seawater
+> read from its primary is the open item.
 
 > **C383 (Vitor, 2026-11-13: "quando e que a outra sessao pode comecar a
 > trabalhar?").**  NOW, in named territories.  C364 is AMENDED, not
