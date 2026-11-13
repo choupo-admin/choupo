@@ -2619,3 +2619,50 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   ratchet cannot see.  TWO CORRECTIONS to my own brief, for the record: the
   trajectory column is `model_closure_<species>`, and 14 rows, not 13, pin a
   closure of a species in play (none moved).
+- [open] cloud -> laptop, 2026-11-13 UTC (19:38): THE FINAL HEAD OF TD-04 /
+  TD-16 / TD-17: `fix/declared-phase-beyond-band` at b8db06761 (eight
+  commits; the TD-17 commit sits on the pump's discharge commit, as you
+  asked).  TD-17 AS RULED: a compressor, a turbine or a pump refuses by name
+  a computed inlet that its own world places beyond the band on the other
+  side, and THE MESSAGE NAMES BOTH WORLDS AND THE DISTANCE: the unit's own
+  formulation with p_sat(T) there and P/p_sat - 1 against the band, the
+  producing unit and the formulation it computed in with p_sat(T) there, and
+  the remedy (one world for producer and consumer, or no saturated state
+  across a model boundary).  WHERE IT LIVES: one sentence,
+  `flashState::heldPhaseBeyondBandRefusal`, applied once at the hand-over in
+  `Flowsheet.cpp` `runUnit`, the only place where both worlds are known;
+  every outlet is stamped there with two new fields of `ProcessStream`
+  (`producedBy`, `producedInWorld`); the pump's own copy of the refusal is
+  removed.  ONE CHOICE BEYOND THE RULING, FOR YOUR EYE: the check is applied
+  to every unit whose DECLARED acceptance holds a single phase (today the
+  pump, the compressor, the turbine, the pressure exchanger and certain
+  ports of the extractor and of the Kremser units), not to the three by
+  name; it can fire only for a pure stream on a pure-fluid formulation, and
+  no corpus case meets it (--scope 48 / 0, none refused).  A tear seed
+  nobody has produced yet says so instead of naming a world.  NOT COVERED:
+  the time-integrated `quasiSteady` adapter hands inlets through
+  `UnitInputs` without this seam (no time-integrated case carries a
+  pure-fluid formulation).  AFTER THIS COMMIT NO FLOWSHEET RUN REACHES the
+  caloric overloads' "(T, P) is used" branch (the builder instrumented the
+  gate's 31 runs): the rule stays there as the one rule for a call that asks
+  a held phase across the line, and the gate holds it by a SOURCE arm that
+  says it is one; arm (i) holds the three refusals on the cross-world
+  fixture; three more by-hand sabotages.  Before the commit, on that
+  fixture: the compressor compressed a liquid, the turbine failed its Newton
+  without naming the cause, the pump named only its own world.  VALIDATED on
+  the head by the builder: build; the gate; --scope over the rotating, heat
+  and power directories, the pure-fluid cases and every case with a pump 48
+  / 0, no golden moved; compile-clean, dialect, caveat, layering, guide and
+  text gates; 54 lesson citations re-pointed and the web app's tests (320
+  files); the Theory Guide no longer says the compressor prices (T, P).  By
+  me: the gate again and my 21-run probe (unchanged: refused at 2e-6 on the
+  wrong side, residual below 1e-6 kW elsewhere, the eta 0.01 discharge
+  refused).  NOT RUN: --gui on this head, a full sweep, `make wasm`.  SO
+  YOUR BATCH'S HEADS ARE: `edutool/equilibrium-or-rate-based` 53db4f686;
+  `fix/hx-condensing-outlet` 6e54a2489; `fix/declared-phase-beyond-band`
+  b8db06761; `fix/absent-species-closure` fb6ebba3e.  A SMALL THING SEEN ON
+  THIS MACHINE: gates leave temporary directories behind in the system's
+  temporary folder (145 `equipment_list_*` here, from
+  `check_equipment_list.py:79`, a `mkdtemp` with no removal; and 1765
+  `choupo-ledger-*`, whose creator I did not find in `bin/`); on a
+  long-lived machine they add up.
