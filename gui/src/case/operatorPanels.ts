@@ -135,6 +135,9 @@ export interface PanelElementSpec {
   reason: string;
   /** A comment written beside the range (the unit of a raw number). */
   unitNote?: string;
+  /** The column's unit the case DECLARES (`measurement { cvUnit "..."; }`),
+   *  which the engine publishes as `unit` with `unitFrom declared`. */
+  cvUnit?: string;
 }
 
 export interface PanelMessageSpec {
@@ -172,7 +175,7 @@ export function panelDictText(p: PanelSpec): string {
     L.push(`        name        ${e.name};`);
     L.push(`        title       ${q(e.title)};`);
     L.push(`        kind        ${e.kind};`);
-    L.push(`        measurement { unit ${RIG};  cv ${e.cv}; }`);
+    L.push(`        measurement { unit ${RIG};  cv ${e.cv};${e.cvUnit ? `  cvUnit ${q(e.cvUnit)};` : ""} }`);
     if (e.ref) L.push(`        reference   { unit ${RIG};  cv ${e.ref}; }`);
     if (e.range)
       L.push(`        range       { min ${e.range.min};  max ${e.range.max}; }${e.unitNote ? `   // ${e.unitNote}` : ""}`);
@@ -214,19 +217,19 @@ const OVERLIMIT_ACTION = "lower the current, or stop the batch: past the limitin
 
 const E_DILUATE: PanelElementSpec = {
   name: "diluate", title: "Diluate conductivity", kind: "trend", cv: "kappa_dil_S_per_m",
-  range: { min: "0", max: "1.4" }, unitNote: "S/m",
+  range: { min: "0", max: "1.4" }, unitNote: "S/m", cvUnit: "S/m",
   place: { column: 1, row: 1, width: 8, height: 4 },
   reason: "the diluate is the product; its conductivity says how far the batch has got",
 };
 const E_DEMIN: PanelElementSpec = {
   name: "demineralisation", title: "Demineralisation, actual against ideal at I(0)", kind: "trend",
-  cv: "deminActual", ref: "deminIdeal", range: { min: "0", max: "1" }, unitNote: "fraction",
+  cv: "deminActual", ref: "deminIdeal", range: { min: "0", max: "1" }, unitNote: "fraction", cvUnit: "-",
   place: { column: 1, row: 5, width: 8, height: 4 },
   reason: "the unit publishes the straight line beside the run; their parting is the over-limiting regime",
 };
 const E_VOLTAGE: PanelElementSpec = {
   name: "voltage", title: "Stack voltage", kind: "trend", cv: "U_V",
-  range: { min: "0", max: "10" }, unitNote: "V",
+  range: { min: "0", max: "10" }, unitNote: "V", cvUnit: "V",
   place: { column: 9, row: 1, width: 4, height: 2 },
   reason: "at constant current the voltage is the free electrical variable; it rises as the diluate loses conductivity",
 };
@@ -234,7 +237,7 @@ const E_VOLTAGE: PanelElementSpec = {
 export function overLimitingElement(high = 1): PanelElementSpec {
   return {
     name: "overLimiting", title: "Limiting current", kind: "lamp", cv: "i_over_ilim",
-    range: { min: "0", max: "2.5" }, unitNote: "-",
+    range: { min: "0", max: "2.5" }, unitNote: "-", cvUnit: "-",
     limit: { high: numText(high), source: "the limiting current of the unit's own film model",
       reason: "above 1 the extra current splits water instead of moving salt" },
     alarm: { on: "high", delay: "0 s", action: OVERLIMIT_ACTION },
@@ -245,7 +248,7 @@ export function overLimitingElement(high = 1): PanelElementSpec {
 }
 const E_CURRENT: PanelElementSpec = {
   name: "currentDensity", title: "Current density against the stack rating", kind: "bar", cv: "i_A_per_m2",
-  range: { min: "0", max: "250" }, unitNote: "A/m2",
+  range: { min: "0", max: "250" }, unitNote: "A/m2", cvUnit: "A/m2",
   limit: { high: "200", source: RATING_SOURCE, reason: "the rating the unit checks the run against" },
   alarm: { on: "high", action: "lower the current set on the rectifier" },
   place: { column: 9, row: 5, width: 4, height: 2 },
