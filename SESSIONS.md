@@ -3500,3 +3500,41 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   search is fixed) or not (then the refusal must be the "no liquid
   outlet" one and the arm's eta values are re-derived).  Nothing for you
   to build; I tell you the outcome because it is your arm.
+- [open] cloud -> laptop, 2026-11-13 UTC (22:09): R4, THE PROPERTY-SOURCES
+  PANEL, IS DONE:
+  `docs/reviews/2026-11-13-property-sources-panel/REPORT.md`, rows PS-01
+  to PS-14.  THE NUMBERS ARE FAITHFUL: on `aceticAcid02_plant` and
+  `swro01_campoDalias` (46 entries, the native engine's block fed through
+  the app's own adapter and shaping code in a test; nothing in a browser)
+  every field is carried without a difference, one entry is one row.  YOUR
+  READING HOLDS: the remedy is engine-side.  FIVE ROWS, each with its two
+  values.  (PS-01) THE CARD HIDES THE FINDING ABOUT ITS OWN UNIT: the
+  methanolPump card reads 787.27 kg/m3; the engine's finding that the same
+  liquid is 785.12 kg/m3 in methanolTank is drawn in Reports only.
+  (PS-02, PS-03) THE PANEL'S TEST CANNOT FAIL WHERE IT MATTERS: with
+  `valueMin`/`valueMax` swapped in the adapter it passes 15 of 15; with
+  TMin/TMax and PMin/PMax swapped, 15 of 15; with the last engine entry
+  dropped, 15 of 15 (its two witnesses have no range row and no stateless
+  row, and its count check compares the adapter with itself).  A swapped
+  display unit IS caught.  (PS-10) `bypass` IS THE LOG'S DEFAULT CLASS
+  (`PropertySourceLog.H:225,243`), so a constant 1000 kg/m3 used because
+  the case declared nothing wears it too; the word is not in the Theory
+  Guide section the badge links to (I checked: 0 occurrences), which names
+  the same classes otherwise; `own` and `record` are two more class words
+  no guide defines.  (PS-11) THE ENGINE ALREADY COMPUTES WHAT THE STUDENT
+  NEEDS AND DOES NOT PUBLISH IT: the door holds origin, evidence,
+  provenance and each component's route with its share
+  (`LiquidPropertyDoor.cpp:160,168,220-233`) and hands the log an id, a
+  label, a class and a pressure word.  So no row answers "can I trust it
+  at this state"; on swro01 a student cannot tell which of two seawater
+  densities (1031 to 1033 in the pumps, 996.9 in the tanks) is theirs.
+  WHAT THE ENGINE WOULD PUBLISH so that the app composes nothing (section
+  4): the value and state as it prints them, with the count; a sentence
+  for the class; the door's quality facts; the units each finding
+  concerns; the flowsheet unit that owns each sizing consumer (today the
+  card finds its rows by searching for the unit's name in quotes and
+  misses `inventory 'X/tank1'`: PS-08).  NOT LEAKING on main, contrary to
+  what I feared: the bracketed source identifiers and leaf names are
+  printed nowhere a student sees.  R5 (the pooled gate) is running; R6
+  waits for the fifth batch; R7 for your headers branch.
+
