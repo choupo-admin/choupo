@@ -598,7 +598,8 @@ inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& a
 // once), console tag [estimate], AdvisoryLog category "provenance" -- the
 // same channel as the ion D0 estimate, so it reaches the caveat block and the
 // result record.  An ABSENT word says nothing: silence keeps meaning
-// "nothing was declared".
+// "nothing was declared"; a present word the vocabulary does not know is
+// announced as such (ES-03, below).
 inline void announceDatumProvenance(const std::string& locus,
                                     const std::string& onceKey,
                                     const std::string& subject,
@@ -607,6 +608,22 @@ inline void announceDatumProvenance(const std::string& locus,
                                     const std::string& usedFor)
 {
     if (word.empty()) return;
+    //  ES-03: a PRESENT word the vocabulary does not know is said to be
+    //  unknown -- never read as an absence in silence -- and is not refused
+    //  (the tolerant reader serves the whole tree).
+    if (!isRegisteredOriginWord(word))
+    {
+        const std::string msg = subject + " declares the provenance word '"
+            + word + "', which is not registered: it is read as unattributed,"
+              " so this run cannot say whether the value is measured or an"
+              " estimate; use a registered word (" + originClassWords()
+            + ", or a synonym core/Origin.H lists)";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "unregisteredOriginWord:" + onceKey, "provenance", "warning",
+                locus, msg))
+            std::cerr << "[provenance] " << locus << ": " << msg << "\n";
+        return;
+    }
     const Origin o = originFromWord(word);
     if (o != Origin::estimated && o != Origin::predictive
         && o != Origin::assumed && o != Origin::placeholder)

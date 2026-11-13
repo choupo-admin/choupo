@@ -152,6 +152,26 @@ inline const char* originToWord(Origin o)
     }
 }
 
+// Is `w` a word originFromWord() KNOWS (ES-03, 2026-11-13)?  originFromWord is
+// tolerant and resolves any other word to `unattributed`, in silence -- so a
+// reader that meets a PRESENT word for which this is false announces it as
+// unrecognised rather than reading it as an absence.  Derived from
+// originFromWord itself: there is no second list of words.
+inline bool isRegisteredOriginWord(const std::string& w)
+{
+    return w == "unattributed" || originFromWord(w) != Origin::unattributed;
+}
+
+// The class words, for a remedy sentence ("use one of ..."): derived from the
+// enum through originToWord, so it cannot drift from it.
+inline std::string originClassWords()
+{
+    std::string out;
+    for (int i = int(Origin::literature); i <= int(Origin::placeholder); ++i)
+        out += (out.empty() ? "" : ", ") + std::string(originToWord(Origin(i)));
+    return out;
+}
+
 } // namespace Choupo
 
 #endif
