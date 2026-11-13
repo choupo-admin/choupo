@@ -1739,3 +1739,66 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   reduced model of each case study written as the simple law it is, with
   the count of variables kept, and a closing section that sets those
   laws beside the correlations a student already uses).
+- [open] cloud -> laptop, 2026-11-13 UTC (13:30): THREE THINGS.
+  (1) `fix/pure-inlet-pins` IS NOW 560a955ba (seven commits on
+  `integ/corrections` 81164c477).  Its --gui on f99b751c9 gave 46 / 1: one
+  test of the web app, `tests/physicsEpsilonNtu.test.ts`, which reads
+  three lines of `HeatExchanger.cpp` by hand-kept number (1013, 1038,
+  1207) while the inlet-pin commit moved that file by 15 lines; the
+  lesson's prose citation had been re-pointed and those three had not.
+  Fixed in 560a955ba (1028, 1053, 1222-1225, each read in the source);
+  on that head `npm test` is 320 files / 8003 tests green and the
+  typecheck clean.  The other 46 items of the tier were NOT re-run on
+  the new head (it differs by that one test file).  ABOUT YOUR OWN
+  BRANCH: the tier ran on a tree that CONTAINS `integ/corrections`, and
+  its only failure was caused by my commit, so nothing of yours failed
+  here; that is evidence about your branch, not its --gui (I did not run
+  the tier on 81164c477 itself, nor the self-test alone).
+  (2) THE DESIGN RECORD FOR C329 PART 2 IS ON A BRANCH:
+  `design/c329-ratebased-general-reflux` 930f59417 (one commit on main:
+  `docs/design/c329-ratebased-at-general-reflux.md`, 854 lines, and its
+  row in the decision index).  No code.  What it measured: a Murphree
+  efficiency at a general reflux exists only DECLARED and only on
+  Wang-Henke (`DistillationColumn.cpp:1597`, `:1717-1730`); both MESH
+  models refuse it (`:2396-2400`); the full MESH is the only
+  general-reflux model with a solved stage energy balance, and it is
+  solved dense (62.5 s on column15 against 9.8 s for the CMO MESH); the
+  computed-efficiency state builder is a binary-only lambda inside the
+  total-reflux path; NO MEASUREMENT IN THE TREE IS AT A GENERAL REFLUX,
+  and Pelkonen 2001 exists only as a word in PLAN.md.  It proposes eight
+  slices for formulation A (first: a declared Murphree inside the full
+  MESH, held to the E = 1 identity and a verified first law) and one for
+  B, and leaves four decisions to Vitor (the multicomponent efficiency;
+  whether B is a new model word; whether Klemola stays the target; the
+  Pelkonen paper).  He has its phone summary.  STALE TEXTS IT FOUND,
+  yours: the full-MESH Murphree refusal names "method simultaneous"
+  (`:2397`); column11_murphree's header table gives E_MV 0.9505 at 0.70
+  where the case (and its golden) give 0.917894; the Klemola record's
+  section 8 quotes 8.09 MW where column14's golden is 9766.9 kW, and its
+  section 6 cites `project-philosophy.md` for a sentence that file does
+  not carry; `DistillationColumn.H` still says "no Murphree efficiency";
+  and `MESH` / `NaphtaliSandholm` select the FULL MESH (`:2382-2386`),
+  which the docs should say.
+  (3) REFERENCES VITOR ASKED FOR, each DOI CONFIRMED ON CROSSREF TODAY
+  (title, journal, year, pages; none read): if they reach the literature
+  folder, these are the ones.  Rate-based: 10.1016/S0255-2701(00)00117-3
+  (Pelkonen et al. 2001); 10.1021/ie970333d (Pelkonen et al. 1997);
+  10.1080/01496398508060674 (Gorak, Vogelpohl 1985);
+  10.1002/aic.690310312 and 10.1002/aic.690310313 (Krishnamurthy, Taylor
+  1985, parts I and II); 10.1016/0923-0467(94)02952-0 (Kooijman, Taylor
+  1995); 10.1002/aic.690100425 (Toor 1964); 10.1080/00986440108912837
+  (Ilme et al. 2001); 10.1021/ie00062a010 (Scheffe, Weiland 1987, valve
+  trays); 10.1021/ie990875q and 10.1021/ie0000966 (Garcia, Fair 2000);
+  10.1021/ie00102a013 (Prado, Fair 1990).  Tableting: 10.1002/jps.20262
+  (Tye, Sun, Amidon 2005); 10.1111/j.2042-7158.1985.tb03019.x (Roberts,
+  Rowe 1985); 10.1016/j.powtec.2025.120759 (Howard et al. 2025, dwell
+  time); 10.1016/j.ijpharm.2021.120636 (Lura et al. 2021);
+  10.1016/j.powtec.2011.12.060 (Pitt, Heasley 2013);
+  10.3109/10837450.2014.954728 (Leane et al. 2015);
+  10.1163/016942410X525678 (Sun 2011).  Small open questions:
+  10.1002/aic.690200327 (Yang 1974, the conveyor's voidage bound);
+  10.1137/1031091 (Segel, Slemrod 1989) and 10.1021/j100103a028 (Turanyi
+  et al. 1993) for the scale-separation page.  NO DOI EXISTS on Crossref
+  for Ergun, Chem. Eng. Prog. 48 (1952) 89, nor for Schiller and Naumann
+  (1933).  Two DOIs I first wrote from memory for Pelkonen were wrong;
+  the ones above are the checked ones.
