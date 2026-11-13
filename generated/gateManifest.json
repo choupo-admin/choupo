@@ -1708,13 +1708,13 @@
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
-      "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 85 raw liquid-property site(s) (vliq 23, direct 12, literal 18, conversion 32), each within its pin; none new; the door review's 18 probe lines all caught.  NOT CHECKED: a value built with no literal (a variable read under an unrelated key, a constant spelled otherwise in another header), a conversion line that names no volume or flow, thermo/ and propertyOps/; a kg/kmol conversion on a volume line is counted (pinned).",
-      "seconds": 3.9
+      "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 84 raw liquid-property site(s) (vliq 23, direct 12, phaseVariable 0, literal 19, conversion 30), each within its pin; none new; the two door reviews' 27 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; counted and pinned although false: a kg/kmol or kmol/mol conversion on a volume line and PackingRBF.H's dPflood 1025 Pa/m; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
+      "seconds": 1.6
     },
     "check_property_source_witnesses": {
       "exit": 0,
-      "claim": "check_property_source_witnesses: OK -- 10 (unit, property) sources in 7 witness case(s) are the tags their code takes.  NOT CHECKED: any case outside the witnesses (the goldens' `source` rows will hold those), or whether a source is right.",
-      "seconds": 8.8
+      "claim": "check_property_source_witnesses: OK -- (a) 3 source(s) built outside src/core/PropertySourceLog.H: 2 pair a tag's id with that tag's words, 1 with a string-literal id (pinned per file); (b) 10 (unit, property) sources in 7 witness case(s) are the tags their code takes; (c) the 17 published entries carrying a header tag's id carry its words; (d) the words of all 23 tags match bin/curate/property_source_words.tsv.  NOT CHECKED: any case outside the witnesses, whether a source is right, an addendum's words after '; ', and the door's own ids and labels (held by check_property_route_bench's label hashes).",
+      "seconds": 15.8
     },
     "check_vliq_datum": {
       "exit": 0,
