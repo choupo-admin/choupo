@@ -318,8 +318,8 @@
     },
     "check_electrolyte_records": {
       "exit": 0,
-      "claim": "electrolyte-records: OK -- monoliths absent, 99 pitzer-pairs, 65 pitzer-mixing, 48 eNRTL, 63 speciation, 9 gas-liquid, 6 ion-exchange record(s) structurally sound; the mineralSolubility kind stays retired.",
-      "seconds": 0.0
+      "claim": "electrolyte-records: OK -- monoliths absent, 99 pitzer-pairs, 83 pitzer-mixing, 48 eNRTL, 218 speciation, 9 gas-liquid, 6 ion-exchange record(s) structurally sound; the mineralSolubility kind stays retired; 3 declared tCorrelationForm(s) read as declared and 2 contradicted form(s) refused through choupoProps (a form's AGREEMENT with the physics is not checked).",
+      "seconds": 0.3
     },
     "check_electrolyte_sidecars": {
       "exit": 0,
@@ -1378,8 +1378,8 @@
     },
     "check_activity_domain": {
       "exit": 0,
-      "claim": "[activity-domain] OK the activity models declare their own domain (4 AqueousActivity classes, each with validityDomain; no name branch or inline band in SpeciationSolver/ScalingScan/Exchange); Davies announces beyond I = 0.5 with its own sentence and not inside it, PitzerHMW states no bound and announces nothing, Edwards announces beyond its paper's ~6 mol/kg; NOT checked: whether a declared band is true, temperature domains, the mixed-solvent dominant-solvent criterion (no source states one)",
-      "seconds": 2.2
+      "claim": "[activity-domain] OK the activity models declare their own domain (4 AqueousActivity classes, each with validityDomain; no name branch or inline band in SpeciationSolver/ScalingScan/Exchange); Davies announces beyond I = 0.5 with its own sentence and not inside it, PitzerHMW states no bound and announces nothing, Edwards announces beyond its paper's ~6 mol/kg; Davies' I_max is within 0.1 of the median 10 %-in-gamma_pm crossing of the evaluated 25 C tables (1-1 0.52, 2-1 0.56) and its banner states that criterion; NOT checked: whether the Edwards band is true, temperature domains, a 2- anion's ion pairs, the mixed-solvent dominant-solvent criterion (no source states one)",
+      "seconds": 3.0
     },
     "check_rejection_inversion": {
       "exit": 0,
