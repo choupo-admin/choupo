@@ -43,16 +43,21 @@ namespace {
 //  reproduced once (ReferenceFluid::load caches the record itself).
 const PureFluidModel& referenceModel(const std::string& equation, scalar mw)
 {
+    //  The mutex protects the cache map only; the model is built OUTSIDE it
+    //  (a factory may run a case's own registered code -- C378 review PA-02).
     static std::mutex m;
     static std::map<std::pair<std::string, double>, std::unique_ptr<PureFluidModel>> cache;
+    {
+        std::lock_guard<std::mutex> lk(m);
+        const auto it = cache.find({ equation, mw });
+        if (it != cache.end()) return *it->second;
+    }
+    const DictPtr d = Dictionary::fromString(
+        "method Helmholtz;\nequation " + equation + ";\n", "<referenceEquation leaf>");
+    std::unique_ptr<PureFluidModel> built = PureFluidModel::New(d, mw);
     std::lock_guard<std::mutex> lk(m);
     auto& slot = cache[{ equation, mw }];
-    if (!slot)
-    {
-        const DictPtr d = Dictionary::fromString(
-            "method Helmholtz;\nequation " + equation + ";\n", "<referenceEquation leaf>");
-        slot = PureFluidModel::New(d, mw);
-    }
+    if (!slot) slot = std::move(built);          // a racing thread's copy wins; ours is dropped
     return *slot;
 }
 

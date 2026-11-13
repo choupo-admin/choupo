@@ -89,6 +89,13 @@ struct RunState
     std::map<std::string, double> massless;
 };
 
+//  WHAT THE MUTEX PROTECTS: the RunState above (the caches and the lines
+//  already printed) and nothing else.  It is held only while those maps
+//  are read or written -- never while a method is resolved, built or
+//  evaluated, because a method may call back into this file (a marked
+//  measurement evaluates the method it replaces, whose massWithoutVolume
+//  leaf reported back to a tally here): held across that, the same thread
+//  waited on itself forever (C378 pilot review, PA-02).
 std::mutex& mtx() { static std::mutex m; return m; }
 RunState&   run() { static RunState r; return r; }
 
@@ -395,13 +402,22 @@ DensityResolution resolveDensity(const ThermoPackage& thermo, const sVector& x)
         throw PropertyDomainError(PropertyDomainError::Kind::invalidState,
             "liquid density: empty composition (no component has x > 0)");
 
+    const auto sk = std::make_pair(thermo.serial(), set);
+    {
+        std::lock_guard<std::mutex> lk(mtx());
+        freshRun();
+        const auto it = run().bySerial.find(sk);
+        if (it != run().bySerial.end()) return it->second;
+    }
+
+    //  Resolved WITHOUT the lock (see mtx()): resolution may build and
+    //  evaluate methods, and those may report back to this file.
+    DensityResolution r = resolveNew(thermo, set);
+
     std::lock_guard<std::mutex> lk(mtx());
     freshRun();
-    const auto sk = std::make_pair(thermo.serial(), set);
-    const auto it = run().bySerial.find(sk);
-    if (it != run().bySerial.end()) return it->second;
-
-    DensityResolution r = resolveNew(thermo, set);
+    const auto again = run().bySerial.find(sk);       // another thread got here first
+    if (again != run().bySerial.end()) return again->second;
     const Key key{ packageIdentity(thermo), set };
     const auto f = run().first.find(key);
     if (f != run().first.end())
