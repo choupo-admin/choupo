@@ -1,0 +1,21 @@
+variant	set	mean|delta|_pct	max|delta|_pct	AAD_bounds_pct	max_lower_bound_pct	verdict(thresholds)
+correct	A_0.1MPa	0.0000	0.0000	0.000..0.055	0.000	as measured: AAD 0.055, max 0.206 -> pass
+correct	B_2MPa	0.0000	0.0000	0.000..0.120	0.000	as measured: AAD 0.12, max 0.2 -> pass
+t_in_kelvin	A_0.1MPa	16.7404	21.6931	16.685..16.795	21.487	FAIL (decided)
+t_in_kelvin	B_2MPa	23.3222	31.1596	23.202..23.442	30.960	FAIL (decided)
+w_NaOH_for_w_water	A_0.1MPa	20.0966	45.0588	20.042..20.152	44.853	FAIL (decided)
+w_NaOH_for_w_water	B_2MPa	62.3214	119.3324	62.201..62.441	119.132	FAIL (decided)
+flat_list_read_column_major	A_0.1MPa	14618579.2402	31007487.9624	14618579.185..14618579.295	31007487.756	FAIL (decided)
+flat_list_read_column_major	B_2MPa	12730706.7380	14046564.7543	12730706.618..12730706.858	14046564.554	FAIL (decided)
+rows_reversed	A_0.1MPa	341201.5704	663755.0893	341201.515..341201.625	663754.883	FAIL (decided)
+rows_reversed	B_2MPa	254889.1635	255170.1015	254889.044..254889.284	255169.901	FAIL (decided)
+x_not_sqrt_x	A_0.1MPa	14.5533	15.6297	14.498..14.608	15.424	FAIL (decided)
+x_not_sqrt_x	B_2MPa	9.5130	15.0829	9.393..9.633	14.883	FAIL (decided)
+zero_at_273.16	A_0.1MPa	0.0005	0.0005	0.000..0.055	0.000	PASS (decided): the threshold cannot see it
+zero_at_273.16	B_2MPa	0.0005	0.0005	0.000..0.120	0.000	PASS (decided): the threshold cannot see it
+mole_fraction_for_mass_fraction	A_0.1MPa	11.4832	12.4813	11.428..11.538	12.275	FAIL (decided)
+mole_fraction_for_mass_fraction	B_2MPa	5.8490	10.1614	5.729..5.969	9.961	FAIL (decided)
+last_coef_row0_typo_1e-3_rel	A_0.1MPa	0.4857	0.8773	0.431..0.541	0.671	FAIL (decided)
+last_coef_row0_typo_1e-3_rel	B_2MPa	1.1961	1.8132	1.076..1.316	1.613	FAIL (decided)
+T_frozen_at_298.15	A_0.1MPa	1.3802	2.6393	1.325..1.435	2.433	FAIL (decided)
+T_frozen_at_298.15	B_2MPa	1.0861	1.1183	0.966..1.206	0.918	FAIL (decided)

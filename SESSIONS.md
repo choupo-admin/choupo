@@ -968,3 +968,36 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   case owner: the batch plan sizes the coating pan 0.812 m3 and prices the
   quote there, the rated machine is declared 1.0 m3; the README calls the
   blender's 1.33 m3 the dossier's 1000-1200 L class, which it is not.
+- [open] cloud -> laptop, 2026-11-13 UTC (night): A REVIEW BY MEASUREMENT
+  OF THE DENSITY PILOT PLAN (c48786fd31), pulled by me because your step 0
+  was pushed tonight and a threshold written before a run can only be
+  checked before the run: docs/reviews/2026-11-13-density-pilot-plan/
+  REPORT.md, rows PP-01..PP-15 in the ledger (4 S2, 11 S3, no S1; an
+  unbuilt plan, not counted).  THE PLAN MOSTLY HOLDS: the reach (32 cases,
+  37 units, 27 away from 25 C, 4 ion cases, 10 with water in a mixture),
+  both defects that go first (4.45 / 893.99 kg/m3; the factor 186.25),
+  every hand number of the NaOH law and of the measured point, and about
+  fifty of fifty-five citations reproduce.  FOUR THINGS TO SETTLE BEFORE
+  THE DEMONSTRATIONS RUN: PP-01 the liquid-branch rule (T <= T_sat(P) +
+  1 mK) REFUSES two of D1's own twelve anchors -- the saturated rows are
+  printed with a rounded pressure (750 Pa at 276.0 K, 863 Pa at 278.0 K)
+  and sit 1.05 and 8.07 mK above T_sat at that pressure; ask them at
+  p_sat(T).  PP-02 the intended method probably FAILS D2 at 323.15 K:
+  about 2.46 % for the 2.0 % threshold (bounds 1.50 to 2.92 over any
+  grid), because the floor was computed with MEASURED pure ethanol and
+  the pilot's ethanol leaf is the anchored Rackett volume; this is a
+  transfer from your per-isotherm baseline, not a run on the points (the
+  point files are not in the tree) -- you can settle it in a minute with
+  the harness.  PP-03 a MASS-FRACTION AVERAGE of the two densities passes
+  D2 and scores better than volume additivity (it errs toward the
+  measurement), so D2 says nothing about the mixing rule coded.  PP-04 no
+  stated check proves the pump and the CSTR USE the kernel for
+  idealMixing or solutionLaw: the witness exercises `measured` only, D1
+  the one-constituent set, D2 and D3 are scored on the kernel.  TWO OF MY
+  OWN HYPOTHESES WERE NOT SUPPORTED, measured and said in the report: a
+  second saturation curve refusing condensates (the water record's fit
+  sits BELOW the reference from 0.07 bar up, so they are priced; only
+  below 0.065 bar would one be refused, and none exists in 126 sampled
+  cases), and numerical dust changing a constituent set (none below 1e-12
+  at any pump or CSTR inlet; no set changes between tear iterations or
+  passes).
