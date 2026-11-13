@@ -59,12 +59,35 @@ temporary directory, with CHOUPO_HOME set to this tree):
       not meet its stopping rule, in the JSON; the shipped case (Sauter
       169.5 um) raises none -- the negative.
 
+  (h) pneumaticConveyor, the default mu_w.  pneumaticConveyor01 declares no
+      `particleWallFriction`: at verbosity 0 the JSON carries an `assumed`
+      advisory quoting the mu_w the run published as a KPI, saying it sets
+      the horizontal slip u_t sqrt(mu_w) and naming the key that declares
+      it, and no console line; at verbosity 3 the site line and the caveat
+      block carry it (the block prints at verbosity >= 1 only).  The same
+      case DECLARING `particleWallFriction 0.4;` announces nothing -- the
+      negative: a declared value is silent.
+
+  (i) pneumaticConveyor, the voidage window.  pneumaticConveyor01 with its
+      silica tripled (eps = 1 - rho*/rho_p, recomputed from the published
+      KPIs, outside the window) carries a voidage advisory in the JSON at
+      verbosity 0, printing `0.994 <= eps <= 0.9995` -- the two bounds the
+      test uses -- and that eps; at verbosity 3 it reaches the caveat block.
+      The shipped case (eps 0.9973) raises none -- the negative.
+
+  (j) pneumaticConveyor, a bend key nobody reads.  pneumaticConveyor02 with
+      `RoverD 8;` on its first bend is REFUSED (non-zero exit) naming the
+      bend, the key and the accepted keys `type exitRatio`; the same case
+      with an `exitRatio` declared runs -- the positive control.
+
 WHAT THIS GATE DOES **NOT** CHECK, so its green line cannot imply it.  It does
 not judge any hypothesis: whether a feed is dilute enough, whether an
 overloaded screen or a mismatched settling test gives a usable answer,
-whether s > 1 describes a real slurry.  It does not check the console lines
-of the pneumatic conveyor's OTHER warnings (loading, voidage, saltation,
-acceleration length), which are still console-only; nor `particleVelocity`'s
+whether s > 1 describes a real slurry, or whether 0.4 is a fair mu_w or
+0.994-0.9995 the right Yang window (the gate holds the message to the test,
+not the test to the paper).  It does not check the console lines of the
+pneumatic conveyor's OTHER warnings (loading, saltation, acceleration
+length), which are still console-only; nor `particleVelocity`'s
 own substitution loop, which has the same structure and no announcement.  It
 checks the mixer's emulsion sentence only through its count, not the vapour/
 liquid "UNLIKE phases" sentence that shares the same counts.  It runs no case
@@ -90,6 +113,21 @@ OBSERVED (first line of each failure):
                                          'liquid inlets merged'
   S8 u_t non-convergence suppressed   -> (g) d_p = 1.0564 mm: ... no advisory
                                          says so
+
+and, for arms (h)-(j), on 2026-11-13, PneumaticConveyor.cpp edited, rebuilt,
+the gate run, restored with `git checkout --` and rebuilt:
+
+  S9  default-mu_w advisory skipped   -> (h) ... runs on the default, and no
+      (`if (!muWallDeclared)` -> false)   advisory in the JSON says so
+  S10 announced even when declared    -> (h) mu_w DECLARED (0.4) still
+      (`if (!muWallDeclared)` -> true)    announced a default
+  S11 voidage back under verbosity>=1 -> (i) solids x3: eps = 0.99198 is
+                                         outside the window and no advisory
+                                         reached the JSON at verbosity 0
+  S12 message prints 0.999, not the   -> (i) the voidage advisory does not
+      constant the test uses              print the two bounds the test uses
+  S13 bend-key refusal disabled       -> (j) a bend declaring `RoverD 8;`
+                                         ran to exit 0
 
 Each sabotage was caught by its own arm and by no other, so no arm leans on
 another to fire.
@@ -482,13 +520,165 @@ def main() -> int:
             else:
                 claims.append("pneumatic u_t non-convergence announced at Re ~ 1000")
 
+        # ---- (h) pneumaticConveyor: the default mu_w ----------------------
+        MUW = "particleWallFriction was NOT declared"
+        #  The caveat block prints at verbosity >= 1 only (choupoSolve's
+        #  main), so the block and the site line are read on the shipped
+        #  case (verbosity 3); the JSON is read at verbosity 0.
+        c = copy_case("pneumaticConveyor01_sand", td, "h_v3")
+        rc3, out3 = run(c)
+        c = copy_case("pneumaticConveyor01_sand", td, "h_default")
+        ok = edit(c / "system" / "controlDict", r"(?m)^verbosity\s+\d+;",
+                  "verbosity 0;")
+        rc, out = run(c)
+        js = result(out) if rc == 0 else None
+        if not ok:
+            fails.append("(h) pneumaticConveyor01's controlDict changed shape: "
+                         "no verbosity line")
+        elif js is None:
+            fails.append(f"(h) pneumaticConveyor01 at verbosity 0: did not "
+                         f"run (exit {rc})")
+        else:
+            kmu = next((kk.get("particleWallFriction") for kk in
+                        js.get("kpis", {}).values()
+                        if "particleWallFriction" in kk), None)
+            adv = advisories(js, MUW)
+            if not adv:
+                fails.append("(h) pneumaticConveyor01 declares no "
+                             "particleWallFriction, runs on the default, and "
+                             "no advisory in the JSON says so (verbosity 0)")
+            elif kmu is None or ("mu_w = %g" % kmu) not in adv[0]["message"]:
+                fails.append(f"(h) the advisory does not quote the mu_w the "
+                             f"run published ({kmu}): "
+                             + adv[0]["message"][:160])
+            elif adv[0].get("category") != "assumed":
+                fails.append("(h) the default mu_w advisory is filed under "
+                             f"'{adv[0].get('category')}', not 'assumed'")
+            elif MUW not in caveats(out3) or not any(
+                    "[assumed] pneumaticConveyor" in l and MUW in l
+                    for l in out3.splitlines()):
+                fails.append(f"(h) at verbosity 3 (exit {rc3}) the default mu_w "
+                             "did not reach both its site line and the caveat "
+                             "block")
+            elif MUW in out.split("<<<Choupo:result-begin>>>")[0]:
+                fails.append("(h) at verbosity 0 the default mu_w printed its "
+                             "console line -- the line is for verbosity >= 1")
+            elif "u_t sqrt(mu_w)" not in adv[0]["message"] \
+                    or "Declare `particleWallFriction" not in adv[0]["message"]:
+                fails.append("(h) the advisory must say what mu_w sets (the "
+                             "horizontal slip u_t sqrt(mu_w)) and name the key "
+                             "that declares it")
+            else:
+                claims.append("default mu_w = %g announced at verbosity 0" % kmu)
+        c = copy_case("pneumaticConveyor01_sand", td, "h_declared")
+        ok = edit(c / "system" / "flowsheetDict",
+                  r"(geometry\s*\{[^}]*\})",
+                  r"\g<1>\n    particleWallFriction 0.4;", count=1)
+        if not ok:
+            fails.append("(h) the declared-mu_w probe is STALE: "
+                         "pneumaticConveyor01's operation block changed shape")
+        else:
+            rc, out = run(c)
+            js = result(out) if rc == 0 else None
+            if js is None:
+                fails.append(f"(h) mu_w declared: did not run (exit {rc})")
+            elif MUW in out or advisories(js, "particleWallFriction"):
+                fails.append("(h) mu_w DECLARED (0.4) still announced a "
+                             "default -- a declared value must announce "
+                             "nothing")
+
+        # ---- (i) pneumaticConveyor: the voidage window --------------------
+        VOID = "OUTSIDE the window 0.994 <= eps <= 0.9995"
+        c = copy_case("pneumaticConveyor01_sand", td, "i_ship")
+        rc, out = run(c)
+        if rc != 0:
+            fails.append(f"(i) pneumaticConveyor01: did not run (exit {rc})")
+        elif "OUTSIDE the window" in out:
+            fails.append("(i) pneumaticConveyor01 (eps 0.9973) raised the "
+                         "voidage advisory -- the negative fired")
+        def dense(tag, verbosity=None):
+            c = copy_case("pneumaticConveyor01_sand", td, tag)
+            ok = edit(c / "0" / "Feed", r"(silica\s+)([0-9.]+)(\s*kmol/h;)",
+                      lambda m: f"{m.group(1)}{3.0 * float(m.group(2)):.7f}{m.group(3)}")
+            if verbosity is not None:
+                ok = ok and edit(c / "system" / "controlDict",
+                                 r"(?m)^verbosity\s+\d+;", f"verbosity {verbosity};")
+            return (run(c) if ok else (None, ""))
+        rc3, out3 = dense("i_dense3")
+        rc, out = dense("i_dense0", 0)
+        if rc is None or rc3 is None:
+            fails.append("(i) the dense probe is STALE: pneumaticConveyor01's "
+                         "feed or controlDict changed shape")
+        else:
+            js = result(out) if rc == 0 else None
+            k = next((kk for kk in (js or {}).get("kpis", {}).values()
+                      if "suspensionDensity" in kk), None)
+            adv = advisories(js, "OUTSIDE the window")
+            if k is None:
+                fails.append(f"(i) solids x3, verbosity 0: did not run or "
+                             f"published no suspensionDensity (exit {rc})")
+            else:
+                eps = 1.0 - k["suspensionDensity"] / k["rho_particle"]
+                if 0.994 <= eps <= 0.9995:
+                    fails.append(f"(i) the dense probe's voidage {eps:.5f} is "
+                                 "INSIDE the window -- the probe proves nothing")
+                elif not adv:
+                    fails.append(f"(i) solids x3: eps = {eps:.5f} is outside "
+                                 "the window and no advisory reached the JSON "
+                                 "at verbosity 0")
+                elif VOID not in adv[0]["message"]:
+                    fails.append("(i) the voidage advisory does not print the "
+                                 "two bounds the test uses: "
+                                 + adv[0]["message"][:160])
+                elif ("eps = %.5f" % eps) not in adv[0]["message"]:
+                    fails.append(f"(i) the advisory's eps is not 1 - rho*/rho_p "
+                                 f"= {eps:.5f} from the published KPIs")
+                elif "OUTSIDE the window" not in caveats(out3):
+                    fails.append(f"(i) at verbosity 3 (exit {rc3}) the voidage "
+                                 "advisory did not reach the caveat block")
+                else:
+                    claims.append("voidage %.5f outside 0.994-0.9995 announced "
+                                  "at verbosity 0" % eps)
+
+        # ---- (j) pneumaticConveyor: a bend key nobody reads ----------------
+        c = copy_case("pneumaticConveyor02_bends", td, "j_ship")
+        ok = edit(c / "system" / "flowsheetDict",
+                  r"\{ type longRadius; \}", "{ type longRadius; exitRatio 0.75; }",
+                  count=1)
+        rc, out = run(c)
+        if not ok or rc != 0:
+            fails.append(f"(j) pneumaticConveyor02 with an `exitRatio` (the "
+                         f"positive control) did not run (exit {rc}, edit {ok})")
+        c = copy_case("pneumaticConveyor02_bends", td, "j_roverd")
+        ok = edit(c / "system" / "flowsheetDict",
+                  r"\{ type longRadius; \}", "{ RoverD 8; type longRadius; }",
+                  count=1)
+        if not ok:
+            fails.append("(j) the RoverD probe is STALE: pneumaticConveyor02's "
+                         "bends changed shape")
+        else:
+            rc, out = run(c)
+            if rc == 0:
+                fails.append("(j) a bend declaring `RoverD 8;` ran to exit 0 -- "
+                             "a key the bend model does not read must be "
+                             "refused")
+            elif not ("bend 1 declares `RoverD`" in out
+                      and "does not read" in out
+                      and "Accepted: type exitRatio" in out):
+                fails.append("(j) the refusal does not name the bend, the key "
+                             "and the accepted keys: "
+                             + next((l for l in out.splitlines()
+                                     if "ERROR" in l), "")[:160])
+            else:
+                claims.append("bend key RoverD refused by name")
+
     if fails:
         print("check_solids_announcements: FAILED")
         for f in fails:
             print("  " + f)
         return 1
     print("check_solids_announcements: OK -- " + "; ".join(claims) +
-          " (7 arms, scratch copies; no hypothesis judged)")
+          " (10 arms, scratch copies; no hypothesis judged)")
     return 0
 
 
