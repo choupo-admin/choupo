@@ -1725,6 +1725,11 @@
       "exit": 0,
       "claim": "check_property_sources_pinned: OK -- 16 case(s) publishing liquid-property sources, every (unit, property) pinned by a `source` row (the --fast set, run live (no suite cache)).",
       "seconds": 42.7
+    },
+    "check_pure_fluid_phase_asked": {
+      "exit": 0,
+      "claim": "check_pure_fluid_phase_asked: OK -- at seven suction pressures p_sat(T)(1+e), e from -1e-6 to +1e-6 including 0 and +-1e-12, T = 446.5158944 K on IF97 water: the feed pump (liquid, to 80 bar) gives dT = 1.17209206 K and the compressor fed saturated steam (vapour, to 20 bar) T_out = 561.129929 K, each the same to 1e-06 K, every run on the pure-fluid route.  NOT CHECKED: whether those values are right, the turbine, the energy report's pricing of a pure stream at vf = 0 or 1, a wet turbine exhaust.",
+      "seconds": 0.3
     }
   }
 }

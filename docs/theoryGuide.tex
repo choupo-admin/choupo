@@ -2529,7 +2529,7 @@ $T_{\mathrm{sat}}$ can fall either side of $p_{\mathrm{sat}}(T)$.  Until
 2026-11 the route ignored the phase asked: water on IF97 at 446.52\,K, asked
 for its liquid density one part in $10^{7}$ below $p_{\mathrm{sat}}$
 (8.587\,bar), returned 4.45\,kg/m$^3$, the vapour, for 893.98.  The kernel now
-honours the phase asked (\code{pureFluidDensityState},
+honours the phase asked (\code{pureFluidPhaseState},
 \code{src/thermo/pureFluid/PureFluidModel.H}):
 \begin{equation}
   \rho_L(T,P) \;=\;
@@ -2551,9 +2551,38 @@ $P \ge p_{\mathrm{sat}}(T)(1-\epsilon)$ it is the saturated vapour at $T$.  At
 or above the critical temperature, and below the triple point, there is no
 saturation line and the phase asked changes nothing.  The door's label says
 which: ``liquid branch at the temperature and pressure; at or below the
-saturation pressure, the saturated liquid at T''.  The enthalpy routes are
-not covered by this rule: \code{H\_real} takes no phase and still answers the
-stable phase at $(T,P)$.
+saturation pressure, the saturated liquid at T''.
+
+\subparagraph{The same rule for the enthalpy and the entropy.}\label{sec:pure-fluid-caloric-phase}
+A unit that \emph{holds} the phase of the state it prices --- the pump's
+suction is liquid, the compressor's and the turbine's inlets are vapour, by
+their declared acceptance --- asks the package's real enthalpy and entropy
+\emph{with} that phase: \code{H\_real(T, P, y, phase)} and
+\code{S\_real(T, P, y, phase)}.  On a pure-fluid route they evaluate the
+formulation at the pressure the same decision gives,
+\begin{equation}
+  h_L(T,P) \;=\;
+  \begin{cases}
+    h(T, P)                         & P > p_{\mathrm{sat}}(T)\,(1+\epsilon),\\[2pt]
+    h\bigl(T, p_{\mathrm{sat}}(T)\bigr) = h'(T) & \text{otherwise},
+  \end{cases}
+  \label{eq:pure-fluid-caloric-phase}
+\end{equation}
+and symmetrically for the vapour and for $s$; the package has no separate
+pure-fluid heat capacity (it is the temperature derivative of the same $h$).
+On any other route the phase is ignored and the value is the generic one, bit
+for bit.  Without it, the pump of \code{rankine02\_water} --- whose suction is
+the condenser's saturated liquid, $P = p_{\mathrm{sat}}(T)$ to the last bit
+--- read the vapour enthalpy whenever that bit fell below the line, and its
+discharge Newton, $h(T_{\mathrm{out}}, P_{\mathrm{out}}) = h_{\mathrm{in}} +
+w$, then found a ``liquid'' 125\,K hotter than its suction: a suction pressure
+moved by $-10^{-12}$ of itself was enough, and another compiler's arithmetic
+did it on its own.  \code{check\_pure\_fluid\_phase\_asked} runs that pump,
+and a compressor fed saturated steam, at seven suction pressures
+$p_{\mathrm{sat}}(1+e)$ with $|e|\le10^{-6}$ and demands one answer.  The
+turbine's discharge and any state whose phase the unit does not hold (a wet
+exhaust) keep the formulation's stable phase at $(T,P)$, and so does the
+energy report's pricing of a pure stream at a vapour fraction of 0 or 1.
 
 \paragraph{The table.}  Just before the result block every run prints one
 line per unit, property and source:

@@ -203,15 +203,19 @@ private:
 };
 
 // ---------------------------------------------------------------------------
-//  THE PHASE A PURE-FLUID DENSITY IS ASKED FOR (DEV.md 4c C378, pilot plan
-//  section 11 step 2).  A formulation draws both phases and, at a given
-//  (T, P) below its critical temperature, answers with the one that is
+//  THE PHASE A PURE FLUID IS ASKED FOR (DEV.md 4c C378, pilot plan section
+//  11 step 2; defects 1 and 3).  A formulation draws both phases and, at a
+//  given (T, P) below its critical temperature, answers with the one that is
 //  stable there.  A consumer that asks for the LIQUID density of a stream
 //  sitting on the saturation line (a pump suction is saturated liquid by
 //  construction) got the vapour root whenever the last bit of P fell below
-//  p_sat(T): water on IF97 at 446.52 K returned 4.45 kg/m3 for 893.99.
-//  The ONE decision, read by ThermoPackage::density and by the liquid-
-//  property door's label:
+//  p_sat(T): water on IF97 at 446.52 K returned 4.45 kg/m3 for 893.99; the
+//  pump's suction ENTHALPY did the same and heated the "liquid" by 125 K.
+//  The ONE decision of the state a pure fluid is evaluated at when the
+//  caller names the phase -- density, enthalpy and entropy alike (the
+//  package has no separate pure-fluid heat capacity: it is a derivative of
+//  the same enthalpy).  Read by ThermoPackage::density, H_real and S_real
+//  (their phase-taking overloads) and by the liquid-property door's label:
 //    * no saturation line at T (at or above the critical temperature, or
 //      below the triple point): (T, P) as asked -- one fluid;
 //    * LIQUID asked: P above p_sat (1 + band) -> the liquid branch at (T, P);
@@ -224,22 +228,22 @@ private:
 //  other side of the line -- a state the phase asked does not have, which
 //  the caller announces.
 // ---------------------------------------------------------------------------
-enum class PureFluidDensityBranch
+enum class PureFluidPhaseBranch
 {
     oneFluid, liquidBranch, saturatedLiquid, vapourBranch, saturatedVapour
 };
 
-struct PureFluidDensityState
+struct PureFluidPhaseState
 {
     scalar                 pEval     = 0.0;    // Pa: the pressure to evaluate v at
-    PureFluidDensityBranch branch    = PureFluidDensityBranch::oneFluid;
+    PureFluidPhaseBranch branch    = PureFluidPhaseBranch::oneFluid;
     bool                   farAcross = false;
 };
 
 //  Relative band around p_sat(T) inside which a state is ON the line.
 constexpr scalar pureFluidSaturationBand = 1.0e-6;
 
-PureFluidDensityState pureFluidDensityState(const PureFluidModel& m, scalar T_K,
+PureFluidPhaseState pureFluidPhaseState(const PureFluidModel& m, scalar T_K,
                                             scalar p_Pa, bool liquidAsked);
 
 } // namespace Choupo

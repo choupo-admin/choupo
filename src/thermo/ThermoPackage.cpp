@@ -2297,7 +2297,7 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
             //  THE PHASE ASKED IS HONOURED (C378 pilot, defect 1): on or
             //  across the saturation line, the saturated branch of the phase
             //  asked, never the other root (pureFluid/PureFluidModel.H).
-            const PureFluidDensityState st = pureFluidDensityState(
+            const PureFluidPhaseState st = pureFluidPhaseState(
                 m, T, P_Pa, ph == DensityPhase::Liquid);
             static bool announcedAcross = false;
             if (st.farAcross && !announcedAcross)
@@ -2590,6 +2590,60 @@ std::string ThermoPackage::surfaceTensionMethod() const
 {
     if (!surfaceTension_) return "";
     return surfaceTension_->modelName() + "/" + surfaceTensionMixing_->ruleName();
+}
+
+// ---- THE CALORIC FUNCTIONS AT A PHASE THE CALLER HOLDS (C378 defect 3) ------
+//  Placed at the end of the file so that no line an EduTool lesson cites by
+//  `file:line` above it moved.  The decision is pureFluidPhaseState's, the
+//  same one density() reads; the generic route ignores the phase.
+namespace {
+//  Said once per run and per function when the state asked lies beyond the
+//  band on the other side of the saturation line.
+void announceAcross(bool& said, const char* what, DensityPhase ph,
+                    scalar T, scalar P, scalar ps)
+{
+    if (said) return;
+    said = true;
+    std::cout << what << ": a pure-fluid "
+              << (ph == DensityPhase::Liquid ? "LIQUID" : "VAPOUR")
+              << " state was asked at T = " << T << " K, P = " << P
+              << " Pa, on the other side of the saturation pressure (" << ps
+              << " Pa); the saturated "
+              << (ph == DensityPhase::Liquid ? "liquid" : "vapour")
+              << " at T is used\n";
+}
+} // namespace
+
+scalar ThermoPackage::H_real(scalar T, scalar P_Pa, const sVector& y,
+                             DensityPhase ph) const
+{
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, y))
+        {
+            const PureFluidModel& m = *pureFluid_.at(*i);
+            const PureFluidPhaseState st = pureFluidPhaseState(
+                m, T, P_Pa, ph == DensityPhase::Liquid);
+            static bool said = false;
+            if (st.farAcross) announceAcross(said, "enthalpy", ph, T, P_Pa, m.p_sat(T));
+            return m.h_molar(T, st.pEval);
+        }
+    return H_real(T, P_Pa, y);
+}
+
+scalar ThermoPackage::S_real(scalar T, scalar P_Pa, const sVector& y,
+                             DensityPhase ph) const
+{
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, y))
+        {
+            const PureFluidModel& m = *pureFluid_.at(*i);
+            const PureFluidPhaseState st = pureFluidPhaseState(
+                m, T, P_Pa, ph == DensityPhase::Liquid);
+            static bool said = false;
+            if (st.farAcross) announceAcross(said, "entropy", ph, T, P_Pa, m.p_sat(T));
+            return m.s_molar(T, st.pEval);
+        }
+    return S_real(T, P_Pa, y);
 }
 
 } // namespace Choupo

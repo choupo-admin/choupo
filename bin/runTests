@@ -6139,6 +6139,22 @@ PYEOF
     fi
     rm -f /tmp/heavyw.$$
 
+    # Pure-fluid phase-asked gate (2026-11-13, DEV.md 4c C378 pilot, defect 3).
+    # A unit that holds its inlet's phase (the pump: liquid; the compressor:
+    # vapour) asks the pure fluid's enthalpy and entropy WITH it, so a suction
+    # on the saturation line cannot be read on the other root by the last bit
+    # of P: the GitHub runner put rankine02's pump 125 K hot that way.  Seven
+    # suction pressures p_sat (1 + e), e to +-1e-12, must give one answer.
+    if gate_exec "$ROOT/bin/curate/check_pure_fluid_phase_asked.py" > /tmp/pfphase.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pure-fluid-phase-asked-gate" "$(gate_claim check_pure_fluid_phase_asked /tmp/pfphase.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pure_fluid_phase_asked.py)\n" "pure-fluid-phase-asked-gate"
+        cat /tmp/pfphase.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pfphase.$$
+
     # IF97-regions gate (2026-11-04, DEV.md 4c C214 W6): the IAPWS-IF97 kernel
     # -- regions 1, 2, 3 (the Helmholtz form, new), 4 and B23 -- reproduces
     # every verification value PRINTED in Wagner et al. 2000 (Tables A3, A6,
@@ -8920,6 +8936,22 @@ if [ -n "${FAST:-}" ]; then
         fail=$((fail+1))
     fi
     rm -f /tmp/routebench.$$
+fi
+
+# --- the FAST tier's pure-fluid phase-asked gate (2026-11-13, C378 defect 3) --
+#  No fast-set case puts a pure fluid's suction on its saturation line at a
+#  perturbed last bit, and the defect it guards showed only on another
+#  compiler.  Seven scratch runs, seconds.
+if [ -n "${FAST:-}" ]; then
+    if gate_exec "$ROOT/bin/curate/check_pure_fluid_phase_asked.py" > /tmp/pfphase.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pure-fluid-phase-asked-gate" "$(gate_claim check_pure_fluid_phase_asked /tmp/pfphase.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pure_fluid_phase_asked.py)\n" "pure-fluid-phase-asked-gate"
+        cat /tmp/pfphase.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pfphase.$$
 fi
 
 # --- the FAST tier's conservation gates ------------------------------------

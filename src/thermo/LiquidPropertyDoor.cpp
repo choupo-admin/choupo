@@ -131,9 +131,9 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         if (p == Property::density)
         {
             //  The words follow the one phase decision the package took
-            //  (pureFluidDensityState, C378 pilot defect 1).
-            const bool line = pureFluidDensityState(*model, T, P, true).branch
-                           != PureFluidDensityBranch::oneFluid;
+            //  (pureFluidPhaseState, C378 pilot defect 1).
+            const bool line = pureFluidPhaseState(*model, T, P, true).branch
+                           != PureFluidPhaseBranch::oneFluid;
             r.label = "property kernel: the pure-fluid formulation "
                     + model->densityFormulation()
                     + (line ? ", liquid branch at the temperature and pressure; at or"

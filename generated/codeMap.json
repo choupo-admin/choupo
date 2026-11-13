@@ -1731,10 +1731,10 @@
   "Pump": [
    "src/unitOperations/rotating/Pump.H"
   ],
-  "PureFluidDensityState": [
+  "PureFluidModel": [
    "src/thermo/pureFluid/PureFluidModel.H"
   ],
-  "PureFluidModel": [
+  "PureFluidPhaseState": [
    "src/thermo/pureFluid/PureFluidModel.H"
   ],
   "PureParams": [

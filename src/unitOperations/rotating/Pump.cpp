@@ -211,8 +211,8 @@ int Pump::solve(const DictPtr& dict,
     }
     if (pureRoute)
     {
-        const scalar h_target = thermo.H_real(T_in, P_in, x) + w_real;
-        auto f  = [&](scalar T){ return thermo.H_real(T, P_out, x) - h_target; };
+        const scalar h_target = thermo.H_real(T_in, P_in, x, DensityPhase::Liquid) + w_real;
+        auto f  = [&](scalar T){ return thermo.H_real(T, P_out, x, DensityPhase::Liquid) - h_target; };
         auto df = [&](scalar T){
             const scalar d = 0.25;
             return (f(T + d) - f(T - d)) / (2.0 * d);

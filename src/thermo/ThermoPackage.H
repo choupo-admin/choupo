@@ -345,6 +345,20 @@ public:
     scalar H_real(scalar T_K, scalar P_Pa, const sVector& y) const;
     scalar S_real(scalar T_K, scalar P_Pa, const sVector& y) const;
 
+    // The same, for a caller that HOLDS the phase of the state it prices (a
+    // pump's suction is liquid, a compressor's or a turbine's inlet vapour --
+    // their declared acceptance; DEV.md 4c C378 pilot, defect 3).  On a
+    // PURE-FLUID route below the critical temperature the state is the one
+    // `pureFluidPhaseState` decides (pureFluid/PureFluidModel.H): on the
+    // saturation line, inside its band or on the other side of it, the
+    // SATURATED branch of the phase asked, never the other root; elsewhere
+    // (T, P) as asked.  On any other route the phase argument is IGNORED and
+    // the value is the three-argument one, bit for bit (the EoS root the
+    // generic route takes is unchanged).  Without a phase: the formulation's
+    // own router, unchanged.  (`DensityPhase` is the package's one phase word.)
+    scalar H_real(scalar T_K, scalar P_Pa, const sVector& y, DensityPhase ph) const;
+    scalar S_real(scalar T_K, scalar P_Pa, const sVector& y, DensityPhase ph) const;
+
     // ---- ABSOLUTE (elements-reference) enthalpy for energy balances ------
     //
     // The Hliquid / Hvapour pair above uses the SENSIBLE+latent datum

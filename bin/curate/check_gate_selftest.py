@@ -308,6 +308,18 @@ SABOTAGES += [
 
 SOURCE_SABOTAGES = [
     {
+        "gate": "check_pure_fluid_phase_asked.py",
+        "kind": "source/phase-dropped",
+        "file": "src/unitOperations/rotating/Pump.cpp",
+        "find": "thermo.H_real(T_in, P_in, x, DensityPhase::Liquid) + w_real;",
+        "replace": "thermo.H_real(T_in, P_in, x) + w_real;",
+        "why": "C378 pilot, defect 3: the pump's suction enthalpy asked "
+               "without the phase the pump holds.  A suction on the "
+               "saturation line is then read on whichever root the last bit "
+               "of P picks -- the runner's 125 K pump.  The gate's seven "
+               "perturbed suctions must disagree and NAME the spread.",
+    },
+    {
         "gate": "check_property_route_bench.py",
         "kind": "source/route-relabelled",
         "file": "src/thermo/LiquidPropertyDoor.cpp",
