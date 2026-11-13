@@ -32,11 +32,12 @@ record.*
   Then the computed efficiency on top, binary only.  No measurement in the
   tree is at a general reflux, so until one is transcribed these columns can
   be held only to limits, not to data.
-* **Vitor decides:** what a student is told a multicomponent efficiency is
-  (one efficiency on two keys, or one per component), whether B is a new
-  `model` word, and whether Klemola's column (nine components, VALVE trays)
-  is the target at all, since none of the three tray correlations in the
-  tree describes a valve tray.
+* **Decided on 2026-11-13** (7.2): one efficiency for every component,
+  computed on two declared keys in a multicomponent column; B is a new
+  `model` word, `rateBased`; the validation has three rungs, and Klemola's
+  column stays one of them, held to its authors' back-calculated
+  efficiencies (none of the three tray correlations in the tree describes
+  its VALVE trays: that source is still missing).
 
 ## 1. The solvers as they are
 
@@ -450,7 +451,11 @@ concentration other than the unit's own linear combination, and any
 thermodynamic factor (no `d ln gamma / d x` exists in any activity model; a
 search of `src/` finds none).
 
-### 3.2 Options for three or more components (described, not chosen)
+### 3.2 Options for three or more components
+
+*Chosen on 2026-11-13: option 1, with a per-component efficiency as an
+output only (7.2, decision 1).  The options are kept as they were
+described.*
 
 1. **A pseudo-binary efficiency on DECLARED keys.**  The tray's E is computed
    from the light-key/heavy-key pair (their gas pair diffusivity, their
@@ -674,20 +679,41 @@ then.
     column15 the full MESH with a SATURATED reflux gives 8095 kW, closure
     `verified` (1.5).  The duty is a quantity the full MESH could address
     independently of any efficiency, once it carries the subcooled reflux.
-* Pelkonen 2001: **nothing**.  The only occurrence in the tree is PLAN.md's
-  C329 row.  No case, no transcription, no record.
+* Pelkonen 2001: **nothing in the tree**: no case, no transcription, no
+  record.  The paper itself was read by the coordinating session on
+  2026-11-13 (amendment below); it is not in the repository.
 
 **Not here, and what a reader of each paper would have to supply:**
 
-* Pelkonen 2001 (as named in PLAN.md; the full citation is not in the tree):
-  the column geometry and packing or tray data; the systems (the plan says two
-  ternaries, one held for prediction); for each run the feed or total-reflux
-  specification, the pressure, the boil-up or F-factor, and the reboiler or
-  any fixed composition; the MEASURED axial profiles (composition, and
-  temperature if published) with their positions and uncertainty; which
-  properties the authors used.  Whether the runs are at total reflux or at a
-  general reflux is not known here and decides whether they test A/B at a
-  general reflux at all.
+* Pelkonen 2001 (Pelkonen, Gorak, Ohligschlaeger and Kaesemann, Chem. Eng.
+  Process. 40 (2001) 235-243, doi 10.1016/S0255-2701(00)00117-3, the DOI
+  confirmed on Crossref): the column geometry and packing data; for each run
+  the total-reflux specification, the pressure, the boil-up or F-factor, and
+  the reboiler or any fixed composition; the MEASURED axial profiles with
+  their positions and uncertainty; which properties the authors used.
+  **AMENDED 2026-11-13.**  This record first said that whether the runs are
+  at total reflux "is not known here".  The coordinating session has since
+  read the paper (its page images; this session has not), and reports:
+  every run is at TOTAL reflux at atmospheric pressure (the paper's section
+  6); its Tables 3 to 5 give composition profiles along the packing for
+  methanol + 2-propanol + water (Sulzer BX and Platte K, 1.79 m), methanol
+  + acetonitrile + water (Montz-Pak A3-500, 3 m) and acetone + methanol +
+  2-propanol + water (Rombopak 6M, 3 m), in 100 mm columns.  So the paper
+  is NOT a general-reflux measurement.  What it offers is a MULTICOMPONENT
+  total-reflux validation, and the tree's total-reflux path is binary
+  today (3.2).  Nothing is transcribed from the paper here.
+* The general-reflux measurement: Mori, Oda, Aragaki and Kunimoto, "Packed
+  column distillation simulation with a rate-based method", J. Chem. Eng.
+  Japan 29 (1996) 307-314, doi 10.1252/jcej.29.307 (the DOI and the four
+  authors confirmed on Crossref by this session).  First named through
+  Pelkonen's Table 1; then obtained and read from page images by the
+  coordinating session's study (2026-11-13; this session has not read it),
+  which reports: methanol, ethanol and water at atmospheric pressure on a
+  structured packing, 0.21 m in diameter with 2.20 m packed, reflux ratio
+  6.42 with a subcooled reflux and a cold feed; ONE run; a near-ideal system
+  with no distillation boundary; the END compositions in its Table 5, the
+  profiles only in its Fig. 5.  Nothing of it is in the tree; a profile
+  enters a case only after it is digitised with three readings.
 * Klemola & Ilme 1996: the valve-tray data a correlation would need (valve
   lift, valve mass and orifice details beyond Table 1), and the paper's Table
   4 (the record says it lists ten methods disagreeing across a factor of
@@ -763,27 +789,57 @@ Slices are numbered S1, S2, ... to keep them apart from the layout options
 
 B1 does not depend on S1-S8 and can be built in parallel with them.
 
-### 7.2 The owner's decisions
+### 7.2 The decisions
 
-* **Pedagogical scope of a multicomponent efficiency** (3.2): one efficiency
-  on declared keys, component-wise efficiencies, or nothing short of
-  Maxwell-Stefan.
-* **Whether Formulation B is a new `model` word** (for example `rateBased`)
-  or a mode of the full MESH.  Recommendation, with its reason: a new word,
-  because B's unknowns, its properties and its refusals are different and a
-  student must be able to SEE which question the column answered; the
-  dispatcher's refusal of an unknown word (`:1369-1373`) makes a new word
-  cheap and safe.
-* **Formulation A's home**: full MESH only (recommended), or also Wang-Henke
-  (where column14 lives today).
+**AMENDED 2026-11-13.**  This section listed the decisions as open.  The
+owner delegated them to the architect, who took them the same day on a
+private study of practice (DEV.md 4c, C389 (3) and "C329, second part: the
+four decisions").  They are written here as taken; the reasons are the
+architect's and are in that entry.  Two questions of this record were not
+among the four and stay open (at the end).
+
+1. **The multicomponent efficiency** (3.2).  DECLARED: one Murphree vapour
+   efficiency per tray, or per section, the same for every component; never
+   on the condenser or the reboiler.  COMPUTED from the internals in a column
+   of more than two components: a pseudo-binary efficiency on two DECLARED
+   key components, applied to every component.  A per-component efficiency is
+   an OUTPUT only, printed with the warning that it is unbounded (it can be
+   negative or above one); it is never an input.
+2. **Formulation B is a new `model` word, `rateBased`**, not an option of the
+   equilibrium column.  The efficiency computed from the internals
+   (Formulation A) stays a block on the full MESH, which also settles this
+   record's question of A's home.  A `rateBased` case declares the internals,
+   the correlations (one default per kind of internal, named in the output),
+   the flow model of each phase and the number of segments of a packed
+   section; the film is algebraic; the condenser and the reboiler stay
+   equilibrium stages.  First slice: the binary packed segment (4.4).  For
+   three components or more the film is Maxwell-Stefan, and an effective- or
+   equal-diffusivity shortcut is NOT offered there, because near a
+   distillation boundary it predicts the wrong product (Pelkonen 2001,
+   section 5, as read by the coordinating session; section 6 here).
+3. **The validation ladder has three rungs**, each for what it can decide:
+   Pelkonen 2001's total-reflux multicomponent profiles (do the models end
+   on the right side of the boundary?); ONE measured column at a general
+   reflux (item 4); the industrial butane fractionator already in the
+   validation subset, held to the efficiencies its authors back-calculated
+   and not to the products alone (section 6: (a) a multicomponent option and
+   (b) a two-pass valve-tray correlation are still needed for it, and (b)
+   has no source in the tree).  The two binary total-reflux sets stay the
+   anchor of the correlations.
+4. **The general-reflux measurement is Mori et al. 1996** (section 6), with
+   its limits as the coordinating session read them: one run; a near-ideal
+   system with no distillation boundary, so it cannot tell the two
+   formulations apart; end compositions in a table, profiles in a figure to
+   be digitised with three readings before any number enters a case.
+
+The order of slices in 7.1 stands with these four written in.
+
+**Still open** (not among the four):
+
 * **One diameter or two** in sizing mode (2.4).
-* **The Klemola target.**  The plan's "Klemola column14/15 with the
-  efficiency coming out of the model" needs (a) a multicomponent option, (b)
-  a two-pass valve-tray efficiency correlation, and (c) acceptance that the
-  comparison is against the paper's back-calculated E_MV/E_OV/NTU_OV, not
-  the products.  (b) has no source in the tree.
-* **The Pelkonen 2001 paper** must be supplied before it can be planned
-  against (section 6).
+* **Whether Formulation A is also offered on Wang-Henke**, where column14
+  lives today.  Decision 2 puts the computed efficiency on the full MESH; it
+  does not say what the Wang-Henke column's declared efficiency becomes.
 
 ### 7.3 Rejected alternatives
 
