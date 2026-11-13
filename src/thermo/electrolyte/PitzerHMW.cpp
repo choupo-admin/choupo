@@ -340,7 +340,7 @@ ActivityDomain PitzerHMW::validityDomain() const
 // ----------------------------------------------------------------------------
 ActivityResult PitzerHMW::evaluate(const IonState& st, double T) const
 {
-    const double A = PitzerForm::aPhi(T);   // THE one A_phi(T) (= 0.3915 at 25 C)
+    const double A = PitzerForm::aPhi(T);   // the Pitzer A_phi(T) (= 0.3915 at 25 C)
     const double I = st.I;
 
     ActivityResult r;
