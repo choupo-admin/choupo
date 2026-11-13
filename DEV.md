@@ -3476,6 +3476,33 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C394 (Vitor, 2026-11-13, on the sweep's wall clock: "O set de casos
+> tem mesmo de ser aqueles 500?  Nao ha forma de usar um subset que seja
+> representativo?" and, of the regressed-pairs gate: "Esses pares tem de
+> ser corridos na suite?").**  MEASURED on tonight's full sweep (2232
+> result lines, 70 min walked): the simulation cases are 36 min of
+> one-core work, the gates 259.  DECISIONS.  (1) A GATE WHOSE VERDICT
+> DEPENDS ONLY ON NAMED INPUTS RUNS WHEN THOSE INPUTS CHANGE.  The
+> regressed-pairs gate (about 850 fit cases, 1800 runs) reads the pair
+> records, their fit cases, the fitting operation and the activity
+> models it calls, and itself; with none of them changed its verdict
+> cannot change.  It, the roughly 1260 curation fits and the other
+> data-integrity gates of that kind get a key over exactly those inputs
+> (the dependency files the build already writes give the engine half);
+> on an unchanged key the suite prints the earlier verdict AS REUSED,
+> with the key and the date it was taken, never as a fresh PASS; a clean
+> checkout has no earlier verdict and runs everything, so the hosted
+> full tier and a release always do.  This is rule 4's "evidence is
+> reused while it still describes what enters main", made mechanical.
+> (2) THE FAST SET GAINS WHAT IT MISSED TODAY: the crash of the fifth
+> batch passed `--fast` (86 / 0) because no case of the set carries a
+> pure stream of a component with no vapour-pressure model; one utility
+> case on a thermal fluid and one solids case enter `tutorials/FASTSET`
+> with the fifth batch.  A subset is completed by what it fails to
+> catch.  (3) The self-test of the gates (383 s) runs its arms in a
+> pool, as the pairs gate now does.  NOT DONE: cutting cases from the
+> full sweep; they are not where the time is.
+
 > **C389, THE PRICES REVIEWED AT THEIR SOURCES (2026-11-13, late;
 > docs/reviews/2026-11-13-c389-prices/, rows PR-01 to PR-14).**  The
 > three adopted numbers reproduce at their sources (value, unit, year,
