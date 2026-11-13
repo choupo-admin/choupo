@@ -41,8 +41,8 @@ SPDX-License-Identifier = "GPL-3.0-or-later"
 # authors; prose, figures and explanatory text are CC BY-SA 4.0 "except where
 # noted"; code excerpts, case files and other machine-readable examples
 # included in a guide are GPL-3.0-or-later, which this table cannot express.
-# The Properties Guide and the Theory Guide are authored by Vítor Geraldes,
-# Pedro Mendes and Miguel Rodrigues.
+# Who the named authors of each guide are is stated in NOTICE and in
+# docs/preamble.tex (one place); this manifest names no one but the holder.
 [[annotations]]
 path = [
   "docs/propsGuide.tex",
@@ -51,18 +51,6 @@ path = [
   "docs/theoryGuide.tex",
   "docs/theoryGuide.pdf",
   "docs/theoryGuide-unitAcceptanceTable.tex",
-]
-SPDX-FileCopyrightText = [
-  "Copyright (C) 2026 Vítor Geraldes",
-  "Copyright (C) 2026 Pedro Mendes",
-  "Copyright (C) 2026 Miguel Rodrigues",
-]
-SPDX-License-Identifier = "CC-BY-SA-4.0"
-
-# The Developer Guide and the remaining manuals are authored by Vítor Geraldes
-# alone.
-[[annotations]]
-path = [
   "docs/developerGuide.tex",
   "docs/developerGuide.pdf",
   "docs/designGuide.tex",
@@ -76,7 +64,6 @@ path = [
   "docs/tutorialsGuide.tex",
   "docs/tutorialsGuide.pdf",
   "docs/tutorialsGuide-*.tex",
-  "docs/tutorialsGuide-sdemValidation.tex",
 ]
-SPDX-FileCopyrightText = "Copyright (C) 2026 Vítor Geraldes"
+SPDX-FileCopyrightText = "Copyright (C) 2026 by the named authors of each guide, as stated in NOTICE and docs/preamble.tex"
 SPDX-License-Identifier = "CC-BY-SA-4.0"

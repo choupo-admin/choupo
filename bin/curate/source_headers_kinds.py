@@ -41,7 +41,6 @@ import fnmatch
 import re
 import subprocess
 import sys
-import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -104,21 +103,16 @@ EXCLUSIONS = [
        patterns=["gui/public/icons/*", "gui/public/logo2*.png",
                  "gui/public/THIRD_PARTY_NOTICES",
                  "gui/public/*.LICENSE.txt"]),
-    _e("third-party-licence-text",
-       "a licence text of someone else's work, kept verbatim",
-       paths=["bin/curate/nanofiltran/LICENSE-LAPACK.txt"]),
-    _e("held-nanofiltran-source",
-       "HELD FOR THE OWNER (not classified by the tool): the NanoFiltran "
-       "reference program, its sources and cases; a LAPACK licence text "
-       "sits beside them, so which lines are Choupo's is a question of "
-       "ownership the tool does not answer",
-       patterns=["bin/curate/nanofiltran/src/*",
-                 "bin/curate/nanofiltran/cases/*",
-                 "bin/curate/nanofiltran/shipped/*"]),
+    _e("third-party-as-received",
+       "NanoFiltran, vendored as received (DEV.md 4c C393, ruled): its Fortran "
+       "notice names another holder and is not valid UTF-8, a LAPACK licence "
+       "text and another author's SIMPLEX source sit beside it.  Never "
+       "stamped, never rewritten, never opened in text mode",
+       patterns=["bin/curate/nanofiltran/*"]),
     _e("held-enrtl-reimplementations",
-       "HELD FOR THE OWNER: re-implementations written 'per IDAES enrtl.py' "
-       "beside the two IDAES copies; whether they are derivative works is a "
-       "question of ownership the tool does not answer",
+       "origin to be ruled by the owner: re-implementations written 'per IDAES "
+       "enrtl.py' beside the two IDAES copies; whether they are derivative "
+       "works is his call.  Not stamped until he rules",
        paths=["bin/curate/enrtl_ref/enrtl_proto.py",
               "bin/curate/enrtl_ref/enrtl_mixed_solvent.py",
               "bin/curate/enrtl_ref/enrtl_validated.py",
@@ -136,7 +130,7 @@ EXCLUSIONS = [
     _e("not-a-code-kind-config",
        "plain lists and configuration inside a code root (dotfiles, host "
        "names, file lists): not a code kind",
-       patterns=["*/.gitignore", "*/.gitattributes", "gui/src/ui/methods/*.layoutDict", "site/CNAME",
+       patterns=["*/.gitignore", "gui/src/ui/methods/*.layoutDict", "site/CNAME",
                  "site/analytics.conf", "site/frozenApps.txt",
                  "bin/curate/recording_platform.txt",
                  "bin/curate/suite_lanes.txt",
@@ -167,13 +161,20 @@ SCOPED_OUT = [
 ]
 
 
-def norm_name(s: str) -> str:
-    s = unicodedata.normalize("NFKD", s)
-    return "".join(c for c in s if not unicodedata.combining(c)).lower().strip()
+# Files whose own notice is the project's but which QUOTE another party's
+# notice about something else (a downloaded database's licence in a docstring).
+# One explicit entry per file with its reason, never a looser pattern: a
+# foreign copyright line in such a file is not a notice about the file.
+QUOTED_NOTICES = {
+    "bin/curate/lvpp_sigma_profile.py":
+        "the project's own script; a docstring line states the MIT licence "
+        "and holder of the downloaded LVPP database it reads",
+}
 
 
 def authors(root: Path = ROOT):
-    """Names listed in AUTHORS above the 'Curators' heading, as authors."""
+    """Names listed in AUTHORS above the 'Curators' heading, as authors,
+    EXACTLY as written (accent included)."""
     names = []
     txt = (root / "AUTHORS").read_text(encoding="utf-8").split("\n")
     for ln in txt:
@@ -184,14 +185,25 @@ def authors(root: Path = ROOT):
     return names
 
 
-def is_author_name(name: str, authors_norm) -> bool:
-    """A copyright line's name field begins with a listed author's name (a
-    trailing '.  Licence: ...' or 'and contributors' is allowed)."""
-    n = norm_name(name)
-    for a in authors_norm:
-        if n.startswith(a) and (len(n) == len(a) or not n[len(a)].isalnum()):
+def is_author_name(name: str, authors_list) -> bool:
+    """A copyright line's name field begins with a listed author's name,
+    compared EXACTLY, accent included (a trailing '.  Licence: ...' or
+    'and contributors' is allowed).  Until the accent was corrected in five
+    files (DEV.md 4c C393) the comparison ignored accents; it no longer does."""
+    for a in authors_list:
+        if name.startswith(a) and (len(name) == len(a) or not name[len(a)].isalnum()):
             return True
     return False
+
+
+def own_and_foreign(path: str, names, authors_list):
+    """(ours, foreign) names of the copyright lines of `path`; foreign lines
+    of a QUOTED_NOTICES file are not notices about the file."""
+    ours = [n for n in names if is_author_name(n, authors_list)]
+    foreign = [n for n in names if n not in ours]
+    if path in QUOTED_NOTICES:
+        foreign = []
+    return ours, foreign
 
 
 def tracked(root: Path = ROOT):

@@ -60,7 +60,7 @@ def git(*a):
 
 
 def arm_a_b_c(fails):
-    an = {K.norm_name(n) for n in K.authors()}
+    an = K.authors()
     rows = K.classify_all()
     tracked = {p for p, _c, _d in rows}
     kinds = {}
@@ -78,7 +78,7 @@ def arm_a_b_c(fails):
         kinds[det] = kinds.get(det, 0) + 1
         t = K.head_text(raw)
         _has_c, names, has_s = K.notice_state(raw)
-        ours = [n for n in names if K.is_author_name(n, an)]
+        ours, foreign = K.own_and_foreign(path, names, an)
         if not ours:
             if names:
                 fails.append("FOREIGN-COPYRIGHT  %s  (names %r, nobody in AUTHORS)"
@@ -130,7 +130,7 @@ def arm_d(fails):
     r = git("merge-base", "--is-ancestor", PIN, "HEAD")
     if r.returncode != 0:
         return "author arm: NO SUBJECT (the pinned commit %s is not an ancestor of HEAD)" % PIN[:9]
-    an = {K.norm_name(n) for n in K.authors()}
+    an = K.authors()
     r = git("log", "--format=%H%x09%an", PIN + "..HEAD")
     n = 0
     for ln in r.stdout.splitlines():

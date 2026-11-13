@@ -7,6 +7,8 @@ that lacks them (DEV.md 4c C393).  Reads the SAME table as the gate
     bin/curate/add_source_headers.py                  # apply
     bin/curate/add_source_headers.py --kind web-tests # only one kind (one commit per kind)
     bin/curate/add_source_headers.py --files          # with --check: list every file, not a summary
+    bin/curate/add_source_headers.py [--check] PATH...  # only these files (also new, untracked ones;
+                                                      # this is what bin/header calls)
 
 IDEMPOTENT: a second run changes nothing.  NO BEHAVIOUR CHANGES: the lines are
 comments, placed
@@ -77,7 +79,7 @@ def inside_block_comment(text_before: str) -> bool:
     return text_before.rfind("/*") > text_before.rfind("*/")
 
 
-def plan(kind: str, raw: bytes, authors_norm):
+def plan(kind: str, raw: bytes, authors_norm, path: str = ""):
     """-> (new_bytes | None, note).  None + note 'ok' when nothing to do;
     None + 'CONFLICT: ...' when the file must not be touched."""
     form, syntax, bsrc = K.KINDS[kind]
@@ -91,8 +93,7 @@ def plan(kind: str, raw: bytes, authors_norm):
     ms = list(K.COPY_RE.finditer(head))
     names = [m.group(3).strip() for m in ms]
     has_spdx = bool(K.SPDX_RE.search(head))
-    ours = [n for n in names if K.is_author_name(n, authors_norm)]
-    foreign = [n for n in names if n not in ours]
+    ours, foreign = K.own_and_foreign(path, names, authors_norm)
     if foreign and not ours:
         return None, "CONFLICT: copyright line names " + repr(foreign[0])
     if ours and has_spdx:
@@ -166,17 +167,40 @@ def main(argv):
     only = None
     if "--kind" in argv:
         only = argv[argv.index("--kind") + 1]
-    an = {K.norm_name(n) for n in K.authors()}
+    an = K.authors()
     todo, conflicts, notes = {}, [], []
     total = 0
-    for path, cat, kind in K.classify_all():
+    paths = [a for i, a in enumerate(argv) if not a.startswith("--")
+             and not (i and argv[i - 1] == "--kind")]
+    if paths:
+        rows = []
+        for a in paths:
+            pp = Path(a).resolve()
+            try:
+                rel = str(pp.relative_to(K.ROOT))
+            except ValueError:
+                print("add_source_headers: %s is outside the repository" % a)
+                return 2
+            raw = K.read_head(rel)
+            if raw is None:
+                print("add_source_headers: no such file %s" % a)
+                return 2
+            cat, kind = K.classify(rel, "100644", K.first_line_of(raw))
+            if cat != "code":
+                print("add_source_headers: %s is not a code file this tool stamps (%s: %s)"
+                      % (rel, cat, kind or "no kind"))
+                return 2
+            rows.append((rel, cat, kind))
+    else:
+        rows = K.classify_all()
+    for path, cat, kind in rows:
         if cat != "code" or (only and kind != only):
             continue
         raw = K.read_head(path)
         if raw is None:
             continue
         total += 1
-        new, note = plan(kind, raw, an)
+        new, note = plan(kind, raw, an, path)
         if new is None:
             if note.startswith("CONFLICT"):
                 conflicts.append((path, kind, note))
