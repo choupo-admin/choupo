@@ -496,6 +496,11 @@ TU); (3) consistency — every base follows the same pattern.
    `reg("myOp", []{ return std::make_unique<MyOp>(); });`
 4. `make` picks the new `.cpp` up automatically (recursive `find`).  **Rebuild
    WASM** too (`make wasm`) or the GUI won't see the new type (§13).
+5. A liquid density, viscosity or surface tension comes from
+   `liquidProperty::evaluate(thermo, Property::density, T, P, x).value`; a
+   `Vliq()` read or a literal density is refused by
+   `check_liquid_property_ratchet`, and the run's liquid-properties table
+   names your unit and the number it took.
 
 Dev-side instructions live HERE; the user-facing catalogue entry goes in
 [`docs/ai/unit-ops.md`](docs/ai/unit-ops.md).  Add a new thermo model the same
@@ -573,6 +578,7 @@ divergence and caveat blocks (`main.cpp`, `if (verbosity >= 1)`).
 - The layering is the point, and it is enforced by the file split -> docs/architecture/settled-contracts.md#the-layering-is-the-point-and-it-is-enforced-by-the-file-split
 - Records -> docs/architecture/settled-contracts.md#records
 - THE SEAL MUST NOT CHANGE THE PHYSICS — and the importer now PROVES it, not merely that the case runs (2026-08-04) -> docs/architecture/settled-contracts.md#the-seal-must-not-change-the-physics--and-the-importer-now-proves-it-not-merely-that-the-case-runs-2026-08-04
+- A unit never prices a liquid density, viscosity, surface tension or diffusivity itself: it asks `liquidProperty::evaluate` (src/thermo/LiquidPropertyDoor.H) -> docs/architecture/settled-contracts.md#a-unit-never-prices-a-liquid-property-itself-2026-11-12-devmd-4c-c378-slice-0
 - Electrolyte data tree — 5 HOMES, NO `apparent/`, NO `true` (SETTLED 2026-07-01; the count corrected 2026-07-28, do NOT relitigate the layout) -> docs/architecture/settled-contracts.md#electrolyte-data-tree--5-homes-no-apparent-no-true-settled-2026-07-01-the-count-corrected-2026-07-28-do-not-relitigate-the-layout
 
 ---

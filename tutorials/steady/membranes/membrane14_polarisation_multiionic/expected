@@ -23,5 +23,5 @@ kpi     NF                     water_recovery   0.156964780302   1e-4
 kpi     NF                     xi_V_per_m_avg   33.7249232824    1e-4
 kpi     NF                     solute_closure_rel 1.49476402457e-16 1e-4
 source  NF                     liquidDensity    default.rhoFeed1000 exact
-source  NF                     liquidDiffusivity record.speciesD0.StokesEinstein exact
 source  NF                     liquidViscosity  declared.case    exact
+source  NF                     liquidDiffusivity record.speciesD0.uncorrected exact

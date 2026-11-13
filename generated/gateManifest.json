@@ -1713,8 +1713,8 @@
     },
     "check_property_source_witnesses": {
       "exit": 0,
-      "claim": "check_property_source_witnesses: OK -- 9 (unit, property) sources in 6 witness case(s) are the tags their code takes.  NOT CHECKED: any case outside the witnesses (the goldens' `source` rows will hold those), or whether a source is right.",
-      "seconds": 25.7
+      "claim": "check_property_source_witnesses: OK -- 10 (unit, property) sources in 7 witness case(s) are the tags their code takes.  NOT CHECKED: any case outside the witnesses (the goldens' `source` rows will hold those), or whether a source is right.",
+      "seconds": 8.6
     },
     "check_vliq_datum": {
       "exit": 0,

@@ -1,0 +1,36 @@
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  estimatedSpecies01_announced              (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  enthalpy_naoh_water                       (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  pitzer01_nacl                             (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  olsson01_naoh_high_concentration          (checked vs reference; 5 anchor(s) agree with the cited primary)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  archer01_nacl_cold_to_hot                 (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  electrolyteFit01_nacl                     (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  evaporator06_nacl_pitzer                  (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  evaporator08_naoh_dilution_heat           (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  evaporator10_naoh_triple_effect           (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  crystalliser05_nacl_pitzer                (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  crystalliser10_naoh_antisolvent           (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0
+PASS  golden-closure-static                     (check_campaign_closure --static: OK -- 559 expected file(s) read, no pinned mass/element/solute closure above 0.001 and no energy closure above 0.01 where the claim stands.)
+PASS  overlay02_nacl_calorimetric               (checked vs reference)
+PASS 1 / FAIL 0 / KNOWN-BROKEN 0 / EXPECTED-FAIL 0

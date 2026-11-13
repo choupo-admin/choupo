@@ -63,4 +63,4 @@ kpi     Stage                  water_recovery   0.417533999363     1e-4
 kpi     Stage                  xi_V_per_m_avg   16.8243695989      1e-4
 source  Stage                  liquidDensity    default.rhoFeed1000 exact
 source  Stage                  liquidDiffusivity declared.case    exact
-source  Stage                  liquidViscosity  declared.case,Vogel/GrunbergNissan exact
+source  Stage                  liquidViscosity  Vogel/GrunbergNissan,declared.case exact

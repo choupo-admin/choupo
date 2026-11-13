@@ -1,0 +1,10 @@
+n01_paren_init	const scalar rho_w(1000.0);
+n02_pow_kinematic	const scalar nu = 1.0 * std::pow(10.0, -6);
+n03_div_1e3	const scalar Qv = mdot / 1.0e3;
+n04_using_alias	const scalar r = pkg.density(T, P, x, DP::Liquid);
+n05_other_header_const	const scalar rho = units::waterDensity;
+n06_seawater_literal	const scalar seawater = 1025.0;
+n07_lambda_density	auto rhoOf = [&](scalar t) { return thermo.density(t, P, x, DensityPhase::Liquid); };
+n08_mu_over_rho	const scalar nu = 1.0e-3 / 1000.0;
+n09_multiline_call	const scalar r = pkg.density(T, P, x,\n                               DensityPhase::Liquid);
+n10_phase_variable	const DensityPhase ph = DensityPhase::Liquid;\n    const scalar rho = thermo.density(T, P, x, ph);

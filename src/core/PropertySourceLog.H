@@ -169,9 +169,22 @@ inline const NamedSource declaredByCase
 inline const NamedSource ownWilkeChang
     { "own.WilkeChang.mixtureViscosity",
       "computed by the unit itself, not by the property kernel: its own Wilke-Chang, both ways at infinite dilution in the mixture viscosity, combined linearly in mole fraction" };
+//  An ion's D0 is curated at 25 C.  WHICH of the three tags a unit records
+//  is decided by the builder that read the D0 (membrane::buildPolarisation),
+//  never by the unit: Stokes-Einstein is applied only when the package
+//  prices a liquid viscosity, and a tag that says "scaled" beside a run
+//  that says "NOT temperature-corrected" is a false printed source
+//  (review ledger DX-01).
 inline const NamedSource speciesRecordD0
     { "record.speciesD0.StokesEinstein",
       "each ion's diffusivity from its species record, scaled to temperature by Stokes-Einstein" };
+inline const NamedSource speciesRecordD0AtCuration
+    { "record.speciesD0.at25C",
+      "each ion's diffusivity from its species record, at the 25 C it is curated at (the unit runs at 25 C)" };
+inline const NamedSource speciesRecordD0Uncorrected
+    { "record.speciesD0.uncorrected",
+      "each ion's diffusivity from its species record at 25 C, NOT corrected to the unit's temperature: the case declares no liquid-viscosity model" };
+
 //  THE TAG'S WORDS AT THE DATUM'S TEMPERATURE (C378, TR-12).  A record's
 //  `Vliq` belongs to its `VliqT` (25 C when absent).  A tag that says "25 C
 //  molar volume" is true for every component on it that states no `VliqT`;

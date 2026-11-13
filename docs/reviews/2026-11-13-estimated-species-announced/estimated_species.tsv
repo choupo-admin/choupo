@@ -1,0 +1,19 @@
+species	datum	word	method_or_source
+But	sAq	estimated	Shock (1995): anion S from the acid's ESTIMATED S and the selected dissociation entropy of Table 3 (Table 4 footnote s)
+Glut	hfAq	estimated	Shock (1995) Table 4 footnote ab: DfH computed from the tabulated DfG and S (S estimated, footnotes af and ae) with the elements' entropies
+Glut	sAq	estimated	Shock (1995) Table 4 footnote ae (eq 16): S estimated with the author's correlation (eq 16) or from the divalent anion's estimate plus the dissociation entropy
+Glyc	sAq	estimated	Shock (1995): acid S ESTIMATED (Table 10 footnote g) plus Miller & Smith-Magowan's printed dissociation entropy
+H2Glut	sAq	estimated	Shock (1995) Table 4 footnote p (eq 16): S estimated with the author's correlation (eq 16) or from the divalent anion's estimate plus the dissociation entropy
+H2Maln	sAq	estimated	Shock (1995) Table 4 footnote p (eq 16): S estimated with the author's correlation (eq 16) or from the divalent anion's estimate plus the dissociation entropy
+HBut	sAq	estimated	Shock (1995) S of the aqueous acid is an ESTIMATE of the author (i (eq 13)), not a measurement (Table 4, footnote i (eq 13))
+HGlut	hfAq	estimated	Shock (1995) Table 4 footnote ab: DfH computed from the tabulated DfG and S (S estimated, footnotes af and ae) with the elements' entropies
+HGlut	sAq	estimated	Shock (1995) Table 4 footnote af: S estimated with the author's correlation (eq 16) or from the divalent anion's estimate plus the dissociation entropy
+HGlyc	sAq	estimated	Shock (1995) Table 10 footnote g: S of the aqueous hydroxyacid estimated with the author's eq (39)
+HLac	sAq	estimated	Shock (1995) Table 10 footnote g: S of the aqueous hydroxyacid estimated with the author's eq (39)
+HMaln	hfAq	estimated	Shock (1995) Table 4 footnote ab: DfH computed from the tabulated DfG and S (S estimated, footnotes af and ae) with the elements' entropies
+HMaln	sAq	estimated	Shock (1995) Table 4 footnote af: S estimated with the author's correlation (eq 16) or from the divalent anion's estimate plus the dissociation entropy
+HPropn	sAq	estimated	Shock (1995) S of the aqueous acid is an ESTIMATE of the author (i (eq 13)), not a measurement (Table 4, footnote i (eq 13))
+Lac	sAq	estimated	Shock (1995) Table 10 footnote h: S of the aqueous hydroxyacid anion estimated with the author's eq (40)
+Maln	hfAq	estimated	Shock (1995) Table 4 footnote ab: DfH computed from the tabulated DfG and S (S estimated, footnotes af and ae) with the elements' entropies
+Maln	sAq	estimated	Shock (1995) Table 4 footnote ae (eq 16): S estimated with the author's correlation (eq 16) or from the divalent anion's estimate plus the dissociation entropy
+Propn	sAq	estimated	Shock (1995): anion S from the acid's ESTIMATED S and the selected dissociation entropy of Table 3 (Table 4 footnote s)

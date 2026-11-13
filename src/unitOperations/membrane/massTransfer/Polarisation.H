@@ -357,6 +357,15 @@ public:
     { return policy_.coupling == IonCoupling::Electroneutral; }
     bool                       hasCorrelation() const { return corr_ != nullptr; }
 
+    //- How the ions' 25 C D0 were brought to the unit's temperature, as the
+    //  builder did it (review ledger DX-01).  `notRead`: no ion D0 entered
+    //  this film (a constant k and no coupling).  The unit that prints where
+    //  its liquid diffusivity came from reads THIS, so the printed source
+    //  cannot say "Stokes-Einstein" when the factor was not applied.
+    enum class IonD0Temperature { notRead, atCuration, stokesEinstein, uncorrected };
+    IonD0Temperature ionD0Temperature() const { return ionD0T_; }
+    void setIonD0Temperature(IonD0Temperature v) { ionD0T_ = v; }
+
     //- k_{c,i} for solute s at the local hydraulics (the D slot of `hyd` is
     //  overwritten with the solute's own D).
     scalar kFilm(const MassTransferContext& hyd, std::size_t s) const;
@@ -399,6 +408,7 @@ private:
     const MassTransferModel* corr_;
     scalar                   kConst_;
     scalar                   T_;
+    IonD0Temperature         ionD0T_ = IonD0Temperature::notRead;
 };
 
 //- Build the object from a unit's operation block: reads the policy,
