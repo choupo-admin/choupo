@@ -478,13 +478,13 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
   {
     caseDir: "tutorials/batch/electrodialysis/edbatch01_constant_current",
     file: "log.choupoBatch",
-    readBy: ["operatorPanels.test.ts"],
+    readBy: ["operatorPanels.test.ts", "panelWorkspace.test.ts"],
     stdout: true,
   },
   {
     caseDir: "tutorials/batch/electrodialysis/edbatch01_constant_current",
     file: "trajectory.csv",
-    readBy: ["operatorPanels.test.ts"],
+    readBy: ["operatorPanels.test.ts", "panelWorkspace.test.ts"],
   },
 ];
 

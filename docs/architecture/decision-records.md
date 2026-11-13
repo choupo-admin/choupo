@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 241 records already exist
+## 1. Why an index, when 242 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 241 design records, **168 state a rejected alternative and 73 do not** —
+- Of 242 design records, **169 state a rejected alternative and 73 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -72,6 +72,7 @@ direction is an error.
 | [`chromatography-peaks-and-resolution.md`](../design/chromatography-peaks-and-resolution.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `chromatography` EduTool: the engine (`choupoBatch`, `fixedBedAdsorber`) runs the linear two-solute pulse of a gas bed, the page carries the closed forms (retention, moments, plate model, van Deemter, resolution, cuts) and its own second-order integration of the overloaded competitive-Langmuir column (liquid chromatography has no engine route); section 7 is the source-check table (30 rows against Wankat, Schmidt-Traub, Nicoud, Ruthven, Seader and the 1941 and 1956 papers: 20 match, 4 differ, 3 derived, 2 not found in hand, 1 engine fact), section 4 measures the engine at 100, 200 and 400 cells and fits the first-order-upwind grid's share of the variance (29 to 33 % at the default), section 6 records three engine findings, reported and not fixed; no engine, data or case file changed |
 | [`naoh-water-olsson1997.md`](../design/naoh-water-olsson1997.md) | ADR | no | **SHIPPED 2026-11-12 (C377 b)** -- NaOH-water to 80 wt % as the published Olsson, Jernqvist & Aly (1997) vapour-pressure and enthalpy correlations, selectable as `model OlssonNaOH;`, handing over to Pitzer below the window; the evaporator's boiling-point rise now solves the exact relation a_w Psat(T) = Psat(T - BPE); six evaporator goldens re-recorded for the rule (`docs/reviews/2026-11-12-c377-moved-rows.md`). |
 | [`choosing-an-electrolyte-model.md`](../design/choosing-an-electrolyte-model.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `electrolyte-models` EduTool puts Davies, Pitzer and eNRTL side by side on one salt against measured osmotic and activity coefficients, running the engine's `choupoProps` operations and computing only the arithmetic of the comparison in TypeScript; section 7 is the source-check table (25 rows: 17 match, 4 corrected, 3 not in hand); no engine, data or case file changed |
+| [`operator-panels-good-practice.md`](../design/operator-panels-good-practice.md) | ADR | yes | **PAGE BUILT 2026-11-12 (DEV.md 4c C371, slice S5)** -- the `operator-panels` EduTool: the engine (`choupoBatch`) runs the shipped `edbatch01_constant_current` rig with at most one declared value changed and reports the FACTS about the panelDict the page writes (the result's `panel` block, now carried by the GUI adapter); the page draws the worked panel and four display forms as lesson-local illustrations, colours only where the engine's alarm interval says, and counts alarm onsets against a labelled assumption; section 6 lists every alarm-management and display rule as `unchecked` against the paid standards (none read, no number taken), section 7 reports five findings about the landed S1 slice.  REJECTED: a page-side preview of the facts, a general panel renderer, planting an alarm with no action; no engine, data or case file changed |
 | [`c361-solids-processing.md`](../design/c361-solids-processing.md) | ADR | yes | **SLICES 1-2 BUILT 2026-11-12 (DEV.md 4c C361)** -- one size axis per case (`sizeGrid { xMax; ratio; nClasses; }`, geometric, the pan as class 0), every authored inlet put on it before the first unit (a law INTEGRATED in its mass basis, a table RE-BINNED uniform in ln x, both mass-exact and printed), the grid handed to every unit, the mixer blending class by class (a stream on its own bins re-binned and announced, two different grids REFUSED), moments from one home (`psdMoments`) on every stream and drawn by the GUI; the `mill`: a breakage population balance (Austin 1971) with selection functions `austin`, `herbstFuerstenau` (energy-specific), `vogelPeukert` (impact threshold), breakage `austin`, plug flow and perfectly mixed, mass exact per class, adiabatic shaft work, Bond printed beside.  No grid declared: no golden moves (`--scope` over 180 solids cases).  REJECTED: each unit's own bins with re-binning at every consumer; one engine-wide grid; carrying the continuous law on the stream.  DEFERRED: one distribution per solid species, the time-integrated binaries, residence-time distributions, slices 3 (screen, hydrocyclone, closed circuit) and 4 (filtration, thickener, centrifuge) |
 | [`a-tear-has-a-pressure.md`](../design/a-tear-has-a-pressure.md) | ADR | no | **SHIPPED 2026-11-01 (DEV.md 4c C186 item 5)** -- pressure is a tear variable: a recycle with a pressure drop and nothing setting a pressure is refused by tear name instead of "converging" on a pass-to-pass drift; `sweep`, `gridSweep` and `designSpec` read every point through the one `simulationFailure` verdict (a failed point is named, nan, counted; all-fail refuses).  Reproduced first.  Gate `check_driver_convergence` |
 | [`a-negative-pressure-is-refused.md`](../design/a-negative-pressure-is-refused.md) | ADR | no | **SHIPPED 2026-11-02 (DEV.md 4c C186 item 5b)** -- a NEGATIVE outlet pressure on an accepted pass refuses by unit, stream, P, inlet and remedy (it was replaced by the inlet's pressure, exit 0, a recycle "converging" on it); a trial sweep keeps the old handling and is announced (`trial pressure clamped N time(s)`); P == 0 stays the unit-did-not-set sentinel (28 corpus cases, cstr/pfr).  Reproduced and corpus-measured first.  Gate `check_negative_pressure` |
@@ -395,7 +396,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**73 of 241 records state no rejected alternative.**  For a FORUM or a STUDY
+**73 of 242 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

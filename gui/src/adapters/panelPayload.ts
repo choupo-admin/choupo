@@ -99,6 +99,8 @@ export interface PanelSummaryReport {
   elements?: number; facts?: number; messages?: number;
   alarms?: number; alarmsMax?: number; alarmsMaxAt?: number;
   instants?: number; locked: boolean;
+  /** The grid the elements are placed on (`grid { columns; rows; }`). */
+  gridColumns?: number; gridRows?: number;
 }
 
 export interface PanelReport {
@@ -181,7 +183,7 @@ export function shapePanel(raw: unknown): PanelReport | null {
   const summary: PanelSummaryReport | null = s
     ? {
       locked: s["locked"] === 1 || s["locked"] === true,
-      ...Object.fromEntries((["elements", "facts", "messages", "alarms", "alarmsMax", "alarmsMaxAt", "instants"] as const)
+      ...Object.fromEntries((["elements", "facts", "messages", "alarms", "alarmsMax", "alarmsMaxAt", "instants", "gridColumns", "gridRows"] as const)
         .flatMap((k) => (fin(s[k]) ? [[k, s[k] as number]] : []))),
     }
     : null;

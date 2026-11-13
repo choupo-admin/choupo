@@ -41,7 +41,6 @@ import type { ReactNode } from "react";
 import {
   Alert, Badge, Box, Button, Group, Loader, SegmentedControl, Slider, Stack, Table, Text, Title,
 } from "@mantine/core";
-import { useElementSize } from "@mantine/hooks";
 
 import { useCaseFilesRun, type MethodRunState } from "../../case/methodRun.js";
 import { filesToCaseFiles, tutorialByName } from "../../cases/tutorials.js";
@@ -55,16 +54,9 @@ import { KnobNumber, PanelNote } from "./knobPanel.js";
 import { OriginMark, type OriginKind } from "./origin.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import { PANEL_LIMITS, PANEL_STEPS } from "./operatorPanelsLesson.js";
-
-const GRID = "var(--mantine-color-default-border)";
-const INK = "var(--mantine-color-dimmed)";
-const TEXT = "var(--mantine-color-text)";
-const QUIET = "var(--mantine-color-gray-6)";
-/** The ONE colour of the panel drawings, reserved for an element in alarm. */
-const ALARM = "#c92a2a";
-
-const sig = (v: number | undefined, n = 4): string =>
-  (v !== undefined && Number.isFinite(v) ? Number(v.toPrecision(n)).toString() : "—");
+//  The drawing primitives are SHARED with the Panel workspace (ui/panelWidgets.tsx):
+//  one bar with its limits, one trend, one lamp, one alarm colour.
+import { ALARM, GRID, Lamp, MiniTrend, ScaleBar, sig } from "../panelWidgets.js";
 
 // ---- page chrome ------------------------------------------------------------------
 
@@ -109,68 +101,6 @@ function useRigRun(panel: PanelSpec | null, variantId: PanelVariantId, key: stri
     report: ok ? run.result!.panel! : null,
     traj: ok ? run.result!.trajectory! : null,
   };
-}
-
-// ---- a small trend, drawn at its container's width --------------------------------
-
-function MiniTrend({ t, y, yRef, range, limit, cursor, alarmOn, height = 90, aria }: {
-  t: readonly number[]; y: readonly number[]; yRef?: readonly number[];
-  range: [number, number]; limit?: number; cursor?: number; alarmOn?: boolean; height?: number; aria: string;
-}): JSX.Element {
-  const { ref, width } = useElementSize();
-  const W = Math.max(80, Math.round(width || 260)), H = height, m = 4;
-  const tMax = t[t.length - 1] || 1;
-  const X = (x: number): number => m + (W - 2 * m) * x / tMax;
-  const Y = (v: number): number => {
-    const c = Math.min(Math.max(v, range[0]), range[1]);
-    return m + (H - 2 * m) * (1 - (c - range[0]) / (range[1] - range[0]));
-  };
-  const path = (s: readonly number[]): string => s.map((v, i) => `${i ? "L" : "M"}${X(t[i]!).toFixed(1)},${Y(v).toFixed(1)}`).join("");
-  return (
-    <Box ref={ref} style={{ width: "100%" }}>
-      <svg width={W} height={H} role="img" aria-label={aria} style={{ display: "block" }}>
-        <rect x={0.5} y={0.5} width={W - 1} height={H - 1} fill="none" stroke={GRID} />
-        {limit !== undefined && (
-          <line x1={m} x2={W - m} y1={Y(limit)} y2={Y(limit)} stroke={QUIET} strokeDasharray="4 3" />
-        )}
-        {yRef && <path d={path(yRef)} fill="none" stroke={QUIET} strokeWidth={1.2} strokeDasharray="2 2" />}
-        <path d={path(y)} fill="none" stroke={alarmOn ? ALARM : TEXT} strokeWidth={1.6} />
-        {cursor !== undefined && <line x1={X(cursor)} x2={X(cursor)} y1={m} y2={H - m} stroke={INK} strokeWidth={0.8} />}
-      </svg>
-    </Box>
-  );
-}
-
-/** A horizontal bar on its scale, the limit marked.  The fill turns to the
- *  alarm colour ONLY when the engine's interval says the element is in alarm. */
-function ScaleBar({ value, range, limit, alarmOn, aria }: {
-  value: number; range: [number, number]; limit?: number; alarmOn?: boolean; aria: string;
-}): JSX.Element {
-  const f = (v: number): number => Math.min(Math.max((v - range[0]) / (range[1] - range[0]), 0), 1);
-  return (
-    <Box role="img" aria-label={aria} style={{ position: "relative", height: 14, border: `1px solid ${GRID}`, borderRadius: 2 }}>
-      <Box style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: `${100 * f(value)}%`,
-        background: alarmOn ? ALARM : QUIET, opacity: alarmOn ? 0.9 : 0.5 }} />
-      {limit !== undefined && (
-        <Box style={{ position: "absolute", top: -3, bottom: -3, left: `calc(${100 * f(limit)}% - 1px)`, width: 2, background: TEXT }} />
-      )}
-    </Box>
-  );
-}
-
-/** The lamp: a word AND a shape, coloured only when in alarm. */
-function Lamp({ alarmOn, normal, high }: { alarmOn: boolean | undefined; normal: string; high: string }): JSX.Element {
-  if (alarmOn === undefined) return <Text size="sm" c="dimmed">no alarm declared</Text>;
-  return (
-    <Group gap={8} wrap="nowrap">
-      <svg width={18} height={18} aria-hidden>
-        {alarmOn
-          ? <polygon points="9,1 17,17 1,17" fill={ALARM} />
-          : <circle cx={9} cy={9} r={7} fill="none" stroke={QUIET} strokeWidth={2} />}
-      </svg>
-      <Text size="sm" fw={alarmOn ? 700 : 500} c={alarmOn ? "red.8" : "dimmed"}>{alarmOn ? high : normal}</Text>
-    </Group>
-  );
 }
 
 // ---- the worked panel, drawn (lesson-local, its six elements only) ---------------

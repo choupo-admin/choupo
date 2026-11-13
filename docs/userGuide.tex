@@ -2956,6 +2956,57 @@ variables
 \end{lstlisting}
 
 % =====================================================================
+\section{The Panel view: an operator panel, read-only}\label{sec:panelWorkspace}
+
+\begin{whatyoulllearn}
+A time-integrated case may declare an \emph{operator panel}; the
+\emph{Panel} view draws it from the run, at the instant a time cursor is
+on, and changes nothing.
+\end{whatyoulllearn}
+
+\paragraph{What it is for.}  An operator-in-training opens a
+time-integrated case and sees, at the instant the cursor is on, whether
+each watched variable is inside its limits, how it got there, and what the
+case's author declared about it.  The view appears in the top menu of a
+time-integrated case \emph{only when the case declares a panel}
+(\file{system/panelDict}, written in the design guide's section on the
+operator panel; today the engine reads it in \code{choupoBatch} runs); a case
+without one shows no Panel entry.  \emph{Open in new tab} puts the same panel in a tab of
+its own for a second screen; that tab follows the parent's latest run and
+dims, saying why, when the case has moved since the run it draws.
+
+\paragraph{What it shows.}  Each element of the panel is one of four kinds:
+a \emph{number}, a \emph{bar} (the value on its scale with its limits drawn),
+a \emph{trend} (the whole run beside the number, the limits drawn, the
+engine's alarm intervals as a band along the foot, the cursor as a vertical
+line) and a \emph{lamp} (a word and a shape).  Everything is grey by
+default.  An element is coloured, and carries a word and a triangle, only
+while the engine reports its alarm active at the cursor's instant, and then
+it also shows the action the case's author asked for.  The strip above the
+widgets counts the alarms active at that instant.  Under each element are the
+reason it is on the panel and, in \emph{declared by the case}, the source and
+reason of its limit.  Below the widgets the engine's \emph{facts} about the
+panel are listed as it wrote them (an element that never moves, a limit that
+is never approached, the instants a limit is crossed): facts, not a grade.
+
+\paragraph{The time cursor.}  One slider moves every widget together over the
+instants the run wrote; it works from the keyboard (arrows, \emph{Home},
+\emph{End}).  A crossing is seen on the written instants: an excursion
+shorter than one write interval is not seen, and the remedy is a smaller
+\code{writeInterval}.
+
+\paragraph{Where the limits come from, and what the view does not do.}
+Every limit, range, word, reason and action is the case's own, read back from
+the engine's report of \file{system/panelDict}.  The view \emph{computes
+nothing}: it compares no value with a limit.  The engine reports an alarm
+interval only for an element that declares an \code{alarm}; an element with a
+limit and no alarm has its limit drawn, is never coloured and is not
+counted.  A column the run does not publish is drawn as \emph{not published},
+never as a zero.  The unit of a column is not published, so the view prints
+the column's name beside its value (\code{i\_A\_per\_m2}).  The view has no
+editing control: change the panel in \file{system/panelDict} and run again.
+
+% =====================================================================
 \section{Sweeps, design specs, optimisation}\label{sec:outer}
 
 \begin{whatyoulllearn}

@@ -154,7 +154,7 @@ interface LegacySessionPrefs {
 function isolatedTab(): boolean {
   if (typeof window === "undefined") return false;
   const q = new URLSearchParams(window.location.search);
-  return q.has("case") || q.has("focus") || q.has("internals") || q.has("layout") || q.has("step");
+  return q.has("case") || q.has("focus") || q.has("internals") || q.has("layout") || q.has("step") || q.has("panel");
 }
 
 /** Public face of the isolated-tab test (gui-credo §4 "Tab citizenship"): a
@@ -259,6 +259,8 @@ export type WorkspaceKey =
   | "case"
   | "reports"
   | "pinch"
+  //  the operator panel of a time-integrated case (DEV.md 4c C371 slice S2)
+  | "panel"
   | "literature";
 
 interface AppState {

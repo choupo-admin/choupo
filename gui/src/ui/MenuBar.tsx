@@ -203,6 +203,8 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
   const hasVariables = useMemo(
     () => buildVariableRows(caseFiles, null).length > 0 || buildSpecTargets(caseFiles, null).length > 0,
     [caseFiles]);
+  //  the Panel view exists where the case declares system/panelDict or a run published one (C371)
+  const hasPanel = caseFiles.rawFiles?.["system/panelDict"] !== undefined || runResult?.panel !== undefined;
   const mirror = useLiteratureMirror();
   const visibleWorkspaces = visibleWorkspacesFor({
     hasCase: hasCaseOpen(tutorialName),
@@ -212,6 +214,7 @@ export function MenuBar({ availableWidthPx, onRowWidth }: {
     hasPid,
     hasVariables,
     pinchReady,
+    hasPanel,
     hasLiteratureMirror: mirror.kind === "ready",
   }, WORKSPACES);
   /* Every visible workspace is a VIEW of this case now — the two modes left
