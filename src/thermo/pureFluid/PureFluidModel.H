@@ -164,6 +164,19 @@ public:
     virtual scalar lambda(scalar T_K, scalar p_Pa) const;
     virtual scalar sigma (scalar T_K) const;
 
+    // WHICH FORMULATION gives each property this model returns (C378 slice 0,
+    // review DR-01).  One name per property, read by BOTH the package's
+    // announcement and the liquid-property door, so the label a student reads
+    // is the one of the object that computed -- IF97 defines a density, not a
+    // viscosity or a surface tension.
+    virtual std::string densityFormulation() const { return type(); }
+    virtual std::string viscosityFormulation() const
+    { return "none (" + type() + " ships no viscosity formulation)"; }
+    virtual std::string conductivityFormulation() const
+    { return "none (" + type() + " ships no thermal-conductivity formulation)"; }
+    virtual std::string surfaceTensionFormulation() const
+    { return "none (" + type() + " ships no surface-tension formulation)"; }
+
     // Self-check: maximum relative deviation against the underlying
     // formulation's published verification states.  Delegates to the frozen
     // kernel(s) where one exists.  For the thermodynamic + viscosity +

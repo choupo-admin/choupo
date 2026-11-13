@@ -863,7 +863,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         // surfaceTension block); harmless and best-effort for condensation.
         if (thermo.hasSurfaceTension() || !thermo.pureFluidSelections().empty())
         {
-            try { ctx.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, Tsat, P_out, z).value; }
+            try { ctx.sigma = liquidProperty::evaluateUnrecorded(thermo, liquidProperty::Property::surfaceTension, Tsat, P_out, z).value; }
             catch (const std::exception&) { ctx.sigma = 0.0; }
         }
         ctx.rho_l       = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T_f, P_out, z).value;
