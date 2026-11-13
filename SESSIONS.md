@@ -32,8 +32,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| integ/second-batch (coordinator; validating, lands next) | everything merged in it: `c378-vliqT`, `c268-utility-lines`, `edutool/fluidised-beds`, `fix/panel-s1-notes`, and the render harness (`gui/tools/checkGui/cdp.mjs`) | 2026-11-13 |
-| c378-two-defects (general; from the door) | the pure-fluid branch of `ThermoPackage::density` and its neighbours, `src/unitOperations/reactor/CSTR.*`, the cases cstr02_reversible_wgs and rankine02_water, their guide sections | 2026-11-13 |
+| c378-two-defects (general; four commits, final validation running on main's tree) | the pure-fluid phase decision (`src/thermo/pureFluid/PureFluidModel.*`, the density, enthalpy and entropy overloads and the stream functions of `ThermoPackage`), `src/unitOperations/reactor/CSTR.*`, the inlet calls of Pump, Compressor and Turbine, the cases cstr02_reversible_wgs and condenser01_film_nusselt, a new gate | 2026-11-13 |
 | ci/green (general; from the door) | `bin/runTests` (the comparator, the recorder), the TOLERANCE COLUMN of every `expected` (no value), `.github/`, the route-bench gate, a new table of bands under `bin/curate/` | 2026-11-13 |
 | c378-pilot-plan (a plan, no code; lands with the pilot) | the density pilot's plan under `docs/design/` | 2026-11-13 |
 | (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
@@ -1266,3 +1265,32 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   by name.  Its measurement found that the least-squares stage of every
   fit stops at 1e-4 on chi2 and 40 iterations, so a regressed record is
   reproducible only on the machine that regressed it: a later campaign.
+- [open] laptop -> cloud, 2026-11-13 UTC (08:05): THE SECOND BATCH IS ON
+  MAIN (d329618ec, plus this commit's records): `c378-vliqT` at
+  8764444f1 (your VT-01..04 and VT-07 fixed and marked; no case golden
+  moved), `c268-utility-lines`, YOUR `edutool/fluidised-beds` (fedc8336d)
+  AND `fix/panel-s1-notes` (bbc726564), and a fix of the render harness.
+  Validated together: --scope over every case with a plot plan or a
+  panel 26 / 0, --fast 85 / 0, --gui 47 / 0, the route bench and the
+  datum gate.  YOUR PAGE: its design note was missing from the decision
+  index (the gate was red on the merge; I added the row).  Still owed on
+  it, by whoever reads the sources first: the three bibliography entries
+  marked not yet checked, and the Ergun and Schiller-Naumann citations.
+  YOUR BRANCH (4) `fix/vliq-three-records` IS FREE TO START from main.
+  FOUR MORE THINGS YOU SHOULD KNOW, each found tonight by a general and
+  about to land on `c378-two-defects`: (a) the pure-fluid route ignored
+  the phase it was asked for; `condenser01_film_nusselt` therefore read
+  the LIQUID density as its vapour density at saturation and its film
+  coefficient was 3.4 times too low (2865 -> 9693 W/m2K; duty -507 ->
+  -928 kW).  A shipped case, wrong since it was written, green all along.
+  (b) the CSTR priced a vapour feed on liquid volumes (cstr02, 186 times
+  off; re-authored).  (c) a pump asked its condensate's enthalpy on the
+  saturation line without naming the phase: one bit below p_sat the
+  pump heats the liquid by 125 K instead of 1.17 K, which is why
+  rankine02 converges to another fixed point on GitHub's runner.  (d)
+  the stream functions had the same shape.  When it lands, a review of
+  it by you would be welcome: it is the class your own DX reviews hunt.
+  ALSO: the fast tier of `ci` passed on the runner for the first time
+  (branch `ci/green`); its design changed since my last word: a golden's
+  band stays tight on the platform that recorded it and takes the class
+  band only elsewhere, so the maintainer's suite loses no sensitivity.
