@@ -106,14 +106,15 @@ int Pump::solve(const DictPtr& dict,
     //  capacity below is the solvent's, per mole of solution -- the C146
     //  dilute-solution reading, decided as it was before the pilot: by the
     //  component being a dissolved ion without a liquid volume of its own
-    //  (an aqueous bridge and no `Vliq`), and ANNOUNCED.  The case's volume
+    //  (an aqueous bridge and no liquid-volume route in its record: no
+    //  Vliq and no critical constants), and ANNOUNCED.  The case's volume
     //  hypothesis `massWithoutVolume` is read by the DENSITY only; it never
     //  moves this share (a declaration on a component with a liquid Cp left
     //  the density unchanged and raised dT by half before this was split).
     scalar x_ions = 0.0;
     std::string ions;
     for (std::size_t i = 0; i < n; ++i)
-        if (x[i] > 0.0 && thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+        if (x[i] > 0.0 && thermo.liquidVolumeRouteOf(i) == ThermoPackage::LiquidVolumeRoute::none && thermo.comp(i).hasAqueousMapping())
         {
             x_ions += x[i];
             ions   += (ions.empty() ? "" : " ") + thermo.comp(i).name();
@@ -303,7 +304,7 @@ int Pump::solve(const DictPtr& dict,
         if (x_ions > 0.0)
         {
             for (std::size_t i = 0; i < n; ++i)
-                if (thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+                if (thermo.liquidVolumeRouteOf(i) == ThermoPackage::LiquidVolumeRoute::none && thermo.comp(i).hasAqueousMapping())
                     xCp[i] = 0.0;
             solventShare = 1.0 - x_ions;
             for (auto& v : xCp) v /= solventShare;
