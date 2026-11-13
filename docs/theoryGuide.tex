@@ -7717,6 +7717,23 @@ enthalpies agree with Domalski (1972), Sections 6.11 to 6.15, to 0.3~kJ/mol).  \
 dilution, zero ionic strength; the uncertainty of an ion is that of the acid's aqueous enthalpy (0.4 to 1.0~kJ/mol) plus
 the printed step enthalpies.
 
+\paragraph{An estimated formation datum and how a run says it used one.}\label{sec:estimated-species-datum}
+Some entries of a species record are not measurements: Shock (1995) prints entropies that his own correlations
+(Eqs.~13, 16, 39, 40) estimate, and the enthalpies of the ions computed from them inherit the estimate.  Such a datum
+carries a per-value block \code{provenance \{ hfAq \{ origin estimated; method "\ldots"; \} \}} (likewise \code{sAq},
+\code{cpAq}); the origin words that mean ``not measured'' are \code{estimated}, \code{predictive}, \code{assumed} and
+\code{placeholder}.  A datum without the block is read as it always was.  Reading a record is not using it, so the
+engine speaks only where the number enters a result: the sum $\sum_i\nu_i\,\Delta_fH^\circ_i(\mathrm{aq})$ that sets
+the enthalpy datum of an electrolyte (the aqueous ion reference of a salt), and the constant ion heat-capacity tier that
+extends that reference away from $25$~\textdegree C when no Criss--Cobble entry exists.  On first use in a run it prints
+one \code{[estimate] species '<name>'} line per species and datum (the datum, the origin word, the record's own method
+sentence, and what depended on it) and records the same sentence in the result's advisories (category
+\code{provenance}), from which the caveat block and the result's provenance are written.  Nothing moves: the number is
+the record's.  The entropy $S^\circ$ has no consumer in the engine today, so an estimated \code{sAq} is flagged on the
+record and not announced until a run prices an entropy through it.  Validity: a statement about provenance, not a
+property model; the witness is \file{estimatedSpecies01\_announced} and the gate
+\file{check\_estimated\_species\_announced}.
+
 \emph{One scale per family.}  The step enthalpy a record carries (from the work that printed the pK) and the
 difference of the neighbouring species' formation enthalpies are two readings of one quantity, and the gate
 \file{check\_species\_c373} holds them to a per-family tolerance: succinic $0.18$ and $0.06$, fumaric $0.00$ (the

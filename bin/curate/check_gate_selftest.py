@@ -367,6 +367,16 @@ SOURCE_SABOTAGES = [
                "unit's own duty at a trivially perfect closure.  A6 must "
                "catch it.",
     },
+    {
+        "gate": "check_estimated_species_announced.py",
+        "kind": "detection",
+        "file": "src/thermo/electrolyte/SaltFromCatalogue.H",
+        "find": "    const Origin o = originFromWord(origin);\n",
+        "replace": "    const Origin o = originFromWord(origin);\n    if (true) return;\n",
+        "why": "silences the announcement of a species datum that is not a "
+               "measurement.  The witness consumes an estimated hfAq, so arm "
+               "(a) must see the missing line and the missing advisory.",
+    },
 ]
 
 

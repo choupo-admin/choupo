@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  estimatedSpecies01_announced -- WHY THIS CASE EXISTS.
+
+  A species record may mark a formation datum (hfAq, sAq, cpAq) with an origin
+  that is not a measurement (estimated, predictive, assumed, placeholder).  The
+  engine announces such a datum ONCE per species and datum per run, on the
+  [estimate] channel and in the result's provenance, when the run CONSUMES it
+  -- here, when the aqueous ion reference of NaOH (sum nu*hfAq, the enthalpy
+  datum of the electrolyte) is assembled.  Reading a record is not consuming it.
+
+  No shipped catalogue case consumes an estimated formation datum (the 14
+  catalogue species that carry one are organic acid ions no electrolyte case
+  reaches yet), so this case MAKES one on purpose: its case-local
+  constant/species/OH.dat is the catalogue record with ONE addition, a
+  `provenance { hfAq { origin estimated; ... } }` block.  The VALUES are the
+  catalogue's, unchanged, so NaOH's activity surface is the one of
+  enthalpy_naoh_water; the case is an announcement witness, not a claim that
+  the hydroxide enthalpy is estimated (it is a measured NBS value).
+
+  Held by the gate check_estimated_species_announced: it runs this case and
+  requires the announcement text and the provenance entry; a run that did not
+  consume the datum must say nothing.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name      gamma_naoh;
+        type      electrolyteActivity;
+        molality  { from 0.1; to 6.0; n 12; }
+        output    { file estimated_witness_naoh.csv; }
+    }
+);

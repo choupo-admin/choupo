@@ -419,8 +419,11 @@ compared, differences listed); glycylglycine and triglycine have no formation da
 C376 route 2b (Shock 1995, scan read from images): propionic, n-butyric, benzoic, malonic and glutaric acids are new ladders
 (`HPropn`/`Propn`, `HBut`/`But`, `HBenz`/`Benz`, `H2Maln`/`HMaln`/`Maln`, `H2Glut`/`HGlut`/`Glut`; the neutral master carries its own `hfAq`/`sAq`);
 glycolic acid carries DfH -648.06 kJ/mol (the crystal route) and lactic acid/lactate an entropy.  An entropy or an anion enthalpy the
-paper marks as estimated has a per-value `provenance { sAq { origin estimated; method ...; } }` block in the record: the engine does NOT
-yet announce a species' estimated datum on use (design note section 7.3), so treat these as flagged data, not as measurements.
+paper marks as estimated has a per-value `provenance { sAq { origin estimated; method ...; } }` block in the record. A run that CONSUMES
+such a datum (hfAq in the aqueous ion reference of a salt; cpAq on the constant ion-Cp tier) prints one `[estimate] species '<name>'` line per
+species and datum and records it in the result advisories (category `provenance`, so the caveat block and the result's provenance carry it);
+reading a record is not consuming it, and sAq has no consumer yet. Origin words that mean "not measured": estimated, predictive, assumed,
+placeholder. Witness `estimatedSpecies01_announced`, gate `check_estimated_species_announced`.
 C376 route 4 (Alberty 2003, Table 3.2, read from images): glycylglycine (`H2GlyGly`/`HGlyGly`/`GlyGly`) carries DfH -734.25 kJ/mol and an
 entropy-equivalent for the zwitterion from DfG and DfH (CODATA element entropies), the ions by Goldberg's steps.  Alberty's other families are
 compared against the catalogue and not entered (citrate differs by 8 to 13 kJ/mol from Kochergina's; Alberty's phosphate and pyrophosphate differ from

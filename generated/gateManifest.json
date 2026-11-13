@@ -1715,6 +1715,11 @@
       "exit": 0,
       "claim": "check_property_source_witnesses: OK -- 9 (unit, property) sources in 6 witness case(s) are the tags their code takes.  NOT CHECKED: any case outside the witnesses (the goldens' `source` rows will hold those), or whether a source is right.",
       "seconds": 25.7
+    },
+    "check_estimated_species_announced": {
+      "exit": 0,
+      "claim": "check_estimated_species_announced: OK an estimated hfAq consumed by the aqueous ion reference is announced once per run (console + result advisory), a record without provenance and an unconsumed estimated sAq stay silent, diagnostics identical; arms (a)-(d); NOT checked: the cpAq route, physical correctness of any catalogue estimate",
+      "seconds": 0.3
     }
   }
 }

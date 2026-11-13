@@ -7042,6 +7042,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/srcwit.$$
+    # estimated-species gate (2026-11-13, DEV.md 4c C376).  A species formation datum whose provenance is not a measurement is ANNOUNCED once per run when the run consumes it (the aqueous ion reference), in the console and the result advisories; a record read but not consumed, or without provenance, stays silent; no number moves.  Witness: tutorials/props/electrolyte/estimatedSpecies01_announced.
+    if gate_exec "$ROOT/bin/curate/check_estimated_species_announced.py" > /tmp/estspecies.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "estimated-species-announced-gate" "$(head -1 /tmp/estspecies.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_estimated_species_announced.py)\n" "estimated-species-announced-gate"
+        cat /tmp/estspecies.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/estspecies.$$
     # property-route bench gate (2026-11-12, DEV.md 4c C378 slice 0, TR-16).  Every liquid-property route the kernel has (density incl. the reference equations, flat and bare Rackett; viscosity; surface tension; diffusivity), for every component record and the manifest's binaries, over 11 T x 3 P, answers bit for bit what it answered when recorded; a moved record is NAMED.  Goldens cannot show it: no stream table prints a density and most routes no case walks.
     if gate_exec "$ROOT/bin/curate/check_property_route_bench.py" > /tmp/routebench.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "property-route-bench-gate" "$(head -1 /tmp/routebench.$$)"
