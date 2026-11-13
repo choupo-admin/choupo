@@ -31,23 +31,24 @@ License
   profile, distillation stage profile,...) on linear axes.
 
   The unit declares its independent variable via `xAxis`; every other
-  column is drawn as a separate trace.  To keep wildly different scales
-  legible on the same chart we split them by column-name heuristic:
-
-      LEFT axis  (default):  F_*    molar flows           [mol/s]
-                             x_*, y_*  mole fractions     [0, 1]
-      RIGHT axis (y2):       T      temperature           [K]
-                             X      conversion            [0, 1]
-
-  The chart picks the right-axis title from whichever right-side trace
-  is present.  When no column maps to the right axis the secondary axis
-  is hidden.
+  column is a series.  A series never shares an axis with a quantity of
+  another kind: the series are GROUPED by what they are
+  (`case/profileSeries.ts`: temperature, liquid fractions, vapour
+  fractions, activity coefficients, reaction extent, ...) and every group
+  is its own panel, stacked on the shared x axis, with an axis title that
+  is true for what it draws.  A staged column opens on temperature, the
+  liquid fractions of the components that matter and the reaction extent;
+  the other groups are a chip away and every series is in the legend.
 \*---------------------------------------------------------------------------*/
 
 import { useEffect, useMemo, useState } from "react";
-import { Group, SegmentedControl, Stack, Text } from "@mantine/core";
+import { Chip, Group, SegmentedControl, Stack, Text } from "@mantine/core";
 
 import type { UnitProfile } from "../../adapters/SolverAdapter.js";
+import {
+  groupProfileSeries, initiallyDrawn, panelDomains,
+  type ProfileGroup,
+} from "../../case/profileSeries.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "./plotly.js";
 
 export function ProfilePlot(
@@ -78,52 +79,100 @@ export function ProfilePlot(
     );
   }
 
-  const x = active.columns[active.xAxis] ?? [];
-  const seriesKeys = Object.keys(active.columns).filter(
-    (k) => k !== active.xAxis,
+  return (
+    <Stack gap={0} h="100%">
+      {profiles.length > 1 && (
+        <Group justify="center" py={4}>
+          <SegmentedControl
+            size="xs"
+            value={active.unit}
+            onChange={setUnitName}
+            data={profiles.map((p) => ({ label: p.unit, value: p.unit }))}
+          />
+        </Group>
+      )}
+      {/* keyed by unit: the chips and the legend state start from the rule
+          for each unit and are the reader's afterwards */}
+      <ProfileBody key={active.unit} profile={active} />
+    </Stack>
   );
+}
 
-  const onRight = (k: string) => k === "T" || k === "X" || k === "grade_efficiency";
-  const rightLabels = seriesKeys.filter(onRight);
+function ProfileBody({ profile: active }: { profile: UnitProfile }) {
+  const groups = useMemo(
+    () => groupProfileSeries(active.columns, active.xAxis),
+    [active],
+  );
+  const [shown, setShown] = useState<Set<string>>(
+    () => new Set(groups.filter((g) => g.defaultOn).map((g) => g.id)),
+  );
+  const [drawn, setDrawn] = useState<Set<string>>(() => {
+    const d = new Set<string>();
+    for (const g of groups) initiallyDrawn(g, active.columns).forEach((k) => d.add(k));
+    return d;
+  });
+
+  const x = active.columns[active.xAxis] ?? [];
+  const panels: ProfileGroup[] = groups.filter((g) => shown.has(g.id));
+  const domains = panelDomains(panels.map((g) => g.weight));
   // Particle-size distributions (cyclone) read best on a log diameter axis.
   const logX = active.xAxis === "diameter_micron";
 
-  const traces = seriesKeys.map((k, i) => ({
-    type: "scatter" as const,
-    mode: "lines+markers" as const,
-    name: k,
-    x,
-    y: active.columns[k],
-    yaxis: onRight(k) ? ("y2" as const) : ("y" as const),
-    line: {
-      color: PLOT_COLORS.series[i % PLOT_COLORS.series.length],
-      width: 2,
-    },
-    marker: { size: 4 },
-    hovertemplate: `${active.xAxis}=%{x:.3g}<br>${k}=%{y:.4g}<extra></extra>`,
-  }));
+  //  One colour per LEGEND NAME, so a component keeps its colour in the liquid
+  //  and the vapour panel.
+  const colourOf = useMemo(() => {
+    const names: string[] = [];
+    for (const g of groups) for (const k of g.keys) {
+      const l = g.label(k);
+      if (!names.includes(l)) names.push(l);
+    }
+    return (l: string) => PLOT_COLORS.series[names.indexOf(l) % PLOT_COLORS.series.length];
+  }, [groups]);
 
-  const rightTitle = rightLabels.includes("T")
-    ? rightLabels.length > 1
-      ? rightLabels.join(", ")
-    : "T (K)"
-  : rightLabels.includes("grade_efficiency")
-      ? "η (grade efficiency)"
-    : rightLabels.includes("X")
-        ? "X (conversion)"
-      : "";
-  const rightRange: [number, number] | undefined =
-    rightLabels.length === 1 &&
-    (rightLabels[0] === "X" || rightLabels[0] === "grade_efficiency")
-      ? [0, 1]
-    : undefined;
-  const leftTitle = seriesKeys.some((k) => k.startsWith("massFrac"))
-    ? "mass fraction"
-  : seriesKeys.some((k) => k.startsWith("x_") || k.startsWith("y_"))
-      ? "mole fraction"
-    : seriesKeys.some((k) => k.startsWith("F_"))
-        ? "molar flow (mol/s)"
-      : "value";
+  const traceKeys: string[] = [];
+  const traces: any[] = [];
+  panels.forEach((g, pi) => {
+    const ax = pi === 0 ? "" : String(pi + 1);
+    for (const k of g.keys) {
+      const colour = colourOf(g.label(k));
+      const common = {
+        name: g.label(k),
+        x,
+        y: active.columns[k],
+        xaxis: "x",
+        yaxis: `y${ax}`,
+        legendgroup: g.id,
+        legendgrouptitle: { text: g.chip, font: { size: 11 } },
+        visible: drawn.has(k) ? true : ("legendonly" as const),
+        hovertemplate: `${active.xAxis}=%{x:.3g}<br>${k}=%{y:.4g}<extra></extra>`,
+      };
+      traceKeys.push(k);
+      traces.push(
+        g.kind === "bar"
+          ? { ...common, type: "bar" as const, marker: { color: colour }, width: 0.7 }
+          : {
+              ...common,
+              type: "scatter" as const,
+              mode: "lines+markers" as const,
+              line: { color: colour, width: 2 },
+              marker: { size: 4 },
+            },
+      );
+    }
+  });
+
+  const lastY = panels.length <= 1 ? "y" : `y${panels.length}`;
+  const yaxes: Record<string, unknown> = {};
+  panels.forEach((g, pi) => {
+    yaxes[pi === 0 ? "yaxis" : `yaxis${pi + 1}`] = {
+      ...darkLayout.yaxis,
+      domain: domains[pi],
+      anchor: "x",
+      title: { text: g.title, font: { size: 11 }, standoff: 6 },
+      automargin: true,
+      ...(g.range ? { range: g.range } : {}),
+    };
+  });
 
   // Vertical marker lines (e.g. the column's feed stage) + a small
   // text annotation hanging off the top of the plot.
@@ -154,59 +203,85 @@ export function ProfilePlot(
     borderpad: 2,
   }));
 
+  const toggleGroup = (id: string) =>
+    setShown((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  //  The legend click is the reader's, kept in state (a re-render on a chip
+  //  must not undo it); the double-click isolate is not offered.
+  const onLegendClick = (ev: any) => {
+    const k = traceKeys[ev.curveNumber];
+    if (k === undefined) return false;
+    setDrawn((prev) => {
+      const next = new Set(prev);
+      if (next.has(k)) next.delete(k); else next.add(k);
+      return next;
+    });
+    return false;
+  };
+
   return (
-    <Stack gap={0} h="100%">
-      {profiles.length > 1 && (
-        <Group justify="center" py={4}>
-          <SegmentedControl
-            size="xs"
-            value={active.unit}
-            onChange={setUnitName}
-            data={profiles.map((p) => ({ label: p.unit, value: p.unit }))}
-          />
+    <>
+      {groups.length > 1 && (
+        <Group gap={6} px="sm" py={4} wrap="wrap" data-testid="profile-groups">
+          <Text size="xs" c="dimmed">Show</Text>
+          {groups.map((g) => (
+            <Chip
+              key={g.id}
+              size="xs"
+              variant="outline"
+              checked={shown.has(g.id)}
+              onChange={() => toggleGroup(g.id)}
+            >
+              {g.chip}
+            </Chip>
+          ))}
         </Group>
       )}
       <div style={{ flex: 1, minHeight: 0 }}>
-        <Plot
-          data={traces}
-          layout={{
-...darkLayout,
-            title: {
-              text: `Profile  ·  ${active.unit}`,
-              font: {...darkLayout.font, size: 14 },
-            },
-            xaxis: {
-...darkLayout.xaxis,
-              title: { text: active.xAxis },
-...(logX ? { type: "log" as const } : {}),
-            },
-            yaxis: {
-...darkLayout.yaxis,
-              title: { text: leftTitle },
-            },
-            yaxis2:
-              rightLabels.length > 0
-                ? {
-                    overlaying: "y" as const,
-                    side: "right" as const,
-                    title: { text: rightTitle, standoff: 8 },
-                    gridcolor: "transparent",
-                    zerolinecolor: PLOT_COLORS.grid,
-                    linecolor: PLOT_COLORS.axis,
-                    tickfont: { color: PLOT_COLORS.text, size: 11 },
-                    showgrid: false,
-...(rightRange ? { range: rightRange } : {}),
-                  }
-              : undefined,
-            shapes: markerShapes,
-            annotations: markerAnnotations,
-            legend: {...darkLayout.legend, x: 0.02, y: 0.98 },
-          }}
-          config={PLOT_CONFIG}
-          style={{ width: "100%", height: "100%" }}
-          useResizeHandler
-        />
+        {panels.length === 0 ? (
+          <Stack align="center" justify="center" h="100%">
+            <Text c="dimmed" size="sm">Choose a group of series above.</Text>
+          </Stack>
+        ) : (
+          <Plot
+            data={traces}
+            layout={{
+              ...darkLayout,
+              margin: { l: 64, r: 150, t: 40, b: 44 },
+              //  left-aligned: the feed marker's label hangs off the top of the
+              //  plot and a centred title ran under it
+              title: {
+                text: `Profile  ·  ${active.unit}`,
+                font: { ...darkLayout.font, size: 14 },
+                x: 0.01, xanchor: "left",
+              },
+              xaxis: {
+                ...darkLayout.xaxis,
+                title: { text: active.xAxis },
+                anchor: lastY,
+                ...(logX ? { type: "log" as const } : {}),
+              },
+              ...yaxes,
+              shapes: markerShapes,
+              annotations: markerAnnotations,
+              legend: {
+                ...darkLayout.legend,
+                x: 1.01, xanchor: "left", y: 1, yanchor: "top",
+                groupclick: "toggleitem",
+              },
+              bargap: 0.25,
+            }}
+            config={PLOT_CONFIG}
+            style={{ width: "100%", height: "100%" }}
+            useResizeHandler
+            onLegendClick={onLegendClick}
+            onLegendDoubleClick={() => false}
+          />
+        )}
       </div>
-    </Stack>
+    </>
   );
 }
