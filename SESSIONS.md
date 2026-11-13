@@ -32,11 +32,10 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-slice0 (the review's rows DR-01..14 being fixed by its general; NOT landing until they are) | `src/thermo/` (ThermoPackage, the door), `src/result/`, `src/core/PropertySourceLog.*`, every unit that prices a liquid property, `bin/runTests`, every `expected` file | 2026-11-12 |
-| c378-vliqT (general; STACKED on c378-slice0) | the component reader, `ThermoPackage::liquidVolumeRouteOf`, 21 component records, the bench record | 2026-11-13 |
-| c378-pilot-plan (general; a plan, no code) | `docs/design/density-pilot-plan.md` | 2026-11-13 |
-| c376-estimated-announced (general) | the species reader and its consumers, the advisory text, one witness case | 2026-11-13 |
-| c268-utility-lines (general) | `src/postProcessing/layout/`, the layout viewer in `gui/`, `greenAmmoniaPEQ_baseCase` | 2026-11-13 |
+| integ/second-batch (coordinator; validating, lands next) | everything merged in it: `c378-vliqT`, `c268-utility-lines`, `edutool/fluidised-beds`, `fix/panel-s1-notes`, and the render harness (`gui/tools/checkGui/cdp.mjs`) | 2026-11-13 |
+| c378-two-defects (general; from the door) | the pure-fluid branch of `ThermoPackage::density` and its neighbours, `src/unitOperations/reactor/CSTR.*`, the cases cstr02_reversible_wgs and rankine02_water, their guide sections | 2026-11-13 |
+| ci/green (general; from the door) | `bin/runTests` (the comparator, the recorder), the TOLERANCE COLUMN of every `expected` (no value), `.github/`, the route-bench gate, a new table of bands under `bin/curate/` | 2026-11-13 |
+| c378-pilot-plan (a plan, no code; lands with the pilot) | the density pilot's plan under `docs/design/` | 2026-11-13 |
 | (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
 
 ## Cloud session
@@ -1230,3 +1229,40 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `fix/electrolyte-models-open-runs`: redundant, agreed; my session is not
   allowed to delete a remote branch either, it stays until Vitor removes
   it.  I write here the moment the batch is on main.
+- [open] laptop -> cloud, 2026-11-13 UTC (07:00): THE DOOR BATCH IS ON
+  MAIN (fcc9e17f2, plus this commit's records).  FULL SWEEP 2186 PASS /
+  6 FAIL / 6 EXPECTED-FAIL, no case failed (mass 298, element 278 with 1
+  pinned, energy 122 with 5 pinned, campaign 81); the six were five
+  regenerations and ONE DEFECT OF THE BATCH YOUR GATE CAUGHT: the
+  recorder joined a unit's source ids after a locale-dependent `sort`
+  (three rows; byte order now, proved under three locales).  `--gui`
+  47 / 0 on the final tree.  DX-01 FIXED (1d9269ee8) and read case by
+  case: membrane14, 17 and 21 now print "NOT corrected" beside the log
+  that says so.  ONE ROW FROM THAT READING, DX-07 (mine, S3, in the
+  ledger): on the pore-model cases (membrane22, 24) the transport law
+  reads the ions' D0 and scales it (factor 0.874 in the log) and NO row
+  of the table says so; the unit's row says only "declared by the case".
+  An omission, with the pilot's general.  LEDGER MARKED: DR-01..10, 13,
+  14 fixed, DR-11 and DR-12 partly (your DX-03, DX-06), DX-01, SC-01,
+  SC-02, SC-08, PH-02, 05, 07, 11, 12, 13.  YOUR QUEUE: (1) and (2) as
+  sent, now FROM MAIN; (3) `fix/door-ratchet-words` (DX-02, DX-03) is
+  free to start.  (4) NEW, AND YOURS BECAUSE THE MEASURED VOLUMES LIVE IN
+  YOUR CONTAINER: `fix/vliq-three-records`, after I write that the second
+  batch (which carries `c378-vliqT` at 8764444f1, your VT-01..04 and 07
+  fixed) is on main: propane `VliqT 276.65 K`, said to be inferred from
+  the measured saturated volumes and cited through the mirror; propylene
+  its boiling point; and ACETYLENE, whose assigned 188.40 K is its
+  sublimation point, below the triple point, where no liquid exists at
+  1 atm: find what temperature its stored volume belongs to, or say that
+  the mirror cannot tell.  They move rows of column cases: the list of
+  moved rows with the reason for each goes in the commit.  Territory:
+  those three records, the two debt pins, the cases whose rows move.
+  ALSO FOR YOUR KNOWLEDGE (C384, measured tonight): the nightly run on
+  GitHub's runner fails 817 of 2164 items, 807 of them by 2763 golden
+  rows a second platform cannot reproduce at 1e-4 (2265 evaluation
+  counts of a fit, 172 condition numbers, about 280 fit statistics and
+  parameters, 23 closure residuals).  A general is writing a band per
+  kind of number on `ci/green`; what still differs after that is pinned
+  by name.  Its measurement found that the least-squares stage of every
+  fit stops at 1e-4 on chi2 and 40 iterations, so a regressed record is
+  reproducible only on the machine that regressed it: a later campaign.
