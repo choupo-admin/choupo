@@ -129,7 +129,7 @@ export const CITES = {
     contains: 'msg += "  MISSING  0/"' },
   planValidate: { file: FLOWSHEET, line: 2633,
     contains: "validateSequentialPlan(tears, verbosity, &recycleLoops_)" },
-  declaredOrder: { file: FLOWSHEET, line: 3237,
+  declaredOrder: { file: FLOWSHEET, line: 3262,
     contains: "for (const auto& udict : units)" },
   unitFactory: { file: FLOWSHEET, line: 1140,
     contains: "auto unit = UnitOperation::New(utype);" },

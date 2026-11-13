@@ -114,7 +114,7 @@ export const WEGSTEIN_STEPS: readonly LessonStep[] = [
       { step: "The newton branch avoids the redundancy by tearing on "
           + "component molar flows instead, which are mutually independent, "
           + "followed by the temperature and the pressure "
-          + "(Flowsheet.cpp:3656-3665, the pressure at Flowsheet.cpp:3663). "
+          + "(Flowsheet.cpp:3681-3690, the pressure at Flowsheet.cpp:3688). "
           + "The total and the fractions are recovered afterwards.",
         eq: String.raw`x = ( F_1,\ \ldots,\ F_{N_c},\ T,\ P ), \qquad F_i = F z_i`},
     ],
@@ -350,7 +350,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "of them and they are not the same number. The Wegstein class "
       + "defaults to [-5, 0] (src/solver/Wegstein.H:73-74); the recycle loop "
       + "constructs it with [-1, 0] "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3466-3467). A Choupo "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3491-3492). A Choupo "
       + "recycle that declares nothing therefore runs at the gentler clamp.",
   },
   {
@@ -409,7 +409,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
       + "norm of the change in the packed tear vector falls below the "
       + "declared tolerance — a flow in kmol/s, a handful of mole fractions, "
       + "a temperature in kelvin and a pressure in bar, added in quadrature "
-      + "with no scaling (src/unitOperations/flowsheet/Flowsheet.cpp:3555, "
+      + "with no scaling (src/unitOperations/flowsheet/Flowsheet.cpp:3580, "
       + "the norm at Flowsheet.cpp:1905-1914; the pressure is carried in bar "
       + "for exactly this reason, Flowsheet.cpp:1809-1814, since in pascals "
       + "it would swamp everything else). A temperature near 360 dominates a "
@@ -425,11 +425,11 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry, the pressure itself for the pressure entry "
-          + "(Flowsheet.cpp:3720-3739, applied at Flowsheet.cpp:3761).",
+          + "(Flowsheet.cpp:3745-3764, applied at Flowsheet.cpp:3786).",
         eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
-          + "old Wegstein default also had (Flowsheet.cpp:3723-3724)." },
+          + "old Wegstein default also had (Flowsheet.cpp:3748-3749)." },
       { step: "And for the convergence plot the engine publishes neither "
           + "norm. It computes two physical residuals instead — the recycle "
           + "mass imbalance and the recycle energy imbalance, each divided "
@@ -521,7 +521,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "not torn: the vapour fraction sitting on the torn stream is whatever "
       + "the previous sweep left there — the engine says so in its own words "
       + "on the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3844-3845). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3869-3870). So the state "
       + "handed to the first consumer of a tear is an assumption about four "
       + "quantities carrying a fifth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "
