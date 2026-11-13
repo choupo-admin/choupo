@@ -572,8 +572,9 @@ costing
     //  with a dated quotation (vendor, reference, date in `source`).  THE
     //  MACHINES SCALE WITH THE BATCH PLAN (DEV.md 4c C99): each `value` is the
     //  price of ONE machine of its `referenceSize`, and the item costs
-    //  units x value x (the stage's size per unit / referenceSize)^0.6.  The
-    //  building does not scale.  All are in 2026 money, the costing year.
+    //  units x value x (size / referenceSize)^0.6, a batch machine on the
+    //  INSTALLED size and count its `ratedMachine` declares (C389), any other
+    //  on the stage's size.  The building does not scale.  2026 money.
     quotes
     (
         { hvacGrade D;  valuePerSupplyAir 12;  currency EUR;  year 2026;

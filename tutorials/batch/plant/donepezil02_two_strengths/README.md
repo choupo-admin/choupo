@@ -3,7 +3,7 @@
 ## Mission
 
 1. **Explain the base result.**  The plant makes 150 million tablets
-   (34 828 kg) in 115 lots and loses money: NPV −28.96 M EUR.  Find the term
+   (34 828 kg) in 115 lots and loses money: NPV −29.88 M EUR.  Find the term
    of COM_d that makes the loss (compare 2.73 C_OL with 1.23 (C_RM + C_UT) in
    the Economic Appraisal), and use the **Bases** table of the batch plan so
    that 300 kg, 305.9 kg, 168 h, 928 h, 2127 h and 3840 h each mean one thing.
