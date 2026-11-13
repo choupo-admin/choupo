@@ -3535,6 +3535,14 @@ accepts today, and that is a policy call.
 > forbidden and would break every clone); the gate of this slice also
 > refuses, from a pinned commit onward, a commit on main whose author is
 > not a person named in AUTHORS.
+> CONFIRMED BY VITOR the same hour ("Faz isso"), after the read-back of
+> the scope and of the holder line: "Copyright (C) 2026 Vitor Geraldes"
+> (his name with its accent, as the engine's banner prints it), his name
+> alone, on every code file.  A general builds the tool, the gate and the
+> manifest on a branch now and hands back the list of files it would NOT
+> stamp (generated, third-party, unclassified) BEFORE any file is
+> changed: a notice on a file that is someone else's would be the one
+> way this slice could harm the record it protects.
 
 > **THE FOURTH INTEGRATION OF 2026-11-13 LANDED.**  Three branches.
 > (a) C388, THE EDUTOOL "EQUILIBRIUM STAGES OR RATE-BASED?" (the
