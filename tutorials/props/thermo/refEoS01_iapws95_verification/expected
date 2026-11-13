@@ -12,7 +12,7 @@ diag    sat450                 rhoL             890.341249762      1e-4
 diag    sat450                 rhoV             4.81200360126      1e-4
 diag    sat450                 sL               2108.65844688      1e-4
 diag    sat450                 sV               6609.21221328      1e-4
-diag    sat450                 worstCheckRelDev 4.99275183559e-07  1e-4
+diag    sat450                 worstCheckRelDev 4.99275183559e-07  abs:5e-06
 diag    liquid300              T                300                1e-4
 diag    liquid300              checkValues      81                 1e-4
 diag    liquid300              checksReproduced 81                 1e-4
@@ -27,7 +27,7 @@ diag    liquid300              rho              996.556340389      1e-4
 diag    liquid300              s                393.062433815      1e-4
 diag    liquid300              u                112553.334133      1e-4
 diag    liquid300              w                1501.52041506      1e-4
-diag    liquid300              worstCheckRelDev 4.99275183559e-07  1e-4
+diag    liquid300              worstCheckRelDev 4.99275183559e-07  abs:5e-06
 diag    metastableVapour300    T                300                1e-4
 diag    metastableVapour300    checkValues      81                 1e-4
 diag    metastableVapour300    checksReproduced 81                 1e-4
@@ -42,7 +42,7 @@ diag    metastableVapour300    rho              0.0362049665988    1e-4
 diag    metastableVapour300    s                8355.26998547      1e-4
 diag    metastableVapour300    u                2410949.84965      1e-4
 diag    metastableVapour300    w                426.933725072      1e-4
-diag    metastableVapour300    worstCheckRelDev 4.99275183559e-07  1e-4
+diag    metastableVapour300    worstCheckRelDev 4.99275183559e-07  abs:5e-06
 diag    supercritical900       T                900                1e-4
 diag    supercritical900       checkValues      81                 1e-4
 diag    supercritical900       checksReproduced 81                 1e-4
@@ -57,7 +57,7 @@ diag    supercritical900       rho              52.6148011306      1e-4
 diag    supercritical900       s                6590.70432727      1e-4
 diag    supercritical900       u                3232664.93905      1e-4
 diag    supercritical900       w                698.445755151      1e-4
-diag    supercritical900       worstCheckRelDev 4.99275183559e-07  1e-4
+diag    supercritical900       worstCheckRelDev 4.99275183559e-07  abs:5e-06
 diag    extrapolated1500       T                1500               1e-4
 diag    extrapolated1500       checkValues      81                 1e-4
 diag    extrapolated1500       checksReproduced 81                 1e-4
@@ -72,7 +72,7 @@ diag    extrapolated1500       rho              1.44455426899      1e-4
 diag    extrapolated1500       s                9333.71281836      1e-4
 diag    extrapolated1500       u                4526685.54652      1e-4
 diag    extrapolated1500       w                917.243691472      1e-4
-diag    extrapolated1500       worstCheckRelDev 4.99275183559e-07  1e-4
+diag    extrapolated1500       worstCheckRelDev 4.99275183559e-07  abs:5e-06
 diag    co2Sat280              T                280              1e-4
 diag    co2Sat280              checkValues      67               1e-4
 diag    co2Sat280              checksReproduced 67               1e-4
