@@ -5,13 +5,30 @@
 \*-----------------------------------------------------------------------------*/
 /*---------------------------------------------------------------------------*\
   constant/economics -- the prices this appraisal is priced at (DEV.md 4c C44,
-  slice 4).  Currency: EUR per kg of the stream named.
+  slice 4; the three prices replaced by CITED public figures on 2026-11-13).
+  Currency: EUR per kg of the stream named.
 
-  EVERY PRICE BELOW IS AN AUTHOR-SET ASSUMPTION, and none cites a source,
-  because none was read.  They are round figures of the right order chosen
-  so the appraisal can run, NOT market data; a group replaces each with a
-  dated, cited figure before quoting an NPV.  The provenance block of each
-  says exactly that, in the words the engine carries to its output.
+  EVERY PRICE BELOW IS A PUBLIC, DATED, CITED FIGURE, read from the document
+  its provenance block names, with the arithmetic and the exchange rate
+  written beside it.  They are three DIFFERENT KINDS of number and the file
+  says which each is:
+    * ProductNH3 is the EU's IMPORT UNIT VALUE of anhydrous ammonia in 2025
+      (a customs value at the EU border), used here as the market price of
+      CONVENTIONAL (fossil) ammonia; not a price at the gate, not a contract
+      price.  No transaction or contract price of renewable
+      ammonia could be read, so none is assumed: the premium this plant needs
+      is not an input, it is what the engine's break-even prints
+      (`breakEven_price_ProductNH3` in system/postDict);
+    * H2Feed is the regulator's own statement of the average COST of
+      renewable (RFNBO) hydrogen in the EU, with its range -- a production
+      cost estimate current in October 2025.  The source states no delivered
+      price and no pressure: that the plant pays this cost at its fence is
+      THE CASE'S READING, not the source's;
+    * N2Feed is a MODELLED nitrogen PRODUCTION COST (a paper's table), not a
+      merchant price.  It is about 1 % of the raw-material bill here.
+  The ranges the sources span (low and high, each cited) feed the
+  `sensitivity {}` block of the two feasibility cases; they are in the
+  provenance `method` of each price below.
 
   WHAT IS PRICED HERE AND WHAT IS NOT.
     * the two RAW MATERIALS that cross the battery limit: electrolytic
@@ -29,41 +46,45 @@
     The purge (Purge) and the flash gases (LetdownGas, FlashGas) carry no
     price: their hydrogen is lost, which the H2 price already charges, and
     no credit is taken for them as fuel.
+
+  AT THESE PRICES THE PLANT LOSES MONEY, and that is the finding, not a
+  defect: hydrogen at 8 EUR/kg alone costs 0.1803 x 8 = 1.44 EUR per kg of
+  ammonia made, against a market price of 0.53.  The labour rate below is
+  still the one figure in this file that is an assumption (see it).
 \*---------------------------------------------------------------------------*/
 products
 (
     {
         stream    ProductNH3;
-        price     1.00;               // EUR/kg NH3 -- AUTHOR-SET: a "green"
-                                      // premium over grey ammonia, assumed
-        costYear  2026;
+        price     0.530;              // EUR/kg NH3 -- Eurostat, EU import unit value of anhydrous ammonia, 2025
+        costYear  2025;
         provenance
         {
-            origin  "author-set assumption (DEV.md 4c C44), not a market price";
-            method  "round figure chosen for the appraisal to run; replace with a dated, cited price";
+            origin  "Eurostat, Comext database, dataset DS-045409 'EU trade since 1988 by HS2-4-6 and CN8', product CN 28141000 'Anhydrous ammonia', flow IMPORT, reporter EU27, partner extra-EU27, calendar year 2025: value 1 427 171 639 EUR, quantity 2 693 549 t (26 935 494.25 x 100 kg); all twelve months of 2025 are in the data, and the dataset does not state whether the year is final; retrieved 2026-11-13 (dataset updated 2026-11-13) from https://ec.europa.eu/eurostat/api/comext/dissemination/statistics/1.0/data/DS-045409.  This is the EU's IMPORT UNIT VALUE (a customs value at the EU border), used here as the market price of CONVENTIONAL ammonia; it is not a price at the gate, not a contract price, and not a price of renewable ammonia";
+            method  "unit value = value / quantity = 1 427 171 639 EUR / 2 693 549 000 kg = 0.52985 EUR/kg, rounded to 0.530; already in EUR, no exchange rate.  RANGE READ (the sensitivity ends): low 0.439 EUR/kg = USGS, Mineral Commodity Summaries, Nitrogen (fixed) - ammonia, February 2026, p. 1, average price free on board Gulf Coast 2025, 450 USD per short ton / 907.185 kg = 0.4960 USD/kg / 1.12998 USD per EUR (ECB euro reference rate, annual average 2025, https://data-api.ecb.europa.eu/service/data/EXR/A.USD.EUR.SP00.A, retrieved 2026-11-13); high 0.726 EUR/kg = the same Eurostat dataset, January-September 2026 (provisional), value / quantity over the nine months";
         }
     }
 );
 rawMaterials
 (
     {
-        stream    H2Feed;             // electrolytic H2 at 30 bar
-        price     4.50;               // EUR/kg H2 -- AUTHOR-SET assumption
-        costYear  2026;
+        stream    H2Feed;             // renewable (RFNBO) electrolytic H2 at 30 bar
+        price     8.0;                // EUR/kg H2 -- ACER, average COST of RFNBO hydrogen in the EU, October 2025
+        costYear  2025;
         provenance
         {
-            origin  "author-set assumption (DEV.md 4c C44), not a market price";
-            method  "round figure for the delivered cost of electrolytic hydrogen; replace with a dated, cited price";
+            origin  "ACER (EU Agency for the Cooperation of Energy Regulators), 'European hydrogen markets, 2025 Monitoring Report', 2 December 2025, pdf p. 40 (para 78): 'Notably, the average cost of RFNBO hydrogen remains significantly higher at around 8 EUR/kg, ranging between 7-10 EUR/kg (purple area in the graph), depending on the country of origin' (an estimate current in October 2025, which the report bases on cost estimates of a commercial data provider, S&P Global Commodity Insights); the same figure is key finding 5, p. 5: 'At around 8 EUR/kgH2, the average cost of RFNBO hydrogen in the EU'; https://www.acer.europa.eu/sites/default/files/documents/Publications/ACER-2025-European-hydrogen-markets.pdf, retrieved 2026-11-13";
+            method  "taken as published, in EUR/kg, no conversion.  The source states a COST, and no delivered price and no pressure; THIS CASE reads that cost as what the plant pays at its fence for hydrogen at 30 bar -- the case's reading, not the source's: compression to 30 bar and a supplier's margin are not in the source's figure.  RANGE READ (the sensitivity ends): high 10.0 EUR/kg = the top of the report's 7-10 range; low 4.95 EUR/kg = the same report, p. 26, the average price ammonia producers reported they would pay for renewable hydrogen in the second European Hydrogen Bank auction ('4.95 EUR/kg'), a stated willingness to pay, not a transaction.  CROSS-CHECKS READ: 6.17 EUR/kg (European Hydrogen Observatory, 'European average for renewable hydrogen in 2025', https://observatory.clean-hydrogen.europa.eu/, page undated) and about 6 EUR/kg (MIBGAS IBHYX index, January-October 2025, as quoted by ACER p. 41)";
         }
     }
     {
         stream    N2Feed;             // ASU nitrogen, 99.99 % N2, 100 ppm Ar
-        price     0.05;               // EUR/kg N2 -- AUTHOR-SET assumption
-        costYear  2026;
+        price     0.0175;             // EUR/kg N2 -- OIES, modelled nitrogen PRODUCTION COST
+        costYear  2024;
         provenance
         {
-            origin  "author-set assumption (DEV.md 4c C44), not a market price";
-            method  "round figure for the delivered cost of ASU nitrogen; replace with a dated, cited price";
+            origin  "Oxford Institute for Energy Studies, OIES Paper ET40 'Fueling the future: a techno-economic evaluation of e-ammonia production for marine applications' (N. Souissi), October 2024, Table 2 'Relevant costs data' (pdf p. 25), row 'Nitrogen production costs per ton', columns 'Present', six regions: 18.98 (Chile Atacama, PV), 17.68 (Chile Patagonia, wind onshore), 18.87 (Australia, PV), 17.9 (United States, wind onshore), 18.39 (Canada, wind onshore), 17.25 (Middle East, PV), in USD per tonne; https://www.oxfordenergy.org/wpcms/wp-content/uploads/2024/10/ET40-Fuelling-the-future-final.pdf, retrieved 2026-11-13.  A MODELLED production COST of nitrogen, not a price";
+            method  "the highest of the six 'Present' values, Chile (Atacama) PV, 18.98 USD/t / 1000 / 1.08238 USD per EUR (ECB euro reference rate, annual average 2024, the year of the paper, https://data-api.ecb.europa.eu/service/data/EXR/A.USD.EUR.SP00.A, retrieved 2026-11-13) = 0.01754 EUR/kg, rounded to 0.0175; the only nitrogen figure that could be read.  RANGE READ (the sensitivity ends): the table's 'Present' range, low 17.25 USD/t = 0.01594 EUR/kg (15.94 EUR/t), high 18.98 USD/t = 0.01754 EUR/kg (17.54 EUR/t)";
         }
     }
 );

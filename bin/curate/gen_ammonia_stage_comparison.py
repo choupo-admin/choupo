@@ -55,12 +55,12 @@ under a model change.
 WHAT IT DOES NOT CLAIM.  The "why" column is authored prose.  It is held to
 the runs where a number is substituted into it, and every DIRECTION it states
 (less conversion, more recycle, a hotter last bed, a plant losing money in
-every year, the heat recovery exceeding the whole NPV difference, ...) is a
+every year, the heat recovery exceeding the plant-made part of the NPV difference, ...) is a
 `claim()` the runs must satisfy or the script fails; but a sentence can still
 be wrong about the physics in a way no direction catches.  The bed/Gibbs
 equilibrium difference is traced to three causes whose shares are NOT
 separated (said in the table).  Nothing here says either stage's answer is
-right -- both rest on the same author-set prices.
+right -- both rest on the same cited prices (constant/economics, public figures since 2026-11-13).
 
 SABOTAGES (by hand, 2026-10-12; each restored afterwards, each caught):
   S1  a stale number: the committed FCI cell for the basic design edited
@@ -436,7 +436,8 @@ def build(A, B, C, sfA, sfC, salA, salC):
       "The feasibility flowsheet has no feed/effluent exchanger *by construction* — its converter "
       "feed is heated by molten salt bought as a utility, which its own pinch pass says the next "
       "stage can recover — and this case builds that exchanger. That one flowsheet decision is worth "
-      "more than the whole NPV difference; the model refinements (kinetic beds, Ergun, Kern, one "
+      "more than the part of the NPV difference that the plant's own changes make (the difference "
+      "less the start-up years, a changed assumption); the model refinements (kinetic beds, Ergun, Kern, one "
       "converter shell, a costed catalyst) together move the NPV the OTHER way. The appraisal's "
       "start-up years are a changed assumption, measured separately below.")
     w("")
@@ -739,11 +740,19 @@ def build(A, B, C, sfA, sfC, salA, salC):
     w("")
     #  The prose around the tables makes claims about these numbers; hold it to them.
     hr, mf, sc = bykind["heat recovery built"], bykind["model fidelity"], bykind["scope (not costed before)"]
-    if not (hr > npvC - npvA > 0 and mf < 0 and sc < 0 and mf + sc < 0):
-        fail("the prose says the heat recovery built exceeds the whole NPV difference and the model "
+    ca = bykind["changed assumption"]
+    #  2026-11-13 (cited prices, DEV.md 4c): at the author-set prices the heat recovery exceeded the
+    #  WHOLE difference; at the cited prices (hydrogen 8 EUR/kg) the plants lose far more per year, the
+    #  ramp-up gains more, the start-up years are worth about half the difference, and the heat recovery
+    #  exceeds what is left of it, the part the PLANT's own changes make.  The direction stated now is
+    #  the one that holds at both price sets: more than the difference less the start-up years.
+    if not (hr > npvC - npvA - ca > 0 and mf < 0 and sc < 0 and mf + sc < 0):
+        fail("the prose says the heat recovery built exceeds the part of the NPV difference that the "
+             "plant's own changes make (the difference less the start-up years) and the model "
              "refinements and the catalyst's scope move it the other way; the numbers no longer say so")
     w(f"**So:** building the heat recovery the feasibility flowsheet left out is worth {dlt(0.0, M(hr))} "
-      f"M EUR — more than the whole difference. The model refinements together are worth "
+      f"M EUR — more than the part of the difference the plant's own changes make "
+      f"({dlt(M(npvA), M(npvC - ca))} M EUR, the difference less the start-up years). The model refinements together are worth "
       f"{dlt(0.0, M(mf))} M EUR (the converter shell around a catalyst volume "
       f"{f(vcat / vA['V_R'], 1)} times the space-velocity rule's, the interbed coolers, less steam, "
       f"more refrigeration), costing the catalyst the feasibility left out {dlt(0.0, M(sc))}, and the "

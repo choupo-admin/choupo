@@ -38,9 +38,11 @@ function econ(inputs: EconomicSensitivityInput[] | undefined, NPV = -500e6): Eco
   };
 }
 
-//  The 150 bar witness's three widest rows (greenAmmonia02_feasibility150bar,
-//  golden `sens_` rows), in the order the engine published them, plus one
-//  narrow row the engine put LAST.
+//  FIXTURE rows (nothing here reads a case): the 150 bar witness's three widest
+//  rows as the golden `sens_` rows had them at the former author-set prices
+//  (greenAmmonia02_feasibility150bar, before 2026-11-13; its prices and ends
+//  are cited public figures now and its rows are different numbers), in the
+//  order the engine published them, plus one narrow row the engine put LAST.
 const H2 = row({ input: "price.H2Feed", kpiKey: "price_H2Feed", baseValue: 4.5,
   valueLow: 3.6, valueHigh: 5.4, NPV_low: -24603531.9342, NPV_high: -961599656.603,
   NPVswing: 936996124.669 });
