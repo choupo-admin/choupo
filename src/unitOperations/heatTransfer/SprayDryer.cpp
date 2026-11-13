@@ -596,7 +596,7 @@ int SprayDryer::solve(const DictPtr& dict,
     if (!multiSolvent)
         PropertySourceLog::instance().useHere("liquidDensity", solv.Vliq() > 0.0 ? liquidSource::solventVliqFlat
             : NamedSource{ liquidSource::dropletDensityFallback.id, liquidSource::dropletDensityFallback.label },
-            "bypass", took(rho_L), solv.Vliq() > 0.0 ? "not applied" : "");
+            liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), solv.Vliq() > 0.0 ? "not applied" : "");
     if (multiSolvent)
     {
         //  The solvent liquid's density at its feed composition: molar
@@ -614,7 +614,7 @@ int SprayDryer::solve(const DictPtr& dict,
         if (!(all && V > 0.0))
             PropertySourceLog::instance().useHere("liquidDensity", liquidSource::dropletDensityFallback);
         else
-            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::solventsVliqIdealMix, "bypass", took(rho_L), "not applied");
+            PropertySourceLog::instance().useHere("liquidDensity", liquidSource::solventsVliqIdealMix, liquidProperty::statedDatumTemperatures(thermo, xs), "", "bypass", took(rho_L), "not applied");
         if (!all)
             AdvisoryLog::instance().add("model", "warning",
                 "sprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "'",

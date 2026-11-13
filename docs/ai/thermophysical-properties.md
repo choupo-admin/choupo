@@ -87,8 +87,9 @@ numerical review):
   carry a `Vliq` whose temperature no source states (pinned debt);
 * the units that read `Vliq` themselves (pump, pressure exchanger, CSTR,
   liquid PFR, crystallisers, spray dryer) take the stored datum flat, at
-  whatever `VliqT` it belongs to; their table line says "25 C molar
-  volume", which is true only for a record without `VliqT`;
+  whatever `VliqT` it belongs to; their table line names the records that
+  state one ("molar volume at the temperature its record states (CH4 at
+  111.66 K; any other at 25 C)") and says "25 C" only when none does;
 * water without `pureFluids`: +2.0 % at 273.16 K, -3.5 % at 373.16 K,
   -6.5 % at 573.16 K, no 4 C maximum, -2.1 % at 500 bar;
 * water-ethanol viscosity with no interaction parameter: -59.7 % at

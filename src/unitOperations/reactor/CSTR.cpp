@@ -28,6 +28,7 @@ License
 
 #include "CSTR.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "CatalystPellet.H"
 #include "ReactorOutlet.H"
 #include "core/Advisory.H"
@@ -249,7 +250,7 @@ int CSTR::solve(const DictPtr& dict,
         V_mol_in += z_in[i] * thermo.comp(i).Vliq();
     }
     const scalar Q = F_in * V_mol_in;        // m³/s (feed volumetric flow)
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, "bypass", took(V_mol_in), "not applied");
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(V_mol_in), "not applied");
     const scalar tau = V_R / Q;              // s    (residence time)
 
     if (verbosity >= 3)
@@ -665,7 +666,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         V_mol_in += z_in[i] * thermo.comp(i).Vliq();
     }
     const scalar Q   = F_in * V_mol_in;      // m^3/s
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, "bypass", took(V_mol_in), "not applied");
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(V_mol_in), "not applied");
     const scalar tau = V_R / Q;              // s
 
     // Inlet enthalpy flow [W] on the ELEMENTS datum -- only when non-isothermal --

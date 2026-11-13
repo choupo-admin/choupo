@@ -2576,8 +2576,12 @@ reads the datum as stored.  The Poynting factor keeps its constant-volume
 form with the stored datum.  The units that still read the volume
 themselves (pump, pressure exchanger, CSTR, liquid PFR, crystallisers,
 spray dryer; \S\ref{sec:liquid-property-sources}) read the datum flat, at
-whatever temperature it belongs to; they move to the one door in their own
-slice.
+whatever temperature it belongs to, and their line in the run's table of
+liquid-property sources names the records that state one (``molar volume at
+the temperature its record states (CH$_4$ at 111.66\,K; any other at
+25\,$^\circ$C)''); they move to the one door in their own slice.  The
+door's own label is generated the same way, from the route and the datum's
+temperature, in one function.
 
 \paragraph{What it does not fix.}  A sealed case carries its own copy of
 each record, frozen by its seal; the correction reaches it when the seal is
