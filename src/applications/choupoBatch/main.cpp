@@ -96,7 +96,7 @@ Description
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 #include "postProcessing/panel/PanelPass.H"
-
+#include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <variant>
 #include <algorithm>
 #include <cmath>
@@ -183,7 +183,7 @@ try
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)
     electrolyte::AqueousVolumetricModel::registerBuiltins();   // the volumetric-model slot (rung 0/1)
-    PureFluidModel    ::registerBuiltins();   // pure-component absolute props (IF97)
+    PureFluidModel    ::registerBuiltins();   liquidProperty::DensityMethod::registerBuiltins();   // pure-fluid models (IF97); the liquid-density methods (C378 pilot)
     EquationOfState ::registerBuiltins();
     TransportModel  ::registerBuiltins();
     SurfaceTensionModel::registerBuiltins();

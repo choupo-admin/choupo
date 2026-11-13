@@ -2801,6 +2801,83 @@ its numerical review; do not size on them in silence:
 These are the targets of the slices that follow; this one only makes them
 visible where they are used.
 
+\subsection{The liquid density as methods: resolution and precedence}\label{sec:liquid-density-methods}
+
+The pilot of the kernel's reorganisation (DEV.md 4c C378;
+\code{docs/design/density-pilot-plan.md}) serves ONE property, the liquid
+density, through \emph{methods}: code objects of one base,
+\code{DensityMethod} (\code{src/thermo/liquidProperty/}), registered by an
+explicit factory and called through a second entry of the door,
+\code{liquidProperty::density(const Request\&)}.  A method answers one
+request --- the density of a set of constituents at $(T,P)$ with the phase's
+own mole fractions --- and returns, with the number, its identifier, the
+words a student reads (written by the method that computed, never by the
+consumer), its leaves and the share each carries, whether pressure entered,
+and the three statements of quality.  The entry is migration scaffolding:
+only the pump and the CSTR call it, and \code{liquidProperty::evaluate}
+keeps serving every other consumer unchanged.
+
+\paragraph{Leaves and set methods.}  A \emph{leaf} is bound to one
+component and answers its liquid molar volume $v_i$; a \emph{set method}
+answers the density of the whole set.  The leaves:
+\begin{itemize}
+\item \code{recordVolume} --- the component record's own volume on the
+  route its data support, which the leaf's identifier names
+  (\code{recordVolume.anchoredRackett}, \code{.flatVliq}, \code{.bareRackett}:
+  the route is a fact of the record, read by \code{liquidVolumeRouteOf}) (the three routes of the paragraph \emph{The
+  one door} above: the record's \code{Vliq} at \code{VliqT} carried in $T$ by
+  Rackett's shape; the same volume held flat when the record has no critical
+  constants; Rackett alone, an estimate).  They call the package's
+  \code{liquidMolarVolumeOf}, so they are today's numbers, bit for bit.
+  Pressure is not applied.  Above the component's critical temperature the
+  volume is refused by name: a hard limit.
+\item \code{pureFluid} --- the case's \code{pureFluids} selection (IF97, or a
+  Helmholtz record by name) on its liquid branch
+  (\S\ref{sec:liquid-density-reference-leaf}).  The selection is an explicit
+  act of the case: it pins the component's leaf in every set.
+\end{itemize}
+The set method of the pilot's first step is additive volumes,
+\code{idealMixing}:
+\begin{equation}
+  \rho \;=\; \frac{\sum_{i\in S} x_i M_i}{\sum_{i\in S} x_i\, v_i(T,P)},
+  \qquad x \text{ normalised over } S,
+  \label{eq:liquid-density-ideal-mixing}
+\end{equation}
+term for term the arithmetic of the package's own liquid branch, so over the
+record leaves the two agree to the last bit (\code{check\_property\_route\_bench}
+counts it at every state of its grid).  It has no excess volume: for water +
+ethanol at 0.1\,MPa the measured mixture is about 1.8\,\% denser at
+298.15\,K, and no leaf can recover that.
+
+\paragraph{Resolution: once per constituent set, by facts.}  The
+constituent set $S$ of a request is the components with $x_i>0$ (one
+definition of ``present'' in the kernel).  The method is resolved at the
+set's \emph{first} request and frozen for the run --- a function of $S$ and
+of the data the case and the catalogue hold, never of $T$, $P$ or the
+amounts: there is no switch on a mole fraction.  The precedence is the routes
+record's rule~4:
+\begin{enumerate}
+\item a measurement the case marks for use (\S\ref{sec:liquid-density-measured});
+\item a record law for exactly $S$: for one constituent, the case's
+  \code{pureFluids} selection, else a reference equation that names it;
+  for two or more, a solution record (\S\ref{sec:liquid-density-solution-law});
+\item \code{idealMixing}, one leaf per constituent, each by
+  \code{pureFluid} $>$ \code{referenceEquation} $>$ the record's volume route
+  $>$ \code{massWithoutVolume} (only when declared,
+  \S\ref{sec:liquid-density-mass-without-volume}); a declared Henry solute
+  has no pure-liquid leaf (its volume in the liquid is a partial molar volume);
+\item refusal, naming every method passed over and why, and the remedy (a
+  volume for each constituent, or a solution record named by its file,
+  \code{parameters/solution/<set>.dat}).
+\end{enumerate}
+A resolution is kept per package identity and set for the run; a package met
+for the first time (another pass of an outer driver builds its own) resolves
+its sets again, and a set that would resolve to a \emph{different} method
+than earlier in the run is refused: the pass changed which data exist, which
+the run cannot hide.  The same liquid can therefore carry two printed
+densities while the migration lasts --- a valve on the slice-0 wrapper and a
+pump on the methods --- and the table's \code{[twice]} line says so.
+
 \section{Heat capacity}\label{ch:heat}
 
 The molar heat capacity is parametrised as a polynomial in temperature:

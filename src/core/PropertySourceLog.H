@@ -297,6 +297,11 @@ public:
 
     bool empty() const { return used_.empty() && declared_.empty() && parameters_.empty(); }
 
+    //  The run's number: it changes at every clear(), so a cache that must
+    //  live for one run (the liquid-density resolutions, C378 pilot) knows
+    //  when a new run began.
+    unsigned generation() const { return generation_.load(std::memory_order_relaxed); }
+
     //  The table the log prints, with the mismatches; nothing when empty.
     void printUsed(std::ostream& os) const;
     //  The result block (a leading ",\n" like the other optional blocks), or

@@ -107,6 +107,25 @@ Every run prints, just before its result block, one line per unit:
 * There is NO key today to declare a measured density, a solution
   correlation, `massWithoutVolume` or `neglectedIn`.  Do not write them.
 
+## 3b. The liquid density as methods (C378 pilot)
+
+The pump and the CSTR take their liquid density from the kernel's METHODS
+(`src/thermo/liquidProperty/`), through `liquidProperty::density`; every
+other unit stays on the slice-0 wrapper (section 2).  The method is chosen
+once per constituent set (the components with x > 0), at the set's first
+request, and frozen for the run -- never by T, P or the amounts:
+
+| method | kind | what it answers |
+|---|---|---|
+| `recordVolume` (its id names the route: `recordVolume.anchoredRackett`, `.flatVliq`, `.bareRackett`) | leaf | the record's `Vliq` on its route (anchored on Rackett at `VliqT`; flat; Rackett alone, an estimate); no pressure |
+| `pureFluid` | leaf / one-constituent set | the case's `pureFluids` selection, liquid branch, with pressure |
+| `idealMixing` | set | additive volumes over one leaf per constituent; no excess volume |
+
+Precedence for a set: a marked measurement; a record law for exactly the set
+(one constituent: `pureFluids`, else a reference equation; two or more: a
+solution record); `idealMixing`; refusal naming every method passed over and
+the remedy.  A declared Henry solute has no pure-liquid leaf.
+
 ## 4. Known deviations -- do not size on them silently
 
 Measured (docs/design/thermophysical-property-routes.md section 1.2 and its
