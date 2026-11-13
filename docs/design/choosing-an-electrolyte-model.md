@@ -142,7 +142,7 @@ ion pair at low I).
   (Review 2026-11-12, origin/main 4a3d79cca: CONFIRMED, src/propertyOps/Speciate.cpp:365 reads
   `dict->subDict("output")->lookupWord("file")` unconditionally and writes the CSV before the
   diagnostics at :376.)
-* (Review 2026-11-12: finding 1 CONFIRMED, src/thermo/FitGrade.H:126-129 appends the fixed phrase "with nothing held out" to every record that carries a `fitGradeCap`, without reading the record's `heldOut` block; ElectrolyteFit.H:70-74 says the interleaved rows "cannot contradict" the fit, so the intent is "nothing that could contradict it", and the sentence drops that qualifier.)
+* (Review 2026-11-12: finding 1 CONFIRMED, src/thermo/FitGrade.H:127-130 appends the fixed phrase "with nothing held out" to every record that carries a `fitGradeCap`, without reading the record's `heldOut` block; ElectrolyteFit.H:70-74 says the interleaved rows "cannot contradict" the fit, so the intent is "nothing that could contradict it", and the sentence drops that qualifier.)
 * The review's EL-01 (single-salt eNRTL off 25 C) stands; the page works at 25 C only and says
   so in its limits.
 

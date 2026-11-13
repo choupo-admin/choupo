@@ -214,7 +214,7 @@ surface pressure, so elevation and friction are not counted twice); Claus
 the 2 : 1 is forced by the declared air rate and the O and H balances, not
 chosen by the minimisation; species list is the FIRST assumption, ideal gas
 the second); sour water (m = A n is master TOTALS in moles, as
-`ThermoPackageBuilder.cpp:1567` defines it; the master balance on one basis;
+`ThermoPackageBuilder.cpp:1568` defines it; the master balance on one basis;
 γ on the formed species in the mass-action law; the table no longer puts
 stage 1's pH beside stage 2's bisulfide — stage 1 carries no sulfide; the
 anchor is Edwards' PREDICTED column, not his measurements, and the case
@@ -225,7 +225,7 @@ ideal for NRTL, Λ = 1 for Wilson, and UNIQUAC keeps its combinatorial term —
 through τ too; X_m defined; a missing main-group pair CAN be regressed, as a
 new named parameterisation); COSMO-SAC (contacts are Boltzmann-weighted; α',
 c_HB and σ_HB were regressed on mixtures; φ and θ defined as
-`CosmoSac.cpp:177-178` forms them); property origins (MW is a sum of atomic
+`CosmoSac.cpp:178-179` forms them); property origins (MW is a sum of atomic
 weights; s_298 is measured only where a record cites a measurement; ω is
 DEFINED at T_r = 0.7 and here comes from Lee–Kesler, as
 `EstimateComponent.cpp:359` prints; the table shows totals, not a group sum;

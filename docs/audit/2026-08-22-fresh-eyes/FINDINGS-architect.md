@@ -393,20 +393,20 @@ records, which have *"zero golden coverage"*.
 
 ### A6b. An eighth gate: the only failing branch is behind a flag nobody passes
 
-`bin/curate/check_groups.py:94-96`:
+`bin/curate/check_groups.py:96-98`:
 
     if args.strict and missing:
         return 1
     return 0
 
-`--strict` is opt-in (`check_groups.py:61`).  `bin/runTests:2782` invokes the
+`--strict` is opt-in (`check_groups.py:63`).  `bin/runTests:2782` invokes the
 script bare.  The gate can print `[check_groups] MISSING a UNIFAC groups block`
 and still be scored `PASS groups-gate`.  Its own docstring says *"It is NOT
 wired into bin/runTests"* — but it is, at line 2782, as a scored gate.
 
 **Category, per philosophy §5a**: BUG, in the verification machinery.  Not
 architectural incompleteness — the correct form exists three files away
-(`check_caveat_surface.py:131-134` returns 1 for exactly this condition, saying
+(`check_caveat_surface.py:133-136` returns 1 for exactly this condition, saying
 *"a check that cannot run must not pass"*).
 
 ## A7. THE GIBBS DIRECT MINIMISER REPORTS A CONVERGENCE IT NEVER COMPUTED — and a golden pins the fabrication
@@ -563,7 +563,7 @@ from being trusted.
 The plant runs green under its existing seal.  A re-seal refreshes its
 component mirrors from today's catalogue, where at least one component now
 declares `aqueousSpeciation <set>` -- the ThermoResolver dispatch
-(ThermoPackageBuilder.cpp:1873) then classifies the system as reactive-shaped,
+(ThermoPackageBuilder.cpp:1874) then classifies the system as reactive-shaped,
 and the reactive electrolyteGammaPhi slice serves ionic davies only, refusing
 the plant's declared Pitzer by name (line 514).  Both behaviours are settled
 contracts individually; their collision is new: a SEALED case whose

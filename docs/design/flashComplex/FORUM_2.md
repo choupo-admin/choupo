@@ -17,7 +17,7 @@ rewrite into the corpus form).
 > I will be brief, because the finding is large and needs no ornament.
 >
 > You declare five masters and two solids.  I went and read the builder.  At
-> `ThermoPackageBuilder.cpp:690` there is this:
+> `ThermoPackageBuilder.cpp:691` there is this:
 >
 > ```
 > apparent component '<X>' carries TWO candidate marker elements (C, Ca)
@@ -72,7 +72,7 @@ rewrite into the corpus form).
 > solidPhases ( calcite  ammoniumBicarbonate );
 > ```
 >
-> and the builder, at `ThermoPackageBuilder.cpp:248`, prints:
+> and the builder, at `ThermoPackageBuilder.cpp:249`, prints:
 >
 > ```
 > [builder] chemistryDict solidPhases lists 2 phases but the single-salt
@@ -141,8 +141,8 @@ Six objections.  **Five confirm; one is editorial.**
 
 | # | finding | status | severity |
 |---|---|---|---|
-| 1 | BOTH of the case's solids (CaCO3, NH4HCO3) fall into the "two marker elements" refusal; the message itself names the missing slice | **CONFIRMED** `ThermoPackageBuilder.cpp:690` | **structural** — this is the second mandatory slice |
-| 2 | `chemistryDict` with two solids: the adapter honours the FIRST and ignores the rest, with a warning.  The list order decides the physics | **CONFIRMED** `ThermoPackageBuilder.cpp:248` | high |
+| 1 | BOTH of the case's solids (CaCO3, NH4HCO3) fall into the "two marker elements" refusal; the message itself names the missing slice | **CONFIRMED** `ThermoPackageBuilder.cpp:691` | **structural** — this is the second mandatory slice |
+| 2 | `chemistryDict` with two solids: the adapter honours the FIRST and ignores the rest, with a warning.  The list order decides the physics | **CONFIRMED** `ThermoPackageBuilder.cpp:249` | high |
 | 3 | "the aggregate is exact by construction" is false by 0.00056 log (inside the 0.002 uncertainty, but the sentence is a false theorem) | **CONFIRMED** by calculation | medium |
 | 4 | the masters declared in the corpus have only ever been `Acetate` and `NH4`; this case declares FIVE — unexercised territory | **CONFIRMED** (tutorial sweep) | medium |
 | 5 | the `README.md` in `constant/chemistry/` does not say what is deliberately NOT there (mineral solubility) | **CONFIRMED** by reading | medium — pedagogical |

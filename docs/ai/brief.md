@@ -457,5 +457,5 @@ students' approved files are the ground truth: **do not regenerate the case.**
                          replace or add into rawFiles/extraFiles, parse-validated dicts, no delete);
                          gui/src/ui/ClipboardBridge.tsx:80-93 (changed files applied, then Complete 0/ hint)
   §10 ORPHAN / MISSING . src/unitOperations/flowsheet/Flowsheet.cpp:2412-2441,2464 (0/ completeness refusal)
-  §10 init0 no overwrite src/applications/choupoSolve/main.cpp:537-538; gui/src/case/completeZero.ts:20-28
+  §10 init0 no overwrite src/applications/choupoSolve/main.cpp:537-538; gui/src/case/completeZero.ts:48-56
 -->

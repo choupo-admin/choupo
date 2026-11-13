@@ -100,7 +100,7 @@ and fails on a record saturation read in any other):**
 |---|---|
 | `SaturationCurve.cpp` | the one home itself: the record answers where no method is declared and outside the method's window |
 | `Component.cpp:1240` | the record's own formation-entropy leg at 298.15 K, inside `Component`, below the package; a flagged component's entropy is priced by the method when pure |
-| `ThermoPackageBuilder.cpp:1270` | the reactive electrolyte builder (`electrolyteGammaPhi`); that formulation REFUSES a `pureFluids {}` block (`ThermoPackageBuilder.cpp`, "transport/pureFluids on formulation ... is not wired natively"), so no flagged component reaches it |
+| `ThermoPackageBuilder.cpp:1271` | the reactive electrolyte builder (`electrolyteGammaPhi`); that formulation REFUSES a `pureFluids {}` block (`ThermoPackageBuilder.cpp`, "transport/pureFluids on formulation ... is not wired natively"), so no flagged component reaches it |
 | `Speciate.cpp:584` | a props op reading a BARE record (`database()->loadComponent("water")`): no package, so no declared method |
 | `FreezingPoint.cpp:87` | a props op building its own `SolidPhase` from a bare record: its liquid leg and its crystal read the same record, consistent by construction |
 | `Heater.cpp:385,391`, `PhaseChanger.cpp:81` | the dome bisection (150 .. 1200 K) for a dominant component that is NOT effectively pure.  A flagged component that IS pure already takes `pureFluid(dom).T_sat` on the line above; a flagged component in a mixed phase is refused by the enthalpy route (`pureFluidRoute`, "IF97 is a pure-water method") before the bisection is reached.  Routing it would only make every bracket trial outside 273.15 .. 647.096 K announce a substitution about a temperature no answer sits at |

@@ -182,7 +182,7 @@ Each row below is the same disease: a value that depends on solver history or fa
 | `Wilson.cpp:264`, `UNIFAC.cpp:291-293`, `NRTL.cpp:404,410`; DistillationColumn.cpp:516-521 | No policy for negative or unnormalised x: NaN, branch switches, dropped terms; the two stageK branches price one trial differently | Non-virtual `ActivityModel::gamma` wrapper projecting x⁺ = max(x,0)/Σ, announced once; delete the per-model guards | Gate arm: each model, x = (0.6, 0.41, −0.01) gives the same γ as the projected x, finite |
 | `ElectrolyteActivity.cpp:74-78` | γ_w jumps by 1/x_w when x_s crosses 0 with an antisolvent present | x_wb = x_w/(x_w + x_s), no `xs > 0` gate (byte-identical for binaries) | γ_w continuous at x_s = 0 for crystalliser11's liquid |
 | `UNIFAC.cpp:168, 305, 322` | A groupless H2 leaks into the other components' combinatorial; −993 at x_H2 = 0.999 | Combinatorial on the grouped sub-mixture, l = 0 for groupless | acetonePlant and acetone05: γ of acetone independent of x_H2 |
-| `CosmoSac.cpp:116-131` | 500-iteration cap reached silently; absolute test on G | Relative test on ln G at 1e-12; throw or announce at the cap | cosmoSAC01 unchanged; d ln γ/dT smooth by finite differences |
+| `CosmoSac.cpp:117-132` | 500-iteration cap reached silently; absolute test on G | Relative test on ln G at 1e-12; throw or announce at the cap | cosmoSAC01 unchanged; d ln γ/dT smooth by finite differences |
 | `ElectrolyteActivity.H:198-211` | Piecewise-linear average Cp: dH/dT steps at the nodes | PCHIP, or an analytic Cp(T) integral | dH/dT continuous at 333/373/423/473 K |
 
 ### Rank 10: Tear accelerators: projection and scaling (class D; medium/low)

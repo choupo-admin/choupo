@@ -111,8 +111,8 @@ CORS header, so the student downloads it and loads it.  The page then:
    clean is always shown capped at warning.
 
 Every number of the rule is read back from the pipeline's source by
-`databaseToParametersFit.test.ts` (`pairs_c283.py:71, 86, 87, 254`,
-`pairs_px.py:68, 71`, `bin/choupo-curate:109`), and `gradeOf`/`capOf` are
+`databaseToParametersFit.test.ts` (`pairs_c283.py:73, 86, 87, 254`,
+`pairs_px.py:70, 71`, `bin/choupo-curate:109`), and `gradeOf`/`capOf` are
 compared with `pairs_c283.grade_of` / `cap_grade` run in Python.
 
 **Tested how.**  The browser runs the WASM build, which was NOT built here
@@ -153,8 +153,8 @@ prints the commit and the date.
 ## 5. What was verified about the pipeline, and one correction to the brief
 
 Read in this tree: C300 rules 1, 2 and 4 are implemented
-(`src/thermo/FitGrade.H`, `pairs_c283.py:147`, `ReviewRecord.cpp`); rule 3
-applies to NEW promotions (`pairs_c283.py:162`, `NOT_PROMOTED_GRADES`), but
+(`src/thermo/FitGrade.H`, `pairs_c283.py:149`, `ReviewRecord.cpp`); rule 3
+applies to NEW promotions (`pairs_c283.py:164`, `NOT_PROMOTED_GRADES`), but
 the 17 severe NRTL records promoted before it are still in the default
 catalogue (`binary-pairs-from-open-measurements.md:1335`, "measured, not
 done").  The page says exactly that; the brief's sentence "severe leaves the

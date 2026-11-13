@@ -356,7 +356,7 @@ acetonePlant and acetone03_luyben_reaction_section
 flash12_nh3_acetic_ethanol_reactive (`idealMolecularVLE`),
 esterification2sector and crystalliser09_KHT_KCl_series (`idealBinaryPair`).
 Parse sites: ApproximationAuthorisation.H:114-150 (two words) and
-ThermoPackageBuilder.cpp:1095-1105 (`idealMolecularVLE`); both read `reason`
+ThermoPackageBuilder.cpp:1096-1106 (`idealMolecularVLE`); both read `reason`
 with `lookupWordOrDefault`, neither refuses an unknown word; ThermoOverride.H
 refuses `approximations` in a fragment as an unknown key (kept).
 
@@ -365,10 +365,10 @@ the builder at :1095 asks it.  Unknown word: refused naming the three.
 Missing `reason`: refused with the word and its components.  No shipped
 case changes (all seven carry a reason, none an unknown word).  What
 changes with it, in the same commit: `bin/choupo-resolve` (:195-200 writes
-the block without a reason), the probe in `check_composite_limits.py:189`
+the block without a reason), the probe in `check_composite_limits.py:191`
 (no reason), docs/ai/thermo.md:705 (example without reason).  Hazard to
 measure first: `readFrom` is called on every v2 build
-(ThermoPackageBuilder.cpp:2231), including the post and utility packages
+(ThermoPackageBuilder.cpp:2232), including the post and utility packages
 built after the solve; the parse should fill a value owned by the build.
 
 ## 7. Documentation owed (rule 4d, C381)

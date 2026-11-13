@@ -368,7 +368,7 @@ apparent component 'CaCO3' carries TWO candidate marker elements (C, Ca)
   -- the spike's collapse contract needs exactly one; generalised salt
   reconstruction is a later, deliberate slice.
 ```
-(`ThermoPackageBuilder.cpp:690`)
+(`ThermoPackageBuilder.cpp:691`)
 
 CaCO₃ carries Ca and C; NH₄HCO₃ carries N and C. Declaring the typed bridge
 on each does not rescue them either — `markersSeen` (line 709) refuses two
