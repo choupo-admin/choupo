@@ -79,6 +79,8 @@ export const EM_SALTS: readonly SaltDef[] = [
 
 /** The salt of step 6: Pitzer has a pair record for it, eNRTL has none. */
 export const EM_REFUSAL_SALT: SaltDef = salt("MgSO4", "MgSO4 (2-2)", "Mg", "SO4", 2, 2, 1, 1);
+/** The molalities step 6 asks about, mol/kg. */
+export const EM_REFUSAL_MS: readonly number[] = [0.1, 0.5, 1.0];
 
 export const saltById = (id: string): SaltDef =>
   EM_SALTS.find((s) => s.id === id) ?? (id === "MgSO4" ? EM_REFUSAL_SALT : EM_SALTS[0]!);
@@ -278,6 +280,24 @@ export function emDaviesCaseFiles(s: SaltDef, ms: readonly number[], withPairs: 
     "system/propsDict": `operations\n(\n${ops.join("\n")}\n);\n`,
     "constant/thermoPhysPropDict": EM_DAVIES_THERMO,
   };
+}
+
+/** THE RUNS THE PAGE STARTS ON OPEN, in one home: the page builds each of
+ *  them through `emOnOpenCaseFiles` and the native test
+ *  (tests/electrolyteModelsRuns.test.ts) runs exactly these, for every salt
+ *  the page offers, and requires each to finish.  A run that is meant to be
+ *  REFUSED (step 6, eNRTL on MgSO4) is not one of them: it starts on the
+ *  student's click, because the site smoke judges every run started on open
+ *  by its exit code. */
+export const EM_ON_OPEN: readonly EmRun[] = ["Pitzer", "eNRTL", "Davies", "DaviesPairs"];
+
+/** The case files of one on-open run for salt `s` over the page's
+ *  molalities `ms` (Davies is asked only up to DAVIES_I_MAX). */
+export function emOnOpenCaseFiles(s: SaltDef, ms: readonly number[], run: EmRun):
+  Record<string, string> {
+  if (run === "Davies" || run === "DaviesPairs")
+    return emDaviesCaseFiles(s, daviesMolalities(s, ms), run === "DaviesPairs");
+  return emPackageCaseFiles(s, run, ms);
 }
 
 // ---- reading the engine's answers --------------------------------------------------
