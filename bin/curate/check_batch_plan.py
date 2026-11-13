@@ -34,7 +34,9 @@ touched.
       units minus the declared ones.
   (b) THE CONSEQUENCES: each `volume fromBatchPlan;` vessel's published size
       is its stage's volume per unit; each scaled quote's C_p is value x
-      units x (size / referenceSize)^exponent with the stage's size and the
+      units x (size / referenceSize)^exponent with the stage's size (or, for
+      a unit whose `ratedMachine` batchVolume declares the machine bought,
+      its declared nominalVolume and installed count -- C389 (4)) and the
       DECLARED reference and exponent; the economics' streamFactor is Q / (r_P
       x 8760).
   (c) THE ANNOUNCEMENTS reach all three surfaces: stderr `[batchPlan]`, the
@@ -97,7 +99,9 @@ share).  Every number in it is the probe's, chosen to exercise one rule each.
       the 8 h every other product change takes; both recompute.
   (j) ONE PRODUCT THROUGH `products` IS THE ONE-PRODUCT PLAN: every lot,
       cycle, offset, busy hour, size, finding and purchased cost to 1e-9
-      against the unmodified witness.
+      against the witness with its rated machines removed, as the probe's
+      are (a rated batch machine prices its quote on the installed size,
+      C389 (4), and the probe cannot carry one).
   (k) REFUSALS, each named: `production` beside `products`; no
       `campaignOrder`; an order that is not a permutation; a stage with no
       `productChangeover`; `productChangeover` and `campaignOrder` in a
@@ -629,7 +633,18 @@ def check_consequences(tag, j, R):
         sc = q["scaling"]
         ref = val(sc, "referenceSize")
         size = st["Vu"] if st["type"] == "batch" else st["Ru"]
-        cp = float(q["value"][0]) * st["nip"] * st["nop"] * (size / ref) ** float(sc["exponent"][0])
+        units = st["nip"] * st["nop"]
+        #  A batch machine the case's `ratedMachine` declares BOUGHT is priced
+        #  on its INSTALLED size and count (C389 (4), PH-06), read here from
+        #  the declaration; check_tablet_machines arm (g) holds the rest.
+        rm = next((u for u in pd["sizing"]["units"] if u["unitName"] == [n]
+                   and u["type"] == ["ratedMachine"]
+                   and u["designRules"]["kind"] == ["batchVolume"]), None)
+        if rm and st["type"] == "batch":
+            size = val(rm["designRules"]["rating"], "nominalVolume")
+            if "installed" in rm["designRules"]:
+                units = int(float(rm["designRules"]["installed"]["count"][0]))
+        cp = float(q["value"][0]) * units * (size / ref) ** float(sc["exponent"][0])
         e = eq.get(n)
         got = e and e["cost"]["purchased"]
         if got is None or not close(got, cp):
@@ -702,11 +717,14 @@ PRODUCTS = """
 """
 
 
-def strip_rated_machines(t, keep_cleaning=False):
+def strip_rated_machines(t, keep_cleaning=False, only_machines=False):
     """The multiproduct probes test the BATCH PLAN, not the sizers: a
     `ratedMachine` entry and the `cleanUtilities` pass each refuse a
     multiproduct plan by name (DEV.md 4c C195, a stated limit of both), so
-    the probe's copy drops them."""
+    the probe's copy drops them.  `only_machines`: drop the rated machines
+    alone (arm (j)'s single twin, whose scaled quotes must then read the
+    plan's size as the probe's do -- C389 (4), a rated batch machine is
+    priced on its installed size)."""
     out = []
     i = 0
     while True:
@@ -728,6 +746,8 @@ def strip_rated_machines(t, keep_cleaning=False):
         out.append(t[i:s])
         i = k + 1
     t = "".join(out)
+    if only_machines:
+        return t
     # The clean-utilities pass also reads the single-product plan's lot and Gantt.
     m = re.search(r"\ncleanUtilities\n\{", t)
     if m:
@@ -1634,7 +1654,7 @@ def witness_per_year():
 
 def arm_one_product(work):
     """(j) one product through the multiproduct path IS the single plan."""
-    ds = copy_witness(work, "single_ref")
+    ds = copy_witness(work, "single_ref", lambda t: strip_rated_machines(t, only_machines=True))
     outs, errs, rcs, js = solve(ds)
     d = copy_witness(work, "one", multi_edit(products=ONE_PRODUCT % witness_per_year(), pco=None))
     out, err, rc, j = solve(d)

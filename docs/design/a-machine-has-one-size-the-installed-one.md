@@ -1,7 +1,9 @@
 # A machine has one size: the installed one
 
-**Status: DESIGN 2026-11-13, written before the code** (DEV.md 4c C389 (4), review finding PH-06).
-Design written before the code; it records the alternatives rejected.
+**Status: BUILT 2026-11-13** (DEV.md 4c C389 (4), review finding PH-06).
+The design was written and committed before the code; it records the
+alternatives rejected.  Built as designed; the sizer's refusal of an
+overfilled machine now also names the fill at the installed size.
 
 ## 1. What was wrong
 
@@ -91,4 +93,15 @@ DECLARED nominal volume, reference size, exponent and installed count and
 equals the published C_p; the printed arithmetic names the installed size; a
 probe whose lot overfills the installed bin refuses naming the fill; a
 scaled quote on a unit with no rated machine (the vessel of a plain stage)
-still reads the plan.  `check_batch_plan` arm (b) reads the same rule.
+still reads the plan.  `check_batch_plan` arm (b) reads the same rule, and
+its arm (j) compares the one-product probe with a witness twin whose rated
+machines are removed (the probe cannot carry one).  Sabotages S19-S21 in
+the gate's docstring.
+
+## 6. What moved
+
+Every scaled quote on a batch machine of the three tablet plants:
+apalutamide01 (blender 1.19 -> 1.2 m3, final blender 1.333 -> 1.2, coating
+pan 0.812 -> 1.0), donepezil01 and donepezil02 (granulator 1.11 -> 1.2,
+fluid-bed dryer 1.34 -> 1.5, coating pan 0.61 -> 1.0; the final blender
+already sized 1.0 = 1.0), and every capital and economics figure downstream.

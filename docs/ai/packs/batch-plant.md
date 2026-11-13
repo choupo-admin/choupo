@@ -150,6 +150,10 @@ batchPlan
 | `packagingLine` | `packsPerMinute` (plain), `itemsPerPack`, `itemMass` | N x packs/min x 60 packs/h | packs/h from the mass |
 * The stage's unit must be in the batch plan and the stage must be of the right
   type (`batchVolume` needs a batch stage, the others a semicontinuous one).
+* A `batchVolume` machine has ONE size, its `nominalVolume` (the machine
+  bought): the sheet publishes the plan's `V_required` (at its fill) beside
+  `V_installed` and `fill_installed` (checked against `maxFill`; no minimum),
+  and a `scaling` quote on that unit is priced on the installed size.
 * Utilisation = load / capacity, printed in the Sizing table and the design
   sheet.  ABOVE 1 it REFUSES (shown as `FAILED`): `the machine does NOT fit
   the lot -- utilisation 1.02881 ... 2 machine(s) of this rating would carry
@@ -180,7 +184,8 @@ batchPlan
   reason "..."; } ... ); }`.  `basis purchased` needs the case's own
   `bareModuleFactor`.  `kind facility` (a building) is not multiplied by
   `siteFactor`.  Optional `scaling { referenceSize 1 m3; exponent 0.6;
-  exponentSource "..."; }`.  Quote one price per machine; a vessel sized by
+  exponentSource "..."; }` (a `batchVolume` rated machine's installed size,
+  else the stage's).  Quote one price per machine; a vessel sized by
   the plan (`type vessel`) is costed by Turton, no quote.
 * `economics { ... streamFactor fromBatchPlan; ... }`: the year's flows are
   Q, not hours x rate.  A numeric `streamFactor` beside a batch plan is

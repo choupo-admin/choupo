@@ -58,7 +58,13 @@ on a `vessel` (one lot, one vessel; a stage of several vessels is refused
 there, because a sized item is costed as one); a declared quote's
 `scaling { referenceSize; exponent; exponentSource; }` (`C_p = value x units
 x (size per unit / referenceSize)^n`, the reference size's DIMENSIONS
-compared with the stage's size kind); and the economics above.
+compared with the stage's size kind); and the economics above.  Since
+2026-11-13 (C389 (4), PH-06) the plan's batch volume is the REQUIREMENT: a
+unit whose `ratedMachine` (`batchVolume`) declares the machine bought is
+priced on that installed size and count, the fill at it published and
+checked by the sizer, and the plan's JSON stage record draws the installed
+size beside its own --
+[`a-machine-has-one-size-the-installed-one.md`](a-machine-has-one-size-the-installed-one.md).
 
 **A rated unit's capacity is the flowsheet's rate.**  For a unit whose
 throughput its declared hardware fixes -- today the `sprayDryer`, the one

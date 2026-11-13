@@ -740,9 +740,24 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
         d.set("maxFill",            fill,               "-");
         d.set("V_working_required", load,               "m3");
         d.set("V_working_capacity", capacity,           "m3");
+        //  ONE SIZE, THE INSTALLED ONE (2026-11-13, DEV.md 4c C389 (4),
+        //  PH-06).  The plan's volume per unit at its TARGET fill is the
+        //  REQUIREMENT; the declared nominal volume is the machine bought;
+        //  the fill at it is a RESULT, held below `maxFill` by the fit check
+        //  (fill_installed = utilisation x maxFill).  No lower bound is
+        //  declared, and none is checked.  `installedBatchMachine` is the
+        //  one reader a quote and the plan's JSON use.
+        d.set("V_required",         stage->volumePerUnit, "m3");
+        d.set("V_installed",        Vnom,               "m3");
+        d.set("fill_installed",     load / (installed * Vnom), "-");
         basis = "lot working volume = the plan stage's mass per lot / its declared"
                 " bulk density (read from the batch plan); capacity = machines x"
-                " vendor nominal volume x maximum fill";
+                " vendor nominal volume x maximum fill.  ONE SIZE: the installed"
+                " one, the declared nominal volume (V_installed); the plan's volume"
+                " per unit at its target fill is the requirement held against it"
+                " (V_required); the fill at the installed size, lot working volume /"
+                " (machines x V_installed), is checked against maxFill (above it the"
+                " lot does not fit); no minimum fill is declared, so none is checked";
     }
     else
     {
@@ -945,7 +960,13 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
                     + E.v->product + "'")
                 + " -- utilisation " + fmt(E.util) + " (" + fmt(E.load) + " "
                 + E.loadUnit + " against " + fmt(E.capacity) + " " + E.loadUnit
-                + " for " + std::to_string(installed) + " machine(s)).  "
+                + " for " + std::to_string(installed) + " machine(s))"
+                + (kind == "batchVolume"
+                   ? std::string(": the fill at the installed size would be ")
+                     + fmt(E.d.values.at("fill_installed")) + ", above maxFill "
+                     + fmt(E.d.values.at("maxFill"))
+                   : std::string())
+                + ".  "
                 + std::to_string(E.needed) + " machine(s) of this rating would carry it:"
                 " declare `installed { count " + std::to_string(E.needed)
                 + "; source \"...\"; reason \"...\"; }` (a second unit is a decision"
@@ -972,6 +993,9 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
         {
             d.set("utilisation_" + E.v->product, E.util, "-");
             d.set("load_" + E.v->product, E.load, "-");
+            if (kind == "batchVolume")
+                d.set("fill_installed_" + E.v->product,
+                      E.load / (installed * d.values.at("V_installed")), "-");
         }
         d.set("productsChecked", static_cast<scalar>(evals.size()), "-");
         basis += ".  MULTIPRODUCT: the fit is checked for each of the "
@@ -1008,6 +1032,14 @@ std::vector<EquipmentSizing> RatedMachineSize::size(const std::string& unitName,
         std::cerr << "[sizing] " << who << ": " << msg << "\n";
         AdvisoryLog::instance().add("sizing", "warning", who, msg);
     }
+    if (kind == "batchVolume")
+        std::cout << "  [sizing] " << who << ": stage '" << stage->name
+                  << "' requires " << fmt(d.values.at("V_required")) << " m3 per unit"
+                  " (the batch plan, at its fill " << fmt(evals[bind].v->fillFraction)
+                  << "); INSTALLED " << fmt(d.values.at("V_installed")) << " m3 x "
+                  << installed << "; fill at the installed size "
+                  << fmt(d.values.at("fill_installed")) << " (maxFill "
+                  << fmt(d.values.at("maxFill")) << "; no minimum declared)\n";
     if (designRules->found("shift"))
     {
         const DictPtr sh = designRules->subDict("shift");

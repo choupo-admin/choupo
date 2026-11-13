@@ -79,7 +79,12 @@ Description
     FOUR KINDS (`kind`, a declared word; an unknown one refuses):
       batchVolume   a bin blender, high-shear bowl, coating pan.  rating:
                     nominalVolume [m3], maxFill [-].  capacity = N V_nominal
-                    maxFill; load = the lot's working volume.
+                    maxFill; load = the lot's working volume.  ONE SIZE, the
+                    installed one (C389 (4)): V_required (the plan's volume
+                    per unit at its fill) beside V_installed = V_nominal and
+                    fill_installed = load / (N V_nominal) <= maxFill (no
+                    minimum declared, none checked); a scaled quote on the
+                    unit prices V_installed (`installedBatchMachine`).
       massRate      a roller compactor, mill, screen.  rating: capacity
                     [kg/h].  load = the mass per lot / the stage's operating
                     time.

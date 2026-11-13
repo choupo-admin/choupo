@@ -3284,7 +3284,11 @@ carries as a mass balance only, \emph{does it fit the lot and the
 shift}: the load (working volume, kg/h, tablets/h or packs/h) read from
 the plan and the run, over a vendor rating the case declares with its
 source --- never defaulted --- and refused above 100\,\%, announced
-above 85\,\%. The app's Reports tab draws it: a machine-utilisation table,
+above 85\,\%. A batch machine has \emph{one} size, the one installed
+(\texttt{nominalVolume}): the plan's volume at its target fill is the
+requirement held against it, the fill at the installed size is published and
+checked against \texttt{maxFill} (no minimum is declared), and a scaled quote
+is priced on the installed size. The app's Reports tab draws it: a machine-utilisation table,
 the bottleneck first, with the engine's own utilisation, its ``announced''
 mark and the batch plan's stage utilisation beside it, and the Gantt chart of
 the first campaign (SVG download); nothing in it is recomputed by the app. It

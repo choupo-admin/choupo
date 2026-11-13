@@ -2021,7 +2021,10 @@ int BatchPlanPass::run(SimulationResult& result)
                   << fmt(plan.productRate, 6) << " kg/h (the balance per kg of"
                      " product every product shares unless it declares its own).\n"
                   << "  Campaign order (declared): " << wordList(plan.campaignOrder)
-                  << ", then the year repeats.\n";
+                  << ", then the year repeats.\n"
+                  << "  req./unit is the size the plan REQUIRES per unit (a batch"
+                     " stage at its declared fill); a rated machine's INSTALLED size"
+                     " is held against it in the sizing pass.\n";
         for (const auto& pr : plan.products)
         {
             std::cout << "  " << std::left << std::setw(18) << pr.name
@@ -2089,7 +2092,7 @@ int BatchPlanPass::run(SimulationResult& result)
                       << fmt(t.requiredTime) << " h/yr = "
                       << fmt(100.0 * t.occupancy, 3) << " % of the available time.\n"
                       << "      " << std::left << std::setw(22) << "stage"
-                      << std::setw(16) << "size/unit" << std::setw(14) << "sized by"
+                      << std::setw(16) << "req./unit" << std::setw(14) << "sized by"
                       << std::setw(7) << "Nip/op" << std::setw(11) << "clean h"
                       << std::setw(11) << "busy h" << std::setw(8) << "occ %" << "\n";
             for (const auto& n : t.stages)
@@ -2355,7 +2358,10 @@ int BatchPlanPass::run(SimulationResult& result)
               << fmt(plan.productRate, 6) << " kg/h (a BASIS -- the plant runs"
                  " in lots).\n"
               << "  Production Q = " << fmt(plan.productPerYear, 8) << " kg/yr"
-              << "  (source: " << plan.productionSource << ")\n";
+              << "  (source: " << plan.productionSource << ")\n"
+              << "  req./unit is the size the plan REQUIRES per unit (a batch"
+                 " stage at its declared fill); a rated machine's INSTALLED size"
+                 " is held against it in the sizing pass.\n";
     if (plan.lotRule == "declared")
         std::cout << "  Lot B = " << fmt(plan.lotStreamMass, 8) << " kg of "
                   << plan.lotStream << " x r_P / r_" << plan.lotStream << " ("
@@ -2381,7 +2387,7 @@ int BatchPlanPass::run(SimulationResult& result)
                   << t.source << ")\n"
                   << "    " << std::left << std::setw(22) << "stage"
                   << std::setw(8) << "type" << std::setw(12) << "m/lot kg"
-                  << std::setw(14) << "S m3/kg" << std::setw(13) << "size/unit"
+                  << std::setw(14) << "S m3/kg" << std::setw(13) << "req./unit"
                   << std::setw(7) << "Nip/op" << std::setw(9) << "t_j h"
                   << std::setw(9) << "t/Nop h" << std::setw(8) << "u %"
                   << std::setw(9) << "occ %" << "\n";
