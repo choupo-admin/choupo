@@ -78,7 +78,7 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
       + "the reduction falls with ε, and the question for each model is how small ε "
       + "has to be for the error to stay inside your tolerance.  The three case studies "
       + "below measure that, each with the engine running both models.",
-    formula: String.raw`\frac{\mathrm{d}x}{\mathrm{d}t} = f(x, y), \qquad \varepsilon\,\frac{\mathrm{d}y}{\mathrm{d}t} = g(x, y) \quad\xrightarrow{\;\varepsilon \to 0\;}\quad g(x, y) = 0`,
+    formula: String.raw`\begin{aligned} \frac{\mathrm{d}x}{\mathrm{d}t} &= f(x, y) \\ \varepsilon\,\frac{\mathrm{d}y}{\mathrm{d}t} &= g(x, y) \;\xrightarrow{\;\varepsilon \to 0\;}\; g(x, y) = 0 \end{aligned}`,
     where: [
       { sym: "x", means: "the slow variable (the master)" },
       { sym: "y", means: "the fast variable, which will obey it" },
@@ -103,8 +103,8 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
     body: "A feed of 1 mol/s runs through a big mixing tank holding 1000 mol and then a "
       + "small one holding 50 mol.  Both start full of A; from t = 0 the feed is the "
       + "tracer B.  Each tank's time constant is what it holds over what flows through "
-      + "it: τ_s = 1000 s for the big one, τ_f = 50 s for the small one, so ε = 0.05.  "
-      + "The small tank's content follows whatever leaves the big one, about τ_f late.  "
+      + "it: \\(\\tau_s\\) = 1000 s for the big one, \\(\\tau_f\\) = 50 s for the small one, so ε = 0.05.  "
+      + "The small tank's content follows whatever leaves the big one, about \\(\\tau_f\\) late.  "
       + "Replace it by its quasi-steady relation and its outlet is its inlet: a tank "
       + "with nothing in it that accumulates.  The engine does exactly that when a "
       + "steady unit is wrapped as `quasiSteady` and re-solved at every instant on what "
@@ -114,13 +114,13 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
       + "`storageTank` (outlet = inlet) wrapped as `quasiSteady`.",
     derivation: [
       { step: "A tracer balance on each well-mixed tank of constant holdup:",
-        eq: String.raw`\tau_s\,\frac{\mathrm{d}x_s}{\mathrm{d}t} = x_\mathrm{in} - x_s, \qquad \tau_f\,\frac{\mathrm{d}x_f}{\mathrm{d}t} = x_s - x_f` },
-      { step: "Divide the second by τ_s: it is the fast equation of step 1, with ε = τ_f/τ_s.  "
+        eq: String.raw`\begin{aligned} \tau_s\,\frac{\mathrm{d}x_s}{\mathrm{d}t} &= x_\mathrm{in} - x_s \\ \tau_f\,\frac{\mathrm{d}x_f}{\mathrm{d}t} &= x_s - x_f \end{aligned}` },
+      { step: "Divide the second by the big tank's time constant: it is the fast equation of step 1, with ε the ratio of the two time constants.  "
           + "Setting ε to zero leaves an algebraic relation:",
-        eq: String.raw`\varepsilon\,\tau_s\,\frac{\mathrm{d}x_f}{\mathrm{d}t} = x_s - x_f \;\xrightarrow{\;\varepsilon \to 0\;}\; x_f = x_s` },
+        eq: String.raw`\begin{aligned} \varepsilon\,\tau_s\,\frac{\mathrm{d}x_f}{\mathrm{d}t} &= x_s - x_f \\ &\xrightarrow{\;\varepsilon \to 0\;}\; x_f = x_s \end{aligned}` },
       { step: "For a step in the feed, both solutions are known in closed form, and their "
           + "difference is the lag the reduction drops:",
-        eq: String.raw`x_f - x_s^\mathrm{red} = \frac{\tau_f\left[\exp(-t/\tau_s) - \exp(-t/\tau_f)\right]}{\tau_s - \tau_f}` },
+        eq: String.raw`\begin{aligned} x_f - x_s^\mathrm{red} = &\frac{\tau_f\,\exp(-t/\tau_s)}{\tau_s - \tau_f} \\ - &\frac{\tau_f\,\exp(-t/\tau_f)}{\tau_s - \tau_f} \end{aligned}` },
       { step: "Its largest value, over all t, depends on ε alone:",
         eq: String.raw`\max_t\,\lvert x_f - x_s^\mathrm{red}\rvert = \varepsilon^{1/(1-\varepsilon)} \approx \varepsilon` },
     ],
@@ -137,8 +137,8 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
       { sym: "x_s^\\mathrm{red}", means: "the reduced model's answer for what leaves the plant, the big tank's outlet" },
       { sym: "\\exp", means: "the exponential function" },
       { sym: "\\max_t", means: "the largest value over all times" },
-      { sym: "\\mathrm{d}x_s", means: "a small change of x_s" },
-      { sym: "\\mathrm{d}x_f", means: "a small change of x_f" },
+      { sym: "\\mathrm{d}x_s", means: "a small change of the big tank's fraction" },
+      { sym: "\\mathrm{d}x_f", means: "a small change of the small tank's fraction" },
     ],
     note: "The closed form is drawn as a check over the engine's two runs, never in "
       + "place of them.",
@@ -148,38 +148,38 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
     title: "Case 2: a fast equilibrium feeding a slow step",
     body: "In a closed vessel A turns into B and B back into A, both fast, while B turns "
       + "slowly into C.  The full model integrates all three rates "
-      + "(tutorials/batch/reactor/batch30_fast_equilibrium_full: k_f = 0.1 1/s, "
-      + "k_r = 0.025 1/s, k = 0.001 1/s).  After a short first moment A and B are at "
-      + "equilibrium with each other, n_B = K n_A, and only their sum moves: the pair "
+      + "(tutorials/batch/reactor/batch30_fast_equilibrium_full: \\(k_f\\) = 0.1 1/s, "
+      + "\\(k_r\\) = 0.025 1/s, \\(k\\) = 0.001 1/s).  After a short first moment A and B are at "
+      + "equilibrium with each other, \\(n_B = K n_A\\), and only their sum moves: the pair "
       + "behaves as one pool that drains into C at the rate of the B it contains.  The "
       + "reduced model (batch31_fast_equilibrium_reduced) runs that one law, written in "
       + "the case as an `expression` rate law with two parameters, k and K.  The fast "
       + "rate constants do not appear at all.",
     derivation: [
       { step: "The three first-order rates:",
-        eq: String.raw`\frac{\mathrm{d}n_A}{\mathrm{d}t} = -k_f n_A + k_r n_B, \qquad \frac{\mathrm{d}n_B}{\mathrm{d}t} = k_f n_A - k_r n_B - k\,n_B` },
-      { step: "When k_f and k_r are large against k, the fast pair sets its own ratio:",
-        eq: String.raw`k_f n_A = k_r n_B \;\Rightarrow\; n_B = K n_A, \qquad K = \frac{k_f}{k_r}` },
+        eq: String.raw`\begin{aligned} \frac{\mathrm{d}n_A}{\mathrm{d}t} &= -k_f n_A + k_r n_B \\ \frac{\mathrm{d}n_B}{\mathrm{d}t} &= k_f n_A - k_r n_B - k\,n_B \end{aligned}` },
+      { step: "When the two fast rate constants are large against the slow one, the fast pair sets its own ratio:",
+        eq: String.raw`\begin{aligned} k_f n_A &= k_r n_B \\ \Rightarrow\; n_B &= K n_A, \quad K = \frac{k_f}{k_r} \end{aligned}` },
       { step: "Add the two balances: the fast terms cancel, and the pool decays with one "
           + "lumped rate constant:",
-        eq: String.raw`\frac{\mathrm{d}P}{\mathrm{d}t} = -k\,n_B = -\frac{k\,K}{1 + K}\,P, \qquad P = n_A + n_B` },
+        eq: String.raw`\begin{aligned} \frac{\mathrm{d}P}{\mathrm{d}t} &= -k\,n_B = -\frac{k\,K}{1 + K}\,P \\ P &= n_A + n_B \end{aligned}` },
     ],
-    formula: String.raw`\varepsilon = \frac{k}{k_f}, \qquad r = \frac{k\,K}{1+K}\,c_P`,
+    formula: String.raw`\varepsilon = \frac{k}{k_f}, \quad r = \frac{k\,K}{1+K}\,c_P`,
     where: [
       { sym: "n_A", means: "amount of A in the vessel", unit: "kmol" },
       { sym: "n_B", means: "amount of B", unit: "kmol" },
-      { sym: "\\mathrm{d}n_A", means: "a small change of n_A", unit: "kmol" },
-      { sym: "\\mathrm{d}n_B", means: "a small change of n_B", unit: "kmol" },
+      { sym: "\\mathrm{d}n_A", means: "a small change of the amount of A", unit: "kmol" },
+      { sym: "\\mathrm{d}n_B", means: "a small change of the amount of B", unit: "kmol" },
       { sym: "k_f", means: "rate constant of A to B (fast)", unit: "1/s" },
       { sym: "k_r", means: "rate constant of B to A (fast)", unit: "1/s" },
       { sym: "k", means: "rate constant of B to C (slow)", unit: "1/s" },
-      { sym: "K", means: "equilibrium constant of the fast pair, k_f/k_r" },
+      { sym: "K", means: "equilibrium constant of the fast pair, the forward over the reverse rate constant" },
       { sym: "P", means: "the pool, A and B together", unit: "kmol" },
       { sym: "\\mathrm{d}P", means: "a small change of the pool", unit: "kmol" },
       { sym: "r", means: "the reduced rate law, the rate at which C is made per volume", unit: "kmol/(m³ s)" },
       { sym: "c_P", means: "concentration of the pool, P over the vessel volume", unit: "kmol/m³" },
     ],
-    note: "The equilibrium constant is held at 4 while the slider moves k_f and k_r "
+    note: "The equilibrium constant is held at 4 while the slider moves \\(k_f\\) and \\(k_r\\) "
       + "together, so the reduced answer never moves: only the full model learns how "
       + "fast the pair is.",
   },
@@ -191,30 +191,30 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
       + "two rates balance and its amount is whatever makes them equal, small and "
       + "following A.  Then P is made as fast as A is consumed, and the rate law needs "
       + "only the stable species.  The full model "
-      + "(tutorials/batch/reactor/batch32_fast_intermediate_full: k_1 = 0.001 1/s, "
-      + "k_2 = 0.1 1/s) integrates both steps; the reduced one "
-      + "(batch33_fast_intermediate_reduced) runs A to P at k_1 c_A, written in the case "
+      + "(tutorials/batch/reactor/batch32_fast_intermediate_full: \\(k_1\\) = 0.001 1/s, "
+      + "\\(k_2\\) = 0.1 1/s) integrates both steps; the reduced one "
+      + "(batch33_fast_intermediate_reduced) runs A to P at \\(k_1 c_A\\), written in the case "
       + "as an `expression` law.  In a closed vessel the P the reduced model is ahead "
       + "by is exactly the I in transit.",
     derivation: [
       { step: "The two first-order steps:",
-        eq: String.raw`\frac{\mathrm{d}n_A}{\mathrm{d}t} = -k_1 n_A, \qquad \frac{\mathrm{d}n_I}{\mathrm{d}t} = k_1 n_A - k_2 n_I, \qquad \frac{\mathrm{d}n_P}{\mathrm{d}t} = k_2 n_I` },
-      { step: "Divide the intermediate's balance by k_2: its left side carries the small "
-          + "number k_1/k_2.  Setting it to zero:",
-        eq: String.raw`n_I = \frac{k_1}{k_2}\,n_A \;\Rightarrow\; \frac{\mathrm{d}n_P}{\mathrm{d}t} = k_1 n_A` },
+        eq: String.raw`\begin{aligned} \frac{\mathrm{d}n_A}{\mathrm{d}t} &= -k_1 n_A \\ \frac{\mathrm{d}n_I}{\mathrm{d}t} &= k_1 n_A - k_2 n_I \\ \frac{\mathrm{d}n_P}{\mathrm{d}t} &= k_2 n_I \end{aligned}` },
+      { step: "Divide the intermediate's balance by the fast rate constant: its left side "
+          + "carries the small number slow over fast.  Setting it to zero:",
+        eq: String.raw`\begin{aligned} n_I &= \frac{k_1}{k_2}\,n_A \\ \Rightarrow\; \frac{\mathrm{d}n_P}{\mathrm{d}t} &= k_1 n_A \end{aligned}` },
     ],
     formula: String.raw`\varepsilon = \frac{k_1}{k_2}, \qquad r = k_1\,c_A`,
     where: [
       { sym: "n_I", means: "amount of the intermediate", unit: "kmol" },
       { sym: "n_P", means: "amount of the product", unit: "kmol" },
-      { sym: "\\mathrm{d}n_I", means: "a small change of n_I", unit: "kmol" },
-      { sym: "\\mathrm{d}n_P", means: "a small change of n_P", unit: "kmol" },
+      { sym: "\\mathrm{d}n_I", means: "a small change of the amount of I", unit: "kmol" },
+      { sym: "\\mathrm{d}n_P", means: "a small change of the amount of P", unit: "kmol" },
       { sym: "k_1", means: "rate constant of A to I (slow)", unit: "1/s" },
       { sym: "k_2", means: "rate constant of I to P (fast)", unit: "1/s" },
       { sym: "c_A", means: "concentration of A", unit: "kmol/m³" },
     ],
-    note: "This is the same pair of equations as the two tanks, with k_1 in place of "
-      + "1/τ_s and k_2 in place of 1/τ_f.  The closed form of case 1 is its closed form "
+    note: "This is the same pair of equations as the two tanks, with \\(k_1\\) in place of "
+      + "\\(1/\\tau_s\\) and \\(k_2\\) in place of \\(1/\\tau_f\\).  The closed form of case 1 is its closed form "
       + "too, and the engine's two cases give the same numbers at the same ε.",
   },
   {
@@ -222,14 +222,14 @@ export const FAST_SLOW_STEPS: readonly LessonStep[] = [
     title: "So this is why correlations are simple",
     body: "Look at what each reduction left.  The two tanks became one tank and one time "
       + "constant.  The fast equilibrium became one pool and one lumped rate constant, "
-      + "k K/(1+K), with the fast rate constants gone.  The intermediate became a rate "
-      + "law in the stable species alone, with k_2 gone.  Each is fewer variables, an "
+      + "\\(kK/(1+K)\\), with the fast rate constants gone.  The intermediate became a rate "
+      + "law in the stable species alone, with \\(k_2\\) gone.  Each is fewer variables, an "
       + "algebraic relation in place of a differential equation, and a valid range: "
       + "a window of the ratio of time scales, which the slider showed you at your "
       + "tolerance.  That is what an engineering correlation is.  It is simple because "
       + "something fast was assumed to have settled, and it fails where that stops being "
       + "true.",
-    formula: String.raw`\varepsilon\,\frac{\mathrm{d}y}{\mathrm{d}t} = g(x, y) \;\longrightarrow\; g(x, y) = 0 \;\longrightarrow\; \text{a law in } x \text{ alone, inside a window of } \varepsilon`,
+    formula: String.raw`\begin{aligned} \varepsilon\,\frac{\mathrm{d}y}{\mathrm{d}t} &= g(x, y) \\ &\longrightarrow\; g(x, y) = 0 \\ &\longrightarrow\; \text{a law in } x \text{ alone} \end{aligned}`,
     where: [],
     note: "The table below puts the three reduced laws beside correlations you already "
       + "use, and names, for each, what was assumed to have settled and where it is in "
@@ -251,19 +251,19 @@ export const SIMPLE_LAWS: readonly SimpleLaw[] = [
     law: "Case 1: one tank and one time constant",
     slaved: "The small tank's content, settled on what leaves the big one.",
     where: "This page, unsteady07 and unsteady08.",
-    price: "The lag of the small tank is lost; the window is the ε your tolerance allows.",
+    price: "The lag of the small tank is lost; the window is the \\(\\varepsilon\\) your tolerance allows.",
   },
   {
-    law: "Case 2: one pool and the lumped rate constant k K/(1+K)",
+    law: "Case 2: one pool and the lumped rate constant \\(kK/(1+K)\\)",
     slaved: "The ratio of A to B, settled at its equilibrium.",
     where: "This page, batch30 and batch31.",
     price: "The first moment, while B forms, is lost; nothing about the fast pair's speed can be learned from the reduced law.",
   },
   {
-    law: "Case 3: a rate law in the stable species alone, k_1 c_A",
+    law: "Case 3: a rate law in the stable species alone, \\(k_1 c_A\\)",
     slaved: "The intermediate, settled where its two rates balance.",
     where: "This page, batch32 and batch33.",
-    price: "The intermediate in transit is lost; k_2 cannot be fitted from the product curve.",
+    price: "The intermediate in transit is lost; \\(k_2\\) cannot be fitted from the product curve.",
   },
   {
     law: "The effectiveness factor of a catalyst pellet",

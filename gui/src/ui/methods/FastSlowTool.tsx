@@ -109,19 +109,20 @@ const MYSTERY: Readonly<Record<CaseStudyId, { q: string; stepNo: number; guesses
 
 /** The reduced law each case leaves, in LaTeX. */
 const REDUCED_LAW: Readonly<Record<CaseStudyId, string>> = {
-  tanks: String.raw`\tau_s\,\frac{\mathrm{d}x_s}{\mathrm{d}t} = x_\mathrm{in} - x_s, \qquad x_f = x_s`,
+  tanks: String.raw`\begin{aligned} \tau_s\,\frac{\mathrm{d}x_s}{\mathrm{d}t} &= x_\mathrm{in} - x_s \\ x_f &= x_s \end{aligned}`,
   equilibrium: String.raw`\frac{\mathrm{d}P}{\mathrm{d}t} = -\frac{k\,K}{1+K}\,P`,
   intermediate: String.raw`\frac{\mathrm{d}n_P}{\mathrm{d}t} = k_1\,n_A`,
 };
 const COUNT_WORDS: Readonly<Record<CaseStudyId, { states: string; params: string }>> = {
-  tanks: { states: "tracer held in each tank", params: "time constants (τ_s, τ_f)" },
+  tanks: { states: "tracer held in each tank", params: "time constants" },
   equilibrium: { states: "amounts (A, B, C; the pool counted once)", params: "rate and equilibrium constants" },
   intermediate: { states: "amounts (A, I, P)", params: "rate constants" },
 };
 
 /** "x %" of a fraction. */
 const pct = (v: number, d = 3): string => `${fmt(100 * v, d)} %`;
-const valueLabel = (c: CaseStudy, v: number): string => (c.id === "tanks" ? `ε = ${v}` : `${v}`);
+const valueLabel = (c: CaseStudy, v: number): string =>
+  (c.id === "tanks" ? `ε = ${v}` : `${v}  (ε = ${fmt(c.epsOf(v), 3)})`);
 
 function toLine(c: Curve | null): XY[] {
   return c ? c.t.map((t, i): XY => [t, c.y[i]!]) : [];
@@ -222,7 +223,7 @@ function CaseStudyBlock({ id }: { id: CaseStudyId }): JSX.Element {
               <Text size="xs" c="dimmed">
                 <Tex src={c.ratioTex} mode="inline" />, {c.ratioLabel}
               </Text>
-              <Text size="xs" ff="monospace">{valueLabel(c, v)} (ε = {fmt(eps, 3)})</Text>
+              <Text size="xs" ff="monospace">{valueLabel(c, v)}</Text>
             </Group>
             <Slider size="xs" mt={4} value={vi} min={0} max={c.stops.length - 1} step={1}
               label={null} onChange={setVi}
@@ -237,6 +238,14 @@ function CaseStudyBlock({ id }: { id: CaseStudyId }): JSX.Element {
           {(full.err || red.err) && (
             <Alert color="red" variant="light" title="the engine did not finish">
               <Text size="sm">{full.err ?? red.err}</Text>
+            </Alert>
+          )}
+          {((full.result && !fCurve) || (red.result && !rCurve)) && (
+            <Alert color="gray" variant="light" title="nothing to compare">
+              <Text size="sm">
+                A run finished but its trajectory does not carry the columns this page compares
+                ({c.quantity}), so nothing is drawn rather than a curve the engine did not publish.
+              </Text>
             </Alert>
           )}
           {fCurve && rCurve && (
@@ -278,7 +287,7 @@ function CaseStudyBlock({ id }: { id: CaseStudyId }): JSX.Element {
       {started && fCurve && (
         <Panel title="what the full model costs" origin={["engine", "page"]}
           originNote={id === "tanks"
-            ? "the step counts are the cases' own declarations; the explicit bound is arithmetic on 1/τ_f"
+            ? "the step counts are the cases' own declarations; the explicit bound is arithmetic on the small tank's time constant"
             : "accepted steps counted from the step history the engine prints; the explicit bound is arithmetic on the fastest rate constant"}>
           <Wide>
             <Table withTableBorder fz="xs" style={{ width: "auto" }}>
@@ -301,7 +310,7 @@ function CaseStudyBlock({ id }: { id: CaseStudyId }): JSX.Element {
           </Wide>
           <Text size="sm">
             {id === "tanks"
-              ? "The router hands the big tank's outlet to the small one once per driver step, so the step must stay short against τ_f; this case holds it at 0.25 s for both models so the comparison is fair.  The driver publishes no count of its own, and nothing is shown in its place."
+              ? "The router hands the big tank's outlet to the small one once per driver step, so the step must stay short against the small tank's time constant; this case holds it at 0.25 s for both models so the comparison is fair.  The driver publishes no count of its own, and nothing is shown in its place."
               : "Move the slider and watch the stiff integrator: it spends a few more steps on the first moment and then strides on the slow clock, so its count barely moves while the explicit bound grows in proportion to the fast rate.  With a stiff integrator, the reduction's gain is not speed.  It is the fast constants you no longer need to know."}
           </Text>
         </Panel>
@@ -409,30 +418,28 @@ export function FastSlowTool(): JSX.Element {
 
         <Panel title="three reduced laws beside the correlations you use" origin="page"
           originNote="text: what was assumed to have settled, and where it is in Choupo">
-          <Wide>
-            <Table withTableBorder withColumnBorders fz="xs">
-              <Table.Thead><Table.Tr><Table.Th>the simple law</Table.Th><Table.Th>what was slaved</Table.Th>
-                <Table.Th>where it is in Choupo</Table.Th><Table.Th>the price</Table.Th></Table.Tr></Table.Thead>
-              <Table.Tbody>
-                {SIMPLE_LAWS.map((l) => (
-                  <Table.Tr key={l.law}>
-                    <Table.Td>{l.law}</Table.Td>
-                    <Table.Td>{l.slaved}</Table.Td>
-                    <Table.Td>
-                      {l.where}
-                      {l.tool && (
-                        <>{" "}<Text span component="a" href="#" c="accent" size="xs"
-                          onClick={(e) => { e.preventDefault(); openMethodToolAt(l.tool!, null); }}>
-                          Open it.
-                        </Text></>
-                      )}
-                    </Table.Td>
-                    <Table.Td>{l.price}</Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </Wide>
+          <Stack gap={8}>
+            {SIMPLE_LAWS.map((l) => (
+              <Box key={l.law} px="sm" py={6}
+                style={{ borderLeft: "3px solid var(--mantine-color-default-border)",
+                  overflowWrap: "anywhere" }}>
+                <Text size="sm" fw={600}><TexText text={l.law} /></Text>
+                <Text size="sm"><Text span c="dimmed" size="xs">what was slaved · </Text>
+                  <TexText text={l.slaved} /></Text>
+                <Text size="sm"><Text span c="dimmed" size="xs">where it is in Choupo · </Text>
+                  <TexText text={l.where} />
+                  {l.tool && (
+                    <>{" "}<Text span component="a" href="#" c="accent" size="sm"
+                      onClick={(e) => { e.preventDefault(); openMethodToolAt(l.tool!, null); }}>
+                      Open it.
+                    </Text></>
+                  )}
+                </Text>
+                <Text size="sm"><Text span c="dimmed" size="xs">the price · </Text>
+                  <TexText text={l.price} /></Text>
+              </Box>
+            ))}
+          </Stack>
           <Text size="sm">{WINDOW_SENTENCE}</Text>
         </Panel>
 
