@@ -1,0 +1,56 @@
+# Reference KPIs (golden master).  The rows ABOVE the second rule are written by
+# hand from an INDEPENDENT closed-form recomputation; the rows below it were
+# appended by `bin/runTests --record-append` (self-recorded: they pin that the
+# answer has not moved, nothing more).
+# units: stream F is kmol/s (canonical SI, as in the result JSON).
+# kind   name      key         expected        reltol
+# =============================================================================
+#  THE WHOLE DECLARED CURVE, held to verification/screenClosedForm.py (Python,
+#  standard library, written from King 2001 eq. 4.41 and section 4.2 and the
+#  grid's stated rules, not from the C++).  The curve's built-in anchor
+#  (anchor_partition_dev, the identity c(d50) = 1 - e^-0.693) holds for ANY m;
+#  these rows sum and read the whole curve.  Measured agreement when written:
+#  the split 1.1e-8 (the engine's feed fractions carry the grid's ratio to 9
+#  figures), the cut sizes and the imperfection to 1e-12.
+#  NOT a validation: the feed and the parameters are illustrative.
+kpi     screen                 solidsTo_oversize 0.344316387641    1e-6
+kpi     screen                 d50c_um          21632.9451714      1e-6
+kpi     screen                 d50_um           21208.373422       1e-6
+kpi     screen                 imperfection     0.203790245091     1e-6
+stream  oversize               F                0.0861707902771    1e-6
+stream  undersize              F                0.164095515278     1e-6
+# =============================================================================
+stream  feed                   F                0.250266305556   1e-4
+stream  feed                   T                298.15           1e-4
+stream  oversize               T                298.15           1e-4
+stream  undersize              T                298.15           1e-4
+kpi     screen                 anchor_partition_dev 0                1e-4
+kpi     screen                 bypass           0.05             1e-4
+kpi     screen                 feed_Sv_m2_m3    646.161757646    1e-4
+kpi     screen                 feed_d10_um      2381.24999507    1e-4
+kpi     screen                 feed_d32_um      9285.60059304    1e-4
+kpi     screen                 feed_d50_um      13470.3789264    1e-4
+kpi     screen                 feed_d80_um      28874.4023874    1e-4
+kpi     screen                 feed_d90_um      42065.8112012    1e-4
+kpi     screen                 fluidMassClosure 0                1e-4
+kpi     screen                 fluidMassFlow_kg_s 0                1e-4
+kpi     screen                 fluidTo_oversize 0                1e-4
+kpi     screen                 oversize_Sv_m2_m3 255.752125995    1e-4
+kpi     screen                 oversize_d10_um  15209.6015861    1e-4
+kpi     screen                 oversize_d32_um  23460.2155374    1e-4
+kpi     screen                 oversize_d50_um  31790.0123991    1e-4
+kpi     screen                 oversize_d80_um  49077.2146082    1e-4
+kpi     screen                 oversize_d90_um  60021.3054615    1e-4
+kpi     screen                 oversize_solids_kg_s 8.62456717082    1e-4
+kpi     screen                 sizeMassClosure  0                1e-4
+kpi     screen                 solidsMassFlow_kg_s 25.0483786975    1e-4
+kpi     screen                 undersize_Sv_m2_m3 851.175927886    1e-4
+kpi     screen                 undersize_d10_um 1643.57188462    1e-4
+kpi     screen                 undersize_d32_um 7049.07152967    1e-4
+kpi     screen                 undersize_d50_um 8443.88205295    1e-4
+kpi     screen                 undersize_d80_um 15476.1538255    1e-4
+kpi     screen                 undersize_d90_um 18480.3760199    1e-4
+kpi     screen                 undersize_solids_kg_s 16.4238115267    1e-4
+boundary global                 H_feeds_kW       -302221.590589   1e-4
+boundary global                 Q_boundary_kW    0                1e-4
+boundary global                 H_products_kW    -302221.590589   1e-4

@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  screen01_dolomite_karra / thermoPhysPropDict
+
+  THE SOLID IS CALCITE'S RECORD STANDING IN FOR THE TEST'S DOLOMITE.  A
+  screen reads no property of its solid except the bulk density the case
+  declares (110 lb/ft3, the test's), does no work and exchanges no heat; the
+  catalogue's dolomite record carries equilibrium data only (no `role`, no
+  thermal block), so using it would need a case-local record with invented
+  numbers.  Calcite (CaCO3, the same carbonate family) is used instead and
+  the substitution is said here: the mass flow is the test's, the moles are
+  calcite's.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( CaCO3 );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

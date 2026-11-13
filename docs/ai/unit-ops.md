@@ -2229,7 +2229,10 @@ operation
 Theory: `sec:screen` (`sec:screen-karra`, `sec:screen-declared`).  Case:
 `tutorials/steady/solids/screen01_dolomite_karra` (King's Example 10.1, measured;
 compared, NOT anchored: Karra states no accuracy; the area utilisation factor 1.08
-against King's own 1.58 is unexplained).
+against King's own 1.58 is unexplained) and
+`tutorials/steady/solids/screen02_declared_rosinRammler` (`model declared` with a
+case-declared Rosin-Rammler curve, illustrative, held to an independent closed
+form).
 
 ### `hydrocyclone`
 A hydrocyclone classifying a SLURRY on the case's `sizeGrid`.  Outputs
@@ -2313,7 +2316,12 @@ Theory: `sec:cakeFilter` (`sec:cakeFilter-rotaryDrum`, `sec:cakeFilter-batchPres
 `tutorials/steady/solids/filter01_caco3_rotaryDrum` (Geankoplis Example 24.2-4:
 all four rows anchored, area 6.6434 vs 6.60 m2) and
 `tutorials/steady/solids/filter02_caco3_pressWashing` (Examples 24.2-1 to 24.2-3:
-five rows anchored, -0.16 to -0.58 %, one cause: the package's water viscosity).
+five rows anchored, -0.16 to -0.58 %, one cause: the package's water viscosity);
+`tutorials/steady/solids/filter03_drum_area_medium_tabulatedWash` (a drum with a
+declared `area`, `mediumResistance` > 0 and a `tabulated` wash) and
+`tutorials/steady/solids/filter04_leafFilter_sameAsFiltrateWash` (`washFlowPath
+sameAsFiltrate`): illustrative values, each held to an independent recomputation
+of Ruth's law, not validations.
 
 ### `thickener`
 A gravity thickener sized from the case's ONE batch settling test by Kynch's

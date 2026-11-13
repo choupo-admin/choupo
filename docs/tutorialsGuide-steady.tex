@@ -12661,6 +12661,76 @@ One press, two inlets (the slurry, the wash water), three outlets (the washed ca
 \end{tutgolden}
 
 \clearpage
+\tutentry{filter03\_drum\_area\_medium\_tabulatedWash}{tutorials/steady/solids/filter03\_drum\_area\_medium\_tabulatedWash}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (drum) at (0.0,-0.0) {\textbf{drum}\\[-1pt]{\tiny cakeFilter}};
+  \draw[->] ($(drum.west)+(-1.05,-0.17)$) -- ($(drum.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {slurry};
+  \draw[->] ($(drum.west)+(-1.05,0.17)$) -- ($(drum.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {washWater};
+  \draw[->] ($(drum.east)+(0,-0.34)$) -- ($(drum.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {cake};
+  \draw[->] ($(drum.east)+(0,0.00)$) -- ($(drum.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {filtrate};
+  \draw[->] ($(drum.east)+(0,0.34)$) -- ($(drum.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {spentWash};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A rotary vacuum drum with a declared area (cycle time the result), a medium resistance R\_m = 1e10 1/m and a cake wash read off a tabulated wash test, on Geankoplis Example 24.2-4's CaCO3 slurry: illustrative values, held to an independent recomputation of Ruth's law.}
+\begin{tutnarrative}
+One drum, two inlets (the slurry, the wash water), three outlets (the washed cake, the filtrate, the spent wash). Area declared, medium resistance non-zero, a tabulated wash test (illustrative; see controlDict).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{drum}{cycleTime\_s}{197.330866947}
+\goldrow{kpi}{drum}{filtrationTime\_s}{65.1191860927}
+\goldrow{kpi}{drum}{Kp\_s\_m6}{13914.2215059}
+\goldrow{kpi}{drum}{B\_s\_m3}{22.1108448567}
+\goldrow{kpi}{drum}{washTime\_s}{53.2990814119}
+\goldrow{kpi}{drum}{washRatio}{1.3458922137}
+\goldrow{kpi}{drum}{soluteRemaining}{0.177070127586}
+\goldrow{stream}{cake}{F}{0.00973326044667}
+\goldrow{stream}{cake}{T}{298.2}
+\goldrow{stream}{filtrate}{F}{0.0266890924144}
+\goldrow{stream}{filtrate}{T}{298.2}
+\goldrow{stream}{slurry}{F}{0.0364223528611}
+\goldrow{stream}{slurry}{T}{298.2}
+\goldrow{stream}{spentWash}{F}{0.011101687}
+\goldmore{30}
+\end{tutgolden}
+
+\clearpage
+\tutentry{filter04\_leafFilter\_sameAsFiltrateWash}{tutorials/steady/solids/filter04\_leafFilter\_sameAsFiltrateWash}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (leaf) at (0.0,-0.0) {\textbf{leaf}\\[-1pt]{\tiny cakeFilter}};
+  \draw[->] ($(leaf.west)+(-1.05,-0.17)$) -- ($(leaf.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {slurry};
+  \draw[->] ($(leaf.west)+(-1.05,0.17)$) -- ($(leaf.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {washWater};
+  \draw[->] ($(leaf.east)+(0,-0.34)$) -- ($(leaf.east)+(1.05,-0.34)$) node[at end, below, font=\tiny, anchor=north east] {cake};
+  \draw[->] ($(leaf.east)+(0,0.00)$) -- ($(leaf.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {filtrate};
+  \draw[->] ($(leaf.east)+(0,0.34)$) -- ($(leaf.east)+(1.05,0.34)$) node[at end, above, font=\tiny, anchor=south east] {spentWash};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A batch leaf filter washed along the filtrate's path (washFlowPath sameAsFiltrate, Geankoplis eq. 24.2-19) on filter02's CaCO3 slurry and press: the wash at the final filtration rate, held to an independent recomputation.}
+\begin{tutnarrative}
+One leaf filter (filter02's press, washed along the filtrate's path), two inlets (the slurry, the wash water), three outlets (the washed cake, the filtrate, the spent wash).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{leaf}{Kp\_s\_m6}{37.7186910595}
+\goldrow{kpi}{leaf}{B\_s\_m3}{16.0104565113}
+\goldrow{kpi}{leaf}{filtrationTime\_s}{268.13893969}
+\goldrow{kpi}{leaf}{washTime\_s}{48.2322641462}
+\goldrow{kpi}{leaf}{cycleTime\_s}{1516.37120384}
+\goldrow{kpi}{leaf}{pressesRequired}{0.911380955288}
+\goldrow{stream}{cake}{F}{0.00311377514992}
+\goldrow{stream}{cake}{T}{298.2}
+\goldrow{stream}{filtrate}{F}{0.112084642378}
+\goldrow{stream}{filtrate}{T}{298.2}
+\goldrow{stream}{slurry}{F}{0.115198417528}
+\goldrow{stream}{slurry}{T}{298.2}
+\goldrow{stream}{spentWash}{F}{0.01120846425}
+\goldrow{stream}{spentWash}{T}{298.2}
+\goldmore{30}
+\end{tutgolden}
+
+\clearpage
 \tutentry{hydrocyclone01\_quartz\_willsTable91}{tutorials/steady/solids/hydrocyclone01\_quartz\_willsTable91}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -12912,6 +12982,39 @@ One vibrating screen, King (2001) Example 10.1, Table 10.1 (p. 364).
 \goldrow{kpi}{screen}{feed\_d10\_um}{2500}
 \goldrow{kpi}{screen}{feed\_d32\_um}{9606.46939208}
 \goldmore{40}
+\end{tutgolden}
+
+\clearpage
+\tutentry{screen02\_declared\_rosinRammler}{tutorials/steady/solids/screen02\_declared\_rosinRammler}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (screen) at (0.0,-0.0) {\textbf{screen}\\[-1pt]{\tiny screen}};
+  \draw[->] ($(screen.west)+(-1.05,0.00)$) -- ($(screen.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(screen.east)+(0,-0.17)$) -- ($(screen.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {oversize};
+  \draw[->] ($(screen.east)+(0,0.17)$) -- ($(screen.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {undersize};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A screen on a declared Rosin-Rammler partition curve (King 2001 eq. 4.41, d50 = 22 mm, m = 5.9, bypass 0.05) on an illustrative dry calcite feed: the whole curve held to an independent closed-form recomputation.}
+\begin{tutnarrative}
+One screen, model `declared`: the case's Rosin-Rammler curve and bypass (illustrative values; see controlDict).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{screen}{solidsTo\_oversize}{0.344316387641}
+\goldrow{kpi}{screen}{d50c\_um}{21632.9451714}
+\goldrow{kpi}{screen}{d50\_um}{21208.373422}
+\goldrow{kpi}{screen}{imperfection}{0.203790245091}
+\goldrow{stream}{oversize}{F}{0.0861707902771}
+\goldrow{stream}{undersize}{F}{0.164095515278}
+\goldrow{stream}{feed}{F}{0.250266305556}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{oversize}{T}{298.15}
+\goldrow{stream}{undersize}{T}{298.15}
+\goldrow{kpi}{screen}{anchor\_partition\_dev}{0}
+\goldrow{kpi}{screen}{bypass}{0.05}
+\goldrow{kpi}{screen}{feed\_Sv\_m2\_m3}{646.161757646}
+\goldrow{kpi}{screen}{feed\_d10\_um}{2381.24999507}
+\goldmore{26}
 \end{tutgolden}
 
 \clearpage
