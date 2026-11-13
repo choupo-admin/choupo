@@ -1,20 +1,20 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    fit_antoine            A                5.41157009624      0.05
-diag    fit_antoine            B                2180.15969858      0.05
-diag    fit_antoine            C                -41.1733950336     0.05
+diag    fit_antoine            A                5.41157009624      1e-4
+diag    fit_antoine            B                2180.15969858      1e-4
+diag    fit_antoine            C                -41.1733950336     1e-4
 diag    fit_antoine            R2               0.999999906303     1e-4
-diag    fit_antoine            dHvap_kJ_per_mol 50.7423810758      0.05
-diag    fit_antoine            minimax_evaluations 581                2
-diag    fit_antoine            minimax_max_scaled_final 0.000138178781262  0.01
-diag    fit_antoine            minimax_max_scaled_start 0.000184030574794  0.01
+diag    fit_antoine            dHvap_kJ_per_mol 50.7423810758      1e-4
+diag    fit_antoine            minimax_evaluations 581                1e-4
+diag    fit_antoine            minimax_max_scaled_final 0.000138178781262  1e-4
+diag    fit_antoine            minimax_max_scaled_start 0.000184030574794  1e-4
 diag    fit_antoine            n_heldout        0                  1e-4
 diag    fit_antoine            n_outliers_dropped 0                  1e-4
 diag    fit_antoine            n_points         11                 1e-4
 diag    fit_antoine            objective_method 2                  1e-4
-diag    fit_antoine            relErr_max_fit_pct 0.0138178781262    0.01
-diag    fit_antoine            relErr_max_fit_pct_leastSquares 0.018403057479     0.01
-diag    fit_antoine            relErr_mean_fit_pct 0.0113055677043    0.01
-diag    fit_antoine            relErr_mean_fit_pct_leastSquares 0.00901229307596   0.01
+diag    fit_antoine            relErr_max_fit_pct 0.0138178781262    1e-4
+diag    fit_antoine            relErr_max_fit_pct_leastSquares 0.018403057479     1e-4
+diag    fit_antoine            relErr_mean_fit_pct 0.0113055677043    1e-4
+diag    fit_antoine            relErr_mean_fit_pct_leastSquares 0.00901229307596   1e-4
 verdict fit_antoine            verdict          validationRefused  exact

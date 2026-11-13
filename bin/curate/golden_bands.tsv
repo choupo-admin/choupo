@@ -1,19 +1,28 @@
 # golden_bands.tsv -- the ONE table that says how wide a golden row's band is,
 # by WHAT KIND OF NUMBER the row holds (C384, 2026-11-13).  Read by
-# bin/curate/golden_bands.py, which is the recorder's band writer
-# (bin/runTests --record), the tool that rewrote the existing goldens, and the
-# library of bin/curate/check_golden_bands.py (the gate that holds every row to
-# its class).  A row of NO class below is a DIRECT RESULT: the default 1e-4 (a
-# case may author another band for it; the gate does not police that).
+# bin/curate/golden_bands.py (the recorder's band writer, the cross-platform
+# transformation and the rewrite tool) and by bin/curate/check_golden_bands.py.
+#
+# A GOLDEN IS TWO CLAIMS.  On the platform that recorded it: "this has not
+# moved" -- the band written in the file, tight.  Elsewhere: "this reproduces as
+# well as this kind of number can" -- the file passed through THIS table, in a
+# temporary file, never written to the tree (golden_bands.py cross; bin/runTests
+# does it when the running platform is not the recording one).  So the classes
+# fall in two GROUPS:
+#   platform  (count, condition, parameter, objective): NEVER on disk.  Applied
+#             only in cross mode, and never tighter than the file's own band.
+#   residual  (residual_*): ON DISK as `abs:<v>`, because a closure residual is
+#             round-off of a balance and its meaning is absolute on any platform.
+# A row of NO class is a DIRECT RESULT: the band of the file, in every mode.
 #
 # Columns (TAB separated):  class | kinds | name regex | key regex | rule | param | reason
 #   kinds       comma list of golden kinds the class applies to
 #   name regex  matched (fullmatch) against the row's name column; `.*` = any
 #   key regex   matched (fullmatch) against the row's key column
 #   rule        rel  -- a relative band, `param` is the number
-#               abs_frac_of_term -- an ABSOLUTE band `abs:<param x term>`;
-#                   which term is named by the `term` rule in golden_bands.py
-#                   (boundary_denominator | unit_Q_kW | ledger_terms)
+#               abs_frac_of_term -- an ABSOLUTE band `abs:<param x term>`, the
+#                   term named by golden_bands.py (boundary_denominator |
+#                   unit Q_kW | ledger terms)
 #   Floor: an absolute band is never written below 1e-9 in the row's own unit.
 # The first matching line wins.  Anchor rows and `exact` rows are never touched.
 count	diag,kpi	.*	iter|.*iterations|.*evaluations	rel	2.0	A count of iterations or evaluations is decided by comparisons of 1e-6 on a max-norm objective (FitObjective.cpp minimise: restart ends when the best value improved by less than 1e-6 relative), so it is chaotic in the last digits: measured 2265 of 4174 minimax_evaluations rows differ between two platforms, max 1.43 from 5 restart passes against 2.  The row asserts "within a factor of three" and still fails a solver that needs ten times more.
@@ -23,3 +32,4 @@ objective	diag	.*	chi2|chi2_reduced|chi2_in_sample|rms|bubble_aad_fit|bubble_max
 residual_boundary	boundary	global	residual_kW	abs_frac_of_term	1e-5	A closure residual is round-off of a balance, so it is compared on an ABSOLUTE band written in the row: 1e-5 of the energy the plant exchanges (`residual_denom_kW` of the same result block; measured platform difference at most 6.4e-7 of it).  With no published denominator: abs:max(1e-3 kW, 1e-4 x |expected|) -- the 1e-3 kW floor, never tighter than the relative 1e-4 the row always had (flash20 differs by 4.3e-3 kW of 42.86 between two runs on one platform).
 residual_hx	kpi	.*	H_closure_gap_kW	abs_frac_of_term	1e-8	The gap is the unit's own enthalpy closure in the unit of its duty: 1e-8 of that unit's |Q_kW| (measured 1e-10).
 residual_ledger	kpi	.*	energy_residual_kJ	abs_frac_of_term	1e-9	The campaign and dynamic energy ledgers: 1e-9 of the largest pinned energy term of that ledger (measured 6e-13 and 2e-15).
+direct	*	.*	.*	none	0	A direct result of the run (a flash duty, a stream flow, a KPI of a unit, a word): the band of the golden file in every mode, 1e-4 unless the case authored another.  It exists so that EVERY row of every golden has a class (check_golden_bands).

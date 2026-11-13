@@ -1977,28 +1977,39 @@ row carries a published value and pins that it \emph{agrees}, and
 guarding; \code{--record} writes them from the current run once you trust
 it.  A case with no \file{expected} still gets the NaN guard.
 
-\medskip\noindent\textbf{The tolerance column has three forms, and the band is
-chosen by what the row holds} (C384).  A plain number (\code{1e-4}) is a
-\emph{relative} band; \code{abs:<v>} is an \emph{absolute} one,
-$|a-e|\le v$ in the row's own unit; \code{exact} compares a word.  One table,
-\file{bin/curate/golden\_bands.tsv}, names the classes, and the recorder
-(\code{--record}), \file{bin/curate/golden\_bands.py} and the gate
-\file{check\_golden\_bands.py} all read it: a \emph{direct result} keeps
-\code{1e-4}; a \emph{count} of iterations or evaluations (\code{iter},
+\medskip\noindent\textbf{A golden is two claims, and its tolerance column has three
+forms} (C384).  A plain number (\code{1e-4}) is a \emph{relative} band;
+\code{abs:<v>} is an \emph{absolute} one, $|a-e|\le v$ in the row's own unit;
+\code{exact} compares a word.  On the platform that \emph{recorded} a golden it
+claims ``this has not moved'': the band written in the file, tight.  On
+\emph{another} platform it claims ``this reproduces as well as this kind of
+number can'': the file passed through one table,
+\file{bin/curate/golden\_bands.tsv}, in a temporary stream that is never written
+to the tree.  The table's platform classes are applied only there, and never
+tighter than the file's own band: a \emph{count} (\code{iter},
 \code{*iterations}, \code{*evaluations}) and a \emph{condition number}
 (\code{cond\_JtJ}) take a relative band of \code{2.0}, because they are decided
 by comparisons of $10^{-6}$ on a max-norm objective and are chaotic in the last
 places; an optimiser's \emph{objective values} (\code{chi2}, \code{rms},
 \code{bubble\_*}, \code{relErr\_*}, \code{lle\_*}) take \code{1e-2} and its
 \emph{fitted parameters} \code{5e-2} (a hundred times, and five times the square
-root of, the least-squares stopping tolerance); a closure \emph{residual} takes
-an absolute band computed at record time from a term of the same result block:
-$10^{-5}$ of \code{residual\_denom\_kW} for a \code{boundary} row (or
-\code{abs:}$\max(10^{-3}\,\mathrm{kW},\,10^{-4}|e|)$ when none is published), $10^{-8}|Q_{kW}|$ of the unit for
-\code{H\_closure\_gap\_kW}, $10^{-9}$ of the largest pinned energy term of the
-ledger for \code{energy\_residual\_kJ}, never below $10^{-9}$.  The reason and
-the measurement of each class are in the table itself.  A row that still
-disagrees between two platforms after its band is a \emph{finding} and goes in
+root of, the least-squares stopping tolerance).  The one class that is on disk is
+the closure \emph{residual}, because round-off of a balance is absolute on any
+platform: $10^{-5}$ of \code{residual\_denom\_kW} for a \code{boundary} row (or
+$\max(10^{-3}\,\mathrm{kW},10^{-4}|e|)$ when none is published),
+$10^{-8}|Q_{kW}|$ of the unit for \code{H\_closure\_gap\_kW}, $10^{-9}$ of the
+largest pinned energy term of the ledger for \code{energy\_residual\_kJ}, never
+below $10^{-9}$.  The mode is decided \emph{per golden file} by a platform
+\emph{fingerprint} (CPU, architecture, C library, compiler and the SIMD features
+glibc dispatches on, read from the running system by one function in
+\file{golden\_bands.py}): the file's own \code{\# platform <fingerprint>} comment
+line, else the platform declared in \file{bin/curate/recording\_platform.txt};
+\code{--record} writes that line when it runs anywhere but the declared platform.
+Equal to the running platform: strict.  Otherwise cross, and the run says so in
+one line at its top and one in its tally, with the number of files.
+\code{CHOUPO\_GOLDEN\_MODE=cross} (or \code{strict}) forces a mode, to see locally
+what the CI runner sees.  A row that still disagrees across platforms after its
+class band is a \emph{finding} and goes in
 \file{bin/curate/platform\_divergence\_debt.tsv}, which may only shrink.
 \end{keyidea}
 

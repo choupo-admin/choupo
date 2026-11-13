@@ -3,18 +3,18 @@
 # kind   name      key         expected        reltol
 #  Round-off quantities (chi2, rms, the AADs: 1e-9..1e-6 on zero-noise synthetic data) are NOT pinned -- a relative
 #  tolerance on cancellation round-off is a coin toss across compilers; the recovered parameters and the counts are.
-diag    fit_mixed              cond_JtJ         29.8172762939      2
+diag    fit_mixed              cond_JtJ         29.8172762939      1e-4
 diag    fit_mixed              converged        1                  1e-4
 diag    fit_mixed              corr_computed    1                  1e-4
 diag    fit_mixed              dof              26                 1e-4
 diag    fit_mixed              identifiable     1                  1e-4
 diag    fit_mixed              invertible       1                  1e-4
-diag    fit_mixed              iter             5                  2
+diag    fit_mixed              iter             5                  1e-4
 diag    fit_mixed              lle_n_ties       8                  1e-4
 diag    fit_mixed              lle_n_ties_heldout 5                  1e-4
 diag    fit_mixed              lle_penalised_ties 0                  1e-4
 diag    fit_mixed              lle_penalised_ties_heldout 0                  1e-4
-diag    fit_mixed              max_abs_corr     0.750661460302     0.01
+diag    fit_mixed              max_abs_corr     0.750661460302     1e-4
 diag    fit_mixed              n_data           28                 1e-4
 diag    fit_mixed              n_heldout        10                 1e-4
 diag    fit_mixed              n_params         2                  1e-4
@@ -23,18 +23,18 @@ diag    fit_mixed              penalised_points 0                  1e-4
 diag    fit_mixed              t_crit95         2.056              1e-4
 diag    fit_mixed              weighted         1                  1e-4
 diag    fit_mixed              well_conditioned 1                  1e-4
-diag    fit_mixed_start2       cond_JtJ         29.8172762966      2
+diag    fit_mixed_start2       cond_JtJ         29.8172762966      1e-4
 diag    fit_mixed_start2       converged        1                  1e-4
 diag    fit_mixed_start2       corr_computed    1                  1e-4
 diag    fit_mixed_start2       dof              26                 1e-4
 diag    fit_mixed_start2       identifiable     1                  1e-4
 diag    fit_mixed_start2       invertible       1                  1e-4
-diag    fit_mixed_start2       iter             5                  2
+diag    fit_mixed_start2       iter             5                  1e-4
 diag    fit_mixed_start2       lle_n_ties       8                  1e-4
 diag    fit_mixed_start2       lle_n_ties_heldout 5                  1e-4
 diag    fit_mixed_start2       lle_penalised_ties 0                  1e-4
 diag    fit_mixed_start2       lle_penalised_ties_heldout 0                  1e-4
-diag    fit_mixed_start2       max_abs_corr     0.750661460292     0.01
+diag    fit_mixed_start2       max_abs_corr     0.750661460292     1e-4
 diag    fit_mixed_start2       n_data           28                 1e-4
 diag    fit_mixed_start2       n_heldout        10                 1e-4
 diag    fit_mixed_start2       n_params         2                  1e-4

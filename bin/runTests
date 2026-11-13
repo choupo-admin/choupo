@@ -112,18 +112,34 @@
 #    1e-4        a plain number: RELATIVE, |a-e|/|e| <= tol (absolute when |e| < 1e-9)
 #    abs:<v>     ABSOLUTE: |a-e| <= v, in the row's own unit, whatever |e| is
 #    exact       a WORD, compared as text
-#  and the band of a row is chosen by WHAT KIND OF NUMBER it holds, in ONE
-#  table, bin/curate/golden_bands.tsv, that the recorder (this file's
-#  `--record`), bin/curate/golden_bands.py and the gate check_golden_bands.py
-#  all read:
-#    direct result      1e-4 (a case may author another band)
+#
+#  A GOLDEN IS TWO CLAIMS.  On the platform that RECORDED it: "this has not
+#  moved" -- the band written in the file, tight (locally every count, condition
+#  number and fit statistic reproduces bit for bit; loosening them on disk would
+#  blind the maintainer's own suite).  On ANOTHER platform: "this reproduces as
+#  well as this kind of number can" -- the file passed through ONE table,
+#  bin/curate/golden_bands.tsv, in a temporary stream that is never written to
+#  the tree.  The class bands, applied ONLY in that cross mode and never tighter
+#  than the file's own band:
 #    count              rel 2.0   (iter, *iterations, *evaluations: chaotic in the last places)
 #    condition number   rel 2.0   (cond_JtJ)
 #    optimiser objective values   rel 1e-2   (chi2 family, rms, bubble_*, relErr_*, lle_*, ...)
 #    fitted parameters  rel 5e-2  (A, B, C, dHvap, param_*)
-#    closure residual   abs:<v>   (boundary residual_kW: 1e-5 x residual_denom_kW, or max(1e-3 kW, 1e-4 x |value|) with
-#                       none published; kpi H_closure_gap_kW: 1e-8 x |Q_kW| of the unit; kpi
-#                       energy_residual_kJ: 1e-9 x the largest pinned energy term; never below 1e-9)
+#  and the one class that IS on disk, because a closure residual is round-off of
+#  a balance and its meaning is absolute on any platform: `abs:<v>`
+#    boundary residual_kW   1e-5 x residual_denom_kW of the result block, or
+#                           max(1e-3 kW, 1e-4 x |value|) when none is published
+#    kpi H_closure_gap_kW   1e-8 x |Q_kW| of the unit
+#    kpi energy_residual_kJ 1e-9 x the largest pinned energy term; never below 1e-9
+#  THE MODE is decided per golden file by the platform FINGERPRINT (CPU, architecture,
+#  C library, compiler, SIMD features, read from the running system; ONE function,
+#  bin/curate/golden_bands.py): the file's own `# platform <fingerprint>` comment
+#  line, else the platform declared in bin/curate/recording_platform.txt.  Equal
+#  to the running platform: strict.  Otherwise: cross.  `--record` writes the
+#  `# platform` line when it runs anywhere but the declared platform.
+#  CHOUPO_GOLDEN_MODE=cross|strict forces a mode (the self-test, or to see
+#  locally what the CI runner sees).  The run prints one line at its top and one
+#  in its tally saying which mode ran and for how many golden files.
 #  Each class carries its measured reason in the table.
 #
 #  `anchor` is a SIXTH-COLUMN CLAIM, not a kind (2026-08-10; respelled the
@@ -1846,6 +1862,7 @@ auto_generate() {
     local resf; resf=$(mktemp)
     printf '%s\n' "$out" > "$resf"
     python3 -I "$ROOT/bin/curate/golden_bands.py" apply "$dest" --result "$resf" || { rm -f "$resf"; return 1; }
+    python3 -I "$ROOT/bin/curate/golden_bands.py" stamp "$dest" || { rm -f "$resf"; return 1; }
     rm -f "$resf"
     return 0
 }
@@ -2648,6 +2665,19 @@ fi
 # --- check mode -----------------------------------------------------------
 pass=0; fail=0; known_broken=0; expected_fail=0
 KB_NAMES=(); EF_NAMES=()
+#  THE MODE OF THE GOLDENS (C384).  A golden is two claims: on the platform that
+#  recorded it, "this has not moved" (the band written in the file); elsewhere,
+#  "this reproduces as well as this kind of number can" (the file passed through
+#  bin/curate/golden_bands.tsv, in a temporary stream, never written).  The
+#  running platform's fingerprint decides, per file (a golden's own `# platform`
+#  line overrides the declared one in bin/curate/recording_platform.txt);
+#  CHOUPO_GOLDEN_MODE=cross|strict forces it.  One loud line here, one in the tally.
+GB_LOG=$(mktemp); export CHOUPO_GB_LOG="$GB_LOG"
+GB_TOP=$(python3 -I "$ROOT/bin/curate/golden_bands.py" mode | cut -f1,2)
+case "$GB_TOP" in
+    cross*) echo "[golden bands] CROSS-PLATFORM BANDS ARE ON: $(printf '%s' "$GB_TOP" | cut -f2) -- count, condition-number and optimiser rows are compared through bin/curate/golden_bands.tsv (never written to the tree)";;
+    *)      echo "[golden bands] strict: $(printf '%s' "$GB_TOP" | cut -f2) -- every golden is compared as written";;
+esac
 [ "$#" -eq 0 ] && gate_segments          # the gates' segments (THE GATES, above)
 
 # Catalogue identity + CAS audit runs once on the FULL sweep (it is a property
@@ -8151,7 +8181,7 @@ for case_dir in "$1"; do
                      bad="$bad\n    ANCHOR $name.$key: model gives ${act:-?} against the CITED $exp_v (band $tol) -- a disagreement with the primary, not a moved golden"
                  else bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v ($([ "${tol#abs:}" != "$tol" ] && echo "band" || echo "reltol") $tol)"; fi;;
             esac
-        done < "$exp_file"
+        done < <(python3 -I "$ROOT/bin/curate/golden_bands.py" view "$exp_file")
         #  A golden with ZERO data rows pinned nothing and still printed the
         #  suite's STRONGEST verdict ("checked vs reference") -- observed on
         #  farelo_licl_range, 2026-08-22.  Checked-vacuously is not checked.
@@ -9060,6 +9090,13 @@ if [ "$expected_fail" -gt 0 ]; then
     for n in "${EF_NAMES[@]}"; do echo "    - $n"; done
 fi
 pool_times_commit
+GB_N=$(sort -u "$GB_LOG" 2>/dev/null | grep -c . || true)
+if [ "$GB_N" -gt 0 ] || [ "${GB_TOP%%$'\t'*}" = cross ]; then
+    echo "[golden bands] cross-platform bands: $GB_N golden file(s); $(printf '%s' "$GB_TOP" | cut -f2)"
+else
+    echo "[golden bands] strict: every golden was compared as written; $(printf '%s' "$GB_TOP" | cut -f2)"
+fi
+rm -f "$GB_LOG"
 echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
 #  WHAT THAT NUMBER MEANS (G2, 2026-08-05).  Almost every case above compares
 #  against a golden Choupo recorded itself, so a PASS proves the answer has NOT

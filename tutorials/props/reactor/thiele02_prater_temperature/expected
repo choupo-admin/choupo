@@ -21,7 +21,7 @@ diag    thiele_CO_alumina_prater field_maxAbsDeviation 1.44754e-06      1e-4
 diag    thiele_CO_alumina_prater gate_eta         1                1e-4
 diag    thiele_CO_alumina_prater gate_field       1                1e-4
 diag    thiele_CO_alumina_prater gates_pass       1                1e-4
-diag    thiele_CO_alumina_prater newton_iterations 1                2
+diag    thiele_CO_alumina_prater newton_iterations 1                1e-4
 diag    thiele_CO_alumina_prater newton_residual  3.35917e-15      1e-4
 diag    thiele_CO_alumina_prater nodes            401              1e-4
 diag    thiele_CO_alumina_prater phi              1.0161           1e-4

@@ -2,15 +2,15 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    cosmo_score            aad              0.982597286548   1e-4
-diag    cosmo_score            chi2             14.8354761504    0.01
-diag    cosmo_score            max_abs_resid    1.77675451305    0.01
+diag    cosmo_score            chi2             14.8354761504    1e-4
+diag    cosmo_score            max_abs_resid    1.77675451305    1e-4
 diag    cosmo_score            max_resid_x1     0.5              1e-4
 diag    cosmo_score            mode_evaluate    1                1e-4
 diag    cosmo_score            n_data           11               1e-4
 diag    cosmo_score            n_feasible       11               1e-4
 diag    cosmo_score            partial          0                1e-4
 diag    cosmo_score            penalised_points 0                1e-4
-diag    cosmo_score            rms              1.16132667671    0.01
+diag    cosmo_score            rms              1.16132667671    1e-4
 diag    cosmo_score            sse              14.8354761504    1e-4
 diag    cosmo_score            validity_declared 0                1e-4
 diag    txy_cosmo              n_emptyCurves    0                1e-4

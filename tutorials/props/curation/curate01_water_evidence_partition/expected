@@ -5,7 +5,7 @@ diag    psat_water_validated   A                5.40221          1e-4
 diag    psat_water_validated   B                1838.68          1e-4
 diag    psat_water_validated   C                -31.737          1e-4
 diag    psat_water_validated   R2               1                1e-4
-diag    psat_water_validated   aad_heldout_pct  5.95532e-08      0.01
+diag    psat_water_validated   aad_heldout_pct  5.95532e-08      1e-4
 diag    psat_water_validated   dHvap_kJ_per_mol 43.3787          1e-4
 diag    psat_water_validated   n_heldout        10               1e-4
 diag    psat_water_validated   n_points         10               1e-4

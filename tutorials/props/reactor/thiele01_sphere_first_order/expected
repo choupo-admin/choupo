@@ -37,7 +37,7 @@ diag    thiele_CO_alumina      c_centre               2.89874e-01        1e-6
 diag    thiele_CO_alumina      c_centre_closedForm    2.89873e-01        1e-6
 diag    thiele_CO_alumina      weiszPrater            6.87350e-01        1e-5
 diag    thiele_CO_alumina      nodes                  4.01e+02           1e-6
-diag    thiele_CO_alumina      newton_iterations      1.000e+00          2
+diag    thiele_CO_alumina      newton_iterations      1.000e+00          1e-6
 diag    thiele_CO_alumina      sweep_points           6.30e+01           1e-6
 diag    thiele_CO_alumina      sweep_nodes            2.01e+02           1e-6
 diag    thiele_CO_alumina      eta_relDeviation       1.34497e-06        1e-3

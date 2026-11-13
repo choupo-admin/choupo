@@ -223,12 +223,13 @@ SABOTAGES += [
     {
         "gate": "check_golden_bands.py",
         "kind": "detection",
-        "file": "data/curation/pairs/acetone-methanol/expected",
-        "find": "diag    fit_nrtl               minimax_evaluations 423              2\n",
-        "replace": "diag    fit_nrtl               minimax_evaluations 423              1e-4\n",
-        "why": "a COUNT of evaluations hand-pinned at the default 1e-4 is the "
-               "row a second platform cannot reproduce (C384): the gate must "
-               "fail it, not wave through a band the class table forbids.",
+        "file": "bin/curate/golden_bands.tsv",
+        "find": "\titer|.*iterations|.*evaluations\trel\t2.0\t",
+        "replace": "\titer|.*iterations|.*evaluations\trel\t1e-4\t",
+        "why": "the class table is what the cross-platform comparison is made "
+               "of (C384): a count class that no longer gives 2.0 leaves the "
+               "runner red on the rows it cannot reproduce, and the gate's "
+               "transformation arm must fail it.",
     },
     {
         "gate": "check_golden_bands.py",

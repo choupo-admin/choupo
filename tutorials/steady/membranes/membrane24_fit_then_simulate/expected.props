@@ -1,21 +1,21 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    fit_NF270_FdL2021      chi2             0.0116573675401    0.01
-diag    fit_NF270_FdL2021      chi2_reduced     0.000971447295009  0.01
+diag    fit_NF270_FdL2021      chi2             0.0116573675401    1e-4
+diag    fit_NF270_FdL2021      chi2_reduced     0.000971447295009  1e-4
 diag    fit_NF270_FdL2021      cond_scaled      28.7504509901      1e-4
 diag    fit_NF270_FdL2021      converged        1                  1e-4
 diag    fit_NF270_FdL2021      dof              12                 1e-4
-diag    fit_NF270_FdL2021      heldOut_AAD_pct  0.925797692862     0.01
+diag    fit_NF270_FdL2021      heldOut_AAD_pct  0.925797692862     1e-4
 diag    fit_NF270_FdL2021      identifiable     1                  1e-4
-diag    fit_NF270_FdL2021      inSample_AAD_pct 2.66344502745      0.01
-diag    fit_NF270_FdL2021      iter             8                  2
+diag    fit_NF270_FdL2021      inSample_AAD_pct 2.66344502745      1e-4
+diag    fit_NF270_FdL2021      iter             8                  1e-4
 diag    fit_NF270_FdL2021      maxAbsCorr       0.962078368382     1e-4
 diag    fit_NF270_FdL2021      n_fit            14                 1e-4
 diag    fit_NF270_FdL2021      n_heldOut        14                 1e-4
 diag    fit_NF270_FdL2021      n_params         2                  1e-4
 diag    fit_NF270_FdL2021      n_points         28                 1e-4
-diag    fit_NF270_FdL2021      rms              0.0288560064806    0.01
+diag    fit_NF270_FdL2021      rms              0.0288560064806    1e-4
 verdict fit_NF270_FdL2021      verdict          validated          exact
 # The fitted parameters themselves (written by hand: the recorder reads
 # word-keyed diagnostics only).  fit.0 = poreModel.poreRadius [m],

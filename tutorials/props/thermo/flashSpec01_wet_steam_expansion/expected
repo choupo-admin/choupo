@@ -9,7 +9,7 @@ diag    expand                 S_per_mass       6.72637907882      1e-4
 diag    expand                 T                318.957548207      1e-4
 diag    expand                 dH_fromReference -22864.7579963     1e-4
 diag    expand                 flashes          0                  1e-4
-diag    expand                 iterations       0                  2
+diag    expand                 iterations       0                  1e-4
 diag    expand                 onSaturationPlateau 1                  1e-4
 diag    expand                 ref_H            61239.6972971      1e-4
 diag    expand                 ref_P            8000000            1e-4
@@ -29,7 +29,7 @@ diag    throttle               S_per_mass       2.19292917394      1e-4
 diag    throttle               T                372.755918611      1e-4
 diag    throttle               dH_fromReference 0                  1e-4
 diag    throttle               flashes          0                  1e-4
-diag    throttle               iterations       0                  2
+diag    throttle               iterations       0                  1e-4
 diag    throttle               onSaturationPlateau 1                  1e-4
 diag    throttle               ref_H            13499.1526066      1e-4
 diag    throttle               ref_P            1000000            1e-4
@@ -47,7 +47,7 @@ diag    halfBoil               S                78.0149401506      1e-4
 diag    halfBoil               S_per_mass       4.33055454624      1e-4
 diag    halfBoil               T                373.1243           1e-4
 diag    halfBoil               flashes          0                  1e-4
-diag    halfBoil               iterations       0                  2
+diag    halfBoil               iterations       0                  1e-4
 diag    halfBoil               onSaturationPlateau 1                  1e-4
 diag    halfBoil               residual         0                  1e-4
 diag    halfBoil               target           0.5                1e-4
@@ -61,7 +61,7 @@ diag    dewP                   S                132.483698082      1e-4
 diag    dewP                   S_per_mass       7.35407705145      1e-4
 diag    dewP                   T                373.15             1e-4
 diag    dewP                   flashes          0                  1e-4
-diag    dewP                   iterations       0                  2
+diag    dewP                   iterations       0                  1e-4
 diag    dewP                   onSaturationPlateau 0                  1e-4
 diag    dewP                   residual         0                  1e-4
 diag    dewP                   target           1                  1e-4

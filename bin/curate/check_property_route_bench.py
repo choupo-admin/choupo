@@ -68,6 +68,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from golden_bands import platform_fingerprint   # ONE fingerprint function (C384)
+
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "bin" / "curate" / "property_route_bench.manifest"
 HASHES = ROOT / "bin" / "curate" / "property_route_bench.sha256.tsv"
@@ -76,34 +79,6 @@ OUT = ROOT / "build" / "propertyRouteBench" / "bench.tsv"
 LABEL_HASHES = ROOT / "bin" / "curate" / "property_route_labels.sha256.tsv"
 LABELS = ROOT / "build" / "propertyRouteBench" / "labels.tsv"
 NAME = "check_property_route_bench"
-
-
-def platform_fingerprint():
-    """The platform the bench's hexfloats are bit-for-bit true on, read from the
-    RUNNING system (C384, 2026-11-13).  The libm a binary calls picks its
-    variant of exp/log/pow by the CPU's instruction set and differs in the last
-    bit between libraries, so a bit-for-bit pin is a claim about ONE platform:
-    the architecture, the C library, the compiler that built the binary, and the
-    SIMD features glibc dispatches on."""
-    libc = " ".join(platform.libc_ver()).strip() or "unknown"
-    try:
-        cxx = subprocess.run([os.environ.get("CXX", "g++"), "--version"], capture_output=True,
-                             text=True, timeout=30).stdout.splitlines()[0].strip()
-    except (OSError, IndexError, subprocess.SubprocessError):
-        cxx = "unknown"
-    feats = ""
-    model = ""
-    try:
-        for line in Path("/proc/cpuinfo").read_text().splitlines():
-            if line.startswith("model name") and not model:
-                model = " ".join(line.split(":", 1)[1].split())
-            if line.startswith("flags"):
-                have = set(line.split(":", 1)[1].split())
-                feats = ",".join(f for f in ("sse4_1", "avx", "avx2", "fma", "avx512f") if f in have)
-                break
-    except OSError:
-        pass
-    return f"cpu={model or 'unknown'}; arch={platform.machine()}; libc={libc}; cxx={cxx}; simd={feats or 'unknown'}"
 
 
 def pinned_platform():
