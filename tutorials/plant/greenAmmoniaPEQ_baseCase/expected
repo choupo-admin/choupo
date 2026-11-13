@@ -1798,3 +1798,8 @@ source  ShellTubeHX:_unit_'N2Cooler'_(design) liquidViscosity  pureFluid.IF97   
 source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidDensity    pureFluid.IF97   exact
 source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidViscosity  pureFluid.IF97   exact
 source  storage_'NH3Storage'   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+kpi     economics              breakEven_operating_fixed 31723572.0741    1e-4
+kpi     economics              breakEven_operating_sales 388859818.374    1e-4
+kpi     economics              breakEven_operating_variable 414569919.647    1e-4
+kpi     economics              breakEven_price_H2Feed 3.72243864459    1e-4
+kpi     economics              breakEven_price_ProductNH3 1.17505630749    1e-4

@@ -316,3 +316,4 @@ boundary global               H_products_kW    -265.68373138      1e-4
 source  dryer                  liquidDensity    bypass.solventVliq25C exact
 source  dryer                  liquidViscosity  default.water1e-3 exact
 source  dryer                  surfaceTension   BrockBird/Butler exact
+kpi     economics              breakEven_price_powder 15.4376071108    1e-4

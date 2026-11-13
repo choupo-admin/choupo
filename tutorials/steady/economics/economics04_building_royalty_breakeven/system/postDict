@@ -79,8 +79,13 @@ economics
         reason      "the group's own building is a controlled-environment block, so its grade D rooms cost more than its unclassified ones";
     }
 
-    //  E5a -- the break-evens, with the cost classification printed.
-    breakEven {}
+    //  E5a -- the break-evens, with the cost classification printed, and
+    //  (3) the price of the powder at which the NPV is zero: the minimum
+    //  selling price, every other price held.
+    breakEven
+    {
+        price ( powder );
+    }
 
     //  E5b -- a royalty on sales, for a patent window of the first six
     //  operating years of the ten.

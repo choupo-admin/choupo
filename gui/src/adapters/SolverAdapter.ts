@@ -1322,6 +1322,11 @@ export interface Economics {
    *  publishes the inputs IN TORNADO ORDER (largest NPV swing first, a tie in
    *  declared order) -- the GUI draws that order and sorts nothing. */
   sensitivity?: EconomicSensitivity;
+  /** The price break-evens (2026-11-13), present ONLY when the case declared
+   *  `economics { breakEven { price ( <stream> ... ); } }`: per stream, the
+   *  price at which the engine's NPV is zero with every other price held.
+   *  The engine's numbers; the GUI computes none of them. */
+  breakEvenPrices?: EconomicBreakEvenPrice[];
   /** THE ANNUAL BASIS the engine used (DEV.md 4c C264): every annual FLOW
    *  (raw materials, utilities, revenue) is its hourly figure x
    *  `operatingHours`; `operatingHoursFrom` says where those hours came from
@@ -1345,6 +1350,15 @@ export interface EconomicsLand {
   recoveredAtYear: number;
   source: string;
   reason: string;
+}
+
+/** One price break-even: the minimum selling price of a product, or the
+ *  highest purchase price of a raw material the plant can bear (NPV = 0). */
+export interface EconomicBreakEvenPrice {
+  stream: string;
+  role: string;             // "product" | "rawMaterial"
+  declared: number;         // the case's price, currency per kg
+  breakEven: number;        // currency per kg at which NPV = 0
 }
 
 /** The economic sensitivity as the engine published it: one row per declared

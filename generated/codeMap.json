@@ -634,6 +634,9 @@
   "ENRTLSingleSalt": [
    "src/thermo/electrolyte/ENRTLSingleSalt.H"
   ],
+  "EconomicBreakEvenPrice": [
+   "src/core/ResultRecords.H"
+  ],
   "EconomicSensitivityRow": [
    "src/core/ResultRecords.H"
   ],

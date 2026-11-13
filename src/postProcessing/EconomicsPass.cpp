@@ -4027,6 +4027,7 @@ int EconomicsPass::run(SimulationResult& result)
             breakEvenOn = true;
         }
     }
+    std::vector<EconomicBreakEvenPrice> bePrices;
     if (breakEvenOn)
     {
         const RoyaltyDeclaration& ry = baseIn.royalty;
@@ -4092,8 +4093,130 @@ int EconomicsPass::run(SimulationResult& result)
             }
         }
         const scalar npvAtFound = std::isfinite(sNpv) ? npvAt(sNpv) : std::nan("");
+
+        //  (3) PRICE (2026-11-13): `breakEven { price ( <stream> ... ); }`.
+        //  For each named stream the price of THAT stream, every other price
+        //  held, at which NPV = 0 -- found by `appraise` on a copy, exactly
+        //  as (2): the cash flow has ONE home.  A product's is the minimum
+        //  selling price; a raw material's is the highest purchase price the
+        //  plant can bear.  Whatever the NPV carries moves with the price as
+        //  a price end of `sensitivity {}` moves it (receivables, the
+        //  built-up working capital, tax, the royalty on sales).
+        std::vector<std::string> priceStreams;
+        if (std::holds_alternative<DictPtr>(econDict_->entryValue("breakEven")))
+        {
+            const DictPtr beBlock = econDict_->subDict("breakEven");
+            for (const auto& k : beBlock->keys())
+                if (k != "price")
+                    throw std::runtime_error("economics { breakEven { " + k + " } }:"
+                        " the only key of the block is `price ( <stream> ... );`,"
+                        " the priced streams whose break-even price to publish;"
+                        " delete the line for none.");
+            if (beBlock->found("price")) priceStreams = beBlock->lookupWordList("price");
+        }
+        {
+            std::vector<std::string> priced;
+            for (const auto& p : baseIn.rawMats)  priced.push_back(p.stream);
+            for (const auto& p : baseIn.products) priced.push_back(p.stream);
+            std::string pricedList;
+            for (const auto& x : priced) pricedList += (pricedList.empty() ? "" : " ") + x;
+            for (std::size_t i = 0; i < priceStreams.size(); ++i)
+            {
+                const std::string& name = priceStreams[i];
+                const std::string where = "economics { breakEven { price ( " + name + " ) } }";
+                for (std::size_t j = 0; j < i; ++j)
+                    if (priceStreams[j] == name)
+                        throw std::runtime_error(where + ": stream '" + name
+                            + "' is named twice; name each once.");
+                bool isProduct = false, found = false;
+                for (const auto& p : baseIn.products) if (p.stream == name) { found = true; isProduct = true; }
+                for (const auto& p : baseIn.rawMats)  if (p.stream == name) { found = true; }
+                if (!found)
+                    throw std::runtime_error(where + ": constant/economics prices no"
+                        " such stream, so this appraisal neither sells nor buys it"
+                        " and has no price to break even on.  Add it to `products`"
+                        " or `rawMaterials` of constant/economics with a price, or"
+                        " name one of the priced streams: "
+                        + (pricedList.empty() ? std::string("(none)") : pricedList));
+                const std::string key = "price." + name;
+                const scalar declared = sensitivityValue(baseIn, key);
+                auto npvAtPrice = [&](scalar pr)
+                {
+                    return appraise(withSensitivityValue(baseIn, key, pr), result, false).NPV;
+                };
+                //  NPV rises with a product's price and falls with a raw
+                //  material's; the bracket opens at price 0 and doubles from
+                //  the declared price (1 if it is 0), 60 times at most.
+                const scalar f0 = npvAtPrice(0.0);
+                scalar lo = 0.0, hi = declared > 0.0 ? declared : 1.0;
+                scalar root = std::nan("");
+                scalar fHi = f0;
+                if (isProduct)
+                {
+                    if (f0 >= 0.0) root = 0.0;
+                    else
+                    {
+                        for (int k = 0; k < 60; ++k)
+                        {
+                            fHi = npvAtPrice(hi);
+                            if (fHi >= 0.0) break;
+                            lo = hi;  hi *= 2.0;
+                        }
+                        if (fHi < 0.0)
+                            throw std::runtime_error(where + ": no price in [0, "
+                                + csvNum(hi, 4) + "] " + curStr + "/kg makes the NPV"
+                                " zero (NPV " + csvNum(f0, 0) + " at price 0, "
+                                + csvNum(fHi, 0) + " at the upper end).  The"
+                                " stream's revenue cannot offset the costs at any"
+                                " finite price -- is its mass flow zero?  Check the"
+                                " stream's flow in the converged case, or drop it"
+                                " from `price ( ... )`.");
+                    }
+                }
+                else
+                {
+                    if (f0 < 0.0)
+                        throw std::runtime_error(where + ": the NPV is negative"
+                            " (" + csvNum(f0, 0) + " " + curStr + ") even when '"
+                            + name + "' is free, so no purchase price of it makes"
+                            " the NPV zero.  The plant does not pay whatever this"
+                            " raw material costs; drop it from `price ( ... )`.");
+                    for (int k = 0; k < 60; ++k)
+                    {
+                        fHi = npvAtPrice(hi);
+                        if (fHi < 0.0) break;
+                        lo = hi;  hi *= 2.0;
+                    }
+                    if (fHi >= 0.0)
+                        throw std::runtime_error(where + ": no price in [0, "
+                            + csvNum(hi, 4) + "] " + curStr + "/kg makes the NPV"
+                            " zero (NPV " + csvNum(f0, 0) + " at price 0, "
+                            + csvNum(fHi, 0) + " at the upper end): the NPV does"
+                            " not depend on this price.  Is the stream's mass flow"
+                            " zero?  Drop it from `price ( ... )`.");
+                }
+                if (!std::isfinite(root))
+                {
+                    //  NPV >= 0 is the side a product's price rises into and
+                    //  a raw material's price falls out of.
+                    for (int it = 0; it < 200; ++it)
+                    {
+                        const scalar mid = 0.5 * (lo + hi);
+                        const bool ok = npvAtPrice(mid) >= 0.0;
+                        if (ok == isProduct) hi = mid; else lo = mid;
+                    }
+                    root = 0.5 * (lo + hi);
+                }
+                EconomicBreakEvenPrice b;
+                b.stream = name;  b.role = isProduct ? "product" : "rawMaterial";
+                b.declared = declared;  b.breakEven = root;
+                bePrices.push_back(std::move(b));
+            }
+        }
         std::cout << std::fixed << std::setprecision(0)
-                  << "\n  -- BREAK-EVEN (two answers, two questions) -----------------\n"
+                  << (bePrices.empty()
+                        ? "\n  -- BREAK-EVEN (two answers, two questions) -----------------\n"
+                        : "\n  -- BREAK-EVEN (three answers, three questions) -------------\n")
                   << "    (1) OPERATING: the fraction x of nameplate production at which"
                      " sales = cost of production, year at full production\n"
                   << "        FIXED    F = 0.180 FCI + 2.73 C_OL + depreciation = "
@@ -4122,6 +4245,23 @@ int EconomicsPass::run(SimulationResult& result)
                       << " " << curStr << ")\n";
         else
             std::cout << "(none: " << npvNote << ")\n";
+        for (const auto& b : bePrices)
+        {
+            const bool prod = b.role == "product";
+            std::cout << "    (3) PRICE of " << b.stream << " (" << (prod
+                          ? "the minimum selling price of this product"
+                          : "the highest purchase price of this raw material the plant can bear")
+                      << "): NPV = 0 at " << std::setprecision(4) << b.breakEven << " "
+                      << curStr << "/kg, every other price held; declared "
+                      << b.declared << " " << curStr << "/kg, ratio "
+                      << (b.declared > 0.0 ? b.breakEven / b.declared : std::nan(""))
+                      << "\n";
+        }
+        if (!bePrices.empty())
+            std::cout << "        found by `appraise` on a copy with only that price moved: the"
+                         " receivables, the working capital, the tax and the royalty on sales"
+                         " move with it exactly as at a price end of `sensitivity {}`.\n"
+                      << std::setprecision(0);
         std::cout << "    They differ because (2) carries the capital charge, the tax, the"
                      " working capital, the ramp-up, the royalty window and discounting,"
                      " and (1) is one year's operating cost against its sales.\n"
@@ -4137,6 +4277,11 @@ int EconomicsPass::run(SimulationResult& result)
         extCsv.emplace_back("breakEven_operating_variable", csvNum(slopeVar, 0));
         extCsv.emplace_back("breakEven_operating_sales", csvNum(slopeRev, 0));
         extCsv.emplace_back("breakEven_npv_fraction", csvNum(sNpv, 6));
+        for (const auto& b : bePrices)
+        {
+            extKpis.emplace_back("breakEven_price_" + b.stream, b.breakEven);
+            extCsv.emplace_back("breakEven_price_" + b.stream, csvNum(b.breakEven, 6));
+        }
     }
     //  ---- E5c: the working capital by three methods ----------------------
     if (econDict_->found("workingCapitalMethods"))
@@ -4445,6 +4590,8 @@ int EconomicsPass::run(SimulationResult& result)
             summary.sensitivity.push_back(std::move(r));
         }
     }
+
+    summary.breakEvenPrices = bePrices;
 
     //  THE FINANCING (G4) on the result, only when declared.
     if (fin.present)

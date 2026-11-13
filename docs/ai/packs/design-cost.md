@@ -227,6 +227,8 @@ economics
     `appraise` on a copy); they differ (capital charge, tax, working capital,
     ramp-up, royalty window, discounting) and the output says so.  KPIs
     `breakEven_operating_fraction`, `breakEven_npv_fraction`.  No verdict.
+    `price ( <stream> ... );` inside the block adds, per priced stream, the
+    price at which NPV = 0 (KPI `breakEven_price_<stream>`).
   - `royalty { rate <fraction>; basis sales|costOfManufacture; expiry <year>;
     source; reason; }`: a cost of operating years 1..expiry only, deducted
     before the tax; refused without `expiry` (a royalty with no end), source

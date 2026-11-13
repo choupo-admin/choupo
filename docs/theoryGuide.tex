@@ -28841,6 +28841,42 @@ uncertainty upstream of it}.  The correlations behind the FCI are
 study-grade, so the NPV is a study-grade number wearing however many digits
 the arithmetic produced.
 
+\paragraph{The break-evens: three questions, three answers.}\label{par:break-even}
+\code{breakEven \{\}} publishes two answers that say different things, and
+\code{breakEven \{ price ( \ldots ); \}} adds a third.  (1)~The
+\emph{operating} break-even is the fraction $x$ of nameplate production at
+which one year's sales equal one year's cost of production,
+$x = F/(R-V)$ with $F = 0.180\,\mathrm{FCI} + 2.73\,C_{OL} + D$ (fixed) and
+$V = 1.23\,(C_{RM}+C_{UT}+C_{WT})$ (variable); the classification is a
+modelling choice and is printed.  (2)~The \emph{NPV} break-even is the
+fraction $s$ of production, capital and labour held, at which
+$\mathrm{NPV}(s)=0$.  (3)~The \emph{price} break-even is, for a priced
+stream $j$ of \code{constant/economics}, the price $\pi_j^{\ast}$ with every
+other price held at which
+\begin{equation}
+\mathrm{NPV}\!\left(\pi_j^{\ast}\right) = 0 ,
+\label{eq:breakeven-price}
+\end{equation}
+found, like (2), by evaluating the \emph{same} appraisal on a copy
+(\code{appraise}): the cash flow has one home.  For a product $\pi_j^{\ast}$
+is the \emph{minimum selling price}, and because it carries the capital
+charge, the tax, the working capital and discounting it lies above the cost
+of production per kilogram that the run prints; for a raw material it is the
+\emph{highest purchase price the plant can bear}.  The NPV rises with a
+product's price and falls with a raw material's, so the root is bracketed
+from price $0$ and from the declared price doubled (at most sixty times) and
+bisected on the sign of the NPV; the run \emph{refuses by name} a stream the
+appraisal neither sells nor buys, a raw material whose NPV is negative even
+when the material is free, and a bracket with no sign change (it states the
+bracket and the NPV at both ends, as when a stream's mass flow is zero).
+Everything the NPV carries moves with the price exactly as at a price end of
+\code{sensitivity \{\}}: the receivables and the built-up working capital,
+the tax, and a royalty on sales.  The output prints $\pi_j^{\ast}$, the
+declared price and their ratio; it states no verdict and no threshold.
+Worked cases: \code{economics04\_building\_royalty\_breakeven} (the powder's
+minimum selling price) and \code{greenAmmoniaPEQ\_baseCase} (the minimum
+selling price of ammonia and the highest price of hydrogen).
+
 \paragraph{What is NOT modelled, named rather than implied.}  A ramp-up
 that degrades yield or quality (the production fraction scales products and
 raw materials alike), a utility bill not proportional to throughput, a
