@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 /* Generate the legal notices shipped by the static GUI build.
  *
  * package-lock.json is the deterministic inventory.  We include every

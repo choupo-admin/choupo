@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 import { defineConfig } from "vitest/config";
 import { localCataloguePlugin } from "./scripts/localCataloguePlugin.js";
 import { layoutViewerPlugin } from "./scripts/layoutViewerPlugin.js";

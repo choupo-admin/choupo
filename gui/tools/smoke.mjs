@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 //  gui/tools/smoke.mjs -- does the GUI actually RENDER and SOLVE?
 //
 //  WHY THIS EXISTS.  `npm test` runs 2131 unit tests and `npm run typecheck`

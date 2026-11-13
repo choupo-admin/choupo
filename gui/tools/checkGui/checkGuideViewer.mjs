@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*---------------------------------------------------------------------------*\
   checkGuideViewer -- PROVE that Help opens the manual AT ITS SECTION, in a
   page Choupo draws itself.
