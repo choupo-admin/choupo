@@ -1,0 +1,64 @@
+## block donepezil01_formula  (mg per tablet; UK SmPC ARICEPT 10 mg: API 10.00, lactose 174.33 -- cited, NOT read by this reviewer)
+ingredient	declared_mg	engine_kg_h	engine_mg	diff
+apiFeed	10.0	7.2	10.0	0.0
+lactoseFeed	174.33	125.5176	174.33	-0.0
+starchFeed	50.0	36.0	50.0	0.0
+mccFeed	36.87	26.5464	36.87	0.0
+hpcFeed	7.4	5.328	7.4	0.0
+mgstFeed	1.4	1.008	1.4	0.0
+CORE	280.0		280.0	-0.0
+API w/w %	3.6		3.571	
+binder water mg (10 wt % HPC)	66.6	47.952	66.6	
+binder water / dry intragranular %	23.9		23.91	
+coat mg (3 % of 280)	8.4		8.4	-0.0
+coat water mg (12 wt %)	61.6	43.90848	61.6	
+packed tablet g	0.29023	206.879493	0.290235	
+donepezil HCl MW / base equivalent of 10 mg	415.96		415.958 / 9.124 mg	SmPC: 9.12 mg
+
+## block donepezil01_plan
+quantity	independent	engine/README	diff
+lot B kg	305.852	305.852	
+lots N	143	143	0
+H_eq h	210.4365	210.437	
+granulation T_L h / limiting	4.25 / drying		
+granulation campaigns / required h / occ %	18 / 1120.75 / 29.2	18 / 1121	
+tableting T_L h / limiting	11 / packaging		
+tableting campaigns / required h / occ %	18 / 2239.00 / 58.3	18 / 2239	
+drying stage V m3 = f/(550*0.5)*B	1.3362	1.336	
+FBD drying rate implied: wet mass per lot / 1.5 h vs flowsheet wetMass kg/h	245.0 vs 248.5		
+
+## block donepezil01_economics
+revenue EUR/yr	14999984	14999984	0
+tablets / yr	149999150	150 M	
+NPV taxOnLoss credit	-18672739	-18672735	
+NPV taxOnLoss none	-21380165	-21.4 M (README)	
+operating break-even x = F/(R-V)	1.1911	1.19 (README)	
+
+## block donepezil02_year  (multiproduct: campaigns back to back, the product clean REPLACES the train changeover)
+quantity	independent	engine/README	diff
+lots 10 mg / 5 mg	86 / 29	86 / 29	
+tablets/yr 10 mg / 5 mg	90001034 / 60000689	90 M / 60 M	
+granulation year h (product clean 6 h replaces the 24 h changeover)	880.25	880.2	0.05
+granulation year h if a product change cost at least the 24 h same-product clean	916.25		36.0
+two products save over one product with the same campaigns (h)	36.0		
+tableting year h	2079	2079	0
+tableting year h if each product change cost at least the 24 h clean	2109		30
+5 mg press load tablets/h (2.14 M cores / 14 h)	153061		
+blended price EUR/kg	361.778	361.78	
+
+## block crew_cover_what_if  (REVIEWER's what-if: the declared crew staffed for each train's DECLARED available hours, not round the clock)
+quantity	engine (x 4.5)	what-if (avail h / 1960)	diff
+donepezil01 positions	45	19.59	
+donepezil01 C_OL EUR/yr	3704400	1612800	-2091600
+donepezil01 COM_d EUR/yr	14819804	9109736	-5710068
+donepezil01 NPV EUR	-18672739	9189308	27862046
+apalutamide01 positions	49.5	25.71	
+apalutamide01 C_OL EUR/yr	4074840	2116800	-1958040
+apalutamide01 COM_d change EUR/yr (x 2.73)			-5345449
+
+## block fbd_energy  (adiabatic fluid-bed dryer by hand; Cp polynomials, Watson latent heat and solid Cp from the case's own records)
+quantity	independent	engine	diff
+GAB X_eq of the starch at a_w 0.06 kg/kg	0.03673	0.037	
+water evaporated kg/h	46.63	46.6 (12.95e-3 kg/s = 46.62)	
+FBD exhaust T K	316.72	316.72	0.0
+air heater duty kW (250 dry + 3 water kmol/h, 298.15 -> 333.15 K)	72.063	72.1	

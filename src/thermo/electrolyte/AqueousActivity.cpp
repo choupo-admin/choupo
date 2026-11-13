@@ -57,7 +57,9 @@ std::string ActivityDomain::bannerPhrase() const
 {
     if (!stated()) return "no ionic-strength bound stated";
     std::ostringstream os;
-    os << "trustworthy to I ~ " << I_max << " mol/kg, " << beyondPhrase;
+    os << "trustworthy to I ~ " << I_max << " mol/kg";
+    if (!criterion.empty()) os << " (" << criterion << ")";
+    os << ", " << beyondPhrase;
     return os.str();
 }
 
@@ -76,8 +78,9 @@ std::string ActivityDomain::sentence(double I) const
 //   A(T)        = 0.51 * SolventProperties::debyeHuckelFactor(T)  (0.51 at 25 C)
 //   log10 g_i   = -A z_i^2 ( sqrt(I)/(1+sqrt(I)) - 0.3 I )
 //   neutral     => g = 1 (z == 0 or I <= 0; no Setchenow b*I term in v1)
-// Trustworthy to I ~ 0.5 mol/kg, indicative beyond: the band is DECLARED in
-// validityDomain() below and the solver announces a state beyond it.
+// Its band (I ~ 0.5 mol/kg, and what "trustworthy" means there -- a measured
+// error limit, not a guarantee) is DECLARED in validityDomain() below, and the
+// solver announces a state beyond it.
 namespace {
 
 class DaviesActivity : public AqueousActivity
@@ -91,12 +94,42 @@ public:
     //  tutorials/props/electrolyte/davies01_band_edge: the gamma_pm error
     //  against PitzerHMW crosses ~2-8 % over m = 0.25-0.5 and grows without
     //  bound beyond it.
+    //
+    //  WHAT "TRUSTWORTHY" MEANS HERE, MEASURED AGAINST MEASUREMENTS
+    //  (2026-11-13, finding EL-09 of the 2026-11-12 electrolyte review).
+    //  Stated error limit: 10 % in gamma_pm.  Davies' gamma_pm (A = 0.51,
+    //  stoichiometric ionic strength, no ion pairs) against every evaluated
+    //  298.15 K table in data/curation/electrolytes/*/constant/experiments
+    //  reaches 10 % at (linear interpolation in I between table rows):
+    //    1-1 salts (41): median I = 0.52; quartiles 0.28 / 1.19; range 0.14
+    //                    (KH2PO4) to beyond 6 (LiBr); KCl 0.40, NaCl 0.60
+    //    2-1 salts (18): median I = 0.56; quartiles 0.37 / 0.70; range below
+    //                    0.30 (CdNO2, ZnI2: complexing) to 0.88 (MgI2)
+    //    1-2 salts (8, sulfates and hydrogen phosphates): already 15-47 %
+    //                    off at the first tabulated point, I = 0.30
+    //  So the band's NUMBER does not depend on the charge type of the
+    //  cation: the median 1-1 and 2-1 salts cross 10 % at the same I, and
+    //  the spread WITHIN a type (a factor of 40 for 1-1) dwarfs the
+    //  difference between types.  What depends on charge is a 2- ANION:
+    //  stoichiometric Davies fails it from the start, and only the ion pair
+    //  in the network rescues it (Na2SO4 with the catalogue's NaSO4- is
+    //  -2.7 % at I = 0.24 and +2.3 % at 0.43; review table
+    //  item3b_davies_with_ion_pairs.tsv).  That is what the criterion says;
+    //  the threshold, and therefore every announcement, is unchanged.
+    //  check_activity_domain arm (c) recomputes the two medians from the
+    //  tables and holds I_max to them.
     ActivityDomain validityDomain() const override
     {
         ActivityDomain d;
         d.I_max        = 0.5;
         d.source       = "Davies, Ion Association (Butterworths, 1962): the "
-                         "equation's own ~0.5 mol/kg band";
+                         "equation's own ~0.5 mol/kg band; measured against "
+                         "the evaluated 298.15 K tables in "
+                         "data/curation/electrolytes, the median 1-1 and 2-1 "
+                         "salt reach 10 % in gamma_pm at I = 0.52 and 0.56";
+        d.criterion    = "gamma_pm within 10 % of measured for the median 1-1 "
+                         "or 2-1 salt; some salts exceed it from I ~ 0.15, and "
+                         "a 2- anion only with its ion pairs in the network";
         d.subject      = "Davies";
         d.bandLabel    = "trust range";
         d.consequence  = "speciation and SI are INDICATIVE (use Pitzer for "

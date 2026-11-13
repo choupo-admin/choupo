@@ -67,10 +67,12 @@ Description
 
     A_phi = 2.303 A_gamma/3, with A_gamma the Debye-Huckel parameter
     tabulated 0-100 C by Lewis et al. (1961); above that the paper gives
-    A_phi = 1.4017e-6 sqrt(rho*) / (D* T)^(3/2).  Here it is obtained from
-    the SAME SolventProperties::debyeHuckelFactor(T) every other Choupo
-    electrolyte kernel uses, so two models in one case cannot disagree
-    about the solvent -- with the 25 C anchor 2.303 * 0.5108 / 3.
+    A_phi = 1.4017e-6 sqrt(rho*) / (D* T)^(3/2).  Here its TEMPERATURE
+    DEPENDENCE is the SAME SolventProperties::debyeHuckelFactor(T) every other
+    Choupo electrolyte kernel uses, so two models in one case agree about how
+    rho_w(T) and eps_w(T) move; its 25 C ANCHOR is this paper's own,
+    2.303 * 0.5108 / 3 = 0.39213, which is NOT the Pitzer kernels' 0.3915
+    (+0.16 %) -- the four anchors are listed in PitzerForm.H.
 
     VERIFIED AGAINST TWO CLOSED FORMS the paper itself supplies, both to
     machine precision (2026-08-04, reproducible from the header of the

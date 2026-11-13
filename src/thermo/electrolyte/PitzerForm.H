@@ -40,9 +40,27 @@ Description
     HMW assembly):
 
       Universal constants:  b = 1.2 (the DH closest-approach), A_phi(25 C) =
-      0.3915 (the osmotic Debye-Huckel slope on the molality scale), scaled in
-      T by SolventProperties::debyeHuckelFactor(T) -- the SAME A_phi the
-      single-salt kernel and the eNRTL/Davies kernels use (one A_phi, not two).
+      0.3915 (the osmotic Debye-Huckel slope on the molality scale; Pitzer &
+      Mayorga 1973), scaled in T by SolventProperties::debyeHuckelFactor(T).
+      The two Pitzer kernels (PitzerSingleSalt, PitzerHMW) use this value.
+
+      ONE TEMPERATURE FACTOR, FOUR 25 C ANCHORS (stated, not unified).  Every
+      aqueous electrolyte kernel scales its Debye-Huckel slope by the SAME
+      debyeHuckelFactor(T), so the families agree about how the SOLVENT
+      changes with T.  They do NOT share the 25 C value: each carries the
+      anchor of its own source, which on the molality-scale A_phi reads
+        Pitzer   0.3915                         (this file, aPhiRef25)
+        eNRTL    A_DH 2.9127 x sqrt(Mw/1000) = 0.39094   (ENRTLSingleSalt.H,
+                                                          ENRTLMultiSalt.H)
+        Davies   A = 0.51 (log10) -> ln10 x 0.51/3 = 0.39144
+                                                (AqueousActivity.cpp)
+        Edwards  2.303 x 0.5108/3 = 0.39213     (EdwardsPitzer.cpp)
+      -- a 0.3 % spread in the limiting slope (eNRTL -0.14 %, Davies
+      -0.015 %, Edwards +0.16 % against Pitzer).  On a Pitzer Debye-Huckel
+      term a 0.16 % slope moves gamma by ~0.1 % for a 1-1 salt at I = 1 and
+      ~0.4 % for a 2-2 salt.  The eNRTL mixed-solvent kernel takes its A_phi
+      from the case.  Unifying them is a decision (it moves every
+      non-Pitzer golden in its last digits), not a correction made here.
 
       Debye-Huckel term of F (the long-range part of ln gamma):
         fGamma(I) = -A_phi [ sqrt(I)/(1 + b sqrt(I)) + (2/b) ln(1 + b sqrt(I)) ]
@@ -88,8 +106,11 @@ constexpr double bDH       = 1.2;     // Debye-Huckel closest-approach parameter
 constexpr double aPhiRef25 = 0.3915;  // osmotic DH slope, water, 25 C
 
 // A_phi(T): the 25 C osmotic Debye-Huckel slope scaled by the Born-Bjerrum
-// factor eps_w(T), rho_w(T) (= 0.3915 at 25 C).  THE one A_phi -- the single
-// salt kernel's aPhi(T) is now this function (one slope, not two).
+// factor eps_w(T), rho_w(T) (= 0.3915 at 25 C).  The Pitzer families' A_phi:
+// PitzerHMW calls this; PitzerSingleSalt::aPhi(T) evaluates the same product
+// from its own A_phi member (default 0.3915, the same value).  The eNRTL,
+// Davies and Edwards kernels share the FACTOR, not the anchor -- see the
+// header above.
 inline double aPhi(double T)
 {
     return aPhiRef25 * SolventProperties::debyeHuckelFactor(T);

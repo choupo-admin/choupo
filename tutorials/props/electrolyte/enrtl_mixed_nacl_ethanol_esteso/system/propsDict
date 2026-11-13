@@ -39,8 +39,12 @@ operations
         name     esteso;
         type     enrtlMixedSolvent;
 
-        // defaults are the published water-ethanol-NaCl parameters; spelled
-        // out here so the case READS as its own citation.
+        // spelled out here so the case READS as its own citation.  The
+        // ion<->OH pair is the AQUEOUS NaCl pair: left out, the op reads the
+        // catalogue record parameters/eNRTL/Na-Cl.dat (Chen et al. 1982,
+        // 8.885 / -4.549).  This case DECLARES Chen & Song's Table 2 value,
+        // 8.886, and the run prints both; with 8.885 instead, AAD_total_pct
+        // reads 4.3267 against the 4.3065 pinned (measured 2026-11-13).
         salt     { tau_OH_ca 8.886; tau_ca_OH -4.549;    // Table 2 (aqueous)
                    tau_C2_ca 15.526; tau_ca_C2 0.759; }  // Table 7
         alcohol  { X 1.811; Z 0.609; MW 46.069; }        // ethanol, Table 4

@@ -28,10 +28,13 @@ License
 
 #include "ENRTLMixedSolventOp.H"
 #include "thermo/electrolyte/ENRTLMixedSolvent.H"
+#include "thermo/electrolyte/SaltFromCatalogue.H"
 
 #include "thermo/RecordResolver.H"
 #include <fstream>
+#include <cmath>
 #include <iomanip>
+#include <limits>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -41,16 +44,64 @@ namespace Choupo {
 int ENRTLMixedSolventOp::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
                              int verbosity)
 {
-    electrolyte::ENRTLMixedSolvent model;   // defaults = published NaCl/water-ethanol
+    electrolyte::ENRTLMixedSolvent model;   // segment defaults = published NaCl/water-ethanol
+
+    // THE AQUEOUS PAIR HAS ONE HOME (EL-06, 2026-11-12 review).  OH == water,
+    // so the ion<->OH taus ARE the salt's water-eNRTL pair, which the
+    // catalogue carries (parameters/eNRTL/Na-Cl.dat) and the single- and
+    // multi-salt eNRTL kernels read.  The kernel used to carry its own copy
+    // (8.886 beside the record's 8.885).  It is read from the record here; a
+    // case may still DECLARE its own (with its own citation), and then the
+    // run says which value it used and what the record carries.  The lookup
+    // is absence-tolerant (a sealed case that declares both taus need not
+    // mirror the record); an UNDECLARED tau with no record refuses below.
+    auto rec = electrolyte::findENRTLPair("Na", "Cl");
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+    const double recOHca = rec ? rec->lookupScalar("tau_m_ca") : nan;
+    const double recCaOH = rec ? rec->lookupScalar("tau_ca_m") : nan;
+    model.tau_OH_ca = recOHca;
+    model.tau_ca_OH = recCaOH;
 
     // Optional overrides (another alcohol / salt -- every value a curated cite)
+    bool declOHca = false, declCaOH = false;
     if (dict->found("salt"))
     {
         auto s = dict->subDict("salt");
+        declOHca = s->found("tau_OH_ca");
+        declCaOH = s->found("tau_ca_OH");
         model.tau_OH_ca = s->lookupScalarOrDefault("tau_OH_ca", model.tau_OH_ca);
         model.tau_ca_OH = s->lookupScalarOrDefault("tau_ca_OH", model.tau_ca_OH);
         model.tau_C2_ca = s->lookupScalarOrDefault("tau_C2_ca", model.tau_C2_ca);
         model.tau_ca_C2 = s->lookupScalarOrDefault("tau_ca_C2", model.tau_ca_C2);
+    }
+    if (std::isnan(model.tau_OH_ca) || std::isnan(model.tau_ca_OH))
+        throw std::runtime_error("enrtlMixedSolvent: the aqueous ion<->OH taus"
+            " are not declared (salt { tau_OH_ca; tau_ca_OH; }) and the"
+            " catalogue record parameters/eNRTL/Na-Cl.dat is not reachable"
+            " from this case -- declare them, or (in a sealed case) re-seal so"
+            " the record is mirrored");
+    if (verbosity >= 1)
+    {
+        auto said = [&](const char* key, double used, double fromRecord,
+                        bool declared)
+        {
+            std::cout << "  " << key << " " << used;
+            if (!declared)
+                std::cout << "  (catalogue parameters/eNRTL/Na-Cl.dat)\n";
+            else if (used == fromRecord)
+                std::cout << "  (DECLARED by the case; equal to the catalogue"
+                             " record parameters/eNRTL/Na-Cl.dat)\n";
+            else if (std::isnan(fromRecord))
+                std::cout << "  (DECLARED by the case; the catalogue record"
+                             " parameters/eNRTL/Na-Cl.dat is not reachable"
+                             " from it to compare)\n";
+            else
+                std::cout << "  (DECLARED by the case; the catalogue record"
+                             " parameters/eNRTL/Na-Cl.dat carries "
+                          << fromRecord << ")\n";
+        };
+        said("tau_OH_ca", model.tau_OH_ca, recOHca, declOHca);
+        said("tau_ca_OH", model.tau_ca_OH, recCaOH, declCaOH);
     }
     if (dict->found("alcohol"))
     {

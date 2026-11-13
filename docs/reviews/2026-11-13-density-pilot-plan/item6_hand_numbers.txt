@@ -1,0 +1,29 @@
+rho pure water 20C	plan=997.608	computed=997.608242	diff=+0.000242
+rho 50 wt% 20C	plan=1522.92	computed=1522.923324	diff=+0.003324
+rho w0.20 303.15K	plan=1212.699	computed=1212.699135	diff=+0.000135
+rho w0.20 333.15K	plan=1196.16	computed=1196.164334	diff=+0.004334
+Q m3/s	plan=0.00082386	computed=0.000824	diff=-0.000000
+tau s	plan=1213.8	computed=1213.800000	diff=+0.000000
+W_shaft W	plan=235.39	computed=235.388273	diff=-0.001727
+head m	plan=16.802	computed=16.802047	diff=+0.000047
+law vs point %	plan=-0.09	computed=-0.090696	diff=-0.000696
+dRho/dT	plan=-0.517	computed=-0.517138	diff=-0.000138
+dRho/dw	plan=1084	computed=1083.723556	diff=-0.276444
+linear span +-1.5K,+-0.001	plan=1.86	computed=1.859431	diff=-0.000569
+corner span (max-min)/2 of the law over the box	1.8594	corners ['1212.388', '1214.557', '1210.838', '1213.004']
+linear span +-3K,+-0.002	plan=3.7	computed=3.718861	diff=+0.018861
+law at w[NaOH]=0, T=273.15	1002.1308
+law at w[NaOH]=0, T=293.15	997.6082
+law at w[NaOH]=0, T=298.15	996.1536
+law at w[NaOH]=0, T=303.15	994.5695
+law at w[NaOH]=0, T=333.15	982.3432
+law at w[NaOH]=0, T=353.15	971.6008
+law at w[NaOH]=0, T=373.15	958.7850
+law at w[NaOH]=0, T=423.15	917.6751
+law at w[NaOH]=0, T=473.15	863.6071
+step at w[NaOH]->0, T=273.15999999999997: law 1002.1291  IAPWS95(1 bar) 999.8431  law/ref-1 = +0.2286 %
+step at w[NaOH]->0, T=293.15: law 997.6082  IAPWS95(1 bar) 998.2065  law/ref-1 = -0.0599 %
+step at w[NaOH]->0, T=298.15: law 996.1536  IAPWS95(1 bar) 997.0470  law/ref-1 = -0.0896 %
+step at w[NaOH]->0, T=303.15: law 994.5695  IAPWS95(1 bar) 995.6489  law/ref-1 = -0.1084 %
+step at w[NaOH]->0, T=333.15: law 982.3432  IAPWS95(1 bar) 983.1952  law/ref-1 = -0.0867 %
+step at w[NaOH]->0, T=353.15: law 971.6008  IAPWS95(1 bar) 971.7898  law/ref-1 = -0.0195 %

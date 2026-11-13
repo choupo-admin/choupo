@@ -327,6 +327,14 @@ inline DictPtr bridgePitzerPair(const DictPtr& r)
         if (pr->found(k)) os << k << " " << pr->lookupScalar(k) << "; ";
     if (pr->found("calorimetricFit"))
         os << "calorimetricFit " << pr->lookupWord("calorimetricFit") << "; ";
+    // The record's DECLARED T-correlation form sits at the TOP LEVEL of the
+    // record, beside `model`, not inside `parameters {}` -- so it is carried
+    // across explicitly.  Dropping it (as this bridge did until 2026-11-12)
+    // told every run that a record declaring its form had not, and left the
+    // declared-form-vs-fields refusal of resolveTCorrelationForm unreachable
+    // for every standards record.
+    if (r->found("tCorrelationForm"))
+        os << "tCorrelationForm " << r->lookupWord("tCorrelationForm") << "; ";
     appendDeclaredTemperatureSpan(os, r);
     return Dictionary::fromString(os.str());
 }
