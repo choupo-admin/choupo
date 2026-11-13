@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """ONE HOME for "the files this gate is allowed to judge": the TRACKED tree.
 
     from tracked_tree import tracked_files

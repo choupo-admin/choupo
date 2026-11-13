@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Put the copyright line and the licence identifier on every tracked code file
 that lacks them (DEV.md 4c C393).  Reads the SAME table as the gate
 (source_headers_kinds.py); keeps no table of its own.
@@ -36,6 +38,7 @@ who is not in AUTHORS (a notice on a file that is someone else's would be the
 one way this slice could harm the record it protects); a file whose notice
 cannot be placed without altering code; excluded and scoped-out files.
 """
+import os
 import re
 import sys
 from pathlib import Path
@@ -79,75 +82,96 @@ def inside_block_comment(text_before: str) -> bool:
     return text_before.rfind("/*") > text_before.rfind("*/")
 
 
-def plan(kind: str, raw: bytes, authors_norm, path: str = ""):
+def plan(kind: str, raw: bytes, authors_list, path: str = ""):
     """-> (new_bytes | None, note).  None + note 'ok' when nothing to do;
-    None + 'CONFLICT: ...' when the file must not be touched."""
+    None + 'CONFLICT: ...' when the file must not be touched.
+
+    The notice is read from the file's LEADING COMMENT BLOCK only
+    (K.scan): a docstring or a string literal that quotes a notice is neither
+    a notice nor a conflict.  ANOTHER HOLDER is any copyright line of the
+    block that is not the exact holder line, in every common spelling
+    (`Copyright 2019 X`, the copyright sign, `(c) 2019 X`,
+    `Copyright (C) 2019, X`, `(C) X 2019`): the file is a CONFLICT and is
+    never stamped, unless it is in K.QUOTED_NOTICES.  A file that declares
+    another licence identifier, or two project lines, is a CONFLICT too.
+    A byte-order mark stays first: the header goes after it."""
     form, syntax, bsrc = K.KINDS[kind]
+    bom = raw.startswith(K.BOM)
+    body = raw[len(K.BOM):] if bom else raw
     try:
-        text = raw.decode("utf-8")
+        text = body.decode("utf-8")
     except UnicodeDecodeError:
         return None, "CONFLICT: not UTF-8"
-    nl = newline_of(raw)
+    nl = newline_of(body)
     nls = nl.decode()
-    head = text[:K.WINDOW]
-    ms = list(K.COPY_RE.finditer(head))
-    names = [m.group(3).strip() for m in ms]
-    has_spdx = bool(K.SPDX_RE.search(head))
-    ours, foreign = K.own_and_foreign(path, names, authors_norm)
-    if foreign and not ours:
-        return None, "CONFLICT: copyright line names " + repr(foreign[0])
-    if ours and has_spdx:
+    sc = K.scan(path, kind, body)
+    ours, foreign = sc["ours"], sc["foreign"]
+    good = [x for x in sc["spdx"] if x[1] == K.SPDX_ID]
+    other = [x for x in sc["spdx"] if x[1] != K.SPDX_ID]
+    if foreign and path not in K.QUOTED_NOTICES:
+        return None, "CONFLICT: another notice, line %d: %r" % (foreign[0][0], foreign[0][1][:60])
+    if other:
+        return None, "CONFLICT: the file declares another licence identifier %r" % other[0][1]
+    if len(ours) > 1 or len(good) > 1:
+        return None, "CONFLICT: more than one project notice or identifier"
+    if ours and good:
         return None, "ok"
-    lines = re.findall(rb"[^\n]*\n|[^\n]+", raw)
+    lines = re.findall(rb"[^\n]*\n|[^\n]+", body)
 
-    # B: an author's copyright line, no identifier
-    if ours and not has_spdx:
-        m = [x for x in ms if x.group(3).strip() in ours][0]
-        line_start = head.rfind("\n", 0, m.start()) + 1
-        line_no = head.count("\n", 0, line_start)
+    def done(ls, note):
+        out = b"".join(ls)
+        return (K.BOM + out if bom else out), note
+
+    # B: the holder's line, no identifier
+    if ours and not good:
+        line_no = ours[0][0] - 1
+        before = "".join(l.decode("utf-8") for l in lines[:line_no])
         line = lines[line_no].decode("utf-8")
-        if inside_block_comment(head[:m.start()]) and syntax == "block":
-            end = head.find("*/", m.start())
-            if end < 0:
+        if syntax == "block" and inside_block_comment(before + line[:line.find("Copyright")]):
+            at = None
+            for k in range(line_no, len(lines)):
+                if b"*/" in lines[k] and (k > line_no or lines[k].find(b"*/") > lines[k].find(b"Copyright")):
+                    at = k + 1
+                    break
+            if at is None:
                 return None, "CONFLICT: unterminated block comment"
-            eol = head.find("\n", end)
-            if eol < 0:
-                return None, "CONFLICT: no newline after the banner"
-            at = text.count("\n", 0, eol) + 1
-            new = "/* " + K.SPDX_LINE + " */" + nls
-            lines.insert(at, new.encode("utf-8"))
-            return b"".join(lines), "spdx-after-block"
+            one = ("/* " + K.SPDX_LINE + " */" + nls).encode("utf-8")
+            if at + 1 > K.HEADER_LINES:
+                # a long block: the identifier goes at the top, so that both
+                # lines sit within the first HEADER_LINES lines
+                lines.insert(0, one)
+                return done(lines, "spdx-at-top")
+            if not lines[at - 1].endswith(b"\n"):
+                lines[at - 1] += nl
+            lines.insert(at, one)
+            return done(lines, "spdx-after-block")
         lm = LEAD_RE.match(line)
-        if lm and syntax != "block":
+        if lm:
             new = lm.group(1) + lm.group(2) + (lm.group(3) or " ") + K.SPDX_LINE
+            if not lines[line_no].endswith(b"\n"):
+                lines[line_no] += nl
             lines.insert(line_no + 1, (new + nls).encode("utf-8"))
-            return b"".join(lines), "spdx-after-line"
-        if lm and syntax == "block":
-            new = lm.group(1) + lm.group(2) + (lm.group(3) or " ") + K.SPDX_LINE
-            lines.insert(line_no + 1, (new + nls).encode("utf-8"))
-            return b"".join(lines), "spdx-after-line"
+            return done(lines, "spdx-after-line")
         return None, "CONFLICT: cannot place the identifier beside the copyright line"
 
-    # C: the identifier is there, the copyright line is not
-    if has_spdx and not ours:
-        m = K.SPDX_RE.search(head)
-        line_start = head.rfind("\n", 0, m.start()) + 1
-        line_no = head.count("\n", 0, line_start)
-        prefix = head[line_start:m.start()]
+    # C: the identifier is there, the holder's line is not
+    if good and not ours:
+        line_no = good[0][0] - 1
+        line = lines[line_no].decode("utf-8")
+        i = line.find("SPDX-License-Identifier")
+        prefix = line[:i]
         if re.match(r"^\s*(#|//|rem|REM|::)?\s*$", prefix):
             lines.insert(line_no, (prefix + K.COPYRIGHT_LINE + nls).encode("utf-8"))
-            return b"".join(lines), "copyright-before-spdx"
-        # the identifier shares its line with other text (a comment opener or
-        # prose): put the copyright line alone at the top, in its own comment
+            return done(lines, "copyright-before-spdx")
         idx = insertion_index(kind, lines)
         if idx and not lines[idx - 1].endswith(b"\n"):
             lines[idx - 1] += nl
         one = ("/* " + K.COPYRIGHT_LINE + " */") if syntax == "block" else \
             comment_lines(syntax, [K.COPYRIGHT_LINE])[0]
         lines.insert(idx, (one + nls).encode("utf-8"))
-        return b"".join(lines), "copyright-at-top"
+        return done(lines, "copyright-at-top")
 
-    # A: neither
+    # A: neither (a notice quoted in a docstring does not count)
     idx = insertion_index(kind, lines)
     if idx and idx <= len(lines) and not lines[idx - 1].endswith(b"\n"):
         lines[idx - 1] += nl
@@ -158,7 +182,7 @@ def plan(kind: str, raw: bytes, authors_norm, path: str = ""):
         ins = "".join(l + nls for l in comment_lines(
             syntax, [K.COPYRIGHT_LINE, K.SPDX_LINE])).encode("utf-8")
     lines.insert(idx, ins)
-    return b"".join(lines), "full-" + form
+    return done(lines, "full-" + form)
 
 
 def main(argv):
@@ -166,7 +190,11 @@ def main(argv):
     show_files = "--files" in argv
     only = None
     if "--kind" in argv:
-        only = argv[argv.index("--kind") + 1]
+        only = argv[argv.index("--kind") + 1] if argv.index("--kind") + 1 < len(argv) else ""
+        if only not in K.KINDS:
+            print("add_source_headers: unknown kind %r; the kinds are %s"
+                  % (only, ", ".join(sorted(K.KINDS))))
+            return 2
     an = K.authors()
     todo, conflicts, notes = {}, [], []
     total = 0
@@ -175,7 +203,10 @@ def main(argv):
     if paths:
         rows = []
         for a in paths:
-            pp = Path(a).resolve()
+            pp = Path(os.path.abspath(a))
+            if pp.is_symlink():
+                print("add_source_headers: %s is a symbolic link; a link is never stamped" % a)
+                return 2
             try:
                 rel = str(pp.relative_to(K.ROOT))
             except ValueError:
@@ -206,9 +237,6 @@ def main(argv):
                 conflicts.append((path, kind, note))
             continue
         todo.setdefault(kind, []).append((path, note, new))
-        # Vitor-without-accent notes
-        if b"Vitor Geraldes" in raw[:K.WINDOW]:
-            notes.append(path)
     n = sum(len(v) for v in todo.values())
     if check:
         for kind in sorted(todo):

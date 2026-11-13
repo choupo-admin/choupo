@@ -9,7 +9,7 @@
 #  the work is done by bin/curate/add_source_headers.py; this script only keeps
 #  the command line it always had.  The holder is NEVER read from git
 #  configuration (in a managed container user.name is a tool's identity): it is
-#  "Copyright (C) 2026 Vítor Geraldes".  The old template etc/header.txt was
+#  the one holder line of the table, accent included.  The old template etc/header.txt was
 #  retired with it: it was a second home for the banner and not the banner the
 #  files carry; the banner is now copied from the engine's own files.
 #

@@ -11,6 +11,7 @@ License
     This file is part of Choupo.  Choupo is free software under the GNU General
     Public License v3.0-or-later.  SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 /*---------------------------------------------------------------------------*\
   MolecularActivity -- the MOLECULAR twin of ElectrolytePackageActivity.  It

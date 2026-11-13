@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """ONE home for the table behind `check_source_headers.py` and
 `add_source_headers.py` (DEV.md 4c C393): WHICH tracked files are code that
 carries the copyright line and the licence identifier, in WHAT FORM, and
@@ -76,6 +78,42 @@ KINDS = {
 }
 
 
+
+# THE RULINGS the exclusion table cites (SH-12): the coordinator's rulings of
+# 2026-11-13 (commission C393), quoted beside each entry so the table does not
+# point at a location that does not hold them.
+RULING_NANOFILTRAN = (
+    "the coordinator's rulings of 2026-11-13 (commission C393), ruling 1: "
+    "\"NanoFiltran (bin/curate/nanofiltran/**): PERMANENT exclusion, ... third-"
+    "party-as-received; never stamped, never rewritten (its Fortran notice is "
+    "not valid UTF-8): your tool must not even open those files in text mode.  "
+    "Same for the two files with another holder's notice under "
+    "bin/curate/enrtl_ref/.\"")
+RULING_HELD = (
+    "the coordinator's rulings of 2026-11-13 (commission C393), ruling 2: "
+    "\"The four re-implementations under bin/curate/enrtl_ref/ that say 'per "
+    "... enrtl.py': STAY EXCLUDED as held, not stamped, with the reason "
+    "'origin to be ruled by the owner'.\"")
+RULING_QUOTED = (
+    "the coordinator's rulings of 2026-11-13 (commission C393), ruling 3: "
+    "\"bin/curate/lvpp_sigma_profile.py: the project's own script; STAMP it.  "
+    "Your conflict rule must tell a file's own notice from a notice it QUOTES "
+    "about something else: make that an explicit per-file entry with its "
+    "reason, not a looser pattern.\"")
+RULING_ACCENT = (
+    "the coordinator's rulings of 2026-11-13 (commission C393), ruling 4: "
+    "\"THE ACCENT: ... the holder line is `Copyright (C) 2026 Vítor "
+    "Geraldes`.  After that commit the gate compares the name EXACTLY, accent "
+    "included.\"; and the follow-up: \"The holder line is compared EXACTLY ... "
+    "the few existing lines that say more go in an explicit per-file list "
+    "with the exact line each carries.\"")
+RULING_HEADER_WRAPPER = (
+    "the coordinator's rulings of 2026-11-13 (commission C393), ruling 6: "
+    "\"ONE TOOL: bin/header a thin wrapper ... the holder read from the ONE "
+    "shared table, never from git configuration; if etc/header.txt stays it "
+    "is the banner's one home\" (it was retired: the banner's one home is "
+    "the engine's own files).")
+
 def _e(name, reason, patterns=(), paths=(), dynamic=None, kind="rule"):
     return {"name": name, "reason": reason, "patterns": list(patterns),
             "paths": list(paths), "dynamic": dynamic}
@@ -104,15 +142,15 @@ EXCLUSIONS = [
                  "gui/public/THIRD_PARTY_NOTICES",
                  "gui/public/*.LICENSE.txt"]),
     _e("third-party-as-received",
-       "NanoFiltran, vendored as received (DEV.md 4c C393, ruled): its Fortran "
-       "notice names another holder and is not valid UTF-8, a LAPACK licence "
-       "text and another author's SIMPLEX source sit beside it.  Never "
-       "stamped, never rewritten, never opened in text mode",
+       "NanoFiltran, vendored as received: its Fortran notice names another "
+       "holder and is not valid UTF-8, a LAPACK licence text and another "
+       "author's SIMPLEX source sit beside it.  Never stamped, never "
+       "rewritten, never opened in text mode.  Ruling: " + RULING_NANOFILTRAN,
        patterns=["bin/curate/nanofiltran/*"]),
     _e("held-enrtl-reimplementations",
        "origin to be ruled by the owner: re-implementations written 'per IDAES "
        "enrtl.py' beside the two IDAES copies; whether they are derivative "
-       "works is his call.  Not stamped until he rules",
+       "works is his call.  Not stamped until he rules.  Ruling: " + RULING_HELD,
        paths=["bin/curate/enrtl_ref/enrtl_proto.py",
               "bin/curate/enrtl_ref/enrtl_mixed_solvent.py",
               "bin/curate/enrtl_ref/enrtl_validated.py",
@@ -167,8 +205,20 @@ SCOPED_OUT = [
 # foreign copyright line in such a file is not a notice about the file.
 QUOTED_NOTICES = {
     "bin/curate/lvpp_sigma_profile.py":
-        "the project's own script; a docstring line states the MIT licence "
-        "and holder of the downloaded LVPP database it reads",
+        "the project's own script; a comment line states the MIT licence "
+        "and holder of the downloaded LVPP database it reads.  Ruling: "
+        + RULING_QUOTED,
+}
+
+# Existing holder lines that say more than the exact line, per file, with the
+# EXACT line each carries (the gate compares the holder line exactly; anything
+# not here must be `COPYRIGHT_LINE` and nothing after the name).  Ruling:
+# RULING_ACCENT.
+ALLOWED_HOLDER_LINES = {
+    "gui/tests/layoutUtilityLines.test.ts":
+        "Copyright (C) 2026 Vítor Geraldes.  Licence: GPL-3.0-or-later (see AUTHORS).",
+    "src/postProcessing/EstimateClass.H":
+        "Copyright (C) 2026 Vítor Geraldes and contributors (see AUTHORS)",
 }
 
 
@@ -186,24 +236,9 @@ def authors(root: Path = ROOT):
 
 
 def is_author_name(name: str, authors_list) -> bool:
-    """A copyright line's name field begins with a listed author's name,
-    compared EXACTLY, accent included (a trailing '.  Licence: ...' or
-    'and contributors' is allowed).  Until the accent was corrected in five
-    files (DEV.md 4c C393) the comparison ignored accents; it no longer does."""
-    for a in authors_list:
-        if name.startswith(a) and (len(name) == len(a) or not name[len(a)].isalnum()):
-            return True
-    return False
-
-
-def own_and_foreign(path: str, names, authors_list):
-    """(ours, foreign) names of the copyright lines of `path`; foreign lines
-    of a QUOTED_NOTICES file are not notices about the file."""
-    ours = [n for n in names if is_author_name(n, authors_list)]
-    foreign = [n for n in names if n not in ours]
-    if path in QUOTED_NOTICES:
-        foreign = []
-    return ours, foreign
+    """A commit author's name is EXACTLY a name listed in AUTHORS (no prefix,
+    no suffix, accent included)."""
+    return name in authors_list
 
 
 def tracked(root: Path = ROOT):
@@ -302,6 +337,9 @@ def classify(path: str, mode: str = "100644", first_line: str = ""):
         if path.startswith(pre):
             return ("scoped-out", pre)
     if "/" not in path:
+        k = code_kind(path, first_line)
+        if k:
+            return ("code", k)
         return ("scoped-out", "root file")
     return ("unclassified", "")
 
@@ -324,7 +362,7 @@ def classify_all(root: Path = ROOT):
     out = []
     for path, mode in tracked(root):
         fl = ""
-        if mode != "120000" and in_code_root(path) and _ext(path) == "":
+        if mode != "120000" and (in_code_root(path) or "/" not in path) and _ext(path) == "":
             raw = read_head(path, root)
             fl = first_line_of(raw) if raw is not None else ""
         c, d = classify(path, mode, fl)
@@ -335,21 +373,142 @@ def classify_all(root: Path = ROOT):
 # ---------------------------------------------------------------------------
 # Reading a file's notice
 # ---------------------------------------------------------------------------
-COPY_RE = re.compile(r"Copyright \(C\) (\d{4})(?:-(\d{4}))? ([^|*\n\r]*?)\s*(?:\||\*/|$)",
-                     re.M | re.I)
 SPDX_RE = re.compile(r"SPDX-License-Identifier:\s*" + re.escape(SPDX_ID))
+BOM = b"\xef\xbb\xbf"
+# A header must sit in the file's leading comment block AND within its first
+# HEADER_LINES lines (the banner is 27 lines; a shebang and a cookie add two).
+HEADER_LINES = 40
+
+# A line of a leading comment that STARTS a copyright notice, in the common
+# spellings: `Copyright (C) 2019 X`, `Copyright 2019 X`, `(c) 2019 X`,
+# `Copyright (C) 2019, X`, the copyright sign, `(C) X 2019`.  Banner art
+# ('... U nits   | ') and comment decorations may precede it.
+NOTICE_LINE_RE = re.compile(
+    r"^(?P<pre>[\s/*#|\\\"'`-]*(?:REM\s+|rem\s+)?(?:[^|\n]*\|\s*)?)"
+    r"(?P<n>(?:copyright|©|\(c\))[^\n]{0,60}?\b(?:19|20)\d\d\b[^\n]*)$",
+    re.I)
+SPDX_LINE_RE = re.compile(
+    r"^(?P<pre>[\s/*#|\\\"'`-]*(?:REM\s+|rem\s+)?(?:[^|\n]*\|\s*)?)"
+    r"SPDX-License-Identifier:\s*(?P<v>[^\n]*?)\s*(?:\*/)?\s*\|?\s*$")
+CODING_RE = re.compile(r"^[ \t\f]*#.*?coding[:=][ \t]*[-\w.]+")
 
 
-def head_text(raw: bytes) -> str:
-    return raw[:WINDOW * 4].decode("utf-8", "replace")[:WINDOW]
+def _strip_tail(n: str) -> str:
+    return re.sub(r"[\s|]*(?:\*/)?[\s|]*$", "", n)
 
 
-def notice_state(raw: bytes, names=None):
-    """(has_copyright, copyright_names, has_spdx) within the first WINDOW chars."""
-    t = head_text(raw)
-    ms = COPY_RE.findall(t)
-    has_c = bool(re.search(r"Copyright", t))
-    return has_c, [m[2] for m in ms], bool(SPDX_RE.search(t))
+def decode(raw: bytes) -> str:
+    if raw.startswith(BOM):
+        raw = raw[len(BOM):]
+    return raw.decode("utf-8", "replace")
+
+
+def leading_region(kind: str, text: str):
+    """[(lineno, line)] of the file's LEADING COMMENT BLOCK: after a shebang,
+    a Python encoding cookie or `@echo off`, the consecutive comment lines
+    (and blank lines among them) up to the first line that is not a comment.
+    A docstring, a string literal or code ends it."""
+    syntax = KINDS[kind][1]
+    lines = text.split("\n")
+    i = 0
+    if lines and lines[0].startswith("#!"):
+        i = 1
+    if kind == "script-hash" and i < 2 and i < len(lines) and CODING_RE.match(lines[i]):
+        i += 1
+    if kind == "batch" and lines and lines[0].strip().lower() == "@echo off":
+        i = 1
+    out = []
+    in_block = False
+    for n in range(i, len(lines)):
+        ln = lines[n].rstrip("\r")
+        st = ln.strip()
+        if in_block:
+            out.append((n + 1, ln))
+            if "*/" in ln:
+                in_block = False
+            continue
+        if st == "":
+            out.append((n + 1, ln))
+            continue
+        if syntax == "#":
+            ok = st.startswith("#")
+        elif syntax == "rem":
+            # `#` lines are accepted for batch files: three of them carry the
+            # project banner as `#` lines (a legacy form, left as it is).
+            ok = (st.lower().startswith(("rem ", "rem\t", "::", "@rem", "#"))
+                  or st.lower() == "rem")
+        else:
+            ok = st.startswith("//")
+            if st.startswith("/*"):
+                ok = True
+                if "*/" not in st[2:]:
+                    in_block = True
+        if not ok:
+            break
+        out.append((n + 1, ln))
+    return out
+
+
+def scan(path: str, kind: str, raw: bytes):
+    """What a file's leading comment block says about its notice:
+    dict(ours=[(lineno, n)], foreign=[(lineno, n)], spdx=[(lineno, value)],
+    region=[...]).  `ours` = the exact holder line (or the file's entry in
+    ALLOWED_HOLDER_LINES); `foreign` = any other copyright line; only lines
+    within the first HEADER_LINES lines count."""
+    text = decode(raw)
+    region = leading_region(kind, text)
+    ours, foreign, spdx = [], [], []
+    allowed = ALLOWED_HOLDER_LINES.get(path)
+    for no, ln in region:
+        if no > HEADER_LINES:
+            break
+        m = NOTICE_LINE_RE.match(ln)
+        if m:
+            n = _strip_tail(m.group("n"))
+            if n == COPYRIGHT_LINE or (allowed is not None and n == allowed):
+                ours.append((no, n))
+            else:
+                foreign.append((no, n))
+            continue
+        m = SPDX_LINE_RE.match(ln)
+        if m:
+            spdx.append((no, m.group("v")))
+    return {"ours": ours, "foreign": foreign, "spdx": spdx, "region": region}
+
+
+def findings(path: str, kind: str, raw: bytes):
+    """The gate's findings for one code file, as (code, text)."""
+    sc = scan(path, kind, raw)
+    out = []
+    quoted = path in QUOTED_NOTICES
+    if not sc["ours"]:
+        out.append(("NO-COPYRIGHT", "no line `%s` in the leading comment block (first %d lines)"
+                    % (COPYRIGHT_LINE, HEADER_LINES)))
+    if len(sc["ours"]) > 1:
+        out.append(("DUPLICATE-COPYRIGHT", "%d project copyright lines" % len(sc["ours"])))
+    if sc["foreign"] and not quoted:
+        out.append(("FOREIGN-COPYRIGHT", "line %d: %r" % (sc["foreign"][0][0], sc["foreign"][0][1][:70])))
+    good = [v for _n, v in sc["spdx"] if v == SPDX_ID]
+    other = [v for _n, v in sc["spdx"] if v != SPDX_ID]
+    if not good:
+        out.append(("NO-SPDX", "no line `%s` in the leading comment block" % SPDX_LINE))
+    if len(good) > 1:
+        out.append(("DUPLICATE-SPDX", "%d identifier lines" % len(good)))
+    if other:
+        out.append(("OTHER-SPDX", "the file declares %r" % other[0]))
+    return out
+
+
+# Any spelling of the project's notice (with or without the accent), or the
+# project's identifier, in a file that must carry none.
+PROJECT_NOTICE_RE = re.compile(
+    r"copyright\s*\(c\)\s*\d{4}(?:-\d{4})?\s+v\S{1,2}tor\s+geraldes", re.I)
+PROJECT_SPDX_RE = re.compile(r"SPDX-License-Identifier:\s*" + re.escape(SPDX_ID))
+
+
+def carries_project_notice(raw: bytes) -> bool:
+    t = raw[:WINDOW * 4].decode("utf-8", "replace")[:WINDOW]
+    return bool(PROJECT_NOTICE_RE.search(t) or PROJECT_SPDX_RE.search(t))
 
 
 def banner_text(kind_src: str, root: Path = ROOT) -> str:
@@ -374,11 +533,11 @@ def census(root: Path = ROOT):
         raw = read_head(path, root)
         if raw is None:
             continue
-        has_c, _n, has_s = notice_state(raw)
+        f = {code for code, _t in findings(path, d, raw)}
         r = res.setdefault(d, [0, 0, 0])
         r[0] += 1
-        r[1] += 0 if has_c else 1
-        r[2] += 0 if has_s else 1
+        r[1] += 1 if "NO-COPYRIGHT" in f else 0
+        r[2] += 1 if "NO-SPDX" in f else 0
     return res
 
 

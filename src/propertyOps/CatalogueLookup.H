@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /*---------------------------------------------------------------------------*\
        \|/       C hemicals     | Open-source, glass-box chemical process simulator
       \\|//      H eat-transfer | https://choupo.org
@@ -54,7 +55,6 @@ Description
     one source.  It reads the INSTALLATION catalogue (a question about the
     catalogue, so a case with no catalogue refuses by name).
 \*---------------------------------------------------------------------------*/
-/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #pragma once
 
