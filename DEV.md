@@ -3476,6 +3476,66 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C393 (Vitor, 2026-11-13: "A outra sessao descobriu que ha ficheiros
+> que nao tem header e isso pode-me lixar o copyright!!  Acho que vai
+> ter de rever tudo!  Podes-te coordenar com ela?").**  MEASURED the same
+> turn, over the tracked tree (a file counts as carrying the notice when
+> its first 4000 characters hold a copyright line; a second count for
+> the licence identifier):
+>   src C++            981 files   16 without a copyright line    8 without the identifier
+>   gui/src            601         58                             75
+>   gui/tests          331        149                            161
+>   gui (other)         20         11                             11
+>   bin scripts        512        458                            443
+>   make                 4          4                              4
+>   etc                  3          2                              2
+>   CI workflows        17         17                             17
+>   site                 4          4                              4
+>   guides' sources     28         28                             28
+> WHAT IT MEANS, said plainly (the architect is not a lawyer): copyright
+> in a file does not depend on a notice inside it; the repository's root
+> NOTICE and LICENSE cover every file, and the history and the sign-offs
+> record who wrote what.  What a missing header costs is practical: a
+> file copied out of the tree carries neither its licence nor its holder,
+> and the licence's own appendix recommends a notice in each source file.
+> So this is hygiene with a real use, not a loss of rights, and nothing
+> has to be re-read by a person: a file either carries the two lines or
+> it does not, and a gate can say which.
+> DECISION.  (1) CODE (src, gui, bin, make, etc, the workflows, the
+> site's scripts): every tracked file carries a copyright line and the
+> licence identifier.  The 16 engine files and the web app's sources
+> take the banner their neighbours carry; every other file takes a short
+> form of two lines after any shebang (a copyright line and
+> `SPDX-License-Identifier: GPL-3.0-or-later`), which moves a script's
+> line numbers by two and changes no behaviour.  (2) THE GUIDES' SOURCES
+> ARE NOT STAMPED WITH THE CODE'S LICENCE: the manuals are a separate
+> work under their own licence, and their authorship is decided in one
+> place (the preamble's author macro); they, and every file that cannot
+> hold a comment (JSON, goldens, tables, images, PDFs), are covered by
+> ONE machine-readable manifest at the root that states holder and
+> licence per path, which is what the root NOTICE says in prose today.
+> DATA RECORDS are not touched by this slice: their licences are per
+> record and the manifest must say exactly what the licence map says, no
+> more.  (3) A GATE, `check_source_headers`, holds it from then on: a
+> tracked code file without the two lines fails; nothing is pinned as
+> debt once the slice lands.  (4) THE HOLDER LINE is the one 965 engine
+> files already carry, "Copyright (C) 2026 Vitor Geraldes"; it is read
+> back to Vitor before any file is changed, because a copyright line is
+> a statement about a person.  (5) WHEN: after the fifth integration
+> lands, as its own small slice, validated as text that executes
+> nothing new (every script still parses, the typecheck, the web app's
+> tests, the gates that read sources by line, `--gui`, `--fast`); built
+> by a general of this session; the reviewing session reads the tool
+> and the gate, not the files.
+> FOUND WHILE MEASURING, AND CLOSER TO THE COPYRIGHT RECORD THAN A
+> HEADER: 45 commits on main carry the tool's identity as AUTHOR instead
+> of the holder's (2026-09-25 to 2026-11-01): 42 are merge commits and 3
+> are small edits of a register and of the decision index; none carries
+> source code.  History is not rewritten (a force-push of main is
+> forbidden and would break every clone); the gate of this slice also
+> refuses, from a pinned commit onward, a commit on main whose author is
+> not a person named in AUTHORS.
+
 > **THE FOURTH INTEGRATION OF 2026-11-13 LANDED.**  Three branches.
 > (a) C388, THE EDUTOOL "EQUILIBRIUM STAGES OR RATE-BASED?" (the
 > reviewing session's; shelf Separations).  The student's question is
