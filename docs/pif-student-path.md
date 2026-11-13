@@ -243,8 +243,11 @@ NPV -18.7 M and breaks even (NPV) at 1.28 x nameplate.
 ## 5. What Choupo does NOT do yet -- do it by hand, and say so
 
 * **No machine physics**: granulation end-point, granule size, blend and
-  content uniformity, compaction force, hardness, dissolution, coating
-  uniformity.  The machines are mass-balance boxes checked for FIT only.
+  content uniformity, hardness, dissolution, coating uniformity.  The
+  machines are mass-balance boxes checked for FIT only; the tablet press is
+  also checked for dwell time and for the compaction force a target
+  strength needs WHEN the case declares the formulation's fitted curves and
+  dwell need (DEV.md 4c C270, `tutorials/batch/plant/tabletPress01_dwell_and_force`).
   The compaction bench (`tutorials/props/powder/compaction01_mcc`) fits
   Heckel / Kawakita / Ryshkewitch to literature data, outside the plant.
 * **Multiproduct campaigns with rated machines**: the plan accepts

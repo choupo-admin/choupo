@@ -129,10 +129,81 @@ consequence.
   installed-count arithmetic, since both shipped cases run one machine per
   stage; the gate does it on a fixture.
 
+## Item 3 -- the press rated on dwell time, and the force a tablet needs (C270)
+
+*DEV.md 4c C270, 2026-11-09 and 2026-11-13.  Vitor, on his class
+demonstration of choosing a rotary press: the press must be rated on the
+formulation's dwell time, with an optional overall equipment effectiveness
+that does not count the rejects twice; and, reading what the apalutamide case
+says of its press: "Mas não há um modelo de design que entra com
+propriedades mecânicas dos excipientes?!" -- then "Avança com os dois, um
+único material ajustado."*
+
+Two checks were added to the `tabletPress` kind, as optional blocks of the
+press's `designRules`, each with `source` and `reason`; absent, the run says
+the press was NOT checked for dwell time and for compaction force, and no
+number of the three shipped plants moved.
+
+* **`dwell { punchFlat; pitchCircle; minimumDwellTime; }`.**  Kinematics:
+  t = L / (pi D n), n_max = L / (pi D t_min).  The dwell-limited capacity is
+  published beside the catalogue's, the utilisation uses the lower, and a
+  binding limit is announced (stderr, the caveat block, the item, its basis).
+* **`effectiveness { availability; performance; quality; }`.**  OEE scales
+  the capacity.  Its quality factor already counts the rejected tablets, so
+  quality below 1 on a press whose flowsheet splits off a reject stream is
+  announced as rejects counted twice, with both numbers.
+* **`compaction { heckel {}; ryshkewitch {}; targetTensileStrength;
+  punchTipArea; maxCompressionForce; [trueDensity]; }`.**  ONE fitted
+  material.  The Ryshkewitch-Duckworth curve inverted gives the porosity at
+  the target strength, the Heckel line inverted the pressure at that solid
+  fraction, the punch tip area the force; a true density adds the
+  flat-faced tablet's thickness.  The forward and inverse forms live in ONE
+  header, `src/propertyOps/CompactionLaws.H`, which the `compactionFit`
+  bench also calls, so the constants the bench fits are read by the press
+  with no second transcription (both bench witnesses' goldens unmoved).
+  Refused: a target at or above sigma_0, a non-positive constant, a solid
+  fraction the line reaches only below zero pressure, `K` beside `Py`.
+  Announced: a pressure outside the Heckel window, the two curves on
+  different bases (in-die / out-of-die), a force above `announceAbove` of
+  the maximum.
+
+**The batch plan is not re-timed.**  C270 said "the batch plan uses the
+lower".  Taken as the smallest step that changes no existing number: the
+SIZER rates the press on the lower capacity and refuses a press that no
+longer fits the plan's declared operating time; the plan's own stage time
+stays the case's declaration.  Whether the plan should derive its operating
+time from the rated press is Vitor's decision (it would move every plant's
+Gantt).
+
+**Witness.**  `tutorials/batch/plant/tabletPress01_dwell_and_force`: the
+bench's own MCC constants (compaction01_mcc, op mcc_inDie, held to its
+golden by the gate), a 2 MPa target, an 11.28 mm flat-faced punch: 29.7 MPa,
+2.97 kN; a 75 rpm catalogue press that runs at 50.9 rpm for a 10 ms dwell.
+
+### What was rejected
+
+* **A mixture rule** for the Heckel or Ryshkewitch-Duckworth constants of a
+  blend.  The bench's own witness found the published ternary data does not
+  follow a simple average, and Vitor ruled "um único material ajustado": the
+  case declares the curves of the formulation as measured, or of the
+  excipient that dominates it, and every run says no mixture rule exists.
+* **Computing the minimum dwell time.**  It is a property of the
+  formulation, measured (a compaction simulator); an open study found pure
+  MCC insensitive between 10 and 130 ms and a starch sensitive.  No model
+  here predicts it, so it is declared.
+* **A hardness model** beyond the fitted strength curve: no capping,
+  lamination or breaking-force prediction.  The target is a tensile
+  strength, the quantity the fitted curve carries.
+* **Re-timing the batch plan** (above): it would move every shipped
+  plant's numbers, and that is the owner's call.
+
 ## Gate
 
 `bin/curate/check_tablet_machines.py` (`tablet-machines-gate` in `bin/runTests`):
 independent recomputation of every utilisation, the room volumes, supply
 flows, fan powers, duties, the water demand and the peak from the case
 dictionaries; the refusals fired on copies of a shipped case; the quote
-legality; and the layout summary unchanged.
+legality; and the layout summary unchanged.  Since C270, arm (f): the dwell, effectiveness and compaction numbers
+recomputed from the witness's declaration, its four constants held to the
+bench's golden, the refusals and announcements fired on copies, and the
+negative on the three shipped plants.

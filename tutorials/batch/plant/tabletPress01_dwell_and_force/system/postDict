@@ -105,7 +105,7 @@ sizing
               //  mixture rule: the blend here IS that material).
               compaction
               {
-                       material "MCC Avicel PH200, fitted by tutorials/props/powder/compaction01_mcc (op mcc_inDie)";
+                       material "MCC Avicel PH200 (the compaction bench, op mcc_inDie)";
                        heckel
                        {
                            K       0.00906082550054 1/MPa;
