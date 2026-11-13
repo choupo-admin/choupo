@@ -7158,6 +7158,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/vliqdatum.$$
+    # liquid-density entry callers gate (2026-11-13, DEV.md 4c C378 pilot).  The pilot's second entry, liquidProperty::density, is migration scaffolding: only the pump, the CSTR and the two bench probes of the kernel (the props key rho_liquid_kernel, the route bench) call it, each with a pinned count; a fourth file is a decision written into the gate.
+    if gate_exec "$ROOT/bin/curate/check_liquid_density_entry_callers.py" > /tmp/ldcallers.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "liquid-density-entry-callers-gate" "$(head -1 /tmp/ldcallers.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_liquid_density_entry_callers.py)\n" "liquid-density-entry-callers-gate"
+        cat /tmp/ldcallers.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ldcallers.$$
     # property-source witnesses gate (2026-11-13, DEV.md 4c C378 slice 0, door review DR-11).  One witness case per liquid-property source class, run live: each unit publishes the tag its code takes; a site that picks another tag of the same class (no value moves) is caught here until the goldens carry `source` rows.
     if gate_exec "$ROOT/bin/curate/check_property_source_witnesses.py" > /tmp/srcwit.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "property-source-witnesses-gate" "$(head -1 /tmp/srcwit.$$)"

@@ -76,6 +76,9 @@ public:
     virtual std::string origin() const = 0;
     virtual bool        pressureApplied() const { return false; }
     virtual std::string evidence() const { return "not quantified"; }
+    //  True for the declared hypothesis that the component has mass and no
+    //  volume (MassWithoutVolume.H): idealMixing holds its bound.
+    virtual bool        isMassless() const { return false; }
 
     //  The leaf answered as a method of its own (a one-component view).
     DensityAnswer evaluate(scalar T_K, scalar P_Pa, const sVector& x) const override;

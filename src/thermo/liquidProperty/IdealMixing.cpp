@@ -14,10 +14,13 @@
 
 #include "IdealMixing.H"
 
+#include "DensityResolver.H"
+#include "thermo/ApproximationAuthorisation.H"
 #include "thermo/PropertyDomainError.H"
 #include "thermo/ThermoPackage.H"
 
 #include <cmath>
+#include <cstdio>
 #include <map>
 #include <stdexcept>
 
@@ -88,6 +91,34 @@ DensityAnswer IdealMixing::evaluate(scalar T, scalar P, const sVector& x) const
         if (x[i] <= 0.0) continue;
         Vmix += (x[i] / zsum) * leaves_[k]->molarVolume(T, P);
         a.leaves.push_back({ thermo_->comp(i).name(), leaves_[k]->id(), x[i] / zsum });
+    }
+    //  THE HYPOTHESIS' BOUND (MassWithoutVolume.H): the sum of the mass
+    //  fractions of the components that keep their mass and add no volume.
+    scalar wMassless = 0.0;
+    std::string listed;
+    for (std::size_t k = 0; k < set_.size(); ++k)
+        if (leaves_[k]->isMassless() && x[set_[k]] > 0.0)
+        {
+            const std::size_t i = set_[k];
+            wMassless += (x[i] / zsum) * thermo_->comp(i).MW() / (Mbar * 1000.0);
+            listed += (listed.empty() ? "" : ", ") + thermo_->comp(i).name();
+        }
+    if (!listed.empty())
+    {
+        const scalar wMax = ApproximationAuthorisation::instance().maxMassFractionWithoutVolume();
+        if (wMassless > wMax)
+        {
+            char b[160];
+            std::snprintf(b, sizeof b, "the sum of their mass fractions is %.6g, above"
+                          " the maxMassFraction %.6g", wMassless, wMax);
+            throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+                "liquid density: the case's hypothesis massWithoutVolume (" + listed
+                + " keep their mass and add no volume) does not stand here: " + b
+                + " the case itself declared (approximations.massWithoutVolume).",
+                "a liquid within the declared bound, a larger bound with its reason,"
+                " or a volume for the component (a record `Vliq` or a solution record)");
+        }
+        noteMassWithoutVolume(listed, wMassless);
     }
     if (!(Vmix > 0.0) || !std::isfinite(Vmix))
         throw PropertyDomainError(PropertyDomainError::Kind::invalidState,

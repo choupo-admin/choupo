@@ -15,7 +15,11 @@
 #include "DensityResolver.H"
 
 #include "DensityLeaf.H"
+#include "Measured.H"
+#include "SolutionLaw.H"
+#include "core/Advisory.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/ApproximationAuthorisation.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "thermo/PropertyDomainError.H"
 #include "thermo/RecordResolver.H"
@@ -23,7 +27,10 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cmath>
+#include <cstdio>
 #include <filesystem>
+#include <iostream>
 #include <limits>
 #include <map>
 #include <memory>
@@ -57,8 +64,8 @@ std::vector<std::string> sortedNames(const ThermoPackage& thermo, const std::vec
     return n;
 }
 
-//  What makes two packages the same for the freeze: their components and
-//  their pure-fluid selections, in order.
+//  What makes two packages the same set of facts for the "resolves
+//  differently" refusal: their components and their pure-fluid selections.
 std::string packageIdentity(const ThermoPackage& thermo)
 {
     std::string s;
@@ -72,11 +79,14 @@ using Key = std::pair<std::string, std::vector<std::size_t>>;   // (identity, se
 struct RunState
 {
     unsigned generation = 0;
-    std::map<Key, DensityResolution> resolved;
-    //  The packages (by address) whose sets were already checked against the
-    //  run's resolution; a package met for the first time resolves again.
-    std::set<std::tuple<const ThermoPackage*, std::string, std::vector<std::size_t>>> checked;
+    //  THE PACKAGE'S SERIAL, never its address (ruling 6): a package built
+    //  where another one died has a serial of its own and inherits nothing.
+    std::map<std::pair<unsigned long long, std::vector<std::size_t>>, DensityResolution> bySerial;
+    //  The first resolution of each (identity, set) in the run.
+    std::map<Key, DensityResolution> first;
     std::vector<Key> order;
+    //  The hypothesis' use (component list -> largest mass-fraction sum).
+    std::map<std::string, double> massless;
 };
 
 std::mutex& mtx() { static std::mutex m; return m; }
@@ -100,13 +110,10 @@ std::string referenceRecordFor(const ThermoPackage& thermo, std::size_t i)
     static std::mutex m;
     static std::map<std::string, std::pair<std::string, std::string>> parsed;  // path -> (equation, fluid)
     const Component& c = thermo.comp(i);
-    const auto names = [&] {
-        std::vector<std::string> n{ c.name() };
-        for (const auto& a : c.aliases()) n.push_back(a);
-        return n;
-    }();
+    std::vector<std::string> names{ c.name() };
+    for (const auto& a : c.aliases()) names.push_back(a);
     const fs::path stdDir = records::standardsRecord("parameters/Helmholtz");
-    std::map<int, std::vector<std::pair<std::string, std::string>>> byTier;  // tier -> (equation, path)
+    std::map<int, std::vector<std::pair<std::string, std::string>>> byTier;
     for (const auto& p : records::scanRecordDir("parameters/Helmholtz"))
     {
         std::pair<std::string, std::string> ef;
@@ -147,6 +154,8 @@ std::string leafFor(const ThermoPackage& thermo, std::size_t i,
                     std::string& record)
 {
     const std::string c = thermo.comp(i).name();
+    const bool declaredMassless =
+        ApproximationAuthorisation::instance().massWithoutVolume().count(c) > 0;
     if (thermo.hasPureFluid(i))
     {
         const std::string ref = referenceRecordFor(thermo, i);
@@ -157,10 +166,11 @@ std::string leafFor(const ThermoPackage& thermo, std::size_t i,
     }
     if (thermo.isHenrySolute(i))
     {
+        passed.push_back("recordVolume (" + c + "): a declared Henry solute has no pure-liquid leaf");
+        if (declaredMassless) return "massWithoutVolume";
         why = "'" + c + "' is a declared Henry solute: its volume in the liquid is a"
               " partial molar volume (`v_inf`), which this kernel does not read, so no"
-              " pure-liquid volume stands for it";
-        passed.push_back("recordVolume (" + c + "): a declared Henry solute has no pure-liquid leaf");
+              " pure-liquid volume stands for it, and no `massWithoutVolume` covers it";
         return "";
     }
     record = referenceRecordFor(thermo, i);
@@ -174,59 +184,166 @@ std::string leafFor(const ThermoPackage& thermo, std::size_t i,
     const auto route = thermo.liquidVolumeRouteOf(i);
     if (route == ThermoPackage::LiquidVolumeRoute::none)
     {
-        why = "'" + c + "' has no liquid volume: its record carries neither `Vliq`"
-              " nor the critical constants Tc and Pc";
         passed.push_back("recordVolume (" + c + "): neither `Vliq` nor Tc, Pc in its record");
+        if (declaredMassless) return "massWithoutVolume";
+        why = "'" + c + "' has no liquid volume: its record carries neither `Vliq`"
+              " nor the critical constants Tc and Pc, and no `massWithoutVolume`"
+              " covers it";
         return "";
     }
     return "recordVolume";
 }
 
-DensityResolution resolveNew(const ThermoPackage& thermo, const std::vector<std::size_t>& set)
+//  THE CATALOGUE'S CHOICE (tiers 2b-5), without the case's measurement.
+DensityResolution resolveCatalogue(const ThermoPackage& thermo, const std::vector<std::size_t>& set)
 {
     DensityResolution r;
     r.set     = set;
     r.setName = setDisplayName(thermo, set);
 
-    //  (2b) one constituent: the case's own pure-fluid selection pins it;
-    //  else a reference equation that names it.  The same order as a leaf's,
+    //  (2b) ONE constituent: the case's own pure-fluid selection pins it;
+    //  else a reference equation that names it -- the order a leaf follows,
     //  so the set {i} and the leaf i inside a mixture agree as x_i -> 1.
-    std::string leaf1, record1, why1;
     if (set.size() == 1 && !thermo.isHenrySolute(set.front()))
-        leaf1 = leafFor(thermo, set.front(), r.passedOver, why1, record1);
-    if (leaf1 == "pureFluid" || leaf1 == "referenceEquation")
     {
-        r.method = leaf1;
-        r.record = record1;
+        std::string record, why;
+        std::vector<std::string> passed;
+        const std::string leaf = leafFor(thermo, set.front(), passed, why, record);
+        if (leaf == "pureFluid" || leaf == "referenceEquation")
+        {
+            r.method = leaf;
+            r.record = record;
+            r.passedOver = passed;
+            return r;
+        }
     }
-    else
+    //  (2b) TWO OR MORE: a solution record for exactly the set.
+    std::vector<std::string> missing;
+    if (set.size() >= 2)
     {
-        r.passedOver.clear();
-        //  (3) additive volumes, one leaf per constituent.
-        std::vector<std::string> missing;
-        for (const std::size_t i : set)
+        const std::string rec = SolutionLaw::recordFor(thermo, set);
+        if (!rec.empty())
         {
-            std::string why, record;
-            const std::string leaf = leafFor(thermo, i, r.passedOver, why, record);
-            if (leaf.empty()) { missing.push_back(why); continue; }
-            r.parts.push_back(leaf);
-            r.partRecords.push_back(record);
+            r.method = "solutionLaw";
+            r.record = rec;
+            return r;
         }
-        if (!missing.empty())
-        {
-            //  (5) refusal: every method passed over, and the remedy.
-            std::string msg = "liquid density of the constituent set " + r.setName
-                + ": no method applies.  idealMixing (additive volumes) needs a volume"
-                  " for every constituent, and ";
-            for (std::size_t k = 0; k < missing.size(); ++k)
-                msg += (k ? "; " : "") + missing[k];
-            msg += ".  Remedy: give each such component a liquid volume in its record"
-                   " (`Vliq`, or Tc and Pc), or provide a solution record for this set,"
-                   " parameters/solution/" + setFileName(thermo, set) + ".dat.";
-            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, msg,
-                "a liquid volume for each constituent, or a solution record for the set");
-        }
-        r.method = "idealMixing";
+        r.passedOver.push_back("solutionLaw: no solution record with a liquidDensity"
+            " block for this set (parameters/solution/" + setFileName(thermo, set) + ".dat)");
+    }
+    //  (3) additive volumes, one leaf per constituent.
+    for (const std::size_t i : set)
+    {
+        std::string why, record;
+        const std::string leaf = leafFor(thermo, i, r.passedOver, why, record);
+        if (leaf.empty()) { missing.push_back(why); continue; }
+        r.parts.push_back(leaf);
+        r.partRecords.push_back(record);
+    }
+    if (!missing.empty())
+    {
+        //  (5) refusal: every method passed over, and the remedy.
+        std::string msg = "liquid density of the constituent set " + r.setName
+            + ": no method applies.  ";
+        if (set.size() >= 2)
+            msg += "No solution record covers this set (the kind of record that would:"
+                   " parameters/solution/" + setFileName(thermo, set) + ".dat, a"
+                   " `liquidDensity` law for exactly these constituents); and ";
+        msg += "idealMixing (additive volumes) needs a volume for every constituent: ";
+        for (std::size_t k = 0; k < missing.size(); ++k)
+            msg += (k ? "; " : "") + missing[k];
+        msg += ".  Remedy: a solution record for this set (from measured densities of"
+               " the mixture), a liquid volume in each such component's record (`Vliq`,"
+               " or Tc and Pc), or the declared hypothesis `approximations {"
+               " massWithoutVolume { components ( ... ); maxMassFraction <w>; reason"
+               " \"...\"; } }`.";
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, msg,
+            "a solution record for the set, a liquid volume for each constituent, or"
+            " the hypothesis massWithoutVolume");
+    }
+    r.method = "idealMixing";
+    return r;
+}
+
+std::vector<std::string> namesOf(const ThermoPackage& thermo, const std::vector<std::size_t>& set)
+{
+    std::vector<std::string> n;
+    for (const std::size_t i : set) n.push_back(thermo.comp(i).name());
+    std::sort(n.begin(), n.end());
+    return n;
+}
+
+//  (1) THE CASE'S MEASUREMENT MARKED FOR USE, over the catalogue's choice.
+DensityResolution resolveNew(const ThermoPackage& thermo, const std::vector<std::size_t>& set)
+{
+    const auto here = namesOf(thermo, set);
+    const Measurement* marked = nullptr;
+    for (const auto& m : MeasurementDeclarations::instance().all())
+    {
+        auto c = m.constituents;
+        std::sort(c.begin(), c.end());
+        if (m.use != "method" || c != here) continue;
+        if (marked)
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                "liquid density of " + setDisplayName(thermo, set) + ": two measurements"
+                " are marked for use (" + marked->name + ", " + m.name + "); one set has"
+                " one method.", "mark one; keep the other as `use check;`");
+        marked = &m;
+    }
+    if (!marked)
+    {
+        DensityResolution r = resolveCatalogue(thermo, set);
+        r.methodId = build(r, thermo)->id();
+        return r;
+    }
+
+    //  The catalogue method the measurement displaces: named, and applying.
+    DensityResolution cat;
+    std::string catWhy;
+    bool catApplies = true;
+    try { cat = resolveCatalogue(thermo, set); }
+    catch (const PropertyDomainError& e) { catApplies = false; catWhy = e.what(); }
+    const std::string here0 = "volumetric.liquid.measured." + marked->name;
+    if (catApplies)
+    {
+        if (marked->replacesMethod.empty())
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                here0 + " is marked `use method` for " + setDisplayName(thermo, set)
+                + " without `replaces`, while the catalogue method " + cat.method
+                + " applies to that set.  A value of the case displaces a catalogue"
+                  " method only by an explicit act.",
+                "`replaces { method " + cat.method + ";"
+                + (cat.record.empty() ? std::string()
+                                      : " record " + fs::path(cat.record).stem().string() + ";")
+                + " }`, or `use check;`");
+        const std::string catRecord = cat.method == "solutionLaw"
+            ? fs::path(cat.record).stem().string() : cat.record;
+        if (marked->replacesMethod != cat.method
+            || (!marked->replacesRecord.empty() && marked->replacesRecord != catRecord))
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                here0 + " `replaces { method " + marked->replacesMethod
+                + (marked->replacesRecord.empty() ? "" : "; record " + marked->replacesRecord)
+                + "; }`, but the method that applies to " + setDisplayName(thermo, set)
+                + " is " + cat.method + (catRecord.empty() ? "" : " (" + catRecord + ")")
+                + ".  It may displace only the method that applies.",
+                "name the applying method in `replaces`");
+    }
+    else if (!marked->replacesMethod.empty())
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            here0 + " `replaces " + marked->replacesMethod + "`, but no catalogue method"
+            " applies to " + setDisplayName(thermo, set) + " (" + catWhy + ").",
+            "drop `replaces`: the measurement is then the set's only method");
+
+    DensityResolution r;
+    r.set     = set;
+    r.setName = setDisplayName(thermo, set);
+    r.method  = "measured";
+    r.record  = marked->name;
+    if (catApplies)
+    {
+        r.under.push_back(cat);
+        r.passedOver.push_back(cat.method + (cat.record.empty() ? "" : " (" + fs::path(cat.record).stem().string() + ")")
+            + ": replaced by the case's measurement " + marked->name);
     }
     r.methodId = build(r, thermo)->id();
     return r;
@@ -263,6 +380,7 @@ std::shared_ptr<const DensityMethod> build(const DensityResolution& r, const The
         lb.recordName = k < r.partRecords.size() ? r.partRecords[k] : std::string();
         b.parts.push_back(std::shared_ptr<const DensityMethod>(DensityMethod::New(r.parts[k], lb)));
     }
+    for (const auto& u : r.under) b.parts.push_back(build(u, thermo));
     return std::shared_ptr<const DensityMethod>(DensityMethod::New(r.method, b));
 }
 
@@ -277,29 +395,31 @@ DensityResolution resolveDensity(const ThermoPackage& thermo, const sVector& x)
 
     std::lock_guard<std::mutex> lk(mtx());
     freshRun();
-    const Key key{ packageIdentity(thermo), set };
-    const auto seen = std::make_tuple(&thermo, key.first, set);
-    const auto it = run().resolved.find(key);
-    if (it != run().resolved.end() && run().checked.count(seen)) return it->second;
+    const auto sk = std::make_pair(thermo.serial(), set);
+    const auto it = run().bySerial.find(sk);
+    if (it != run().bySerial.end()) return it->second;
 
     DensityResolution r = resolveNew(thermo, set);
-    if (it != run().resolved.end())
+    const Key key{ packageIdentity(thermo), set };
+    const auto f = run().first.find(key);
+    if (f != run().first.end())
     {
-        if (it->second.methodId != r.methodId || it->second.parts != r.parts
-            || it->second.record != r.record || it->second.partRecords != r.partRecords)
+        if (f->second.methodId != r.methodId || f->second.parts != r.parts
+            || f->second.record != r.record || f->second.partRecords != r.partRecords)
             throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
                 "liquid density of the constituent set " + r.setName + ": resolved to "
-                + it->second.methodId + " earlier in this run and to " + r.methodId
+                + f->second.methodId + " earlier in this run and to " + r.methodId
                 + " now.  A method is resolved once per constituent set and never"
                   " handed over; a pass that changes which data exist for the set is"
                   " refused.",
                 "keep the data the set's method reads the same across the run's passes");
-        run().checked.insert(seen);
-        return it->second;
     }
-    run().checked.insert(seen);
-    run().order.push_back(key);
-    return run().resolved.emplace(key, std::move(r)).first->second;
+    else
+    {
+        run().first.emplace(key, r);
+        run().order.push_back(key);
+    }
+    return run().bySerial.emplace(sk, std::move(r)).first->second;
 }
 
 std::vector<DensityResolution> densityResolutionsOfRun()
@@ -307,8 +427,23 @@ std::vector<DensityResolution> densityResolutionsOfRun()
     std::lock_guard<std::mutex> lk(mtx());
     freshRun();
     std::vector<DensityResolution> out;
-    for (const auto& k : run().order) out.push_back(run().resolved.at(k));
+    for (const auto& k : run().order) out.push_back(run().first.at(k));
     return out;
+}
+
+void noteMassWithoutVolume(const std::string& components, double w)
+{
+    std::lock_guard<std::mutex> lk(mtx());
+    freshRun();
+    double& m = run().massless[components];
+    m = std::max(m, w);
+}
+
+std::map<std::string, double> massWithoutVolumeOfRun()
+{
+    std::lock_guard<std::mutex> lk(mtx());
+    freshRun();
+    return run().massless;
 }
 
 //  THE PILOT'S ENTRY (LiquidPropertyDoor.H).
@@ -317,7 +452,17 @@ Result density(const Request& q)
     if (!q.thermo)
         throw std::logic_error("liquidProperty::density: a request names its package");
     const DensityResolution res = resolveDensity(*q.thermo, q.x);
-    const DensityAnswer a = build(res, *q.thermo)->evaluate(q.T, q.P, q.x);
+    DensityAnswer a;
+    try { a = build(res, *q.thermo)->evaluate(q.T, q.P, q.x); }
+    catch (const PropertyDomainError& e)
+    {
+        //  A STATE OUTSIDE A HARD DOMAIN, OR NOT A STATE, IS A REJECTABLE
+        //  TRIAL (plan section 7): a solver that can reject a step does; a
+        //  converged or final state fails the run with the remedy.  A missing
+        //  datum is a resolution failure, never a property of the state.
+        if (e.kind == PropertyDomainError::Kind::missingDatum) throw;
+        throw PropertyDomainTrial(e.kind, e.what(), e.remedy);
+    }
 
     Result r;
     r.value           = a.rho;
@@ -328,8 +473,53 @@ Result density(const Request& q)
     r.quality         = a.quality;
 
     std::string type, unit;
-    if (q.who) { type = q.who->type; unit = q.who->unit; }
-    else if (!PropertySourceLog::instance().current(type, unit)) return r;
+    const bool site = q.who ? (type = q.who->type, unit = q.who->unit, true)
+                            : PropertySourceLog::instance().current(type, unit);
+
+    //  THE CASE'S CHECK-ONLY MEASUREMENTS OF THIS SET: printed beside the
+    //  value, never used (plan section 5).
+    {
+        const auto here = namesOf(*q.thermo, res.set);
+        for (const auto& m : MeasurementDeclarations::instance().all())
+        {
+            auto c = m.constituents;
+            std::sort(c.begin(), c.end());
+            if (m.use != "check" || c != here) continue;
+            const auto w = Measured::massFractions(*q.thermo, res.set, q.x);
+            const std::string out = Measured::outsideBox(m, q.T, q.P, w);
+            char b[200];
+            std::string msg;
+            if (out.empty())
+            {
+                std::snprintf(b, sizeof b, " %.6g kg/m3 against %.6g kg/m3 computed (%+.3g %%)",
+                              m.rho, r.value, (r.value / m.rho - 1.0) * 100.0);
+                msg = "check " + m.name + ":" + b + " by " + r.methodId;
+            }
+            else
+            {
+                std::snprintf(b, sizeof b, " (measured at %.6g K; here %.6g K, %+.6g K away)",
+                              m.T, q.T, q.T - m.T);
+                msg = "check " + m.name + ": not at its conditions -- " + out + b
+                    + "; computed " + std::to_string(r.value) + " kg/m3 by " + r.methodId;
+            }
+            const std::string where = site ? type + " " + unit : std::string("no unit");
+            if (AdvisoryLog::instance().addAnnouncedOnce("liquidDensityCheck:" + m.name + ":" + where,
+                    "validity", "info", "liquid density (" + where + ")", msg))
+                std::cout << "  [liquid density] " << msg << "\n";
+        }
+    }
+
+    if (!site) return r;
+    //  "PRESSURE NOT APPLIED" once per method and unit (the second amendment
+    //  block, item 6), not beside every value.
+    if (!r.pressureApplied
+        && AdvisoryLog::instance().addAnnouncedOnce(
+               "liquidDensityPressure:" + r.methodId + ":" + type + " " + unit,
+               "approximation", "info", type + " " + unit,
+               "liquid density by " + r.methodId + ": pressure is not applied (the method"
+               " carries no pressure term)"))
+        std::cout << "  [liquid density] " << type << " " << unit << ": " << r.methodId
+                  << " carries no pressure term; pressure not applied\n";
     PropertySourceLog::instance().use(type, unit, name(Property::density),
         r.methodId, r.label, "kernel", r.pressureApplied ? "applied" : "not applied", "",
         took(r.value, q.T, q.P > 0.0 ? q.P : std::numeric_limits<double>::quiet_NaN(),

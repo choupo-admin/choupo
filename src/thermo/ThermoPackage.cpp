@@ -96,7 +96,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
 {
     if (this != &o)
     {
-        components_          = std::move(o.components_);
+        components_          = std::move(o.components_);   serial_ = o.serial_;   // the package serial (C378)
         phases_             = std::move(o.phases_);
         activity_           = std::move(o.activity_);
         eos_                = std::move(o.eos_);

@@ -15,6 +15,9 @@
 #include "DensityMethod.H"
 
 #include "IdealMixing.H"
+#include "MassWithoutVolume.H"
+#include "Measured.H"
+#include "SolutionLaw.H"
 #include "PureFluidLeaf.H"
 #include "RecordVolumeLeaf.H"
 #include "thermo/ThermoPackage.H"
@@ -70,8 +73,16 @@ void DensityMethod::registerBuiltins()
         { return std::make_unique<PureFluidLeaf>(b, PureFluidLeaf::Kind::caseSelection); });
     registerType("referenceEquation", [](const Binding& b)
         { return std::make_unique<PureFluidLeaf>(b, PureFluidLeaf::Kind::referenceEquation); });
+    registerType("massWithoutVolume", [](const Binding& b)
+        { return std::make_unique<MassWithoutVolume>(b); });
     registerType("idealMixing", [](const Binding& b)
         { return std::make_unique<IdealMixing>(b); });
+    registerType("solutionLaw", [](const Binding& b)
+        { return std::make_unique<SolutionLaw>(b); });
+    registerType("measured", [](const Binding& b)
+        { return std::make_unique<Measured>(b); });
+    //  The forms a solution record's law may take (SolutionLaw.H).
+    SolutionForm::registerBuiltins();
 }
 
 } // namespace liquidProperty

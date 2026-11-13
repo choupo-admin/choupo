@@ -49,6 +49,7 @@ Description
 
 #include "DensityMethod.H"
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -70,6 +71,7 @@ struct DensityResolution
     std::string              record;       // the record a direct method reads ("" when none)
     std::string              methodId;     // the id the method gives itself
     std::vector<std::string> passedOver;   // "method: reason"
+    std::vector<DensityResolution> under;  // the catalogue method a measurement replaces (0 or 1)
 };
 
 //  Resolve (or return the run's resolution of) the set present in `x`.
@@ -81,6 +83,12 @@ std::shared_ptr<const DensityMethod> build(const DensityResolution& r, const The
 
 //  Every resolution of the run, in the order first met (for the table).
 std::vector<DensityResolution> densityResolutionsOfRun();
+
+//  The hypothesis massWithoutVolume's use in the run: the components it
+//  covered (as listed in one liquid) -> the largest sum of their mass
+//  fractions it stood at (IdealMixing notes; the table prints it).
+void noteMassWithoutVolume(const std::string& components, double w);
+std::map<std::string, double> massWithoutVolumeOfRun();
 
 //  "{ethanol, NaCl, water}" and "ethanol-NaCl-water": the set's names,
 //  sorted case-insensitively (the solution records' file names).

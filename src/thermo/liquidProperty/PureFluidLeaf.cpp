@@ -25,6 +25,7 @@
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -109,13 +110,47 @@ scalar PureFluidLeaf::volumeAt(scalar T, scalar P, bool asSet) const
     if (st.farAcross)
     {
         const scalar ps = model_->p_sat(T);
+        //  THE PACKAGE IS THE AUTHORITY ON A STREAM'S PHASE (ruling 3 at
+        //  hand-back A).  A reference equation taken BY THE FACT is a density
+        //  method, not the stream's equation of state: between its own line
+        //  p_ref and the package's line p_pkg for the component (its
+        //  saturation curve, ThermoPackage::Psat), where the package holds a
+        //  liquid and the formulation would call it a vapour, the request is
+        //  the formulation's SATURATED LIQUID at T, announced with both
+        //  pressures.  Below both lines the package too says vapour: refused.
+        //  With the case's own selection the two lines are one line.
+        scalar pPkg = std::numeric_limits<scalar>::quiet_NaN();
+        if (asSet && kind_ == Kind::referenceEquation)
+        {
+            try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) {}
+            if (pPkg == pPkg && P >= pPkg * (1.0 - pureFluidSaturationBand))
+            {
+                std::string type, unit;
+                const std::string site = PropertySourceLog::instance().current(type, unit)
+                                       ? type + " " + unit : std::string("no unit");
+                const std::string msg = "the liquid density of pure " + c + " by "
+                    + id() + " at T = " + fmt("%.6g K", T) + ", P = " + fmt("%.8g Pa", P)
+                    + ": the package's own saturation line puts this state in the liquid"
+                      " (p_sat " + fmt("%.8g Pa", pPkg) + "), the reference equation's"
+                      " below it (p_sat " + fmt("%.8g Pa", ps) + ", "
+                    + fmt("%+.3g", ps / pPkg - 1.0) + " relative); priced as the"
+                      " formulation's saturated liquid at T";
+                if (AdvisoryLog::instance().addAnnouncedOnce(
+                        "liquidDensityBetweenLines:" + id() + ":" + site,
+                        "approximation", "info", "liquid density (" + site + ")", msg))
+                    std::cout << "  [liquid density] " << msg << "\n";
+                return model_->v_molar(T, st.pEval);
+            }
+        }
         if (asSet)
             throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
                 "liquid density of {" + c + "}: at T = " + fmt("%.6g K", T) + " and P = "
                 + fmt("%.6g Pa", P) + " pure " + c + " is a VAPOUR -- its saturation"
                 " pressure there is p_sat(T) = " + fmt("%.6g Pa", ps) + " ("
-                + model_->densityFormulation() + "), and a liquid exists only at or"
-                " above it.  Remedy: a pressure at or above p_sat(T) (or a temperature"
+                + model_->densityFormulation() + ")"
+                + (pPkg == pPkg ? ", and the package's own saturation line is at "
+                                  + fmt("%.6g Pa", pPkg) + ": both say vapour" : std::string())
+                + "; a liquid exists only at or above the line.  Remedy: a pressure at or above p_sat(T) (or a temperature"
                 " below the boiling point at P); a unit that holds a vapour asks for the"
                 " vapour's density.",
                 "a pressure at or above p_sat(T)");

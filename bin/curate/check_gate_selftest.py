@@ -321,11 +321,11 @@ SABOTAGES += [
         "gate": "check_liquid_property_ratchet.py",
         "kind": "detection",
         "file": "bin/curate/liquid_property_ratchet_debt.tsv",
-        "find": "src/unitOperations/rotating/Pump.cpp\tvliq\t2",
-        "replace": "src/unitOperations/rotating/Pump.cpp\tvliq\t1",
+        "find": "src/unitOperations/heatTransfer/SprayDryer.cpp\tvliq\t6",
+        "replace": "src/unitOperations/heatTransfer/SprayDryer.cpp\tvliq\t5",
         "why": "the ratchet must see a unit pricing a liquid property itself "
-               "beyond its pin (C378 slice 0).  Lowering the pump's pin below "
-               "the two `.Vliq()` reads its source holds is the same as one "
+               "beyond its pin (C378 slice 0).  Lowering the spray dryer's pin "
+               "below the six `.Vliq()` reads its source holds is the same as one "
                "new raw read: the gate must NAME the file, not pass.",
     },
     {
@@ -338,6 +338,16 @@ SABOTAGES += [
                "says 298.15 K is the TR-12 defect itself -- a datum read at "
                "a temperature it does not belong to (C378).  The gate must "
                "name CO2, not pass.",
+    },
+    {
+        "gate": "check_liquid_density_entry_callers.py",
+        "kind": "detection",
+        "file": "src/unitOperations/valve/Valve.cpp",
+        "find": "#include \"thermo/LiquidPropertyDoor.H\"",
+        "replace": "#include \"thermo/LiquidPropertyDoor.H\"\nstatic double c378Probe(const Choupo::liquidProperty::Request& q) { return Choupo::liquidProperty::density(q).value; }",
+        "why": "the pilot's entry is scaffolding (C378): a unit beyond the "
+               "pump and the CSTR that starts calling it is a fourth caller "
+               "nobody decided.  The gate must NAME Valve.cpp.",
     },
 ]
 
@@ -357,7 +367,7 @@ SOURCE_SABOTAGES = [
     {
         "gate": "check_property_route_bench.py",
         "kind": "source/route-relabelled",
-        "file": "src/thermo/LiquidPropertyDoor.cpp",
+        "file": "src/thermo/liquidProperty/DensityLeaf.cpp",
         "find": "        case Route::anchoredRackett: return \"each component's \" + where + \" scaled to temperature by Rackett\";",
         "replace": "        case Route::anchoredRackett: return \"each component's \" + where + \", with no temperature effect (its record has no critical constants)\";",
         "why": "the door review's SB-3 (C378 slice 0, DR-11): the scaled route "
@@ -369,13 +379,14 @@ SOURCE_SABOTAGES = [
     {
         "gate": "check_property_source_witnesses.py",
         "kind": "source/site-retagged",
-        "file": "src/unitOperations/rotating/Pump.cpp",
-        "find": "? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,",
-        "replace": "? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqSilentZero,",
-        "why": "the door review's SB-2 (DR-11): the pump records a tag of the "
-               "same class whose words are false for pure water.  No value moves "
-               "and the ratchet counts nothing; the witness of pump01_water "
-               "must see the wrong sourceId.",
+        "file": "src/thermo/liquidProperty/PureFluidLeaf.cpp",
+        "find": ": \"referenceEquation.\" + equation_;",
+        "replace": ": \"pureFluid.\" + equation_;",
+        "why": "the door review's SB-2 (DR-11), carried to the pilot's kernel: "
+               "the reference leaf a pump on pure water resolves to records "
+               "the id of the case-selection route.  No value moves and the "
+               "ratchet counts nothing; the witness of pump01_water must see "
+               "the wrong sourceId.",
     },
     {
         "gate": "check_lumped_cp_note.py",
