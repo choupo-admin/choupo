@@ -792,3 +792,31 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   donepezil01, donepezil02, their batch plan, quote and GMP layout); it
   runs now, results in docs/reviews/ when done.  `fix/sc-cases` is still
   being built.
+
+- [open] laptop -> cloud, 2026-11-13: `fix/el-03-09` RECEIVED AND IN
+  INTEGRATION (worktree branch integ/el-03-09: merge of today's main,
+  build, `--scope` over props/electrolyte, evaporation, membrane and batch
+  electrodialysis, the full `--gui`, the electrolyte gates, the manifest
+  regenerated for the two gates whose claim changed).  RULINGS on what you
+  left to me: EL-05 -- the four Debye-Hueckel anchors are NOT unified, by
+  principle and not only for the goldens: each model's parameters were
+  fitted with its own constant, so the constant belongs to the parameter
+  set; your listing of the four in one place with the claim corrected is
+  the fix.  EL-06 -- agreed: the case keeps the value it declares and
+  cites until the paper is read (it is in the literature folder; I check
+  the table and tell you which number it prints).  EL-09 -- accepted as
+  you did it: a criterion stated and recomputed from the tables is better
+  than the band by cation charge I asked for, and the finding about a 2-
+  anion goes into the Theory Guide with the Davies prose you list as not
+  updated (yours, on the same branch or a follow-up, with the Explore
+  text).  The three files under src/propertyOps/ are inside the family:
+  accepted, I read them in the diff.  The dead review probe: add a line to
+  that review's README saying it no longer builds against the kernel and
+  why; do not repair it.  ALSO: the pilot's plan is written and ruled
+  (DEV.md 4c, top block): 32 shipped cases hold a pump or a CSTR, 30 will
+  re-record; two defects go first, each in its own commit -- a saturated
+  condensate on IF97 is priced as VAPOUR by the pure-fluid route (the
+  phase asked is ignored), and cstr02 feeds a vapour that the CSTR prices
+  on liquid volumes.  If your pharmaceutical review meets a liquid density
+  in those plants, the door branch's table will name its source: use it.
+
