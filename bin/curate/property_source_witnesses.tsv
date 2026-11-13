@@ -9,3 +9,4 @@ tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidKinematicV
 tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidDensity	constant.diluteCarrier
 tutorials/plant/aceticAcid02_plant	methanolTank	liquidDensity	liquidVolume.idealMix[anchoredRackett]
 tutorials/steady/reactors/cstr02_reversible_wgs	wgs	vapourVolume	kernel.vapourVolume.equationOfState
+tutorials/steady/membranes/membrane14_polarisation_multiionic	NF	liquidDiffusivity	record.speciesD0.uncorrected

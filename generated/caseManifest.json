@@ -9,7 +9,7 @@
   "cases": 1839,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 25
+  "anchored": 24
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -29188,9 +29188,7 @@
      "ideal"
     ]
    },
-   "roles": [
-    "anchored"
-   ],
+   "roles": [],
    "hasGolden": true
   },
   "tutorials/steady/solids/mill01_limestone_herbstFuerstenau": {

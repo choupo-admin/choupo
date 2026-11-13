@@ -1264,7 +1264,7 @@ get_source() {
             p=$(printf '%s' "$line" | grep -oP '"property": "\K[^"]*' | head -1)
             [ "$p" = "$prop" ] || continue
             printf '%s' "$line" | grep -oP '"sourceId": "\K[^"]*' | head -1
-        done | sort -u | paste -sd, -
+        done | LC_ALL=C sort -u | paste -sd, -
 }
 
 get_any() {
@@ -2488,7 +2488,7 @@ auto_generate() {
                 p=$(printf '%s' "$line" | grep -oP '"property": "\K[^"]*' | head -1)
                 s=$(printf '%s' "$line" | grep -oP '"sourceId": "\K[^"]*' | head -1)
                 printf '%s\t%s\t%s\n' "$u" "$p" "$s"
-            done | sort -u | awk -F'\t' '
+            done | LC_ALL=C sort -u | awk -F'\t' '
                 { k = $1 "\t" $2; v[k] = (k in v) ? v[k] "," $3 : $3; if (!(k in seen)) { seen[k] = 1; ord[++n] = k } }
                 END { for (i = 1; i <= n; i++) { split(ord[i], a, "\t");
                       printf "source  %-22s %-16s %-18s %s\n", a[1], a[2], v[ord[i]], "exact" } }'

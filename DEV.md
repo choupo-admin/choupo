@@ -3476,6 +3476,100 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C378 SLICE 0 IS ON MAIN (2026-11-13, fcc9e17f2).**  THE DOOR, with what
+> rode in its batch: C376's announcement of estimated aqueous data, the
+> case corrections of the solids and pharma reviews (ledger SC-01/02/08,
+> PH-02/05/07/11/12/13), EL-09's prose, the interface fixes of the
+> browser rehearsal.  WHAT MOVED: no number.  438 `source` rows were
+> APPENDED to 145 goldens (the diff of every `expected` shows additions
+> only); the two hydrocyclone rows once called anchors are plain
+> self-recorded rows.  THE FULL SWEEP'S WRITTEN REASON: the door changes
+> how every unit obtains a liquid density, viscosity and surface tension,
+> and the batch carries an announcement on the electrolyte build path.
+> ITS RESULT: 2186 PASS, 6 FAIL, 6 EXPECTED-FAIL; no case failed; mass
+> held on 298 steady cases, elements on 278 (1 pinned), energy on 122 (5
+> pinned), campaigns on 81.  The six: five generated artefacts
+> regenerated and each gate re-run alone; one defect of the batch (the
+> recorder's locale-dependent sort, three rows).  AFTER THE SWEEP, and
+> validated by what each can reach, not by a second sweep: the locale fix
+> (the two cases under three locales), the review's DX-01 (--scope over
+> the 38 spiral-wound items, 0 FAIL; the table read against the log on
+> the five ion cases), a last merge of main that brought no engine file.
+> --gui on the final tree: 47 PASS / 0 FAIL.  NOT DONE: a WebAssembly rebuild and any
+> look in a browser.  OPEN FROM IT, with owners: DX-02/03 (the ratchet's
+> eight missed spellings; a gate for each tag's words) to the reviewing
+> session; DX-04..07 (three naming rows; the pore model's ion
+> diffusivities are read and not in the table) with the pilot; 957
+> published rows no golden pins (379 `diag`, 578 `kpi`), found by the
+> append and left out of this commit, to be appended once C384's bands
+> exist.
+
+> **C378 / C384, THE NIGHT OF 2026-11-13: FOUR DECISIONS TAKEN WHILE THE
+> DOOR'S SWEEP RAN (the architect, on the reviewing session's three
+> reports of the night and on two measurements of its own).**
+> (1) A FALSE PRINTED SOURCE IS FIXED BEFORE THE LANDING, NOT AFTER
+> (ledger DX-01): the spiral-wound module printed "scaled to temperature
+> by Stokes-Einstein" for an ion's diffusivity in a run whose own log said
+> "NOT temperature-corrected".  The tag is now chosen by the builder that
+> read the D0 (three tags: scaled; at the 25 C it is curated at; not
+> corrected), and the unit only records it.  The sweep is not repeated:
+> the patch can reach only which tag that module records, and the
+> membrane cases are re-run for it.  DX-02..06 are debt with owners.
+> (2) A GOLDEN ROW MAY NOT DEPEND ON THE LOCALE: the recorder joined a
+> unit's source ids after a bare `sort`, which under this machine's
+> collation puts `declared.case` before `Vogel/GrunbergNissan` and under
+> the runner's C locale after it; three rows.  Both sorts are byte order
+> now.  Found because the gate that reads the same rows sorts in Python.
+> (3) ES-01, THE MARK TRAVELS WITH THE STORED NUMBER: a reaction enthalpy
+> the catalogue's generator formed from a formation value marked
+> `estimated` carries that word in the chemistry record, written by the
+> generator, and the speciation solver announces when it moves log K
+> with it.  Forming the enthalpy at assembly was the alternative and is
+> not taken: new grammar for a number the generator already keeps
+> consistent.
+> (4) VT-05/06, PROPANE AND PROPYLENE GET A DATUM TEMPERATURE BY
+> MEASUREMENT, in their own commit after the datum-temperature branch
+> lands: propane 276.65 K (its stored volume equals the measured
+> saturated-liquid volume there; said to be inferred, cited through the
+> mirror), propylene its boiling point.  Both move rows of column cases,
+> which is why they are not folded into a branch that moves none.
+> ALSO MEASURED: THE NIGHTLY `ci` RUN FAILS 817 OF 2164 ITEMS, AND 807 ARE
+> ONE CLASS.  2763 rows differ between the runner and the laptop: 2265
+> are evaluation counts of a fit, 172 condition numbers, about 280 fit
+> statistics and fitted parameters, 23 closure residuals.  The first
+> half of C384's decision (c) was written on the fast tier alone and is
+> too small: the rule is now A BAND PER KIND OF NUMBER (a direct result
+> 1e-4; a closure residual an absolute band on the balance's own scale; a
+> count 0.25; a condition number 0.5; a number an optimiser produced a
+> band tied to its stopping tolerance and to the measured disagreement of
+> the two platforms), in one table the recorder and a gate both read.  A
+> general measures the distributions first and proposes the bands; none
+> is loosened without the measurement.
+> THE BANDS, RULED ON THE MEASUREMENT (2763 failing rows of the nightly
+> run, against 183028 golden rows): a count 2.0 (it is decided by a 1e-6
+> comparison on a max-norm objective and differs on 2265 of 4174 rows,
+> by up to 1.43; the row asserts "within a factor of three"); a condition
+> number 2.0; an objective value of a fit 1e-2 and a fitted parameter
+> 5e-2 (a hundred times, and five times the square root of, the
+> least-squares stop); a closure residual an absolute band, 1e-5 of the
+> energy exchanged for a plant boundary (measured worst 6.4e-7), 1e-8 of
+> the unit's duty for an exchanger's gap (measured 1e-10), 1e-9 of the
+> largest term for a ledger (measured 6e-13).  WHAT STILL FAILS ON THE
+> RUNNER AFTER THAT IS A FINDING AND IS PINNED BY NAME in a table that
+> may only shrink; the nightly run passes when nothing NEW fails.  The
+> fast tier carries no pin.  FOUND BY THE SAME MEASUREMENT, each its own
+> later work: (a) the least-squares stage of every fit stops at 1e-4 on
+> chi2 and 40 iterations (FitParameters.cpp:661-663), so a fitted
+> parameter is defined to about 1e-2 and a regressed record is
+> reproducible only on the platform that regressed it (356 pair values
+> re-regress away from their record on the runner, median 2.7e-5, worst
+> 0.98): a tighter stop re-regresses the catalogue and is a campaign;
+> (b) rankine02_water converges on the runner to another fixed point
+> (boiler inlet 572 K against 448 K), probably the pump inlet sitting
+> exactly on the saturation line, given to the general fixing the
+> pure-fluid phase defect; (c) one fit's `identifiable` verdict flips
+> with the platform.
+
 > **C384 (Vitor, 2026-11-13: "o EduTools ainda nao foi update?").**
 > MEASURED the same turn: THE SITE HAS NOT PUBLISHED SINCE 2026-11-12
 > 11:22 UTC (4a3d79cca), fourteen hours and every landing of the day.  TWO
