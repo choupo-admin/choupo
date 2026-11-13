@@ -60,6 +60,7 @@ import { shapePhaseSplitScans, type PhaseSplitScanBlock } from "./phaseSplitPayl
 import { shapePostProcessing, type PostProcessingBlock } from "../case/postProcessing.js";
 import { shapeBatchPlan, type BatchPlan } from "./batchPlanPayload.js";
 import { shapePanel, type PanelReport } from "./panelPayload.js";
+import { shapePropertySources, type PropertySourcesReport } from "./propertySourcesPayload.js";
 import { readEdges } from "../case/toGraph.js";
 import { fromJson, serialize } from "../dict/index.js";
 import { parseDynamicInstants } from "../case/dynamicInstants.js";
@@ -197,7 +198,7 @@ export class WasmAdapter implements SolverAdapter {
         const { displayLog, streams, streamAliases, convergence, profiles, txy, componentMolarMass, unitSectors, equipment, equipmentList, kpis,
           utilityAllocation, globalEnergyBoundary, globalMassBoundary, engine, computed, timeline, transfers, energyLedger, advisories, divergences, modelBoundaries, closuresByConstruction, recycleLoops, operationResults, thermoResolution,
           componentCoverage, experimentalDatasets, validation, economics, layout, building, phaseSplitScans,
-          postProcessing, batchPlan, panel, converged } =
+          postProcessing, batchPlan, panel, propertySources, converged } =
           extractStructured(log, caseFiles);
         const result: RunResult = { status, log: displayLog, streams, convergence, ...(converged !== undefined ? { converged } : {}) };
         if (streamAliases) result.streamAliases = streamAliases;
@@ -239,6 +240,7 @@ export class WasmAdapter implements SolverAdapter {
         if (postProcessing) result.postProcessing = postProcessing;
         if (batchPlan) result.batchPlan = batchPlan;
         if (panel) result.panel = panel;
+        if (propertySources) result.propertySources = propertySources;
         if (trajectoryCsv) {
           const parsed = parseTrajectoryCsv(trajectoryCsv);
           if (parsed) result.trajectory = parsed;
@@ -500,6 +502,8 @@ export function extractStructured(log: string,
   batchPlan?: BatchPlan;
   /** The operator panel's facts (`system/panelDict`, DEV.md 4c C371), as published. */
   panel?: PanelReport;
+  /** Where each unit took its liquid properties from (`propertySources`, DEV.md 4c C378). */
+  propertySources?: PropertySourcesReport;
 } {
   const beginIdx = log.lastIndexOf(BEGIN_MARK);
   const endIdx = log.lastIndexOf(END_MARK);
@@ -774,6 +778,10 @@ export function extractStructured(log: string,
       ? { batchPlan: shapeBatchPlan(parsed.batchPlan)! } : {}),
 //  The operator panel (DEV.md 4c C371 S1): the TYPES policed, no fact derived.
 ...(shapePanel(parsed.panel) ? { panel: shapePanel(parsed.panel)! } : {}),
+//  Where each unit took its liquid properties from (C378): types policed,
+//  unknown fields kept, nothing derived (adapters/propertySourcesPayload).
+...(shapePropertySources(parsed.propertySources)
+      ? { propertySources: shapePropertySources(parsed.propertySources)! } : {}),
   };
 }
 
@@ -1313,6 +1321,8 @@ interface ResultPayload {
   batchPlan?: unknown;
   /** The operator panel (DEV.md 4c C371 S1), shaped by adapters/panelPayload. */
   panel?: unknown;
+  /** Where each unit took its liquid properties from (DEV.md 4c C378), shaped by adapters/propertySourcesPayload. */
+  propertySources?: unknown;
   version: number;
   converged: boolean;
   components: string[];

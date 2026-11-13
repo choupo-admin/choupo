@@ -36,7 +36,7 @@
 \*---------------------------------------------------------------------------*/
 
 export type ReportSectionId =
-  | "equipment" | "sheets" | "utilities" | "mass" | "energy"
+  | "equipment" | "sheets" | "utilities" | "mass" | "energy" | "liquidProperties"
   | "layout" | "trains" | "pfd" | "columns" | "exchangers" | "economics" | "sensitivity" | "batchPlan";
 
 export interface ReportSection {
@@ -72,6 +72,10 @@ export interface ReportFacts {
    *  (case/pfdSheet.ts) can be drawn.  OPTIONAL so a caller that predates S2
    *  keeps its section list. */
   pfd?: boolean;
+  /** The run carries the engine's propertySources block with at least one
+   *  row: where each unit took its liquid properties from.  OPTIONAL, so a
+   *  caller that predates it keeps its section list. */
+  propertySources?: boolean;
 }
 
 /** The sections, in page order.  ONE list: the rail lists it, the page
@@ -101,6 +105,9 @@ export function reportSections(f: ReportFacts): ReportSection[] {
     subtitle: "plant boundary — feeds vs products (kg/h)" });
   out.push({ id: "energy", title: "Global energy balance",
     subtitle: "flow enthalpy at the boundary (kW)" });
+  if (f.propertySources)
+    out.push({ id: "liquidProperties", title: "Liquid properties used",
+      subtitle: "which liquid density, viscosity and surface tension each unit took, and from where" });
   if (f.pfd)
     out.push({ id: "pfd", title: "PFD (PDF)",
       subtitle: "the process flow diagram with its stream table, tags, utilities and title block — print to PDF" });

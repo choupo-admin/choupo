@@ -2902,6 +2902,22 @@ into the case's \file{reports/} directory and announces the file:
 \end{tabularx}
 \end{center}
 
+\paragraph{Which liquid properties each unit used.}\label{sec:reports-liquid-properties}
+When a run priced a liquid density, viscosity, surface tension or
+diffusivity, the Reports workspace has a \emph{Liquid properties used}
+section for the whole run: the engine's own findings first (the same liquid
+given two numbers, a source the unit's type does not declare, a constant
+beside a computed value), then a table grouped by the consumer the engine
+named --- the property, the number with its unit, the state it was asked at
+(temperature, pressure), and the source in the engine's words, with the
+engine's class word beside it: \emph{kernel} (the case's property package
+priced it), \emph{bypass} (the unit computed it itself, so the number does not
+follow the case's property choices) or \emph{declared} (the case gave it).  A
+number the engine did not record reads ``value not recorded''.  The app only
+displays the engine's table; it computes and rewords nothing.  The section is
+absent from a result that has no such block.  What the three classes mean is
+in the Theory Guide, \S\ref{sec:liquid-property-sources}.
+
 \paragraph{The PFD as a printable sheet.}\label{sec:pfd-sheet}
 Exporting the flowsheet has two forms.  The canvas \emph{Colours} menu,
 \emph{Export figure}, saves the coloured drawing as SVG or PNG.  The
@@ -4495,7 +4511,11 @@ table, thermo foundation) open on demand as workspaces.
   \item \textbf{Single-click} a node or edge --- raises a floating
         selection card (labels, units, help tooltips; a unit's continuous
         operation values are a what-if of the open copy, never written
-        to disk).
+        to disk).  After a run the card of a unit that priced a liquid
+        also lists \emph{Liquid properties used}: the number, the state it
+        was asked at and where it came from, in the engine's words, with
+        a link to the Theory Guide (\S\ref{sec:liquid-property-sources});
+        a unit with nothing to report shows no such section.
   \item \textbf{Double-click} --- pops the unit out, or drills into a
         composite sector (the drilled sub-case is seeded from the
         parent's persisted \file{converged/} state).

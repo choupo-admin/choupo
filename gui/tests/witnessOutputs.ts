@@ -486,6 +486,22 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "trajectory.csv",
     readBy: ["operatorPanels.test.ts", "panelWorkspace.test.ts"],
   },
+  //  Where each unit took its liquid properties from (C378): the run logs
+  //  whose result blocks carry `propertySources` and whose printed
+  //  `[liquid properties]` table the adapter's numbers are held to.  A pump
+  //  (one row) and the green-ammonia plant (several units, grouped).
+  {
+    caseDir: "tutorials/steady/rotating/pump01_water",
+    file: "log.choupoSolve",
+    readBy: ["propertySources.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/plant/greenAmmoniaPEQ_baseCase",
+    file: "log.choupoSolve",
+    readBy: ["propertySources.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by
