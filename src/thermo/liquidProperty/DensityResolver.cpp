@@ -64,13 +64,25 @@ std::vector<std::string> sortedNames(const ThermoPackage& thermo, const std::vec
     return n;
 }
 
-//  What makes two packages the same set of facts for the "resolves
-//  differently" refusal: their components and their pure-fluid selections.
+//  THE WORLD, for the "resolves differently" refusal (C378 pilot review,
+//  PA-03).  A per-unit `thermo {}` declares a second world over the same
+//  components; it is a second recipe, never a contradiction of the first.
+//  The identity is therefore every per-component fact the resolution
+//  READS from the package -- the name, the pure-fluid selection, whether the
+//  formulation makes it a Henry solute, and which liquid-volume route its
+//  record offers -- so two worlds that can resolve differently are two
+//  identities.  It is not the package's serial: a pass that rebuilds the
+//  SAME world gets a new serial, and the refusal exists for that world --
+//  one whose resolution would change between passes because the data the
+//  set's method reads changed.  (The measurement and the hypothesis are the
+//  case's, one per run, and read the same by every world.)
 std::string packageIdentity(const ThermoPackage& thermo)
 {
     std::string s;
     for (std::size_t i = 0; i < thermo.n(); ++i)
-        s += thermo.comp(i).name() + "/" + thermo.pureFluidMethod(i) + ";";
+        s += thermo.comp(i).name() + "/" + thermo.pureFluidMethod(i)
+           + "/" + (thermo.isHenrySolute(i) ? "henry" : "-")
+           + "/" + std::to_string(static_cast<int>(thermo.liquidVolumeRouteOf(i))) + ";";
     return s;
 }
 
