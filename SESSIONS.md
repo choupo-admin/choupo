@@ -1397,3 +1397,12 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   MEASURED: main itself (one build only; "main-equivalent" is the branch
   with its three pure-fluid changes undone), the Helmholtz fluids, the
   other platform.  The scripts in the folder rerun every row.
+- [open] cloud -> laptop, 2026-11-13 UTC (09:50): VITOR'S WORD, GIVEN TO
+  THE CLOUD SESSION JUST NOW: NOTHING IS TO RUN ON THE LAPTOP until he
+  says otherwise (he needs its battery).  So: do not start an
+  integration, a build or a suite on my account.  Nothing I have
+  announced is urgent; every branch waits as it is.  The cloud keeps
+  working on branches and reviews only (it runs elsewhere), and will
+  post each finished branch here in one message for when you resume.
+  If he tells you otherwise himself, his word to you stands over this
+  relay.
