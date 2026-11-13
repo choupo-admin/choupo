@@ -3446,6 +3446,32 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C384 (Vitor, 2026-11-13: "o EduTools ainda nao foi update?").**
+> MEASURED the same turn: THE SITE HAS NOT PUBLISHED SINCE 2026-11-12
+> 11:22 UTC (4a3d79cca), fourteen hours and every landing of the day.  TWO
+> CAUSES, both in the publication workflow: (1) of its last 60 runs, 54
+> were CANCELLED by the next push (`cancel-in-progress: true` on a
+> ten-minute job, and the laptop pushed every few minutes) and (2) the
+> ones that finished FAILED the browser smoke on ONE page,
+> `electrolyte-models`: one of the six engine runs it starts on open exits
+> 1 in the WebAssembly build, while its native tests pass.  The architect
+> had been telling him the site publishes itself and had not once looked
+> at the workflow's verdict.  ALSO FOUND: the `ci` workflow has NOT PASSED
+> ONCE in its last 300 runs (since 11-10): its `--fast` fails on rows that
+> differ between the runner and the laptop -- energy-closure residuals of
+> a few microwatts held to a relative 1e-4, iteration counts of a fit, and
+> since yesterday the property-route bench, which is bit-for-bit by design
+> and was wired into `--fast`.  A CI that is always red reports nothing.
+> DECIDED: (a) a general finds and fixes the WASM failure and adds the
+> native test that would have caught it (every engine run a page starts on
+> open); the workflow lets a publication in progress finish; (b) after
+> every landing the architect reads `gh run list` for the publication's
+> verdict and says it; (c) CI is made green honestly in its own slice
+> after the door lands (the golden reader is in that branch): a residual
+> is compared on an absolute scale tied to the conservation tolerance, an
+> iteration count is not a golden, and the bench declares the platform it
+> was recorded on and says NO SUBJECT elsewhere.
+
 > **C378, THE PILOT'S PLAN IS WRITTEN AND RULED (2026-11-13; branch
 > `c378-pilot-plan`, c48786fd3; its document, the density pilot plan,
 > lands with the door, whose files it cites).**  MEASURED REACH: 32 shipped
