@@ -66,14 +66,14 @@ describe("the rule is the pipeline's, read back from its own source", () => {
     const c283 = read("bin/curate/pairs_c283.py").split("\n");
     const px = read("bin/curate/pairs_px.py").split("\n");
     const cur = read("bin/choupo-curate").split("\n");
-    expect(c283[70]).toBe(`OUTLIER_K = ${FIT_RULE.outlierK.toFixed(1)}          # C283 amended: three times the band, in temperature 3 K`);
-    expect(c283[89]).toBe(`GRADE_K = (${FIT_RULE.gradeK.map((v) => v.toFixed(1)).join(", ")})`);
-    expect(c283[90]).toBe(`GRADE_PCT = (${FIT_RULE.gradePct.map((v) => v.toFixed(1)).join(", ")})`);
-    expect(px[67]).toContain(`OUTLIER_PCT = ${FIT_RULE.outlierPct.toFixed(1)}`);
-    //  pairs_px.py no longer carries the numbers: its GRADE_PCT IS pairs_c283's (one home), checked at c283[90] above.
-    expect(px[70]).toContain("GRADE_PCT = pc.GRADE_PCT");
-    expect(cur[108]).toBe(`MIN_INTERIOR = ${FIT_RULE.minInterior}`);
-    expect(c283[374]).toContain(`def candidates(pmax=${FIT_RULE.pMaxKPa.toFixed(1)})`);
+    expect(c283[72]).toBe(`OUTLIER_K = ${FIT_RULE.outlierK.toFixed(1)}          # C283 amended: three times the band, in temperature 3 K`);
+    expect(c283[91]).toBe(`GRADE_K = (${FIT_RULE.gradeK.map((v) => v.toFixed(1)).join(", ")})`);
+    expect(c283[92]).toBe(`GRADE_PCT = (${FIT_RULE.gradePct.map((v) => v.toFixed(1)).join(", ")})`);
+    expect(px[69]).toContain(`OUTLIER_PCT = ${FIT_RULE.outlierPct.toFixed(1)}`);
+    //  pairs_px.py no longer carries the numbers: its GRADE_PCT IS pairs_c283's (one home), checked at c283[92] above.
+    expect(px[72]).toContain("GRADE_PCT = pc.GRADE_PCT");
+    expect(cur[110]).toBe(`MIN_INTERIOR = ${FIT_RULE.minInterior}`);
+    expect(c283[376]).toContain(`def candidates(pmax=${FIT_RULE.pMaxKPa.toFixed(1)})`);
   });
 
   it("grade and cap agree with pairs_c283.grade_of and cap_grade", () => {

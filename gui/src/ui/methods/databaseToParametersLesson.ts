@@ -150,7 +150,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "names repeat, and two substances can share a formula.  The pipeline "
       + "joins each compound to a catalogue component through an InChIKey "
       + "bridge, and refuses a pair it cannot join.",
-    note: "bin/choupo-thermoml:1044 (no CAS in the archive); bin/curate/pairs_c283.py:434 "
+    note: "bin/choupo-thermoml:1046 (no CAS in the archive); bin/curate/pairs_c283.py:434 "
       + "(the refusal).  On this page you make the join yourself.",
   },
   {
@@ -161,7 +161,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "uncertainty on every point and at least five interior points.  The "
       + "pure endpoints are set aside.  A vapour composition with no liquid "
       + "one, a varying temperature or a repeated row is refused.",
-    note: "The refusals: bin/choupo-thermoml:1801, :1868, :640.  The rules: "
+    note: "The refusals: bin/choupo-thermoml:1803, :1870, :642.  The rules: "
       + "bin/curate/pairs_c283.py:467.",
   },
   {
@@ -201,7 +201,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "pressure).  The grade is in-sample.  A clean on one temperature or "
       + "one laboratory is capped at warning, and severe fits are no longer "
       + "promoted.",
-    note: "bin/curate/pairs_c283.py:92, :151, :166.  The 17 severe records "
+    note: "bin/curate/pairs_c283.py:92, :153, :168.  The 17 severe records "
       + "promoted before that rule are still in the catalogue: "
       + "docs/design/binary-pairs-from-open-measurements.md:1335.",
   },
