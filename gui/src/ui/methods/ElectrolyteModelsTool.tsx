@@ -29,7 +29,7 @@
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
-  Alert, Badge, Box, Code, Group, Loader, SegmentedControl, Select, Stack, Table, Text, Title,
+  Alert, Badge, Box, Button, Code, Group, Loader, SegmentedControl, Select, Stack, Table, Text, Title,
 } from "@mantine/core";
 
 import { useCaseFilesRun } from "../../case/methodRun.js";
@@ -195,7 +195,7 @@ function Status({ busy, err, what }: { busy: boolean; err: string | null; what: 
 
 const step = lessonStepper(EM_STEPS);
 const SALT_SHORT: Record<string, string> = { NaCl: "NaCl", KCl: "KCl", CaCl2: "CaCl₂", Na2SO4: "Na₂SO₄" };
-const REFUSAL_MS = [0.1, 0.5, 1.0] as const;
+export const REFUSAL_MS = [0.1, 0.5, 1.0] as const;
 
 interface ModelRow {
   key: string; label: string; style: SeriesStyle; pts: ModelPoint[];
@@ -298,10 +298,15 @@ export function ElectrolyteModelsTool(): JSX.Element {
 
   // ---- step 6 ---------------------------------------------------------------------------
   const mg = EM_REFUSAL_SALT;
+  //  The eNRTL run is MEANT to be refused (the catalogue has no Mg-SO4 eNRTL
+  //  pair), so the READER starts it: a run that cannot answer is never started
+  //  on open, where it would read as an engine run that did not finish.
+  const [askENRTL, setAskENRTL] = useState(false);
   const runRP = useCaseFilesRun(
     () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(mg, "Pitzer", REFUSAL_MS)), "R|Pitzer|MgSO4", "choupoProps");
-  const runRE = useCaseFilesRun(
-    () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(mg, "eNRTL", REFUSAL_MS)), "R|eNRTL|MgSO4", "choupoProps");
+  const runRE = useCaseFilesRun(askENRTL
+    ? () => filesToCaseFiles(EM_CASE_NAME, emPackageCaseFiles(mg, "eNRTL", REFUSAL_MS)) : null,
+  `R|eNRTL|MgSO4|${askENRTL ? "asked" : "not asked"}`, "choupoProps");
   const mgPitzer = readPackageRun(runRP.result, mg, "Pitzer", REFUSAL_MS);
   const refusalLine = (runRE.log ?? "").split("\n").map((l) => l.trim())
     .find((l) => /fatal error|no parameters/i.test(l)) ?? null;
@@ -532,7 +537,7 @@ export function ElectrolyteModelsTool(): JSX.Element {
 
         {step(6)}
         <Panel title="MgSO4 under both models" origin={["engine", "reference"]}
-          originNote="two runs of choupoProps in this browser; the record list is the catalogue's files as bundled">
+          originNote="runs of choupoProps in this browser (the eNRTL one when you ask for it); the record list is the catalogue's files as bundled">
           <Status busy={runRP.busy} err={null} what="running Pitzer on MgSO4…" />
           <Status busy={runRE.busy} err={null} what="running eNRTL on MgSO4…" />
           <Box>
@@ -543,13 +548,19 @@ export function ElectrolyteModelsTool(): JSX.Element {
           </Box>
           <Box>
             <Text size="sm" fw={700}>eNRTL</Text>
-            {runRE.err || refusalLine
+            {!askENRTL && (
+              <Button size="xs" variant="light" mt={4} onClick={() => setAskENRTL(true)}>
+                Ask eNRTL for MgSO4
+              </Button>
+            )}
+            {askENRTL && (runRE.err || refusalLine
               ? <Text size="xs" ff="monospace" c="red" style={{ overflowWrap: "anywhere" }}>{refusalLine ?? runRE.err}</Text>
-              : <Text size="sm">{runRE.result ? "an answer -- the catalogue now holds an eNRTL record for Mg-SO4" : "—"}</Text>}
+              : <Text size="sm">{runRE.result ? "an answer -- the catalogue now holds an eNRTL record for Mg-SO4" : "—"}</Text>)}
           </Box>
           <Text size="xs" c="dimmed">
             No MgSO4 table is in the tree, so the Pitzer numbers here are compared with nothing; the
-            point is that one model answers and the other refuses, naming the file it looked for.
+            point is that one model answers and the other, when you ask it, refuses, naming the file it
+            looked for.
           </Text>
           <Wide>
             <Table fz="xs" striped withTableBorder style={{ minWidth: 300 }}>

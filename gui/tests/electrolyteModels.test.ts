@@ -17,14 +17,24 @@
   its cases, its readers and its arithmetic, held to hand values and to the
   files of the tree.
 
-  No engine runs here (there is none in node): the readers are fed text in
-  the exact shape the engine writes (a one-row CSV from electrolyteActivity,
-  a species CSV and diagnostics from speciate), copied from a native run of
-  this tree.  What the engine answers for each salt is in
-  docs/design/choosing-an-electrolyte-model.md, measured natively.
+  The readers are fed text in the exact shape the engine writes (a one-row
+  CSV from electrolyteActivity, a species CSV and diagnostics from speciate),
+  copied from a native run of this tree.  What the engine answers for each
+  salt is in docs/design/choosing-an-electrolyte-model.md, measured natively.
+
+  ONE block DOES run the engine: "the runs the page starts on open".  The
+  publication smoke opens the page and fails it when any run started on open
+  does not finish, so every case the page starts by itself is run here by
+  THIS checkout's native choupoProps (the reactorLadderTool precedent: absent
+  binary refuses, never skips), and the step-6 eNRTL/MgSO4 case -- refused by
+  design -- is held to start only on the reader's press.
 \*---------------------------------------------------------------------------*/
 
-import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MantineProvider } from "@mantine/core";
@@ -38,7 +48,7 @@ import {
 } from "../src/case/electrolyteModels.js";
 import { inSampleAgainst, measuredTable, pairRecord } from "../src/ui/methods/electrolyteModelsData.js";
 import { EM_CITATIONS, EM_STEPS } from "../src/ui/methods/electrolyteModelsLesson.js";
-import { ElectrolyteModelsTool, tableCite } from "../src/ui/methods/ElectrolyteModelsTool.js";
+import { ElectrolyteModelsTool, REFUSAL_MS, tableCite } from "../src/ui/methods/ElectrolyteModelsTool.js";
 import { METHOD_TOOLS } from "../src/ui/methods/registry.js";
 
 const repo = (rel: string): string => readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8");
@@ -291,5 +301,74 @@ describe("the lesson", () => {
     expect(html).toContain("Every model starts from the same term");
     expect(html).toContain("limiting law plot");
     expect(html).toContain("Hamer and Wu (1972)");
+  });
+});
+
+// ---- the runs the page starts on open, run by the native engine ----------------------
+//
+//  The site's publication smoke opens every EduTool and fails a page when a
+//  run it started on open does not finish.  A refused run never finishes, so
+//  a deliberate refusal must wait for the reader.  Every salt the reader can
+//  select is run, because selecting one re-starts the four runs of steps 1-5.
+
+const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+function runProps(files: Record<string, string>): { status: number | null; log: string } {
+  const bin = join(REPO, "choupoProps");
+  expect(existsSync(bin), `${bin} is absent -- run \`make all\` at the repository `
+    + "root; this test runs the native engine and must not skip").toBe(true);
+  const dir = mkdtempSync(join(tmpdir(), "choupo-em-"));
+  try {
+    for (const [rel, text] of Object.entries(files)) {
+      mkdirSync(dirname(join(dir, rel)), { recursive: true });
+      writeFileSync(join(dir, rel), text);
+    }
+    const r = spawnSync(bin, ["."], { cwd: dir, encoding: "utf-8",
+      env: { ...process.env, CHOUPO_HOME: REPO }, maxBuffer: 256 * 1024 * 1024 });
+    return { status: r.status, log: (r.stdout ?? "") + (r.stderr ?? "") };
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+describe("the runs the page starts on open", () => {
+  for (const s of EM_SALTS) {
+    it(`${s.id}: Pitzer, eNRTL, Davies and Davies + pairs, at the page's molalities, all exit 0`, () => {
+      const ms = emMolalities(measuredTable(s));
+      const dms = daviesMolalities(s, ms);
+      for (const [what, files] of [
+        ["Pitzer", emPackageCaseFiles(s, "Pitzer", ms)],
+        ["eNRTL", emPackageCaseFiles(s, "eNRTL", ms)],
+        ["Davies", emDaviesCaseFiles(s, dms, false)],
+        ["Davies + pairs", emDaviesCaseFiles(s, dms, true)],
+      ] as const) {
+        const r = runProps(files);
+        expect(r.status, `${what} on ${s.id}:\n${r.log.slice(-2000)}`).toBe(0);
+      }
+    }, 120_000);
+  }
+
+  it("step 6: Pitzer on MgSO4 answers (exit 0)", () => {
+    const r = runProps(emPackageCaseFiles(EM_REFUSAL_SALT, "Pitzer", REFUSAL_MS));
+    expect(r.status, r.log.slice(-2000)).toBe(0);
+  }, 60_000);
+
+  it("step 6: eNRTL on MgSO4 is refused, naming the missing pair", () => {
+    const r = runProps(emPackageCaseFiles(EM_REFUSAL_SALT, "eNRTL", REFUSAL_MS));
+    expect(r.status).not.toBe(0);
+    expect(r.log).toMatch(/no parameters for \(Mg, SO4\)/);
+    expect(r.log).toContain("parameters/eNRTL/Mg-SO4.dat");
+  }, 60_000);
+
+  it("the page starts the refused run only when the reader asks for it", () => {
+    const src = repo("gui/src/ui/methods/ElectrolyteModelsTool.tsx");
+    const i = src.indexOf("const runRE = useCaseFilesRun(");
+    expect(i).toBeGreaterThan(-1);
+    expect(src.slice(i, i + 200)).toMatch(/useCaseFilesRun\(askENRTL\s*\?/);
+    expect(src).toContain("const [askENRTL, setAskENRTL] = useState(false);");
+    expect(src).toContain("onClick={() => setAskENRTL(true)}");
+    //  Every other useCaseFilesRun on the page builds one of the cases run
+    //  above; there are exactly six, and only runRE is gated.
+    expect((src.match(/useCaseFilesRun\(/g) ?? []).length).toBe(6);
   });
 });
