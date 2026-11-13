@@ -339,7 +339,7 @@ function Lab({ initial }: { initial: LabSetup }): JSX.Element {
   const n = setup.columns.length;
 
   return (
-    <Box style={{ height: "100vh", overflowY: "auto", overflowX: "hidden" }} px="md" py="sm">
+    <Box style={{ height: "var(--choupo-vh)", overflowY: "auto", overflowX: "hidden" }} px="md" py="sm">
       <Stack gap="md" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
         <Box>
           <Title order={3}>Fluidisation laboratory</Title>
