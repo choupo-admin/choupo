@@ -1083,7 +1083,7 @@
         "key": "chemistry",
         "name": "Equilibrium reaction records (dissolution, association, gas-liquid)",
         "source": "data/standards/chemistry/",
-        "count": 229
+        "count": 233
       },
       {
         "key": "conventions",
@@ -1119,7 +1119,7 @@
         "key": "parameters.Pitzer",
         "name": "Pitzer (Harvie-Moller-Weare) ion-interaction pairs",
         "source": "data/standards/parameters/Pitzer/",
-        "count": 164
+        "count": 182
       },
       {
         "key": "parameters.eNRTL",

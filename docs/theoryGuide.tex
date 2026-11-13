@@ -6417,6 +6417,114 @@ $a_w=0.981$ against the measured $0.980$--$0.981$.  Before this, Choupo
 of the Davies model only, never a silent default under Pitzer.
 \end{keyidea}
 
+\subsection{Borate in the HMW model: Felmy and Weare (1986)}\label{sec:hmw-borate}
+
+Boron is the reason a seawater desalination plant has a pH problem: boric
+acid $\text{B(OH)}_3$ is a small neutral molecule that crosses a reverse-osmosis
+membrane, while its anion $\text{B(OH)}_4^-$ is rejected, and the split between
+the two is set by the pH and by the activity coefficients of the borate ions in
+a brine whose ionic strength is $0.7$\,mol/kg.  The Davies model has no
+specific-interaction terms and misses the sodium--borate interaction; the HMW
+assembly of \S\ref{ch:pitzer-hmw} carries it.  The parameters are those of
+Felmy and Weare, \emph{Geochim.\ Cosmochim.\ Acta} \textbf{50} (1986)
+2771--2783, who extended the Harvie--M\o ller--Weare model to borate; every
+number in the records below was read from the paper's tables (page images read
+twice, the text layer a third time) and is held in the evidence table
+\file{data/curation/batches/boron\_c198/readings.tsv}, one row per number with
+its table and page.
+
+\paragraph{Species and equilibria.}  Besides $\text{B(OH)}_3$ and
+$\text{B(OH)}_4^-$ the model carries two polyborates, which matter above about
+$0.05$\,mol/kg of boron, and two calcium and magnesium ion pairs, which matter
+in seawater:
+\begin{align}
+  \text{B(OH)}_3+\text{H}_2\text{O} &\rightleftharpoons \text{B(OH)}_4^-+\text{H}^+,
+      & \log K &= -9.239, \label{eq:hmw-borate-1}\\
+  3\,\text{B(OH)}_3 &\rightleftharpoons \text{B}_3\text{O}_3(\text{OH})_4^-
+      +2\,\text{H}_2\text{O}+\text{H}^+, & \log K &= -7.528,\\
+  4\,\text{B(OH)}_3 &\rightleftharpoons \text{B}_4\text{O}_5(\text{OH})_4^{2-}
+      +3\,\text{H}_2\text{O}+2\,\text{H}^+, & \log K &= -16.134,\\
+  \text{M}^{2+}+\text{B(OH)}_3+\text{H}_2\text{O} &\rightleftharpoons
+      \text{MB(OH)}_4^{+}+\text{H}^+, & \log K &=
+      \begin{cases}-7.589 & \text{M}=\text{Ca}\\ -7.84 & \text{M}=\text{Mg}\end{cases}
+\end{align}
+at $25\,^\circ$C, written from the neutral master \code{H3BO3}
+(\file{data/standards/chemistry/}\code{BOH4}, \code{B3O3OH4}, \code{B4O5OH4},
+\code{CaBOH4}, \code{MgBOH4}\code{-formation.dat}).  The paper prints the
+standard chemical potentials $\mu^\circ/RT$ of the species (its Table~2,
+p.~2773: $-390.81$ for $\text{B(OH)}_3(\text{aq})$, $-465.20$ for
+$\text{B(OH)}_4^-$, $-963.77$ and $-1239.10$ for the polyborates, $-692.30$
+and $-651.89$ for the Ca and Mg pairs), and a constant follows as
+$\ln K=-\Delta\mu^\circ/RT$ once the chemical potentials of $\text{H}_2\text{O}$,
+$\text{Ca}^{2+}$ and $\text{Mg}^{2+}$ of Harvie et al.\ (1984) are added.  The
+constants are \emph{derived} that way, with $\mu^\circ/RT$ of $\text{H}_2\text{O}$,
+$\text{H}^+$, $\text{Ca}^{2+}$ and $\text{Mg}^{2+}$ read from Table~4 (p.~728) of
+Harvie et al.\ (1984): $-9.2390$, $-7.5276$, $-16.1338$, $-7.5886$ and
+$-7.8397$, each within $4\times10^{-4}$ of the public-domain databank's three
+decimals, which are kept (\file{formation\_check.tsv} holds the arithmetic).
+No enthalpy is given by either source, so none is written: a run at another
+temperature is announced.  The Pitzer route's $\log K=-9.239$ is the
+parameterisation's own and is never mixed with the Davies route's $-9.24$ with
+an enthalpy (identity per parameterisation).
+
+\paragraph{The Pitzer terms.}  The paper's tables give, and the engine reads
+through the sums of \S\ref{sec:hmw-etheta} and Eq.~\eqref{eq:hmw-neutral},
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \emph{Table~3 (p.~2773), 14 values.}  $\beta^{(0)}$, $\beta^{(1)}$ and
+        $C^\phi$ of the pairs Na--$\text{B(OH)}_4$ ($-0.0427$, $0.089$,
+        $0.0114$), Na--$\text{B}_3\text{O}_3(\text{OH})_4$ ($-0.056$, $-0.910$),
+        Na--$\text{B}_4\text{O}_5(\text{OH})_4$ ($-0.11$, $-0.40$), the three
+        K pairs, and $\text{MB(OH)}_4^+$--Cl ($0.16$ Mg, $0.12$ Ca);
+  \item \emph{Table~4 (p.~2773), 11 values.}  $\theta$ of
+        $\text{B(OH)}_4^-$ with $\text{Cl}^-$ ($-0.065$) and $\text{SO}_4^{2-}$
+        ($-0.012$), of each polyborate with Cl, $\text{SO}_4$ and
+        $\text{HCO}_3$, and $\psi_{\text{Na}}$ of $\text{B(OH)}_4^-$--Cl
+        ($-0.0073$) and of the two polyborates with Cl;
+  \item \emph{Table~5 (p.~2774), 7 values.}  The neutral boric acid:
+        $\lambda$ with Cl ($0.091$), $\text{SO}_4$ ($0.018$),
+        $\text{B}_3\text{O}_3(\text{OH})_4^-$ ($-0.20$), Na ($-0.097$) and
+        K ($-0.14$), and $\zeta$ with H--Cl ($-0.0102$) and Na--$\text{SO}_4$
+        ($0.046$).  The convention of the paper is $\lambda_{\text{B(OH)}_3,\text{H}}=0$.
+\end{itemize}
+They live as one record each under
+\file{data/standards/parameters/Pitzer/\{pairs,theta,psi,lambda,zeta\}/},
+every record with its table, page, \code{origin literature}, the validity
+($25\,^\circ$C, one temperature) and the statement that the value is the
+paper's own fit (in-sample).  The eight binary records were in the catalogue
+before, transcribed from the databank; the values are unchanged and their
+source is now the paper.
+
+\paragraph{What was checked, and against what.}  The tutorial
+\code{borate01\_felmyWeare} runs two operations.  (i)~Borax-saturated water
+(Na $0.323$, boron $0.646$\,mol/kg): the paper's Table~1 (p.~2772) prints
+$\text{B(OH)}_3$ $.081$, $\text{B(OH)}_4^-$ $.131$,
+$\text{B}_3\text{O}_3(\text{OH})_4^-$ $.050$, $\text{B}_4\text{O}_5(\text{OH})_4^{2-}$
+$.071$\,mol/kg; the engine gives $.0794$, $.1311$, $.0517$, $.0701$ (pH~9.27).
+Table~1 is the paper's own model output, so this is \emph{in-sample}: it shows
+that the tables were transcribed and the sums implemented alike, not that the
+model is right.  (ii)~Dickson's synthetic seawater ($S=35$, his Table~1) at pH~8.2, the pairs
+explicit.  Dickson (1990), Table~3 (p.~762), prints
+$\ln(K^*/m^\circ)=-19.7556$ for boric acid at 298.15\,K on the \emph{total}
+hydrogen-ion scale, in mol per kg of water, uncertain by $\pm0.004$ (p.~764).
+The engine's pH is the free proton, the paper's scale counts the proton bound
+to sulfate, $m^*(\text{H})=m(\text{H})+m(\text{HSO}_4)$, so bisulfate is in the
+network and the engine's own value is used (the paper says its constant is hard
+to know in seawater).  The model gives $-19.7115$: $0.044$ above the paper,
+outside its stated uncertainty, and $0.85\,\%$ in the free boric acid; it is an
+anchor row with a $1.2\,\%$ tolerance justified in the case's \file{expected}
+file.  It is only partly independent: the borate paper does not list Dickson's
+seawater data among its fit, but its Na, Ca and Mg terms were fitted to
+emf data of the same laboratory family (Hershey et al.\ 1985) and its K terms to
+Dickson's unpublished KCl emf data.
+
+\paragraph{Limits.}  $25\,^\circ$C only; no temperature surface exists for any
+term.  The polyborate interactions with Mg and Ca were never parameterised (the
+paper says high magnesium with high borate is not accurately modelled).  The
+borate minerals of the paper (borax, teepleite, the pentaborates, their
+$\mu^\circ/RT$ in Table~2) and the Searles Lake application (its Tables~6--14)
+need solid-phase records that are not shipped.  A dissolved amine or phosphate
+does not interact with borate here: the paper has no such term.
+
 \subsection{The single-salt collapse --- the skeptic's gate}
 
 The multi-ion sums \emph{must} reduce to the closed single-salt kernel
@@ -6480,9 +6588,9 @@ HMW base set; the full $\beta(T)$, $\theta(T)$ temperature surface is
 deferred (the dominant temperature dependence enters only through
 $A_\phi(T)$, scaled by the Born--Bjerrum factor, and through the
 single-salt $\partial\beta/\partial T$ calorimetric slots).  The ion
-roster is the core seawater/brine system plus carbonates --- borate,
-$\text{H}_4\text{SiO}_4$, $\text{HSO}_4^-$ and the higher neutral system
-are intentionally out.  And $J(x)$ is Pitzer's \emph{approximation} to
+roster is the core seawater/brine system plus carbonates and, since the
+borate slice (\S\ref{sec:hmw-borate}), borate; $\text{H}_4\text{SiO}_4$,
+$\text{HSO}_4^-$ and the higher neutral system are intentionally out.  And $J(x)$ is Pitzer's \emph{approximation} to
 the defining integral (good to $\sim10^{-3}$), not the integral itself
 --- accurate enough that the limiting law and the single-salt collapse
 hold to machine precision, but a Chebyshev-grade $J(x)$ would be the next
