@@ -184,7 +184,8 @@ def arm_comparator():
             rc, out = run_tests_on(d)
             ok = (rc == 0)
             if ok != want_pass:
-                problems.append(f"{label}: expected {'PASS' if want_pass else 'FAIL'}, runTests exited {rc}")
+                problems.append(f"{label}: expected {'PASS' if want_pass else 'FAIL'}, runTests exited {rc}; last lines: "
+                                + " | ".join(out.strip().splitlines()[-4:])[:600])
             return out
 
         k = qrow.split()
