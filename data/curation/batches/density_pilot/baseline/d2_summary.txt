@@ -1,0 +1,15 @@
+d2_pecar    all                                n= 795  AAD 3.976 %  bias -3.976 %  max 7.677 % at T=348.15 P=40000.0 kPa x_EtOH=0.4034
+d2_pecar    0.1 MPa                            n= 159  AAD 2.890 %  bias -2.890 %  max 5.073 % at T=348.15 P=100.0 kPa x_EtOH=0.2502
+d2_pecar    10 MPa                             n= 159  AAD 3.462 %  bias -3.462 %  max 5.730 % at T=348.15 P=10000.0 kPa x_EtOH=0.3009
+d2_pecar    20 MPa                             n= 159  AAD 4.007 %  bias -4.007 %  max 6.389 % at T=348.15 P=20000.0 kPa x_EtOH=0.3009
+d2_pecar    30 MPa                             n= 159  AAD 4.518 %  bias -4.518 %  max 7.034 % at T=348.15 P=30000.0 kPa x_EtOH=0.35
+d2_pecar    40 MPa                             n= 159  AAD 5.003 %  bias -5.003 %  max 7.677 % at T=348.15 P=40000.0 kPa x_EtOH=0.4034
+d2_pecar    0.1 MPa, 298.15 K                  n=  53  AAD 1.762 %  bias -1.762 %  max 3.300 % at T=298.15 P=100.0 kPa x_EtOH=0.2502
+d2_pecar    0.1 MPa, 323.15 K                  n=  53  AAD 2.943 %  bias -2.943 %  max 4.199 % at T=323.15 P=100.0 kPa x_EtOH=0.2502
+d2_pecar    0.1 MPa, 348.15 K                  n=  53  AAD 3.966 %  bias -3.966 %  max 5.073 % at T=348.15 P=100.0 kPa x_EtOH=0.2502
+d2_pecar    pure ethanol (engine vs measured)  n=  15  AAD 3.143 %  bias -3.112 %  max 6.850 % at T=348.15 P=40000.0 kPa x_EtOH=1.0
+d2b_rehman  all                                n= 108  AAD 2.064 %  bias -2.043 %  max 4.074 % at T=323.15 P=101.0 kPa x_EtOH=0.3
+d2b_rehman  0.1 MPa                            n= 108  AAD 2.064 %  bias -2.043 %  max 4.074 % at T=323.15 P=101.0 kPa x_EtOH=0.3
+Pecar, ideal mixing with REFERENCE pure volumes (IAPWS-95 water, measured ethanol), 0.1 MPa: n=159 AAD 1.751 % max 3.415 % (the excess volume alone)
+Pecar, ideal mixing with REFERENCE pure volumes (IAPWS-95 water, measured ethanol), all pressures: n=795 AAD 1.459 % max 3.415 % (the excess volume alone)
+V^E minimum (Pecar, all): -1.0781 cm3/mol at T=298.15 P=100.0 kPa x=0.4034

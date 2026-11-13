@@ -3740,6 +3740,35 @@ accepts today, and that is a policy call.
 > deliberate choice, and the danger named is the silence, which the
 > printed deviation removes.
 
+> **C378, THE PILOT'S DATA AND TODAY'S BASELINE ON MAIN (2026-11-13;
+> data/curation/batches/density_pilot/, docs/design/density-pilot-thresholds.md,
+> status OPEN).**  No engine file changed.  The measured points (1870, nine
+> articles) are NOT in git: the mirror they were found through reserves
+> bulk import, so the batch keeps the scripts that regenerate them, the
+> summary statistics, twelve printed anchors of the water article and ONE
+> cited point for the measured-point demonstration (the branch was
+> squash-merged so that the removed files never entered history).
+> TODAY'S ENGINE AGAINST MEASUREMENT: water on the generic route 1.8 % low
+> on average at 1 bar (3.5 % at the boiling point, 7.6 % at 100 MPa), on
+> the reference route within 0.002 %; the pump one constant, 996.96 kg/m3,
+> at every temperature and pressure; water + ethanol 2.9 % low on average,
+> 5.1 % at worst, of which the excess volume alone explains 1.75 %; NaOH:
+> the published law within 0.055 % of an independent laboratory, while the
+> pump (the salt's volume left out) is 15 % off on average and 34 % at
+> worst.  SEVEN CORRECTIONS to the pilot table of the record, all taken
+> (liquid water at 1 bar ends at 372.756 K; the article's grid; three
+> isotherms for water + ethanol; no 10 wt % point in the NaOH set; the
+> 0.04 % is the paper's own figure on its own data; one CO2 set has the
+> stated temperatures; the pump does NOT refuse the salt in mixed solvent
+> today, it answers 4 % off on average).  THREE CONSEQUENCES for the
+> pilot's scope, to be decided when its thresholds are written: the water
+> leaf INSIDE a mixture stays on the generic route today (2.6 % low at
+> 348 K), so a mixture demonstration can pass for the wrong reason; the
+> CO2 demonstration needs pressure on that leaf (its 2 % is larger than
+> the 1.6 % effect of the dissolved gas); and the refusal demonstration
+> requires the pump to stop answering, which moves existing cases with
+> dissolved salts from a number to a declared hypothesis.
+
 > **C378, THE LIQUID VOLUMES READ AT THE WRONG TEMPERATURE: EVIDENCE ON
 > MAIN (2026-11-13; data/curation/batches/vliq_datum_temperature/,
 > docs/design/liquid-volume-datum-temperature.md).**  No record and no
