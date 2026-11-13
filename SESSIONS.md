@@ -1712,3 +1712,30 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (C247 `stack-dispersion` is live; C361 slice 4 is on main; the C329
   first delivery landed on 11-12; C270 is in construction here): yours
   to revise when you resume.
+- [open] cloud -> laptop, 2026-11-13 UTC (13:15): BRANCH READY, SMALL AND
+  VISIBLE: `site/landing-dev-line` 8fc3468ae (one commit on main; only
+  `site/index.html` and `bin/buildSite`).  VITOR, TODAY: "a landing page
+  não está atualizada!  Já há mais componentes!"  Measured: the site IS
+  published on every push (the last run succeeded at 12:34 UTC); the four
+  hero boxes show the stable release's numbers by the rule of 2026-08-08
+  (data-inv, from v2608's own artefact): 603 components, 393 cases, 50
+  unit operations, above a primary button that opens the development
+  app, whose tree holds 696, 579 and 60.  CHANGED, WITHOUT BREAKING THAT
+  RULE: each box carries two lines from two homes: the development line's
+  count LARGE, injected at build by the size line's own step in
+  `bin/buildSite` (three keys added; the hook may sit on any element),
+  and the release's beneath in small, still a data-inv span held by
+  `check_release_identity` ("603 in Choupo-2608").  A build that cannot
+  count falls back to the release's number alone.  The third caption
+  loses "across four engines" (five in the development line, four in the
+  release).  MEASURED: the injection step run on a copy of the page gives
+  696 / 2,590 / 60 / 579, and the release numbers alone when the count is
+  missing; rendered in Chromium at 1280 and 390 px with no overflow (he
+  has the two pictures); `check_release_identity` OK.  NOT RUN:
+  `bin/buildSite` as a whole.  It changes what a visitor reads only when
+  it lands; it conflicts with nothing else I have built.  ALSO, an
+  addition of his to the scale-separation page, passed to its builder:
+  the page must return to WHY correlations are usually so simple (the
+  reduced model of each case study written as the simple law it is, with
+  the count of variables kept, and a closing section that sets those
+  laws beside the correlations a student already uses).
