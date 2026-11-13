@@ -1,0 +1,2 @@
+membrane27 HPpump: x_water 0.989600  v_mine 1.7879634944e-05  v_engine 1.7879634944e-05  rel +3.58e-12  W_hyd_mine 11866.2906 W
+membrane27 Booster: x_water 0.989298  v_mine 1.7832975231e-05  v_engine 1.7832975229e-05  rel +1.35e-10  W_hyd_mine 370.6296 W

@@ -1,0 +1,7 @@
+comp {'water': 0.820662839699, 'sucrose': 0.0118349741888, 'ethanol': 0.16725134122, 'CO2': 0.000250844892296}
+T 314.942417206 P 100000 F_mass 1.96407538805 massless {'N2', 'CO2'} w_massless 4.158e-04
+mine rho 967.075965  tau 2461.911520  published tau 2461.911520 rel -1.38e-12
+  water: {'MW': 18.015, 'Tc': 647.14, 'Pc': 220.64, 'omega': 0.3449, 'Vliq': 1.807e-05, 'VliqT': None, 'path': '<scratch>/runs/tutorials_plant_ChemicalPlantTutorial/constant/components/water.dat'}
+  sucrose: {'MW': 342.297, 'Tc': None, 'Pc': None, 'omega': None, 'Vliq': 0.0002115, 'VliqT': None, 'path': '<scratch>/runs/tutorials_plant_ChemicalPlantTutorial/constant/components/sucrose.dat'}
+  ethanol: {'MW': 46.069, 'Tc': 513.92, 'Pc': 61.48, 'omega': 0.649, 'Vliq': 5.85e-05, 'VliqT': None, 'path': '<scratch>/runs/tutorials_plant_ChemicalPlantTutorial/constant/components/ethanol.dat'}
+  CO2: {'MW': 44.01, 'Tc': 304.13, 'Pc': 73.83, 'omega': 0.225, 'Vliq': 4.7e-05, 'VliqT': None, 'path': '<scratch>/runs/tutorials_plant_ChemicalPlantTutorial/constant/components/CO2.dat'}

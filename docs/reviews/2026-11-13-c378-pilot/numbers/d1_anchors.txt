@@ -1,0 +1,12 @@
+sat T 273.16 p 612  printed 999.793  mine 999.7925  rel -4.80e-07
+sat T 276.0 p 750  printed 999.914  mine 999.9145  rel +4.54e-07
+sat T 278.0 p 863  printed 999.919  mine 999.9194  rel +4.20e-07
+sat T 298.0 p 3142  printed 997.042  mine 997.0417  rel -3.08e-07
+iso T 275.0 p 100000  printed 999.937  mine 999.9373  rel +2.61e-07
+iso T 280.0 p 100000  printed 999.91  mine 999.9104  rel +3.57e-07
+iso T 285.0 p 100000  printed 999.517  mine 999.5167  rel -3.26e-07
+iso T 372.756 p 100000  printed 958.632  mine 958.6315  rel -5.69e-07
+iso T 275.0 p 5e+07  printed 1023.62  mine 1023.6208  rel +7.89e-07
+iso T 295.0 p 5e+07  printed 1019.4  mine 1019.3951  rel -4.79e-06
+iso T 300.0 p 5e+07  printed 1017.85  mine 1017.8463  rel -3.68e-06
+iso T 370.0 p 5e+07  printed 982.351  mine 982.3511  rel +1.34e-07

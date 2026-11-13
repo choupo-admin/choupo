@@ -1,0 +1,4 @@
+omega 0.6490 T 298.15: exit 0 pump rho 888.2769 kernel 888.2769 (unit = kernel: 1.1e-12)
+omega 0.6490 T 323.15: exit 0 pump rho 866.4798 kernel 866.4798 (unit = kernel: 7.8e-14)
+omega 0.0000 T 298.15: exit 0 pump rho 888.2769 kernel 888.2769 (unit = kernel: 1.1e-12)
+omega 0.0000 T 323.15: exit 0 pump rho 869.1658 kernel 869.1658 (unit = kernel: 5.4e-13)
