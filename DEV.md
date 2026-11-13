@@ -3552,12 +3552,14 @@ accepts today, and that is a policy call.
 > checkout has no earlier verdict and runs everything, so the hosted
 > full tier and a release always do.  This is rule 4's "evidence is
 > reused while it still describes what enters main", made mechanical.
-> (2) THE FAST SET GAINS WHAT IT MISSED TODAY: the crash of the fifth
-> batch passed `--fast` (86 / 0) because no case of the set carries a
-> pure stream of a component with no vapour-pressure model; one utility
-> case on a thermal fluid and one solids case enter `tutorials/FASTSET`
-> with the fifth batch.  A subset is completed by what it fails to
-> catch.  (3) The self-test of the gates (383 s) runs its arms in a
+> (2) CORRECTION, the same night: THE FAST SET DID NOT MISS THE CRASH.
+> It holds `utility02_hitec_csp_heater`, one of the four cases that
+> crashed.  What happened is that the fast tier was never RUN on the
+> phase branch nor on the merged tree before the sweep (its builder ran
+> a scope of 48 cases; the architect went straight to the full sweep).
+> So no case is added, and the rule is the order: `--fast` runs FIRST on
+> every merged tree, and a sweep starts only when it passes; a builder
+> that touches a path every case goes through runs it too.  (3) The self-test of the gates (383 s) runs its arms in a
 > pool, as the pairs gate now does.  NOT DONE: cutting cases from the
 > full sweep; they are not where the time is.
 
