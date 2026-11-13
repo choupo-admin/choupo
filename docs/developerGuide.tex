@@ -1994,7 +1994,7 @@ places; an optimiser's \emph{objective values} (\code{chi2}, \code{rms},
 root of, the least-squares stopping tolerance); a closure \emph{residual} takes
 an absolute band computed at record time from a term of the same result block:
 $10^{-5}$ of \code{residual\_denom\_kW} for a \code{boundary} row (or
-\code{abs:1e-3} kW when none is published), $10^{-8}|Q_{kW}|$ of the unit for
+\code{abs:}$\max(10^{-3}\,\mathrm{kW},\,10^{-4}|e|)$ when none is published), $10^{-8}|Q_{kW}|$ of the unit for
 \code{H\_closure\_gap\_kW}, $10^{-9}$ of the largest pinned energy term of the
 ledger for \code{energy\_residual\_kJ}, never below $10^{-9}$.  The reason and
 the measurement of each class are in the table itself.  A row that still

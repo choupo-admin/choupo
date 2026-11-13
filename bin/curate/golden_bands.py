@@ -23,7 +23,7 @@ computed at record time from the TERM the same result block publishes:
 
   boundary global residual_kW   1e-5 x `residual_denom_kW` of `globalEnergyBoundary`
                                 (published only when `residual_pct_available`);
-                                with none published: abs:1e-3 kW
+                                with none published: abs:max(1e-3 kW, 1e-4 x |expected|)
   kpi <unit> H_closure_gap_kW   1e-8 x |Q_kW| of the same unit
   kpi <ledger> energy_residual_kJ   1e-9 x the largest pinned energy term of
                                 that ledger (campaign: energy_dH_vessels_kJ,
@@ -161,14 +161,23 @@ def term_for(cls, name, key, gv, block):
     raise SystemExit(f"golden_bands: no term rule for class {cls.name}")
 
 
-def prescribed(cls, kind, name, key, gv, block):
+def prescribed(cls, kind, name, key, gv, block, expected=None):
     """The tolerance string the class prescribes, or (None, why) when it cannot be computed."""
     if cls.rule == "rel":
         return f"{cls.param:g}", None
     term, why = term_for(cls, name, key, gv, block)
     if term is None:
         if cls.name == "residual_boundary":
-            return f"abs:{BOUNDARY_NO_DENOM_KW:g}", None
+            #  No denominator is published.  The floor is 1e-3 kW, but never
+            #  tighter than the 1e-4 relative band the row has always carried:
+            #  flash20's residual of 42.86 kW differs by 4.3e-3 kW between two
+            #  runs on ONE platform (9.99e-5 relative), so abs:1e-3 would turn a
+            #  row that passed into a red one (C384, measured).
+            try:
+                big = 1e-4 * abs(float(expected))
+            except (TypeError, ValueError):
+                big = 0.0
+            return "abs:" + fmt(max(BOUNDARY_NO_DENOM_KW, big)), None
         return None, why
     return "abs:" + fmt(max(FLOOR, cls.param * term)), None
 
@@ -187,7 +196,7 @@ def apply_text(text, block=None):
         cls = classify(kind, name, key)
         if cls is None:
             continue
-        want, why = prescribed(cls, kind, name, key, gv, block)
+        want, why = prescribed(cls, kind, name, key, gv, block, toks[3][0])
         if want is None:
             skipped.append((kind, name, key, why))
             continue

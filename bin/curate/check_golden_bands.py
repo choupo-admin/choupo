@@ -100,7 +100,7 @@ def check_text(text, label, block=None):
         if v < gb.FLOOR * (1 - 1e-9):
             bad.append(f"{row}: absolute band {v:g} is below the 1e-9 floor")
             continue
-        want, why = gb.prescribed(cls, kind, name, key, gv, block)
+        want, why = gb.prescribed(cls, kind, name, key, gv, block, toks[3][0])
         term_known = want is not None and not (cls.name == "residual_boundary"
                                                and gb.boundary_denominator(block) is None)
         if not term_known:

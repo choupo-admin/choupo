@@ -121,7 +121,7 @@
 #    condition number   rel 2.0   (cond_JtJ)
 #    optimiser objective values   rel 1e-2   (chi2 family, rms, bubble_*, relErr_*, lle_*, ...)
 #    fitted parameters  rel 5e-2  (A, B, C, dHvap, param_*)
-#    closure residual   abs:<v>   (boundary residual_kW: 1e-5 x residual_denom_kW, or 1e-3 kW with
+#    closure residual   abs:<v>   (boundary residual_kW: 1e-5 x residual_denom_kW, or max(1e-3 kW, 1e-4 x |value|) with
 #                       none published; kpi H_closure_gap_kW: 1e-8 x |Q_kW| of the unit; kpi
 #                       energy_residual_kJ: 1e-9 x the largest pinned energy term; never below 1e-9)
 #  Each class carries its measured reason in the table.
