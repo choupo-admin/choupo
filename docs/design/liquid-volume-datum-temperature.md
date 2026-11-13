@@ -1,13 +1,15 @@
 # The temperature of a liquid-volume datum (C378, TR-12)
 
-Kind: ADR.  Status: OPEN -- the grammar is proposed here and nothing is built; no
-record, no engine file and no case changed.  Tree read: `origin/main` 3e6c37270.
+Kind: ADR.  Status: BUILT (2026-11-13, branch `c378-vliqT`; section 7 says what
+was done and what was not).  Proposed on `origin/main` 3e6c37270.
 Evidence: [`data/curation/batches/vliq_datum_temperature/`](../../data/curation/batches/vliq_datum_temperature/README.md)
 (`evidence.tsv` one row per record; the scripts that re-derive it).  It closes the
 class that
 [`thermophysical-slice0-plan.md`](thermophysical-slice0-plan.md) section 1.7 and
 [`thermophysical-property-routes.md`](thermophysical-property-routes.md) row TR-12
-named, and widens it: the census finds 21 records of one kind, not 17.
+named, and widens it: the census finds 21 records of one kind, not 17 -- 20 that gain
+`VliqT`, and sucrose, the 21st, whose `Vliq` is not a pure-liquid volume and is not
+this slice's (section 4).
 
 ## 0. The architect's ruling on this evidence (2026-11-13)
 
@@ -24,7 +26,8 @@ named, and widens it: the census finds 21 records of one kind, not 17.
    entered into any record.  Where a better datum is wanted later it comes
    from a primary measurement or from a reference equation the engine
    already carries (N2, CH4, CO2, water), origin word `derived`.
-3. **TWENTY-ONE RECORDS, not seventeen** (Cl2, H2S, SO2 and nButane store a
+3. **TWENTY-ONE RECORDS, not seventeen: twenty gain `VliqT`, the twenty-first is
+   sucrose (section 4)** (Cl2, H2S, SO2 and nButane store a
    boiling-point volume and say nothing), and six UNRESOLVED (propane,
    propylene, H2O2, HCHO, HCN, NO2): those six are pinned by name as known
    debt until a measured liquid density with its temperature is read for
@@ -52,7 +55,7 @@ its number belongs to another temperature, so it is silently read as if it were 
 | another stated T | CO2 (273 K), hitecSalt (465 K) | the reference equation gives 47.45 cm3/mol at 273.15 K against 47.0 stored; Janz & Tomkins, 1.941 g/cm3 at 470 K |
 | no T, Tc < 298.15 K | Ar, He, O3, ethylene | also a volume at Tb (within 1.5 %) |
 | no T, Tc 298-330 K | ethane, acetylene, N2O, HCl | also a volume at Tb (within 0.7 %) |
-| found here: no T, Tc far above 298 K | Cl2, H2S, SO2, nButane | a volume at Tb or near it; the engine's 25 C density is +13 %, +19 %, +7 %, +4 % |
+| found here: no T, Tc far above 298 K | Cl2, H2S, SO2, nButane | a volume at Tb or near it; the engine's 25 C density was +13 %, +19 %, +7 %, +4 % above a handbook value carried to 25 C; the correction's own change of the engine's 25 C density (former over new, measured on the branch) is +11.38 %, +21.32 %, +6.71 %, +5.06 % (review VT-03).  n-butane's stored volume equals the measured saturated volume at 269.92 K, 2.7 K below Tb (VT-04) |
 | not a pure-liquid volume | sucrose | an apparent molar volume in solution, no T, no source |
 | unresolved, no source in hand | propane, propylene, H2O2, HCHO, HCN, NO2 | listed in `evidence.tsv`, class A7 |
 
@@ -207,3 +210,43 @@ only those; the full sweep is not warranted by this reach.
    the moved rows listed.  Documentation (Theory Guide section, the Tutorials Guide, `docs/ai`) in the
    same slice, per rule 4d.
 4. The solution record for sucrose and glucose (with the routes study).
+
+## 7. What was built (2026-11-13)
+
+* **Grammar.**  `VliqT` (kelvin) beside `Vliq`, read by `Component::readVliqT`
+  at both sites that read `Vliq`; absent = 298.15 K.  Refused at load, by name:
+  `VliqT` without `Vliq`; `VliqT` at or above `Tc`.  A local or overlay record
+  that writes its own `Vliq` and no `VliqT` does not inherit the base record's
+  `VliqT` (`Database.cpp`).
+* **The anchor.**  `ThermoPackage::liquidMolarVolumeOf` anchors Rackett at
+  `c.VliqT()`; a record that states it is announced once with its temperature;
+  the door's label names the datum's temperature ("each component's molar
+  volume at 111.66 K scaled to temperature by Rackett").  A request at `T >= Tc`
+  is refused as before.  `liquidMolarVolumeOf` is now public.
+* **The other readers** -- each decided, and only the ones whose present read is
+  wrong for a `VliqT` record changed: the solubility parameter asks the volume at
+  its own T; Hansen's volume-fraction rule at the triples' Tref; Wilson refuses a
+  parametrised pair over a record whose `VliqT` is not 298.15 K (no catalogue
+  Wilson pair names one); Wilke-Chang keeps the stored datum (the correlation
+  wants the volume at Tb, which these records store); the Poynting factor keeps
+  its constant-volume form; the seven unit-level flat reads (ratchet debt) are
+  unchanged and read the datum at whatever temperature it belongs to.  A record
+  without `VliqT` gives the same bits in every reader.  (This departs from
+  section 3's "298.15 K for Poynting, Wilson and Hansen, Tb for Wilke-Chang" for
+  Poynting and Wilson: the Poynting factor is evaluated at the system
+  temperature, where a volume at 25 C is no better a constant than the stored
+  one, and a cryogen has no liquid at 25 C to give it; Wilson refuses rather
+  than mixing the two temperatures in one ratio.)
+* **Records.**  Twenty records carry `VliqT` with a line saying how it was
+  established, no value changed: CH4, CO, H2, N2, NO, O2 (their own "at Tb");
+  CO2 273.15 K and hitecSalt 465 K (their own statement); Ar, He, O3, ethylene,
+  ethane, acetylene, N2O, HCl, Cl2, H2S, SO2, nButane (`Tb`, from this batch).
+  The census's "21" counted sucrose, which is not this slice.  The six
+  unresolved are pinned in `bin/curate/vliq_datum_debt.tsv`, read by the gate
+  `check_vliq_datum`.
+* **Reach measured.**  The property-route bench moved 24 blocks (the commit
+  lists them).  No shipped case row moved: every case names these records
+  through a sealed copy, and even with `VliqT` written into those copies no
+  pinned row moved (`docs/reviews/2026-11-13-c378-vliqT-moved-rows.md`).
+  Section 5's expected moves did not occur.
+

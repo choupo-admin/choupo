@@ -1238,7 +1238,7 @@ export function ExploreWorkspace() {
     //  miscible in all proportions); and the sources and limits live in
     //  the Details below, not on the figure.  The old caption also said
     //  Hansen "is not implemented", false on the engine and true on the
-    //  data: SolubilityParameter.cpp:168 reads `hansen { dD; dP; dH; }`,
+    //  data: SolubilityParameter.cpp:180 reads `hansen { dD; dP; dH; }`,
     //  :315-410 draws the Teas coordinates with a sum-rule check (gate
     //  check_hansen_teas), and no standards record carries the block.
     ? `Cohesion of the pure liquids -- Hildebrand parameter delta at ${fixedT.toFixed(2)} K.  `

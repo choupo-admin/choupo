@@ -417,7 +417,15 @@ def _glossary() -> str:
     return """## Field glossary (what each block on a component means)
 
 - `MW`, `Tc`, `Pc`, `omega`, `Tb`, `Hvap_Tb` — universal pure-compound (axiom 1).
-- `Vliq` — liquid molar volume (apparent for solutes).
+- `Vliq` — liquid molar volume (apparent for solutes), m^3/mol.
+- `VliqT` — the temperature `Vliq` belongs to, in K (absent = 298.15 K).
+  Write it whenever the measured volume is not a 25 C value (a gas's
+  volume at its normal boiling point: N2, CH4; CO2 at 273.15 K); the
+  liquid density then anchors Rackett there, V(T) = Vliq Rackett(T) /
+  Rackett(VliqT).  Read as a temperature (another dimension is refused);
+  refused at load without `Vliq`, at or above `Tc`, or below the record's
+  `triplePoint.T`.
+  Twenty catalogue records carry it (C378); gate `check_vliq_datum`.
 - `Antoine { ... }` — `log10(Psat [bar]) = A − B/(T + C)` for VLE (a
   coefficient checked or fitted on ln is off by ln 10; the engine is
   log10, src/thermo/vaporPressure/Antoine.cpp).

@@ -45,7 +45,7 @@ scalar WilkeChang::diffusivityLiquidBinary(const Component& solute,
     const scalar Mb    = solvent.MW();                       // g/mol
     const scalar etaB  = muSolvent_PaS * 1.0e3;              // Pa·s -> cP
     { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Wilke-Chang liquid diffusivity", "the solute volume V_A, which the correlation defines at the normal boiling point"); }
-    const scalar Va_m3 = solute.Vliq();                      // m³/mol
+    const scalar Va_m3 = solute.Vliq();  // m³/mol, as stored: the correlation's V_A is at Tb, where the C378 `VliqT` records' datum is
     if (Va_m3 <= 0.0)
         throw std::runtime_error("WilkeChang: solute '" + solute.name()
             + "' has no Vliq (solute molar volume) in its.dat.");

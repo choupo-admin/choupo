@@ -92,6 +92,13 @@ struct Result
     Quality           quality;
 };
 
+//  The components of `x` (mole fraction > 0) whose record states the
+//  temperature of its `Vliq` (`VliqT`, C378), as "CH4 at 111.66 K" -- what a
+//  unit that reads the stored volume itself hands to
+//  liquidSource::labelAtDatum so its table line says the datum's
+//  temperature.  Empty when none does.
+std::vector<std::string> statedDatumTemperatures(const ThermoPackage& thermo, const sVector& x);
+
 //  Evaluate through the package.  `who` (when given) records the use;
 //  `leftOut` names components the CALLER left out of `x` (pricedDensity).
 Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K, scalar P_Pa,

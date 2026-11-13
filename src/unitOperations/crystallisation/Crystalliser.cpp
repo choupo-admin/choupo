@@ -28,6 +28,7 @@ License
 
 #include "Crystalliser.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "streams/PsdOnGrid.H"
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "CrystallisationHeat.H"
@@ -520,7 +521,7 @@ int Crystalliser::solveMSMPR(const DictPtr& dict,
         char b[64];
         std::snprintf(b, sizeof(b), "%.3g", static_cast<double>(xZero));
         PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero,
-            zeroed.empty() ? std::string()
+            liquidProperty::statedDatumTemperatures(thermo, z), zeroed.empty() ? std::string()
                            : "; taken at zero volume here: " + zeroed + ", mole fraction "
                              + b + " of the liquor",
             "bypass", took(Q / (F * 1000.0)), "not applied");
@@ -832,7 +833,7 @@ int Crystalliser::solveDiscretizedPBE(const DictPtr& dict,
         char b[64];
         std::snprintf(b, sizeof(b), "%.3g", static_cast<double>(xZero));
         PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqSilentZero,
-            zeroed.empty() ? std::string()
+            liquidProperty::statedDatumTemperatures(thermo, z), zeroed.empty() ? std::string()
                            : "; taken at zero volume here: " + zeroed + ", mole fraction "
                              + b + " of the liquor",
             "bypass", took(Q / (F * 1000.0)), "not applied");

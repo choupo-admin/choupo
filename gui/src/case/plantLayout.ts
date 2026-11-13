@@ -105,6 +105,7 @@ License
 
 import type {
   PlantLayout, LayoutAccess, LayoutItem, LayoutPipe, LayoutPortInfo, LayoutRoad,
+  LayoutUtilityLine,
 } from "../adapters/SolverAdapter.js";
 import { bankProblems, type MembraneBank } from "./membraneBank.js";
 
@@ -218,6 +219,57 @@ export interface ScenePipe {
   /** Drawing radius (m) and particle speed (m/s): stylised, monotone in flow. */
   radius: number;
   speed: number;
+  tooltip: string[];
+}
+
+/** A utility line's SERVICE: the word the engine publishes, the sentence a
+ *  legend and a tooltip say, and the colour it is drawn in.  The colour is
+ *  one channel of two (the WORD is the other, and a line's name is in every
+ *  tooltip and in the register), so nothing rests on colour alone.  Cooling
+ *  water takes the cyan the flowsheet canvas already gives a COOLING duty
+ *  (toGraph.ts), the flare header the orange it gives HEAT (a hot, ignitable
+ *  gas); refrigerant is the one new colour, because nothing on the canvas
+ *  means it.  Supply and return of one family share a colour: the words tell
+ *  them apart. */
+export const UTILITY_COLOURS: Record<string, number> = {
+  coolingWater: 0x22b8cf,
+  refrigerant:  0x7048e8,
+  flare:        0xe8590c,
+};
+export const UTILITY_FALLBACK_COLOUR = 0x868e96;
+export const UTILITY_WORDS: Record<string, string> = {
+  coolingWaterSupply: "cooling water, supply",
+  coolingWaterReturn: "cooling water, return",
+  refrigerantSupply:  "refrigerant, supply",
+  refrigerantReturn:  "refrigerant, return",
+  flareHeader:        "flare header",
+};
+export const UTILITY_FAMILY_WORDS: Record<string, string> = {
+  coolingWater: "cooling water",
+  refrigerant:  "refrigerant",
+  flare:        "flare header",
+};
+export const utilityColour = (family: string): number =>
+  UTILITY_COLOURS[family] ?? UTILITY_FALLBACK_COLOUR;
+export const utilityCss = (family: string): string =>
+  `#${utilityColour(family).toString(16).padStart(6, "0")}`;
+export const utilityWord = (service: string): string => UTILITY_WORDS[service] ?? service;
+
+/** The tube radius a utility line is drawn with (m): thin and constant,
+ *  because no utility line is sized and a thickness would claim a size. */
+export const UTILITY_RADIUS = 0.12;
+
+/** One declared utility line, in three.js coordinates, in the direction of
+ *  flow.  Everything but the mapping is the engine's, carried. */
+export interface SceneUtilityLine {
+  id: string;
+  name: string;
+  service: string;
+  family: string;
+  colour: number;
+  points: Vec3[];
+  length: number;
+  radius: number;
   tooltip: string[];
 }
 
@@ -426,6 +478,8 @@ export interface LayoutScene {
   links: SceneLink[];
   wind: SceneWind | null;
   pipes: ScenePipe[];
+  /** DEV.md 4c C268 slice 2; empty when the case declares none. */
+  utilityLines: SceneUtilityLine[];
   junctions: SceneJunction[];
   rack: SceneRack | null;
   /** Bounding box of everything drawn, for the ground grid. */
@@ -522,6 +576,24 @@ export function pipeId(p: LayoutPipe): string {
 
 /** Portal spacing of the drawn rack (m): a drawing convention, not data. */
 export const RACK_PORTAL_SPACING = 6;
+
+function utilityLineOf(u: LayoutUtilityLine): SceneUtilityLine {
+  const lines = [
+    `${u.name}: ${utilityWord(u.service)}`,
+    `${endName(u.fromKind, u.from)} → ${endName(u.toKind, u.to)}`,
+    `length ${u.length.toFixed(1)} m, rack tier ${u.tier + 1}, ${u.sizeState}`,
+  ];
+  if (u.utilityFlow !== undefined && Number.isFinite(u.utilityFlow))
+    lines.push(`carries ${u.utilityFlow.toPrecision(4)} kg/s (${u.carries ?? ""})`);
+  lines.push(u.sizeNote);
+  lines.push(`why: ${u.reason}`);
+  return {
+    id: u.id, name: u.name, service: u.service, family: u.family,
+    colour: utilityColour(u.family),
+    points: u.route.map(([x, y, z]) => toThree(x, y, z)),
+    length: u.length, radius: UTILITY_RADIUS, tooltip: lines,
+  };
+}
 
 function pipeOf(p: LayoutPipe): ScenePipe {
   const phase = phaseOf(p.vf);
@@ -826,13 +898,15 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
 
   //  The pipes, the junctions and the rack, as the engine routed them.
   const pipes = (layout.pipes ?? []).map(pipeOf);
+  const utilityLines = (layout.utilityLines ?? []).map(utilityLineOf);
   const junctions: SceneJunction[] = (layout.junctions ?? []).map((j) => ({
     unit: j.unit, at: toThree(j.x, j.y, j.z), label: `${j.unit} (${j.type})`,
   }));
   let rack: SceneRack | null = null;
   const k = layout.pipeRack;
-  if (k && pipes.length > 0) {
-    const lanes = (layout.pipes ?? []).map((p) => p.lane).filter((l) => l >= 0);
+  if (k && (pipes.length > 0 || utilityLines.length > 0)) {
+    const lanes = [...(layout.pipes ?? []), ...(layout.utilityLines ?? [])]
+      .map((p) => p.lane).filter((l) => l >= 0);
     const nTiers = lanes.length ? Math.floor(Math.max(...lanes) / k.lanesPerTier) + 1 : 1;
     const portals = rackPortals(k.xStart, k.xEnd, layout.rackCrossings ?? []);
     rack = {
@@ -846,6 +920,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     grow([rack.x1, 0, rack.zc + rack.halfWidth]);
   }
   for (const p of pipes) for (const q of p.points) grow(q);
+  for (const p of utilityLines) for (const q of p.points) grow(q);
 
   //  The roads (C90), as the engine checked them.
   const roads = roadsOf(layout);
@@ -902,6 +977,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
     fit([x.center[0] + x.size[0] / 2, x.center[1] + x.size[1] / 2, x.center[2] + x.size[2] / 2]);
   }
   for (const p of pipes) for (const q of p.points) fit(q);
+  for (const p of utilityLines) for (const q of p.points) fit(q);
   for (const j of junctions) fit(j.at);
   //  The roads (C90) join the site to the plant: a site whose roads the case
   //  declared is framed with them, so the gate and the buildings they serve
@@ -937,7 +1013,7 @@ export function layoutScene(layout: PlantLayout | undefined): LayoutScene | null
   const windsocks = windsocksOf(layout);
   return { solids, fence, bunds, crossings, unrouted, unroutedListed, roads, barriers, approaches, truckRoutes, carParks,
            turningAreas, windsocks, zones, areas, plot, links, wind, pipes,
-           junctions, rack, min, max, fitMin, fitMax };
+           utilityLines, junctions, rack, min, max, fitMin, fitMax };
 }
 
 //  ---- secondary containment: drawing bookkeeping only (DEV.md 4c C134) ----

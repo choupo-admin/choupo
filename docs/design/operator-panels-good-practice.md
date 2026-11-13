@@ -202,7 +202,16 @@ the EEMUA guide as the sources of their own wording (for every rule above
 that cites them, the rule is now read elsewhere; what those texts say beyond
 it is unread), and ISO 11064.
 
-## 7. Findings about the landed S1 slice (reported, not fixed)
+## 7. Findings about the landed S1 slice (reported here; four since fixed)
+
+Findings 1, 2, 3 and 5 were fixed on 2026-11-13 (the review notes on S1):
+the record's header names the built slices and `bin/curate/check_panel.py`;
+`alarmsActive` also publishes the first instant any alarm is active, the
+number of written instants with one active and those periods as intervals
+(the per-instant count stays unpublished, derivable from each element's
+intervals); the `sameQuantityAlarms` id names the first of its elements; and
+the log and this page no longer write the maximum's instant as "first at".
+They are kept below as they were found.
 
 1. The record's header still reads "CONTRACT, not built" and names the gate
    `check_operator_panel` "(proposed)"; S1 has landed and the gate is

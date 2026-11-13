@@ -3476,6 +3476,38 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **THE SECOND BATCH OF 2026-11-13 IS ON MAIN (d329618ec).**  FOUR BRANCHES
+> AND ONE TOOL FIX, validated together.  (1) C378, `VliqT`: a record's
+> liquid molar volume belongs to a stated temperature (20 records; the
+> correction assigns a temperature and replaces no value); the reader
+> checks the dimension and refuses a datum below the record's triple
+> point (review VT-01, VT-02); the one label function and the unit tags
+> say the datum.  WHAT MOVED: 24 value blocks and 23 label blocks of the
+> route bench, each listed in the branch's commits; NO case golden,
+> because a sealed case carries its own copy of each record and those
+> copies do not yet state a `VliqT` (refreshing them moves rows and is its
+> own listed act).  Propane, propylene and acetylene stay pinned for a
+> commit of their own, by measurement.  (2) C268 slice 2: the reference
+> plant's thirteen utility lines, routed (2063 m), 77 golden rows added
+> to its `expected`, whose 14 `source` rows from the door were kept.  (3)
+> The reviewing session's EduTool on fluidised beds and its six notes on
+> the operator panel.  (4) The render harness kills its browser on every
+> exit it can see and reaps at launch what a killed run left: seven
+> orphaned browsers, one spinning three cores for four hours, had kept
+> every build of the night waiting on the load.  ONE REAL CONFLICT, in
+> the header of the property-source log, between the datum label and the
+> three ion-diffusivity tags of DX-01: both kept.  VALIDATION, SIZED BY
+> REACH, NO FULL SWEEP: the result emitter's new block is written only
+> when a case declares utility lines (one case), and a record without
+> `VliqT` reads byte for byte as before (the route bench holds that for
+> the whole catalogue, bit for bit).  Run on the merged tree: the build;
+> --scope over tutorials/plant, tutorials/batch/plant, the
+> electrodialysis cases and economics04 (every case with a plot plan or
+> a panel), 26 PASS / 0 FAIL with the conservation gates of that pass;
+> --fast 85 PASS / 0 FAIL; --gui 47 PASS / 0 FAIL; the route bench, the datum gate, the
+> ratchet, the witnesses, the pinned sources, the panel and layout
+> gates.  NOT DONE: a WebAssembly rebuild; a look in a browser.
+
 > **C378 SLICE 0 IS ON MAIN (2026-11-13, fcc9e17f2).**  THE DOOR, with what
 > rode in its batch: C376's announcement of estimated aqueous data, the
 > case corrections of the solids and pharma reviews (ledger SC-01/02/08,

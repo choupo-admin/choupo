@@ -1662,6 +1662,25 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   inside the footprint, below the item's top) is ANNOUNCED as `pipeClash`,
   by name -- move the item or give the pipe waypoints.  No pressure drop and
   no cost yet.
+* UTILITY LINES (C268 slice 2): a utility is not a flowsheet stream, so the
+  engine routes nothing for one; the case DECLARES each line in `utilityLines`
+  (`name; service; from; to; [fromPort {}] [toPort {}]; [carries { unit; utility; }];
+  reason`), `service` one of `coolingWaterSupply`, `coolingWaterReturn`,
+  `refrigerantSupply`, `refrigerantReturn`, `flareHeader`, `from` and `to`
+  PLACED items, the flow running from `from` to `to`.  The engine routes the line
+  on the SAME rack by the same rule as a process pipe, on a tier ABOVE every
+  process pipe's (no process route moves; one tier per service family, a supply
+  beside its return), its two ends on ports of their items (the top unless a
+  face is declared; several lines on one item are spread across its cross
+  extent).  EVERY LINE IS UNSIZED and published `sizeState unsized`: no process
+  pipe is sized either.  `carries` names a unit and a utility; the engine reads
+  that row of the run's utility allocation (kg/s) as `utilityFlow` and refuses a
+  row the run does not carry.  Refused by name: an unknown service, a name
+  twice, `from` equal `to`, an item not placed, a face that is not one, an
+  `elevation` off the item.  Findings (each a draft to move): `utilityClash`,
+  `utilityCrossesRoad`, `utilityThroughBund`, `utilityNotRouted` (an end
+  indoors).  Published under `layout.utilityLines`, beside the pipes, only when
+  declared.  Witness: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
   envelope of every declared sector area, every placed footprint, every
   routed pipe and (C97) every room of a declared `building {}`, grown on
@@ -1979,7 +1998,8 @@ elements
         name        overLimiting;                   // unique word
         title       "Limiting current";
         kind        lamp;                           // number | bar | trend | lamp
-        measurement { unit rig;  cv i_over_ilim; }  // or { controller C; cv SP|PV|MV; }
+        measurement { unit rig;  cv i_over_ilim;    // or { controller C; cv SP|PV|MV; }
+                      cvUnit "-"; }                 // optional: the column's unit, as text
         range       { min 0;  max 2.5; }            // required for bar and lamp
         limit       { high 1;                       // low and/or high
                       source "the unit's own film model";
@@ -2005,6 +2025,14 @@ messages ( { name overLimiting; from overLimiting; on high; text "..."; }
   is published in (`_V`, `_A_per_m2`, `_S_per_m` in the column name); a named
   unit (`313.15 K`) is converted to SI.  The engine cannot check the dimension:
   no trajectory column declares one.
+* The column's UNIT, published on the element as `unit`: the writer's where
+  the column is its own (`t` s, `<vessel>.T` K, `<vessel>.n_<component>` kmol;
+  `unitFrom engine`), else the case's `measurement { cvUnit "..."; }` (free
+  text, read from the unit's own source, `"-"` for dimensionless;
+  `unitFrom declared`), else none -- never guessed from the key's name.  A
+  `cvUnit` that differs from the writer's is published beside it as
+  `unitDeclared` with the fact `unitDiffers`.  `cvUnit` is refused on a
+  `reference` and when empty.
 * REFUSED by name, with the remedy: an unknown key (with a suggestion), an
   unknown `kind`, an element with no `reason`, a `limit` with neither end or
   without `source` or `reason`, an `alarm` without a `limit` or an `action`, a
@@ -2015,12 +2043,20 @@ messages ( { name overLimiting; from overLimiting; on high; text "..."; }
   lines in the log, golden kind `panel`): `notPublished`; `constant` (the
   series moved by no more than 1e-8 relative over the run); `outOfRange`;
   `limitOutsideRange`; `violated` / `neverViolated` / `alwaysViolated` (k of n
-  written instants beyond the limit, first and last instant);
+  written instants beyond the limit, first and last instant; the periods are
+  the element's `limitIntervals`, published for EVERY element with a limit,
+  alarm or not, apart from the alarm's own `intervals`, which apply the
+  `delay`);
   `neverApproached` (no violation and the closest approach over 0.5 of the
   range; 0.5 is a default of the design record, not taken from a standard);
-  `controllerWithoutElement`; `sameQuantityAlarms` (same column; two series
-  that are functions of each other are not detected); `alarmsActive` (the
-  maximum number active at once, with the `delay` applied on the write grid);
+  `controllerWithoutElement`; `unitDiffers` (the case's `cvUnit` is not the
+  writer's unit); `sameQuantityAlarms` (same column, id
+  `sameQuantityAlarms:<first element>` with the column as a word; two series
+  that are functions of each other are not detected); `alarmsActive` (with the
+  `delay` applied on the write grid: `max` active at once and `at`, the first
+  instant that maximum is reached; `first`, the first instant ANY alarm is
+  active; `count`, the written instants with at least one active; and those
+  periods as `intervals`);
   `message:<name>` (whether it fires and the first instant).  Every crossing is
   resolved to the WRITE GRID (`writeInterval`): an excursion shorter than one
   interval is missed.  `draftDiffers` is not built (it needs the draft tool).

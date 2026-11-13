@@ -56,10 +56,11 @@ import { guideUrl, openGuide } from "../help/guideLinks.js";
 import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 
 import type { PlantLayout } from "../adapters/SolverAdapter.js";
-import { phaseCss, PHASE_WORDS } from "../case/plantLayout.js";
+import { phaseCss, PHASE_WORDS, utilityCss } from "../case/plantLayout.js";
 import {
   FINDINGS_CAPTION, findingRows, itemRows, layoutNotes, LEGEND_CONTROLS, LEGEND_PHASES,
   LEGEND_PIPES, LEGEND_SHAPES, PARTICLE_WORD, PIPE_REGISTER_CAPTION, pipeRegister,
+  UTILITY_REGISTER_CAPTION, utilityRegister,
   FENCE_CAPTION, fenceSummary, PLOT_CAPTION, plotSummary, ROADS_CAPTION, roadSummary,
   BUNDS_CAPTION, bundSummary, DESIGN_GUIDE_CONTAINMENT,
 } from "../case/layoutTables.js";
@@ -187,6 +188,59 @@ export function PipeRegister({ layout }: { layout: PlantLayout }) {
         </Text>
       )}
     </>
+  );
+}
+
+/** UTILITY LINES (DEV.md 4c C268 slice 2): one row per declared line, the
+ *  service in words beside its swatch (colour is never the only channel). */
+export function UtilityRegister({ layout }: { layout: PlantLayout }) {
+  const reg = utilityRegister(layout);
+  if (!reg) return null;
+  return (
+    <ScrollArea type="auto" mt="xs">
+      <Group gap="md" wrap="wrap" mb={4}>
+        {reg.families.map((f) => (
+          <Group key={f.family} gap={4} wrap="nowrap">
+            <span aria-hidden style={{ display: "inline-block", width: 14, height: 6,
+              borderRadius: 3, background: utilityCss(f.family) }} />
+            <Text size="xs">{f.word}</Text>
+          </Group>
+        ))}
+      </Group>
+      <Table striped withTableBorder fz="xs" ff="monospace" miw={860} captionSide="top">
+        <Table.Caption style={{ textAlign: "left" }}>{UTILITY_REGISTER_CAPTION}</Table.Caption>
+        <Table.Thead><Table.Tr>
+          <Table.Th>Line</Table.Th>
+          <Table.Th>Service</Table.Th>
+          <Table.Th>From → to</Table.Th>
+          <Table.Th ta="right">Rack tier</Table.Th>
+          <Table.Th ta="right">Flow (kg/s)</Table.Th>
+          <Table.Th>Size</Table.Th>
+          <Table.Th ta="right">Length (m)</Table.Th>
+        </Table.Tr></Table.Thead>
+        <Table.Tbody>
+          {reg.rows.map((r) => (
+            <Table.Tr key={r.id}>
+              <Table.Td>{r.name}</Table.Td>
+              <Table.Td>
+                <span aria-hidden style={{ display: "inline-block", width: 10, height: 6,
+                  borderRadius: 3, marginRight: 4, background: utilityCss(r.family) }} />
+                {r.service}
+              </Table.Td>
+              <Table.Td>{r.ends}</Table.Td>
+              <Table.Td ta="right">{r.tier}</Table.Td>
+              <Table.Td ta="right">{r.flow}</Table.Td>
+              <Table.Td>{r.size}</Table.Td>
+              <Table.Td ta="right">{r.length}</Table.Td>
+            </Table.Tr>
+          ))}
+          <Table.Tr>
+            <Table.Td colSpan={6} ta="right">{reg.total.label}</Table.Td>
+            <Table.Td ta="right">{reg.total.length}</Table.Td>
+          </Table.Tr>
+        </Table.Tbody>
+      </Table>
+    </ScrollArea>
   );
 }
 
@@ -426,6 +480,7 @@ export function PlantLayoutTables({ layout, sectioned = false }: {
     </>
   );
   const nPipes = layout.pipes?.length ?? 0;
+  const nUtility = layout.utilityLines?.length ?? 0;
   return (
     <>
       {wrap("plot", !!layout.plot,
@@ -437,8 +492,9 @@ export function PlantLayoutTables({ layout, sectioned = false }: {
             layout.roadNetwork ? `${layout.roadNetwork.length.toFixed(0)} m,`
               + ` ${layout.roadNetwork.pavedArea.toFixed(0)} m² paved` : undefined)}
       {wrap("findings", !!findingsTable, findingsTable, `${findings.length}`)}
-      {wrap("pipes", nPipes > 0 || (layout.notRouted?.length ?? 0) > 0,
-            <PipeRegister layout={layout} />, `${nPipes} routed`)}
+      {wrap("pipes", nPipes > 0 || (layout.notRouted?.length ?? 0) > 0 || nUtility > 0,
+            <><PipeRegister layout={layout} /><UtilityRegister layout={layout} /></>,
+            `${nPipes} routed` + (nUtility > 0 ? `, ${nUtility} utility lines` : ""))}
       {wrap("items", true, itemsTable, `${layout.items.length} placed`)}
     </>
   );

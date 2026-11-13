@@ -28,6 +28,7 @@ License
 
 #include "Pump.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "solver/NewtonRaphson.H"
 #include "core/Advisory.H"
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE inlet-phase reading
@@ -327,6 +328,7 @@ int Pump::solve(const DictPtr& dict,
     if (v_mix > 0.0)
         PropertySourceLog::instance().useHere("liquidDensity", x_ions > 0.0
             ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
+            liquidProperty::statedDatumTemperatures(thermo, x), "",
             "bypass", took(rho, T_in, P_in, compositionKey(x)), "not applied");
 
     if (verbosity >= 2)

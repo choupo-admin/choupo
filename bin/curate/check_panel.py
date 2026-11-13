@@ -28,14 +28,23 @@ names the risk it holds:
       neither end, an alarm with no limit / no action, a delay with no unit,
       a bar with no range, a placement outside the grid / on a held cell / with
       no grid, a duplicate name, a message naming no element, an empty panel,
-      a lock with no reason, a `reference` on a lamp.
+      a lock with no reason, a `reference` on a lamp, a `cvUnit` on a
+      `reference`, an empty `cvUnit`.
   (d) EVERY FACT, on a fixture built to trigger it, and RECOMPUTED HERE from
       trajectory.csv (an independent reader of the same file): notPublished,
       constant, outOfRange, limitOutsideRange, violated (k of n, first, last),
       neverViolated, alwaysViolated, neverApproached (closest approach over 0.5
       of the range), controllerWithoutElement, sameQuantityAlarms, alarmsActive
-      (with a delay applied on the write grid), a message that fires and one
-      that never does; and the panel reaches all three surfaces: the `[panel]`
+      (with a delay applied on the write grid; its maximum and first instant,
+      the first instant ANY alarm is active, how many written instants carry
+      one and those periods as intervals), a message that fires and one
+      that never does; the limit-violation periods (`limitIntervals`) of every
+      element with a limit, alarm or not, apart from the alarm's `intervals`;
+      the `sameQuantityAlarms` id naming an element; the unit of a column
+      (the writer's where it knows it, else the case's `cvUnit`, else none,
+      never guessed from the key; a disagreement published with a fact); the alarmsActive and
+      violated log lines not reading the maximum's instant as a start; and
+      the panel reaches all three surfaces: the `[panel]`
       log lines, the `panel` JSON block, and the golden `panel` kind (the
       witness's `expected` carries its rows).
   (e) THE OTHER BINARIES REFUSE the file by name: choupoSolve, choupoProps,
@@ -291,6 +300,11 @@ REFUSALS = [
     ("lock without reason",
      panel(el(), head='lock { by "me"; date "2026-11-12"; }'),
      "`lock` has no `reason`"),
+    ("cvUnit on a reference",
+     panel(el(extra='        reference { unit rig; cv U_V; cvUnit "V"; }')),
+     "the reference is drawn on the measurement's scale"),
+    ("empty cvUnit", panel(el(meas='{ unit rig;  cv U_V;  cvUnit ""; }')),
+     "has no `cvUnit`"),
     ("reference on a lamp",
      panel(el(kind="lamp", extra="        reference { unit rig; cv U_V; }")),
      "belongs to a `trend`"),
@@ -338,11 +352,11 @@ def approx(a, b, tol=1e-9):
 FACT_ELEMENTS = """
     { name notPub;   kind trend; measurement { unit rig; cv noSuchColumn; }
       reason "a column the run does not publish"; }
-    { name tempConst; kind number; measurement { unit rig; cv T; }
+    { name tempConst; kind number; measurement { unit rig; cv T; cvUnit "degC"; }
       range { min 273.15 K; max 333.15 K; }
       limit { high 330; source "fixture"; reason "far from the run"; }
       reason "constant, never violated, never approached"; }
-    { name voltRange; kind trend; measurement { unit rig; cv U_V; }
+    { name voltRange; kind trend; measurement { unit rig; cv U_V; cvUnit "V"; }
       range { min 0; max 5; }
       limit { high 20; source "fixture"; reason "outside its own scale"; }
       reason "the scale hides the run; the limit is off the scale"; }
@@ -361,10 +375,14 @@ FACT_ELEMENTS = """
       limit { high 1; source "fixture"; reason "regime boundary"; }
       alarm { on high; delay 500 s; action "act much later"; }
       reason "a delay longer than the excursion: never active"; }
-    { name alwaysLow; kind number; measurement { unit rig; cv T; }
+    { name alwaysLow; kind number; measurement { unit rig; cv T; cvUnit "K"; }
       range { min 273.15 K; max 500; }
       limit { low 400; source "fixture"; reason "above the run"; }
       reason "violated at every instant"; }
+    { name nWater; kind trend; measurement { unit rig; cv n_water; }
+      reason "a vessel amount: the writer states its unit"; }
+    { name nConc; kind trend; measurement { unit rig; cv n_conc_water; }
+      reason "a unit's own key that merely starts with n_: no unit is guessed"; }
 """
 FACT_MESSAGES = """
     { name fires;  from lamp;      on high; text "fires"; }
@@ -449,10 +467,22 @@ def arm_facts(work):
     need("alwaysViolated:alwaysLow" in ids
          and F["alwaysViolated:alwaysLow"]["violated"] == n,
          "`alwaysViolated` was not reported")
-    # sameQuantityAlarms on rig.i_over_ilim: lamp, lampDelayed, lampLate
-    need("sameQuantityAlarms:rig.i_over_ilim" in ids
-         and F["sameQuantityAlarms:rig.i_over_ilim"]["count"] == 3,
-         "three alarms on one column were not reported as `sameQuantityAlarms`")
+    # sameQuantityAlarms on rig.i_over_ilim: lamp, lampDelayed, lampLate.
+    # (note 3, 2026-11-13) the id names an ELEMENT, like every other fact --
+    # the first in declaration order -- and the column rides as a word.
+    SQ = F.get("sameQuantityAlarms:lamp", {})
+    need(SQ.get("count") == 3 and SQ.get("column") == "rig.i_over_ilim"
+         and SQ.get("elements") == "lamp lampDelayed lampLate",
+         "three alarms on one column were not reported as"
+         " `sameQuantityAlarms:lamp` (the first element) with the column and"
+         f" the elements as words: {SQ or sorted(i for i in ids if i.startswith('sameQ'))}")
+    need(all(i.split(":", 1)[1] in {e.split(":", 1)[1] for e in E}
+             for i in ids if ":" in i
+             and not i.startswith(("notPublished:", "controllerWithoutElement:"))),
+         "a fact id (other than notPublished:<e>:reference and"
+         " controllerWithoutElement:<controller>) carries something other than"
+         " an element name after the colon:"
+         f" {sorted(i for i in ids if ':' in i and not i.startswith(('notPublished:', 'controllerWithoutElement:')) and i.split(':', 1)[1] not in {e.split(':', 1)[1] for e in E})}")
 
     # alarms active with the delay on the write grid
     def active(delay):
@@ -474,6 +504,29 @@ def arm_facts(work):
          and approx(F["alarmsActive"]["at"], amaxAt),
          f"alarmsActive max {amax} at {amaxAt} not recomputed")
     need(SUM["alarmsMax"] == amax, "summary.alarmsMax disagrees")
+    # (note 2, 2026-11-13) WHEN any alarm was first active and for how long:
+    # the first instant with at least one alarm active, the number of such
+    # written instants, and those periods as the row's intervals.
+    anyk = [k for k in range(n) if counts[k] > 0]
+    want_iv = []
+    for k in anyk:
+        if want_iv and k > 0 and counts[k - 1] > 0:
+            want_iv[-1][1] = t[k]
+        else:
+            want_iv.append([t[k], t[k]])
+    AA = F.get("alarmsActive", {})
+    need(anyk and "first" in AA and approx(AA["first"], t[anyk[0]]),
+         "alarmsActive publishes no `first` (the first instant any alarm is"
+         " active) or it is not recomputed")
+    need(AA.get("count") == len(anyk),
+         f"alarmsActive `count` is not {len(anyk)} (written instants with at"
+         " least one alarm active)")
+    got_iv = AA.get("intervals")
+    need(isinstance(got_iv, list) and len(got_iv) == len(want_iv)
+         and all(approx(g[0], w[0]) and approx(g[1], w[1])
+                 for g, w in zip(got_iv, want_iv)),
+         f"alarmsActive `intervals` {got_iv} are not the periods with at least"
+         f" one alarm active {want_iv}")
     iv = E["element:lampLate"]["intervals"]
     need(sum(a2) == 0 and iv == [], "an alarm whose delay outlasts the excursion"
          " was active")
@@ -481,6 +534,62 @@ def arm_facts(work):
     iv1 = E["element:lampDelayed"]["intervals"]
     need(first_active is not None and iv1 and approx(iv1[0][0], first_active),
          "the delayed alarm's first active instant is not recomputed")
+    # (note 6, 2026-11-13) EVERY element with a limit, alarm or not, carries
+    # the periods its limit is violated (write grid, no delay) as
+    # `limitIntervals`; `intervals` stays the alarm's and is absent without one.
+    def periods(flags):
+        out = []
+        for k in range(n):
+            if flags[k]:
+                if out and k > 0 and flags[k - 1]:
+                    out[-1][1] = t[k]
+                else:
+                    out.append([t[k], t[k]])
+        return out
+    nlim = 0
+    for eid, er in E.items():
+        if "limitLow" not in er and "limitHigh" not in er:
+            need("limitIntervals" not in er, f"{eid} has no limit and publishes limitIntervals")
+            continue
+        if not er.get("published"):
+            continue
+        col = S[er["column"]]
+        flags = [("limitHigh" in er and v > er["limitHigh"])
+                 or ("limitLow" in er and v < er["limitLow"]) for v in col]
+        want = periods(flags)
+        got = er.get("limitIntervals")
+        need(isinstance(got, list) and len(got) == len(want)
+             and all(approx(g[0], w[0]) and approx(g[1], w[1]) for g, w in zip(got, want)),
+             f"{eid}: limitIntervals {got} are not the limit-violation periods {want}")
+        if "alarmOn" not in er:
+            need("intervals" not in er, f"{eid} has no alarm and publishes alarm intervals")
+        nlim += 1
+    need(nlim >= 6 and E["element:alwaysLow"].get("limitIntervals")
+         and E["element:lampLate"].get("limitIntervals")
+         and E["element:lampLate"].get("intervals") == [],
+         "the fixture no longer holds a limit without an alarm that is violated, and an"
+         " alarm whose delay hides a violation its limitIntervals still show")
+    # (note 5, 2026-11-13) THE UNIT OF A COLUMN: the writer's where it knows
+    # it (t, a vessel's .T in K, its .n_<component> in kmol), else the case's
+    # cvUnit, else NONE -- never guessed from a key's name (n_conc_water starts
+    # with n_ and is a unit's own key).  A declaration that disagrees with the
+    # writer is published beside it with a fact, not refused.
+    def U(name):
+        er = E.get("element:" + name, {})
+        return (er.get("unit"), er.get("unitFrom"), er.get("unitDeclared"))
+    need(U("nWater") == ("kmol", "engine", None),
+         f"rig.n_water carries the writer's unit kmol: got {U('nWater')}")
+    need(U("alwaysLow") == ("K", "engine", None) and "unitDiffers:alwaysLow" not in ids,
+         f"rig.T declared K as the writer has it: got {U('alwaysLow')}")
+    need(U("tempConst") == ("K", "engine", "degC") and "unitDiffers:tempConst" in ids
+         and F["unitDiffers:tempConst"].get("unitDeclared") == "degC",
+         f"a cvUnit that disagrees with the writer is not published beside it"
+         f" with a unitDiffers fact: got {U('tempConst')}")
+    need(U("voltRange") == ("V", "declared", None),
+         f"a unit's own key with a declared cvUnit: got {U('voltRange')}")
+    need(U("nConc") == (None, None, None) and U("lamp") == (None, None, None),
+         f"a unit was published where neither the writer nor the case states one"
+         f" (guessed from the key's name?): nConc {U('nConc')}, lamp {U('lamp')}")
     # controllerWithoutElement: C1 measures rig.T, tempConst shows rig.T -> shown;
     # the fixture below removes it.
     need("controllerWithoutElement:C1" not in ids,
@@ -492,6 +601,20 @@ def arm_facts(work):
          "a message on a limit the run never crosses fired")
     need(M["message:theEnd"]["fired"] == 1 and approx(M["message:theEnd"]["t"], t[-1]),
          "the end message did not fire at the last instant")
+    # (note 4, 2026-11-13) the log must not let the maximum's instant be read
+    # as the start of the alarms: it names the first activation and says the
+    # maximum's instant is when the MAXIMUM was first reached.
+    aline = next((l for l in out.splitlines() if l.startswith("[panel] alarmsActive")), "")
+    fmt6 = lambda v: f"{v:.6g}"
+    need(anyk and f"the first alarm became active at t = {fmt6(t[anyk[0]])} s" in aline
+         and f"was first reached at t = {fmt6(amaxAt)} s" in aline
+         and "first at t =" not in aline,
+         "the alarmsActive log line does not name the first activation"
+         f" ({fmt6(t[anyk[0]]) if anyk else '-'} s) apart from the instant the"
+         f" maximum was first reached ({fmt6(amaxAt)} s): {aline!r}")
+    vline = next((l for l in out.splitlines() if l.startswith("[panel] violated:lamp")), "")
+    need("first at t =" not in vline and f"the first of them is t = {fmt6(t[viol[0]])} s" in vline,
+         f"the violated log line is ambiguous or wrong: {vline!r}")
     # log lines
     for needle in ("[panel] notPublished:notPub", "[panel] constant:tempConst",
                    "[panel] violated:lamp", "[panel] neverApproached:tempConst",
@@ -519,7 +642,10 @@ def arm_facts(work):
                   " notPublished, constant, outOfRange, limitOutsideRange, violated /"
                   " neverViolated / alwaysViolated (k, n, first, last, closest approach),"
                   " neverApproached, controllerWithoutElement, sameQuantityAlarms,"
-                  " alarmsActive with a delay, three messages; on the log, the JSON block")
+                  " limit-violation intervals of every limited element apart from the alarm's,"
+                  " the unit of a column (writer's, declared, or none, never guessed),"
+                  " alarmsActive with a delay (maximum and its instant, first instant any"
+                  " alarm is active, instants with one, their intervals), three messages; on the log, the JSON block")
 
 
 def arm_golden(wd):

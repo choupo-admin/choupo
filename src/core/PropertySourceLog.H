@@ -184,6 +184,14 @@ inline const NamedSource speciesRecordD0AtCuration
 inline const NamedSource speciesRecordD0Uncorrected
     { "record.speciesD0.uncorrected",
       "each ion's diffusivity from its species record at 25 C, NOT corrected to the unit's temperature: the case declares no liquid-viscosity model" };
+
+//  THE TAG'S WORDS AT THE DATUM'S TEMPERATURE (C378, TR-12).  A record's
+//  `Vliq` belongs to its `VliqT` (25 C when absent).  A tag that says "25 C
+//  molar volume" is true for every component on it that states no `VliqT`;
+//  `statedAt` lists the ones that do ("CH4 at 111.66 K"), and the words are
+//  completed here, in one place.  Empty `statedAt`: the tag's words, byte
+//  for byte.
+std::string labelAtDatum(const char* label, const std::vector<std::string>& statedAt);
 } // namespace liquidSource
 
 class PropertySourceLog
@@ -238,6 +246,12 @@ public:
     void useHere(const std::string& property, const NamedSource& s,
                  const std::string& addendum, const std::string& sourceClass,
                  const Taken& taken, const std::string& pressureNote);
+    //  ... with the temperature each component's `Vliq` belongs to, for a
+    //  tag that reads the records' molar volumes (liquidSource::labelAtDatum).
+    void useHere(const std::string& property, const NamedSource& s,
+                 const std::vector<std::string>& statedAt, const std::string& addendum,
+                 const std::string& sourceClass, const Taken& taken,
+                 const std::string& pressureNote);
 
     //  A THERMODYNAMIC MODEL THAT READS A COMPONENT'S 25 C LIQUID VOLUME AS A
     //  PARAMETER (Poynting, Wilson, Wilke-Chang, the mixed-solvent activity

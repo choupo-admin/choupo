@@ -1,11 +1,18 @@
 # An operator panel kept in the case
 
-**Kind:** ADR · **Status:** CONTRACT, not built (DEV.md 4c C371; design
-record first, slices S1-S5 below) · **Gate (S1):** `check_operator_panel`
-(proposed) · **Witness (S1):** `edbatch01_constant_current`
+**Kind:** ADR · **Status:** PARTLY BUILT (DEV.md 4c C371): S1 the engine
+(99adc853e0), S2 the read-only GUI workspace (e31b30c286) and S5 the EduTool
+lesson (aa5393aef3) are on `main`; S1b, S3 and S4 are not built (§9 says
+which piece is where) · **Gate (S1):** `bin/curate/check_panel.py` (`check_panel`
+in `bin/runTests`) · **Witness (S1):** `edbatch01_constant_current`
 
-Read at `origin/main` 034ae5055 on 2026-11-12.  Every statement about the
-engine or the GUI as it is today carries the `file:line` it was read at.
+Read at `origin/main` 034ae5055 on 2026-11-12, before anything was built.
+Every statement about the engine or the GUI as it was then carries the
+`file:line` it was read at; the §2 table is that reading and is left as it
+was.  Corrected after the landing (2026-11-13, review notes on S1): the
+status, the refusals and facts of §5, where the block is published and the
+slice table of §9 now say what the tree does, and each sentence that
+describes a piece not built says so.
 Run numbers come from one run of `edbatch01_constant_current` with the
 primary checkout's build of 2026-11-10 (41 written instants, 0 to 2000 s).
 Everything said about industrial practice (alarm management, operator
@@ -75,7 +82,7 @@ admits no mid-run disturbance; (d) the Control Room never opens on it.
 | `name` | word, unique | identity; the facts and the golden rows use it |
 | `title` | string | what the operator reads |
 | `kind` | `number`, `bar`, `trend`, `lamp` | the first four; others are later slices (§9) |
-| `measurement` | `{ unit <u>; cv <key>; }` or `{ controller <C>; cv SP|PV|MV; }` | resolves to the published column `<u>.<key>` / `<C>.<cv>`; the controller block's shape reused verbatim |
+| `measurement` | `{ unit <u>; cv <key>; }` or `{ controller <C>; cv SP|PV|MV; }`, optionally `cvUnit "<text>";` | resolves to the published column `<u>.<key>` / `<C>.<cv>`; the controller block's shape reused verbatim.  `cvUnit` (added 2026-11-13, review note 5) is the case's statement of the unit the column is published in, free text (`"V"`, `"A/m2"`, `"-"` for dimensionless), read from the unit's source; it is not `unit`, which already names the unit operation in this block; refused on a `reference` (drawn on the measurement's scale) and when empty |
 | `reference` | same shape as `measurement`, optional, `trend` only | a second series drawn faint (actual against ideal, PV against SP) |
 | `range { min; max; }` | scalars | the scale of the element; required for `bar`, `lamp` |
 | `limit { low; high; source; reason; }` | at least one of `low`/`high`; `source` and `reason` strings, both required | ONE block for a limit and a band (a band is a limit with both ends) |
@@ -95,6 +102,25 @@ example writes it in a comment beside each raw value.  `delay` and
 The engine cannot check a limit's dimension against its series, because no
 trajectory column declares its dimension today: that is stated, not hidden
 (§10, open item 7).
+
+**The unit of a column, as published (2026-11-13, review note 5; a stated
+default the owner can reverse).**  Measured first: no unit operation
+declares a unit for a key it publishes (`trajectoryExtras()` returns
+`(key, value)` pairs, `BatchUnitOperation.H`; the driver's `stateLabels()`
+are names), so there is no home to read one from.  Three cases, in order:
+(a) where the column is the WRITER's own and its unit is a fact of the code
+that writes it, the writer states it (`PublishedSeries::units`, filled by
+choupoBatch: `t` in s, a vessel's `.T` in K and `.n_<component>` in kmol,
+`BatchState` in `BatchUnitOperation.H`), published as `unit` with
+`unitFrom engine`; (b) otherwise the case may declare it,
+`measurement { ...; cvUnit "V"; }`, published as `unit` with
+`unitFrom declared`; (c) neither: no `unit` word at all -- never a guess from
+the key's name (`_V`, `_A_per_m2` are names, not declarations, and
+`n_conc_water` begins with `n_` and is a unit's own key).  A `cvUnit` that
+differs as text from the writer's unit is not refused: `unit` stays the
+writer's, `unitDeclared` carries the case's, and the fact
+`unitDiffers:<element>` says so.  The unit is a word for a reader; it does
+not make the engine check a limit's dimension (open item 7 stands).
 
 ### 3.3 Field-by-field check of the proposed grammar (`panelDict.proposed`)
 
@@ -213,8 +239,14 @@ messages
 );
 ```
 
-What the facts of §5 would say on this run (computed by hand from the
-trajectory with the definitions of §5): `overLimiting` violated at **9 of 41**
+The shipped `system/panelDict` of the witness differs from this example in
+two declared ways, and its own header says so: it has no `draft {}` block and
+every element is `authored edited`, because the drafter (S3) does not exist.
+
+What the facts of §5 say on this run (computed by hand from the trajectory
+with the definitions of §5 before S1 was built, and confirmed by the built
+pass: the witness's `[panel]` log lines and the `panel` rows of its
+`expected` carry the same numbers): `overLimiting` violated at **9 of 41**
 written instants, first at **1600 s** (the unit's own step-resolved crossing
 is 1593 s, `t_overLimiting_s`); `currentDensity` **constant** at 175 A/m2,
 never violated, closest approach 25 A/m2 = 0.10 of its range; `temperature`
@@ -230,7 +262,7 @@ which is the tutorial's first finding (§8).
 |---|---|---|---|
 | home | `system/panelDict`, optional | it is part of the case, like `layoutDict`; the engine reads it | the `.cho` marker: CLAUDE.md §3 reserves it for GUI-only metadata the solver never reads (`CLAUDE.md:374-377`), and the facts need the engine |
 | absent | no line of any output changes | the layout precedent (`src/result/ResultEmitter.cpp:1531-1535`); proved per case by whole-output diff | |
-| readers | `choupoBatch` (S1); the time-integrated driver, so `choupoCtrl` and `choupoSemiContinuous` (S1b) | a panel reads quantities over time | |
+| readers | `choupoBatch` (S1, built); the time-integrated driver, so `choupoCtrl` and `choupoSemiContinuous` (S1b, NOT built: until it is, the driver REFUSES the file by name, `src/dynamicDriver/DynamicDriver.cpp` before it reads the flowsheet's `recipe`) | a panel reads quantities over time | |
 | `choupoSolve`, `choupoProps` | REFUSE a `panelDict` by name: "a panel reads a time-integrated run" | a steady run has no time axis; silently ignoring a declared file is the unread-key defect | ignoring it |
 | outer drivers | the panel is evaluated on the direct path only | an outer pass writes no outputs (`DynamicDriver.cpp:2082`) | facts per sweep point |
 | physics | **never changes it, structurally** | see below | |
@@ -259,39 +291,60 @@ would sit beside the integrator).
 | refuses (malformed) | why |
 |---|---|
 | unknown `unit` or `controller` name | a typo, the controller's own rule (`PIDController.cpp:45-46`) |
-| unknown `kind`, unknown key (via `dictAudit`), `alarm` without `limit`, `limit` without `source` or `reason`, element without `reason` | the file says something the engine cannot read |
+| unknown `kind`, unknown key (the nearest key suggested by `dictAudit::editDistance`), `alarm` without `limit` or without `action`, `limit` without `source` or `reason` or with neither end, element without `reason`, a time (`delay`, `trendWindow`) without its unit, a `bar` or `lamp` without `range`, a `lock` without `by`, `date` or `reason` | the file says something the engine cannot read |
 | `place` outside `grid`, two elements on one cell, duplicate `name`, `message.from` naming no element | the panel cannot be drawn |
-| `--panel-draft --force` on a locked panel | the lock is a statement someone made |
+| `--panel-draft --force` on a locked panel (S3, NOT built: there is no drafter yet) | the lock is a statement someone made |
 
 | fact (`kind` id) | exact definition | threshold and its reason |
 |---|---|---|
-| `notPublished` | the column `<owner>.<cv>` is absent from the run's published series | none.  A FACT, not a refusal: the panel is drawn with "not published" in that element, never a zero; the remedy is for the unit to publish it.  A unit that can `getCV` a key it does not write (`DynamicCSTR.cpp` `T_jacket`) is reported with that distinction |
+| `notPublished` | the column `<owner>.<cv>` is absent from the run's published series | none.  A FACT, not a refusal: the panel is drawn with "not published" in that element, never a zero; the remedy is for the unit to publish it.  A unit that can `getCV` a key it does not write (`DynamicCSTR.cpp` `T_jacket`) is to be reported with that distinction -- NOT built: it is the driver's case (S1b), and the driver refuses the file today |
 | `constant` | `max - min <= 1e-8 max(1, abs(max))` over every written instant | the element shows a quantity that never moved in this run; 1e-8 is the last digit `trajectory.csv` writes (scientific, 8 decimals, `main.cpp:709`) |
 | `outOfRange` | some written value below `range.min` or above `range.max`; reports the count and the extreme | the scale hides part of the run |
 | `limitOutsideRange` | `limit.low` or `limit.high` outside `[range.min, range.max]` | the limit cannot be seen on its own scale |
-| `violated` | count `k` of `n` written instants beyond a limit (strictly), first and last instant | always published when a limit exists; `k = 0` is reported as `neverViolated`, `k = n` as `alwaysViolated` |
+| `violated` | count `k` of `n` written instants beyond a limit (strictly), first and last instant; the periods themselves are the element's `limitIntervals` | always published when a limit exists; `k = 0` is reported as `neverViolated`, `k = n` as `alwaysViolated` |
 | `neverApproached` | `k = 0` and the closest approach, `(high - max)/(range.max - range.min)` (or the `low` mirror), exceeds 0.5 | a limit in the far half of its own scale from every point was not exercised; 0.5 is a stated default of this record, not taken from any practice, and the closest approach is always published so a student can judge with another number |
 | `controllerWithoutElement` | a PID in the flowsheet whose `PV` is shown by no element (`measurement { controller C; cv PV; }`, or the same `unit`/`cv` as its measurement block) | a declared loop the operator cannot see |
-| `sameQuantityAlarms` | more than one `alarm` whose elements resolve to the same column | one cause, one alarm; two series that are functions of each other (`I_A`, `i_A_per_m2`) are NOT detected, and this is said in the gate |
-| `alarmsActive` | per instant, the count of elements in alarm (`delay` applied on the write grid); published: the maximum and its first instant | the count of active alarms is always shown |
-| `messageFired` | first instant each message's trigger holds | a message that never fires is visible as absent |
-| `draftDiffers` | an element marked `authored draft` whose fields differ from what the draft rules (§6) give on this run | the file was hand-edited without saying so, or the draft rules moved |
+| `unitDiffers` | the case's `cvUnit` differs, as text, from the unit the writer states for that column; words `column`, `unit` (the writer's), `unitDeclared` | the numbers are in the writer's unit; the declaration is shown beside it, never silently dropped and never refused |
+| `sameQuantityAlarms` | more than one `alarm` whose elements resolve to the same column.  Id `sameQuantityAlarms:<the first of those elements in declaration order>`, like every other fact naming an element; the column rides as the word `column`, all the elements as `elements`, their number as `count` | one cause, one alarm; two series that are functions of each other (`I_A`, `i_A_per_m2`) are NOT detected, and this is said in the gate |
+| `alarmsActive` | per instant, the count of elements in alarm (`delay` applied on the write grid).  Published: `alarms` (declared), `max` (the largest count at one written instant) and `at` (the first instant that maximum is reached -- it can be the last written instant, so it is NOT the start of the alarms), `first` (the first written instant with at least one alarm active; absent when none ever is), `count` (the number of written instants with at least one alarm active) and, as the row's `intervals`, the periods with at least one alarm active.  The per-instant count itself is not published: it is derivable from each alarmed element's own `intervals` | the count of active alarms is always shown, and when and for how long any alarm was active is published, not left to be inferred from the maximum |
+| `message:<name>` | first instant each message's trigger holds, as `fired` 0 or 1 and `t` when it fires | a message that never fires is published with `fired` 0 and no `t` |
+| `draftDiffers` | an element marked `authored draft` whose fields differ from what the draft rules (§6) give on this run | NOT built (S3): the file was hand-edited without saying so, or the draft rules moved |
 
 All crossings are resolved to the **write grid** (`writeInterval`): a crossing
 between two writes is seen at the next one, and an excursion shorter than one
-interval is missed.  Said in the block and the guide; the remedy is a smaller
-`writeInterval`.  Rejected: evaluating every step (puts the evaluator inside
+interval is missed.  Said in the first `[panel]` log line of every run and
+in the Design Guide (`sec:operatorPanel`); the JSON block carries no sentence
+on it.  The remedy is a smaller `writeInterval`.  Rejected: evaluating every step (puts the evaluator inside
 the loop, §4).
 
-**Where published.**  (a) A JSON block `"panel"`, emitted only when the file
-exists, one record per line with an `"id"` exactly like `"layout"`
-(`ResultEmitter.cpp:1531-1540`): `{"id": "element:<name>", "kind", "column",
-"min", "max", "first", "last", "violated", "n", "closestApproach",
-"intervals": [[t0, t1], ...]}`, `{"id": "<fact>:<name>", ...}` per fact,
-`{"id": "message:<name>", "t"}`, `{"id": "summary", "elements", "facts",
-"alarmsMax", "alarmsMaxAt", "locked"}`; the panel as read (kinds, ranges,
-limits, places) rides in the element records so the GUI parses no dict to
-draw.  (b) A `[panel]` line family on stdout at verbosity >= 1, one line per
+**Where published.**  (a) A JSON block `"panel"` (`src/result/PanelJson.cpp`),
+emitted only when the file exists, with four lists `elements`, `facts`,
+`messages`, `summary`, one record per line with an `"id"` exactly like
+`"layout"`; on each line the numbers come first, then the short words, then
+the interval lists where the row has them (`intervals`, then `limitIntervals`), and last a `"text": {}` object
+carrying the case's own sentences and the engine's explanation, so a golden
+never reads a number out of a sentence.  As built:
+`{"id": "element:<name>"}` carries the panel as read (`kind`, `column`,
+`referenceColumn`, `authored`, `alarmOn`, `rangeMin`/`rangeMax`,
+`limitLow`/`limitHigh`, `alarmDelay`, `placeColumn`/`placeRow`/`placeWidth`/
+`placeHeight`), the column's `unit` with `unitFrom` `engine` or `declared`
+(and `unitDeclared` when a declaration disagrees with the writer; absent when
+neither states one), `published` 0 or 1, and on a published column `min`, `max`,
+`first`, `last`, `n`, with a limit `violated` and `closestApproach` (and
+`closestApproachFraction` with a range) and `limitIntervals` `[[t0, t1], ...]`
+(the periods the limit is violated on the write grid, no delay -- on EVERY
+element with a limit, alarm or not), with an alarm `intervals` (the periods
+the alarm is active, its delay applied; a list apart from `limitIntervals`,
+so a delay that hides a violation never hides it from the reader, and an
+element with no alarm is never coloured as if it had one), and
+in `text` the `title`, `reason`, `limitSource`, `limitReason`, `action` and
+the lamp's words; `{"id": "<fact>:<element>", ...}` per fact, its numbers and its
+`explanation` -- the part after the colon is an element name, except
+`notPublished:<element>:reference` and `controllerWithoutElement:<controller>`,
+and `alarmsActive`, which has no colon; `{"id": "message:<name>"}` with `on`, `from`, `fired` and `t`;
+`{"id": "summary"}` with `elements`, `facts`, `messages`, `alarms`,
+`alarmsMax`, `alarmsMaxAt`, `instants`, `locked`, the grid, the style and the
+lock's sentences.  The GUI therefore parses no dict to draw.  (b) A `[panel]` line family on stdout at verbosity >= 1, one line per
 fact.  NOT in the end-of-run caveat block: that block says how far the
 NUMBERS can be trusted, and nothing in a panel changes a number.  (c) A golden
 kind `panel`, read by id like `get_layout` (`bin/runTests:1162-1175`) and added
@@ -407,6 +460,20 @@ examiner would see something other than what was locked.
 
 ## 9. Decision 7 -- slices
 
+**Status at 02d088295c (2026-11-13).**  S1 BUILT (99adc853e0): the engine
+pass `src/postProcessing/panel/PanelPass.{H,cpp}`, the records
+`src/core/PanelRecords.H`, the block `src/result/PanelJson.cpp`, the golden
+kind `panel`, the gate `bin/curate/check_panel.py`, the witness's panel; its
+guide section went to the Design Guide (`sec:operatorPanel`), not the Theory
+Guide.  S1b NOT built: the driver binaries refuse the file.  S2 BUILT
+(e31b30c286): the Panel workspace and the `?panel=` pop-out
+(`gui/src/ui/PanelWorkspace.tsx`, `gui/src/case/panelView.ts`), User Guide
+`sec:panelWorkspace`.  S3 and S4 NOT built: no `panelHints()`, no
+`--panel-draft`, no `bin/choupo-panel`, no `draftDiffers`, no GUI write.  S5
+BUILT as the EduTool `operator-panels` (aa5393aef3;
+`gui/src/ui/methods/OperatorPanelsTool.tsx`, Theory Guide `sec:operatorPanels`
+and an EduTools Guide section).
+
 Every slice lands on FAIL 0 of the validation listed, and carries rule 4d:
 (G) a Theory Guide section with a `\label`, (L) the Theory/F1 link opening it,
 (A) `docs/ai/case-layout.md` (the `system/panelDict` section) and the
@@ -416,7 +483,7 @@ capability index, (C) `docs/tutorials-catalogue.md` and the Tutorials Guide,
 
 | slice | content | acceptance | validation |
 |---|---|---|---|
-| **S1** engine | `PublishedSeries` captured in choupoBatch's `writeSnapshot`; `src/postProcessing/panel/` reader and facts of §5; the `panel` JSON block and `[panel]` lines; golden kind `panel`; `choupoSolve`/`choupoProps` refuse the file; `edbatch01` carries the §3.4 panel; gate `check_operator_panel` | the example's facts as in §3.4; every refusal of §5 by name; G (`sec:operatorPanel`, the facts' definitions), L, A, C, P | build; `edbatch01`, `edbatch02` byte-identical without the file; `--scope` on the batch ED cases; the gate (byte-identity arm, one sabotage per fact and per refusal); `check_layering`; `--fast` (choupoBatch's main is touched) |
+| **S1** engine | `PublishedSeries` captured in choupoBatch's `writeSnapshot`; `src/postProcessing/panel/` reader and facts of §5; the `panel` JSON block and `[panel]` lines; golden kind `panel`; `choupoSolve`/`choupoProps` refuse the file (and, until S1b, `choupoCtrl`/`choupoSemiContinuous`); `edbatch01` carries the §3.4 panel; gate `check_panel` (`bin/curate/check_panel.py`) | the example's facts as in §3.4; every refusal of §5 by name; G (`sec:operatorPanel`, the facts' definitions), L, A, C, P | build; `edbatch01`, `edbatch02` byte-identical without the file; `--scope` on the batch ED cases; the gate (byte-identity arm, one sabotage per fact and per refusal); `check_layering`; `--fast` (choupoBatch's main is touched) |
 | **S1b** driver | the same reader in `DynamicDriver`, controller rules, `controllerWithoutElement`; a panel on `ctrl21_tank_level_control` | facts on the ctrl witness; the Signal's `PV` never drawn as a measured zero (`DynamicDriver.cpp:1054-1068`) | the ctrl and semi-continuous cases the driver reaches, by `--scope`; the gate's ctrl arm |
 | **S2** GUI read-only | Panel workspace and `?panel=` pop-out drawing the four kinds from the trajectory and the block; time cursor; alarm count; facts list | renders on both witnesses; "not published" drawn, never a zero; a stale run dims | `--gui`; a test recomputing nothing but comparing drawn states with the block's `intervals` |
 | **S3** draft | `panelHints()` on `batchElectrodialysis` (and `dynamicCSTR`, `dynamicTank`); `--panel-draft`, `bin/choupo-panel`; `draftDiffers`; `--force` keeping `edited` | the draft of the witness equals §3.4 save the edited voltage range and the actions; refuses on a locked file | the gate's draft arms; the units' cases by `--scope` (the hook is read-only, the outputs byte-identical); G updated with the rules table |

@@ -1106,6 +1106,37 @@ struct LayoutPipe
     }
 };
 
+//  A UTILITY LINE (2026-11-13, DEV.md 4c C268 slice 2).  A utility is not a
+//  flowsheet stream, so the engine routes nothing for one by itself: the case
+//  DECLARES the line (`utilityLines` in system/layoutDict) -- from an item to
+//  an item, with a SERVICE word -- and the engine routes it on the pipe rack's
+//  tiers above the process pipes' (a family -- cooling water, refrigerant,
+//  flare header -- shares its own tier) and checks it like a process pipe.
+//  NO SIZE: no pipe-sizing rule exists for a process pipe either (the layout
+//  carries no diameter, no pressure drop), so every line is `unsized` and says
+//  so; the flow a line CARRIES is published where a design sheet publishes it.
+struct LayoutUtilityLine
+{
+    std::string name;          // the case's name for the line (unique)
+    std::string service;       // coolingWaterSupply | coolingWaterReturn | ...
+    std::string family;        // coolingWater | refrigerant | flare
+    std::string from, to;      // placed item ids; the flow runs from -> to
+    LayoutPort  fromPort, toPort;
+    int         lane = -1;     // the rack lane (numbered on after the process pipes')
+    int         tier = -1;
+    std::vector<std::vector<scalar>> route;   // flow direction, {x, y, z} metres
+    scalar      length = 0;    // [m]
+    std::string sizeState;     // "unsized"
+    std::string sizeNote;      // why
+    //  What it carries, where a sheet publishes it: the unit whose design
+    //  sheet is read, the sheet's key, the number [kg/s] and its words.
+    std::string carries;       // "" when nothing is declared
+    bool        hasFlow = false;
+    scalar      flow = 0;      // [kg/s]
+    std::string flowSource;    // the sentence: which sheet, which key
+    std::string reason;
+};
+
 struct LayoutNotRouted
 {
     std::string stream;
@@ -1446,6 +1477,11 @@ struct PlantLayoutRecord
     std::vector<LayoutJunction>        junctions;
     std::vector<LayoutPipe>            pipes;
     std::vector<LayoutNotRouted>       notRouted;
+    //  C268 slice 2: the declared utility lines (empty when the case declares
+    //  none, and then nothing is published).  `lanesUsed` is how many rack
+    //  lanes the process pipes took: the utility lines number on from it.
+    std::vector<LayoutUtilityLine>     utilityLines;
+    int                                lanesUsed = 0;
     //  Sized items the layout does not place.  `unplaced` are placeable items
     //  the case left out (announced); `internal` are items that live inside
     //  or on another one (a tray stack, a catalyst charge, a relief valve) and
