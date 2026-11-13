@@ -42,10 +42,26 @@ Description
 
     with
         u_g    = Q_gas / A                      superficial gas velocity
-        u_p    = u_g (1 - 0.68 d_p^0.92 rho_p^0.5 rho_g^-0.2 D^-0.54)   (Hinkle)
+        u_p    = u_g - s,  s^2 C_D(Re_s) = (4/3) d_p rho_p g (sin th + mu_w cos th) / rho_g
+                                                (force balance: drag = wall
+                                                 friction + gravity along the
+                                                 pipe; sin th = dz/L)
         rho*   = m_dot_solids / (u_p A)         suspended-solids density
-        f_p    = 3/8 (rho_g/rho_p) C_D (D/d_p) ((u_g-u_p)/u_p)^2        (Hinkle)
+        f_p eps^3/(1-eps) = 0.0206 [(1-eps)(u_t/u_p)]^-0.869            (Yang 1974, vertical)
+        f_p eps^3/(1-eps) = 0.117  [(1-eps)(u_t/u_p) u_g/sqrt(g D)]^-1.15 (Yang 1974, horizontal)
+                 with 1-eps = rho* / rho_p; the vertical form when |dz/L| > 0.5
         u_salt = sqrt(g D) (mu_load 10^(1440 d_p+1.96))^(1/(1100 d_p+2.5)) (Rizk)
+
+    The slip s is iterated on C_D at the slip Reynolds number.  mu_w is the
+    particle-wall Coulomb friction coefficient, `particleWallFriction` in the
+    operation block (0.4 when the case declares none); the run publishes it as
+    a KPI and prints it in the verbosity >= 2 banner.  The balance has two
+    limits: a vertical line, s ~ u_t (drag = gravity), and a horizontal one,
+    s ~ u_t sqrt(mu_w) (drag = wall friction); both hold up to the gas
+    buoyancy, which the balance leaves out, and the horizontal one also up to
+    C_D changing with the slip.  A slip that leaves u_p <= 0.02 u_g (the gas
+    below pickup) is floored there, so that rho* stays finite, and the
+    verbosity >= 2 banner marks the particle velocity BELOW PICKUP.
 
     The conveyor REPORTS the saltation velocity u_salt and warns aloud if the
     gas velocity falls below it (risk of saltation / line blockage) -- a

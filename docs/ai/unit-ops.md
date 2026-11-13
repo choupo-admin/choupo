@@ -2065,20 +2065,34 @@ operation { solidsRecovery 0.9; gasCarryover 0.01; }
 Dilute-phase pneumatic conveying of solids in a gas (the conveying LINE).
 Total pressure drop = sum of contributions (gas + solids acceleration,
 gas + solids wall friction, gas + solids static head over the vertical
-rise `dz`); particle velocity by Hinkle (slip), gas friction Fanning,
-solids friction Hinkle (C_D Schiller–Naumann).  REPORTS the Rizk
+rise `dz`, plus one re-acceleration term per bend).  The particle velocity
+comes from a FORCE BALANCE, not a fitted slip: in developed flow the gas drag
+on a particle (Schiller–Naumann `C_D` at the slip Reynolds number, iterated)
+balances its wall friction plus the gravity component along the pipe,
+`slip² C_D = (4/3) d_p ρ_p g (sin θ + μ_w cos θ)/ρ_g` with `sin θ = dz/L` and
+`u_p = u_g − slip` (≈ `u_t` vertical, ≈ `u_t √μ_w` horizontal).  `μ_w` is
+`operation.particleWallFriction`, 0.4 when undeclared (published as a KPI and
+printed in the verbosity ≥ 2 banner).  Gas friction Fanning (Blasius above
+Re 2100, 16/Re below); solids friction Yang (1974), on the voidage
+`1−ε = ρ*/ρ_p` and `u_t/u_p` — his vertical equation when `|dz/L| > 0.5`,
+else the horizontal one, which adds the Froude number `u_g/√(gD)`; the run
+warns when ε leaves the correlation's range.  REPORTS the Rizk
 saltation velocity and **warns aloud if `u_g` falls below it** (settling /
 blockage risk) — never a silent clip.  Hardware-only operation block;
-every velocity, the suspended density and ΔP are results.  Needs a
-`transport { viscosity { model Chung; } }` block (gas viscosity) and the solid
-component's `solid { rho_p; }` (a missing density refuses by name; several
-solids: volume-additive mean).
+every velocity, the suspended density and ΔP are results.  The particle size
+is the Sauter mean of the inlet PSD.  Needs a gas viscosity,
+`transport { vapour { viscosity { model Chung; } } }` in the
+thermoPhysPropDict, and the solid component's `solid { rho_p; }` (a missing
+density refuses by name; several solids: volume-additive mean).
 ```
 type      pneumaticConveyor;
-operation { geometry { D 0.1 m;  L 50 m;  dz 10 m;       // diameter, length, rise
-                       bends ( { RoverD 8; type longRadius; } ) } }
-// feed stream declares solids as solidFlows (mass) + a PSD:
-//   solids { solidFlows { silica 282 kg/h; } diameters (...); massFractions (...); }
+operation { geometry { D 0.1 m;  L 8 m;  dz 2 m;          // diameter, length, rise
+                       bends ( { type longRadius; } ) } }
+// the feed stream (0/<stream>) carries the solids as a phase of its overall
+// componentMolarFlows, plus a PSD:
+//   phases { vapour { componentMolarFlows { N2 50 kmol/h; } }
+//            solid  { componentMolarFlows { silica 46.6 kmol/h; } } }
+//   particleSizeDistribution { diameter ( 0.0001 0.0002 0.0005 ); massFrac ( 0.3 0.5 0.2 ); }
 ```
 Each `bends` entry takes a `type` — `longRadius` (**default**, exit ratio
 0.75), `shortRadius` (0.50) or `blindTee` (0.25, the solids nearly stop: high
