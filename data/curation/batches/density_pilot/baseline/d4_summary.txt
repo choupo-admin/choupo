@@ -1,0 +1,17 @@
+d4b McBride-Wright 2015 (x_CO2 stated): deviation of today's engine from the measured density, per isotherm
+  T~275 K: engine mixture (CO2 priced as a liquid): n=14 AAD 1.286 % bias -1.018 % max 2.945 %; CO2 left out (water, generic route): n=14 AAD 1.706 % bias -1.605 %; pure water IAPWS-95: bias -0.876 % max 1.505 %
+  T~296 K: engine mixture (CO2 priced as a liquid): n=14 AAD 3.115 % bias -3.115 % max 5.288 %; CO2 left out (water, generic route): n=14 AAD 3.003 % bias -3.003 %; pure water IAPWS-95: bias -0.840 % max 1.415 %
+  T~323 K: engine mixture (CO2 priced as a liquid): REFUSED at all 12 points (T above Tc of CO2); CO2 left out (water, generic route): n=12 AAD 4.458 % bias -4.458 %; pure water IAPWS-95: bias -0.716 % max 1.278 %
+  T~348 K: engine mixture (CO2 priced as a liquid): REFUSED at all 11 points (T above Tc of CO2); CO2 left out (water, generic route): n=11 AAD 5.697 % bias -5.697 %; pure water IAPWS-95: bias -0.648 % max 1.170 %
+  T~373 K: engine mixture (CO2 priced as a liquid): REFUSED at all 11 points (T above Tc of CO2); CO2 left out (water, generic route): n=11 AAD 6.660 % bias -6.660 %; pure water IAPWS-95: bias -0.560 % max 1.028 %
+  T~398 K: engine mixture (CO2 priced as a liquid): REFUSED at all 3 points (T above Tc of CO2); CO2 left out (water, generic route): n=3 AAD 8.367 % bias -8.367 %; pure water IAPWS-95: bias -0.837 % max 0.897 %
+  T~399 K: engine mixture (CO2 priced as a liquid): REFUSED at all 9 points (T above Tc of CO2); CO2 left out (water, generic route): n=9 AAD 7.277 % bias -7.277 %; pure water IAPWS-95: bias -0.402 % max 0.634 %
+  T~424 K: engine mixture (CO2 priced as a liquid): REFUSED at all 12 points (T above Tc of CO2); CO2 left out (water, generic route): n=12 AAD 8.396 % bias -8.396 %; pure water IAPWS-95: bias -0.407 % max 0.766 %
+  T~449 K: engine mixture (CO2 priced as a liquid): REFUSED at all 12 points (T above Tc of CO2); CO2 left out (water, generic route): n=12 AAD 9.212 % bias -9.212 %; pure water IAPWS-95: bias -0.278 % max 0.605 %
+d4a Hebach 2004 (aqueous phase, composition not stated): measured minus pure water on IAPWS-95 at the same (T, P)
+  T~293 K, P < 10 MPa: n=16 increment over pure water +0.178 .. +1.538 % (mean +1.066 %)
+  T~293 K, P >= 10 MPa: n=21 increment over pure water +1.552 .. +1.712 % (mean +1.637 %)
+  T~294 K, P < 10 MPa: n=2 increment over pure water +1.474 .. +1.526 % (mean +1.500 %)
+  T~294 K, P >= 10 MPa: n=9 increment over pure water +1.555 .. +1.703 % (mean +1.627 %)
+  T~313 K, P < 10 MPa: n=5 increment over pure water +0.151 .. +1.092 % (mean +0.640 %)
+  T~313 K, P >= 10 MPa: n=10 increment over pure water +1.141 .. +1.331 % (mean +1.241 %)

@@ -317,7 +317,9 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2347 direct + 3691 per-value = 6038 across 3016 files**
+**census: 2373 direct + 3695 per-value = 6068 across 3046 files**
+
+(recounted 2026-11-13, DEV.md 4c C198: twenty-six boron records (eight binary pairs re-sourced and eighteen mixing terms new, Felmy & Weare 1986) each declare `origin literature` as a direct child: +26 direct, +26 files; four chemistry records (the polyborates and the Ca and Mg borate pairs) gain a per-value `derived` entry for `logK25`: +4 per-value, +4 files; and, before it,
 
 (recounted 2026-11-12, DEV.md 4c C376: fourteen aqueous-species records gain a `provenance {}` block of per-value `estimated` entries for the entropies, and for the diprotic anions' enthalpies, that Shock 1995 marks as estimated (`species/HPropn`, `HBut`, `H2Maln`, `HGlyc`, `HLac` and their ions): +18 per-value blocks across 14 files, no direct entry.)
 

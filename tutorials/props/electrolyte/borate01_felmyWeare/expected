@@ -1,0 +1,78 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    borax_table1           I                0.393087850536   1e-4
+diag    borax_table1           T_K              298.15           1e-4
+diag    borax_table1           aw               0.990787118585   1e-4
+diag    borax_table1           chargeImposed    1                1e-4
+diag    borax_table1           gamma_B3O3OH4    0.423449637575   1e-4
+diag    borax_table1           gamma_B4O5OH4    0.106011715443   1e-4
+diag    borax_table1           gamma_BOH4       0.591616129108   1e-4
+diag    borax_table1           gamma_H          0.624719077966   1e-4
+diag    borax_table1           gamma_H3BO3      0.920034112535   1e-4
+diag    borax_table1           gamma_Na         0.549583836077   1e-4
+diag    borax_table1           m_B3O3OH4        0.0517063269607  1e-4
+diag    borax_table1           m_B4O5OH4        0.0700878496744  1e-4
+diag    borax_table1           m_BOH4           0.131090687789   1e-4
+diag    borax_table1           m_H              8.6202739044e-10 1e-4
+diag    borax_table1           m_H3BO3          0.0794389326309  1e-4
+diag    borax_table1           m_Na             0.323            1e-4
+diag    borax_table1           networkRestricted 1                1e-4
+diag    borax_table1           pH               9.26879416565    1e-4
+diag    seawater_boron_pH82    I                0.722505498692   1e-4
+diag    seawater_boron_pH82    T_K              298.15           1e-4
+diag    seawater_boron_pH82    aw               0.981266538064   1e-4
+diag    seawater_boron_pH82    chargeImposed    0                1e-4
+diag    seawater_boron_pH82    gamma_BOH4       0.474662838274   1e-4
+diag    seawater_boron_pH82    gamma_CaBOH4     0.583995129214   1e-4
+diag    seawater_boron_pH82    gamma_H          0.73657253034    1e-4
+diag    seawater_boron_pH82    gamma_H3BO3      1.00805365991    1e-4
+diag    seawater_boron_pH82    gamma_MgBOH4     0.611202692069   1e-4
+diag    seawater_boron_pH82    m_BOH4           6.59179318239e-05 1e-4
+diag    seawater_boron_pH82    m_CaBOH4         4.78469144755e-06 1e-4
+diag    seawater_boron_pH82    m_H              8.566126464e-09  1e-4
+diag    seawater_boron_pH82    m_H3BO3          0.000346033515243 1e-4
+diag    seawater_boron_pH82    m_MgBOH4         1.44238614854e-05 1e-4
+diag    seawater_boron_pH82    networkRestricted 1                1e-4
+diag    seawater_boron_pH82    pH               8.2              1e-4
+
+# --- ANCHOR rows (6th column): PRINTED values, never refreshed by --record -------------
+# (1) Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771, Table 1, p. 2772: the species
+#     molalities the PAPER'S OWN MODEL calculates for borax-saturated water at 25 C, totals
+#     Na 0.323 and boron 0.081 + 0.131 + 3 x 0.050 + 4 x 0.071 = 0.646.  IN-SAMPLE: an output of the
+#     fit these parameters came from, not a measurement; it holds the transcription and the engine's
+#     implementation of the Pitzer-HMW sums with neutral, ion-pair and polyborate terms.  The
+#     tolerance 5e-2 is three printed digits (a +-0.0005 on .050 is 1 %) plus the engine's different
+#     convention for the water mass and rounding of the paper's constants; the measured
+#     deviations are m_H3BO3 -1.9 %, m_BOH4 +0.07 %, m_B3O3OH4 +3.4 %, m_B4O5OH4 -1.3 %.
+diag    borax_table1           m_Na             0.323            5e-2     anchor
+diag    borax_table1           m_H3BO3          0.081            5e-2     anchor
+diag    borax_table1           m_BOH4           0.131            5e-2     anchor
+diag    borax_table1           m_B3O3OH4        0.050            5e-2     anchor
+diag    borax_table1           m_B4O5OH4        0.071            5e-2     anchor
+# (2) Dickson, Deep-Sea Res. 37 (1990) 755-766, Table 3, p. 762: ln(K*/m0) = -19.7556 for the dissociation of
+#     boric acid in synthetic seawater of S = 35 (composition of Table 1, p. 756: the totals of this operation) at
+#     298.15 K, on the TOTAL hydrogen ion scale, molality (mol per kg of water); stated uncertainty +-0.004 in ln K*
+#     (p. 764).  The stoichiometric constant lumps every orthoborate form, so the engine's B(OH)4- plus the
+#     CaB(OH)4+ and MgB(OH)4+ pairs are the numerator.  CONVERSION to what the engine computes: the engine's pH
+#     is the FREE hydrogen ion; the paper's scale counts the proton bound to sulfate, m*(H) = m(H) + m(HSO4)
+#     (the paper's eq. 10 with the bisulfate constant of the medium).  Bisulfate is therefore in this operation's
+#     network and the engine's own m(HSO4) is used: no sulfate constant from outside the engine, and the paper
+#     says that constant is hard to know accurately in seawater, so the conversion carries its own
+#     uncertainty (see below).  Arithmetic, from the run:
+#         m*(H) = 8.5661e-9 + 2.6142e-9 = 1.1180e-8 mol/kg ;  K* = exp(-19.7556) = 2.6318e-9
+#         R = K*/m*(H) = 0.23539 ;  m_H3BO3 = B_T/(1+R) = 3.4901e-4 mol/kg, B_T = 4.3116e-4.
+#     The model gives ln K* = -19.7115 (0.044 above the paper), i.e. m_H3BO3 0.85 % below the value the paper's
+#     constant implies.  TOLERANCE 1.2e-2 on m_H3BO3 (m_H3BO3 moves by 0.2 x the change in ln K*, so it is +-0.06 in
+#     ln K*): the root-sum-square of the paper's +-0.004 (p. 764), the fit residual 0.0042 (p. 763), the engine's
+#     bisulfate against a different constant (0.018 in ln K*, the size of the difference between the engine's
+#     m(HSO4)/m(H) = 0.305 and the 0.2815 that Dickson's constant gives) and the borate paper's own emf scatter
+#     for the Ca and Mg terms (0.013-0.025 in ln gamma, its p. 2773) is about 0.03; the tolerance is twice that.
+#     The model sits outside the paper's stated uncertainty (0.044 against 0.004) and inside the tolerance.
+#     INDEPENDENCE: PARTLY.  Dickson's seawater measurements are not among the data the borate paper says it
+#     fitted (its p. 2773: Platford's isopiestic data and Hershey et al. 1985 emf data in NaCl, CaCl2 and MgCl2
+#     for the Na, Ca and Mg terms; Dickson's UNPUBLISHED emf data in KCl, same laboratory and cell type, for the
+#     K terms), but the Na, Ca and Mg borate terms rest on data of the same family, and the major-ion terms of
+#     the medium come from Harvie, Moller & Weare 1984.
+diag    seawater_boron_pH82    m_H3BO3          3.4901e-4 1.2e-2  anchor
+
