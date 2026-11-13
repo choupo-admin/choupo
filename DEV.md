@@ -3476,6 +3476,21 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C329, SECOND PART: TO BE BUILT AS SOON AS POSSIBLE (Vitor,
+> 2026-11-13, to the reviewing session, which relayed it: asked how
+> rate-based distillation stood and told that the build of the
+> `rateBased` model word was what remained, "E diz lhe para fazer isso
+> ASAP").**  It goes AHEAD of what can wait (C394's suite economy, the
+> inherited tablet slices), and BEHIND only what is already in flight
+> (the fifth batch, the file headers).  First slice, per the four
+> decisions of this date: the new model word on a BINARY PACKED SEGMENT,
+> film coefficients and effective area from declared internals,
+> condenser and reboiler as equilibrium stages, held against the two
+> binary total-reflux sets already in the tree and against the design
+> record's own acceptance lines; documented in the guides in the same
+> slice (rule 4d).  A brief with every engine fact measured is written
+> before a builder starts.
+
 > **A SMALL INTEGRATION LANDED, LATE ON 2026-11-13: three branches.**
 > (a) THE PRICES AFTER THEIR REVIEW (C389, rows PR-03 to PR-14): each
 > sensitivity range on one basis (ammonia 0.380 to 0.692 EUR/kg, the
