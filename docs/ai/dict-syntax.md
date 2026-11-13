@@ -678,7 +678,10 @@ stream table and result JSON show that `vf`.
   temperature `Tc` (Vítor's rule: you can only speak of *vapour* below `Tc`).  A gas
   mixture holding a sub-critical species — steam in a water-gas-shift feed, `T` below
   water's `Tc` — is all-vapour but the screen can't prove it, so you say `phase gas;`.
-  A declared phase is honoured, never re-solved (R-E2), and priced as declared.
+  A declared phase is honoured, never re-solved (R-E2), and priced as declared
+  -- except that a PURE stream on a `pureFluids` formulation whose (T, P) lie
+  more than 1e-6 of p_sat(T) across the line from its declared phase is
+  refused by name (see pitfalls.md).
   `vaporFraction 0;` or `1;` on a mixture is refused naming this spelling.
 * `vaporFraction 0.25;` — a **two-phase split**, for a PURE component only: on its
   saturation curve `T` and `P` are *not* independent, so the split is a genuine

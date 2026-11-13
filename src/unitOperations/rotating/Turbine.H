@@ -32,6 +32,9 @@ Description
     Credo-pure gas-phase turbine (expander).  The mirror of the
     compressor: it EXTRACTS shaft work from a gas, dropping its
     pressure and temperature.
+    A computed pure inlet that this unit's own world places beyond the
+    saturation band on the LIQUID side is refused when the flowsheet hands
+    it over, naming both worlds (flashState::heldPhaseBeyondBandRefusal).
 
     Hardware (the only OP parameters):
         W_shaft  --  shaft power extracted from the fluid  [W, NEGATIVE]

@@ -2681,7 +2681,8 @@ formulation at the pressure the same decision gives,
   h_L(T,P) \;=\;
   \begin{cases}
     h(T, P)                         & P > p_{\mathrm{sat}}(T)\,(1+\epsilon),\\[2pt]
-    h\bigl(T, p_{\mathrm{sat}}(T)\bigr) = h'(T) & \text{otherwise},
+    h\bigl(T, p_{\mathrm{sat}}(T)\bigr) = h'(T) & |P/p_{\mathrm{sat}}(T)-1| \le \epsilon,\\[2pt]
+    h(T, P)                         & P < p_{\mathrm{sat}}(T)\,(1-\epsilon),
   \end{cases}
   \label{eq:pure-fluid-caloric-phase}
 \end{equation}
@@ -2696,9 +2697,39 @@ w$, then found a ``liquid'' 125\,K hotter than its suction: a suction pressure
 moved by $-10^{-12}$ of itself was enough, and another compiler's arithmetic
 did it on its own.  \code{check\_pure\_fluid\_phase\_asked} runs that pump,
 and a compressor fed saturated steam, at seven suction pressures
-$p_{\mathrm{sat}}(1+e)$ with $|e|\le10^{-6}$ and demands one answer.  The
+$p_{\mathrm{sat}}(1+e)$ with $|e|\le5\times10^{-7}$ and demands one answer.  The
 turbine's discharge and any state whose phase the unit does not hold (a wet
 exhaust) keep the formulation's stable phase at $(T,P)$.
+
+\emph{Beyond} the band on the other side of the line --- the third case of
+\eqref{eq:pure-fluid-caloric-phase} --- the phase held is one that $T$ and
+$P$ contradict, and the enthalpy and entropy are taken at $(T,P)$, the state
+the stream functions below price, so a caller and the energy report would
+read one number, said in the caveat block.  No unit's inlet reaches that
+case any more (the refusals below come first); it stays the one rule for any
+call that asks a held phase across the line.  (The density keeps the saturated
+branch of the phase asked: it is asked as a property of \emph{that} phase.)
+Before this rule a pump whose suction was declared liquid $2\times10^{-6}$
+below $p_{\mathrm{sat}}$ priced the saturated liquid while the report priced
+the vapour, and the plant boundary was left open by the latent heat at exit
+0.  Such a stream never reaches a unit when an author wrote it: a pure stream
+on a pure-fluid formulation whose \emph{declared} phase (\code{phase liquid;}
+or \code{phase gas;}, or \code{vaporFraction 0} or~$1$) its own $T$ and $P$
+place more than $\epsilon$ across the line is over-specified and inconsistent,
+and it is refused by name before any unit runs, in the case's world and in
+the own world of each unit that consumes it, with its $p_{\mathrm{sat}}(T)$
+and the two remedies (delete the phase word, or write
+$P = p_{\mathrm{sat}}(T)$ if the saturated state is meant).  A \emph{computed}
+inlet in that state can still arrive, from a producer that computes in
+another thermophysical world and puts a saturated state on \emph{its} line.
+A unit that holds one phase of its inlet --- the pump a liquid, the
+compressor and the turbine a vapour --- reads it in its own world, where
+priced at $(T,P)$ it is the other phase, and refuses it by name when it is
+handed over, naming both worlds (the consumer's formulation and
+$p_{\mathrm{sat}}(T)$ there, the producing unit and its formulation) and the
+distance: a saturated state does not cross a model boundary unchanged.  A
+pump whose own losses would heat its liquid past $T_{\mathrm{sat}}(P_{\mathrm{out}})$
+refuses too, rather than publish an outlet its discharge search did not find.
 
 The energy report prices every stream through the package's stream
 functions (\code{H\_stream\_formation}, \code{S\_stream\_formation},

@@ -3476,6 +3476,106 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C329, SECOND PART: THE FOUR DECISIONS, TAKEN BY THE ARCHITECT ON A
+> STUDY OF PRACTICE (2026-11-13; delegated by C389 (3); the study is
+> private, in the Studies folder, and names what it read: three
+> textbooks, the handbook's distillation section, two commercial manuals,
+> the papers in the folder, and the source of the open-source simulator
+> the earlier studies surveyed).**
+> (1) THE MULTICOMPONENT EFFICIENCY.  DECLARED: one Murphree vapour
+> efficiency per tray (or per section), the same for every component;
+> never on the condenser or the reboiler.  COMPUTED from the internals in
+> a column of more than two components: a pseudo-binary efficiency on
+> two DECLARED keys, applied to every component.  A per-component
+> efficiency is OUTPUT only, printed with the warning that it is
+> unbounded (the texts agree that component efficiencies in a
+> multicomponent mixture can be negative or above one); it is never an
+> input.  This is the practice the texts describe and the one the
+> measured industrial column in the tree was analysed with.
+> (2) THE EXPLICIT INTERFACIAL MODEL IS A NEW MODEL WORD of the
+> distillation column (`rateBased`), not an option of the equilibrium
+> column; the efficiency computed from the internals stays a block on
+> the full MESH.  The case declares the internals, the correlations
+> (one default per kind of internal, named in the output), the flow model
+> of each phase and the number of segments of a packed section; the film
+> is algebraic; condenser and reboiler stay equilibrium stages.  First
+> slice: the binary packed segment.  For three components or more the
+> film is Maxwell-Stefan: an effective- or equal-diffusivity shortcut is
+> NOT offered there, because near a distillation boundary it predicts the
+> wrong product (the packed-column paper read today, its section 5).
+> (3) THE VALIDATION LADDER, three rungs, each for what it can decide:
+> the total-reflux multicomponent profiles of that paper (do the models
+> end on the right side of the boundary?); ONE measured column at a
+> general reflux (below); the industrial butane fractionator already in
+> the subset, held to the efficiencies its authors back-calculated, not
+> to the products alone.  The two binary total-reflux sets stay the
+> anchor of the correlations.
+> (4) THE GENERAL-REFLUX MEASUREMENT IS Mori, Oda and Aragaki (J. Chem.
+> Eng. Japan 29 (1996) 307-314), obtained today (open access) and in the
+> folder: methanol, ethanol and water at atmospheric pressure on a
+> structured packing, 0.21 m by 2.20 m packed, reflux ratio 6.42 with a
+> subcooled reflux and a cold feed.  ITS LIMITS, SAID: one run; a
+> near-ideal system with no distillation boundary, so it cannot tell the
+> two formulations apart; its Table 5 gives the END compositions and the
+> profiles are in a figure, to be digitised with three readings before
+> any number enters a case.  It was read from page images by a study
+> general; nothing of it is in the tree yet.
+> THE ORDER OF SLICES in the design record stands with these four
+> written in; the reviewing session amends its record.
+
+> **C389 (Vitor, 2026-11-13, answering what the architect needed from
+> him: "4. decide tu de forma sensata e de acordo com as boas praticas.
+> 3. Ve como dizem as boas praticas ou [the open-source simulator the
+> C378 study surveyed].  2. Decide e eu depois logo revejo").**  THREE
+> DELEGATIONS, each answered here.
+> (4) THE TWO PRACTICE QUESTIONS OF THE PHARMACEUTICAL CASES, RULED.
+> PH-03: a change of PRODUCT is the full clean and line clearance of the
+> suite AND the product's own part (the verification of the clean, the
+> change parts, the colour), so it can never cost less time than the
+> same-product campaign clean.  The cases declare each product clean as
+> the train's campaign changeover PLUS its own increment (the proposal's
+> candidate B: it keeps the colour direction the case teaches, which a
+> flat floor would erase); 62 rows of kind `batch` move in
+> donepezil02_two_strengths, listed in the proposal note.  With it, in
+> the engine: a declared product clean shorter than the train's campaign
+> changeover is ANNOUNCED.  PH-06: a machine has ONE size, the INSTALLED
+> one its rated-machine block declares (equipment is bought in catalogue
+> sizes).  What the batch plan computes from the lot and the target fill
+> is a REQUIREMENT held against it; the fill at the installed size is a
+> RESULT, published and checked against the declared range; the quote is
+> priced on the installed size.  Today the final blender and the coating
+> pan are priced at 1.333 and 0.812 m3 while the checks declare a 1.2 m3
+> bin and a 1.0 m3 pan.  Both go to the reviewing session, which wrote
+> the proposal and holds the tablet plants' territory.
+> (2) THE REFERENCE PLANT'S PRICES: the author-set round figures (NH3
+> 1.00, H2 4.50, N2 0.05 EUR/kg) are replaced by PUBLIC figures, each
+> dated and cited from a source that was read, with the conversion
+> written; the break-even prices of C385 stay beside the NPV.  A general
+> proposes the table (source, date, value, unit, conversion) BEFORE the
+> case is touched; the re-record lists its rows.  He reviews afterwards.
+> (3) THE FOUR DECISIONS OF C329'S SECOND PART are taken by the architect
+> AFTER a study of practice: the literature in the folder (the
+> nonequilibrium-stage papers, the two packed-column papers read today)
+> and that simulator's source, read for organisation only; the notes
+> name it and stay in the private Studies folder.  READ TODAY BY THE
+> ARCHITECT, AND IT CHANGES THE RECORD: the packed-column paper the
+> design record proposes as the general-reflux measurement (Pelkonen et
+> al., Chem. Eng. Process. 40 (2001) 235-243) is at TOTAL REFLUX in every
+> run (its section 6 says so; Tables 3 to 5 are composition profiles
+> along the packing for three non-ideal systems, ternary and quaternary,
+> on three structured packings).  It was in the literature folder since
+> 2026-11-11; the architect gave its DOI as a missing article without
+> searching the folder, and Vitor downloaded it a second time.  WHAT IT
+> IS GOOD FOR: the multicomponent total-reflux validation the tree
+> lacks (today's total-reflux path is binary), and, for C388, its Fig. 5:
+> near a distillation boundary the equilibrium-stage model and an
+> equal-diffusivity model fill the reboiler with 2-propanol where the
+> experiment and the Maxwell-Stefan model fill it with water: the simple
+> model predicts the wrong PRODUCT.  A measured column at a general
+> reflux named by that paper's own Table 1: Mori, Oda and Aragaki, J.
+> Chem. Eng. Japan 29 (1996) 307-314 (methanol, ethanol, water; partial
+> reflux; six compositions along the column), to be obtained and read.
+
 > **THE SINGLE INTEGRATION OF 2026-11-13 IS ON MAIN (d0e3bfab0): ELEVEN
 > BRANCHES, ONE FULL SWEEP.**  THE SWEEP'S WRITTEN REASON: the golden
 > comparator and thirteen value-extraction helpers of `bin/runTests`

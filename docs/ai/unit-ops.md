@@ -961,6 +961,19 @@ operation block.
   * No package capability beyond the components' own records.
 <!-- END GENERATED unit-acceptance turbine -->
 
+**A computed inlet across the saturation line (pump, compressor, turbine).**
+A unit that holds ONE phase of its inlet (its declared acceptance: the pump a
+liquid, the compressor and the turbine a vapour) refuses, at the hand-over, a
+pure stream that its OWN world places beyond the 1e-6 band on the other side
+of the saturation line -- priced at (T, P) there it is the other phase.  It
+arises where a saturated state crosses a model boundary (a producer under its
+own `thermo {}` puts it on ITS line).  The message names the stream, the unit,
+T, P, p_sat(T) and the formulation in the unit's own world, P/p_sat - 1
+against the band, and the producing unit with its formulation; the remedy is
+one world for producer and consumer.  One home:
+`flashState::heldPhaseBeyondBandRefusal`, applied in `Flowsheet.cpp` where a
+unit is handed its inlets.
+
 ### `pump`
 Incompressible: `ΔP = η W_shaft / Q_vol`, `Q_vol = ṅ·v_molar` (set by the
 feed), tiny dissipation `dT = (1-η) w_real / Cp_liq`.  Closed form, no
@@ -979,7 +992,16 @@ discharge T solves `H_real(T_out, P_out) = H_real(T_in, P_in) + w_real`, and
 both enthalpies are asked AS LIQUID (2026-11-13, C378 defect 3): a suction
 on the saturation line -- a condenser's saturated liquid -- is the saturated
 liquid at T_in whatever the last bit of P, never the vapour root (which once
-put a closed Rankine loop's pump 125 K hot on another compiler).  Theory
+put a closed Rankine loop's pump 125 K hot on another compiler).  The pump
+never publishes an outlet it did not find: when that enthalpy lies above the
+saturated liquid's at `P_out` (the losses heat the liquid past `T_sat(P_out)`,
+measured at 550 K with `eta 0.01`) it REFUSES by name, naming `T_sat(P_out)`,
+both enthalpies, `eta` and the remedies (raise the discharge pressure or the
+efficiency; a flashing discharge is not this unit's model); a search that
+fails otherwise raises its non-convergence -- the inlet temperature is never
+published in its place.  A computed inlet that the pump's own world puts on
+the vapour side beyond the band is refused when it is handed over (the note
+just above this section).  Theory
 Guide `sec:pure-fluid-caloric-phase`; gate `check_pure_fluid_phase_asked`.
 THE DENSITY (C378 pilot): `v_molar = M / rho`, rho the property kernel's
 liquid density at the INLET state through its methods (`liquidProperty::
