@@ -2273,7 +2273,10 @@ on the finest class).
 A cake filter on a SLURRY (a liquid carrying solids; not a gas-borne powder),
 constant pressure, the two-resistance law of Geankoplis, Hersel & Lepek 5th ed.
 section 24.2: `t/V = K_p V/2 + B`, `K_p = mu alpha c_S/(A^2 dp)`,
-`B = mu R_m/(A dp)`; a compressible cake `alpha = alpha0 dp^s`.  Inlets
+`B = mu R_m/(A dp)`; a compressible cake `alpha = alpha0 dp^s`.  A negative
+`compressibility` is REFUSED by name (alpha would fall as dp rises); s above 1
+runs and is ANNOUNCED (K_p then grows as dp^(s-1): where the cake dominates the
+medium, a higher pressure drop gives LESS filtrate); 0 <= s <= 1 is silent.  Inlets
 `( slurry [wash] )`, outlets `( cake filtrate [spentWash] )`.  `model rotaryDrum`
 is continuous (declare `cycleTime` XOR `area`; the other is the result, eq.
 24.2-26); `model batchPress` is cyclic (declare `area`, `filtratePerCycle`,

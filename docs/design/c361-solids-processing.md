@@ -524,28 +524,32 @@ paper.
 
 | quantity | as implemented | units | source | code |
 |---|---|---|---|---|
-| compressible cake | alpha = alpha_0 dp^s | m/kg, dp in Pa | G eq. 24.2-11, p. 1081 | `CakeFilter.cpp:184` |
-| liquor kept by the cake | L_r = (m - 1) W | kg/s | the definition of m, G eq. 24.2-10, p. 1080 | `:205` |
-| filtrate | Q_f = (m_l - L_r) / rho_l | m3/s | balance | `:219` |
-| solids per filtrate | c_S = W / Q_f, printed beside rho c_x / (1 - m c_x) | kg/m3 | G eq. 24.2-10 (the same by algebra) | `:220`, `:222` |
-| cake porosity (saturated) | eps = ((m-1)/rho_l) / ((m-1)/rho_l + 1/rho_s) | - | ours: the liquor fills the voids | `:225` |
-| drum flux, t_c declared | V/(A t_c) = [-R_m/t_c + (R_m^2/t_c^2 + 2 c_S alpha dp f/(mu t_c))^1/2] / (alpha c_S) | m/s | G eq. 24.2-26, p. 1089 (eq. 24.2-24 when R_m = 0) | `:272` |
-| drum, area declared | t_c = (f - mu R_m Q_f/(dp A)) 2 dp A^2 / (mu alpha c_S Q_f^2) | s | G eq. 24.2-25 solved for t_c | `:289` |
-| cake formation time | t = f t_c | s | G eq. 24.2-23, p. 1088 | `:291` |
-| constants | K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp) | s/m6, s/m3 | G eqs. 24.2-14, -15, p. 1082 | `:308-309` |
-| filtration time | t = K_p V^2/2 + B V | s | G eq. 24.2-17, p. 1082 | `:310` |
-| washing rate | (dV/dt)_f = k / (K_p V_f + B); k = 1 (`sameAsFiltrate`, and every drum), 1/4 (`throughWashing`) | m3/s | G eqs. 24.2-19, -20, pp. 1086-1087 | `:343` |
-| wash per cycle, wash time | V_w = Q_w V_f / Q_f; t_w = V_w / (dV/dt)_f | m3, s | cycle-averaged flows | `:344-345` |
-| press cycle, presses | t_c = t_f + t_w + t_clean (G p. 1087); n = Q_f t_c / V_f | s, - | G Example 24.2-3; n is ours | `:377-378` |
-| wash ratio | N = wash volume / volume of liquid in the cake | - | Perry 9th ed. p. 18-76 (the definition beside eq. 18-71) | `:359` |
-| solute remaining, `displacement` | R = max(0, 1 - N) | - | the definition of ideal displacement (no source claimed) | `:55` |
-| solute remaining, `tabulated` | ln R linear in N between the test's points; no extrapolation | - | Perry eq. 18-71, p. 18-76 ("log R vs. N", named, not parametrised) | `:70` |
-| washed cake liquor | n_cake,i = R n_r,i + beta n_w,i, beta = (1 - R) V_r / V_w (refused above 1) | kmol/s | ours: volume-for-volume replacement | `:361`, `:370` |
-| spent wash | the DIFFERENCE (n_r,i + n_w,i) - n_cake,i | kmol/s | balance | `:372` |
-| cake per area, thickness | W_A = c_S V / A; L = W_A / ((1 - eps) rho_s) | kg/m2, m | G eq. 24.2-4 with the filtrate held in the cake neglected, as G does | `:396-397` |
+| compressible cake | alpha = alpha_0 dp^s | m/kg, dp in Pa | G eq. 24.2-11, p. 1081 | `CakeFilter.cpp:221` |
+| liquor kept by the cake | L_r = (m - 1) W | kg/s | the definition of m, G eq. 24.2-10, p. 1080 | `:242` |
+| filtrate | Q_f = (m_l - L_r) / rho_l | m3/s | balance | `:256` |
+| solids per filtrate | c_S = W / Q_f, printed beside rho c_x / (1 - m c_x) | kg/m3 | G eq. 24.2-10 (the same by algebra) | `:257`, `:259` |
+| cake porosity (saturated) | eps = ((m-1)/rho_l) / ((m-1)/rho_l + 1/rho_s) | - | ours: the liquor fills the voids | `:262` |
+| drum flux, t_c declared | V/(A t_c) = [-R_m/t_c + (R_m^2/t_c^2 + 2 c_S alpha dp f/(mu t_c))^1/2] / (alpha c_S) | m/s | G eq. 24.2-26, p. 1089 (eq. 24.2-24 when R_m = 0) | `:309` |
+| drum, area declared | t_c = (f - mu R_m Q_f/(dp A)) 2 dp A^2 / (mu alpha c_S Q_f^2) | s | G eq. 24.2-25 solved for t_c | `:326` |
+| cake formation time | t = f t_c | s | G eq. 24.2-23, p. 1088 | `:328` |
+| constants | K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp) | s/m6, s/m3 | G eqs. 24.2-14, -15, p. 1082 | `:345-346` |
+| filtration time | t = K_p V^2/2 + B V | s | G eq. 24.2-17, p. 1082 | `:347` |
+| washing rate | (dV/dt)_f = k / (K_p V_f + B); k = 1 (`sameAsFiltrate`, and every drum), 1/4 (`throughWashing`) | m3/s | G eqs. 24.2-19, -20, pp. 1086-1087 | `:380` |
+| wash per cycle, wash time | V_w = Q_w V_f / Q_f; t_w = V_w / (dV/dt)_f | m3, s | cycle-averaged flows | `:381-382` |
+| press cycle, presses | t_c = t_f + t_w + t_clean (G p. 1087); n = Q_f t_c / V_f | s, - | G Example 24.2-3; n is ours | `:414-415` |
+| wash ratio | N = wash volume / volume of liquid in the cake | - | Perry 9th ed. p. 18-76 (the definition beside eq. 18-71) | `:396` |
+| solute remaining, `displacement` | R = max(0, 1 - N) | - | the definition of ideal displacement (no source claimed) | `:56` |
+| solute remaining, `tabulated` | ln R linear in N between the test's points; no extrapolation | - | Perry eq. 18-71, p. 18-76 ("log R vs. N", named, not parametrised) | `:71` |
+| washed cake liquor | n_cake,i = R n_r,i + beta n_w,i, beta = (1 - R) V_r / V_w (refused above 1) | kmol/s | ours: volume-for-volume replacement | `:398`, `:407` |
+| spent wash | the DIFFERENCE (n_r,i + n_w,i) - n_cake,i | kmol/s | balance | `:409` |
+| cake per area, thickness | W_A = c_S V / A; L = W_A / ((1 - eps) rho_s) | kg/m2, m | G eq. 24.2-4 with the filtrate held in the cake neglected, as G does | `:433-434` |
 
 Window: constant pressure; laminar flow through the cake (G p. 1077); the
-cake law is the case's measured alpha or (alpha_0, s).  Every solid is
+cake law is the case's measured alpha or (alpha_0, s).  A negative s is
+refused by name (alpha would fall as dp rises -- a cake that opens as it is
+squeezed); s above 1 runs and is ANNOUNCED on the advisory log, because then
+K_p grows as dp^(s-1) and, where the cake term dominates the medium's, a
+higher pressure drop gives less filtrate; 0 <= s <= 1 is silent.  Every solid is
 retained (stated, not computed).  The products leave at the feed's T and P
 (no work; the wash must arrive at the slurry's temperature).
 
