@@ -15277,6 +15277,41 @@ equation in one number.}
 A single non-linear equation in a single unknown $\xi$: \textbf{Newton-1D
 in one variable}, with damping. Convergence is typically 3--5 iterations.
 
+\subsection{The volumetric flow, by the phase of the feed}\label{sec:cstr-volumetric-basis}
+
+The rate is written in concentrations, $c_i = F_i/Q$, and the model holds the
+volumetric flow $Q$ constant at its feed value (constant density); the space
+time is $\tau = V_R/Q$.  $Q$ depends on what the feed \emph{is}, and the
+feed's phase is a result: the vapour fraction $\beta$ the unit already holds,
+resolved at the feed's own $(T,P,\zv)$ by the same equilibrium every unit and
+the energy report use (\code{flashState::resolvedInletVaporFraction}):
+\begin{equation}
+  Q \;=\;
+  \begin{cases}
+    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}) & \beta = 0
+      \ \text{(liquid feed)},\\[3pt]
+    F \, \bar M / \rho_V(T,P,\zv) = F\, v_V(T,P,\zv) & \beta = 1
+      \ \text{(vapour feed)},\\[3pt]
+    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}),\ \text{announced}
+      & 0 < \beta < 1,
+  \end{cases}
+  \label{eq:cstr-feed-volumetric-flow}
+\end{equation}
+with $V_i^{\mathrm{liq}}$ each component record's 25\,$^\circ$C liquid volume
+(no temperature or pressure effect; the liquid-property reorganisation of
+\S\ref{sec:liquid-property-sources} moves it later) and $\rho_V$ the package's
+vapour density from the equation of state the case declares ($v_V=RT/P$ for
+the ideal gas).  A two-phase feed keeps the liquid basis --- this unit is a
+stirred liquid, and a trace of dissolved gas flashing at the feed (the
+fermentors' CO$_2$) is what it still means --- and the run says so once per
+unit with the vapour fraction.  Until 2026-11 the liquid line applied to every
+feed: \code{cstr02\_reversible\_wgs}, CO and steam at 600\,K and 10\,bar, got
+$Q = 7.44\times10^{-6}$\,m$^3$/s and $\tau = 134$\,s, where the gas's own
+$Q = FRT/P = 1.386\times10^{-3}$\,m$^3$/s gives $\tau = 0.72$\,s for the
+same $V_R$, 186 times less.  On the gas basis the reversible rate's detailed
+balance $k_{\mathrm{rev}} = k/K_c$ reads concentrations on the basis $K_c$ is
+defined on.
+
 \subsection{First-order kinetics --- analytic check}
 
 For an Arrhenius first-order reaction $r = k\, c_A$ with

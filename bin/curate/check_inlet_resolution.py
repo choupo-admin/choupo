@@ -1542,7 +1542,14 @@ def main() -> int:
             "        { component H2; nu -1; order 1; }\n"
             "        { component O2; nu -0.5; order 0; }\n"
             "        { component water; nu 1; order 0; }\n    );\n"
-            "    kinetics { type Arrhenius; A 0.1; Ea 0; }\n}\n")
+            #  The burner's feed is a GAS, and since the C378 pilot's defect 2
+            #  (2026-11-13) the cstr prices a gas feed on the gas's own
+            #  volume (tau ~ 98 s here, not the ~8.6e4 s its components'
+            #  liquid volumes gave).  A 100 keeps k tau ~ 1e4, the
+            #  near-complete burn (X ~ 0.9999) whose product is the liquid
+            #  water this arm is about; at A 0.1 the gas basis leaves 9 %
+            #  of the H2 unburnt and the outlet two-phase.
+            "    kinetics { type Arrhenius; A 100; Ea 0; }\n}\n")
         #  Small flows: the multi-reaction Newtons judge an absolute residual
         #  in mol/s, and 1 kmol/h keeps the fixture well inside it.
         kwater = "componentMolarFlows\n{\n    water  1 kmol/h;\n}\n" + state

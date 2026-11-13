@@ -34,7 +34,8 @@ const std::map<std::string, std::vector<Row>>& table()
     static const std::map<std::string, std::vector<Row>> t = {
         { "pump",              { { "liquidDensity",     { "bypass" } } } },
         { "pressureExchanger", { { "liquidVolume",      { "bypass" } } } },
-        { "cstr",              { { "liquidVolume",      { "bypass" } } } },
+        { "cstr",              { { "liquidVolume",      { "bypass" } },
+                                 { "vapourVolume",      { "kernel" } } } },
         { "pfr",               { { "liquidVolume",      { "bypass" } },
                                  { "liquidDiffusivity", { "kernel" } } } },
         { "crystalliser",      { { "liquidVolume",      { "bypass" } } } },

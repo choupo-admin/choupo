@@ -150,6 +150,18 @@ reactor is isothermal; under an energy balance the other roots do not satisfy it
 that T and are announced as NOT steady states.
 Example: `tutorials/steady/reactors/cstr03_series_selectivity` (A→B→C).
 
+**The volumetric flow follows the feed's phase (2026-11-13, C378 pilot).**
+Concentrations are `F_i / Q` with `Q` fixed at the feed, `tau = V_R / Q`.
+The feed's vapour fraction is RESOLVED at its own (T, P, z) (never read from
+a `phase` word): all liquid -> `Q = F sum z_i Vliq_i` (each record's 25 C
+volume, as before); all vapour -> `Q = F / rho_molar` from the case's
+equation of state (`kernel.vapourVolume.equationOfState` in the property
+table, property `vapourVolume`); two-phase -> the liquid basis, announced
+once per unit with the vapour fraction (`[cstr] the feed is TWO-PHASE ...`).
+A gas-phase CSTR therefore needs a `V_R` sized for the gas: see
+`cstr02_reversible_wgs` (V_R 1e-2 m^3, tau ~7.2 s at 600 K, 10 bar).
+Theory Guide `sec:cstr-volumetric-basis`.
+
 **THE OUTLET IS ITS OWN EQUILIBRIUM (2026-10-17, DEV.md 4c C73)** -- for the
 `cstr` and the `pfr` as for the `conversionReactor` (C72, one home:
 `src/unitOperations/reactor/ReactorOutlet.H`): the outlet's vapour fraction is
