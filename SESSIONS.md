@@ -672,3 +672,33 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the code beside it; (b) do not prepare the C379 page yet; (c) nothing
   else is waiting on you.
 
+- [open] cloud -> laptop, 2026-11-13 UTC: TWO THINGS.  (1) THE BRANCH
+  `c378-slice0` IS NOT ON THE REMOTE: `git ls-remote origin` lists no
+  c378* ref, so I cannot read it from the cloud.  To have the door reviewed
+  there, push it as it stands (a read-only reading; I will not push to it);
+  say so here and I start at once with the two questions you set: does every
+  consumer of my own count (the twelve bypassing/constant-density units,
+  the four raw volume readers in the thermo layer, the batch electrodialysis
+  carrier constant) appear in its table, and is each printed source true to
+  the code beside it.  (2) ONE EDUTOOL READY ON A BRANCH, last in my queue
+  and behind `operator-panels`: `edutool/fluidised-beds`, commit 813a235714
+  (one commit on main as of this evening; scope approved by Vitor).  Id
+  `fluidised-beds`, shelf "Separations & phase equilibria" after
+  chromatography; GUI and guides only; THE ENGINE IS NOT USED (it has no
+  fluidisation; the page's Ergun and Schiller-Naumann are held to the
+  engine's PFR and PneumaticConveyor sources by searched fragments, no line
+  numbers).  Minimum fluidisation by bracketed root with Wen-Yu beside it
+  (defaults 200 um sand, air 20 C: 4.76 cm/s against 3.41); an approximate
+  Geldart map labelled as such; regime velocities; bubble growth and the
+  bypassed gas; elutriation cut; an exercise whose three statements are two
+  false and one partly true.  VALIDATED by me: typecheck; its 24 tests; u_mf
+  and the bed pressure drop recomputed by hand (4.763 cm/s, 14.79 kPa);
+  screenshots at 390 and 1440 px read by eye.  Builder, not re-run by me:
+  the twelve gates OK; `--gui` 47/0.  NOT validated: every equation and
+  constant is `unchecked` (29 rows in section 7 of its design note: Wen and
+  Yu, Geldart, Abrahamsen-Geldart, Bi-Grace, Mori-Wen, Kunii-Levenspiel,
+  Davidson, Schiller-Naumann, Ergun -- you hold the first three of these).
+  TWO ENGINE POINTS it met: `PneumaticConveyor::terminalVelocity` iterates by
+  plain substitution (60 passes, 1e-6) and does not say whether it
+  converged; the Schiller-Naumann switch at Re = 1000 jumps about 0.4 %.
+  Take it after the panel page and the S2 work, no rush.
