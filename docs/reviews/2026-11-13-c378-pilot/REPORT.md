@@ -2,10 +2,10 @@
 
 Date: 2026-11-13.  Reviewed: `c378-pilot` at its final head f08f9b061e,
 before it landed, on native builds of that commit.  Three reviewers, one
-angle each; two have handed back and are reported here, the third (blast
-radius and gates) is section 6, still to come.  Findings:
+angle each; the third (blast radius and gates) is section 6.  Findings:
 `findings.tsv` (PA-01 .. PA-19 the contract and the code, PB-01 .. PB-09
-the numbers).  Scripts: `contract/` and `numbers/`; each takes
+the numbers, PC-01 .. PC-16 the blast radius and the gates).  Scripts:
+`contract/`, `numbers/` and `blast/`; each takes
 `<repo-root> <scratch-dir>` and writes only under the scratch directory.
 
 ## 1. Verdict
@@ -100,6 +100,59 @@ demonstrations need mirror data that is not in git and were not re-run.
   moved golden rows were read instead).
 - The gate edits of the last commit beyond one literal.
 
-## 6. Blast radius and gates
+## 6. Blast radius and gates (the third reviewer)
 
-To come: the third reviewer is still measuring.
+Rows PC-01 .. PC-16 (PC-08 is PB-01 again and has no row of its own).
+
+**The pilot's headline claim holds.**  `--scope` over 43 cases with no
+pump and no CSTR (the steady fast-set entries, batch, control, unsteady,
+two plants and four props families): 48 PASS, 0 FAIL, conservation gates
+included; nothing moved.  Over every case with a pump or a CSTR plus the
+six demonstrations: 41 PASS, 0 FAIL, with the missing caustic record
+placed by hand (without it the two caustic cases fail: PA-01).  No pin
+was loosened by the last commit; one was tightened.
+
+**Two more rows gate the batch.**  Both reproduced by the reviewing
+session on a build of f08f9b061e.
+
+| id | minimal case | observed | expected |
+|---|---|---|---|
+| PC-03 | liquidDensity02 run with every 3rd (or 7th) `pow` result moved by one unit in the last place (`blast/ulp_probe.py`) | exit 2, "check value NOT reproduced -- Table 7, T = 300 K, rho = 996.556 kg/m3" | exit 0, as with no result moved and with every 2nd or 5th |
+| PC-02 | cstr01_first_order with `water 0.2 kmol/h;` added to `0/feed`, sealed as shipped and with the manifest removed (`blast/latent_seal_demo.sh`) | sealed 855.33 kg/m3, unsealed 856.65 kg/m3, nothing announced | one density, or a line saying the sealed case has no copy of the reference record |
+
+PC-03 is the same kind of defect as the closure of an absent species
+(review CI-00): a decision that flips on the last bit of a library
+function.  The check compares a liquid's pressure at a given density to
+nine printed digits; clean, it passes with a margin of 3.8e-10 relative.
+Another compiler or math library can be on the other side of that margin,
+and since the pilot the record is loaded by every pump and reactor whose
+liquid holds water.
+
+**A red test** (PC-04): the web app's van Heerden lesson still quotes
+cstr08's steady states from before the re-record; its test fails, so the
+web-app run of the branch cannot pass.
+
+**What the gates do not hold** (PC-05, by-hand sabotages: edit, build,
+run, restore, build):
+
+| sabotage | caught? |
+|---|---|
+| the pump head from a density perturbed by 2e-5, the molar volume untouched | no |
+| the reactor's molar volume from a density perturbed by 1e-7 | yes (the wiring arm and the rate-expression gate; the goldens at 1e-4 did not see it) |
+| the reference leaf's volume perturbed by 2e-6 | no (the route bench answers NO SUBJECT on this machine) |
+| the resolver ignoring reference records | yes |
+| ideal mixing perturbed only for three or more constituents | no |
+| the pressure-advisory threshold raised from 2 MPa to 6 or 2000 MPa | no |
+| a new caller of the entry through an alias or a using-declaration | no |
+
+The four survivors, applied together with the opposite sign, also pass
+everything.
+
+**Seals** (PC-02, PC-10, PC-14): beyond PC-02, a sealed case still reads
+the installation catalogue for solution records and utilities (on main
+too); with the catalogue hidden two plants refuse and two cases change
+their utility allocation.  Sealed and unsealed twins agree on the twelve
+cases that carry a copy of the water record.
+
+**Not reviewed by this reviewer:** `check_gate_selftest` (read, not run);
+a full sweep; `--gui` as a suite; accuracy against measurements.

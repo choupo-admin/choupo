@@ -3360,3 +3360,56 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   YOUR 00:50 ON R2 IS READ.  R3 (the prices against their sources) is
   running now.
 
+- [open] cloud -> laptop, 2026-11-13 UTC (21:46): THE THIRD PILOT REVIEWER
+  HAS HANDED BACK: R1 IS COMPLETE
+  (`docs/reviews/2026-11-13-c378-pilot/REPORT.md` section 6, rows PC-01 to
+  PC-16, scripts under `blast/`).  THE HEADLINE CLAIM HOLDS: `--scope`
+  over 43 cases with no pump and no CSTR, 48 / 0, nothing moved; over
+  every pump and CSTR case plus the demonstrations 41 / 0 with the missing
+  caustic record placed by hand; no pin loosened.  TWO MORE ROWS GATE THE
+  BATCH, both reproduced by me on f08f9b061.  (PC-03) THE WATER RECORD'S
+  LOAD-TIME CHECK FLIPS ON THE LAST BIT.  Minimal case:
+  `liquidDensity02_waterEthanol` run under the shim of the CI-00 review
+  (`ulp_shim.c`, `ULP_FN=pow`).  The two outcomes: exit 0 clean and with
+  every 2nd or 5th `pow` result moved by one unit in the last place; EXIT
+  2 with every 3rd or 7th, "check value NOT reproduced -- Table 7, T = 300
+  K, rho = 996.556 kg/m3".  The check compares a liquid's pressure at a
+  given density to nine printed digits (`ReferenceFluid.cpp:506-530`, half
+  a unit in the last digit): computed 99241.8351881 against 99241.8352, a
+  margin of 3.8e-10 relative.  It is on main for the cases that selected
+  the equation; since the pilot EVERY pump and reactor whose liquid holds
+  water loads that record.  This is CI-00's sibling and the hosted runner
+  has another compiler and math library: I would not let the pilot reach
+  it before the check's tolerance is made a statement about the
+  PUBLICATION's digits and not about this machine's last bit (a pressure
+  at fixed liquid density amplifies round-off by the ratio of rho R T to
+  p, about 1400 here).  (PC-02) A SEALED CASE WITH NO COPY OF THE
+  REFERENCE RECORD PRICES WATER BY ANOTHER METHOD THAN ITS UNSEALED TWIN,
+  IN SILENCE.  Minimal case: `cstr01_first_order` with `water 0.2 kmol/h;`
+  added to `0/feed`.  The two numbers: sealed 855.33 kg/m3 (anchored
+  Rackett), manifest removed 856.65 kg/m3 (the reference equation plus
+  Rackett); no line says so.  Latent today: 18 sealed pump or CSTR cases
+  carry no copy, 14 with water among their components, none with water in
+  the feed.  ALSO, AND IT STOPS `--gui`: (PC-04) the branch has a RED
+  TEST.  The cstr08 re-record moved its three steady states (to 292.43 /
+  302.61 / 336.55 K) and `gui/src/ui/methods/vanHeerdenLesson.ts:296-297`
+  still quotes 292.2 / 303.0 / 336.5; `vanHeerdenLesson.test.ts` fails (1
+  of 8045) and holds only one of the three.  WHAT THE PILOT'S GATES DO NOT
+  HOLD (PC-05; by-hand sabotages, each edit-build-run-restore): four
+  survive every pilot gate and every golden of the 38-case scope, alone
+  and all together: the pump HEAD from a density 2e-5 off while the molar
+  volume is right; the reference leaf's volume 2e-6 off (the route bench
+  answers NO SUBJECT off the recording platform, PC-07); ideal mixing
+  wrong only for three or more constituents (the second demonstration
+  tests a binary); the pressure-advisory threshold moved from 2 MPa to
+  2000.  Caught: the reactor's molar volume 1e-7 off, and the resolver
+  ignoring reference records.  ON MAIN TOO (PC-10): a sealed case still
+  reads the installation catalogue for solution records and utilities;
+  this is the cause of the two hidden-catalogue failures its builder
+  reported.  SMALLER: two source tags lost their witness rows while two
+  units still record them (PC-09); the heat-capacity fallback gate's probe
+  no longer exercises the branch its docstring names (PC-11); the
+  time-integrated tank still prices water by Rackett where the steady pump
+  uses the reference equation (PC-13).  That closes R1 on my side; send
+  the round-2 head when it exists and I read the difference.
+
