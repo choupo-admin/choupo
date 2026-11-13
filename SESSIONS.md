@@ -1802,3 +1802,63 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   for Ergun, Chem. Eng. Prog. 48 (1952) 89, nor for Schiller and Naumann
   (1933).  Two DOIs I first wrote from memory for Pelkonen were wrong;
   the ones above are the checked ones.
+- [open] cloud -> laptop, 2026-11-13 UTC (14:00): BRANCH READY:
+  `feat/c270-press-dwell-and-compaction` 8e5800f65 (four commits on main
+  1a17797d8): C270 as written, plus the part Vitor added today (the
+  compaction curves to the punch force; ONE fitted material).  THE
+  GRAMMAR, three optional blocks beside `rating` in a `ratedMachine` of
+  kind `tabletPress`, each with source and reason: `dwell { punchFlat;
+  pitchCircle; minimumDwellTime; }`, `effectiveness { availability;
+  performance; quality; }`, `compaction { heckel { K | Py; A; Pmin; Pmax;
+  basis; } ryshkewitch { sigma0; kb; basis; } targetTensileStrength;
+  punchTipArea; maxCompressionForce; trueDensity; }`.  A press that
+  declares none says once that it was NOT checked for dwell time nor for
+  compaction force and publishes no new value: the three tablet plants
+  pass their goldens untouched.  ONE HOME for the two curves:
+  `src/propertyOps/CompactionLaws.H`, forward and inverse, which the
+  bench `compactionFit` now calls too (its two witnesses unmoved).  THE
+  WITNESS `tutorials/batch/plant/tabletPress01_dwell_and_force` chains
+  the bench's golden constants of compaction01_mcc to a press; I ran it
+  and recomputed it by hand: the punch flat dwells 6.79 ms at the
+  catalogue 75 rpm against a declared need of 10 ms, so the press is
+  capped at 50.93 rpm, 110 008 tablets an hour for a nameplate of
+  162 000, and with a declared effectiveness of 0.855 its utilisation is
+  0.759 where the nameplate would read 0.441; a 2 MPa tablet needs a
+  porosity of 0.3957, a compaction pressure of 29.75 MPa and 2.97 kN on
+  a 99.93 mm2 punch, 3.7 % of the declared 80 kN.  TWO ANNOUNCEMENTS FIRE
+  ON THE WITNESS, on purpose left visible: the pressure is just outside
+  the Heckel window (30 to 170 MPa), and the Heckel line is in-die while
+  the strength curve is out-of-die.  Gate: `check_tablet_machines` arm
+  (f) (15 numbers recomputed from the declaration, the four constants
+  held to the bench's golden, 11 fixtures, 9 by-hand sabotages each
+  caught).  VALIDATED: --scope over tutorials/batch/plant and
+  tutorials/props/powder 10 / 0 (no existing golden moved; the new case's
+  89 rows recorded), --gui 47 / 0, the gates of the brief.  THE SOURCE
+  RULE: the kinematics needs none; two open-access articles were READ and
+  checked on Crossref for the only two statements that entered
+  (10.3390/pharmaceutics12040310: pure MCC keeps its strength over dwell
+  times of 10 to 130 ms; 10.3390/pharmaceutics16030362: 2 MPa as a
+  commonly used minimum tensile strength, and how elastic recovery is
+  measured); nothing about capping or lamination was written.  EVERY
+  EQUATION IS `unchecked` for you: the two inversions (eps =
+  ln(sigma0/sigma_t)/kb; P = (ln(1/(1-D)) - A)/K), F = P A_tip, the
+  flat-faced thickness, the dwell kinematics, OEE = A P Q.  DEV.md 4c
+  (C270: what was decided today and built) and the PLAN row are edited
+  ON THE BRANCH.  LEFT TO VITOR: C270 says the batch plan uses the lower
+  capacity; the builder took the smallest step that moves no number (the
+  sizer rates on the lower capacity and refuses a press that no longer
+  fits the declared operating time; the plan's stage time stays the
+  case's declaration).  Making the plan derive its time from the rated
+  press would move every plant's Gantt.  NOT in this branch: the EduTool
+  page, any mixture rule.
+  A DEFECT IN `bin/runTests` FOUND ON THE WAY, YOURS, AND IT MATTERS FOR
+  THE RUNNER: the recorder of the `source` rows (near line 2492) joins
+  ids with `v[k] = (k in v) ? v[k] "," $3 : $3`.  Under mawk, which is
+  `awk` in this container and the default `awk` of the runner's image,
+  the left side creates `v[k]` before `(k in v)` is evaluated, so the
+  FIRST id gets a leading comma: `printf 'a x 1\na x 2\n' | mawk '{k=$1;
+  v[k] = (k in v) ? v[k] "," $3 : $3} END{print v["a"]}'` prints `,1,2`.
+  `check_batch_plan` arms (g) and (l), which run under `PATH=/usr/bin:/bin`,
+  fail here for that reason alone on apalutamide's freshly recorded rows.
+  Testing `(k in seen)` before the assignment, as the next statement
+  already does, removes the dependence on the dialect.
