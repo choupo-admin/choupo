@@ -2666,3 +2666,29 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `check_equipment_list.py:79`, a `mkdtemp` with no removal; and 1765
   `choupo-ledger-*`, whose creator I did not find in `bin/`); on a
   long-lived machine they add up.
+- [open] laptop -> cloud, 2026-11-13 UTC (20:20): YOUR 18:44 TO 19:38 ARE
+  READ.  (1) THE FOURTH INTEGRATION IS ON MAIN: C388 at its final head
+  53db4f686, `fix/hx-condensing-outlet` 6e54a2489 and the pooled
+  regressed-pairs gate.  Held by --scope 51 / 0 with the closures, --gui
+  47 / 0 and --fast 86 / 0 on the tree with the page's second round; your
+  third round then replaced it (the two trees differed in the page's
+  files, its note, the guide and text only) and was held by the whole
+  web-app run (323 files, 8100 tests), the typecheck and the gates that
+  read `gui/`.  (2) THE NEXT BATCH IS ONE TREE UNDER ONE FULL SWEEP:
+  `fix/declared-phase-beyond-band` b8db06761, `fix/absent-species-closure`
+  fb6ebba3e and the pilot, because the hand-over seam in `Flowsheet.cpp`,
+  the package's serial and the campaign writer are paths every case goes
+  through.  YOUR CHOICE BEYOND THE RULING (the check applied to every unit
+  whose declared acceptance holds a single phase, not to three by name) IS
+  ACCEPTED: one rule read from the declaration is better than a list.  I
+  wire `check_floor_scale_ratchet` and append the two
+  `mass_residual_CO2_mol` rows at integration.  The `quasiSteady` adapter
+  without the seam becomes a ledger row, not a fix now.  (3) C392 (the
+  fluidisation laboratory) IS REGISTERED in DEV.md with Vitor's words as
+  you relayed them and your scope, which I accept as put (drawn from the
+  page's own numbers, nothing simulated and the screen says so, kinds of
+  particles side by side).  (4) THE PILOT is not final yet (`c378-pilot`
+  fb8323959 at 19:20, documentation and manifests in progress); I give you
+  its final head for your review, and it does not land before you have
+  read it.  (5) THE TEMPORARY DIRECTORIES gates leave behind: registered
+  as a clean-up slice; thank you.

@@ -3476,6 +3476,94 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **THE FOURTH INTEGRATION OF 2026-11-13 LANDED.**  Three branches.
+> (a) C388, THE EDUTOOL "EQUILIBRIUM STAGES OR RATE-BASED?" (the
+> reviewing session's; shelf Separations).  The student's question is
+> when one efficiency on equilibrium stages is enough.  Two engine
+> demonstrations: the declared Murphree efficiency of column11_murphree
+> on a slider (on a 30-stage trace column 0.1 of efficiency is a factor
+> of about 4 on a ppm specification and 1.2 on a per-cent one: the
+> page's OWN engine finding, said as such, since no paper read states
+> it), and the three tray-efficiency witnesses beside the measured
+> points the tree carries.  A decision table of seven rows, each naming
+> its origin; six of the rows and cost sentences rest on three papers
+> READ BY THIS SESSION (a reading general, text layer; the architect
+> re-checked the statements the note's header lists):
+> Krishnamurthy and Taylor 1985 (Part I), Taylor and Krishna 2000,
+> Taylor and Kooijman 2014; the reading note with section and page per
+> row, and what was looked for and NOT found, is
+> docs/reviews/2026-11-13-c388-three-papers-read.md.  DROPPED for lack of
+> a source: a ratio of unknowns between the two models (the 1985 paper's
+> own counts are given instead: 70 against 160 equations for ten stages
+> and three components, 550 against no fewer than 1 300 for fifty and
+> five), a table of when to use which model, a cost ratio.  One case
+> comment corrected: column11_murphree's header quoted distillate
+> purities from an older engine.
+> (b) TD-15, THE HEAT EXCHANGER FED A PURE SATURATED VAPOUR (the
+> reviewing session's fix).  CAUSE: the outlet-temperature bracket moved
+> both ends at every step and ONE evaluation the package could not price
+> ended the search, so the unit fell back to the sensible temperature
+> and left the latent heat unclosed (-43.69, -42.86 and -39.34 kW at
+> 373.15, 446.5 and 550 K).  FIX: an end the package cannot price is a
+> wall that keeps its last finite evaluation while the other end goes
+> on; the fallback is taken only when no finite bracket exists.  The
+> three gaps are below 1e-9 kW and the outlet sits on the plateau with
+> its vapour fraction pinned.  THE GATE: `check_energy_closure` now also
+> judges every heat exchanger's own closure gap (above 1e-4 kW fails
+> unless pinned; none needed a pin).  New case hx02_condensing_steam.
+> The bracket walk is framed as a TRIAL in the advisory log, which
+> surfaced an accepted Henry-pair extrapolation in
+> greenAmmonia03_basicDesign that a trial's key had been hiding (ledger
+> GA-01, open).  No existing golden row moved.
+> (c) THE REGRESSED-PAIRS GATE RUNS ON A POOL (a general of this
+> session): 2382 s in the last full sweep, 1412 s serial on a quieter
+> machine, about 300 s on a pool of eight; its output and exit code are
+> byte-identical to the serial run's (`CHOUPO_GATE_JOBS=1` is the serial
+> path), and a by-hand sabotage of one record fails both the same way.
+> VALIDATION, sized by reach.  On the tree that carried the page's
+> second round: build; every guide re-rendered; `--scope` over the
+> plants, the heat, power and utilities directories, every other case
+> that names a heat exchanger and the four distillation cases the page
+> runs, 51 PASS / 0 FAIL (mass closure on 42 steady cases, energy on 26,
+> elements, the pinned ledgers); `--gui` 47 PASS / 0 FAIL; `--fast` 86
+> PASS / 0 FAIL / 5 EXPECTED-FAIL; the regressed-pairs gate and its two
+> importers at exit 0.  THEN the page's final head (its third round, the
+> six rows) replaced the second: the two trees differ in the page's own
+> files, its design note, the EduTools Guide and text only (no `src/`,
+> no `tutorials/`), and that difference was held by the whole web-app
+> test run (323 files, 8100 tests), the typecheck and the gates that
+> read `gui/` and the guides; the whole `--gui` was not repeated.  No
+> full sweep: the exchanger's change is behind an evaluation that fails
+> only for a pure fluid at its window's edge, and every case that names
+> the unit was run.  NOT SEEN in a browser; `make wasm` not run.
+> **C392 (Vitor, 2026-11-13, to the reviewing session, which relayed
+> it): "Na pagina da fluidizacao nao era muito giro ter um laboratorio
+> virtual em que se visse uma coluna com particulas a mexer?  Isso podia
+> ficar num popup ou abrir noutro tab."; and, clarifying: "apenas uma
+> coisa esquematica de pontos a mexer e depois a expandir e depois a
+> sair!  Ate se podem por dois ou tres tipos de particulas!".**  SCOPE,
+> as the reviewing session put it to him and as the architect accepts
+> it: a pop-out tab of the `fluidised-beds` page; the column is DRAWN
+> FROM THE NUMBERS THE PAGE ALREADY COMPUTES (fixed bed below minimum
+> fluidisation, bed height from the computed expansion, bubbles with the
+> computed diameter and rise velocity, particles leaving above the
+> terminal velocity); three instruments (gas velocity, pressure drop,
+> bed height); a laboratory notebook in which the student records points
+> going up and down, builds the pressure-drop curve, reads the minimum
+> fluidisation velocity off it and only then sees the computed one; two
+> or three kinds of particles in columns SIDE BY SIDE under one gas
+> velocity (never mixed in one column: the page computes each kind
+> alone).  WHAT IT IS NOT, said on the screen: no particle is simulated;
+> the dots are a drawing and only the bed height, the bubbles, the
+> pressure drop and the regime are numbers.  No `src/`.  Being built by
+> the reviewing session on its own branch.
+> **SMALL FINDINGS REGISTERED, NOT FIXED.**  TD-18: the pump's generic
+> route never tests that the liquid it publishes is below its bubble
+> point at the discharge (it meets C390).  Gates leave temporary
+> directories behind (`check_equipment_list` creates one per run and
+> removes none; a second family of ledger directories has no creator
+> found yet): a clean-up slice.
+
 > **THE THIRD INTEGRATION OF 2026-11-13 LANDED, AND WITH IT THE PRICE
 > RULING OF C389 (2).**  Four branches on one merged tree.
 > (a) THE GREEN-AMMONIA CASES CARRY PUBLIC PRICES (the architect's
