@@ -3740,6 +3740,55 @@ accepts today, and that is a policy call.
 > deliberate choice, and the danger named is the silence, which the
 > printed deviation removes.
 
+> **C378, THE PILOT'S DATA AND TODAY'S BASELINE ON MAIN (2026-11-13;
+> data/curation/batches/density_pilot/, docs/design/density-pilot-thresholds.md,
+> status OPEN).**  No engine file changed.  The measured points (1870, nine
+> articles) are NOT in git: the mirror they were found through reserves
+> bulk import, so the batch keeps the scripts that regenerate them, the
+> summary statistics, twelve printed anchors of the water article and ONE
+> cited point for the measured-point demonstration (the branch was
+> squash-merged so that the removed files never entered history).
+> TODAY'S ENGINE AGAINST MEASUREMENT: water on the generic route 1.8 % low
+> on average at 1 bar (3.5 % at the boiling point, 7.6 % at 100 MPa), on
+> the reference route within 0.002 %; the pump one constant, 996.96 kg/m3,
+> at every temperature and pressure; water + ethanol 2.9 % low on average,
+> 5.1 % at worst, of which the excess volume alone explains 1.75 %; NaOH:
+> the published law within 0.055 % of an independent laboratory, while the
+> pump (the salt's volume left out) is 15 % off on average and 34 % at
+> worst.  SEVEN CORRECTIONS to the pilot table of the record, all taken
+> (liquid water at 1 bar ends at 372.756 K; the article's grid; three
+> isotherms for water + ethanol; no 10 wt % point in the NaOH set; the
+> 0.04 % is the paper's own figure on its own data; one CO2 set has the
+> stated temperatures; the pump does NOT refuse the salt in mixed solvent
+> today, it answers 4 % off on average).  THREE CONSEQUENCES for the
+> pilot's scope, to be decided when its thresholds are written: the water
+> leaf INSIDE a mixture stays on the generic route today (2.6 % low at
+> 348 K), so a mixture demonstration can pass for the wrong reason; the
+> CO2 demonstration needs pressure on that leaf (its 2 % is larger than
+> the 1.6 % effect of the dissolved gas); and the refusal demonstration
+> requires the pump to stop answering, which moves existing cases with
+> dissolved salts from a number to a declared hypothesis.
+
+> **C378, THE LIQUID VOLUMES READ AT THE WRONG TEMPERATURE: EVIDENCE ON
+> MAIN (2026-11-13; data/curation/batches/vliq_datum_temperature/,
+> docs/design/liquid-volume-datum-temperature.md).**  No record and no
+> engine file changed.  TWENTY-ONE records, not seventeen: Cl2, H2S, SO2
+> and nButane also store a boiling-point volume and state nothing (the
+> engine's density at 25 C is about +13, +19, +7 and +4 % for them).  Every
+> record that could be cross-checked stores a volume at ITS OWN normal
+> boiling point, within 2.1 %.  RULED: the correction ASSIGNS A
+> TEMPERATURE and replaces no value -- an optional `VliqT` beside `Vliq`
+> (default 298.15 K), equal to the record's `Tb` for those records, 273.15
+> K for CO2, 465 K for hitecSalt; the handbook appendix used for the
+> comparison is a cross-check and enters no record; six records stay
+> unresolved and pinned by name (propane, propylene, H2O2, HCHO, HCN,
+> NO2); hitecSalt's molar mass (87.4 against 84.29 from its own
+> composition) is its own defect and commit; sucrose's value belongs in a
+> solution record.  The reader change lands after the door.  REACH read
+> by hand: nButane and propane in six columns and the Cavett train, H2S in
+> the sour-water stripper, Cl2 in the chlorination case, a CH4 flash that
+> is refused today, CO2 in eight liquid-candidate cases.
+
 > **C378, A READING WHILE THE DOOR IS BUILT (2026-11-12, night): the
 > density model for electrolyte solutions now in the literature folder,
 > put against rule 9.**  Laliberte & Cooper (J. Chem. Eng. Data 49 (2004)
@@ -3758,6 +3807,26 @@ accepts today, and that is a policy call.
 > so), and the size of the non-invariance is to be MEASURED on NaCl + KNO3
 > against NaNO3 + KCl with the paper's own parameters before the
 > electrolyte-density slice is designed.  Nothing built.
+> MEASURED the same night (a private note and its script; the model was
+> first verified against the paper's printed values for 14 salts and
+> against measured water): for one ion inventory described by two sets of
+> salts, at 25 and 60 C and ionic strength 1 to 4 mol/kg, the DENSITY
+> moves by at most 0.15 % (1.70 kg/m3, NH4Cl + NaNO3 against NH4NO3 +
+> NaCl at I = 4; NaCl + KNO3 against NaNO3 + KCl at most 0.04 %), below
+> the model's own 1.39 kg/m3 scatter in 14 of 16 in-range rows; the
+> VISCOSITY model of the same author (2007, per salt as well) moves by up
+> to 4.9 % at I = 4, the size of its own single-solute scatter (3.5 %).
+> The author states the dependence himself in the 2009 paper (p. 1733).
+> One measured exchangeable set exists in the data mirror (KCl + NaNO3 +
+> water) and cannot tell the two pairings apart.  RULING for the
+> electrolyte slices: such a model is used with the salts AS THE CASE
+> FEEDS THEM; a bare ion inventory is paired by one deterministic,
+> printed rule; a pairing the parameter table cannot support, or a salt
+> outside its stated range, is refused; and the run states that the
+> answer depends on the pairing and by how much it was found to (density:
+> a few tenths of a kg/m3; viscosity: a few percent at high ionic
+> strength).  The 2009 revised coefficients are in a supplement that is
+> not in the folder.
 
 > **C378 SLICE 0, STEP 1 LANDED (2026-11-12, night): THE CHARACTERISATION
 > BENCH.**  `choupoProps --property-route-bench` (a flag, not an

@@ -1,0 +1,6 @@
+D3 NaOH, Galindo-Luna 2019 (0.1 MPa), pump route (NaOH volume left out): n=186 AAD 14.951 % bias +14.951 % max 34.397 % at T=353.15 K w=0.5
+D3 NaOH, Hnedkovsky 2007 (323-573 K, 2-10 MPa), pump route: n=116 AAD 11.735 % bias +11.735 % max 38.198 % at T=573.15 K P=10000 kPa w=0.004
+D4 CO2 + water, McBride-Wright 2015, pump route (CO2 at its flat 25 C Vliq): n=98 AAD 3.377 % bias +0.315 % max 10.538 % at T=449.2 K P=15080 kPa x=0.0086
+D5 d5a NaCl + ethanol + water, 298-313 K, pump route (NaCl volume left out): n=21 AAD 4.128 % bias +3.734 % max 14.831 % at T=313.15 K w_EtOH=0 w_NaCl=0.2693
+D5 d5b NaCl + ethanol + water, 298-313 K, pump route (NaCl volume left out): n=53 AAD 1.830 % bias -0.510 % max 7.406 % at T=298.15 K w_EtOH=0.09744 w_NaCl=0.19997
+D3b point (303.15 K, w = 0.20): measured 1213.8 kg/m3; pump route 1246.2 kg/m3; a flat 1000 kg/m3 would give 1000
