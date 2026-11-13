@@ -3072,6 +3072,10 @@
     "type": "PureFluidLeaf"
    },
    {
+    "key": "referenceEquation",
+    "type": "PureFluidLeaf"
+   },
+   {
     "key": "idealMixing",
     "type": "IdealMixing"
    }
@@ -6967,6 +6971,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -9343,11 +9348,13 @@
    "src/thermo/liquidProperty/IdealMixing.H"
   ],
   "src/thermo/liquidProperty/PureFluidLeaf.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -9358,6 +9365,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/equationOfState/HelmholtzEnergy.H",
+   "src/thermo/equationOfState/ReferenceFluid.H",
    "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/PureFluidLeaf.H",
@@ -13322,6 +13331,7 @@
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
+   "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -15711,6 +15721,7 @@
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/WilkeChang.cpp",
@@ -19253,6 +19264,7 @@
    "src/postProcessing/sizing/PhaseDensity.cpp",
    "src/postProcessing/sizing/PipeHeaderSize.cpp",
    "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/propertyOps/PropertyEvaluator.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
@@ -21064,6 +21076,7 @@
    "src/thermo/equationOfState/HelmholtzEnergy.cpp",
    "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp"
   ],
   "src/thermo/equationOfState/IdealGas.H": [
@@ -21082,6 +21095,7 @@
    "src/propertyOps/ReferenceEoSOp.cpp",
    "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/equationOfState/ReferencePureFluid.cpp",
+   "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/pureFluid/PureFluidModel.cpp"
   ],
   "src/thermo/equationOfState/ReferencePureFluid.H": [

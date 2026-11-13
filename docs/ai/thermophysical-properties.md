@@ -119,12 +119,23 @@ request, and frozen for the run -- never by T, P or the amounts:
 |---|---|---|
 | `recordVolume` (its id names the route: `recordVolume.anchoredRackett`, `.flatVliq`, `.bareRackett`) | leaf | the record's `Vliq` on its route (anchored on Rackett at `VliqT`; flat; Rackett alone, an estimate); no pressure |
 | `pureFluid` | leaf / one-constituent set | the case's `pureFluids` selection, liquid branch, with pressure |
+| `referenceEquation` | leaf / one-constituent set | a Helmholtz record in `parameters/Helmholtz/` whose `fluid` is the component (water, CO2, CH4, N2 today), by that fact, with pressure; case-local copy first |
 | `idealMixing` | set | additive volumes over one leaf per constituent; no excess volume |
 
 Precedence for a set: a marked measurement; a record law for exactly the set
 (one constituent: `pureFluids`, else a reference equation; two or more: a
 solution record); `idealMixing`; refusal naming every method passed over and
 the remedy.  A declared Henry solute has no pure-liquid leaf.
+
+The liquid branch of the two pure-fluid leaves is the engine's one band
+(1e-6 of p_sat): a ONE-constituent set asked as a liquid more than the band
+below p_sat(T) is a VAPOUR and is refused ("pure water at 373.15 K and 1 bar
+is a VAPOUR -- its saturation pressure there is p_sat(T) = 101418 Pa");
+remedy: a pressure at or above p_sat(T).  A leaf inside a mixture below its
+own p_sat is the saturated liquid at T, announced once per method and unit.
+At or above the critical temperature there is no liquid (refused).  The
+props bench key `rho_liquid_kernel` (choupoProps, `propertyScan1D`) asks the
+same methods for the state's composition.
 
 ## 4. Known deviations -- do not size on them silently
 

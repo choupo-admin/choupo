@@ -2878,6 +2878,59 @@ the run cannot hide.  The same liquid can therefore carry two printed
 densities while the migration lasts --- a valve on the slice-0 wrapper and a
 pump on the methods --- and the table's \code{[twice]} line says so.
 
+\subsection{The reference leaf and the liquid branch}\label{sec:liquid-density-reference-leaf}
+
+\paragraph{\code{referenceEquation}, by the fact.}  A Helmholtz record in
+\code{parameters/Helmholtz/} whose \code{fluid} is a component's name or one
+of its aliases --- today IAPWS-95 for water~\cite{IAPWS_R695}, Span--Wagner
+for CO$_2$~\cite{SpanWagner1996}, Setzmann--Wagner for CH$_4$~\cite{SetzmannWagner1991},
+and the N$_2$ record --- makes the leaf \code{referenceEquation} apply to
+that component, \emph{with pressure}, as a leaf inside a mixture and as the
+method of the one-constituent set.  The record is found as the equation
+itself is found: the case's own \code{constant/parameters/Helmholtz/} first
+(which wins), then the catalogue; a sealed case reads only its own copy, so
+the seal copies the record into the case.  Two records of one tier naming the
+same fluid are refused, naming both.  A case that selects
+\code{pureFluids \{ water \{ method IF97; \} \}} pins water to IF97 in every
+set, and the reference equation is printed as passed over.  The leaf's
+evidence is the record's own stated uncertainty (IAPWS-95: 0.0001\,\% in the
+liquid near ambient pressure up to 0.5\,\% at high pressure and temperature).
+
+Measured against the twelve printed anchors of Wagner and Pruss (Tables
+13.1--13.2 of the IAPWS-95 article; saturated states asked at
+$p_{\mathrm{sat}}(T)$ of the same formulation, as is the 0.1\,MPa bubble
+point at 372.756\,K): the reference leaf is within 0.00048\,\% at every
+anchor, and IF97 through the case's selection within 0.00072\,\%.  Without
+the reference leaf a water inside a mixture was the record's 25\,$^\circ$C
+volume carried by Rackett: $-2.6$\,\% at 348\,K and no pressure effect
+($-2$\,\% at 20\,MPa).
+
+\paragraph{The liquid branch, one band.}  Both pure-fluid leaves place the
+state by \code{pureFluidPhaseState}, the one decision of the engine
+(\S\ref{sec:pure-fluid-density-phase}, Eq.~\ref{eq:pure-fluid-liquid-branch}):
+above $p_{\mathrm{sat}}(T)(1+\epsilon)$ the liquid at $(T,P)$; inside the band
+$\epsilon = 10^{-6}$ the saturated liquid at $T$.  Beyond the band on the
+vapour side the two uses part:
+\begin{itemize}
+\item the \emph{one-constituent set} asked as a liquid is a \textbf{vapour}:
+  the request is refused with a typed domain error naming $p_{\mathrm{sat}}(T)$
+  and the remedy (``pure water at 373.15\,K and 1\,bar is a VAPOUR --- its
+  saturation pressure there is 101\,418\,Pa'').  A saturated condensate whose
+  pressure was computed by another formulation can fall outside the band of
+  this one: the pump inlet of \code{rankine02\_water} (446.516\,K,
+  858\,590\,Pa from IF97) is the IF97 liquid, 893.99\,kg/m$^3$, through that
+  case's selection, but IAPWS-95's own $p_{\mathrm{sat}}$ there is
+  858\,738\,Pa, so the same state asked of the reference leaf alone is a
+  vapour, $1.7\times10^{-4}$ below its line;
+\item a \emph{leaf in a mixture} below its own $p_{\mathrm{sat}}$ is the
+  saturated liquid at $T$ --- the hypothetical-liquid convention the Rackett
+  leaves follow too --- announced once per method and unit.
+\end{itemize}
+At or above the record's critical temperature there is no liquid: a hard
+limit for both (CO$_2$ above 304.13\,K).  Below the triple point the
+formulation is asked at $(T,P)$ as it is: IF97 refuses there by its own name,
+IAPWS-95 describes the supercooled liquid.
+
 \section{Heat capacity}\label{ch:heat}
 
 The molar heat capacity is parametrised as a polynomial in temperature:

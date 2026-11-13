@@ -66,6 +66,7 @@ struct DensityResolution
     std::string              setName;      // "{ethanol, NaCl, water}"
     std::string              method;       // the registered name ("idealMixing")
     std::vector<std::string> parts;        // a composite's leaves, one per constituent
+    std::vector<std::string> partRecords;  // the record each leaf reads ("" when none)
     std::string              record;       // the record a direct method reads ("" when none)
     std::string              methodId;     // the id the method gives itself
     std::vector<std::string> passedOver;   // "method: reason"

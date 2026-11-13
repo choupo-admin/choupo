@@ -32,7 +32,7 @@ License
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "unitOperations/saturation/BubblePoint.H"
 #include "unitOperations/flash/IsothermalFlash.H"
-
+#include "thermo/LiquidPropertyDoor.H"   // rho_liquid_kernel (C378 pilot)
 #include <algorithm>
 #include <cmath>
 #include <map>
@@ -254,6 +254,20 @@ scalar evaluateProperty(const std::string& propKey,
         return thermo.density(T, P_Pa, zi, DensityPhase::Liquid);
     }
 
+    // rho_liquid_kernel: the LIQUID mass density [kg/m3] of the state's
+    // composition at the scan T and P through the property kernel's METHODS
+    // (thermo/liquidProperty/, DEV.md 4c C378 pilot): the method the pump and
+    // the CSTR use, resolved per constituent set.  The props bench of the
+    // pilot: a set no method can price is REFUSED here with the kernel's own
+    // words, as the units refuse it.  `rho_liquid_<comp>` above keeps the
+    // slice-0 route.
+    if (propKey == "rho_liquid_kernel")
+    {
+        liquidProperty::Request q;
+        q.thermo = &thermo; q.T = T; q.P = P_Pa; q.x = xLiquid;
+        return liquidProperty::density(q).value;
+    }
+
     if (propKey == "T")        return T;
     if (propKey == "P")        return P_Pa;
     if (propKey == "Cp_ig")    return thermo.Cp_ig(T, xLiquid);
@@ -359,6 +373,7 @@ std::string propertyUnit(const std::string& k)
     if (perComp("gamma") || perComp("y_eq"))              return "-";
     if (perComp("Hvap") || perComp("h_ig"))               return "J/mol";
     if (perComp("s_ig") || perComp("Cp_liquid"))          return "J/(mol*K)";
+    if (k == "rho_liquid_kernel")                         return "kg/m3";
     if (perComp("rho_liquid"))                            return "kg/m3";
     if (k == "T" || k == "T_bubble")                      return "K";
     if (k == "P")                                         return "Pa";

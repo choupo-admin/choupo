@@ -68,6 +68,8 @@ void DensityMethod::registerBuiltins()
               static_cast<int>(b.thermo->liquidVolumeRouteOf(b.set.at(0)))); });
     registerType("pureFluid", [](const Binding& b)
         { return std::make_unique<PureFluidLeaf>(b, PureFluidLeaf::Kind::caseSelection); });
+    registerType("referenceEquation", [](const Binding& b)
+        { return std::make_unique<PureFluidLeaf>(b, PureFluidLeaf::Kind::referenceEquation); });
     registerType("idealMixing", [](const Binding& b)
         { return std::make_unique<IdealMixing>(b); });
 }
