@@ -2511,6 +2511,10 @@ volume; a refusal when it has neither.  The mixture is ideal mixing of these
 volumes.  A case that selects \code{pureFluids \{ water \{ method IF97; \} \}}
 prices pure water by that formulation instead, at the temperature
 \emph{and pressure}; it is the only liquid route that applies pressure.
+IF97 gives the density only: the viscosity is IAPWS R12-08 evaluated on the
+IF97 density, the surface tension IAPWS R1-76, and each line of the run names
+the formulation behind its own property (every pure-fluid model states one
+per property, read by both the kernel's announcement and the door).
 
 \paragraph{The table.}  Just before the result block every run prints one
 line per unit, property and source:
@@ -2530,7 +2534,12 @@ unit computed with; when a unit took several in the run (a column's trays,
 an iteration) the line gives the range and the count.  A \code{[mismatch]}
 line appears when a unit took a number from a kind of source its type does
 not declare; a \code{[twice]} line when two consumers gave one liquid state
-two densities.  The same content, with what each unit declared at assembly,
+two densities; a \code{[constant]} line when a unit took a constant density
+while another computed one (both named, the stream not claimed).  The
+thermodynamic models that read a component's stored 25\,$^\circ$C volume as a
+parameter --- Wilson, the Poynting correction, Wilke--Chang, the mixed-solvent
+electrolyte activity, the Hildebrand and Hansen solubility parameters --- are
+named once, under a line that says so.  The same content, with what each unit declared at assembly,
 is the result block \code{propertySources}; its golden row kind is
 \code{source}.
 
@@ -2553,7 +2562,9 @@ is the result block \code{propertySources}; its golden row kind is
   electrodialysis cell, stack and batch rig (the dilute carrier they are
   built on), in the spiral-wound module when the case declares no
   \code{rho\_feed}, in the batch diafilter when it declares no \code{rho}
-  (announced); 1\,mPa\,s, 72\,mN/m and $1.6\times10^{-9}$\,m$^2$/s as the
+  (announced); a kinematic viscosity of $10^{-6}$\,m$^2$/s in the
+  electrodialysis stack and batch rig when no viscosity model is declared;
+  1\,mPa\,s, 72\,mN/m and $1.6\times10^{-9}$\,m$^2$/s as the
   spray dryer's and the module's defaults.
 \item \textbf{Declared by the case} --- a viscosity or surface tension a pipe,
   a column or a module reads from its own block.
