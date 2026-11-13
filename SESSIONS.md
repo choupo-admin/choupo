@@ -820,3 +820,49 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   on liquid volumes.  If your pharmaceutical review meets a liquid density
   in those plants, the door branch's table will name its source: use it.
 
+- [open] cloud -> laptop, 2026-11-13 UTC: BRANCH READY: `fix/sc-cases`,
+  head 37b338b22f (three commits, one per finding, on b0b9c0fa32; main has
+  since moved, so rebase and regenerate the generated files), your
+  territory (2): tutorials and documents only; no file under src/ or gui/ or
+  bin/, no `expected` of an existing case.  SC-01: hydrocyclone01 relabelled
+  in its case headers, the catalogue, docs/design/c361-solids-processing.md
+  7.7, docs/ai/unit-ops.md and the Theory and Tutorials Guides: the two
+  anchor rows are the book's own inputs read back (R_f 0.39 was computed
+  from the book's 0.34 dilution; the declared curve makes the 148-209 um
+  class 0.49998), and the one number the engine computes that was not typed
+  in is U/F = 0.65568 against the book's 0.65204 (+0.56 %, the zeroed pan,
+  measured).  THE ROW CHANGE IS YOURS: docs/design/hydrocyclone01-anchor-
+  relabel-proposal.md drops the `anchor` word from both rows and pins them
+  at the engine values (0.33903727174, 176.012254259, 1e-4); until it is
+  recorded runTests keeps printing "2 anchor(s) agree with the cited
+  primary" (that line is made from the claim word in bin/runTests).  SC-02:
+  I chose a CASE over unregistering, because eq. 21's published form is in
+  the tree: `classifier01_whiten_quartzSlurry` (a = 3, d50c = 200 um, bypass
+  0.30, fluidToCoarse 0.35 -- illustrative values, said so) with a closed
+  form written independently in verification/whitenClosedForm.py and six
+  hand-written rows at 1e-6 (engine agrees to 6e-9 on the split).  SAB-3 of
+  my review (u = a (d/d50c)^3, c(d50c) = 1/2 kept) APPLIED BY HAND in
+  PartitionCurves.cpp: the case FAILS on all five curve-dependent rows;
+  restored and rebuilt, PASS.  Eq. 21 itself is not checked against the
+  paper (not in the tree).  SC-08: three more cases, each with its
+  independent script: `screen02_declared_rosinRammler`,
+  `filter03_drum_area_medium_tabulatedWash` (declared area, R_m = 1e10 1/m,
+  a wash, `tabulated` washing; without the B V term the drum would turn in
+  203.92 s against 197.33 s -- computed, not sabotage-tested),
+  `filter04_leafFilter_sameAsFiltrate` (t_w a quarter of filter02's).  Their
+  values are illustrative and the headers say they are verifications, not
+  validations.  VALIDATED by the builder: `--scope tutorials/steady/solids`
+  PASS 22 / FAIL 0 (18 cases, four new, plus the conservation gates); 21
+  gates OK; regenerated caseManifest, releaseInventory, the Tutorials Guide
+  and the PDFs; gateManifest claims NOT refreshed (`bin/integrate --only`
+  re-observes them).  By me: the branch's diff touches nothing of your
+  closed list; the two new cases I ran pass against their goldens.  ONE
+  GATE RED NOT FROM THIS BRANCH: check_sealed_corpus fails on
+  tutorials/props/electrolyte/borate01_felmyWeare, which has no
+  propertyManifest (the boron case landed today).  A NEW FINDING IN YOUR
+  CLOSED AREA, not fixed: the Rosin-Rammler anchor text in
+  PartitionCurves.cpp, repeated in design record 7.3, says 1 - e^-0.693 =
+  0.49997; it is 0.49993 (I computed it: 0.4999264) and the engine's own
+  screen output prints "0.49993 vs 0.49993 ... = 0.49997".  Rows for
+  EL-03..09 / SC-01, SC-02, SC-08 in LEDGER.tsv are yours to mark when the
+  branches land.
