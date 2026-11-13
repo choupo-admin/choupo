@@ -212,6 +212,32 @@ int Pump::solve(const DictPtr& dict,
     }
     if (pureRoute)
     {
+        //  A COMPUTED inlet carried as a liquid whose T and P lie on the
+        //  vapour side beyond the band (review TD-04; an authored one is
+        //  refused before any unit runs) is priced at (T, P) like every
+        //  stream function prices it -- a VAPOUR, and no liquid discharge
+        //  carries its enthalpy plus the work.  Refused, never pumped.
+        if (const auto i = thermo.pureFluidCarrying(x))
+        {
+            const PureFluidModel& pm = *thermo.pureFluidModel(*i);
+            if (pureFluidPhaseState(pm, T_in, P_in, true).farAcross)
+            {
+                char b[700];
+                std::snprintf(b, sizeof b, "pump '%s': its inlet is carried as "
+                    "a LIQUID, but T = %.10g K and P = %.10g Pa lie on the vapour "
+                    "side of %s's saturation pressure %.10g Pa (P/p_sat - 1 = "
+                    "%+.3e, beyond the %.0e band).  Priced at (T, P), as every "
+                    "stream function prices it, it is a VAPOUR, and a pump takes "
+                    "a liquid.  Look upstream: the unit that produced it labelled "
+                    "it liquid off its own saturation line (or in another "
+                    "thermophysical world).",
+                    (dict->name().empty() ? type() : dict->name()).c_str(),
+                    T_in, P_in, thermo.comp(*i).name().c_str(),
+                    pm.p_sat(T_in), P_in / pm.p_sat(T_in) - 1.0,
+                    pureFluidSaturationBand);
+                throw std::runtime_error(b);
+            }
+        }
         const scalar h_target = thermo.H_real(T_in, P_in, x, DensityPhase::Liquid) + w_real;
         auto f  = [&](scalar T){ return thermo.H_real(T, P_out, x, DensityPhase::Liquid) - h_target; };
         auto df = [&](scalar T){
