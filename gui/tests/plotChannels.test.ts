@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 // No two series of one figure told apart by colour alone (DEV.md 4c C168
 // slice 2, ruling (d); the audit's AC8: NanoFiltran's Fig. 3 drew Na+, Mg2+
 // and Cl- as three solid lines and three open squares differing in colour

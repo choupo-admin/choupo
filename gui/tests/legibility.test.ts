@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 // The one minimum text size and what a zoomed drawing does with a label that
 // would fall below it (DEV.md 4c C168 slice 2, ruling (c)).
 import { describe, expect, it } from "vitest";
