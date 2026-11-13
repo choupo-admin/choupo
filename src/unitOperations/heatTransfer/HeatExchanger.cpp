@@ -1017,7 +1017,7 @@ int HeatExchanger::solve(const DictPtr& dict,
         auto word = [](int c) -> const char*
         { return c == 0 ? "liquid" : (c == 2 ? "vapour" : "two-phase"); };
         std::string sides;
-        for (const auto& pr : { std::make_pair(&s0, &o0), std::make_pair(&s1, &o1) })
+        for (const auto pr : { std::make_pair(&s0, &o0), std::make_pair(&s1, &o1) })
         {
             const scalar vin  = pr.first->qPinned > 0.0 ? pr.first->qPinned
                                                         : pr.first->vf;

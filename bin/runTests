@@ -108,6 +108,24 @@
 #  selects the word comparison (see the check loop).  `reltol` is |actual-exp|/|exp| (falls
 #  back to absolute when exp is ~0).
 #
+#  THE TOLERANCE COLUMN HAS THREE FORMS (C384, 2026-11-13):
+#    1e-4        a plain number: RELATIVE, |a-e|/|e| <= tol (absolute when |e| < 1e-9)
+#    abs:<v>     ABSOLUTE: |a-e| <= v, in the row's own unit, whatever |e| is
+#    exact       a WORD, compared as text
+#  and the band of a row is chosen by WHAT KIND OF NUMBER it holds, in ONE
+#  table, bin/curate/golden_bands.tsv, that the recorder (this file's
+#  `--record`), bin/curate/golden_bands.py and the gate check_golden_bands.py
+#  all read:
+#    direct result      1e-4 (a case may author another band)
+#    count              rel 2.0   (iter, *iterations, *evaluations: chaotic in the last places)
+#    condition number   rel 2.0   (cond_JtJ)
+#    optimiser objective values   rel 1e-2   (chi2 family, rms, bubble_*, relErr_*, lle_*, ...)
+#    fitted parameters  rel 5e-2  (A, B, C, dHvap, param_*)
+#    closure residual   abs:<v>   (boundary residual_kW: 1e-5 x residual_denom_kW, or 1e-3 kW with
+#                       none published; kpi H_closure_gap_kW: 1e-8 x |Q_kW| of the unit; kpi
+#                       energy_residual_kJ: 1e-9 x the largest pinned energy term; never below 1e-9)
+#  Each class carries its measured reason in the table.
+#
 #  `anchor` is a SIXTH-COLUMN CLAIM, not a kind (2026-08-10; respelled the
 #  same day -- see below).  A row is SELF-RECORDED by default: it pins that
 #  the answer has not MOVED, which is regression.  A row marked `anchor`
@@ -280,7 +298,7 @@ pool_run() {
         | awk -v fn="$fn" -v tf="$JOBTIMES" '
               BEGIN { while ((getline l < tf) > 0) { split(l, a, "\t"); t[a[1]] = a[2] } }
               { k = fn ":" $0; printf "%s\t%s\n", ((k in t) ? t[k] : 1e9), $0 }' \
-        | sort -t$'\t' -k1,1gr -s | cut -f2-)
+        | LC_ALL=C sort -t$'\t' -k1,1gr -s | cut -f2-)
     while IFS= read -r id; do
         [ -n "$id" ] || continue
         ( [ -n "${POOL_NOTHREADS:-}" ] || export CHOUPO_THREADS="$JOB_THREADS"
@@ -813,7 +831,7 @@ get_aad() {
 #     claimed as coverage it does not have.
 get_closure() {
     local out="$1" unit="$2" key="$3"
-    printf '%s\n' "$out" | awk -v u="$unit" -v k="$key" '
+    awk -v u="$unit" -v k="$key" '
         /"energyClosures":/ {
             n = split($0, rec, /\}, *\{/)
             for (i = 1; i <= n; i++) {
@@ -830,7 +848,7 @@ get_closure() {
                     print v; exit
                 }
             }
-        }'
+        }' <<< "$out"
 }
 
 # --- pull one field out of the top-level `"utilityAllocation": [...]` array
@@ -880,7 +898,7 @@ get_utility() {
     local tier util field
     tier=${key%%.*}; field=${key##*.}
     util=${key#*.}; util=${util%.*}
-    printf '%s\n' "$out" | awk -v u="$unit" -v t="$tier" -v w="$util" -v f="$field" '
+    awk -v u="$unit" -v t="$tier" -v w="$util" -v f="$field" '
         function norm(s) { gsub(/[ \t]+/, "_", s); return s }
         /"utilityAllocation":/ {
             n = split($0, rec, /\}, *\{/)
@@ -908,7 +926,7 @@ get_utility() {
                     print v; exit
                 }
             }
-        }'
+        }' <<< "$out"
 }
 
 # --- dispatch by `kind`: diag -> operation diagnostics, aad -> the validation
@@ -942,7 +960,7 @@ get_utility() {
 #     two equipment types could be 0.1 apart.
 get_equipment() {
     local out="$1" unit="$2" key="$3"
-    printf '%s\n' "$out" | awk -v u="$unit" -v k="$key" '
+    awk -v u="$unit" -v k="$key" '
         /"equipment": \[/ { inblk = 1; next }
         inblk && /^  \]/  { inblk = 0 }
         !inblk { next }
@@ -1010,7 +1028,7 @@ get_equipment() {
                 print s; exit
             }
             exit
-        }'
+        }' <<< "$out"
 }
 
 #  boundary <ledger> <field> -- one number of a plant-boundary ledger the
@@ -1033,7 +1051,7 @@ get_boundary() {
         mass)   obj="globalMassBoundary" ;;
         *)      return 0 ;;
     esac
-    printf '%s\n' "$out" | grep -m1 "\"$obj\": {" \
+    grep -m1 "\"$obj\": {" <<< "$out" \
         | grep -oE "\"$key\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//'
 }
 
@@ -1168,7 +1186,7 @@ get_ledger() {
 #     with its opening quote, so `"dx"` cannot answer it.
 get_layout() {
     local out="$1" id="$2" key="$3"
-    printf '%s\n' "$out" | awk -v id="$id" -v k="$key" '
+    awk -v id="$id" -v k="$key" '
         /^  "(layout|building)": \{/ { inblk = 1; next }
         inblk && /^  \}/  { inblk = 0 }
         !inblk { next }
@@ -1186,7 +1204,7 @@ get_layout() {
                 print s; exit
             }
             exit
-        }'
+        }' <<< "$out"
 }
 
 # --- pull one field out of the top-level `"batchPlan": {...}` block (2026-10-19,
@@ -1198,7 +1216,7 @@ get_layout() {
 #     operatingFrom, ...) is compared with `exact`.
 get_batch() {
     local out="$1" id="$2" key="$3"
-    printf '%s\n' "$out" | awk -v id="$id" -v k="$key" '
+    awk -v id="$id" -v k="$key" '
         /^  "batchPlan": \{/ { inblk = 1; next }
         inblk && /^  \}/  { inblk = 0 }
         !inblk { next }
@@ -1215,7 +1233,7 @@ get_batch() {
                 print s; exit
             }
             exit
-        }'
+        }' <<< "$out"
 }
 
 # --- pull one field out of the top-level `"panel": {...}` block (2026-11-12,
@@ -1228,7 +1246,7 @@ get_batch() {
 #     before a key is looked up, so a number inside a sentence cannot answer.
 get_panel() {
     local out="$1" id="$2" key="$3"
-    printf '%s\n' "$out" | awk -v id="$id" -v k="$key" '
+    awk -v id="$id" -v k="$key" '
         /^  "panel": \{/ { inblk = 1; next }
         inblk && /^  \}/  { inblk = 0 }
         !inblk { next }
@@ -1245,7 +1263,7 @@ get_panel() {
                 print s; exit
             }
             exit
-        }'
+        }' <<< "$out"
 }
 
 #  source <unit> <property> -- WHERE a consumer took a liquid property from
@@ -1363,11 +1381,20 @@ audit_catalogue() {
 #  relative bands, and 6 rows below it silently got the loose absolute one --
 #  two semantics, chosen by which side of an undocumented constant the
 #  recorded noise happened to land.  Fresh-eyes audit, finding C4/C5.)
+#
+#  THE ABSOLUTE FORM (C384, 2026-11-13).  A tolerance written `abs:<v>` is an
+#  ABSOLUTE band: |a - e| <= v in the row's own unit, whatever |e| is.  It is
+#  what a closure RESIDUAL needs: the row asserts "this residual did not move
+#  by more than a small fraction of what the balance exchanges", which no
+#  relative band can say about a number that is round-off.  The three forms of
+#  the column are therefore: a plain number (relative, as above), `abs:<v>`
+#  (absolute) and `exact` (a word, compared by the check loop, never here).
 within_tol() {
     awk -v a="$1" -v e="$2" -v t="$3" 'BEGIN{
         if (a == "" )            { exit 2 }       # missing
         ae = (e<0)?-e:e
         diff = a-e; if (diff<0) diff=-diff
+        if (substr(t, 1, 4) == "abs:") { exit (diff <= substr(t, 5) + 0) ? 0 : 1 }
         rel = (ae > 1e-9) ? diff/ae : diff
         exit (rel <= t) ? 0 : 1
     }'
@@ -1805,7 +1832,25 @@ fi
 # --- auto-generate an expected from a run (steady cases only) -------------
 #  Pulls every numeric KPI of every unit (skipping the volatile
 #  `iterations`) plus each stream's F, at a default relative tolerance.
+#  THE BAND OF A RECORDED ROW IS CHOSEN BY WHAT THE ROW HOLDS (C384).  The
+#  generator below writes every row at the one default tolerance; this wrapper
+#  then lets bin/curate/golden_bands.py -- the one reader of
+#  bin/curate/golden_bands.tsv -- rewrite the tolerance column of the rows
+#  that belong to a class (a count, a condition number, an optimiser's answer,
+#  a closure residual), computing the absolute band of a residual from the term
+#  of THIS run's result block.  Values are never touched.
 auto_generate() {
+    local case_dir="$1" out="$2" dest="${4:-}"
+    [ -z "$dest" ] && dest="$case_dir/expected"
+    auto_generate_raw "$@" || return $?
+    local resf; resf=$(mktemp)
+    printf '%s\n' "$out" > "$resf"
+    python3 -I "$ROOT/bin/curate/golden_bands.py" apply "$dest" --result "$resf" || { rm -f "$resf"; return 1; }
+    rm -f "$resf"
+    return 0
+}
+
+auto_generate_raw() {
     #  $4 -- optional destination.  Defaults to the case's own `expected`;
     #  the refresh path below writes to a scratch file instead so it can
     #  diff the generated rows against the golden it is about to keep.
@@ -2200,7 +2245,7 @@ auto_generate() {
         #  column13 nanowatt lesson (a golden over cancellation noise).  The
         #  threshold lives HERE and nowhere else: `check_energy_boundary_pinned`
         #  requires the three terms and checks any residual row it finds.
-        gbl=$(printf '%s\n' "$out" | grep -m1 '"globalEnergyBoundary": {')
+        gbl=$(grep -m1 '"globalEnergyBoundary": {' <<< "$out")
         if [ -n "$gbl" ]; then
             for gk in H_feeds_kW Q_boundary_kW H_products_kW; do
                 gv=$(printf '%s\n' "$gbl" | grep -oE "\"$gk\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//')
@@ -2241,7 +2286,7 @@ auto_generate() {
         #  (99.2 % of it on the ammonia plant) and would pass whatever the
         #  process did.  The excluded mass is pinned beside it, so a
         #  declaration that silently stops excluding anything is visible.
-        gmb=$(printf '%s\n' "$out" | grep -m1 '"globalMassBoundary": {')
+        gmb=$(grep -m1 '"globalMassBoundary": {' <<< "$out")
         if [ -n "$gmb" ]; then
             for gk in process_in_kg_per_h process_out_kg_per_h \
                       process_closure_pct utility_excluded_kg_per_h; do
@@ -7997,7 +8042,7 @@ for case_dir in "$1"; do
     have_block=1; [ -z "$block" ] && { have_block=0; block="$out"; }
 
     # (1) NaN / inf guard
-    if printf '%s\n' "$block" | grep -qiE ':[[:space:]]*-?(nan|inf)\b'; then
+    if grep -qiE ':[[:space:]]*-?(nan|inf)\b' <<< "$block"; then
         printf "FAIL  %-40s  (NaN/inf in result)\n" "$label"; fail=$((fail+1)); continue
     fi
 
@@ -8097,7 +8142,7 @@ for case_dir in "$1"; do
                  else bad="$bad\n    $kind.$name.$key: MISSING (expected $exp_v)"; fi;;
               *) if [ "${claim:-}" = anchor ]; then
                      bad="$bad\n    ANCHOR $name.$key: model gives ${act:-?} against the CITED $exp_v (band $tol) -- a disagreement with the primary, not a moved golden"
-                 else bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v (reltol $tol)"; fi;;
+                 else bad="$bad\n    $kind.$name.$key: got ${act:-?} expected $exp_v ($([ "${tol#abs:}" != "$tol" ] && echo "band" || echo "reltol") $tol)"; fi;;
             esac
         done < "$exp_file"
         #  A golden with ZERO data rows pinned nothing and still printed the
@@ -8630,6 +8675,19 @@ if [ "$#" -eq 0 ]; then
     fi
     rm -f /tmp/ebpin.$$
 
+    # Golden-bands gate (C384, 2026-11-13): every golden row's band is the one
+    # its CLASS prescribes (bin/curate/golden_bands.tsv), and the comparator
+    # fails a wrong value in each of the three forms of the tolerance column.
+    if gate_exec "$ROOT/bin/curate/check_golden_bands.py" > /tmp/gbands.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "golden-bands-gate" "$(tail -1 /tmp/gbands.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_golden_bands.py)\n" "golden-bands-gate"
+        cat /tmp/gbands.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/gbands.$$
+
     # impossible-phase pins (2026-08-27; moved after the walk 2026-09-05 --
     # it reads the single-pass cache, and before the walk there is none, so
     # it re-ran the corpus on its own: 181 s, measured, for the same claim).  The energy report proves a stream
@@ -8806,7 +8864,7 @@ if [ "$#" -eq 0 ]; then
     if [ -f "$branch/flowsheetDict" ]; then
         sb_out=$("$ROOT/choupoSolve" "$branch" 2>&1); sb_rc=$?
         sb_announced=0
-        printf '%s\n' "$sb_out" | grep -qE 'reactions library: loaded — (inherited from|LOCAL)' \
+        grep -qE 'reactions library: loaded — (inherited from|LOCAL)' <<< "$sb_out" \
             && sb_announced=1
         if [ "$sb_rc" -eq 0 ] && [ "$sb_announced" -eq 1 ]; then
             printf "PASS  %-40s  (runs alone; reactions cascade announced)\n" \

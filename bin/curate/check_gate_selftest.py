@@ -221,6 +221,29 @@ RETIRED_PROBE = "species" + "Map"
 
 SABOTAGES += [
     {
+        "gate": "check_golden_bands.py",
+        "kind": "detection",
+        "file": "data/curation/pairs/acetone-methanol/expected",
+        "find": "diag    fit_nrtl               minimax_evaluations 423              2\n",
+        "replace": "diag    fit_nrtl               minimax_evaluations 423              1e-4\n",
+        "why": "a COUNT of evaluations hand-pinned at the default 1e-4 is the "
+               "row a second platform cannot reproduce (C384): the gate must "
+               "fail it, not wave through a band the class table forbids.",
+    },
+    {
+        "gate": "check_golden_bands.py",
+        "kind": "detection",
+        "file": "tutorials/steady/flowsheets/proxy01_gas_loop/expected",
+        "find": "H_closure_gap_kW 1.16937215466e-09 abs:7.012e-08\n",
+        "replace": "H_closure_gap_kW 1.16937215466e-09 1e-4\n",
+        "why": "a closure RESIDUAL with a relative band is a golden over "
+               "round-off (C384): it must carry an absolute band written in "
+               "the row, and the gate must fail the relative one.",
+    },
+]
+
+SABOTAGES += [
+    {
         "gate": "check_workspace_truth.py",
         "kind": "detection/poisoned-overlay",
         "file": "src/propertyOps/EvidencePartition.H",

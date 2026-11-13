@@ -1,0 +1,25 @@
+# golden_bands.tsv -- the ONE table that says how wide a golden row's band is,
+# by WHAT KIND OF NUMBER the row holds (C384, 2026-11-13).  Read by
+# bin/curate/golden_bands.py, which is the recorder's band writer
+# (bin/runTests --record), the tool that rewrote the existing goldens, and the
+# library of bin/curate/check_golden_bands.py (the gate that holds every row to
+# its class).  A row of NO class below is a DIRECT RESULT: the default 1e-4 (a
+# case may author another band for it; the gate does not police that).
+#
+# Columns (TAB separated):  class | kinds | name regex | key regex | rule | param | reason
+#   kinds       comma list of golden kinds the class applies to
+#   name regex  matched (fullmatch) against the row's name column; `.*` = any
+#   key regex   matched (fullmatch) against the row's key column
+#   rule        rel  -- a relative band, `param` is the number
+#               abs_frac_of_term -- an ABSOLUTE band `abs:<param x term>`;
+#                   which term is named by the `term` rule in golden_bands.py
+#                   (boundary_denominator | unit_Q_kW | ledger_terms)
+#   Floor: an absolute band is never written below 1e-9 in the row's own unit.
+# The first matching line wins.  Anchor rows and `exact` rows are never touched.
+count	diag,kpi	.*	iter|.*iterations|.*evaluations	rel	2.0	A count of iterations or evaluations is decided by comparisons of 1e-6 on a max-norm objective (FitObjective.cpp minimise: restart ends when the best value improved by less than 1e-6 relative), so it is chaotic in the last digits: measured 2265 of 4174 minimax_evaluations rows differ between two platforms, max 1.43 from 5 restart passes against 2.  The row asserts "within a factor of three" and still fails a solver that needs ten times more.
+condition	diag	.*	cond_JtJ	rel	2.0	The condition number of J^T J in a flat valley moves with the last digits of the parameters: measured median 2.3e-3, p95 0.22, max 1.4e3 between two platforms.  Rows still red are pinned findings (platform_divergence_debt.tsv).
+parameter	diag	fit_.*	A|B|C|dHvap_kJ_per_mol|param_.*	rel	5e-2	A fitted parameter is defined to about sqrt of the least-squares tolerance (FitParameters.cpp:662, tolerance 1e-4 on the relative change of chi2) in the flat directions of J^T J; measured p95 0.19 and max 0.35.  Five times that square root; rows still red are findings.
+objective	diag	.*	chi2|chi2_reduced|chi2_in_sample|rms|bubble_aad_fit|bubble_max_fit|bubble_aad_heldout|bubble_max_heldout|max_abs_resid|max_abs_corr|minimax_max_scaled_start|minimax_max_scaled_final|relErr_.*_pct(_leastSquares)?|relErr_.*_leftOut_pct|aad_heldout_pct|aad_heldout_K|lle_(rel_|aad_dx|max_abs_dx).*|inSample_.*(pct|AAD)|heldOut_.*(pct|AAD)	rel	1e-2	A statistic of an optimiser's answer inherits its stopping tolerance (least squares 1e-4 on the change of chi2): a hundred times that.  Measured median 1.2e-3, p95 0.09, max 0.39; rows still red are flat-valley findings, not a wider class.
+residual_boundary	boundary	global	residual_kW	abs_frac_of_term	1e-5	A closure residual is round-off of a balance, so it is compared on an ABSOLUTE band written in the row: 1e-5 of the energy the plant exchanges (`residual_denom_kW` of the same result block; measured platform difference at most 6.4e-7 of it).  With no published denominator: abs:1e-3 kW (measured differences at most 1e-4 kW).
+residual_hx	kpi	.*	H_closure_gap_kW	abs_frac_of_term	1e-8	The gap is the unit's own enthalpy closure in the unit of its duty: 1e-8 of that unit's |Q_kW| (measured 1e-10).
+residual_ledger	kpi	.*	energy_residual_kJ	abs_frac_of_term	1e-9	The campaign and dynamic energy ledgers: 1e-9 of the largest pinned energy term of that ledger (measured 6e-13 and 2e-15).
