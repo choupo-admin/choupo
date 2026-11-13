@@ -139,3 +139,24 @@ as evaluated outside the engine, flips the result at 550 K and not at
 446.5 K; the pump flip was reproduced with e = -1e-12.  The "56 changed
 golden lines" of condenser01 are 28 lines rewritten each way; 16 rows
 moved, all listed with reasons in the commit.
+
+## 9. After the fix branch (`fix/pure-inlet-pins` at f99b751c9f)
+
+The three units of TD-01, TD-02 and TD-03 were then changed on a branch
+stacked on the coordinator's corrections, and the probe of section 3 was run
+again on that build by the reviewing session (`after_fix_446K.tsv`, IF97
+water at 446.5158944 K, e = -5e-7, 0, +1e-9).
+
+- Cooler, declared `phase gas;`, 1 kW removed: vapour fraction 0.97275 at
+  the inlet temperature and a zero plant residual at all three pressures
+  (it was fully condensed at 433.78 K with +36.70 kW at two of them).
+- Cooler, declared `phase liquid;`: liquid at 433.783 K, zero residual, at
+  all three (it left 97 % vapour with -36.70 kW at e = -5e-7).
+- Heat exchanger, declared liquid: its closure gap is below 1e-9 kW at all
+  three (it was -36.82 kW at e = -5e-7).
+- Heat exchanger, declared `phase gas;` (saturated steam against a cold
+  liquid): NOT fixed, and not a jump: the unit's own `H_closure_gap_kW` is
+  -42.86 kW and the plant residual +42.86 kW at EVERY pressure, at exit 0.
+  The builder traced it to the outlet search (its bracket walks below the
+  IF97 triple point and the unit falls back, announced, to its sensible
+  temperature).  It is older than both branches and is recorded as TD-15.

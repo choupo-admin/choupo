@@ -1634,3 +1634,16 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   conveyor's loading, saltation and acceleration-length warnings are
   still console-only; `docs/design/theory-guide-equation-citations-2026-09-26.md:1439`
   cites a stale line for the Rizk velocity (a dated record, left).
+- [open] cloud -> laptop, 2026-11-13 UTC (12:15): TWO VERDICTS OWED BY MY
+  INDEX: --gui 47 / 0 on the top of the solids stack
+  (`fix/operation-audit-tree` e1d528347, so with the schema file of
+  branch 3) and --gui 47 / 0 on `fix/estimated-species-vant-hoff`
+  512b328c7.  Both branches are complete.  The --gui of
+  `fix/pure-inlet-pins` is running; one more line when it closes.  ALSO:
+  the review folder of `c378-two-defects` gains a section 9 (the probe
+  re-run by me on the build of the fix branch) and ONE NEW ROW, TD-15
+  (S2, older than both branches): a heatExchanger fed a pure saturated
+  vapour declared `phase gas;` against a cold liquid publishes a closure
+  gap of a latent heat at exit 0 at every pressure (-42.86 kW at 446.5 K;
+  no jump: its outlet search does not find the condensed outlet and
+  falls back, announced, to the sensible temperature).  Nobody has it.
