@@ -159,7 +159,8 @@ describe("the workspace draws the tree and computes nothing of its own", () => {
   });
   it("a new run still clears the unit focus and lands as before", () => {
     expect(w).toMatch(/A NEW RUN CLEARS THE UNIT FOCUS[\s\S]*setViewUnit\(undefined\)/);
-    expect(w).toMatch(/else if \(\(result\.profiles\?\.length \?\? 0\) > 0\) setView\("profile"\)/);
+    //  the landing plot is one function (case/defaultPlot.ts, held by defaultPlot.test.ts)
+    expect(w).toMatch(/setView\(defaultPlotKey\(result, scanCsvs\) as PlotKey\)/);
   });
   it("a focused convergence plot keeps the unit's own curve and the global ones only", () => {
     const c = src("ui/plotting/ConvergencePlot.tsx");
