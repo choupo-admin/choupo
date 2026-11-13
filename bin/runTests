@@ -2551,7 +2551,12 @@ auto_generate_raw() {
                 s=$(printf '%s' "$line" | grep -oP '"sourceId": "\K[^"]*' | head -1)
                 printf '%s\t%s\t%s\n' "$u" "$p" "$s"
             done | LC_ALL=C sort -u | awk -F'\t' '
-                { k = $1 "\t" $2; v[k] = (k in v) ? v[k] "," $3 : $3; if (!(k in seen)) { seen[k] = 1; ord[++n] = k } }
+                #  (k in seen) is tested BEFORE v[k] is touched: under mawk, the
+                #  awk of the runner, an assignment whose right side asks (k in v)
+                #  creates v[k] first, and the first id came out with a leading
+                #  comma (2026-11-13).  No quote character may appear in this
+                #  comment: it sits inside a quoted awk program.
+                { k = $1 "\t" $2; if (k in seen) v[k] = v[k] "," $3; else { v[k] = $3; seen[k] = 1; ord[++n] = k } }
                 END { for (i = 1; i <= n; i++) { split(ord[i], a, "\t");
                       printf "source  %-22s %-16s %-18s %s\n", a[1], a[2], v[ord[i]], "exact" } }'
     } > "$dest"
@@ -4763,6 +4768,26 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/sdem.$$
+
+    # Solids-announcements gate (2026-11-13, review ledger SC-03..07, SP-07,
+    # SP-09 and the conveyor's defaults).  What a solids unit ASSUMES is said
+    # where a run can read it: the centrifuge's feed solids fraction and its
+    # unhindered-settling assumption, the thickener's test-concentration
+    # note at every verbosity, how the compression slope was taken, an
+    # overloaded screen, a compressibility outside its range refused or
+    # announced, a mixer that no longer calls two powders liquid inlets, the
+    # conveyor's undeclared wall friction and a bend key nothing reads.  One
+    # arm per statement, each run on a scratch copy; a sabotage of any one
+    # fails its own arm.
+    if gate_exec "$ROOT/bin/curate/check_solids_announcements.py" > /tmp/solann.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "solids-announcements" "$(grep -m1 '^check_solids_announcements: OK' /tmp/solann.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_solids_announcements.py)\n" "solids-announcements"
+        cat /tmp/solann.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/solann.$$
 
     # Polarisation-coupling gate (2026-09-15).  The multi-ionic
     # concentration-polarisation model of Geraldes & Afonso (2007) -- per-ion

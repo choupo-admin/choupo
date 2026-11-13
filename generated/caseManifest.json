@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1839,
+  "cases": 1840,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -21629,6 +21629,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/plant/tabletPress01_dwell_and_force": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "splitter"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/reactor/batch01_first_order": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -31148,6 +31162,7 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/batch/plant/donepezil02_two_strengths",
+    "tutorials/batch/plant/tabletPress01_dwell_and_force",
     "tutorials/plant/ChemicalPlantTutorial",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/acetonePlant",
@@ -32159,6 +32174,7 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/batch/plant/donepezil02_two_strengths",
+    "tutorials/batch/plant/tabletPress01_dwell_and_force",
     "tutorials/plant/aceticAcid02_plant",
     "tutorials/plant/polycaprolactonePlant",
     "tutorials/plant/swro01_campoDalias",
@@ -34467,6 +34483,7 @@
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/batch/plant/donepezil01_tablets",
     "tutorials/batch/plant/donepezil02_two_strengths",
+    "tutorials/batch/plant/tabletPress01_dwell_and_force",
     "tutorials/batch/reactor/batch01_first_order",
     "tutorials/batch/reactor/batch01b_first_order_eulersi",
     "tutorials/batch/reactor/batch02_adiabatic",

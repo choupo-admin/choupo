@@ -520,6 +520,9 @@
   "DatumAmendment": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "DatumMark": [
+   "src/thermo/electrolyte/SpeciationSolver.H"
+  ],
   "DeclaredHeat": [
    "src/unitOperations/reactor/ReactionHeat.H"
   ],
@@ -5645,6 +5648,7 @@
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/RatedMachineSize.H",
    "src/postProcessing/sizing/TrainSplit.H",
+   "src/propertyOps/CompactionLaws.H",
    "src/result/ClosureVariable.H",
    "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
@@ -6013,6 +6017,7 @@
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/CompactionFit.H",
+   "src/propertyOps/CompactionLaws.H",
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
@@ -11349,6 +11354,7 @@
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "src/unitOperations/hydraulics/PneumaticConveyor.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12687,6 +12693,7 @@
    "src/unitOperations/separation/cycloneModel/Muschelknautz.H"
   ],
   "src/unitOperations/solids/CakeFilter.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12808,6 +12815,7 @@
    "src/unitOperations/solids/millModel/MillModels.H"
   ],
   "src/unitOperations/solids/Screen.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12832,6 +12840,7 @@
    "src/unitOperations/solids/millModel/MillModels.H"
   ],
   "src/unitOperations/solids/SedimentingCentrifuge.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12873,6 +12882,7 @@
    "src/unitOperations/solids/SolidLiquidCore.H"
   ],
   "src/unitOperations/solids/Thickener.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -13191,6 +13201,7 @@
    "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
@@ -13217,7 +13228,11 @@
    "src/unitOperations/separation/Absorber.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
    "src/unitOperations/separation/Stripper.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -16771,6 +16786,10 @@
   "src/propertyOps/CompactionFit.H": [
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/CompactionLaws.H": [
+   "src/postProcessing/sizing/RatedMachineSize.cpp",
+   "src/propertyOps/CompactionFit.cpp"
   ],
   "src/propertyOps/ConstantEstimator.H": [
    "src/applications/choupoProps/main.cpp",

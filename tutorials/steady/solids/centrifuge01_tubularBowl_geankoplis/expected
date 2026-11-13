@@ -73,3 +73,4 @@ kpi     bowl                   vWall_cut_m_s    1.89462682453e-05 1e-4
 kpi     bowl                   volumeFractionOutsideMidRadius 0.628272696362   1e-4
 source  bowl                   liquidDensity    liquidVolume.idealMix[flatVliq] exact
 source  bowl                   liquidViscosity  Andrade/GrunbergNissan exact
+kpi     bowl                   solidsVolumeFraction_feed 0.00100000004056 1e-4
