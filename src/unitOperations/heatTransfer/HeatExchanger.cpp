@@ -34,7 +34,6 @@ License
 #include "unitOperations/heatTransfer/htc/BellDelaware.H"
 #include "materials/MaterialRegistry.H"
 #include "thermo/ThermoPackage.H"
-#include "thermo/ThermoAnnounce.H"
 #include "core/Advisory.H"
 #include "core/RegistryRefusal.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
@@ -921,34 +920,71 @@ int HeatExchanger::solve(const DictPtr& dict,
         const scalar Hin = Hinlet(s);
         if (!std::isfinite(Hin))
         {
-            if (announceOnce("hxNoDatum:" + s.name))
-                std::cerr << "[hx] " << s.name << ": this package cannot price"
-                             " the stream on the elements datum (a component"
-                             " has no standardThermochemistry block), so the"
-                             " outlet temperature comes from the eps-NTU heat"
-                             " capacity as before.  This side closes in Q, not"
-                             " in H.\n";
+            const std::string m =
+                "this package cannot price '" + s.name + "' on the elements"
+                " datum (a component has no standardThermochemistry block), so"
+                " its outlet temperature comes from the eps-NTU heat capacity"
+                " as before.  This side closes in Q, not in H";
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "hxNoDatum:" + s.name, "balance", "warning",
+                    "heatExchanger on '" + s.name + "'", m))
+                std::cerr << "[hx] " << m << ".\n";
             Hmol(s, Tguess, &vfOut);
             return Tguess;
         }
         const scalar Htarget = Hin + dH_per_mol;
         auto f = [&](scalar T) { return Hmol(s, T, nullptr) - Htarget; };
 
+        //  THE BRACKET.  Both ends walk outward from the eps-NTU guess,
+        //  doubling.  AN END THE PACKAGE CANNOT PRICE IS A WALL, NOT A
+        //  VERDICT (review TD-15, 2026-11-13): the end keeps its last finite
+        //  evaluation and stops moving, and the other end goes on.  Until
+        //  then one non-finite evaluation ended the whole search -- a
+        //  condensing IF97 steam whose eps-NTU guess was the cold inlet's
+        //  300 K walked its LOW end below the IF97 window (NaN) on the third
+        //  step, while its HIGH end was two steps short of the saturation
+        //  temperature that brackets the root, and the unit fell back to the
+        //  sensible temperature with a latent heat missing from its own
+        //  balance (-42.86 kW on 1 mol/s at 446.5 K).  Wherever every
+        //  evaluation is finite the sequence of trial points is exactly the
+        //  one it always was.  A guess the package cannot price at all keeps
+        //  the old answer: there is nothing finite to walk from.
         scalar lo = Tguess, hi = Tguess, flo = f(lo), fhi = flo;
         const scalar span = std::max<scalar>(1.0, 0.05 * std::abs(Tguess - s.T));
-        for (int k = 0; k < 60 && flo * fhi > 0.0; ++k)
+        bool loWall = !std::isfinite(flo), hiWall = loWall;
+        for (int k = 0; k < 60 && flo * fhi > 0.0 && !(loWall && hiWall); ++k)
         {
-            lo = std::max<scalar>(50.0, lo - span * (1 << std::min(k, 12)));
-            hi = hi + span * (1 << std::min(k, 12));
-            flo = f(lo); fhi = f(hi);
+            const scalar step = span * (1 << std::min(k, 12));
+            if (!loWall)
+            {
+                const scalar t = std::max<scalar>(50.0, lo - step);
+                const scalar ft = f(t);
+                if (std::isfinite(ft)) { lo = t; flo = ft; }
+                else                   loWall = true;
+            }
+            if (!hiWall)
+            {
+                const scalar t = hi + step;
+                const scalar ft = f(t);
+                if (std::isfinite(ft)) { hi = t; fhi = ft; }
+                else                   hiWall = true;
+            }
         }
         if (!(flo * fhi <= 0.0) || !std::isfinite(flo) || !std::isfinite(fhi))
         {
-            if (announceOnce("hxInvert:" + s.name))
-                std::cerr << "[hx] " << s.name << ": could not bracket the"
-                             " outlet enthalpy; falling back to the eps-NTU"
-                             " temperature (" << Tguess << " K).  This side's"
-                             " energy balance closes in Q, not in H.\n";
+            std::ostringstream m;
+            m << "could not bracket the outlet enthalpy of '" << s.name
+              << "' between " << lo << " K and " << hi << " K"
+              << (loWall || hiWall ? " (the package cannot price the state"
+                                     " beyond them)" : "")
+              << "; its outlet temperature falls back to the eps-NTU"
+                 " temperature (" << Tguess << " K), so this side's energy"
+                 " balance closes in Q, not in H, and the unit's"
+                 " H_closure_gap_kW carries the difference";
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "hxInvert:" + s.name, "balance", "warning",
+                    "heatExchanger on '" + s.name + "'", m.str()))
+                std::cerr << "[hx] " << m.str() << ".\n";
             Hmol(s, Tguess, &vfOut);
             return Tguess;
         }
