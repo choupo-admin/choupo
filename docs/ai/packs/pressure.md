@@ -254,9 +254,9 @@ real.
  Compressor: Compressor.cpp:95-107 (eta + exactly one of W_shaft/P_out), :140-147 (P_out > P_in), :61-79 (liquid suction refused via acceptance), KPIs W_shaft/T_out/T_out_isen/ratio from :170+ and the run.
  Turbine: Turbine.cpp:78-86 (W_shaft required and negative, eta 0<eta<=1); no P_out lookup (P_out is disc.P_out :108); vapour acceptance :64-75.
  Valve: src/unitOperations/valve/Valve.cpp:53 (operation P required), :58-62 (P>=Pfeed warning only), acceptance :378 (any phase).
- Pipe: src/unitOperations/hydraulics/Pipe.cpp:100-103 (D, L, roughness required; dz optional), :112-118 (fittings list of {K, count}), :486-487 (model word, default Churchill), :450-472 (viscosity), :146-182 (gas refused), :186-192 (twoPhase model), :566-568 (dP sum), KPIs :626-630.
+ Pipe: src/unitOperations/hydraulics/Pipe.cpp:101-104 (D, L, roughness required; dz optional), :113-119 (fittings list of {K, count}), :510-511 (model word, default Churchill), :474-496 (viscosity), :170-206 (gas refused; a declared single phase is not flashed, :141-162), :210-216 (twoPhase model), :590-592 (dP sum), KPIs :650-654.
  Friction models registered: src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.cpp:402-405.
- PhaseChanger: src/unitOperations/heatTransfer/PhaseChanger.cpp:158-160 (P optional, held from inlet), :183-196 (exactly one coordinate; message quoted), outletT :320.
+ PhaseChanger: src/unitOperations/heatTransfer/PhaseChanger.cpp:159-161 (P optional, held from inlet), :191-204 (exactly one coordinate; message quoted), outletT :328.
  Energy wires: src/unitOperations/flowsheet/Flowsheet.cpp:876-1042 (energyInputs: from/kind/target; summed targets :900-910; kind mismatch refused; forward only); docs/ai/energy.md section 2.
  SRK phiPhi grammar: docs/ai/thermo.md:213-248 (copied form, run).
 -->

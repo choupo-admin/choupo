@@ -53,6 +53,6 @@ describe("the page separates what the method allows from what the unit models", 
     expect(lines[1013 - 1]).toContain("bool phaseChanged = false");
     expect(lines.slice(1038 - 1, 1038 + 6).join(" ")).toContain("a side changed phase: ");
     expect(lines.slice(1207 - 1, 1210).join(" ")).toContain("U.A.LMTD is NOT a check here");
-    expect(note).toContain("HeatExchanger.cpp:1013-1038, 1207-1210");
+    expect(note).toContain("HeatExchanger.cpp:1028-1053, 1222-1225");
   });
 });

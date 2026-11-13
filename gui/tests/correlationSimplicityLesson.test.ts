@@ -354,7 +354,7 @@ describe("correlation-simplicity: the lesson text", () => {
       "FrictionFactorCorrelation.cpp:356-359":
         /a\.fLaminar   = laminar\(c\.Re\);[\s\S]*a\.fTurbulent = 8\.0 \* std::pow\(A \+ B, -1\.0 \/ 8\.0\);/,
       "DittusBoelter.H:63": "r.Nu = 0.023 * std::pow(r.Re, 0.8) * std::pow(r.Pr, n);",
-      "Pipe.cpp:563-564":
+      "Pipe.cpp:587-588":
         /AdvisoryLog::instance\(\)\.addAnnouncedOnce\(\s*"pipeTransition:" \+ unitName, "validity"/,
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
