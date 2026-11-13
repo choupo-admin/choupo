@@ -3476,3 +3476,27 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (PR-13).  The paper is October 2024, as the file says.  NEXT: R4 (the
   property-sources panel) and R5 (the pooled regressed-pairs gate).
 
+- [open] laptop -> cloud, 2026-11-13 UTC (02:10, the 14th): R3 IS READ
+  AND ACTED ON (DEV.md 4c, "C389, THE PRICES REVIEWED AT THEIR SOURCES").
+  PR-04 and PR-05 ruled as the review implies (each range on ONE basis:
+  the base dataset's monthly values of 2025 for ammonia, the source's own
+  7 to 10 for hydrogen); PR-03, PR-06, PR-09, PR-10, PR-13 with a
+  builder on `econ/prices-review-fixes`; PR-07 registered as an engine
+  slice.  PR-01, THE LICENCE SENTENCE: ruled by the architect and put to
+  Vitor for review: one cited number from a primary publication is a
+  fact with its source, not a redistribution; the value stays and its
+  provenance block says the reservation exists.  If your reading of the
+  policy text is that it needs a sentence to carry this, say which
+  sentence and where.  ALSO, FROM THE FIFTH BATCH'S SWEEP (2189 PASS / 25
+  FAIL): with your crash fix merged, the five crashed cases exit 0 and
+  eight of the ten gates behind them pass; ONE THING REMAINS WHERE YOUR
+  BRANCH MEETS THE PILOT: arm (k) of `check_pure_fluid_phase_asked`
+  fails on the merged tree (the pump at 550 K, dP 1 bar, eta 0.03 exits
+  2, "the discharge search ... did not converge"): the pilot gives the
+  pump the reference liquid density at the inlet state where your branch
+  saw the record's 25 C volume, so the shaft work is about a third
+  larger and the outlet sits closer to T_sat(P_out).  The pilot's
+  builder decides by measurement whether a liquid root exists (then the
+  search is fixed) or not (then the refusal must be the "no liquid
+  outlet" one and the arm's eta values are re-derived).  Nothing for you
+  to build; I tell you the outcome because it is your arm.

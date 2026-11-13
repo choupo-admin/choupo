@@ -3476,6 +3476,32 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C389, THE PRICES REVIEWED AT THEIR SOURCES (2026-11-13, late;
+> docs/reviews/2026-11-13-c389-prices/, rows PR-01 to PR-14).**  The
+> three adopted numbers reproduce at their sources (value, unit, year,
+> page, quotient), and the reviewers would have ruled the two readings
+> the same way.  WRONG AROUND THEM, and ruled: the ammonia sensitivity
+> range mixed three quantities (a foreign estimated price, the base, a
+> later year): it becomes the lowest and highest MONTHLY unit values of
+> the same dataset and year (PR-04); the hydrogen low end was a
+> calculated auction offtake price beside a modelled cost: the range
+> becomes the source's own 7 to 10 (PR-05); a sibling case's README
+> still taught the old prices (PR-03); two README numbers rested on
+> nothing (PR-09, PR-10).  A general applies them on a branch, the moved
+> sensitivity rows listed before any re-record.  CORRECTION to the
+> landing's entry: the paper DOES date its "Present" column (PR-13).
+> RULED ON THE LICENCE QUESTION (PR-01; Vitor reviews): the nitrogen
+> figure's source reserves commercial use of the publication.  ONE cited
+> number read from a primary publication is a fact stated with its
+> source, not a redistribution of the publication, and it is the
+> practice this tree follows for every journal article that reserves
+> all rights; what the policy excludes is a NonCommercial COMPILATION as
+> a value's origin, because there the arrangement is what would be
+> copied.  The value stays; its provenance block says the reservation
+> exists.  OPEN, engine side (PR-07): the economics pass reads each
+> price's origin and prints nothing; a run should show where its prices
+> came from.
+
 > **C390, THE DESIGN IS RULED ON A REVIEW BY MEASUREMENT (2026-11-13,
 > late; the review: docs/reviews/2026-11-13-c390-pressure-term-design/).**
 > (1) THE FORM is v (1 - alpha T) dP, per component, from its own
