@@ -105,7 +105,8 @@ std::string unitNameOf(const DictPtr& dict)
 //  RESULT -- the `vf_in` both solve paths already hold, from
 //  `flashState::resolvedInletVaporFraction` (StreamEquilibrium.H), never a
 //  declared flag -- and THIS is the one place that reads it for Q:
-//    * all liquid (vf = 0): the liquid basis, exactly as before;
+//    * all liquid (vf = 0): the liquid basis, M / rho_L from the property
+//      kernel at the feed state (C378 pilot; until then the 25 C volumes);
 //    * all vapour (vf = 1): Q = F / rho_molar, the package's VAPOUR density
 //      at the feed state (the case's equation of state, ThermoPackage::density);
 //    * two phases: the liquid basis, kept and ANNOUNCED once per unit with the
@@ -126,7 +127,7 @@ const char* concentrationBasisWords(FeedBasis b)
 {
     return b == FeedBasis::vapour
         ? "F_i / Q, Q on the gas basis F * v_vapour(T_feed, P_feed) from the case's equation of state"
-        : "F_i / Q, Q on the liquid basis F * sum z_i Vliq_i";
+        : "F_i / Q, Q on the liquid basis F M / rho_liquid at the feed state (the property kernel's method for the feed's constituents)";
 }
 
 //  A vapour volume from the equation of state is not a liquid property: its
@@ -161,21 +162,24 @@ FeedFlow feedVolumetricFlow(const ThermoPackage& thermo, scalar F_in /*mol/s*/,
             "kernel", took(f.vMol, T, P, compositionKey(z_in)), "applied");
         return f;
     }
-    for (std::size_t i = 0; i < n; ++i)
+    //  THE LIQUID BASIS: the property kernel's density at the FEED state
+    //  (C378 pilot, ruling 2), over the constituents present -- the method
+    //  resolved once per constituent set, the use recorded by the kernel.
     {
-        if (thermo.comp(i).Vliq() <= 0.0)
-            throw std::runtime_error("CSTR: component '" + thermo.comp(i).name()
-                + "' has Vliq <= 0 -- needed for liquid concentration");
-        f.vMol += z_in[i] * thermo.comp(i).Vliq();
+        scalar Mbar = 0.0;                                   // g/mol
+        for (std::size_t i = 0; i < n; ++i) Mbar += z_in[i] * thermo.comp(i).MW();
+        liquidProperty::Request ask;
+        ask.thermo = &thermo; ask.T = T; ask.P = P; ask.x = z_in;
+        const scalar rhoL = liquidProperty::density(ask).value;     // kg/m3
+        f.vMol = (Mbar * 1.0e-3) / rhoL;                             // m3/mol
     }
     f.Q = F_in * f.vMol;
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(f.vMol), "not applied");
     if (f.basis == FeedBasis::twoPhaseOnLiquid)
     {
         std::ostringstream m;
         m << "the feed is TWO-PHASE (vapour fraction "
           << vf_in << "), but the concentrations stay on the LIQUID basis"
-             " F * sum z_i Vliq_i: this unit is a stirred liquid of constant"
+             " F / rho_liquid(feed): this unit is a stirred liquid of constant"
              " volumetric flow, and the vapour's volume is not in Q";
         if (AdvisoryLog::instance().addAnnouncedOnce("cstrTwoPhaseFeed:" + unit,
                 "approximation", "info", "cstr " + unit, m.str()))

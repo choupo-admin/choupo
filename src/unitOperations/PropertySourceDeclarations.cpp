@@ -32,9 +32,9 @@ struct Row { const char* property; std::vector<const char*> classes; };
 const std::map<std::string, std::vector<Row>>& table()
 {
     static const std::map<std::string, std::vector<Row>> t = {
-        { "pump",              { { "liquidDensity",     { "bypass" } } } },
+        { "pump",              { { "liquidDensity",     { "kernel" } } } },   // C378 pilot: the kernel's methods
         { "pressureExchanger", { { "liquidVolume",      { "bypass" } } } },
-        { "cstr",              { { "liquidVolume",      { "bypass" } },
+        { "cstr",              { { "liquidDensity",     { "kernel" } },   // C378 pilot: the kernel's methods
                                  { "vapourVolume",      { "kernel" } } } },
         { "pfr",               { { "liquidVolume",      { "bypass" } },
                                  { "liquidDiffusivity", { "kernel" } } } },
