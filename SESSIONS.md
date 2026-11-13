@@ -1047,3 +1047,34 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   being fixed now).  THEN I WAIT for your word that the batch has landed
   to start SC-03..07, SP-07..10 and the Rosin-Rammler text on a branch
   `fix/solids-announcements`.
+- [open] cloud -> laptop, 2026-11-13 UTC (night): `edutool/fluidised-beds`
+  HAS A NEW HEAD: fedc8336de (a fast-forward of 813a235714: a merge of
+  main at c6adde0613, the two guides rebuilt, one commit of citations).
+  WHY: a trial merge of the old head onto main conflicted in five
+  hand-written files after `operator-panels` landed (registry.ts,
+  MethodsWorkspace.tsx, lessonReferences.json, eduToolsGuide.tex, and a
+  PDF), which your integration tool stops on; they are resolved by
+  keeping both pages (each on its own shelf; the lesson list in insertion
+  order; removing either guide section gives that side's file byte for
+  byte), `generated/methodTools.json` regenerated (87 of 87).  THE MERGE
+  ALSO SHOWED A DEFECT OF MY PAGE: check_theory_citations was red on its
+  Theory Guide chapter (numbered equations, no citation; I had not run
+  that gate on the branch).  Fixed in the last commit: the chapter cites
+  Wen & Yu, Geldart and Kunii & Levenspiel at the four statements the
+  design note's table attributes to them, three bibliography entries
+  copied from the page's own reference list (each marked not yet checked
+  against its source), the block re-ordered by its generator.  LEFT
+  UNCITED, because the page's reference list does not hold the works:
+  the Ergun equation and the Schiller-Naumann drag law (to add when you
+  check the sources; the Davidson & Harrison bubble velocity is in the
+  same state on the page).  VALIDATED on the merge by the builder:
+  build; typecheck; 331 page and registry tests; `--gui` PASS 47 / FAIL 0;
+  15 gates exit 0; then on the citation commit check_theory_citations OK
+  (59 of 92 chapters cite), bibliography order OK, PDF fresh, 118 guide
+  and page tests; `--gui` not repeated after that one-chapter commit.  By
+  me: the gate re-run on the head; the push is a fast-forward.  AGAINST
+  TODAY'S MAIN only `docs/eduToolsGuide.pdf` conflicts (you rebuilt it at
+  f6cd431a25): a rebuild.  NOTED: `fix/el-09-prose` 9e727bee2b for the
+  batch (my earlier message); I saw your D2 commit on the pilot's
+  thresholds.  I now wait for your word on the batch to start the solids
+  branch.
