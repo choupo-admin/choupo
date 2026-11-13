@@ -64,10 +64,24 @@ WHAT IT CHECKS.
      criterion.  Sabotage by hand: I_max 0.5 -> 0.3 in the source (no
      rebuild needed, the arm reads the declaration) -> FAIL (c) twice,
      naming 0.52 and 0.56.
+ (d) DAVIES WITH A 2- ANION'S ION PAIR (EL-09, 2026-11-13).  For Na2SO4 at
+     298.15 K and m = 0.1, 0.2, 0.3, 0.4 mol/kg the arm runs the `speciate`
+     op with Davies twice -- with the catalogue's full network (NaSO4-) and
+     with `networkScope restricted; network ( water-dissociation );` -- and
+     forms gamma_pm on the TOTAL molality from the solved activities,
+     (a_Na^2 a_SO4/((2m)^2 m))^(1/3), against the Na-SO4 evaluated table.
+     WITH the pair it must be within 10 % to m = 0.3 and beyond at 0.4;
+     WITHOUT, beyond at all four; each percentage must equal the gate's
+     table to its printed precision, and the seven the Theory Guide prints
+     (sec:davies-band) must appear there as text.  `-v` prints the rows.
+     Sabotage by hand (2026-11-13): an expected value moved by one unit of
+     its last digit -> FAIL (d)(iii); the WITH run given the restricted
+     network -> FAIL (d)(i) and (iii); one number changed in the guide ->
+     FAIL (d)(iii) on the guide text.
 WHAT IT DOES NOT CHECK.  Whether a declared band is TRUE of any model other
 than Davies (that is the source the declaration cites; for Edwards, its
-paper), or Davies' claim about a 2- anion's ion pairs (it cites the review
-table, which no gate recomputes); a temperature domain (checked where a model's
+paper), or Davies with the ion pairs of any 1-2 salt but Na2SO4 (arm (d));
+a temperature domain (checked where a model's
 PARAMETERS are read, e.g. each Edwards record's Trange); the
 dominant-solvent criterion of the mixed-solvent composite (`ionic davies;
 molecular NRTL`), which no source in the tree states and is therefore NOT
@@ -355,6 +369,150 @@ else:
     elif "beyond its" in out:
         fail.append("(b5) edwards02 (I <= 1.55) announced a domain advisory")
 
+
+# ------------------------------- (d) Davies with a 2- anion's ion pair (EL-09)
+# The Theory Guide (sec:davies-band) claims, for Na2SO4 at 298.15 K, that
+# Davies' gamma_pm comes back inside 10 % of the evaluated table when the
+# catalogue's NaSO4- is in the speciation network, and is far outside it
+# without.  Recompute the eight rows with the ENGINE on every run: one
+# `speciate` op per (m, network), Davies; WITH = the catalogue's full network
+# (it holds NaSO4-), WITHOUT = `networkScope restricted; network (
+# water-dissociation );` (every ion free).  gamma_pm referred to the salt's
+# TOTAL molality from the solved free-ion activities,
+#     gamma_pm = (a_Na^2 a_SO4 / ((2m)^2 m))^(1/3),
+# against the Na-SO4 evaluated table.  Asserted: (i) WITH inside 10 % at
+# m = 0.1, 0.2, 0.3 and beyond it at 0.4; (ii) WITHOUT beyond 10 % at all
+# four; (iii) every percentage equals D_EXPECTED to its printed precision,
+# and the seven the guide prints appear in its text (gate and guide cannot
+# drift apart).  `-v` prints the eight rows.
+VERBOSE = "-v" in sys.argv[1:] or "--verbose" in sys.argv[1:]
+NA2SO4 = CURATION / "Na-SO4/constant/experiments/Na-SO4.dat"
+GUIDE = ROOT / "docs/theoryGuide.tex"
+# m: (with pair %, decimals, without pair %, decimals) -- as the guide prints
+D_EXPECTED = {0.1: ("-2.7", "+21"), 0.2: ("+2.3", "+50"),
+              0.3: ("+7.1", "+87"), 0.4: ("+11.6", "+134")}
+D_IN_GUIDE = ["-2.7", "+2.3", "+7.1", "+11.6", "+21", "+50", "+87"]
+DAVIES_SURFACE = """recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components ( water );
+aqueousProperties
+{
+    activityCoefficients { model Davies; referenceBasis aqueousMolality; }
+}
+"""
+
+
+def d_op(name, m, restricted):
+    scope = ("\n      networkScope restricted; network ( water-dissociation );"
+             "\n      reason \"check_activity_domain (d): every ion free, no "
+             "ion pair\";" if restricted else "")
+    return (f"    {{ name {name}; type speciate; activityModel davies;\n"
+            f"      temperature 298.15; analyticalTotals {{ Na {2 * m:g} "
+            f"mol/kg; SO4 {m:g} mol/kg; }}\n      pH 7.0;{scope}\n"
+            f"      output {{ file {name}.csv; }} }}")
+
+
+def d_rows():
+    """{m: (gamma_meas, gamma_with, gamma_without)} or a failure string."""
+    import csv
+    import os
+    t = NA2SO4.read_text(errors="replace")
+    blk = re.search(r"\ndata\s*\((.*?)\);", t, re.S)
+    if not blk:
+        return "the Na-SO4 evaluated table has no data block"
+    meas = {}
+    for ln in blk.group(1).strip().splitlines():
+        if ln.strip() and not ln.strip().startswith("//"):
+            v = ln.split()
+            meas[float(v[0])] = float(v[1])
+    tmp = Path(tempfile.mkdtemp(prefix="activityDomain.d."))
+    case = tmp / "na2so4"
+    (case / "system").mkdir(parents=True)
+    (case / "constant").mkdir()
+    (case / "system/controlDict").write_text(
+        'application  choupoProps;\ndescription  "check_activity_domain (d)";'
+        "\nverbosity    1;\n")
+    (case / "constant/thermoPhysPropDict").write_text(DAVIES_SURFACE)
+    ops = []
+    for m in D_EXPECTED:
+        tag = f"{m:g}".replace(".", "p")
+        ops.append(d_op(f"with_m{tag}", m, False))
+        ops.append(d_op(f"without_m{tag}", m, True))
+    (case / "system/propsDict").write_text(
+        "operations\n(\n" + "\n".join(ops) + "\n);\n")
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    try:
+        r = subprocess.run([str(PROPS), str(case)], capture_output=True,
+                           text=True, timeout=600, env=env, cwd=case)
+        if r.returncode != 0:
+            return (f"the Na2SO4 speciate probe exited {r.returncode}: "
+                    + (r.stdout + r.stderr).strip()[-400:])
+        out = {}
+        for m in D_EXPECTED:
+            if m not in meas:
+                return f"the Na-SO4 table has no row at m = {m}"
+            tag = f"{m:g}".replace(".", "p")
+            g = []
+            for kind in ("with", "without"):
+                f = case / f"{kind}_m{tag}.csv"
+                if not f.exists():
+                    return f"the probe wrote no {f.name}"
+                act = {row["species"]: float(row["activity"])
+                       for row in csv.DictReader(open(f))}
+                if "Na" not in act or "SO4" not in act:
+                    return f"{f.name} carries no Na or SO4 activity"
+                g.append((act["Na"] ** 2 * act["SO4"]
+                          / ((2 * m) ** 2 * m)) ** (1.0 / 3.0))
+            out[m] = (meas[m], g[0], g[1])
+        return out
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+if not PROPS.exists():
+    fail.append(f"(d) {PROPS.relative_to(ROOT)} is not built -- a check that "
+                "cannot run must not pass")
+else:
+    rows = d_rows()
+    if isinstance(rows, str):
+        fail.append(f"(d) {rows} -- a check that cannot run must not pass")
+    else:
+        if VERBOSE:
+            print("[activity-domain] (d) Na2SO4, Davies, 298.15 K, gamma_pm "
+                  "referred to the total molality")
+            print("    m      measured  with NaSO4-  err %   without  err %")
+        for m, (gm, gw, go) in rows.items():
+            ew, eo = 100 * (gw - gm) / gm, 100 * (go - gm) / gm
+            if VERBOSE:
+                print(f"    {m:<5}  {gm:.4f}    {gw:.4f}     {ew:+7.2f}  "
+                      f"{go:.4f}  {eo:+7.2f}")
+            inside = abs(ew) <= 10.0
+            if (m < 0.35) != inside:
+                fail.append(f"(d)(i) with NaSO4- at m = {m}: Davies is "
+                            f"{ew:+.2f} % off the table -- expected "
+                            + ("within" if m < 0.35 else "beyond") + " 10 %")
+            if abs(eo) <= 10.0:
+                fail.append(f"(d)(ii) without the pair at m = {m}: Davies is "
+                            f"{eo:+.2f} % off -- expected beyond 10 %")
+            for got, want, what in ((ew, D_EXPECTED[m][0], "with the pair"),
+                                    (eo, D_EXPECTED[m][1], "without")):
+                dec = len(want.split(".")[1]) if "." in want else 0
+                if f"{got:+.{dec}f}" != want:
+                    fail.append(f"(d)(iii) {what} at m = {m}: the engine gives "
+                                f"{got:+.{dec}f} %, the gate's table (and the "
+                                f"Theory Guide) say {want} %")
+    sec = GUIDE.read_text(errors="replace").split(r"\label{sec:davies-band}")
+    if len(sec) != 2:
+        fail.append("(d)(iii) docs/theoryGuide.tex has no single "
+                    "sec:davies-band to hold the numbers against")
+    else:
+        body = sec[1].split(r"\subsection")[0]
+        for v in D_IN_GUIDE:
+            if f"${v}$" not in body:
+                fail.append(f"(d)(iii) the Theory Guide's sec:davies-band no "
+                            f"longer prints ${v}$ -- the gate and the guide "
+                            "have drifted apart")
+
 if fail:
     for f in fail:
         print("FAIL", f)
@@ -368,6 +526,10 @@ print(f"[activity-domain] OK the activity models declare their own domain "
       f"median 10 %-in-gamma_pm crossing of the evaluated 25 C tables (1-1 "
       f"{medians.get('1-1', float('nan')):.2f}, 2-1 "
       f"{medians.get('2-1', float('nan')):.2f}) and its banner states that "
-      "criterion; NOT checked: whether the Edwards band is true, temperature "
-      "domains, a 2- anion's ion pairs, the mixed-solvent dominant-solvent "
-      "criterion (no source states one)")
+      "criterion; Davies with the catalogue's NaSO4- recomputed for Na2SO4 "
+      "at m = 0.1-0.4 mol/kg (within 10 % to 0.3, beyond at 0.4; beyond at "
+      "all four without the pair; all eight equal the gate's table to "
+      "their printed digits, and the seven the Theory Guide prints appear "
+      "in it); NOT checked: whether the Edwards band is true, temperature "
+      "domains, the ion pairs of the other seven 1-2 salts, the "
+      "mixed-solvent dominant-solvent criterion (no source states one)")
