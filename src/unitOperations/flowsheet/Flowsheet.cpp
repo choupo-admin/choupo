@@ -1163,17 +1163,17 @@ void runUnit(const DictPtr&                                          udict,
     //
     //  The unit has now consulted everything it was ever going to consult, so
     //  anything still unread in its `operation {}` block had no effect on the
-    //  answer above -- while the author believes it did.  `murphreeEficiency
-    //  0.70;` is the live example: it parses, it sits there, the column runs
-    //  ideal-tray, and the distillate toluene comes out 0.94 instead of 2.47
-    //  kmol/h with nothing said.
-    //
+    //  answer above -- while the author believes it did (`murphreeEficiency
+    //  0.70;` parses, sits there, and the column runs ideal-tray: distillate
+    //  toluene 0.94 instead of 2.47 kmol/h, nothing said).  THE WHOLE TREE of
+    //  the block is walked, not its first level: `geometry { dZ 6 m; }` for
+    //  `dz` is as dead as a key at the top (DictAudit.H `auditTree`).
     //  Only on the LAST pass: a recycle re-solves each unit many times, and
     //  the same slip announced once per Wegstein iteration is noise that
     //  teaches the reader to scroll past it.
     if (!quiet && augmented->found("operation"))
     {
-        const auto findings = dictAudit::audit(*augmented->subDict("operation"),
+        const auto findings = dictAudit::auditTree(*augmented->subDict("operation"),
                                                "unit '" + uname + "' operation{}");
         dictAudit::report(findings, verbosity);
     }
