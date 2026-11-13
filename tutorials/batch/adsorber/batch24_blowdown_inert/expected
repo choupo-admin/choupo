@@ -59,3 +59,7 @@ kpi     campaign               utility_steamLP_eur 1.20000000243e-06 1e-4
 kpi     campaign               utility_steamLP_kJ 0.100000000202   1e-4
 kpi     campaign               utility_steamLP_kg 4.57456542555e-05 1e-4
 ledger  bed                    energy.isothermalDuty.valid valid            exact
+kpi     bed                    D_axial_interstitial 0.00025          1e-4
+kpi     bed                    D_numerical      0                1e-4
+kpi     bed                    mass_residual_CO2_mol 0                1e-4
+kpi     bed                    numerical_dispersion_ratio 0                1e-4

@@ -55,3 +55,4 @@ kpi     campaign               energy_residual_kJ 1.02410614711e-12 abs:1e-09
 kpi     bed                    D_axial_interstitial 0.00025          1e-4
 kpi     bed                    D_numerical      0                1e-4
 kpi     bed                    numerical_dispersion_ratio 0                1e-4
+kpi     bed                    mass_residual_CO2_mol 0                1e-4

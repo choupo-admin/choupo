@@ -7148,6 +7148,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/lpratchet.$$
+    # floor-scale ratchet gate (2026-11-13, DEV.md 4c, review CI-00d).  A ratio whose scale is floored with a tiny literal (a division by max(quantity, 1e-30) and its relatives) reports round-off as a closure when the quantity is absent: batch25 published 4.1e7 for a species the bed never held, on one math library and not on another.  The gate COUNTS such divisions per file against a pinned table, two-sided: a new one fails, and so does a pinned one that left without its row.  It classifies nothing: whether a pinned site is a defect is read site by site.
+    if gate_exec "$ROOT/bin/curate/check_floor_scale_ratchet.py" > /tmp/floorratchet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "floor-scale-ratchet-gate" "$(grep -m1 '^check_floor_scale_ratchet: OK' /tmp/floorratchet.$$ || head -1 /tmp/floorratchet.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_floor_scale_ratchet.py)\n" "floor-scale-ratchet-gate"
+        cat /tmp/floorratchet.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/floorratchet.$$
     # liquid-volume datum gate (2026-11-13, DEV.md 4c C378, TR-12).  A record's `Vliq` belongs to `VliqT` (absent = 298.15 K); a temperature stated in the `Vliq` comment must agree with the key, a record with Tc < 330 K carrying `Vliq` must state its temperature, and the six unresolved records stay pinned by name in bin/curate/vliq_datum_debt.tsv (two-sided).
     if gate_exec "$ROOT/bin/curate/check_vliq_datum.py" > /tmp/vliqdatum.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "vliq-datum-gate" "$(head -1 /tmp/vliqdatum.$$)"
