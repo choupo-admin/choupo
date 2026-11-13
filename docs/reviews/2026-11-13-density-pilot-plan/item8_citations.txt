@@ -1,0 +1,561 @@
+===== LiquidPropertyDoor.H:85-93
+struct Result
+{
+    scalar            value = 0.0;
+    std::string       methodId;          // stable word
+    std::string       label;             // generated from the route that ran
+    std::vector<Leaf> leaves;            // one per component, for a composite method
+    bool              pressureApplied = false;
+    Quality           quality;
+};
+===== PropertyDomainError.H:44-64
+struct PropertyDomainError : public std::runtime_error
+{
+    enum class Kind { outsideHardDomain, invalidState, missingDatum };
+
+    PropertyDomainError(Kind k, const std::string& message, std::string remedyText = "")
+      : std::runtime_error(message), kind(k), remedy(std::move(remedyText)) {}
+
+    Kind        kind;
+    std::string remedy;   // what would let the route answer; "" for an invalid state
+
+    static const char* kindName(Kind k)
+    {
+        switch (k)
+        {
+            case Kind::outsideHardDomain: return "outsideHardDomain";
+            case Kind::invalidState:      return "invalidState";
+            case Kind::missingDatum:      return "missingDatum";
+        }
+        return "?";
+    }
+};
+===== src/thermo/ThermoPackage.cpp:2346-2355
+    scalar Vmix = 0.0;                                          // m³/mol
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        if (z[i] <= 0.0) continue;
+        Vmix += (z[i] / zsum) * liquidMolarVolumeOf(i, T);
+    }
+    if (!(Vmix > 0.0) || !std::isfinite(Vmix))
+        throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: liquid molar volume"
+            " is not a finite positive number");
+    return Mbar / Vmix;                                         // kg/m³
+===== src/thermo/ThermoPackage.cpp:2427-2430
+scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
+{
+    constexpr scalar Tref_Vliq = 298.15;                        // `Vliq` datum
+    static bool announcedAnchored = false, announcedBare = false,
+===== src/thermo/ThermoPackage.cpp:2460-2482
+    else if (route == LiquidVolumeRoute::flatVliq)
+    {
+        Vi = Vdecl;
+        if (!announcedFlat)
+        {
+            std::cout << "liquid density: component '" << c.name()
+                      << "' declares Vliq but no critical constants, so its"
+                         " molar volume is held CONSTANT at the 25 C datum"
+                         " -- no thermal expansion is modelled for it\n";
+            announcedFlat = true;
+        }
+    }
+    else if (route == LiquidVolumeRoute::bareRackett)
+    {
+        Vi = closures::rackettVliq(T, Tc, Pc_Pa, omega);
+        if (!announcedBare)
+        {
+            std::cout << "liquid density: component '" << c.name()
+                      << "' declares no Vliq, so its molar volume is bare"
+                         " Rackett -- a generic saturated-liquid ESTIMATE,"
+                         " unanchored to any measurement of this substance\n";
+            announcedBare = true;
+        }
+===== src/thermo/ThermoPackage.cpp:2503-2507
+    //  can do without the component asks over the others
+    //  (`pricedDensity::select`) and says so in its own words.
+    if (hasCrit && T >= Tc)
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain, "ThermoPackage::density: no liquid molar"
+            " volume for component '" + c.name() + "' at T = "
+===== src/thermo/ThermoPackage.cpp:2539-2546
+ThermoPackage::LiquidVolumeRoute ThermoPackage::liquidVolumeRouteOf(std::size_t i) const
+{
+    const Component& c = components_.at(i);
+    const bool hasCrit = (c.Tc() > 0.0 && c.Pc() * 1.0e5 > 0.0);
+    if (c.Vliq() > 0.0) return hasCrit ? LiquidVolumeRoute::anchoredRackett
+                                       : LiquidVolumeRoute::flatVliq;
+    return hasCrit ? LiquidVolumeRoute::bareRackett : LiquidVolumeRoute::none;
+}
+===== LiquidPropertyDoor.cpp:35-39
+    switch (r)
+    {
+        case Route::anchoredRackett: return "anchoredRackett";
+        case Route::flatVliq:        return "flatVliq";
+        case Route::bareRackett:     return "bareRackett";
+===== LiquidPropertyDoor.cpp:123-150
+    else if (p == Property::density)
+    {
+        scalar zs = 0.0;
+        for (std::size_t k = 0; k < x.size(); ++k) if (x[k] > 0.0) zs += x[k];
+        std::set<Route> routes;
+        for (std::size_t k = 0; k < x.size() && k < thermo.n(); ++k)
+            if (x[k] > 0.0)
+            {
+                const Route rt = thermo.liquidVolumeRouteOf(k);
+                routes.insert(rt);
+                r.leaves.push_back({ thermo.comp(k).name(),
+                                     std::string("liquidVolume.") + routeId(rt),
+                                     zs > 0.0 ? x[k] / zs : 0.0 });
+            }
+        r.methodId = "liquidVolume.idealMix[";
+        r.label    = "property kernel: ideal mixing of liquid volumes, ";
+        bool first = true;
+        for (const Route rt : routes)
+        {
+            r.methodId += std::string(first ? "" : "+") + routeId(rt);
+            r.label    += std::string(first ? "" : "; ") + routeLabel(rt);
+            if (r.quality.origin.empty() || std::string(routeOrigin(rt)) == "estimated")
+                r.quality.origin = routeOrigin(rt);
+            first = false;
+        }
+        r.methodId += "]";
+        r.quality.provenance = "the component records' Vliq, Tc, Pc, omega";
+    }
+===== ThermoPackageBuilder.cpp:2755-2771
+        // G4: pureFluids{} rides verbatim -- a per-component multi-property
+        // surface override, announced.
+        DictPtr pureFluidsDict;
+        if (v2->found("pureFluids"))
+        {
+            pureFluidsDict = v2->subDict("pureFluids");
+            if (thermoAnnounce())
+            {
+                std::string names;
+                for (const auto& k : pureFluidsDict->keys())
+                    names += (names.empty() ? "" : ", ") + k;
+                std::cout << "[v2 native] pureFluids override (" << names
+                          << "): the declared surface REPLACES the"
+                             " component-correlation routes it covers --"
+                             " saturation dome (Psat), caloric (h/s/Cp),"
+                             " volumetric (v/rho) and transport, on that"
+                             " component only.\n";
+===== ThermoPackageBuilder.cpp:2102-2106
+    // pureFluids; the other formulations carry neither yet -- a system
+    // declaring them lands on the dispatch's named refusal.
+    if (v2->found("pureFluids"))
+        return false;
+    if (v2->found("transport") && form != "diluteSolution")
+===== ThermoPackageBuilder.cpp:2580-2584
+            throw std::runtime_error("thermophysicalPropertySystem: solutes"
+                " solutionModel implemented: henryDilute.");
+        const std::string solvent = sol->lookupWord("component");
+        const auto solutes = sus->lookupWordList("components");
+        if (solutes.empty())
+===== src/thermo/ThermoPackage.cpp:2286-2302
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, z))
+        {
+            const PureFluidModel& m = *pureFluid_.at(*i);
+            static bool announced = false;
+            if (!announced)
+            {
+                std::cout << "density: the pure-fluid formulation "
+                          << m.type() << " (rho = MW / v_molar)\n";
+                announced = true;
+            }
+            const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
+            const scalar vm = m.v_molar(T, P_Pa);             // m³/mol
+            if (!(vm > 0.0) || !std::isfinite(vm))
+                throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: pure-fluid"
+                    " v_molar is not a finite positive number");
+            return Mi / vm;                                    // kg/m³
+===== PureFluidModel.H:116-119
+    virtual scalar h_molar (scalar T_K, scalar p_Pa) const = 0;
+    virtual scalar s_molar (scalar T_K, scalar p_Pa) const = 0;
+    virtual scalar v_molar (scalar T_K, scalar p_Pa) const = 0;
+    virtual scalar cp_molar(scalar T_K, scalar p_Pa) const = 0;
+===== src/thermo/ThermoPackage.cpp:1366-1374
+
+// ---- Pure-fluid override helpers ----------------------------------------
+
+bool ThermoPackage::isEffectivelyPure(const sVector& z, std::size_t i,
+                                      scalar thr)
+{
+    return i < z.size() && z[i] >= thr;
+}
+
+===== src/thermo/ThermoPackage.cpp:1398-1412
+        const scalar zi = (i < z.size()) ? z[i] : 0.0;
+        if (zi <= 1.0e-12) continue;                 // absent: nothing to route
+        if (ThermoPackage::isEffectivelyPure(z, i))
+            return i;                                // pure -> use the package
+        // present but mixed -> refuse, naming the component and its fraction.
+        char buf[64];
+        std::snprintf(buf, sizeof(buf), "%.3g", static_cast<double>(zi));
+        throw std::runtime_error(
+            std::string("PureFluidModel ") + kv.second->type()
+            + " is a pure-water property method; component '" + comps[i].name()
+            + "' is x=" + buf + " in this phase -- " + kv.second->type()
+            + " cannot do mixtures (v1). Remove the pureFluids "
+            + kv.second->type()
+            + " selection for this case or use the generic thermo.");
+    }
+===== src/thermo/ThermoPackage.H:771-775
+    bool   hasSaturationCurve(std::size_t i) const;
+    // True iff component i carries essentially all of the phase (x_i >= thr).
+    static bool isEffectivelyPure(const sVector& z, std::size_t i,
+                                  scalar thr = 0.999);
+    // For the glass-box run header: list of "<component>: PureFluidModel <type>"
+===== IAPWS95.dat:43-43
+fluid         water;
+===== IAPWS95.dat:66-66
+uncertainty "R6-95 Section 6 and Figs. 1-4: tolerances depend on the region -- density from 0.0001 % (liquid near ambient pressure) to 0.5 % (high pressures, high temperatures), speed of sound and isobaric heat capacity growing drastically towards the critical point; the release also states unsatisfactory second-derivative behaviour within Tc..Tc+5 K at densities within 0.5 % of rho_c (Section 5 item 1)";
+===== SpanWagner1996.dat:20-20
+fluid         CO2;
+===== ReferenceFluid.cpp:79-86
+    const std::string sub = "parameters/Helmholtz/" + equation + ".dat";
+    const fs::path p = records::resolveRequired(sub,
+        "the reference equation of state '" + equation + "'");
+    if (p.empty() || !fs::exists(p))
+        throw std::runtime_error("reference equation of state '" + equation
+            + "': no record " + sub + " (case-local constant/" + sub
+            + " or the catalogue).  The equations shipped are the records "
+              "in data/standards/parameters/Helmholtz/.");
+===== AqueousVolumetric.H:39-44
+    Registered formulations (explicit factory, the house pattern):
+
+      diluteVolume          rung 0 -- solutes add MASS and no volume:
+                            rho = rhoWaterKell(T) + soluteMass.  The
+                            weakest honest closure; error grows with
+                            concentration (~ +1.8 % at 1 molal NaCl).
+===== src/unitOperations/rotating/Pump.cpp:100-134
+    scalar v_mix = 0.0, x_ions = 0.0;
+    std::string ions;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        const scalar vi = thermo.comp(i).Vliq();
+        if (x[i] > 0.0 && vi <= 0.0)
+        {
+            if (thermo.comp(i).hasAqueousMapping())
+            {
+                x_ions += x[i];
+                ions   += (ions.empty() ? "" : " ") + thermo.comp(i).name();
+                continue;
+            }
+            throw std::runtime_error(
+                "Pump: component '" + thermo.comp(i).name()
+                + "' has no liquid molar volume (Vliq) in its.dat --- "
+                "required for the incompressible pump model");
+        }
+        v_mix += x[i] * vi;
+    }
+    if (x_ions > 0.0)
+    {
+        char b[200];
+        std::snprintf(b, sizeof(b), "dissolved ion(s) (%s) carry no liquid"
+            " molar volume: the volume flow is the solvent's (dilute-solution"
+            " reading, and its heat capacity likewise; ion mole fraction %.3g"
+            " neglected)", ions.c_str(),
+            static_cast<double>(x_ions));
+        AdvisoryLog::instance().add("approximation", "info",
+            "pump '" + (dict->name().empty() ? type() : dict->name()) + "'", b);
+        if (verbosity >= 2) std::cout << "  [pump] " << b << "\n";
+    }
+
+    const scalar F_mol_s = F * 1000.0;                  // mol/s
+    const scalar Q_vol   = F_mol_s * v_mix;             // m^3/s  (set by the feed)
+===== src/unitOperations/rotating/Pump.cpp:136-140
+    // ---- Specification: EXACTLY ONE of W_shaft | P_out | dP -------------
+    //   For an incompressible liquid the pump relation is invertible in
+    //   CLOSED FORM:
+    //        ΔP = eta · W_shaft / Q_vol    <->    W_shaft = Q_vol · ΔP / eta
+    //   so the discharge pressure is just as DIRECT a spec as the shaft
+===== src/unitOperations/rotating/Pump.cpp:236-242
+        if (x_ions > 0.0)
+        {
+            for (std::size_t i = 0; i < n; ++i)
+                if (thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+                    xCp[i] = 0.0;
+            solventShare = 1.0 - x_ions;
+            for (auto& v : xCp) v /= solventShare;
+===== src/unitOperations/rotating/Pump.cpp:316-330
+
+    // Pump head h = dP / (rho g).  rho = MW_mix / v_mix, with
+    // MW_mix in kg/mol (Component.MW() is kg/kmol -> /1000).
+    scalar MW_mix = 0.0;                                // kg/kmol
+    for (std::size_t i = 0; i < n; ++i) MW_mix += x[i] * thermo.comp(i).MW();
+    const scalar rho = (v_mix > 0.0)
+        ? (MW_mix / 1000.0) / v_mix                     // kg/m^3
+      : liquidSource::pumpHeadDensityFallback.value;
+    if (!(v_mix > 0.0))
+        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::pumpHeadDensityFallback);
+    const scalar head_m = dP / (rho * 9.80665);
+    if (v_mix > 0.0)
+        PropertySourceLog::instance().useHere("liquidDensity", x_ions > 0.0
+            ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
+            "bypass", took(rho, T_in, P_in, compositionKey(x)), "not applied");
+===== src/unitOperations/reactor/CSTR.cpp:108-112
+    // unit declares `reactions ( r1 r2 );` and carries no single `reaction`.
+
+    const scalar F_in_kmols = feedDict->lookupScalar("F",   Dims::molarFlow);
+    const scalar T          = feedDict->lookupScalar("T",   Dims::temperature);
+    const scalar V_R        = operDict->lookupScalar("V_R", Dims::volume);
+===== src/unitOperations/reactor/CSTR.cpp:238-253
+    const scalar F_in = F_in_kmols * 1000.0;         // mol/s
+    sVector F_i_in(n);
+    for (std::size_t i = 0; i < n; ++i) F_i_in[i] = z_in[i] * F_in;
+
+    // Feed molar volume (m³/mol) — assumed constant inside reactor
+    scalar V_mol_in = 0.0;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        if (thermo.comp(i).Vliq() <= 0.0)
+            throw std::runtime_error("CSTR: component '" + thermo.comp(i).name()
+                + "' has Vliq <= 0 -- needed for liquid concentration");
+        V_mol_in += z_in[i] * thermo.comp(i).Vliq();
+    }
+    const scalar Q = F_in * V_mol_in;        // m³/s (feed volumetric flow)
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, "bypass", took(V_mol_in), "not applied");
+    const scalar tau = V_R / Q;              // s    (residence time)
+===== src/unitOperations/reactor/CSTR.cpp:439-442
+    //  the pressure the stream will carry.  The duty below prices exactly
+    //  this published state (`cstrDutyKW` reads `produced_`).
+    const scalar P_feed = feedDict->lookupScalarOrDefault("P", 101325.0);
+    const bool   pinned_in =
+===== src/unitOperations/reactor/CSTR.cpp:528-531
+    law.reserve(R);
+    RateOffer offer;
+    offer.concentrationBasis = "F_i / Q, Q on the liquid basis F * sum z_i Vliq_i";
+    //  A law that reads P gets the FEED's declared pressure, never the
+===== src/unitOperations/reactor/CSTR.cpp:657-669
+    sVector F_i_in(n, 0.0);
+    for (std::size_t i = 0; i < n; ++i) F_i_in[i] = z_in[i] * F_in;
+    scalar V_mol_in = 0.0;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        if (thermo.comp(i).Vliq() <= 0.0)
+            throw std::runtime_error("CSTR: component '" + thermo.comp(i).name()
+                + "' has Vliq <= 0 -- needed for liquid concentration");
+        V_mol_in += z_in[i] * thermo.comp(i).Vliq();
+    }
+    const scalar Q   = F_in * V_mol_in;      // m^3/s
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, "bypass", took(V_mol_in), "not applied");
+    const scalar tau = V_R / Q;              // s
+===== SolutionRegistry.cpp:43-46
+std::string key(const std::string& solute, const std::string& solvent)
+{
+    return solute + "-" + solvent;
+}
+===== SolutionRegistry.cpp:56-73
+void SolutionRegistry::loadFrom(const std::string& dataRoot)
+{
+    fs::path dir = fs::path(dataRoot) / "standards" / "parameters" / "solution";
+    if (!fs::exists(dir)) return;
+
+    records::ScanGuard guard("SolutionRegistry", "solution pair");
+    for (auto& e : fs::directory_iterator(dir))
+    {
+        if (!e.is_regular_file()) continue;
+        if (e.path().extension() != ".dat") continue;
+        auto d = Dictionary::fromFile(e.path().string());
+        SolutionPair s;
+        s.readFromDict(d);
+        if (s.solute().empty() || s.solvent().empty())
+            throw std::runtime_error("SolutionRegistry: file '"
+                + e.path().string() + "' lacks `solute` or `solvent`");
+        guard.claim(key(s.solute(), s.solvent()), e.path().string());
+        registry()[key(s.solute(), s.solvent())] = std::move(s);
+===== SolutionPair.cpp:43-47
+    // factor 1.0 -- same units as Component::h_formation, so the two combine
+    // directly on the aqueous rung).
+    dHsoln_ = d->lookupScalar("dHsoln", Dims::molarEnergy);
+
+    if (d->found("Cp"))
+===== ApproximationAuthorisation.H:113-131
+    //  system dict; safe to call with a dict that carries no block at all --
+    //  that is the "Read, empty" state and it is a real answer.
+    void readFrom(const DictPtr& topLevel)
+    {
+        read_ = true;
+        idealPairs_.clear();
+        reason_.clear();
+        outsideActivity_.clear();
+        reasonOutside_.clear();
+        idealMolecular_.clear();
+        reasonMolecular_.clear();
+        if (!topLevel || !topLevel->found("approximations")) return;
+        auto ap = topLevel->subDict("approximations");
+        //  HARDENED (C378 slice 0): a word this engine does not know is
+        //  REFUSED, never ignored -- an authorisation the engine cannot
+        //  execute is an authorisation the case believes it took; and each
+        //  word carries a non-empty `reason`, the statement a reader audits.
+        static const char* const words[] =
+            { "idealBinaryPair", "componentOutsideActivityModel", "idealMolecularVLE" };
+===== src/applications/choupoSolve/main.cpp:607-611
+    AdsorbentRegistry::loadFrom(dataRoot.string());
+    HenrysLawRegistry::loadFrom(dataRoot.string());
+    SolutionRegistry::loadFrom(dataRoot.string());
+    UtilityCatalogue::loadFrom(dataRoot.string());
+
+===== src/applications/choupoBatch/main.cpp:259-263
+    EDStackRegistry::loadFrom(dataRoot.string());
+    HenrysLawRegistry::loadFrom(dataRoot.string());
+    SolutionRegistry::loadFrom(dataRoot.string());
+    UtilityCatalogue::loadFrom(dataRoot.string());
+    std::cout << "Case directory: " << fs::current_path().string() << "\n"
+===== DynamicDriver.cpp:427-431
+    HenrysLawRegistry::loadFrom(dataRoot.string());
+
+    SolutionRegistry::loadFrom(dataRoot.string());
+    UtilityCatalogue::loadFrom(dataRoot.string());
+    std::cout << "Case directory: " << fs::current_path().string() << "\n"
+===== src/unitOperations/flowsheet/Flowsheet.cpp:3521-3550
+                std::map<std::string, ProcessStream> assumedTears;
+                for (const auto& t : tears) assumedTears[t] = streams_.at(t);
+                try { sweep(/*quiet=*/true); }
+                catch (const InfeasibleTrial& e)
+                {
+                    if (!haveImage)
+                    {
+                        //  An ACCEPTED pass from the same tear states the
+                        //  refusal by name when the reason is a negative
+                        //  pressure (the unit, the stream, the drop, the
+                        //  remedy); any other reason falls through to ours.
+                        sweep(/*quiet=*/false);
+                        throw std::runtime_error(
+                            std::string("Flowsheet: the recycle ")
+                            + (outerIt == 0 ? "seed" : "direct-substitution step")
+                            + " is infeasible and there is no earlier iterate"
+                              " to fall back on: " + e.what());
+                    }
+                    ++rejectedExtrap;
+                    std::cout << "  " << std::setw(4) << outerIt
+                              << "  [rejected extrapolation] " << e.what()
+                              << " -- direct substitution from the last image\n";
+                    unpackTears(tears, streams_, gPrev, thermo.n(),
+                                /*announce=*/false, &streamBounds);
+                    x = gPrev;
+                    haveImage = false;
+                    accel = solver::Wegstein(x.size(), qmin, qmax);
+                    if (recDE)
+                        deAccel = solver::FixedPointAccelerator::New(
+                            "DominantEigenvalue", x.size(), deOpts);
+===== src/unitOperations/flowsheet/Flowsheet.cpp:3627-3631
+                                         thermo.n() + 3, 1.0);
+                }
+                catch (const InfeasibleTrial& e)
+                {
+                    std::cout << "  [recycle] the last iterate has no feasible image: "
+===== NewtonND.cpp:931-948
+                    xNew[i] = x[i] + alpha * dx[i];
+                try { FxNew = F(xNew); }
+                catch (const InfeasibleTrial&) { alpha *= 0.5; continue; }  // trial infeasible: shorten
+                normFNew = normL2(FxNew);
+                if (normFNew < normF) break;
+                alpha *= 0.5;
+            }
+        }
+        else
+        {
+            scalar a = 1.0;
+            for (;;)
+            {
+                for (std::size_t i = 0; i < x.size(); ++i)
+                    xNew[i] = x[i] + a * dx[i];
+                try { FxNew = F(xNew); break; }
+                catch (const InfeasibleTrial&) { a *= 0.5; if (a < opts.minAlpha) throw; }
+            }
+===== NewtonRaphson.cpp:116-125
+{
+    auto tryF = [&](scalar x, scalar& fx) -> bool
+    {
+        try { fx = f(x); return true; }
+        catch (const InfeasibleTrial&)
+        {
+            if (infeasible) infeasible->push_back(x);
+            return false;
+        }
+    };
+===== DesignSpec.cpp:262-274
+        //  "solve" it.  Named with the coordinates; the Newton's own handling
+        //  of a throwing residual then stops it, announced.
+        if (const std::string why = simulationFailure(r); !why.empty())
+        {
+            std::ostringstream pt;
+            pt << std::setprecision(8);
+            for (std::size_t i = 0; i < n; ++i)
+                pt << (i ? ", " : "") << "$" << vars_[i].variable << " = "
+                   << std::clamp(x[i], vars_[i].lo, vars_[i].hi);
+            throw InfeasibleTrial("DesignSpec: evaluation "
+                + std::to_string(evalCounter) + " FAILED at (" + pt.str()
+                + ") -- " + why);
+        }
+===== PropertySourceDeclarations.cpp:33-38
+{
+    static const std::map<std::string, std::vector<Row>> t = {
+        { "pump",              { { "liquidDensity",     { "bypass" } } } },
+        { "pressureExchanger", { { "liquidVolume",      { "bypass" } } } },
+        { "cstr",              { { "liquidVolume",      { "bypass" } } } },
+        { "pfr",               { { "liquidVolume",      { "bypass" } } } },
+===== docs/theoryGuide.tex:2479-2483
+
+% ---------------------------------------------------------------------
+\section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}
+
+A unit that needs the density, viscosity, surface tension or diffusivity
+===== gui/src/case/modelDocs.ts:96-98
+  // reactors
+  cstr: "ch:cstr",
+  pfr: "ch:pfr",
+===== gui/src/case/modelDocs.ts:167-169
+  turbine: "ch:rotating",
+  pump: "ch:rotating",
+  pressureExchanger: "sec:pressure-exchanger",
+===== settled-contracts.md:3732-3736
+  limitation, verify it against the engine before repeating it."*
+
+### A UNIT NEVER PRICES A LIQUID PROPERTY ITSELF (2026-11-12, DEV.md 4c C378 slice 0)
+
+**A UNIT NEVER PRICES A LIQUID PROPERTY ITSELF (2026-11-12, DEV.md 4c C378 slice 0).**
+===== src/unitOperations/heatTransfer/Valve.cpp:299-302
+===== Valve.cpp:299-302
+                announced = true;
+            }
+            return liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P, sel.zPriced, nullptr, sel.dropped).value;
+        };
+===== PhaseChanger.cpp:864-870
+        if (thermo.hasSurfaceTension() || !thermo.pureFluidSelections().empty())
+        {
+            try { ctx.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, Tsat, P_out, z).value; }
+            catch (const std::exception&) { ctx.sigma = 0.0; }
+        }
+        ctx.rho_l       = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T_f, P_out, z).value;
+        ctx.lambda_l    = thermo.thermalConductivityLiquid(T_f, z);
+===== PhaseDensity.cpp:124-127
+    const std::string excluded = sel.dropped;
+    r.rho = ph == DensityPhase::Liquid
+        ? liquidProperty::evaluate(tp, liquidProperty::Property::density, s.T, s.P, sel.zPriced, liquidProperty::Consumer{"sizing", who}, sel.dropped).value
+        : tp.density(s.T, s.P, sel.zPriced, ph);
+===== GasStoreSize.cpp:657-660
+        rho = 0.0;
+        if (sel.keptFraction > 0.0)
+            try { rho = liquidProperty::evaluate(tp, liquidProperty::Property::density, T, d.P, sel.zPriced, liquidProperty::Consumer{"sizing", who}, sel.dropped).value; }
+            catch (const std::exception&) { rho = 0.0; }
+===== PipeHeaderSize.cpp:198-201
+                        " `viscosity { value <Pa.s>; source; reason; }`.  No"
+                        " viscosity is guessed.");
+                mu = liquidProperty::evaluate(*pkg, liquidProperty::Property::viscosity, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.pipeHeader", who}).value;
+                muFrom = "the case's liquid-viscosity model";
+===== SpiralWoundModule.cpp:408-411
+        if (thermo.hasLiquidViscosity())
+        {
+            mu_feed = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_in, 0.0, z_in).value;
+            AdvisoryLog::instance().add("model", "info",
+===== ShellTubeHX.cpp:230-237
+    {
+        f.rho = need("density", ph == DensityPhase::Liquid
+            ? liquidProperty::evaluate(tp, liquidProperty::Property::density, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.shellTubeHX", who}).value
+            : tp.density(s.T, s.P, s.z, ph),
+            "The package's phase-density route returned nothing usable.");
+        f.mu = need("viscosity", s.vapour ? tp.viscosityGas(s.T, s.z)
+                                          : liquidProperty::evaluate(tp, liquidProperty::Property::viscosity, s.T, s.P, s.z, liquidProperty::Consumer{"sizing.shellTubeHX", who}).value,
+            "Declare a viscosity model in the package's `transport {}`.");

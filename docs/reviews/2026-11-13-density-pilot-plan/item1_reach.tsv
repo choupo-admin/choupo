@@ -1,0 +1,37 @@
+case	unit	type	inletStream	T_K	P_bar	vf	composition(x>0)	rho_today	rho_anchored	change_pct	leaf_notes
+ChemicalPlantTutorial	Fermentor	cstr	FERMENTATION.Mixed	314.942283	1.000000	0	water=0.8206 sucrose=0.01183 ethanol=0.1673 CO2=0.0002508	978.6878	REFUSED	-	sucrose:flatVliq;CO2:T>=Tc(304.13)x=0.000251
+aceticAcid02_plant	methanolPump	pump	methanolStored	300.000000	1.013250	0	methanol=1	787.2727	785.1166	-0.274	
+cstr01_first_order	reactor	cstr	feed	350.000000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+cstr02_reversible_wgs	wgs	cstr	feed	600.000000	10.000000	1	CO=0.5 water=0.5	859.1562	REFUSED	-	CO:T>=Tc(132.85)x=0.5
+cstr03_series_selectivity	reactor	cstr	feed	350.000000	1.013250	0	compA=1	375.0000	346.3444	-7.642	
+cstr04_adiabatic	reactor	cstr	feed	350.000000	15.000000	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+cstr05_multiplicity	reactor	cstr	feed	300.000000	15.000000	0	ethanol=0.5 aceticAcid=0.5	914.6785	912.4662	-0.242	
+cstr06_jacketed	reactor	cstr	feed	350.000000	15.000000	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+cstr07_lhhw_methylAcetate	reactor	cstr	feed	333.150000	1.013250	0	methanol=0.5 aceticAcid=0.5	937.6298	895.0111	-4.545	
+cstr08_furusawa_bistable	reactor	cstr	feed	284.300000	1.013250	0	12PropyleneOxide=0.04837 water=0.8679 methanol=0.08373	939.0548	953.2462	+1.511	
+economics01_esterification_dcf	reactor	cstr	feed	350.000000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+economics02_irr_sweep	reactor	cstr	feed	350.000000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+esterification2sector	reactor	cstr	Feed	360.000000	1.013250	0	aceticAcid=0.5 ethanol=0.5	914.6785	836.3413	-8.564	
+membrane21_two_stage_nf_array	Booster	pump	concentrate1	293.150000	1.333881	0	water=0.9995 Na=0.0002227 Cl=0.0002237 NO3=3.5e-06 NH4=4.422e-06	997.6953	1002.2902	+0.461	Na:noVolume x=0.000223;Cl:noVolume x=0.000224;NO3:noVolume x=3.5e-06;NH4:noVolume x=4.42e-06
+membrane22_two_stage_nf_array_dspmde	Booster	pump	concentrate1	293.150000	1.263355	0	water=0.9997 NaCl=0.0002091 CaCl2=2.361e-05 MgSO4=2.363e-05	997.9353	1002.5313	+0.461	NaCl:noVolume x=0.000209;CaCl2:noVolume x=2.36e-05;MgSO4:noVolume x=2.36e-05
+membrane27_swro_energy_recovery	HPpump	pump	toHPpump	298.150000	2.000000	0	water=0.9896 NaCl=0.0104	1030.9444	1030.9444	+0.000	NaCl:noVolume x=0.0104
+membrane27_swro_energy_recovery	Booster	pump	pxHPout	298.150000	53.365394	0	water=0.9893 NaCl=0.0107	1031.9406	1031.9406	+0.000	NaCl:noVolume x=0.0107
+optim02_process_cost	reactor	cstr	feed	350.000000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+optim05_reactor_npv	reactor	cstr	feed	352.500000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	846.3953	-7.465	
+process01_reactor_flash	reactor	cstr	feed	350.000000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+process02_reactor_hx_flash	reactor	cstr	feed	350.000000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+process02_with_design	reactor	cstr	feed	350.000000	1.013250	0	ethanol=0.5 aceticAcid=0.5	914.6785	849.7073	-7.103	
+process03_recycle	reactor	cstr	mixed	355.958559	1.000000	0	ethanol=0.3071 water=0.2138 aceticAcid=0.3334 ethylAcetate=0.1458	919.4647	847.2859	-7.850	
+process05_isomerization_recycle	reactor	cstr	mixed	324.526026	5.000000	0	neoPentane=0.8964 nPentane=0.1036	594.9285	563.2080	-5.332	
+pump01_water	pump01	pump	feed	298.150000	1.000000	0	water=1	996.9563	996.9563	-0.000	
+pump02_pressure_spec	pump02	pump	feed	298.150000	1.000000	0	water=1	996.9563	996.9563	-0.000	
+pumpSystem01_operating_point	pump01	pump	feed	298.150000	3.000000	0	water=1	996.9563	996.9563	-0.000	
+rankine02_water	feedPump	pump	condensate	446.515894	8.585904	0	water=1	996.9563	845.2619	-15.216	
+recycle02_dominant_eigenvalue	reactor	cstr	mixed	324.526032	5.000000	0	neoPentane=0.8964 nPentane=0.1036	594.9285	563.2080	-5.332	
+recycle_autoinit_tear	reactor	cstr	mixed	355.958559	1.000000	0	ethanol=0.3071 water=0.2138 aceticAcid=0.3334 ethylAcetate=0.1458	919.4647	847.2859	-7.850	
+sugarPlantEconomicsSweep	Fermentor	cstr	FERMENTATION.Mixed	314.421506	1.000000	0	water=0.6806 sucrose=0.02255 ethanol=0.2966 CO2=0.0002468	977.4502	REFUSED	-	sucrose:flatVliq;CO2:T>=Tc(304.13)x=0.000247
+swro01_campoDalias	IntakePump	pump	s0	298.150000	1.000000	0	water=0.9889 NaCl=0.01113 boron=8.832e-06	1033.3476	1033.3476	-0.000	NaCl:noVolume x=0.0111;boron:flatVliq
+swro01_campoDalias	HPpump	pump	toHPpump	298.150000	2.000000	0	water=0.9895 NaCl=0.01047 boron=8.622e-06	1031.1587	1031.1587	-0.000	NaCl:noVolume x=0.0105;boron:flatVliq
+swro01_campoDalias	Booster	pump	pxHPout	298.150000	56.146374	0	water=0.9893 NaCl=0.01066 boron=8.767e-06	1031.7915	1031.7915	-0.000	NaCl:noVolume x=0.0107;boron:flatVliq
+swro01_campoDalias	Pass2Pump	pump	perm1	298.150000	1.000000	0	water=1 NaCl=3.38e-05 boron=7.614e-07	997.0644	997.0644	-0.000	NaCl:noVolume x=3.38e-05;boron:flatVliq
+userOp03_case_rate_law	-	-	-	-	-	-	-	NO RUN	-	-	-

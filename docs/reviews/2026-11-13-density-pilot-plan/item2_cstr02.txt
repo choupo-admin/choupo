@@ -1,0 +1,4 @@
+feed: T=600 K P=1000000 Pa vf=1 F=0.277778 mol/s composition={'CO': 0.5, 'water': 0.5, 'CO2': 0, 'H2': 0}
+today: Q = V_R/tau = 7.44028e-06 m3/s, rho = 859.1562 kg/m3, tau = 134.404 s
+ideal gas at the feed state: Q = 0.00138574 m3/s, rho = 4.6129 kg/m3
+factor Q_ig / Q_today = 186.25

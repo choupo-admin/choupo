@@ -1,0 +1,27 @@
+# rho_water IAPWS95 (engine): 298.15 K 997.0470, 323.15 K 988.0345; ethanol anchored Rackett: 298.15 K 787.504, 323.15 K 757.207 kg/m3; RK proxy A0=-3.4228e-06 A1=-1.5558e-06 m3/mol (amplitude x0.8313 to give the intended AAD 1.762 % at 298.15 K)
+T_K	variant	delta_vs_intended_mean_pct	delta_min_pct	delta_max_pct	proxyAAD_pct	proxyMax_pct	PASS_Pecar(AAD<=2.0,max<=3.6)	PASS_Rehman(AAD<=2.3,max<=3.7)
+298.15	i_intended	+0.000	+0.000	+0.000	1.724	2.817	pass	pass
+298.15	ii_massFractionAverage	+0.883	+0.042	+1.398	0.860	1.458	pass	pass
+298.15	iii_moleFractionAverage	+4.741	+0.140	+6.961	2.920	4.241	FAIL	FAIL
+298.15	iv_leavesFrozenAt298	+0.000	+0.000	+0.000	1.724	2.817	pass	pass
+298.15	v_componentsSwapped	+14.148	-68.842	+181.128	55.838	180.650	FAIL	FAIL
+298.15	vi_moleReadAsMass	+3.739	+0.123	+5.581	1.937	2.812	pass	pass
+298.15	vii_waterLeafAnchoredRackett(today)	-0.003	-0.009	-0.000	1.727	2.821	pass	pass
+323.15	i_intended	+0.000	+0.000	+0.000	1.676	2.745	pass	pass
+323.15	ii_massFractionAverage	+1.124	+0.054	+1.780	0.575	1.013	pass	pass
+323.15	iii_moleFractionAverage	+5.504	+0.163	+8.081	3.718	5.388	FAIL	FAIL
+323.15	iv_leavesFrozenAt298	+2.981	+0.942	+3.952	1.387	3.782	FAIL	FAIL
+323.15	v_componentsSwapped	+14.956	-69.758	+188.311	57.277	187.839	FAIL	FAIL
+323.15	vi_moleReadAsMass	+4.221	+0.141	+6.316	2.459	3.569	FAIL	FAIL
+323.15	vii_waterLeafAnchoredRackett(today)	-0.479	-1.447	-0.023	2.146	3.410	FAIL	pass
+both	i_intended	-	-	-	1.700	2.817	pass	pass
+both	ii_massFractionAverage	-	-	-	0.717	1.458	pass	pass
+both	iii_moleFractionAverage	-	-	-	3.319	5.388	FAIL	FAIL
+both	iv_leavesFrozenAt298	-	-	-	1.555	3.782	FAIL	FAIL
+both	v_componentsSwapped	-	-	-	56.557	187.839	FAIL	FAIL
+both	vi_moleReadAsMass	-	-	-	2.198	3.569	FAIL	pass
+both	vii_waterLeafAnchoredRackett(today)	-	-	-	1.936	3.410	pass	pass
+# measured-baseline transfer (today -> intended, water leaf only):
+#  Pecar 298.15 K: today AAD 1.762 % -> intended ~ 1.759 % (bounds 1.753 .. 1.762 over any grid)
+#  Pecar 323.15 K: today AAD 2.943 % -> intended ~ 2.464 % (bounds 1.496 .. 2.920 over any grid)
+#  Rehman 298.15-323.15 K (today AAD 2.52 %, thresholds note 3.2): intended ~ 2.305 % if its 54 points split evenly over the two isotherms at x 0.1..0.9 (threshold 2.3 %)

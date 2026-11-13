@@ -1,0 +1,30 @@
+condensate stream: T=446.515894355 K P=858590.397228 Pa vf=0
+pump today: rho = dP/(head g) = 996.9563 kg/m3; v_molar_liq = 1.807e-05
+IF97	P	rho_liquid_water=4.4499826	T_bubble(P)=446.515894	Psat(T)=858590.397
+IF97	P(1+1e-6)	rho_liquid_water=893.988962	T_bubble(P)=446.515936	Psat(T)=858590.397
+IF97	P(1-1e-6)	rho_liquid_water=4.4499778	T_bubble(P)=446.515852	Psat(T)=858590.397
+IF97	T-1mK	rho_liquid_water=893.990012	T_bubble(P)=446.515894	Psat(T)=858569.994
+IF97	T+1mK	rho_liquid_water=4.44996897	T_bubble(P)=446.515894	Psat(T)=858610.801
+IAPWS95	P	rho_liquid_water=4.44962681	T_bubble(P)=446.508654	Psat(T)=858738.144
+IAPWS95	P(1+1e-6)	rho_liquid_water=4.44963161	T_bubble(P)=446.508696	Psat(T)=858738.144
+IAPWS95	P(1-1e-6)	rho_liquid_water=4.44962201	T_bubble(P)=446.508612	Psat(T)=858738.144
+IAPWS95	T-1mK	rho_liquid_water=4.44964043	T_bubble(P)=446.508654	Psat(T)=858717.736
+IAPWS95	T+1mK	rho_liquid_water=4.44961319	T_bubble(P)=446.508654	Psat(T)=858758.552
+record	P	rho_liquid_water=845.261933	T_bubble(P)=443.218769	Psat(T)=931764.26
+record	P(1+1e-6)	rho_liquid_water=845.261933	T_bubble(P)=443.218809	Psat(T)=931764.26
+record	P(1-1e-6)	rho_liquid_water=845.261933	T_bubble(P)=443.218729	Psat(T)=931764.26
+record	T-1mK	rho_liquid_water=845.263093	T_bubble(P)=443.218769	Psat(T)=931741.331
+record	T+1mK	rho_liquid_water=845.260774	T_bubble(P)=443.218769	Psat(T)=931787.19
+
+literal rule (T, max(P, p_sat(T))) through today's stable-phase evaluator:
+# CAUTION: p_sat is read back from the CSV (9 significant digits). IF97's own router picks region 1 when p >= psat(T) in double precision (src/thermo/iapws/IF97.cpp:429), so the IF97 vapour rows below are the CSV rounding, not the rule.
+IF97	T=446.515894355	p_sat(T)=858590.397	P_eval=858590.397228	rho=4.4499826
+IF97	T=446.516394355	p_sat(T)=858600.599	P_eval=858600.599	rho=4.45003287
+IF97	T=446.516894355	p_sat(T)=858610.801	P_eval=858610.801	rho=4.45008314
+IF97	T=300.0	p_sat(T)=3536.58941	P_eval=858590.397228	rho=996.897073
+IF97	T=373.0	p_sat(T)=100876.301	P_eval=858590.397228	rho=958.816616
+IAPWS95	T=446.515894355	p_sat(T)=858738.144	P_eval=858738.144	rho=893.984347
+IAPWS95	T=446.516394355	p_sat(T)=858748.348	P_eval=858748.348	rho=893.983829
+IAPWS95	T=446.516894355	p_sat(T)=858758.552	P_eval=858758.552	rho=893.98331
+IAPWS95	T=300.0	p_sat(T)=3536.80675	P_eval=858590.397228	rho=996.896646
+IAPWS95	T=373.0	p_sat(T)=100876.298	P_eval=858590.397228	rho=958.812084

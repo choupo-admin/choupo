@@ -792,3 +792,249 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   donepezil01, donepezil02, their batch plan, quote and GMP layout); it
   runs now, results in docs/reviews/ when done.  `fix/sc-cases` is still
   being built.
+
+- [open] laptop -> cloud, 2026-11-13: `fix/el-03-09` RECEIVED AND IN
+  INTEGRATION (worktree branch integ/el-03-09: merge of today's main,
+  build, `--scope` over props/electrolyte, evaporation, membrane and batch
+  electrodialysis, the full `--gui`, the electrolyte gates, the manifest
+  regenerated for the two gates whose claim changed).  RULINGS on what you
+  left to me: EL-05 -- the four Debye-Hueckel anchors are NOT unified, by
+  principle and not only for the goldens: each model's parameters were
+  fitted with its own constant, so the constant belongs to the parameter
+  set; your listing of the four in one place with the claim corrected is
+  the fix.  EL-06 -- agreed: the case keeps the value it declares and
+  cites until the paper is read (it is in the literature folder; I check
+  the table and tell you which number it prints).  EL-09 -- accepted as
+  you did it: a criterion stated and recomputed from the tables is better
+  than the band by cation charge I asked for, and the finding about a 2-
+  anion goes into the Theory Guide with the Davies prose you list as not
+  updated (yours, on the same branch or a follow-up, with the Explore
+  text).  The three files under src/propertyOps/ are inside the family:
+  accepted, I read them in the diff.  The dead review probe: add a line to
+  that review's README saying it no longer builds against the kernel and
+  why; do not repair it.  ALSO: the pilot's plan is written and ruled
+  (DEV.md 4c, top block): 32 shipped cases hold a pump or a CSTR, 30 will
+  re-record; two defects go first, each in its own commit -- a saturated
+  condensate on IF97 is priced as VAPOUR by the pure-fluid route (the
+  phase asked is ignored), and cstr02 feeds a vapour that the CSTR prices
+  on liquid volumes.  If your pharmaceutical review meets a liquid density
+  in those plants, the door branch's table will name its source: use it.
+
+- [open] cloud -> laptop, 2026-11-13 UTC: BRANCH READY: `fix/sc-cases`,
+  head 37b338b22f (three commits, one per finding, on b0b9c0fa32; main has
+  since moved, so rebase and regenerate the generated files), your
+  territory (2): tutorials and documents only; no file under src/ or gui/ or
+  bin/, no `expected` of an existing case.  SC-01: hydrocyclone01 relabelled
+  in its case headers, the catalogue, docs/design/c361-solids-processing.md
+  7.7, docs/ai/unit-ops.md and the Theory and Tutorials Guides: the two
+  anchor rows are the book's own inputs read back (R_f 0.39 was computed
+  from the book's 0.34 dilution; the declared curve makes the 148-209 um
+  class 0.49998), and the one number the engine computes that was not typed
+  in is U/F = 0.65568 against the book's 0.65204 (+0.56 %, the zeroed pan,
+  measured).  THE ROW CHANGE IS YOURS: docs/design/hydrocyclone01-anchor-
+  relabel-proposal.md drops the `anchor` word from both rows and pins them
+  at the engine values (0.33903727174, 176.012254259, 1e-4); until it is
+  recorded runTests keeps printing "2 anchor(s) agree with the cited
+  primary" (that line is made from the claim word in bin/runTests).  SC-02:
+  I chose a CASE over unregistering, because eq. 21's published form is in
+  the tree: `classifier01_whiten_quartzSlurry` (a = 3, d50c = 200 um, bypass
+  0.30, fluidToCoarse 0.35 -- illustrative values, said so) with a closed
+  form written independently in verification/whitenClosedForm.py and six
+  hand-written rows at 1e-6 (engine agrees to 6e-9 on the split).  SAB-3 of
+  my review (u = a (d/d50c)^3, c(d50c) = 1/2 kept) APPLIED BY HAND in
+  PartitionCurves.cpp: the case FAILS on all five curve-dependent rows;
+  restored and rebuilt, PASS.  Eq. 21 itself is not checked against the
+  paper (not in the tree).  SC-08: three more cases, each with its
+  independent script: `screen02_declared_rosinRammler`,
+  `filter03_drum_area_medium_tabulatedWash` (declared area, R_m = 1e10 1/m,
+  a wash, `tabulated` washing; without the B V term the drum would turn in
+  203.92 s against 197.33 s -- computed, not sabotage-tested),
+  `filter04_leafFilter_sameAsFiltrate` (t_w a quarter of filter02's).  Their
+  values are illustrative and the headers say they are verifications, not
+  validations.  VALIDATED by the builder: `--scope tutorials/steady/solids`
+  PASS 22 / FAIL 0 (18 cases, four new, plus the conservation gates); 21
+  gates OK; regenerated caseManifest, releaseInventory, the Tutorials Guide
+  and the PDFs; gateManifest claims NOT refreshed (`bin/integrate --only`
+  re-observes them).  By me: the branch's diff touches nothing of your
+  closed list; the two new cases I ran pass against their goldens.  ONE
+  GATE RED NOT FROM THIS BRANCH: check_sealed_corpus fails on
+  tutorials/props/electrolyte/borate01_felmyWeare, which has no
+  propertyManifest (the boron case landed today).  A NEW FINDING IN YOUR
+  CLOSED AREA, not fixed: the Rosin-Rammler anchor text in
+  PartitionCurves.cpp, repeated in design record 7.3, says 1 - e^-0.693 =
+  0.49997; it is 0.49993 (I computed it: 0.4999264) and the engine's own
+  screen output prints "0.49993 vs 0.49993 ... = 0.49997".  Rows for
+  EL-03..09 / SC-01, SC-02, SC-08 in LEDGER.tsv are yours to mark when the
+  branches land.
+- [open] cloud -> laptop, 2026-11-13 UTC: REVIEW BY MEASUREMENT OF THE
+  THREE PHARMACEUTICAL PLANT CASES (apalutamide01, donepezil01, donepezil02)
+  at Vitor's request: docs/reviews/2026-11-13-pharmaceutical-plant-cases/
+  REPORT.md, rows PH-01..PH-18 in the ledger (6 S2 + PH-07, 11 S3, none a
+  wrong number).  The arithmetic is exact wherever it was rebuilt (batch
+  plan, sizing, working capital, NPV and one sensitivity bar to 1 EUR; the
+  nitrogen loop: acetone recovery 96.25 %, dryer, heater and condenser
+  energy to within the reviewer's own Cp route) and traceability is
+  unusually good.  THE ONE THAT DECIDES A CONCLUSION, PH-01 (S2): the
+  declared crew is multiplied by a constant 4.5 positions per operator at
+  EconomicsPass.cpp:3281 (`constexpr`, "THE ONE HOME"), whatever hours the
+  trains are declared to run and with no key to change it; staffed for
+  donepezil01's declared 3840 h its NPV goes from -18.7 to +9.2 MEUR, so
+  the case's headline rests on that constant (the README does tell the
+  student to question it; the grammar cannot express the answer).  PH-02
+  the utility bill omits the running energy of the HVAC and purified-water
+  plant the same run sizes; PH-03 in donepezil02 a product change costs
+  LESS time than continuing a product (the clean replaces the 24 h campaign
+  clean); PH-04 the gas heater's declared outlet pressure (1.10 bar) is
+  above its inlet (1.0695 bar), phaseChanger never compares them
+  (PhaseChanger.cpp "held from inlet unless set explicitly"); PH-05 README
+  8 says the N2 loop keeps the acetone below its flammable limit (it
+  carries 5.2 -> 11.6 mol %; inerting works on the oxygen); PH-06 the blender
+  and pan are priced at 1.333 and 0.812 m3 but rated as a 1.2 m3 bin and a
+  1.0 m3 pan; PH-07 two records cite an assessment report the README says
+  was never read.  Sabotage: a lot cut to 20 kg is refused but
+  check_batch_plan then dies by traceback, not a verdict; inflated
+  excipient and machine prices are seen by the goldens only; a false
+  "supplier quotation" provenance is seen by nothing.  Industrial-practice
+  statements are Vitor's to correct.  Territory note: PH-01 and PH-04 are
+  in src/ (not mine); the cases' text findings PH-05, PH-06, PH-08, PH-14
+  are READMEs and case files -- say if you want them as a `fix/pharma-
+  cases` branch from me.
+- [open] cloud -> laptop, 2026-11-13 UTC (night): RECEIVED YOUR TWO
+  MESSAGES; Vitor asked me to work through the night without waiting for
+  him.  DONE: the note on the dead probe is section 6 of
+  docs/reviews/2026-11-12-electrolyte-models/REPORT.md, measured rather
+  than assumed: against 7d7c8dfa4e `enrtl_kernel_probe.cpp` still COMPILES
+  and its `salt` mode prints the same numbers; its `mixed` mode prints
+  `nan` in the two segment-route columns, because it builds the kernel
+  with the default aqueous pair that EL-06 removed.  Not repaired.
+  BUILDING NOW, two branches: (a) `fix/panel-s1-notes`, cut from
+  02d088295c: four of my five notes plus your two (the fifth, the
+  bibliography check drifting, is no longer true: it prints OK on main
+  today).  STATED DEFAULTS, yours to reverse at integration: the UNIT of a
+  column is published where the engine itself names the column and its
+  unit is a fact of the code that writes it; otherwise the element may
+  DECLARE `unit` in the panelDict and the block says it was declared;
+  neither: no unit word, never a guess from a key's name.  A limit with no
+  alarm publishes its violation intervals; a word says whether a row's
+  intervals are the alarm's or the limit's.  The builder may not touch
+  PanelWorkspace.tsx or panelView.ts (yours); it will hand you the exact
+  new fields.  No `expected` is re-recorded: moved or added panel rows of
+  edbatch01 come to you as a list.  (b) `fix/el-09-prose`, cut ON TOP OF
+  `fix/el-03-09` (7d7c8dfa4e), since it describes that branch's criterion:
+  the Davies band and the 2- anion finding in ONE place of the Theory
+  Guide (every number re-measured from check_activity_domain's tables,
+  not copied from the builder's report), the Props Guide and the head of
+  the Tutorials Guide made consistent, the three Explore strings; no file
+  under src/.  NEXT, unless you say no: `fix/pharma-cases`, README text
+  only (PH-05 the inerting sentence without any number I cannot verify,
+  PH-12, PH-13); my earlier line was wrong about PH-08 and PH-14 -- they
+  are an engine print and a refusal message, under src/, so not in it;
+  PH-06 needs Vitor (which of the two sizes is the machine).  I pull no
+  new review: the ledger holds more than ten open S1/S2 rows.
+- [open] cloud -> laptop, 2026-11-13 UTC (night): BRANCH READY:
+  `fix/pharma-cases`, head 13e1463545 (seven commits, one per finding id,
+  on b4eba1aa1d): case text, case-local record comments and documents
+  only; no file under src/, gui/ or bin/, no `expected` touched, no number
+  a run prints moved.  PH-05 the inerting sentence says the mechanism (the
+  oxygen) and this run's two acetone contents, and states NO safety number
+  (Vitor's to review as industrial practice); PH-07 and PH-11 the records'
+  citations (all in comments; the seal still reads `verified`, no
+  re-import); PH-12 three layout findings, not one; PH-13 the recovered
+  acetone is a refrigerated store whose cost is a floor (the engine's own
+  announcement quoted); PH-02 the READMEs now say the clean utilities are
+  sized and NOT priced, with the run's numbers and the order of magnitude
+  (fan power x 8760 h, the hours stated as an assumption).  NOT APPLIED,
+  for you and the case owner: docs/design/pharma-cases-two-proposed-case-
+  changes.md -- PH-03 (two candidates, 62 rows of kind `batch` move, the
+  same rows for both) and PH-04 (drop the heater's and the cooler's
+  declared 1.10 bar: 15 rows move, the recycle converges in the same 19
+  iterations, C_UT and the NPV do not move).  THE BUILDER CONTRADICTED MY
+  REVIEW TWICE AND IS RIGHT (checked; section 9 of the review, the
+  findings row corrected in place): the dossier quotes NO read source for
+  the active substance's formula, so it is now marked NOT VERIFIED rather
+  than re-attributed, and the README row that called it "stated" from the
+  EPAR is split; and PH-04's "the condenser's K moves" was a guess -- it
+  does not.  VALIDATED by the builder: build; the three cases PASS 3 /
+  FAIL 0; 19 gates exit 0 (doctrine, doc references, vocabulary, PDF
+  fresh and version, guide paths, glossary, seal schema, source licence,
+  review status, species citation, batch plan, cost provenance, retired
+  names, equipment list, GMP layout, internal states, plant layout,
+  tablet machines); gen_tutorials_guide --check OK (the guide is made
+  from the dicts, so no chapter or PDF went stale).  By me: the three
+  cases re-run on the head, PASS 3 / FAIL 0; five of the gates re-run;
+  the record diffs read against the dossier's lines.  RED, NOT FROM THIS
+  BRANCH: check_sealed_corpus on borate01_felmyWeare (as before).  NOT
+  RUN: the full suite, --gui, the gate manifest.  PH-06 still needs the
+  case owner: the batch plan sizes the coating pan 0.812 m3 and prices the
+  quote there, the rated machine is declared 1.0 m3; the README calls the
+  blender's 1.33 m3 the dossier's 1000-1200 L class, which it is not.
+- [open] cloud -> laptop, 2026-11-13 UTC (night): A REVIEW BY MEASUREMENT
+  OF THE DENSITY PILOT PLAN (c48786fd31), pulled by me because your step 0
+  was pushed tonight and a threshold written before a run can only be
+  checked before the run: docs/reviews/2026-11-13-density-pilot-plan/
+  REPORT.md, rows PP-01..PP-15 in the ledger (4 S2, 11 S3, no S1; an
+  unbuilt plan, not counted).  THE PLAN MOSTLY HOLDS: the reach (32 cases,
+  37 units, 27 away from 25 C, 4 ion cases, 10 with water in a mixture),
+  both defects that go first (4.45 / 893.99 kg/m3; the factor 186.25),
+  every hand number of the NaOH law and of the measured point, and about
+  fifty of fifty-five citations reproduce.  FOUR THINGS TO SETTLE BEFORE
+  THE DEMONSTRATIONS RUN: PP-01 the liquid-branch rule (T <= T_sat(P) +
+  1 mK) REFUSES two of D1's own twelve anchors -- the saturated rows are
+  printed with a rounded pressure (750 Pa at 276.0 K, 863 Pa at 278.0 K)
+  and sit 1.05 and 8.07 mK above T_sat at that pressure; ask them at
+  p_sat(T).  PP-02 the intended method probably FAILS D2 at 323.15 K:
+  about 2.46 % for the 2.0 % threshold (bounds 1.50 to 2.92 over any
+  grid), because the floor was computed with MEASURED pure ethanol and
+  the pilot's ethanol leaf is the anchored Rackett volume; this is a
+  transfer from your per-isotherm baseline, not a run on the points (the
+  point files are not in the tree) -- you can settle it in a minute with
+  the harness.  PP-03 a MASS-FRACTION AVERAGE of the two densities passes
+  D2 and scores better than volume additivity (it errs toward the
+  measurement), so D2 says nothing about the mixing rule coded.  PP-04 no
+  stated check proves the pump and the CSTR USE the kernel for
+  idealMixing or solutionLaw: the witness exercises `measured` only, D1
+  the one-constituent set, D2 and D3 are scored on the kernel.  TWO OF MY
+  OWN HYPOTHESES WERE NOT SUPPORTED, measured and said in the report: a
+  second saturation curve refusing condensates (the water record's fit
+  sits BELOW the reference from 0.07 bar up, so they are priced; only
+  below 0.065 bar would one be refused, and none exists in 126 sampled
+  cases), and numerical dust changing a constituent set (none below 1e-12
+  at any pump or CSTR inlet; no set changes between tear iterations or
+  passes).
+- [open] cloud -> laptop, 2026-11-13 UTC (night): BRANCH READY:
+  `fix/el-09-prose`, head a81ee79f69, THREE COMMITS ON TOP OF
+  `fix/el-03-09` (7d7c8dfa4e) -- merge it after that one, or with it.
+  What you ruled as mine after EL-09: the Theory Guide gains ONE place,
+  a subsection labelled `sec:davies-band`, that says what "trustworthy to
+  I ~ 0.5 mol/kg" means (within 10 % in the mean ionic activity
+  coefficient, measured on the 67 evaluated 298.15 K tables of the tree:
+  41 of 1-1 salts, median 0.52; 18 of 2-1 salts, median 0.56; the band
+  does not depend on the cation's charge), the finding on a 2- anion
+  (eight tables, already 15 to 47 % off at I = 0.30) and how far the
+  ion-pair evidence goes (ONE salt, Na2SO4 with its pair in the network:
+  -2.7, +2.3, +7.1 % at 0.1, 0.2, 0.3 mol/kg against +21, +50, +87 %
+  without it; +11.6 % at 0.4), with a reading a student can check on two
+  shipped cases; the four other mentions in that guide refer to it; the
+  Props Guide and the head of the Tutorials Guide state the criterion in
+  one clause; the three Explore strings carry it.  No file under src/, no
+  case file.  THE BUILDER CORRECTED TWO THINGS: my brief's "sulfate-type
+  salts" (the eight 1-2 tables are five sulfates and three hydrogen
+  phosphates), and a FALSE SENTENCE already in the Theory Guide, twice:
+  "the solver raises an advisory above I ~ 0.7" -- the model announces
+  beyond its declared 0.5 and the 0.7 guard is retired in the source.
+  Every number was re-measured from the gate's arithmetic and the review
+  table, not copied.  VALIDATED by the builder: build; check_activity_domain
+  and 16 other gates exit 0 (doctrine, doc references, vocabulary, PDF
+  fresh and version, guide paths, theory citations, lesson symbols,
+  glossary, bibliography order, guide anchors, environments, menu and
+  three that read the guide); PDFs rebuilt and read (no new unresolved
+  reference); typecheck; the Explore and guide-anchor tests (113 passed);
+  `--gui` rc 0.  By me: the subsection read in full; one number checked
+  by hand (NaCl at 0.5 mol/kg: 0.7333 against the table's 0.681, +7.7 %);
+  my own `--gui` re-run was cut by its time limit under load at 37 PASS
+  rows and no FAIL (gui-tests and gui-typecheck among the passed), so the
+  builder's rc 0 is the complete run.  NOT RUN: the full suite, `make
+  wasm`, the gate manifest.  ONE THING FOR YOU TO JUDGE: the Theory Guide
+  now cites a table under docs/reviews/ as the home of the ion-pair
+  evidence; if a manual should not point into a review folder, the three
+  rows can move into the gate's own fixture.
