@@ -3476,6 +3476,79 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C390, THE DESIGN IS RULED ON A REVIEW BY MEASUREMENT (2026-11-13,
+> late; the review: docs/reviews/2026-11-13-c390-pressure-term-design/).**
+> (1) THE FORM is v (1 - alpha T) dP, per component, from its own
+> p_sat,i(T) to P, with the kernel's pure-component volume and its
+> temperature slope; NOT v dP.  The number that tells them apart (the
+> review's, on water at 298.15 K and 100 bar against the engine's own
+> reference route): 166.127 J/mol reference, 166.117 this form, 180.233
+> v dP; at 450 K, 86.110, 85.327 and 181.207.  Both forms close a pump's
+> plant balance below 4e-11 kW, so CLOSURE CANNOT HOLD THIS SLICE: the
+> gate holds the pump's outlet temperature (liquidDensity01: 0.024238 K
+> on the reference route, 0.024201 K with this form, 0.020520 K with v
+> dP).  (2) ONE HOME: the liquid leg of the stream's formation enthalpy,
+> with its entropy partner in the same slice; nothing in the species
+> phase enthalpy, so no heat of reaction moves.  (3) THE PUMP SOLVES THE
+> STREAM BALANCE and reads its outlet phase (TD-18 closes by
+> construction).  (4) The reference pressure is the K-value's; the
+> Poynting factor is NOT touched in this slice (it rides a constant
+> record volume and is off whenever the vapour is an ideal gas; moving
+> it moves K-values and is its own decision).  (5) THE RESERVATION IS
+> ACCEPTED AND ORDERS THE WORK: for a liquid no reference equation names
+> the slope is the corresponding-states one, and the term is a
+> difference: within 1 % at a reduced temperature of 0.6, 7 to 13 % too
+> large near 0.75, wrong by a third at 0.9; AMMONIA cannot be checked in
+> the tree at all, and the ammonia plants are the cases that move most
+> (the let-down flash duty of ammonia02_full_plant from +13.80 to
+> -225.06 kW).  THEREFORE: an AMMONIA REFERENCE EQUATION IS CURATED
+> FIRST (a published Helmholtz formulation, read from its primary, as
+> the three in the tree were), the reference plant is ammonia and
+> deserves it on its own account; THEN the pressure term is built; the
+> run says per component which slope the term used, and a term that has
+> changed sign on the corresponding-states route gets its own line.  A
+> full sweep and the list of moved rows, case by case, before any
+> re-record.  The review's section 7 is the build's checklist (17 unit
+> sites on the temperature-only liquid enthalpy, the precipitate's leg,
+> the dynamic holdups, a brine pump that keeps its closed form,
+> announced).  ORDER: after the fifth batch; the source of the ammonia
+> formulation is looked for in the literature folder first.
+
+> **THE REVIEWING SESSION IS A REVIEWER ONLY AGAIN (Vitor, 2026-11-13,
+> to that session: "Vamos voltar a usar esta sessao so como revisor.
+> Termina as coisas que tens em maos e depois assume-te como revisor.").**
+> It finishes the crash fix on its phase branch and cuts no further build
+> branch; it writes under docs/reviews/, the ledger and the board, and
+> reviews by measurement.  A defect a review finds comes to the
+> coordinating session, which decides who builds.  HANDED BACK, NOT
+> STARTED, and now this session's to build: (i) the RATE machines of the
+> tablet plants priced on their rating (ruled today: the installed
+> machine is its rating; the moved rows listed before any re-record, the
+> NPV movement of each plant said); (ii) the campaign-plan page's second
+> toy plant, which still teaches the inversion PH-03 removed; (iii) the
+> installed-size column in the app's batch-plan table.  The design note
+> ("a machine has one size, the installed one") is on the pharmaceutical
+> branch and reaches main with the fifth batch.
+> **THE FIFTH INTEGRATION IS HELD (2026-11-13, late).**  Its full sweep
+> on the merged tree found a SEGMENTATION FAULT on lithiumBrinePlant:
+> the phase branch stamps every outlet with the world it was produced
+> in, and for a pure stream of a component with no vapour-pressure model
+> the stamp asked a saturation pressure through an unchecked pointer.
+> The reviewing session located it and is fixing it.  The pilot's review
+> (three reviewers by measurement) found no S1 and no wrong number, and
+> TWO rows that block landing: the caustic demonstrations do not run
+> from what git holds (an ignore rule hides their sealed solution
+> record; the builder's tree still had the file), and a marked
+> measurement over a set with a mass-without-volume leaf deadlocks.
+> Five more S2 rows are ruled (a measurement is used, checked or refused
+> by name; ONE reading of the mass-without-volume declaration, which the
+> pump's heat capacity does not read; the freeze is per world; the two
+> pinned pump demonstrations say whose debt it is) and with the pilot's
+> builder as a second round.  ALSO FOUND, ON MAIN, NOT THE PILOT'S: a
+> stream that declares temperature and vapour fraction and no pressure
+> reaches the units with P = 0 (PA-09): a builder of its own after the
+> batch.  THE BATCH IS REBUILT AND SWEPT AGAIN when both fixes exist.
+
 > **C393 (Vitor, 2026-11-13: "A outra sessao descobriu que ha ficheiros
 > que nao tem header e isso pode-me lixar o copyright!!  Acho que vai
 > ter de rever tudo!  Podes-te coordenar com ela?").**  MEASURED the same

@@ -1,0 +1,28 @@
+PASS  W referenceEquation: liquidDensity01_water at 298.15 K, 100000.0 Pa: pump 997.047039 vs kernel 997.047039, CSTR 997.1319762 vs kernel 997.1319762 kg/m3 (worst 1.90e-12, limit 1e-9)
+PASS  W referenceEquation: liquidDensity01_water at 277.15 K, 50000000.0 Pa: pump 1023.342815 vs kernel 1023.342815, CSTR 1023.428592 vs kernel 1023.428592 kg/m3 (worst 3.11e-13, limit 1e-9)
+PASS  W referenceEquation: the two states are priced differently (997.04704 / 1023.3428), so a unit holding a number of its own could not pass
+PASS  D1 500 bar: pump at 298.15 K: 1 bar 997.047039, 500 bar 1018.439224 kg/m3 (within 0.005 % of 1018.4: 0.0039 %)
+PASS  D1 373.15 K, 1 bar: the run refuses (the pump does not accept a vapour inlet) and the kernel refuses it as a vapour, naming p_sat(T) = 101418 Pa
+PASS  D1 anchors: 12 printed IAPWS-95 densities, max |dev| 0.00048 % (limit 0.001 %)
+PASS  D1 maximum: 1 bar: 273.16 K 999.8431, 277.15 K 999.9742, 283.15 K 999.7018 kg/m3
+PASS  W idealMixing: liquidDensity02_waterEthanol at 298.15 K, 100000.0 Pa: pump 888.2769428 vs kernel 888.2769428, CSTR 888.2926933 vs kernel 888.2926933 kg/m3 (worst 8.39e-13, limit 1e-9)
+PASS  W idealMixing: liquidDensity02_waterEthanol at 323.15 K, 100000.0 Pa: pump 866.4797516 vs kernel 866.4797516, CSTR 866.4886028 vs kernel 866.4886028 kg/m3 (worst 2.52e-13, limit 1e-9)
+PASS  W idealMixing: the two states are priced differently (888.27694 / 866.47975), so a unit holding a number of its own could not pass
+PASS  D2 mechanism: x = 0.5, 298.15 K: kernel 836.951622408, additive volumes of its two leaves 836.951622408 (rel 1.1e-16, limit 1e-9); mass-fraction average 846.4101 (|diff| 9.459 kg/m3 > 1)
+PASS  D2 ethanol leaf: pure ethanol at 298.15 K 787.504 kg/m3 against the measured 785.7 (+0.230 %, limit 0.3 %)
+FAIL  W solutionLaw: liquidDensity03_NaOH at 303.15 K, 100000.0 Pa did not run (exit 2): ERROR: liquid density of the constituent set {NaOH, water}: no method applies.  No solution record covers this set (the kind of record that would: parameters/solution/NaOH-water.dat, a `liquidDensity` law for exactly these constituents); and idealMixing (additive volumes) needs a volume for every co
+Traceback (most recent call last):
+  File "<repo>/bin/curate/check_density_pilot.py", line 436, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "<repo>/bin/curate/check_density_pilot.py", line 302, in main
+    worst = max(rel(v, olsson(T, w)) for v, (T, w) in zip(vals, pts))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/bin/curate/check_density_pilot.py", line 302, in <genexpr>
+    worst = max(rel(v, olsson(T, w)) for v, (T, w) in zip(vals, pts))
+                ^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/bin/curate/check_density_pilot.py", line 157, in rel
+    return abs(a / b - 1.0)
+               ~~^~~
+TypeError: unsupported operand type(s) for /: 'str' and 'float'
+rc 1
