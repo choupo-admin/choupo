@@ -1745,6 +1745,16 @@
       "exit": 0,
       "claim": "check_solids_announcements: OK -- centrifuge phi_s recomputed on 2 cases + 30 vol % probe; thickener slope names t = 3600, 6300, 10800 s; thickener test-concentration advisory at verbosity 0; screen AUF 1.0820 announced; cakeFilter s<0 refused, s>1 announced, K_p ratio 2^0.5; mixer emulsion line: powders 0, liquids 2; pneumatic u_t non-convergence announced at Re ~ 1000; default mu_w = 0.4 announced at verbosity 0; voidage 0.99198 outside 0.994-0.9995 announced at verbosity 0; bend key RoverD refused by name (10 arms, scratch copies; no hypothesis judged)",
       "seconds": 0.4
+    },
+    "check_liquid_density_entry_callers": {
+      "exit": 0,
+      "claim": "check_liquid_density_entry_callers: OK -- the pilot's entry liquidProperty::density has its 4 named callers (Pump.cpp, CSTR.cpp, PropertyEvaluator.cpp, PropertyRouteBench.cpp), each with its pinned call count; no other file under src/ calls it.  NOT CHECKED: the state each caller passes.",
+      "seconds": 0.3
+    },
+    "check_density_pilot": {
+      "exit": 0,
+      "claim": "check_density_pilot: OK -- 30 of 30 arms hold (wiring per method, D1-D5, the measurement's witness, the package's line).  NOT CHECKED: the accuracy scores on the mirror's measured sets (score_pilot.py).",
+      "seconds": 2.0
     }
   }
 }
