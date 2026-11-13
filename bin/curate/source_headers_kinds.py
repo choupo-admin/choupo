@@ -135,7 +135,7 @@ EXCLUSIONS = [
                  "bin/curate/recording_platform.txt",
                  "bin/curate/suite_lanes.txt",
                  "bin/curate/migrate_thermoPhysProp.skipped.txt",
-                 "etc/header.txt", ".claude/settings.json"]),
+                 ".claude/settings.json"]),
     _e("not-a-code-kind-markup",
        "HTML pages: markup, not one of the code kinds this slice stamps "
        "(listed for the owner)",
