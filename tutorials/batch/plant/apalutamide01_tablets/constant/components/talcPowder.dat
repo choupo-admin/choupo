@@ -11,7 +11,10 @@
 
   Talc -- the anti-tack agent of the coat.
 
-  Listed among the film-coat ingredients of the US label (via RxList).  Named
+  Listed among the film-coat ingredients of the 60 mg tablet by the EU SmPC
+  section 6.1 and the US prescribing information section 11 (DailyMed setid
+  d1cda4f7-...), as section 1.2 of
+  docs/design/apalutamide-design-basis-dossier.md reads them.  Named
   `talcPowder` so that it does not overlay the catalogue's `talc` record,
   which carries a mineral dissolution equilibrium this plant never uses.
 

@@ -11,9 +11,12 @@
 
   Croscarmellose sodium -- the disintegrant of the tablet core.
 
-  Listed among the core excipients of the US label (via RxList).  A cross-
-  linked sodium carboxymethylcellulose with no single formula: no `formula`,
-  a NOMINAL molar mass.
+  Listed among the core excipients of the 60 mg tablet by the EU SmPC
+  section 6.1 and the US prescribing information section 11 (DailyMed setid
+  d1cda4f7-...), as section 1.2 of
+  docs/design/apalutamide-design-basis-dossier.md reads them.  A
+  cross-linked sodium carboxymethylcellulose with no single formula: no
+  `formula`, a NOMINAL molar mass.
 
   WHAT THIS RECORD IS FOR, AND WHAT IT IS NOT.  It carries what a SOLID that
   is only MOVED, MIXED, DRIED and PRESSED needs in this plant: a molar mass,

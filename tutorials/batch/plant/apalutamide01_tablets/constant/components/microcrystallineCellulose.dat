@@ -11,7 +11,10 @@
 
   Microcrystalline cellulose (MCC) -- filler and binder of the tablet core.
 
-  Listed among the core excipients of the US label (via RxList).
+  Listed among the core excipients of the 60 mg tablet by the EU SmPC
+  section 6.1 and the US prescribing information section 11 (DailyMed setid
+  d1cda4f7-...), as section 1.2 of
+  docs/design/apalutamide-design-basis-dossier.md reads them.
 
   WHAT THIS RECORD IS FOR, AND WHAT IT IS NOT.  It carries what a SOLID that
   is only MOVED, MIXED, DRIED and PRESSED needs in this plant: a molar mass,
