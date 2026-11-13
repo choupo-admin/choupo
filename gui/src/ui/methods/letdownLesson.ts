@@ -332,7 +332,7 @@ Y &= 1 - \frac{x_\mathrm{eff}}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x_\m
       { sym: "\\rho_2", means: "the density leaving", unit: "kg/m³" },
     ],
     note: "Both ends of the valve are priced by flashState::priceState "
-      + "(src/unitOperations/flash/StreamEquilibrium.H:930), the same call "
+      + "(src/unitOperations/flash/StreamEquilibrium.H:1013), the same call "
       + "the energy report's rule is; on an SRK package its vapour "
       + "enthalpy includes the departure from the ideal gas, which is the "
       + "Joule-Thomson effect.",

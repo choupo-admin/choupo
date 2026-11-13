@@ -35,7 +35,9 @@ Description
     On a pure-fluid formulation the discharge T is solved on H_real at
     P_out instead, and the pump never publishes an outlet it did not find:
     a liquid its losses heat past T_sat(P_out) is REFUSED by name, and a
-    search that fails otherwise raises, never substituting T_in.
+    search that fails otherwise raises, never substituting T_in.  A
+    computed pure inlet its own world places beyond the band on the VAPOUR
+    side is refused at the hand-over, naming both worlds.
 
     Operation parameters --- eta (always) PLUS exactly ONE spec:
         eta      --  pump (hydraulic + isentropic) efficiency  [-]

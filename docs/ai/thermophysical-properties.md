@@ -97,8 +97,10 @@ Every run prints, just before its result block, one line per unit:
   rule, announced in the caveat block (the density keeps the saturated
   branch of the phase asked); an AUTHORED pure stream that declares a phase
   its (T, P) contradict beyond the band is REFUSED by name before any unit
-  runs (`flashState::declaredPhaseBeyondBandRefusal`), and a pump fed a
-  COMPUTED liquid-labelled vapour beyond the band refuses it.  The units that price or classify an
+  runs (`flashState::declaredPhaseBeyondBandRefusal`); a pump, compressor
+  or turbine handed a COMPUTED inlet its own world places beyond the band on
+  the other side refuses it, naming both worlds
+  (`flashState::heldPhaseBeyondBandRefusal`).  The units that price or classify an
   AUTHORED inlet with their own flash -- `phaseChanger`, `heatExchanger`,
   `pipe` -- take a DECLARED phase as the state (one home,
   `flashState::declaredInletEnthalpy` / `declaredSinglePhase`): a pinned

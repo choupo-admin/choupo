@@ -566,6 +566,89 @@ declaredPhaseBeyondBandRefusal(const std::string&   name,
     return std::string(buf);
 }
 
+//  ---- A COMPUTED INLET ITS CONSUMER'S OWN WORLD PLACES ACROSS THE LINE ----
+//
+//  Review TD-17 (the coordinator's ruling): a unit that holds ONE phase of
+//  its inlet -- the pump a liquid, the compressor and the turbine a vapour,
+//  their declared acceptance -- REFUSES a computed pure inlet that its OWN
+//  world places beyond the band on the other side of the saturation line,
+//  because priced at (T, P), as every stream function of that world prices
+//  it, it is the other phase.  It arises where a saturated state crosses a
+//  model boundary: the producer put it on ITS line, the consumer's line is
+//  elsewhere.  So the message names both worlds and the distance.  The
+//  producer's world is stamped on the stream by the flowsheet
+//  (`ProcessStream::producedInWorld`, from this function), the consumer's
+//  is the package the unit is handed.
+
+//  One line naming the world a pure stream is computed in at T: its
+//  pure-fluid formulation and p_sat(T) there, or that it has none.
+inline std::string pureWorldName(const ThermoPackage& thermo,
+                                 const sVector& z, scalar T)
+{
+    const auto i = soleComponent(z);
+    if (!i || *i >= thermo.n()) return std::string();
+    char buf[300];
+    if (const PureFluidModel* m = thermo.pureFluidModel(*i))
+    {
+        const auto w = m->saturationWindow();
+        if (T >= w.first && T < w.second)
+            std::snprintf(buf, sizeof buf, "the pure-fluid formulation %s "
+                "(p_sat(T) = %.10g Pa there)", m->densityFormulation().c_str(),
+                m->p_sat(T));
+        else
+            std::snprintf(buf, sizeof buf, "the pure-fluid formulation %s "
+                "(no saturation line at T)", m->densityFormulation().c_str());
+        return buf;
+    }
+    try
+    {
+        std::snprintf(buf, sizeof buf, "no pure-fluid formulation for %s "
+            "(its saturation curve gives p_sat(T) = %.10g Pa)",
+            thermo.comp(*i).name().c_str(), thermo.Psat(*i, T));
+    }
+    catch (const std::exception&)
+    {
+        std::snprintf(buf, sizeof buf, "no pure-fluid formulation for %s",
+                      thermo.comp(*i).name().c_str());
+    }
+    return buf;
+}
+
+inline std::optional<std::string>
+heldPhaseBeyondBandRefusal(const std::string&   unitLocus,
+                           const ProcessStream& s,
+                           bool                 heldLiquid,
+                           const ThermoPackage& thermo)
+{
+    const auto i = soleComponent(s.z);
+    if (!i || *i >= thermo.n() || !(s.F > 0.0)) return std::nullopt;
+    const PureFluidModel* m = thermo.pureFluidModel(*i);
+    if (!m) return std::nullopt;
+    if (!pureFluidPhaseState(*m, s.T, s.P, heldLiquid).farAcross)
+        return std::nullopt;
+    const scalar ps = m->p_sat(s.T);
+    const std::string from = s.producedBy.empty()
+        ? std::string("no unit has produced it in this pass (a tear seed read "
+                      "from its 0/ file)")
+        : "it was produced by unit '" + s.producedBy + "', computing in "
+          + (s.producedInWorld.empty() ? std::string("a world not recorded")
+                                       : s.producedInWorld);
+    char buf[1000];
+    std::snprintf(buf, sizeof buf,
+        "%s cannot take inlet '%s': it holds a %s, but in its own world (the "
+        "pure-fluid formulation %s) T = %.10g K and P = %.10g Pa lie on the "
+        "%s side of the saturation line -- p_sat(T) = %.10g Pa there, "
+        "P/p_sat - 1 = %+.3e against the %.0e band -- so priced at (T, P), "
+        "as every stream function of that world prices it, it is a %s.  ",
+        unitLocus.c_str(), s.name.c_str(), heldLiquid ? "LIQUID" : "VAPOUR",
+        m->densityFormulation().c_str(), s.T, s.P,
+        heldLiquid ? "vapour" : "liquid", ps, s.P / ps - 1.0,
+        pureFluidSaturationBand, heldLiquid ? "VAPOUR" : "LIQUID");
+    return std::string(buf) + "As carried, " + from + ".  Put producer and "
+        "consumer in one thermophysical world, or do not ask a saturated state "
+        "to cross a model boundary.";
+}
+
 inline std::string contradictedStreamsMessage(
     const std::vector<std::string>& contradicted,
     const std::string&              who = "")

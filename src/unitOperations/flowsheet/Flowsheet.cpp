@@ -1139,6 +1139,32 @@ void runUnit(const DictPtr&                                          udict,
 
     auto unit = UnitOperation::New(utype);
 
+    //  A COMPUTED INLET THIS UNIT'S OWN WORLD PLACES ACROSS THE LINE (review
+    //  TD-17).  Judged HERE, at the hand-over, because only here are both
+    //  worlds known: `thermo` is the unit's own, and the producer's is
+    //  stamped on the stream (below, on every outlet).  A unit that declares
+    //  ONE inlet phase (its acceptance, per port where it declares ports)
+    //  refuses a pure stream its world puts beyond the band on the other
+    //  side; the sentence has one home, flashState::heldPhaseBeyondBandRefusal.
+    //  An authored inlet was refused before any unit ran.
+    {
+        const UnitAcceptance acc = unit->acceptance();
+        std::vector<std::string> ins;
+        if (udict->found("inputs")) ins = udict->lookupWordList("inputs");
+        else if (udict->found("in")) ins.push_back(udict->lookupWord("in"));
+        for (std::size_t k = 0; acc.declared && k < ins.size(); ++k)
+        {
+            const auto& ph = (k < acc.ports.size()) ? acc.ports[k].phases
+                                                    : acc.phases;
+            if (ph.liquid == ph.vapour) continue;       // holds no one phase
+            const auto st = streams.find(ins[k]);
+            if (st == streams.end() || st->second.authoredInlet) continue;
+            if (auto why = flashState::heldPhaseBeyondBandRefusal(
+                    utype + " '" + uname + "'", st->second, ph.liquid, thermo))
+                throw std::runtime_error(*why);
+        }
+    }
+
     //  WHAT THE CASE DECLARES THIS UNIT STARTS FROM
     //  (0/internalStates/<SECTOR>/<unit>, one block per kind).
     //  Handed over BEFORE solve so the unit can seed its own interior from it
@@ -1256,6 +1282,8 @@ void runUnit(const DictPtr&                                          udict,
             }
         }
         if (s.P <= 0.0) s.P = P_inherit;
+        s.producedBy      = uname;                       // TD-17: who, and
+        s.producedInWorld = flashState::pureWorldName(thermo, s.z, s.T);  // where
         streams[outputs[k]] = s;
     }
 
