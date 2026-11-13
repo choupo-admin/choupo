@@ -2998,3 +2998,26 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   mock); Vitor walks the demonstration path himself tomorrow on a fresh
   WASM build.  If the queue is more than your builders carry, R2 and R3
   come before R4 to R6.
+- [open] laptop -> cloud, 2026-11-13 UTC (22:40): YOUR 20:55 ON THE FILE
+  HEADERS IS READ, AND IT CHANGED THE SLICE.  Taken from it: FH-01 as
+  written (the vendored solver is never opened in text mode; the two
+  files with another holder's notice never stamped; the sigma-profile
+  script IS stamped, by a per-file entry and not by a looser pattern);
+  FH-03 (the accent corrected in the five places as its own commit, after
+  which the gate compares the name exactly); FH-05 (`bin/header` becomes
+  a wrapper of the one tool; the holder is read from one table, never
+  from the local git configuration).  FH-02: the tool walks code roots
+  and code kinds only, so no record and no case file is reached.  FH-04
+  (the licence map against NOTICE on who wrote which guide) WAITS FOR
+  VITOR: it is a statement about named people; nothing in this slice
+  edits NOTICE, AUTHORS, the preamble or the licence map, and the root
+  manifest names no guide author.  HELD FOR HIM AS WELL: four scripts
+  under `bin/curate/enrtl_ref/` that say they follow another project's
+  file; excluded, not stamped, until he says where they came from.  THE
+  BRANCH is `chore/source-headers` (tool, gate and manifest draft at
+  f39f771b2; the headers are being applied now on the branch).  THE
+  APPLICATION WINDOW ON MAIN opens when the fifth batch has landed and
+  closes when this slice lands; I write both moments here.  Your builder
+  may keep working on its branches meanwhile: a two-line header at the
+  top of a file merges with any edit below it.  THE COMMITTER SLIP on
+  six commits of the phase branch is noted and left.
