@@ -126,6 +126,13 @@ TEMPLATE = ROOT / "tutorials" / "steady" / "power" / "rankine02_water"
 T_IN = 446.5158944
 EPS = (-1e-6, -1e-9, -1e-12, 0.0, 1e-12, 1e-9, 1e-6)
 TOL = 1.0e-6                     # K
+#  The two points AT the band's edge (|e| = 1e-6) fall inside the band on one
+#  platform and outside it on another (seen on the CI runner, 2026-11-13: the
+#  compressor's T_out moved by 1.6e-4 K at e = -1e-6, the honest effect of
+#  1e-6 in pressure on a state priced at its own (T, P)).  They are held to the
+#  BRANCH, not to the last digit: a phase flip moves the pump's dT by 124 K and
+#  the compressor's T_out by 114 K.
+EDGE_TOL = 1.0e-2                # K
 RESULT = re.compile(r"<<<Choupo:result-begin>>>\n(.*?)\n<<<Choupo:result-end>>>", re.S)
 
 
@@ -370,15 +377,21 @@ def main() -> int:
                         bound.append((e, r[1]))
             got[kind] = vals
             if len(vals) == len(EPS):
-                lo = min(v for _, v in vals)
-                hi = max(v for _, v in vals)
+                inside = [v for e, v in vals if abs(e) < 1.0e-6]
+                centre = [v for e, v in vals if e == 0.0][0]
+                lo, hi = min(inside), max(inside)
+                edge = max(abs(v - centre) for e, v in vals if abs(e) >= 1.0e-6)
                 if hi - lo > TOL:
                     fail.append(f"{kind}: {unit}.{key} depends on the last bits of the "
                                 f"inlet pressure -- " + ", ".join(
                                     f"{e:+.0e}: {v:.9g}" for e, v in vals)
-                                + f" (spread {hi - lo:.3g} K > {TOL:g} K): the unit's "
-                                  "inlet phase is decided by the formulation's router, "
-                                  "not by the phase the unit holds")
+                                + f" (spread inside the band {hi - lo:.3g} K > {TOL:g} K): "
+                                  "the unit's inlet phase is decided by the formulation's "
+                                  "router, not by the phase the unit holds")
+                elif edge > EDGE_TOL:
+                    fail.append(f"{kind}: {unit}.{key} changes branch at the band's edge "
+                                f"-- " + ", ".join(f"{e:+.0e}: {v:.9g}" for e, v in vals)
+                                + f" ({edge:.3g} K from the centre > {EDGE_TOL:g} K)")
         shown = unit_arms(tmp, fail)
     for term in ("H_feeds_kW", "H_products_kW"):
         vs = [(e, g.get(term)) for e, g in bound if abs(e) < 1.0e-6]
@@ -419,7 +432,9 @@ def main() -> int:
     print(f"{NAME}: OK -- at seven suction pressures p_sat(T)(1+e), e from -1e-6 to "
           f"+1e-6 including 0 and +-1e-12, T = {T_IN} K on IF97 water: the feed pump "
           f"(liquid, to 80 bar) gives dT = {pd:.9g} K and the compressor fed saturated "
-          f"steam (vapour, to 20 bar) T_out = {ct:.9g} K, each the same to {TOL:g} K, "
+          f"steam (vapour, to 20 bar) T_out = {ct:.9g} K, each the same to {TOL:g} K over "
+          f"the five pressures inside the band and on the same branch (within {EDGE_TOL:g} K) "
+          "at the two on its edge, "
           f"and the pump case's plant-boundary H_feeds_kW = {bound[3][1]['H_feeds_kW']:.9g} "
           "and H_products_kW the same to 1e-6 relative over the five runs inside the "
           "band, every run on the pure-fluid route; the branch held outside the engine: "
