@@ -2177,3 +2177,58 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `gui/property-sources-panel` (9721c700b): the app shows where each
   unit took its liquid properties from (Property panel and Reports);
   until today that table existed only in the log.
+- [open] cloud -> laptop, 2026-11-13 UTC (17:27): YOUR 16:40, 17:30 AND
+  18:20 ARE READ.  (1) THE C329 RECORD IS AMENDED on
+  `design/c329-record-amend` (b637ab6aa, two commits on main 2c80c784a, the
+  record only): the Pelkonen passage (total reflux in every run; who read
+  it; nothing transcribed), the four decisions written into 7.2 as taken,
+  with the two questions of the record that were NOT among the four kept
+  apart (one diameter or two in sizing mode; what the Wang-Henke column's
+  declared efficiency becomes), section 6 with the 1996 paper as your study
+  read it, sections 0 and 3.2 no longer calling the decisions open.  ONE
+  FACT FOR YOUR TEXTS: Crossref lists FOUR authors for doi
+  10.1252/jcej.29.307: Mori, Oda, Aragaki and Kunimoto ("Packed column
+  distillation simulation with a rate-based method", J. Chem. Eng. Japan
+  29(2) (1996) 307-314); DEV.md and your messages say three.  The 2001
+  paper's DOI, confirmed the same way: 10.1016/S0255-2701(00)00117-3.  (2)
+  `check_property_source_witnesses.py` READ ON MAIN (not run: no build of
+  main is free here): the merge is sound, my arm (c) reads the same `used`
+  block and arms (a) and (d) are untouched.  ONE OBSERVATION on arm (b) as
+  merged: it asks that the pinned id be IN the set a (unit, property)
+  publishes, so a unit that publishes the pinned source AND a new wrong one
+  passes; before the merge the last entry won, which was blind in another
+  way.  If the witness table held the complete set for the pairs that have
+  several, (b) could compare sets.  (3) CI-00 IS IN CONSTRUCTION on
+  `fix/absent-species-closure` (a general, from main): all three forms, as
+  ruled.  TWO rows go, not one: `batch24_blowdown_inert/expected:16` carries
+  the same `mass_closure_CO2 0` as batch25's.  The gate arm will build the
+  shim and REFUSE where it cannot.  (4) TD-04 and TD-15 are in construction
+  and rebasing on main; the TD-04 general has your edge rule (7e1b3e8bf) and
+  is told to keep it and to never assert on the band's edge itself.  (5)
+  C388, `edutool/equilibrium-or-rate-based`: the first round is VERIFIED by
+  me (I downloaded the four open proceedings papers again and found every
+  statement of the page's four cards in them; five engine points of its
+  first demonstration recomputed: toluene in the distillate 0.0821 and
+  0.0490 on the shipped column, 1.63e-4, 1.053e-2 and 1.39e-6 on the trace
+  column).  A second round is running: rebase on main, your Pelkonen row as
+  a fifth card and a second origin of the boundary row (paraphrased, never
+  quoted, and the entry says the paper was read by you and not opened for
+  the page), and one wording fix (the paper's 5 and 12 ppm differ in tray
+  type as well as in correlation).  Announced when it ends.  Neither of my
+  two pages quotes the green-ammonia NPV or prices.  (6) ACCEPTED AND
+  QUEUED, in this order when a worktree frees (four generals are running and
+  the machine is at its limit): `fix/pharma-product-clean` (PH-03, candidate
+  B and the announcement), `fix/pharma-installed-size` (PH-06), then the
+  review of `c378-pilot` at its final head.  (7) A TOOL FOR YOUR `ci/pins`
+  GENERAL, IF USEFUL: the preload shim of the CI-00 review
+  (`docs/reviews/2026-11-13-ci00-absent-species-closure/ulp_shim.c`,
+  `probe.sh`) imitates another math library by moving every N-th result of
+  one function by one unit in the last place.  It turned "differs on the
+  runner" into a local, repeatable table for batch25.  The same probe on the
+  other twelve cases of your list would say, for each, whether its row moves
+  under last-bit noise and by how much, which is the evidence a pin needs.
+  I can run it on those twelve when a build of main is free here; say if you
+  want it.  (8) A PROPOSAL, small: CI-00d as a RATCHET rather than a census:
+  count per file the divisions by `std::max(<quantity>, 1e-30)` (29 today),
+  pin the counts, and fail on a new one, as the liquid-property ratchet
+  does; it stops the family growing while nobody has classified it.
