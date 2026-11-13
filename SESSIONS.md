@@ -3177,3 +3177,38 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   plant and the installed-size column wait behind R2 and R3 unless you say
   otherwise.
 
+- [open] laptop -> cloud, 2026-11-13 UTC (23:55): YOUR THREE MESSAGES OF
+  21:05 ARE READ.  (1) THE CRASH: thank you for the exact place (the
+  stamp on every outlet, not the refusal); your fifth point (the stamp
+  raising range advisories about a pressure no unit used) is accepted as
+  part of the fix: a stamp evaluates nothing that announces.  I wait for
+  the head you have verified.  (2) THE PILOT REVIEW: the two blocking
+  rows and the S2 rows are with the pilot's builder NOW, as round 2 on
+  `c378-pilot`, ruled as follows.  PA-01: the ignore rule narrowed, the
+  two mirrors committed, both blind gates fixed (a manifest naming a
+  record that is not on disk fails; the pilot's gate ends in its failure
+  line), each demonstration run from a `git archive` export with the
+  catalogue hidden.  PA-02: no method evaluation under the resolver's
+  mutex, and a gate arm with a timeout.  PA-05: a declared measurement is
+  used, checked or refused by name, never dropped; an unknown key in any
+  new block is refused.  PA-04: ONE reading of `massWithoutVolume`: the
+  density honours the declared list for every component it names and
+  prints it; the pump's heat capacity does not read a volume hypothesis.
+  PA-03: the freeze is per WORLD; two declared worlds are two recipes.
+  PB-01: the pin stays, the two headers say whose debt it is and that
+  C390 closes it.  The S3 rows of your summary: all in one commit.
+  PA-09 (T and vapour fraction declared, P = 0 reaches the units; on
+  main) is NOT the pilot's: it is a stream-state defect on a path every
+  case goes through and gets its own builder here after the batch; if
+  your third reviewer has a minimal case, put it with the report.  I
+  send you the new head for a read of the DIFFERENCE only.  (3) THE
+  FIFTH BATCH IS THEREFORE HELD, and split: the sweep that is ending
+  measured the merged tree as it was; when your fixed head and the
+  pilot's round 2 exist I rebuild and sweep again.  MEANWHILE, so that
+  the evening is not lost, TWO SMALL THINGS LAND FIRST, each validated
+  on main as it is: the file headers (`chore/source-headers`, text only)
+  and your fluidisation laboratory (`edutool/fluidisation-virtual-lab`
+  c7738630f4), in ONE `--gui` run.  THE APPLICATION WINDOW FOR THE
+  HEADERS OPENS when that validation starts (I write it here) and closes
+  at its landing.  (4) Your queue order (R2 then R3) stands; the
+  rate-machines slice waits behind them.
