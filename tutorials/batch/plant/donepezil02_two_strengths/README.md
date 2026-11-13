@@ -158,7 +158,14 @@ The building is priced as `donepezil01_tablets` prices it: 5 240 EUR/m2 for
 the shell plus the two `hvacGrade` supply-air quotes (the earlier all-in
 6 000 EUR/m2 is gone).  What is still not computed for a plan of several
 products: the wait for QC release between campaigns and any optimisation of
-the order (`BatchPlanPass.H`, WHAT IS NOT DONE).
+the order (`BatchPlanPass.H`, WHAT IS NOT DONE).  And, as in
+`donepezil01_tablets` (its section 6), the running energy of the clean
+utilities is sized and NOT priced: the printed `C_UT` = 1 051 EUR/yr is the
+two air heaters' steam and the final blender's chilled water, while the
+same run sizes a 51.5 kW HVAC fan (about 452 MWh, 45 kEUR a year if the
+building is ventilated all 8 760 h — an assumption), 134 kW of winter
+heating and 90 kW of summer cooling (design-day peaks), and 470 m3 a year
+of purified water, none of which reaches the bill.
 
 ## 5. What the group changes for its own drug
 

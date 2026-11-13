@@ -420,7 +420,20 @@ facilities — replace it with quotes if you have them), vent treatment for
 the purge, dust collection, cleaning-in-place, validation and
 qualification.  **Not in the operating cost:** the disposal of the
 recovered acetone (it is no longer sold — the dossier's red team, item 11 —
-and a contractor's price was not found).
+and a contractor's price was not found); and the running energy of the
+clean utilities the same run SIZES — the HVAC fan (30.4 kW), its winter
+heating (79.3 kW) and summer cooling (52.9 kW), and the generation of the
+purified water (112 m3 a year).  They are sized and NOT priced.  The
+utility bill printed, `C_UT` = 2 052 EUR/yr, is only the process units the
+utility allocation serves: `airHeater`, `blender`, `exhaustCooler`,
+`gasHeater`, `solventCondenser` and the `blower`.  For the order of
+magnitude: a GMP building is ventilated whether or not a train runs, so
+ASSUME 8 760 h a year; the fan alone is then 30.4 kW x 8 760 h = 266 MWh a
+year, about 26.6 kEUR at the 0.10 EUR/kWh this run prices the blower's
+electricity at — some thirteen times the whole printed bill (11.7 kEUR if
+it ran only the solid-dose train's declared 3 840 h).  The heating and
+cooling are design-day PEAKS, not averages: their energy over a year needs
+the site's climate, which the case does not carry.
 
 **The labour: a declared crew, and Turton's correlation beside it.**  Two
 numbers are printed, and you should be able to explain both.
