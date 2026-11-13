@@ -153,6 +153,47 @@ std::string referenceRecordFor(const ThermoPackage& thermo, std::size_t i)
     }
     //  A sealed case without its copy has no such fact; the seal copies every
     //  record that names a component (bin/choupo-import, ruling 1).
+    //  A SEALED CASE WITHOUT THE COPY IS SAID (C378 pilot review, PC-02): its
+    //  unsealed twin would price the component by the catalogue's reference
+    //  equation and the sealed one by a lower rung, in silence.  When the
+    //  catalogue holds a record naming the component, the run says once
+    //  which record the case lacks and which tool copies it.
+    if (byTier.empty() && records::sealed())
+    {
+        std::string missing;
+        std::error_code ec;
+        if (fs::is_directory(stdDir, ec))
+            for (const auto& p : fs::directory_iterator(stdDir, ec))
+            {
+                if (p.path().extension() != ".dat") continue;
+                std::pair<std::string, std::string> ef;
+                {
+                    std::lock_guard<std::mutex> lk(m);
+                    const auto it = parsed.find(p.path().string());
+                    if (it != parsed.end()) ef = it->second;
+                    else
+                    {
+                        const DictPtr d = Dictionary::fromFile(p.path().string());
+                        ef = { d->lookupWordOrDefault("equation", p.path().stem().string()),
+                               d->lookupWordOrDefault("fluid", "") };
+                        parsed.emplace(p.path().string(), ef);
+                    }
+                }
+                if (std::find(names.begin(), names.end(), ef.second) != names.end())
+                    { missing = "parameters/Helmholtz/" + p.path().filename().string(); break; }
+            }
+        if (!missing.empty()
+            && AdvisoryLog::instance().addAnnouncedOnce("liquidDensitySealedNoReference:" + c.name(),
+                   "provenance", "info", "liquid density (" + c.name() + ")",
+                   "this SEALED case carries no copy of " + missing + ", the reference"
+                   " equation the catalogue holds for " + c.name() + ": the component is"
+                   " priced on a lower rung than in the same case unsealed.  Remedy:"
+                   " bin/curate/seal_reference_records.py <case> (or a fresh"
+                   " bin/choupo-import) copies the record into the case."))
+            std::cout << "  [liquid density] sealed case: no copy of " << missing << " for "
+                      << c.name() << " -- priced on a lower rung than the unsealed case;"
+                         " bin/curate/seal_reference_records.py copies it\n";
+    }
     if (byTier.empty()) return "";
     const auto& best = byTier.begin()->second;
     if (best.size() > 1)
