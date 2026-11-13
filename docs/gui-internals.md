@@ -304,6 +304,24 @@ flow:
 `trajectory.csv` is still written + plotted (the **Trajectory** view); the
 scrubber is the richer per-instant state on top of it.
 
+### The Panel workspace (DEV.md 4c C371, slice S2)
+
+A **read-only** view of the engine's `panel` block (`system/panelDict`,
+`choupoBatch`).  `adapters/panelPayload.ts` types the block and `WasmAdapter`
+carries it as `RunResult.panel` beside `RunResult.trajectory`;
+`case/panelView.ts` is the pure mapping to widgets at a written instant (the
+value is the trajectory's sample, the STATE is membership of the instant in the
+engine's published alarm intervals -- the GUI compares no value with a limit);
+`ui/panelWidgets.tsx` holds the drawing primitives (bar with limits, trend,
+lamp, the one alarm colour) shared with the operator-panels EduTool page;
+`ui/PanelWorkspace.tsx` is the board (time cursor, alarm count, widgets, the
+engine's facts).  The menu entry exists only where `system/panelDict` is among
+the case files or a run published a panel.  `?panel=<key>` is the pop-out on the
+`?layout=` precedent (`case/panelPopOut.ts`, `state/usePanelPopOut.ts`,
+`ui/PanelPopOutTab.tsx`): a stash with the block and only the columns the panel
+reads, followed through the `storage` event, dimmed when stale.  No editing
+affordance exists; tuning and saving are slice S4.
+
 `make` with no target builds the NATIVE binaries (`.DEFAULT_GOAL := all`, set
 before the includes -- otherwise the first rule in `make/wasm.mk` would win).
 The WASM build is always an explicit target: `make wasm-gui`.

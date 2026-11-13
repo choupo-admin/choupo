@@ -3446,6 +3446,78 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C378, THE PILOT'S PLAN IS WRITTEN AND RULED (2026-11-13; branch
+> `c378-pilot-plan`, c48786fd3; its document, the density pilot plan,
+> lands with the door, whose files it cites).**  MEASURED REACH: 32 shipped
+> cases hold a pump or a CSTR (37 units); 27 are away from 25 C; 4 carry
+> dissolved ions through a pump (membrane21, 22, 27, swro01); 10 have
+> water in a mixture; 30 of 32 will re-record (a CSTR at 350 K moves about
+> -7 % in volumetric flow), 6 must declare `massWithoutVolume`.  TWO
+> DEFECTS FOUND by the plan's runs, each its own commit BEFORE the pilot:
+> the pure-fluid route ignores the phase asked, so a SATURATED condensate
+> on IF97 is priced as vapour (rankine02's pump inlet: 4.45 kg/m3 where
+> the liquid branch gives 893.99; the pump is not hurt today only because
+> it bypasses the kernel); and cstr02 feeds a VAPOUR that the CSTR prices
+> on liquid volumes (about 186 times off).  RULINGS on its seven
+> questions: (1) the water leaf takes the reference equation WITH pressure
+> where a record names the fluid, and the seal copies that record into the
+> case; (2) the CSTR takes its density at the FEED state -- its model
+> already says "constant volumetric flow, the feed's" (CSTR.cpp:241), and
+> the table says so; (3) a method is resolved per constituent set at its
+> FIRST request and frozen for the run ("at assembly" cannot hold for a
+> set first met during the solve), and a stream that would resolve
+> differently in a later pass is refused; (4) the demonstration CSTRs
+> declare a reaction whose reactant is absent from the feed, said in the
+> header; (5) a marked point outside its box is refused, the law appearing
+> in a check-only variant; (6) cstr02 is corrected first, through the
+> equation of state; (7) water + ethanol is SCORED at 298.15 and 323.15 K
+> and REPORTED at 348.15 K, where the ethanol leaf, not the mixing, is the
+> error -- decided before any run.  ALSO RULED: the solution-property
+> record lives in `parameters/solution/` and is independent of any
+> activity model's own record for the same pair; the second entry of the
+> door used by the pump and the CSTR is migration scaffolding, named so,
+> counted by a gate and removed when the last consumer has moved; the CO2
+> demonstration is selection and refusal only, not scored.  THE PASS
+> THRESHOLDS, written before the pilot runs (from
+> docs/design/density-pilot-thresholds.md, with ruling 7): water -- the
+> units' flow and residence time equal the kernel's value to 1e-9, the
+> kernel within 0.001 % (reference equation) or 0.005 % (IF97) of the
+> twelve printed anchors, a maximum between 275 and 280 K, 500 bar
+> different from 1 bar, FAIL if any unit reads 996.96 kg/m3 at 500 bar;
+> water + ethanol at 0.1 MPa, two isotherms -- AAD <= 2.0 %, maximum <=
+> 3.6 % against the first laboratory, AAD <= 2.3 %, maximum <= 3.7 %
+> against the second, the printed evidence within 0.05 points of the
+> harness; NaOH -- the record reproduces the law to 1e-6, AAD <= 0.10 %
+> and maximum <= 0.30 % against the independent set at 0.1 MPa, AAD <=
+> 0.20 % and maximum <= 0.30 % up to 2 MPa, 10 MPa reported and not
+> scored; the measured point -- Q = 8.2386e-4 m3/s and tau = 1213.8 s
+> reproduced to 1e-6, a domain error outside the box; NaCl in water +
+> ethanol -- a refusal naming the three constituents, the kind of record
+> missing and the remedy, on the pump, the CSTR and the bench, FAIL on any
+> number or on a refusal for another reason.
+
+> **C371 S2 LANDED (2026-11-13; 3eb1b66e1): THE PANEL WORKSPACE, READ-ONLY,
+> with the reviewing session's lesson on panels and alarms.**  Built on
+> that session's adapter (`panelPayload.ts`) and sharing its drawing
+> primitives.  The lesson's sixteen practice rules were READ against two
+> public documents (the review guide for human-system interfaces,
+> Revision 3, 558 pages; the UK regulator's alarm-handling sheet): none
+> contradicted, six with a difference, three reworded on the page, the
+> only alarm rates in hand cited; the standards sold by their publishers
+> were not read and Revision 4 could not be obtained.  Held by --gui 47/0
+> on the merged tree, typecheck, the electrodialysis cases 5/0, the page's
+> 28 tests after the source check; seen only as headless renders.  OPEN
+> for the engine's panel slice (given to the reviewing session, C383): a
+> unit per column, an interval for a limit without an alarm, its five
+> notes.  OPEN in the workspace: scales on the trends, the grid's holes.
+> **C378 SLICE 0 NOT LANDED YET (2026-11-13): the reviewing session read
+> the branch (DR-01..DR-14) and found two false printed sources (water's
+> surface tension and viscosity labelled with a formulation that defines
+> neither; the electrodialysis kinematic viscosity missing from the
+> table), consumers the inventory missed, and a ratchet that caught 4 of
+> its 18 probe lines.  All fourteen rows went back to the general before
+> any golden is re-recorded.**
+
 > **C198 LANDED (2026-11-13): SEAWATER BORON ON PITZER.**  Every
 > parameter of Felmy & Weare (1986) read from page images, three readings
 > each (the text layer of the PDF misreads two chemical potentials by 90

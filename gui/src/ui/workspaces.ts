@@ -160,6 +160,7 @@ export const WORKSPACES: WorkspaceEntry[] = [
   { label: "Plots",     key: "plots"     },
   { label: "Log",       key: "log"       },
   { label: "Case",      key: "case"      },
+  { label: "Panel",     key: "panel"     },  // the operator panel (C371); only where the case declares one
   { label: "Pinch",     key: "pinch"     },  // shown once a run yields heat duties
   //  a process case: utilities + global balances; a properties case: the
   //  curation verdicts, the records written, the files (C172 slice 3b)
@@ -182,7 +183,7 @@ export const WORKSPACES: WorkspaceEntry[] = [
  *  The FLOWSHEET is deliberately absent: it draws a run AND the declaration,
  *  so it dims only its result layer, inside FlowCanvas itself. */
 export const RESULT_WORKSPACES: readonly WorkspaceKey[] =
-  ["plots", "reports", "streams", "variables", "log", "pinch", "studies"] as const;
+  ["plots", "reports", "streams", "variables", "log", "pinch", "studies", "panel"] as const;
 
 export const VIEW_LABELS: ReadonlySet<string> =
   new Set(WORKSPACES.map((w) => w.label));
@@ -206,6 +207,8 @@ export interface WorkspaceContext {
    *  working and says what is missing -- only the menu stops offering it. */
   /** The case declares $variables or a designSpec target (Variables). */
   hasVariables?: boolean;
+  /** The case declares `system/panelDict`, or a run published a `panel` block (Panel). */
+  hasPanel?: boolean;
   /** A run exists (Pinch draws the engine's pinchPass artefacts, case/pinch.ts). */
   pinchReady?: boolean;
   /** The reader's local literature mirror answered (Literature). */
@@ -252,6 +255,7 @@ export function allowedWorkspaceLabels(ctx: WorkspaceContext): Set<string> {
     return new Set([
       "Flowsheet", "Plots", "Log", "Case", ...literature,
       ...(ctx.hasPid ? ["Control"] : []),
+      ...(ctx.hasPanel ? ["Panel"] : []),
     ]);
   }
   return new Set([

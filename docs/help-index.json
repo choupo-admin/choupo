@@ -77,6 +77,7 @@
   "workspaces": {
     "explore":   { "guide": "explorer", "anchor": "sec:explorer-catalogue", "title": "Explore (catalogue and property surfaces)" },
     "props":     { "guide": "props",  "anchor": "ch:consistency-props", "title": "Property workflow (estimate / fit / consistency)" },
+    "panel":     { "guide": "user",   "anchor": "sec:panelWorkspace",  "title": "Panel (the operator panel of a time-integrated run)" },
     "pinch":     { "guide": "theory", "anchor": "ch:heat",             "title": "Pinch / heat integration" },
     "streams":   { "guide": "theory", "anchor": "ch:stream-as-state",  "title": "Streams (the process stream as state)" },
     "variables": { "guide": "user",   "anchor": "sec:outer",           "title": "Variables / outer drivers (sweep, optimise, fit)" },

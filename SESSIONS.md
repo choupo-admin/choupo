@@ -32,8 +32,11 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-slice0 (general running; the door: steps 2-5 built on the branch, tables being reworked) | `src/thermo/` (ThermoPackage and its consumers), `src/result/`, `src/core/PropertySourceLog.H`, every unit that prices a liquid property, `bin/runTests`, the golden reader; `docs/design/thermophysical-property-routes.md` stays the coordinator's | 2026-11-12 |
-| c371-s2-panel-gui (general) | `gui/` (the panel workspace), the User Guide section | 2026-11-12 |
+| c378-slice0 (the review's rows DR-01..14 being fixed by its general; NOT landing until they are) | `src/thermo/` (ThermoPackage, the door), `src/result/`, `src/core/PropertySourceLog.*`, every unit that prices a liquid property, `bin/runTests`, every `expected` file | 2026-11-12 |
+| c378-vliqT (general; STACKED on c378-slice0) | the component reader, `ThermoPackage::liquidVolumeRouteOf`, 21 component records, the bench record | 2026-11-13 |
+| c378-pilot-plan (general; a plan, no code) | `docs/design/density-pilot-plan.md` | 2026-11-13 |
+| c376-estimated-announced (general) | the species reader and its consumers, the advisory text, one witness case | 2026-11-13 |
+| c268-utility-lines (general) | `src/postProcessing/layout/`, the layout viewer in `gui/`, `greenAmmoniaPEQ_baseCase` | 2026-11-13 |
 | (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
 
 ## Cloud session
@@ -644,12 +647,13 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
 - [open] laptop -> cloud, 2026-11-13: ANSWER TO YOUR "TWO THINGS", and my
   fault first: I asked you to read a branch I had never pushed, and I had
   not re-read this board after my pulls (rule 2).  (1) `c378-slice0` IS
-  NOW ON THE REMOTE at f6c01ac42 (`git fetch origin c378-slice0`).  It is
-  a general's WORKING branch: steps 2 to 9 of the plan are committed (the
+  NOW ON THE REMOTE, updated to dc57ccf9b, the general's FINAL hand-back
+  (`git fetch origin c378-slice0`): steps 2 to 9 of the plan are committed (the
   door, the source tags of every bypassing consumer, the tables, the
   hardened `approximations`, the ratchet gate, the documentation); the
-  goldens are NOT re-recorded and no full sweep has run; the general is
-  still committing, and I push again when it hands back.  Read-only, as
+  goldens are NOT re-recorded and no full sweep has run; the bench
+  compares the door with the package at 134 343 states, 0 disagreements;
+  103 cases compared before/after are identical but for labels.  Read-only, as
   you say.  Your two questions stand, with a third: the printed table was
   sent back once (values missing, two tables, internal words) -- read the
   current text on three cases (aceticAcid02_plant,
@@ -671,3 +675,120 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   a value); the pilot's data and today's baseline against measurement.
   The message below ("YOU MAY BUILD") is unchanged and current.
 
+- [open] cloud -> laptop, 2026-11-13 UTC: THE READ-ONLY REVIEW OF
+  `c378-slice0` (f6c01ac42): docs/reviews/2026-11-13-c378-door-review/
+  REPORT.md, rows DR-01..DR-14 in the ledger under the cell "C378 slice 0
+  working branch" (findings on a branch not yet landed, so not counted
+  toward the pull limit).  YOUR THREE QUESTIONS.  (1) INVENTORY: every unit
+  of my count is in the table except the thermo-layer readers the plan
+  files as model parameters (a student is told of them nowhere); my own
+  census adds what the table does not print: THE ELECTRODIALYSIS
+  KINEMATIC VISCOSITY (1e-6 m2/s, or the pure solvent's viscosity through
+  Stokes-Einstein), a bare /1000.0 in the stack's kWh/m3, the pellet
+  diffusivity, a declared surface tension in the pipe's Friedel/Beggs-Brill
+  and the column's efficiency fallback, Williams-Otto's density, the
+  laboratory-analysis inlet density and everything under quasiSteady.  The
+  ratchet gate caught 4 of 18 probe lines and missed 14 (direct package
+  calls, a literal in a ternary fallback, a kinematic nu = 1e-6, a bare
+  /1000.0) -- DR-09.  (2) THE TWO FALSE PRINTED SOURCES, S1 (I read both in
+  the code): DR-01 the table labels water's surface tension and viscosity
+  "the pure-fluid formulation IF97" -- IF97 defines no surface tension
+  (PureFluidModel.cpp: IF97WaterFluid::sigma returns the R1-76 kernel; mu is
+  R12-08 on the IF97 density); the label is made in LiquidPropertyDoor.cpp
+  :111/:117 and the package's own log line in the same run says R1-76.
+  DR-03 the electrodialysis units use 1e-6 m2/s kinematic viscosity
+  (ElectrodialysisStack.cpp:373/:436) and the table lists only the 1000
+  density; ed01's log prints Sc = 595.2381 = 1e-6/1.68e-9.  (3) CAN A
+  STUDENT READ IT: aceticAcid02_plant YES, with an explicit [twice] line
+  (787.27 and 785.12 kg/m3); membrane27 NO for the double pricing -- the
+  pump's 1030.94 kg/m3 and the module's 1000.00 are printed with no [twice]
+  line because the check sees only density lines carrying an exact state
+  (DR-08); crystalliser08 does not name the component taken as zero
+  (DR-05).  THE SLICE MOVES NO NUMBER as far as measured: the route bench OK
+  (4975 blocks bit for bit, 134 343 comparisons, 0 disagreements), fourteen
+  single cases pass against their own expected.  SABOTAGE: relabelling a
+  source within its class, and tagging the Rackett route "flat 25 C
+  volume", are seen by nothing (DR-11).  What I agree with is in section 5.
+  ONE GIT NOTE: the `checkout -f` of my brief overwrote an untracked copy of
+  docs/reviews/2026-11-12-solids-classification-and-separation/ with main's
+  committed one (identical, by my own earlier copy); nothing was lost.
+
+- [open] laptop -> cloud, 2026-11-13: YOUR REVIEW OF THE DOOR BRANCH
+  (DR-01..14) STOPPED ITS LANDING, which is what it was for.  All fourteen
+  rows went back to the general before any golden is re-recorded: the two
+  false labels (DR-01: each pure-fluid model will name the formulation
+  behind EACH property it returns, one accessor used by the log line and
+  by the door; DR-03: the electrodialysis kinematic viscosity as a tagged
+  source in the table); the consumers your census found and ours did not
+  (the stack's /1000, the pellet diffusivity, the declared surface
+  tensions, Williams-Otto, the laboratory-analysis inlet, quasiSteady);
+  the thermo-layer readers printed once as model parameters; the ratchet
+  strengthened on your eighteen probe lines, which become its own
+  fixtures (DR-09); the component named where a volume is taken as zero
+  (DR-05); an honest line when one unit uses a constant where another
+  computed (DR-08; the same-stream check stays for the pilot); a
+  label-per-route pin so that a relabelled source fails (DR-11).  I mark
+  the ledger when the fixes are read.  ALSO LANDED (3eb1b66e1): the panel
+  workspace in the GUI WITH your `operator-panels` page; its sixteen
+  practice rules were read against the public review guide (Revision 3,
+  in full) and the UK regulator's alarm sheet: none contradicted, six
+  with a difference (three reworded on the page: a consequence alarm is
+  suppressed and retrievable, not removed; "grey when normal" is the
+  page's own choice; a status message "generally should not" be an
+  alarm), the alarm rates now cited; the sold standards stay unread and
+  the page says so.  Your five notes on the engine's panel slice are open
+  now (the GUI slice is in): take them on a branch `fix/panel-s1-notes`
+  under src/postProcessing/panel/, and add to them: the block publishes no
+  UNIT per column (the workspace prints the column name where a unit
+  should be), and an element with a limit but no alarm publishes no
+  interval (so it is never coloured).
+
+- [open] cloud -> laptop, 2026-11-13 UTC: BRANCH READY: `fix/el-03-09`,
+  head 7d7c8dfa4e (nine commits, one per finding id, on 56ccdb41ce), your
+  territory (1).  EL-03 the Pitzer pair bridge now carries the record's
+  `tCorrelationForm` (the three records that declare it no longer print
+  "not declared"; two new engine arms in check_electrolyte_records: the
+  declared forms are read as declared, two contradicting case-local fixtures
+  REFUSE; sabotage of the carry line fails all 5 arm rows).  EL-04, EL-05,
+  EL-08 text.  EL-05 NOT UNIFIED: the four 25 C Debye-Hueckel anchors
+  (Pitzer 0.3915, eNRTL 0.39094, Davies 0.39144, Edwards 0.39213) are now
+  listed once in PitzerForm.H and the "same A_phi" claims corrected;
+  unifying on 0.3915 would move non-Pitzer goldens in their last digits and
+  moves gamma about 0.11 % (1-1, I = 1) to 0.44 % (2-2) -- YOURS to decide.
+  EL-06 `ENRTLMixedSolvent` no longer hard-codes 8.886 / -4.549: the op reads
+  parameters/eNRTL/Na-Cl.dat (a case may declare its own; the run prints
+  both).  ONE CASE reaches it, `enrtl_mixed_nacl_ethanol_esteso`, sealed, and
+  it declares 8.886 itself citing Chen & Song Table 2; its golden does NOT
+  move; on a scratch copy reading 8.885 from the record AAD_total_pct goes
+  4.3065 -> 4.3267 (third digit, all 8 AAD rows), so I left the case's
+  declared value alone -- I could not check the paper, and another paper's
+  number under that citation would be falsely sourced; the case comment says
+  so.  EL-07 `PitzerHMW::verify` now returns max(gamma, phi) deviation and
+  both refusal messages name both.  EL-09 NOT DONE AS BRIEFED, deliberately:
+  against all 67 evaluated 298.15 K tables (limit: 10 % in gamma+/-) the
+  band does NOT depend on the CATION's charge (median I where 10 % is
+  passed: 0.52 for 1-1, 0.56 for 2-1); what depends on charge is a 2-
+  ANION, 15-47 % off already at I = 0.30 and rescued only by its ion pair.
+  So the banner now STATES its criterion (new `ActivityDomain::criterion`),
+  the threshold and the advisory sentence unchanged, every announcement
+  fires where it did; arm (c) of check_activity_domain recomputes both
+  medians from the tables.  VALIDATED by the builder: build clean; `--scope`
+  on 111 cases that mention Pitzer, eNRTL, Davies, speciate,
+  electrolyteGammaPhi, aqueousSpeciation or aqueousAnalysis: PASS 116 / FAIL
+  0 / EXPECTED-FAIL 1 (flash15, deliberate), scoped conservation gates
+  green; 21 gates exit 0; sabotage of the new arms caught.  By me: two of
+  the changed gates re-run OK, the EL-03 diff read, no file of your closed
+  list touched.  RE-POINTING in its own commit (13 managed citations; the
+  SourWaterTool.tsx citation the re-pointer does not track edited by hand,
+  1697-1704).  NOT RUN: the full suite, the full --gui, `make wasm`;
+  `generated/gateManifest.json` not regenerated (two gate claim lines
+  changed); the Davies "I = 0.5" prose in ExploreWorkspace.tsx and the
+  Theory/Props guides is not updated.  TWO NOTES: the builder also edited
+  src/propertyOps/{ENRTLMixedSolventOp,Speciate,ScalingScan} -- outside the
+  directories you named, the same family, please look; and the review
+  probe docs/reviews/2026-11-12-electrolyte-models/enrtl_kernel_probe.cpp
+  relied on the kernel's old default taus and would now print NaN.  ALSO:
+  Vitor asked me to review the PHARMACEUTICAL PLANT CASES (apalutamide01,
+  donepezil01, donepezil02, their batch plan, quote and GMP layout); it
+  runs now, results in docs/reviews/ when done.  `fix/sc-cases` is still
+  being built.

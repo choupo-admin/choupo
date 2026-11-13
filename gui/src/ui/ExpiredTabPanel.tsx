@@ -39,11 +39,11 @@ import { Alert, Box, Text } from "@mantine/core";
 import { IconClockX } from "@tabler/icons-react";
 
 export function ExpiredTabPanel({ kind }: {
-  kind: "focus" | "internals" | "explore" | "layout" | "building" | "step";
+  kind: "focus" | "internals" | "explore" | "layout" | "building" | "step" | "panel";
 }) {
   const what = kind === "focus" ? "mini-flowsheet" : kind === "explore" ? "McCabe-Thiele"
     : kind === "layout" ? "3D plant layout" : kind === "building" ? "GMP building"
-    : kind === "step" ? "workflow step" : "internals";
+    : kind === "step" ? "workflow step" : kind === "panel" ? "operator panel" : "internals";
   return (
     <Box
       style={{
@@ -67,6 +67,8 @@ export function ExpiredTabPanel({ kind }: {
             ? "Reopen it from EduTools in the top bar — pick “Distillation (McCabe-Thiele)”, choose the two compounds, and press the pop-out button in its toolbar."
             : kind === "step"
             ? "Reopen it from the parent — open the case, and double-click the step's box on its Workflow (or select it and press Enter)."
+            : kind === "panel"
+            ? "Reopen it from the parent — run the case, open the Panel view and press “Open in new tab”."
             : kind === "layout"
             ? "Reopen it from the parent — run the case, open Reports → “Plant layout (3D)” and press “Open in new tab” (or the same button under the EduTools plant-layout bench)."
             : kind === "building"
