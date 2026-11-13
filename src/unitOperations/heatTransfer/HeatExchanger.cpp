@@ -949,6 +949,13 @@ int HeatExchanger::solve(const DictPtr& dict,
         //  evaluation is finite the sequence of trial points is exactly the
         //  one it always was.  A guess the package cannot price at all keeps
         //  the old answer: there is nothing finite to walk from.
+        //  The walk and the bisection visit temperatures the answer is not
+        //  at -- a wall below the IF97 window raises its own validity
+        //  advisories there -- so they are framed as a TRIAL (core/
+        //  Advisory.H): what they raise is filed as the path, and the state
+        //  read at the answer below is what speaks about the outlet.
+        AdvisoryFrame walk("heatExchanger outlet-enthalpy bracket of '"
+                           + s.name + "'", /*trial=*/true);
         scalar lo = Tguess, hi = Tguess, flo = f(lo), fhi = flo;
         const scalar span = std::max<scalar>(1.0, 0.05 * std::abs(Tguess - s.T));
         bool loWall = !std::isfinite(flo), hiWall = loWall;
@@ -972,6 +979,7 @@ int HeatExchanger::solve(const DictPtr& dict,
         }
         if (!(flo * fhi <= 0.0) || !std::isfinite(flo) || !std::isfinite(fhi))
         {
+            walk.close();
             std::ostringstream m;
             m << "could not bracket the outlet enthalpy of '" << s.name
               << "' between " << lo << " K and " << hi << " K"
@@ -990,6 +998,7 @@ int HeatExchanger::solve(const DictPtr& dict,
         }
         const flashState::BracketedRoot root =
             flashState::bisectIncreasing(f, lo, flo, hi, fhi);
+        walk.close();
         const scalar Tans = root.T;
         if (const auto q = flashState::qualityAtJump(root, Htarget, s.P, s.z,
                                                      thermo))
