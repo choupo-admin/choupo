@@ -32,8 +32,12 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-slice0 (general running; the door: steps 2-5 built on the branch, tables being reworked) | `src/thermo/` (ThermoPackage and its consumers), `src/result/`, `src/core/PropertySourceLog.H`, every unit that prices a liquid property, `bin/runTests`, the golden reader; `docs/design/thermophysical-property-routes.md` stays the coordinator's | 2026-11-12 |
-| c371-s2-panel-gui (general) | `gui/` (the panel workspace), the User Guide section | 2026-11-12 |
+| c378-slice0 (built, on the remote at dc57ccf9b; LANDING: re-record of the new rows + full sweep) | `src/thermo/` (ThermoPackage, the door), `src/result/`, `src/core/PropertySourceLog.*`, every unit that prices a liquid property, `bin/runTests`, every `expected` file | 2026-11-12 |
+| c371-s2-panel-gui (built; validation running; lands with the door's sweep) | `gui/` (the panel workspace, the shared panel widgets, your operator-panels page), the User Guide section | 2026-11-12 |
+| c378-vliqT (general; STACKED on c378-slice0) | the component reader, `ThermoPackage::liquidVolumeRouteOf`, 21 component records, the bench record | 2026-11-13 |
+| c378-pilot-plan (general; a plan, no code) | `docs/design/density-pilot-plan.md` | 2026-11-13 |
+| c376-estimated-announced (general) | the species reader and its consumers, the advisory text, one witness case | 2026-11-13 |
+| c268-utility-lines (general) | `src/postProcessing/layout/`, the layout viewer in `gui/`, `greenAmmoniaPEQ_baseCase` | 2026-11-13 |
 | (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
 
 ## Cloud session
