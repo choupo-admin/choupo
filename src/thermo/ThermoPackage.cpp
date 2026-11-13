@@ -2268,6 +2268,35 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
     return surfaceTensionMixing_->mix(T, x, sig, liquidMixingContext());   // N/m
 }
 
+namespace {
+//  A pure-fluid state asked beyond the saturation band on the OTHER side of
+//  the line from the phase the caller holds (C378, `pureFluidPhaseState`'s
+//  `farAcross`): the saturated branch of the phase asked is used.  The fact
+//  rides `AdvisoryLog::addAnnouncedOnce`, keyed by function, component and
+//  phase, so it reaches the result JSON and the end-of-run caveat block of
+//  every pass that meets it; the console line is printed once per process.
+//  It was a private static latch on `std::cout` and reached neither (review
+//  TD-07, 2026-11-13).
+void announceAcross(const char* what, const std::string& comp,
+                    DensityPhase ph, scalar T, scalar P, scalar ps)
+{
+    const bool liq = (ph == DensityPhase::Liquid);
+    const std::string key = std::string("pureFluidAcross:") + what + ":"
+                          + comp + (liq ? ":liquid" : ":vapour");
+    AdvisoryLog& log = AdvisoryLog::instance();
+    if (log.passHas(key)) return;
+    std::ostringstream m;
+    m << "a pure-fluid " << (liq ? "LIQUID" : "VAPOUR") << " " << what
+      << " was asked at T = " << T << " K, P = " << P
+      << " Pa, on the other side of the saturation pressure (" << ps
+      << " Pa, beyond the 1e-6 band); the saturated "
+      << (liq ? "liquid" : "vapour") << " at T is used";
+    if (log.addAnnouncedOnce(key, "thermo", "warning",
+                             "component '" + comp + "'", m.str()))
+        std::cout << what << ": " << m.str() << "\n";
+}
+} // namespace
+
 scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
                               DensityPhase ph) const
 {
@@ -2299,18 +2328,9 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
             //  asked, never the other root (pureFluid/PureFluidModel.H).
             const PureFluidPhaseState st = pureFluidPhaseState(
                 m, T, P_Pa, ph == DensityPhase::Liquid);
-            static bool announcedAcross = false;
-            if (st.farAcross && !announcedAcross)
-            {
-                std::cout << "density: a pure-fluid "
-                          << (ph == DensityPhase::Liquid ? "LIQUID" : "VAPOUR")
-                          << " density was asked at T = " << T << " K, P = " << P_Pa
-                          << " Pa, on the other side of the saturation pressure ("
-                          << m.p_sat(T) << " Pa); the saturated "
-                          << (ph == DensityPhase::Liquid ? "liquid" : "vapour")
-                          << " at T is returned\n";
-                announcedAcross = true;
-            }
+            if (st.farAcross)
+                announceAcross("density", components_[*i].name(), ph, T,
+                               P_Pa, m.p_sat(T));
             const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
             const scalar vm = m.v_molar(T, st.pEval);         // m³/mol
             if (!(vm > 0.0) || !std::isfinite(vm))
@@ -2621,24 +2641,6 @@ std::string ThermoPackage::surfaceTensionMethod() const
 //  Placed at the end of the file so that no line an EduTool lesson cites by
 //  `file:line` above it moved.  The decision is pureFluidPhaseState's, the
 //  same one density() reads; the generic route ignores the phase.
-namespace {
-//  Said once per run and per function when the state asked lies beyond the
-//  band on the other side of the saturation line.
-void announceAcross(bool& said, const char* what, DensityPhase ph,
-                    scalar T, scalar P, scalar ps)
-{
-    if (said) return;
-    said = true;
-    std::cout << what << ": a pure-fluid "
-              << (ph == DensityPhase::Liquid ? "LIQUID" : "VAPOUR")
-              << " state was asked at T = " << T << " K, P = " << P
-              << " Pa, on the other side of the saturation pressure (" << ps
-              << " Pa); the saturated "
-              << (ph == DensityPhase::Liquid ? "liquid" : "vapour")
-              << " at T is used\n";
-}
-} // namespace
-
 scalar ThermoPackage::H_real(scalar T, scalar P_Pa, const sVector& y,
                              DensityPhase ph) const
 {
@@ -2648,8 +2650,9 @@ scalar ThermoPackage::H_real(scalar T, scalar P_Pa, const sVector& y,
             const PureFluidModel& m = *pureFluid_.at(*i);
             const PureFluidPhaseState st = pureFluidPhaseState(
                 m, T, P_Pa, ph == DensityPhase::Liquid);
-            static bool said = false;
-            if (st.farAcross) announceAcross(said, "enthalpy", ph, T, P_Pa, m.p_sat(T));
+            if (st.farAcross)
+                announceAcross("enthalpy", components_[*i].name(), ph, T, P_Pa,
+                               m.p_sat(T));
             return m.h_molar(T, st.pEval);
         }
     return H_real(T, P_Pa, y);
@@ -2664,8 +2667,9 @@ scalar ThermoPackage::S_real(scalar T, scalar P_Pa, const sVector& y,
             const PureFluidModel& m = *pureFluid_.at(*i);
             const PureFluidPhaseState st = pureFluidPhaseState(
                 m, T, P_Pa, ph == DensityPhase::Liquid);
-            static bool said = false;
-            if (st.farAcross) announceAcross(said, "entropy", ph, T, P_Pa, m.p_sat(T));
+            if (st.farAcross)
+                announceAcross("entropy", components_[*i].name(), ph, T, P_Pa,
+                               m.p_sat(T));
             return m.s_molar(T, st.pEval);
         }
     return S_real(T, P_Pa, y);
