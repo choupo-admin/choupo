@@ -1629,6 +1629,90 @@ gas, isothermal; no wall, no distributor pressure drop, no jets; no elutriation
 rate and no freeboard; no reactor model.  Every correlation is empirical, and
 the published accuracies are not quoted because they have not been checked.
 
+\subsection{When the fast obeys the slow: separation of time scales}\label{sec:edu-fast-and-slow}
+
+\declaredanchor{ch:stiff-ode}
+
+\noindent\textit{\small Tool:} \code{tool=fast-and-slow}.  \textit{\small
+Cases it starts from:} three pairs, each a full and a reduced model, with one
+declared number of the full case changed by the slider:
+\begin{itemize}[leftmargin=*,nosep,topsep=2pt]
+  \item \file{unsteady07\_fast\_tank\_full} and
+        \file{unsteady08\_fast\_tank\_reduced} (in \file{tutorials/unsteady/});
+  \item \file{batch30\_fast\_equilibrium\_full} and
+        \file{batch31\_fast\_equilibrium\_reduced} (in \file{tutorials/batch/reactor/});
+  \item \file{batch32\_fast\_intermediate\_full} and
+        \file{batch33\_fast\_intermediate\_reduced} (the same folder).
+\end{itemize}
+
+\subsubsection*{The question}
+
+\emph{My model is heavy and stiff: which variables can I stop integrating and
+replace by an algebraic relation, and how wrong will I be?}
+
+The page opens on a puzzle: a plant has more fast motions than anybody could
+list, yet the formulas engineers design with have two or three variables and
+fit within a design tolerance.  Why are they so simple?  The page ``Why
+engineering correlations are simple'' names the separation of scales as one
+mechanism and shows it on a two-variable toy; this page shows it at work on
+running process models, with the engine computing both sides.  The short
+answer comes first: divide the fast time scale by the slow one,
+$\varepsilon = \tau_\mathrm{fast}/\tau_\mathrm{slow}$, replace each fast part
+by the relation that makes its own rate zero, and the error falls with
+$\varepsilon$.  Three case studies test it, each as a guess, a reveal (the
+engine runs both models; nothing runs before the student presses the button),
+a slider that makes the fast part slower until the reduction fails, the cost
+of the full model, and ``what is left when the fast part obeys'': the reduced
+law, counted against the full one, with the range of the slider where its error
+stays under a tolerance the student sets.  The cases are a small tank behind a
+big one (the small one replaced by a \code{storageTank} wrapped as
+\code{quasiSteady}), a fast equilibrium feeding a slow step (one pool at
+$kK/(1+K)$, an \code{expression} rate law) and a reactive intermediate (a rate
+law in the stable species alone).  The closing section, ``So this is why
+correlations are simple'', puts the three reduced laws beside the
+effectiveness factor of a pellet, a film coefficient or friction factor, the
+membrane module solved quasi-steady inside a tank's start-up, and the engine's
+refusal of a loop with no vessel on it, quoted rather than fired.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+Every curve is the engine's: \code{choupoSemiContinuous} for the tanks,
+\code{choupoBatch} with the adaptive Rosenbrock23 integrator for the reactors,
+whose accepted steps the page counts from the step history the engine prints.
+The page divides mole numbers by their total, subtracts the reduced curve from
+the full one, and draws two closed forms as labelled checks: the largest gap of
+two linear first-order parts, $\varepsilon^{1/(1-\varepsilon)}$, and the
+stability limit of a fixed explicit RK4 step.  The time-integrated driver
+publishes no step count, so the tank case shows its declared fixed step count
+and nothing in its place.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+At the defaults the largest gaps are 4.3\,\% (tanks, $\varepsilon = 0.05$),
+0.62\,\% (equilibrium, $k_f/k = 100$) and 0.95\,\% (intermediate,
+$k_2/k_1 = 100$).  Move each slider to its slow end and watch the gap reach
+37\,\% where the two time scales are equal.  In the intermediate case, compare
+the gap with the tank case at the same $\varepsilon$: the numbers are the same,
+because the two problems are the same pair of equations.  In the reactor cases
+watch the step count: the stiff integrator's barely moves, while the explicit
+bound grows with the fast rate.  Then set a tolerance and measure the window.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That reducing a stiff model is mainly about speed.}  With a stiff
+integrator the full model costs little more; what the reduced law gains is that
+it no longer needs the fast constants at all, which is why a correlation can be
+fitted with two or three numbers.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Linear, first-order models only; synthetic species and author-set numbers;
+isothermal reactors.  Next, named and not built: batch electrodialysis (the
+film against the emptying tank) and a cascade control loop.  The measured
+tables are in \file{docs/design/fast-and-slow.md}.
+
 \subsection{Operator panels and alarms}\label{sec:edu-operator-panels}
 
 \declaredanchor{sec:operatorPanels}
