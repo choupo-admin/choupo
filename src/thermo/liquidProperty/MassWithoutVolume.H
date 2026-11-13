@@ -57,6 +57,9 @@ public:
     std::string datum() const override { return statedDatum(); }
     std::string origin() const override { return "assumed"; }
     bool        isMassless() const override { return true; }
+    //  A component with no volume has no volume to compress: it does not stop
+    //  the mixture's pressure statement from being the other leaves'.
+    bool        pressureApplied() const override { return true; }
 };
 
 } // namespace liquidProperty

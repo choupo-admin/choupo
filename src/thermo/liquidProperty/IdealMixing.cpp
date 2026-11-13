@@ -15,6 +15,7 @@
 #include "IdealMixing.H"
 
 #include "DensityResolver.H"
+#include "core/PropertySourceLog.H"
 #include "thermo/ApproximationAuthorisation.H"
 #include "thermo/PropertyDomainError.H"
 #include "thermo/ThermoPackage.H"
@@ -119,6 +120,7 @@ DensityAnswer IdealMixing::evaluate(scalar T, scalar P, const sVector& x) const
                 " or a volume for the component (a record `Vliq` or a solution record)");
         }
         noteMassWithoutVolume(listed, wMassless);
+        PropertySourceLog::instance().hypothesisHere("massWithoutVolume", listed, wMassless, wMax);
     }
     if (!(Vmix > 0.0) || !std::isfinite(Vmix))
         throw PropertyDomainError(PropertyDomainError::Kind::invalidState,

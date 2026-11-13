@@ -153,6 +153,7 @@ void PropertySourceLog::clear()
     used_.clear();
     declared_.clear();
     parameters_.clear();
+    hypotheses_.clear();
     generation_.fetch_add(1, std::memory_order_relaxed);
 }
 
@@ -401,9 +402,23 @@ std::vector<std::string> PropertySourceLog::constantBesideComputed() const
     return out;
 }
 
+void PropertySourceLog::hypothesisHere(const std::string& word, const std::string& components,
+                                       double share, double bound)
+{
+    std::string type, unit;
+    if (!current(type, unit)) return;
+    std::lock_guard<std::mutex> g(mutex_);
+    Hypothesis& h = hypotheses_[{ word, unit }];
+    h.type = type;
+    h.components = components;
+    h.bound = bound;
+    if (h.count == 0 || share > h.largest) h.largest = share;
+    ++h.count;
+}
+
 void PropertySourceLog::printUsed(std::ostream& os) const
 {
-    if (used_.empty() && parameters_.empty()) return;
+    if (used_.empty() && parameters_.empty() && hypotheses_.empty()) return;
     os << "\n[liquid properties] Where each unit took its liquid properties from in"
           " this run (values as used; nothing is changed by this table)\n";
     //  Units of one type that share the property, the source AND the value
@@ -432,6 +447,14 @@ void PropertySourceLog::printUsed(std::ostream& os) const
     for (const auto& m : mismatches()) os << "  [mismatch] " << m << "\n";
     for (const auto& p : pricedTwice()) os << "  [twice] " << p << "\n";
     for (const auto& c : constantBesideComputed()) os << "  [constant] " << c << "\n";
+    for (const auto& h : hypotheses_)
+    {
+        char b[160];
+        std::snprintf(b, sizeof b, "largest share %.3g of the declared bound %.3g", h.second.largest,
+                      h.second.bound);
+        os << "  [hypothesis] " << h.first.first << " (" << h.second.components << ") in "
+           << h.first.second << " (" << h.second.type << "): " << b << "\n";
+    }
     if (!parameters_.empty())
     {
         os << "  Parameters of thermodynamic models that read a component's 25 C"
@@ -503,7 +526,24 @@ std::string PropertySourceLog::json() const
           << ", \"reads\": " << jsonString(p.second) << " }";
         first = false;
     }
-    o << (first ? "" : "\n    ") << "]\n  }";
+    o << (first ? "" : "\n    ") << "]";
+    if (!hypotheses_.empty())
+    {
+        o << ",\n    \"hypotheses\": [";
+        first = true;
+        for (const auto& h : hypotheses_)
+        {
+            o << (first ? "\n      " : ",\n      ") << "{ \"word\": " << jsonString(h.first.first)
+              << ", \"unit\": " << jsonString(h.first.second)
+              << ", \"consumerType\": " << jsonString(h.second.type)
+              << ", \"components\": " << jsonString(h.second.components)
+              << ", \"largestShare\": " << jsonNumber(h.second.largest)
+              << ", \"bound\": " << jsonNumber(h.second.bound) << " }";
+            first = false;
+        }
+        o << "\n    ]";
+    }
+    o << "\n  }";
     return o.str();
 }
 

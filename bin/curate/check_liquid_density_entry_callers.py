@@ -16,7 +16,7 @@ THE CALLERS, by file, with the number of call sites each holds:
   src/unitOperations/rotating/Pump.cpp          1   the pump (inlet state)
   src/unitOperations/reactor/CSTR.cpp           1   the CSTR (feed state, liquid basis)
   src/propertyOps/PropertyEvaluator.cpp         1   the props bench key `rho_liquid_kernel`
-  src/applications/choupoProps/PropertyRouteBench.cpp  2   the route bench (its sweep and the address-reuse check)
+  src/applications/choupoProps/PropertyRouteBench.cpp  4   the route bench (its sweep, the address-reuse and the domain-trial checks)
 The two bench files are instruments of the kernel, not units pricing a
 property (ruling 1 at the pilot's hand-back A).
 
@@ -39,7 +39,7 @@ ALLOWED = {
     "src/unitOperations/rotating/Pump.cpp": 1,
     "src/unitOperations/reactor/CSTR.cpp": 1,
     "src/propertyOps/PropertyEvaluator.cpp": 1,
-    "src/applications/choupoProps/PropertyRouteBench.cpp": 2,   # the sweep and the address-reuse check
+    "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)
 }
 CALL = re.compile(r"\bliquidProperty::density\s*\(")
 

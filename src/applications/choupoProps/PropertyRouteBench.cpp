@@ -15,6 +15,7 @@
 #include "PropertyRouteBench.H"
 
 #include "core/Dictionary.H"
+#include "core/InfeasibleTrial.H"
 #include "thermo/Database.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "thermo/SurfaceTensionModel.H"
@@ -593,6 +594,36 @@ int run(const std::string& manifestPath, const std::string& outPath)
             if (id != rn.second) reuseOk = false;
         }
         reuseLine += " (packages at a reused address: " + std::to_string(sameAddress) + ")";
+
+        //  THE DOMAIN ERROR IS A REJECTABLE TRIAL (C378 pilot, step 6): a
+        //  state outside a method's hard domain reaches the caller as an
+        //  InfeasibleTrial -- the type every recycle solver catches to reject
+        //  a step -- and a missing datum does not (it fails the run).  NaOH
+        //  at 40 wt % and 285 K lies outside the law's Table III; NaCl in
+        //  water has no method at all.
+        const DictPtr dn = Dictionary::fromString(systemText({ "NaOH", "water" }, ""),
+                                                  "<domain-trial check>");
+        ThermoPackage pn = ThermoPackageBuilder::build(dn, db);
+        liquidProperty::Request q;
+        q.thermo = &pn; q.T = 285.0; q.P = 1.0e5;
+        const double a = 0.40 / 39.997, bw = 0.60 / 18.015;
+        q.x = { a / (a + bw), bw / (a + bw) };
+        bool trial = false, missingIsTrial = true;
+        try { (void)liquidProperty::density(q); }
+        catch (const InfeasibleTrial&) { trial = true; }
+        catch (...) {}
+        const DictPtr dc = Dictionary::fromString(systemText({ "NaCl", "water" }, ""),
+                                                  "<domain-trial check>");
+        ThermoPackage pc = ThermoPackageBuilder::build(dc, db);
+        liquidProperty::Request qc;
+        qc.thermo = &pc; qc.T = 298.15; qc.P = 1.0e5; qc.x = { 0.01, 0.99 };
+        try { (void)liquidProperty::density(qc); missingIsTrial = false; }
+        catch (const InfeasibleTrial&) { missingIsTrial = true; }
+        catch (...) { missingIsTrial = false; }
+        if (!trial || missingIsTrial) reuseOk = false;
+        reuseLine += std::string("; a state outside the law's domain is ")
+                   + (trial ? "an InfeasibleTrial" : "NOT an InfeasibleTrial")
+                   + ", a missing method is " + (missingIsTrial ? "WRONGLY a trial" : "not a trial");
     }
     fs::current_path(here);
     os.close();
@@ -619,7 +650,8 @@ int run(const std::string& manifestPath, const std::string& outPath)
               << kernelDiffer << " different";
     for (const auto& kv : kernelDifferByMethod) std::cout << "  [" << kv.first << " " << kv.second << "]";
     std::cout << "\n";
-    std::cout << "  resolution by package, not address: " << (reuseOk ? "ok" : "FAIL")
+    std::cout << "  resolution by package, not address, and the domain error as a trial: "
+              << (reuseOk ? "ok" : "FAIL")
               << " --" << reuseLine << "\n";
     char b[64];
     std::snprintf(b, sizeof(b), "%.1f", secs);

@@ -593,8 +593,14 @@ def ratchet_kW(pin: float) -> float:
 #  the scoped run: the same model-boundary step, -760.1 -> -715.7 kW; the
 #  percentage moved with the energy-exchanged denominator (230.5 kW of
 #  boundary duty).  The debt is still unpaid.
+#  esterification2sector RE-PINNED 310.4440 -> 291.0850 on 2026-11-13 (DEV.md
+#  4c C378 pilot, step 7): the reactor's volumetric flow is priced at the
+#  feed temperature (the property kernel's liquid density at 360 K, -8.6 %
+#  against the flat 25 C volumes), which moves its conversion and the flash
+#  downstream; the same model-boundary step, -715.7 -> -689.2 kW.  The balance
+#  is still open.
 KNOWN_OPEN = {
-    "tutorials/steady/flowsheets/esterification2sector": 310.4440,
+    "tutorials/steady/flowsheets/esterification2sector": 291.0850,
     "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,

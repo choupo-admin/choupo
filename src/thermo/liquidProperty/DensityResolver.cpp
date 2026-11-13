@@ -133,6 +133,8 @@ std::string referenceRecordFor(const ThermoPackage& thermo, std::size_t i)
         const int tier = (p.parent_path() == stdDir) ? 1 : 0;      // 0: the case's own
         byTier[tier].push_back({ ef.first, p.string() });
     }
+    //  A sealed case without its copy has no such fact; the seal copies every
+    //  record that names a component (bin/choupo-import, ruling 1).
     if (byTier.empty()) return "";
     const auto& best = byTier.begin()->second;
     if (best.size() > 1)
@@ -446,6 +448,13 @@ std::map<std::string, double> massWithoutVolumeOfRun()
     return run().massless;
 }
 
+//  THE PRESSURE ABOVE WHICH A METHOD THAT TAKES NONE IS ANNOUNCED [Pa].  A
+//  liquid's isothermal compressibility is about 5e-10 per Pa (water 4.6e-10
+//  at 25 C), so 2 MPa is a 0.1 % density effect -- the order a golden's
+//  1e-4 tolerance can see.  Below it the table's pressure column ("not
+//  applied") is the statement; an advisory on every pump would be noise.
+constexpr double pressureAnnouncedAbove = 2.0e6;
+
 //  THE PILOT'S ENTRY (LiquidPropertyDoor.H).
 Result density(const Request& q)
 {
@@ -510,14 +519,16 @@ Result density(const Request& q)
     }
 
     if (!site) return r;
-    //  "PRESSURE NOT APPLIED" once per method and unit (the second amendment
-    //  block, item 6), not beside every value.
-    if (!r.pressureApplied
+    //  "PRESSURE NOT APPLIED": the table's pressure column says it on every
+    //  such row, always; the ADVISORY is raised only where it can matter
+    //  (ruling 2 at hand-back B), once per method and unit.
+    if (!r.pressureApplied && q.P > pressureAnnouncedAbove
         && AdvisoryLog::instance().addAnnouncedOnce(
                "liquidDensityPressure:" + r.methodId + ":" + type + " " + unit,
                "approximation", "info", type + " " + unit,
                "liquid density by " + r.methodId + ": pressure is not applied (the method"
-               " carries no pressure term)"))
+               " carries no pressure term) at " + std::to_string(q.P * 1.0e-6) + " MPa, above "
+               "the 2 MPa where a liquid's compressibility (about 5e-10 per Pa) reaches 0.1 %"))
         std::cout << "  [liquid density] " << type << " " << unit << ": " << r.methodId
                   << " carries no pressure term; pressure not applied\n";
     PropertySourceLog::instance().use(type, unit, name(Property::density),

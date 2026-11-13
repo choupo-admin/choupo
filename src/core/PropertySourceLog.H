@@ -295,7 +295,16 @@ public:
     //  False when no consumer is being solved (a props bench, a probe).
     bool current(std::string& type, std::string& unit) const;
 
-    bool empty() const { return used_.empty() && declared_.empty() && parameters_.empty(); }
+    bool empty() const { return used_.empty() && declared_.empty() && parameters_.empty()
+                                && hypotheses_.empty(); }
+
+    //  A DECLARED HYPOTHESIS USED BY THE CONSUMER BEING SOLVED (C378 pilot:
+    //  `massWithoutVolume`): the components it covered, the largest share it
+    //  stood at in the run and the bound the case declared.  The table prints
+    //  one line per hypothesis and unit; the result block `propertySources`
+    //  lists them under `hypotheses` (nothing when none was used).
+    void hypothesisHere(const std::string& word, const std::string& components,
+                        double share, double bound);
 
     //  The run's number: it changes at every clear(), so a cache that must
     //  live for one run (the liquid-density resolutions, C378 pilot) knows
@@ -325,6 +334,9 @@ private:
     std::string currentType_, currentUnit_;
     std::atomic<unsigned> generation_{1};
     std::map<std::string, std::string> parameters_;   // model -> what it reads
+    struct Hypothesis { std::string type, components; double largest = 0, bound = 0; long count = 0; };
+    //  (word, unit) -> its use in the run
+    std::map<std::pair<std::string, std::string>, Hypothesis> hypotheses_;
     //  (unit, property, source id) -> what the unit took from it
     std::map<std::tuple<std::string, std::string, std::string>, Used> used_;
     //  (type, unit, property) -> declared source classes

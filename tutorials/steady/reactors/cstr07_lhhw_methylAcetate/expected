@@ -11,8 +11,8 @@ kpi     reactor                T_out            333.15           1e-4
 kpi     reactor                V_R              0.005            1e-4
 kpi     reactor                k_esterification_meoac 0.00280769603355 1e-4
 kpi     reactor                nReactions       1                1e-4
-kpi     reactor                newtonResidual   1.2490009027e-16 1e-4
-kpi     reactor                tau_s            366.524129505    1e-4
+kpi     reactor                newtonResidual   4.16333634234e-17 1e-4
+kpi     reactor                tau_s            349.864256248    1e-4
 kpi     reactor                xi_esterification_meoac_mol_per_s 0.0680930737737  1e-4
 stream  feed                   T                333.15           1e-4
 stream  reactorOut             T                333.15           1e-4
@@ -24,4 +24,4 @@ utility reactor                cooling.coolingWater.duty_kW -0.0517242743531 1e-
 utility reactor                cooling.coolingWater.T 333.15           1e-4
 utility reactor                cooling.coolingWater.kg_s 0.00123742283141 1e-4
 utility reactor                cooling.coolingWater.eur_h 7.44829550685e-05 1e-4
-source  reactor                liquidVolume     bypass.recordVliq25C exact
+source  reactor                liquidDensity    idealMixing[anchoredRackett] exact
