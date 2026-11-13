@@ -81,3 +81,7 @@ source  NF_NaCl_BsWall         liquidDensity    default.rhoFeed1000 exact
 source  NF_NaCl_BsWall         liquidViscosity  default.water1e-3 exact
 source  NF_NaCl_pore           liquidDensity    default.rhoFeed1000 exact
 source  NF_NaCl_pore           liquidViscosity  default.water1e-3 exact
+source  NF_MgSO4_BsWall        liquidDiffusivity record.speciesD0.at25C exact
+source  NF_MgSO4_pore          liquidDiffusivity record.speciesD0.at25C exact
+source  NF_NaCl_BsWall         liquidDiffusivity record.speciesD0.at25C exact
+source  NF_NaCl_pore           liquidDiffusivity record.speciesD0.at25C exact

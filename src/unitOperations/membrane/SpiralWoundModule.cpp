@@ -889,13 +889,9 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  announces "NOT temperature-corrected" cannot print "scaled by
     //  Stokes-Einstein" in its table.  No ion D0 read, no row.
     {
-        using IonT = membrane::Polarisation::IonD0Temperature;
-        const IonT how = polar.ionD0Temperature();
-        if (how != IonT::notRead)
+        if (polar.ionD0Basis())
             PropertySourceLog::instance().useHere("liquidDiffusivity",
-                how == IonT::stokesEinstein ? liquidSource::speciesRecordD0
-              : how == IonT::atCuration     ? liquidSource::speciesRecordD0AtCuration
-                                            : liquidSource::speciesRecordD0Uncorrected,
+                stokesEinstein::ionD0Source(*polar.ionD0Basis()),
                 "record", took(std::numeric_limits<double>::quiet_NaN()));
     }
     if (!dSoluteAdvisory.empty() && polar.nIons() < polar.solutes().size())

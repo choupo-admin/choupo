@@ -9,10 +9,10 @@ tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidKinematicV
 tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidDensity	constant.diluteCarrier
 tutorials/plant/aceticAcid02_plant	methanolTank	liquidDensity	liquidVolume.idealMix[anchoredRackett]
 tutorials/steady/membranes/membrane14_polarisation_multiionic	NF	liquidDiffusivity	record.speciesD0.uncorrected
-
 tutorials/ctrl/ctrl12_williams_otto	plant	liquidDensity	constant.benchmark.WilliamsOtto
-tutorials/ctrl/ctrl12_williams_otto	plant	liquidDensity	declared:bypass
 tutorials/ctrl/ctrl21_tank_level_control	tank	liquidDensity	liquidVolume.idealMix[anchoredRackett]
-tutorials/ctrl/ctrl21_tank_level_control	tank	liquidDensity	declared:kernel
 tutorials/ctrl/ctrl22_reactor_level_and_temperature	reactor	liquidDensity	liquidVolume.idealMix[anchoredRackett]
+tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde	Stage1	liquidDiffusivity	record.speciesD0.StokesEinstein
+tutorials/ctrl/ctrl21_tank_level_control	tank	liquidDensity	declared:kernel
+tutorials/ctrl/ctrl12_williams_otto	plant	liquidDensity	declared:bypass
 tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup	UF	liquidDensity	declared:bypass

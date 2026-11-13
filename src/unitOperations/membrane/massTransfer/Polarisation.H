@@ -151,9 +151,11 @@ SourceFiles
 #include "MassTransferModel.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "thermo/transport/StokesEinstein.H"
 
 #include <cstddef>
 #include <limits>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -362,9 +364,10 @@ public:
     //  this film (a constant k and no coupling).  The unit that prints where
     //  its liquid diffusivity came from reads THIS, so the printed source
     //  cannot say "Stokes-Einstein" when the factor was not applied.
-    enum class IonD0Temperature { notRead, atCuration, stokesEinstein, uncorrected };
-    IonD0Temperature ionD0Temperature() const { return ionD0T_; }
-    void setIonD0Temperature(IonD0Temperature v) { ionD0T_ = v; }
+    //  Empty: no ion D0 entered this film.  Otherwise the basis the builder
+    //  applied, decided by stokesEinstein::basis (the one decision).
+    const std::optional<stokesEinstein::Basis>& ionD0Basis() const { return ionD0Basis_; }
+    void setIonD0Basis(stokesEinstein::Basis v) { ionD0Basis_ = v; }
 
     //- k_{c,i} for solute s at the local hydraulics (the D slot of `hyd` is
     //  overwritten with the solute's own D).
@@ -408,7 +411,7 @@ private:
     const MassTransferModel* corr_;
     scalar                   kConst_;
     scalar                   T_;
-    IonD0Temperature         ionD0T_ = IonD0Temperature::notRead;
+    std::optional<stokesEinstein::Basis> ionD0Basis_;
 };
 
 //- Build the object from a unit's operation block: reads the policy,
