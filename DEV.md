@@ -3476,6 +3476,49 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **A SMALL INTEGRATION LANDED, LATE ON 2026-11-13: three branches.**
+> (a) THE PRICES AFTER THEIR REVIEW (C389, rows PR-03 to PR-14): each
+> sensitivity range on one basis (ammonia 0.380 to 0.692 EUR/kg, the
+> lowest and highest monthly unit values of the base dataset in 2025,
+> re-fetched; hydrogen 7.0 to 10.0, the source's own range); the market
+> index the same report gives near 8.2 EUR/kg cited as support for
+> reading the cost as a price; a sibling case's README no longer teaches
+> the old prices; the net present value without the tax credit rests on
+> a run (-4 075.8 M EUR); the licence gate gains an arm (a value whose
+> origin is known to reserve reuse says so in its provenance).  MOVED:
+> six `kpi economics` sensitivity rows in each of the two feasibility
+> cases, listed in the branch's commit; no balance.  (b) C392, THE
+> FLUIDISATION LABORATORY: a tab opened from the fluidised-beds page, one
+> to three columns side by side, schematic dots, three instruments, a
+> notebook that asks for the minimum fluidisation velocity before
+> showing it; every number from the page's own arithmetic; the screen
+> says no particle is simulated.  Opened in a browser by the reviewing
+> session at three velocities; not by the architect.  (c) C384, THE
+> RUNNER'S PINS: twelve named pins with their cause in
+> bin/curate/platform_divergence_debt.tsv (one of them a DEFECT, CI-01:
+> a fit's `identifiable` verdict changes with the platform); the
+> self-test reports "arm NOT observed" where a gate answers NO SUBJECT;
+> a lesson test holds an order of magnitude, not solver digits; the
+> reference-equation case's check band.  On the hosted runner the full
+> tier went from 20 failures to 14, of which 12 are these pins and 2 are
+> the absent-species closure that waits in the held batch.
+> VALIDATION: build; every guide re-rendered; `--scope` over the plants,
+> the economics cases, the screening case and the thermo directory 27
+> PASS / 0 FAIL (mass closure on 20 steady cases, energy, elements, the
+> pinned ledgers); `--gui` 47 PASS / 0 FAIL; the self-test alone at exit
+> 0; `--fast` 86 PASS / 0 FAIL / 5 EXPECTED-FAIL.  No full sweep: case
+> files, web-app files and gates only.
+> **THE REVIEWING SESSION MODIFIES NO TRACKED FILE (Vitor, 2026-11-13, to
+> that session: "Nao mexas aqui em codigo!").**  Strict reading, taken by
+> it: no edit of code, scripts or records even in a private worktree;
+> a review that needs a sabotage writes it as a REQUEST (file, exact
+> edit, what the gate must print) and this session runs it.  Open
+> requests: six on the pooled regressed-pairs gate (its review found no
+> false OK and no race; RP-01 a shared case's failure can be reported
+> under the wrong exception; RP-09 a record that loses its
+> `fittedInCase` line leaves the scan in silence), and the sabotage
+> table of the headers' gate on its final head.
+
 > **C394 (Vitor, 2026-11-13, on the sweep's wall clock: "O set de casos
 > tem mesmo de ser aqueles 500?  Nao ha forma de usar um subset que seja
 > representativo?" and, of the regressed-pairs gate: "Esses pares tem de
