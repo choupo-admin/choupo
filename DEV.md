@@ -3476,6 +3476,53 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C329, SECOND PART: THE FOUR DECISIONS, TAKEN BY THE ARCHITECT ON A
+> STUDY OF PRACTICE (2026-11-13; delegated by C389 (3); the study is
+> private, in the Studies folder, and names what it read: three
+> textbooks, the handbook's distillation section, two commercial manuals,
+> the papers in the folder, and the source of the open-source simulator
+> the earlier studies surveyed).**
+> (1) THE MULTICOMPONENT EFFICIENCY.  DECLARED: one Murphree vapour
+> efficiency per tray (or per section), the same for every component;
+> never on the condenser or the reboiler.  COMPUTED from the internals in
+> a column of more than two components: a pseudo-binary efficiency on
+> two DECLARED keys, applied to every component.  A per-component
+> efficiency is OUTPUT only, printed with the warning that it is
+> unbounded (the texts agree that component efficiencies in a
+> multicomponent mixture can be negative or above one); it is never an
+> input.  This is the practice the texts describe and the one the
+> measured industrial column in the tree was analysed with.
+> (2) THE EXPLICIT INTERFACIAL MODEL IS A NEW MODEL WORD of the
+> distillation column (`rateBased`), not an option of the equilibrium
+> column; the efficiency computed from the internals stays a block on
+> the full MESH.  The case declares the internals, the correlations
+> (one default per kind of internal, named in the output), the flow model
+> of each phase and the number of segments of a packed section; the film
+> is algebraic; condenser and reboiler stay equilibrium stages.  First
+> slice: the binary packed segment.  For three components or more the
+> film is Maxwell-Stefan: an effective- or equal-diffusivity shortcut is
+> NOT offered there, because near a distillation boundary it predicts the
+> wrong product (the packed-column paper read today, its section 5).
+> (3) THE VALIDATION LADDER, three rungs, each for what it can decide:
+> the total-reflux multicomponent profiles of that paper (do the models
+> end on the right side of the boundary?); ONE measured column at a
+> general reflux (below); the industrial butane fractionator already in
+> the subset, held to the efficiencies its authors back-calculated, not
+> to the products alone.  The two binary total-reflux sets stay the
+> anchor of the correlations.
+> (4) THE GENERAL-REFLUX MEASUREMENT IS Mori, Oda and Aragaki (J. Chem.
+> Eng. Japan 29 (1996) 307-314), obtained today (open access) and in the
+> folder: methanol, ethanol and water at atmospheric pressure on a
+> structured packing, 0.21 m by 2.20 m packed, reflux ratio 6.42 with a
+> subcooled reflux and a cold feed.  ITS LIMITS, SAID: one run; a
+> near-ideal system with no distillation boundary, so it cannot tell the
+> two formulations apart; its Table 5 gives the END compositions and the
+> profiles are in a figure, to be digitised with three readings before
+> any number enters a case.  It was read from page images by a study
+> general; nothing of it is in the tree yet.
+> THE ORDER OF SLICES in the design record stands with these four
+> written in; the reviewing session amends its record.
+
 > **C389 (Vitor, 2026-11-13, answering what the architect needed from
 > him: "4. decide tu de forma sensata e de acordo com as boas praticas.
 > 3. Ve como dizem as boas praticas ou [the open-source simulator the

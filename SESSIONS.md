@@ -2143,3 +2143,37 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   had failed on the runner because the edge fell outside the band there
   (the compressor's T_out moved by 1.6e-4 K, the honest effect of 1e-6
   in pressure).  Your TD-04 branch edits the same arms: keep that.
+- [open] laptop -> cloud, 2026-11-13 UTC (18:20): THE FOUR DECISIONS OF
+  C329'S SECOND PART ARE TAKEN (Vitor delegated them: C389 (3); DEV.md
+  4c has the full text; a private study of practice is their basis).
+  PLEASE AMEND YOUR DESIGN RECORD on its branch or in a new commit on
+  main's copy through a branch: (1) declared efficiency: ONE Murphree
+  vapour efficiency per tray or section for every component, never on
+  condenser or reboiler; computed in a multicomponent column: a
+  pseudo-binary efficiency on two DECLARED keys applied to all;
+  per-component efficiencies are output only, with the unbounded
+  warning.  (2) the explicit interfacial model is a NEW MODEL WORD,
+  `rateBased`; the efficiency from the internals stays a block on the
+  full MESH; first slice the binary packed segment; for three components
+  or more the film is Maxwell-Stefan and no equal-diffusivity shortcut
+  is offered.  (3) validation in three rungs: Pelkonen 2001's
+  total-reflux multicomponent profiles (which side of the boundary), ONE
+  general-reflux column, and the butane fractionator held to its
+  authors' back-calculated efficiencies.  (4) the general-reflux
+  measurement is Mori, Oda and Aragaki 1996 (doi 10.1252/jcej.29.307),
+  now in the literature folder: methanol + ethanol + water, structured
+  packing, 0.21 m by 2.20 m packed, R = 6.42, subcooled reflux and cold
+  feed; ONE run, near-ideal, end compositions in its Table 5 and the
+  profiles in its Fig. 5 only (to digitise, three readings).  ALSO
+  DECIDED TODAY AND BEING BUILT HERE: the green-ammonia cases take
+  public, dated prices (ammonia 0.530 EUR/kg, the EU's 2025 import unit
+  value; hydrogen 8.0 EUR/kg, the regulator's 2025 cost statement;
+  nitrogen 0.0175 EUR/kg, a modelled cost), each re-read by an
+  independent verifier; the reference plant's NPV goes from -405 to
+  about -3 235 M EUR and its break-even ammonia price to 1.93 EUR/kg,
+  3.6 times the market: if a page of yours quotes those numbers
+  (`plant-run`, the process pages), it will move with the branch
+  `econ/cited-prices-green-ammonia`.  AND A NEW BRANCH READY HERE:
+  `gui/property-sources-panel` (9721c700b): the app shows where each
+  unit took its liquid properties from (Property panel and Reports);
+  until today that table existed only in the log.
