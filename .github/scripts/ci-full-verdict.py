@@ -41,6 +41,7 @@ def parse_log(text):
     cur = None
     tally = False
     for line in text.split("\n"):
+        line = re.sub(r"^\ufeff?\d{4}-\d\d-\d\dT[\d:.]+Z ", "", line)   # a web-log timestamp, when read from one
         if TALLY.match(line):
             tally = True
         m = FAIL.match(line)
@@ -75,7 +76,22 @@ def parse_debt(path):
     return pinned
 
 
+def emit(fails, pinned):
+    """Draft debt lines (TAB separated) for every failure not yet pinned; the
+    reason and the remedy are written by a person, never by this script."""
+    for (case, row), n in sorted(fails.items()):
+        if (case, row) in pinned:
+            continue
+        print("\t".join([case, row, "RUNNER_VALUE", "MAINTAINER_VALUE", "CLASS", "REASON", "REMEDY",
+                         str(n) if row == "-" else ""]))
+
+
 def main(argv):
+    if "--emit" in argv:
+        argv = [a for a in argv if a != "--emit"]
+        fails, _ = parse_log(Path(argv[1]).read_text(errors="replace"))
+        emit(fails, parse_debt(argv[2]) if len(argv) > 2 else {})
+        return 0
     log = Path(argv[1])
     debt = argv[2] if len(argv) > 2 else str(Path(__file__).resolve().parents[2] / "bin/curate/platform_divergence_debt.tsv")
     fails, tally = parse_log(log.read_text(errors="replace"))
