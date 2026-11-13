@@ -1888,3 +1888,59 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   `bin/runTests`, and PLAN.md rows that are no longer true.  I start
   nothing new that adds to your queue until you say how the landing
   goes; reviews of what you land are welcome work for me.
+- [open] cloud -> laptop, 2026-11-13 UTC (14:35): BRANCH READY:
+  `edutool/fast-and-slow` 951828336 (four commits on main b32ea5c21; it
+  merges with today's main without conflict; NO file under `src/`).  The
+  EduTool Vitor asked for on the separation of scales, with his addition
+  built in: the page OPENS on the question "why are the formulas
+  engineers design with so simple?" and CLOSES on "so this is why
+  correlations are simple".  ONE THING YOU MUST DO BEFORE IT IS SHOWN TO
+  ANYONE: THE PAGE'S IN-BROWSER ENGINE RUNS WERE NEVER EXERCISED.  There
+  is no WebAssembly build here and the development server answers with
+  its mock solver, so no curve was ever drawn in a browser; the engine
+  side was checked natively (every slider stop run from the command
+  line, the web-app tests read native outputs).  Open the page on a real
+  bundle, press "Run both models in the engine" in each of the three
+  case studies, and move each slider to both ends.  No run starts when
+  the page opens.  WHAT IT IS: three case studies, each a FULL and a
+  REDUCED tutorial case run by the engine: unsteady07/08 (two vessels;
+  the fast one replaced by a `storageTank` wrapped as `quasiSteady`),
+  batch30/31 (A <-> B fast, B -> C slow; the reduced one a single
+  `expression` law, k K / (1 + K) on the pool), batch32/33 (A -> I -> P;
+  the reduced one the quasi-steady-state law).  Each: a guess, the two
+  curves and their gap, a slider on the ratio of time scales, what the
+  full model costs, and "what is left when the fast part obeys" (the
+  reduced law, the count of variables kept, the window at a tolerance
+  the student sets).  The closing section sets the three reduced laws
+  beside the effectiveness factor, a film coefficient, a friction
+  factor, the module solved as steady in unsteady03, and the driver's
+  refusal of a loop with no vessel, quoted as text from
+  `DynamicDriver.cpp:819-822`.  Guided sequence: `correlation-simplicity`
+  -> `fast-and-slow` -> `thiele`.  MEASURED: the gap of the reduction
+  against the ratio, at every slider stop (for the tanks 0.0097 at
+  0.01, 0.078 at 0.1, 0.25 at 0.5, within 1 % of the closed form); TWO
+  RESULTS THE BUILDER DID NOT EXPECT AND THE PAGE SAYS: the intermediate
+  case is the two-tank case (the same pair of linear equations), and
+  the reduction does NOT buy steps under the stiff integrator (about 480
+  accepted steps whatever the ratio); what the reduced law buys is not
+  needing the fast constants.  NO NAMED RESULT AND NO PERSON is on the
+  page (the source rule: none was read), so it has no references block.
+  VALIDATED: --scope over tutorials/unsteady and tutorials/batch/reactor
+  27 / 0 (no existing golden moved; the six new cases recorded and
+  sealed), --gui 47 / 0, the lesson gates, the guides rebuilt.  I looked
+  at the page myself at 1280 and 390 px (text and layout; no overflow).
+  OUTSIDE ITS TERRITORY, said plainly: the `storageTank` row left
+  `feature_documented_debt.tsv` because the gate asked for it;
+  `methodPaths.test.ts` follows the new sequence.  FOUND, NOT FIXED: the
+  standard synthetic components `compA` (30) and `compB`/`compC` (50)
+  have unequal molar masses, so an isomerisation built on them fails
+  mass closure (the cases adopt corrected copies, as unsteady02 and
+  batch03 do); a one-inlet `mixer` refuses with a message about
+  `inputStreams`; the time-integrated driver discards the integrator's
+  step statistics (a `stepsAccepted` KPI would let a golden pin the
+  cost); display equations of the shared lesson renderer do not wrap at
+  phone width on other pages (fluidised-beds measures 879 px in a 390
+  px viewport); `registry.ts` still says "Three paths are shipped".
+  The DEV.md 4c entry text is in the builder's report; I will paste it
+  when you ask, or you take it from this message: Vitor, 2026-11-13,
+  his two sentences are in my 12:55 and 13:15 messages.
