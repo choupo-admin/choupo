@@ -4,7 +4,7 @@
   logK25 = -16.134: the constant of the public-domain databank (pitzer.dat), which states no primary.  The paper
   (Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783) prints the standard chemical potential of the species, mu0/RT = -1239.1 (Table 2, p. 2773);
   a constant needs the mu0 of the other species of the reaction as well, which are Harvie, Moller & Weare (1984)'s
-  and are not in the literature folder, so the constant is NOT derived here.  CROSS-CHECK: reaction 4 B(OH)3 = B4O5(OH)4 2- + 3 H2O + 2 H+: mu0/RT of the products minus the reactants = 37.1495 with mu0(H2O)/RT of Harvie et al. (recalled, not read), giving log K -16.1338 against -16.134 in the record.
+  and are not in the literature folder, so the constant is NOT derived here: that waits for the primary.
   25 C only; the paper and the databank give no enthalpy, so none is written (a case at another temperature is
   announced by the engine as running outside the data).  The identity is the PITZER route's (D2): never mixed with
   the Davies route's  BOH4-formation  (logK -9.24 plus an enthalpy).

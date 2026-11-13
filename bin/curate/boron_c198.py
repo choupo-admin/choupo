@@ -13,7 +13,7 @@ calcium / magnesium ion pairs and the two polyborates.
 The formation constants are NOT computed here.  The paper prints standard chemical potentials mu0/RT
 (Table 2), and a constant needs the mu0 of H2O, Ca2+ and Mg2+, which are Harvie, Moller & Weare (1984)'s
 and are not in the literature folder.  The constants are those of the public-domain databank
-(sources.tsv PW1), and formation_check.tsv holds the cross-check against Table 2 (documented there).
+(sources.tsv PW1), and the derivation from the primary waits for Harvie et al. (1984).
 """
 import sys
 from pathlib import Path
@@ -96,7 +96,7 @@ def mixing_record(kind, fields, value, desc, role, table, page, ids):
     return "\n".join(hdr) + body + provenance("value transcribed from the paper's table; no calculation", ids, table, page)
 
 
-def chem_record(name, masters, nuw, logk, mu, rx, extra):
+def chem_record(name, masters, nuw, logk, mu, rx):
     hdr = [
         TOP,
         f"  chemistry/{name}-formation.dat -- {rx}",
@@ -104,7 +104,7 @@ def chem_record(name, masters, nuw, logk, mu, rx, extra):
         f"  logK25 = {logk}: the constant of the public-domain databank (pitzer.dat), which states no primary.  The paper",
         f"  ({CITE}) prints the standard chemical potential of the species, mu0/RT = {mu} (Table 2, p. 2773);",
         "  a constant needs the mu0 of the other species of the reaction as well, which are Harvie, Moller & Weare (1984)'s",
-        "  and are not in the literature folder, so the constant is NOT derived here.  CROSS-CHECK: " + extra,
+        "  and are not in the literature folder, so the constant is NOT derived here: that waits for the primary.",
         "  25 C only; the paper and the databank give no enthalpy, so none is written (a case at another temperature is",
         "  announced by the engine as running outside the data).  The identity is the PITZER route's (D2): never mixed with",
         "  the Davies route's  BOH4-formation  (logK -9.24 plus an enthalpy).",
@@ -157,19 +157,14 @@ def render():
                 "the higher-order neutral term of boric acid with a cation and an anion together, in the pitzerHMW engine.",
                 "Table 5", "2774", r["id"])
     # chemistry
-    chk = {l.split("\t")[0]: l.split("\t") for l in (BATCH / "formation_check.tsv").read_text().splitlines()[1:]}
-    def cc(k):
-        return f"reaction {chk[k][1]}: mu0/RT of the products minus the reactants = {chk[k][2]} with mu0(H2O)/RT of Harvie et al. (recalled, not read), giving log K {chk[k][3]} against {chk[k][4]} in the record."
     out[CHEM / "B3O3OH4-formation.dat"] = chem_record("B3O3OH4", [("H3BO3", 3), ("H", -1)], -2, -7.528, by["mu03"]["value"],
-        "the first polyborate, written from the neutral master:  3 B(OH)3 = B3O3(OH)4- + 2 H2O + H+", cc("B3O3OH4"))
+        "the first polyborate, written from the neutral master:  3 B(OH)3 = B3O3(OH)4- + 2 H2O + H+")
     out[CHEM / "B4O5OH4-formation.dat"] = chem_record("B4O5OH4", [("H3BO3", 4), ("H", -2)], -3, -16.134, by["mu04"]["value"],
-        "the second polyborate, written from the neutral master:  4 B(OH)3 = B4O5(OH)4 2- + 3 H2O + 2 H+", cc("B4O5OH4"))
+        "the second polyborate, written from the neutral master:  4 B(OH)3 = B4O5(OH)4 2- + 3 H2O + 2 H+")
     out[CHEM / "CaBOH4-formation.dat"] = chem_record("CaBOH4", [("Ca", 1), ("H3BO3", 1), ("H", -1)], 1, -7.589, by["mu05"]["value"],
-        "the calcium borate ion pair, written from its masters:  Ca2+ + B(OH)3 + H2O = CaB(OH)4+ + H+",
-        "with mu0(Ca2+)/RT = -223.30 (recalled, not read) the paper's Table 2 gives log K -7.5887; the Ca2+ value is not independently confirmed.")
+        "the calcium borate ion pair, written from its masters:  Ca2+ + B(OH)3 + H2O = CaB(OH)4+ + H+")
     out[CHEM / "MgBOH4-formation.dat"] = chem_record("MgBOH4", [("Mg", 1), ("H3BO3", 1), ("H", -1)], 1, -7.84, by["mu06"]["value"],
-        "the magnesium borate ion pair, written from its masters:  Mg2+ + B(OH)3 + H2O = MgB(OH)4+ + H+",
-        "NONE: it needs mu0(Mg2+)/RT of Harvie et al. (1984), not read; the databank constant is carried unchecked.")
+        "the magnesium borate ion pair, written from its masters:  Mg2+ + B(OH)3 + H2O = MgB(OH)4+ + H+")
     return out
 
 

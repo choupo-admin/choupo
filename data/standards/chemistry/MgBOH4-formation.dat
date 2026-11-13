@@ -4,7 +4,7 @@
   logK25 = -7.84: the constant of the public-domain databank (pitzer.dat), which states no primary.  The paper
   (Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783) prints the standard chemical potential of the species, mu0/RT = -651.89 (Table 2, p. 2773);
   a constant needs the mu0 of the other species of the reaction as well, which are Harvie, Moller & Weare (1984)'s
-  and are not in the literature folder, so the constant is NOT derived here.  CROSS-CHECK: NONE: it needs mu0(Mg2+)/RT of Harvie et al. (1984), not read; the databank constant is carried unchecked.
+  and are not in the literature folder, so the constant is NOT derived here: that waits for the primary.
   25 C only; the paper and the databank give no enthalpy, so none is written (a case at another temperature is
   announced by the engine as running outside the data).  The identity is the PITZER route's (D2): never mixed with
   the Davies route's  BOH4-formation  (logK -9.24 plus an enthalpy).

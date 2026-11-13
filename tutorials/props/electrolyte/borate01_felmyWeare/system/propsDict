@@ -14,8 +14,9 @@
   molecule, an orthoborate ion, two polyborate ions and (in seawater) two ion
   pairs with calcium and magnesium.  Can the engine's Pitzer model, loaded with
   the paper's tables and nothing else, reproduce the paper's own species
-  distribution, and does it then land on Dickson's apparent constant of boric
-  acid in seawater?  Two operations, both `speciate` at 25 C:
+  distribution, and what borate speciation does it give for seawater (the
+  comparison with the conditional constant of boric acid in seawater is
+  pending)?  Two operations, both `speciate` at 25 C:
 
    1. borax_table1 -- water saturated with borax (Na2B4O7.10H2O).  Totals: Na
       0.323 and boron 0.646 mol/kg (Na : B = 1 : 2, the borax stoichiometry,
@@ -28,31 +29,23 @@
       docs/design/boron-in-seawater-apparent-pka-study.md section 3 at the GIVEN
       pH 8.2 (Br folded into Cl, Sr into Ca, carbonate left out: the study says
       why), with the posture of the parameterisation: the major ions unpaired,
-      CaB(OH)4+ and MgB(OH)4+ explicit.  Choupo: pK*F = 8.6765 against Dickson's
-      8.6896 (free scale, molal): the borate fraction is 0.6 % low in free boric
-      acid.
+      CaB(OH)4+ and MgB(OH)4+ explicit.  Pinned at the engine's own value.
 
   WHAT IS HELD, AND HOW FAR IT CAN BE TRUSTED (read this before the numbers).
-   * The ANCHOR rows of the `expected` file are the paper's Table 1 and the
-     Dickson value above.  Table 1 is CALCULATED BY THE PAPER'S OWN MODEL, from
-     the very parameters that were fitted to the data: it is IN-SAMPLE.  Its
-     agreement shows that the tables were transcribed and the engine implements
-     the same sums (neutral lambda and zeta terms, ion pairs, polyborate
-     virials); it does not test the model against nature.
-   * The Dickson row is PARTLY INDEPENDENT.  The seawater measurement is not in
-     the paper's fit, but the Na, Ca and Mg borate terms were fitted to the emf
-     data of the same laboratory family (Hershey et al. 1985; Dickson,
-     unpublished, for K).  Dickson's pK*B itself is quoted from the study, not
-     read from Dickson (1990), and moved to the free scale there.
+   * The ANCHOR rows of the `expected` file are the five numbers of the paper's
+     Table 1, which is CALCULATED BY THE PAPER'S OWN MODEL, from the very
+     parameters that were fitted to the data: it is IN-SAMPLE.  Its agreement
+     shows that the tables were transcribed and the engine implements the same
+     sums (neutral lambda and zeta terms, ion pairs, polyborate virials); it
+     does not test the model against nature.
+   * The seawater operation carries NO anchor.  A comparison with the
+     conditional constant of boric acid in seawater (Dickson 1990) exists in
+     docs/design/boron-in-seawater-apparent-pka-study.md as a secondary
+     evaluation; it becomes an anchor only when the primary is read.
    * The formation constants of B(OH)4-, the polyborates and the two ion pairs
-     are the public-domain databank's (pitzer.dat); the paper prints the
-     standard chemical potentials (Table 2) from which they follow with the
-     chemical potentials of H2O, Ca2+ and Mg2+ of Harvie, Moller & Weare (1984),
-     which the project does not hold.  The three that need only H2O (B(OH)4-,
-     B3O3(OH)4-, B4O5(OH)4 2-) reproduce to 4 digits with the recalled H2O value
-     (data/curation/batches/boron_c198/formation_check.tsv); the
-     Ca pair agrees (log K -7.5887) with a recalled
-     Ca2+ value; the Mg pair is carried unchecked.
+     are the public-domain databank's; the paper prints the species' mu0/RT
+     (Table 2, read), and the derivation of the constants from the primary
+     waits for Harvie, Moller & Weare (1984), which the project does not hold.
    * 25 C only.  The paper gives no temperature dependence; the engine announces
      any run away from 298.15 K.
    * The case is not sealed: the records come from data/standards.  Not read

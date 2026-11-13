@@ -50,15 +50,7 @@ diag    borax_table1           m_H3BO3          0.081     5e-2    anchor
 diag    borax_table1           m_BOH4           0.131     5e-2    anchor
 diag    borax_table1           m_B3O3OH4        0.050     5e-2    anchor
 diag    borax_table1           m_B4O5OH4        0.071     5e-2    anchor
-# (2) Dickson's conditional constant of boric acid in seawater: pK*B = 8.5975 on the total scale
-#     (S 35, 25 C; Dickson, Deep-Sea Res. 37 (1990) 755 -- the primary was NOT read here; the number is
-#     the one evaluated in docs/design/boron-in-seawater-apparent-pka-study.md section 4), moved to the
-#     free scale on molality: pK*F = 8.6896.  At the GIVEN pH 8.2 the engine's m_H (8.5737e-9) and the
-#     total boron 4.3116e-4 turn that constant into the free boric acid it implies:
-#         R = 10^-8.6896 / m_H = 0.23836 ,  m_H3BO3 = 4.3116e-4 / (1 + R) = 3.4817e-4 mol/kg.
-#     The model gives 3.4614e-4 (pK*F 8.6765, 0.013 below Dickson).  PARTLY INDEPENDENT: the seawater
-#     measurement is not in the paper's fit, but the paper's Na/Ca/Mg borate terms were fitted to the
-#     emf data of the same laboratory family (Hershey et al. 1985; Dickson, unpublished, for K).
-#     The gap equals the error of the scale conversion (about 0.01 in pK) to within a factor of two.
-diag    seawater_boron_pH82    m_H3BO3          3.4817e-4 1.5e-2  anchor
-
+# (2) The seawater operation carries NO anchor.  The comparison with the conditional constant of boric
+#     acid in seawater (Dickson 1990) is reported from a secondary evaluation
+#     (docs/design/boron-in-seawater-apparent-pka-study.md) and becomes an anchor only when the primary is read;
+#     m_H3BO3 above is the engine's own value, pinned at the golden tolerance.

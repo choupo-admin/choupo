@@ -1,5 +1,5 @@
 id	kind	subject	a	b	c	value	unit	table	page	text_layer	image_200dpi	image_300dpi	note
-mu01	mu0	B(OH)3				-390.81	-	Table 2	2773	-300.81	-390.81	-390.81	DISAGREE: the text layer reads 3 as 0; both page-image readings give -390.81; confirmed by arithmetic: with -390.81 the B(OH)4- value gives pK 9.239 (formation_check.tsv)
+mu01	mu0	B(OH)3				-390.81	-	Table 2	2773	-300.81	-390.81	-390.81	DISAGREE: the text layer reads 3 as 0; both page-image readings give -390.81; the text layer is the outlier
 mu02	mu0	BOH4				-465.2	-	Table 2	2773	-465.20	-465.2	-465.2	
 mu03	mu0	B3O3OH4				-963.77	-	Table 2	2773	-963.77	-963.77	-963.77	
 mu04	mu0	B4O5OH4				-1239.1	-	Table 2	2773	-1239.10	-1239.1	-1239.1	

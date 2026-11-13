@@ -6458,10 +6458,8 @@ and $-651.89$ for the Ca and Mg pairs), and a constant follows as
 $\ln K=-\Delta\mu^\circ/RT$ once the chemical potentials of $\text{H}_2\text{O}$,
 $\text{Ca}^{2+}$ and $\text{Mg}^{2+}$ of Harvie et al.\ (1984) are added.  The
 project does not hold that paper, so the constants are the public-domain
-databank's; for the first three the paper's numbers with
-$\mu^\circ_{\text{H}_2\text{O}}/RT=-95.6635$ (recalled, not read) give
-$-9.2390$, $-7.5276$ and $-16.1338$ --- four digits --- and the cross-check is
-tabulated in \file{formation\_check.tsv}.  The Mg constant is carried unchecked.
+databank's, the paper prints the species' $\mu^\circ/RT$ (Table~2, read), and
+the derivation of the constants from the primary waits for Harvie et al.\ (1984).
 No enthalpy is given by either source, so none is written: a run at another
 temperature is announced.  The Pitzer route's $\log K=-9.239$ is the
 parameterisation's own and is never mixed with the Davies route's $-9.24$ with
@@ -6502,12 +6500,11 @@ $\text{B}_3\text{O}_3(\text{OH})_4^-$ $.050$, $\text{B}_4\text{O}_5(\text{OH})_4
 $.071$\,mol/kg; the engine gives $.0794$, $.1311$, $.0517$, $.0701$ (pH~9.27).
 Table~1 is the paper's own model output, so this is \emph{in-sample}: it shows
 that the tables were transcribed and the sums implemented alike, not that the
-model is right.  (ii)~Reference seawater at pH~8.2 with the pairs explicit: the
-apparent constant is $\mathrm{p}K^*_{\text{F}}=8.6765$ against $8.6896$ of
-Dickson (1990) moved to the free scale on molality; the gap is $0.013$, about
-the uncertainty of the scale conversion.  This one is only partly independent:
-the Na, Ca and Mg borate terms were fitted to the emf data of the same
-laboratory family (Hershey et al.\ 1985).
+model is right.  (ii)~Reference seawater at pH~8.2 with the pairs explicit: the engine gives
+the borate speciation, which is pinned at its own value.  The comparison with
+the conditional constant of boric acid in seawater is reported from a secondary
+evaluation and is pending: it becomes an anchor only when the primary
+(Dickson 1990) is read.
 
 \paragraph{Limits.}  $25\,^\circ$C only; no temperature surface exists for any
 term.  The polyborate interactions with Mg and Ca were never parameterised (the
