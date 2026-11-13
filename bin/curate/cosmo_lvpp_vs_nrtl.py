@@ -3,6 +3,7 @@
 # predict, with no adjustment, the measured bubble points every catalogue NRTL
 # pair was regressed to, and set the prediction beside the fitted NRTL.
 #
+#     Copyright (C) 2026 Vítor Geraldes
 #     SPDX-License-Identifier: GPL-3.0-or-later
 #
 # WHY THIS IS THE ACCEPTANCE (DEV.md 4c C310; docs/design/cosmo-sac-lvpp-hftzvp-2018.md)

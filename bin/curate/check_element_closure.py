@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: no steady case ships a plant that loses atoms in silence.
 
     bin/curate/check_element_closure.py

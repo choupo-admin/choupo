@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_models_catalogue -- the public model catalogue must describe THIS tree.
 
 `generated/modelsCatalogue.json` feeds the site's /models page: every entry

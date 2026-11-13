@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_pump_liquid_inlet -- a pump refuses, by name, an inlet that is not a
 liquid (DEV.md 4c C188 defect 2).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The Hildebrand parameter is DERIVED, and the derivation is checked.
 
 WHAT THIS GUARDS.  `delta = sqrt((dHvap(T) - R T)/V_m)` has three ways to go

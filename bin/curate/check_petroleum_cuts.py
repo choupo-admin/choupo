@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: `petroleumCuts` cuts a TBP curve into pseudo-components the way Riazi
 (ASTM MNL50, 2005) says, and refuses what it cannot do honestly.
 

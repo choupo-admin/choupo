@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """migrate_c300_grade_labels -- DEV.md 4c C300 rules 1 and 2 on the records
 already in the catalogue (2026-11-11).  A one-off migration, kept so the
 change it made can be re-read and re-run (it is idempotent).

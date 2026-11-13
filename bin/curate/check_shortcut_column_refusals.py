@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The FUG shortcut refuses what it used to substitute for, and says why.
 
 WHAT THIS GATE IS ABOUT.  `shortcutColumn` had three places where an absence

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the pair record a student PROMOTES carries the evidence and the verdict.
 
     bin/curate/check_promoted_pair_record.py

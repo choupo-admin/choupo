@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Henry's-law constants of gases and volatile solutes in ORGANIC solvents,
 regressed from ThermoML measurements (DEV.md 4c C321 part 2).
 

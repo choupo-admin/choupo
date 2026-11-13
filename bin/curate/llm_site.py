@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Assemble what choupo.org serves to an ASSISTANT: /llm/** and /llms.txt.
 
     bin/curate/llm_site.py <dist>            copy + write  (bin/buildSite calls it)

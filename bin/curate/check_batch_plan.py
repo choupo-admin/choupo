@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a batch plant is designed on the steady balance, and every number
 the engine publishes for it RECOMPUTES here.
 

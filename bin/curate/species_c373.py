@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Make the aqueous-species and ionisation records of C373 from the batch's evidence tables.
 
     bin/curate/species_c373.py write     (re)write every record the tables say `build`

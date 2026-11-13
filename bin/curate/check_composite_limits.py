@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Composite mixed-solvent electrolyte v1 -- the THREE LIMIT TESTS.
 
 The implemented liquid surface is a COMPOSITE (ratified wording,

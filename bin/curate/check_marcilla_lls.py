@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the Marcilla LLS anchor contact -- brine + halite reproduced, and
 the water/1-butanol MISCIBILITY verdict of the corpus UNIFAC table pinned
 in BOTH directions.

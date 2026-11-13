@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the stage K of a reactive package -- a MEASURED, PINNED step in T.
 
     bin/curate/check_stagek_continuity.py

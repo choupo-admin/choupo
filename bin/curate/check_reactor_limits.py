@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_reactor_limits -- the reactors refuse or announce where their own
 formulation stops holding, and the equilibrium reactor answers the question
 the gibbsReactor answers.

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Stream-face gate: the aggregated STEADY instant snapshot is spelled
 streamFaces/faces{} wherever its writer produces it.
 

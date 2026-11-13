@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the pure-component vapour pressure is a continuous, monotone
 function of T over the whole range a solver can visit.
 

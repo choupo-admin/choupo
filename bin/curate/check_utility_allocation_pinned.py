@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: which utility serves a duty is PINNED, not merely reported.
 
     bin/curate/check_utility_allocation_pinned.py

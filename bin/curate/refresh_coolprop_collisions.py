@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # refresh_coolprop_collisions.py -- promote the CoolProp-anchored collision
 # files staged in data/local/_coolprop_review/ over the existing proposal
 # files in data/local/components/, as a STRICT UPGRADE (never a field loss).

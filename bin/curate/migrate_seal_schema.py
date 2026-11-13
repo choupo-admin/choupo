@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Sealing-SCHEMA migration (ratified 2026-08-03): legacySeal ->
 computationalSeal, declared as exactly that -- a schema migration, NEVER
 a scientific reseal.

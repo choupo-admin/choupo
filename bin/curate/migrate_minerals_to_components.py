@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """
 migrate_minerals_to_components.py -- roadmap Phase D, batch 1 (PURE minerals).
 

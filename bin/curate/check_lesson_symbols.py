@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_lesson_symbols -- every symbol in an EduTool equation is DEFINED.
 
 WHY THIS EXISTS.  The owner read the EduTools and asked whether a student

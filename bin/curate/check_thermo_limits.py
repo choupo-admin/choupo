@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: four thermodynamic answers that used to be published as converged
 when they were not (DEV.md 4c C131, phase 2, family (a) -- the review of the
 flash, the saturation solvers and the activity models against good practice).

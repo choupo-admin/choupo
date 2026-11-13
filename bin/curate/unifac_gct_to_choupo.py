@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # unifac_gct_to_choupo.py -- OFFLINE curation importer of the FULL literature
 # UNIFAC parameter table from the ChemSep .gct files into Choupo's
 # data/standards/unifac/.  Companion to chemsep_to_choupo.py (same ethos:

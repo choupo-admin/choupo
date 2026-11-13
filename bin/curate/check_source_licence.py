@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: no encumbered SOURCE is the authority for a shipped value.
 
     bin/curate/check_source_licence.py

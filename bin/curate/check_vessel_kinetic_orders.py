@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The vessels' own Arrhenius paths honour a NEGATIVE kinetic order, and the
 CHEMKIN A conversion sums the orders before it decides (DEV.md 4c C190 items
 10 and 13).

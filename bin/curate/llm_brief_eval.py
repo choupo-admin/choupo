@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """llm_brief_eval.py -- measure what an LLM DOES with a Choupo brief.
 
 DEV.md 4c C200; record docs/design/an-llm-learns-choupo-from-a-brief.md

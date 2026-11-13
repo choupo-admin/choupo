@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the engine's COSMO-SAC LVPP-HFTZVP-2018 reproduces the SELECTION.
 
 DEV.md 4c C310; record docs/design/cosmo-sac-lvpp-hftzvp-2018.md.

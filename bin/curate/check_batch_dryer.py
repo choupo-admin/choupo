@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_batch_dryer -- the drying curve closes on the case's OWN records, the
 two periods are visible in the published columns, and the refusals fire by name.
 

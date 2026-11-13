@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the KINETIC FULL MESH -- a reaction rate LAW (written in the case) carried by the rigorous column.
 
     bin/curate/check_kinetic_mesh.py

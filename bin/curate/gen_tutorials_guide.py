@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Generate docs/tutorialsGuide-entries.tex -- the per-tutorial entries of the
 # Tutorials Guide, ASSEMBLED from each case's OWN story (controlDict
 # description + the author's leading header comment).  The dicts are the

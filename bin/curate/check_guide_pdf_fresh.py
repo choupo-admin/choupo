@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the guide PDF in the TREE is a render of the sources in the TREE.
 
     bin/curate/check_guide_pdf_fresh.py

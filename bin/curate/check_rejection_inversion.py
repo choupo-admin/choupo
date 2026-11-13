@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a data sheet's OBSERVED rejection becomes the INTRINSIC rejection the
 `constantRejection` law takes only by inverting it with the module's OWN film
 at the sheet's own test -- never by pasting it.

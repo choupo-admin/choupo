@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Seal-verdict gate: the manifest's claim and its RETRACTION travel
 together, and the refusal is the CASE's to declare.
 

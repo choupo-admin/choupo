@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generate the "How to cite" WORDING from CITATION.cff, for the engine and the GUI.
     bin/curate/gen_citation.py                 (writes both files)
     bin/curate/gen_citation.py --check         (exit 1 when either is stale)

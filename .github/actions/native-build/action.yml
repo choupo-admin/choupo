@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  native-build  --  the runner's g++ build of Choupo, in ONE home.
 #
 #  ci.yml (fast tier, nightly full sweep) and sanitize.yml (weekly

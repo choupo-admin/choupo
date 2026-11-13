@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the REACTIVE FULL MESH -- a reaction that CHANGES THE NUMBER OF MOLES in a rigorous column.
 
     bin/curate/check_reactive_mesh.py

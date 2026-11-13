@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: an advisory says WHICH STATE it is about -- the answer, or the path.
 
     bin/curate/check_advisory_attribution.py

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a fit's curation verdict reaches EVERY sink, and they all say the same word.
 
     bin/curate/check_fit_verdict_channel.py

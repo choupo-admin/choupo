@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: no steady case ships a plant that does not conserve mass.
 
     bin/curate/check_mass_closure.py

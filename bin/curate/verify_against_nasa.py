@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Read the catalogue's formation data back against NASA TM-4513.
 
     pip install cantera && python3 bin/curate/verify_against_nasa.py

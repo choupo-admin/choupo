@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_feature_documented -- every name a factory registers is in a guide AND the AI catalogue.
 
     bin/curate/check_feature_documented.py [--list]

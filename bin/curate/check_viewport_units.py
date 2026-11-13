@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a full-viewport height is the DYNAMIC viewport, and it has one home.
 
     bin/curate/check_viewport_units.py

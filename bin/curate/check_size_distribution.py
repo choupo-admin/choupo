@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the size-distribution family is right, and its moment BASIS converts.
 
     bin/curate/check_size_distribution.py

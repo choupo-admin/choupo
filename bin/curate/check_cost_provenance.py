@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the sizing and costing tables can be defended from themselves.
 
     bin/curate/check_cost_provenance.py

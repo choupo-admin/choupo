@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """molecular_span_arms -- the MOLECULAR arms (p), (q), (r) of the pair-span gate
 (PO-01 / PO-02 / PO-03 of docs/reviews/2026-11-12-pairs-out-of-sample,
 2026-11-12).

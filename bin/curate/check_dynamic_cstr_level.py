@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Variable-volume CSTR gate (DEV.md 4c C205, slice 2): `dynamicCSTR` with
 `operation { volumeMode variable; }` -- a reactor with a LEVEL.  Its closed
 forms hold, its ledgers close, its two loops work on one unit, the jacket area

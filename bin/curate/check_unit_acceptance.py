@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_unit_acceptance -- what a unit accepts is a DECLARATION, checked by
 ONE function, before the solve on every authored inlet and at the solve on

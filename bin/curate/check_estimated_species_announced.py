@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_estimated_species_announced -- an ESTIMATED species datum is ANNOUNCED
 when a run consumes it, and only then.
 

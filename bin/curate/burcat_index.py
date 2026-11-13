@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Regenerate thirdParty/BURCAT-INDEX.txt -- the browsable view of the Burcat
 # source pool (name, MW, dHf_298 per importable card).  The index is a VIEW,
 # generated, gitignored; the .THR is the source; the catalogue only receives

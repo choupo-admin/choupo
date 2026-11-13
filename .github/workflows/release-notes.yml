@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  PUBLISH THE GITHUB RELEASE FOR A TAG, with the CHANGELOG as its notes.
 #
 #  WHY IT IS SEPARATE FROM release-tag.  Creating a tag and announcing a

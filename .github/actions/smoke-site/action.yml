@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  smoke-site  --  open every live EduTool of the BUILT site in headless
 #  Chrome and fail when one does not render, or when an engine run it starts
 #  on open does not finish (DEV.md 4c C122).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Pinch P2 gate: the candidate-match ANALYSIS TABLE (ratified
 2026-08-03) is an exhaustive per-region enumeration whose duties equal an
 INDEPENDENT recomputation, whose language never claims an optimum, and

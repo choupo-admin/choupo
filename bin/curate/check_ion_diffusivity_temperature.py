@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: an ion's D0 is a 25 C value, and every membrane reader corrects it
 to the unit's temperature by Stokes-Einstein on the package's OWN liquid
 viscosity -- or says it did not.

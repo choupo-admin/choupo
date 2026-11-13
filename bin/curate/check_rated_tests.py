@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a module record may carry SEVERAL rated tests, each kept as the
 source states it, and a case names the one it inverts.
     bin/curate/check_rated_tests.py

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """uniquac_rq_from_groups -- UNIQUAC r and q as the sum of a component's own UNIFAC groups.
 
     bin/curate/uniquac_rq_from_groups.py --list            what would be derived

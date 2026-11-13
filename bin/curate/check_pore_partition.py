@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: WHY the DSPM-DE pore held each ion back -- the partition factors,
 the potential steps and the pore's numerics the props bench publishes --
 holds together and holds to its definitions.

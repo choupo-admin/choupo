@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # import_coolprop.py -- deterministic importer of the CoolProp pure-fluid
 # library into the data/local/ proposal tier.  Style precedent:
 # parse_speciation.py / audit_proposed.py (deterministic, spot-checked, emits a

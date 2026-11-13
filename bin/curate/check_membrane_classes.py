@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a membrane a student chooses by WHAT IT DOES -- the six functional
 classes are illustrative records, said so on every run, and their intrinsic
 rejections are DERIVED from the observed ones they state.

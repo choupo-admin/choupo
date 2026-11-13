@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # import_gibbs_nasa.py -- fill the formation-data gap (standardThermochemistry: dHf_298,
 # s_298) from the NASA Glenn thermodynamic database (public domain).
 #

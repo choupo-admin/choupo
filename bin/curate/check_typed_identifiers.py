@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Typed-identifier gate -- the compiler owns the rule; this guards the shortcuts.
 
 The 2026-07-25 three-way decision: ComponentId / SpeciesId / SolidId are strong

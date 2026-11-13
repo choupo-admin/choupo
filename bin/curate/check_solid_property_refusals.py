@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A missing property of a solid is REFUSED or ANNOUNCED, never replaced in silence.
 
 WHAT THIS GATE IS ABOUT.  Review SP-01..SP-05 (docs/reviews/2026-11-12-solid-

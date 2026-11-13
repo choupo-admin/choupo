@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """ONE home for the suite's single-pass output cache -- and for its SCOPE.
 
     from suite_cache import stdout_of, SCOPED, scope_sentence

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # scrub_proposed.py -- deterministic IN-PLACE scrub of the token-clean candidate
 # subset of data/local/components/.  Removes FALSE pedigree comment text +
 # commented-out excluded coefficient blocks left behind by the 2026-06-07 ingest

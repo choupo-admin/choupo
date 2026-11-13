@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: constrained WEIGHTED LEAST SQUARES reconciles a laboratory analysis
 into ONE admissible inlet, and it can never see the chemistry it feeds.
 

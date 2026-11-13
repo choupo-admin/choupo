@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Stamp every file banner with the line's own version, from Banner.H.
 
     bin/curate/banner_version.py            # rewrite banners to CHOUPO_VERSION

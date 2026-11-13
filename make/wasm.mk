@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # =============================================================================
 #  Choupo  --  WebAssembly build (v0.25+; incremental objects 2026-07-19)
 #

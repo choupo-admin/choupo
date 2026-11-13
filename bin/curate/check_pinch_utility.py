@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Pinch gate: A UTILITY IS NOT A PROCESS STREAM (DEV.md 4c C230).
 
 Witness: tutorials/plant/ammonia02_full_plant, whose water cooler takes

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Charge-balance gate: when a case SOLVES the pH, electroneutrality is an
 equation the solver imposes -- so its residual on the ANSWER belongs at
 round-off, and nothing physical may move it.

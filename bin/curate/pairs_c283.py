@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """pairs_c283 -- `bin/choupo-curate pair` under DEV.md 4c C283 (amended) and C284.
 
     bin/choupo-curate pair A B [--plan] [--declare-only] [--resume] [--no-commit]

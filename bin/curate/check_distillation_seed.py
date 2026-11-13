@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: an unconverged seed is announced, and a Newton step that does not
 improve the residual is counted, limited and never returned as the "last good
 iterate" (DEV.md 4c C184 defects A and B).

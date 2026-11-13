@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the friction-factor family states its windows, cites its sources, and proves itself.
 
     bin/curate/check_friction_correlations.py

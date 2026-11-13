@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """line_count -- how big Choupo is, counted from the tree and never typed.
 

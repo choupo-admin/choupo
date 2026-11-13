@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The Rules-of-Thumb page indexes the guide, and quotes none of it.
 
 WHY THIS GATE EXISTS.  Process heuristics are exactly the material a student

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: no shipped case shows a broken mass, element or energy balance.
 
     bin/curate/check_campaign_closure.py                 # static + live (the sweep's form)

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """C198: the boron records of Felmy & Weare (1986) rendered from their evidence table.
 
     bin/curate/boron_c198.py            write the governed records

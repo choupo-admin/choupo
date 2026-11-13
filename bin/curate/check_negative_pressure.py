@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a NEGATIVE outlet pressure is refused by name on an accepted pass,
 and announced (never silent) when only a trial sweep visits it.
 

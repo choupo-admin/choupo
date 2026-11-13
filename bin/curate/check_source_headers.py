@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 """Gate: every tracked code file carries the copyright line and the licence
 identifier, and no commit since a pinned one has a stranger as its author.
 

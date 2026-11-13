@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the azeotrope CEILING -- a prediction written in one case and tested
 in another, pinned so the link between them cannot rot.
 

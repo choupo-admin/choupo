@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # phreeqc_oracle.py — independent cross-check of the Choupo electrolyte stack
 # against native USGS PHREEQC (public domain).  This is a CURATION / VALIDATION
 # tool, NOT engine code: it lives in bin/curate/, runs OFF the hot path, and

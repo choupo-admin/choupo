@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """P-swing gate (P1 outlet-pressure switch + P2 feed-valve closure over the
 section-9 expansion-work widening; ratified battery, second-opinion review
 2026-08-03).  Separate witnesses so no single case proves two things:

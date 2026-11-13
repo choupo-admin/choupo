@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A machine fits the batch; the building's air and water follow from the
 building (DEV.md 4c C195).
 

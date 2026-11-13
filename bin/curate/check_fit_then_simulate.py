@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: ONE CASE, TWO MODES -- a membrane fitted in Properties mode, the
 record it writes, and the Process mode that refuses a stale one.
     bin/curate/check_fit_then_simulate.py

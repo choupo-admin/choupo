@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: multi-ion Gibbs-Duhem, and it MEASURES Davies' declared approximation.
 
     bin/curate/check_ion_gibbs_duhem.py

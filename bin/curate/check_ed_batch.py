@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a BATCH electrodialysis rig is where the predicted limiting current
 starts to matter -- it FALLS while the run proceeds, and the run crosses it.
     bin/curate/check_ed_batch.py

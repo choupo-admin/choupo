@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Second-liquid gate: the reactive path's TWO-liquid answer is really two
 liquids, and the equality that ties them holds at the answer.
 

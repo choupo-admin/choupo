@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # rank_candidates.py -- re-rank the data/local/components/ proposal tier into
 # a promotion-candidate list, AFTER the CoolProp import + collision refresh.
 # Supersedes the hand-built PROMOTION-CANDIDATES.md.  Deterministic; promotes

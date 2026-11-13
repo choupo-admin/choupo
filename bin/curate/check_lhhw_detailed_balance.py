@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_lhhw_detailed_balance -- an LHHW law with `reversible true` must
 come to rest at the DECLARED Kc (DEV.md 4c C185 item 7).

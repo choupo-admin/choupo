@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the newcomer's on-ramp shows the trace the ENGINE prints.
 
     bin/curate/check_intro_trace.py

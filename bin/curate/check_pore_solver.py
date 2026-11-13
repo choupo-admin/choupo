@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the DSPM-DE pore SOLVED by finite differences -- the analytic
 Jacobian, the grid, machine level, an analytic limit, the station solved at
 once, the default, the refusals, the voice.

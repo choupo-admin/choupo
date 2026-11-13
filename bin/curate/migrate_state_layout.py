@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """migrate_state_layout -- the ONE-SHOT migration of a time-integrated case's
 `0/` from the retired shape to the ratified state layout (task #186,

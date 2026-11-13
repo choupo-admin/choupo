@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 import re, sys
 
 txt = open('pitzer.dat', encoding='utf-8', errors='replace').read().splitlines()

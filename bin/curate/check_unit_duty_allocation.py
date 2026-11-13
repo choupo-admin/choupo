@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: every heat duty a unit publishes is allocated, carried or LISTED --
 never dropped -- and a declared utility is held to what it can serve.
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """solverDict-lint gate: a system/solverDict in a batch or ctrl case is a
 FILE nobody reads -- the unread-key defect one level up -- and the binary
 must SAY so (announce, never refuse: the unread-keys posture, DEV.md 4b).

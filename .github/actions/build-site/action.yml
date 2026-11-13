@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  build-site  --  the toolchain and the build of the site, in ONE home.
 #
 #  Two workflows build the site: `publish-site` (main, then pushed to

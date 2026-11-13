@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # NEGATIVE-PARITY GATE: every refusal the engine's grammar promises must be
 # demonstrated EXECUTABLE.  Builds tiny bad systems in a temp case and asserts
 # each one is REFUSED with the named message -- a silent acceptance (exit 0)

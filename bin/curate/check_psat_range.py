@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a declared vapour-pressure window has a CONSUMER, and it tells the
 two physically different failures apart.
 

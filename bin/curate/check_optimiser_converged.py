@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the optimiser never reads an objective off a simulation that did
 not converge -- an unconverged simulation is a FAILED evaluation on every
 path (Nelder-Mead, SQP, the integer enumeration), counted by cause, and a

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a Q-specified heater's OUTLET STATE satisfies H_out - H_in = Q.
 
     bin/curate/check_duty_inversion.py

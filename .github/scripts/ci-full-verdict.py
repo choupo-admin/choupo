@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """ci-full-verdict.py <runTests-full.log> [bin/curate/platform_divergence_debt.tsv]
 
 The verdict of the FULL tier on the runner (C384).  `bin/runTests` itself stays

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A5 feed-switch gate: the fixed bed's ONE existing cycle step is the
 isothermal feed switch, its refusals are real, and its datum amendments
 are ledgered.

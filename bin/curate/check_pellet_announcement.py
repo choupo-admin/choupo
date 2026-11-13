@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a declared solid catalyst with no pellet model ANNOUNCES eta = 1.
 
     bin/curate/check_pellet_announcement.py

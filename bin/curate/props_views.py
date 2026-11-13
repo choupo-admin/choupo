@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A propsDict's `studies`, `references` and `views`, taken out -- one home for the gates.
 
     from props_views import strip_views

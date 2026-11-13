@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the membrane SHORTLIST filters hard, re-rates at the student's
 conditions, shows every criterion side by side, and has NO score, NO rank and
 no reader of who is paid.

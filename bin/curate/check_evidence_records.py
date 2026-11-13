@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_evidence_records -- every measured DATASET the tree ships is readable
 and cites its source, and the engine can be asked AT its points.
 

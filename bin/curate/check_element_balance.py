@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Element-balance gate (steady): the plant-boundary ELEMENT conservation
 report is real physics, not a renamed mass balance.
 

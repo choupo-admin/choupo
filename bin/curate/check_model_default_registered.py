@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a model slot's DEFAULT never names something its own factory cannot build.
 
     bin/curate/check_model_default_registered.py

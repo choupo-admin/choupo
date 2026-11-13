@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the corpus's proven-impossible phase labels are PINNED, not hidden.
 
     bin/curate/check_impossible_phase_pins.py

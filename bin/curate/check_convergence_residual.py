@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """NORMALIZED-RESIDUAL CONVERGENCE -- the contract gate (2026-08-09).
 
 Ruling (Vitor, 2026-08-09): `flash17_two_liquids_reactive` reports a

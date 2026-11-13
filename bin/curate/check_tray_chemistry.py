@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """PER-TRAY CHEMISTRY on a reacting column -- the physics-direction gate
 (2026-08-04; sour-water programme S2, docs/design/sour-water-stripper-scope.md §4).
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Composite-report gate: a composite/named-edge case's reports must carry the
 REAL boundary (roles from the flattened topology) and a non-empty global mass
 balance.  Runs composite01_two_flashes in a temp copy and asserts:

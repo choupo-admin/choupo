@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Render the guides' version stamp from the engine's own CHOUPO_VERSION.
 
     bin/curate/guide_version.py            # write docs/version.tex

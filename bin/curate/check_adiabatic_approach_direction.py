@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: an ADIABATIC gibbsReactor's approach direction is read from the
 answer, never from the seed.
 

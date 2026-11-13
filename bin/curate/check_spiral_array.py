@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a spiral-wound STAGE -- vessels in parallel, elements in series --
 built from element and feed-spacer RECORDS, with the spacer's own
 correlations, their window and Schock & Miquel's hydraulic diameter.

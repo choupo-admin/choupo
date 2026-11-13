@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the FOPDT identification is recomputed here, from the published curve.
 
     bin/curate/check_reaction_curve.py

@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_evaporative_dryer -- the free-moisture dryer's three limits, and the
 wet-bulb floor it shares with the solid dryer (2026-10-05, DEV.md C26 and

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the AACE estimate-class table has ONE home, and the engine reads it.
 
 WHY THIS GATE EXISTS.  The classification had TWO homes and they disagreed

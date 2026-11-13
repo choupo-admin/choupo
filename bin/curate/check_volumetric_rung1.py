@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the volumetric-model slot, and rung 1 (standardStateVolumes).
 
     bin/curate/check_volumetric_rung1.py

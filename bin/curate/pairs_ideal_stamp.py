@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """DEV.md 4c C334 -- stamp the beats-ideal guard onto the SEVERE records already
 in data/standards/parameters/{NRTL,UNIQUAC,Wilson}/ (those promoted before the
 guard existed).

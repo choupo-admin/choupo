@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Anti-legacy gate (D2 closed migration, ratified 2026-07-26): NO
 pre-identity gas-liquid schema remains in the dev corpus.
 

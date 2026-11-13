@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The four remaining points of the external audit (DEV.md 4c C190 items 14, 11,
 15 and 12): an explicit reverse pair is READ by the batch vessel, a declared
 `catalystLoading` reaches the vessels' own rate law, a membrane fit that no step

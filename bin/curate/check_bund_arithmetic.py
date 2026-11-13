@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the bund capacity arithmetic Choupo's layout check computes (DEV.md
 4c C134) is the arithmetic the secondary-containment EduTool teaches (C136),
 on numbers the green-ammonia witness's own bund supplies.

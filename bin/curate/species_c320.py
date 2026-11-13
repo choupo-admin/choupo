@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Make the aqueous-species records of C320 from the batch's evidence table.
 
     bin/curate/species_c320.py write     (re)write data/standards/species/<name>.dat for every `included` species

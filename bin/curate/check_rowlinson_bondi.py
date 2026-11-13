@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Rowlinson-Bondi liquid-Cp gate (built 2026-08-12).
 
 WHY THE MODEL EXISTS.  `HeatCapacityModel` registered `polynomial` and `NASA7`

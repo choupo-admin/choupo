@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  ci-summary.sh <log>
 #
 #  Copies the suite's own verdict lines into the run's step summary, so the

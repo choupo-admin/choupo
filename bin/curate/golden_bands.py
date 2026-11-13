@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The band of a golden row, chosen by WHAT KIND OF NUMBER the row holds, and
 the two claims a golden makes.
 

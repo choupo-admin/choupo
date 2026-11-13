@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The IAPWS-2017/2018 heavy-water formulation, transcribed for CURATION use.
 
     bin/curate/heavy_water_iapws.py --check     # verify the transcription

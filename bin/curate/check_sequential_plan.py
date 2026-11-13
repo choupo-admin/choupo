@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_sequential_plan -- the tear/order contract REFUSES, end to end,
 through the real choupoSolve binary (2026-10-25, DEV.md 4c C150 R27).
 

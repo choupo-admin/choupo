@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a unit that holds its inlet's phase gets that phase from a pure fluid, whatever the last bit of P.
 
     bin/curate/check_pure_fluid_phase_asked.py

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: boron in reverse osmosis as an acid and its base split by the pH
 (DEV.md 4c C198, Stage 1), recomputed OUTSIDE the engine.
 

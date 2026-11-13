@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the aqueous-species records of C320 reproduce from their evidence table and agree with it.
 
     bin/curate/check_species_records.py

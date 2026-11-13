@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Every operation schema must accept every shipped case that uses its op.
 
 Design record: DEV.md section 5 debt 6.

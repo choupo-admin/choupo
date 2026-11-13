@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # SUPERSEDED 2026-06-30: the monolith this importer emitted was consolidated into
 # the per-file databank layout (electrolyte/<file>.dat is GONE -> parameters/electrolyte/
 # and data/standards/chemistry/, single-source). The live tier is per-file; the

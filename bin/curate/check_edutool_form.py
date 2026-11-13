@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_edutool_form -- an EduTool is a lesson; the Explorer is for choices.
 
 THE RULE, ruled by Vitor on 2026-08-28 and enforced here rather than

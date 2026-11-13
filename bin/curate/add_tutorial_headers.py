@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tutorial licence banner, OpenFOAM-style (Vitor, 2026-07-18).
 
 OpenFOAM stamps every tutorial dict with the project banner (name, version,

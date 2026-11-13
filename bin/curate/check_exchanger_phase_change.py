@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_exchanger_phase_change -- an eps-NTU exchanger whose side changes
 phase says that its DUTY, not only its outlet, rests on a sensible model;
 and the U.A.LMTD line says what it is a check of (2026-10-25, DEV.md 4c

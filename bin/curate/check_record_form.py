@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Record-form gate: the settled shape of a data record, enforced where it
 was regressed -- INCLUDING drafts under docs/design/.
 

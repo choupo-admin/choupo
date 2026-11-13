@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the enthalpy-concentration locus is an EQUILIBRIUM on the ONE datum.
 
     bin/curate/check_enthalpy_concentration.py

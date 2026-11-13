@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """choupo-curate -- the C16 chain for one binary pair, as ONE command.
 
     bin/choupo-curate pair A B [--pmax 110] [--plan] [--no-commit]

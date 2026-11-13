@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: every reference (multiparameter Helmholtz) equation of state the catalogue ships reproduces its publication's own check values, in the engine AND in an independent implementation.
 
     bin/curate/check_reference_eos.py

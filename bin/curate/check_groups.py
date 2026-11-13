@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_groups.py -- UNIFAC group-enforcement gate (forum F-GRP-1).
 
 Cross-references a component tree against the group-estimation prelist

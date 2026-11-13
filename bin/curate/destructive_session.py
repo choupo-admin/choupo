@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """ONE home for "a gate is about to mutate this tree, and may not survive it".
 
     from destructive_session import DestructiveSession, assert_tree_undisturbed

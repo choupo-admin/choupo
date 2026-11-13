@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """PreToolUse hook (Bash): refuse `git add -A`, `git add --all` and `git add .`.
 
 CLAUDE.md section 2: "Never `git add -A`.  Stage explicitly per file."  The

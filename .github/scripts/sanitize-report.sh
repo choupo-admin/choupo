@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  sanitize-report.sh <dir> [<dir> ...]
 #
 #  Turns the ASan/UBSan output a sanitized `bin/runTests` left in the given

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the multi-ionic concentration-polarisation model of Geraldes & Afonso
 (2007) is what the engine computes, reduces to the film model it replaced,
 and does something when switched on.

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the evidence vocabulary has ONE home, and the GUI never strengthens it.
 
     bin/curate/check_verdict_parity.py

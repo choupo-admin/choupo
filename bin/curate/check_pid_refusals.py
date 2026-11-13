@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The two PID gain refusals FIRE, with their named remedies (I5, W-R-C).
 
 Until 2026-08-22 a PID whose gains{} used the textbook spelling

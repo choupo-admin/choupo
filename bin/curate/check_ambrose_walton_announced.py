@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the Ambrose-Walton vapour-pressure model SAYS WHAT IT IS, and says
 when its curve contradicts the record it was built from -- and moves no number.
 

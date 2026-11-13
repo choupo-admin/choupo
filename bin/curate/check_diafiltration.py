@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the batch diafilter conserves matter, and its washout law is falsifiable.
 
     bin/curate/check_diafiltration.py

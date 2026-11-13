@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """No unit op selects thermodynamics -- neither in source, nor in a case.
 
 A unit operation answers a process question.  WHICH activity model evaluates

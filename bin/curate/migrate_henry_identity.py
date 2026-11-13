@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """D2 closed-migration wave: typed equilibrium-parameterisation identity on
 the parameters/Henry/ pair records (ADR docs/design/equilibrium-
 parameterisation-identity.md, ratified 2026-07-26; wave approved by Vitor

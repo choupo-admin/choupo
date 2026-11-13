@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a stream is fixed by TWO variables, and the engine says so.
 
     bin/curate/check_overspecified_stream.py

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_method_tools -- the landing's EduTools list IS the live registry.
 
     bin/curate/check_method_tools.py

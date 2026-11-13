@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: every pipe end lands on a PORT of its item, and the port is where the
 convention says it is (2026-11-05, DEV.md 4c C229).
 

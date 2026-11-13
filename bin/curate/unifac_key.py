@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The ChemSep UNIFAC subgroup id -> Choupo group NAME key, DERIVED.
 
     bin/curate/unifac_key.py            # print the key and its coverage

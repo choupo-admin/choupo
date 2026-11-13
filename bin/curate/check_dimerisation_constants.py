@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A vapour-dimerisation constant is read off the table of the substance it names.
 
 2026-11-03 (DEV.md 4c C201): `aceticAcid-dissolution.dat` carried

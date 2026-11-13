@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Digitise Fig. 3 of Geraldes & Alves, "Computer program for simulation of
 mass transport in nanofiltration membranes", J. Membr. Sci. 321 (2008)
 172-182, doi:10.1016/j.memsci.2008.04.054 -- the observed rejections of

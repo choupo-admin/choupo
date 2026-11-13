@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generate the FEASIBILITY -> BASIC-DESIGN comparison of the green-ammonia
 sequence (DEV.md 4c C68, the addition accepted from a second opinion: "a
 feasibility -> basic-design comparison of consumptions, investment and

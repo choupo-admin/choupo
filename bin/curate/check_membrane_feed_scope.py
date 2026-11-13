@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_membrane_feed_scope -- a spiral-wound module refuses, by name, a
 present component it does not model (DEV.md 4c C188 defect 1).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the `material { ... }` wrapper — one rule, and ONE form per inlet.
 
     bin/curate/check_material_wrapper.py

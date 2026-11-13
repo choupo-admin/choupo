@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # =============================================================================
 #  site-smoke  --  build the site from a BRANCH and open every live EduTool in
 #                  a browser.  It never publishes: there is no publish step in

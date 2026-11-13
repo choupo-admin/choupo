@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: component and pair file names follow the engine's rule (DEV.md 4c C296).
 
     bin/curate/check_pair_names.py

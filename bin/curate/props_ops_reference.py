@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generate the propsGuide's OPERATIONS REFERENCE from the op schemas.
 
     bin/curate/props_ops_reference.py            # write docs/propsGuide-operations.tex

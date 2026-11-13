@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The adaptive integrator's positivity guard is a per-ROW mask that covers
 every packed unit (DEV.md 4c C185 item 8).
 

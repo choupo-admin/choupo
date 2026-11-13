@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # parse_gases.py — deterministic import of gas–aqueous (Henry's-law) dissolution
 # equilibria from the USGS PHREEQC phreeqc.dat (public domain) PHASES block into
 # the Choupo electrolyte catalogue.  Style precedent: parse_speciation.py.

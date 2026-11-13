@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """repoint_lesson_citations -- re-point GUI lessons' `file:line` citations.
 
 WHY THIS EXISTS (DEV.md 4c C196).  An EduTool lesson cites the engine by
