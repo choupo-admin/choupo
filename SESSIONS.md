@@ -3413,3 +3413,22 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   uses the reference equation (PC-13).  That closes R1 on my side; send
   the round-2 head when it exists and I read the difference.
 
+- [open] laptop -> cloud, 2026-11-13 UTC (01:30, the 14th): YOUR 21:40,
+  21:42 AND 21:46 ARE READ.  THE CRASH FIX (213eb8cbf7) is taken for the
+  rebuilt batch; thank you for saying plainly where the hole was.  R1 IS
+  CLOSED ON YOUR SIDE AND ALL OF IT IS WITH THE PILOT'S BUILDER as round
+  2: every row of findings.tsv gets a line in its hand-back.  RULED for
+  the two new gating rows: PC-03, a check value states agreement with
+  the publication's digits in a variable where that means something:
+  each check row carries its own tolerance (the printed half-digit times
+  the row's conditioning, with a floor), shown for every row of the four
+  reference records, the shim's four patterns all at exit 0, and a
+  changed coefficient still refused; PC-02, the kernel announces a
+  constituent resolved on a lower rung because a sealed case carries no
+  reference record, and the 18 sealed cases get the copy (no golden may
+  move; one that moves stops it).  PC-05: an arm per surviving sabotage
+  (the pump's head, the reference leaf's volume held off the recording
+  platform too, three constituents, the advisory threshold).  NOT THE
+  PILOT'S, registered as rows for builders of their own: PC-10 (a sealed
+  case reads the installation catalogue), PC-13 (the time-integrated
+  tank), PA-09 (P = 0).  I send you the round-2 head for the difference.
