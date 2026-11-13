@@ -1378,8 +1378,8 @@
     },
     "check_activity_domain": {
       "exit": 0,
-      "claim": "[activity-domain] OK the activity models declare their own domain (4 AqueousActivity classes, each with validityDomain; no name branch or inline band in SpeciationSolver/ScalingScan/Exchange); Davies announces beyond I = 0.5 with its own sentence and not inside it, PitzerHMW states no bound and announces nothing, Edwards announces beyond its paper's ~6 mol/kg; Davies' I_max is within 0.1 of the median 10 %-in-gamma_pm crossing of the evaluated 25 C tables (1-1 0.52, 2-1 0.56) and its banner states that criterion; Davies with the catalogue's NaSO4- recomputed for Na2SO4 at m = 0.1-0.4 mol/kg (within 10 % to 0.3, beyond at 0.4; beyond at all four without the pair; all eight equal the gate's table to their printed digits, and the seven the Theory Guide prints appear in it); NOT checked: whether the Edwards band is true, temperature domains, the ion pairs of the other seven 1-2 salts, the mixed-solvent dominant-solvent criterion (no source states one)",
-      "seconds": 4.9
+      "claim": "[activity-domain] OK the activity models declare their own domain (4 AqueousActivity classes, each with validityDomain; no name branch or inline band in SpeciationSolver/ScalingScan/Exchange); Davies announces beyond I = 0.5 with its own sentence and not inside it, PitzerHMW states no bound and announces nothing, Edwards announces beyond its paper's ~6 mol/kg; Davies' I_max is within 0.1 of the median 10 %-in-gamma_pm crossing of the evaluated 25 C tables (1-1 0.52, 2-1 0.56) and its banner states that criterion; NOT checked: whether the Edwards band is true, temperature domains, a 2- anion's ion pairs, the mixed-solvent dominant-solvent criterion (no source states one)",
+      "seconds": 3.0
     },
     "check_rejection_inversion": {
       "exit": 0,
@@ -1703,28 +1703,23 @@
     },
     "check_property_route_bench": {
       "exit": 0,
-      "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 4974, values 81003, refusals 74163, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357; door against the old call: 134343 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 15.4
+      "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 4974, values 81129, refusals 74037, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357; door against the old call: 134343 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 24.4
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
       "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 85 raw liquid-property site(s) (vliq 23, direct 12, literal 18, conversion 32), each within its pin; none new; the door review's 18 probe lines all caught.  NOT CHECKED: a value built with no literal (a variable read under an unrelated key, a constant spelled otherwise in another header), a conversion line that names no volume or flow, thermo/ and propertyOps/; a kg/kmol conversion on a volume line is counted (pinned).",
-      "seconds": 1.9
+      "seconds": 3.9
     },
     "check_property_source_witnesses": {
       "exit": 0,
       "claim": "check_property_source_witnesses: OK -- 9 (unit, property) sources in 6 witness case(s) are the tags their code takes.  NOT CHECKED: any case outside the witnesses (the goldens' `source` rows will hold those), or whether a source is right.",
       "seconds": 25.7
     },
-    "check_estimated_species_announced": {
+    "check_vliq_datum": {
       "exit": 0,
-      "claim": "check_estimated_species_announced: OK an estimated hfAq consumed by the aqueous ion reference is announced once per run (console + result advisory), a record without provenance and an unconsumed estimated sAq stay silent, diagnostics identical; arms (a)-(d); NOT checked: the cpAq route, physical correctness of any catalogue estimate",
-      "seconds": 0.3
-    },
-    "check_property_sources_pinned": {
-      "exit": 0,
-      "claim": "check_property_sources_pinned: OK -- 16 case(s) publishing liquid-property sources, every (unit, property) pinned by a `source` row (the --fast set, run live (no suite cache)).",
-      "seconds": 42.7
+      "claim": "check_vliq_datum: OK -- 531 records carry `Vliq`, 20 state its temperature as `VliqT`, 498 state one in the `Vliq` comment and agree with the key; 6 unresolved pinned by name (H2O2, HCHO, HCN, NO2, propane, propylene); the engine refuses `VliqT 50 Pa;` (run on a scratch copy).  NOT CHECKED: whether a stated temperature is right, case-local sealed copies, prose away from the `Vliq` line.",
+      "seconds": 0.2
     }
   }
 }

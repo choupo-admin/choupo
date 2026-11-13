@@ -141,7 +141,16 @@ int SolubilityParameter::run(const DictPtr& dict,
         Derived d;
         d.name  = c.name();
         d.dHvap = c.Hvap_latent(T);              // J/mol, Watson
-        d.Vm    = c.Vliq();                      // m3/mol at 25 C
+        //  The volume at T.  A record without `VliqT` keeps the stored
+        //  datum (its 25 C volume, as before).  A record that states its
+        //  datum at another temperature (C378: a gas whose Vliq is the
+        //  volume at its normal boiling point) is asked through the one
+        //  home of the liquid volume, at T: reading a boiling-point volume
+        //  as a 25 C one put Cl2's delta about 6 % high at 25 C.
+        d.Vm    = c.hasVliqT()
+                ? thermo.liquidMolarVolumeOf(
+                      static_cast<std::size_t>(&c - thermo.components().data()), T)
+                : c.Vliq();                      // m3/mol
         { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Hildebrand solubility parameter", "the molar volume in delta = sqrt((dHvap - RT)/V)"); }
 
         //  R T is the vaporisation work against the surroundings: what is

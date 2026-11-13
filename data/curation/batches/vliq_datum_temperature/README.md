@@ -47,7 +47,7 @@ that state NO temperature, have Tc far above 298 K, and still store a volume at 
 | A3 no T, Tc < 298.15 K | Ar, He, O3, ethylene | also a volume at Tb (stored within 1.5 % of Poling's point carried to Tb) | Poling Section B |
 | A4 no T, Tc 298-330 K | ethane, acetylene, N2O, HCl | also a volume at Tb (within 0.7 %) | Poling Section B; HCl carried to 25 C is 45.94 against 30.5 stored |
 | A5 not a pure-liquid volume | sucrose | an apparent molar volume in solution, no temperature, no source | nothing in hand |
-| **A6 found here**: no T, Tc well above 298 K, value at Tb | Cl2, H2S, SO2, nButane | a volume at Tb or near it (within 1.9 %) | Poling Section B; at 25 C the engine's density is about +13 % (Cl2), +19 % (H2S), +7 % (SO2), +4 % (nButane, Poling prints 100.48 at 298.15 K) |
+| **A6 found here**: no T, Tc well above 298 K, value at Tb | Cl2, H2S, SO2, nButane | a volume at Tb or near it (within 1.9 %) | Poling Section B; at 25 C the engine's density was about +13 % (Cl2), +19 % (H2S), +7 % (SO2), +4 % (nButane, Poling prints 100.48 at 298.15 K) above the HANDBOOK-carried value; the correction itself lowers the engine's own 25 C density by factors of 1/1.1138, 1/1.2132, 1/1.0671, 1/1.0506 (the former is +11.38 %, +21.32 %, +6.71 %, +5.06 % above the new; review VT-03) |
 | **A7 found here**: unresolved | propane, propylene, H2O2, HCHO, HCN, NO2 | no temperature, no source; propane matches no Tb value | see the table below |
 
 The finding behind A3, A4 and A6: of the 18 records that store a volume at a stated or unstated

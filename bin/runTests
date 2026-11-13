@@ -7032,6 +7032,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/lpratchet.$$
+    # liquid-volume datum gate (2026-11-13, DEV.md 4c C378, TR-12).  A record's `Vliq` belongs to `VliqT` (absent = 298.15 K); a temperature stated in the `Vliq` comment must agree with the key, a record with Tc < 330 K carrying `Vliq` must state its temperature, and the six unresolved records stay pinned by name in bin/curate/vliq_datum_debt.tsv (two-sided).
+    if gate_exec "$ROOT/bin/curate/check_vliq_datum.py" > /tmp/vliqdatum.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "vliq-datum-gate" "$(head -1 /tmp/vliqdatum.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_vliq_datum.py)\n" "vliq-datum-gate"
+        cat /tmp/vliqdatum.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/vliqdatum.$$
     # property-source witnesses gate (2026-11-13, DEV.md 4c C378 slice 0, door review DR-11).  One witness case per liquid-property source class, run live: each unit publishes the tag its code takes; a site that picks another tag of the same class (no value moves) is caught here until the goldens carry `source` rows.
     if gate_exec "$ROOT/bin/curate/check_property_source_witnesses.py" > /tmp/srcwit.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "property-source-witnesses-gate" "$(head -1 /tmp/srcwit.$$)"

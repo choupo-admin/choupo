@@ -266,6 +266,34 @@ void PropertySourceLog::useHere(const std::string& property, const NamedSource& 
             pressureNote, "", taken);
 }
 
+void PropertySourceLog::useHere(const std::string& property, const NamedSource& s,
+                                const std::vector<std::string>& statedAt,
+                                const std::string& addendum, const std::string& sourceClass,
+                                const Taken& taken, const std::string& pressureNote)
+{
+    std::string type, unit;
+    if (current(type, unit))
+        use(type, unit, property, s.id, liquidSource::labelAtDatum(s.label, statedAt) + addendum,
+            sourceClass, pressureNote, "", taken);
+}
+
+std::string liquidSource::labelAtDatum(const char* label, const std::vector<std::string>& statedAt)
+{
+    std::string w(label);
+    if (statedAt.empty()) return w;
+    const std::string key = "25 C molar volume";
+    const std::size_t at = w.find(key);
+    if (at == std::string::npos) return w;
+    std::size_t end = at + key.size();
+    const bool plural = (end < w.size() && w[end] == 's');
+    if (plural) ++end;
+    std::string who;
+    for (std::size_t k = 0; k < statedAt.size(); ++k) who += (k ? ", " : "") + statedAt[k];
+    return w.substr(0, at) + (plural ? "molar volumes" : "molar volume")
+         + " at the temperature its record states (" + who + "; any other at 25 C)"
+         + w.substr(end);
+}
+
 std::vector<std::string> PropertySourceLog::mismatches() const
 {
     std::vector<std::string> out;

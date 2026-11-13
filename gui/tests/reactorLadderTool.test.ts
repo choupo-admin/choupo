@@ -111,7 +111,7 @@ describe("the reactor-ladder lesson", () => {
 
   it("names the liquid-basis volume among its limits", () => {
     const l = LADDER_LIMITS.find((x) => x.id === "volume-is-a-shape");
-    expect(l?.body).toContain("PFR.cpp:675");  // C259: the comment moved from 647 to 649 to 675
+    expect(l?.body).toContain("PFR.cpp:676");  // C259: the comment moved from 647 to 649 to 675
   });
 });
 
