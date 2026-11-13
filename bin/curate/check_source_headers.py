@@ -127,10 +127,10 @@ def arm_d(fails):
     """-> a one-line account (OK / NO SUBJECT)."""
     r = git("cat-file", "-e", PIN + "^{commit}")
     if r.returncode != 0:
-        return "author arm: NO SUBJECT (the pinned commit %s is not in this clone, a shallow checkout)" % PIN[:9]
+        return ("NO SUBJECT", "the pinned commit %s is not in this clone, a shallow checkout" % PIN[:9])
     r = git("merge-base", "--is-ancestor", PIN, "HEAD")
     if r.returncode != 0:
-        return "author arm: NO SUBJECT (the pinned commit %s is not an ancestor of HEAD)" % PIN[:9]
+        return ("NO SUBJECT", "the pinned commit %s is not an ancestor of HEAD" % PIN[:9])
     an = K.authors()
     r = git("log", "--format=%H%x09%an", PIN + "..HEAD")
     n = 0
@@ -139,13 +139,14 @@ def arm_d(fails):
         n += 1
         if not K.is_author_name(name, an):
             fails.append("AUTHOR  %s  (author %r is not listed in AUTHORS)" % (h[:9], name))
-    return "author arm: %d commits since %s, every author listed in AUTHORS" % (n, PIN[:9])
+    return ("OK", "%d commits since %s, every author listed in AUTHORS" % (n, PIN[:9]))
 
 
 def main():
     fails = []
     kinds, nrows = arm_a_b_c(fails)
-    dline = arm_d(fails)
+    dstate, ddetail = arm_d(fails)
+    dline = "author arm: %s (%s)" % (dstate, ddetail)
     total = sum(kinds.values())
     if fails:
         print("source-headers: FAIL -- %d finding(s)" % len(fails))
@@ -156,8 +157,10 @@ def main():
                   % (len(fails) - 200))
         print("  " + dline)
         return 1
-    print("source-headers: OK -- %d code files in %d kinds carry the copyright line and the licence "
-          "identifier; the exclusion table is two-sided; %s" % (total, len(kinds), dline))
+    print("source-headers: OK -- every tracked code file (%d kinds) carries the copyright line and the licence "
+          "identifier; the exclusion table is two-sided; author arm: %s" % (len(kinds), dstate))
+    print("  %d code files read" % total)
+    print("  " + dline)
     return 0
 
 

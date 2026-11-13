@@ -1745,6 +1745,11 @@
       "exit": 0,
       "claim": "check_solids_announcements: OK -- centrifuge phi_s recomputed on 2 cases + 30 vol % probe; thickener slope names t = 3600, 6300, 10800 s; thickener test-concentration advisory at verbosity 0; screen AUF 1.0820 announced; cakeFilter s<0 refused, s>1 announced, K_p ratio 2^0.5; mixer emulsion line: powders 0, liquids 2; pneumatic u_t non-convergence announced at Re ~ 1000; default mu_w = 0.4 announced at verbosity 0; voidage 0.99198 outside 0.994-0.9995 announced at verbosity 0; bend key RoverD refused by name (10 arms, scratch copies; no hypothesis judged)",
       "seconds": 0.4
+    },
+    "check_source_headers": {
+      "exit": 0,
+      "claim": "source-headers: OK -- every tracked code file (9 kinds) carries the copyright line and the licence identifier; the exclusion table is two-sided; author arm: OK",
+      "seconds": 0.5
     }
   }
 }
