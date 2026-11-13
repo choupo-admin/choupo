@@ -50,10 +50,24 @@ on:
   workflow_dispatch:
 
 concurrency:
-  #  One build at a time, and a newer push wins: an older run's verdict
-  #  landing after a newer one is worth spending a cancelled job on.
+  #  One build at a time, and the run in progress FINISHES (2026-11-13).
+  #  This used to be `cancel-in-progress: true`, so every push to main
+  #  cancelled the publication under way: 54 of 60 runs were cancelled and
+  #  the site could publish only when nobody pushed for the ten minutes a run
+  #  takes -- on a busy day, never.  Now GitHub keeps at most ONE pending run
+  #  per group: a newer push replaces the older PENDING run (that one shows as
+  #  cancelled, which is routine) and never touches the running one.
+  #
+  #  What a visitor sees in between: the running build publishes its commit,
+  #  older than main's head but never older than what the site already
+  #  showed, because the runs of this group are serialised in push order;
+  #  the pending run then builds main's head and publishes over it (the
+  #  badge and buildinfo.json name whichever commit is live).  The one way
+  #  to publish backwards is a manual "Re-run" of an OLD run after a newer
+  #  one finished -- re-run the newest instead.  Serialising also means two
+  #  publishes never race on the site repository's `git push`.
   group: publish-site
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   #  Read only, and it stays that way.  The write this workflow performs is
