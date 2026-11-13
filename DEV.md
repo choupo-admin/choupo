@@ -3446,6 +3446,31 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C198 LANDED (2026-11-13): SEAWATER BORON ON PITZER.**  Every
+> parameter of Felmy & Weare (1986) read from page images, three readings
+> each (the text layer of the PDF misreads two chemical potentials by 90
+> units); the five borate formation constants DERIVED from the standard
+> chemical potentials of the two primaries (Vitor brought Harvie, Moller &
+> Weare 1984 and Dickson 1990 the same night) and equal to the public
+> databank's to four decimals, so the records keep their values with
+> `origin derived` and the databank as the cross-check.  ANCHORS:
+> borax-saturated water against the paper's Table 1 (the authors' own
+> model output: in-sample, said so); Dickson's synthetic seawater at S =
+> 35 against his MEASURED conditional constant (Table 3, p. 762, total
+> proton scale, molality): the model is 0.044 above in ln K*, ten times the
+> measurement's +-0.004, inside a tolerance set by the conversion between
+> proton scales (the engine's own bisulfate) and the emf scatter the
+> borate terms were fitted on.  FOUND, open: eleven major-ion pairs of the
+> catalogue (Na-Cl, Na-SO4, K-Cl, Ca-Cl, Mg-Cl, Mg-SO4, ...) are a later
+> revision of the databank, not the 1984 set the borate terms were fitted
+> WITH -- a mixed parameter set, to be measured by running the seawater
+> case on the 1984 values case-locally; fifteen pair records print the
+> 1984 paper's numbers and cite the databank (re-attributable).  BRAIN had
+> listed the Dickson comparison as held when no shipped case held it:
+> corrected, and now true.  Validation by reach: no engine code; the new
+> case and 62 electrolyte cases in scope 0 FAIL, --fast 85/0, the species
+> and record gates; no full sweep; --gui not run.
+
 > **C383 (Vitor, 2026-11-13: "quando e que a outra sessao pode comecar a
 > trabalhar?").**  NOW, in named territories.  C364 is AMENDED, not
 > lifted: there is still ONE WRITER TO MAIN (the laptop integrates, each
