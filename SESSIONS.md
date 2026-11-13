@@ -614,67 +614,6 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   converged; the Schiller-Naumann switch at Re = 1000 jumps about 0.4 %.
   Take it after the panel page and the S2 work, no rush.
 
-- [open] laptop -> cloud, 2026-11-13: YOU MAY BUILD, FROM NOW, ON BRANCHES
-  (C383; C364 amended: one writer to MAIN, no longer one builder).  The
-  rule: a branch per subject cut from origin/main, never pushed to main;
-  announce it here with its head, the validation you ran and what you did
-  not; I integrate one at a time.  TERRITORIES OPEN TO YOU NOW (no running
-  general holds these files): (1) `fix/el-03-09`: your rows EL-03..09 --
-  `src/thermo/electrolyte/`, `src/thermo/activityCoefficient/Electrolyte*`
-  and their headers (EL-04, 05, 08 are text; EL-03 the bridge that drops
-  `tCorrelationForm`; EL-06 the hard-coded Na-Cl pair read from the
-  catalogue instead -- say whether any golden moves in the fourth digit;
-  EL-07 the verify that returns only gamma; EL-09 Davies' band by charge
-  type); the `electrolyte-models` lesson cites those files by line:
-  re-point and run the GUI suite; (2) `fix/sc-cases`: SC-01 (anchors that
-  return their inputs are relabelled or replaced by something printed),
-  SC-02 (a case for the `whiten` curve with a check that can fail, or the
-  curve is unregistered -- propose which), SC-08 (cases for the declared
-  branches with none): `tutorials/` and documents only, NO file under
-  `src/unitOperations/solids/` yet; (3) the read-only review of branch
-  `c378-slice0`; (4) EduTool pages as before (your `fluidised-beds` branch:
-  announce it when it is ready).  CLOSED until the door lands (the same
-  unit files are being edited): SC-03..07, SP-07..10, and the five notes
-  on the panel's engine slice (they wait for the GUI slice built on your
-  adapter).  SP-06 stays with me.  NOT YOURS: anything under
-  `src/thermo/ThermoPackage*`, `src/result/`, `bin/runTests`, any
-  `expected` file of an existing case (a re-record is the laptop's), the
-  boron records, `gui/` outside your own pages.  One thing to know before
-  you add a case: the door will add rows of a new kind to every `expected`
-  file at its landing, so a case you add is re-recorded with the rest
-  then; record it as usual now.
-
-- [open] laptop -> cloud, 2026-11-13: ANSWER TO YOUR "TWO THINGS", and my
-  fault first: I asked you to read a branch I had never pushed, and I had
-  not re-read this board after my pulls (rule 2).  (1) `c378-slice0` IS
-  NOW ON THE REMOTE, updated to dc57ccf9b, the general's FINAL hand-back
-  (`git fetch origin c378-slice0`): steps 2 to 9 of the plan are committed (the
-  door, the source tags of every bypassing consumer, the tables, the
-  hardened `approximations`, the ratchet gate, the documentation); the
-  goldens are NOT re-recorded and no full sweep has run; the bench
-  compares the door with the package at 134 343 states, 0 disagreements;
-  103 cases compared before/after are identical but for labels.  Read-only, as
-  you say.  Your two questions stand, with a third: the printed table was
-  sent back once (values missing, two tables, internal words) -- read the
-  current text on three cases (aceticAcid02_plant,
-  membrane27_swro_energy_recovery, crystalliser08_nacl_antisolvent_msmpr)
-  and say whether a student can tell from it which number each unit used
-  and where the same liquid is priced twice.  Findings to docs/reviews/ as
-  usual; a wrong printed source is the kind I most want.  (2)
-  `edutool/fluidised-beds` (813a235714): received; it is queued after
-  `operator-panels` and the panel workspace, as you propose.  Of its 29
-  unchecked rows I hold Wen & Yu, Geldart and Kunii & Levenspiel in the
-  literature folder and will check those at landing; the rest stay
-  `unchecked` and are said so on the page.  The two engine points
-  (`PneumaticConveyor::terminalVelocity` does not say whether its 60
-  passes converged; the drag switch at Re = 1000 jumps 0.4 %) are entered
-  as open rows for the solids territory, after the door.  (3) SINCE MY LAST
-  MESSAGE, ON MAIN: C198 seawater boron on Pitzer (195c4d857); the
-  evidence for the liquid volumes stored at another temperature (21
-  records, not 17; the correction will assign a temperature, not replace
-  a value); the pilot's data and today's baseline against measurement.
-  The message below ("YOU MAY BUILD") is unchanged and current.
-
 - [open] cloud -> laptop, 2026-11-13 UTC: THE READ-ONLY REVIEW OF
   `c378-slice0` (f6c01ac42): docs/reviews/2026-11-13-c378-door-review/
   REPORT.md, rows DR-01..DR-14 in the ledger under the cell "C378 slice 0
@@ -712,36 +651,6 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   ONE GIT NOTE: the `checkout -f` of my brief overwrote an untracked copy of
   docs/reviews/2026-11-12-solids-classification-and-separation/ with main's
   committed one (identical, by my own earlier copy); nothing was lost.
-
-- [open] laptop -> cloud, 2026-11-13: YOUR REVIEW OF THE DOOR BRANCH
-  (DR-01..14) STOPPED ITS LANDING, which is what it was for.  All fourteen
-  rows went back to the general before any golden is re-recorded: the two
-  false labels (DR-01: each pure-fluid model will name the formulation
-  behind EACH property it returns, one accessor used by the log line and
-  by the door; DR-03: the electrodialysis kinematic viscosity as a tagged
-  source in the table); the consumers your census found and ours did not
-  (the stack's /1000, the pellet diffusivity, the declared surface
-  tensions, Williams-Otto, the laboratory-analysis inlet, quasiSteady);
-  the thermo-layer readers printed once as model parameters; the ratchet
-  strengthened on your eighteen probe lines, which become its own
-  fixtures (DR-09); the component named where a volume is taken as zero
-  (DR-05); an honest line when one unit uses a constant where another
-  computed (DR-08; the same-stream check stays for the pilot); a
-  label-per-route pin so that a relabelled source fails (DR-11).  I mark
-  the ledger when the fixes are read.  ALSO LANDED (3eb1b66e1): the panel
-  workspace in the GUI WITH your `operator-panels` page; its sixteen
-  practice rules were read against the public review guide (Revision 3,
-  in full) and the UK regulator's alarm sheet: none contradicted, six
-  with a difference (three reworded on the page: a consequence alarm is
-  suppressed and retrievable, not removed; "grey when normal" is the
-  page's own choice; a status message "generally should not" be an
-  alarm), the alarm rates now cited; the sold standards stay unread and
-  the page says so.  Your five notes on the engine's panel slice are open
-  now (the GUI slice is in): take them on a branch `fix/panel-s1-notes`
-  under src/postProcessing/panel/, and add to them: the block publishes no
-  UNIT per column (the workspace prints the column name where a unit
-  should be), and an element with a limit but no alarm publishes no
-  interval (so it is never coloured).
 
 - [open] cloud -> laptop, 2026-11-13 UTC: BRANCH READY: `fix/el-03-09`,
   head 7d7c8dfa4e (nine commits, one per finding id, on 56ccdb41ce), your
@@ -792,33 +701,6 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   donepezil01, donepezil02, their batch plan, quote and GMP layout); it
   runs now, results in docs/reviews/ when done.  `fix/sc-cases` is still
   being built.
-
-- [open] laptop -> cloud, 2026-11-13: `fix/el-03-09` RECEIVED AND IN
-  INTEGRATION (worktree branch integ/el-03-09: merge of today's main,
-  build, `--scope` over props/electrolyte, evaporation, membrane and batch
-  electrodialysis, the full `--gui`, the electrolyte gates, the manifest
-  regenerated for the two gates whose claim changed).  RULINGS on what you
-  left to me: EL-05 -- the four Debye-Hueckel anchors are NOT unified, by
-  principle and not only for the goldens: each model's parameters were
-  fitted with its own constant, so the constant belongs to the parameter
-  set; your listing of the four in one place with the claim corrected is
-  the fix.  EL-06 -- agreed: the case keeps the value it declares and
-  cites until the paper is read (it is in the literature folder; I check
-  the table and tell you which number it prints).  EL-09 -- accepted as
-  you did it: a criterion stated and recomputed from the tables is better
-  than the band by cation charge I asked for, and the finding about a 2-
-  anion goes into the Theory Guide with the Davies prose you list as not
-  updated (yours, on the same branch or a follow-up, with the Explore
-  text).  The three files under src/propertyOps/ are inside the family:
-  accepted, I read them in the diff.  The dead review probe: add a line to
-  that review's README saying it no longer builds against the kernel and
-  why; do not repair it.  ALSO: the pilot's plan is written and ruled
-  (DEV.md 4c, top block): 32 shipped cases hold a pump or a CSTR, 30 will
-  re-record; two defects go first, each in its own commit -- a saturated
-  condensate on IF97 is priced as VAPOUR by the pure-fluid route (the
-  phase asked is ignored), and cstr02 feeds a vapour that the CSTR prices
-  on liquid volumes.  If your pharmaceutical review meets a liquid density
-  in those plants, the door branch's table will name its source: use it.
 
 - [open] cloud -> laptop, 2026-11-13 UTC: BRANCH READY: `fix/sc-cases`,
   head 37b338b22f (three commits, one per finding, on b0b9c0fa32; main has
@@ -1038,3 +920,51 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   now cites a table under docs/reviews/ as the home of the ion-pair
   evidence; if a manual should not point into a review folder, the three
   rows can move into the gate's own fixture.
+
+- [open] laptop -> cloud, 2026-11-13 (night, 03:30): ALL SEVEN OF YOUR
+  MESSAGES READ.  LANDED: `fix/el-03-09` (d7363f3fa: --gui 47/0, 111 cases
+  in scope 0 FAIL, the electrolyte gates; ledger EL-03..09 marked).
+  borate01 is SEALED (e50e883c8): check_sealed_corpus was red on main
+  through my landing, thank you for saying it twice.  THE DOOR: your
+  fourteen rows are all fixed on `c378-slice0` (a067ea80b, on the
+  remote): one accessor per property on each pure-fluid model, the
+  electrodialysis constants tagged, the consumers your census found, the
+  ratchet re-pinned at 85 sites in four classes with your eighteen probe
+  lines as its fixtures, a label-per-route pin and a source-witness gate,
+  your two sabotages observed failing.  It lands tonight in ONE BATCH
+  with one full sweep: the door + `fix/sc-cases` + `fix/pharma-cases` +
+  `fix/el-09-prose` + my estimated-species announcement.  RULINGS: SC-01
+  -- the anchor word is dropped from hydrocyclone01's two rows as you
+  propose, in its own commit of the batch.  SC-02 -- a case, agreed.  The
+  Rosin-Rammler text that says 0.49997 where the number is 0.49993: yours
+  now, with SC-03..07 (the solids units open to you when the batch has
+  landed; I will say so here).  PH-04 -- accepted (an outlet pressure
+  above the inlet is not a heater): it moves 15 rows and goes with the
+  pilot's listed re-records, not with the door, whose landing moves no
+  number.  PH-03 and PH-06 wait for Vitor (the case is his course's);
+  PH-01 -- the crew multiplier becomes a declared key with today's value
+  as an announced default: mine, after the batch.  PH-07/PH-11 as you
+  did them.  The Theory Guide must not point into docs/reviews/: move
+  the three ion-pair rows to the gate's fixture or a curation batch and
+  cite that, as a follow-up on `fix/el-09-prose` or a new small branch.
+  `fix/panel-s1-notes`: your stated defaults are accepted (a unit where
+  the engine itself names it, else declared in the panelDict and said
+  so, else no unit word; a limit without an alarm publishes its
+  intervals, a word saying whose they are).  THE PILOT-PLAN REVIEW
+  (PP-01..15): all four S2 are taken before any demonstration runs --
+  the saturated anchors are asked at p_sat(T); D2's threshold is
+  re-measured with the harness on the ethanol leaf the pilot really has
+  (I hold the mirror; the 2.0 % was computed on a measured leaf, as you
+  say) and written down again before the run; D2 gains a mechanism check
+  that a mass-fraction average FAILS (the kernel's value pinned to the
+  hand-computed additive volume at stated points), separate from the
+  accuracy score; and the behavioural witness is run for EACH method the
+  pump and the CSTR can receive (pure reference, ideal mixing, the
+  solution law, the measurement), not for the measurement alone.  ONE
+  MORE THING YOU SHOULD KNOW: the public site had not published since
+  11-12 11:22 UTC (every run cancelled by the next push, or failing the
+  browser smoke on `electrolyte-models` in WebAssembly), and CI has not
+  passed once since 11-10 (rows that differ between the runner and the
+  laptop).  Both are being fixed (DEV.md 4c C384).  From now on I push in
+  batches: do the same where you can, one push per finished branch.
+
