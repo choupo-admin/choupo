@@ -61,6 +61,17 @@ const logOf = (caseDir: string, file: string): LogRecord[] => {
 
 /** A number as the page prints it: the quoted string, compared at ITS OWN
  *  precision -- "0.499" means |x - 0.499| < 0.0005. */
+/** A converged residual in the round-off tail (below 1e-12) is solver arithmetic:
+ *  the last digits differ between two math libraries (the CI runner printed another
+ *  3.0e-15 than the maintainer's machine), so a GUI test never pins them (C384).
+ *  The page quotes its ORDER OF MAGNITUDE and that is what is asserted: the value is
+ *  within a decade of the quoted one.  Anything above the tail is pinned as printed. */
+function sameAsPrintedOrMagnitude(quoted: string, value: number): boolean {
+  const q = Number(quoted.replace("−", "-").replace(/\s/g, ""));
+  if (Math.abs(q) >= 1e-12) return sameAsPrinted(quoted, value);
+  return value > 0 && Math.abs(Math.log10(value) - Math.log10(Math.abs(q))) < 1;
+}
+
 function sameAsPrinted(quoted: string, value: number): boolean {
   const s = quoted.replace("−", "-").replace(/\s/g, "");
   const m = /^(-?\d+(?:\.(\d+))?)(?:e(-?\d+))?$/.exec(s);
@@ -145,7 +156,7 @@ describe("every number the prose quotes is the engine's own", () => {
     for (const r of rows.slice(1)) if (r.alpha !== null) expect(r.alpha).toBe(1);
     expect(Q.shiftNormF.length).toBe(rows.length - 1);
     Q.shiftNormF.forEach((q, k) =>
-      expect(sameAsPrinted(q, rows[k + 1]!.normF!), `|F| at iteration ${k + 1}`)
+      expect(sameAsPrintedOrMagnitude(q, rows[k + 1]!.normF!), `|F| at iteration ${k + 1}`)
         .toBe(true));
     //  ln N does not move: the shift neither makes nor destroys moles.
     for (const r of rows) if (r.dlnN !== null) expect(Math.abs(r.dlnN)).toBeLessThan(1e-8);
@@ -221,7 +232,7 @@ describe("every number the prose quotes is the engine's own", () => {
       { iteration: Q.ammoniaPrimalIterations, converged: true });
     expect(routeEnd(ammonia, "primalReseed")).toEqual(
       { iteration: Q.ammoniaReseedIterations, converged: true });
-    expect(sameAsPrinted(Q.ammoniaReseedNormF, pick(ammonia, "primalReseed", 0, "normF")!)).toBe(true);
+    expect(sameAsPrintedOrMagnitude(Q.ammoniaReseedNormF, pick(ammonia, "primalReseed", 0, "normF")!)).toBe(true);
     //  The re-seed Newton starts exactly where the primal left off.
     for (const q of ["pi_N", "pi_H", "pi_O", "lnN"])
       expect(pick(ammonia, "primalReseed", 0, q)).toBe(pick(ammonia, "primalSeed",
