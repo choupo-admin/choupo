@@ -280,14 +280,14 @@ describe("every file:line this page cites into the engine resolves", () => {
    *  long enough" and "the claim is where I said it is". */
   const ANCHORS: [string, number, string][] = [
     // the measurement: the sin/cos fit and what it publishes
-    ["src/dynamicDriver/DynamicDriver.cpp", 2004, "std::hypot(abc[1], abc[2])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2006, "std::atan2(abc[2], abc[1])"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2018, "out_phase_rad"],
-    ["src/dynamicDriver/DynamicDriver.cpp", 2023, "fit_residual_rel"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2005, "std::hypot(abc[1], abc[2])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2007, "std::atan2(abc[2], abc[1])"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2019, "out_phase_rad"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 2024, "fit_residual_rel"],
     // the drive
     ["src/control/signal/Signals.H", 124, "amplitude*sin"],
     // the half-step lag: the drive is held across the step (C22 slice 2)
-    ["src/dynamicDriver/DynamicDriver.cpp", 1730, "zero-order hold"],
+    ["src/dynamicDriver/DynamicDriver.cpp", 1731, "zero-order hold"],
     // "one point of a Bode plot" — the engine's own words for what it measures
     ["src/control/signal/Signal.H", 42, "one point of a Bode plot"],
     // the tank whose lag the page derives
@@ -303,7 +303,7 @@ describe("every file:line this page cites into the engine resolves", () => {
     ["src/propertyOps/ReactionCurve.H", 221, "theta_s"],
     ["src/propertyOps/ReactionCurve.H", 137, "Kc, Ti, Td"],
     // the one delay this tree has, and it is not a dead time
-    ["src/unitOperations/dynamic/DynamicUnitOperation.H", 143, "integrates"],
+    ["src/unitOperations/dynamic/DynamicUnitOperation.H", 151, "integrates"],
   ];
 
   it("lands each load-bearing citation on the statement it claims", () => {

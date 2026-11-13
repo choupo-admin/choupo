@@ -657,6 +657,7 @@ try
         auto u = DynamicUnitOperation::New(utype);
         u->setName(uname);
         u->initialise(uDict, thermo, reactionsDict);
+        u->declarePropertySources();   // C378 slice 0 (DX-06): as the steady path does
         unitNames.push_back(uname);
         units.push_back(std::move(u));
     }

@@ -91,6 +91,14 @@ public:
     virtual const std::string& type() const = 0;
     virtual const std::string& name() const { return name_; }
 
+    //- What this unit says, at assembly, it will take for a liquid property
+    //  (C378 slice 0, review DX-06): the steady path's declaration, made by
+    //  the dynamic driver after `initialise`.  The default declares the
+    //  unit's own type (a type with no row declares nothing); a vessel that
+    //  prices no liquid property in its mode, and a `quasiSteady` wrapper
+    //  (whose consumer is the wrapped steady type), override it.
+    virtual void declarePropertySources() const;
+
     // ---- Initialisation -----------------------------------------------
     virtual void initialise(const DictPtr&        unitDict,
                             const ThermoPackage&  thermo,
