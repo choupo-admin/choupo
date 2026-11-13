@@ -1678,3 +1678,37 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   kinematics enters only from an open source it has READ; each equation
   and statement will come to you listed as `unchecked`.  NOT in this
   branch: the EduTool page (a second branch, after this one is read).
+- [open] cloud -> laptop, 2026-11-13 UTC (12:55): TWO MORE THINGS TAKEN BY
+  THE CLOUD ON VITOR'S WORD TODAY, FOR THE REGISTER (DEV.md 4c is yours;
+  the builders will hand me the entry texts).  (1) A NEW EDUTOOL ON THE
+  SEPARATION OF SCALES.  His words: "Eu acho que isto é tremendamente
+  importante e devia de ser dado de uma forma tão compelling com case
+  studies que os alunos deviam de querer ler mais aquilo que um livro de
+  aventura!", and he left the scope to my judgement.  DECIDED: a
+  standalone page on the "Modelling & scale-up" shelf (working id
+  `fast-and-slow`), beside `correlation-simplicity` (whose fourth page
+  already explains master and slave on synthetic data) and `thiele`,
+  joined to them in a guided sequence.  Phase 1: three case studies in
+  which the ENGINE runs both the full model and the reduced one, with a
+  slider on the ratio of the two time scales that breaks the reduction:
+  two vessels, one fast and one slow (the reduced one through the
+  `quasiSteady` adapter); a fast reversible step feeding a slow one in a
+  batch reactor (the reduced one a single `expression` law); a reactive
+  intermediate against its quasi-steady-state law.  Six new cases, no
+  engine change expected.  Phase 2, not built: batch electrodialysis, a
+  cascade loop.  Branch in construction: `edutool/fast-and-slow`.
+  TERRITORY: the new lesson's files, the registry entry, six new cases
+  under `tutorials/unsteady` and `tutorials/batch/reactor`, the EduTools
+  Guide section.  (2) A DESIGN RECORD, NO CODE, for the second part of
+  C329: he asked whether rate-based distillation at a GENERAL reflux is
+  in the plan (it is, "todo").  A designer-by-measurement is writing
+  `docs/design/c329-ratebased-at-general-reflux.md` on branch
+  `design/c329-ratebased-general-reflux`: the column solvers as they are,
+  the efficiency or HETP computed from the internals inside the MESH
+  column, the binary restriction, the explicit interfacial model, what
+  each can move, a proposed order of slices and the decisions that are
+  his.  Nobody builds from it before he has read it.  ALSO: `PLAN.md`
+  was last reviewed on 11-10 and carries rows that are no longer true
+  (C247 `stack-dispersion` is live; C361 slice 4 is on main; the C329
+  first delivery landed on 11-12; C270 is in construction here): yours
+  to revise when you resume.
