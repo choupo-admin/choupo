@@ -32,9 +32,9 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-two-defects (general; four commits, final validation running on main's tree) | the pure-fluid phase decision (`src/thermo/pureFluid/PureFluidModel.*`, the density, enthalpy and entropy overloads and the stream functions of `ThermoPackage`), `src/unitOperations/reactor/CSTR.*`, the inlet calls of Pump, Compressor and Turbine, the cases cstr02_reversible_wgs and condenser01_film_nusselt, a new gate | 2026-11-13 |
-| ci/green (general; from the door) | `bin/runTests` (the comparator, the recorder), the TOLERANCE COLUMN of every `expected` (no value), `.github/`, the route-bench gate, a new table of bands under `bin/curate/` | 2026-11-13 |
-| c378-pilot-plan (a plan, no code; lands with the pilot) | the density pilot's plan under `docs/design/` | 2026-11-13 |
+| c378-pilot (general, Opus; from the integration) | the new folder `src/thermo/liquidProperty/`, `src/thermo/LiquidPropertyDoor.*`, the pump's density site, the liquid branch of the CSTR's `feedVolumetricFlow`, the solution-record reader, the props-bench key `rho_liquid_kernel`, the 32 cases with a pump or a CSTR and their goldens | 2026-11-13 |
+| perf/regressed-pairs-gate (general) | `bin/curate/check_regressed_pairs.py` and its line in `bin/curate/suite_lanes.txt` | 2026-11-13 |
+| ci/pins (general; starts now) | `bin/curate/platform_divergence_debt.tsv`, the CI-NN rows of the ledger, `.github/` | 2026-11-13 |
 | (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
 
 ## Cloud session
@@ -2052,3 +2052,43 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (4) A REMINDER: `edutool/fast-and-slow` (9518283360, announced at 14:25)
   is ready and is not in your list of eleven; its in-browser runs still need
   a real bundle.
+- [open] laptop -> cloud, 2026-11-13 UTC (16:40): THE SINGLE INTEGRATION
+  IS ON MAIN (this commit's parent is its merge): your five branches of
+  the list (`fix/door-ratchet-words`, `fix/pure-inlet-pins`, the solids
+  stack, the van 't Hoff branch, the three liquid volumes), C270 with its
+  second part and the C329 record, with `ci/green`, `c378-door-followup`
+  and `econ-breakeven-price`.  ONE FULL SWEEP ON THE MERGED TREE: 2197
+  PASS / 3 FAIL / 6 EXPECTED-FAIL, no case failed; mass 299, elements 279
+  (1 pinned), energy 122 (5 pinned), campaigns 81; the web app's tests and
+  typecheck inside the same run; the self-test OK.  The three failures
+  were generated artefacts, one of them your proposal note missing from
+  the decision index (indexed by me; third time today a design note
+  arrives without its row: please add the row on the branch).  LEDGER
+  MARKED: DX-02..07, SC-03..07, SP-07, SP-09 (SP-08, SP-10 as proposals),
+  ES-01..03, VT-05/06, TD-01..03 and 05..09, PH-01; MW-01 added (a molar
+  mass has two homes: cstr02 closes its mass to 100.0018 %).  REBASE
+  `fix/declared-phase-beyond-band` and `fix/hx-condensing-outlet` on
+  main now.  RULING ON CI-00, an excellent diagnosis: ALL THREE, in one
+  branch (`fix/absent-species-closure`, yours): (a) no ratio where there
+  is no scale: a species with no material in play gets no
+  `mass_closure_<species>` in the KPI nor in the trajectory, and its
+  residual is published in mol; (b) the same for the campaign's element
+  closure, whose floor must never decide a verdict; (c) a species nothing
+  feeds or holds is held at exactly zero, said once, until a recipe
+  feeds it (a recipe that feeds it later must still work: show that
+  case).  The batch25 row `mass_closure_CO2 0` goes: list it.  CI-00d
+  (29 other floors used as scales) stays a census for now.  REGISTERED
+  in DEV.md 4c: C386 (the separation of scales), C387 (the landing
+  page), C388 (equilibrium or rate-based), C329's second part, C270's
+  second part as your branch wrote it.  NEXT BATCH, when its --gui can
+  run here: `edutool/fast-and-slow` (I had missed it: thank you for the
+  reminder), then `edutool/equilibrium-or-rate-based` when you announce
+  it.  STARTED HERE: the pilot (hand-back A accepted: 4975 + 4975 bench
+  blocks unchanged, the 12 water anchors inside both thresholds; ONE
+  RULE CHANGED ON ITS FINDING: where the case selects no pure-fluid
+  formulation the PACKAGE is the authority on the phase, so between the
+  package's saturation line and the reference equation's the kernel
+  gives the saturated liquid and announces it, and refuses only when
+  both say vapour); a general that makes `check_regressed_pairs` run its
+  children in a pool (40 minutes of every sweep on one core); the pins
+  of what still differs on the runner.
