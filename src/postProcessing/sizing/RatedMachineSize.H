@@ -119,9 +119,43 @@ Description
     plot plan (`notPlacedBecause`): the machine stands in a room of the
     building, and the room is what the plan places.
 
+    THE TABLET PRESS'S THREE OPTIONAL CHECKS (2026-11-13, DEV.md 4c C270),
+    each a block of the designRules beside `rating`, each with its `source`
+    and `reason`; ABSENT, the run announces that the press was NOT checked
+    for dwell time and for compaction force (naming the keys) and no number
+    moves.
+      dwell { punchFlat <L>; pitchCircle <D>; minimumDwellTime <t>; }
+          the punch head's flat stays under the roll for t = L / (pi D n) at
+          n rev/s, so a formulation needing t_min is pressed no faster than
+          n_max = L / (pi D t_min).  Published: the dwell at the catalogue
+          speed, n_max, the dwell-limited capacity and `dwellBinds`; the
+          utilisation uses the LOWER capacity and a binding limit is
+          announced.  (The batch plan is NOT re-timed by it: the plan's
+          operating time is the case's declaration; see DEV.md 4c C270.)
+      effectiveness { availability; performance; quality; }
+          OEE = A x P x Q scales the capacity; a quality factor below 1 on a
+          press whose flowsheet already splits off a reject stream is
+          announced as rejects counted twice, with both numbers.
+      compaction { material; heckel { K | Py; A; Pmin; Pmax; basis
+                   inDie|outOfDie; } ryshkewitch { sigma0; kb; basis; }
+                   targetTensileStrength; punchTipArea; maxCompressionForce;
+                   [trueDensity;] }
+          ONE fitted material, no mixture rule (said on every run).  The
+          Ryshkewitch-Duckworth curve inverted gives the porosity at the
+          target strength, the Heckel line inverted the pressure at that
+          solid fraction, the punch tip area the force -- the SAME functions
+          the compaction bench fits (`propertyOps/CompactionLaws.H`).  A
+          target at or above sigma_0, a non-positive constant, or a solid
+          fraction the Heckel line reaches only below zero pressure REFUSE;
+          a pressure outside the Heckel window, two curves on different
+          bases, and a force above `announceAbove` of the press's maximum are
+          ANNOUNCED.  A declared true density adds the thickness of a
+          flat-faced tablet, m / (rho_true D A_tip).
+
     NOT MODELLED, said in the item's basis: the machine's behaviour (no
-    compaction force, no granule size, no blend uniformity), its overall
-    equipment effectiveness, and the speed at which a lot can really be run.
+    granule size, no blend uniformity; for any machine but a declared press,
+    no compaction force either), and the speed at which a lot can really be
+    run beyond what the declared dwell and effectiveness say.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
