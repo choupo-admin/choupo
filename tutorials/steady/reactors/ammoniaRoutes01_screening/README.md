@@ -236,9 +236,11 @@ engine's numbers move.
   feasibility case now runs at the cited 0.530 / 8.0 / 0.0175 EUR/kg, this
   screen at its own round 1.00 / 4.50 / 0.05, so the 0.160 EUR/kg above and
   the feasibility case's margin are different numbers. At the cited prices
-  the screen's own ratios (0.1776 kg H₂ and 0.82 kg N₂ per kg NH₃, read from
-  the table's raw-material row) would give 0.530 - 1.420 - 0.014 = -0.905
-  EUR/kg (worked by hand, not a run), against -0.929 EUR/kg in
+  the screen's own ratios give, per kg NH₃ (worked by hand, not a run):
+  ammonia sold 0.530; hydrogen 0.799 / 4.50 = 0.1776 kg H₂ (the table's
+  "raw materials" row, H₂ 0.799 EUR at 4.50) x 8.0 = 1.4208; nitrogen 0.041 /
+  0.05 = 0.82 kg N₂ (the same row, N₂ 0.041 EUR at 0.05) x 0.0175 = 0.0144;
+  margin 0.530 - 1.4208 - 0.0144 = -0.905 EUR/kg, against -0.929 EUR/kg in
   `greenAmmonia02_feasibility150bar` (its `grossMargin_RM`, -360.33 M EUR/yr
   on 387 732 t/yr). The difference, 0.024 EUR/kg, is the hydrogen the loop
   purges and flashes off, which an input-output balance cannot see because it

@@ -373,8 +373,8 @@ same under either tax reading above. For comparison only, and not like for
 like: IRENA's Innovation Outlook, Renewable Ammonia (2022) estimates "the
 range of USD 720 - 1 400 per tonne" for the production cost of renewable
 ammonia in new plants today (pdf p. 16), 720 being the estimate for the best
-solar and wind sites (p. 12): 0.68 to 1.33 EUR/kg at the ECB 2022 average of
-1.0530 USD per EUR, with hydrogen made on site; this plant buys hydrogen at
+solar and wind sites (p. 12): 0.68 to 1.33 EUR/kg at the ECB 2022 annual average of
+1.05305 USD per EUR (read 2026-11-13 from the ECB data API, EXR/A.USD.EUR.SP00.A, 1.0530486), with hydrogen made on site; this plant buys hydrogen at
 the EU's cost today.
 
 ### Utilities: what serves each duty, and the converter's steam credit
