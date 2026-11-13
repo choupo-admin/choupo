@@ -29761,6 +29761,14 @@ frequency, and Laplace domains'', \emph{Can.\ J.\ Chem.\ Eng.}\
 \textbf{56}, 257--262 (1978).  The two-point reaction-curve construction
 (Eq.~\ref{eq:rc-twopoint}).
 
+\bibitem{NUREG0700r3} O'Hara, J. M., and Fleger, S., \emph{Human-System
+Interface Design Review Guidelines}, NUREG-0700, Revision~3, U.S. Nuclear
+Regulatory Commission, Washington, DC (2020).
+
+\bibitem{HSE_CHIS6} Health and Safety Executive, \emph{Better alarm
+handling}, Chemicals Sheet No.~6 (CHIS6), printed and published by the
+Health and Safety Executive (March 2000).
+
 \bibitem{ShampineReichelt1997} Shampine and Reichelt, \emph{SIAM J.\
 Sci.\ Comput.}\ \textbf{18}, 1, 1997.  The ``ode23s'' embedded 2(3)
 Rosenbrock pair Choupo's \code{Rosenbrock23} implements
@@ -31986,11 +31994,22 @@ he can take; a quantity that only needs watching is a trend, and an event
 someone should know of (a normal end of batch) is a message.  One cause
 earns one alarm.  A person can act on only a limited number of alarms in a
 given time, and an upset that sets off many at once --- a flood --- hides
-the one that matters.  These rules are written here from reasoning; they
-are also the subject of published alarm-management and display standards
-(ISA-18.2, IEC~62682, ISA-101.01) and of an open US-government review guide
-(NUREG-0700), none of which was read for this section, and no number is
-taken from them.
+the one that matters.  These rules were first written from reasoning and
+then read against two public documents: the US review guide for
+human-system interfaces \cite{NUREG0700r3} (Revision~3, read in full; the
+alarm guidelines of its Section~4 and the display guidelines of Sections~1
+and~6) and a guidance sheet of the UK safety regulator on alarm handling
+\cite{HSE_CHIS6}.  None is contradicted; three are stated here more
+strongly than the guide states them: it lets the alarm of a consequence be
+\emph{suppressed} and stay retrievable rather than removed, it asks for
+conservative and consistent colour rather than a grey display (grey when
+normal is this panel's own choice), and it says a status message
+``generally should not'' go through the alarm display.  The only alarm
+rates in hand are the sheet's: about one alarm in ten minutes in normal
+operation, and no more than ten in the first ten minutes after a major
+upset.  The alarm-management and display standards sold by their
+publishers (ISA-18.2, IEC~62682, ISA-101.01) were not read, and Revision~4
+of the review guide could not be obtained.
 
 \textbf{What the engine does.}  A case may declare its panel in
 \file{system/panelDict}; \code{choupoBatch} reads it after the time loop

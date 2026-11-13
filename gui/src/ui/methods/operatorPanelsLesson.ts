@@ -22,9 +22,11 @@
   engine reads the panel after the run and reports FACTS about it
   (src/postProcessing/panel/PanelPass.cpp).  What makes a panel GOOD is not
   a fact and no engine grades it: the rules on this page are good practice
-  written from reasoning, and every one taken from the practice of alarm
-  management and operator displays is marked UNCHECKED against its source in
-  docs/design/operator-panels-good-practice.md, section 6.
+  written from reasoning.  Section 6 of docs/design/operator-panels-good-practice.md
+  records, rule by rule, which of them were read in NUREG-0700 Revision 3
+  (US NRC) or in the UK HSE sheet "Better alarm handling" (CHIS6), with the
+  guideline numbers, and which stay UNCHECKED because their source is a paid
+  standard that was not read.
 \*---------------------------------------------------------------------------*/
 
 import type { LessonLimit, LessonStep } from "./lessonStep.js";
@@ -59,8 +61,11 @@ export const PANEL_STEPS: readonly LessonStep[] = [
       + "wrong, but because it answers no question the operator has at the "
       + "rig.  The table maps the worked panel; the list under it is what the "
       + "run publishes and the panel does not show, each with the reason.",
-    note: "The mapping is this page's design reasoning for this rig, not a "
-      + "rule from a standard.  A different operator (a maintenance "
+    note: "The mapping is this page's design reasoning for this rig.  What "
+      + "an open review guide does say is the general principle: a display "
+      + "carries the simplest information its function needs and nothing "
+      + "irrelevant to the task (NUREG-0700 Rev. 3, guideline 1.5-6), and the "
+      + "format follows the task (1.1-1).  A different operator (a maintenance "
       + "technician, a process engineer reviewing a campaign) has different "
       + "questions and gets a different panel from the same run.",
   },
@@ -73,9 +78,9 @@ export const PANEL_STEPS: readonly LessonStep[] = [
       + "says where it is heading.  A lamp says only whether it is normal, in a "
       + "word.  Colour is reserved for the abnormal: a panel where everything "
       + "is grey when all is well makes the one coloured element impossible to "
-      + "miss.  And colour never works alone -- a word or a shape doubles it, "
-      + "because some operators do not see the difference between red and "
-      + "green and a printed panel may be in black and white.",
+      + "miss.  And colour never works alone -- another cue doubles it (here a "
+      + "word and a shape), because some operators do not see the difference "
+      + "between red and green and a printed panel may be in black and white.",
     formula: String.raw`d \;=\; \frac{x_{\text{high}} - \max_k x_k}{x_{\max} - x_{\min}}`,
     where: [
       { sym: "d", means: "the closest approach of a run to a high limit, as a "
@@ -90,8 +95,15 @@ export const PANEL_STEPS: readonly LessonStep[] = [
       { sym: "x_{\\min}", means: "the bottom of the element's declared scale "
         + "(range min)" },
     ],
-    note: "The four drawings are the page's illustrations of four display "
-      + "forms, kept small and local to this lesson.  Whether the value is "
+    note: "Two of these statements are read in NUREG-0700 Rev. 3: colour "
+      + "coding should be redundant with another display feature, so that the "
+      + "information survives a monochrome display, a printout or a colour "
+      + "vision impairment (1.3.8-10), and colour should be used conservatively "
+      + "and consistently (1.3.8-1).  \"Grey when normal\" is this page's "
+      + "design choice, not a rule of that guide: its dark-board guideline "
+      + "(4.1.1-4) is about which conditions may be in the alarm state, not "
+      + "about colour.  The four drawings are the page's illustrations of four "
+      + "display forms, kept small and local to this lesson.  Whether the value is "
       + "abnormal at the cursor is not decided by the page: it is read from "
       + "the alarm intervals the engine published for that element.",
   },
@@ -107,6 +119,12 @@ export const PANEL_STEPS: readonly LessonStep[] = [
       + "to diagnose -- which is where the wall of numbers belongs.  Moving "
       + "down a level is a choice the operator makes; nothing forces him to "
       + "read the detail to know the plant is normal.",
+    note: "The three levels are this page's arrangement.  NUREG-0700 Rev. 3 "
+      + "says an overview display should show the overall status at a glance, "
+      + "including the presence of alarm conditions (6.1.2-2, 6.1.2-5) and "
+      + "point the user to the detail (6.1.3-1), but it also says one should "
+      + "not be provided where it would distract from the tasks (6.1.2-1), and "
+      + "it prescribes no unit level or number of levels.",
   },
   {
     n: 5,
@@ -117,18 +135,30 @@ export const PANEL_STEPS: readonly LessonStep[] = [
       + "alarms that always sound together teach the operator to acknowledge "
       + "both without reading either.  Alarms have priorities, so the "
       + "operator knows which to act on first.  A normal end of batch is a "
-      + "message, never an alarm.  And a person can act on only so many "
+      + "message, not an alarm.  And a person can act on only so many "
       + "alarms in a given time: when a single upset sets off many at once -- "
       + "an alarm flood -- the one that matters is lost among the others.  "
       + "Move the over-limiting limit and watch the engine's facts change; "
       + "then run the naive panel, which puts an alarm on everything that "
       + "moves, and count what the operator would face.",
     note: "The facts (violated, never approached, alarms active) are the "
-      + "engine's, from a re-run of the case with the changed panel.  How "
-      + "many alarms a person can handle is NOT taken from a standard here: "
-      + "it is an adjustable assumption of the page, labelled as such, and "
-      + "the onsets per window are the page's own count over the engine's "
-      + "alarm intervals.",
+      + "engine's, from a re-run of the case with the changed panel.  Read in "
+      + "NUREG-0700 Rev. 3: alarm conditions are those that need operator "
+      + "attention or action (4.1.1-4); status messages that ask for no action "
+      + "generally stay out of the alarm display (4.1.2-5); alarms are "
+      + "prioritised (4.1.3-1); alarm reduction must keep the crew able to act "
+      + "on all that matter, with no figure given (4.1.2-1, 4.1.2-2).  "
+      + "Where it differs from this page: for alarms that always follow one "
+      + "event it says to SUPPRESS the consequence alarm so that it stays "
+      + "retrievable, not to remove it (4.1.2-9, 4.1.3-2, 4.1.3-3).  The "
+      + "UK HSE sheet CHIS6 (quoting the EEMUA guide) gives figures: a "
+      + "long-term average of no more than one alarm in ten minutes in "
+      + "normal operation and no more than ten displayed in the first ten "
+      + "minutes after a major upset, and about three priorities.  The "
+      + "handling rate of this page's slider (default 2 in ten minutes) is "
+      + "NOT taken from either: it is an adjustable assumption, labelled as "
+      + "such, and the onsets per window are the page's own count over the "
+      + "engine's alarm intervals.",
   },
   {
     n: 6,
@@ -196,13 +226,17 @@ export const PANEL_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "unchecked-practice",
-    title: "The good-practice rules are unchecked against their sources.",
-    body: "The standards on alarm management and operator displays are "
-      + "published texts that are not in hand here; no number, table or "
-      + "figure is taken from them.  The rules on this page are written from "
-      + "reasoning, and the design note lists each with its status.  The "
-      + "never-approached threshold of 0.5 is a default of the design "
-      + "record, and the alarm-handling rate is an assumption of this page.",
+    title: "Only part of the good-practice rules are checked against a source.",
+    body: "Two open documents were read for these rules: the US NRC review "
+      + "guide NUREG-0700 (Revision 3, 2020) and the UK HSE sheet \"Better "
+      + "alarm handling\" (CHIS6, 2000); the design note gives the guideline "
+      + "or page of each rule they support and where they differ from the "
+      + "page.  The paid standards on alarm management and operator displays "
+      + "(ISA-18.2, IEC 62682, ISA-101.01) and the EEMUA guide were not read, "
+      + "and a rule only they could support stays unchecked.  No table or "
+      + "figure of a standard is on the page.  The never-approached threshold "
+      + "of 0.5 is a default of the design record, and the alarm-handling "
+      + "rate is an assumption of this page.",
   },
   {
     id: "dimension",

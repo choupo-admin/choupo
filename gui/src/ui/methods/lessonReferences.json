@@ -2885,11 +2885,31 @@
         {
           "text": "O'Hara, J. M.; Fleger, S.; Hughes Green, N.; Morrow, S. (2026). Human-System Interface Design Review Guidelines. NUREG-0700, Revision 4. U.S. Nuclear Regulatory Commission, Office of Nuclear Regulatory Research.",
           "url": "https://www.nrc.gov/reading-rm/doc-collections/nuregs/staff/sr0700/r4/index.html",
-          "note": "An open (US-government) set of review guidelines whose sections include information displays and alarm systems.  Listed as further reading: no rule, number or figure on this page is taken from it, and its content was not read for this page.",
+          "note": "The current revision.  Listed as further reading: its body could not be downloaded for this check (the nrc.gov file server refused an automated request), so the rules on this page were read in Revision 3 (July 2020) instead.  The NRC page says Revision 4 updates Sections 1, 2, 6, 7 and 10 and adds Section 15; Section 4 (alarm systems) is not on that list, while the display guidelines read here (Sections 1 and 6) may differ in Revision 4.",
           "verified": {
             "method": "official",
             "evidence": "nrc.gov NUREG-0700 collection page and the Revision 4 page fetched 2026-11-12: title, number, Revision 4, publication date January 2026, the four authors and the abstract's list of fifteen sections (1 information displays, 4 alarm systems) read; the report body was not read",
             "date": "2026-11-12"
+          }
+        },
+        {
+          "text": "O'Hara, J. M.; Fleger, S. (2020). Human-System Interface Design Review Guidelines. NUREG-0700, Revision 3. U.S. Nuclear Regulatory Commission, Office of Nuclear Regulatory Research.",
+          "url": "https://www.osti.gov/biblio/1644018",
+          "note": "READ for this page (superseded by Revision 4, see the entry above): the guidelines cited in the design note are 1.1-1, 1.3.8-1, 1.3.8-10, 1.5-6, 4.1.1-4, 4.1.2-1, 4.1.2-2, 4.1.2-5, 4.1.2-9, 4.1.3-1, 4.1.3-2, 4.1.3-3, 6.1.2-1, 6.1.2-2, 6.1.2-5 and 6.1.3-1.  The guide gives no figure for how many alarms a person can handle.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "full report (558 pages) downloaded 2026-11-13 from the US Department of Energy OSTI repository, which holds the NRC report (osti.gov/biblio/1644018; the nrc.gov file server refused the download), read with pdftotext; title page: NUREG-0700 Revision 3, manuscript completed October 2019, published July 2020, authors O'Hara and Fleger; each guideline listed in the note read in Sections 1, 4 and 6",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Health and Safety Executive (2000). Better alarm handling. Chemicals Sheet No 6 (CHIS6). Sudbury: HSE Books.",
+          "url": "https://www.hse.gov.uk/PuBns/chis6.pdf",
+          "note": "Guidance of the UK safety regulator, four pages, free on hse.gov.uk; read in full.  It quotes the alarm-rate targets and the proportions of priorities from the EEMUA guide (pages 37 and 65), which was not read.",
+          "verified": {
+            "method": "official",
+            "evidence": "PDF downloaded from hse.gov.uk and read in full 2026-11-13 (pdftotext): title, Chemicals Sheet No 6, 'information current at 3/00', Step 1 on alarm necessity and rate targets, prioritisation box, Step 2 on quick fixes",
+            "date": "2026-11-13"
           }
         },
         {

@@ -34,8 +34,11 @@ builds.
   value with a limit).  Its one count is the alarm ONSETS (starts of the
   engine's intervals) inside any ten-minute window, step 5, labelled `page`.
 * **Assumption** (labelled on the page): how many alarms one person can act
-  on in ten minutes.  Default 2, adjustable 1-20.  It is NOT a standard's
-  value; no such number was read from any source.
+  on in ten minutes.  Default 2, adjustable 1-20.  It is NOT taken from a
+  source.  (The UK HSE sheet CHIS6 quotes, from the EEMUA guide, no more than
+  ten alarms displayed in the first ten minutes after a major upset and an
+  average of no more than one in ten minutes in normal operation; NUREG-0700
+  gives no figure.  The default stays the page's own assumption.)
 
 ### What the engine's panel block supplied
 
@@ -152,30 +155,52 @@ reference cannot show the fault it is made from.
 * No mid-run disturbance: the unit takes none (record section 2).
 * No alarm priorities in the grammar: the page states the rule, the panel
   cannot declare a priority.
-* The alarm-handling rate is not taken from any source.
+* The alarm-handling rate is not taken from any source (see section 1 for
+  the figures the HSE sheet quotes).
 
-## 6. To check against the source
+## 6. Checked against the source
 
-Status words: `unchecked` (a practice principle whose source is a paid text
-not read here); `verified open source <how>`; `the page's own design
-reasoning`.  No table, threshold or figure of a standard is on the page.
+Read 2026-11-13: **NUREG-0700, Revision 3** (US NRC, July 2020; full report,
+558 pages, from the US DOE OSTI copy `osti.gov/biblio/1644018`, because the
+nrc.gov file server refused an automated download) and **HSE, "Better alarm
+handling", Chemicals Sheet No 6 (CHIS6, 2000)**, `hse.gov.uk/PuBns/chis6.pdf`,
+four pages.  NOT read: ISA-18.2-2016, IEC 62682:2022, ISA-101.01-2015, the
+EEMUA guide (all sold) and NUREG-0700 Revision 4 (current; per the NRC page
+it updates Sections 1, 2, 6, 7 and 10 and adds Section 15, so Section 4 on
+alarms is untouched but the display guidelines below, Sections 1 and 6, may
+read differently in it).  NUREG numbers are guideline numbers with the page
+label of Revision 3.
 
-| what | the work | where on the page | status |
-|---|---|---|---|
-| an alarm must ask for an operator action; otherwise it is a trend or a message | ISA-18.2-2016; IEC 62682:2022; EEMUA Publication 191 (title and edition not verified on an official page) | step 5, Theory Guide sec:operatorPanels | unchecked |
-| one cause, one alarm | ISA-18.2-2016; IEC 62682:2022 | steps 5, 7 | unchecked |
-| alarms carry priorities | ISA-18.2-2016; IEC 62682:2022 | step 5 | unchecked |
-| a normal end of batch is a message, not an alarm | the operator-panel record and the prior review | step 5 | the page's own design reasoning |
-| the rate of alarms a person can handle is limited; the alarm flood as the classic failure | ISA-18.2-2016; EEMUA Publication 191 | step 5 | unchecked (the limit itself is the page's adjustable assumption) |
-| colour reserved for the abnormal (a grey panel when normal) | ISA-101.01-2015 | step 3 | unchecked |
-| colour always doubled by a word or a shape | ISA-101.01-2015; NUREG-0700 Rev. 4 (information displays) | step 3 | unchecked (NUREG-0700 Rev. 4 verified to exist on nrc.gov, its content not read) |
-| display hierarchy overview / unit / detail | ISA-101.01-2015 | step 4 | unchecked |
-| control-room ergonomics generally | ISO 11064 series (title not verified: the official page refused the fetch) | further reading in this note only | unchecked |
-| start from the operator's questions; task -> minimum information -> element | -- | step 2 | the page's own design reasoning |
-| a complex system that works grew from a simple one that worked | Gall, Systemantics (1977) | step 6 | paraphrase; catalogue record verified on Open Library, wording not checked against the book |
-| `neverApproached` at 0.5 of the range | the operator-panel record, section 5 | steps 5, 7 | the record's default, not a practice |
-| the definitions of every fact | `src/postProcessing/panel/PanelPass.cpp`; Design Guide sec:operatorPanel | all steps | engine (S1), read from the run |
-| NUREG-0700 Rev. 4 exists, is a US-government report, and has sections on information displays and alarm systems | nrc.gov NUREG-0700 Rev. 4 page | references | verified open source (official page fetched 2026-11-12; body not read) |
+Status words: `read in <source>` (verdict supported / supported with a
+difference); `unchecked` (its source is a paid text not read); `not addressed`
+(read, and the document does not say it); `the page's own design reasoning`.
+No table, threshold or figure of a standard is on the page.
+
+| what | read in | guideline, page | verdict | status |
+|---|---|---|---|---|
+| an alarm must ask for an operator action; otherwise it is a trend or a message | NUREG-0700 Rev. 3; HSE CHIS6 | 4.1.1-4 (4-12): only conditions that "require operator attention or action are in the alarm state"; 4.1.2-5 (4-13); HSE p.1 "Are they all necessary, requiring operator action?" | supported | read (was: ISA-18.2, IEC 62682, EEMUA 191, unchecked) |
+| one cause, one alarm | NUREG-0700 Rev. 3 | 4.1.2-9 (4-14), Table 4.1 causal and multisetpoint rows (4-3) | supported with a difference: the guide says the consequence alarm MAY be suppressed (kept retrievable, 4.1.3-2, 4.1.3-3), "only the alarm message associated with the main event may be presented", never removed; the page's reason (operators acknowledge both unread) is not in the guide | read for the rule; the reason is the page's own; ISA-18.2/IEC 62682 not read |
+| alarms carry priorities | NUREG-0700 Rev. 3; HSE CHIS6 | 4.1.3-1 (4-14): "presented in prioritized form to indicate urgency"; HSE p.2 "Use about three priorities", based on consequences | supported | read |
+| a normal end of batch is a message, not an alarm | NUREG-0700 Rev. 3; HSE CHIS6 | 4.1.2-5 (4-13): status indications "generally should not be presented through the alarm system display"; 6.1.2-2 (6-5); HSE p.1 "process status indicators should not be designated as alarms" | supported with a difference: "generally should not", not "never" (the guide allows them if readily told apart from alarms); the page now says "not an alarm" | read; the end-of-batch example is the page's |
+| the rate of alarms a person can handle is limited; the alarm flood as the classic failure | NUREG-0700 Rev. 3; HSE CHIS6 | 4.1.2-1 (4-12): alarm system must not "overload the operator's cognitive processes"; 4.1.2-2 (4-12): "no specific guidance on the degree of alarm reduction required"; HSE p.1: 275 alarms in the last 11 minutes at Texaco Milford Haven, "alarm floods" | supported (the guide gives no figure; HSE quotes EEMUA's) | read |
+| colour reserved for the abnormal (a grey panel when normal) | NUREG-0700 Rev. 3 | 1.3.8-1 (1-46) "employed conservatively and consistently"; 1.3.8-4 (1-47); 4.1.1-4 (4-12) | supported with a difference: the guide asks for conservative, consistent colour and saturated colour for critical data, and a dark board for the ALARM state; it has no "all grey when normal" rule | read for conservative use; "grey when normal" is the page's design choice; ISA-101.01 not read |
+| colour always doubled by a word or a shape | NUREG-0700 Rev. 3 | 1.3.8-10 (1-50): "Color coding should be redundant with some other display feature" (monochrome, printout, colour vision impairment) | supported | read (was: ISA-101.01, NUREG-0700 Rev. 4 contents, unchecked) |
+| display hierarchy overview / unit / detail | NUREG-0700 Rev. 3 | 6.1.2-1, 6.1.2-2, 6.1.2-5 (6-4 to 6-6), 6.1.3-1 (6-7), 1.1-14 (1-9) | supported with a difference: an overview showing status and alarms at a glance and leading to detail is read; three levels and a "unit" level are not in the guide, and it says no overview should be provided where it would distract (6.1.2-1) | overview read; the three-level arrangement is the page's; ISA-101.01 not read |
+| start from the operator's questions; task -> minimum information -> element | NUREG-0700 Rev. 3 (principle only) | 1.5-6 (1-57): "information irrelevant to the task should not be displayed"; 1.1-1 (1-6) format follows the task | supported with a difference: the principle is in the guide; the three questions and the mapping table are the page's method | the page's own design reasoning, with the principle read |
+| every alarm has a defined action (the page's exercise defect, an action that is only a description) | NUREG-0700 Rev. 3; HSE CHIS6 | 4.5-1 (4-35): response procedures for alarms that require a response; HSE p.2 "Have a defined response to each alarm", p.3 "eliminate/review alarms with no defined operator response" | supported | read |
+| the limit is a trade-off (timely against nuisance), so the slider moves it | NUREG-0700 Rev. 3 | 4.1.1-2, 4.1.1-3 (4-11): "tradeoff between the timely alerting of an operator ... and the creation of nuisance alarms" | supported | read |
+| four forms for one value: number, scale with limit, trend, lamp | NUREG-0700 Rev. 3 | 1.1-13 (1-9) trend graphs support projecting the future state; 1.2.11-1 (1-34) zones on a scale | supported with a difference: trend and operating-range zones read; the guide does not rank bare number, scale and lamp | read for trend and zones; the comparison is the page's |
+| a complex system that works grew from a simple one that worked | Gall, Systemantics (1977) | step 6 | not addressed by either document read (NUREG 1.5-6 on simplicity is related, not the claim) | paraphrase; catalogue record verified on Open Library, wording not checked against the book |
+| `neverApproached` at 0.5 of the range | the operator-panel record, section 5 | steps 5, 7 | not addressed: neither document gives a threshold | the record's default, not a practice |
+| the alarm-handling rate of the slider, default 2 in ten minutes | the page's assumption | step 5 | not addressed by NUREG-0700; HSE quotes other figures (one in ten minutes average, ten in the first ten minutes after an upset) | the page's adjustable assumption, labelled on the page |
+| control-room ergonomics generally | ISO 11064 series (title not verified: the official page refused the fetch) | further reading in this note only | not addressed (no rule of the page rests on it) | unchecked |
+| the definitions of every fact | `src/postProcessing/panel/PanelPass.cpp`; Design Guide sec:operatorPanel | all steps | not a practice rule | engine (S1), read from the run |
+| NUREG-0700 exists, is a US-government report, and has sections on information displays and alarm systems | nrc.gov NUREG-0700 Rev. 4 page; Revision 3 report | references | verified | verified open source: Rev. 3 read 2026-11-13 (kind `pdf`); Rev. 4 official page fetched 2026-11-12, body not read |
+
+Still unchecked, by name: ISA-18.2-2016, IEC 62682:2022, ISA-101.01-2015 and
+the EEMUA guide as the sources of their own wording (for every rule above
+that cites them, the rule is now read elsewhere; what those texts say beyond
+it is unread), and ISO 11064.
 
 ## 7. Findings about the landed S1 slice (reported, not fixed)
 
