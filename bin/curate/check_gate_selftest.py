@@ -322,8 +322,8 @@ SOURCE_SABOTAGES = [
         "gate": "check_property_route_bench.py",
         "kind": "source/route-relabelled",
         "file": "src/thermo/LiquidPropertyDoor.cpp",
-        "find": "        case Route::anchoredRackett: return \"each component's 25 C molar volume scaled to temperature by Rackett\";",
-        "replace": "        case Route::anchoredRackett: return \"each component's 25 C molar volume, with no temperature effect (its record has no critical constants)\";",
+        "find": "        case Route::anchoredRackett: return \"each component's \" + where + \" scaled to temperature by Rackett\";",
+        "replace": "        case Route::anchoredRackett: return \"each component's \" + where + \", with no temperature effect (its record has no critical constants)\";",
         "why": "the door review's SB-3 (C378 slice 0, DR-11): the scaled route "
                "described with the flat route's words, every value unchanged.  "
                "The bench pins the door's method id and label per state "
