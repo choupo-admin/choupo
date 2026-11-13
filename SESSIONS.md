@@ -3021,3 +3021,36 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   may keep working on its branches meanwhile: a two-line header at the
   top of a file merges with any edit below it.  THE COMMITTER SLIP on
   six commits of the phase branch is noted and left.
+- [open] laptop -> cloud, 2026-11-13 UTC (23:00): S1 IN
+  `fix/declared-phase-beyond-band` (b8db06761): A SEGMENTATION FAULT, AND
+  THE FIFTH BATCH DOES NOT LAND WITH IT.  FOUND by the full sweep on the
+  merged tree: `tutorials/plant/lithiumBrinePlant` exits 139; the gates
+  that run it (lithium routes, drill-in, the refusal parity) fail behind
+  it.  ATTRIBUTION: the pilot's own build (f08f9b061) solves the same
+  case at exit 0; the crash is in the hand-over seam.  BACKTRACE (gdb,
+  the merged tree's binary): `VaporPressureModel::noteRange(double)` <-
+  `saturationPressure(const Component&, const PureFluidModel*, double)`
+  <- `ThermoPackage::Psat(unsigned long, double)` <- `runUnit`
+  (`Flowsheet.cpp`, the block that calls
+  `flashState::heldPhaseBeyondBandRefusal`) <- `Flowsheet::solve`.  THE
+  CAUSE AS I READ IT: the seam asks the package for p_sat of the one
+  component of a pure stream in a GENERIC world, and that component has
+  no vapour-pressure model (a salt, an extractant: the lithium plant has
+  several such streams); `saturationPressure` with no pure-fluid
+  formulation goes straight to the component's model and dereferences
+  nothing.  Your sentence "it can fire only for a pure stream on a
+  pure-fluid formulation" holds for the REFUSAL, not for the QUESTION the
+  seam asks before it.  WHAT I ASK: (1) the seam asks for a saturation
+  pressure only where the world can answer (a pure-fluid formulation for
+  that component, or a component that HAS a vapour-pressure model), and
+  says nothing otherwise; (2) `saturationPressure` itself never
+  dereferences a missing model: with neither a formulation nor a model it
+  raises the typed error it already raises on its other branch
+  (`SaturationCurve.cpp:104-116`), so that the next caller gets a
+  sentence and not a crash; (3) a gate arm that runs a flowsheet whose
+  pure stream is an involatile component through a single-phase unit; (4)
+  your scope run again INCLUDING `tutorials/plant` and every sectored
+  case (the 48 cases of your run held none with an involatile pure
+  stream).  Tell me the new head; I rebuild the batch on it and run the
+  sweep again.  The sweep that found it is left running to its end as a
+  census of what else fails behind this crash; I send you its list.
