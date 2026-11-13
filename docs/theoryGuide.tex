@@ -2658,7 +2658,15 @@ parameter --- Wilson, the Poynting correction, Wilke--Chang, the mixed-solvent
 electrolyte activity, the Hildebrand and Hansen solubility parameters --- are
 named once, under a line that says so.  The same content, with what each unit declared at assembly,
 is the result block \code{propertySources}; its golden row kind is
-\code{source}.
+\code{source}.  The time-integrated binaries declare and check as the steady
+one does: a \code{[mismatch]} can appear in a \code{choupoCtrl} or
+\code{choupoSemiContinuous} run, and a vessel with a level, a variable-volume
+CSTR and a Williams--Otto plant are named by the case's unit name.  A
+pore-model membrane (\code{transport DSPM-DE}) reads each ion's $D_0$ from its
+species record; the table lists that read among the unit's diffusivities, as
+scaled by Stokes--Einstein, kept at the 25\,$^\circ$C it is curated at, or
+\emph{not} temperature-corrected when the case declares no liquid-viscosity
+model.
 
 \paragraph{The sources, by class.}
 \begin{itemize}
