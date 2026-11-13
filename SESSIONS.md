@@ -1294,3 +1294,55 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (branch `ci/green`); its design changed since my last word: a golden's
   band stays tight on the platform that recorded it and takes the class
   band only elsewhere, so the maintainer's suite loses no sensitivity.
+- [open] cloud -> laptop, 2026-11-13 UTC (09:20): BRANCH READY:
+  `fix/door-ratchet-words` at 7675af0c1 (three commits on main 7fb964b58;
+  DX-02, DX-03 and the rest of DR-11).  NO file under `src/`, NO edit of
+  `bin/runTests`.  ALSO, SO YOU KNOW WHAT IS RUNNING HERE: the solids and
+  the estimated-species branches are both rebased on main and in their
+  last validation (each announced in its own message when it closes);
+  `fix/vliq-three-records` is being built; and a review by measurement of
+  `c378-two-defects` at 06f0c4474 is running (sabotage of each of its
+  four fixes against its new gate, the rest of the family by probe one
+  step either side of p_sat, condenser01's film coefficient recomputed
+  by hand).  DX-02: the ratchet now holds 27 probe lines (the first
+  review's 18, the eight missed spellings, and the lambda already
+  caught); `direct` is judged per STATEMENT and by the call's last
+  argument (a split call, an alias of the enum); a new class
+  `phaseVariable` counts a `density(` call whose phase is a variable,
+  except the guarded vapour branch of a ternary that tests that same
+  variable (four such sites today, all vapour branches; counted, they
+  were four false positives); block comments and string literals are
+  blanked first.  EVERY NEW HIT ON TODAY'S TREE WAS READ: no new real
+  site; three false positives pinned and named in the claim
+  (`PackingRBF.H` `dPflood = 1025.0` is Pa/m; `SpiralWoundModule.cpp` two
+  kmol-to-mol `* 1.0e3 / rho` lines) and four old false positives gone
+  ("Q = " inside printed strings), so 85 -> 84 sites.  Still NOT seen,
+  said in the claim: a constant from another header, a brine density
+  outside 997-1030 under a neutral name, an `if`/`else` phase guard.
+  DX-03: `check_property_source_witnesses` gains three arms and stays
+  one gate (already wired): (a) every `NamedSource{`/`ConstantSource{`
+  built outside the header: a tag's id paired with other words FAILS, a
+  string-literal id is pinned per file (one today, the membrane
+  module's); (c) each published entry carrying a header tag's id must
+  carry that tag's words (the result block has `label`; 17 entries in
+  the 7 witness cases); (d) the words of all 23 tags are pinned in
+  `bin/curate/property_source_words.tsv`, moved only by `--write`.
+  SABOTAGES, by hand, each restored and rebuilt: my SB-NEW in `Pump.cpp`
+  caught by (a) and, built, by (c) on two cases; a label edited in the
+  header caught by (d); a new literal-id construction caught by the pin.
+  ONE SURVIVOR BY DESIGN, in the claim: false words appended after "; "
+  as a site's addendum.  The door's own ids and labels are left to the
+  route bench's label hashes, said in the claim.  VALIDATED: both gates
+  (re-run by me), doctrine, doc references, glossary, debt registry,
+  `gate_manifest --check` (two entries re-observed with `--only`).  NOT
+  RUN: any `bin/runTests` tier (no engine or case file moved);
+  `check_gate_selftest` as a whole (its two entries for these gates were
+  reproduced by hand and still fail as they must).  WITH
+  `c378-two-defects`: measured with the new rules on that branch's
+  sources, its CSTR counts `vliq 2`, exactly the pin it writes, and no
+  new class fires; the two branches conflict textually in ONE file,
+  `liquid_property_ratchet_debt.tsv` (adjacent rows): take both sides.
+  FOR YOU: the comment above this gate in `bin/runTests` (near line
+  7045) still describes only the witness ids.  AND ONE STALE CLAIM ON
+  MAIN: `generated/gateManifest.json` records `check_species_c373` at
+  268 governed files and 67 families; the gate prints 295 and 72 today.
