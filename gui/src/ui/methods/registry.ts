@@ -81,7 +81,7 @@ export type MethodToolId =
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
-  | "operator-panels" | "fluidised-beds";
+  | "operator-panels" | "fluidised-beds" | "fast-and-slow";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -278,6 +278,18 @@ export const METHOD_PATHS: MethodPath[] = [
       { tool: "relaxation", why: "Why a recycle must be iterated, and how a step factor tames an oscillating loop but never a runaway one." },
       { tool: "wegstein", why: "The same factor, chosen for you per variable from the last two passes, on a tear that holds a flow and a temperature." },
       { tool: "tear-streams", why: "Which stream to cut in the first place: the engine detects every cycle and leaves the cut to the author." },
+    ],
+  },
+  {
+    //  2026-11-13 (the fast-and-slow commission): one argument across three
+    //  pages, the owner's framing -- the question, the mechanism, an instance.
+    id: "fast-and-slow",
+    title: "Why correlations are simple",
+    intro: "The question, the mechanism at work on running models, and one more instance of it.",
+    steps: [
+      { tool: "correlation-simplicity", why: "Asks the question: dimensional analysis alone does not make a correlation simple, so what does?" },
+      { tool: "fast-and-slow", why: "Shows the mechanism at work: the engine runs a full and a reduced model, and the reduced one is a simple law inside a window of the ratio of time scales." },
+      { tool: "thiele", why: "One more instance: the pellet's interior settles on the bulk, and what is left is one number, the effectiveness factor." },
     ],
   },
 ];
@@ -1007,6 +1019,34 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "Re alone does not decide the regime, from Reynolds' 1883 apparatus "
       + "to the measured onset of sustained turbulence.",
     theory: "ch:why-transport",
+  },
+  //  COMMISSIONED 2026-11-13 by Vitor ("isto e tremendamente importante e
+  //  devia de ser dado de uma forma tao compelling com case studies que os
+  //  alunos deviam de querer ler mais aquilo que um livro de aventura!"),
+  //  then sharpened the same day: the page must come back to the charge on
+  //  WHY correlations are simple.  Three case studies, each a FULL and a
+  //  REDUCED tutorial case run by the engine in the browser (two tanks under
+  //  choupoSemiContinuous, two batch reactors under choupoBatch); the page
+  //  subtracts the two curves.  It continues `correlation-simplicity`'s page
+  //  4 and leads to `thiele`.  Record: docs/design/fast-and-slow.md.
+  {
+    id: "fast-and-slow", blurb: "Drop a fast variable, measure the error, see why correlations stay simple.",
+    label: "When the fast obeys the slow: separation of time scales",
+    discipline: "Modelling & scale-up", kind: "construction", status: "live",
+    origins: ["engine", "page", "assumption"],
+    teaches: "Which variables of a stiff model can stop being integrated: those "
+      + "whose time scale is short against the slow one, replaced by the relation "
+      + "that makes their own rate zero, with an error that falls with the ratio of "
+      + "the two time scales.  Three case studies, each a guess, the engine running "
+      + "the full and the reduced model, and a slider that makes the fast part slower "
+      + "until the reduction fails: a small tank behind a big one (the small tank as "
+      + "a quasi-steady unit), a fast equilibrium feeding a slow step (one pool at "
+      + "k K/(1+K)) and a reactive intermediate (a rate law in the stable species), "
+      + "the last the same equation as the first.  The cost of the full model "
+      + "counted from the integrator, the reduced law counted against the full one, "
+      + "and its validity window at your tolerance -- which is why engineering "
+      + "correlations are simple.",
+    theory: "ch:stiff-ode",
   },
   //  COMMISSIONED 2026-10-11 (DEV.md 4c C64): "sabes como habitualmente se
   //  da a reducao de pressao de mais de 10x de uma corrente num processo

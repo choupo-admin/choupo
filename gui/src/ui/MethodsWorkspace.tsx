@@ -361,6 +361,9 @@ const ChromatographyTool = lazy(() =>
 const OperatorPanelsTool = lazy(() =>
   import("./methods/OperatorPanelsTool.js")
     .then((m) => ({ default: m.OperatorPanelsTool })));
+const FastSlowTool = lazy(() =>
+  import("./methods/FastSlowTool.js")
+    .then((m) => ({ default: m.FastSlowTool })));
 const FluidisedBedsTool = lazy(() =>
   import("./methods/FluidisedBedsTool.js")
     .then((m) => ({ default: m.FluidisedBedsTool })));
@@ -679,6 +682,7 @@ export function MethodsWorkspace() {
             : tool === "chromatography" ? <ChromatographyTool />
             : tool === "operator-panels" ? <OperatorPanelsTool />
             : tool === "fluidised-beds" ? <FluidisedBedsTool />
+            : tool === "fast-and-slow" ? <FastSlowTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

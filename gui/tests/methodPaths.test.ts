@@ -28,10 +28,10 @@ import {
 } from "../src/ui/methods/registry.js";
 
 describe("the pedagogical paths", () => {
-  it("the paths of the ruling exist, in that order (C246 added Recycle numerics)", () => {
+  it("the paths of the ruling exist, in that order (C246 added Recycle numerics; fast-and-slow added Why correlations are simple)", () => {
     expect(METHOD_PATHS.map((p) => p.id)).toEqual(
       ["distillation", "thermodynamics", "measurement-to-parameter",
-        "reaction-engineering", "recycle-numerics"]);
+        "reaction-engineering", "recycle-numerics", "fast-and-slow"]);
   });
 
   it("every path is a walk of three or more distinct live tools, each step explained", () => {
