@@ -84,6 +84,11 @@ struct PanelRow
     std::vector<std::pair<std::string, std::string>> words;      // short words
     bool                                             hasIntervals = false;
     std::vector<std::pair<scalar, scalar>>           intervals;  // [t0, t1] s
+    //  An element's LIMIT-violation periods on the write grid (no delay), a
+    //  list apart from `intervals` (its alarm's active periods, the delay
+    //  applied) so neither is read for the other.
+    bool                                             hasLimitIntervals = false;
+    std::vector<std::pair<scalar, scalar>>           limitIntervals;
     //  The case's own sentences and the engine's explanation, written last on
     //  the line inside `"text": {}` so a golden reads no number out of them.
     std::vector<std::pair<std::string, std::string>> text;

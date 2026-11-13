@@ -282,7 +282,7 @@ would sit beside the integrator).
 | `constant` | `max - min <= 1e-8 max(1, abs(max))` over every written instant | the element shows a quantity that never moved in this run; 1e-8 is the last digit `trajectory.csv` writes (scientific, 8 decimals, `main.cpp:709`) |
 | `outOfRange` | some written value below `range.min` or above `range.max`; reports the count and the extreme | the scale hides part of the run |
 | `limitOutsideRange` | `limit.low` or `limit.high` outside `[range.min, range.max]` | the limit cannot be seen on its own scale |
-| `violated` | count `k` of `n` written instants beyond a limit (strictly), first and last instant | always published when a limit exists; `k = 0` is reported as `neverViolated`, `k = n` as `alwaysViolated` |
+| `violated` | count `k` of `n` written instants beyond a limit (strictly), first and last instant; the periods themselves are the element's `limitIntervals` | always published when a limit exists; `k = 0` is reported as `neverViolated`, `k = n` as `alwaysViolated` |
 | `neverApproached` | `k = 0` and the closest approach, `(high - max)/(range.max - range.min)` (or the `low` mirror), exceeds 0.5 | a limit in the far half of its own scale from every point was not exercised; 0.5 is a stated default of this record, not taken from any practice, and the closest approach is always published so a student can judge with another number |
 | `controllerWithoutElement` | a PID in the flowsheet whose `PV` is shown by no element (`measurement { controller C; cv PV; }`, or the same `unit`/`cv` as its measurement block) | a declared loop the operator cannot see |
 | `sameQuantityAlarms` | more than one `alarm` whose elements resolve to the same column.  Id `sameQuantityAlarms:<the first of those elements in declaration order>`, like every other fact naming an element; the column rides as the word `column`, all the elements as `elements`, their number as `count` | one cause, one alarm; two series that are functions of each other (`I_A`, `i_A_per_m2`) are NOT detected, and this is said in the gate |
@@ -301,7 +301,7 @@ the loop, §4).
 emitted only when the file exists, with four lists `elements`, `facts`,
 `messages`, `summary`, one record per line with an `"id"` exactly like
 `"layout"`; on each line the numbers come first, then the short words, then
-the one `intervals` list where the row has one, and last a `"text": {}` object
+the interval lists where the row has them (`intervals`, then `limitIntervals`), and last a `"text": {}` object
 carrying the case's own sentences and the engine's explanation, so a golden
 never reads a number out of a sentence.  As built:
 `{"id": "element:<name>"}` carries the panel as read (`kind`, `column`,
@@ -309,8 +309,12 @@ never reads a number out of a sentence.  As built:
 `limitLow`/`limitHigh`, `alarmDelay`, `placeColumn`/`placeRow`/`placeWidth`/
 `placeHeight`), `published` 0 or 1, and on a published column `min`, `max`,
 `first`, `last`, `n`, with a limit `violated` and `closestApproach` (and
-`closestApproachFraction` with a range), with an alarm `intervals`
-`[[t0, t1], ...]` (the instants the alarm is active, its delay applied), and
+`closestApproachFraction` with a range) and `limitIntervals` `[[t0, t1], ...]`
+(the periods the limit is violated on the write grid, no delay -- on EVERY
+element with a limit, alarm or not), with an alarm `intervals` (the periods
+the alarm is active, its delay applied; a list apart from `limitIntervals`,
+so a delay that hides a violation never hides it from the reader, and an
+element with no alarm is never coloured as if it had one), and
 in `text` the `title`, `reason`, `limitSource`, `limitReason`, `action` and
 the lamp's words; `{"id": "<fact>:<element>", ...}` per fact, its numbers and its
 `explanation` -- the part after the colon is an element name, except

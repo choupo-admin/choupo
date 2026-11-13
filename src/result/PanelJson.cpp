@@ -40,10 +40,21 @@ namespace Choupo {
 
 namespace {
 
+void emitIntervals(std::ostream& os, const char* key,
+                   const std::vector<std::pair<scalar, scalar>>& iv)
+{
+    os << ", \"" << key << "\": [";
+    for (std::size_t i = 0; i < iv.size(); ++i)
+        os << (i ? ", " : "") << "[" << jsonNumber(iv[i].first)
+           << ", " << jsonNumber(iv[i].second) << "]";
+    os << "]";
+}
+
 //  One record, one line, `"id"` first and followed by a comma (the golden
 //  `panel` kind finds a row by that exact prefix).  Numbers, then words, then
-//  the intervals, and last the `"text": {}` sub-object so a golden never reads
-//  a number out of the case's own sentences.
+//  the intervals (the alarm's, then the limit's), and last the `"text": {}`
+//  sub-object so a golden never reads a number out of the case's own
+//  sentences.
 void emitRow(std::ostream& os, const PanelRow& r, const char* lead)
 {
     os << lead << "      { \"id\": " << jsonEscape(r.id);
@@ -51,14 +62,8 @@ void emitRow(std::ostream& os, const PanelRow& r, const char* lead)
         os << ", " << jsonEscape(k) << ": " << jsonNumber(v);
     for (const auto& [k, v] : r.words)
         os << ", " << jsonEscape(k) << ": " << jsonEscape(v);
-    if (r.hasIntervals)
-    {
-        os << ", \"intervals\": [";
-        for (std::size_t i = 0; i < r.intervals.size(); ++i)
-            os << (i ? ", " : "") << "[" << jsonNumber(r.intervals[i].first)
-               << ", " << jsonNumber(r.intervals[i].second) << "]";
-        os << "]";
-    }
+    if (r.hasIntervals)      emitIntervals(os, "intervals", r.intervals);
+    if (r.hasLimitIntervals) emitIntervals(os, "limitIntervals", r.limitIntervals);
     if (!r.text.empty())
     {
         os << ", \"text\": {";

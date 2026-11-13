@@ -2015,7 +2015,10 @@ messages ( { name overLimiting; from overLimiting; on high; text "..."; }
   lines in the log, golden kind `panel`): `notPublished`; `constant` (the
   series moved by no more than 1e-8 relative over the run); `outOfRange`;
   `limitOutsideRange`; `violated` / `neverViolated` / `alwaysViolated` (k of n
-  written instants beyond the limit, first and last instant);
+  written instants beyond the limit, first and last instant; the periods are
+  the element's `limitIntervals`, published for EVERY element with a limit,
+  alarm or not, apart from the alarm's own `intervals`, which apply the
+  `delay`);
   `neverApproached` (no violation and the closest approach over 0.5 of the
   range; 0.5 is a default of the design record, not taken from a standard);
   `controllerWithoutElement`; `sameQuantityAlarms` (same column, id

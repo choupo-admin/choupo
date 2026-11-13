@@ -760,6 +760,19 @@ PanelRecord evaluate(const Dictionary&      d,
                        " violate it).";
             addFact(std::move(f), msg);
 
+            //  The periods the LIMIT is violated, on the write grid and with no
+            //  delay, for EVERY element with a limit (alarm or not): an element
+            //  without an alarm would otherwise carry no state at all, and on
+            //  one with an alarm a delay can hide a violation the operator
+            //  should still see.  `intervals` stays the alarm's.
+            er.hasLimitIntervals = true;
+            for (std::size_t i = 0; i < n; ++i)
+                if (vi[i])
+                {
+                    if (i > 0 && vi[i - 1]) er.limitIntervals.back().second = T(i);
+                    else er.limitIntervals.push_back({T(i), T(i)});
+                }
+
             if (k == 0 && hasFrac && frac > kNeverApproachedFraction)
             {
                 PanelRow g = row("neverApproached:" + el.name);

@@ -37,7 +37,11 @@ names the risk it holds:
       (with a delay applied on the write grid; its maximum and first instant,
       the first instant ANY alarm is active, how many written instants carry
       one and those periods as intervals), a message that fires and one
-      that never does; and the panel reaches all three surfaces: the `[panel]`
+      that never does; the limit-violation periods (`limitIntervals`) of every
+      element with a limit, alarm or not, apart from the alarm's `intervals`;
+      the `sameQuantityAlarms` id naming an element; the alarmsActive and
+      violated log lines not reading the maximum's instant as a start; and
+      the panel reaches all three surfaces: the `[panel]`
       log lines, the `panel` JSON block, and the golden `panel` kind (the
       witness's `expected` carries its rows).
   (e) THE OTHER BINARIES REFUSE the file by name: choupoSolve, choupoProps,
@@ -518,6 +522,41 @@ def arm_facts(work):
     iv1 = E["element:lampDelayed"]["intervals"]
     need(first_active is not None and iv1 and approx(iv1[0][0], first_active),
          "the delayed alarm's first active instant is not recomputed")
+    # (note 6, 2026-11-13) EVERY element with a limit, alarm or not, carries
+    # the periods its limit is violated (write grid, no delay) as
+    # `limitIntervals`; `intervals` stays the alarm's and is absent without one.
+    def periods(flags):
+        out = []
+        for k in range(n):
+            if flags[k]:
+                if out and k > 0 and flags[k - 1]:
+                    out[-1][1] = t[k]
+                else:
+                    out.append([t[k], t[k]])
+        return out
+    nlim = 0
+    for eid, er in E.items():
+        if "limitLow" not in er and "limitHigh" not in er:
+            need("limitIntervals" not in er, f"{eid} has no limit and publishes limitIntervals")
+            continue
+        if not er.get("published"):
+            continue
+        col = S[er["column"]]
+        flags = [("limitHigh" in er and v > er["limitHigh"])
+                 or ("limitLow" in er and v < er["limitLow"]) for v in col]
+        want = periods(flags)
+        got = er.get("limitIntervals")
+        need(isinstance(got, list) and len(got) == len(want)
+             and all(approx(g[0], w[0]) and approx(g[1], w[1]) for g, w in zip(got, want)),
+             f"{eid}: limitIntervals {got} are not the limit-violation periods {want}")
+        if "alarmOn" not in er:
+            need("intervals" not in er, f"{eid} has no alarm and publishes alarm intervals")
+        nlim += 1
+    need(nlim >= 6 and E["element:alwaysLow"].get("limitIntervals")
+         and E["element:lampLate"].get("limitIntervals")
+         and E["element:lampLate"].get("intervals") == [],
+         "the fixture no longer holds a limit without an alarm that is violated, and an"
+         " alarm whose delay hides a violation its limitIntervals still show")
     # controllerWithoutElement: C1 measures rig.T, tempConst shows rig.T -> shown;
     # the fixture below removes it.
     need("controllerWithoutElement:C1" not in ids,
@@ -570,6 +609,7 @@ def arm_facts(work):
                   " notPublished, constant, outOfRange, limitOutsideRange, violated /"
                   " neverViolated / alwaysViolated (k, n, first, last, closest approach),"
                   " neverApproached, controllerWithoutElement, sameQuantityAlarms,"
+                  " limit-violation intervals of every limited element apart from the alarm's,"
                   " alarmsActive with a delay (maximum and its instant, first instant any"
                   " alarm is active, instants with one, their intervals), three messages; on the log, the JSON block")
 

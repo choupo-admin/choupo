@@ -2838,7 +2838,9 @@ instants $t_k$ and values $v_k$ of the element's column:
  low (strictly), and the first and last such instant; $k=0$ is
  \emph{never violated} and $k=n$ \emph{always violated}. The closest
  approach is $d=\min(\text{high}-\max v,\ \min v-\text{low})$, published
- with its fraction of the range.
+ with its fraction of the range. The periods of violation are published on
+ every element with a limit (\code{limitIntervals}, no delay), apart from
+ the periods its alarm is active (\code{intervals}, the delay applied).
 \item \emph{never approached}: $k=0$ and $d/(\text{range.max}-\text{range.min})
  > 0.5$. The $0.5$ is a default of the design record, not taken from a
  practice or a standard.
