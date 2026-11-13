@@ -83,6 +83,7 @@ import { layoutFactsOf, type LayoutFacts } from "../case/layoutFacts.js";
 import { PlantLayout3D } from "./plotting/PlantLayout3D.js";
 import { GmpBuildingSection, useBuildingOverlay } from "./GmpBuildingSection.js";
 import { BatchPlanSection } from "./BatchPlanSection.js";
+import { LiquidPropertiesReport } from "./LiquidPropertySources.js";
 import { downloadPfdSvgs, openPfdTab, pfdSetOfRun } from "./pfdReport.js";
 import { PAGE_SIZES, type PageSizeName } from "../case/pfdSheet.js";
 import { machineUtilisation } from "../case/machineUtilisation.js";
@@ -181,6 +182,7 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
     trains: hasBanks,
     batchPlan: !!runResult.batchPlan,
     pfd: runResult.streams.length > 0,
+    propertySources: (runResult.propertySources?.used.length ?? 0) > 0,
   };
   const sections = reportSections(facts);
   const caseName = useStore((s) => s.tutorialName);
@@ -206,6 +208,8 @@ function ReportsBody({ runResult }: { runResult: RunResult }) {
                                      economics={runResult.economics} />,
     mass:       () => <MassBody runResult={runResult} />,
     energy:     () => <EnergyBody gb={runResult.globalEnergyBoundary} />,
+    liquidProperties: () => (runResult.propertySources
+      ? <LiquidPropertiesReport report={runResult.propertySources} /> : null),
     pfd:        () => <PfdBody runResult={runResult} />,
     columns:    () => <ColumnsBody runResult={runResult} columns={columnUnits} />,
     exchangers: () => <ExchangersBody runResult={runResult} units={hxUnits} />,

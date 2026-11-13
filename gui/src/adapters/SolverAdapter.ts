@@ -40,6 +40,7 @@ import type { PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import type { PostProcessingBlock } from "../case/postProcessing.js";
 import type { BatchPlan } from "./batchPlanPayload.js";
 import type { PanelReport } from "./panelPayload.js";
+import type { PropertySourcesReport } from "./propertySourcesPayload.js";
 import type { CaseFiles } from "../case/types.js";
 import type { DynamicInstants } from "../case/dynamicInstants.js";
 
@@ -809,6 +810,10 @@ export interface RunResult {
    *  about the case's `system/panelDict` (adapters/panelPayload).  Absent
    *  unless the case declares one; a reader draws it and derives no fact. */
   panel?: PanelReport;
+  /** WHERE EACH UNIT TOOK ITS LIQUID PROPERTIES FROM (DEV.md 4c C378): the
+   *  engine's `propertySources` block, types policed and unknown fields kept
+   *  (adapters/propertySourcesPayload).  Absent on an older result. */
+  propertySources?: PropertySourcesReport;
 }
 
 /** One hazardous-area zone envelope: a vertical cylinder about the item's

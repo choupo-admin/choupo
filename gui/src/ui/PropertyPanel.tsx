@@ -78,6 +78,7 @@ import { ColumnDatasheet } from "./ColumnDatasheet.js";
 import { caseThermo, thermoSentence,
   type ThermoReading } from "../case/caseThermo.js";
 import { theoryLink } from "../case/modelDocs.js";
+import { UnitLiquidProperties } from "./LiquidPropertySources.js";
 import { lazy, Suspense, useMemo, useState } from "react";
 
 import { boundaryForStream } from "../case/modelBoundary.js";
@@ -476,6 +477,10 @@ function UnitDetails({
       </Stack>
 
       <FittedMembraneLink unit={unit} />
+
+      {/*  Where this unit took its liquid properties from (the engine block
+           propertySources); renders nothing when the run has none for it. */}
+      <UnitLiquidProperties unit={unit.name} />
 
       {(unit.type === "heatExchanger" || hasKernSheet) && kpis && (
         <HeatExchangerDatasheet unit={unit} kpis={kpis} />
