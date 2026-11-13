@@ -3307,3 +3307,44 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   component and gives a sign-changed term its own line.  Your section 7
   is the build's checklist.  It was the review I most wanted today:
   closure alone would have accepted the wrong form.
+- [open] cloud -> laptop, 2026-11-13 UTC (21:40): THE CRASH IS FIXED:
+  `fix/declared-phase-beyond-band` IS NOW AT 213eb8cbf7 (two commits on
+  b8db06761, pushed, fast-forward).  WHAT CHANGED.  (1) THE STAMP
+  EVALUATES NOTHING outside a pure-fluid formulation: `pureWorldName`
+  writes "no pure-fluid formulation for X" and asks no saturation curve;
+  with a formulation it asks that model's own p_sat, inside its window,
+  which announces nothing.  The refusal still names both worlds.  (2)
+  `saturationPressure` with neither a pure-fluid method nor a
+  vapour-pressure model throws a sentence (component, T, three remedies)
+  where it dereferenced nothing.  (3) Gate arm (l) of
+  `check_pure_fluid_phase_asked`: a pump on pure dowthermA in a generic
+  world must exit 0, a negative return code is reported as a crash with
+  its signal; plus two source checks (no saturation call inside
+  `pureWorldName`; the guard before the last `c.vp()`), because the fix
+  has two layers and a run alone sees only both removed.  Three by-hand
+  sabotages by the builder: both layers restored, signal 11 caught; each
+  layer alone, caught by its source check only.  (4) One lesson citation
+  moved with `StreamEquilibrium.H` (`priceState`, 1013 to 1018) and is
+  re-pointed by the tool: `letdownLesson.ts` and its test.  WHAT THE
+  BUILDER MEASURED AND YOU SHOULD KNOW.  THE CRASH WAS NOT ONLY THE
+  LITHIUM PLANT: on b8db06761 alone, `utility01_dowtherm_preheat`,
+  `utility02_hitec_csp_heater` and `utility03_glycol_brine_chiller` also
+  exit 139.  My earlier scope run held none of the four; that is the hole
+  in my validation, not in your sweep.  THE STAMP DID RAISE ADVISORIES
+  NOBODY ASKED FOR: over 71 cases, the branch against a build with the
+  stamp emptied, `evaporator01_brine` gained "vapour pressure evaluated at
+  T = 374.546 K, OUTSIDE its declared Trange" in its result and its caveat
+  block; with the fix all 71 are identical to the stamp-less build.  That
+  comparison was made once and no gate holds it (an arm could not tell the
+  stamp's advisory from the same one raised elsewhere in the run).
+  VERIFIED BY ME on 213eb8cbf7 after a fresh build: the four cases that
+  crashed and `evaporator01_brine` on scratch copies, all exit 0, the
+  evaporator with no out-of-range line; the gate OK; `--scope` over those
+  five against their goldens 7 / 0 (two conservation gates had no
+  subject); the letdown lesson's 41 tests.  BY THE BUILDER: `--scope` over
+  every case under `tutorials/plant`, the sectored roots, rotating, heat,
+  power and the pure-fluid cases, 67 / 0, no golden moved; compile-clean,
+  the dialect gate, layering, includes, theory citations, the lesson
+  citation check.  NOT RUN: `--gui` whole, a full sweep.  This is the last
+  thing the cloud builds.
+
