@@ -2019,8 +2019,11 @@ messages ( { name overLimiting; from overLimiting; on high; text "..."; }
   `neverApproached` (no violation and the closest approach over 0.5 of the
   range; 0.5 is a default of the design record, not taken from a standard);
   `controllerWithoutElement`; `sameQuantityAlarms` (same column; two series
-  that are functions of each other are not detected); `alarmsActive` (the
-  maximum number active at once, with the `delay` applied on the write grid);
+  that are functions of each other are not detected); `alarmsActive` (with the
+  `delay` applied on the write grid: `max` active at once and `at`, the first
+  instant that maximum is reached; `first`, the first instant ANY alarm is
+  active; `count`, the written instants with at least one active; and those
+  periods as `intervals`);
   `message:<name>` (whether it fires and the first instant).  Every crossing is
   resolved to the WRITE GRID (`writeInterval`): an excursion shorter than one
   interval is missed.  `draftDiffers` is not built (it needs the draft tool).

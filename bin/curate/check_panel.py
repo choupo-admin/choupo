@@ -34,7 +34,9 @@ names the risk it holds:
       constant, outOfRange, limitOutsideRange, violated (k of n, first, last),
       neverViolated, alwaysViolated, neverApproached (closest approach over 0.5
       of the range), controllerWithoutElement, sameQuantityAlarms, alarmsActive
-      (with a delay applied on the write grid), a message that fires and one
+      (with a delay applied on the write grid; its maximum and first instant,
+      the first instant ANY alarm is active, how many written instants carry
+      one and those periods as intervals), a message that fires and one
       that never does; and the panel reaches all three surfaces: the `[panel]`
       log lines, the `panel` JSON block, and the golden `panel` kind (the
       witness's `expected` carries its rows).
@@ -474,6 +476,29 @@ def arm_facts(work):
          and approx(F["alarmsActive"]["at"], amaxAt),
          f"alarmsActive max {amax} at {amaxAt} not recomputed")
     need(SUM["alarmsMax"] == amax, "summary.alarmsMax disagrees")
+    # (note 2, 2026-11-13) WHEN any alarm was first active and for how long:
+    # the first instant with at least one alarm active, the number of such
+    # written instants, and those periods as the row's intervals.
+    anyk = [k for k in range(n) if counts[k] > 0]
+    want_iv = []
+    for k in anyk:
+        if want_iv and k > 0 and counts[k - 1] > 0:
+            want_iv[-1][1] = t[k]
+        else:
+            want_iv.append([t[k], t[k]])
+    AA = F.get("alarmsActive", {})
+    need(anyk and "first" in AA and approx(AA["first"], t[anyk[0]]),
+         "alarmsActive publishes no `first` (the first instant any alarm is"
+         " active) or it is not recomputed")
+    need(AA.get("count") == len(anyk),
+         f"alarmsActive `count` is not {len(anyk)} (written instants with at"
+         " least one alarm active)")
+    got_iv = AA.get("intervals")
+    need(isinstance(got_iv, list) and len(got_iv) == len(want_iv)
+         and all(approx(g[0], w[0]) and approx(g[1], w[1])
+                 for g, w in zip(got_iv, want_iv)),
+         f"alarmsActive `intervals` {got_iv} are not the periods with at least"
+         f" one alarm active {want_iv}")
     iv = E["element:lampLate"]["intervals"]
     need(sum(a2) == 0 and iv == [], "an alarm whose delay outlasts the excursion"
          " was active")
@@ -519,7 +544,8 @@ def arm_facts(work):
                   " notPublished, constant, outOfRange, limitOutsideRange, violated /"
                   " neverViolated / alwaysViolated (k, n, first, last, closest approach),"
                   " neverApproached, controllerWithoutElement, sameQuantityAlarms,"
-                  " alarmsActive with a delay, three messages; on the log, the JSON block")
+                  " alarmsActive with a delay (maximum and its instant, first instant any"
+                  " alarm is active, instants with one, their intervals), three messages; on the log, the JSON block")
 
 
 def arm_golden(wd):

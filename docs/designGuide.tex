@@ -2847,8 +2847,11 @@ instants $t_k$ and values $v_k$ of the element's column:
  the same column (two columns that are functions of each other are not
  detected).
 \item \emph{alarms active}: per instant the number of alarms in alarm, an
- alarm being active once its condition has held for its \code{delay}; the
- maximum and its first instant are published. \emph{Messages}: the first
+ alarm being active once its condition has held for its \code{delay}. Published:
+ the maximum and the first instant it is reached (which can be the last
+ written instant, so it is not when the alarms began), the first instant any
+ alarm is active, the number of written instants with at least one active,
+ and those periods as intervals. \emph{Messages}: the first
  instant each message's trigger holds (or that it never does).
 \end{itemize}
 Every crossing is resolved to the \emph{write grid}: a crossing between two

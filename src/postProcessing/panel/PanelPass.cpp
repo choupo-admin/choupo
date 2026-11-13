@@ -854,20 +854,40 @@ PanelRecord evaluate(const Dictionary&      d,
     //  alarmsActive
     std::size_t alarmsDeclared = 0;
     for (const auto& el : els) if (el.hasAlarm) ++alarmsDeclared;
+    //  Published: the maximum count and the first instant it is reached
+    //  (`max`, `at`); the first instant ANY alarm is active (`first`); how
+    //  many written instants carry at least one (`count`); and those periods
+    //  as the row's `intervals`.  The per-instant count itself is not
+    //  published: it is derivable from each alarmed element's own intervals.
     std::size_t aMax = 0, aMaxAt = 0;
     if (alarmsDeclared > 0)
     {
+        std::size_t aCount = 0, aFirst = 0;
+        std::vector<std::pair<scalar, scalar>> anyIv;
+        bool prevAny = false;
         for (std::size_t k = 0; k < n; ++k)
         {
             std::size_t c = 0;
             for (std::size_t ei = 0; ei < els.size(); ++ei)
                 if (!active[ei].empty() && active[ei][k]) ++c;
             if (c > aMax) { aMax = c; aMaxAt = k; }
+            if (c > 0)
+            {
+                if (aCount == 0) aFirst = k;
+                ++aCount;
+                if (prevAny) anyIv.back().second = T(k);
+                else         anyIv.push_back({T(k), T(k)});
+            }
+            prevAny = (c > 0);
         }
         PanelRow f = row("alarmsActive");
         num(f, "alarms", static_cast<scalar>(alarmsDeclared));
         num(f, "max", static_cast<scalar>(aMax));
         if (aMax > 0) num(f, "at", T(aMaxAt));
+        if (aCount > 0) num(f, "first", T(aFirst));
+        num(f, "count", static_cast<scalar>(aCount));
+        f.hasIntervals = true;
+        f.intervals = anyIv;
         addFact(std::move(f), std::to_string(alarmsDeclared) + " alarm(s)"
                 " declared; at most " + std::to_string(aMax) + " active at"
                 " once" + (aMax > 0 ? ", first at t = " + fmt(T(aMaxAt)) + " s"
