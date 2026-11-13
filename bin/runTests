@@ -7158,6 +7158,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/srchdr.$$
+    # vendored-files test (2026-11-13, DEV.md 4c C393): the source-headers gate and tool never read a file under a third-party-as-received rule (NanoFiltran, whose Fortran notice is not valid UTF-8) in text mode.
+    if gate_exec "$ROOT/bin/curate/test_source_headers_vendored.py" > /tmp/srchdrv.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "source-headers-vendored-test" "$(head -1 /tmp/srchdrv.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/test_source_headers_vendored.py)\n" "source-headers-vendored-test"
+        cat /tmp/srchdrv.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/srchdrv.$$
     # liquid-volume datum gate (2026-11-13, DEV.md 4c C378, TR-12).  A record's `Vliq` belongs to `VliqT` (absent = 298.15 K); a temperature stated in the `Vliq` comment must agree with the key, a record with Tc < 330 K carrying `Vliq` must state its temperature, and the six unresolved records stay pinned by name in bin/curate/vliq_datum_debt.tsv (two-sided).
     if gate_exec "$ROOT/bin/curate/check_vliq_datum.py" > /tmp/vliqdatum.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "vliq-datum-gate" "$(head -1 /tmp/vliqdatum.$$)"

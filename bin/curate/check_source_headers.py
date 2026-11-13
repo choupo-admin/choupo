@@ -52,7 +52,7 @@ import source_headers_kinds as K  # noqa: E402
 
 ROOT = K.ROOT
 # The head of origin/main the branch of this slice started from (full hash).
-PIN = "3952d49bf4370e719330493cc0f2267360342b20"
+PIN = "c2615e79fea790d8dc888210c286ee534d50b748"
 
 
 def git(*a):

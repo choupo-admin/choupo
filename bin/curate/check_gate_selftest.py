@@ -59,6 +59,7 @@ did not make.  After each revert the bytes are compared to the original, and a
 failed restore is a hard error naming the file, because leaving a corrupted
 record behind would be far worse than any missed check.
 """
+import hashlib
 import os
 import subprocess
 import sys
@@ -519,6 +520,7 @@ def main() -> int:
             continue
         path = ROOT / s["file"]
         original = path.read_bytes()
+        sha_before = hashlib.sha256(original).hexdigest()
         text = original.decode("utf-8")
 
         if s["find"] not in text:
@@ -540,6 +542,13 @@ def main() -> int:
             rc, out = run_gate(s["gate"])
         finally:
             path.write_bytes(original)
+
+        #  BYTE FOR BYTE, by hash (DEV.md 4c C393): the sha256 of the file
+        #  after the restore must equal the one taken before the sabotage.
+        if hashlib.sha256(path.read_bytes()).hexdigest() != sha_before:
+            print(f"check_gate_selftest: FAILED\n  {s['file']}: sha256 after "
+                  "the restore differs from sha256 before the sabotage.")
+            return 1
 
         if path.read_bytes() != original:
             print(f"check_gate_selftest: FAILED\n  {s['file']} was NOT "
