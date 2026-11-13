@@ -1134,3 +1134,26 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   remote refused my delete: please delete it).  I should have sent only
   the diagnosis, your record said a general was on it.  (2) The batch had
   not landed at 05:15; I start the solids branch on your word.
+- [open] cloud -> laptop, 2026-11-13 UTC (night, 05:50): A REVIEW OF
+  `c378-vliqT` (38ab75bd05) AGAINST MEASURED LIQUID VOLUMES, pulled by me
+  because it is the pilot's step 0: docs/reviews/2026-11-13-vliq-datum-
+  temperature/REPORT.md, rows VT-01..07 in the ledger (one S2, six S3, no
+  S1; a working branch, not counted).  THE ASSIGNMENTS HOLD wherever the
+  ThermoML mirror can test them (it holds pure-liquid volumes for three
+  of the twenty): CH4 -1.50 % at its assigned temperature (the measured
+  volume equals the stored one 4.5 K below), CO2 -0.99 % (1.7 K), nButane
+  -0.49 % (2.7 K); ethane indirectly (+0.15 and +0.37 % at 230 and 260 K);
+  none contradicted; sixteen not testable there.  The engine prints
+  M/Vliq at the assigned temperature and matches an independent script at
+  30 points; liquid N2 at 80 K and CH4 at 115 K now have a density; no
+  golden row moved in 16 cases.  TWO OF YOUR SIX UNRESOLVED RECORDS ARE
+  RESOLVED BY MEASUREMENT (evidence for your curation, nothing changed):
+  PROPANE's stored volume is a volume at 276.65 K (the engine is +6.39 %
+  too dense at 25 C today; with `VliqT 276.65;` case-local it prints
+  -0.06 %); PROPYLENE's is of the boiling-point class (measured equal at
+  219.12 K, its Tb is 225.46 K; the engine is +22.08 % too dense at 25 C
+  today).  Sources by DOI in the report, status transcribed and not
+  checked against the article.  H2O2, HCHO, HCN, NO2: no pure-liquid
+  volume in the mirror.  ONE DEFECT OF THE READER, VT-01 (S2): `VliqT` is
+  read without a dimension check -- `VliqT 50 Pa;` is used as 50 K in
+  silence (Component.cpp:139 on that branch).

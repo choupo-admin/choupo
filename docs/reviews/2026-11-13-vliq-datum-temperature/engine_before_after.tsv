@@ -1,0 +1,31 @@
+component	T_K	M	Vliq_stored	VliqT	V_before_cm3	rho_before_kg_m3	V_after_cm3	rho_after_kg_m3	engine_rho_branch_kg_m3	engine_minus_script_pct	change_in_rho_pct	V_measured_cm3	rho_before_vs_measured_pct	rho_after_vs_measured_pct	measured_dois	status
+Cl2	239.18	70.906	45	239.18	40.403	1754.97	45.000	1575.69	1575.68888889	-7.05e-05	+11.38	n/a	n/a	n/a	-	-
+Cl2	298.15	70.906	45	239.18	45.000	1575.69	50.120	1414.73	1414.72645109	-2.51e-04	+11.38	n/a	n/a	n/a	-	-
+H2S	212.85	34.082	34.9	212.85	28.767	1184.77	34.900	976.56	976.561604585	+1.64e-04	+21.32	n/a	n/a	n/a	-	-
+H2S	298.15	34.082	34.9	212.85	34.900	976.56	42.341	804.94	804.942777263	+3.45e-04	+21.32	n/a	n/a	n/a	-	-
+SO2	263.13	64.065	43.9	263.13	41.140	1557.24	43.900	1459.34	1459.33940774	-4.06e-05	+6.71	n/a	n/a	n/a	-	-
+SO2	298.15	64.065	43.9	263.13	43.900	1459.34	46.845	1367.59	1367.59414917	+3.03e-04	+6.71	n/a	n/a	n/a	-	-
+nButane	272.65	58.123	96.2	272.65	91.568	634.75	96.200	604.19	604.189189189	-1.34e-04	+5.06	96.670	+5.57	+0.49	10.1016/j.jct.2004.07.017	transcribedNotCheckedAgainstArticle
+nButane	260	58.123	96.2	272.65	89.548	649.07	94.078	617.82	617.819861643	-2.24e-05	+5.06	94.499	+5.53	+0.45	10.1016/j.jct.2004.07.017,10.1021/je049672l	transcribedNotCheckedAgainstArticle
+nButane	298.15	58.123	96.2	272.65	96.200	604.19	101.066	575.10	575.099365729	-1.10e-04	+5.06	101.415	+5.42	+0.35	10.1016/j.jct.2004.07.017,10.1016/j.jct.2006.09.014,10.1021/je049672l	transcribedNotCheckedAgainstArticle
+nButane	310	58.123	96.2	272.65	98.672	589.05	103.663	560.69	560.690088217	+1.57e-05	+5.06	104.023	+5.42	+0.35	10.1016/j.jct.2004.07.017,10.1016/j.jct.2006.09.014,10.1021/je049672l	transcribedNotCheckedAgainstArticle
+ethane	184.55	30.07	55.1	184.55	32.175	934.58	55.100	545.74	545.735027223	-9.11e-04	+71.25	n/a	n/a	n/a	-	-
+ethane	230	30.07	55.1	184.55	36.371	826.75	62.287	482.77	482.766353711	-7.55e-04	+71.25	62.380	+71.51	+0.15	10.1016/j.jct.2014.06.023	transcribedNotCheckedAgainstArticle
+ethane	260	30.07	55.1	184.55	40.791	737.17	69.856	430.46	430.455209663	-1.11e-03	+71.25	70.112	+71.88	+0.37	10.1016/j.jct.2014.06.023	transcribedNotCheckedAgainstArticle
+ethane	298.15	30.07	55.1	184.55	55.100	545.74	94.360	318.67	318.672716094	+8.52e-04	+71.25	85.184	+54.60	-9.72	10.1016/j.jct.2014.06.023,10.1021/je900978x	transcribedNotCheckedAgainstArticle
+CO2	273.15	44.01	47	273.15	36.419	1208.44	47.000	936.38	936.382978723	+3.18e-04	+29.05	47.472	+30.35	+1.00	10.1021/je0497496	transcribedNotCheckedAgainstArticle
+CO2	253.2	44.01	47	273.15	32.828	1340.62	42.366	1038.81	1038.80808495	-1.84e-04	+29.05	42.661	+29.95	+0.70	10.1021/je0497496	transcribedNotCheckedAgainstArticle
+CO2	293	44.01	47	273.15	43.275	1016.98	55.848	788.03	788.02875603	-1.58e-04	+29.05	56.790	+31.23	+1.69	10.1021/je0497496	transcribedNotCheckedAgainstArticle
+CO2	298.15	44.01	47	273.15	47.000	936.38	60.655	725.58	725.576964336	-4.18e-04	+29.05	n/a	n/a	n/a	-	-
+N2	77.35	28.013	34.6	77.35	n/a	n/a	34.600	809.62	809.624277457	+5.28e-04	n/a	n/a	n/a	n/a	-	-
+N2	80	28.013	34.6	77.35	n/a	n/a	35.124	797.54	797.537608886	-3.00e-04	n/a	n/a	n/a	n/a	-	-
+N2	90	28.013	34.6	77.35	n/a	n/a	37.410	748.82	748.815947768	-5.41e-04	n/a	n/a	n/a	n/a	-	-
+N2	130	28.013	34.6	77.35	n/a	n/a	n/a	n/a	refused: ThermoPackage::density: no liquid molar volume for component 'N2' at T = 130.000000 K: it is above its critical	-	n/a	n/a	n/a	n/a	-	-
+CH4	111.66	16.043	37.4	111.66	n/a	n/a	37.400	428.96	428.957219251	-6.48e-04	n/a	37.968	n/a	+1.52	10.1016/j.jct.2015.09.034	transcribedNotCheckedAgainstArticle
+CH4	105	16.043	37.4	111.66	n/a	n/a	36.566	438.75	438.745915603	-9.31e-04	n/a	37.128	n/a	+1.54	10.1016/j.jct.2015.09.034	transcribedNotCheckedAgainstArticle
+CH4	115	16.043	37.4	111.66	n/a	n/a	37.845	423.91	423.912024604	+4.78e-04	n/a	38.396	n/a	+1.46	10.1016/j.jct.2015.09.034	transcribedNotCheckedAgainstArticle
+CH4	125	16.043	37.4	111.66	n/a	n/a	39.304	408.18	408.179531587	-1.15e-04	n/a	39.870	n/a	+1.44	10.1016/j.jct.2015.09.034	transcribedNotCheckedAgainstArticle
+CH4	135	16.043	37.4	111.66	n/a	n/a	40.998	391.31	391.314090192	+1.05e-03	n/a	41.551	n/a	+1.35	10.1016/j.jct.2015.09.034	transcribedNotCheckedAgainstArticle
+CH4	298.15	16.043	37.4	111.66	n/a	n/a	n/a	n/a	refused: ThermoPackage::density: no liquid molar volume for component 'CH4' at T = 298.150000 K: it is above its critica	-	n/a	n/a	n/a	n/a	-	-
+HCl	188	36.461	30.5	188	20.991	1736.96	30.500	1195.44	not run	-	+45.30	n/a	n/a	n/a	-	-
+HCl	298.15	36.461	30.5	188	30.500	1195.44	44.316	822.75	not run	-	+45.30	n/a	n/a	n/a	-	-
