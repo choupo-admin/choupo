@@ -155,6 +155,17 @@ use the resolved one in the first law).
   do not fix the split and `vaporFraction q;` stays its pin (a wet steam line,
   a partially condensed pure vapour).  That is where the old sentence "T,P
   alone do not fix the split" was true; for a mixture it never was.
+- **A pure-fluid stream whose declared phase its own `(T, P)` contradict is
+  REFUSED.**  On a `pureFluids { ... }` formulation, a pure stream declaring
+  `phase liquid;` (or `vaporFraction 0;`) with `P < p_sat(T) (1 - 1e-6)`, or
+  `phase gas;` (or `vaporFraction 1;`) with `P > p_sat(T) (1 + 1e-6)`, is
+  over-specified and inconsistent: the energy report prices it at `(T, P)`
+  on the other branch.  The refusal names the stream, `T`, `P`, `p_sat(T)`
+  and the relative distance, and the two remedies: delete the phase word
+  and let `T` and `P` decide, or, if the saturated state is meant, write
+  `P` = `p_sat(T)` to the digits printed.  Inside the 1e-6 band the pin
+  decides (the saturated state).  Checked in the case's world and in the
+  own `thermo {}` world of each unit that consumes the stream.
 - **If the quality IS your specification**, the state is `(P, q)` or `(T, q)`
   and the other variable has to be SOLVED — which this engine does not do
   today.  Declare the `T` at which the `(T,P)` flash gives your `q` (read it

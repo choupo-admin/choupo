@@ -92,7 +92,13 @@ Every run prints, just before its result block, one line per unit:
   still reads the stable phase at (T, P).  The energy report's pure streams
   at a carried vf of exactly 0 or 1 are priced, INSIDE the band only, on the
   saturated branch that vf names (outside the band: (T, P) as before;
-  0 < vf < 1: the existing split).  The units that price or classify an
+  0 < vf < 1: the existing split).  BEYOND the band on the other side of the
+  line the unit's enthalpy and entropy are taken at (T, P) too, the same
+  rule, announced in the caveat block (the density keeps the saturated
+  branch of the phase asked); an AUTHORED pure stream that declares a phase
+  its (T, P) contradict beyond the band is REFUSED by name before any unit
+  runs (`flashState::declaredPhaseBeyondBandRefusal`), and a pump fed a
+  COMPUTED liquid-labelled vapour beyond the band refuses it.  The units that price or classify an
   AUTHORED inlet with their own flash -- `phaseChanger`, `heatExchanger`,
   `pipe` -- take a DECLARED phase as the state (one home,
   `flashState::declaredInletEnthalpy` / `declaredSinglePhase`): a pinned
