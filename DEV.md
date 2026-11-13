@@ -3476,6 +3476,265 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C329, SECOND PART: TO BE BUILT AS SOON AS POSSIBLE (Vitor,
+> 2026-11-13, to the reviewing session, which relayed it: asked how
+> rate-based distillation stood and told that the build of the
+> `rateBased` model word was what remained, "E diz lhe para fazer isso
+> ASAP").**  It goes AHEAD of what can wait (C394's suite economy, the
+> inherited tablet slices), and BEHIND only what is already in flight
+> (the fifth batch, the file headers).  First slice, per the four
+> decisions of this date: the new model word on a BINARY PACKED SEGMENT,
+> film coefficients and effective area from declared internals,
+> condenser and reboiler as equilibrium stages, held against the two
+> binary total-reflux sets already in the tree and against the design
+> record's own acceptance lines; documented in the guides in the same
+> slice (rule 4d).  A brief with every engine fact measured is written
+> before a builder starts.
+
+> **A SMALL INTEGRATION LANDED, LATE ON 2026-11-13: three branches.**
+> (a) THE PRICES AFTER THEIR REVIEW (C389, rows PR-03 to PR-14): each
+> sensitivity range on one basis (ammonia 0.380 to 0.692 EUR/kg, the
+> lowest and highest monthly unit values of the base dataset in 2025,
+> re-fetched; hydrogen 7.0 to 10.0, the source's own range); the market
+> index the same report gives near 8.2 EUR/kg cited as support for
+> reading the cost as a price; a sibling case's README no longer teaches
+> the old prices; the net present value without the tax credit rests on
+> a run (-4 075.8 M EUR); the licence gate gains an arm (a value whose
+> origin is known to reserve reuse says so in its provenance).  MOVED:
+> six `kpi economics` sensitivity rows in each of the two feasibility
+> cases, listed in the branch's commit; no balance.  (b) C392, THE
+> FLUIDISATION LABORATORY: a tab opened from the fluidised-beds page, one
+> to three columns side by side, schematic dots, three instruments, a
+> notebook that asks for the minimum fluidisation velocity before
+> showing it; every number from the page's own arithmetic; the screen
+> says no particle is simulated.  Opened in a browser by the reviewing
+> session at three velocities; not by the architect.  (c) C384, THE
+> RUNNER'S PINS: twelve named pins with their cause in
+> bin/curate/platform_divergence_debt.tsv (one of them a DEFECT, CI-01:
+> a fit's `identifiable` verdict changes with the platform); the
+> self-test reports "arm NOT observed" where a gate answers NO SUBJECT;
+> a lesson test holds an order of magnitude, not solver digits; the
+> reference-equation case's check band.  On the hosted runner the full
+> tier went from 20 failures to 14, of which 12 are these pins and 2 are
+> the absent-species closure that waits in the held batch.
+> VALIDATION: build; every guide re-rendered; `--scope` over the plants,
+> the economics cases, the screening case and the thermo directory 27
+> PASS / 0 FAIL (mass closure on 20 steady cases, energy, elements, the
+> pinned ledgers); `--gui` 47 PASS / 0 FAIL; the self-test alone at exit
+> 0; `--fast` 86 PASS / 0 FAIL / 5 EXPECTED-FAIL.  No full sweep: case
+> files, web-app files and gates only.
+> **THE REVIEWING SESSION MODIFIES NO TRACKED FILE (Vitor, 2026-11-13, to
+> that session: "Nao mexas aqui em codigo!").**  Strict reading, taken by
+> it: no edit of code, scripts or records even in a private worktree;
+> a review that needs a sabotage writes it as a REQUEST (file, exact
+> edit, what the gate must print) and this session runs it.  Open
+> requests: six on the pooled regressed-pairs gate (its review found no
+> false OK and no race; RP-01 a shared case's failure can be reported
+> under the wrong exception; RP-09 a record that loses its
+> `fittedInCase` line leaves the scan in silence), and the sabotage
+> table of the headers' gate on its final head.
+
+> **C394 (Vitor, 2026-11-13, on the sweep's wall clock: "O set de casos
+> tem mesmo de ser aqueles 500?  Nao ha forma de usar um subset que seja
+> representativo?" and, of the regressed-pairs gate: "Esses pares tem de
+> ser corridos na suite?").**  MEASURED on tonight's full sweep (2232
+> result lines, 70 min walked): the simulation cases are 36 min of
+> one-core work, the gates 259.  DECISIONS.  (1) A GATE WHOSE VERDICT
+> DEPENDS ONLY ON NAMED INPUTS RUNS WHEN THOSE INPUTS CHANGE.  The
+> regressed-pairs gate (about 850 fit cases, 1800 runs) reads the pair
+> records, their fit cases, the fitting operation and the activity
+> models it calls, and itself; with none of them changed its verdict
+> cannot change.  It, the roughly 1260 curation fits and the other
+> data-integrity gates of that kind get a key over exactly those inputs
+> (the dependency files the build already writes give the engine half);
+> on an unchanged key the suite prints the earlier verdict AS REUSED,
+> with the key and the date it was taken, never as a fresh PASS; a clean
+> checkout has no earlier verdict and runs everything, so the hosted
+> full tier and a release always do.  This is rule 4's "evidence is
+> reused while it still describes what enters main", made mechanical.
+> (2) THE FAST SET GAINS WHAT IT MISSED TODAY: the crash of the fifth
+> batch passed `--fast` (86 / 0) because no case of the set carries a
+> pure stream of a component with no vapour-pressure model; one utility
+> case on a thermal fluid and one solids case enter `tutorials/FASTSET`
+> with the fifth batch.  A subset is completed by what it fails to
+> catch.  (3) The self-test of the gates (383 s) runs its arms in a
+> pool, as the pairs gate now does.  NOT DONE: cutting cases from the
+> full sweep; they are not where the time is.
+
+> **C389, THE PRICES REVIEWED AT THEIR SOURCES (2026-11-13, late;
+> docs/reviews/2026-11-13-c389-prices/, rows PR-01 to PR-14).**  The
+> three adopted numbers reproduce at their sources (value, unit, year,
+> page, quotient), and the reviewers would have ruled the two readings
+> the same way.  WRONG AROUND THEM, and ruled: the ammonia sensitivity
+> range mixed three quantities (a foreign estimated price, the base, a
+> later year): it becomes the lowest and highest MONTHLY unit values of
+> the same dataset and year (PR-04); the hydrogen low end was a
+> calculated auction offtake price beside a modelled cost: the range
+> becomes the source's own 7 to 10 (PR-05); a sibling case's README
+> still taught the old prices (PR-03); two README numbers rested on
+> nothing (PR-09, PR-10).  A general applies them on a branch, the moved
+> sensitivity rows listed before any re-record.  CORRECTION to the
+> landing's entry: the paper DOES date its "Present" column (PR-13).
+> RULED ON THE LICENCE QUESTION (PR-01; Vitor reviews): the nitrogen
+> figure's source reserves commercial use of the publication.  ONE cited
+> number read from a primary publication is a fact stated with its
+> source, not a redistribution of the publication, and it is the
+> practice this tree follows for every journal article that reserves
+> all rights; what the policy excludes is a NonCommercial COMPILATION as
+> a value's origin, because there the arrangement is what would be
+> copied.  The value stays; its provenance block says the reservation
+> exists.  OPEN, engine side (PR-07): the economics pass reads each
+> price's origin and prints nothing; a run should show where its prices
+> came from.
+
+> **C390, THE DESIGN IS RULED ON A REVIEW BY MEASUREMENT (2026-11-13,
+> late; the review: docs/reviews/2026-11-13-c390-pressure-term-design/).**
+> (1) THE FORM is v (1 - alpha T) dP, per component, from its own
+> p_sat,i(T) to P, with the kernel's pure-component volume and its
+> temperature slope; NOT v dP.  The number that tells them apart (the
+> review's, on water at 298.15 K and 100 bar against the engine's own
+> reference route): 166.127 J/mol reference, 166.117 this form, 180.233
+> v dP; at 450 K, 86.110, 85.327 and 181.207.  Both forms close a pump's
+> plant balance below 4e-11 kW, so CLOSURE CANNOT HOLD THIS SLICE: the
+> gate holds the pump's outlet temperature (liquidDensity01: 0.024238 K
+> on the reference route, 0.024201 K with this form, 0.020520 K with v
+> dP).  (2) ONE HOME: the liquid leg of the stream's formation enthalpy,
+> with its entropy partner in the same slice; nothing in the species
+> phase enthalpy, so no heat of reaction moves.  (3) THE PUMP SOLVES THE
+> STREAM BALANCE and reads its outlet phase (TD-18 closes by
+> construction).  (4) The reference pressure is the K-value's; the
+> Poynting factor is NOT touched in this slice (it rides a constant
+> record volume and is off whenever the vapour is an ideal gas; moving
+> it moves K-values and is its own decision).  (5) THE RESERVATION IS
+> ACCEPTED AND ORDERS THE WORK: for a liquid no reference equation names
+> the slope is the corresponding-states one, and the term is a
+> difference: within 1 % at a reduced temperature of 0.6, 7 to 13 % too
+> large near 0.75, wrong by a third at 0.9; AMMONIA cannot be checked in
+> the tree at all, and the ammonia plants are the cases that move most
+> (the let-down flash duty of ammonia02_full_plant from +13.80 to
+> -225.06 kW).  THEREFORE: an AMMONIA REFERENCE EQUATION IS CURATED
+> FIRST (a published Helmholtz formulation, read from its primary, as
+> the three in the tree were), the reference plant is ammonia and
+> deserves it on its own account; THEN the pressure term is built; the
+> run says per component which slope the term used, and a term that has
+> changed sign on the corresponding-states route gets its own line.  A
+> full sweep and the list of moved rows, case by case, before any
+> re-record.  The review's section 7 is the build's checklist (17 unit
+> sites on the temperature-only liquid enthalpy, the precipitate's leg,
+> the dynamic holdups, a brine pump that keeps its closed form,
+> announced).  ORDER: after the fifth batch; the source of the ammonia
+> formulation is looked for in the literature folder first.
+
+> **THE REVIEWING SESSION IS A REVIEWER ONLY AGAIN (Vitor, 2026-11-13,
+> to that session: "Vamos voltar a usar esta sessao so como revisor.
+> Termina as coisas que tens em maos e depois assume-te como revisor.").**
+> It finishes the crash fix on its phase branch and cuts no further build
+> branch; it writes under docs/reviews/, the ledger and the board, and
+> reviews by measurement.  A defect a review finds comes to the
+> coordinating session, which decides who builds.  HANDED BACK, NOT
+> STARTED, and now this session's to build: (i) the RATE machines of the
+> tablet plants priced on their rating (ruled today: the installed
+> machine is its rating; the moved rows listed before any re-record, the
+> NPV movement of each plant said); (ii) the campaign-plan page's second
+> toy plant, which still teaches the inversion PH-03 removed; (iii) the
+> installed-size column in the app's batch-plan table.  The design note
+> ("a machine has one size, the installed one") is on the pharmaceutical
+> branch and reaches main with the fifth batch.
+> **THE FIFTH INTEGRATION IS HELD (2026-11-13, late).**  Its full sweep
+> on the merged tree found a SEGMENTATION FAULT on lithiumBrinePlant:
+> the phase branch stamps every outlet with the world it was produced
+> in, and for a pure stream of a component with no vapour-pressure model
+> the stamp asked a saturation pressure through an unchecked pointer.
+> The reviewing session located it and is fixing it.  The pilot's review
+> (three reviewers by measurement) found no S1 and no wrong number, and
+> TWO rows that block landing: the caustic demonstrations do not run
+> from what git holds (an ignore rule hides their sealed solution
+> record; the builder's tree still had the file), and a marked
+> measurement over a set with a mass-without-volume leaf deadlocks.
+> Five more S2 rows are ruled (a measurement is used, checked or refused
+> by name; ONE reading of the mass-without-volume declaration, which the
+> pump's heat capacity does not read; the freeze is per world; the two
+> pinned pump demonstrations say whose debt it is) and with the pilot's
+> builder as a second round.  ALSO FOUND, ON MAIN, NOT THE PILOT'S: a
+> stream that declares temperature and vapour fraction and no pressure
+> reaches the units with P = 0 (PA-09): a builder of its own after the
+> batch.  THE BATCH IS REBUILT AND SWEPT AGAIN when both fixes exist.
+
+> **C393 (Vitor, 2026-11-13: "A outra sessao descobriu que ha ficheiros
+> que nao tem header e isso pode-me lixar o copyright!!  Acho que vai
+> ter de rever tudo!  Podes-te coordenar com ela?").**  MEASURED the same
+> turn, over the tracked tree (a file counts as carrying the notice when
+> its first 4000 characters hold a copyright line; a second count for
+> the licence identifier):
+>   src C++            981 files   16 without a copyright line    8 without the identifier
+>   gui/src            601         58                             75
+>   gui/tests          331        149                            161
+>   gui (other)         20         11                             11
+>   bin scripts        512        458                            443
+>   make                 4          4                              4
+>   etc                  3          2                              2
+>   CI workflows        17         17                             17
+>   site                 4          4                              4
+>   guides' sources     28         28                             28
+> WHAT IT MEANS, said plainly (the architect is not a lawyer): copyright
+> in a file does not depend on a notice inside it; the repository's root
+> NOTICE and LICENSE cover every file, and the history and the sign-offs
+> record who wrote what.  What a missing header costs is practical: a
+> file copied out of the tree carries neither its licence nor its holder,
+> and the licence's own appendix recommends a notice in each source file.
+> So this is hygiene with a real use, not a loss of rights, and nothing
+> has to be re-read by a person: a file either carries the two lines or
+> it does not, and a gate can say which.
+> DECISION.  (1) CODE (src, gui, bin, make, etc, the workflows, the
+> site's scripts): every tracked file carries a copyright line and the
+> licence identifier.  The 16 engine files and the web app's sources
+> take the banner their neighbours carry; every other file takes a short
+> form of two lines after any shebang (a copyright line and
+> `SPDX-License-Identifier: GPL-3.0-or-later`), which moves a script's
+> line numbers by two and changes no behaviour.  (2) THE GUIDES' SOURCES
+> ARE NOT STAMPED WITH THE CODE'S LICENCE: the manuals are a separate
+> work under their own licence, and their authorship is decided in one
+> place (the preamble's author macro); they, and every file that cannot
+> hold a comment (JSON, goldens, tables, images, PDFs), are covered by
+> ONE machine-readable manifest at the root that states holder and
+> licence per path, which is what the root NOTICE says in prose today.
+> DATA RECORDS are not touched by this slice: their licences are per
+> record and the manifest must say exactly what the licence map says, no
+> more.  (3) A GATE, `check_source_headers`, holds it from then on: a
+> tracked code file without the two lines fails; nothing is pinned as
+> debt once the slice lands.  (4) THE HOLDER LINE is the one 965 engine
+> files already carry, "Copyright (C) 2026 Vitor Geraldes"; it is read
+> back to Vitor before any file is changed, because a copyright line is
+> a statement about a person.  (5) WHEN: after the fifth integration
+> lands, as its own small slice, validated as text that executes
+> nothing new (every script still parses, the typecheck, the web app's
+> tests, the gates that read sources by line, `--gui`, `--fast`); built
+> by a general of this session; the reviewing session reads the tool
+> and the gate, not the files.
+> FOUND WHILE MEASURING, AND CLOSER TO THE COPYRIGHT RECORD THAN A
+> HEADER: 45 commits on main carry the tool's identity as AUTHOR instead
+> of the holder's (2026-09-25 to 2026-11-01): 42 are merge commits and 3
+> are small edits of a register and of the decision index; none carries
+> source code.  History is not rewritten (a force-push of main is
+> forbidden and would break every clone); the gate of this slice also
+> refuses, from a pinned commit onward, a commit on main whose author is
+> not a person named in AUTHORS.
+> CONFIRMED BY VITOR the same hour ("Faz isso"), after the read-back of
+> the scope and of the holder line: "Copyright (C) 2026 Vitor Geraldes"
+> (his name with its accent, as the engine's banner prints it), his name
+> alone, on every code file.  A general builds the tool, the gate and the
+> manifest on a branch now and hands back the list of files it would NOT
+> stamp (generated, third-party, unclassified) BEFORE any file is
+> changed: a notice on a file that is someone else's would be the one
+> way this slice could harm the record it protects.
+> THE LICENCE MAP AGAINST THE AUTHORSHIP RECORD (review row FH-04),
+> CONFIRMED BY VITOR ("esta ok", after the two versions were read back to
+> him): AUTHORS and NOTICE are right (the Properties Guide and the Theory
+> Guide by three named authors, every other guide by him alone); the
+> licence map, which named two authors for all guides, no longer names
+> anyone and points to those two files.  No authorship changed; a stale
+> copy was removed.
+
 > **THE FOURTH INTEGRATION OF 2026-11-13 LANDED.**  Three branches.
 > (a) C388, THE EDUTOOL "EQUILIBRIUM STAGES OR RATE-BASED?" (the
 > reviewing session's; shelf Separations).  The student's question is

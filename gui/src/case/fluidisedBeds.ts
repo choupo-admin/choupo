@@ -207,6 +207,40 @@ export function bedPressureDrop(u: number, p: Particle, gas: Gas, epsMf: number,
   return Lmf * weightGradient(epsMf, p, gas);
 }
 
+// ---- the bed that expands without bubbles -------------------------------------------
+
+export interface ParticulateBed {
+  /** the voidage at which the bed's weight is carried at u */
+  eps: number;
+  /** the expanded bed height, m: the same particles, (1 - eps_mf) L_mf = (1 - eps) H */
+  H: number;
+  iterations: number;
+}
+
+/** THE PAGE'S OWN EXTENSION of step 1's balance to a bed that expands
+ *  without bubbles (the particulate band of a group A powder, between u_mf
+ *  and u_mb): the bed opens until Ergun's gradient at the new voidage again
+ *  equals the bed's weight at that voidage,
+ *      Ergun(u, eps) = (1 - eps)(rho_p - rho_g) g,
+ *  solved for eps by bisection on [eps_mf, 1).  No new constant: it is
+ *  Ergun and the weight line of step 1, with the voidage free.  It is NOT a
+ *  published expansion law (Richardson and Zaki's is the usual one, and is
+ *  not on this page), and Ergun was written for packed beds, so it is a
+ *  stated approximation.  Returns null at or below u_mf (the bed is packed)
+ *  and where no voidage below 1 carries the weight (the balance has left
+ *  the dense bed).  Used by the laboratory view (fluidisationLab.ts). */
+export function particulateExpansion(u: number, p: Particle, gas: Gas, epsMf: number,
+  Lmf: number, umf: number): ParticulateBed | null {
+  if (!(u > umf)) return null;
+  //  Divided by (1 - eps), so the weight term does not vanish at eps -> 1.
+  const g = (e: number): number => ergunGradient(u, p.d, e, gas).total / (1 - e) - (p.rhoP - gas.rhoG) * G;
+  const top = 1 - 1e-9;
+  if (!(g(epsMf) > 0) || !(g(top) < 0)) return null;
+  //  g falls with eps: bisect on -g so the root finder's sign convention holds.
+  const r = bisect((e) => -g(e), epsMf, top);
+  return { eps: r.x, H: (Lmf * (1 - epsMf)) / (1 - r.x), iterations: r.iterations };
+}
+
 // ---- Geldart's groups ----------------------------------------------------------------
 
 export type GeldartGroup = "A" | "B" | "C" | "D";

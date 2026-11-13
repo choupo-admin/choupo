@@ -1,0 +1,89 @@
+=== ammonia02_full_plant mode=base rc=0
+   plant residual_kW=-1.38172628731 pct=-0.00208218591619
+   unit makeupComp: dH=24002.1943 items=24000.0000 closure%=100.01 remaining=2.1943
+   unit recycleComp: dH=3999.5636 items=4000.0000 closure%=99.99 remaining=-0.4364
+   unit mixer: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit FEHE: dH=0.0283 items=0.0283 closure%= remaining=0.0283
+   unit converter: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit waterCooler: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit separator: dH=-38346.0119 items=-38345.6074 closure%=100.00 remaining=-0.4044
+   unit letdown: dH=13.8024 items=13.8025 closure%=100.00 remaining=-0.0001
+   unit purgeSplit: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit T201: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   kpi makeupComp.dT=356.394257943 T_out=656.394257943
+   kpi recycleComp.dT=13.736009863 T_out=263.736009863
+   golden rows checked=204 moved=0
+=== ammonia02_full_plant mode=Avliq rc=0
+   plant residual_kW=-1.38204352558 pct=-0.00208509532516
+   unit makeupComp: dH=24002.1943 items=24000.0000 closure%=100.01 remaining=2.1943
+   unit recycleComp: dH=3999.5509 items=4000.0000 closure%=99.99 remaining=-0.4491
+   unit mixer: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit FEHE: dH=0.0283 items=0.0283 closure%= remaining=0.0283
+   unit converter: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit waterCooler: dH=-0.0001 items=-0.0001 closure%= remaining=-0.0001
+   unit separator: dH=-37807.4440 items=-37807.0527 closure%=100.00 remaining=-0.3913
+   unit letdown: dH=-474.9782 items=-474.9781 closure%=100.00 remaining=-0.0001
+   unit purgeSplit: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit T201: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   kpi makeupComp.dT=356.394257943 T_out=656.394257943
+   kpi recycleComp.dT=13.736009863 T_out=263.736009863
+   golden rows checked=204 moved=20
+     kpi      economics              COM_d              216744030.9 -> 216703085.1  rel -1.889e-04
+     kpi      economics              IRR                0.1264542007 -> 0.1268525314  rel +3.150e-03
+     kpi      economics              NPV                15777483.6 -> 16023641.4  rel +1.560e-02
+     kpi      economics              paybackYears       11.23446521 -> 11.18073364  rel -4.783e-03
+     kpi      letdown                Q                  13802.4647 -> -474978.1093  rel -3.541e+01
+     kpi      letdown                Q_kW               13.8024647 -> -474.9781093  rel -3.541e+01
+     kpi      separator              Q                  -38345615.12 -> -37807052.69  rel -1.404e-02
+     kpi      separator              Q_kW               -38345.61512 -> -37807.05269  rel -1.404e-02
+     boundary global                 Q_boundary_kW      -10331.81265 -> -10282.0308  rel -4.818e-03
+     kpi      economics              C_UT               40499658.13 -> 40466371.1  rel -8.219e-04
+     kpi      economics              grossMargin_RM_UT  69406018.7 -> 69439323.42  rel +4.799e-04
+     kpi      pinch                  Q_C_min_kW         95732.56985 -> 95682.75147  rel -5.204e-04
+     kpi      pinch                  Q_cool_current_kW  95746.37231 -> 95682.75147  rel -6.645e-04
+     kpi      pinch                  Q_heat_current_kW  13.8024647 -> 0  rel -1.000e+00
+     kpi      pinch                  candidates_admissible 5 -> 2  rel -6.000e-01
+     kpi      pinch                  candidates_total   6 -> 4  rel -3.333e-01
+     kpi      pinch                  violation_heat_below_pinch_kW 13.8024647 -> 0  rel -1.000e+00
+     kpi      pinch                  Q_cold_total_kW    115046.3208 -> 115032.4602  rel -1.205e-04
+     kpi      pinch                  Q_hot_total_kW     210778.8906 -> 210715.2117  rel -3.021e-04
+     kpi      pinch                  Q_recovery_max_kW  115046.3208 -> 115032.4602  rel -1.205e-04
+=== ammonia02_full_plant mode=Bkern rc=0
+   plant residual_kW=-1.38197660446 pct=-0.00208419410994
+   unit makeupComp: dH=24002.1943 items=24000.0000 closure%=100.01 remaining=2.1943
+   unit recycleComp: dH=3999.5574 items=4000.0000 closure%=99.99 remaining=-0.4426
+   unit mixer: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   unit FEHE: dH=0.0283 items=0.0283 closure%= remaining=0.0283
+   unit converter: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit waterCooler: dH=0.0001 items=0.0001 closure%= remaining=0.0001
+   unit separator: dH=-38082.8162 items=-38082.4182 closure%=100.00 remaining=-0.3980
+   unit letdown: dH=-225.0624 items=-225.0623 closure%=100.00 remaining=-0.0001
+   unit purgeSplit: dH=-0.0000 items=-0.0000 closure%= remaining=-0.0000
+   unit T201: dH=0.0000 items=0.0000 closure%= remaining=0.0000
+   kpi makeupComp.dT=356.394257943 T_out=656.394257943
+   kpi recycleComp.dT=13.736009863 T_out=263.736009863
+   golden rows checked=204 moved=20
+     kpi      economics              COM_d              216744030.9 -> 216717158.3  rel -1.240e-04
+     kpi      economics              IRR                0.1264542007 -> 0.1267157364  rel +2.068e-03
+     kpi      economics              NPV                15777483.6 -> 15939078.23  rel +1.024e-02
+     kpi      economics              paybackYears       11.23446521 -> 11.19916033  rel -3.143e-03
+     kpi      letdown                Q                  13802.4647 -> -225062.3374  rel -1.731e+01
+     kpi      letdown                Q_kW               13.8024647 -> -225.0623374  rel -1.731e+01
+     kpi      separator              Q                  -38345615.12 -> -38082418.23  rel -6.864e-03
+     kpi      separator              Q_kW               -38345.61512 -> -38082.41823  rel -6.864e-03
+     boundary global                 Q_boundary_kW      -10331.81265 -> -10307.48057  rel -2.355e-03
+     kpi      economics              C_UT               40499658.13 -> 40477812.74  rel -5.394e-04
+     kpi      economics              grossMargin_RM_UT  69406018.7 -> 69427881.78  rel +3.150e-04
+     kpi      pinch                  Q_C_min_kW         95732.56985 -> 95708.20124  rel -2.545e-04
+     kpi      pinch                  Q_cool_current_kW  95746.37231 -> 95708.20124  rel -3.987e-04
+     kpi      pinch                  Q_heat_current_kW  13.8024647 -> 0  rel -1.000e+00
+     kpi      pinch                  candidates_admissible 5 -> 2  rel -6.000e-01
+     kpi      pinch                  candidates_total   6 -> 4  rel -3.333e-01
+     kpi      pinch                  violation_heat_below_pinch_kW 13.8024647 -> 0  rel -1.000e+00
+     kpi      pinch                  Q_cold_total_kW    115046.3208 -> 115032.4602  rel -1.205e-04
+     kpi      pinch                  Q_hot_total_kW     210778.8906 -> 210740.6614  rel -1.814e-04
+     kpi      pinch                  Q_recovery_max_kW  115046.3208 -> 115032.4602  rel -1.205e-04
+
+real	0m1.051s
+user	0m0.770s
+sys	0m0.054s

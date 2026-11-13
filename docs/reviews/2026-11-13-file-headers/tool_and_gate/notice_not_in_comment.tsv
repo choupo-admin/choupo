@@ -1,0 +1,7 @@
+path	kind	copyright_in_comment	spdx_in_comment
+bin/curate/add_source_headers.py	script-hash	False	False
+bin/curate/check_gates_judge_tracked.py	script-hash	False	False
+bin/curate/check_source_headers.py	script-hash	True	False
+bin/curate/gate_prereq.py	script-hash	False	False
+bin/curate/source_headers_kinds.py	script-hash	False	False
+bin/curate/tracked_tree.py	script-hash	False	False

@@ -3481,6 +3481,13 @@ parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Reje
   free-for-commercial ethos) and **no-grant / all-rights-reserved** (NIST SRD/WebBook,
   Engineering Toolbox, DIPPR, Yaws, CRC, REFPROP — nothing to honour).  Also watch
   **provenance laundering** (copyleft data that secretly contains proprietary data).
+* **The exclusion is about a source's ARRANGEMENT** (a database, a compilation, a table
+  taken whole).  ONE value read from a primary publication and cited to it is a fact
+  with its source, whatever the publication's reuse notice; when that notice restricts
+  reuse, the value's provenance says so in words.  (Added 2026-11-13, DEV.md 4c C389,
+  review row PR-01: a techno-economic paper that reserves commercial use of the
+  publication was the origin of one price; the practice was already this for every
+  journal article that reserves all rights, and the sentence was missing.)
 * Cite the **PRIMARY** source per value, never the aggregator's arrangement.
 
 ### C++17 — CLOSED 2026-08-27, with the argument that had been missing

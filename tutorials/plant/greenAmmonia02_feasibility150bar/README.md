@@ -152,20 +152,22 @@ converged run again, through the same cash flow — a tornado, printed sorted
 by NPV swing and written to `reports/economics/sensitivity.csv`. The FCI's
 ends are the declared accuracy band itself (`relative accuracyBand;`), so
 the −30 % / +50 % finally reaches the NPV. The three **prices' ends are
-cited**: the lowest and highest figure the sources span (ammonia 0.439,
-USGS US Gulf Coast FOB 2025, to 0.726 EUR/kg, the EU import unit value in
-January-September 2026; hydrogen 4.95, the price ammonia producers said they
-would pay in the second European Hydrogen Bank auction, to 10.0 EUR/kg, the
-top of ACER's 7-10 range; nitrogen 0.0159 to 0.0175, OIES Table 2's six
-"Present" values), each with its arithmetic in `constant/economics`. The
+cited**, each on the basis of its base price (ammonia 0.380 to 0.692
+EUR/kg, the lowest and highest monthly EU import unit value of 2025 in the
+base price's own Eurostat dataset, June and November; hydrogen 7.0 to 10.0,
+ACER's own range of the cost of renewable hydrogen by country of origin;
+nitrogen 0.0159 to 0.0175, OIES Table 2's six "Present" values), each with
+its arithmetic in `constant/economics`, where figures of another kind (a US
+FOB estimate, a nine-month 2026 value, an auction's average offtake price)
+are context and not ends. The
 three utility bills ±20 %, the discount rate 8 % / 12 % and the stream
 factor 0.85 / 0.95 are the customary round figures, not cited.
 
 | input (low / high end) | NPV at low | NPV at high | swing |
 |---|---|---|---|
-| H₂ price (4.95 / 10.0 EUR/kg) | −1 737.26 | −4 366.05 | 2 628.79 |
+| H₂ price (7.0 / 10.0 EUR/kg) | −2 804.39 | −4 366.05 | 1 561.66 |
 | discount rate (8 % / 12 %) | −3 728.31 | −2 988.21 | 740.10 |
-| NH₃ price (0.439 / 0.726 EUR/kg) | −3 535.36 | −2 871.74 | 663.62 |
+| NH₃ price (0.380 / 0.692 EUR/kg) | −3 671.78 | −2 950.36 | 721.42 |
 | stream factor (0.85 / 0.95) | −3 147.86 | −3 502.03 | 354.18 |
 | molten-salt bill, `hitecSalt` (×0.8 / ×1.2) | −3 285.40 | −3 364.49 | 79.09 |
 | **FCI, the accuracy band** (29.44 / 63.09 M EUR) | −3 300.20 | −3 366.19 | 66.00 |
@@ -176,15 +178,15 @@ factor 0.85 / 0.95 are the customary round figures, not cited.
 M EUR; the base NPV is −3 324.94 M EUR. What it teaches:
 
 * **The hydrogen price decides, the capital does not.** The hydrogen range
-  the sources span swings the NPV by 2.6 G EUR — forty times the whole
-  −30 / +50 % capital band (66 M EUR) — and the ammonia range by 0.66 G EUR,
-  ten times. At this stage a better capital estimate cannot rescue or sink
+  the source gives swings the NPV by 1.56 G EUR — twenty-four times the whole
+  −30 / +50 % capital band (66 M EUR) — and the ammonia range by 0.72 G EUR,
+  eleven times. At this stage a better capital estimate cannot rescue or sink
   the project; the margin R − C_RM can. The capital band also moves the NPV
   about twice as far as the capital itself (66 M EUR for a 33.6 M EUR spread
   of FCI), because 0.180 FCI rides inside COM_d every year.
 * **No single input flips the sign, and no end of any price comes close.**
-  Hydrogen at 4.95 EUR/kg leaves the NPV at −1 737 M EUR, ammonia at 0.726
-  at −2 872 M EUR; neither has an IRR. This case declares no `breakEven`;
+  Hydrogen at 7.0 EUR/kg leaves the NPV at −2 804 M EUR, ammonia at 0.692
+  at −2 950 M EUR; neither has an IRR. This case declares no `breakEven`;
   the base case prints the exact ones (its README: ammonia at 1.93 EUR/kg,
   3.6 times the market price, or hydrogen at 1.79 EUR/kg), and a reading
   across this table would not be exact, because the tax credit on losses

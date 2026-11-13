@@ -1,0 +1,126 @@
+path	kind	notice_as_written
+LICENSE	root-or-other	Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+bin/curate/enrtl_ref/enrtl.py	bin	Copyright (c) 2018-2026 by the software owners: The Regents of the
+bin/curate/enrtl_ref/enrtl_reference_states.py	bin	Copyright (c) 2018-2026 by the software owners: The Regents of the
+bin/curate/lvpp_sigma_profile.py	bin	Copyright (c) 2017 LVPP (the LICENSE at tag 18.07).
+bin/curate/nanofiltran/LICENSE-LAPACK.txt	bin	Copyright (c) 1992-2013 The University of Tennessee and The University
+bin/curate/nanofiltran/src/SIMPLEX.F	bin	Copyright (c) 1998-2004 <Michael F. Hutt>
+data/curation/pairs/12Butanediol-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/13Dioxolane-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/1Chlorobutane-toluene/constant/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/1Methoxy2PropylAcetate-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/1Propoxy2Propanol-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/2Amino2Methyl1Propanol-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/2Chlorobutane-toluene/constant/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/2Ethoxyethanol-ethylAcetate/constant/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/2Ethoxyethanol-methylAcetate/constant/components/methylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/2Ethyl1Hexanol-nButanol/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/2Methoxyethanol-toluene/constant/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/2Propoxyethanol-nButanol/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/3Methyl1Butanol-nButanol/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/3Methylthiophene-nHexane/constant/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/3Methylthiophene-toluene/constant/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/Dichloroethane-pentanenitrile/constant/components/Dichloroethane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/Dichloroethane-tertButylAcetate/constant/components/Dichloroethane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/Dichloroethane-toluene/constant/components/Dichloroethane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/Dichloroethane-toluene/constant/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/allylAlcohol-ethylAcetate/constant/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/allylAlcohol-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/aniline-nButanol/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/benzene-nButanol/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/diEthylCarbonate-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dichloromethane-nHexane/constant/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/diethylethanolamine-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/diisopropylEther-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-ethylLactate/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-isopentylAcetate/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-methylFormate/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-methylPhenylCarbonate/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-nButanol/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-nButanol/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-nButylButanoate/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-nButylPropionate/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-nNonane/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylCarbonate-pXylene/constant/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylSulfoxide-ethylAcetate/constant/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/dimethylSulfoxide-methylAcetate/constant/components/methylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylAcetate-ethylLactate/constant/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylAcetate-isopentylAcetate/constant/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylAcetate-nDecane/constant/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylAcetate-propyleneCarbonate/constant/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylButanoate-nHexane/constant/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylLactate-methanol/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylLactate-methylAcetate/constant/components/methylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/ethylPropionate-nHexane/constant/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/furan-nHexane/constant/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/furan-toluene/constant/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/isobutylAcetate-methylAcetate/constant/components/methylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/isopentylAcetate-methylAcetate/constant/components/methylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/mCresol-nButanol/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/methanol-nitrobenzene/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/methanol-tetrahydropyran/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/methanol-vinylPropionate/constant/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/methylAcetate-pXylene/constant/components/methylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/nButanol-pXylene/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/nButanol-pyrrole/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/nButanol-tetrahydropyran/constant/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/nButylFormate-nHexane/constant/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/nHexane-tetrahydropyran/constant/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/curation/pairs/sulfolane-toluene/constant/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/C4H4.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/CH4.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/CO2.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/Dichloroethane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/H2S.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/H2SO4.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/HNO3.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/HONO.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/N2H4.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/SO2.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/acetaldehyde.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/dimethylCarbonate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/ethane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/ethylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/ethylene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/methanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/methylAcetate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/methylLinoleate.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/nButane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/nButanol.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/nHexane.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/propyne.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+data/standards/components/toluene.dat	data	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+docs/design/where-to-find-property-data.md	docs-other	Copyright © 1979 International Union of Pure and Applied Chemistry. All Rights Reserved." | aggregator, no gra
+gui/public/THIRD_PARTY_NOTICES	gui-other	Copyright (c) 2014-present Sebastian McKenzie and other contributors
+gui/public/plotly-basic.min.js.LICENSE.txt	gui-other	Copyright (c) 2021 Plotly, Inc
+gui/tests/layoutExport.test.ts	gui-tests	Copyright © 2010-2024 three.js authors\n",
+thirdParty/chemsep/pcd/Artistic_license_2_0.txt	root-or-other	Copyright (c) 2000-2006, The Perl Foundation.
+thirdParty/lvpp-sigma/LICENSE	root-or-other	Copyright (c) 2017 LVPP
+thirdParty/lvpp-sigma/README.md	root-or-other	Copyright (c) 2017 LVPP), text in `LICENSE` beside the data. Openly
+thirdParty/thermo-ipdb/README.md	root-or-other	Copyright (C) 2016, 2017,
+tutorials/props/gibbs/landscape06_nitrogen_fixation_routes/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways/constant/components/CH4.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/Dichloroethane.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/acetone.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/benzene.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soa
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/ethanol.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/ethylAcetate.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/methylAcetate.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/nButane.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/nButanol.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002/constant/components/nHexane.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive/constant/components/ethanol.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores
+tutorials/props/transport/surfacetension01_stored_vs_brockbird/constant/components/methanol.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/props/transport/surfacetension01_stored_vs_brockbird/constant/components/nHexane.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/distillation/column13_sour_water_stage_identity/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/distillation/stripper01_sour_water/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/distillation/stripper02_sour_water_h2s/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/distillation/stripper02_sour_water_h2s/constant/components/H2S.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/gibbs/claus01_thermal_stage/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/gibbs/claus01_thermal_stage/constant/components/H2S.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/gibbs/claus01_thermal_stage/constant/components/SO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/gibbs/gibbs12_element_potential_newton/constant/components/CH4.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/gibbs/gibbs12_element_potential_newton/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619
+tutorials/steady/thermo/basis01_two_unit_chain/constant/components/CO2.dat	tutorial	Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.1619

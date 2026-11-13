@@ -1,0 +1,99 @@
+// R4 scratch comparison: engine propertySources block vs the app's adapter
+// and panel.  Copied temporarily into gui/tests/, deleted afterwards.
+import { readFileSync, writeFileSync } from "node:fs";
+import { MantineProvider } from "@mantine/core";
+import { createElement } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { describe, expect, it, vi } from "vitest";
+
+import { extractStructured } from "../src/adapters/WasmAdapter.js";
+import {
+  propertyWords, rowsByUnit, rowsOfUnit, stateText, valueText,
+} from "../src/adapters/propertySourcesPayload.js";
+import type { CaseFiles } from "../src/case/types.js";
+import { LiquidPropertiesReport, UnitLiquidPropertiesRows } from "../src/ui/LiquidPropertySources.js";
+
+vi.mock("../src/state/store.js", () => ({
+  useStore: Object.assign(
+    (sel: (s: unknown) => unknown) => sel({}),
+    { getState: () => ({}), setState: () => undefined, subscribe: () => () => undefined }),
+}));
+
+const S = process.env.R4_SCRATCH!;
+const emptyCase: CaseFiles = { thermoPackage: {}, controlDict: {} };
+const html = (el: React.ReactElement): string =>
+  renderToStaticMarkup(createElement(MantineProvider, null, el));
+
+function engineBlock(log: string): any {
+  const a = log.indexOf("<<<Choupo:result-begin>>>");
+  const b = log.indexOf("<<<Choupo:result-end>>>");
+  return JSON.parse(log.slice(a + "<<<Choupo:result-begin>>>".length, b)).propertySources;
+}
+function printedTable(log: string): string {
+  const at = log.indexOf("[liquid properties]");
+  return log.slice(at, log.indexOf("<<<Choupo:result-begin>>>", at));
+}
+
+for (const name of (process.env.R4_CASES ?? "").split(",")) {
+  describe(name, () => {
+    const log = readFileSync(`${S}/runs/${name}/log.choupoSolve`, "utf-8");
+    const eng = engineBlock(log);
+    const ps = extractStructured(log, emptyCase).propertySources!;
+    const out: string[] = [];
+    it("compare", () => {
+      out.push(`# ${name}`);
+      out.push(`engine used=${eng.used.length} adapter used=${ps.used.length}`);
+      out.push(`engine keys: ${Object.keys(eng).join(",")}`);
+      out.push(`engine declared=${eng.declared.length} declaredNotUsed=${eng.declaredNotUsed.length} mismatches=${eng.mismatches.length} pricedTwice=${eng.pricedTwice.length} constantBesideComputed=${eng.constantBesideComputed.length} modelParameters=${eng.modelParameters.length}`);
+      // field-by-field
+      eng.used.forEach((e: any, i: number) => {
+        const r = ps.used[i]!;
+        const diffs: string[] = [];
+        const pairs: [string, unknown, unknown][] = [
+          ["unit", e.unit, r.unit], ["consumerType", e.consumerType, r.consumerType],
+          ["property", e.property, r.property], ["sourceId", e.sourceId, r.sourceId],
+          ["label", e.label, r.label], ["class", e.class, r.sourceClass],
+          ["pressure", e.pressure, r.pressure], ["calls", e.calls, r.calls],
+          ["valueMin", e.valueMin, r.valueMin], ["valueMax", e.valueMax, r.valueMax],
+          ["TMin", e.TMin, r.TMin], ["TMax", e.TMax, r.TMax],
+          ["PMin", e.PMin, r.PMin], ["PMax", e.PMax, r.PMax],
+          ["leftOut", JSON.stringify(e.leftOut), JSON.stringify(r.leftOut)],
+        ];
+        for (const [k, a, b] of pairs) if (a !== b) diffs.push(`${k}: engine=${a} adapter=${b}`);
+        const shown = `${propertyWords(r.property)} | ${valueText(r) || "value not recorded"} | ${stateText(r)} | [${r.sourceClass}] ${r.label}`;
+        out.push(`ROW ${i} ${e.unit} (${e.consumerType}) ${e.property} ${e.sourceId} calls=${e.calls} kernel=${e.kernel} -> SHOWN: ${shown}${diffs.length ? "  DIFFS: " + diffs.join("; ") : ""}`);
+      });
+      // the existing test's invariant on this case
+      const text = printedTable(log);
+      for (const r of ps.used) {
+        const line = `${propertyWords(r.property)}   ${valueText(r)} ${stateText(r)}   ${r.label}`;
+        if (!text.includes(line)) out.push(`NOT-IN-PRINTED: ${JSON.stringify(line.slice(0, 160))}`);
+      }
+      // groups (Reports) vs console lines
+      const groups = rowsByUnit(ps);
+      const consoleLines = text.split("\n").filter((l) => /^  \S/.test(l) && !l.startsWith("  ["));
+      out.push(`report groups=${groups.length} report rows=${groups.reduce((n, g) => n + g.rows.length, 0)} console lines (non-finding)=${consoleLines.length}`);
+      for (const g of groups) {
+        const types = new Set(g.rows.map((r) => r.consumerType));
+        if (types.size > 1) out.push(`GROUP ${g.unit}: rows of several consumerTypes ${[...types].join(",")} shown under one '(${g.consumerType})'`);
+      }
+      // render Reports and count rows / findings
+      const rep = html(createElement(LiquidPropertiesReport, { report: ps }));
+      writeFileSync(`${S}/${name}.report.html`, rep);
+      out.push(`rendered report data-liquid-row count=${(rep.match(/data-liquid-row/g) ?? []).length}`);
+      for (const f of [...eng.pricedTwice, ...eng.mismatches, ...eng.constantBesideComputed])
+        if (!rep.includes(f.replace(/'/g, "&#x27;"))) out.push(`FINDING NOT RENDERED: ${f.slice(0, 100)}`);
+      for (const f of eng.declaredNotUsed) out.push(`declaredNotUsed in engine (rendered? ${rep.includes(f.replace(/'/g, "&#x27;"))}): ${f}`);
+      for (const p of eng.modelParameters) out.push(`modelParameter in engine (rendered? ${rep.includes(p.model)}): ${p.model}: ${p.reads}`);
+      // panel per unit for every flowsheet unit name seen
+      const unitNames = new Set<string>(eng.used.map((e: any) => e.unit).filter((u: string) => !u.includes("'")));
+      for (const u of unitNames) {
+        const rows = rowsOfUnit(ps, u);
+        const pan = html(createElement(UnitLiquidPropertiesRows, { report: ps, unit: u }));
+        out.push(`PANEL ${u}: rowsOfUnit=${rows.length} [${rows.map((r) => r.unit).join(" | ")}] rendered rows=${(pan.match(/data-liquid-row/g) ?? []).length}`);
+      }
+      writeFileSync(`${S}/${name}.compare.txt`, out.join("\n") + "\n");
+      expect(true).toBe(true);
+    });
+  });
+}

@@ -35,6 +35,12 @@ The violation is the aggregator standing AS the authority:
 -- the second calling an aggregator "Primary data", which is the exact
 inversion the invariant forbids.
 
+THE EXCLUSION IS ABOUT A SOURCE'S ARRANGEMENT (a database, a compilation, a
+table taken whole).  ONE value read from a primary publication and cited to it
+is a fact with its source, whatever the publication's reuse notice; when that
+notice restricts reuse, the value's provenance says so in words (RESTRICTED
+NOTICE ARM below; settled-contracts.md, licence policy, 2026-11-13, C389).
+
 THE SECOND RULE, added 2026-09-01: a NONCOMMERCIAL COMPILATION.  Burcat's
 Third Millennium database (hosted at ReSpecTh) is "provided free of charge
 for non commercial use" -- and NonCommercial is on the excluded list
@@ -659,7 +665,54 @@ def case_local_no_grant():
     return found, nscan
 
 
+#  THE RESTRICTED-NOTICE ARM (2026-11-13, C389 review row PR-02).  An explicit,
+#  short list of origins known to carry a reuse-restricting notice.  A value
+#  from one of them is a fact with its source (see the docstring), but its
+#  provenance must SAY the notice in words: every case-local constant/ file
+#  and catalogue record that names the origin must also carry the words.
+#  Keyed on a string the provenance block already contains.  Add an entry when
+#  a review finds another publication whose notice restricts reuse.
+RESTRICTED_NOTICE = [
+    {"match": "Oxford Institute for Energy Studies",
+     "words": "reserves commercial use of the publication",
+     "what": "OIES Paper ET40 (the nitrogen price of the green-ammonia cases)"},
+]
+RESTRICTED_NOTICE_ROOTS = ("tutorials", "data/standards")
+
+
+def restricted_notice_violations():
+    """Files naming a listed origin without the reservation's words, and the
+    number of files that name one (so an arm that finds none is visible)."""
+    bad, named = [], 0
+    for root in RESTRICTED_NOTICE_ROOTS:
+        for p in _tracked_under(ROOT / root):
+            if root == "tutorials" and "constant" not in p.parts:
+                continue
+            try:
+                text = p.read_text(errors="ignore")
+            except OSError:
+                continue
+            for e in RESTRICTED_NOTICE:
+                if e["match"] in text:
+                    named += 1
+                    if e["words"] not in text:
+                        bad.append((p.relative_to(ROOT).as_posix(), e))
+    return bad, named
+
+
 def main() -> int:
+    rn_bad, rn_named = restricted_notice_violations()
+    if rn_bad:
+        for f, e in rn_bad:
+            print(f"check_source_licence: FAILED -- {f} names {e['match']!r} "
+                  f"({e['what']}) without saying, in words, that the "
+                  f"publication {e['words']!r}: a value from a source whose "
+                  "notice restricts reuse carries that notice in its provenance.")
+        return 1
+    if rn_named == 0:
+        print("check_source_licence: FAILED -- the restricted-notice arm found "
+              "no file naming a listed origin; the arm is looking at nothing.")
+        return 1
     violations, pinned_seen, nfiles = [], set(), 0
     nc_new, nc_seen = [], set()
     accepted_seen = {}
@@ -992,7 +1045,7 @@ def main() -> int:
         #  the WORD the record declares, not a databank licence.
         f"{n} ({ACCEPTED_DATABANK[n]['licence'] if n in ACCEPTED_DATABANK else ACCEPTED_PUBLIC_DOMAIN[n]['licenceWord']}, {k} record(s))"
         for n, k in sorted(accepted_seen.items()))
-    print(f"check_source_licence: OK -- {nfiles} TRACKED record(s) scanned (untracked and data/local files are NOT judged; an "
+    print(f"check_source_licence: OK -- restricted-notice arm: all {rn_named} file(s) naming a listed reuse-restricted origin ({len(RESTRICTED_NOTICE)} listed) also carry its reservation in words.  {nfiles} TRACKED record(s) scanned (untracked and data/local files are NOT judged; an "
           f"absent or collapsed scan root REFUSES); no "
           f"encumbered source stands as the authority for a value, except "
           f"{len(PINNED)} pinned violations awaiting curation (a primary "

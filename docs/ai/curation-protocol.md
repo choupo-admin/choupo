@@ -150,7 +150,9 @@ against the student's or a primary source's VLE data.
 
 NEVER (no-grant or NonCommercial — do not enter their numbers, even cited):
 NIST SRD / WebBook, DIPPR, Yaws, CRC (as a product), direct DECHEMA / DDBST transcription,
-CAS Common Chemistry (CC-BY-NC). See `CLAUDE.md` §10 (CODE-vs-DATA policy).
+CAS Common Chemistry (CC-BY-NC). See the licence policy (CODE vs DOCS vs DATA) in
+`docs/architecture/settled-contracts.md`: the exclusion is about a source's ARRANGEMENT;
+one value read from a primary publication and cited to it is a fact with its source.
 
 ---
 

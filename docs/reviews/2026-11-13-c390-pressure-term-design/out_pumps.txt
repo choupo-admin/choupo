@@ -1,0 +1,136 @@
+=== pump01_water mode=base rc=0
+   plant residual_kW=1.3 pct=65
+   unit pump01: dH=0.7000 items=2.0000 closure%=35.00 remaining=-1.3000
+   kpi pump01.dT=0.927152317881 T_out=299.077152318
+   golden rows checked=22 moved=0
+=== pump01_water mode=Avliq rc=0
+   plant residual_kW=4.54747350886e-13 pct=2.27373675443e-11
+   unit pump01: dH=2.0000 items=2.0000 closure%=100.00 remaining=-0.0000
+   kpi pump01.dT=0.927038507223 T_out=299.077038507
+   golden rows checked=22 moved=3
+     kpi      pump01                 dT                 0.9271523179 -> 0.9270385072  rel -1.228e-04
+     boundary global                 H_products_kW      -2863.315917 -> -2861.99842  rel -4.601e-04
+     boundary global                 residual_kW        1.3 -> 4.547473509e-13  rel -1.000e+00
+=== pump01_water mode=Arec rc=0
+   plant residual_kW=0 pct=0
+   unit pump01: dH=2.0000 items=2.0000 closure%=100.00 remaining=0.0000
+   kpi pump01.dT=0.92554445098 T_out=299.075544451
+   golden rows checked=22 moved=3
+     kpi      pump01                 dT                 0.9271523179 -> 0.925544451  rel -1.734e-03
+     boundary global                 H_products_kW      -2863.315917 -> -2861.99842  rel -4.601e-04
+     boundary global                 residual_kW        1.3 -> 0  rel -1.000e+00
+=== pump01_water mode=Akern rc=0
+   plant residual_kW=4.54747350886e-13 pct=2.27373675443e-11
+   unit pump01: dH=2.0000 items=2.0000 closure%=100.00 remaining=-0.0000
+   kpi pump01.dT=0.9323780692 T_out=299.082378069
+   golden rows checked=22 moved=3
+     kpi      pump01                 dT                 0.9271523179 -> 0.9323780692  rel +5.636e-03
+     boundary global                 H_products_kW      -2863.315917 -> -2861.998421  rel -4.601e-04
+     boundary global                 residual_kW        1.3 -> 4.547473509e-13  rel -1.000e+00
+=== pump01_water mode=Brec rc=0
+   plant residual_kW=4.09272615798e-12 pct=2.04636307899e-10
+   unit pump01: dH=2.0000 items=2.0000 closure%=100.00 remaining=-0.0000
+   kpi pump01.dT=1.40329156876 T_out=299.553291569
+   golden rows checked=22 moved=5
+     kpi      pump01                 T_out              299.0771523 -> 299.5532916  rel +1.592e-03
+     kpi      pump01                 dT                 0.9271523179 -> 1.403291569  rel +5.136e-01
+     boundary global                 H_products_kW      -2863.315917 -> -2862.003238  rel -4.584e-04
+     boundary global                 residual_kW        1.3 -> 4.092726158e-12  rel -1.000e+00
+=== pump01_water mode=Bkern rc=0
+   plant residual_kW=0 pct=0
+   unit pump01: dH=2.0000 items=2.0000 closure%=100.00 remaining=0.0000
+   kpi pump01.dT=1.07368269645 T_out=299.223682696
+   golden rows checked=22 moved=5
+     kpi      pump01                 T_out              299.0771523 -> 299.2236827  rel +4.899e-04
+     kpi      pump01                 dT                 0.9271523179 -> 1.073682696  rel +1.580e-01
+     boundary global                 H_products_kW      -2863.315917 -> -2861.999763  rel -4.597e-04
+     boundary global                 residual_kW        1.3 -> 0  rel -1.000e+00
+=== pump02_pressure_spec mode=base rc=0
+   plant residual_kW=0.523982299286 pct=65.0000000001
+   unit pump02: dH=0.2821 items=0.8061 closure%=35.00 remaining=-0.5240
+   kpi pump02.dT=0.37370107947 T_out=298.523701079
+   golden rows checked=22 moved=0
+=== pump02_pressure_spec mode=Avliq rc=0
+   plant residual_kW=0 pct=0
+   unit pump02: dH=0.8061 items=0.8061 closure%=100.00 remaining=0.0000
+   kpi pump02.dT=0.373654958134 T_out=298.523654958
+   golden rows checked=22 moved=3
+     kpi      pump02                 dT                 0.3737010795 -> 0.3736549581  rel -1.234e-04
+     boundary global                 H_products_kW      -2863.733773 -> -2863.192293  rel -1.891e-04
+     boundary global                 residual_kW        0.5239822993 -> 0  rel -1.000e+00
+=== pump02_pressure_spec mode=Arec rc=0
+   plant residual_kW=4.54747350886e-13 pct=5.64114052096e-11
+   unit pump02: dH=0.8061 items=0.8061 closure%=100.00 remaining=-0.0000
+   kpi pump02.dT=0.373407428293 T_out=298.523407428
+   golden rows checked=22 moved=3
+     kpi      pump02                 dT                 0.3737010795 -> 0.3734074283  rel -7.858e-04
+     boundary global                 H_products_kW      -2863.733773 -> -2863.192293  rel -1.891e-04
+     boundary global                 residual_kW        0.5239822993 -> 4.547473509e-13  rel -1.000e+00
+=== pump02_pressure_spec mode=Akern rc=0
+   plant residual_kW=-4.54747350886e-13 pct=-5.64114052096e-11
+   unit pump02: dH=0.8061 items=0.8061 closure%=100.00 remaining=0.0000
+   kpi pump02.dT=0.374584739909 T_out=298.52458474
+   golden rows checked=22 moved=3
+     kpi      pump02                 dT                 0.3737010795 -> 0.3745847399  rel +2.365e-03
+     boundary global                 H_products_kW      -2863.733773 -> -2863.192295  rel -1.891e-04
+     boundary global                 residual_kW        0.5239822993 -> -4.547473509e-13  rel -1.000e+00
+=== pump02_pressure_spec mode=Brec rc=0
+   plant residual_kW=-9.09494701773e-13 pct=-1.12822810419e-10
+   unit pump02: dH=0.8061 items=0.8061 closure%=100.00 remaining=0.0000
+   kpi pump02.dT=0.565134782409 T_out=298.715134782
+   golden rows checked=22 moved=5
+     kpi      pump02                 T_out              298.5237011 -> 298.7151348  rel +6.413e-04
+     kpi      pump02                 dT                 0.3737010795 -> 0.5651347824  rel +5.123e-01
+     boundary global                 H_products_kW      -2863.733773 -> -2863.197112  rel -1.874e-04
+     boundary global                 residual_kW        0.5239822993 -> -9.094947018e-13  rel -1.000e+00
+=== pump02_pressure_spec mode=Bkern rc=0
+   plant residual_kW=0 pct=0
+   unit pump02: dH=0.8061 items=0.8061 closure%=100.00 remaining=0.0000
+   kpi pump02.dT=0.429376765808 T_out=298.579376766
+   golden rows checked=22 moved=5
+     kpi      pump02                 T_out              298.5237011 -> 298.5793768  rel +1.865e-04
+     kpi      pump02                 dT                 0.3737010795 -> 0.4293767658  rel +1.490e-01
+     boundary global                 H_products_kW      -2863.733773 -> -2863.193637  rel -1.886e-04
+     boundary global                 residual_kW        0.5239822993 -> 0  rel -1.000e+00
+=== liquidDensity02_waterEthanol mode=base rc=0
+   plant residual_kW=0.22515500557 pct=69.9999999998
+   unit P1: dH=0.0965 items=0.3217 closure%=30.00 remaining=-0.2252
+   kpi P1.dT=0.0285143033732 T_out=298.178514303
+   golden rows checked=35 moved=0
+=== liquidDensity02_waterEthanol mode=Avliq rc=0
+   plant residual_kW=1.81898940355e-12 pct=5.65518221217e-10
+   unit P1: dH=0.3217 items=0.3217 closure%=100.00 remaining=-0.0000
+   kpi P1.dT=0.0285144987457 T_out=298.178514499
+   golden rows checked=35 moved=1
+     boundary global                 residual_kW        0.2251550056 -> 1.818989404e-12  rel -1.000e+00
+=== liquidDensity02_waterEthanol mode=Arec rc=0
+   plant residual_kW=3.63797880709e-12 pct=1.13103644243e-09
+   unit P1: dH=0.3217 items=0.3217 closure%=100.00 remaining=-0.0000
+   kpi P1.dT=0.0285110865169 T_out=298.178511087
+   golden rows checked=35 moved=2
+     kpi      P1                     dT                 0.02851430337 -> 0.02851108652  rel -1.128e-04
+     boundary global                 residual_kW        0.2251550056 -> 3.637978807e-12  rel -1.000e+00
+=== liquidDensity02_waterEthanol mode=Akern rc=0
+   plant residual_kW=1.81898940355e-12 pct=5.65518221217e-10
+   unit P1: dH=0.3217 items=0.3217 closure%=100.00 remaining=-0.0000
+   kpi P1.dT=0.028519197437 T_out=298.178519197
+   golden rows checked=35 moved=2
+     kpi      P1                     dT                 0.02851430337 -> 0.02851919744  rel +1.716e-04
+     boundary global                 residual_kW        0.2251550056 -> 1.818989404e-12  rel -1.000e+00
+=== liquidDensity02_waterEthanol mode=Brec rc=0
+   plant residual_kW=3.63797880709e-12 pct=1.13103644243e-09
+   unit P1: dH=0.3217 items=0.3217 closure%=100.00 remaining=-0.0000
+   kpi P1.dT=0.0528077523052 T_out=298.202807752
+   golden rows checked=35 moved=3
+     kpi      P1                     dT                 0.02851430337 -> 0.05280775231  rel +8.520e-01
+     kpi      R1                     k_absentAcid       1.742676004e-06 -> 1.74554157e-06  rel +1.644e-03
+     boundary global                 residual_kW        0.2251550056 -> 3.637978807e-12  rel -1.000e+00
+=== liquidDensity02_waterEthanol mode=Bkern rc=0
+   plant residual_kW=1.81898940355e-12 pct=5.65518221214e-10
+   unit P1: dH=0.3217 items=0.3217 closure%=100.00 remaining=-0.0000
+   kpi P1.dT=0.046463095713 T_out=298.196463096
+   golden rows checked=35 moved=4
+     kpi      P1                     dT                 0.02851430337 -> 0.04646309571  rel +6.295e-01
+     kpi      R1                     Q_kW               0 -> 1.818989404e-12  rel +inf
+     kpi      R1                     k_absentAcid       1.742676004e-06 -> 1.744792768e-06  rel +1.215e-03
+     boundary global                 residual_kW        0.2251550056 -> 1.818989404e-12  rel -1.000e+00

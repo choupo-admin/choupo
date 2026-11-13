@@ -1,0 +1,13 @@
+exit 0
+Description:       Liquid density D1: pure water through a pump and a CSTR -- the reference equation by the fact that a record names water
+  [liquid density] the liquid density of pure water by referenceEquation.IAPWS95 at T = 300 K, P = 3535 Pa: the package's own saturation line puts this state in the liquid (p_sat 3533.5278 Pa), the reference equation's below it (p_sat 3536.8068 Pa, +0.000928 relative); priced as the formulation's saturated liquid at T
+probe	300.0 3535.0 water 1.0	996.51302746813224
+probe	300.0 3530.0 water 1.0	REFUSED	liquid density of {water}: at T = 300 K and P = 3530 Pa pure water is a VAPOUR -- its saturation pressure there is p_sat(T) = 3536.81 Pa (Helmholtz reference equation IAPWS95), and the package's own saturation line is at 3533.53 Pa: both say vapour; a liquid exists only at or above the line.  Remedy: a pressure at or above p_sat(T) (or a temperature below the b
+probe	450.0 970000.0 water 1.0	890.3660923262338
+probe	450.0 900000.0 water 1.0	REFUSED	liquid density of {water}: at T = 450 K and P = 900000 Pa pure water is a VAPOUR -- its saturation pressure there is p_sat(T) = 932204 Pa (Helmholtz reference equation IAPWS95), and the package's own saturation line is at 1.01445e+06 Pa: both say vapour; a liquid exists only at or above the line.  Remedy: a pressure at or above p_sat(T) (or a temperature belo
+probe	450.0 1100000.0 water 1.0	890.4514998515848
+probe	610.0 15000000.0 water 1.0	625.74732430065274
+probe	610.0 13000000.0 water 1.0	REFUSED	liquid density of {water}: at T = 610 K and P = 1.3e+07 Pa pure water is a VAPOUR -- its saturation pressure there is p_sat(T) = 1.40326e+07 Pa (Helmholtz reference equation IAPWS95), and the package's own saturation line is at 1.66939e+07 Pa: both say vapour; a liquid exists only at or above the line.  Remedy: a pressure at or above p_sat(T) (or a temperat
+probe	610.0 17000000.0 water 1.0	635.12302105453273
+[psat] component 'water': Antoine evaluated at T = 450 K, OUTSIDE its declared Trange (273 373).
+     The saturation pressure is extrapolated: it is still returned (I4 -- extrapolation is a legitimate choice), but it is no longer covered by the fit, and every K-value computed from it inherits that.

@@ -1,0 +1,18 @@
+Antoine A B C = 5.40221 1838.675 -31.737; check IAPWS-95 psat(450 K) = 9.322035636e+05 Pa (Table 8: 0.932203564 MPa)
+T 275.000  psat95 6.984512e+02 Pa  Antoine 6.979538e+02 Pa  Antoine/95-1 -0.0007  rhoL_sat 999.887
+T 300.000  psat95 3.536807e+03 Pa  Antoine 3.533528e+03 Pa  Antoine/95-1 -0.0009  rhoL_sat 996.513
+T 350.000  psat95 4.168173e+04 Pa  Antoine 4.216879e+04 Pa  Antoine/95-1 +0.0117  rhoL_sat 973.702
+T 373.124  psat95 1.013239e+05 Pa  Antoine 1.038278e+05 Pa  Antoine/95-1 +0.0247  rhoL_sat 958.368
+T 400.000  psat95 2.457693e+05 Pa  Antoine 2.566722e+05 Pa  Antoine/95-1 +0.0444  rhoL_sat 937.486
+T 450.000  psat95 9.322036e+05 Pa  Antoine 1.014453e+06 Pa  Antoine/95-1 +0.0882  rhoL_sat 890.341
+T 500.000  psat95 2.639196e+06 Pa  Antoine 2.989674e+06 Pa  Antoine/95-1 +0.1328  rhoL_sat 831.313
+T 550.000  psat95 6.117184e+06 Pa  Antoine 7.152299e+06 Pa  Antoine/95-1 +0.1692  rhoL_sat 755.808
+T 580.000  psat95 9.447966e+06 Pa  Antoine 1.118338e+07 Pa  Antoine/95-1 +0.1837  rhoL_sat 697.638
+T 600.000  psat95 1.234482e+07 Pa  Antoine 1.467589e+07 Pa  Antoine/95-1 +0.1888  rhoL_sat 649.411
+T 610.000  psat95 1.403256e+07 Pa  Antoine 1.669391e+07 Pa  Antoine/95-1 +0.1897  rhoL_sat 620.652
+T 620.000  psat95 1.590058e+07 Pa  Antoine 1.890644e+07 Pa  Antoine/95-1 +0.1890  rhoL_sat 586.878
+T 630.000  psat95 1.796897e+07 Pa  Antoine 2.132329e+07 Pa  Antoine/95-1 +0.1867  rhoL_sat 544.248
+T 640.000  psat95 2.026523e+07 Pa  Antoine 2.395417e+07 Pa  Antoine/95-1 +0.1820  rhoL_sat 481.594
+T 600: rho_sat 649.411; rho_L at max(p_ref,p_pkg)=1.4676e+07 Pa: 658.262; diff +1.3629%
+T 610: rho_sat 620.652; rho_L at max(p_ref,p_pkg)=1.6694e+07 Pa: 633.773; diff +2.1141%
+T 620: rho_sat 586.878; rho_L at max(p_ref,p_pkg)=1.8906e+07 Pa: 607.257; diff +3.4725%
