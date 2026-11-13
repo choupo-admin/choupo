@@ -4,6 +4,7 @@
   read from the RESOLVED authored system (the entry point resolves the
   `inherits` chain ONCE and hands the object to every op) -- one reader,
   no filesystem walking here.
+  Copyright (C) 2026 Vítor Geraldes
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 #pragma once

@@ -54,6 +54,7 @@ Description
     one source.  It reads the INSTALLATION catalogue (a question about the
     catalogue, so a case with no catalogue refuses by name).
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #pragma once
 

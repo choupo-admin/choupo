@@ -10,6 +10,7 @@
 License
     This file is part of Choupo (GPL-3.0-or-later).  See ExtractionShortcutOp.H.
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #include "ExtractionShortcutOp.H"
 #include "unitOperations/separation/ExtractionShortcut.H"

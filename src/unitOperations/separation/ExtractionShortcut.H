@@ -45,6 +45,7 @@ Description
     and nothing about efficiency.  It is exact for a straight equilibrium
     line and approximate for a curved one.
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #pragma once
 

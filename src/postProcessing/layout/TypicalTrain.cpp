@@ -10,6 +10,7 @@
 License
     This file is part of Choupo.  GPL-3.0-or-later; see TypicalTrain.H.
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #include "postProcessing/layout/TypicalTrain.H"
 #include "core/Dimensions.H"
