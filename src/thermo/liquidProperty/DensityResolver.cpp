@@ -165,6 +165,18 @@ std::string leafFor(const ThermoPackage& thermo, std::size_t i,
     const std::string c = thermo.comp(i).name();
     const bool declaredMassless =
         ApproximationAuthorisation::instance().massWithoutVolume().count(c) > 0;
+    //  ONE READING OF THE HYPOTHESIS (C378 pilot review, PA-04): a component
+    //  the case lists under `massWithoutVolume` keeps its mass and adds no
+    //  volume, WHATEVER volume its record carries -- that is what the
+    //  declaration says, and `maxMassFraction` bounds it.  Before, a listed
+    //  component with a volume took its volume and the list was read only by
+    //  the pump's heat capacity, which is not a volume question at all.
+    if (declaredMassless)
+    {
+        passed.push_back("its own volume (" + c + "): the case lists it under"
+            " massWithoutVolume, which the density honours whatever the record holds");
+        return "massWithoutVolume";
+    }
     if (thermo.hasPureFluid(i))
     {
         const std::string ref = referenceRecordFor(thermo, i);
@@ -176,7 +188,6 @@ std::string leafFor(const ThermoPackage& thermo, std::size_t i,
     if (thermo.isHenrySolute(i))
     {
         passed.push_back("recordVolume (" + c + "): a declared Henry solute has no pure-liquid leaf");
-        if (declaredMassless) return "massWithoutVolume";
         why = "'" + c + "' is a declared Henry solute: its volume in the liquid is a"
               " partial molar volume (`v_inf`), which this kernel does not read, so no"
               " pure-liquid volume stands for it, and no `massWithoutVolume` covers it";
@@ -194,7 +205,6 @@ std::string leafFor(const ThermoPackage& thermo, std::size_t i,
     if (route == ThermoPackage::LiquidVolumeRoute::none)
     {
         passed.push_back("recordVolume (" + c + "): neither `Vliq` nor Tc, Pc in its record");
-        if (declaredMassless) return "massWithoutVolume";
         why = "'" + c + "' has no liquid volume: its record carries neither `Vliq`"
               " nor the critical constants Tc and Pc, and no `massWithoutVolume`"
               " covers it";
@@ -231,14 +241,23 @@ DensityResolution resolveCatalogue(const ThermoPackage& thermo, const std::vecto
     if (set.size() >= 2)
     {
         const std::string rec = SolutionLaw::recordFor(thermo, set);
-        if (!rec.empty())
+        std::string listed;
+        for (const std::size_t i : set)
+            if (ApproximationAuthorisation::instance().massWithoutVolume().count(thermo.comp(i).name()))
+                listed += (listed.empty() ? "" : ", ") + thermo.comp(i).name();
+        if (!rec.empty() && !listed.empty())
+            r.passedOver.push_back("solutionLaw." + rec + ": the case lists " + listed
+                + " under massWithoutVolume, a hypothesis the solution's own law cannot"
+                  " hold, so the set is mixed by additive volumes");
+        else if (!rec.empty())
         {
             r.method = "solutionLaw";
             r.record = rec;
             return r;
         }
-        r.passedOver.push_back("solutionLaw: no solution record with a liquidDensity"
-            " block for this set (parameters/solution/" + setFileName(thermo, set) + ".dat)");
+        else
+            r.passedOver.push_back("solutionLaw: no solution record with a liquidDensity"
+                " block for this set (parameters/solution/" + setFileName(thermo, set) + ".dat)");
     }
     //  (3) additive volumes, one leaf per constituent.
     for (const std::size_t i : set)

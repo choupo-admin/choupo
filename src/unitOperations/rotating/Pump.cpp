@@ -28,7 +28,6 @@ License
 
 #include "Pump.H"
 #include "core/PropertySourceLog.H"
-#include "thermo/ApproximationAuthorisation.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "solver/NewtonRaphson.H"
 #include "core/Advisory.H"
@@ -102,13 +101,34 @@ int Pump::solve(const DictPtr& dict,
     const scalar rho   = liquidProperty::density(densityAsk).value;   // kg/m^3
     const scalar M_mix = MW_mix * 1.0e-3;               // kg/mol
     const scalar v_mix = M_mix / rho;                   // m^3/mol
-    //  The components the case's hypothesis covers (no liquid enthalpy datum
-    //  either): the heat capacity below is the rest's, per mole of solution.
+    //  THE HEAT CAPACITY IS NOT A VOLUME QUESTION (C378 pilot review, PA-04).
+    //  A dissolved ion carries no liquid enthalpy datum, so the liquid heat
+    //  capacity below is the solvent's, per mole of solution -- the C146
+    //  dilute-solution reading, decided as it was before the pilot: by the
+    //  component being a dissolved ion without a liquid volume of its own
+    //  (an aqueous bridge and no `Vliq`), and ANNOUNCED.  The case's volume
+    //  hypothesis `massWithoutVolume` is read by the DENSITY only; it never
+    //  moves this share (a declaration on a component with a liquid Cp left
+    //  the density unchanged and raised dT by half before this was split).
     scalar x_ions = 0.0;
+    std::string ions;
     for (std::size_t i = 0; i < n; ++i)
-        if (x[i] > 0.0 && ApproximationAuthorisation::instance().massWithoutVolume()
-                              .count(thermo.comp(i).name()))
+        if (x[i] > 0.0 && thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+        {
             x_ions += x[i];
+            ions   += (ions.empty() ? "" : " ") + thermo.comp(i).name();
+        }
+    if (x_ions > 0.0)
+    {
+        char b[240];
+        std::snprintf(b, sizeof(b), "dissolved ion(s) (%s) carry no liquid enthalpy"
+            " datum: the liquid heat capacity is the solvent's, per mole of solution"
+            " (dilute-solution reading; ion mole fraction %.3g neglected)",
+            ions.c_str(), static_cast<double>(x_ions));
+        AdvisoryLog::instance().add("approximation", "info",
+            "pump '" + (dict->name().empty() ? type() : dict->name()) + "'", b);
+        if (verbosity >= 2) std::cout << "  [pump] " << b << "\n";
+    }
 
     const scalar F_mol_s = F * 1000.0;                  // mol/s
     const scalar Q_vol   = F_mol_s * v_mix;             // m^3/s  (set by the feed)
@@ -216,8 +236,7 @@ int Pump::solve(const DictPtr& dict,
         if (x_ions > 0.0)
         {
             for (std::size_t i = 0; i < n; ++i)
-                if (ApproximationAuthorisation::instance().massWithoutVolume()
-                        .count(thermo.comp(i).name()))
+                if (thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
                     xCp[i] = 0.0;
             solventShare = 1.0 - x_ions;
             for (auto& v : xCp) v /= solventShare;
