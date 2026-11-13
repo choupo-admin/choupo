@@ -31,7 +31,10 @@ Documents read in full for the quality and process parts:
 Not reachable from this session: the TGA AusPAR
 (<https://www.tga.gov.au/sites/default/files/auspar-apalutamide-190325.pdf>; the server returned an empty reply or 403),
 and the Janssen safety data sheet behind J&J Medical Connect's role gate.
-The README cites the AusPAR.  Read it before the next revision.
+The first version of the case cited the AusPAR (its README, and the records
+`apalutamide.dat` for the formula and `hpmcas.dat` for the spray-dried
+dispersion); it is cited nowhere in the case now, and the formula is marked
+not verified there.  Read the AusPAR before the next revision.
 
 ---
 

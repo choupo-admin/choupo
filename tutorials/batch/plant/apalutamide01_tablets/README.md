@@ -70,7 +70,8 @@ are yours to argue if you prefer them.
 | The intermediate is spray dried with HPMCAS | *Materials* 16 (2023) 6616, section 3.1 (a secondary review); consistent with the patent (1.3) | stated (secondary) |
 | **The quantitative formula** (the table in section 2) — dispersion 1:3 apalutamide : HPMCAS-**LG**, 700 mg core, 21 mg Opadry II coat | US 12,303,493 B2, Examples 3.1-3.3 (1.4) | stated **in the originator's patent example — consistent with, but not confirmed as, the registered formula**, which every regulator redacts |
 | **The spray-drying solvent**: the patent's scale-up example uses dichloromethane / methanol 40:60 at 5 wt % solids; its acetone examples (laboratory, HPMCAS-LF) are also 5 wt % | US 12,303,493 B2, Ex. 3.1, 4.1, 6.1 (1.4, 4.2) | stated (patent); the COMMERCIAL solvent is **not found** |
-| Apalutamide C21H15F4N5O2S, 477.43 g/mol, Form B, non-hygroscopic, mp 194-196 °C | EPAR-2018 2.2.2 (1.3); molar mass recomputed here from the formula | stated |
+| Apalutamide as supplied: Form B, non-hygroscopic, mp 194-196 °C | EPAR-2018 2.2.2 (1.3) | stated |
+| Apalutamide C21H15F4N5O2S, 477.43 g/mol | no document the dossier read is quoted for the formula (the TGA AusPAR, cited for it by an earlier version of `constant/components/apalutamide.dat`, could not be opened); the molar mass is recomputed here from the formula | **not verified** |
 | Hazard: Repr. 1B (H360), STOT RE 2 (H373); **no exposure limit published** | the supplier's SDS (MedKoo, rev. 11 Jun 2020) (2) | stated; OEL **not found** |
 | Commercial batch sizes | redacted everywhere (1.3) | **not found** |
 
@@ -91,8 +92,8 @@ different core (no plain MCC) and coat, and its composition and weight are
 240 mg line needs the composition first.
 
 The TGA's AusPAR for apalutamide (2019), which the first version of this
-case cited, could not be opened by the dossier's session: read it before
-your next revision.
+case cited, could not be opened by the dossier's session, and it is cited
+nowhere in the case now: read it before your next revision.
 
 ## 2. The production basis
 

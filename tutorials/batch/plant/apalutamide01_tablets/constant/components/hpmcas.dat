@@ -12,8 +12,16 @@
   Hypromellose acetate succinate (HPMCAS) -- the polymer of the solid
   dispersion.
 
-  The reference product's tablet core is an amorphous solid dispersion of
-  apalutamide in HPMCAS made by spray drying (AusPAR apalutamide, TGA 2019).
+  The reference product's tablet core contains HPMCAS (EU SmPC section 6.1
+  and the US prescribing information section 11, as section 1.2 of
+  docs/design/apalutamide-design-basis-dossier.md reads them).  That the
+  intermediate is an amorphous solid dispersion of apalutamide in HPMCAS
+  made by spray drying is NOT stated by the regulators' reports, which
+  redact it; it is stated by a secondary review (Pandi P et al., Materials
+  16 (2023) 6616, section 3.1 and Table 2) and by the originator's patent
+  example (US 12,303,493 B2, Example 3.1) -- dossier sections 1.3 and 1.4.
+  An earlier version of this record cited the TGA AusPAR (2019) for it,
+  which the dossier says could not be opened.
   HPMCAS is a polydisperse substituted cellulose with no single molar mass
   and no single formula, so this record has no `formula` (the element balance
   lists it as refused, which is true) and a NOMINAL molar mass.
