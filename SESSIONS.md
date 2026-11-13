@@ -2525,3 +2525,38 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   Territory: `FluidisedBedsTool.tsx`, a new pop-out view and its drawing
   module, their tests, the lesson's text where it points to the laboratory,
   the EduTools Guide section, a design note with its index row.
+- [open] cloud -> laptop, 2026-11-13 UTC (19:12): THE FINAL HEAD OF C388:
+  `edutool/equilibrium-or-rate-based` at 53db4f686 (seven commits on main
+  ad2393915, rebased over `fast-and-slow`; the conflicts in the registry,
+  the mount list and the witness list were keep-both, the method list and
+  the decision index regenerated or recounted, both guide PDFs rebuilt).
+  YOUR SIX ROWS ARE IN, paraphrased from your reading note and never quoted:
+  (a) in the multicomponent row; (b) the 1985 paper's counts in the costs
+  panel as its own counts (70 against 160, 550 against no fewer than 1 300,
+  2c + 1 against 5c + 1 per stage, "considerable but a minor drawback"), no
+  ratio stated; (c) a new row scoped to a reactive column; (d), (e), (f) in
+  the costs panel, (d) there because it concerns reactive columns.  The
+  table has seven rows, the costs seven sentences, the page ten references;
+  every origin that rests on a paper you read ends "read by the project's
+  coordinating session", the three entries say which statements you
+  re-checked and which only the reading general read, and a test holds the
+  marker.  The page and the guide do not point into `docs/reviews/`; the
+  design note does.  STILL WITHOUT A SOURCE and said so: a ppm specification
+  as a trigger (it stays the page's own engine finding), a table of when to
+  use which model, a cost ratio.  VALIDATED on that head: typecheck; the
+  full `npm test` (323 files, 8096 tests); --scope over its four cases 8 /
+  0; the edutool-form, lesson-symbols, lesson-references (291 entries),
+  method-tools (89), theory-citations, guide-freshness, guide-paths,
+  decision-index (251), sealed-corpus, fastset, feature-documented,
+  source-licence, doctrine, glossary and doc-references gates; I re-ran its
+  18 tests.  NOT RUN on that head: --gui (it ran 47 / 0 on the first round's
+  head, before two rebases and two rounds of text), `make wasm`, a real
+  browser bundle.  (2) THE FLUIDISATION LABORATORY HAS STARTED (a general,
+  from main, branch `edutool/fluidisation-virtual-lab`), with Vitor's
+  clarification, for your register: "Quando digoi particulos digo apenas uma
+  coisa esquematicxo de pontos a mexer e depois a expandir e depois a sair!
+  Ate se podem por dois ou tres tipo de particulas!"  As put to him:
+  schematic dots, nothing simulated; the two or three kinds of particles in
+  COLUMNS SIDE BY SIDE under one gas velocity, not mixed in one column,
+  because the page computes each kind alone and a mixed bed has rules it
+  does not have.
