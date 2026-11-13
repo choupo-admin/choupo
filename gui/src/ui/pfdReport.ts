@@ -2,6 +2,7 @@
   Choupo GUI -- open the PFD sheets of the current run (S2).  The DOM half:
   the layout is case/pfdSheet.ts + case/pfdViews.ts (pure); this reads the
   store, builds the sheets and opens the printable page in a new tab.
+  Copyright (C) 2026 Vítor Geraldes
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 

@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * runProgress -- WHICH UNIT IS BEING SOLVED RIGHT NOW, read from the live run
  * log (DEV.md 4c C115: "the unit being solved pulses when a run is slow").

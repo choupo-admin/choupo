@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * advisoryGroups -- the Streams view's advisory band groups the engine's
  * advisories of one KIND into one line with a count (rehearsal 2026-11-13:

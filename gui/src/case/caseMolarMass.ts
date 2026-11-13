@@ -7,6 +7,7 @@
   rather than left blank until the solver emits `componentMolarMass`.  Honest:
   the MW is the curated datum, not a fabricated number.
 
+  Copyright (C) 2026 Vítor Geraldes
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 const MW_RE = /^\s*MW\s+([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)\s*;/m;

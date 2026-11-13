@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * unitPlots -- the Plots navigator's UNITS tree (DEV.md 4c C156): which units
  * the run carries, which sector owns each, and which plots the run published

@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * SolvingHalo -- the unit being solved PULSES when a run is slow (DEV.md 4c
  * C115).  Rendered inside every unit node (and every folded sector box, which

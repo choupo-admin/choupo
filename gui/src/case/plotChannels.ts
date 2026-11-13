@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * plotChannels -- no two series of one figure told apart by colour alone
  * (DEV.md 4c C168 slice 2, ruling (d) and the audit's AC8).

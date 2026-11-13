@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * legibilityFloor -- the minimum text size, APPLIED to a zoomed React Flow
  * drawing (the flowsheet and the calculation map).  The decision is

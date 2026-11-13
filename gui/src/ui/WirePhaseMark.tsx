@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * WirePhaseMark -- the move-point at the middle of a stream wire, carrying
  * the wire's PHASE as a letter (DEV.md 4c C168 slice 2, ruling (d): "no
