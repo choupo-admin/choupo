@@ -1,0 +1,43 @@
+// [imported] origin "data/standards/parameters/Pitzer/pairs/Na-B4O5OH4.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer binary ion-interaction parameters --- Na / B4O5OH4 in aqueous solution.
+  Role: the beta0 / beta1 / Cphi set (alpha1 2.0) of the Pitzer virial expansion --
+  consumed by the pitzer (single-salt VLE) and pitzerHMW (multi-ion speciation)
+  activity engines.
+  Source: Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 3, p. 2773, read from the page
+  image (the PRIMARY; the earlier record was transcribed from the public-domain
+  databank that carries the same numbers).  Fitted by the authors to isopiestic, emf
+  and solubility data at 25 C: in-sample.  No temperature dependence is given.
+\*-----------------------------------------------------------------------------*/
+recordType electrolytePairParameters;
+schemaVersion 1;
+
+model pitzer;
+
+pair { cation Na; anion B4O5OH4; }
+
+parameters
+{
+    beta0 -0.11;
+    beta1 -0.4;
+    beta2 0.0;
+    Cphi 0.0;
+    alpha1 2.0;
+    alpha2 12.0;
+}
+
+source "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 3, p. 2773 (25 C)";
+
+provenance
+{
+    origin        literature;
+    source        "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 3, p. 2773";
+    method        "values transcribed from the paper's table; no calculation";
+    readings      "pair03_beta0, pair03_beta1: read three times (text layer, page image at 200 dpi, page image at 300 dpi), data/curation/batches/boron_c198/readings.tsv";
+    fitBasis      inSample;   // the paper's own fit: these values reproduce the paper, they do not test it
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "25 C: the paper gives no temperature dependence for any of these terms";
+    }
+}
