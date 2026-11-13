@@ -517,6 +517,20 @@ def arm_facts(work):
          "a message on a limit the run never crosses fired")
     need(M["message:theEnd"]["fired"] == 1 and approx(M["message:theEnd"]["t"], t[-1]),
          "the end message did not fire at the last instant")
+    # (note 4, 2026-11-13) the log must not let the maximum's instant be read
+    # as the start of the alarms: it names the first activation and says the
+    # maximum's instant is when the MAXIMUM was first reached.
+    aline = next((l for l in out.splitlines() if l.startswith("[panel] alarmsActive")), "")
+    fmt6 = lambda v: f"{v:.6g}"
+    need(anyk and f"the first alarm became active at t = {fmt6(t[anyk[0]])} s" in aline
+         and f"was first reached at t = {fmt6(amaxAt)} s" in aline
+         and "first at t =" not in aline,
+         "the alarmsActive log line does not name the first activation"
+         f" ({fmt6(t[anyk[0]]) if anyk else '-'} s) apart from the instant the"
+         f" maximum was first reached ({fmt6(amaxAt)} s): {aline!r}")
+    vline = next((l for l in out.splitlines() if l.startswith("[panel] violated:lamp")), "")
+    need("first at t =" not in vline and f"the first of them is t = {fmt6(t[viol[0]])} s" in vline,
+         f"the violated log line is ambiguous or wrong: {vline!r}")
     # log lines
     for needle in ("[panel] notPublished:notPub", "[panel] constant:tempConst",
                    "[panel] violated:lamp", "[panel] neverApproached:tempConst",

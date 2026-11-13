@@ -195,11 +195,18 @@ function TimeCursor({ traj, i, setI }: { traj: NonNullable<Answer["traj"]>; i: n
 
 function FactsList({ report }: { report: PanelReport }): JSX.Element {
   const s = report.summary;
+  // The engine's alarmsActive fact: `first` is when ANY alarm first became
+  // active; the summary's alarmsMaxAt is when the MAXIMUM was first reached,
+  // which can be the last written instant -- never shown as "first at".
+  const firstActive = report.facts.find((f) => f.kind === "alarmsActive")?.numbers["first"];
   return (
     <Stack gap={6}>
       <Text size="sm">
         {s?.elements ?? report.elements.length} element(s), {s?.alarms ?? 0} alarm(s) declared;
-        at most {s?.alarmsMax ?? 0} active at once{s?.alarmsMax ? ` (first at t = ${sig(s.alarmsMaxAt)} s)` : ""}.
+        at most {s?.alarmsMax ?? 0} active at once
+        {s?.alarmsMax
+          ? ` (${firstActive !== undefined ? `the first alarm active at t = ${sig(firstActive)} s; ` : ""}that maximum first reached at t = ${sig(s.alarmsMaxAt)} s)`
+          : ""}.
       </Text>
       {report.facts.filter((f) => f.kind !== "alarmsActive").length === 0
         && <Text size="sm" c="dimmed">No element-level fact: no limit is crossed, no element is constant, nothing is unpublished.</Text>}

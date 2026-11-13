@@ -754,8 +754,10 @@ PanelRecord evaluate(const Dictionary&      d,
                        + " s.";
             else
                 msg += "violated at " + std::to_string(k) + " of "
-                       + std::to_string(n) + " written instants, first at t = "
-                       + fmt(T(kFirst)) + " s (last " + fmt(T(kLast)) + " s).";
+                       + std::to_string(n) + " written instants; the first of"
+                       " them is t = " + fmt(T(kFirst)) + " s and the last t = "
+                       + fmt(T(kLast)) + " s (the instants between need not all"
+                       " violate it).";
             addFact(std::move(f), msg);
 
             if (k == 0 && hasFrac && frac > kNeverApproachedFraction)
@@ -888,11 +890,18 @@ PanelRecord evaluate(const Dictionary&      d,
         num(f, "count", static_cast<scalar>(aCount));
         f.hasIntervals = true;
         f.intervals = anyIv;
+        //  `at` is when the MAXIMUM was first reached, which can be the last
+        //  written instant: it is said beside the first activation, never as
+        //  "first at", which a reader takes for the start of the alarms.
         addFact(std::move(f), std::to_string(alarmsDeclared) + " alarm(s)"
-                " declared; at most " + std::to_string(aMax) + " active at"
-                " once" + (aMax > 0 ? ", first at t = " + fmt(T(aMaxAt)) + " s"
-                                    : std::string(" (none was ever active)"))
-                + ".");
+                " declared; " + (aCount > 0
+                    ? "the first alarm became active at t = " + fmt(T(aFirst))
+                      + " s; at least one was active at "
+                      + std::to_string(aCount) + " of " + std::to_string(n)
+                      + " written instants; the maximum of "
+                      + std::to_string(aMax) + " active at once was first"
+                      " reached at t = " + fmt(T(aMaxAt)) + " s."
+                    : std::string("none was ever active in this run.")));
     }
 
     //  messages
