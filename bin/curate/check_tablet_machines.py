@@ -102,7 +102,8 @@ the run's own stream masses (never read back from the item it is compared to):
 
 NOT CHECKED: the vendor numbers (they are the case's, declared assumptions),
 whether the air-change rates are right for a product (a risk assessment), and
-the physics of any machine (there is none).
+the physics of any machine (there is none, beyond the press's declared dwell
+kinematics and the inversion of declared compaction curves, arm (f)).
 
 BY-HAND SABOTAGES (2026-11-02), each on the named source, rebuilt with
 `make -j1 all`, the gate run, the file restored and rebuilt: see the commit
@@ -1001,7 +1002,7 @@ def main():
           "`value` beside `valuePerSupplyAir`; a cleaning unit in no stage, with no effluent "
           "fraction, declared twice; the absent declaration announced once and publishing "
           "nothing).  NOT CHECKED: the vendor numbers and air-change rates (the case's own "
-          "assumptions), any machine physics (there is none).  SEVERAL PRODUCTS "
+          "assumptions), any machine physics (none is modelled; the press checks of arm (f) are kinematics and declared curves).  SEVERAL PRODUCTS "
           "(donepezil02_two_strengths, C249 d): %d product-fits recomputed from each "
           "product's own lot and stage override, %d per-product cleaning rows and %d "
           "per-product water lots recomputed.  THE PRESS (C270, tabletPress01_dwell_and_force): "
