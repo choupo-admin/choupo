@@ -139,12 +139,16 @@ public:
     // set actually in play, not a black box.
     void announceParameters(const IonState& st, std::ostream& os) const override;
 
-    // TIER-1 self-test (the skeptic's gate): for EVERY binary in pairs.dat,
-    // assert this multi-ion model's single-salt-solution mean ln gamma_pm
-    // reproduces PitzerSingleSalt::lnGammaPM to floating point, and check the
-    // I -> 0 Debye-Huckel limiting law.  Returns the max single-salt deviation
-    // across all binaries (0 in exact arithmetic; ~1e-13 from FP reassociation).
-    // Prints the limiting-law anchor at verbosity >= 3.  Mirrors IF97::verify().
+    // TIER-1 self-test (the skeptic's gate): for EVERY binary in the Pitzer
+    // pairs catalogue, assert this multi-ion model's single-salt-solution mean
+    // ln gamma_pm AND osmotic coefficient phi reproduce PitzerSingleSalt's
+    // lnGammaPM / osmoticCoefficient to floating point, and check the I -> 0
+    // Debye-Huckel limiting law.  Returns the LARGER of the two max relative
+    // single-salt deviations (gamma, phi) across all binaries (0 in exact
+    // arithmetic; ~1e-14 from FP reassociation) -- so a caller's threshold
+    // gates both.  The limiting-law ratio and the J(x) kernel deviation are
+    // PRINTED at verbosity >= 3 and are not part of the returned number.
+    // Mirrors IF97::verify().
     // `onlyIons` (Codex seal-audit, 2026-07-18): restrict the single-salt
     // oracle to the pairs whose cation AND anion are in the set -- the
     // per-run gate checks the CASE's ions only (an NaCl run must not depend

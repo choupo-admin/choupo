@@ -974,7 +974,11 @@ double PitzerHMW::verify(int verbosity, const std::set<std::string>* onlyIons)
                   << "  (approximation accuracy; E_theta now ACTIVE)\n";
     }
 
-    return maxDev;
+    // BOTH oracles are the gate (EL-07, 2026-11-12 review): the osmotic one
+    // was computed and printed but not returned, so neither caller's
+    // threshold ever tested phi.  The returned number is the larger of the
+    // two relative deviations; the verbosity-3 lines above name which.
+    return std::max(maxDev, maxDevPhi);
 }
 
 } // namespace electrolyte
