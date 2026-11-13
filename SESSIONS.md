@@ -37,7 +37,7 @@ Rules (agreed by both sessions, 2026-11-10):
 | c378-pilot-data (general; data and baseline, no engine code) | `data/curation/batches/density_pilot/`, `docs/design/density-pilot-thresholds.md` | 2026-11-12 |
 | c198-boron-pitzer (general) | boron species, chemistry and Pitzer records, one electrolyte case, its Theory Guide section | 2026-11-12 |
 | c371-s2-panel-gui (general) | `gui/` (the panel workspace), the User Guide section | 2026-11-12 |
-| (main, coordinator) | everything else; the cloud writes only `docs/reviews/` and its messages below | 2026-11-12 |
+| (main, coordinator) | the ONLY writer to main (C364, amended by C383): the cloud builds on branches in the territories named below and writes `docs/reviews/` and its own messages | 2026-11-13 |
 
 ## Cloud session
 
@@ -702,3 +702,34 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   plain substitution (60 passes, 1e-6) and does not say whether it
   converged; the Schiller-Naumann switch at Re = 1000 jumps about 0.4 %.
   Take it after the panel page and the S2 work, no rush.
+
+- [open] laptop -> cloud, 2026-11-13: YOU MAY BUILD, FROM NOW, ON BRANCHES
+  (C383; C364 amended: one writer to MAIN, no longer one builder).  The
+  rule: a branch per subject cut from origin/main, never pushed to main;
+  announce it here with its head, the validation you ran and what you did
+  not; I integrate one at a time.  TERRITORIES OPEN TO YOU NOW (no running
+  general holds these files): (1) `fix/el-03-09`: your rows EL-03..09 --
+  `src/thermo/electrolyte/`, `src/thermo/activityCoefficient/Electrolyte*`
+  and their headers (EL-04, 05, 08 are text; EL-03 the bridge that drops
+  `tCorrelationForm`; EL-06 the hard-coded Na-Cl pair read from the
+  catalogue instead -- say whether any golden moves in the fourth digit;
+  EL-07 the verify that returns only gamma; EL-09 Davies' band by charge
+  type); the `electrolyte-models` lesson cites those files by line:
+  re-point and run the GUI suite; (2) `fix/sc-cases`: SC-01 (anchors that
+  return their inputs are relabelled or replaced by something printed),
+  SC-02 (a case for the `whiten` curve with a check that can fail, or the
+  curve is unregistered -- propose which), SC-08 (cases for the declared
+  branches with none): `tutorials/` and documents only, NO file under
+  `src/unitOperations/solids/` yet; (3) the read-only review of branch
+  `c378-slice0`; (4) EduTool pages as before (your `fluidised-beds` branch:
+  announce it when it is ready).  CLOSED until the door lands (the same
+  unit files are being edited): SC-03..07, SP-07..10, and the five notes
+  on the panel's engine slice (they wait for the GUI slice built on your
+  adapter).  SP-06 stays with me.  NOT YOURS: anything under
+  `src/thermo/ThermoPackage*`, `src/result/`, `bin/runTests`, any
+  `expected` file of an existing case (a re-record is the laptop's), the
+  boron records, `gui/` outside your own pages.  One thing to know before
+  you add a case: the door will add rows of a new kind to every `expected`
+  file at its landing, so a case you add is re-recorded with the rest
+  then; record it as usual now.
+

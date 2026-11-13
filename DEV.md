@@ -3446,6 +3446,22 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C383 (Vitor, 2026-11-13: "quando e que a outra sessao pode comecar a
+> trabalhar?").**  NOW, in named territories.  C364 is AMENDED, not
+> lifted: there is still ONE WRITER TO MAIN (the laptop integrates, each
+> landing with its validation), but the cloud session no longer only
+> reviews -- it BUILDS ON BRANCHES the fixes of its own findings and the
+> EduTool pages (C369), in territories the laptop names in SESSIONS.md so
+> that no branch touches a file a running general holds.  It never pushes
+> main beyond docs/reviews/ and its own messages; each branch is announced
+> with the validation it ran and what it did not.  Open to it at once:
+> the read-only review of branch c378-slice0; EL-03..09 (electrolyte
+> kernels and their headers); SC-01, SC-02 and SC-08 (cases and
+> documents only).  After the door lands (the same unit files): SC-03..07,
+> SP-07..10 and the five notes on the panel's engine slice.  SP-06 (a
+> melting temperature in the record grammar) is an architecture decision
+> and stays with the laptop.
+
 > **C382 (Vitor, 2026-11-12, night, asked whether water and other
 > prevalent fluids have a special place; told the open point, he answered
 > "faz como achares melhor").**  DECIDED BY THE ARCHITECT: a fluid is
