@@ -330,17 +330,17 @@ King's units (h_T mm, A t/(h m2), W^F t/h, rho_B kg/m3):
 
 | quantity | as implemented | King | code |
 |---|---|---|---|
-| effective aperture | h_T = (h + d_w) cos(theta) - d_w | eq. 4.31 | `Screen.cpp:214` |
-| basic capacity | A = 12.13 h_T^0.32 - 10.3 (h_T < 51 mm); 0.34 h_T + 14.41 (>= 51) | 4.32-4.33 | `Screen.cpp:54` |
-| open area (optional `openArea`) | A <- A x 100 oa / OA, OA = 21.5 log10(h) + 37 | 4.34-4.35 | `Screen.cpp:229-236` |
-| oversize factor | B = 1.6 - 1.2 Pbar (Pbar <= 0.87); 4.275 - 4.25 Pbar; Pbar = 1 - P^F(h_T) | 4.36 | `Screen.cpp:59` |
-| half-size factor | C = 0.7 + 1.2x (x <= 0.3); 2.053 x^0.564 (<= 0.55); 3.35 x^1.37 (<= 0.8); 5x - 1.5; x = P^F(h_T/2) | 4.37 | `Screen.cpp:64` |
-| deck, wet, bulk density | D = 1.1 - 0.1 S; E from the table of p. 89 with T = 1.26 h_T (only `wetScreening yes`, else 1); F = rho_B/1600 | 4.38, p. 89, 4.39 | `Screen.cpp:73`, `:243-247` |
-| near-size factor | G_c = 0.975 (1 - P^F(1.25 h_T) + P^F(0.75 h_T))^0.511 | 4.40 | `Screen.cpp:248` |
-| loading | K = (W^F P^F(h_T)/area)/(A B C D E F) | 4.42 | `Screen.cpp:251` |
-| cut size | d50 = h_T G_c / K^0.148 | 4.43 | `Screen.cpp:255` |
+| effective aperture | h_T = (h + d_w) cos(theta) - d_w | eq. 4.31 | `Screen.cpp:215` |
+| basic capacity | A = 12.13 h_T^0.32 - 10.3 (h_T < 51 mm); 0.34 h_T + 14.41 (>= 51) | 4.32-4.33 | `Screen.cpp:55` |
+| open area (optional `openArea`) | A <- A x 100 oa / OA, OA = 21.5 log10(h) + 37 | 4.34-4.35 | `Screen.cpp:230-237` |
+| oversize factor | B = 1.6 - 1.2 Pbar (Pbar <= 0.87); 4.275 - 4.25 Pbar; Pbar = 1 - P^F(h_T) | 4.36 | `Screen.cpp:60` |
+| half-size factor | C = 0.7 + 1.2x (x <= 0.3); 2.053 x^0.564 (<= 0.55); 3.35 x^1.37 (<= 0.8); 5x - 1.5; x = P^F(h_T/2) | 4.37 | `Screen.cpp:65` |
+| deck, wet, bulk density | D = 1.1 - 0.1 S; E from the table of p. 89 with T = 1.26 h_T (only `wetScreening yes`, else 1); F = rho_B/1600 | 4.38, p. 89, 4.39 | `Screen.cpp:74`, `:244-248` |
+| near-size factor | G_c = 0.975 (1 - P^F(1.25 h_T) + P^F(0.75 h_T))^0.511 | 4.40 | `Screen.cpp:249` |
+| loading | K = (W^F P^F(h_T)/area)/(A B C D E F) | 4.42 | `Screen.cpp:252` |
+| cut size | d50 = h_T G_c / K^0.148 | 4.43 | `Screen.cpp:256` |
 | partition | rosinRammler with m = 5.9, no bypass | 4.41 | the curve object |
-| capacity, AUF, efficiency | Th = A B C D E F G_c area; AUF = undersize transmitted / Th; eff = transmitted / (W^F P^F(h)) | 4.30, 4.48, 4.46-4.47 | `Screen.cpp:265-267` |
+| capacity, AUF, efficiency | Th = A B C D E F G_c area; AUF = undersize transmitted / Th; eff = transmitted / (W^F P^F(h)) | 4.30, 4.48, 4.46-4.47 | `Screen.cpp:266-268` |
 
 P^F(x) is `fractionPassing` (`ClassifierCore.cpp:107`): the grid's own
 within-class assumption (uniform in ln x, uniform in x in the pan).  Window
@@ -349,7 +349,9 @@ A > 0 (h_T above about 0.6 mm, the correlation's own zero).  The relation
 signs of 4.36-4.37 and the theta of 4.31 do not survive text extraction; they
 were read from the rendered pages, and the branches meet within 0.03 at each
 boundary.  Anchor: an identity at a printed point, King p. 87 -- the factors
-are unity at the standard condition, B(0.5) C(0.25) = 1.
+are unity at the standard condition, B(0.5) C(0.25) = 1.  An overloaded deck
+(AUF > 1) is computed as declared and ANNOUNCED on the advisory log with the
+AUF, the transmitted undersize and the theoretical capacity.
 
 `screen`, model `declared`: a `partition {}` curve, a `bypass` (fines
 misplaced to the oversize) and an optional `aperture`, checked against the

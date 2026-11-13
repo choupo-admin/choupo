@@ -2208,7 +2208,8 @@ population; no work, no heat; a liquid needs `fluidToOversize`.
   capacity A times the oversize, half-size, deck, wet-screening, bulk-density
   and near-size factors B C D E F G_c, loading K, cut size `d50 = h_T G_c / K^0.148`,
   partition `rosinRammler` with m = 5.9.  Publishes the area utilisation factor
-  (`areaUtilisationFactor`: above 1 the screen is overloaded), the theoretical
+  (`areaUtilisationFactor`: above 1 the screen is overloaded, and the run
+  ANNOUNCES it on the advisory log with the number), the theoretical
   and the transmitted undersize, the screening efficiency and every factor
   (`karra_A .. karra_Gc`, `karra_K`, `karra_d50_um`).  Keys `aperture`,
   `wireDiameter`, `inclination` (write `20 deg`), `area`, `deck` (1 = top),
