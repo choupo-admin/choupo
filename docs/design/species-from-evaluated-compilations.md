@@ -501,7 +501,13 @@ combustion of one of them, none of which is in hand.
   parser accepts a `provenance { hfAq { origin estimated; method "..."; } }` block beside them (the census counts it), and
   `check_origin_census` / `check_record_form` would then hold it.  No species record carries such a block today; the C373 records
   record the derivation in the `source` line only.
-* The announcement on use: NO.  The announcements exist for COMPONENTS: `Component::provenanceFor`, the "property origins (this
+* The announcement on use: BUILT since C376 (2026-11-13), and the paragraph below is the state before it.  A species datum
+  that is not a measurement is announced where a run consumes it (`announceEstimatedSpeciesDatum`,
+  `src/thermo/electrolyte/SaltFromCatalogue.H`); a REACTION ENTHALPY formed from such a datum carries the word of its least
+  certain input in the chemistry record (`provenance { dH {} }`, written by `bin/curate/species_c373.py` from the
+  `dH_basis` column of `steps.tsv`), and the speciation solver announces it once per run when it moves log K with it (a
+  temperature other than 298.15 K); a provenance word the engine does not know is announced as not registered on both
+  readers.  Gate: `check_estimated_species_announced` (arms (a)-(h)).  Before C376: The announcements exist for COMPONENTS: `Component::provenanceFor`, the "property origins (this
   run)" block, `PackageAudit` (`requireVerifiedOrThrow` refuses a required `estimated` or `placeholder` value unless the case
   declares `acceptUnverified true;`) and the `[local] UNVERIFIED` line for `data/local`.  An ion's `hfAq` is read by
   `SaltFromCatalogue.H` (and the speciation energy route) as a bare number; nothing reads a species' provenance, so an estimated
@@ -578,7 +584,11 @@ record (the first species records to carry one; `check_origin_census` recounted,
 none (the source line says `literature`).  Since C376 (2026-11-13) a non-measured species value is ANNOUNCED on use: where the aqueous ion reference of a salt (hfAq) or the
 constant ion-Cp tier (cpAq) consumes it, the run prints `[estimate] species '<name>'` once per species and datum and records the
 sentence in the result advisories; an entropy has no consumer yet.  No catalogue case consumes these records; the witness
-`estimatedSpecies01_announced` and the gate `check_estimated_species_announced` hold the mechanism.
+`estimatedSpecies01_announced` and the gate `check_estimated_species_announced` hold the mechanism.  The reaction
+enthalpies of the malonic and glutaric ladders are the differences of these formation enthalpies, so the six chemistry
+records that store them (`H2Maln`, `HMaln`, `Maln`, `H2Glut`, `HGlut`, `Glut` -formation) carry `origin estimated` on their
+`dH` (the word of the least certain input) and the run announces it whenever it moves log K with that `dH`
+(`[estimate] reaction '<record>'`); the propionic, butyric and benzoic records, whose two inputs are both measured, carry none.
 
 **Checks before entering anything.**  Convention: the same H+ = 0 aqueous scale as the catalogue (Shock states it, and his
 anion values for oxalate, hydrogenoxalate and succinate are NBS and Miller's: H-oxalate -195600 cal = -818.4 kJ/mol and oxalate

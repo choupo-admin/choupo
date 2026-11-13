@@ -585,33 +585,87 @@ inline PitzerSingleSalt loadSalt(const std::string& cation, const std::string& a
     return s;
 }
 
-// A species datum that is NOT a measurement and is USED is ANNOUNCED (C376,
-// 2026-11-13).  `datum` is hfAq, sAq or cpAq; `usedFor` says what in the run
-// depends on it.  Reading a record is not consuming it: callers invoke this
-// only where the number enters a result.  Once per species and datum per run
-// (the entry rides every pass; the console line is printed once), console
-// tag [estimate], AdvisoryLog category "provenance" -- the same channel as
-// the ion D0 estimate, so it reaches the caveat block and the result record.
+// A datum that is NOT a measurement and is USED is ANNOUNCED (C376,
+// 2026-11-13; the reaction road ES-01, the same day).  ONE HOME FOR THE
+// SENTENCE: the species formation data (hfAq, sAq, cpAq) and a chemistry
+// record's reaction enthalpy (dH) are announced here, by the readers that
+// consume them, never anywhere else.  `locus` names the record ("species
+// 'OH'", "reaction 'HGlut-formation'"); `subject` the datum in it; `word` and
+// `method` are the record's per-value provenance as written; `usedFor` says
+// what in the run depends on the number.  Reading a record is not consuming
+// it: callers invoke this only where the number enters a result.  Once per
+// `onceKey` per run (the entry rides every pass; the console line is printed
+// once), console tag [estimate], AdvisoryLog category "provenance" -- the
+// same channel as the ion D0 estimate, so it reaches the caveat block and the
+// result record.  An ABSENT word says nothing: silence keeps meaning
+// "nothing was declared"; a present word the vocabulary does not know is
+// announced as such (ES-03, below).
+inline void announceDatumProvenance(const std::string& locus,
+                                    const std::string& onceKey,
+                                    const std::string& subject,
+                                    const std::string& word,
+                                    const std::string& method,
+                                    const std::string& usedFor)
+{
+    if (word.empty()) return;
+    //  ES-03: a PRESENT word the vocabulary does not know is said to be
+    //  unknown -- never read as an absence in silence -- and is not refused
+    //  (the tolerant reader serves the whole tree).
+    if (!isRegisteredOriginWord(word))
+    {
+        const std::string msg = subject + " declares the provenance word '"
+            + word + "', which is not registered: it is read as unattributed,"
+              " so this run cannot say whether the value is measured or an"
+              " estimate; use a registered word (" + originClassWords()
+            + ", or a synonym core/Origin.H lists)";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "unregisteredOriginWord:" + onceKey, "provenance", "warning",
+                locus, msg))
+            std::cerr << "[provenance] " << locus << ": " << msg << "\n";
+        return;
+    }
+    const Origin o = originFromWord(word);
+    if (o != Origin::estimated && o != Origin::predictive
+        && o != Origin::assumed && o != Origin::placeholder)
+        return;
+    std::string msg = subject + " is " + std::string(originToWord(o))
+        + ", not measured" + (method.empty() ? "" : " (" + method + ")")
+        + "; used by " + usedFor;
+    if (AdvisoryLog::instance().addAnnouncedOnce(
+            onceKey, "provenance", "warning", locus, msg))
+        std::cerr << "[estimate] " << locus << ": " << msg << "\n";
+}
+
+// The species-datum reader of the sentence above: `datum` is hfAq, sAq or
+// cpAq, read from the bridged record's flat `<datum>origin` / `<datum>method`.
 inline void announceEstimatedSpeciesDatum(const std::string& species,
                                           const std::string& datum,
                                           const std::string& usedFor)
 {
     auto row = findAqueousSpecies(species);
     if (!row) return;
-    const std::string origin = row->lookupWordOrDefault(datum + "origin", "");
-    const Origin o = originFromWord(origin);
-    if (o != Origin::estimated && o != Origin::predictive
-        && o != Origin::assumed && o != Origin::placeholder)
-        return;
-    const std::string method = row->lookupWordOrDefault(datum + "method", "");
-    std::string msg = "`" + datum + "` of the aqueous species is "
-        + std::string(originToWord(o)) + ", not measured"
-        + (method.empty() ? "" : " (" + method + ")")
-        + "; used by " + usedFor;
-    if (AdvisoryLog::instance().addAnnouncedOnce(
-            "estimatedSpeciesDatum:" + species + ":" + datum,
-            "provenance", "warning", "species '" + species + "'", msg))
-        std::cerr << "[estimate] species '" << species << "': " << msg << "\n";
+    announceDatumProvenance("species '" + species + "'",
+        "estimatedSpeciesDatum:" + species + ":" + datum,
+        "`" + datum + "` of the aqueous species",
+        row->lookupWordOrDefault(datum + "origin", ""),
+        row->lookupWordOrDefault(datum + "method", ""), usedFor);
+}
+
+// The reaction-enthalpy reader of the same sentence (ES-01): a chemistry
+// record's `dH` whose record-level `provenance { dH { origin; method; } }`
+// says it is not a measurement (the C373 diacid records: the difference of
+// formation enthalpies one of which is an estimate) is announced when the run
+// MOVES log K with it -- the caller invokes this only where the van 't Hoff
+// term is applied (T other than the record's 298.15 K).
+inline void announceEstimatedReactionEnthalpy(const std::string& record,
+                                              const std::string& word,
+                                              const std::string& method)
+{
+    announceDatumProvenance("reaction '" + record + "'",
+        "estimatedReactionEnthalpy:" + record,
+        "`dH` of the reaction record", word, method,
+        "the van 't Hoff temperature dependence of log K (this run evaluates"
+        " K away from the record's 298.15 K)");
 }
 
 // Aqueous infinite-dilution ion reference for a salt: Sum nu_i * (hfAq_i +

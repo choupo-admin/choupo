@@ -504,6 +504,15 @@ At exactly 25 °C every `K(T)` returns its `logK25` (nothing moves); off
 25 °C the run announces the form in use per entry — **analytic** (the
 PHREEQC `-analytical_expression`, anchored on `logK25`), **van't Hoff**
 (constant `dH`), or **flat** (held at 25 °C, the shrinking bare set).
+A chemistry record whose `dH` is not a measurement says so beside it, in
+the same per-value form the species records use:
+`provenance { dH { origin estimated; method "..."; } }` at record level
+(the C373 diacid records carry it, because their `dH` is the difference of
+formation enthalpies one of which is an estimate).  A run that moves
+`log K` with such a `dH` (any temperature other than 298.15 K) prints one
+`[estimate] reaction '<record>'` line and records it in the caveat block;
+at 25 °C it stays silent.  A provenance word the engine does not know is
+printed once as `[provenance] ... not registered`, never read silently.
 
 ### `K(T)` outside the fitted range = announced, never silent
 An analytic `K(T)` carries the source's fitted validity window (`validC

@@ -10,6 +10,9 @@
   This record carries the sum of the first 2 steps (the sign flips with the direction written).
   The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a
   van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).
+  The dH is the difference of formation enthalpies at least one of which is not a measurement; the
+  `provenance { dH {} }` block below carries the word of the least certain one, and the engine announces
+  it whenever a run moves log K with this dH (a temperature other than 298.15 K).
   The neutral master carries its own aqueous formation data (no component + solution pair is in the catalogue for this acid).  Source: Shock (1995); values the paper marks as estimated carry `origin estimated` per value.
 \*-----------------------------------------------------------------------------*/
 recordType aqueousSpeciation;
@@ -17,3 +20,12 @@ schemaVersion 1;
 
 species Maln; masters ( { ion H2Maln; nu 1; } { ion H; nu -2; } );
       logK25 -8.55; dH -4728; source "Shock, Organic acids in hydrothermal solutions: standard molal thermodynamic properties of carboxylic acids, and estimates of dissociation constants at high temperatures and pressures, Am. J. Sci. 295 (1995) 496-580 -- pK: Table 7, p. 534 (log K at 25 C, as printed), dH: the printed DfH of the anion minus that of the acid in Table 4, p. 518 (PDF p. 23) / Table 4, p. 519 (PDF p. 24): pK1 2.85, dH1 0.084 kJ/mol (read from a page image), pK2 5.70, dH2 -4.812 kJ/mol (read from a page image) (pK, dH_ion at 298.15 K)";
+
+provenance
+{
+    dH
+    {
+        origin  estimated;
+        method  "the difference of the formation enthalpies hfAq of H2Maln (literature), HMaln (estimated), Maln (estimated) in their species records, so it carries the word of its least certain input (HMaln, Maln: Shock (1995) Table 4 footnote ab: DfH computed from the tabulated DfG and S (S estimated, footnotes af and ae) with the elements' entropies)";
+    }
+}

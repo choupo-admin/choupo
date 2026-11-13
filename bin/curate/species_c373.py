@@ -234,6 +234,65 @@ def cumulative(st, upto):
     return pk, dh
 
 
+# THE MARK TRAVELS WITH THE STORED NUMBER (ES-01, 2026-11-13).  A step whose `dH_basis` column says
+# `formationDifference` stores a reaction enthalpy that IS the difference of the formation enthalpies (hfAq) of
+# the two species of the step -- and some of those carry a per-value provenance word in formation.tsv.  The
+# record's `dH` then carries the word of its LEAST CERTAIN input: estimated if any input is an estimate,
+# measured (no block, the generator's convention for a plain table reading) only when every input is.  The
+# ranking is the order of the classes in src/core/Origin.H (most certain first); a word it does not rank stops
+# the tool rather than being guessed.
+ORIGIN_RANK = {"literature": 0, "measured": 0, "experimental": 0, "derived": 1, "regressed": 2, "fitted": 2,
+               "predictive": 3, "predicted": 3, "estimated": 4, "estimate": 4, "assumed": 5,
+               "placeholder": 6, "stub": 6}
+
+
+def dh_mark(t, family, steps):
+    """(word, method) for the dH summed over `steps`, or None when every formation value it comes from is measured."""
+    lad = ladder(t, family)
+    inputs = []
+    for r in steps:
+        basis = r.get("dH_basis", "")
+        if basis == "":
+            continue                        # a dH printed by the source as such: its own reading, no formation input
+        if basis != "formationDifference":
+            raise SystemExit(f"{family} step {r['step']}: dH_basis '{basis}' is not a basis this tool knows")
+        s = int(r["step"])
+        for sp in (lad[s - 1]["key"], lad[s]["key"]):
+            rows = [f for f in t["formation"] if f["species"] == sp and f["quantity"] == "hfAq"]
+            if len(rows) != 1:
+                raise SystemExit(f"{family} step {s}: dH_basis formationDifference needs exactly one hfAq row for {sp} in formation.tsv")
+            word = rows[0]["origin"] or "literature"
+            if word not in ORIGIN_RANK:
+                raise SystemExit(f"{sp} hfAq: provenance word '{word}' is not ranked here (the classes of src/core/Origin.H)")
+            if sp not in [i[0] for i in inputs]:
+                inputs.append((sp, word, rows[0]["method"]))
+    if not inputs:
+        return None
+    worst = max(inputs, key=lambda i: ORIGIN_RANK[i[1]])[1]
+    if ORIGIN_RANK[worst] == 0:
+        return None
+    named = ", ".join(f"{sp} ({w})" for sp, w, _ in inputs)
+    weakest = [i for i in inputs if ORIGIN_RANK[i[1]] == ORIGIN_RANK[worst]]
+    methods = []
+    for _, _, m in weakest:
+        if m and m not in methods:
+            methods.append(m)
+    method = (f"the difference of the formation enthalpies hfAq of {named} in their species records, so it carries the word "
+              f"of its least certain input ({', '.join(i[0] for i in weakest)}"
+              + (f": {' / '.join(methods)}" if methods else "") + ")")
+    return worst, clean(method)
+
+
+DH_MARK_NOTE = ["  The dH is the difference of formation enthalpies at least one of which is not a measurement; the",
+                "  `provenance { dH {} }` block below carries the word of the least certain one, and the engine announces",
+                "  it whenever a run moves log K with this dH (a temperature other than 298.15 K)."]
+
+
+def dh_mark_lines(mark):
+    word, method = mark
+    return ["", "provenance", "{", "    dH", "    {", f"        origin  {word};", f'        method  "{method}";', "    }", "}"]
+
+
 def step_lines(t, fam, st):
     L = []
     for r in st:
@@ -291,6 +350,8 @@ def render_chem_master(t, family, j, m):
         L.append("  which the engine announces; nothing is borrowed.")
     L.append("  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a")
     L.append("  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).")
+    if dhj is not None and dh_mark(t, family, ks):
+        L += DH_MARK_NOTE
     if fam["note"]:
         L.append("  " + fam["note"])
     L += ["\\*-----------------------------------------------------------------------------*/",
@@ -301,6 +362,9 @@ def render_chem_master(t, family, j, m):
         tail += f" dH {jnum(dhj)};"
     tail += f' source "{source_line(t, fam, ks)}";'
     L.append(tail)
+    mark = dh_mark(t, family, ks) if dhj is not None else None
+    if mark:
+        L += dh_mark_lines(mark)
     return "\n".join(L) + "\n"
 
 
@@ -342,6 +406,8 @@ def render_chem(t, family, i):
         L.append("  which the engine announces; nothing is borrowed.")
     L.append("  The constant-dCp term of the printed dCp is NOT carried: the record grammar has no place for it (a")
     L.append("  van't Hoff integral with a constant dCp is exactly the `analytic` A1, A3, A4 terms; proposed, not done).")
+    if dhj is not None and dh_mark(t, family, st[: (n if i == 0 else i)]):
+        L += DH_MARK_NOTE
     if fam["note"]:
         L.append("  " + fam["note"])
     L += ["\\*-----------------------------------------------------------------------------*/",
@@ -352,6 +418,9 @@ def render_chem(t, family, i):
         tail += f" dH {jnum(dhj)};"
     tail += f' source "{source_line(t, fam, st[: (n if i == 0 else i)])}";'
     L.append(tail)
+    mark = dh_mark(t, family, st[: (n if i == 0 else i)]) if dhj is not None else None
+    if mark:
+        L += dh_mark_lines(mark)
     return "\n".join(L) + "\n"
 
 
