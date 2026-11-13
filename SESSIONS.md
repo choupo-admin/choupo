@@ -2324,3 +2324,68 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   steady corpus.  NOT FIXED, recorded: on the IF97 cases the low end still
   prices one point below 273.15 K before it becomes a wall (eight such trial
   advisories, now filed as the path).
+- [open] cloud -> laptop, 2026-11-13 UTC (18:22): TD-04 IS READY:
+  `fix/declared-phase-beyond-band` at 09a9c92db (six commits on main
+  9165c8efe), WITH ONE DEPARTURE FROM YOUR RULING THAT NEEDS YOUR WORD.
+  BUILT AS RULED: an authored pure-fluid stream whose declared single phase
+  its own T and P contradict beyond the band is refused by name before any
+  unit runs (one home beside `undeterminedSaturationRefusal`, decided by
+  `pureFluidPhaseState(...).farAcross`, so there is no second band; applied
+  in the case's world, in each consuming unit's own world and to the
+  time-integrated binaries' authored inlets; the message prints T, P, p_sat,
+  the distance and both remedies with their values).  NO CORPUS CASE IS HIT
+  (the 15 steady pure-fluid cases run unchanged), and the wider count you
+  may want: of 33 pinned pure authored streams on ANY package (28 cases),
+  none is contradicted beyond 1e-6 of its own package's saturation pressure.
+  THE COMPUTED-INLET RULE lives in the two caloric overloads (`H_real` and
+  `S_real` with a phase now evaluate at `pureFluidStreamPressure`, the
+  stream functions' own rule; their only callers are the three rotating
+  units), announced through the advisory log; the DENSITY overload keeps the
+  saturated branch of the phase asked, because the door, the column and the
+  sizing code read it as a property of that phase.  THE DEPARTURE: a PUMP
+  fed a computed inlet beyond the band REFUSES by name instead of pricing
+  (T, P): priced there the inlet is a vapour, no liquid discharge carries
+  its enthalpy, and the discharge search fell back in silence.  YOUR WORD,
+  PLEASE, ON THE MIRROR (ledger TD-17): the COMPRESSOR as built follows the
+  ruling: on the builder's cross-world fixture (a producer in an IAPWS-95
+  world, the case on IF97, 1.37e-4 across the line) it prices the
+  vapour-labelled inlet as the compressed liquid its own world finds, its
+  own first law closes, and the 37.97 kW of latent heat appears as the
+  producer's model-boundary step where it was hidden inside the unit before;
+  but it is then a compressor compressing a liquid (dT 0.087 K).  I would
+  refuse it as the pump does (the unit's declared acceptance, read in its
+  own world), and the turbine with it, which today fails its inner Newton on
+  such an inlet; say and it is one small commit.  A SECOND FINDING, BEING
+  FIXED as a separate commit at the tip (droppable): TD-16, the pump's
+  discharge: `T_out = r.converged ? r.x : T_in` replaces a failed search by
+  the inlet temperature in silence; reproduced by me at 550 K with eta 0.01:
+  T_out = T_in and +0.1816 kW of residual (the whole shaft work) at exit 0;
+  eta 0.03 and 0.5 close.  The commit makes the pump refuse a discharge that
+  is not a liquid and raise a typed non-convergence otherwise.  THE GATE:
+  arms (g) to (j) with six by-hand sabotages; arms (a) and (b) now probe at
+  e = +-5e-7 instead of the band's edge, because at the edge the new refusal
+  decides by the last bit; your edge rule of 7e1b3e8bf is kept for the outer
+  points.  VALIDATED by the builder: --scope over the rotating, heat and
+  power directories and ten pure-fluid cases 42 / 0, no golden moved; the
+  web app's tests; the text, caveat, dialect and compile gates; 43 lesson
+  citations re-pointed (two by hand); --gui 46 / 1, the one failure the
+  self-test's platform-pinned target.  By me on the rebased head: build, the
+  gate, and a probe of 21 runs (refused at 2e-6 on the wrong side for both
+  units at the three temperatures; residual below 1e-6 kW at 5e-7 and on the
+  declared side).  Review rows TD-16 and TD-17 and a section 10 are in the
+  two-defects review.  (2) FROM VITOR, a moment ago: he has put three papers
+  in the literature folder for the C388 page, each DOI confirmed by me on
+  Crossref today: Taylor and Kooijman, "Mass Transfer in Distillation", in
+  Distillation: Fundamentals and Principles (2014), pp. 97-143, doi
+  10.1016/B978-0-12-386547-2.00003-X; Taylor and Krishna, "Modelling
+  reactive distillation", Chem. Eng. Sci. 55 (2000) 5183-5229, doi
+  10.1016/S0009-2509(00)00120-2; Krishnamurthy and Taylor, "A nonequilibrium
+  stage model of multicomponent separation processes. Part I", AIChE J. 31
+  (1985) 449-456, doi 10.1002/aic.690310312.  The article he was first asked
+  for (Taylor, Krishna and Kooijman, Chem. Eng. Prog., July 2003, pp. 28-39)
+  has NO DOI: Crossref holds no record of it.  I cannot read that folder
+  from here.  If you or a study general read them, what the page needs is
+  short: for each situation in which the authors say an equilibrium-stage
+  model with efficiencies is not enough (or is enough), one paraphrased
+  sentence with the section or page it rests on; I add the rows to the page
+  with the entry saying who read them, as for Pelkonen.
