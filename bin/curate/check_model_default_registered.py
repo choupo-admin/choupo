@@ -259,7 +259,7 @@ CHAINS = [
   r'(phase\s+)liquid(\s*;\s*rate)', "liquide", "vapour"),
  ("PneumaticConveyor bend type",
   "tutorials/steady/solids/pneumaticConveyor02_bends",
-  r'(\{\s*RoverD[^}\n]*type\s+)longRadius(\s*;)', "shortRadus",
+  r'(\{\s*type\s+)longRadius(\s*;\s*\})', "shortRadus",
   "shortRadius"),
  ("HeatExchanger model",
   "tutorials/steady/heat/heatExchanger02_geometry_U",
