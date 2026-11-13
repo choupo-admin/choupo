@@ -11,8 +11,10 @@
   Pure water at 298.15 K and 1 bar.  No `pureFluids` is selected: the
   kernel prices {water} by the IAPWS-95 reference equation BECAUSE a record
   (parameters/Helmholtz/IAPWS95.dat) names the fluid, with pressure, on its
-  liquid branch.  Expected: rho = 997.047 kg/m3 (Wagner and Pruss print
-  997.05 near 298 K); tau = 997.047 s; Q = 1.002962e-3 m3/s; W = 286.56 W.
+  liquid branch.  Expected: rho = 997.047 kg/m3 at the pump's inlet
+  (Wagner and Pruss print 997.05 near 298 K); Q = 1.002962e-3 m3/s;
+  W = 286.56 W; tau = 997.132 s (the CSTR's feed is the pump's outlet, at
+  3 bar, where the same equation gives 997.132 kg/m3).
   Run it again at 500 bar (0/feed P) and the density rises to 1018.4 --
   the flat 25 C volume the pump read before the pilot gave 996.96 at every
   state.  At 373.15 K and 1 bar water is a VAPOUR: the kernel refuses, naming
@@ -28,6 +30,10 @@
       tau = V_R rho / m_dot             (the CSTR's residence time, at its
                                          feed, the pump's outlet state)
   The pump prices its INLET state, the CSTR its FEED (the pump's outlet).
+  THE PUMP'S FIRST LAW IS OPEN, AND PINNED (check_energy_closure, 70 %):
+  the residual is exactly the useful shaft work, eta x W_shaft, which the
+  generic liquid enthalpy (no pressure term) cannot hold -- the pump's own
+  advisory says so -- and commission C390 closes it.
   Theory Guide: sec:liquid-density-methods.  Gate: check_density_pilot.
 \*---------------------------------------------------------------------------*/
 

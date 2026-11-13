@@ -28,6 +28,10 @@
       tau = V_R rho / m_dot             (the CSTR's residence time, at its
                                          feed, the pump's outlet state)
   The pump prices its INLET state, the CSTR its FEED (the pump's outlet).
+  THE PUMP'S FIRST LAW IS OPEN, AND PINNED (check_energy_closure, 70 %):
+  the residual is exactly the useful shaft work, eta x W_shaft, which the
+  generic liquid enthalpy (no pressure term) cannot hold -- the pump's own
+  advisory says so -- and commission C390 closes it.
   Theory Guide: sec:liquid-density-methods.  Gate: check_density_pilot.
 \*---------------------------------------------------------------------------*/
 
