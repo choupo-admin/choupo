@@ -371,6 +371,82 @@ drawn and explained in the absorber chapter
 counter-current cascade.}
 
 % ---------------------------------------------------------------------
+\subsection{Equilibrium stages or a rate-based model?}\label{sec:edu-equilibrium-or-rate-based}
+
+\declaredanchor{ch:ratebased}
+
+\noindent\textit{\small Tool:} \code{tool=equilibrium-or-rate-based}.
+\textit{\small Cases it runs:} \file{column11\_murphree} as shipped and with
+four declared numbers rewritten, and the three tray-efficiency witnesses
+\file{trayEfficiency01\_yanagi14}, \file{trayEfficiency05\_chanFair\_yanagi14}
+and \file{trayEfficiency06\_syedaChuang\_yanagi14} (all in
+\file{tutorials/steady/distillation/}).
+
+\subsubsection*{The question}
+
+\emph{I have to design or rate a column: is an equilibrium-stage model with one
+efficiency enough, or do I need a rate-based model, and how wrong can the
+simple one be?}
+
+The page states first what the engine has: a declared Murphree efficiency on
+the Wang--Henke column, a computed tray efficiency for a binary at total
+reflux, and no rate-based column.  Every recommendation on the page is either
+demonstrated by an engine run on the page or read in a paper the page lists,
+and the closing decision table names the origin of every row.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Demonstration~1 runs one benzene--toluene column at seven efficiencies, from
+0.4 to 1.0, twice: as the tutorial ships it (a few per cent of toluene in the
+distillate) and taller at higher reflux (parts per million).  Going from an
+efficiency of 0.7 to 0.6 multiplies the first impurity by about 1.2 and the
+second by about 4.  Then count the trays a 10~ppm target needs at three
+efficiencies: 27 real trays at 1.0, 37 at 0.7, 63 at 0.4.  Demonstration~2
+runs three published correlations on one measured sieve tray: at an F-factor
+of 1.5 they span about 28 points, while the measured efficiency stays between
+63 and 74\,\% over the normal range of load.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a column built from equilibrium stages and one efficiency is safe
+because the separation is easy.}  On a trace specification the efficiency acts
+once per tray and the error compounds; the uncertain number is the efficiency
+itself, which correlations for the same tray do not agree on.
+\end{pitfall}
+
+\subsubsection*{What the page takes from references}
+
+Four open conference papers, each read for the page: two commercial H$_2$S
+strippers where one assumed efficiency put the bottoms impurity two orders of
+magnitude below the plant and the computed component efficiencies varied from
+about 20 to 60\,\% along the column (Taylor, Wilkinson and Kooijman, 2010); a
+quaternary azeotropic mixture whose measured trajectories crossed a
+distillation boundary that an equilibrium-stage model cannot cross (Springer,
+van der Molen and Krishna, 2002); reactive absorption in sour gas treatment,
+where an equilibrium model got the H$_2$S over CO$_2$ selectivity wrong
+(Thiele et al., 2006); and an industrial dehexaniser study on how efficiencies
+vary by component and tray (Jakobsson et al., 2002).
+
+\subsubsection*{What this tool does not carry}
+
+No rate-based model; no component efficiencies that differ; demonstration~1
+is a near-ideal binary on constant molar overflow, with the trace column's
+numbers and the targets chosen by the page.  The measured tray efficiencies are
+the tree's transcription, not re-read for the page.  A review often cited for
+these recommendations (Real-world modeling of distillation, 2003) could not be
+opened, so the list of situations is incomplete.  The measured tables and the
+dropped candidates are in \file{docs/design/equilibrium-or-rate-based.md}.
+
+\subsubsection*{Where the derivation lives}
+
+\derivation{Theory Guide, \emph{Columns from their internals: total reflux,
+computed tray efficiency, packed beds} (\theorydest{ch:ratebased}) for the
+computed efficiency, and \emph{Distillation column, Wang-Henke bubble-point}
+(\theorydest{ch:distillation}) for the column and its declared Murphree
+efficiency.}
+
+% ---------------------------------------------------------------------
 \subsection{Absorption: the Kremser shortcut, judged}\label{sec:edu-kremser}
 
 \declaredanchor{ch:absorber}
