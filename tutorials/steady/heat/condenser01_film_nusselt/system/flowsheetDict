@@ -82,8 +82,8 @@ units
                 tubeOD        0.025 m;          // 25 mm OD tubes
                 tubeID        0.021 m;          // 2 mm wall
                 tubeL         2.0   m;
-                nTubes        24;               // deliberately UNDERSIZED: ~45% condenses
-                                              // (vf_out ~ 0.53) -- the partial-condensation lesson
+                nTubes        24;               // deliberately UNDERSIZED: ~82% condenses
+                                              // (vf_out ~ 0.18) -- the partial-condensation lesson
                 wall          carbonSteel;      // -> k = 50 W/(m.K)
             }
 

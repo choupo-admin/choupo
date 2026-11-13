@@ -152,8 +152,12 @@ Example: `tutorials/steady/reactors/cstr03_series_selectivity` (A→B→C).
 
 **The volumetric flow follows the feed's phase (2026-11-13, C378 pilot).**
 Concentrations are `F_i / Q` with `Q` fixed at the feed, `tau = V_R / Q`.
-The feed's vapour fraction is RESOLVED at its own (T, P, z) (never read from
-a `phase` word): all liquid -> `Q = F sum z_i Vliq_i` (each record's 25 C
+The feed's vapour fraction is the one `resolvedInletVaporFraction` returns:
+an UNPINNED authored feed is resolved at its own (T, P, z); a feed that
+DECLARES its phase (`phase liquid;` / `phase gas;`, or a vaporFraction) is
+taken at the declaration and not re-solved -- so a gas declared
+`phase liquid;` is put on the liquid basis, at exit 0 (cstr02 so edited:
+tau 1344 s against 7.2 s).  All liquid -> `Q = F sum z_i Vliq_i` (each record's 25 C
 volume, as before); all vapour -> `Q = F / rho_molar` from the case's
 equation of state (`kernel.vapourVolume.equationOfState` in the property
 table, property `vapourVolume`); two-phase -> the liquid basis, announced
@@ -699,7 +703,11 @@ component's Antoine Psat curve.  `boiler`/`condenser` are the SAME class — the
 direction (and the role label `boiler` / `partial boiler` / `condenser` /
 `partial condenser`) is **emergent** from the converged vf and sign of Q, not a
 model switch.  Q is always reported as `DUTY (result)`, split into latent +
-sensible.
+sensible.  The inlet's enthalpy is its DECLARATION when it declares one
+(`phase gas;` saturated steam is priced as the saturated vapour, in every
+mode, whatever the last digits of P say about the side of the curve); an
+undeclared inlet is resolved at its own (T, P, z).  The `heatExchanger`
+prices a declared inlet the same way.
 
 P is **held** from the inlet (or set `P`).  Then pick **exactly ONE** outlet
 coordinate (a DOF guard rejects zero or two); every mode but `Q` is a built-in
@@ -2857,7 +2865,10 @@ KPIs: `deltaP`, `dP_friction`, `dP_fittings`, `dP_elevation`, `P_in`,
 1 transition / 2 turbulent), `head_loss_m`, `density`, `viscosity`.
 
 **Gas-liquid two-phase flow (Layer 1).**  When the feed flashes two-phase at
-`(T,P)` (i.e. `0 < V/F < 1` — the inlet vapour fraction the flowsheet resolves),
+`(T,P)` (i.e. `0 < V/F < 1` — the inlet vapour fraction the flowsheet resolves;
+a feed that DECLARES a single phase, `phase liquid;` / `phase gas;`, is not
+flashed: its regime is the declaration, so a pure liquid on its saturation
+curve takes the liquid path whatever the last digits of P),
 the pipe AUTOMATICALLY switches to a gas-liquid model.  A single-phase feed uses
 the liquid path above, unchanged.  Select the model with an `operation { twoPhase
 { model ...; } }` sub-block (the `model` slot stays the phase-alone friction

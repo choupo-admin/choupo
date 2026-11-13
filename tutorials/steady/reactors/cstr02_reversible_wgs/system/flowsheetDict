@@ -21,9 +21,12 @@
       For equimolar CO + H2O (sum nu = 0, so Kc = Kp),
       K_eq = X^2 / (1-X)^2  -->  X_eq = sqrt(K)/(1 + sqrt(K)) ≈ 0.841
 
-  THE FEED IS A GAS, AND THE SPACE TIME IS THE GAS'S.  The cstr reads the
-  feed's phase at its own (T, P, z) -- all vapour here -- and takes the
-  volumetric flow from the case's equation of state (ideal gas):
+  THE FEED IS A GAS, AND THE SPACE TIME IS THE GAS'S.  The cstr takes the
+  feed's phase from its declaration -- `phase gas;` in 0/ here; an
+  undeclared feed would be resolved at its own (T, P, z), all vapour too --
+  and the volumetric flow from the case's equation of state (ideal gas).
+  The declaration decides: the same feed declared `phase liquid;` is put on
+  the liquid basis, tau about 1344 s, at exit 0.
       Q   = F R T / P = (1/3.6 mol/s)(8.314)(600)/(1e6) ≈ 1.386e-3 m^3/s
       C0  = P / (2 R T) ≈ 100.2 mol/m^3 of each reactant
       tau = V_R / Q   ≈ 7.22 s   for V_R = 1e-2 m^3

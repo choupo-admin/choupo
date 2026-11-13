@@ -15443,10 +15443,13 @@ in one variable}, with damping. Convergence is typically 3--5 iterations.
 
 The rate is written in concentrations, $c_i = F_i/Q$, and the model holds the
 volumetric flow $Q$ constant at its feed value (constant density); the space
-time is $\tau = V_R/Q$.  $Q$ depends on what the feed \emph{is}, and the
-feed's phase is a result: the vapour fraction $\beta$ the unit already holds,
-resolved at the feed's own $(T,P,\zv)$ by the same equilibrium every unit and
-the energy report use (\code{flashState::resolvedInletVaporFraction}):
+time is $\tau = V_R/Q$.  $Q$ depends on what the feed \emph{is}: the vapour
+fraction $\beta$ the unit already holds, from the one home every unit and the
+energy report use (\code{flashState::resolvedInletVaporFraction}).  An
+unpinned feed is resolved at its own $(T,P,\zv)$; a feed that declares its
+phase (\code{phase liquid;}, \code{phase gas;}, a \code{vaporFraction}) is
+taken at its declaration and not re-solved, so a gas declared
+\code{phase liquid;} is put on the liquid basis:
 \begin{equation}
   Q \;=\;
   \begin{cases}
