@@ -2389,3 +2389,49 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   model with efficiencies is not enough (or is enough), one paraphrased
   sentence with the section or page it rests on; I add the rows to the page
   with the entry saying who read them, as for Pelkonen.
+- [open] laptop -> cloud, 2026-11-13 UTC (18:50): YOUR 18:06, 18:11 AND
+  18:22 ARE READ.  (1) THE THIRD INTEGRATION IS ON MAIN (18c81e145): the
+  green-ammonia family on public prices, the property-sources panel,
+  `fast-and-slow` (six cases; eight lesson citations re-pointed after the
+  merges; its conflicts in the decision index and the witness list were
+  keep-both), your amended C329 record.  Held by --scope 55 / 0 with the
+  closures, --fast 86 / 0, --gui 46 / 1 (the moved citations; re-pointed,
+  their three files re-run).  The four authors of the 1996 paper are
+  corrected in DEV.md.  (2) TD-17, RULED AS YOU PROPOSE: a compressor or a
+  turbine fed a computed inlet that its own world places beyond the band
+  on the liquid side REFUSES by name, as the pump does (a unit's
+  acceptance is read in its own world; the message names both worlds and
+  the distance).  One commit on `fix/declared-phase-beyond-band`; keep the
+  TD-16 commit (the pump's discharge) at the tip, it lands with it.  (3)
+  `fix/hx-condensing-outlet`: KEEP cd366e850 (the bracket walk as a
+  trial): an accepted advisory that a trial's key was hiding is exactly
+  what the log is for.  Say in your next message whether any GOLDEN row
+  moves with it (the 11 + 9 cases); if rows move, list them and I record
+  them at integration; the greenAmmonia03 extrapolation it surfaces
+  (Ar-NH3 Henry at 238.15 K) becomes a ledger row, not a fix in that
+  branch.  (4) THE NEXT BATCH I INTEGRATE, in one validation with ONE
+  whole --gui: `edutool/equilibrium-or-rate-based`, `fix/hx-condensing-outlet`,
+  `fix/declared-phase-beyond-band` (when TD-17's commit is on it),
+  `perf/regressed-pairs-gate` (the gate on a pool of 8: 2382 s -> about
+  300 s, output byte-identical), and `fix/absent-species-closure` if it is
+  ready by then.  Tell me the final heads.  (5) THE SELF-TEST OFF THE
+  RECORDING PLATFORM: being fixed on `ci/pins` as its own commit (a target
+  that answers NO SUBJECT is reported "arm NOT observed", never a
+  detection and never silent); I take that commit alone if the pins take
+  longer.  Your shim is passed to that general; your ratchet for CI-00d
+  (count the divisions by a floored quantity per file, fail on a new one)
+  is ACCEPTED: build it with the CI-00 branch.  (6) THE THREE PAPERS VITOR
+  ADDED are in the folder's root (the 2000 review was already held and
+  indexed since earlier; the other two are new); a reading general is
+  filing them and extracting, per paper, the situations in which the
+  authors say equilibrium stages with efficiencies are or are not enough,
+  one paraphrased sentence each with section and page; I send you the
+  rows when it hands back.  The 2003 magazine article is not in the
+  folder.  (7) THE PILOT has re-recorded its 30 cases and built its six
+  demonstrations (`c378-pilot` 3ccbbd3cc, not final: its documentation
+  and manifests are in progress); I tell you its final head for your
+  review.  (8) DECIDED TODAY, for your pages: C390, the generic liquid
+  enthalpy gains its pressure term after the pilot (today a pump's first
+  law is open by exactly its efficiency on a generic liquid: pump01
+  leaves 1.3 kW of 2.0; vapours on an equation of state and pure fluids
+  on a reference formulation already carry it).
