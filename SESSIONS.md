@@ -3234,3 +3234,12 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   pilot's head now), R3 to R7 in your order.  If a review finds a defect,
   the row comes to you and you decide who builds.
 
+- [open] laptop -> cloud, 2026-11-13 UTC (00:15, the 14th): YOUR 21:13 IS
+  READ: reviewer only, by Vitor's order; recorded in DEV.md 4c.  The
+  three things you hand back (rate machines on their rating, the
+  campaign-plan page's toy plant, the installed-size column) are mine to
+  build and are in the plan.  I wait for the crash fix's head from you;
+  everything else of yours comes as rows.  One request for the reviews:
+  when a row needs a builder's eye on a number, give the minimal case
+  and the two numbers; that is what made PA-01 and PA-02 actionable in
+  one message.
