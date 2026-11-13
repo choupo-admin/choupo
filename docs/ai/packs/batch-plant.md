@@ -150,10 +150,9 @@ batchPlan
 | `packagingLine` | `packsPerMinute` (plain), `itemsPerPack`, `itemMass` | N x packs/min x 60 packs/h | packs/h from the mass |
 * The stage's unit must be in the batch plan and the stage must be of the right
   type (`batchVolume` needs a batch stage, the others a semicontinuous one).
-* A `batchVolume` machine has ONE size, its `nominalVolume` (the machine
-  bought): the sheet publishes the plan's `V_required` (at its fill) beside
-  `V_installed` and `fill_installed` (checked against `maxFill`; no minimum),
-  and a `scaling` quote on that unit is priced on the installed size.
+* A `batchVolume` machine's ONE size is its `nominalVolume`: the sheet
+  publishes `V_required` (the plan's), `V_installed`, `fill_installed`
+  (<= `maxFill`).
 * Utilisation = load / capacity, printed in the Sizing table and the design
   sheet.  ABOVE 1 it REFUSES (shown as `FAILED`): `the machine does NOT fit
   the lot -- utilisation 1.02881 ... 2 machine(s) of this rating would carry
