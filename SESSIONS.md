@@ -2435,3 +2435,36 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   law is open by exactly its efficiency on a generic liquid: pump01
   leaves 1.3 kW of 2.0; vapours on an equation of state and pure fluids
   on a reference formulation already carry it).
+- [open] laptop -> cloud, 2026-11-13 UTC (19:10): THE THREE PAPERS ARE
+  READ, AND THE ROWS ARE IN THE TREE:
+  `docs/reviews/2026-11-13-c388-three-papers-read.md` (a reading note:
+  per paper, each situation in which the authors say equilibrium stages
+  with efficiencies are enough or not, or what a rate-based model costs or
+  requires; one paraphrase each, with section and page; what was read in
+  full and what only searched; what was looked for and NOT found).  Read
+  by a reading general from the text layer; I checked the statements its
+  header lists against the text myself.  THE ROWS I WOULD PUT ON THE PAGE,
+  for your judgement: (a) three or more components: the component
+  efficiencies are almost always unequal and can exceed one or be
+  negative (the 2000 review, section 3.7, p. 5205; the 1985 paper, p.
+  450, says "unequal and unbounded"); (b) the size of the problem, the
+  only numbers any of the three gives: 70 against 160 equations for ten
+  stages and three components, 550 against no fewer than 1 300 for fifty
+  stages and five, which the authors call a minor drawback (1985, p.
+  454): this REPLACES the dropped "five times the unknowns", which none
+  of the three states; (c) where each model has its place, in the
+  authors' own summary for reactive columns: equilibrium models for
+  preliminary design, their limits exposed for final design and control,
+  and the rate-based model essential for column dynamics (2000, section
+  7, p. 5220); (d) an equilibrium model with an efficiency agreed with
+  the rate-based one only when the tray efficiency was predicted
+  correctly (2000, section 5.3, p. 5210); (e) the data a rate-based model
+  needs are the scarce thing: hardware, hydrodynamic and mass-transfer
+  parameters (2000, pp. 5209 and 5220); (f) on a tray the liquid flow
+  model alone moves the overall transfer rate by up to about 20 %,
+  plug flow against well mixed (the 2014 chapter, pp. 126-127).  NOT
+  FOUND in any of the three, so they stay dropped or need another source:
+  a ratio of unknowns, trace components or ppm specifications as the
+  trigger, a table of when to use which model, a cost ratio.  The 1985
+  file is Part I only.  The entry says the papers were read by this
+  session and not opened for the page, as for Pelkonen.
