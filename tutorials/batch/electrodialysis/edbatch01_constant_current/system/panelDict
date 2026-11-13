@@ -33,6 +33,14 @@
   which that record marks as ESTIMATES: the vendor data sheet is not in hand.
   The over-limiting boundary is the unit's own `i_over_ilim` = 1.
 
+  THE UNIT OF EACH COLUMN.  The engine knows the unit of `rig.T` (K) because
+  it writes that column itself; the unit's own columns carry none, so each
+  element here DECLARES it (`cvUnit`), read from the source that computes the
+  column (src/unitOperations/batch/BatchElectrodialysis.cpp, trajectoryExtras
+  and evaluate): kappa in S/m, U in V, i = I / area in A/m2, i/i_lim and the
+  demineralisation fractions dimensionless (`-`).  The result publishes it as
+  `unit` with `unitFrom declared`; it is the case's statement, not checked.
+
   WHAT THE FACTS SAY ON THIS RUN (read them in the log, do not trust this
   paragraph): two of the six elements show a quantity that does not move at
   constant current (`currentDensity`, `temperature`) -- which is the first
@@ -52,7 +60,7 @@ elements
         name        diluate;
         title       "Diluate conductivity";
         kind        trend;
-        measurement { unit rig;  cv kappa_dil_S_per_m; }
+        measurement { unit rig;  cv kappa_dil_S_per_m;  cvUnit "S/m"; }
         range       { min 0;  max 1.4; }                 // S/m
         place       { column 1;  row 1;  width 8;  height 4; }
         reason      "the diluate is the product; its conductivity says how far the batch has got";
@@ -62,7 +70,7 @@ elements
         name        demineralisation;
         title       "Demineralisation, actual against ideal at I(0)";
         kind        trend;
-        measurement { unit rig;  cv deminActual; }
+        measurement { unit rig;  cv deminActual;  cvUnit "-"; }
         reference   { unit rig;  cv deminIdeal; }
         range       { min 0;  max 1; }                   // fraction
         place       { column 1;  row 5;  width 8;  height 4; }
@@ -73,7 +81,7 @@ elements
         name        voltage;
         title       "Stack voltage";
         kind        trend;
-        measurement { unit rig;  cv U_V; }
+        measurement { unit rig;  cv U_V;  cvUnit "V"; }
         range       { min 0;  max 10; }                  // V
         place       { column 9;  row 1;  width 4;  height 2; }
         reason      "at constant current the voltage is the free electrical variable; it rises as the diluate loses conductivity";
@@ -83,7 +91,7 @@ elements
         name        overLimiting;
         title       "Limiting current";
         kind        lamp;
-        measurement { unit rig;  cv i_over_ilim; }
+        measurement { unit rig;  cv i_over_ilim;  cvUnit "-"; }
         range       { min 0;  max 2.5; }                 // -
         limit       { high    1;
                       source  "the limiting current of the unit's own film model";
@@ -99,7 +107,7 @@ elements
         name        currentDensity;
         title       "Current density against the stack rating";
         kind        bar;
-        measurement { unit rig;  cv i_A_per_m2; }
+        measurement { unit rig;  cv i_A_per_m2;  cvUnit "A/m2"; }
         range       { min 0;  max 250; }                 // A/m2
         limit       { high    200;                       // A/m2
                       source  "the stack record's limits { i_max }, an estimate (see the record's provenance)";

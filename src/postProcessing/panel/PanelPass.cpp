@@ -175,6 +175,7 @@ struct Measure
     bool        controller = false;
     std::string owner;       // unit or controller name
     std::string cv;          // column key, or SP | PV | MV
+    std::string cvUnit;      // the unit the CASE declares for it ("" = none)
     std::string column() const { return owner + "." + cv; }
 };
 
@@ -204,13 +205,21 @@ Measure readMeasure(const Dictionary& e, const std::string& key,
 {
     const std::string w = where + " `" + key + "`";
     DictPtr b = needBlock(e, key, where);
-    checkKeys(*b, w, {"unit", "controller", "cv"});
+    if (key == "reference" && b->found("cvUnit"))
+        refuse(w + ": `cvUnit` is declared on the `measurement`; the reference"
+               " is drawn on the measurement's scale, in its unit.");
+    checkKeys(*b, w, {"unit", "controller", "cv", "cvUnit"});
     const bool hasU = b->found("unit"), hasC = b->found("controller");
     if (hasU == hasC)
         refuse(w + " names a quantity by `unit <u>; cv <key>;` or by"
                " `controller <C>; cv SP|PV|MV;`, one of the two.");
     Measure m;
     m.cv = needText(*b, "cv", w, "name the published column, e.g. `cv U_V;`.");
+    if (b->found("cvUnit"))
+        m.cvUnit = needText(*b, "cvUnit", w, "write the unit the column is"
+            " published in, read from the unit that publishes it, e.g."
+            " `cvUnit \"V\";` (`\"-\"` for a dimensionless one), or delete the"
+            " line.");
     if (hasU)
     {
         m.owner = needText(*b, "unit", w, "name a unit of the flowsheet.");
@@ -621,6 +630,39 @@ PanelRecord evaluate(const Dictionary&      d,
         if (el.hasAlarm) alarmsOnColumn[col].push_back(el.name);
 
         const int ci = series.column(col);
+
+        //  THE UNIT OF THE COLUMN.  The writer's, where it states one (a fact
+        //  of the code that writes the column); else the case's `cvUnit`;
+        //  else NONE is published -- never guessed from the key's name.  A
+        //  declaration that disagrees with the writer is published beside it
+        //  and said, not refused.
+        {
+            const std::string eu = series.unitOf(ci);
+            const std::string& du = el.meas.cvUnit;
+            if (!eu.empty())
+            {
+                word(er, "unit", eu);
+                word(er, "unitFrom", "engine");
+                if (!du.empty() && du != eu)
+                {
+                    word(er, "unitDeclared", du);
+                    PanelRow f = row("unitDiffers:" + el.name);
+                    word(f, "column", col);
+                    word(f, "unit", eu);
+                    word(f, "unitDeclared", du);
+                    addFact(std::move(f), "element `" + el.name + "`: the case"
+                            " declares `cvUnit \"" + du + "\"` for `" + col
+                            + "`, which the run writes in " + eu + "; the"
+                            " engine's unit is the one the numbers are in, and"
+                            " the declaration is published beside it.");
+                }
+            }
+            else if (!du.empty())
+            {
+                word(er, "unit", du);
+                word(er, "unitFrom", "declared");
+            }
+        }
         if (el.hasRef && series.column(el.ref.column()) < 0)
         {
             PanelRow f = row("notPublished:" + el.name + ":reference");
@@ -754,9 +796,24 @@ PanelRecord evaluate(const Dictionary&      d,
                        + " s.";
             else
                 msg += "violated at " + std::to_string(k) + " of "
-                       + std::to_string(n) + " written instants, first at t = "
-                       + fmt(T(kFirst)) + " s (last " + fmt(T(kLast)) + " s).";
+                       + std::to_string(n) + " written instants; the first of"
+                       " them is t = " + fmt(T(kFirst)) + " s and the last t = "
+                       + fmt(T(kLast)) + " s (the instants between need not all"
+                       " violate it).";
             addFact(std::move(f), msg);
+
+            //  The periods the LIMIT is violated, on the write grid and with no
+            //  delay, for EVERY element with a limit (alarm or not): an element
+            //  without an alarm would otherwise carry no state at all, and on
+            //  one with an alarm a delay can hide a violation the operator
+            //  should still see.  `intervals` stays the alarm's.
+            er.hasLimitIntervals = true;
+            for (std::size_t i = 0; i < n; ++i)
+                if (vi[i])
+                {
+                    if (i > 0 && vi[i - 1]) er.limitIntervals.back().second = T(i);
+                    else er.limitIntervals.push_back({T(i), T(i)});
+                }
 
             if (k == 0 && hasFrac && frac > kNeverApproachedFraction)
             {
@@ -837,11 +894,13 @@ PanelRecord evaluate(const Dictionary&      d,
     }
 
     //  sameQuantityAlarms (the same published column only: two series that
-    //  are functions of each other are NOT detected)
+    //  are functions of each other are NOT detected).  The id names an
+    //  ELEMENT, like every other fact: the first of them in declaration
+    //  order; the column is the word `column` and all of them `elements`.
     for (const auto& [col, names] : alarmsOnColumn)
         if (names.size() > 1)
         {
-            PanelRow f = row("sameQuantityAlarms:" + col);
+            PanelRow f = row("sameQuantityAlarms:" + names.front());
             word(f, "column", col);
             word(f, "elements", join(names, " "));
             num(f, "count", static_cast<scalar>(names.size()));
@@ -854,25 +913,52 @@ PanelRecord evaluate(const Dictionary&      d,
     //  alarmsActive
     std::size_t alarmsDeclared = 0;
     for (const auto& el : els) if (el.hasAlarm) ++alarmsDeclared;
+    //  Published: the maximum count and the first instant it is reached
+    //  (`max`, `at`); the first instant ANY alarm is active (`first`); how
+    //  many written instants carry at least one (`count`); and those periods
+    //  as the row's `intervals`.  The per-instant count itself is not
+    //  published: it is derivable from each alarmed element's own intervals.
     std::size_t aMax = 0, aMaxAt = 0;
     if (alarmsDeclared > 0)
     {
+        std::size_t aCount = 0, aFirst = 0;
+        std::vector<std::pair<scalar, scalar>> anyIv;
+        bool prevAny = false;
         for (std::size_t k = 0; k < n; ++k)
         {
             std::size_t c = 0;
             for (std::size_t ei = 0; ei < els.size(); ++ei)
                 if (!active[ei].empty() && active[ei][k]) ++c;
             if (c > aMax) { aMax = c; aMaxAt = k; }
+            if (c > 0)
+            {
+                if (aCount == 0) aFirst = k;
+                ++aCount;
+                if (prevAny) anyIv.back().second = T(k);
+                else         anyIv.push_back({T(k), T(k)});
+            }
+            prevAny = (c > 0);
         }
         PanelRow f = row("alarmsActive");
         num(f, "alarms", static_cast<scalar>(alarmsDeclared));
         num(f, "max", static_cast<scalar>(aMax));
         if (aMax > 0) num(f, "at", T(aMaxAt));
+        if (aCount > 0) num(f, "first", T(aFirst));
+        num(f, "count", static_cast<scalar>(aCount));
+        f.hasIntervals = true;
+        f.intervals = anyIv;
+        //  `at` is when the MAXIMUM was first reached, which can be the last
+        //  written instant: it is said beside the first activation, never as
+        //  "first at", which a reader takes for the start of the alarms.
         addFact(std::move(f), std::to_string(alarmsDeclared) + " alarm(s)"
-                " declared; at most " + std::to_string(aMax) + " active at"
-                " once" + (aMax > 0 ? ", first at t = " + fmt(T(aMaxAt)) + " s"
-                                    : std::string(" (none was ever active)"))
-                + ".");
+                " declared; " + (aCount > 0
+                    ? "the first alarm became active at t = " + fmt(T(aFirst))
+                      + " s; at least one was active at "
+                      + std::to_string(aCount) + " of " + std::to_string(n)
+                      + " written instants; the maximum of "
+                      + std::to_string(aMax) + " active at once was first"
+                      " reached at t = " + fmt(T(aMaxAt)) + " s."
+                    : std::string("none was ever active in this run.")));
     }
 
     //  messages

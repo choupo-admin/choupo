@@ -2814,6 +2814,12 @@ blocks give a \code{grid} with placements, a \code{style}, a
 \code{limit} written without a named unit is in the unit the column is
 published in (its name says so: \code{U\_V}, \code{i\_A\_per\_m2}); no
 trajectory column declares its dimension, so the engine cannot check it.
+The column's unit is published on the element as a word: the writer's own
+where the column is the writer's (time in s, a vessel's temperature in K and
+amounts in kmol), else what the case declares with
+\code{measurement \{ ...; cvUnit "V"; \}}, else none --- never guessed from
+the column's name. A declaration that disagrees with the writer is published
+beside it, with the fact \emph{unit differs}.
 
 \textbf{Refused, by name.} What makes the file not a panel: an unknown key,
 unit, controller or kind, an element with no \code{reason}, a limit with
@@ -2838,7 +2844,9 @@ instants $t_k$ and values $v_k$ of the element's column:
  low (strictly), and the first and last such instant; $k=0$ is
  \emph{never violated} and $k=n$ \emph{always violated}. The closest
  approach is $d=\min(\text{high}-\max v,\ \min v-\text{low})$, published
- with its fraction of the range.
+ with its fraction of the range. The periods of violation are published on
+ every element with a limit (\code{limitIntervals}, no delay), apart from
+ the periods its alarm is active (\code{intervals}, the delay applied).
 \item \emph{never approached}: $k=0$ and $d/(\text{range.max}-\text{range.min})
  > 0.5$. The $0.5$ is a default of the design record, not taken from a
  practice or a standard.
@@ -2847,8 +2855,11 @@ instants $t_k$ and values $v_k$ of the element's column:
  the same column (two columns that are functions of each other are not
  detected).
 \item \emph{alarms active}: per instant the number of alarms in alarm, an
- alarm being active once its condition has held for its \code{delay}; the
- maximum and its first instant are published. \emph{Messages}: the first
+ alarm being active once its condition has held for its \code{delay}. Published:
+ the maximum and the first instant it is reached (which can be the last
+ written instant, so it is not when the alarms began), the first instant any
+ alarm is active, the number of written instants with at least one active,
+ and those periods as intervals. \emph{Messages}: the first
  instant each message's trigger holds (or that it never does).
 \end{itemize}
 Every crossing is resolved to the \emph{write grid}: a crossing between two
