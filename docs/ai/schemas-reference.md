@@ -1061,7 +1061,7 @@ Dilute-phase pneumatic conveying line: pressure drop of a gas-solids flow along 
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `geometry` | ✓ | object | — | The pipe run: diameter, length, vertical rise and the bend list. |
-| `particleWallFriction` |   | number | - | Solids-phase wall friction coefficient; defaults to 0.4. |
+| `particleWallFriction` |   | number | - | Particle-wall Coulomb friction coefficient of the slip force balance; 0.4 when not declared, and the run then announces it as an assumed … |
 
 ## `polarisationIndex`  (polarisationIndex operation)
 

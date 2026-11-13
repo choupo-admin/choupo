@@ -169,8 +169,16 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         r.quality.provenance = "the case's pureFluids selection (" + m + ")";
         if (p == Property::density)
         {
+            //  The words follow the one phase decision the package took
+            //  (pureFluidPhaseState, C378 pilot defect 1).
+            const bool line = pureFluidPhaseState(*model, T, P, true).branch
+                           != PureFluidPhaseBranch::oneFluid;
             r.label = "property kernel: the pure-fluid formulation "
-                    + model->densityFormulation() + " at the temperature and pressure";
+                    + model->densityFormulation()
+                    + (line ? ", liquid branch at the temperature and pressure; at or"
+                              " below the saturation pressure, the saturated liquid at T"
+                            : " at the temperature and pressure (no saturation line"
+                              " at this temperature: one fluid)");
             r.pressureApplied = true;
             pressure = "applied";
         }

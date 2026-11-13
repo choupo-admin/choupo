@@ -766,6 +766,18 @@ struct EconomicSensitivityRow
     scalar      equityNPV_low = 0.0, equityNPV_high = 0.0;
 };
 
+// ONE PRICE BREAK-EVEN (2026-11-13): the price of one priced stream at which
+// the base appraisal's NPV is zero, every other price held (`breakEven {
+// price ( <stream> ); }` of the economics block).  Present only when the
+// case declares the key; the engine's numbers, the GUI draws them.
+struct EconomicBreakEvenPrice
+{
+    std::string stream;             // a stream constant/economics prices
+    std::string role;               // "product" | "rawMaterial"
+    scalar      declared  = 0.0;    // the case's price, currency per kg
+    scalar      breakEven = 0.0;    // currency per kg at which NPV = 0
+};
+
 // THE LOAN AND THE EQUITY CASH FLOW, YEAR BY YEAR (2026-10-20, DEV.md 4c C110
 // G4), present only when the case declares `financing {}` in the economics
 // block.  One row per year of the PROJECT timeline (t = first..N); the
@@ -875,6 +887,9 @@ struct EconomicsSummary
     //  tornado order (largest NPV swing first, a tie in declared order).
     std::vector<EconomicSensitivityRow> sensitivity;
     std::string                         sensitivityCaveat;
+    //  THE PRICE BREAK-EVENS (2026-11-13), empty unless `breakEven { price
+    //  ( ... ); }` is declared.
+    std::vector<EconomicBreakEvenPrice> breakEvenPrices;
     //  THE FINANCING (G4), present only when the case declares
     //  `financing {}`.  Every number above stays the PROJECT's (unlevered);
     //  these are the loan and the EQUITY (levered) view beside it.

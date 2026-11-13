@@ -155,6 +155,53 @@ scalar PureFluidModel::T_sat(scalar p_Pa) const
 }
 
 // ===========================================================================
+//  The phase a density is asked for (PureFluidModel.H, defect 1 of C378's
+//  pilot): the one decision, saturated branch on and across the line.
+// ===========================================================================
+PureFluidPhaseState pureFluidPhaseState(const PureFluidModel& m, scalar T_K,
+                                            scalar p_Pa, bool liquidAsked)
+{
+    PureFluidPhaseState s;
+    s.pEval = p_Pa;
+    const auto w = m.saturationWindow();
+    if (!(T_K >= w.first && T_K < w.second))
+        return s;                                   // no saturation line: one fluid
+    const scalar ps = m.p_sat(T_K);
+    if (liquidAsked)
+    {
+        if (p_Pa > ps * (1.0 + pureFluidSaturationBand))
+        {
+            s.branch = PureFluidPhaseBranch::liquidBranch;
+            return s;
+        }
+        s.branch    = PureFluidPhaseBranch::saturatedLiquid;
+        s.pEval     = ps;                           // the router's liquid side
+        s.farAcross = p_Pa < ps * (1.0 - pureFluidSaturationBand);
+        return s;
+    }
+    if (p_Pa < ps * (1.0 - pureFluidSaturationBand))
+    {
+        s.branch = PureFluidPhaseBranch::vapourBranch;
+        return s;
+    }
+    s.branch    = PureFluidPhaseBranch::saturatedVapour;
+    s.pEval     = ps * (1.0 - 1.0e-9);              // just below: the vapour side
+    s.farAcross = p_Pa > ps * (1.0 + pureFluidSaturationBand);
+    return s;
+}
+
+scalar pureFluidStreamPressure(const PureFluidModel& m, scalar T_K,
+                               scalar p_Pa, scalar vapFrac)
+{
+    if (vapFrac > 0.0 && vapFrac < 1.0) return p_Pa;    // not this rule's case
+    const PureFluidPhaseState s = pureFluidPhaseState(m, T_K, p_Pa, vapFrac <= 0.0);
+    const bool onLine = (s.branch == PureFluidPhaseBranch::saturatedLiquid
+                      || s.branch == PureFluidPhaseBranch::saturatedVapour)
+                     && !s.farAcross;
+    return onLine ? s.pEval : p_Pa;
+}
+
+// ===========================================================================
 //  Explicit factory (no auto-registration macros)
 // ===========================================================================
 

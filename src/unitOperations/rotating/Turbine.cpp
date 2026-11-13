@@ -89,8 +89,8 @@ int Turbine::solve(const DictPtr& dict,
 
     // ---- Inlet thermo state ---------------------------------------------
     const scalar F_mol_s = F * 1000.0;                  // mol/s
-    const scalar h_in    = thermo.H_real(T_in, P_in, y);
-    const scalar s_in    = thermo.S_real(T_in, P_in, y);
+    const scalar h_in    = thermo.H_real(T_in, P_in, y, DensityPhase::Vapour);
+    const scalar s_in    = thermo.S_real(T_in, P_in, y, DensityPhase::Vapour);
 
     const scalar w_real_per_mol = W_shaft / F_mol_s;    // J/mol (negative)
     // Turbine convention: eta = w_real / w_isen  =>  w_isen = w_real / eta.

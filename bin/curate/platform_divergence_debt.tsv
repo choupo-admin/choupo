@@ -1,0 +1,15 @@
+# platform_divergence_debt.tsv -- the rows and gates that DISAGREE between the
+# maintainer's platform and the CI runner's, and are not (yet) explained by a
+# band: PINNED, never hidden (C384, 2026-11-13).  It may only SHRINK.
+#
+# Read by .github/scripts/ci-full-verdict.py, which judges the FULL tier: it
+# passes when the runner's failing set is inside this file, fails on any NEW
+# failure, and fails when an entry here no longer fails (remove it).  The FAST
+# tier has no pin and must be green by itself.  bin/runTests knows nothing of
+# this file.  Each entry has a row CI-NN in docs/reviews/LEDGER.tsv.
+#
+# Columns (TAB separated):
+#   case | row | runner_value | maintainer_value | class | reason | remedy | max_details
+#   case        the case's short name or the gate's name, as the sweep prints it
+#   row         kind.name.key as the sweep prints a mismatch, or `-` for a whole gate
+#   max_details for a whole gate: the number of detail lines it printed when pinned

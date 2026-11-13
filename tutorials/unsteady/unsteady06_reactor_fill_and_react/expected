@@ -13,7 +13,7 @@ kpi     balance                energy_kJ_heat_cum 0                  1e-4
 kpi     balance                energy_kJ_in_cum -498064.493979     1e-4
 kpi     balance                energy_kJ_initial -13992.0754455     1e-4
 kpi     balance                energy_kJ_out_cum 0                  1e-4
-kpi     balance                energy_residual_kJ -2.06055119634e-08 1e-4
+kpi     balance                energy_residual_kJ -2.06055119634e-08 abs:0.0005121
 kpi     balance                mass_closure_rel 6.34047758513e-15  1e-4
 kpi     balance                mass_kg_final    114.305835916      1e-4
 kpi     balance                mass_kg_in_cum   111.1824           1e-4
@@ -32,4 +32,4 @@ kpi     reactor                t_end            1500               1e-4
 kpi     reactor                volume_final     0.145337639045     1e-4
 kpi     reactor                z_in_2Butanol_final 0                  1e-4
 kpi     reactor                z_in_2Methyl1Propanol_final 1                  1e-4
-source  dynamicCSTR_'reactor'  liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  reactor                liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

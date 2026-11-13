@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 247 records already exist
+## 1. Why an index, when 249 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 247 design records, **172 state a rejected alternative and 75 do not** —
+- Of 249 design records, **173 state a rejected alternative and 76 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -72,6 +72,7 @@ direction is an error.
 | [`chromatography-peaks-and-resolution.md`](../design/chromatography-peaks-and-resolution.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `chromatography` EduTool: the engine (`choupoBatch`, `fixedBedAdsorber`) runs the linear two-solute pulse of a gas bed, the page carries the closed forms (retention, moments, plate model, van Deemter, resolution, cuts) and its own second-order integration of the overloaded competitive-Langmuir column (liquid chromatography has no engine route); section 7 is the source-check table (30 rows against Wankat, Schmidt-Traub, Nicoud, Ruthven, Seader and the 1941 and 1956 papers: 20 match, 4 differ, 3 derived, 2 not found in hand, 1 engine fact), section 4 measures the engine at 100, 200 and 400 cells and fits the first-order-upwind grid's share of the variance (29 to 33 % at the default), section 6 records three engine findings, reported and not fixed; no engine, data or case file changed |
 | [`hydrocyclone01-anchor-relabel-proposal.md`](../design/hydrocyclone01-anchor-relabel-proposal.md) | ADR | yes | **APPLIED 2026-11-13 (SC-01)** -- the two `anchor` rows of `hydrocyclone01_quartz_willsTable91` returned the book's own inputs (the water split was computed from the 0.34, the declared curve puts the 148-209 um class at 0.49998), so they are plain self-recorded rows at the engine's values and the case's header, the guides and the catalogue say so; no engine number moves.  REJECTED: keeping the rows and relying on the header text (the PASS line would go on saying two anchors agree with a primary) |
 | [`pharma-cases-two-proposed-case-changes.md`](../design/pharma-cases-two-proposed-case-changes.md) | PROPOSAL | no | **PROPOSED 2026-11-13, nothing applied** (review findings PH-03 and PH-04) -- two changes to the pharmaceutical plant cases, each tried on a scratch copy outside the tree and compared with the case's own golden, so the rows each change would move are listed for the coordinator who records goldens; which values a case declares is its owner's decision |
+| [`solid-properties-two-proposals.md`](../design/solid-properties-two-proposals.md) | PROPOSAL | no | **PROPOSED 2026-11-13, nothing implemented** (review findings SP-08 and SP-10) -- six polymer records declare a top-level `rho_p` nothing reads and call it a bulk density (a curation decision); twelve cases whose energy balance is unavailable for a salt crystal the stream cannot price (an architecture question); each re-measured on the branch before it was written down |
 | [`naoh-water-olsson1997.md`](../design/naoh-water-olsson1997.md) | ADR | no | **SHIPPED 2026-11-12 (C377 b)** -- NaOH-water to 80 wt % as the published Olsson, Jernqvist & Aly (1997) vapour-pressure and enthalpy correlations, selectable as `model OlssonNaOH;`, handing over to Pitzer below the window; the evaporator's boiling-point rise now solves the exact relation a_w Psat(T) = Psat(T - BPE); six evaporator goldens re-recorded for the rule (`docs/reviews/2026-11-12-c377-moved-rows.md`). |
 | [`choosing-an-electrolyte-model.md`](../design/choosing-an-electrolyte-model.md) | ADR | no | **PAGE BUILT AND SOURCE-CHECKED 2026-11-12** -- the `electrolyte-models` EduTool puts Davies, Pitzer and eNRTL side by side on one salt against measured osmotic and activity coefficients, running the engine's `choupoProps` operations and computing only the arithmetic of the comparison in TypeScript; section 7 is the source-check table (25 rows: 17 match, 4 corrected, 3 not in hand); no engine, data or case file changed |
 | [`operator-panels-good-practice.md`](../design/operator-panels-good-practice.md) | ADR | yes | **PAGE BUILT 2026-11-12 (DEV.md 4c C371, slice S5)** -- the `operator-panels` EduTool: the engine (`choupoBatch`) runs the shipped `edbatch01_constant_current` rig with at most one declared value changed and reports the FACTS about the panelDict the page writes (the result's `panel` block, now carried by the GUI adapter); the page draws the worked panel and four display forms as lesson-local illustrations, colours only where the engine's alarm interval says, and counts alarm onsets against a labelled assumption; section 6 lists every alarm-management and display rule as `unchecked` against the paid standards (none read, no number taken), section 7 reports five findings about the landed S1 slice.  REJECTED: a page-side preview of the facts, a general panel renderer, planting an alarm with no action; no engine, data or case file changed |
@@ -349,6 +350,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`residue-curve-maps.md`](../design/residue-curve-maps.md) | slice record | no | **2026-11-12, C366** -- the residue-curve-map EduTool computes its maps in the page from the engine's bubble points; PROPOSES an engine op `residueCurveMap`, not built (no second consumer yet). |
 | [`fluidised-bed-hydrodynamics.md`](../design/fluidised-bed-hydrodynamics.md) | slice record | no | **2026-11-12, the `fluidised-beds` EduTool** -- minimum fluidisation, regimes, expansion and bubbles computed in the page (the engine has no fluidised bed, and the page says so and tests it); reports two engine shapes met and not fixed (the pneumatic conveyor's terminal-velocity iteration returns its last iterate unverified; the drag law's 0.4 % jump at Re = 1000); no rejected alternative stated. |
 | [`fixed-bed-numerics-c375.md`](../design/fixed-bed-numerics-c375.md) | slice record | yes | **2026-11-12, C375** -- the fixed bed's first-order upwind scheme widened breakthrough fronts by the grid (v dz/2); a van Leer limited scheme becomes the default and upwind stays selectable (rejected: keeping upwind as default with a finer grid, 1250 cells for the same accuracy); two open defects on profile writing recorded. |
+| [`c329-ratebased-at-general-reflux.md`](../design/c329-ratebased-at-general-reflux.md) | PROPOSAL | yes | **DESIGN 2026-11-13, C329 part 2, nothing built** -- a computed tray efficiency or HETP at a GENERAL reflux (formulation A) and the explicit two-film interfacial stage (formulation B), measured against the solvers as they are: the Murphree relation lives only on the Wang-Henke path (folded into an effective K with a lagged vapour), the full MESH is the one general-reflux model with a solved stage energy balance and is solved dense (62.5 s on the 75-stage Klemola splitter, about 53 of them in five dense full-MESH iterations), and no measurement in the tree is at a general reflux.  Proposes: y as unknowns in the full MESH (block-tridiagonal, 2n+1 per stage), the efficiency coupled by an announced outer fixed point, a packed section as Murphree segments of a derived E = 1 - exp(-dz/H_OG); B at 5n+5 per stage, first as a binary packed bed at total reflux held to the existing transfer-unit bed.  REJECTED: Murphree in the Newton by the Wang-Henke lag; eliminating y recursively (kills the band); the efficiency inside the Newton as the first build; the CMO MESH as host; round(H/HETP) stages; Klemola (nine components, valve trays, a Wang-Henke-only reflux key) as the first witness.  Owner's: the multicomponent efficiency, B's model word, the Klemola target. |
 
 ### Historical
 
@@ -401,7 +403,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**75 of 247 records state no rejected alternative.**  For a FORUM or a STUDY
+**76 of 249 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

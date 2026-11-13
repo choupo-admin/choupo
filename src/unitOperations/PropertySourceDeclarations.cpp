@@ -34,7 +34,8 @@ const std::map<std::string, std::vector<Row>>& table()
     static const std::map<std::string, std::vector<Row>> t = {
         { "pump",              { { "liquidDensity",     { "bypass" } } } },
         { "pressureExchanger", { { "liquidVolume",      { "bypass" } } } },
-        { "cstr",              { { "liquidVolume",      { "bypass" } } } },
+        { "cstr",              { { "liquidVolume",      { "bypass" } },
+                                 { "vapourVolume",      { "kernel" } } } },
         { "pfr",               { { "liquidVolume",      { "bypass" } },
                                  { "liquidDiffusivity", { "kernel" } } } },
         { "crystalliser",      { { "liquidVolume",      { "bypass" } } } },
@@ -64,6 +65,13 @@ const std::map<std::string, std::vector<Row>>& table()
                                  { "liquidViscosity",   { "kernel", "declared" } },
                                  { "surfaceTension",    { "kernel", "declared" } },
                                  { "liquidDiffusivity", { "own" } } } },
+        //  The time-integrated vessels (the dynamic driver declares as the
+        //  steady path does; review DX-06).  The variable-volume vessels
+        //  price their liquid through the kernel; the Williams-Otto plant
+        //  carries the benchmark's own constant density.
+        { "dynamicTank",       { { "liquidDensity",     { "kernel" } } } },
+        { "dynamicCSTR",       { { "liquidDensity",     { "kernel" } } } },
+        { "williamsOttoPlant", { { "liquidDensity",     { "bypass" } } } },
         { "hydrocyclone",      { { "liquidDensity",     { "kernel" } } } },
         { "cakeFilter",        { { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel" } } } },

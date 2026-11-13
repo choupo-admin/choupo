@@ -15,15 +15,27 @@
   the reverse term (auto-derived from g_pure_ig of the four species
   at T = 600 K) caps the conversion at the Le Chatelier equilibrium.
 
-  At T = 600 K:
-      dG_rxn  =  g_CO2 + g_H2 - g_CO - g_H2O   ≈  -16.3 kJ/mol
-      K_eq    =  exp(16300 / (R · 600))        ≈  26.5
-      For equimolar CO + H2O, K_eq = X^2 / (1-X)^2 -->  X_eq ≈ 0.84
+  At T = 600 K (the run prints Kp(T) from the same g_pure_ig):
+      dG_rxn  =  g_CO2 + g_H2 - g_CO - g_H2O   ≈  -16.65 kJ/mol
+      K_eq    =  exp(16650 / (R · 600))        ≈  28.2
+      For equimolar CO + H2O (sum nu = 0, so Kc = Kp),
+      K_eq = X^2 / (1-X)^2  -->  X_eq = sqrt(K)/(1 + sqrt(K)) ≈ 0.841
 
-  V_R is picked large enough (1e-3 m^3 for a 1 kmol/h feed) that the
-  kinetics are fast relative to residence; we see the conversion
-  approach (but not exceed) X_eq ≈ 0.84 --- the
-  thermodynamic ceiling.
+  THE FEED IS A GAS, AND THE SPACE TIME IS THE GAS'S.  The cstr takes the
+  feed's phase from its declaration -- `phase gas;` in 0/ here; an
+  undeclared feed would be resolved at its own (T, P, z), all vapour too --
+  and the volumetric flow from the case's equation of state (ideal gas).
+  The declaration decides: the same feed declared `phase liquid;` is put on
+  the liquid basis, tau about 1344 s, at exit 0.
+      Q   = F R T / P = (1/3.6 mol/s)(8.314)(600)/(1e6) ≈ 1.386e-3 m^3/s
+      C0  = P / (2 R T) ≈ 100.2 mol/m^3 of each reactant
+      tau = V_R / Q   ≈ 7.22 s   for V_R = 1e-2 m^3
+  The design equation  X = k tau C0 [(1-X)^2 - X^2/K]  with k tau C0 ≈ 785
+  puts X about 0.003 below X_eq: the conversion approaches (but does not
+  exceed) the thermodynamic ceiling, X ≈ 0.839 against 0.841.  (Until
+  2026-11-13 the unit priced this gas on its components' 25 C LIQUID
+  volumes, Q 186 times too small, and V_R was 1e-3 m^3; on the gas basis
+  that volume gives tau ≈ 0.72 s and X ≈ 0.816.)
 \*---------------------------------------------------------------------------*/
 
 // stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
@@ -36,7 +48,7 @@ units
         in          feed;
         outputs     ( products );
 
-        operation   { V_R 1.0e-3; }
+        operation   { V_R 1.0e-2; }   // m^3: tau ≈ 7.2 s on the gas basis
         reaction    wgs_reversible;
     }
 );

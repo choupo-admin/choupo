@@ -96,6 +96,94 @@ std::string unitNameOf(const DictPtr& dict)
                                  : dict->lookupWordOrDefault("name", "cstr");
 }
 
+//  ---- THE FEED'S VOLUMETRIC FLOW, BY THE PHASE THE FEED IS IN -------------
+//  (DEV.md 4c C378 pilot plan, Q6; defect 2.)  The unit's model is a constant
+//  volumetric flow Q, fixed at the feed: C_i = F_i / Q, tau = V_R / Q.  Until
+//  2026-11-13 Q was F * sum z_i Vliq_i (each record's 25 C liquid volume)
+//  WHATEVER the feed's phase: the water-gas shift fed at 600 K and 10 bar, a
+//  gas, was given a space time 186 times its own.  The feed's phase is a
+//  RESULT -- the `vf_in` both solve paths already hold, from
+//  `flashState::resolvedInletVaporFraction` (StreamEquilibrium.H), never a
+//  declared flag -- and THIS is the one place that reads it for Q:
+//    * all liquid (vf = 0): the liquid basis, exactly as before;
+//    * all vapour (vf = 1): Q = F / rho_molar, the package's VAPOUR density
+//      at the feed state (the case's equation of state, ThermoPackage::density);
+//    * two phases: the liquid basis, kept and ANNOUNCED once per unit with the
+//      vapour fraction (a stirred liquid carrying a trace of gas, the
+//      fermentors' CO2, is what the model still means; a real two-phase
+//      reactor is not this model).
+enum class FeedBasis { liquid, vapour, twoPhaseOnLiquid };
+
+FeedBasis feedBasisOf(scalar vf_in)
+{
+    if (vf_in >= 1.0 - 1.0e-9) return FeedBasis::vapour;
+    if (vf_in > 1.0e-9)        return FeedBasis::twoPhaseOnLiquid;
+    return FeedBasis::liquid;
+}
+
+//  The words a rate law is told about c[i] (RateOffer::concentrationBasis).
+const char* concentrationBasisWords(FeedBasis b)
+{
+    return b == FeedBasis::vapour
+        ? "F_i / Q, Q on the gas basis F * v_vapour(T_feed, P_feed) from the case's equation of state"
+        : "F_i / Q, Q on the liquid basis F * sum z_i Vliq_i";
+}
+
+//  A vapour volume from the equation of state is not a liquid property: its
+//  own tag, under its own property word, in the same per-unit table.
+const NamedSource vapourVolumeEquationOfState
+    { "kernel.vapourVolume.equationOfState",
+      "property kernel: the feed is all vapour, so its molar volume is the vapour's, from the case's equation of state at the feed temperature and pressure (not a liquid property)" };
+
+struct FeedFlow
+{
+    scalar    Q     = 0.0;    // m3/s
+    scalar    vMol  = 0.0;    // m3/mol
+    FeedBasis basis = FeedBasis::liquid;
+};
+
+FeedFlow feedVolumetricFlow(const ThermoPackage& thermo, scalar F_in /*mol/s*/,
+                            const sVector& z_in, scalar T, scalar P,
+                            scalar vf_in, const std::string& unit)
+{
+    const std::size_t n = thermo.n();
+    FeedFlow f;
+    f.basis = feedBasisOf(vf_in);
+    if (f.basis == FeedBasis::vapour)
+    {
+        scalar Mbar = 0.0;                                   // g/mol
+        for (std::size_t i = 0; i < n; ++i) Mbar += z_in[i] * thermo.comp(i).MW();
+        const scalar rhoV = thermo.density(T, P, z_in, DensityPhase::Vapour);   // kg/m3
+        const scalar M_kg = Mbar * 1.0e-3;                   // kg/mol
+        f.vMol = M_kg / rhoV;
+        f.Q    = F_in * f.vMol;
+        PropertySourceLog::instance().useHere("vapourVolume", vapourVolumeEquationOfState,
+            "kernel", took(f.vMol, T, P, compositionKey(z_in)), "applied");
+        return f;
+    }
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        if (thermo.comp(i).Vliq() <= 0.0)
+            throw std::runtime_error("CSTR: component '" + thermo.comp(i).name()
+                + "' has Vliq <= 0 -- needed for liquid concentration");
+        f.vMol += z_in[i] * thermo.comp(i).Vliq();
+    }
+    f.Q = F_in * f.vMol;
+    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(f.vMol), "not applied");
+    if (f.basis == FeedBasis::twoPhaseOnLiquid)
+    {
+        std::ostringstream m;
+        m << "the feed is TWO-PHASE (vapour fraction "
+          << vf_in << "), but the concentrations stay on the LIQUID basis"
+             " F * sum z_i Vliq_i: this unit is a stirred liquid of constant"
+             " volumetric flow, and the vapour's volume is not in Q";
+        if (AdvisoryLog::instance().addAnnouncedOnce("cstrTwoPhaseFeed:" + unit,
+                "approximation", "info", "cstr " + unit, m.str()))
+            std::cout << "  [cstr] " << m.str() << "\n";
+    }
+    return f;
+}
+
 } // namespace
 
 int CSTR::solve(const DictPtr& dict,
@@ -240,17 +328,12 @@ int CSTR::solve(const DictPtr& dict,
     sVector F_i_in(n);
     for (std::size_t i = 0; i < n; ++i) F_i_in[i] = z_in[i] * F_in;
 
-    // Feed molar volume (m³/mol) — assumed constant inside reactor
-    scalar V_mol_in = 0.0;
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        if (thermo.comp(i).Vliq() <= 0.0)
-            throw std::runtime_error("CSTR: component '" + thermo.comp(i).name()
-                + "' has Vliq <= 0 -- needed for liquid concentration");
-        V_mol_in += z_in[i] * thermo.comp(i).Vliq();
-    }
-    const scalar Q = F_in * V_mol_in;        // m³/s (feed volumetric flow)
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(V_mol_in), "not applied");
+    // Feed molar volume (m³/mol) — assumed constant inside reactor; its
+    // basis follows the feed's resolved phase (feedVolumetricFlow above).
+    const FeedFlow feedQ = feedVolumetricFlow(thermo, F_in, z_in, T,
+        feedDict->lookupScalarOrDefault("P", 101325.0), vf_in, unitNameOf(dict));
+    const scalar V_mol_in = feedQ.vMol;
+    const scalar Q = feedQ.Q;                // m³/s (feed volumetric flow)
     const scalar tau = V_R / Q;              // s    (residence time)
 
     if (verbosity >= 3)
@@ -280,6 +363,9 @@ int CSTR::solve(const DictPtr& dict,
                       << "  (= Kp·(P°/RuT)^Σν, concentration basis)\n"
                       << "  k_rev = k_fwd / Kc = " << k_rev << "\n";
         }
+        if (feedQ.basis == FeedBasis::vapour)
+            std::cout << "\nFeed basis:  all vapour at the feed (T, P) -- v_mol from the"
+                         " case's equation of state, concentrations on the gas basis";
         std::cout << "\nFeed v_mol  = " << std::scientific << V_mol_in
                   << " m³/mol\nVolumetric Q = " << Q << " m³/s\n"
                   << "Residence τ  = " << std::fixed << std::setprecision(4)
@@ -528,7 +614,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     std::vector<std::unique_ptr<ReactionRate>> law;
     law.reserve(R);
     RateOffer offer;
-    offer.concentrationBasis = "F_i / Q, Q on the liquid basis F * sum z_i Vliq_i";
+    offer.concentrationBasis = concentrationBasisWords(feedBasisOf(vf_in));
     //  A law that reads P gets the FEED's declared pressure, never the
     //  1 atm the reactor otherwise assumes for its phase resolution.
     if (!(dict->subDict("feed")->lookupScalarOrDefault("P", 0.0) > 0.0))
@@ -657,16 +743,9 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
     const scalar F_in = F_in_kmols * 1000.0;
     sVector F_i_in(n, 0.0);
     for (std::size_t i = 0; i < n; ++i) F_i_in[i] = z_in[i] * F_in;
-    scalar V_mol_in = 0.0;
-    for (std::size_t i = 0; i < n; ++i)
-    {
-        if (thermo.comp(i).Vliq() <= 0.0)
-            throw std::runtime_error("CSTR: component '" + thermo.comp(i).name()
-                + "' has Vliq <= 0 -- needed for liquid concentration");
-        V_mol_in += z_in[i] * thermo.comp(i).Vliq();
-    }
-    const scalar Q   = F_in * V_mol_in;      // m^3/s
-    PropertySourceLog::instance().useHere("liquidVolume", liquidSource::recordVliqFlat, liquidProperty::statedDatumTemperatures(thermo, z_in), "", "bypass", took(V_mol_in), "not applied");
+    const FeedFlow feedQ = feedVolumetricFlow(thermo, F_in, z_in, T, P, vf_in,
+                                              unitNameOf(dict));
+    const scalar Q   = feedQ.Q;              // m^3/s
     const scalar tau = V_R / Q;              // s
 
     // Inlet enthalpy flow [W] on the ELEMENTS datum -- only when non-isothermal --

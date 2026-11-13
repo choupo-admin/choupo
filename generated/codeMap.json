@@ -520,6 +520,9 @@
   "DatumAmendment": [
    "src/unitOperations/batch/BatchUnitOperation.H"
   ],
+  "DatumMark": [
+   "src/thermo/electrolyte/SpeciationSolver.H"
+  ],
   "DeclaredHeat": [
    "src/unitOperations/reactor/ReactionHeat.H"
   ],
@@ -633,6 +636,9 @@
   ],
   "ENRTLSingleSalt": [
    "src/thermo/electrolyte/ENRTLSingleSalt.H"
+  ],
+  "EconomicBreakEvenPrice": [
+   "src/core/ResultRecords.H"
   ],
   "EconomicSensitivityRow": [
    "src/core/ResultRecords.H"
@@ -1735,6 +1741,9 @@
    "src/unitOperations/rotating/Pump.H"
   ],
   "PureFluidModel": [
+   "src/thermo/pureFluid/PureFluidModel.H"
+  ],
+  "PureFluidPhaseState": [
    "src/thermo/pureFluid/PureFluidModel.H"
   ],
   "PureParams": [
@@ -5639,6 +5648,7 @@
    "src/postProcessing/sizing/EquipmentSize.H",
    "src/postProcessing/sizing/RatedMachineSize.H",
    "src/postProcessing/sizing/TrainSplit.H",
+   "src/propertyOps/CompactionLaws.H",
    "src/result/ClosureVariable.H",
    "src/result/ResultEmitter.H",
    "src/result/SimulationResult.H",
@@ -6007,6 +6017,7 @@
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/CompactionFit.H",
+   "src/propertyOps/CompactionLaws.H",
    "src/propertyOps/FitAlgebra.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
@@ -6344,6 +6355,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/PublishedTable.H",
    "src/core/Sha256.H",
    "src/core/Types.H",
@@ -6364,6 +6376,7 @@
    "src/thermo/membrane/FittedRecord.H",
    "src/thermo/membrane/Membrane.H",
    "src/thermo/membrane/MembraneRegistry.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -6828,6 +6841,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/PolarisationIndex.H",
@@ -6839,6 +6853,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/massTransfer/StirredCell.H"
@@ -6849,6 +6864,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/PoreTransportBench.H",
@@ -6862,6 +6878,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/membrane/Membrane.H",
    "src/thermo/membrane/MembraneRegistry.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -9653,6 +9670,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -10038,6 +10056,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/membrane/Membrane.H",
    "src/thermo/membrane/MembraneRegistry.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchDiafilter.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
@@ -10241,6 +10260,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/ReactionRate.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchAccumulator.H",
    "src/unitOperations/batch/BatchAdsorber.H",
@@ -10550,6 +10570,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/ReactionRate.H",
+   "src/unitOperations/PropertySourceDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
@@ -10579,6 +10600,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/unitOperations/PropertySourceDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
@@ -11332,6 +11354,7 @@
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "src/unitOperations/hydraulics/PneumaticConveyor.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -11452,6 +11475,7 @@
    "src/thermo/membrane/MembraneModule.H",
    "src/thermo/membrane/MembraneModuleRegistry.H",
    "src/thermo/membrane/MembraneRegistry.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/membrane/AqueousSplit.H",
@@ -11468,7 +11492,9 @@
    "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H"
   ],
@@ -11489,6 +11515,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -11538,6 +11565,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -11546,6 +11574,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/ConstantRejection.H",
@@ -11560,6 +11589,7 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -11598,6 +11628,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -11606,6 +11637,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/GelPolarisation.H",
@@ -11616,9 +11648,11 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/InfeasibleTrial.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/BlockTridiagonal.H",
    "src/solver/NewtonND.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/PoreNernstPlanck.H"
@@ -11630,6 +11664,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
@@ -11649,6 +11684,7 @@
    "src/thermo/electrolyte/PitzerSingleSalt.H",
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/../osmotic/OsmoticModel.H",
@@ -11661,6 +11697,7 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -11669,6 +11706,7 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/../osmotic/OsmoticModel.H",
@@ -11678,8 +11716,10 @@
   "src/unitOperations/membrane/transport/TransportModel.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
+   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
+   "src/thermo/transport/StokesEinstein.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/ConstantRejection.H",
@@ -12653,6 +12693,7 @@
    "src/unitOperations/separation/cycloneModel/Muschelknautz.H"
   ],
   "src/unitOperations/solids/CakeFilter.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12774,6 +12815,7 @@
    "src/unitOperations/solids/millModel/MillModels.H"
   ],
   "src/unitOperations/solids/Screen.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12798,6 +12840,7 @@
    "src/unitOperations/solids/millModel/MillModels.H"
   ],
   "src/unitOperations/solids/SedimentingCentrifuge.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -12839,6 +12882,7 @@
    "src/unitOperations/solids/SolidLiquidCore.H"
   ],
   "src/unitOperations/solids/Thickener.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -13157,6 +13201,7 @@
    "src/unitOperations/heatTransfer/SolidDryer.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
@@ -13183,7 +13228,11 @@
    "src/unitOperations/separation/Absorber.cpp",
    "src/unitOperations/separation/IonExchanger.cpp",
    "src/unitOperations/separation/Stripper.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
    "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
@@ -15450,13 +15499,17 @@
    "src/applications/choupoSemiContinuous/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/core/PropertySourceLog.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
    "src/propertyOps/HansenMixture.cpp",
+   "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/propertyOps/SolubilityParameter.cpp",
    "src/result/ResultEmitter.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/phase/SaturatedVapour.cpp",
+   "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/unitOperations/PropertySourceDeclarations.cpp",
    "src/unitOperations/batch/BatchDiafilter.cpp",
@@ -15475,6 +15528,15 @@
    "src/unitOperations/hydraulics/Pipe.cpp",
    "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
+   "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
+   "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
+   "src/unitOperations/membrane/transport/TransportModel.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
@@ -16724,6 +16786,10 @@
   "src/propertyOps/CompactionFit.H": [
    "src/propertyOps/CompactionFit.cpp",
    "src/propertyOps/PropertyOperation.cpp"
+  ],
+  "src/propertyOps/CompactionLaws.H": [
+   "src/postProcessing/sizing/RatedMachineSize.cpp",
+   "src/propertyOps/CompactionFit.cpp"
   ],
   "src/propertyOps/ConstantEstimator.H": [
    "src/applications/choupoProps/main.cpp",
@@ -21191,11 +21257,24 @@
    "src/thermo/transport/SatoRiedel.cpp"
   ],
   "src/thermo/transport/StokesEinstein.H": [
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/InterfaceBalance.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
-   "src/unitOperations/membrane/transport/DSPM_DE.cpp"
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/PoreNernstPlanck.cpp",
+   "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
+   "src/unitOperations/membrane/transport/TransportModel.cpp"
   ],
   "src/thermo/transport/StoredCorrelation.H": [
    "src/thermo/SurfaceTensionModel.cpp",
@@ -21320,6 +21399,8 @@
   "src/unitOperations/PropertySourceDeclarations.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/unitOperations/PropertySourceDeclarations.cpp",
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/unitOperations/UnitAcceptance.H": [

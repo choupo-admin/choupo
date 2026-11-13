@@ -75,9 +75,35 @@ the run's own stream masses (never read back from the item it is compared to):
       once-announced "cleaning water is not counted" and a run whose purified-
       water items carry no cleaning keys.
 
+  (f) THE PRESS ON DWELL TIME AND ON COMPACTION FORCE (DEV.md 4c C270), on
+      the witness tutorials/batch/plant/tabletPress01_dwell_and_force.  From
+      the declaration alone: the dwell at the catalogue speed L/(pi D n), the
+      dwell-limited speed L/(pi D t_min) and capacity, which binds, the OEE,
+      the effective capacity, and the utilisation = the plan's load over the
+      LOWER, effective capacity; the porosity ln(sigma_0/sigma_t)/k_b, the
+      solid fraction, the Heckel pressure (ln(1/(1-D)) - A)/K, the punch
+      force and its ratio to the maximum, the flat-faced thickness -- each
+      against the published item to 1e-6.  The witness's four constants
+      (K, A, sigma_0, k_b) are held to compaction01_mcc's GOLDEN (op
+      mcc_inDie) to 1e-9, so the chain bench -> constants -> force cannot
+      drift apart.  The witness's own announcements (dwell binds, window
+      extrapolation, basis mismatch, one material) are read.  Fixtures on
+      copies: a target at or above sigma_0, a negative K, a solid fraction
+      below the line's zero-pressure density, K beside Py -- each refused
+      BY NAME; quality < 1 on a press that already splits off rejects
+      (counted twice), a force above the maximum -- announced; one basis
+      and a pressure inside the window -- the two warnings ABSENT; a dwell
+      need that does not bind -- no binding announcement; a dwell need that
+      makes the press no longer fit -- the fit refusal; and the blocks
+      stripped -- "NOT checked" for dwell and for compaction, no C270 key
+      published and the utilisation back on the nameplate.  THE NEGATIVE:
+      the three shipped plants announce both absences and publish no C270
+      value (their goldens are held by the suite).
+
 NOT CHECKED: the vendor numbers (they are the case's, declared assumptions),
 whether the air-change rates are right for a product (a risk assessment), and
-the physics of any machine (there is none).
+the physics of any machine (there is none, beyond the press's declared dwell
+kinematics and the inversion of declared compaction curves, arm (f)).
 
 BY-HAND SABOTAGES (2026-11-02), each on the named source, rebuilt with
 `make -j1 all`, the gate run, the file restored and rebuilt: see the commit
@@ -95,6 +121,20 @@ message of the slice for the outputs.
   S9  BatchPlanPass.cpp (C210 E3): the changeover cleans count the instances
       of ONE lot (`c.instances` -> `c.instancesPerLot`); the shipped cases run
       one instance of each so only the parallelClean fixture sees it
+BY-HAND SABOTAGES (2026-11-13, C270), each on RatedMachineSize.cpp unless
+named, committed first, rebuilt, the gate run, restored with git checkout and
+rebuilt: see the commit message of the slice for the outputs.
+  S10 the dwell-limited speed without pi (L / (D t_min))
+  S11 the utilisation on the nameplate: drop `if (binds) perMachine = capLim;`
+  S12 the OEE not applied to the capacity (drop `perMachine *= a * p * q`)
+  S13 the porosity inverted with the wrong sign (ln(sigma_t/sigma_0)/k_b) in
+      CompactionLaws.H -- the bench's goldens do not see it (the bench never
+      inverts), only this arm does
+  S14 the force without the tip area's unit (P x A_tip x 1e-6 dropped)
+  S15 the sigma_0 refusal removed (the target-above-sigma_0 fixture)
+  S16 the double-count announcement removed
+  S17 the basis-mismatch announcement fired on every run (`if (true)`)
+  S18 the "NOT checked for dwell time" announcement removed
 Exit 1 listing failures."""
 import json
 import math
@@ -118,7 +158,8 @@ REL = 1e-6
 fails = []
 counts = {"machines": 0, "rooms": 0, "grades": 0, "uses": 0, "refusals": 0,
           "hvacCosts": 0, "cleaning": 0, "productFits": 0, "productCleans": 0,
-          "productWater": 0}
+          "productWater": 0, "pressNumbers": 0, "benchConstants": 0,
+          "pressAnnouncements": 0, "pressFixtures": 0, "pressNegatives": 0}
 
 
 def fail(msg):
@@ -732,6 +773,201 @@ def arm_refusals():
                      "names no product of the plan")
 
 
+# ------------------------------------------------ (f) the press (C270) ---
+WITNESS = ROOT / "tutorials" / "batch" / "plant" / "tabletPress01_dwell_and_force"
+BENCH = ROOT / "tutorials" / "props" / "powder" / "compaction01_mcc"
+PRESS_UNITS = {"MPa": 1e6, "1/MPa": 1e-6, "mm": 1e-3, "m": 1.0, "ms": 1e-3,
+               "mm2": 1e-6, "kN": 1e3, "g/cm3": 1e3, "g": 1e-3}
+
+
+def pval(d, key):
+    """A declared value in SI (the press arm's own unit table)."""
+    v = d[key]
+    return float(v[0]) * (PRESS_UNITS[v[1]] if len(v) > 1 else 1.0)
+
+
+def bench_golden():
+    """The bench's own golden values of op mcc_inDie (diag rows)."""
+    g = {}
+    for line in (BENCH / "expected").read_text().splitlines():
+        f = line.split()
+        if len(f) >= 4 and f[0] == "diag" and f[1] == "mcc_inDie":
+            g[f[2]] = float(f[3])
+    return g
+
+
+def press_item(out, unit="tabletPress"):
+    for line in out.splitlines():
+        if '"item": "%s"' % unit in line and '"type": "ratedMachine"' in line:
+            mv = re.search(r'"values": \{([^}]*)\}', line)
+            if mv:
+                return {k: float(x) for k, x in re.findall(
+                    r'"([A-Za-z_][A-Za-z0-9_]*)": *(-?[0-9][0-9.eE+-]*)', mv.group(1))}
+    return None
+
+
+def recompute_press(dr):
+    """Every C270 number, from the declaration alone (never read back)."""
+    r = dr["rating"]
+    st, rpm, cpr = (float(r["stations"][0]), float(r["turretSpeed"][0]),
+                    float(r["compressionsPerRevolution"][0]))
+    want = {"capacity_machine": st * rpm * 60.0 * cpr}
+    cap = want["capacity_machine"]
+    if "dwell" in dr:
+        dw = dr["dwell"]
+        L, D, tmin = pval(dw, "punchFlat"), pval(dw, "pitchCircle"), pval(dw, "minimumDwellTime")
+        t_at = L / (math.pi * D * rpm / 60.0)
+        n_max = L / (math.pi * D * tmin) * 60.0
+        want.update({"dwellTime_atRating": t_at * 1e3, "turretSpeed_dwellLimited": n_max,
+                     "capacity_dwellLimited": st * n_max * 60.0 * cpr,
+                     "dwellBinds": 1.0 if n_max < rpm else 0.0})
+        cap = min(cap, want["capacity_dwellLimited"])
+    if "effectiveness" in dr:
+        e = dr["effectiveness"]
+        oee = float(e["availability"][0]) * float(e["performance"][0]) * float(e["quality"][0])
+        want["oee"] = oee
+        cap *= oee
+    if "dwell" in dr or "effectiveness" in dr:
+        want["capacity_effective"] = cap
+    if "compaction" in dr:
+        c = dr["compaction"]
+        h, rd = c["heckel"], c["ryshkewitch"]
+        K = float(h["K"][0]) if "K" in h else 1.0 / float(h["Py"][0])      # 1/MPa
+        A = float(h["A"][0])
+        s0, kb = pval(rd, "sigma0") / 1e6, float(rd["kb"][0])
+        sig = pval(c, "targetTensileStrength") / 1e6
+        eps = math.log(s0 / sig) / kb
+        Dsol = 1.0 - eps
+        P = (math.log(1.0 / (1.0 - Dsol)) - A) / K
+        At = pval(c, "punchTipArea")
+        F = P * 1e6 * At
+        want.update({"porosity_target": eps, "solidFraction_target": Dsol,
+                     "compactionPressure": P, "punchForce": F / 1e3,
+                     "forceRatio": F / pval(c, "maxCompressionForce")})
+        if "trueDensity" in c:
+            want["tabletThickness"] = val(r, "itemMass") / (pval(c, "trueDensity") * Dsol * At) * 1e3
+    return want, cap
+
+
+def arm_press():
+    """(f) C270: the dwell limit, the effectiveness and the compaction force."""
+    out, err = run_case(WITNESS)
+    js = result_json(out)
+    if js is None:
+        fail("tabletPress01: no result JSON")
+        return
+    post = read_dict(WITNESS / "system" / "postDict")
+    dr = next(e for e in post["sizing"]["units"] if e["unitName"] == ["tabletPress"])["designRules"]
+    it = press_item(out)
+    if it is None:
+        fail("tabletPress01: no ratedMachine item")
+        return
+    want, cap = recompute_press(dr)
+    for k, w in want.items():
+        if k not in it:
+            fail("tabletPress01: the item publishes no %s" % k)
+        else:
+            need("tabletPress01 %s" % k, it[k], w)
+            counts["pressNumbers"] += 1
+    # the utilisation divides the load by the LOWER (and effective) capacity
+    rates = stream_rates(js)
+    plan = post["batchPlan"]
+    lot = val(plan["lot"], "mass")
+    st = plan["stages"][0]
+    load = lot / val(dr["rating"], "itemMass") / val(st, "operatingTime")
+    need("tabletPress01 load", it["load"], load)
+    need("tabletPress01 utilisation (on the dwell-limited, effective capacity)",
+         it["utilisation"], load / cap)
+    counts["pressNumbers"] += 2
+    # the four constants are the bench's golden, so the two cannot drift apart
+    g = bench_golden()
+    c = dr["compaction"]
+    for got, key in ((float(c["heckel"]["K"][0]), "heckel_K_perMPa"),
+                     (float(c["heckel"]["A"][0]), "heckel_A"),
+                     (pval(c["ryshkewitch"], "sigma0") / 1e6, "ryshkewitch_sigma0_MPa"),
+                     (float(c["ryshkewitch"]["kb"][0]), "ryshkewitch_kb")):
+        if key not in g:
+            fail("tabletPress01: the bench golden carries no %s" % key)
+        elif not close(got, g[key], 1e-9):
+            fail("tabletPress01: the declared %s %.12g is not the bench's golden %.12g "
+                 "(tutorials/props/powder/compaction01_mcc/expected)" % (key, got, g[key]))
+        else:
+            counts["benchConstants"] += 1
+    # the witness's own announcements: the dwell binds, the window, the basis
+    for must in ("the DWELL LIMIT BINDS", "OUTSIDE the window the Heckel line was fitted on",
+                 "the two curves are on DIFFERENT bases", "no mixture rule is implemented"):
+        if must not in out:
+            fail("tabletPress01: the announcement %r is not in the result" % must)
+        else:
+            counts["pressAnnouncements"] += 1
+
+    # fixtures on copies: refusals and announcements fired one at a time
+    with tempfile.TemporaryDirectory() as td:
+        def fx(name, old, new, must, rc0=None, absent=None):
+            o, e, rc = fixture(td, WITNESS, name, {"postDict": lambda t: sub(t, old, new)})
+            counts["pressFixtures"] += 1
+            blob = o + e
+            if must not in blob:
+                fail("press fixture %s: expected %r; got tail:\n%s" % (name, must, blob[-600:]))
+            if rc0 is not None and (rc == 0) != rc0:
+                fail("press fixture %s: exit code %d" % (name, rc))
+            if absent and absent in blob:
+                fail("press fixture %s: %r must not be printed" % (name, absent))
+            return o
+        fx("targetAboveSigma0", "targetTensileStrength  2 MPa;", "targetTensileStrength  35 MPa;",
+           "no porosity gives it", rc0=None)
+        fx("negativeK", "K       0.00906082550054 1/MPa;", "K       -0.00906082550054 1/MPa;",
+           "must be positive", rc0=None)
+        # a solid fraction below the line's own zero-pressure density
+        fx("belowIntercept", "targetTensileStrength  2 MPa;", "targetTensileStrength  0.3 MPa;",
+           "the Heckel line cannot give the solid fraction", rc0=None)
+        fx("bothKandPy", "A       0.657612232409;", "A       0.657612232409;  Py 110 MPa;",
+           "both `K` and `Py`", rc0=None)
+        fx("doubleCount", "quality      1.0;", "quality      0.99;",
+           "the rejects are COUNTED TWICE", rc0=True)
+        fx("forceAbove", "maxCompressionForce    80 kN;", "maxCompressionForce    2.5 kN;",
+           "is ABOVE the press's maximum compression force", rc0=True)
+        # inside the window and on one basis: neither announcement
+        o = fx("inWindowOneBasis", "basis   outOfDie;", "basis   inDie;",
+               "no mixture rule is implemented", rc0=True,
+               absent="the two curves are on DIFFERENT bases")
+        o = fx("insideWindow", "targetTensileStrength  2 MPa;", "targetTensileStrength  3 MPa;",
+               "COMPACTION", rc0=True, absent="OUTSIDE the window the Heckel line")
+        fx("dwellNotBinding", "minimumDwellTime  10 ms;", "minimumDwellTime  6 ms;",
+           "DWELL (kinematics", rc0=True, absent="the DWELL LIMIT BINDS")
+        # the dwell limit can make a press that fit no longer fit: refused, naming the count
+        fx("dwellRefuses", "minimumDwellTime  10 ms;", "minimumDwellTime  20 ms;",
+           "does NOT fit the lot", rc0=None)
+        # the absent blocks: announced as unchecked, and nothing new published
+        strip = lambda t: re.sub(r"\n              //  THE DWELL LIMIT.*?\n              compaction\n              \{.*?\n              \}\n",
+                                 "\n", t, count=1, flags=re.S)
+        o, e, rc = fixture(td, WITNESS, "nothingDeclared", {"postDict": strip})
+        counts["pressFixtures"] += 1
+        blob = o + e
+        if rc != 0:
+            fail("press fixture nothingDeclared: exit %d\n%s" % (rc, blob[-600:]))
+        for must in ("NOT checked for dwell time", "NOT checked for compaction force"):
+            if must not in blob:
+                fail("press fixture nothingDeclared: %r missing" % must)
+        itn = press_item(o) or {}
+        new = sorted(k for k in itn if k in ("dwellTime_atRating", "capacity_dwellLimited", "oee",
+                                              "capacity_effective", "compactionPressure", "punchForce"))
+        if new:
+            fail("press fixture nothingDeclared: it publishes C270 keys %s" % new)
+        if itn and not close(itn.get("utilisation", -1), load / it["capacity_machine"]):
+            fail("press fixture nothingDeclared: the utilisation is not load / nameplate")
+    # the negative on the shipped plants: announced, nothing new published
+    for case in CASES:
+        o, e = run_case(case)
+        for must in ("NOT checked for dwell time", "NOT checked for compaction force"):
+            if must not in o + e:
+                fail("%s: the press does not announce %r" % (case.name, must))
+        itc = press_item(o) or {}
+        if any(k in itc for k in ("dwellTime_atRating", "oee", "compactionPressure")):
+            fail("%s: the press publishes a C270 value it never declared" % case.name)
+        counts["pressNegatives"] += 1
+
+
 def main():
     if not BIN.exists():
         print("check_tablet_machines: FAILED\n  choupoSolve is not built (make all)")
@@ -739,6 +975,7 @@ def main():
     for c in CASES:
         arm_case(c)
     arm_refusals()
+    arm_press()
     if fails:
         print("check_tablet_machines: FAILED")
         for f in fails:
@@ -765,13 +1002,26 @@ def main():
           "`value` beside `valuePerSupplyAir`; a cleaning unit in no stage, with no effluent "
           "fraction, declared twice; the absent declaration announced once and publishing "
           "nothing).  NOT CHECKED: the vendor numbers and air-change rates (the case's own "
-          "assumptions), any machine physics (there is none).  SEVERAL PRODUCTS "
+          "assumptions), any machine physics (none is modelled; the press checks of arm (f) are kinematics and declared curves).  SEVERAL PRODUCTS "
           "(donepezil02_two_strengths, C249 d): %d product-fits recomputed from each "
           "product's own lot and stage override, %d per-product cleaning rows and %d "
-          "per-product water lots recomputed."
+          "per-product water lots recomputed.  THE PRESS (C270, tabletPress01_dwell_and_force): "
+          "%d published numbers recomputed from the declaration alone (dwell at the catalogue "
+          "speed, the dwell-limited speed and capacity, which binds, OEE, the effective capacity, "
+          "the load and the utilisation on the LOWER capacity; porosity, solid fraction, Heckel "
+          "pressure, punch force and ratio, thickness); %d bench constants equal to "
+          "compaction01_mcc's golden; %d of the witness's announcements read; %d fixtures (four "
+          "refusals by name, double-counted rejects and a force above the maximum announced, "
+          "the window and basis warnings absent when not due, a dwell need that does not bind "
+          "and one that refuses the fit, the blocks stripped: announced unchecked and nothing "
+          "new published); %d shipped plants announce both absences and publish no C270 value.  "
+          "NOT CHECKED: whether a minimum dwell or a target strength is right for a "
+          "formulation (the case's declarations), and any mixture rule (there is none)."
           % (counts["machines"], counts["rooms"], counts["grades"], counts["uses"],
              counts["hvacCosts"], counts["cleaning"], counts["refusals"],
-             counts["productFits"], counts["productCleans"], counts["productWater"]))
+             counts["productFits"], counts["productCleans"], counts["productWater"],
+             counts["pressNumbers"], counts["benchConstants"], counts["pressAnnouncements"],
+             counts["pressFixtures"], counts["pressNegatives"]))
     return 0
 
 

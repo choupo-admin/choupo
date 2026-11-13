@@ -108,8 +108,8 @@ int Compressor::solve(const DictPtr& dict,
 
     // ---- Inlet thermo state ---------------------------------------------
     const scalar F_mol_s = F * 1000.0;                  // mol/s
-    const scalar h_in    = thermo.H_real(T_in, P_in, y);
-    const scalar s_in    = thermo.S_real(T_in, P_in, y);
+    const scalar h_in    = thermo.H_real(T_in, P_in, y, DensityPhase::Vapour);
+    const scalar s_in    = thermo.S_real(T_in, P_in, y, DensityPhase::Vapour);
 
     scalar W_shaft = 0.0, P_out = 0.0, T_out = 0.0, T_out_isen = 0.0;
     int    outerIter = 0;

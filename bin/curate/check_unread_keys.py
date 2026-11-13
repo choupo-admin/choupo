@@ -44,6 +44,14 @@ What is asserted, on the real binary:
   4. THE CORPUS CARRIES ONLY THE EXPLAINED ONES.  The scan must find exactly
      the keys listed in EXPECTED below and no others, so a NEW dead key in a
      new case shows up as a failure here instead of scrolling past in a log.
+  5. IT FIRES BELOW THE FIRST LEVEL (2026-11-13).  The unit-level audit used
+     to look at the first level of `operation {}` only, so a key inside a
+     sub-dictionary the unit read was reported by nothing (a conveyor case
+     carried `RoverD 8;` on six bends for months).  A lift misspelt inside
+     `geometry {}` (`dZ` for `dz`) must be reported with its PATH and the
+     key the model looked for, and the run's own static head must show what
+     the slip cost.  The corpus arm (4) reads nested reports too: its
+     pattern used to require `operation{}: ` and so could not see one.
 
 (4) ANSWERED THE DESIGN QUESTION, AND CHANGED THE ANSWER.  This was built to
 measure first and then escalate the announcement to a REFUSAL, which is what
@@ -165,6 +173,42 @@ else:
     ok("NEGATIVE: the correctly-spelled case reports nothing -- it does not"
        " cry wolf")
 
+# --- 5. it fires below the first level ---------------------------------------
+NESTED = os.path.join(ROOT, "tutorials", "steady", "solids",
+                      "pneumaticConveyor01_sand")
+tmp = tempfile.mkdtemp(prefix="unreadkeys-nested-")
+try:
+    dst = os.path.join(tmp, "c")
+    shutil.copytree(NESTED, dst)
+    fsd = os.path.join(dst, "system", "flowsheetDict")
+    text = open(fsd, errors="replace").read()
+    if not re.search(r"geometry\s*\{[^}]*\bdz\s", text):
+        fail("the nested witness no longer declares `dz` inside `geometry {}`"
+             " -- arm 5 would be testing nothing")
+    open(fsd, "w").write(re.sub(r"(geometry\s*\{[^}]*)\bdz(\s)", r"\1dZ\2", text,
+                                count=1))
+    r = run(dst)
+    out = r.stdout + r.stderr
+    m = re.search(r"\[dict\]   unit '[^']+' operation\{\} geometry: `dZ`([^\n]*)", out)
+    if not m:
+        fail("a key misspelt INSIDE a sub-dictionary of operation{} ran"
+             " silently -- the audit stops at the first level again")
+    elif "`dz`" not in m.group(1):
+        fail("the nested key was reported but the key the model looked for"
+             " (`dz`) was not offered")
+    else:
+        ok("a key misspelt inside `geometry {}` is reported with its path,"
+           " and `dz` is offered as the correction")
+    r0 = run(NESTED)
+    out0 = r0.stdout + r0.stderr
+    if "[dict]" in out0:
+        fail("the UNMODIFIED nested witness reports dead keys: %s"
+             % [l for l in out0.splitlines() if "[dict]" in l][:3])
+    else:
+        ok("NEGATIVE: the unmodified conveyor case reports nothing")
+finally:
+    shutil.rmtree(tmp, ignore_errors=True)
+
 # --- 4. the corpus is clean -------------------------------------------------
 cases = []
 for base, dirs, files in os.walk(os.path.join(ROOT, "tutorials")):
@@ -204,9 +248,12 @@ EXPECTED = {
 
 seen = set()
 for c, line in dead:
-    m = re.search(r"unit '([^']+)' operation\{\}: `([^`]+)`", line)
+    #  A nested report reads `unit 'X' operation{} geometry bends[0]: `key``;
+    #  its path is kept in the key so two blocks' homonyms stay apart.
+    m = re.search(r"unit '([^']+)' operation\{\}([^:`]*): `([^`]+)`", line)
     if m:
-        seen.add((c, m.group(1), m.group(2)))
+        path = m.group(2).strip()
+        seen.add((c, m.group(1), (path + " " if path else "") + m.group(3)))
 
 print("\n  corpus: %d steady cases scanned, %d dead-key report(s), %d distinct"
       % (len(cases), len(dead), len(seen)))

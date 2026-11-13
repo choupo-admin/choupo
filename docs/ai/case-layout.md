@@ -820,6 +820,35 @@ and is NOT blocked by the item) and not placed on the plot plan (its room is).
 No rating is ever defaulted.  Worked cases:
 `tutorials/batch/plant/apalutamide01_tablets`, `donepezil01_tablets`.
 
+A `tabletPress` takes three OPTIONAL blocks beside `rating` (DEV.md 4c C270),
+each with its `source` and `reason`:
+
+```
+dwell         { punchFlat 8 mm;  pitchCircle 0.30 m;  minimumDwellTime 10 ms;  source "...";  reason "..."; }
+effectiveness { availability 0.90;  performance 0.95;  quality 1.0;  source "...";  reason "..."; }
+compaction
+{
+    material "...";                          // ONE fitted material: no mixture rule
+    heckel      { K 0.00906 1/MPa;  A 0.6576;  Pmin 30 MPa;  Pmax 170 MPa;  basis inDie;  source "...";  reason "..."; }
+    ryshkewitch { sigma0 34.17 MPa;  kb 7.173;  basis outOfDie;  source "...";  reason "..."; }
+    targetTensileStrength 2 MPa;  punchTipArea 99.93 mm2;  maxCompressionForce 80 kN;
+    trueDensity 1.6374 g/cm3;               // optional: the flat-faced tablet's thickness
+    source "...";  reason "...";
+}
+```
+
+`dwell`: the dwell at the catalogue speed `L / (pi D n)`, the speed that
+gives the minimum `L / (pi D t_min)`, and its capacity; the utilisation uses
+the LOWER capacity and a binding limit is announced.  `effectiveness`:
+OEE = A x P x Q scales the capacity; a quality below 1 on a press whose
+flowsheet already splits off rejects is announced as counted twice.
+`compaction`: the porosity `ln(sigma0/sigma_t)/kb`, the pressure `(ln(1/(1 -
+D)) - A)/K` (`K` or `Py = 1/K`, exactly one), the force `P x A_tip` against
+the maximum; refused at or above `sigma0`, announced outside the Heckel
+window, across `inDie`/`outOfDie`, and above `announceAbove` of the maximum.
+Absent, the run says the press was NOT checked for dwell time or compaction
+force.  Worked case: `tutorials/batch/plant/tabletPress01_dwell_and_force`.
+
 **THE CLEAN UTILITIES -- the `cleanUtilities` pass (DEV.md 4c C195).**  Declared
 BEFORE `costing` (so its supply air can be priced; it was AFTER `economics` until
 DEV.md 4c C210), it runs after the layout and reads the building the layout
@@ -1402,6 +1431,30 @@ appraisal: `kpis.economics.operatorsPerShift` (the count that priced the
 labour), `operatingPositions`, `C_OL`; beside a declared crew also
 `operatorsPerShift_correlation` and `C_OL_correlation` -- all pinned by the
 `kpi` kind.  Worked case: `tutorials/batch/plant/apalutamide01_tablets`.
+
+**THE COVER OF A SHIFT POSITION IS A DECLARED JUDGEMENT (2026-11-13, review
+row PH-01).**  The 4.5 above is the people one shift position takes through a
+plant that never stops (8760 h / the 1960 h one person works).  A suite on two
+day shifts needs about two.  In the same `economics {}` block:
+
+```
+operatorCover
+{
+    positionsPerShift  2.0;     // 1 or more; the engine's default is 4.5
+    source  "...";
+    reason  "...";
+}
+```
+
+Declared, it replaces the 4.5 on BOTH routes (the crew and the correlation) and
+the crew line prints it with its source and reason; `kpis.economics.
+operatorCover_positionsPerShift` is published only then.  A declared crew with
+the cover left at the default beside a batch plan whose longest train is
+available under 7884 h a year is ANNOUNCED once (class `assumed`): the 4.5, the
+hours and this remedy.  REFUSED by name: a cover below 1, a missing
+`source`/`reason` or `positionsPerShift`, an unknown key.  Absent the block,
+nothing changes.  Worked case: `tutorials/batch/plant/donepezil01_tablets`
+(which keeps the default and is told so).
 
 **A DECLARED QUOTE FOR AN ITEM NO CORRELATION PRICES (2026-10-19, DEV.md 4c
 C98).**  In the postDict's `costing {}` block, beside the price index:

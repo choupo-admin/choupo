@@ -31,14 +31,14 @@
         "bends": {
           "type": "array",
           "title": "Bends",
-          "description": "`( { type longRadius; } { type blindedTee; exitRatio ...; } ... )` — each bend by its kind.",
+          "description": "`( { type longRadius; } { type blindTee; } { type shortRadius; exitRatio ...; } ... )` — each bend by its kind; the engine reads `type` and `exitRatio` only and refuses any other key by name.",
           "items": {
             "type": "object",
             "properties": {
               "type": {
                 "type": "string",
                 "title": "Bend kind",
-                "description": "e.g. longRadius (default) or blindedTee."
+                "description": "longRadius (default), shortRadius or blindTee; any other word is refused."
               },
               "exitRatio": {
                 "type": "number",
@@ -59,7 +59,7 @@
       "type": "number",
       "minimum": 0,
       "title": "Particle-wall friction factor",
-      "description": "Solids-phase wall friction coefficient; defaults to 0.4.",
+      "description": "Particle-wall Coulomb friction coefficient of the slip force balance; 0.4 when not declared, and the run then announces it as an assumed default.",
       "unit": "-"
     }
   },

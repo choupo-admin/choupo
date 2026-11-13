@@ -70,8 +70,13 @@
   screen, the tablet press and the packaging line are FLOW PRIMITIVES (a
   `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of
   the machine -- no blend uniformity, no ribbon density, no particle-size
-  reduction, no compaction force, no tablet hardness.  Choupo has no such
-  equipment model; none is invented here.  The coating pan is TWO boxes, a
+  reduction, no compaction force, no tablet hardness.  The flowsheet has no
+  such equipment model; none is invented here.  (The SIZER can check the
+  press's dwell time and the compaction force a target tablet strength
+  needs WHEN the case declares the formulation's compaction curves and
+  dwell need -- `dwell {}` and `compaction {}`, DEV.md 4c C270, witness
+  tabletPress01_dwell_and_force; this case declares neither, and its run
+  says the press was not checked for them.)  The coating pan is TWO boxes, a
   `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air
   takes the water off), which is the mass and energy balance of one machine.
 \*---------------------------------------------------------------------------*/

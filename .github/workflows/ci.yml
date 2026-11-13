@@ -140,6 +140,9 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             texlive-latex-recommended texlive-latex-extra texlive-pictures \
             texlive-fonts-recommended lmodern
+          #  openpyxl: check_membrane_import reads the vendor workbooks and
+          #  REFUSES when it is absent ("COULD NOT RUN"), so it is installed.
+          python3 -m pip install --quiet openpyxl
 
       - uses: actions/setup-node@v4
         with:
@@ -154,11 +157,19 @@ jobs:
       - name: What this run does NOT check
         run: bash .github/scripts/ci-not-checked.sh full
 
+      #  The sweep stays STRICT (bin/runTests knows nothing of platforms).  The
+      #  FULL tier's verdict is the next step: it passes when the failing set
+      #  is inside bin/curate/platform_divergence_debt.tsv, fails on any new
+      #  failure and on a pinned entry that healed.  No `pipefail` here on
+      #  purpose: the sweep's exit status is judged by that script from the
+      #  log, which it also requires to end in the sweep's own tally.
       - name: bin/runTests (full sweep)
         run: |
-          set -o pipefail
           mkdir -p "$RUNNER_TEMP/ci-out"
           bin/runTests 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-full.log"
+
+      - name: Verdict against the pinned platform divergences
+        run: python3 .github/scripts/ci-full-verdict.py "$RUNNER_TEMP/ci-out/runTests-full.log"
 
       - name: Tally
         if: always()

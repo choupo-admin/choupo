@@ -221,6 +221,30 @@ RETIRED_PROBE = "species" + "Map"
 
 SABOTAGES += [
     {
+        "gate": "check_golden_bands.py",
+        "kind": "detection",
+        "file": "bin/curate/golden_bands.tsv",
+        "find": "\titer|.*iterations|.*evaluations\trel\t2.0\t",
+        "replace": "\titer|.*iterations|.*evaluations\trel\t1e-4\t",
+        "why": "the class table is what the cross-platform comparison is made "
+               "of (C384): a count class that no longer gives 2.0 leaves the "
+               "runner red on the rows it cannot reproduce, and the gate's "
+               "transformation arm must fail it.",
+    },
+    {
+        "gate": "check_golden_bands.py",
+        "kind": "detection",
+        "file": "tutorials/steady/flowsheets/proxy01_gas_loop/expected",
+        "find": "H_closure_gap_kW 1.16937215466e-09 abs:7.012e-08\n",
+        "replace": "H_closure_gap_kW 1.16937215466e-09 1e-4\n",
+        "why": "a closure RESIDUAL with a relative band is a golden over "
+               "round-off (C384): it must carry an absolute band written in "
+               "the row, and the gate must fail the relative one.",
+    },
+]
+
+SABOTAGES += [
+    {
         "gate": "check_workspace_truth.py",
         "kind": "detection/poisoned-overlay",
         "file": "src/propertyOps/EvidencePartition.H",
@@ -319,6 +343,18 @@ SABOTAGES += [
 
 SOURCE_SABOTAGES = [
     {
+        "gate": "check_pure_fluid_phase_asked.py",
+        "kind": "source/phase-dropped",
+        "file": "src/unitOperations/rotating/Pump.cpp",
+        "find": "thermo.H_real(T_in, P_in, x, DensityPhase::Liquid) + w_real;",
+        "replace": "thermo.H_real(T_in, P_in, x) + w_real;",
+        "why": "C378 pilot, defect 3: the pump's suction enthalpy asked "
+               "without the phase the pump holds.  A suction on the "
+               "saturation line is then read on whichever root the last bit "
+               "of P picks -- the runner's 125 K pump.  The gate's seven "
+               "perturbed suctions must disagree and NAME the spread.",
+    },
+    {
         "gate": "check_property_route_bench.py",
         "kind": "source/route-relabelled",
         "file": "src/thermo/LiquidPropertyDoor.cpp",
@@ -382,8 +418,8 @@ SOURCE_SABOTAGES = [
         "gate": "check_estimated_species_announced.py",
         "kind": "detection",
         "file": "src/thermo/electrolyte/SaltFromCatalogue.H",
-        "find": "    const Origin o = originFromWord(origin);\n",
-        "replace": "    const Origin o = originFromWord(origin);\n    if (true) return;\n",
+        "find": "    const Origin o = originFromWord(word);\n",
+        "replace": "    const Origin o = originFromWord(word);\n    if (true) return;\n",
         "why": "silences the announcement of a species datum that is not a "
                "measurement.  The witness consumes an estimated hfAq, so arm "
                "(a) must see the missing line and the missing advisory.",

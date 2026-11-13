@@ -2633,6 +2633,90 @@ IF97 density, the surface tension IAPWS R1-76, and each line of the run names
 the formulation behind its own property (every pure-fluid model states one
 per property, read by both the kernel's announcement and the door).
 
+\paragraph{The phase a pure fluid is asked for.}\label{sec:pure-fluid-density-phase}
+A pure-fluid formulation (IF97~\cite{IAPWS_R797}, or a reference Helmholtz
+equation for water~\cite{IAPWS_R695}, CO$_2$~\cite{SpanWagner1996}, N$_2$ or
+CH$_4$~\cite{SetzmannWagner1991}) draws both phases with one surface and, at a state
+$(T,P)$ below its critical temperature, answers with the phase that is stable
+there: the liquid for $P\ge p_{\mathrm{sat}}(T)$, the vapour below.  A
+consumer that asks for a \emph{liquid} density wants the liquid even when the
+state it carries sits on the saturation line --- a pump suction is saturated
+liquid by construction, and the last bit of a pressure computed from
+$T_{\mathrm{sat}}$ can fall either side of $p_{\mathrm{sat}}(T)$.  Until
+2026-11 the route ignored the phase asked: water on IF97 at 446.52\,K, asked
+for its liquid density one part in $10^{7}$ below $p_{\mathrm{sat}}$
+(8.587\,bar), returned 4.45\,kg/m$^3$, the vapour, for 893.98.  The kernel now
+honours the phase asked (\code{pureFluidPhaseState},
+\code{src/thermo/pureFluid/PureFluidModel.H}):
+\begin{equation}
+  \rho_L(T,P) \;=\;
+  \begin{cases}
+    M / v(T, P)                         & P > p_{\mathrm{sat}}(T)\,(1+\epsilon),\\[2pt]
+    M / v\bigl(T, p_{\mathrm{sat}}(T)\bigr) = M / v'(T) & \text{otherwise},
+  \end{cases}
+  \qquad \epsilon = 10^{-6},
+  \label{eq:pure-fluid-liquid-branch}
+\end{equation}
+where $v'(T)$ is the saturated-liquid volume of the same formulation (IF97
+region~1, or region~3's liquid branch above 623.15\,K; a Helmholtz equation's
+liquid root at its own Maxwell saturation pressure) --- the state at which the
+liquid viscosity and thermal conductivity of a pure fluid were already
+evaluated.  A liquid asked more than $\epsilon$ below $p_{\mathrm{sat}}$ is a
+state the liquid does not have; the saturated liquid at $T$ is returned and
+the run says so once.  A \emph{vapour} density is symmetric: at
+$P \ge p_{\mathrm{sat}}(T)(1-\epsilon)$ it is the saturated vapour at $T$.  At
+or above the critical temperature, and below the triple point, there is no
+saturation line and the phase asked changes nothing.  The door's label says
+which: ``liquid branch at the temperature and pressure; at or below the
+saturation pressure, the saturated liquid at T''.
+
+\subparagraph{The same rule for the enthalpy and the entropy.}\label{sec:pure-fluid-caloric-phase}
+A unit that \emph{holds} the phase of the state it prices --- the pump's
+suction is liquid, the compressor's and the turbine's inlets are vapour, by
+their declared acceptance --- asks the package's real enthalpy and entropy
+\emph{with} that phase: \code{H\_real(T, P, y, phase)} and
+\code{S\_real(T, P, y, phase)}.  On a pure-fluid route they evaluate the
+formulation at the pressure the same decision gives,
+\begin{equation}
+  h_L(T,P) \;=\;
+  \begin{cases}
+    h(T, P)                         & P > p_{\mathrm{sat}}(T)\,(1+\epsilon),\\[2pt]
+    h\bigl(T, p_{\mathrm{sat}}(T)\bigr) = h'(T) & \text{otherwise},
+  \end{cases}
+  \label{eq:pure-fluid-caloric-phase}
+\end{equation}
+and symmetrically for the vapour and for $s$; the package has no separate
+pure-fluid heat capacity (it is the temperature derivative of the same $h$).
+On any other route the phase is ignored and the value is the generic one, bit
+for bit.  Without it, the pump of \code{rankine02\_water} --- whose suction is
+the condenser's saturated liquid, $P = p_{\mathrm{sat}}(T)$ to the last bit
+--- read the vapour enthalpy whenever that bit fell below the line, and its
+discharge Newton, $h(T_{\mathrm{out}}, P_{\mathrm{out}}) = h_{\mathrm{in}} +
+w$, then found a ``liquid'' 125\,K hotter than its suction: a suction pressure
+moved by $-10^{-12}$ of itself was enough, and another compiler's arithmetic
+did it on its own.  \code{check\_pure\_fluid\_phase\_asked} runs that pump,
+and a compressor fed saturated steam, at seven suction pressures
+$p_{\mathrm{sat}}(1+e)$ with $|e|\le10^{-6}$ and demands one answer.  The
+turbine's discharge and any state whose phase the unit does not hold (a wet
+exhaust) keep the formulation's stable phase at $(T,P)$.
+
+The energy report prices every stream through the package's stream
+functions (\code{H\_stream\_formation}, \code{S\_stream\_formation},
+\code{H\_blendPerNaturalPhase}), which take the stream's carried vapour
+fraction $\beta$.  On the saturation line $T$ and $P$ are one variable and do
+not fix the branch; $\beta$ is the only information the stream holds about
+it --- an author's declaration, the run's own flash, or a default, and inside
+the band it is all there is.  So for a pure fluid below its critical
+temperature and \emph{inside} the band, $\beta=0$ is priced on the saturated
+liquid and $\beta=1$ on the saturated vapour (\code{pureFluidStreamPressure},
+the same decision).  Outside the band the stream is priced at $(T,P)$ as
+before, whatever $\beta$ says, and $0<\beta<1$ keeps its split on the line.
+Without this the report priced \code{rankine02\_water}'s condensate on
+whichever root the last bit of $P$ chose, while the pump, asking with its
+phase, priced it as liquid; the gate's third arm holds the plant-boundary
+enthalpy terms of the pump case equal across the perturbed suctions inside
+the band.
+
 \paragraph{The table.}  Just before the result block every run prints one
 line per unit, property and source:
 \begin{verbatim}
@@ -2658,7 +2742,15 @@ parameter --- Wilson, the Poynting correction, Wilke--Chang, the mixed-solvent
 electrolyte activity, the Hildebrand and Hansen solubility parameters --- are
 named once, under a line that says so.  The same content, with what each unit declared at assembly,
 is the result block \code{propertySources}; its golden row kind is
-\code{source}.
+\code{source}.  The time-integrated binaries declare and check as the steady
+one does: a \code{[mismatch]} can appear in a \code{choupoCtrl} or
+\code{choupoSemiContinuous} run, and a vessel with a level, a variable-volume
+CSTR and a Williams--Otto plant are named by the case's unit name.  A
+pore-model membrane (\code{transport DSPM-DE}) reads each ion's $D_0$ from its
+species record; the table lists that read among the unit's diffusivities, as
+scaled by Stokes--Einstein, kept at the 25\,$^\circ$C it is curated at, or
+\emph{not} temperature-corrected when the case declares no liquid-viscosity
+model.
 
 \paragraph{The sources, by class.}
 \begin{itemize}
@@ -15355,6 +15447,44 @@ equation in one number.}
 A single non-linear equation in a single unknown $\xi$: \textbf{Newton-1D
 in one variable}, with damping. Convergence is typically 3--5 iterations.
 
+\subsection{The volumetric flow, by the phase of the feed}\label{sec:cstr-volumetric-basis}
+
+The rate is written in concentrations, $c_i = F_i/Q$, and the model holds the
+volumetric flow $Q$ constant at its feed value (constant density); the space
+time is $\tau = V_R/Q$.  $Q$ depends on what the feed \emph{is}: the vapour
+fraction $\beta$ the unit already holds, from the one home every unit and the
+energy report use (\code{flashState::resolvedInletVaporFraction}).  An
+unpinned feed is resolved at its own $(T,P,\zv)$; a feed that declares its
+phase (\code{phase liquid;}, \code{phase gas;}, a \code{vaporFraction}) is
+taken at its declaration and not re-solved, so a gas declared
+\code{phase liquid;} is put on the liquid basis:
+\begin{equation}
+  Q \;=\;
+  \begin{cases}
+    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}) & \beta = 0
+      \ \text{(liquid feed)},\\[3pt]
+    F \, \bar M / \rho_V(T,P,\zv) = F\, v_V(T,P,\zv) & \beta = 1
+      \ \text{(vapour feed)},\\[3pt]
+    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}),\ \text{announced}
+      & 0 < \beta < 1,
+  \end{cases}
+  \label{eq:cstr-feed-volumetric-flow}
+\end{equation}
+with $V_i^{\mathrm{liq}}$ each component record's 25\,$^\circ$C liquid volume
+(no temperature or pressure effect; the liquid-property reorganisation of
+\S\ref{sec:liquid-property-sources} moves it later) and $\rho_V$ the package's
+vapour density from the equation of state the case declares ($v_V=RT/P$ for
+the ideal gas).  A two-phase feed keeps the liquid basis --- this unit is a
+stirred liquid, and a trace of dissolved gas flashing at the feed (the
+fermentors' CO$_2$) is what it still means --- and the run says so once per
+unit with the vapour fraction.  Until 2026-11 the liquid line applied to every
+feed: \code{cstr02\_reversible\_wgs}, CO and steam at 600\,K and 10\,bar, got
+$Q = 7.44\times10^{-6}$\,m$^3$/s and $\tau = 134$\,s, where the gas's own
+$Q = FRT/P = 1.386\times10^{-3}$\,m$^3$/s gives $\tau = 0.72$\,s for the
+same $V_R$, 186 times less.  On the gas basis the reversible rate's detailed
+balance $k_{\mathrm{rev}} = k/K_c$ reads concentrations on the basis $K_c$ is
+defined on.
+
 \subsection{First-order kinetics --- analytic check}
 
 For an Arrhenius first-order reaction $r = k\, c_A$ with
@@ -24110,8 +24240,11 @@ Reynolds number).  Two limits make it physical: for a VERTICAL line
 ($\theta=90^\circ$) the balance is drag $=$ gravity, so the slip equals the
 terminal velocity $u_t$; for a HORIZONTAL line ($\theta=0$) it is drag $=$ wall
 friction, so the slip is $u_t\sqrt{\mu_w}$.  This REPLACES a fitted slip
-correlation --- there is no black formula and no fallback; $\mu_w$, the
-particle--wall friction coefficient, is declared and announced.
+correlation --- there is no black formula and no fallback.  $\mu_w$, the
+particle--wall friction coefficient, is \texttt{particleWallFriction} in the
+operation block; when the case declares none, Choupo uses $0.4$ and ANNOUNCES
+it as an assumption (at its site, in the end-of-run caveat block and in the
+result), while a declared value is used as given and announced nowhere.
 
 \subsection{Solids friction: Yang (1974)}
 The solids friction factor is the hard part --- particles differ in size,
@@ -24143,7 +24276,13 @@ most important safety number in a conveying design is the MARGIN
 \begin{equation}
   \frac{u_g}{u_{\text{salt}}} \ge 1.5\text{--}2 ,
 \end{equation}
-which Choupo reports as a headline KPI and flags in red when it approaches~1.
+which Choupo publishes as the KPI \texttt{saltationMargin} (beside
+$u_{\text{salt}}$ itself, \texttt{u\_saltation}).  When $u_g$ falls BELOW
+$u_{\text{salt}}$ --- a margin under~1 --- the run prints (at verbosity
+$\ge 1$) a warning that the
+solids may settle and block the line; a margin between~1 and the
+$1.5$--$2$ band raises nothing, so reading it against that band is the
+designer's job.
 Under-velocity plugging --- not the pressure drop --- is the number-one real
 failure of a conveying line; a beautiful $\Delta P$ on a line that will plug is
 worthless.
@@ -24544,6 +24683,76 @@ It is the elastic solution for a disc loaded across a diameter, so it
 holds for flat faces only; a convex tablet needs another expression, which
 \code{compactionFit} does not carry.
 
+\subsection{From the fitted curves to the press: the inverse use}\label{sec:compaction-inverse}
+
+The two lines the bench fits are also a design tool when they are read
+backwards (DEV.md 4c C270).  The rated tablet press (\code{ratedMachine},
+kind \code{tabletPress}, \code{compaction \{\}} block) asks what pressure,
+and what force on one punch, makes a tablet of a declared tensile strength
+$\sigma_t^\ast$.  Inverting Eq.~(\ref{eq:ryshkewitch})
+\cite{Ryshkewitch1953,Duckworth1953} gives the porosity at which the curve
+reaches that strength, and inverting Eq.~(\ref{eq:heckel})
+\cite{Heckel1961a,Heckel1961b} the pressure at which the compact reaches the
+matching relative density $D^\ast = 1 - \varepsilon^\ast$:
+\begin{equation}
+  \varepsilon^\ast = \frac{1}{k_b}\ln\frac{\sigma_0}{\sigma_t^\ast},
+  \qquad
+  P^\ast = \frac{1}{K}\left(\ln\frac{1}{1-D^\ast} - A\right),
+  \qquad
+  F^\ast = P^\ast A_\text{tip},
+  \label{eq:compaction-inverse}
+\end{equation}
+with $A_\text{tip}$ the area of one punch tip.  The functions are the SAME
+ones the bench fits and prints (\file{src/propertyOps/CompactionLaws.H}), so
+there is no second transcription of either line.  For a flat-faced tablet
+of mass $m$ and the material's true density $\rho_\text{true}$ the
+thickness follows from the volume, $h = m/(\rho_\text{true} D^\ast
+A_\text{tip})$ (geometry).
+
+What the inversion can and cannot give, each said by the engine:
+\begin{itemize}
+  \item $\sigma_t^\ast \geq \sigma_0$ has no porosity: $\sigma_0$ is the
+  strength at zero porosity, and the engine refuses.
+  \item $D^\ast$ below $D_A = 1 - e^{-A}$ needs a negative pressure on the
+  line: the target lies outside what the line describes, and the engine
+  refuses.
+  \item $P^\ast$ outside the declared Heckel window is an extrapolation of
+  the fit, announced.
+  \item The two lines on different bases --- Heckel on in-die densities,
+  the strength curve on the porosity of ejected tablets --- are announced:
+  the ejected tablet has recovered elastically, and its height after
+  ejection exceeds the minimum in-die thickness (the elastic recovery that
+  Mohylyuk et al.\ \cite{Mohylyuk2024} compute from the two), so the
+  pressure found at the out-of-die porosity is not the pressure that makes
+  that tablet.
+  \item One material: a blend has no mixture rule here, as for the bench.
+\end{itemize}
+A minimum strength is a formulation decision; Mohylyuk et
+al.\ \cite{Mohylyuk2024} write that 2\,MPa is widely considered the
+minimum acceptable tensile strength of tablets.
+
+\paragraph{Dwell time: the speed a formulation allows.}  On a rotary press
+the punch head's flat of length $L$ passes under the compression roll on
+the turret's pitch circle of diameter $D_\text{pc}$; at $n$ revolutions per
+second the punch stays at its lowest point for
+\begin{equation}
+  t_\text{dwell} = \frac{L}{\pi D_\text{pc}\, n},
+  \qquad
+  n_\text{max} = \frac{L}{\pi D_\text{pc}\, t_\text{min}},
+  \label{eq:dwell}
+\end{equation}
+pure kinematics: a formulation that needs at least $t_\text{min}$ is
+pressed no faster than $n_\text{max}$, whatever the catalogue speed, and
+the press's capacity is the lower of the two speeds times its stations.
+Whether a formulation needs a minimum dwell is a property of the powder,
+measured: W\"unsch et al.\ \cite{Wunsch2020} found pure microcrystalline
+cellulose equally strong at dwell times between 10 and 130\,ms, while a
+starch gave weaker tablets at the shorter dwell times of a production press.
+An overall equipment effectiveness (availability $\times$ performance
+$\times$ quality) may scale the capacity; its quality factor already counts
+the rejected tablets, so a reject split in the flowsheet beside it counts
+them twice, and the engine says so.
+
 \subsection{What the bench claims, and what it does not}
 
 \begin{itemize}
@@ -24568,6 +24777,9 @@ holds for flat faces only; a convex tablet needs another expression, which
 \begin{tutoriallink}
 \file{tutorials/props/powder/compaction01\_mcc} --- microcrystalline cellulose,
 the main excipient of the apalutamide tablet case. \\
+\file{tutorials/batch/plant/tabletPress01\_dwell\_and\_force} --- the
+inverse use: the bench's MCC constants run backwards to the pressure and
+force of a 2\,MPa tablet, and a press whose dwell limit binds. \\
 \file{tutorials/props/powder/compaction02\_dcpd\_brittle} --- dicalcium
 phosphate, the brittle counterpart.  It stands where lactose (the main
 excipient of the donepezil tablet case) should: no open lactose dataset
@@ -24923,9 +25135,9 @@ c(d) = 1-\exp\!\left[-0.693\left(\frac{d}{d_{50}}\right)^{m}\right]
 King (2001) eq.~4.41, p.~89 (the screen's partition); the same form
 Nageswararao et al.\ eq.~20, p.~680, attribute to Plitt.  The constant is kept
 as King prints it, $0.693$ ($\ln 2$ to three figures), so $c(d_{50}) =
-0.49997$, not $1/2$.  WINDOW: a monotone S-curve; $m$ is fitted to the device
+0.49993$, not $1/2$.  WINDOW: a monotone S-curve; $m$ is fitted to the device
 and feed (King uses $m = 5.9$ for a vibrating screen).  ANCHOR (identity):
-$c(d_{50}) = 1-e^{-0.693} = 0.49997$.
+$c(d_{50}) = 1-e^{-0.693} = 0.49993$.
 
 \subsubsection{Partition curve \texttt{tabulated}}\label{sec:partition-tab}
 
@@ -24998,7 +25210,9 @@ correlation's own zero, $h_T$ above about 0.6\,mm).  No parameter is fitted
 (King p.~90), and King states no accuracy for it.  ANCHOR (identity at a
 printed point, King p.~87): the factors are unity at the standard condition,
 $B(0.5)\,C(0.25) = 1$.  An area utilisation factor above $1$ means the screen
-is overloaded; the run says so.
+is overloaded: the split is computed as declared, and the run announces it on
+the advisory log with the AUF, the undersize transmitted and the theoretical
+capacity (a larger \dict{area} is the remedy).
 
 \paragraph{Model \texttt{declared}.}\label{sec:screen-declared}  The case gives
 a \dict{partition \{\}} curve, a \dict{bypass} (fines misplaced to the
@@ -25266,7 +25480,13 @@ that line as its profile (\code{V\_m3}, \code{t\_s}, \code{t\_over\_V\_s\_m3},
 $\alpha_0$ is therefore read in SI, its dimensions having no integer form.
 The case gives EITHER a measured \dict{specificCakeResistance} $\alpha$ OR the
 pair \dict{alpha0}, \dict{compressibility} $s$ (both or neither; one beside
-the other is refused).
+the other is refused).  A negative $s$ is refused by name: $\alpha$ would FALL
+as the pressure drop rises, a cake that opens as it is squeezed, which this law
+has no reading for.  $0 \le s \le 1$ is the usual range and is silent.  An $s$
+above $1$ runs as declared and is announced: then
+$K_p = \mu\,\alpha_0\,c_S\,(-\Delta p)^{s-1}/A^2$ GROWS with the pressure drop,
+so where the cake resistance dominates the medium's a HIGHER pressure drop gives
+LESS filtrate; the engine does not judge whether that $s$ describes the slurry.
 
 \paragraph{What the slurry fixes: the cake moisture and $c_S$.}  The cake
 moisture is DECLARED, as $m$, the kg of WET cake per kg of DRY cake
@@ -25442,7 +25662,9 @@ the compression zone, a flocculant and the safety factor (Wills p.~386 asks for
 at least two) are not applied.  WINDOW: Kynch's postulate (the settling
 velocity a function of the local concentration alone, Talmage \& Fitch p.~38);
 free settling governs the area; the test run at the expected feed
-concentration (Talmage \& Fitch p.~40; a deviation above $5\,\%$ is announced).
+concentration (Talmage \& Fitch p.~40; a test more than $5\,\%$ away from the
+feed's own concentration is used as declared and announced on the advisory log
+at every verbosity, with both concentrations and the deviation).
 
 \paragraph{Kynch's construction.}  The settling velocity at a test point is the
 slope $v = -dH/dt$, the parabola through that point and its two neighbours (the
@@ -25612,14 +25834,20 @@ $v_{\text{wall}} = d_{50}^{2}\Delta\rho\,\omega^{2}r_2/(18\mu)$, must be below $
 (Geankoplis eq.~30.2-13, p.~1437; $N_{Re}<1$, section~30.1B, p.~1413), or the unit
 refuses, and the message says the remedy: $Re$ at the cut grows as $Q^{3/2}/\omega$,
 so a faster bowl or a lower throughput.  Hindered settling (Geankoplis eq.~30.1-16)
-is NOT applied (the solids fraction is printed), nor Ambler's turbulent $\Sigma$
+is NOT applied: every particle settles as if it were alone.  The feed's solids
+VOLUME fraction $\phi_s = (\dot m_s/\rho_s)/Q$ is printed, published
+(\code{solidsVolumeFraction\_feed}) and announced with its number on the
+advisory log --- unhindered (dilute) Stokes settling is assumed at that
+fraction, and where crowding slows the settling the printed cut size is too
+small; no threshold is set, and the engine does not judge whether the feed is
+dilute.  Nor are Ambler's turbulent $\Sigma$
 (eqs.~34--39), the Brownian threshold and agglomeration (pp.~195--196), or the
-drive power.  KEYS (none has a default): \dict{speed} and \dict{sedimentSolids},
+drive power modelled.  KEYS (none has a default): \dict{speed} and \dict{sedimentSolids},
 and those of the model.  KPIs: every classifier KPI of \S\ref{sec:classification}
 under the words \code{sediment}/\code{centrate} (\code{d50\_um}, both products'
 $d_{10}\dots d_{90}$, the closures), \code{omega\_rad\_s}, \code{gForce\_wall},
 \code{sigma\_m2}, \code{cutSize\_d50\_um}, \code{Re\_cut}, \code{vWall\_cut\_m\_s},
-\code{gradeEfficiency\_at\_d50}; for the tubular bowl also \code{bowlVolume\_m3},
+\code{gradeEfficiency\_at\_d50}, \code{solidsVolumeFraction\_feed}; for the tubular bowl also \code{bowlVolume\_m3},
 \code{residenceTime\_s}, \code{sigmaHalfLayer\_m2}, \code{cutSizeHalfLayer\_Dpc\_um},
 \code{gradeEfficiency\_at\_Dpc}.
 
@@ -28841,6 +29069,65 @@ uncertainty upstream of it}.  The correlations behind the FCI are
 study-grade, so the NPV is a study-grade number wearing however many digits
 the arithmetic produced.
 
+\paragraph{The break-evens: three questions, three answers.}\label{par:break-even}
+\code{breakEven \{\}} publishes two answers that say different things, and
+\code{breakEven \{ price ( \ldots ); \}} adds a third.  (1)~The
+\emph{operating} break-even is the fraction $x$ of nameplate production at
+which one year's sales equal one year's cost of production,
+$x = F/(R-V)$ with $F = 0.180\,\mathrm{FCI} + 2.73\,C_{OL} + D$ (fixed) and
+$V = 1.23\,(C_{RM}+C_{UT}+C_{WT})$ (variable); the classification is a
+modelling choice and is printed.  (2)~The \emph{NPV} break-even is the
+fraction $s$ of production, capital and labour held, at which
+$\mathrm{NPV}(s)=0$.  (3)~The \emph{price} break-even is, for a priced
+stream $j$ of \code{constant/economics}, the price $\pi_j^{\ast}$ with every
+other price held at which
+\begin{equation}
+\mathrm{NPV}\!\left(\pi_j^{\ast}\right) = 0 ,
+\label{eq:breakeven-price}
+\end{equation}
+found, like (2), by evaluating the \emph{same} appraisal on a copy
+(\code{appraise}): the cash flow has one home.  For a product $\pi_j^{\ast}$
+is the \emph{minimum selling price}, and because it carries the capital
+charge, the tax, the working capital and discounting it lies above the cost
+of production per kilogram that the run prints; for a raw material it is the
+\emph{highest purchase price the plant can bear}.  The NPV rises with a
+product's price and falls with a raw material's, so the root is bracketed
+from price $0$ and from the declared price doubled (at most sixty times) and
+bisected on the sign of the NPV; the run \emph{refuses by name} a stream the
+appraisal neither sells nor buys, a raw material whose NPV is negative even
+when the material is free, and a bracket with no sign change (it states the
+bracket and the NPV at both ends, as when a stream's mass flow is zero).
+Everything the NPV carries moves with the price exactly as at a price end of
+\code{sensitivity \{\}}: the receivables and the built-up working capital,
+the tax, and a royalty on sales.  The output prints $\pi_j^{\ast}$, the
+declared price and their ratio; it states no verdict and no threshold.
+Worked cases: \code{economics04\_building\_royalty\_breakeven} (the powder's
+minimum selling price) and \code{greenAmmoniaPEQ\_baseCase} (the minimum
+selling price of ammonia and the highest price of hydrogen).
+
+\paragraph{Operating labour and the cover of a shift position.}\label{par:operator-cover}
+The labour of the cost of manufacture is priced as $C_{OL} = n_{\mathrm{pos}}\,w\,h_{\mathrm{op}}$, with $w$ the loaded
+hourly rate, $h_{\mathrm{op}}$ the hours one person works in a year
+(\code{operatorAnnualHours}, 1960~h) and $n_{\mathrm{pos}} = c\,N_{\mathrm{shift}}$
+the operating positions: $N_{\mathrm{shift}}$ the operators per shift (Turton's
+$N_{OL} = (6.29 + 31.7P^2 + 0.23N_{np})^{1/2}$, or a crew the case declares area
+by area) and $c$ the \emph{cover}, the number of people one shift position takes
+through the plant's calendar,
+\begin{equation}
+c \approx \frac{h_{\mathrm{calendar}}}{h_{\mathrm{op}}} ,
+\label{eq:operator-cover}
+\end{equation}
+which is $8760/1960 \approx 4.5$ for a plant that never stops and the engine's
+default.  A solid-dose suite on two day shifts of 3840~h a year is covered by
+about two people per position, so the default would overprice its labour by
+more than half; the cover is therefore a declared judgement of the case
+(\code{operatorCover \{ positionsPerShift; source; reason; \}}, a value below
+one refused), applied to both routes, and a declared crew beside a batch plan
+whose longest train is available for less than $0.90\times 8760$~h is
+announced once as an assumption that names the 4.5, the hours and the remedy.
+Eq.~\eqref{eq:operator-cover} is the arithmetic of the default, not a staffing
+rule: leave, absence and handover are the case's to state.
+
 \paragraph{What is NOT modelled, named rather than implied.}  A ramp-up
 that degrades yield or quality (the production fraction scales products and
 raw materials alike), a utility bill not proportional to throughput, a
@@ -29044,6 +29331,30 @@ and activity-coefficient models. Chapters 6 (vapour pressure), 8
 \emph{Ind. Eng. Chem.}, 35, 398 (1943). The heat-of-vaporisation
 correlation.
 
+\bibitem{IAPWS_R797} IAPWS R7-97(2012).  Every coefficient table in
+\file{src/thermo/iapws/IF97.cpp} is transcribed from this release at
+full published precision, and its \code{verify()} cross-checks them
+against the release's own computer-program verification tables.  The region-3 coefficients (the near-critical Helmholtz equation) were
+read from Wagner, W.\ et al., ``The IAPWS Industrial Formulation 1997 for
+the Thermodynamic Properties of Water and Steam'', \emph{J.\ Eng.\ Gas
+Turbines Power} \textbf{122}, 150--182, 2000, Table~A9, and are held by its
+Table~A10.
+
+\bibitem{IAPWS_R695} IAPWS R6-95(2018), Revised Release on the IAPWS
+  Formulation 1995 for the Thermodynamic Properties of Ordinary Water
+  Substance for General and Scientific Use (2018); W.~Wagner and A.~Pru\ss,
+  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 31 (2002) 387--535.
+
+\bibitem{SpanWagner1996} R.~Span and W.~Wagner, A New Equation of State for
+  Carbon Dioxide Covering the Fluid Region from the Triple-Point Temperature
+  to 1100\,K at Pressures up to 800\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\
+  Data} 25 (1996) 1509--1596.
+
+\bibitem{SetzmannWagner1991} U.~Setzmann and W.~Wagner, A New Equation of
+  State and Tables of Thermodynamic Properties for Methane Covering the Range
+  from the Melting Line to 625\,K at Pressures up to 1000\,MPa,
+  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 20 (1991) 1061--1155.
+
 \bibitem{Renon} Renon, H., \& Prausnitz, J. M., ``Local Compositions in
 Thermodynamic Excess Functions for Liquid Mixtures'', \emph{AIChE J.},
 14, 135--144 (1968). Original NRTL paper.
@@ -29242,25 +29553,10 @@ association contribution Choupo implements (Wertheim TPT1, after Chapman
 et al.\ 1990), with the $\sigma_{ij}^3$ convention under which the
 published $\kappa^{AB}$ were fitted.
 
-\bibitem{IAPWS_R695} IAPWS R6-95(2018), Revised Release on the IAPWS
-  Formulation 1995 for the Thermodynamic Properties of Ordinary Water
-  Substance for General and Scientific Use (2018); W.~Wagner and A.~Pru\ss,
-  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 31 (2002) 387--535.
-
-\bibitem{SpanWagner1996} R.~Span and W.~Wagner, A New Equation of State for
-  Carbon Dioxide Covering the Fluid Region from the Triple-Point Temperature
-  to 1100\,K at Pressures up to 800\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\
-  Data} 25 (1996) 1509--1596.
-
 \bibitem{Span2000N2} R.~Span, E.~W.~Lemmon, R.~T Jacobsen, W.~Wagner and
   A.~Yokozeki, A Reference Equation of State for the Thermodynamic Properties
   of Nitrogen for Temperatures from 63.151 to 1000\,K and Pressures to
   2200\,MPa, \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 29 (2000) 1361--1433.
-
-\bibitem{SetzmannWagner1991} U.~Setzmann and W.~Wagner, A New Equation of
-  State and Tables of Thermodynamic Properties for Methane Covering the Range
-  from the Melting Line to 625\,K at Pressures up to 1000\,MPa,
-  \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 20 (1991) 1061--1155.
 
 \bibitem{GVL} Golub, G. H., \& Van Loan, C. F.,
 \emph{Matrix Computations}, 4th ed., Johns Hopkins University Press,
@@ -29446,15 +29742,6 @@ Prentice-Hall, 1988.  Chapters 1--4 distinguish carefully between
 operator can change in real time) and \emph{design constraints}
 that live on a higher control layer.  Same conceptual split as
 Choupo's unit-op vs DesignSpec layering.
-
-\bibitem{IAPWS_R797} IAPWS R7-97(2012).  Every coefficient table in
-\file{src/thermo/iapws/IF97.cpp} is transcribed from this release at
-full published precision, and its \code{verify()} cross-checks them
-against the release's own computer-program verification tables.  The region-3 coefficients (the near-critical Helmholtz equation) were
-read from Wagner, W.\ et al., ``The IAPWS Industrial Formulation 1997 for
-the Thermodynamic Properties of Water and Steam'', \emph{J.\ Eng.\ Gas
-Turbines Power} \textbf{122}, 150--182, 2000, Table~A9, and are held by its
-Table~A10.
 
 \bibitem{Nusselt1916} Nusselt, W., ``Die Oberfl\"achenkondensation des
 Wasserdampfes'', \emph{Z. Ver. Dt. Ing.}\ \textbf{60}, 541--575, 1916.
@@ -29925,6 +30212,20 @@ tablet strength by the diametral-compression test'', \emph{J.\ Pharm.\
 Sci.}, 59, 688--691 (1970), DOI 10.1002/jps.2600590523.  Located, not read:
 Eq.~(\ref{eq:fellnewton}) is the elastic disc solution as the open sources
 quote it.
+
+\bibitem{Mohylyuk2024} Mohylyuk, V., Paulausks, A., Radzins, O., \&
+Lauberte, L., ``The effect of microcrystalline cellulose--CaHPO$_4$ mixtures
+in different volume ratios on the compaction and structural--mechanical
+properties of tablets'', \emph{Pharmaceutics}, 16(3), 362 (2024), DOI
+10.3390/pharmaceutics16030362, CC BY 4.0.  Read (full text, Europe PMC):
+the elastic recovery from the ejected height and the in-die minimum
+thickness, and the 2\,MPa minimum tensile strength.
+
+\bibitem{Wunsch2020} W\"unsch, I., Friesen, I., Puckhaber, D., Schlegel, T.,
+\& Finke, J. H., ``Scaling tableting processes from compaction simulator to
+rotary presses --- mind the sub-processes'', \emph{Pharmaceutics}, 12(4),
+310 (2020), DOI 10.3390/pharmaceutics12040310, CC BY 4.0.  Read (full text,
+Europe PMC): section 3 on dwell time, MCC and starch.
 
 \bibitem{Austin1971} Austin, L. G., ``Introduction to the mathematical
 description of grinding as a rate process'', \emph{Powder Technology}

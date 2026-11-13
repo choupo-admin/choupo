@@ -112,7 +112,7 @@ void DynamicTank::initialise(const DictPtr&        unitDict,
         const scalar h0 = initDict->lookupScalar("level");
         sVector unit(N, 0.0);
         for (std::size_t i = 0; i < N; ++i) unit[i] = x[i];
-        const auto ls = VVH::liquidState(thermo, unit, T_, P_, who);
+        const auto ls = VVH::liquidState(thermo, unit, T_, P_, who, "dynamicTank", name_);
         const scalar mass = h0 * geom_.area() * ls.density;       // kg
         const scalar nTot = mass / ls.meanMW;                     // kmol
         for (std::size_t i = 0; i < N; ++i) n_[i] = nTot * x[i];
@@ -153,7 +153,7 @@ void DynamicTank::initialise(const DictPtr&        unitDict,
     }
 
     // ---- A restart's declared V must agree with the inventory ------------
-    const auto ls0 = VVH::liquidState(thermo, n_, T_, P_, who);
+    const auto ls0 = VVH::liquidState(thermo, n_, T_, P_, who, "dynamicTank", name_);
     if (initDict->found("V"))
     {
         const scalar Vd = initDict->lookupScalar("V");
@@ -196,7 +196,8 @@ void DynamicTank::announceSteadyLevel_() const
     //  At steady state the tank holds the feed (composition, and T = T_in
     //  with no jacket), so the density is the feed's at T_in.
     const auto lf = VVH::liquidState(*thermo_, nDotIn_, T_in_, P_,
-                                     "dynamicTank '" + name_ + "'");
+                                     "dynamicTank '" + name_ + "'",
+                                     "dynamicTank", name_);
     const scalar Q  = F_in_ * lf.meanMW / lf.density;             // m3/s
     const scalar hs = VVH::valveSteadyLevel(valve_, opening_, Q, lf.density, P_);
     std::cout << "  [dynamicTank] '" << name_ << "': closed-form steady level"
@@ -213,7 +214,7 @@ DynamicTank::Resolved DynamicTank::resolve_(const sVector& n, scalar H,
     const std::string who = "dynamicTank '" + name_ + "'";
     Resolved r;
     r.T = VVH::temperatureFromEnthalpy(*thermo_, n, H, T_);
-    r.liquid = VVH::liquidState(*thermo_, n, r.T, P_, who);
+    r.liquid = VVH::liquidState(*thermo_, n, r.T, P_, who, "dynamicTank", name_);
     r.liquid.level = VVH::level(geom_, r.liquid.volume);
     if (outflow_ == Outflow::flow)
         r.F_out = F_out_set_;

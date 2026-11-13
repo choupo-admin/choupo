@@ -24,6 +24,6 @@ stream  out                    T                299.077152318    1e-4
 boundary global                 H_feeds_kW       -2864.01591733   1e-4
 boundary global                 Q_boundary_kW    2                1e-4
 boundary global                 H_products_kW    -2863.31591733   1e-4
-boundary global                 residual_kW      1.3              1e-4
+boundary global                 residual_kW      1.3              abs:2e-05
 boundary global                 W_shaft_kW       2                1e-4
 source  pump01                 liquidDensity    bypass.recordVliq25C exact

@@ -1,0 +1,6 @@
+# recording_platform.txt -- the platform the goldens of this tree were RECORDED on (C384).
+# ONE declaration.  A golden is compared STRICTLY (the band written in the file) when the
+# running platform equals this one (or the golden's own `# platform` line); otherwise it is
+# compared through bin/curate/golden_bands.tsv in a temporary file.  The line below is
+# what `bin/curate/golden_bands.py fingerprint` prints on the recording machine.
+cpu=13th Gen Intel(R) Core(TM) i7-13620H; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma

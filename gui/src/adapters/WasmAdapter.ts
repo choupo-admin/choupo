@@ -1243,6 +1243,9 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
     //  The sensitivity (C68): the engine writes the key only when the case
     //  declared the block, so its ABSENCE stays absence -- no empty tornado.
     ...(e.sensitivity ? { sensitivity: shapeSensitivity(e.sensitivity) } : {}),
+    //  The price break-evens: kept only when the engine wrote them, rows
+    //  without a finite number dropped rather than drawn at zero.
+    ...(shapeBreakEvenPrices(e.breakEvenPrices)),
     //  The annual basis (C264): kept only when the engine wrote it.
     ...(typeof e.operatingHours === "number" && Number.isFinite(e.operatingHours)
       ? { operatingHours: e.operatingHours,
@@ -1251,6 +1254,23 @@ function shapeEconomics(e: NonNullable<ResultPayload["economics"]>): Economics {
             ? { utilityBill: e.utilityBill } : {}) }
       : {}),
   };
+}
+
+//  The price break-evens, in the engine's order; {} when it wrote none or
+//  none with a finite number (a row is dropped rather than drawn at zero).
+function shapeBreakEvenPrices(
+  b: NonNullable<ResultPayload["economics"]>["breakEvenPrices"],
+): { breakEvenPrices?: NonNullable<Economics["breakEvenPrices"]> } {
+  const rows: NonNullable<Economics["breakEvenPrices"]> = [];
+  for (const r of Array.isArray(b) ? b : [])
+    if (typeof r.stream === "string" && typeof r.breakEven === "number"
+        && Number.isFinite(r.breakEven))
+      rows.push({
+        stream: r.stream, role: typeof r.role === "string" ? r.role : "",
+        declared: typeof r.declared === "number" ? r.declared : NaN,
+        breakEven: r.breakEven,
+      });
+  return rows.length ? { breakEvenPrices: rows } : {};
 }
 
 //  The sensitivity rows in the order the engine published them (tornado
@@ -1506,6 +1526,8 @@ interface ResultPayload {
       depreciation: number; taxableIncome: number; tax: number; afterTaxProfit: number;
       cashFlow: number; discountFactor: number; discountedCF: number;
       cumulativeDCF: number }[];
+    breakEvenPrices?: { stream?: string; role?: string; declared?: number;
+      breakEven?: number }[];
     sensitivity?: {
       caveat?: string;
       inputs?: { input?: string; kpiKey?: string; mode?: string; fromBand?: boolean;

@@ -39,7 +39,7 @@ export const EM_CITATIONS: readonly { file: string; line: number; contains: stri
   { file: "src/thermo/electrolyte/PitzerForm.H", line: 105, contains: "bDH       = 1.2" },
   { file: "src/thermo/electrolyte/AqueousActivity.cpp", line: 164, contains: "0.51 * SolventProperties::debyeHuckelFactor(T)" },
   { file: "src/thermo/electrolyte/AqueousActivity.cpp", line: 175, contains: "-A * z * z * (s / (1.0 + s) - 0.3 * I)" },
-  { file: "src/thermo/electrolyte/SpeciationSolver.cpp", line: 1570, contains: "phi = 1" },
+  { file: "src/thermo/electrolyte/SpeciationSolver.cpp", line: 1599, contains: "phi = 1" },
   { file: "src/thermo/electrolyte/PitzerForm.H", line: 124, contains: "(2.0 / bDH) * std::log(1.0 + bDH * sI)" },
   { file: "src/thermo/electrolyte/PitzerForm.H", line: 283, contains: "inline double bGammaSingleSalt(double alpha, double beta, double I)" },
   { file: "src/thermo/electrolyte/PitzerSingleSalt.H", line: 214, contains: "Cg = 1.5 * CphiT(T)" },

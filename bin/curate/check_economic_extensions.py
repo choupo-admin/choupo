@@ -31,6 +31,16 @@ and the published cash flow, never from the engine's source.
   (c) THE NPV BREAK-EVEN is a root of the real pipeline: a TWIN run with the
       stream factor scaled by the published fraction has |NPV| < 1 EUR, and
       the twins at +-0.5 % of it have opposite signs.  It differs from (b).
+  (c2) THE PRICE BREAK-EVEN (2026-11-13), `breakEven { price ( <stream> ... ); }`:
+      for a product and for a raw material, a TWIN run with that stream's
+      price in constant/economics set to the published `breakEven_price_<stream>`
+      has |NPV| < 1 EUR and the twins at +-0.5 % of it have the right signs
+      (up is better for a product, worse for a raw material); the twin's
+      revenue column in cashFlow.csv equals the base revenue x (price found /
+      declared price) year by year -- recomputed from the published cash flow,
+      never from the engine's source.  The refusals fire by name: a stream the
+      appraisal neither sells nor buys, a stream named twice, a key the block
+      does not read.
   (d) THE ROYALTY.  cashFlow.csv carries a royalty column equal to
       rate x revenue in operating years 1..expiry and ZERO after, the taxable
       income of every year is revenue - operatingCost - royalty -
@@ -61,6 +71,18 @@ and the published cash flow, never from the engine's source.
       `taxCreditOnLoss_NPV`, and the stand-alone reading is announced.  Any
       other word refuses by name; the witness itself (no loss year) publishes
       no loss KPI.
+
+  (j) THE OPERATORS' COVER (2026-11-13, review row PH-01): a declared crew is
+      multiplied by 4.5 positions per operator-per-shift unless the case
+      declares `operatorCover { positionsPerShift <n>; source; reason; }`.
+      On the witness with a crew added: the default prices 4.5 x the crew
+      and publishes no cover KPI; the declared cover of 2.0 prices 2.0 x the
+      crew, publishes `operatorCover_positionsPerShift`, and C_OL is lower in
+      exactly the ratio 2.0 / 4.5; a cover below 1, a cover with no source
+      and an unknown key refuse by name.  On a batch plant whose trains run
+      3840 h (donepezil01_tablets) the default is ANNOUNCED once, class
+      `assumed`, naming the 4.5 and the hours, and declaring the cover
+      silences it and scales C_OL the same way.
 
 NOT CHECKED, said plainly: that the classification of the cost into fixed and
 variable is the right one (it is a modelling choice, printed); that a price per
@@ -145,6 +167,16 @@ def prepare(work, name, edit=None, layout_edit=None, econ_edit=None):
 
 def run(d):
     p = subprocess.run([str(BIN), str(d)], capture_output=True, text=True, cwd=str(ROOT), timeout=900)
+    out = p.stdout + p.stderr
+    (d.parent / (d.name + ".out")).write_text(out + f"\n__rc={p.returncode}\n")
+    return out, p.returncode
+
+
+def _run_batch(d):
+    """Run a case with the binary its controlDict names (choupoBatch for the batch plants)."""
+    app = re.search(r"application\s+(\w+);", (d / "system/controlDict").read_text())
+    exe = ROOT / (app.group(1) if app else "choupoSolve")
+    p = subprocess.run([str(exe), str(d)], capture_output=True, text=True, cwd=str(ROOT), timeout=1800)
     out = p.stdout + p.stderr
     (d.parent / (d.name + ".out")).write_text(out + f"\n__rc={p.returncode}\n")
     return out, p.returncode
@@ -291,6 +323,64 @@ def main():
     if close(s, K["breakEven_operating_fraction"], tol=1e-3, rel=0):
         fail("(c) the NPV and the operating break-even coincide, which they cannot (capital charge, tax, WC)")
 
+    # (c2) the price break-even ---------------------------------------------------
+    p_star = K.get("breakEven_price_powder")
+    if p_star is None or not (p_star > 0.0):
+        fail(f"(c2) breakEven_price_powder not published or not positive: {p_star}")
+    else:
+        p_decl = 20.0
+
+        def with_price(pat, new_price):
+            return lambda t: re.sub(pat, lambda m: m.group(1) + f"{new_price:.12f};", t, count=1)
+        prod_pat = r"(price\s+)20\.0;"
+
+        def npv_price(name, new_price):
+            d = prepare(work, name, econ_edit=with_price(prod_pat, new_price)) if not reuse else work / name
+            o, r = go(d)
+            return kpis(o).get("NPV", float("nan")), d
+        n0, d0 = npv_price("priceRoot", p_star)
+        nlo, _ = npv_price("priceLo", p_star * 0.995)
+        nhi, _ = npv_price("priceHi", p_star * 1.005)
+        if not abs(n0) < 1.0:
+            fail(f"(c2) NPV with the product at the published break-even price {p_star} is {n0}, not 0")
+        if not (nlo < 0.0 < nhi):
+            fail(f"(c2) NPV is not a sign change (up = better) across the product's break-even price: {nlo} .. {nhi}")
+        cf0, _, _ = cashflow(d0)
+        for rb, rt in zip(cf, cf0):
+            if not close(rt["revenue_EUR"], rb["revenue_EUR"] * p_star / p_decl, tol=2.0):
+                fail(f"(c2) year {int(rb['year'])}: revenue at the break-even price {rt['revenue_EUR']} vs base x ratio {rb['revenue_EUR'] * p_star / p_decl}")
+        # a raw material, on a twin that declares it too
+        two = prepare(work, "priceTwo", lambda t: t.replace("price ( powder );", "price ( powder feed );")) if not reuse else work / "priceTwo"
+        o2p, r2p = go(two)
+        K2p = kpis(o2p)
+        f_star = K2p.get("breakEven_price_feed")
+        if r2p != 0 or f_star is None or not close(K2p.get("breakEven_price_powder", float("nan")), p_star, tol=1e-6):
+            fail(f"(c2) the twin naming powder and feed did not run clean or moved the powder's price (rc {r2p})")
+        else:
+            def feed_edit(price):
+                return lambda t: re.sub(r"(price\s+)1\.50;", lambda m: m.group(1) + f"{price:.12f};", t, count=1)
+            res = []
+            for nm, f_ in (("feedRoot", f_star), ("feedLo", f_star * 0.995), ("feedHi", f_star * 1.005)):
+                d = prepare(work, nm, econ_edit=feed_edit(f_)) if not reuse else work / nm
+                o, r = go(d)
+                res.append(kpis(o).get("NPV", float("nan")))
+            if not abs(res[0]) < 1.0:
+                fail(f"(c2) NPV with the feed at its break-even price {f_star} is {res[0]}, not 0")
+            if not (res[1] > 0.0 > res[2]):
+                fail(f"(c2) NPV is not a sign change (up = worse) across the feed's break-even price: {res[1]} .. {res[2]}")
+            if "(3) PRICE of powder" not in o2p or "minimum selling price" not in o2p or "highest purchase price" not in o2p:
+                fail("(c2) the printed block does not carry the (3) PRICE line in words for both roles")
+        for nm, pe, needle in (
+                ("priceUnknown", lambda t: t.replace("price ( powder );", "price ( noSuchStream );"), "neither sells nor buys"),
+                ("priceTwice", lambda t: t.replace("price ( powder );", "price ( powder powder );"), "named twice"),
+                ("priceBadKey", lambda t: t.replace("price ( powder );", "price ( powder );\n        threshold 1;"), "only key of the block")):
+            d = prepare(work, nm, pe) if not reuse else work / nm
+            o, r = go(d)
+            if r == 0:
+                fail(f"(c2) {nm}: expected a refusal, the run exited 0")
+            elif needle not in o:
+                fail(f"(c2) {nm}: refused but the message does not name `{needle}`")
+
     # (d) the royalty ---------------------------------------------------------
     if "royalty_EUR" not in header:
         fail("(d) cashFlow.csv carries no royalty column")
@@ -349,7 +439,7 @@ def main():
         "royaltyFractionalExpiry": (lambda p: p.replace("expiry      6;", "expiry 6.5;"), None, "whole operating year"),
         "royaltyBadBasis": (lambda p: p.replace("basis       sales;", "basis profit;"), None, "royalty basis"),
         "wcmNoFraction": (lambda p: re.sub(r"\n\s*fractionOf\w+\s+[0-9.]+;", "", p), None, "declares no fraction"),
-        "sensNoRoyalty": (lambda p: drop_block(p, "royalty").replace("breakEven {}", "breakEven {}\n    sensitivity { royalty.rate { relative ( -0.2 0.2 ); } }"), None, "royalty.rate"),
+        "sensNoRoyalty": (lambda p: drop_block(p, "royalty").replace("    breakEven\n", "    sensitivity { royalty.rate { relative ( -0.2 0.2 ); } }\n    breakEven\n"), None, "royalty.rate"),
     }
     for name, (pe, le, needle) in refusals.items():
         d = prepare(work, name, pe, None if le == "UNLINK" else le) if not reuse else work / name
@@ -450,6 +540,69 @@ def main():
         if rb == 0 or "taxOnLoss" not in ob:
             fail("(i) `taxOnLoss carryForward;` did not refuse by name")
 
+    # (j) the operators' cover ---------------------------------------------------
+    crew = ('    operatingCrew\n    {\n        areas ( { area "plant"; operatorsPerShift 2; } );\n'
+            '        source "gate twin"; reason "gate twin";\n    }\n')
+    cover = '    operatorCover { positionsPerShift 2.0; source "gate twin"; reason "gate twin"; }\n'
+
+    def with_blocks(*blocks):
+        return lambda t: t.replace("    refuseOnMissingPrice 1;\n", "    refuseOnMissingPrice 1;\n" + "".join(blocks), 1)
+    cdef = prepare(work, "coverDefault", with_blocks(crew)) if not reuse else work / "coverDefault"
+    odef, rdef = go(cdef)
+    Kdef = kpis(odef)
+    cdec = prepare(work, "coverDeclared", with_blocks(crew, cover)) if not reuse else work / "coverDeclared"
+    odec, rdec = go(cdec)
+    Kdec = kpis(odec)
+    if rdef != 0 or rdec != 0 or "operatingPositions" not in Kdef or "operatingPositions" not in Kdec:
+        fail(f"(j) the crew twins did not run clean (rc {rdef}, {rdec})")
+    else:
+        if not close(Kdef["operatingPositions"], 9.0, tol=1e-9) or "operatorCover_positionsPerShift" in Kdef:
+            fail(f"(j) default cover: positions {Kdef['operatingPositions']} (expected 4.5 x 2 = 9) or a cover KPI published")
+        if not close(Kdec["operatingPositions"], 4.0, tol=1e-9) or Kdec.get("operatorCover_positionsPerShift") != 2.0:
+            fail(f"(j) declared cover 2.0: positions {Kdec['operatingPositions']} (expected 4) / KPI {Kdec.get('operatorCover_positionsPerShift')}")
+        if not close(Kdec["C_OL"] * 4.5, Kdef["C_OL"] * 2.0, tol=1.0):
+            fail(f"(j) C_OL {Kdec['C_OL']} vs default {Kdef['C_OL']} is not in the ratio 2.0 / 4.5")
+        if "[assumed] economics: the declared operating crew" in odef:
+            fail("(j) the announcement fired with no batch plan (no calendar is declared)")
+    for nm, blocks, needle in (
+            ("coverBelowOne", (crew, cover.replace("2.0", "0.5")), "at least one person"),
+            ("coverNoSource", (crew, cover.replace('source "gate twin"; ', "")), "`source"),
+            ("coverUnknownKey", (crew, cover.replace("positionsPerShift 2.0;", "positionsPerShift 2.0; hours 5;")), "unknown key")):
+        d = prepare(work, nm, with_blocks(*blocks)) if not reuse else work / nm
+        o, r = go(d)
+        if r == 0:
+            fail(f"(j) {nm}: expected a refusal, the run exited 0")
+        elif needle not in o:
+            fail(f"(j) {nm}: refused but the message does not name `{needle}`")
+    # the announcement, on a batch plant whose trains run 3840 h
+    don = ROOT / "tutorials/batch/plant/donepezil01_tablets"
+    if don.exists():
+        def don_case(name, edit):
+            d = work / name
+            if d.exists():
+                shutil.rmtree(d)
+            shutil.copytree(don, d, ignore=shutil.ignore_patterns("reports", "converged", "design", "iterations"))
+            if edit:
+                pp = d / "system/postDict"
+                pp.write_text(edit(pp.read_text()))
+            return d
+        dd = don_case("donBase", None) if not reuse else work / "donBase"
+        # donepezil01 is a choupoBatch case: the runner is the case's own binary
+        odd, rdd = _run_batch(dd) if not reuse else stored(dd)
+        Kdd = kpis(odd)
+        msgs = [l for l in odd.splitlines() if "[assumed] economics: the declared operating crew" in l]
+        if rdd != 0 or len(msgs) != 1 or "4.5 positions" not in msgs[0] or "3840 h/yr" not in msgs[0]:
+            fail(f"(j) donepezil01: expected ONE `assumed` line naming 4.5 and 3840 h/yr (rc {rdd}, {len(msgs)} line(s): {msgs[:1]})")
+        elif "operatorCover" not in msgs[0]:
+            fail("(j) donepezil01: the announcement does not name the remedy `operatorCover`")
+        dc = don_case("donCover", lambda t: t.replace("    operatingCrew\n", cover + "    operatingCrew\n", 1)) if not reuse else work / "donCover"
+        odc, rdc = (_run_batch(dc) if not reuse else stored(dc))
+        Kdc = kpis(odc)
+        if rdc != 0 or "[assumed] economics: the declared operating crew" in odc:
+            fail(f"(j) donepezil01 with the cover declared: rc {rdc} or the announcement still fires")
+        elif "C_OL" in Kdd and "C_OL" in Kdc and not close(Kdc["C_OL"] * 4.5, Kdd["C_OL"] * 2.0, tol=1.0):
+            fail(f"(j) donepezil01: C_OL {Kdc['C_OL']} vs {Kdd['C_OL']} is not in the ratio 2.0 / 4.5")
+
     if a.keep is None and not a.reuse:
         shutil.rmtree(work, ignore_errors=True)
     if fails:
@@ -458,10 +611,10 @@ def main():
             print("  - " + f)
         return 1
     print("check_economic_extensions: OK -- the building (area x grade price, FCI +1.18 C_BM), both break-evens "
-          "(operating recomputed, NPV a root of the real pipeline), the royalty window (years 1.." + str(expiry) +
+          "(operating recomputed, NPV a root of the real pipeline), the price break-even (twin NPV zero for a product and a raw material, revenue recomputed from the cash flow, 3 refusals), the royalty window (years 1.." + str(expiry) +
           ", both bases), the three working capitals, 8 refusals, absence silent, all pinned; tax on a loss: "
           "the credit reading announced and summed, `taxOnLoss none` zero in every loss year and the NPV lower by "
-          "exactly the discounted credit, a bad word refused.  NOT CHECKED: the fixed/variable classification, "
+          "exactly the discounted credit, a bad word refused; the operators' cover: the default 4.5 and a declared 2.0 price the crew in exactly that ratio, 3 refusals, the default announced once on a 3840 h batch plan and silenced by the declaration.  NOT CHECKED: the fixed/variable classification, "
           "any price's realism")
     return 0
 

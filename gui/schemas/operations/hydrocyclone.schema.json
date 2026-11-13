@@ -41,7 +41,7 @@
           "type": "number",
           "exclusiveMinimum": 0,
           "title": "Cut size (rosinRammler)",
-          "description": "c(d50) = 0.49997 (King's constant 0.693 is kept as printed).",
+          "description": "c(d50) = 0.49993 (King's constant 0.693 is kept as printed).",
           "unit": "m"
         },
         "m": {

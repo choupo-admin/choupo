@@ -80,16 +80,22 @@ batch plan, sizing, clean utilities, costing and economics on top
   and rejects).
 * Checks: `kind:tabletPress` holds the press's tablets per hour (stations x
   turret speed x compressions per revolution) against the lot, the tablet
-  mass and the stage time of the batch plan.
+  mass and the stage time of the batch plan; optionally (DEV.md 4c C270) on
+  the formulation's minimum DWELL TIME (`key:dwell`: the speed capped at
+  L/(pi D t_min), the lower capacity used), a declared OEE
+  (`key:effectiveness`), and the COMPACTION PRESSURE and punch force a
+  target tensile strength needs, from fitted Heckel and Ryshkewitch-Duckworth
+  constants (`key:compaction`, one material).  Witness
+  `tutorials/batch/plant/tabletPress01_dwell_and_force`.
 * Computes (on ONE material, outside the plant): `op:compactionFit` fits the
   Heckel, Kawakita and Ryshkewitch-Duckworth models to compaction data you
   supply, on the linear region you declare, with standard errors.  Witnesses
   `tutorials/props/powder/compaction01_mcc` and
   `tutorials/props/powder/compaction02_dcpd_brittle`.
-* Missing: a physical press unit in the flowsheet that turns compression
-  force, die and fill mass into relative density, porosity, tensile strength
-  or hardness of the tablet; any mixing rule for the compaction parameters of
-  a blend.
+* Missing: a physical press unit in the FLOWSHEET (the press there is a
+  mass split; the sizer's compaction check inverts declared fitted curves and
+  predicts no hardness beyond them); any mixing rule for the compaction
+  parameters of a blend; any prediction of the minimum dwell a powder needs.
 * Witness (press as a machine): `tutorials/batch/plant/donepezil01_tablets`.
 
 ### Granulation (wet granulation, high-shear granulator, roller compaction, dry granulation)
@@ -251,7 +257,8 @@ batch plan, sizing, clean utilities, costing and economics on top
 ### Labour (operators per shift, crew)
 * Computes: Turton's operators per shift with its particulate-step term
   (`key:particulateSteps`), or a crew you declare by area
-  (`key:operatingCrew`), priced by your wage.
+  (`key:operatingCrew`), priced by your wage, with the shift cover (default
+  4.5, round the clock) a declared judgement (`key:operatorCover`).
 * Missing: labour scheduled from the batch plan.
 * Witness: `tutorials/batch/plant/donepezil01_tablets`.
 
@@ -262,7 +269,8 @@ batch plan, sizing, clean utilities, costing and economics on top
   `key:land`, `key:financing`, start-up years.
 * Also computes, each opt-in and declared with its source: a building cost
   from the GMP interior's room areas priced by grade (`key:buildings`), the
-  operating and the NPV break-even capacity (`key:breakEven`), a royalty
+  operating and the NPV break-even capacity and, per priced stream, the
+  price at which NPV = 0 (`key:breakEven`), a royalty
   inside a declared patent window (`key:royalty`) and the working capital by
   three methods side by side (`key:workingCapitalMethods`).  Not computed:
   depreciation by asset class (straight line only).

@@ -29,6 +29,7 @@ License
 
 #include "unitOperations/dynamic/QuasiSteadyUnit.H"
 #include "core/PropertySourceLog.H"
+#include "unitOperations/PropertySourceDeclarations.H"
 #include "unitOperations/flowsheet/UnitInputs.H"
 #include "streams/Composition.H"
 
@@ -149,6 +150,11 @@ void QuasiSteadyUnit::setInletStreamAt(std::size_t port, const ContinuousStream&
             + std::to_string(port) + " does not exist ("
             + std::to_string(inlets_.size()) + " declared)");
     inlets_[port] = s;
+}
+
+void QuasiSteadyUnit::declarePropertySources() const
+{
+    if (steady_) propertySourceDeclarations::declareFor(steady_->type(), name_);
 }
 
 void QuasiSteadyUnit::refresh()

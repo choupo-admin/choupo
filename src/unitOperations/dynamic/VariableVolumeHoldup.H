@@ -98,9 +98,15 @@ struct LiquidState
 //- Resolve volume, density and mean MW of the holdup n at (T, P).  Negative
 //  mole numbers count as zero (a trial state of an RK stage).  An empty
 //  holdup returns volume 0 and density 0; a package that cannot price the
-//  liquid density throws, naming `who`.
+//  liquid density throws, naming `who`.  The density is priced through the
+//  property door as the consumer `consumerType` named `consumerUnit` (the
+//  vessel's real type and the case's unit name -- never the message `who`),
+//  so the liquid-properties table can name it and match its declaration
+//  (review DX-05).
 LiquidState liquidState(const ThermoPackage& thermo, const sVector& n,
-                        scalar T, scalar P_Pa, const std::string& who);
+                        scalar T, scalar P_Pa, const std::string& who,
+                        const std::string& consumerType,
+                        const std::string& consumerUnit);
 
 //- Level from volume.
 scalar level(const VerticalCylinder& g, scalar volume);

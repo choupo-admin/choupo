@@ -93,6 +93,7 @@ const std::map<std::string, UnitSpec>& table()
         { "min",     UnitSpec{ min_to_s,    Dims::time } },
         { "h",       UnitSpec{ h_to_s,      Dims::time } },
         { "hr",      UnitSpec{ h_to_s,      Dims::time } },
+        { "ms",      UnitSpec{ 1.0e-3,      Dims::time } },   // millisecond (a tablet press's dwell time, DEV.md 4c C270)
 
         // ----- inverse time -> 1/s -------------------------------------
         //  A rate of events (tablets per hour, revolutions per minute),
@@ -114,6 +115,13 @@ const std::map<std::string, UnitSpec>& table()
         { "in",      UnitSpec{ inch_to_m,   Dims::length } },
         { "inch",    UnitSpec{ inch_to_m,   Dims::length } },
         { "ft",      UnitSpec{ ft_to_m,     Dims::length } },
+
+        // ----- force → N (DEV.md 4c C270: the force on a press punch) ----
+        { "N",       UnitSpec{ 1.0,         Dims::force } },
+        { "kN",      UnitSpec{ 1.0e3,       Dims::force } },
+
+        // ----- inverse pressure → 1/Pa (the Heckel slope K, DEV.md 4c C270)
+        { "1/MPa",   UnitSpec{ 1.0e-6,      Dimensions{ -1, 1, 2, 0, 0 } } },
 
         // ----- area → m² ------------------------------------------------
         { "m2",      UnitSpec{ 1.0,         Dims::area } },

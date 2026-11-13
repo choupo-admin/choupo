@@ -979,6 +979,25 @@ def check_gui_fixture(problems, notes):
     copy here for the two to drift between.  None of the five fixtures
     below carries either block's reader."""
     norm = lambda s: " ".join(s.split())
+
+    def line_in_chunk(w, c):
+        """A sheet line is in the fixture when the text matches and every NUMBER
+        in it agrees to 1e-4 relative.  The sheet prints a recycle-converged
+        flow to nine places and the last two are a platform's: the CI runner
+        wrote `F 0.073972944` where the fixture carries another value (C384).
+        A drift of a unit, a name or the fourth significant figure still fails."""
+        if w in c:
+            return True
+        num = r"-?\d+\.?\d*(?:[eE][-+]?\d+)?"
+        parts = re.split("(" + num + ")", w)
+        rx = "".join("(" + num + ")" if i % 2 else re.escape(p) for i, p in enumerate(parts))
+        wn = [float(x) for x in parts[1::2]]
+        for m in re.finditer(rx, c):
+            got = [float(x) for x in m.groups()]
+            if all(abs(a - b) <= 1e-4 * max(abs(a), abs(b), 1e-300) + 1e-12 for a, b in zip(got, wn)):
+                return True
+        return False
+
     #  EACH FIXTURE IS ITS OWN TEMPLATE LITERAL, and the wanted lines must all
     #  land in ONE of them (2026-09-07).  This arm used to search the WHOLE
     #  test file for each line, which was exact while a file held one fixture
@@ -1030,7 +1049,7 @@ def check_gui_fixture(problems, notes):
         #  from an unrelated one.
         best, missing = None, want
         for c in chunks:
-            gap = [w for w in want if w not in c]
+            gap = [w for w in want if not line_in_chunk(w, c)]
             if best is None or len(gap) < len(missing):
                 best, missing = c, gap
         if missing:

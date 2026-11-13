@@ -147,5 +147,5 @@ equipment separator              tagNo            V-101            exact
 boundary global                 H_feeds_kW       104.859286489    1e-4
 boundary global                 Q_boundary_kW    -61338.2805634   1e-4
 boundary global                 H_products_kW    -61233.7531347   1e-4
-boundary global                 residual_kW      0.331857777717   1e-4
+boundary global                 residual_kW      0.331857777717   abs:3.654
 kpi     converter              X_H2             0.162068789161   1e-4

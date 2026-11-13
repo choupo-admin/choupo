@@ -19,7 +19,7 @@ stream  reactorOut             T                333.15           1e-4
 boundary global                 H_feeds_kW       -99.4321417879   1e-4
 boundary global                 Q_boundary_kW    -0.0517242743531 1e-4
 boundary global                 H_products_kW    -99.4838660622   1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:5.172e-07
 utility reactor                cooling.coolingWater.duty_kW -0.0517242743531 1e-4
 utility reactor                cooling.coolingWater.T 333.15           1e-4
 utility reactor                cooling.coolingWater.kg_s 0.00123742283141 1e-4

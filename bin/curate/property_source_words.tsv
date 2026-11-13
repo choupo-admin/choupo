@@ -1,0 +1,27 @@
+# kind	key	id	words -- check_property_source_witnesses arms (a) and (d) (C378, re-review DX-03);
+# `tag` rows: every liquidSource tag's id and words; `inlineLiteral` rows: string-literal ids built at a site, per file.
+# Re-pin with --write, in the commit that changes them, and say why.
+tag	analysisDensity	derived.laboratoryAnalysis	derived from the laboratory analysis the case authorises: water's density at the sample temperature (Kell) plus the dissolved solids
+tag	batchDiafilterRhoDefault	default.rho1000.announced	a constant of the unit, 1000 kg/m3, used because the case declares no solution density (rho); announced
+tag	benchmarkConstantDensity	constant.benchmark.WilliamsOtto	a constant of the published benchmark the unit reproduces: 50 lb/ft3 (800.9 kg/m3), equal for every species
+tag	declaredByCase	declared.case	the value the case declares for this unit
+tag	diluteCarrierDensity	constant.diluteCarrier	a constant of the unit, 1000 kg/m3: the dilute-carrier density the whole unit is built on
+tag	dropletDensityFallback	fallback.1000	a constant of the unit, 1000 kg/m3, used because a solvent has no 25 C molar volume
+tag	kernelLiquidDiffusivity	kernel.liquidDiffusivity	property kernel: the case's liquid-diffusivity model (solute at infinite dilution in the medium)
+tag	ownWilkeChang	own.WilkeChang.mixtureViscosity	computed by the unit itself, not by the property kernel: its own Wilke-Chang, both ways at infinite dilution in the mixture viscosity, combined linearly in mole fraction
+tag	pumpHeadDensityFallback	fallback.1000	a constant of the unit, 1000 kg/m3, used for the head because no component has a liquid volume
+tag	recordVliqFlat	bypass.recordVliq25C	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect
+tag	recordVliqIonsMassKept	bypass.recordVliq25C.ionsNoVolume	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a dissolved ion keeps its mass and adds no volume
+tag	recordVliqSilentZero	bypass.recordVliq25C.missingIsZero	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a component without one adds no volume
+tag	rhoFeedDefault	default.rhoFeed1000	a constant of the unit, 1000 kg/m3, used because the case declares no feed density (rho_feed)
+tag	soluteDiffusivityLegacy	default.legacy1.6e-9	a constant of the unit, 1.6e-9 m2/s (an approximate value for NaCl in water), used because the case declares no diffusivity and no model
+tag	solventVliqFlat	bypass.solventVliq25C	computed by the unit itself, not by the property kernel: the solvent's 25 C molar volume alone (the dissolved solids are not counted), with no temperature or pressure effect
+tag	solventsVliqIdealMix	bypass.solventsVliq25C.idealMix	computed by the unit itself, not by the property kernel: the solvents' 25 C molar volumes mixed ideally (the dissolved solids are not counted), with no temperature or pressure effect
+tag	speciesRecordD0	record.speciesD0.StokesEinstein	each ion's diffusivity from its species record, scaled to temperature by Stokes-Einstein
+tag	speciesRecordD0AtCuration	record.speciesD0.at25C	each ion's diffusivity from its species record, at the 25 C it is curated at (the unit runs at 25 C)
+tag	speciesRecordD0Uncorrected	record.speciesD0.uncorrected	each ion's diffusivity from its species record at 25 C, NOT corrected to the unit's temperature: the case declares no liquid-viscosity model
+tag	stokesEinsteinSolvent	kernel.solventViscosity.StokesEinstein	property kernel: the pure solvent's viscosity (the case's model), divided by the unit's 1000 kg/m3 carrier density
+tag	waterKinematicViscosity	constant.waterKinematic1e-6	a constant of the unit, 1e-6 m2/s: the kinematic viscosity of water near 20 C (no viscosity model is declared)
+tag	waterSurfaceTensionFallback	fallback.water0.072	a constant of the unit, 72 mN/m (water), used because the kernel could not give one
+tag	waterViscosityKnob	default.water1e-3	a constant of the unit, 1 mPa s (water near 20 C), used because the case declares no viscosity and no viscosity model
+inlineLiteral	src/unitOperations/membrane/SpiralWoundModule.cpp	1

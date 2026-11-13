@@ -26,7 +26,7 @@ what slices 1 and 2 built.
   (`SizeDistribution.cpp:203-247`): every stream's bins were its OWN.
 * Readers and writers of `psd`: `Cyclone.cpp:87-193`, `BagFilter.cpp:109-159`,
   `GasSolidSplitter.cpp:72-143` (table or inline law), `SprayDryer.cpp:1373`
-  (its own Rosin-Rammler bins), `PneumaticConveyor.cpp:135-290`,
+  (its own Rosin-Rammler bins), `PneumaticConveyor.cpp:139-385`,
   `Crystalliser.cpp:614` and `:936` (its own population-balance bins),
   `UnitInputs.cpp:74-84` and `:283-293` (the stream -> unit dict bridge),
   `StreamStateIO.cpp:553`, `:963` (write) and `:3259-3326` (read),
@@ -313,7 +313,7 @@ Windows: whiten -- monotone (the fish-hook beta form, eq. 25 p. 683, is NOT
 built); rosinRammler -- a monotone S-curve; tabulated -- the case's own grid,
 never interpolated to another.  Anchors (`verify()`), all IDENTITIES: whiten
 c(d50c) = 1/2 for any a (the definition of d50c, p. 683); rosinRammler
-c(d50) = 1 - e^-0.693 = 0.49997; tabulated -- nothing to compute, said so.
+c(d50) = 1 - e^-0.693 = 0.49993; tabulated -- nothing to compute, said so.
 The whiten identity holds for any curve through u = a at d = d50c, so it
 cannot see the shape (review SC-02, 2026-11-12: the shape was reshaped and
 nothing failed).  Since 2026-11-13 `classifier01_whiten_quartzSlurry` holds
@@ -330,17 +330,17 @@ King's units (h_T mm, A t/(h m2), W^F t/h, rho_B kg/m3):
 
 | quantity | as implemented | King | code |
 |---|---|---|---|
-| effective aperture | h_T = (h + d_w) cos(theta) - d_w | eq. 4.31 | `Screen.cpp:214` |
-| basic capacity | A = 12.13 h_T^0.32 - 10.3 (h_T < 51 mm); 0.34 h_T + 14.41 (>= 51) | 4.32-4.33 | `Screen.cpp:54` |
-| open area (optional `openArea`) | A <- A x 100 oa / OA, OA = 21.5 log10(h) + 37 | 4.34-4.35 | `Screen.cpp:229-236` |
-| oversize factor | B = 1.6 - 1.2 Pbar (Pbar <= 0.87); 4.275 - 4.25 Pbar; Pbar = 1 - P^F(h_T) | 4.36 | `Screen.cpp:59` |
-| half-size factor | C = 0.7 + 1.2x (x <= 0.3); 2.053 x^0.564 (<= 0.55); 3.35 x^1.37 (<= 0.8); 5x - 1.5; x = P^F(h_T/2) | 4.37 | `Screen.cpp:64` |
-| deck, wet, bulk density | D = 1.1 - 0.1 S; E from the table of p. 89 with T = 1.26 h_T (only `wetScreening yes`, else 1); F = rho_B/1600 | 4.38, p. 89, 4.39 | `Screen.cpp:73`, `:243-247` |
-| near-size factor | G_c = 0.975 (1 - P^F(1.25 h_T) + P^F(0.75 h_T))^0.511 | 4.40 | `Screen.cpp:248` |
-| loading | K = (W^F P^F(h_T)/area)/(A B C D E F) | 4.42 | `Screen.cpp:251` |
-| cut size | d50 = h_T G_c / K^0.148 | 4.43 | `Screen.cpp:255` |
+| effective aperture | h_T = (h + d_w) cos(theta) - d_w | eq. 4.31 | `Screen.cpp:215` |
+| basic capacity | A = 12.13 h_T^0.32 - 10.3 (h_T < 51 mm); 0.34 h_T + 14.41 (>= 51) | 4.32-4.33 | `Screen.cpp:55` |
+| open area (optional `openArea`) | A <- A x 100 oa / OA, OA = 21.5 log10(h) + 37 | 4.34-4.35 | `Screen.cpp:230-237` |
+| oversize factor | B = 1.6 - 1.2 Pbar (Pbar <= 0.87); 4.275 - 4.25 Pbar; Pbar = 1 - P^F(h_T) | 4.36 | `Screen.cpp:60` |
+| half-size factor | C = 0.7 + 1.2x (x <= 0.3); 2.053 x^0.564 (<= 0.55); 3.35 x^1.37 (<= 0.8); 5x - 1.5; x = P^F(h_T/2) | 4.37 | `Screen.cpp:65` |
+| deck, wet, bulk density | D = 1.1 - 0.1 S; E from the table of p. 89 with T = 1.26 h_T (only `wetScreening yes`, else 1); F = rho_B/1600 | 4.38, p. 89, 4.39 | `Screen.cpp:74`, `:244-248` |
+| near-size factor | G_c = 0.975 (1 - P^F(1.25 h_T) + P^F(0.75 h_T))^0.511 | 4.40 | `Screen.cpp:249` |
+| loading | K = (W^F P^F(h_T)/area)/(A B C D E F) | 4.42 | `Screen.cpp:252` |
+| cut size | d50 = h_T G_c / K^0.148 | 4.43 | `Screen.cpp:256` |
 | partition | rosinRammler with m = 5.9, no bypass | 4.41 | the curve object |
-| capacity, AUF, efficiency | Th = A B C D E F G_c area; AUF = undersize transmitted / Th; eff = transmitted / (W^F P^F(h)) | 4.30, 4.48, 4.46-4.47 | `Screen.cpp:265-267` |
+| capacity, AUF, efficiency | Th = A B C D E F G_c area; AUF = undersize transmitted / Th; eff = transmitted / (W^F P^F(h)) | 4.30, 4.48, 4.46-4.47 | `Screen.cpp:266-268` |
 
 P^F(x) is `fractionPassing` (`ClassifierCore.cpp:107`): the grid's own
 within-class assumption (uniform in ln x, uniform in x in the pan).  Window
@@ -349,7 +349,9 @@ A > 0 (h_T above about 0.6 mm, the correlation's own zero).  The relation
 signs of 4.36-4.37 and the theta of 4.31 do not survive text extraction; they
 were read from the rendered pages, and the branches meet within 0.03 at each
 boundary.  Anchor: an identity at a printed point, King p. 87 -- the factors
-are unity at the standard condition, B(0.5) C(0.25) = 1.
+are unity at the standard condition, B(0.5) C(0.25) = 1.  An overloaded deck
+(AUF > 1) is computed as declared and ANNOUNCED on the advisory log with the
+AUF, the transmitted undersize and the theoretical capacity.
 
 `screen`, model `declared`: a `partition {}` curve, a `bypass` (fines
 misplaced to the oversize) and an optional `aperture`, checked against the
@@ -522,28 +524,32 @@ paper.
 
 | quantity | as implemented | units | source | code |
 |---|---|---|---|---|
-| compressible cake | alpha = alpha_0 dp^s | m/kg, dp in Pa | G eq. 24.2-11, p. 1081 | `CakeFilter.cpp:184` |
-| liquor kept by the cake | L_r = (m - 1) W | kg/s | the definition of m, G eq. 24.2-10, p. 1080 | `:205` |
-| filtrate | Q_f = (m_l - L_r) / rho_l | m3/s | balance | `:219` |
-| solids per filtrate | c_S = W / Q_f, printed beside rho c_x / (1 - m c_x) | kg/m3 | G eq. 24.2-10 (the same by algebra) | `:220`, `:222` |
-| cake porosity (saturated) | eps = ((m-1)/rho_l) / ((m-1)/rho_l + 1/rho_s) | - | ours: the liquor fills the voids | `:225` |
-| drum flux, t_c declared | V/(A t_c) = [-R_m/t_c + (R_m^2/t_c^2 + 2 c_S alpha dp f/(mu t_c))^1/2] / (alpha c_S) | m/s | G eq. 24.2-26, p. 1089 (eq. 24.2-24 when R_m = 0) | `:272` |
-| drum, area declared | t_c = (f - mu R_m Q_f/(dp A)) 2 dp A^2 / (mu alpha c_S Q_f^2) | s | G eq. 24.2-25 solved for t_c | `:289` |
-| cake formation time | t = f t_c | s | G eq. 24.2-23, p. 1088 | `:291` |
-| constants | K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp) | s/m6, s/m3 | G eqs. 24.2-14, -15, p. 1082 | `:308-309` |
-| filtration time | t = K_p V^2/2 + B V | s | G eq. 24.2-17, p. 1082 | `:310` |
-| washing rate | (dV/dt)_f = k / (K_p V_f + B); k = 1 (`sameAsFiltrate`, and every drum), 1/4 (`throughWashing`) | m3/s | G eqs. 24.2-19, -20, pp. 1086-1087 | `:343` |
-| wash per cycle, wash time | V_w = Q_w V_f / Q_f; t_w = V_w / (dV/dt)_f | m3, s | cycle-averaged flows | `:344-345` |
-| press cycle, presses | t_c = t_f + t_w + t_clean (G p. 1087); n = Q_f t_c / V_f | s, - | G Example 24.2-3; n is ours | `:377-378` |
-| wash ratio | N = wash volume / volume of liquid in the cake | - | Perry 9th ed. p. 18-76 (the definition beside eq. 18-71) | `:359` |
-| solute remaining, `displacement` | R = max(0, 1 - N) | - | the definition of ideal displacement (no source claimed) | `:55` |
-| solute remaining, `tabulated` | ln R linear in N between the test's points; no extrapolation | - | Perry eq. 18-71, p. 18-76 ("log R vs. N", named, not parametrised) | `:70` |
-| washed cake liquor | n_cake,i = R n_r,i + beta n_w,i, beta = (1 - R) V_r / V_w (refused above 1) | kmol/s | ours: volume-for-volume replacement | `:361`, `:370` |
-| spent wash | the DIFFERENCE (n_r,i + n_w,i) - n_cake,i | kmol/s | balance | `:372` |
-| cake per area, thickness | W_A = c_S V / A; L = W_A / ((1 - eps) rho_s) | kg/m2, m | G eq. 24.2-4 with the filtrate held in the cake neglected, as G does | `:396-397` |
+| compressible cake | alpha = alpha_0 dp^s | m/kg, dp in Pa | G eq. 24.2-11, p. 1081 | `CakeFilter.cpp:221` |
+| liquor kept by the cake | L_r = (m - 1) W | kg/s | the definition of m, G eq. 24.2-10, p. 1080 | `:242` |
+| filtrate | Q_f = (m_l - L_r) / rho_l | m3/s | balance | `:256` |
+| solids per filtrate | c_S = W / Q_f, printed beside rho c_x / (1 - m c_x) | kg/m3 | G eq. 24.2-10 (the same by algebra) | `:257`, `:259` |
+| cake porosity (saturated) | eps = ((m-1)/rho_l) / ((m-1)/rho_l + 1/rho_s) | - | ours: the liquor fills the voids | `:262` |
+| drum flux, t_c declared | V/(A t_c) = [-R_m/t_c + (R_m^2/t_c^2 + 2 c_S alpha dp f/(mu t_c))^1/2] / (alpha c_S) | m/s | G eq. 24.2-26, p. 1089 (eq. 24.2-24 when R_m = 0) | `:309` |
+| drum, area declared | t_c = (f - mu R_m Q_f/(dp A)) 2 dp A^2 / (mu alpha c_S Q_f^2) | s | G eq. 24.2-25 solved for t_c | `:326` |
+| cake formation time | t = f t_c | s | G eq. 24.2-23, p. 1088 | `:328` |
+| constants | K_p = mu alpha c_S/(A^2 dp), B = mu R_m/(A dp) | s/m6, s/m3 | G eqs. 24.2-14, -15, p. 1082 | `:345-346` |
+| filtration time | t = K_p V^2/2 + B V | s | G eq. 24.2-17, p. 1082 | `:347` |
+| washing rate | (dV/dt)_f = k / (K_p V_f + B); k = 1 (`sameAsFiltrate`, and every drum), 1/4 (`throughWashing`) | m3/s | G eqs. 24.2-19, -20, pp. 1086-1087 | `:380` |
+| wash per cycle, wash time | V_w = Q_w V_f / Q_f; t_w = V_w / (dV/dt)_f | m3, s | cycle-averaged flows | `:381-382` |
+| press cycle, presses | t_c = t_f + t_w + t_clean (G p. 1087); n = Q_f t_c / V_f | s, - | G Example 24.2-3; n is ours | `:414-415` |
+| wash ratio | N = wash volume / volume of liquid in the cake | - | Perry 9th ed. p. 18-76 (the definition beside eq. 18-71) | `:396` |
+| solute remaining, `displacement` | R = max(0, 1 - N) | - | the definition of ideal displacement (no source claimed) | `:56` |
+| solute remaining, `tabulated` | ln R linear in N between the test's points; no extrapolation | - | Perry eq. 18-71, p. 18-76 ("log R vs. N", named, not parametrised) | `:71` |
+| washed cake liquor | n_cake,i = R n_r,i + beta n_w,i, beta = (1 - R) V_r / V_w (refused above 1) | kmol/s | ours: volume-for-volume replacement | `:398`, `:407` |
+| spent wash | the DIFFERENCE (n_r,i + n_w,i) - n_cake,i | kmol/s | balance | `:409` |
+| cake per area, thickness | W_A = c_S V / A; L = W_A / ((1 - eps) rho_s) | kg/m2, m | G eq. 24.2-4 with the filtrate held in the cake neglected, as G does | `:433-434` |
 
 Window: constant pressure; laminar flow through the cake (G p. 1077); the
-cake law is the case's measured alpha or (alpha_0, s).  Every solid is
+cake law is the case's measured alpha or (alpha_0, s).  A negative s is
+refused by name (alpha would fall as dp rises -- a cake that opens as it is
+squeezed); s above 1 runs and is ANNOUNCED on the advisory log, because then
+K_p grows as dp^(s-1) and, where the cake term dominates the medium's, a
+higher pressure drop gives less filtrate; 0 <= s <= 1 is silent.  Every solid is
 retained (stated, not computed).  The products leave at the feed's T and P
 (no work; the wash must arrive at the slurry's temperature).
 
@@ -599,21 +605,23 @@ H = H_0.  Lists are SI (s, m): a list does not carry a unit word.
 
 | quantity | as implemented | source | code |
 |---|---|---|---|
-| slope at a test time | v = -dH/dt of the parabola through that point and its two neighbours (the interior point nearest t) | ours (numerical; a student draws the tangent by eye) | `Thickener.cpp:49-67` |
-| Kynch's layer at (t, H) | H_i = H + v t; C = C_0 H_0 / H_i | Talmage & Fitch 1955 eqs. 4-6, pp. 38-39; Wills & Napier-Munn 2006 eq. 15.4, p. 387 | `:162-165` |
-| underflow line | H_u = C_0 H_0 / C_u | T&F step 1, p. 39 | `:144` |
-| curve crossing | t_x where the (linearly interpolated) test crosses H_u | T&F p. 39 | `:170-174` |
-| `talmageFitch` | tangent at the declared compression time t_c; if H_u < H(t_c): t_u = (H_i - H_u)/v; else t_u = t_x; A = W t_u / (C_0 H_0) | T&F eqs. 7-10 and steps 1-5, p. 39; Wills eq. 15.6, p. 387; Perry 9th ed. eq. 18-54, p. 18-64 | `:177-195`, `:216` |
-| `coeClevenger` | A = max over the test's layers with C < C_u of W (1/C - 1/C_u)/v | Coe & Clevenger 1916 as Wills eq. 15.5, p. 387 prints it, with (C, v) from Kynch's construction as Wills p. 387 says may be done | `:210` |
-| the identity | Coe-Clevenger at the compression layer = Talmage-Fitch's tangent area (algebra: H_i - H_u = v t_u) | Wills derives eq. 15.6 from 15.5, p. 387 | `:221-225` |
-| underflow liquid | (1 - C_u/rho_s) rho_l / C_u kg per kg of solids | definition of C_u | `:229` |
-| overflow | the DIFFERENCE, componentwise; every solid to the underflow (ideal) | balance | `:240` |
-| unit area | A/W in m2 per (t/d) | T&F eq. 10 (their units ft2/(ton/day)) | `:265` |
+| slope at a test time | v = -dH/dt of the parabola through that point and its two neighbours (the interior point nearest t) | ours (numerical; a student draws the tangent by eye) | `Thickener.cpp:51-69` |
+| Kynch's layer at (t, H) | H_i = H + v t; C = C_0 H_0 / H_i | Talmage & Fitch 1955 eqs. 4-6, pp. 38-39; Wills & Napier-Munn 2006 eq. 15.4, p. 387 | `:166-169` |
+| underflow line | H_u = C_0 H_0 / C_u | T&F step 1, p. 39 | `:147` |
+| curve crossing | t_x where the (linearly interpolated) test crosses H_u | T&F p. 39 | `:174-178` |
+| `talmageFitch` | tangent at the declared compression time t_c; if H_u < H(t_c): t_u = (H_i - H_u)/v; else t_u = t_x; A = W t_u / (C_0 H_0) | T&F eqs. 7-10 and steps 1-5, p. 39; Wills eq. 15.6, p. 387; Perry 9th ed. eq. 18-54, p. 18-64 | `:181-200`, `:221` |
+| `coeClevenger` | A = max over the test's layers with C < C_u of W (1/C - 1/C_u)/v | Coe & Clevenger 1916 as Wills eq. 15.5, p. 387 prints it, with (C, v) from Kynch's construction as Wills p. 387 says may be done | `:215` |
+| the identity | Coe-Clevenger at the compression layer = Talmage-Fitch's tangent area (algebra: H_i - H_u = v t_u) | Wills derives eq. 15.6 from 15.5, p. 387 | `:226-230` |
+| underflow liquid | (1 - C_u/rho_s) rho_l / C_u kg per kg of solids | definition of C_u | `:234` |
+| overflow | the DIFFERENCE, componentwise; every solid to the underflow (ideal) | balance | `:245` |
+| unit area | A/W in m2 per (t/d) | T&F eq. 10 (their units ft2/(ton/day)) | `:270` |
 
 Window: Kynch's postulate (the settling velocity a function of the local
 concentration only, T&F p. 38); free settling governs the area; the test at
 the expected feed concentration (T&F p. 40; a deviation above 5 % is
-announced).  Area only: depth, compression time and safety factor (Wills
+announced at every verbosity, on the advisory log, with both concentrations
+and the deviation).  The printed compression slope names the three test
+points of its parabola (the point nearest t and its two neighbours).  Area only: depth, compression time and safety factor (Wills
 p. 386 asks for at least two) are not applied.
 
 Keys, none with a default: `settlingTest { initialConcentration [kg/m3];
@@ -636,21 +644,24 @@ Reads its feed with `readClassifierFeed` and splits with `splitOnPartition`
 
 | quantity | as implemented | units | source | code |
 |---|---|---|---|---|
-| angular speed | omega = 2 pi N (N from `speed` in rpm -> rev/s) | rad/s | G eq. 30.2-4 | `SedimentingCentrifuge.cpp:89` |
-| feed volume flow | Q = m_l/rho_l + m_s/rho_s | m3/s | ours | `:85` |
-| tubular bowl volume | V = pi b (r_2^2 - r_1^2) | m3 | G p. 1436 | `:103` |
-| tubular Sigma | Sigma = omega^2 V / (g ln(2 r_2^2/(r_1^2 + r_2^2))) | m2 | Ambler 1959 eqs. 24-28, p. 191 (the exact form; his eq. 33 is the approximation); de Haan, Eral & Schuur 2nd ed. eqs. 9.44-9.46, p. 309 | `:104` |
-| tubular Sigma, half-layer cut | Sigma_G = omega^2 V / (2 g ln(2 r_2/(r_1 + r_2))) | m2 | G eq. 30.2-19, p. 1439 | `:105` |
-| disc-stack Sigma | Sigma = 2 pi n omega^2 (r_2^3 - r_1^3) / (3 g tan theta) | m2 | de Haan et al. eq. 9.52, p. 311; Ambler eq. 46, p. 194, with C = 1 | `:119` |
-| cut size | Q = 2 v_g(d50) Sigma, v_g = d^2 (rho_s - rho_l) g/(18 mu) -> d50 = (9 mu Q / (drho g Sigma))^1/2 | m | Ambler eq. 9; G eq. 30.2-18 | `:125` |
-| G's critical diameter | D_pc from Sigma_G by the same relation | m | G eq. 30.2-12, p. 1436 | `:142` |
-| Stokes' window | Re = d50 v_wall rho_l / mu < 1, v_wall = d50^2 drho omega^2 r_2/(18 mu) | - | G eq. 30.2-13, p. 1437; N_Re < 1, G section 30.1B, p. 1413 | `:126-127` |
-| tubular grade efficiency | k = d^2 drho omega^2 tau/(18 mu), tau = V/Q; r* = max(r_1, r_2 e^-k); E = (r_2^2 - r*^2)/(r_2^2 - r_1^2) | - | DERIVED here: G eq. 30.2-10 integrated from a starting radius r, with Ambler's eq. 26 premise (feed spread uniformly over the annulus); E(d50) = 1/2 exactly | `:153-155` |
-| disc grade efficiency | E = min(1, (d/d50)^2 / 2) | - | DERIVED here: Ambler eqs. 43-44, p. 194, with f(y) = 1 (the case in which his C = 1): the captured fraction is the drift across the gap, v_g Sigma / Q | `:157` |
-| sediment | Y = SUM_k E_k f_k of the solids; its liquid Y m_s (1 - w_s)/w_s | kg/s | ours (w_s declared) | `:170-175` |
+| angular speed | omega = 2 pi N (N from `speed` in rpm -> rev/s) | rad/s | G eq. 30.2-4 | `SedimentingCentrifuge.cpp:90` |
+| feed volume flow | Q = m_l/rho_l + m_s/rho_s | m3/s | ours | `:86` |
+| tubular bowl volume | V = pi b (r_2^2 - r_1^2) | m3 | G p. 1436 | `:104` |
+| tubular Sigma | Sigma = omega^2 V / (g ln(2 r_2^2/(r_1^2 + r_2^2))) | m2 | Ambler 1959 eqs. 24-28, p. 191 (the exact form; his eq. 33 is the approximation); de Haan, Eral & Schuur 2nd ed. eqs. 9.44-9.46, p. 309 | `:105` |
+| tubular Sigma, half-layer cut | Sigma_G = omega^2 V / (2 g ln(2 r_2/(r_1 + r_2))) | m2 | G eq. 30.2-19, p. 1439 | `:106` |
+| disc-stack Sigma | Sigma = 2 pi n omega^2 (r_2^3 - r_1^3) / (3 g tan theta) | m2 | de Haan et al. eq. 9.52, p. 311; Ambler eq. 46, p. 194, with C = 1 | `:120` |
+| cut size | Q = 2 v_g(d50) Sigma, v_g = d^2 (rho_s - rho_l) g/(18 mu) -> d50 = (9 mu Q / (drho g Sigma))^1/2 | m | Ambler eq. 9; G eq. 30.2-18 | `:126` |
+| G's critical diameter | D_pc from Sigma_G by the same relation | m | G eq. 30.2-12, p. 1436 | `:143` |
+| Stokes' window | Re = d50 v_wall rho_l / mu < 1, v_wall = d50^2 drho omega^2 r_2/(18 mu) | - | G eq. 30.2-13, p. 1437; N_Re < 1, G section 30.1B, p. 1413 | `:127-128` |
+| tubular grade efficiency | k = d^2 drho omega^2 tau/(18 mu), tau = V/Q; r* = max(r_1, r_2 e^-k); E = (r_2^2 - r*^2)/(r_2^2 - r_1^2) | - | DERIVED here: G eq. 30.2-10 integrated from a starting radius r, with Ambler's eq. 26 premise (feed spread uniformly over the annulus); E(d50) = 1/2 exactly | `:154-156` |
+| disc grade efficiency | E = min(1, (d/d50)^2 / 2) | - | DERIVED here: Ambler eqs. 43-44, p. 194, with f(y) = 1 (the case in which his C = 1): the captured fraction is the drift across the gap, v_g Sigma / Q | `:158` |
+| sediment | Y = SUM_k E_k f_k of the solids; its liquid Y m_s (1 - w_s)/w_s | kg/s | ours (w_s declared) | `:171-176` |
 
 Windows: Stokes (enforced); dilute free settling (hindered settling, G eq.
-30.1-16, is NOT applied -- the case's solids fraction is printed);
+30.1-16, is NOT applied -- the feed's solids VOLUME fraction phi_s =
+(m_s/rho_s)/Q is printed, published as `solidsVolumeFraction_feed` and
+ANNOUNCED on the advisory log with that number; no threshold is set and the
+engine does not judge whether the feed is dilute);
 Brownian threshold and agglomeration (Ambler pp. 195-196) not modelled.  No
 drive power.
 

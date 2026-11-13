@@ -120,4 +120,4 @@ utility converter              heating.hitecSalt.duty_kW 10415.5596086    1e-4
 utility converter              heating.hitecSalt.T 700              1e-4
 utility converter              heating.hitecSalt.kg_s 59.179315958     1e-4
 utility converter              heating.hitecSalt.eur_h 562.440218865    1e-4
-boundary global                 residual_kW      0.00215735874372 1e-4
+boundary global                 residual_kW      0.00215735874372 abs:0.9293

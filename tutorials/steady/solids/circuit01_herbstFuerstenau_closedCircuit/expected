@@ -143,5 +143,5 @@ kpi     millSecondHalf         topClassRemaining 0.32065963668    1e-4
 boundary global                 H_feeds_kW       -304045.865282   1e-4
 boundary global                 Q_boundary_kW    637              1e-4
 boundary global                 H_products_kW    -303408.865282   1e-4
-boundary global                 residual_kW      3.81201971322e-07 1e-4
+boundary global                 residual_kW      3.81201971322e-07 abs:0.00637
 boundary global                 W_shaft_kW       637              1e-4

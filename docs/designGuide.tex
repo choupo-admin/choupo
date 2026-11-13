@@ -3288,7 +3288,9 @@ above 85\,\%. The app's Reports tab draws it: a machine-utilisation table,
 the bottleneck first, with the engine's own utilisation, its ``announced''
 mark and the batch plan's stage utilisation beside it, and the Gantt chart of
 the first campaign (SVG download); nothing in it is recomputed by the app. It
-computes no machine physics (no compaction force, no blend uniformity). \textbf{Not computed:} the intermediate store's
+computes no machine physics (no blend uniformity); a tablet press is checked
+for dwell time and compaction force only where the case declares the
+formulation's data (the paragraph below). \textbf{Not computed:} the intermediate store's
 size, QC release times; several products sharing the line are in the
 next section (Organising a multi-product plant), with what that plan
 still does not do. Worked case:
@@ -3297,6 +3299,30 @@ the batch-process chapters of design textbooks (Biegler, Grossmann \&
 Westerberg, \emph{Systematic Methods of Chemical Process Design}; Seider
 et al., \emph{Product and Process Design Principles}) --- cited by title
 only.
+
+\paragraph{The tablet press on dwell time and compaction force (DEV.md 4c
+C270).}  A press bought on its catalogue speed may not run at it.  The punch
+flat of length $L$ stays under the roll for $t = L/(\pi D n)$ on a pitch
+circle $D$ at $n$ revolutions per second, so a formulation needing a minimum
+dwell $t_\text{min}$ caps the speed at $n_\text{max} = L/(\pi D
+t_\text{min})$. Declared in the press's \texttt{designRules} as
+\texttt{dwell \{ punchFlat; pitchCircle; minimumDwellTime; source; reason;
+\}}, the sizer publishes the dwell at the catalogue speed, the dwell-limited
+speed and capacity, and rates the press on the LOWER capacity, announcing a
+binding limit. An optional \texttt{effectiveness \{ availability;
+performance; quality; \}} scales the capacity; a quality below 1 on a press
+whose flowsheet already splits off rejects is announced as the rejects
+counted twice. A \texttt{compaction \{\}} block reads ONE material's fitted
+Heckel and Ryshkewitch-Duckworth constants (from the \texttt{compactionFit}
+bench; no mixture rule) and inverts them: the porosity a target tensile
+strength needs, the pressure that gives it, the force on one punch against
+the press's maximum (Theory Guide, \emph{From the fitted curves to the
+press}). Absent, the run says the press was not checked. Worked case:
+\texttt{tutorials/batch/plant/tabletPress01\_dwell\_and\_force}: a 75 rpm
+catalogue press runs at 51 rpm for a 10\,ms dwell, and a 2\,MPa tablet of
+MCC needs about 30\,MPa, 3\,kN on an 11.28\,mm punch. The batch plan is
+not re-timed by the dwell limit: the press's operating time stays the
+case's declaration, and a press that no longer fits it is refused.
 
 \hypertarget{organising-a-multi-product-plant}{%
 \section{Organising a multi-product

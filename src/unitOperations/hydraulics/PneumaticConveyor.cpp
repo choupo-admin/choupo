@@ -30,11 +30,13 @@ License
 #include "thermo/ThermoPackage.H"
 #include "thermo/SolidMixture.H"
 #include "core/RegistryRefusal.H"
+#include "core/Advisory.H"
 
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <tuple>
 
@@ -81,17 +83,30 @@ scalar particleVelocity(scalar u_g, scalar dp, scalar rho_p, scalar rho_g,
     return u_g - slip;
 }
 
-scalar terminalVelocity(scalar dp, scalar rho_p, scalar rho_g, scalar mu, scalar g)
+//
+// The stopping rule is the loop's own: the relative change of a pass below
+// 1e-6, within 60 passes.  The caller is told whether it was met and the last
+// pass's relative change, because the substitution need not converge: a
+// particle whose u_t sits at Re ~ 1000, where dragCoeff steps by 0.39 %, can
+// cycle between the two branches (measured: sand, 2650 kg/m3, in air at
+// 1.2 kg/m3 and 1.8e-5 Pa s, between dp ~ 1.506 and 1.508 mm -- a two-cycle
+// with a relative change up to 1.9e-3).
+scalar terminalVelocity(scalar dp, scalar rho_p, scalar rho_g, scalar mu, scalar g,
+                        bool& converged, scalar& lastRelChange)
 {
+    converged = true; lastRelChange = 0.0;
     if (rho_p <= rho_g || dp <= 0.0) return 0.0;
     scalar ut = g * dp * dp * (rho_p - rho_g) / (18.0 * mu);   // Stokes
+    converged = false;
     for (int it = 0; it < 60; ++it)
     {
         const scalar Re = rho_g * ut * dp / mu;
         const scalar Cd = dragCoeff(Re);
-        if (Cd <= 0.0) break;
+        if (Cd <= 0.0) { converged = true; break; }
         const scalar un = std::sqrt(4.0 * g * dp * (rho_p - rho_g) / (3.0 * Cd * rho_g));
-        if (std::abs(un - ut) < 1.0e-6 * std::max(un, 1.0e-9)) { ut = un; break; }
+        lastRelChange = std::abs(un - ut) / std::max(un, 1.0e-9);
+        if (std::abs(un - ut) < 1.0e-6 * std::max(un, 1.0e-9))
+        { ut = un; converged = true; break; }
         ut = un;
     }
     return ut;
@@ -158,8 +173,12 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     for (std::size_t i = 0; i < n; ++i) MWg += y[i] * thermo.comp(i).MW();   // kg/kmol
     const scalar rho_g = P * MWg / (R * T);
     if (!thermo.hasTransport())
-        throw std::runtime_error("pneumaticConveyor: needs a gas viscosity --- add "
-            "`transport { viscosity { model Chung; } }` to the thermoPackage.");
+        throw std::runtime_error("pneumaticConveyor: needs a gas viscosity (it "
+            "enters the drag, the terminal velocity and the gas Reynolds number) "
+            "and the case declares no transport model --- add "
+            "`transport { vapour { viscosity { model Chung; } } }` to "
+            "constant/thermoPhysPropDict (ChapmanEnskog is the other registered "
+            "gas-viscosity model).");
     const scalar mu = thermo.viscosityGas(T, y);
 
     // ---- Solids: mass flow, particle density, Sauter mean diameter ------
@@ -189,10 +208,60 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     const scalar mDotG = F * MWg;              // kg/s of gas
     // Particle velocity from the mechanistic FORCE BALANCE (drag = wall friction
     // + gravity component) -- no fitted slip, no silent fallback.  mu_w is the
-    // particle-wall Coulomb friction coefficient (declared, announced).
-    const scalar muWall  = oper->lookupScalarOrDefault("particleWallFriction", 0.4);
+    // particle-wall Coulomb friction coefficient: the case's when it declares
+    // one, otherwise the engine's default 0.4, ANNOUNCED below.
+    const std::string unitName = dict->name().empty()
+        ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
+    constexpr scalar kMuWallDefault = 0.4;
+    const bool   muWallDeclared = oper->found("particleWallFriction");
+    const scalar muWall  = muWallDeclared
+        ? oper->lookupScalar("particleWallFriction") : kMuWallDefault;
+    if (!muWallDeclared)
+    {
+        //  A DEFAULT THAT IS USED IS ANNOUNCED; a declared value announces
+        //  nothing, so silence keeps meaning "nothing was assumed".  The
+        //  advisory reaches the caveat block and the result JSON at every
+        //  verbosity; the console line prints once, at verbosity >= 1.
+        std::ostringstream m;
+        m << std::defaultfloat << std::setprecision(6)
+          << "particleWallFriction was NOT declared in this unit's `operation "
+             "{}`: the particle velocity below was computed with the engine's "
+             "built-in default mu_w = " << kMuWallDefault << " -- the "
+             "particle-wall Coulomb friction coefficient of the force balance, "
+             "which sets the slip in a horizontal line (s ~ u_t sqrt(mu_w)).  "
+             "Declare `particleWallFriction " << kMuWallDefault << ";` (or "
+             "your own value) in `operation {}` to make it the author's choice "
+             "rather than the engine's assumption.";
+        if (AdvisoryLog::instance().add("assumed", "warning",
+                                        "pneumaticConveyor " + unitName, m.str())
+            && verbosity >= 1)
+            std::cout << "  [assumed] pneumaticConveyor '" << unitName << "': "
+                      << m.str() << "\n";
+    }
     const scalar sinTh   = (L > 0.0) ? std::max(-1.0, std::min(1.0, dz / L)) : 0.0;
-    const scalar u_t     = terminalVelocity(dp, rho_p, rho_g, mu, g);
+    bool   utConverged = true;
+    scalar utRelChange = 0.0;
+    const scalar u_t     = terminalVelocity(dp, rho_p, rho_g, mu, g,
+                                            utConverged, utRelChange);
+    if (!utConverged)
+    {
+        //  Not converged is SAID, with the residual; silence keeps meaning
+        //  "the loop met its own stopping rule".
+        std::ostringstream m;
+        m << std::defaultfloat << std::setprecision(4)
+          << "the terminal velocity u_t = " << u_t << " m/s did not meet its "
+             "stopping rule (relative change below 1e-6) in 60 substitution "
+             "passes: the last pass changed it by " << utRelChange
+          << " (relative), at a particle Reynolds number of "
+          << rho_g * u_t * dp / mu << ".  Near Re = 1000 the Schiller-Naumann "
+             "drag steps to 0.44 and the iteration can cycle between the two "
+             "branches.  u_t enters the solids friction factor (Yang 1974, "
+             "through Re_t/Re_p), which carries this uncertainty.";
+        if (AdvisoryLog::instance().add("solver", "warning",
+                                        "pneumaticConveyor " + unitName, m.str())
+            && verbosity >= 1)
+            std::cout << "\n[pneumaticConveyor] WARNING: " << m.str() << "\n";
+    }
     scalar u_p = particleVelocity(u_g, dp, rho_p, rho_g, mu, g, sinTh, muWall);
     // u_p <= 0 means the gas is BELOW PICKUP (slip >= u_g) -- not a model glitch
     // but the physical no-conveying regime the saltation check below flags LOUD.
@@ -243,8 +312,29 @@ int PneumaticConveyor::solve(const DictPtr& dict,
     std::vector<std::tuple<scalar,scalar,std::string>> bendLog;   // ratio, dP, type
     if (geom->found("bends"))
     {
+        std::size_t bendIndex = 0;
         for (const auto& b : geom->lookupDictList("bends"))
         {
+            ++bendIndex;
+            //  A BEND KEY THE MODEL DOES NOT READ IS REFUSED BY NAME.  The bend
+            //  is priced by its solids exit-velocity ratio and nothing else, so
+            //  a radius or an angle written here would do nothing while the
+            //  author believes it did -- and the flowsheet's key audit reads
+            //  only the first level of `operation {}`, never a list inside
+            //  `geometry {}`, so nobody else would say so.
+            for (const auto& k : b->keys())
+                if (k != "type" && k != "exitRatio")
+                    throw std::runtime_error("pneumaticConveyor '" + unitName
+                        + "': bend " + std::to_string(bendIndex) + " declares `"
+                        + k + "`, which the bend model does not read -- "
+                        + registryRefusal::message("bend key", k,
+                              {"type", "exitRatio"}, "Accepted")
+                        + "  A bend is priced by the solids exit-velocity ratio"
+                          " alone: `type longRadius|shortRadius|blindTee;`"
+                          " (0.75 / 0.50 / 0.25) or an explicit `exitRatio"
+                          " <0..1>;`, and dP_bend = m_dot_solids (u_p - ratio"
+                          " u_p) / A.  No bend radius or angle enters it; delete `"
+                        + k + "`.");
             //  THE ELSE IS NOT A CATCH-ALL (2026-09-07).  It used to be, so a
             //  mistyped bend geometry silently priced a long-radius sweep
             //  (0.75) -- and the run then PRINTED the mistyped word beside
@@ -344,13 +434,28 @@ int PneumaticConveyor::solve(const DictPtr& dict,
                   << " above the DILUTE-phase ceiling (~15); this model does NOT"
                   << " cover dense-phase (plug/slug) flow -- treat the result as"
                   << " out of range.\n";
-    if (verbosity >= 1 && (eps < 0.994 || eps > 0.9995))
-        std::cout << "\n[pneumaticConveyor] WARNING: voidage eps = " << std::fixed
-                  << std::setprecision(5) << eps << " is OUTSIDE the Yang-1974 "
-                  << "solids-friction range (0.994-0.999); the f_p is an "
-                  << "EXTRAPOLATION -- more dilute (higher eps) inflates it.  Use "
-                  << "a realistic loading (~2-15 kg/kg) or read dP_solidsFriction "
-                  << "as indicative only.\n";
+    //  The voidage window of the Yang (1974) solids friction.  The test and the
+    //  sentence read the SAME two constants, so the bounds a reader is shown
+    //  are the bounds that decided.  An extrapolation reaches the advisory log
+    //  (the caveat block and the result JSON) at every verbosity; the console
+    //  line prints once, at verbosity >= 1.
+    constexpr scalar kEpsYangMin = 0.994;
+    constexpr scalar kEpsYangMax = 0.9995;
+    if (eps < kEpsYangMin || eps > kEpsYangMax)
+    {
+        std::ostringstream m;
+        m << std::fixed << std::setprecision(5)
+          << "voidage eps = " << eps << " is OUTSIDE the window " << std::defaultfloat
+          << std::setprecision(6) << kEpsYangMin << " <= eps <= " << kEpsYangMax
+          << " this unit applies to the Yang (1974) solids friction; the f_p is "
+             "an EXTRAPOLATION -- more dilute (higher eps) inflates it.  Use a "
+             "realistic loading (~2-15 kg/kg) or read dP_solidsFriction as "
+             "indicative only.";
+        if (AdvisoryLog::instance().add("validity", "warning",
+                                        "pneumaticConveyor " + unitName, m.str())
+            && verbosity >= 1)
+            std::cout << "\n[pneumaticConveyor] WARNING: " << m.str() << "\n";
+    }
     if (verbosity >= 1 && saltRisk)
         std::cout << "\n[pneumaticConveyor] WARNING: gas velocity " << std::fixed
                   << std::setprecision(2) << u_g << " m/s is BELOW the saltation "

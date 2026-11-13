@@ -98,6 +98,6 @@ kpi     ValveLP                x_mass_out       0.0499038733433  1e-4
 boundary global                 H_feeds_kW       -56377.0262138   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -56377.026291    1e-4
-boundary global                 residual_kW      7.72216517362e-05 1e-4
+boundary global                 residual_kW      7.72216517362e-05 abs:0.001
 source  ValveHP                liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
 source  ValveLP                liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

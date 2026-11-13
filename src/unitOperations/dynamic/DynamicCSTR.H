@@ -163,6 +163,10 @@ public:
     void setInletStream(const ContinuousStream& s) override;
 
     bool   variableVolume() const { return variableVolume_; }
+    //- A constant-volume vessel prices no liquid property: only the
+    //  variable-volume one declares its density (review DX-06).
+    void   declarePropertySources() const override
+    { if (variableVolume_) DynamicUnitOperation::declarePropertySources(); }
     bool   setsOutletFlow() const override { return variableVolume_; }  // outflow law
     scalar T_in()       const { return T_in_; }
     scalar F_in()       const { return F_in_; }

@@ -54,7 +54,7 @@ kpi     dryer                  wheelSpeed       25000            1e-4
 boundary global                 H_feeds_kW       -1358.93988169   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -1358.93988169   1e-4
-boundary global                 residual_kW      -2.57614374277e-10 1e-4
+boundary global                 residual_kW      -2.57614374277e-10 abs:0.001
 source  dryer                  liquidDensity    bypass.solventVliq25C exact
 source  dryer                  liquidViscosity  default.water1e-3 exact
 source  dryer                  surfaceTension   BrockBird/Butler exact

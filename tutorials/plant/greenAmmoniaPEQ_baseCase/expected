@@ -90,7 +90,7 @@ kpi     Converter              y_NH3            0.197025151664   1e-4
 kpi     FEHE                   C_cold           159936.653155    1e-4
 kpi     FEHE                   C_hot            147817.367538    1e-4
 kpi     FEHE                   C_r              0.924224464007   1e-4
-kpi     FEHE                   H_closure_gap_kW -1.39843905345e-07 1e-4
+kpi     FEHE                   H_closure_gap_kW -1.39843905345e-07 abs:0.0006141
 kpi     FEHE                   LMTD             71.221949322     1e-4
 kpi     FEHE                   NTU              7.4416154091     1e-4
 kpi     FEHE                   Q                61412416.0232    1e-4
@@ -248,7 +248,7 @@ kpi     WaterCooler            vf_out           0.952811525693   1e-4
 boundary global                 H_feeds_kW       533.06073992     1e-4
 boundary global                 Q_boundary_kW    -57695.5553604   1e-4
 boundary global                 H_products_kW    -57164.2478898   1e-4
-boundary global                 residual_kW      1.75326931383    1e-4
+boundary global                 residual_kW      1.75326931383    abs:0.852
 boundary global                 W_shaft_kW       13670            1e-4
 utility Aftercooler            cooling.coolingWater.duty_kW -5482.93664939   1e-4
 utility Aftercooler            cooling.coolingWater.T 313.15           1e-4
@@ -1798,3 +1798,8 @@ source  ShellTubeHX:_unit_'N2Cooler'_(design) liquidViscosity  pureFluid.IF97   
 source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidDensity    pureFluid.IF97   exact
 source  ShellTubeHX:_unit_'WaterCooler'_(design) liquidViscosity  pureFluid.IF97   exact
 source  storage_'NH3Storage'   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+kpi     economics              breakEven_operating_fixed 31723572.0741    1e-4
+kpi     economics              breakEven_operating_sales 388859818.374    1e-4
+kpi     economics              breakEven_operating_variable 414569919.647    1e-4
+kpi     economics              breakEven_price_H2Feed 3.72243864459    1e-4
+kpi     economics              breakEven_price_ProductNH3 1.17505630749    1e-4

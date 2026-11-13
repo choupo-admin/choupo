@@ -42,19 +42,53 @@ Description
 
     with
         u_g    = Q_gas / A                      superficial gas velocity
-        u_p    = u_g (1 - 0.68 d_p^0.92 rho_p^0.5 rho_g^-0.2 D^-0.54)   (Hinkle)
+        u_p    = u_g - s,  s^2 C_D(Re_s) = (4/3) d_p rho_p g (sin th + mu_w cos th) / rho_g
+                                                (force balance: drag = wall
+                                                 friction + gravity along the
+                                                 pipe; sin th = dz/L)
         rho*   = m_dot_solids / (u_p A)         suspended-solids density
-        f_p    = 3/8 (rho_g/rho_p) C_D (D/d_p) ((u_g-u_p)/u_p)^2        (Hinkle)
+        f_p eps^3/(1-eps) = 0.0206 [(1-eps)(u_t/u_p)]^-0.869            (Yang 1974, vertical)
+        f_p eps^3/(1-eps) = 0.117  [(1-eps)(u_t/u_p) u_g/sqrt(g D)]^-1.15 (Yang 1974, horizontal)
+                 with 1-eps = rho* / rho_p; the vertical form when |dz/L| > 0.5
         u_salt = sqrt(g D) (mu_load 10^(1440 d_p+1.96))^(1/(1100 d_p+2.5)) (Rizk)
+
+    The slip s is iterated on C_D at the slip Reynolds number.  mu_w is the
+    particle-wall Coulomb friction coefficient, `particleWallFriction` in the
+    operation block; when the case declares none the unit uses 0.4 and
+    ANNOUNCES it (site line, advisory log, end-of-run caveat block, result
+    JSON), while a declared value announces nothing.  The run publishes mu_w
+    as a KPI and prints it in the verbosity >= 2 banner.  The balance has two
+    limits: a vertical line, s ~ u_t (drag = gravity), and a horizontal one,
+    s ~ u_t sqrt(mu_w) (drag = wall friction); both hold up to the gas
+    buoyancy, which the balance leaves out, and the horizontal one also up to
+    C_D changing with the slip.  A slip that leaves u_p <= 0.02 u_g (the gas
+    below pickup) is floored there, so that rho* stays finite, and the
+    verbosity >= 2 banner marks the particle velocity BELOW PICKUP.
 
     The conveyor REPORTS the saltation velocity u_salt and warns aloud if the
     gas velocity falls below it (risk of saltation / line blockage) -- a
-    first-class, announced design check, never a silent clip.
+    first-class, announced design check, never a silent clip.  A voidage
+    outside the window the unit applies to Yang's friction (0.994 <= eps <=
+    0.9995, the bounds printed with the advisory) is an extrapolation and is
+    raised on the advisory log at every verbosity.
+
+    Each `bends ( ... )` entry may carry `type` (longRadius | shortRadius |
+    blindTee) and `exitRatio`, nothing else: any other key -- a bend radius,
+    an angle -- would do nothing, so it is REFUSED by name.  A case with no
+    gas viscosity model is refused naming the `transport { vapour {
+    viscosity { ... } } }` block of constant/thermoPhysPropDict.
 
     Hardware-only operation block (the credo): pipe diameter, length, vertical
     rise; every velocity, the suspended density and the pressure drop are
     RESULTS.  Particle density comes from the solid component's `solid{rho_p}`;
     the size from the inlet PSD (Sauter mean for the drag).
+
+    The single-particle drag is Schiller-Naumann, C_D = 24/Re (1 + 0.15
+    Re^0.687) below Re = 1000 and 0.44 above: the two branches do not meet
+    (0.43829 against 0.44, a step of 0.39 %), so a sweep across Re ~ 1000 can
+    show a small kink.  The terminal velocity is found by substitution (relative
+    change below 1e-6, at most 60 passes); a particle sitting on the step can
+    make it cycle, and a run that misses the rule says so on the advisory log.
 
     Inputs (feed );   outputs (conveyed );
 \*---------------------------------------------------------------------------*/

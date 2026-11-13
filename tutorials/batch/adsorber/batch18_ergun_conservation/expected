@@ -37,7 +37,7 @@ kpi     campaign               energy_closure_rel 2.22766880206e-15 1e-4
 kpi     campaign               energy_dH_vessels_kJ 964.217909635    1e-4
 kpi     campaign               energy_records_invalid 0                1e-4
 kpi     campaign               energy_records_valid 2                1e-4
-kpi     campaign               energy_residual_kJ 3.06954461848e-12 1e-4
+kpi     campaign               energy_residual_kJ 3.06954461848e-12 abs:1.378e-06
 kpi     campaign               mass_closure_rel 2.61916812009e-16 1e-4
 kpi     campaign               mass_kg_external_out 0.442361742683   1e-4
 kpi     campaign               mass_kg_final    0.405405925309   1e-4

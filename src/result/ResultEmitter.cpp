@@ -1462,6 +1462,22 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             }
             os << "\n      ]\n    },\n";
         }
+        //  THE PRICE BREAK-EVENS (2026-11-13), ONLY when the case declared
+        //  `breakEven { price ( ... ); }` -- every other case's JSON is
+        //  byte-for-byte what it was.  Also `kpis.economics.breakEven_price_*`.
+        if (!e.breakEvenPrices.empty())
+        {
+            os << "    \"breakEvenPrices\": [";
+            for (std::size_t i = 0; i < e.breakEvenPrices.size(); ++i)
+            {
+                const auto& b = e.breakEvenPrices[i];
+                os << (i ? ",\n" : "\n") << "      { \"stream\": " << esc(b.stream)
+                   << ", \"role\": " << esc(b.role)
+                   << ", \"declared\": " << num(b.declared)
+                   << ", \"breakEven\": " << num(b.breakEven) << " }";
+            }
+            os << "\n    ],\n";
+        }
         //  THE FINANCING (2026-10-20, DEV.md 4c C110 G4), ONLY when the case
         //  declared a loan -- every other economics case's JSON is
         //  byte-for-byte what it was.  The PROJECT's NPV / IRR / paybacks

@@ -1,6 +1,6 @@
 # Pack: a tablet plant from a drug and a dose
 
-budget: 1700 words (~2720 tokens)
+budget: 2100 words (~3360 tokens)
 
 Read this pack when the student wants a pharmaceutical solid-dose plant (tablets) for THEIR drug.
 A recipe: take the scaffold this pack names, change the listed keys, run, read.
@@ -122,4 +122,24 @@ A product's `stages` entry overrides a stage's time for that product; `changeove
 
 ## 9. Do it by hand, and say so in DESIGN.md
 
-No model of granulation end point, blend or content uniformity, compression force, hardness, dissolution or coating. Machines are mass boxes checked for FIT only. No capsule filler, filling line, lyophiliser or sterilising filtration (declare `splitter` placeholders as `massRate` machines, quote them, say nothing is modelled). Crew is a table you declare. HVAC is sensible heat only. One price per product for the whole life. Every kept number from the base case is an ASSUMED placeholder: replace it with a cited figure or defend it.
+No model of granulation end point, blend or content uniformity, hardness, dissolution or coating. Machines are mass boxes checked for FIT only; the press is also checked for dwell time and compaction force when the case declares the data (section 10). No capsule filler, filling line, lyophiliser or sterilising filtration (declare `splitter` placeholders as `massRate` machines, quote them, say nothing is modelled). Crew is a table you declare. HVAC is sensible heat only. One price per product for the whole life. Every kept number from the base case is an ASSUMED placeholder: replace it with a cited figure or defend it.
+
+## 10. The press: dwell time, effectiveness, compaction force (DEV.md 4c C270)
+
+A catalogue speed is not a real speed.  The punch flat `L` stays under the roll for `t = L / (pi D n)` (pitch circle `D`, turret `n` rev/s); a formulation needing `t_min` caps the speed at `n_max = L / (pi D t_min)`.  Add to the press's `designRules`, beside `rating`, each block with `source`/`reason` (worked: `tutorials/batch/plant/tabletPress01_dwell_and_force`):
+
+```
+dwell { punchFlat 8 mm; pitchCircle 0.30 m; minimumDwellTime 10 ms; source "..."; reason "..."; }
+effectiveness { availability 0.90; performance 0.95; quality 1.0; source "..."; reason "..."; }
+compaction { material "..."; targetTensileStrength 2 MPa; punchTipArea 99.93 mm2; maxCompressionForce 80 kN;
+             trueDensity 1.6374 g/cm3;   // optional: the tablet's thickness
+             heckel { K 0.00906 1/MPa; A 0.6576; Pmin 30 MPa; Pmax 170 MPa; basis inDie; source "..."; reason "..."; }
+             ryshkewitch { sigma0 34.17 MPa; kb 7.173; basis outOfDie; source "..."; reason "..."; }
+             source "..."; reason "..."; }
+```
+
+* The four curve constants come from `op:compactionFit` on the student's own dataset (`tutorials/props/powder/compaction01_mcc`); ONE material, no mixture rule.  Never invent them; absent, the run says the press was NOT checked.
+* `quality` below 1 while the flowsheet's splitter already rejects tablets: announced, the rejects counted twice.
+* Refused: a target at or above `sigma0`; a solid fraction below the line's zero-pressure density.  Announced: a pressure outside `Pmin`-`Pmax`, `inDie` against `outOfDie`, a force above `announceAbove` of the maximum.
+* Exercise, predict before you run (measured on the witness, utilisation 0.76): `minimumDwellTime 15 ms` refuses (1.14, two presses); OEE 0.55 refuses (1.18); demand +17 % leaves the press at 0.76 (the check is per lot) and raises the lots from 102 to 119.
+* The minimum dwell is the formulation's, measured (a compaction simulator), not the press maker's: for pure MCC, Wuensch et al. 2020 (Pharmaceutics 12, 310) found the same tensile strength from 10 to 130 ms.

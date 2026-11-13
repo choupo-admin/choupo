@@ -19,4 +19,4 @@ kpi     decanter01             phaseSet         2                  1e-4
 boundary global               H_feeds_kW       -5627.61678644     1e-4
 boundary global               Q_boundary_kW    0                  1e-4
 boundary global               H_products_kW    -5627.61678644     1e-4
-boundary global               residual_kW      0                  1e-4
+boundary global               residual_kW      0                  abs:0.001

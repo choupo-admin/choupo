@@ -71,7 +71,9 @@ VerticalCylinder VerticalCylinder::read(const DictPtr& g, const std::string& who
 }
 
 LiquidState liquidState(const ThermoPackage& thermo, const sVector& n,
-                        scalar T, scalar P_Pa, const std::string& who)
+                        scalar T, scalar P_Pa, const std::string& who,
+                        const std::string& consumerType,
+                        const std::string& consumerUnit)
 {
     LiquidState s;
     sVector x(n.size(), 0.0);
@@ -88,7 +90,7 @@ LiquidState liquidState(const ThermoPackage& thermo, const sVector& n,
     s.meanMW = mass / s.nTotal;
     try
     {
-        s.density = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P_Pa, x, liquidProperty::Consumer{"dynamicVessel", who}).value;
+        s.density = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T, P_Pa, x, liquidProperty::Consumer{consumerType, consumerUnit}).value;
     }
     catch (const std::exception& e)
     {

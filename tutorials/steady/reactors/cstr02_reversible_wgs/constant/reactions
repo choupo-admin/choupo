@@ -19,8 +19,8 @@
        K_eq(T) = exp(-dG_rxn(T) / RT)
        dG_rxn(T) = g_CO2 + g_H2 - g_CO - g_H2O  (all g_pure_ig)
 
-  At T = 600 K, K_eq ~ 26.5; equilibrium conversion of an equimolar
-  CO + H2O feed (1 + 1, V_R = 1e-3 m^3) ~ 84 % (matches the textbook
+  At T = 600 K, K_eq ~ 28.2; equilibrium conversion of an equimolar
+  CO + H2O feed (1 + 1) ~ 84 % (matches the textbook
   Smith-Van Ness Le Chatelier value).
 \*---------------------------------------------------------------------------*/
 

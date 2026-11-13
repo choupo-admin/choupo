@@ -45,4 +45,4 @@ kpi     plant                  wo_C_final       1.12             3e-2     anchor
 kpi     plant                  wo_E_final       9.81             3e-2     anchor
 kpi     plant                  wo_P_final       1.69             3e-2     anchor
 kpi     plant                  wo_G_final       0.22             3e-2     anchor
-source  williamsOttoPlant      liquidDensity    constant.benchmark.WilliamsOtto exact
+source  plant                  liquidDensity    constant.benchmark.WilliamsOtto exact

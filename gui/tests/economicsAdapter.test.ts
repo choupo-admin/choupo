@@ -10,6 +10,7 @@
 import { describe, expect, it } from "vitest";
 
 import { extractStructured } from "../src/adapters/WasmAdapter.js";
+import { breakEvenPriceLine } from "../src/case/breakEvenLine.js";
 import type { CaseFiles } from "../src/case/types.js";
 
 const CASE: CaseFiles = {
@@ -69,5 +70,37 @@ describe("economics adapter mapping", () => {
   it("leaves economics absent for a result with no economics block", () => {
     const r = extractStructured(wrap(BASE), CASE);
     expect(r.economics).toBeUndefined();
+  });
+});
+
+describe("price break-even mapping", () => {
+  const econ = (extra: object) => ({
+    currency: "EUR", FCI: 1, WC: 1, TCI: 2, COM_d: 1, revenue: 1, depreciation: 1,
+    NPV: -1, IRR: null, irrAmbiguous: false, discountedPayback: null,
+    simplePayback: null, discountRate: 0.1, taxRate: 0.21, projectLife: 10,
+    estimateClass: 4, accLo: -30, accHi: 50, cashFlow: [], ...extra,
+  });
+
+  it("keeps the engine's break-even prices, in order, and words them", () => {
+    const r = extractStructured(wrap({ ...BASE, economics: econ({
+      breakEvenPrices: [
+        { stream: "ProductNH3", role: "product", declared: 1.0, breakEven: 1.42 },
+        { stream: "H2Feed", role: "rawMaterial", declared: 4.5, breakEven: 3.1 },
+      ] }) }), CASE);
+    const b = r.economics!.breakEvenPrices!;
+    const [b0, b1] = [b[0]!, b[1]!];
+    expect(b.map((x) => x.stream)).toEqual(["ProductNH3", "H2Feed"]);
+    expect(b0.breakEven).toBe(1.42);
+    expect(breakEvenPriceLine("EUR", b0)).toBe(
+      "NPV = 0 at 1.420 EUR/kg of ProductNH3 (declared 1.000) -- the minimum selling price, every other price held.");
+    expect(breakEvenPriceLine("EUR", b1)).toContain("the highest purchase price the plant can bear");
+  });
+
+  it("leaves the key absent when the engine wrote none, and drops a non-finite row", () => {
+    expect(extractStructured(wrap({ ...BASE, economics: econ({}) }), CASE)
+      .economics!.breakEvenPrices).toBeUndefined();
+    const r = extractStructured(wrap({ ...BASE, economics: econ({
+      breakEvenPrices: [{ stream: "X", role: "product", declared: 1, breakEven: null }] }) }), CASE);
+    expect(r.economics!.breakEvenPrices).toBeUndefined();
   });
 });
