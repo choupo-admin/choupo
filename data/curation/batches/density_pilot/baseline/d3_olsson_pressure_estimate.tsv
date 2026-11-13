@@ -1,0 +1,7 @@
+T_K	P_MPa	P_ref_MPa	factor	dev_pct_after_estimate
+323.15	2	0.1	1.000837	-0.036 (mean of 23)
+323.15	10	0.1	1.004325	+0.028 (mean of 15)
+373.15	10	0.1014	1.004784	+0.180 (mean of 13)
+423.15	10	0.4761	1.005794	+0.178 (mean of 13)
+473.15	10	1.555	1.007259	+0.069 (mean of 16)
+# all in-window points of d3b: AAD after the pressure-step estimate 0.136 %, bias +0.067 %, max 0.329 %
