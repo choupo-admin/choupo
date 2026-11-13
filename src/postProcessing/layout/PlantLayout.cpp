@@ -80,6 +80,12 @@ std::string pipeSubject(const LayoutPipe& p)
     return p.branch.empty() ? p.stream : p.stream + "@" + p.branch;
 }
 
+//  The declared utility lines (C268 slice 2): defined after `evaluate`, so no
+//  line of the code above them moves.
+void routeUtilityLines(const Dictionary& d, const SimulationResult& r,
+                       PlantLayoutRecord& rec, const FindingSink& addFinding);
+void checkUtilityLines(PlantLayoutRecord& rec, const FindingSink& addFinding);
+
 std::string num(scalar v, int prec = 6)
 {
     std::ostringstream o;
@@ -2108,6 +2114,8 @@ void routePipes(const Dictionary& d, const SimulationResult& r,
         for (const auto& bb : branches) rec.pipes.push_back(bb);
     }
 
+    rec.lanesUsed = lane;   // C268 slice 2: the utility lines number on from here
+
     //  ---- A STORE THE ROUTER CANNOT REACH IS A FINDING (C268) ------------
     //  A store attached to a stream that is NOT routed (consumed by two
     //  units, an end the layout cannot reach, indoors) stands with no pipe
@@ -2874,6 +2882,10 @@ void plotOf(const Dictionary& d, PlantLayoutRecord& rec, bool withFence)
         for (const auto& q : p.route)
             take(q[0], q[0], q[1], q[1]);
     }
+    //  The declared utility lines are routes too: every point enters.
+    for (const auto& L : rec.utilityLines)
+        for (const auto& q : L.route)
+            take(q[0], q[0], q[1], q[1]);
     if (rackBand)
     {
         const auto& k = rec.pipeRack;
@@ -5413,6 +5425,10 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     //  ---- the pipes (C80) ---------------------------------------------------
     routePipes(d, r, rec, addFinding);
 
+    //  ---- the declared utility lines (C268 slice 2): on the same rack, on
+    //  the tiers above the process pipes' ------------------------------------
+    routeUtilityLines(d, r, rec, addFinding);
+
     //  ---- the roads (C90): read after the pipes ---------------------------
     if (d.found("roads")) readRoads(d, rec);
 
@@ -5436,6 +5452,7 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
 
     //  ---- the pipe clash (C93): every route final, the fence legs included
     checkPipeClashes(rec, addFinding);
+    checkUtilityLines(rec, addFinding);
 
     //  ---- the truck routes (C96): every road, access point and fence
     //  opening final ---------------------------------------------------------
@@ -5486,6 +5503,21 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
         for (const auto& n : rec.notRouted)
             std::cout << "  " << std::left << std::setw(22) << n.stream
                       << "not routed: " << n.reason << "\n";
+        if (!rec.utilityLines.empty())
+        {
+            scalar ut = 0;
+            for (const auto& L : rec.utilityLines) ut += L.length;
+            std::cout << "[layout] utility lines: " << rec.utilityLines.size()
+                      << " routed (" << num(ut) << " m in all), all unsized\n";
+            for (const auto& L : rec.utilityLines)
+                std::cout << "  " << std::left << std::setw(26) << L.name
+                          << std::setw(22) << L.service
+                          << std::setw(30) << (L.from + " -> " + L.to) << " "
+                          << std::right << std::setw(9) << num(L.length, 5)
+                          << " m  (lane " << L.lane << ", tier " << L.tier + 1
+                          << (L.hasFlow ? ", " + num(L.flow, 5) + " kg/s" : "")
+                          << ")\n";
+        }
         if (rec.roads.present)
         {
             const auto& R = rec.roads;
@@ -5591,6 +5623,418 @@ PlantLayoutRecord evaluate(const Dictionary& d, const SimulationResult& r,
     }
     return rec;
 }
+
+// ===========================================================================
+
+namespace
+{
+
+//  ---- UTILITY LINES (2026-11-13, DEV.md 4c C268 slice 2) ------------------
+//  A utility is not a flowsheet stream, so the engine routes nothing for one
+//  by itself, and the plant's cooling tower, refrigeration package and flare
+//  stood on the plot connected to nothing.  The case DECLARES each line --
+//  `utilityLines ( { name; service; from; to; [fromPort {}] [toPort {}];
+//  [carries { unit; utility; }]; reason; } )`, from a placed item to a placed
+//  item, the flow running from `from` to `to` -- and this routes it on the
+//  SAME rack, by the SAME rule as a process pipe (up from the port's stub to
+//  its lane, across, along the rack, across, down to the target's port; the
+//  ports are the C229 geometry, `portGeometry`, so no second drafting
+//  convention exists).  Three things differ, and each is stated:
+//    * the lane: a utility line takes a lane on a tier ABOVE every process
+//      pipe's (the process pipes' lanes, and so every published process
+//      route, do not move), and the lines of one FAMILY -- cooling water,
+//      refrigerant, flare header -- share a tier, a supply and its return
+//      side by side; a family with more lines than a tier has lanes goes on
+//      to the next tier;
+//    * the ports: several lines on ONE item are spread across the item's
+//      cross extent (a cooling tower takes eight), not stood off by a fifth
+//      of its narrow dimension as process pipes are, which would put the
+//      eighth outside the footprint;
+//    * the size: NONE.  No process pipe is sized either -- the layout carries
+//      no diameter, no velocity, no pressure drop for any pipe -- so a second
+//      sizing rule here would be the first and only one.  Every line is
+//      published `unsized` and says why.
+//  What a line CARRIES is published where the run publishes it: the case
+//  names the unit and the utility, and the engine reads THAT allocation row
+//  of the run (`SimulationResult::utilityAllocation`, kg/s); a row the run
+//  does not carry is a refusal by name.  Nothing is inferred from a service
+//  word.
+struct ServiceRow { const char* word; const char* family; };
+const std::vector<ServiceRow>& utilityServices()
+{
+    static const std::vector<ServiceRow> t = {
+        { "coolingWaterSupply", "coolingWater" },
+        { "coolingWaterReturn", "coolingWater" },
+        { "refrigerantSupply",  "refrigerant"  },
+        { "refrigerantReturn",  "refrigerant"  },
+        { "flareHeader",        "flare"        },
+    };
+    return t;
+}
+
+const char* const kUtilityUnsized =
+    "UNSIZED: the layout sizes no pipe -- no process pipe has a diameter, a"
+    " velocity or a pressure drop either -- so this line is routed and drawn"
+    " at no size, and no size is implied";
+
+void routeUtilityLines(const Dictionary& d, const SimulationResult& r,
+                       PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    if (!d.found("utilityLines")) return;
+    const auto& rack = rec.pipeRack;
+
+    struct Decl
+    {
+        std::string name, service, family, from, to, reason;
+        std::string side[2];
+        scalar      elev[2] = { std::nan(""), std::nan("") };
+        std::string unit, utility;
+    };
+    std::vector<Decl> decls;
+    std::set<std::string> names;
+    std::size_t n = 0;
+    for (const auto& e : d.lookupDictList("utilityLines"))
+    {
+        ++n;
+        Decl x;
+        const std::string w0 = "utilityLines entry " + std::to_string(n);
+        x.name = text(*e, "name", w0);
+        const std::string w = "utility line `" + x.name + "`";
+        if (!names.insert(x.name).second)
+            refuse(w + " is declared twice -- one line, one name");
+        x.service = text(*e, "service", w);
+        for (const auto& s : utilityServices())
+            if (x.service == s.word) x.family = s.family;
+        if (x.family.empty())
+        {
+            std::string all;
+            for (const auto& s : utilityServices())
+                all += (all.empty() ? "" : ", ") + std::string(s.word);
+            refuse(w + ": `service " + x.service + ";` is not a service this"
+                   " layout knows -- one of: " + all);
+        }
+        x.from   = text(*e, "from", w);
+        x.to     = text(*e, "to", w);
+        x.reason = text(*e, "reason", w);
+        if (x.from == x.to)
+            refuse(w + ": `from` and `to` are both `" + x.from + "` -- a line"
+                   " joins two items");
+        const char* keys[2] = { "fromPort", "toPort" };
+        for (int k = 0; k < 2; ++k)
+        {
+            if (!e->found(keys[k])) continue;
+            const auto pd = e->subDict(keys[k]);
+            const std::string ww = w + " " + keys[k];
+            x.side[k] = text(*pd, "side", ww);
+            static const std::set<std::string> faces =
+                { "top", "bottom", "east", "west", "north", "south" };
+            if (!faces.count(x.side[k]))
+                refuse(ww + ": `side " + x.side[k] + ";` -- one of top, bottom,"
+                       " east, west, north, south");
+            if (pd->found("elevation"))
+            {
+                if (x.side[k] == "top" || x.side[k] == "bottom")
+                    refuse(ww + ": `elevation` is for a side face; the top and"
+                           " the bottom have their own height");
+                x.elev[k] = length(*pd, "elevation", ww);
+            }
+        }
+        if (e->found("carries"))
+        {
+            const auto cd = e->subDict("carries");
+            x.unit    = text(*cd, "unit", w + " carries");
+            x.utility = text(*cd, "utility", w + " carries");
+        }
+        decls.push_back(x);
+    }
+
+    //  An end whose item is NOT placed because its sizer REFUSED is not the
+    //  case's mistake (the run goes on, as it does for a process pipe: a
+    //  refused design refuses the ITEM, never the run): the line is NOT
+    //  ROUTED, by a finding naming the sizer's refusal.  Any other absent
+    //  item is a declaration error and is refused.
+    auto itemOf = [&](const std::string& id, const std::string& w) -> const LayoutItem*
+    {
+        for (const auto& i : rec.items) if (i.id == id) return &i;
+        if (refusedSizingOf(r, id)) return nullptr;
+        refuse(w + ": item `" + id + "` is not placed in `items` -- a utility"
+               " line joins two PLACED items");
+    };
+
+    //  The lines on each item, in declaration order: the k-th of n.
+    std::map<std::string, int> onItem, seenOn;
+    for (const auto& x : decls) { ++onItem[x.from]; ++onItem[x.to]; }
+
+    //  Tiers: first free tier above the process pipes', one block of tiers
+    //  per family in the order the case first names it.
+    const int perTier = rack.lanesPerTier;
+    std::vector<std::string> famOrder;
+    std::map<std::string, int> famCount;
+    for (const auto& x : decls)
+    {
+        if (!famCount.count(x.family)) famOrder.push_back(x.family);
+        ++famCount[x.family];
+    }
+    std::map<std::string, int> famBase, famSeen;
+    int tier0 = (rec.lanesUsed + perTier - 1) / perTier;
+    for (const auto& f : famOrder)
+    {
+        famBase[f] = tier0;
+        tier0 += (famCount[f] + perTier - 1) / perTier;
+    }
+
+    for (const auto& x : decls)
+    {
+        const std::string w = "utility line `" + x.name + "`";
+        const LayoutItem* pA = itemOf(x.from, w);
+        const LayoutItem* pB = itemOf(x.to, w);
+        if (!pA || !pB)
+        {
+            const std::string& gone = !pA ? x.from : x.to;
+            addFinding("utilityNotRouted", x.name, gone, 0.0, 0.0, "warning",
+                w + " is NOT ROUTED: `" + gone + "` is not on the plot plan"
+                " because its sizer refused (" + refusedSizingOf(r, gone)->second
+                + ")");
+            continue;
+        }
+        const LayoutItem& A = *pA;
+        const LayoutItem& B = *pB;
+        if (!A.room.empty() || !B.room.empty())
+        {
+            addFinding("utilityNotRouted", x.name, A.room.empty() ? B.id : A.id,
+                0.0, 0.0, "warning",
+                w + " is NOT ROUTED: `" + (A.room.empty() ? B.id : A.id)
+                + "` stands inside the declared building, and indoor piping is"
+                  " not routed (C100)");
+            continue;
+        }
+        LayoutUtilityLine L;
+        L.name = x.name; L.service = x.service; L.family = x.family;
+        L.from = A.id; L.to = B.id; L.reason = x.reason;
+        L.sizeState = "unsized"; L.sizeNote = kUtilityUnsized;
+
+        //  ---- the two ports --------------------------------------------
+        PortGeom g[2];
+        const LayoutItem* it[2] = { &A, &B };
+        for (int k = 0; k < 2; ++k)
+        {
+            const LayoutItem& I = *it[k];
+            const LayoutItem& O = *it[1 - k];
+            const bool declared = !x.side[k].empty();
+            PortReq q;
+            q.item   = &I;
+            q.port   = "utility";
+            q.face   = declared ? x.side[k] : "top";
+            q.origin = declared ? "declared" : "convention";
+            q.frac   = 0.5;
+            if (!std::isnan(x.elev[k]))
+            {
+                if (x.elev[k] < I.z - kTol || x.elev[k] > I.z + I.dz + kTol)
+                    refuse(w + ": `elevation " + num(x.elev[k]) + " m` is not on"
+                           " `" + I.id + "` (its base is " + num(I.z) + " m, its"
+                           " top " + num(I.z + I.dz) + " m)");
+                q.zAbs = x.elev[k];
+            }
+            q.role = "utility line `" + x.name + "` (" + x.service + "): "
+                   + (declared ? "the face the case declared"
+                               : "the item's top, one nozzle per line spread"
+                                 " across its cross extent (a drafting convention)");
+            const int sign = O.x >= I.x ? 1 : -1;
+            g[k] = portGeometry(I, q, sign, 0);
+            //  Spread n lines on one item across its cross extent.
+            const int total = onItem[I.id];
+            const int idx   = seenOn[I.id]++;
+            if (total > 1)
+            {
+                const bool across_y =
+                    q.face == "east" || q.face == "west"
+                    || ((q.face == "top" || q.face == "bottom")
+                        && I.orientation != "alongY");
+                const scalar ext = across_y ? I.dy : I.dx;
+                const scalar pitch = 0.8 * ext / scalar(total - 1);
+                const scalar t = (scalar(idx) - 0.5 * scalar(total - 1)) * pitch;
+                for (auto& pt : g[k].lead) pt[across_y ? 1 : 0] += t;
+                g[k].nozzle[across_y ? 1 : 0] += t;
+            }
+        }
+        auto portOf = [&](int k) {
+            LayoutPort p;
+            p.item = it[k]->id; p.port = "utility";
+            p.role = "utility line `" + x.name + "`";
+            p.origin = x.side[k].empty() ? "convention" : "declared";
+            p.point = g[k].nozzle; p.leaves = g[k].lead.back();
+            return p;
+        };
+        L.fromPort = portOf(0);
+        L.toPort   = portOf(1);
+
+        //  ---- the lane and the route (the rack router's own shape) ------
+        const int kf = famSeen[x.family]++;
+        L.lane = famBase[x.family] * perTier + kf;
+        L.tier = L.lane / perTier;
+        scalar ly = 0, lz = 0;
+        laneAt(rack, L.lane, ly, lz);
+        std::vector<Pt> pts;
+        for (const auto& q : g[0].lead) pts.push_back(q);
+        {
+            const Pt& dep = g[0].lead.back();
+            pts.push_back({ dep[0], dep[1], lz });
+            pts.push_back({ dep[0], ly, lz });
+        }
+        {
+            const Pt& dep = g[1].lead.back();
+            pts.push_back({ dep[0], ly, lz });
+            pts.push_back({ dep[0], dep[1], lz });
+            for (auto q = g[1].lead.rbegin(); q != g[1].lead.rend(); ++q)
+                pts.push_back(*q);
+        }
+        L.route = tidy(pts);
+        for (std::size_t i = 1; i < L.route.size(); ++i)
+            L.length += segLength(L.route[i - 1], L.route[i]);
+
+        //  ---- what it carries, where the run publishes it ---------------
+        if (!x.unit.empty())
+        {
+            const UtilityAllocation* row = nullptr;
+            for (const auto& u : r.utilityAllocation)
+                if (u.unit == x.unit && u.utility == x.utility && u.allocated)
+                    row = &u;
+            if (!row)
+                refuse(w + ": `carries { unit " + x.unit + "; utility "
+                       + x.utility + "; }` names an allocation the run does not"
+                         " carry (the unit's duty is not served by that utility"
+                         " in this run) -- check system/postDict and the"
+                         " utilityAllocation of the result");
+            L.carries = x.unit + " / " + x.utility;
+            L.hasFlow = true;
+            L.flow    = row->kg_s;
+            L.flowSource = "the run's utility allocation of unit `" + x.unit
+                         + "` on `" + x.utility + "`: mass flow = |duty| / the"
+                           " utility's duty per kg, " + num(row->kg_s)
+                         + " kg/s (the run's own number, not an estimate)";
+        }
+        rec.utilityLines.push_back(L);
+    }
+
+    if (!rec.utilityLines.empty())
+    {
+        scalar total = 0;
+        int tLo = rec.utilityLines.front().tier, tHi = tLo;
+        for (const auto& L : rec.utilityLines)
+        {
+            total += L.length;
+            tLo = std::min(tLo, L.tier);
+            tHi = std::max(tHi, L.tier);
+        }
+        announce("info", "layout",
+            std::to_string(rec.utilityLines.size()) + " utility line(s) routed on"
+            " the pipe rack, on tiers " + std::to_string(tLo + 1)
+            + " to " + std::to_string(tHi + 1)
+            + " above the process pipes' lanes ("
+            + num(total, 6) + " m in all); " + kUtilityUnsized);
+    }
+}
+
+//  UTILITY LINES CHECKED (2026-11-13, DEV.md 4c C268 slice 2): every route
+//  final, the same three checks a process pipe gets, each a FINDING (a draft
+//  to move, never a refusal), and each naming the line by the case's own name:
+//    utilityClash       a segment through an item's footprint below its top
+//                       (the router steers round nothing, as for a pipe);
+//    utilityCrossesRoad a segment below the roads' declared headroom over
+//                       paved ground;
+//    utilityThroughBund a horizontal run below a containment's wall top
+//                       through its wall.
+//  (utilityNotRouted -- an end indoors -- is raised where the line is built.)
+//  NOT checked, as for the process pipes: a line against another line.
+void checkUtilityLines(PlantLayoutRecord& rec, const FindingSink& addFinding)
+{
+    for (const auto& L : rec.utilityLines)
+    {
+        const std::string w = "utility line `" + L.name + "`";
+        //  ---- through an item
+        for (const auto& it : rec.items)
+        {
+            if (it.id == L.from || it.id == L.to) continue;
+            if (!it.room.empty()) continue;
+            const scalar zb = it.z + kTol, zt = it.z + it.dz - kTol;
+            for (std::size_t k = 1; k < L.route.size(); ++k)
+            {
+                const auto& a = L.route[k - 1];
+                const auto& b = L.route[k];
+                scalar t0, t1;
+                if (!planInside(it, a, b, t0, t1)) continue;
+                const scalar za = a[2] + t0 * (b[2] - a[2]);
+                const scalar zz = a[2] + t1 * (b[2] - a[2]);
+                const scalar zLo = std::min(za, zz), zHi = std::max(za, zz);
+                if (zHi <= zb || zLo >= zt) continue;
+                addFinding("utilityClash", L.name, it.id, zLo, it.z + it.dz,
+                    "warning",
+                    w + " runs THROUGH `" + it.id + "`: its segment from ("
+                    + num(a[0]) + ", " + num(a[1]) + ", " + num(a[2]) + ") to ("
+                    + num(b[0]) + ", " + num(b[1]) + ", " + num(b[2])
+                    + ") m crosses the item's footprint at " + num(zLo)
+                    + " m, below its top at " + num(it.z + it.dz) + " m.  The"
+                    " router does not steer round items: move the item or an"
+                    " end of the line");
+                break;
+            }
+        }
+        //  ---- over a road, below the headroom
+        if (rec.roads.present)
+            for (const auto& rd : rec.roads.roads)
+            {
+                bool hit = false;
+                for (std::size_t s = 0; s + 1 < L.route.size() && !hit; ++s)
+                {
+                    const auto& a = L.route[s];
+                    const auto& b = L.route[s + 1];
+                    const scalar zLow = std::min(a[2], b[2]);
+                    if (zLow >= rec.roads.headroom - kTol) continue;
+                    const LayoutArea seg{ "", std::min(a[0], b[0]), std::max(a[0], b[0]),
+                                              std::min(a[1], b[1]), std::max(a[1], b[1]) };
+                    for (const auto& pr : pavedRects(rd))
+                        if (seg.xMin < pr.xMax - kTol && pr.xMin < seg.xMax + kTol
+                            && seg.xMax > pr.xMin + kTol
+                            && seg.yMin < pr.yMax - kTol && seg.yMax > pr.yMin + kTol)
+                        {
+                            hit = true;
+                            addFinding("utilityCrossesRoad", L.name, rd.id, zLow,
+                                rec.roads.headroom, "warning",
+                                w + " crosses road `" + rd.id + "` " + num(zLow)
+                                + " m above grade, below the " + num(rec.roads.headroom)
+                                + " m headroom the network declares -- raise its"
+                                  " route or move the road");
+                            break;
+                        }
+                }
+            }
+        //  ---- through a containment's wall
+        for (const auto& b : rec.bunds)
+        {
+            const auto p = outlineOf(b);
+            bool through = false;
+            for (std::size_t s = 0; s + 1 < L.route.size() && !through; ++s)
+            {
+                const auto& u = L.route[s];
+                const auto& v = L.route[s + 1];
+                if (std::fabs(u[2] - v[2]) > kTol) continue;   // a riser
+                if (u[2] >= b.wallHeight - kTol) continue;     // over the wall
+                const P2 a { u[0], u[1] }, c { v[0], v[1] };
+                for (std::size_t k = 0; k < p.size() && !through; ++k)
+                    if (segmentsCross(a, c, p[k], p[(k + 1) % p.size()]))
+                        through = true;
+            }
+            if (through)
+                addFinding("utilityThroughBund", L.name, b.id, 0.0, b.wallHeight,
+                    "warning",
+                    w + " passes THROUGH the wall of bund `" + b.id + "`, below"
+                    " its " + num(b.wallHeight) + " m top: a penetration the"
+                    " spill can leave by unless it is sealed");
+        }
+    }
+}
+
+} // anonymous namespace
 
 // ===========================================================================
 

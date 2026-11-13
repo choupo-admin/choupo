@@ -1,6 +1,6 @@
 # Pack: plant layout (plot plan) and the GMP building interior
 
-budget: 3000 words (~4800 tokens)
+budget: 3150 words (~5000 tokens)
 
 Read this pack when the design must say WHERE things stand: a plot plan with
 the sized equipment, a pipe rack, roads, a fence, hazardous-area zones; or,
@@ -54,6 +54,13 @@ pipeRack { y 5 m; elevation 6 m; laneSpacing 0.5 m; lanesPerTier 4; tierSpacing 
 pipes { <stream> { waypoints ( { x; y; z; } ... ); } }     // override one route
 ports { <stream> { item <id>; side top|bottom|east|west|north|south;
                    [elevation 2 m;] } }                     // move one pipe end's port
+utilityLines ( { name "CW-X-supply"; service coolingWaterSupply|coolingWaterReturn|
+                  refrigerantSupply|refrigerantReturn|flareHeader;
+                  from "<item>"; to "<item>";            // the flow runs from -> to
+                  [fromPort { side top|bottom|east|west|north|south; [elevation 2 m;] }]
+                  [toPort { ... }]
+                  [carries { unit <unit>; utility <utility>; }]   // reads the run's allocation row
+                  reason "..."; } );
 typicals ( { typical "train"; index "train"; count 6; pitch { x 19 m; y 0 m; }
              members ( "RO1/train1" ... ); source; reason; } );
 areas { <SECTOR> { xMin; xMax; yMin; yMax; } }             // sectored cases only
@@ -108,6 +115,13 @@ building { ... }                                           // §4
   item leaves its streams unrouted, and the router does not steer round
   items: a segment through a footprint is announced `pipeClash`.  No pressure
   drop here.  Absent `pipeRack`, a stated default is used and announced.
+* UTILITY LINES are DECLARED in `utilityLines` (a utility is not a stream, so
+  nothing is inferred): routed on the SAME rack above the process pipes' tiers
+  (no process route moves), ports as above, every line UNSIZED (no pipe is sized
+  here).  `carries` reads that unit's utility allocation row (kg/s) as
+  `utilityFlow`; a row the run lacks is refused.  Findings: `utilityClash`,
+  `utilityCrossesRoad`, `utilityThroughBund`, `utilityNotRouted`.  Design Guide
+  \S\ref{utility-lines}.
 * The plot is the envelope of the footprints, the routed pipes, the roads
   and the sector areas, grown by `plot.margin`.  Absent margin: 0 m,
   announced (the area is a lower bound).  `economics { land { price; source;

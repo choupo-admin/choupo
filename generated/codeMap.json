@@ -408,9 +408,6 @@
   "ConstantRejection": [
    "src/unitOperations/membrane/transport/ConstantRejection.H"
   ],
-  "ConstantSource": [
-   "src/core/PropertySourceLog.H"
-  ],
   "Constants": [
    "src/thermo/equationOfState/CubicEoS.H"
   ],
@@ -428,9 +425,6 @@
   ],
   "ConstraintSpec": [
    "src/outerDriver/ConstraintSpec.H"
-  ],
-  "Consumer": [
-   "src/thermo/LiquidPropertyDoor.H"
   ],
   "Context": [
    "src/postProcessing/panel/PanelPass.H",
@@ -1187,14 +1181,14 @@
   "LayoutTypical": [
    "src/core/ResultRecords.H"
   ],
+  "LayoutUtilityLine": [
+   "src/core/ResultRecords.H"
+  ],
   "LayoutWind": [
    "src/core/ResultRecords.H"
   ],
   "LayoutZone": [
    "src/core/ResultRecords.H"
-  ],
-  "Leaf": [
-   "src/thermo/LiquidPropertyDoor.H"
   ],
   "Ledger": [
    "src/thermo/RecordResolver.H"
@@ -1393,9 +1387,6 @@
   ],
   "NRTrace": [
    "src/solver/NewtonRaphson.H"
-  ],
-  "NamedSource": [
-   "src/core/PropertySourceLog.H"
   ],
   "Need": [
    "src/unitOperations/UnitAcceptance.H"
@@ -1680,9 +1671,6 @@
   "PromotionOverride": [
    "src/core/Origin.H"
   ],
-  "PropertyDomainError": [
-   "src/thermo/PropertyDomainError.H"
-  ],
   "PropertyOperation": [
    "src/propertyOps/PropertyOperation.H"
   ],
@@ -1703,9 +1691,6 @@
   ],
   "PropertyScanTernary": [
    "src/propertyOps/PropertyScanTernary.H"
-  ],
-  "PropertySourceLog": [
-   "src/core/PropertySourceLog.H"
   ],
   "Props": [
    "src/thermo/iapws/IF97.H"
@@ -1745,9 +1730,6 @@
   ],
   "QPResult": [
    "src/solver/ActiveSetQP.H"
-  ],
-  "Quality": [
-   "src/thermo/LiquidPropertyDoor.H"
   ],
   "QuasiSteadyUnit": [
    "src/unitOperations/dynamic/QuasiSteadyUnit.H"
@@ -1869,7 +1851,6 @@
    "src/thermo/Database.H"
   ],
   "Result": [
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/electrolyte/AqueousVolumetric.H",
    "src/unitOperations/distillation/PackingRBF.H",
    "src/unitOperations/distillation/TrayEfficiency.H",
@@ -1975,7 +1956,6 @@
    "src/unitOperations/membrane/pressureDrop/SchockMiquelDrop.H"
   ],
   "Scope": [
-   "src/core/PropertySourceLog.H",
    "src/propertyOps/LleResidual.H"
   ],
   "Screen": [
@@ -2226,9 +2206,6 @@
   "TabularSizeDistribution": [
    "src/core/distribution/TabularSizeDistribution.H"
   ],
-  "Taken": [
-   "src/core/PropertySourceLog.H"
-  ],
   "Target": [
    "src/outerDriver/DesignSpec.H"
   ],
@@ -2340,9 +2317,6 @@
   ],
   "UnmodelledSolutes": [
    "src/thermo/electrolyte/UnmodelledSolutes.H"
-  ],
-  "Used": [
-   "src/core/PropertySourceLog.H"
   ],
   "UtilitiesReport": [
    "src/reporting/UtilitiesReport.H"
@@ -3619,7 +3593,6 @@
    "src/core/PanelRecords.H",
    "src/core/PortRoles.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -3678,7 +3651,6 @@
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
-   "src/unitOperations/PropertySourceDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
@@ -3692,7 +3664,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/dynamicDriver/DynamicDriver.H",
    "src/solver/Convergence.H",
@@ -3721,7 +3692,6 @@
    "src/thermo/ChemistrySystem.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SurfaceTensionModel.H",
@@ -3755,7 +3725,6 @@
    "src/core/Origin.H",
    "src/core/PanelRecords.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/PublishedTable.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
@@ -3813,7 +3782,6 @@
   "src/applications/choupoProps/registerUserTypesStub.cpp": [],
   "src/applications/choupoProps/wasmEntry.cpp": [],
   "src/applications/choupoSemiContinuous/main.cpp": [
-   "src/core/PropertySourceLog.H",
    "src/dynamicDriver/DynamicDriver.H"
   ],
   "src/applications/choupoSemiContinuous/wasmEntry.cpp": [],
@@ -3836,7 +3804,6 @@
    "src/core/PanelRecords.H",
    "src/core/PortRoles.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/PublishedTable.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
@@ -4080,9 +4047,6 @@
   "src/core/OdsWriter.cpp": [
    "src/core/MiniZip.H",
    "src/core/OdsWriter.H"
-  ],
-  "src/core/PropertySourceLog.cpp": [
-   "src/core/PropertySourceLog.H"
   ],
   "src/core/RegistryRefusal.cpp": [
    "src/core/DictAudit.H",
@@ -5411,7 +5375,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PricedDensity.H",
    "src/thermo/RecordResolver.H",
@@ -5539,7 +5502,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PricedDensity.H",
    "src/thermo/RecordResolver.H",
@@ -5575,7 +5537,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SaturationCurves.H",
@@ -5718,7 +5679,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SaturationCurves.H",
@@ -6041,30 +6001,18 @@
    "src/thermo/RecordResolver.H"
   ],
   "src/propertyOps/ENRTLMixedSolventOp.cpp": [
-   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
-   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/FitGrade.H",
-   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
-   "src/thermo/ReviewRecord.H",
-   "src/thermo/ThermoAnnounce.H",
-   "src/thermo/electrolyte/ENRTLMixedSolvent.H",
-   "src/thermo/electrolyte/ENRTLSingleSalt.H",
-   "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H",
-   "src/thermo/electrolyte/PitzerForm.H",
-   "src/thermo/electrolyte/PitzerSingleSalt.H",
-   "src/thermo/electrolyte/SaltFromCatalogue.H",
-   "src/thermo/electrolyte/SolventProperties.H"
+   "src/thermo/electrolyte/ENRTLMixedSolvent.H"
   ],
   "src/propertyOps/ENRTLMultiSaltOp.cpp": [
    "src/core/Advisory.H",
@@ -6503,7 +6451,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/HansenMixture.H",
@@ -7243,7 +7190,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/PublishedTable.H",
    "src/core/Types.H",
    "src/propertyOps/PropertyOperation.H",
@@ -8108,7 +8054,6 @@
    "src/core/Origin.H",
    "src/core/PanelRecords.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -8268,7 +8213,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/core/distribution/SizeDistribution.H",
@@ -8385,24 +8329,6 @@
    "src/thermo/AtomicWeights.H",
    "src/thermo/Component.H",
    "src/thermo/ElementComposition.H"
-  ],
-  "src/thermo/LiquidPropertyDoor.cpp": [
-   "src/core/Constants.H",
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Identifiers.H",
-   "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
-   "src/core/Types.H",
-   "src/solver/Convergence.H",
-   "src/thermo/Component.H",
-   "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
-   "src/thermo/PackageAudit.H",
-   "src/thermo/RecordResolver.H",
-   "src/thermo/ThermoPackage.H",
-   "src/thermo/VapourAssociation.H",
-   "src/thermo/pureFluid/PureFluidModel.H"
   ],
   "src/thermo/PackageAudit.cpp": [
    "src/core/Constants.H",
@@ -8522,7 +8448,6 @@
    "src/thermo/FitGrade.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
-   "src/thermo/PropertyDomainError.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ReviewRecord.H",
    "src/thermo/SurfaceTensionModel.H",
@@ -8759,7 +8684,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/thermo/ApproximationAuthorisation.H",
@@ -9308,7 +9232,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/equationOfState/EquationOfState.H",
@@ -9654,7 +9577,6 @@
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -9722,7 +9644,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/thermo/Component.H",
    "src/thermo/transport/LiquidDiffusivityModel.H",
@@ -9773,10 +9694,6 @@
    "src/core/Types.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/thermo/vaporPressure/Wagner.H"
-  ],
-  "src/unitOperations/PropertySourceDeclarations.cpp": [
-   "src/core/PropertySourceLog.H",
-   "src/unitOperations/PropertySourceDeclarations.H"
   ],
   "src/unitOperations/UnitAcceptance.cpp": [
    "src/core/Advisory.H",
@@ -10015,7 +9932,6 @@
    "src/core/Origin.H",
    "src/core/PanelRecords.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -10093,7 +10009,6 @@
    "src/core/Origin.H",
    "src/core/PanelRecords.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
@@ -10220,7 +10135,6 @@
    "src/core/Origin.H",
    "src/core/PanelRecords.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -10322,7 +10236,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -10342,7 +10255,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/core/distribution/SizeGrid.H",
@@ -10377,7 +10289,6 @@
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
@@ -10388,7 +10299,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SaturationCurves.H",
@@ -10466,12 +10376,10 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PricedDensity.H",
    "src/thermo/RecordResolver.H",
@@ -10562,7 +10470,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -10592,7 +10499,6 @@
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -10605,7 +10511,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/streams/Composition.H",
@@ -10626,7 +10531,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
@@ -10660,7 +10564,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -10830,7 +10733,6 @@
    "src/core/Origin.H",
    "src/core/PanelRecords.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -10914,7 +10816,6 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/unitOperations/PropertySourceDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flowsheet/Flowsheet.H",
@@ -11072,7 +10973,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoAnnounce.H",
@@ -11160,7 +11060,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -11214,7 +11113,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/core/distribution/SizeGrid.H",
@@ -11227,7 +11125,6 @@
    "src/streams/StreamMass.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/SolidMixture.H",
@@ -11306,7 +11203,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -11314,7 +11210,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -11380,7 +11275,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
@@ -11416,7 +11310,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/core/Units.H",
@@ -11427,7 +11320,6 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/FitGrade.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
@@ -11749,7 +11641,6 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -11880,7 +11771,6 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/ProblemDivergence.H",
-   "src/core/PropertySourceLog.H",
    "src/core/RegistryRefusal.H",
    "src/core/Types.H",
    "src/core/Units.H",
@@ -12137,7 +12027,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
@@ -12237,7 +12126,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -12260,7 +12148,6 @@
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
-   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/result/ClosureVariable.H",
    "src/result/UnitProfile.H",
@@ -12725,7 +12612,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -12823,7 +12709,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
@@ -12879,7 +12764,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PricedDensity.H",
    "src/thermo/RecordResolver.H",
@@ -12907,7 +12791,6 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PricedDensity.H",
    "src/thermo/RecordResolver.H",
@@ -13023,7 +12906,6 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -13510,7 +13392,6 @@
    "src/streams/StreamStateIO.cpp",
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/Component.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
@@ -13847,7 +13728,6 @@
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ElementComposition.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/ReviewRecord.cpp",
@@ -14251,7 +14131,6 @@
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ElementComposition.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/ReviewRecord.cpp",
@@ -14741,7 +14620,6 @@
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ElementComposition.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
@@ -15074,7 +14952,6 @@
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ElementComposition.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
@@ -15435,44 +15312,6 @@
    "src/unitOperations/reactor/PFR.cpp",
    "src/unitOperations/reactor/ReactionHeat.cpp"
   ],
-  "src/core/PropertySourceLog.H": [
-   "src/applications/choupoBatch/main.cpp",
-   "src/applications/choupoCtrl/main.cpp",
-   "src/applications/choupoProps/main.cpp",
-   "src/applications/choupoSemiContinuous/main.cpp",
-   "src/applications/choupoSolve/main.cpp",
-   "src/core/PropertySourceLog.cpp",
-   "src/propertyOps/HansenMixture.cpp",
-   "src/propertyOps/SolubilityParameter.cpp",
-   "src/result/ResultEmitter.cpp",
-   "src/streams/StreamStateIO.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
-   "src/thermo/activityCoefficient/Wilson.cpp",
-   "src/thermo/phase/SaturatedVapour.cpp",
-   "src/thermo/transport/WilkeChang.cpp",
-   "src/unitOperations/PropertySourceDeclarations.cpp",
-   "src/unitOperations/batch/BatchDiafilter.cpp",
-   "src/unitOperations/batch/BatchElectrodialysis.cpp",
-   "src/unitOperations/batch/BatchUnitOperation.cpp",
-   "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
-   "src/unitOperations/crystallisation/Crystalliser.cpp",
-   "src/unitOperations/distillation/DistillationColumn.cpp",
-   "src/unitOperations/distillation/TrayHydraulics.cpp",
-   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
-   "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
-   "src/unitOperations/electrochem/EDCell.cpp",
-   "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
-   "src/unitOperations/flowsheet/Flowsheet.cpp",
-   "src/unitOperations/heatTransfer/SprayDryer.cpp",
-   "src/unitOperations/hydraulics/Pipe.cpp",
-   "src/unitOperations/membrane/RatedTestInversion.cpp",
-   "src/unitOperations/membrane/SpiralWoundModule.cpp",
-   "src/unitOperations/reactor/CSTR.cpp",
-   "src/unitOperations/reactor/PFR.cpp",
-   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
-   "src/unitOperations/rotating/PressureExchanger.cpp",
-   "src/unitOperations/rotating/Pump.cpp"
-  ],
   "src/core/PublishedTable.H": [
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
@@ -15754,7 +15593,6 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -16019,7 +15857,6 @@
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ElementComposition.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/ReviewRecord.cpp",
@@ -17766,7 +17603,6 @@
    "src/streams/SpeciationBlock.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/streams/UtilityCircuit.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SolidMixture.cpp",
@@ -18426,7 +18262,6 @@
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/ElementComposition.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
@@ -18737,7 +18572,6 @@
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SealCheck.cpp",
@@ -18906,7 +18740,6 @@
    "src/unitOperations/heatTransfer/Heater.cpp"
   ],
   "src/thermo/FitGrade.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -18941,27 +18774,6 @@
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
    "src/unitOperations/membrane/transport/SDEM.cpp",
    "src/unitOperations/separation/IonExchanger.cpp"
-  ],
-  "src/thermo/LiquidPropertyDoor.H": [
-   "src/applications/choupoProps/PropertyRouteBench.cpp",
-   "src/postProcessing/sizing/GasStoreSize.cpp",
-   "src/postProcessing/sizing/PhaseDensity.cpp",
-   "src/postProcessing/sizing/PipeHeaderSize.cpp",
-   "src/postProcessing/sizing/ShellTubeHX.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
-   "src/thermo/transport/StokesEinstein.cpp",
-   "src/unitOperations/distillation/DistillationColumn.cpp",
-   "src/unitOperations/distillation/TrayHydraulics.cpp",
-   "src/unitOperations/dynamic/VariableVolumeHoldup.cpp",
-   "src/unitOperations/heatTransfer/HeatExchanger.cpp",
-   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
-   "src/unitOperations/heatTransfer/SprayDryer.cpp",
-   "src/unitOperations/hydraulics/Pipe.cpp",
-   "src/unitOperations/membrane/SpiralWoundModule.cpp",
-   "src/unitOperations/solids/Hydrocyclone.cpp",
-   "src/unitOperations/solids/SolidLiquidCore.cpp",
-   "src/unitOperations/storage/StorageTank.cpp",
-   "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/PackageAudit.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -19085,7 +18897,6 @@
    "src/streams/SpeciationBlock.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/streams/UtilityCircuit.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
@@ -19202,7 +19013,6 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/PairAudit.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -19251,9 +19061,6 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
-  ],
-  "src/thermo/PropertyDomainError.H": [
-   "src/thermo/ThermoPackage.cpp"
   ],
   "src/thermo/RecordResolver.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -19400,7 +19207,6 @@
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SealCheck.cpp",
@@ -19534,7 +19340,6 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/ReviewRecord.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -19698,7 +19503,6 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -19871,7 +19675,6 @@
    "src/streams/SpeciationBlock.cpp",
    "src/streams/StreamStateIO.cpp",
    "src/streams/UtilityCircuit.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SolidMixture.cpp",
@@ -20122,7 +19925,6 @@
    "src/streams/StreamStateIO.cpp",
    "src/streams/UtilityCircuit.cpp",
    "src/thermo/Component.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PricedDensity.cpp",
    "src/thermo/SaturationCurves.cpp",
    "src/thermo/SolidMixture.cpp",
@@ -20397,7 +20199,6 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp"
   ],
   "src/thermo/electrolyte/ENRTLSingleSalt.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20452,7 +20253,6 @@
    "src/unitOperations/heatTransfer/Evaporator.cpp"
   ],
   "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20501,7 +20301,6 @@
    "src/thermo/electrolyte/OlssonNaOH.cpp"
   ],
   "src/thermo/electrolyte/PitzerForm.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20538,7 +20337,6 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp"
   ],
   "src/thermo/electrolyte/PitzerSingleSalt.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20579,7 +20377,6 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/thermo/electrolyte/SaltFromCatalogue.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20613,7 +20410,6 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/thermo/electrolyte/SolventProperties.H": [
-   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20939,7 +20735,6 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
-   "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/equationOfState/ReferencePureFluid.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -21303,11 +21098,6 @@
   "src/thermo/vaporPressure/Wagner.H": [
    "src/thermo/vaporPressure/VaporPressureModel.cpp",
    "src/thermo/vaporPressure/Wagner.cpp"
-  ],
-  "src/unitOperations/PropertySourceDeclarations.H": [
-   "src/applications/choupoBatch/main.cpp",
-   "src/unitOperations/PropertySourceDeclarations.cpp",
-   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp"
   ],
   "src/unitOperations/UnitAcceptance.H": [
    "src/applications/choupoBatch/main.cpp",

@@ -185,6 +185,9 @@ export function layoutKpis(l: PlantLayout | undefined): FactKpi[] {
     { label: "Pipes routed", value: `${s.pipes} (${sig(s.pipeLength, 4)} m)`,
       source: "layout.summary.pipes" },
   ];
+  if (s.utilityLines !== undefined && s.utilityLines > 0 && s.utilityLength !== undefined)
+    out.push({ label: "Utility lines", value: `${s.utilityLines} (${sig(s.utilityLength, 4)} m, unsized)`,
+               source: "layout.summary.utilityLines" });
   if (s.notRouted > 0)
     out.push({ label: "Not routed", value: String(s.notRouted), source: "layout.summary.notRouted" });
   out.push({ label: "Layout findings", value: String(s.findings), source: "layout.summary.findings" });

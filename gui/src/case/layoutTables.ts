@@ -41,7 +41,10 @@ License
 \*---------------------------------------------------------------------------*/
 
 import type { LayoutPipeRack, PlantLayout } from "../adapters/SolverAdapter.js";
-import { endName, PHASE_WORDS, phaseOf, pipeId, SPEED_RULE, type Phase } from "./plantLayout.js";
+import {
+  endName, PHASE_WORDS, phaseOf, pipeId, SPEED_RULE, utilityWord, UTILITY_FAMILY_WORDS,
+  type Phase,
+} from "./plantLayout.js";
 
 /** The particle each phase carries, as a word for the legend. */
 export const PARTICLE_WORD: Record<Phase, string> = {
@@ -153,6 +156,57 @@ export function pipeRegister(layout: PlantLayout): PipeRegisterView | null {
     solids: notRouted.filter((n) => n.solids).map((n) => n.stream),
     indoor: notRouted.filter((n) => n.indoor && !n.anchor)
       .map((n) => ({ stream: n.stream, reason: n.reason })),
+  };
+}
+
+export const UTILITY_REGISTER_CAPTION =
+  "Utility lines: declared by the case in system/layoutDict, routed by the engine on the rack"
+  + " tiers above the process pipes and checked like them.  No line is sized: the layout sizes"
+  + " no pipe.  The flow is the run's own utility allocation where the case named one.";
+
+export interface UtilityRow {
+  id: string;
+  name: string;
+  service: string;
+  family: string;
+  ends: string;
+  tier: string;
+  flow: string;
+  size: string;
+  length: string;
+}
+
+export interface UtilityRegisterView {
+  rows: UtilityRow[];
+  total: { label: string; length: string };
+  /** One entry per family present: the word the legend prints beside its swatch. */
+  families: { family: string; word: string }[];
+}
+
+/** The utility lines the engine routed, one row each; null when the case
+ *  declares none.  Every cell is the engine's, formatted. */
+export function utilityRegister(layout: PlantLayout): UtilityRegisterView | null {
+  const lines = layout.utilityLines ?? [];
+  if (lines.length === 0) return null;
+  const rows = lines.map((u): UtilityRow => ({
+    id: u.id,
+    name: u.name,
+    service: utilityWord(u.service),
+    family: u.family,
+    ends: `${endName(u.fromKind, u.from)} → ${endName(u.toKind, u.to)}`,
+    tier: String(u.tier + 1),
+    flow: u.utilityFlow === undefined || !Number.isFinite(u.utilityFlow)
+      ? "" : u.utilityFlow.toPrecision(4),
+    size: u.sizeState,
+    length: u.length.toFixed(1),
+  }));
+  const total = lines.reduce((a, u) => a + u.length, 0);
+  const seen: string[] = [];
+  for (const u of lines) if (!seen.includes(u.family)) seen.push(u.family);
+  return {
+    rows,
+    total: { label: `${lines.length} utility lines, in all`, length: total.toFixed(1) },
+    families: seen.map((f) => ({ family: f, word: UTILITY_FAMILY_WORDS[f] ?? f })),
   };
 }
 

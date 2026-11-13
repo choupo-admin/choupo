@@ -2285,6 +2285,113 @@ in \emph{flow order} along the rack, so most lines run straight along it.
   cannot, the road moves, not the rule.
 \end{itemize}
 
+\hypertarget{utility-lines}{%
+\subsection{Utility lines: cooling water, refrigerant and the flare
+header}\label{utility-lines}}\label{sec:utility-lines}
+
+A utility is not a flowsheet stream. The engine routes every material
+stream by itself, but it routes nothing for the cooling water that a
+cooler takes, the refrigerant that boils in a chiller or the relief gas
+that goes to the flare, and a plot plan that shows the cooling tower, the
+refrigeration package and the flare standing apart from everything is
+not finished: it is missing the lines that tie them to the process. The
+case therefore \emph{declares} each utility line in
+\texttt{system/layoutDict}, and the engine routes and checks what was
+declared.
+
+\textbf{What is declared.} One entry of \texttt{utilityLines} per line:
+
+\begin{verbatim}
+utilityLines
+(
+  {
+    name     "CW-N2Cooler-supply";            // unique
+    service  coolingWaterSupply;              // see below
+    from     "coolingTower";                  // a placed item: the flow leaves it
+    to       "N2Cooler";                      // a placed item: the flow reaches it
+    [fromPort { side top|bottom|east|west|north|south; [elevation 2 m;] }]
+    [toPort   { side west; elevation 2 m; }]
+    [carries  { unit N2Cooler; utility coolingWater; }]
+    reason   "the nitrogen cooler's cooling water, from the tower";
+  }
+);
+\end{verbatim}
+
+The \texttt{service} is one of \texttt{coolingWaterSupply},
+\texttt{coolingWaterReturn}, \texttt{refrigerantSupply},
+\texttt{refrigerantReturn} and \texttt{flareHeader}: the services the
+reference plant has, and no others. A word the layout does not know, a
+line whose two ends are one item, an item that is not placed, a name used
+twice, a face that is not a face and an \texttt{elevation} off the item
+are refused by name. Steam and nitrogen are not services of this layout
+until a case has a line for them.
+
+\textbf{How it is routed.} By the rule of a process pipe, on the same
+rack: up from the port's one-metre stub to the line's lane, across, along
+the rack, across, down to the port of the other item (the ports are the
+ones of \S\ref{pipe-racks}; a line lands on the item's top unless the
+case declares a face). Three things differ, and the run says each. The
+\emph{lane}: a utility line takes a lane on a tier above every process
+pipe's, so no process route moves, and the lines of one family (cooling
+water, refrigerant, flare header) share a tier of their own, a supply
+beside its return; a family with more lines than a tier has lanes goes on
+to the next tier. The \emph{ports}: several lines on one item are spread
+across its cross extent (a cooling tower takes eight), not stood off by a
+fifth of its narrow dimension, which would put the eighth outside the
+footprint. The \emph{size}: there is none.
+
+\textbf{No line is sized, and the result says so.} The layout carries no
+diameter, no velocity and no pressure drop for any pipe, process or
+utility, so there is no sizing rule to reuse, and writing a second one for
+utility lines alone would be the first and only one. Every line is
+published \texttt{sizeState unsized}, with the sentence that says why. A
+real project sizes its lines from the flow below on its own velocity
+limit; Choupo draws them all at one thin constant tube radius, so that no
+thickness claims a size.
+
+\textbf{What a line carries.} Where the run publishes it, the line says
+it: \texttt{carries} names the unit and the utility, and the engine reads
+\emph{that} row of the run's utility allocation (the mass flow in kg/s,
+$|Q|$ divided by the utility's duty per kilogram) and publishes it as the
+line's \texttt{utilityFlow}, with the row it was read from. A name the run
+does not carry is refused. Nothing is inferred from the service word. On
+the reference plant the four coolers carry 47.3, 123.9, 131.2 and
+169.1~kg/s, the chiller's two lines 15.06~kg/s, and the three flare lines
+nothing: the case declares no relief valve, and the three vent gases that
+leave the loop are already piped to the fence as process streams, so a
+flow to the flare has no number in that run.
+
+\textbf{What is checked.} As for a process pipe, each a finding (a draft
+to move, never a refusal), named by the case's own name for the line:
+\texttt{utilityClash} (a segment through an item below its top; the router
+steers round nothing), \texttt{utilityCrossesRoad} (below the roads'
+declared headroom over paved ground), \texttt{utilityThroughBund} (a run
+below a containment's wall top through the wall) and
+\texttt{utilityNotRouted} (an end stands inside the declared building,
+where piping is not routed). A line against another line is not checked,
+as for process pipes. The lines enter the plot's envelope, so a line that
+leaves the declared plot grows it.
+
+\textbf{What is published and drawn.} Beside the pipe register: one record
+per line with its service, its ends and ports, its lane and tier, its
+length and its size state; the run's summary counts them. Reports
+$\rightarrow$ Plant layout (3D) draws each line as a thin tube in the
+colour of its service --- the cyan the flowsheet canvas gives a cooling
+duty for cooling water, its orange for the flare header, and a violet
+for the refrigerant, because nothing else on the canvas means a
+refrigerant --- with the service written in words in the tooltip, the
+register and the exported page (colour is one channel of two), and lists
+the lines in a table under the pipe register.
+
+\textbf{What is not here.} A pressure drop, a size, a cost, the steam and
+the nitrogen headers, the cooling-water make-up and blowdown, and the
+line's own supports. The reference plant
+(\texttt{greenAmmoniaPEQ\_baseCase}) declares thirteen lines: eight of
+cooling water between the tower and the four coolers, two of refrigerant
+between the package and the chiller, and three of flare header from the
+separator and the two let-down drums; its header says what it does not
+declare.
+
 \hypertarget{tank-farms-and-the-choice-of-storage}{%
 \subsection{Tank farms and the choice of
 storage}\label{tank-farms-and-the-choice-of-storage}}
@@ -2666,6 +2773,13 @@ that code:
   rack (declared, or a stated default that is announced), or listed as
   not routed with its reason; each route\textquotesingle s length is
   published.
+\item
+  \textbf{Utility lines} the case declares (cooling water, refrigerant,
+  flare header; \S\ref{utility-lines}) are routed on the same rack, on
+  tiers above the process pipes', checked for a clash with an item, a road
+  below the headroom and a bund wall, and published \emph{unsized}, with
+  the flow the run's own utility allocation gives where the case names
+  one.
 \item
   \textbf{Roads} are checked against the footprints, the rack and the
   pipes (a road through an item, or under a rack or pipe lower than the
