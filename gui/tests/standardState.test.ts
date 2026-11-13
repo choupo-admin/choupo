@@ -116,7 +116,7 @@ describe("the lesson", () => {
     //  back, so the next drift fails here instead of on a reader.
     const line = (rel: string, n: number) =>
       readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8").split("\n")[n - 1] ?? "";
-    expect(line("src/thermo/Component.cpp", 1608))
+    expect(line("src/thermo/Component.cpp", 1640))
       .toContain("ONE implementation of the standard-state enthalpy, not two");
     expect(line("src/thermo/ThermoPackage.cpp", 1489))
       .toContain("scalar ThermoPackage::H_real(");
