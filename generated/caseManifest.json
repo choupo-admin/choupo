@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1840,
+  "cases": 1841,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -27566,6 +27566,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/heat/hx02_condensing_steam": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "heatExchanger"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/heat/hxWorkflow1_design_from_duty": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -31368,6 +31382,7 @@
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
+    "tutorials/steady/heat/hx02_condensing_steam",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
@@ -31909,6 +31924,7 @@
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
     "tutorials/steady/heat/heatExchanger05_bell_delaware_auto",
+    "tutorials/steady/heat/hx02_condensing_steam",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/power/combined01_brayton_rankine",
@@ -34740,6 +34756,7 @@
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
+    "tutorials/steady/heat/hx02_condensing_steam",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",

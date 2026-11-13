@@ -1,0 +1,33 @@
+# platform cpu=Intel(R) Xeon(R) Processor @ 2.10GHz; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma,avx512f
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  coolingWater           F                0.001              1e-4
+stream  coolingWater           T                300                1e-4
+stream  steam                  F                0.001              1e-4
+stream  steam                  T                450                1e-4
+stream  warmWater              F                0.001              1e-4
+stream  warmWater              T                368.11865561       1e-4
+stream  wetSteam               F                0.001              1e-4
+stream  wetSteam               T                443.563510759      1e-4
+stream  wetSteam               vf               0.86868175916      1e-4
+kpi     condenserHX            C_cold           75.5               1e-4
+kpi     condenserHX            C_hot            34.2593165607      1e-4
+kpi     condenserHX            C_r              0.453765782261     1e-4
+kpi     condenserHX            H_closure_gap_kW 5.08229014429e-10  abs:5.138e-08
+kpi     condenserHX            LMTD             109.851237347      1e-4
+kpi     condenserHX            NTU              14.594570184       1e-4
+kpi     condenserHX            Q                5137.92898786      1e-4
+kpi     condenserHX            Q_kW             5.13792898786      1e-4
+kpi     condenserHX            T_cold_in        300                1e-4
+kpi     condenserHX            T_cold_out       368.11865561       1e-4
+kpi     condenserHX            T_hot_in         450                1e-4
+kpi     condenserHX            T_hot_out        443.563510759      1e-4
+kpi     condenserHX            U                500                1e-4
+kpi     condenserHX            UA               500                1e-4
+kpi     condenserHX            area             1                  1e-4
+kpi     condenserHX            effectiveness    0.99981153618      1e-4
+boundary global               H_feeds_kW       52.1985969101      1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    52.1985969106      1e-4
+utility condenserHX            heating.-.carried 1                  1e-4

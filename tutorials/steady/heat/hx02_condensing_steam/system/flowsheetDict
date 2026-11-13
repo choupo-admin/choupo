@@ -1,0 +1,52 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  hx02_condensing_steam
+  =====================
+
+  A two-stream heatExchanger whose hot side is IF97 water VAPOUR at 8 bar,
+  6.4 K above its saturation temperature, against cooling water at 300 K.
+  What it shows is WHERE THE OUTLET IS, not how big the duty is:
+
+    * the duty Q comes from the eps-NTU method on SENSIBLE heat-capacity
+      rates -- the vapour's c_p, with no latent term -- so it is NOT the
+      duty a condenser of this area would transfer (a condensing film
+      carries far more).  The unit says so in the advisory log ("a side
+      changed phase").  Read Q as the sensible model's number;
+    * the outlet state is then solved from H(out) = H(in) - Q/n on the
+      package's own enthalpy (IF97), and the duty lands INSIDE the latent
+      jump of a pure fluid: the steam leaves AT Tsat(8 bar) with a pinned
+      vapour fraction, partly condensed;
+    * the unit's own H_closure_gap_kW and the plant's first-law residual
+      are both zero.
+
+  Until 2026-11-13 this case did not close: the outlet search walked the
+  low end of its bracket below the IF97 window, gave up, and published
+  the sensible model's 300 K liquid -- a latent heat missing from the
+  unit's own balance at exit 0.
+\*---------------------------------------------------------------------------*/
+
+// stream state lives on disk in 0/ (per-stream files); flowsheetDict is TOPOLOGY only
+
+units
+(
+    {
+        name        condenserHX;
+        type        heatExchanger;
+        inputs      ( steam  coolingWater );
+        outputs     ( wetSteam  warmWater );
+
+        operation
+        {
+            area     1.0 m2;
+            U        500.0 W/m2/K;
+            flow     counter;
+        }
+    }
+);
