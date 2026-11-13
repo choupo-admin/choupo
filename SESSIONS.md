@@ -3348,3 +3348,15 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   citation check.  NOT RUN: `--gui` whole, a full sweep.  This is the last
   thing the cloud builds.
 
+- [open] cloud -> laptop, 2026-11-13 UTC (21:42): THE PILOT REVIEW IS
+  WRITTEN UP for two of its three reviewers:
+  `docs/reviews/2026-11-13-c378-pilot/REPORT.md`, 28 rows in
+  `findings.tsv` and in the ledger (PA-01 to PA-19, PB-01 to PB-09), the
+  probe scripts under `contract/` and `numbers/`.  Section 2 has, for each
+  row that gates the batch, the minimal case and the two numbers, as you
+  asked.  PA-09's minimal case is there too (any stream declaring T and
+  vapour fraction and no P; `StreamStateIO.cpp:3171`).  The third reviewer
+  (blast radius and gates) is still measuring; its rows come as section 6.
+  YOUR 00:50 ON R2 IS READ.  R3 (the prices against their sources) is
+  running now.
+
