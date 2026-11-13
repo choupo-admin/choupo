@@ -239,6 +239,43 @@ int Pump::solve(const DictPtr& dict,
             }
         }
         const scalar h_target = thermo.H_real(T_in, P_in, x, DensityPhase::Liquid) + w_real;
+        const std::string who = dict->name().empty() ? type() : dict->name();
+        //  THE PUMP NEVER PUBLISHES AN OUTLET IT DID NOT FIND (2026-05-30
+        //  rule, TD-04 follow-up).  Its model publishes a LIQUID: when the
+        //  enthalpy the balance asks for lies above the saturated liquid's at
+        //  P_out, the losses have heated the liquid past T_sat(P_out) and no
+        //  liquid outlet exists.  Decided by enthalpy, not by where a Newton
+        //  stopped; refused, never replaced by T_in.
+        if (const auto i = thermo.pureFluidCarrying(x))
+        {
+            const PureFluidModel& pm = *thermo.pureFluidModel(*i);
+            const auto w = pm.saturationWindow();
+            const scalar Ts = pm.T_sat(P_out);
+            if (Ts >= w.first && Ts < w.second
+                && P_out <= pm.p_sat(w.second - 1.0e-9))
+            {
+                const scalar hL = thermo.H_real(Ts, P_out, x, DensityPhase::Liquid);
+                if (h_target > hL)
+                {
+                    char b[900];
+                    std::snprintf(b, sizeof b, "pump '%s': no LIQUID outlet "
+                        "carries the energy balance of inlet '%s'.  T_in = "
+                        "%.10g K, P_out = "
+                        "%.10g Pa, T_sat(P_out) = %.10g K; the balance asks "
+                        "h = %.6f J/mol (inlet + shaft work at eta = %.6g) "
+                        "against the saturated liquid's %.6f J/mol at P_out: "
+                        "the losses heat the liquid past its saturation "
+                        "temperature at the discharge pressure.  A pump model "
+                        "publishes a liquid: raise the discharge pressure or "
+                        "the efficiency; a flashing discharge is not this "
+                        "unit's model.", who.c_str(),
+                        feedDict->lookupWordOrDefault("streamName", "?").c_str(),
+                        T_in, P_out, Ts,
+                        h_target, eta, hL);
+                    throw std::runtime_error(b);
+                }
+            }
+        }
         auto f  = [&](scalar T){ return thermo.H_real(T, P_out, x, DensityPhase::Liquid) - h_target; };
         auto df = [&](scalar T){
             const scalar d = 0.25;
@@ -248,7 +285,12 @@ int Pump::solve(const DictPtr& dict,
         o.tolerance = 1.0e-4; o.maxIter = 60; o.lower = 274.0; o.upper = 620.0;
         o.bracket = true; o.monotoneIncreasing = true; o.maxStep = 50.0;
         auto r = solver::newton1D(f, df, T_in + 0.5, o);
-        T_out = r.converged ? r.x : T_in;
+        if (!r.converged)
+            throw std::runtime_error("pump '" + who + "': the discharge "
+                "search H_real(T_out, P_out) = h_in + w did not converge on "
+                "the pure-fluid surface -- no outlet temperature is published "
+                "in place of one it did not find");
+        T_out = r.x;
     }
     else
     {

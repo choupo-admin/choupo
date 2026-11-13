@@ -32,6 +32,10 @@ Description
     Credo-pure liquid pump.  Adds shaft work to an INCOMPRESSIBLE
     liquid, raising its pressure.  Because v ~ const for a liquid the
     discharge state is a closed-form expression --- no EoS, no Newton.
+    On a pure-fluid formulation the discharge T is solved on H_real at
+    P_out instead, and the pump never publishes an outlet it did not find:
+    a liquid its losses heat past T_sat(P_out) is REFUSED by name, and a
+    search that fails otherwise raises, never substituting T_in.
 
     Operation parameters --- eta (always) PLUS exactly ONE spec:
         eta      --  pump (hydraulic + isentropic) efficiency  [-]

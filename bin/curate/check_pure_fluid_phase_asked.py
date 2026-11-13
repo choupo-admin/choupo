@@ -112,6 +112,13 @@ so the band's own edge would test the last bit of the refusal:
       (T, P); and, by SOURCE, DynamicDriver.cpp applies the refusal to the
       time-integrated binaries' authored inlets (no time-integrated template
       carries a pure-fluid formulation).
+  (k) the pump never publishes an outlet it did not find: at 550 K, dP 1 bar,
+      inlet declared liquid at p_sat (1 + 5e-7), eta 0.5 and 0.03 run with
+      dT > 0 and the plant residual within 1e-6 kW, and eta 0.01 -- whose
+      losses heat the liquid past T_sat(P_out) -- refuses naming the pump,
+      the inlet, T_in, P_out, T_sat(P_out), the enthalpy asked against the
+      saturated liquid's, eta and both remedies (before: T_out = T_in,
+      published silently, +0.18 kW on the plant boundary at exit 0).
 p_sat(T) is IAPWS-IF97 region 4 (Wagner et al. 2000, Eq. 30), the same
 closed form the engine evaluates.  Each run must also announce the pure-fluid
 route (`pureFluids override (water)`), so a template that lost its IF97
@@ -123,15 +130,19 @@ fails; Sh the own-world refusal call removed -> (h) fails; Si1 the caloric
 overloads back on the saturated branch beyond the band -> (i) fails; Si2 the
 pump's computed-inlet refusal disabled -> (i) fails; Sj1 the entropy
 announcement dropped -> (j) fails; Sj2 the time-integrated call removed ->
-(j) fails.
+(j) fails; Sk1 the pump's enthalpy refusal disabled (the search then fails
+and raises its non-convergence, which does not name the cause) -> (k) fails;
+Sk2 the old code (no refusal, `T_out = r.converged ? r.x : T_in`) -> (k)
+fails.  Restoring the fallback line ALONE is not caught: the enthalpy
+refusal fires before the search in every case the arm builds.
 
 WHAT IT DOES NOT CHECK.  The values to more than the bounds of arm (d)
 and (f) (rankine02's golden pins them); the turbine's BEHAVIOUR (arm (e)
 reads its source: no run can reach it); a turbine fed a computed inlet beyond
 the band (its T(S) search does not converge on a compressed liquid either);
-the time-integrated refusal's BEHAVIOUR (arm (j) reads its source); a pump
-DISCHARGE that its losses heat past T_sat(P_out) (a finding, not a rule
-here); a wet turbine exhaust (the unit does not hold that phase); a
+the time-integrated refusal's BEHAVIOUR (arm (j) reads its source); the
+pump's search non-convergence for any other cause (no case reaches it); a wet
+turbine exhaust (the unit does not hold that phase); a
 heatExchanger fed a declared saturated VAPOUR (its outlet search falls back,
 announced, to the sensible eps-NTU temperature at every e, and its first
 law is open by that fallback, not by the inlet).
@@ -536,6 +547,40 @@ def computed_inlet_arm(tmp: Path, fail: list) -> dict:
     return shown
 
 
+def discharge_arm(tmp: Path, fail: list) -> dict:
+    """Arm (k): the pump never publishes an outlet it did not find."""
+    T = 550.0
+    P = psat_if97(T) * (1.0 + 5.0e-7)
+    shown = {}
+    for eta in (0.5, 0.03, 0.01):
+        unit = ("    { name U; type pump; in probe; outputs ( out ); "
+                f"operation {{ dP 1 bar; eta {eta}; }} }}")
+        rc, res, out = run_raw(probe_case(tmp, f"k_{eta}", unit, {
+            "probe": (T, P, "liquid"), "out": (T + 1.0, P + 1.0e5, "liquid")}))
+        tag = f"(k) pump at {T} K, dP 1 bar, eta {eta}"
+        if eta == 0.01:
+            line = next((ln for ln in out.splitlines() if "no LIQUID outlet" in ln), "")
+            want = ["pump 'U'", "inlet 'probe'", "T_in = 550 K", "P_out = ", "T_sat(P_out) = ",
+                    "the balance asks", "eta = 0.01", "saturated liquid's",
+                    "raise the discharge pressure or the efficiency",
+                    "a flashing discharge is not this unit's model"]
+            miss = [w for w in want if w not in line]
+            if rc == 0 or miss:
+                fail.append(f"{tag}: the losses heat the liquid past T_sat(P_out) and the "
+                            f"pump must refuse naming {miss or 'it'} (exit {rc})")
+            continue
+        if rc != 0 or res is None:
+            fail.append(f"{tag}: exit {rc} -- a liquid discharge exists here")
+            continue
+        r = float((res.get("globalEnergyBoundary") or {}).get("residual_kW", float("nan")))
+        dT = float(res["kpis"]["U"].get("dT", float("nan")))
+        if not abs(r) <= 1.0e-6 or not dT > 0.0:
+            fail.append(f"{tag}: plant residual {r:.6g} kW, dT {dT:.6g} K -- the "
+                        "discharge must carry the shaft work")
+        shown[eta] = dT
+    return shown
+
+
 def dynamic_source(fail: list) -> None:
     """Arm (j'): the time-integrated binaries apply the same refusal (by source)."""
     src = (ROOT / "src" / "dynamicDriver" / "DynamicDriver.cpp").read_text()
@@ -588,6 +633,7 @@ def main() -> int:
         n_refusal = refusal_arm(tmp, fail)
         own_world_arm(tmp, fail)
         comp_inlet = computed_inlet_arm(tmp, fail)
+        disch = discharge_arm(tmp, fail)
     dynamic_source(fail)
     for term in ("H_feeds_kW", "H_products_kW"):
         vs = [(e, g.get(term)) for e, g in bound if abs(e) <= 1.0e-9]
@@ -651,10 +697,13 @@ def main() -> int:
           "a computed inlet across the line priced at (T, P) by the compressor (its "
           f"first law {comp_inlet['rem']:.2g} kW, dT = {comp_inlet['dT']:.4f} K, the plant "
           "residual the producer's model-boundary step) and announced in the result "
-          "JSON, refused by name by the pump; the time-integrated refusal by source.  "
+          "JSON, refused by name by the pump; the time-integrated refusal by source; "
+          f"a pump discharge: eta 0.5 and 0.03 close (dT = {disch.get(0.5, float('nan')):.4f} "
+          f"and {disch.get(0.03, float('nan')):.4f} K), eta 0.01 heated past T_sat(P_out) "
+          "refused by name.  "
           "NOT CHECKED: the values beyond those bounds, a turbine fed a computed inlet "
-          "beyond the band, the time-integrated refusal's behaviour, a pump discharge "
-          "heated past T_sat(P_out), a wet turbine exhaust, a heatExchanger fed a "
+          "beyond the band, the time-integrated refusal's behaviour, the pump's search "
+          "failing for another cause, a wet turbine exhaust, a heatExchanger fed a "
           "declared saturated vapour.")
     return 0
 
