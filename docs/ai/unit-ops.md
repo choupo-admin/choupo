@@ -738,7 +738,15 @@ Two process streams; hardware-only (`area` + `U`).  Outputs the duty Q
 H_in ± Q (so a side may leave two-phase).  A PURE stream whose target lies
 inside its latent jump leaves AT Tsat(P) with its vapour fraction PINNED —
 for one component (T, P) on the saturation curve do not fix the split
-(witness `heatExchanger03_pure_water_plateau`).
+(witness `heatExchanger03_pure_water_plateau`).  The inversion brackets the
+outlet enthalpy outward from the ε-NTU temperature; an end the package
+cannot price (IF97 below 273.15 K, for instance) is a wall and the other end
+walks on, so a condensing steam against cold water finds its plateau
+(witness `hx02_condensing_steam`).  Only when no bracket exists, or a stream
+has no enthalpy datum, does the outlet fall back to the ε-NTU temperature —
+announced in the caveat block, with `H_closure_gap_kW` carrying the
+difference.  The DUTY stays the sensible ε-NTU's (no latent term): a side
+that changes phase is announced, and its Q is not a condenser's.
 
 ```
 inputs  (hot  cold );

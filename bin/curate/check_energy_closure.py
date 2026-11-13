@@ -242,6 +242,15 @@ restore:
       run (its two-phase inlets, now read as they mean, give the old
       dominant-phase Newton no root -- the failure the 2026-10-04 stated
       default existed to avoid).  Restored from the saved file + `make all`.
+  U11 (2026-11-13, review TD-15: the heatExchanger's own
+      H_closure_gap_kW joins the arm) restore the old outlet bracket in
+      HeatExchanger.cpp (both ends moved every step, the search abandoned at
+      the first non-finite evaluation), rebuilt, on a SCOPED run of
+      hx02_condensing_steam and heatExchanger03_pure_water_plateau ->
+      "heatExchanger 'condenserHX' publishes H_closure_gap_kW = -42.9843 kW,
+      above 1e-04 kW and NOT pinned", and the plant arm re-fails the same
+      case (+42.9843 kW, unpinned); heatExchanger03 passes (its walk meets no
+      wall: its water record is not IF97).  Restored md5-identical + `make all`.
   U5  (2026-10-05, the evaporator joins the arm) restore the evaporator's
       Watson duty -> "unit 'CONCENTRATION.Evap1' (evaporator) leaves -21.0456
       kW", Evap2 -10.3209, evaporator02's effect1/2/3 -152.9702 / -62.7408 /
@@ -827,6 +836,39 @@ UNIT_WITNESSES = {
     #  reformer.
     ("tutorials/steady/reactors/equil01_reforming", "reformer"),
 }
+#  THE EXCHANGER'S OWN GAP (2026-11-13, review TD-15).  A two-stream
+#  `heatExchanger` is filed by the report as an internal exchanger, so its
+#  two streams' enthalpy change is not a remainder the report attributes to
+#  it -- but the unit MEASURES it and publishes it: `H_closure_gap_kW` is the
+#  enthalpy the package prices for the two outlets it wrote, minus the two
+#  inlets', and it is zero exactly when each outlet carries the duty the unit
+#  computed.  Its outlet search falls back to the eps-NTU temperature, closing
+#  in Q and not in H, when it cannot bracket the outlet enthalpy; until
+#  2026-11-13 one end walking out of what the package can price (IF97 below
+#  its window) was enough, and a condensing steam published a latent heat as
+#  its own gap (-42.8618 kW on 1 mol/s at 446.5 K) and as the plant's
+#  residual, at exit 0.  So the KPI is judged here on every in-scope case:
+#  |gap| <= UNIT_TOL_KW, or the (case, unit) is PINNED with its measured gap
+#  (`--seed`), ratcheted like KNOWN_OPEN_KW.  A gap the unit could not price
+#  (its package has no enthalpy datum for a stream: the KPI is not finite) is
+#  COUNTED and NAMED, never judged -- that side closes in Q by declaration,
+#  and the fallback is in the advisory log.
+#  MEASURED 2026-11-13 over the 18 corpus cases that name the type: every
+#  priced gap is below 6e-6 kW (the largest ammonia03's FEHE, -5.41e-6), and
+#  three are unpriceable (utility01/02/03, whose heat-transfer fluids carry
+#  no formation datum).  No pin.
+UNIT_HX_GAP = {"heatExchanger"}
+KNOWN_OPEN_HX_GAP = {
+}
+#  The witnesses: a pure steam partly CONDENSED on its plateau against cold
+#  water (the TD-15 shape, IF97), a superheated steam condensing against a
+#  boiling feedwater (both sides on their plateaus), and a gas-gas FEHE on
+#  SRK at pressure.
+HX_GAP_WITNESSES = {
+    ("tutorials/steady/heat/hx02_condensing_steam", "condenserHX"),
+    ("tutorials/steady/heat/heatExchanger03_pure_water_plateau", "boilerHX"),
+    ("tutorials/plant/ammonia02_full_plant", "FEHE"),
+}
 UNIT_HEADER = re.compile(r">>>  Unit \[\d+\]:\s+(\S+)\s+\(type = (\w+)\)")
 
 
@@ -1023,6 +1065,55 @@ def json_block(txt: str, key: str):
         return None
 
 
+def judge_hx_gaps(rel, types, kpis, seen, stats, bad):
+    """The exchanger arm: every heatExchanger's own published
+    H_closure_gap_kW, read from the result JSON (never recomputed)."""
+    for unit, t in types.items():
+        if t not in UNIT_HX_GAP:
+            continue
+        k = kpis.get(unit, {})
+        if "H_closure_gap_kW" not in k:
+            continue
+        g = k["H_closure_gap_kW"]
+        seen.add((rel, unit))
+        if not isinstance(g, (int, float)) or g != g:
+            stats["hxUnpriced"].append("%s:%s" % (rel, unit))
+            continue
+        stats["hxJudged"] += 1
+        stats["hxMeasured"][(rel, unit)] = float(g)
+        pin = KNOWN_OPEN_HX_GAP.get((rel, unit))
+        if abs(g) <= UNIT_TOL_KW:
+            if pin is not None:
+                bad.append(
+                    "%s: heatExchanger '%s' now closes (H_closure_gap_kW "
+                    "%+.6f kW) but is still PINNED at %+.4f kW in "
+                    "KNOWN_OPEN_HX_GAP.  Remove the pin: a stale pin hides the "
+                    "next regression on this unit." % (rel, unit, g, pin))
+            continue
+        if pin is None:
+            bad.append(
+                "%s: heatExchanger '%s' publishes H_closure_gap_kW = %+.4f kW, "
+                "above %.0e kW and NOT pinned: its outlets do not carry the "
+                "duty it computed (Q_kW = %s), so that gap IS its contribution "
+                "to the plant's first-law residual.  The usual cause is the "
+                "outlet search falling back to the eps-NTU temperature (read "
+                "the advisory log: 'could not bracket the outlet enthalpy'); "
+                "fix the inversion, or pin the measured value with `--seed` "
+                "and a reason.  Never widen %.0e kW."
+                % (rel, unit, g, UNIT_TOL_KW, k.get("Q_kW"), UNIT_TOL_KW))
+        elif abs(g) > abs(pin) + ratchet_kW(pin) or (g > 0) != (pin > 0):
+            bad.append(
+                "%s: heatExchanger '%s' gap moved from the pinned %+.4f kW to "
+                "%+.4f kW (ratchet %.1f kW, or a change of sign).  A declared "
+                "debt may not grow quietly." % (rel, unit, pin, g,
+                                                ratchet_kW(pin)))
+        elif abs(g) < abs(pin) - ratchet_kW(pin):
+            bad.append(
+                "%s: heatExchanger '%s' gap SHRANK from the pinned %+.4f kW to "
+                "%+.4f kW.  Re-measure with --seed and re-pin." % (rel, unit,
+                                                                  pin, g))
+
+
 def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
     """The unit arm, on one case's stdout.  Adds (rel, unit) to `seen` for
     every unit it JUDGED, so the witness check can tell read from unread."""
@@ -1030,10 +1121,12 @@ def judge_units(rel: str, txt: str, seen: set, stats: dict, bad: list):
     if not any(t in UNIT_ADIABATIC or t in UNIT_DUTY_IS_DH
                or t in UNIT_MATERIAL_HEAT or t in UNIT_BOUNDARY_DUTY
                or t in UNIT_THROTTLE or t in UNIT_DECLARED_T
+               or t in UNIT_HX_GAP
                for t in types.values()):
         return
     closures = json_block(txt, "energyClosures")
     kpis = json_block(txt, "kpis") or {}
+    judge_hx_gaps(rel, types, kpis, seen, stats, bad)
     portsOf = {u: (ins.split(), outs.split())
                for u, ins, outs in UNIT_PORTS.findall(txt)}
     streams = json_block(txt, "streams") or {}
@@ -1255,7 +1348,9 @@ def main() -> int:
     #  unanswered-pin arm below, which sabotage S7 exists to prove.
     discovered, bucket = set(), {}
     unitSeen, unitStats = set(), {"judged": 0, "noLedger": 0, "tearFed": [],
-                                  "bcHeld": 0, "bc": [], "judgedUnits": set()}
+                                  "bcHeld": 0, "bc": [], "judgedUnits": set(),
+                                  "hxJudged": 0, "hxUnpriced": [],
+                                  "hxMeasured": {}}
     bcSeen = set()
     trSeen = set()
     ranClean = set()
@@ -1412,6 +1507,22 @@ def main() -> int:
                 "A DEFECT IN THE GATE (or the witness was renamed): an arm "
                 "that reads nothing passes forever." % (rel, unit))
 
+    for rel, unit in sorted(HX_GAP_WITNESSES):
+        if rel in ranClean and (rel, unit) not in unitSeen:
+            bad.append(
+                "%s: the exchanger arm did not READ its witness '%s' -- the "
+                "case ran clean, but no `>>>  Unit ... (type = heatExchanger)` "
+                "header with a published H_closure_gap_kW reached it.  THIS IS "
+                "A DEFECT IN THE GATE (or the witness was renamed)."
+                % (rel, unit))
+    for (rel, unit) in sorted(KNOWN_OPEN_HX_GAP):
+        if (rel in ranClean and (rel, unit)
+                not in unitStats["hxMeasured"]):
+            bad.append(
+                "%s: heatExchanger '%s' is PINNED in KNOWN_OPEN_HX_GAP but the "
+                "case ran clean and published no priced gap for it.  A pin "
+                "nothing answers to is a debt nobody can pay." % (rel, unit))
+
     #  THE TWO COUNTS ARE DISJOINT, AND THE GATE CHECKS IT.  A closure by
     #  construction counted among the units that CLOSE is the defect C174
     #  exists to end, and it lives entirely in this file's arithmetic -- no
@@ -1460,6 +1571,16 @@ def main() -> int:
             if abs(measuredKW[rel]) > BAND_KW:
                 print('    "%s": %.4f,' % (rel, measuredKW[rel]))
         print("}")
+        print()
+        print("#  MEASURED %s.  Paste into KNOWN_OPEN_HX_GAP after reading it."
+              % where)
+        print("KNOWN_OPEN_HX_GAP = {")
+        for (rel, unit), g in sorted(unitStats["hxMeasured"].items()):
+            if abs(g) > UNIT_TOL_KW:
+                print('    ("%s", "%s"): %.4f,' % (rel, unit, g))
+        print("}")
+        print("#  Unpriced (not judged): %s"
+              % ("; ".join(unitStats["hxUnpriced"]) or "none"))
         return 0
 
     if not measured and not measuredKW:
@@ -1543,7 +1664,12 @@ def main() -> int:
           "they are right; %d plant first law(s) above include such a "
           "not-verified term, so their closure is evidence about everything "
           "except it.  Each (B) unit's remainder is still held to %.0e kW "
-          "(%d held), and every in-scope witness among %d was read.%s"
+          "(%d held), and every in-scope witness among %d was read.  THE "
+          "EXCHANGER ARM: %d heatExchanger(s) publish H_closure_gap_kW within "
+          "%.0e kW or at their pin (%d pinned in KNOWN_OPEN_HX_GAP; every "
+          "in-scope witness among %d read), and %d could not price their gap "
+          "(no enthalpy datum on a stream: closes in Q by declaration, not "
+          "judged)%s.%s"
           % (ok, BAND, len(KNOWN_OPEN), okKW, BAND_KW, len(KNOWN_OPEN_KW),
              RATCHET, RATCHET_KW_ABS, 100.0 * RATCHET_KW_REL,
              len(refused), len(announced), len(noReport), noReportOuter,
@@ -1563,6 +1689,10 @@ def main() -> int:
              or "none",
              len({r for r, _u, w in unitStats["bc"] if w != "verified"}),
              UNIT_TOL_KW, unitStats["bcHeld"], len(BY_CONSTRUCTION_WITNESSES),
+             unitStats["hxJudged"], UNIT_TOL_KW, len(KNOWN_OPEN_HX_GAP),
+             len(HX_GAP_WITNESSES), len(unitStats["hxUnpriced"]),
+             (": " + "; ".join(unitStats["hxUnpriced"]))
+             if unitStats["hxUnpriced"] else "",
              scope_sentence(len(measured) + len(measuredKW) + len(refused)
                             + len(noReport) + len(announced),
                             len(outOfScope))))

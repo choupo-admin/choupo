@@ -54,6 +54,23 @@ Description
         Q     = eps C_min (T_h,in - T_c,in)
         T_h,out = T_h,in - Q/C_h,   T_c,out = T_c,in + Q/C_c
 
+    THE OUTLET STATE IS NOT THAT TEMPERATURE.  The two lines above are only
+    the initial guess: each outlet is the state whose enthalpy, priced by
+    the case's own package, is H_in -+ Q/n -- a bracket walked outward from
+    the guess and a bisection, the vapour fraction read at the answer.  A
+    PURE stream whose target lies inside its latent jump leaves AT Tsat(P)
+    with its quality PINNED (flash/PureSaturationPlateau.H).  An end of the
+    bracket the package cannot price (IF97 below its window, for instance)
+    is a WALL: it keeps its last finite value and the other end walks on
+    (review TD-15, 2026-11-13: a condensing steam fell back to its sensible
+    300 K and published a latent heat as its own closure gap).  Only when
+    no finite bracket exists, or the package has no enthalpy datum for the
+    stream, does the outlet fall back to the eps-NTU temperature -- and
+    that is ANNOUNCED in the advisory log, and `H_closure_gap_kW` carries
+    the difference.  So the outlet carries the duty the unit computed; the
+    duty itself stays the SENSIBLE eps-NTU's (assumption 1), and a side
+    that changes phase is announced too.
+
     ASSUMPTIONS (glass-box --- stated, not hidden):
       1. sensible heat only, no phase change.  Each stream's Cp is held
          constant across the exchanger but is evaluated at that stream's

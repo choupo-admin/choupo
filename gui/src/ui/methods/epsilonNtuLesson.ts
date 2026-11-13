@@ -95,7 +95,7 @@ export const ENTU_STEPS: readonly LessonStep[] = [
       + "the capacity rate of each stream's inlet phase, with no latent "
       + "term, so when a side changes phase the duty is not that of a "
       + "condenser or an evaporator, the engine announces it, and U·A·LMTD "
-      + "is no check there (HeatExchanger.cpp:1028-1053, 1222-1225).  That "
+      + "is no check there (HeatExchanger.cpp:1073-1098, 1267-1270).  That "
       + "is a limit of the unit, not a statement that the log-mean fails "
       + "across a phase change.",
   },

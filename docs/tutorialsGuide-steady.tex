@@ -8117,6 +8117,49 @@ If you instead need a specific T\_out (say "I want exactly 338 K"), wrap the hea
 \end{tutgolden}
 
 \clearpage
+\tutentry{hx02\_condensing\_steam}{tutorials/steady/heat/hx02\_condensing\_steam}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (condenserHX) at (0.0,-0.0) {\textbf{condenserHX}\\[-1pt]{\tiny heatExchanger}};
+  \draw[->] ($(condenserHX.west)+(-1.05,-0.17)$) -- ($(condenserHX.west)+(0,-0.17)$) node[at start, below, font=\tiny, anchor=north west] {steam};
+  \draw[->] ($(condenserHX.west)+(-1.05,0.17)$) -- ($(condenserHX.west)+(0,0.17)$) node[at start, above, font=\tiny, anchor=south west] {coolingWater};
+  \draw[->] ($(condenserHX.east)+(0,-0.17)$) -- ($(condenserHX.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {wetSteam};
+  \draw[->] ($(condenserHX.east)+(0,0.17)$) -- ($(condenserHX.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {warmWater};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Steam condensing against cooling water on IF97: the outlet sits on its saturation plateau with the duty the unit computed}
+\begin{tutnarrative}
+A two-stream heatExchanger whose hot side is IF97 water VAPOUR at 8 bar, 6.4 K above its saturation temperature, against cooling water at 300 K. What it shows is WHERE THE OUTLET IS, not how big the duty is:
+
+the duty Q comes from the eps-NTU method on SENSIBLE heat-capacity rates -- the vapour's c\_p, with no latent term -- so it is NOT the duty a condenser of this area would transfer (a condensing film carries far more). The unit says so in the advisory log ("a side changed phase"). Read Q as the sensible model's number; the outlet state is then solved from H(out) = H(in) - Q/n on the package's own enthalpy (IF97), and the duty lands INSIDE the latent jump of a pure fluid: the steam leaves AT Tsat(8 bar) with a pinned vapour fraction, partly condensed; the unit's own H\_closure\_gap\_kW and the plant's first-law residual are both zero.
+
+Until 2026-11-13 this case did not close: the outlet search walked the low end of its bracket below the IF97 window, gave up, and published the sensible model's 300 K liquid -- a latent heat missing from the unit's own balance at exit 0.
+
+\end{tutnarrative}
+\tutreadme{Steam at 8 bar, 450 K (6.4 K above its saturation temperature) against cooling water at 3 bar, 300 K, 3.6 kmol/h (1 mol/s) each, in a counter-current heatExchanger of 1 m$^2$ at U = 500 W/m$^2$K. One component, water, priced by IAPWS-IF97 on both sides.}
+\tutreadme{The exchanger forms its duty by the $\varepsilon$-NTU method on SENSIBLE heat-capacity rates: the steam side's rate is the VAPOUR's c\_p, with no latent term. So Q $\approx$ 5.1 kW is not what a condenser of this area would transfer --- a condensing film carries far more. The run says so in its caveat block (a side changed phase). This case exists to show something else: where the outlet goes once the duty is fixed.}
+\tutreadme{1. The outlet is solved from its enthalpy. With Q known, the steam's outlet is the state whose enthalpy is H\_in - Q/n, priced by IF97. The $\varepsilon$-NTU temperature is only the starting guess. 2. The duty lands inside the latent jump. 5.1 kW is far less than the \textasciitilde{}36 kW it would take to condense 1 mol/s, so the outlet sits AT Tsat(8 bar) = 443.56 K with a vapour fraction of about 0.87, carried as a pin (one component on its saturation curve: T and P do not fix the split). 3. The unit closes on its own balance. The KPI H\_closure\_gap\_kW and the plant's first-law residual are both zero: each outlet carries the duty the unit computed.}
+\tutreadme{Until 2026-11-13 this case did not close. The outlet search walks a bracket outward from the $\varepsilon$-NTU guess, here the cold side's 300 K, and its low end walked below the IF97 window (273.15 K) before its high end reached Tsat. The search gave up, the steam left at the sensible model's 300 K as a liquid, and the unit published about 43 kW of latent heat as its own closure gap --- at exit 0. An end the package cannot price is now a wall: it stops, and the other end walks on. If no bracket exists at all, the fallback to the $\varepsilon$-NTU temperature is announced in the caveat block.}
+\tutreadme{$\ast$ Raise U tenfold, to 5000 W/m$^2$K: the duty hardly moves (5.138 to 5.139 kW). The effectiveness is already 0.9998, and the sensible model caps the duty at C\_vapour$\cdot$(T\_h,in - T\_c,in). That cap is exactly why this model is not a condenser. $\ast$ Raise the steam to 600 K: the duty doubles (10.47 kW), yet the outlet quality RISES, to about 0.885 --- the extra duty is spent on the extra superheat the steam brought in. The outlet temperature is still Tsat(8 bar).}
+\begin{tutgolden}
+\goldrow{stream}{coolingWater}{F}{0.001}
+\goldrow{stream}{coolingWater}{T}{300}
+\goldrow{stream}{steam}{F}{0.001}
+\goldrow{stream}{steam}{T}{450}
+\goldrow{stream}{warmWater}{F}{0.001}
+\goldrow{stream}{warmWater}{T}{368.11865561}
+\goldrow{stream}{wetSteam}{F}{0.001}
+\goldrow{stream}{wetSteam}{T}{443.563510759}
+\goldrow{stream}{wetSteam}{vf}{0.86868175916}
+\goldrow{kpi}{condenserHX}{C\_cold}{75.5}
+\goldrow{kpi}{condenserHX}{C\_hot}{34.2593165607}
+\goldrow{kpi}{condenserHX}{C\_r}{0.453765782261}
+\goldrow{kpi}{condenserHX}{H\_closure\_gap\_kW}{5.08229014429e-10}
+\goldrow{kpi}{condenserHX}{LMTD}{109.851237347}
+\goldmore{15}
+\end{tutgolden}
+
+\clearpage
 \tutentry{hxWorkflow1\_design\_from\_duty}{tutorials/steady/heat/hxWorkflow1\_design\_from\_duty}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
