@@ -1,0 +1,31 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     FAST                   F_product_final  0.001            1e-4
+kpi     FAST                   kpi_densityPricedFraction_final 1                1e-4
+kpi     FAST                   kpi_density_kg_m3_final 288.800250979    1e-4
+kpi     FAST                   kpi_fillFraction_final 0.8              1e-4
+kpi     FAST                   kpi_holdupMass_compA_kg_final 0.0101069204986  1e-4
+kpi     FAST                   kpi_holdupMass_kg_final 1.5              1e-4
+kpi     FAST                   kpi_holdupVolume_m3_final 0.00519390130347 1e-4
+kpi     FAST                   kpi_massFlow_kg_s_final 0.03             1e-4
+kpi     FAST                   kpi_residenceTime_s_final 50               1e-4
+kpi     FAST                   kpi_vesselVolume_m3_final 0.00649237662933 1e-4
+kpi     FAST                   kpi_volumetricFlow_m3_s_final 0.000103878026069 1e-4
+kpi     FAST                   t_end            5000             1e-4
+kpi     SLOW                   F_in_final       0.001            1e-4
+kpi     SLOW                   T_final          330              1e-4
+kpi     SLOW                   n_compA_final    0.00673794699909 1e-4
+kpi     SLOW                   n_compB_final    0.993262053001   1e-4
+kpi     SLOW                   t_end            5000             1e-4
+kpi     SLOW                   z_in_compA_final 0                1e-4
+kpi     SLOW                   z_in_compB_final 1                1e-4
+kpi     balance                energy_balance_available 0                1e-4
+kpi     balance                mass_closure_rel 3.77771887846e-15 1e-4
+kpi     balance                mass_kg_final    30               1e-4
+kpi     balance                mass_kg_in_cum   300              1e-4
+kpi     balance                mass_kg_initial  30               1e-4
+kpi     balance                mass_kg_out_cum  300              1e-4
+kpi     balance                mass_residual_kg -1.13331566354e-12 1e-4
+kpi     balance                material_available 1                1e-4
+source  FAST                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

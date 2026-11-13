@@ -502,6 +502,51 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["propertySources.test.ts"],
     stdout: true,
   },
+  //  The `fast-and-slow` EduTool's three full/reduced pairs: the curves the
+  //  page compares, and the two reactor logs whose adaptive step history
+  //  the page counts.
+  {
+    caseDir: "tutorials/unsteady/unsteady07_fast_tank_full",
+    file: "trajectory.csv",
+    readBy: ["fastSlow.test.ts"],
+  },
+  {
+    caseDir: "tutorials/unsteady/unsteady08_fast_tank_reduced",
+    file: "trajectory.csv",
+    readBy: ["fastSlow.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/reactor/batch30_fast_equilibrium_full",
+    file: "trajectory.csv",
+    readBy: ["fastSlow.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
+    file: "trajectory.csv",
+    readBy: ["fastSlow.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/reactor/batch32_fast_intermediate_full",
+    file: "trajectory.csv",
+    readBy: ["fastSlow.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
+    file: "trajectory.csv",
+    readBy: ["fastSlow.test.ts"],
+  },
+  {
+    caseDir: "tutorials/batch/reactor/batch30_fast_equilibrium_full",
+    file: "log.choupoBatch",
+    readBy: ["fastSlow.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
+    file: "log.choupoBatch",
+    readBy: ["fastSlow.test.ts"],
+    stdout: true,
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

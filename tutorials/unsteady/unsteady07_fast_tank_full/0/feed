@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/feed -- the state of stream 'feed' at t = 0: ONE file per stream,
+  in the canonical grammar every state view uses.
+  A domain inlet: from t = 0 the feed is pure compB (the tracer), a step
+  from the compA the tanks hold.  The flow is 1e-3 kmol/s throughout.
+\*-----------------------------------------------------------------------------*/
+
+componentMolarFlows
+{
+    compA  0.0 kmol/s;
+    compB  1.0e-03 kmol/s;
+}
+
+T               330.0 K;
+P               101325.0 Pa;

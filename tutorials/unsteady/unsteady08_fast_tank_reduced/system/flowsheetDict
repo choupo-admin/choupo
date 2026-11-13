@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unsteady08_fast_tank_reduced -- the REDUCED twin of
+  unsteady07_fast_tank_full: the same two tanks, the same step in the feed,
+  with the SMALL tank replaced by its quasi-steady relation.
+
+  THE REDUCTION.  If the small tank's time constant tau_f is short against
+  the big tank's tau_s, its content follows its inlet almost at once, and
+  in the limit it holds nothing that changes: its outlet IS its inlet.
+  That relation is what a `storageTank` computes (outlet = inlet, plus the
+  holdup its declared residence time implies, published as a number and
+  never integrated), and `quasiSteady` re-solves it on SLOW's outlet at
+  every accepted instant ("SAME INSTANT" in the [routing] line).  So the
+  engine runs ONE differential equation where the full model runs two.
+
+  WHAT IS KEPT AND WHAT IS LOST.  The residence time below (50 s, the full
+  model's tau_f) changes no number on the outlet: it only sizes the holdup
+  the storageTank publishes (kpi_holdupMass_kg, what FAST would hold if it
+  were at steady state with its inlet).  The lag of about tau_f is what is
+  lost, and unsteady07 measures it: the largest gap between the two outlet
+  tracer fractions is 0.0428 at eps = 0.05, and it grows with eps.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        SLOW;
+        type        dynamicCSTR;
+        in          feed;
+        outputs     ( s12 );
+        operation
+        {
+            UA           0.0;             // W/K: no jacket
+            T_jacket     330.0 K;
+        }
+    }
+    {
+        name        FAST;
+        type        quasiSteady;
+        in          s12;
+        outputs     ( product );
+        unit
+        {
+            type        storageTank;
+            operation
+            {
+                residenceTime  50 s;      // tau_f of the full model; sizes the published holdup only
+                fillFraction   0.8;       // declared, so no default is taken
+            }
+        }
+    }
+);

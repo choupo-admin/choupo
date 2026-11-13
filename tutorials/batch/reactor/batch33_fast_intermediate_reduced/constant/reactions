@@ -1,0 +1,35 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The quasi-steady-intermediate law, written in the case: the rate at which
+  P is made equals the rate at which A makes I.  k1 is the number batch32
+  declares for A -> I.
+\*---------------------------------------------------------------------------*/
+
+A_to_P
+{
+    stoichiometry
+    (
+        { component compA;  nu -1; }
+        { component compC;  nu  1; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "quasi-steady intermediate of A -> I -> P, derived in system/flowsheetDict; k1 author-set for the lesson";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            k1   1.0e-3  1/s;      // the step that makes I
+        }
+        rate    "k1 * c[compA]";
+        rateConstant { name k1;  unit 1/s; }
+    }
+}

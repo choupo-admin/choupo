@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch32_fast_intermediate_full -- a reactive intermediate, every rate
+  integrated:
+
+      A  --k1-->  I  --k2-->  P      k1 = 0.001 1/s, k2 = 0.1 1/s
+
+  (I is compB and P is compC.)  Isothermal at 350 K, first order, Ea = 0.
+
+  THE QUESTION.  I is used up a hundred times faster than it is made, so it
+  never accumulates: after a short first moment its amount is whatever
+  makes its two rates equal, n_I = (k1/k2) n_A, small and following A.
+  Then P is made as fast as A is consumed:
+
+      dn_P/dt = k1 n_A
+
+  That is the quasi-steady intermediate, and
+  batch33_fast_intermediate_reduced runs exactly that law, A -> P, with no
+  k2.  The two answers for n_P differ by the I that is in transit: measured
+  with these numbers the largest gap is 0.95 % of the charge.  For a
+  closed system the difference in P is the amount of I itself, so the
+  gap and the largest n_I are the same number.  The EduTool page changes
+  k2 and draws it.
+
+  THE SAME EQUATION AS TWO TANKS.  The gap here, at k1/k2 = eps, is the
+  gap between two mixing tanks in series at tau_f/tau_s = eps
+  (unsteady07/unsteady08): eps^(1/(1-eps)) in both, because both are a
+  fast first-order system driven by a slow one.
+
+  No species carries formation data and none is needed: isothermal mode
+  holds T, so the heat of reaction is not used, as in batch03_consecutive.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reactions  ( A_to_I  I_to_P );
+    }
+);

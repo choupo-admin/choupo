@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 249 records already exist
+## 1. Why an index, when 250 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 249 design records, **173 state a rejected alternative and 76 do not** —
+- Of 250 design records, **174 state a rejected alternative and 76 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -351,6 +351,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`fluidised-bed-hydrodynamics.md`](../design/fluidised-bed-hydrodynamics.md) | slice record | no | **2026-11-12, the `fluidised-beds` EduTool** -- minimum fluidisation, regimes, expansion and bubbles computed in the page (the engine has no fluidised bed, and the page says so and tests it); reports two engine shapes met and not fixed (the pneumatic conveyor's terminal-velocity iteration returns its last iterate unverified; the drag law's 0.4 % jump at Re = 1000); no rejected alternative stated. |
 | [`fixed-bed-numerics-c375.md`](../design/fixed-bed-numerics-c375.md) | slice record | yes | **2026-11-12, C375** -- the fixed bed's first-order upwind scheme widened breakthrough fronts by the grid (v dz/2); a van Leer limited scheme becomes the default and upwind stays selectable (rejected: keeping upwind as default with a finer grid, 1250 cells for the same accuracy); two open defects on profile writing recorded. |
 | [`c329-ratebased-at-general-reflux.md`](../design/c329-ratebased-at-general-reflux.md) | PROPOSAL | yes | **DESIGN 2026-11-13, C329 part 2, nothing built** -- a computed tray efficiency or HETP at a GENERAL reflux (formulation A) and the explicit two-film interfacial stage (formulation B), measured against the solvers as they are: the Murphree relation lives only on the Wang-Henke path (folded into an effective K with a lagged vapour), the full MESH is the one general-reflux model with a solved stage energy balance and is solved dense (62.5 s on the 75-stage Klemola splitter, about 53 of them in five dense full-MESH iterations), and no measurement in the tree is at a general reflux.  Proposes: y as unknowns in the full MESH (block-tridiagonal, 2n+1 per stage), the efficiency coupled by an announced outer fixed point, a packed section as Murphree segments of a derived E = 1 - exp(-dz/H_OG); B at 5n+5 per stage, first as a binary packed bed at total reflux held to the existing transfer-unit bed.  REJECTED: Murphree in the Newton by the Wang-Henke lag; eliminating y recursively (kills the band); the efficiency inside the Newton as the first build; the CMO MESH as host; round(H/HETP) stages; Klemola (nine components, valve trays, a Wang-Henke-only reflux key) as the first witness.  Owner's: the multicomponent efficiency, B's model word, the Klemola target. |
+| [`fast-and-slow.md`](../design/fast-and-slow.md) | slice record | yes | **2026-11-13, the `fast-and-slow` EduTool** -- three case studies (two tanks, a fast equilibrium, a reactive intermediate), each a full and a reduced tutorial case run by the engine, answering why correlations are simple; measured gap and cost tables; rejected: the reduced models as page formulas, the semi-continuous adaptive count as a cost (it measures the driver grid), and an engine step-count KPI (proposed, not built). |
 
 ### Historical
 
@@ -403,7 +404,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**76 of 249 records state no rejected alternative.**  For a FORUM or a STUDY
+**76 of 250 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.

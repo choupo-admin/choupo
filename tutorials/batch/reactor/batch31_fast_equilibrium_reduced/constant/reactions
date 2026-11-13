@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The partial-equilibrium law, written in the case.  compA is the pool
+  A + B (see system/flowsheetDict); c[compA] is its concentration, n/V.
+  k and K are the two numbers batch30 declares as k and kf/kr.
+\*---------------------------------------------------------------------------*/
+
+pool_to_C
+{
+    stoichiometry
+    (
+        { component compA;  nu -1; }
+        { component compC;  nu  1; }
+    );
+    kinetics
+    {
+        type    expression;
+        source  "partial equilibrium of A <-> B, derived in system/flowsheetDict; k and K author-set for the lesson";
+        basis   reactorVolume;
+        rateOf  extent;
+        parameters
+        {
+            k    1.0e-3  1/s;      // the slow step B -> C
+            K    4.0     -;        // kf / kr of the fast pair
+        }
+        rate    "k * K / (1 + K) * c[compA]";
+        rateConstant { name k;  unit 1/s; }
+    }
+}

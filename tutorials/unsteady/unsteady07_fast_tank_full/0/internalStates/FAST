@@ -1,0 +1,22 @@
+/*--------------------------------*- Choupo -*----------------------------------*\
+  0/internalStates/FAST -- the initial HOLDUP of 'FAST' (DYNAMIC): the SMALL tank,
+  0.05 kmol against the same flow: time constant 50 s, a ratio of 0.05.
+  At t = 0 it holds pure compA; the feed brings the tracer compB.
+\*-----------------------------------------------------------------------------*/
+
+recordType  internalState;
+
+unit        "FAST";
+equipment   dynamicCSTR;
+
+holdup
+{
+    T           330.0;
+    P           101325.0;
+    V           0.004;          // m3 (compA's liquid molar volume x the holdup)
+    holdupMolar
+    {
+        compA   0.05;          // kmol: holdup / feed flow = the time constant
+        compB   0.0;
+    }
+}
