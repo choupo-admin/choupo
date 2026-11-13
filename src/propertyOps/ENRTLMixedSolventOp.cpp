@@ -63,9 +63,12 @@ int ENRTLMixedSolventOp::run(const DictPtr& dict, const ThermoPackage& /*thermo*
     model.tau_ca_OH = recCaOH;
 
     // Optional overrides (another alcohol / salt -- every value a curated cite)
+    bool declOHca = false, declCaOH = false;
     if (dict->found("salt"))
     {
         auto s = dict->subDict("salt");
+        declOHca = s->found("tau_OH_ca");
+        declCaOH = s->found("tau_ca_OH");
         model.tau_OH_ca = s->lookupScalarOrDefault("tau_OH_ca", model.tau_OH_ca);
         model.tau_ca_OH = s->lookupScalarOrDefault("tau_ca_OH", model.tau_ca_OH);
         model.tau_C2_ca = s->lookupScalarOrDefault("tau_C2_ca", model.tau_C2_ca);
@@ -79,11 +82,15 @@ int ENRTLMixedSolventOp::run(const DictPtr& dict, const ThermoPackage& /*thermo*
             " the record is mirrored");
     if (verbosity >= 1)
     {
-        auto said = [&](const char* key, double used, double fromRecord)
+        auto said = [&](const char* key, double used, double fromRecord,
+                        bool declared)
         {
             std::cout << "  " << key << " " << used;
-            if (used == fromRecord)
+            if (!declared)
                 std::cout << "  (catalogue parameters/eNRTL/Na-Cl.dat)\n";
+            else if (used == fromRecord)
+                std::cout << "  (DECLARED by the case; equal to the catalogue"
+                             " record parameters/eNRTL/Na-Cl.dat)\n";
             else if (std::isnan(fromRecord))
                 std::cout << "  (DECLARED by the case; the catalogue record"
                              " parameters/eNRTL/Na-Cl.dat is not reachable"
@@ -93,8 +100,8 @@ int ENRTLMixedSolventOp::run(const DictPtr& dict, const ThermoPackage& /*thermo*
                              " parameters/eNRTL/Na-Cl.dat carries "
                           << fromRecord << ")\n";
         };
-        said("tau_OH_ca", model.tau_OH_ca, recOHca);
-        said("tau_ca_OH", model.tau_ca_OH, recCaOH);
+        said("tau_OH_ca", model.tau_OH_ca, recOHca, declOHca);
+        said("tau_ca_OH", model.tau_ca_OH, recCaOH, declCaOH);
     }
     if (dict->found("alcohol"))
     {
