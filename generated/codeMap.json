@@ -1298,14 +1298,26 @@
   "MassTransferModel": [
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H"
   ],
+  "MassWithoutVolume": [
+   "src/thermo/liquidProperty/MassWithoutVolume.H"
+  ],
   "Material": [
    "src/materials/Material.H"
   ],
   "MaterialRegistry": [
    "src/materials/MaterialRegistry.H"
   ],
+  "Measured": [
+   "src/thermo/liquidProperty/Measured.H"
+  ],
   "MeasuredQuantity": [
    "src/streams/AnalysisReconciler.H"
+  ],
+  "Measurement": [
+   "src/thermo/liquidProperty/Measured.H"
+  ],
+  "MeasurementDeclarations": [
+   "src/thermo/liquidProperty/Measured.H"
   ],
   "Membrane": [
    "src/thermo/membrane/Membrane.H"
@@ -1710,6 +1722,9 @@
   "PropertyDomainError": [
    "src/thermo/PropertyDomainError.H"
   ],
+  "PropertyDomainTrial": [
+   "src/thermo/PropertyDomainError.H"
+  ],
   "PropertyOperation": [
    "src/propertyOps/PropertyOperation.H"
   ],
@@ -2104,8 +2119,14 @@
   "SolutionDiffusion": [
    "src/unitOperations/membrane/transport/SolutionDiffusion.H"
   ],
+  "SolutionForm": [
+   "src/thermo/liquidProperty/SolutionLaw.H"
+  ],
   "SolutionInstantMeta": [
    "src/io/SolutionWriter.H"
+  ],
+  "SolutionLaw": [
+   "src/thermo/liquidProperty/SolutionLaw.H"
   ],
   "SolutionPair": [
    "src/thermo/solution/SolutionPair.H"
@@ -3076,8 +3097,26 @@
     "type": "PureFluidLeaf"
    },
    {
+    "key": "massWithoutVolume",
+    "type": "MassWithoutVolume"
+   },
+   {
     "key": "idealMixing",
     "type": "IdealMixing"
+   },
+   {
+    "key": "solutionLaw",
+    "type": "SolutionLaw"
+   },
+   {
+    "key": "measured",
+    "type": "Measured"
+   }
+  ],
+  "src/thermo/liquidProperty/SolutionLaw.cpp": [
+   {
+    "key": "polynomialTSqrtX",
+    "type": "PolynomialTSqrtX"
    }
   ],
   "src/thermo/phase/Phase.cpp": [
@@ -8588,6 +8627,7 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -8659,6 +8699,7 @@
    "src/thermo/Database.H",
    "src/thermo/ElementComposition.H",
    "src/thermo/FitGrade.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
@@ -8683,6 +8724,8 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/liquidProperty/DensityMethod.H",
+   "src/thermo/liquidProperty/Measured.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/activityCoefficient/ActivityModel.cpp": [
@@ -9271,6 +9314,7 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
@@ -9303,14 +9347,88 @@
    "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/IdealMixing.H",
+   "src/thermo/liquidProperty/MassWithoutVolume.H",
+   "src/thermo/liquidProperty/Measured.H",
    "src/thermo/liquidProperty/PureFluidLeaf.H",
-   "src/thermo/liquidProperty/RecordVolumeLeaf.H"
+   "src/thermo/liquidProperty/RecordVolumeLeaf.H",
+   "src/thermo/liquidProperty/SolutionLaw.H"
   ],
   "src/thermo/liquidProperty/DensityResolver.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
+   "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/ApproximationAuthorisation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PropertyDomainError.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/liquidProperty/DensityLeaf.H",
+   "src/thermo/liquidProperty/DensityMethod.H",
+   "src/thermo/liquidProperty/DensityResolver.H",
+   "src/thermo/liquidProperty/Measured.H",
+   "src/thermo/liquidProperty/SolutionLaw.H"
+  ],
+  "src/thermo/liquidProperty/IdealMixing.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/ApproximationAuthorisation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PropertyDomainError.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/liquidProperty/DensityLeaf.H",
+   "src/thermo/liquidProperty/DensityMethod.H",
+   "src/thermo/liquidProperty/DensityResolver.H",
+   "src/thermo/liquidProperty/IdealMixing.H"
+  ],
+  "src/thermo/liquidProperty/MassWithoutVolume.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/ApproximationAuthorisation.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/liquidProperty/DensityLeaf.H",
+   "src/thermo/liquidProperty/DensityMethod.H",
+   "src/thermo/liquidProperty/MassWithoutVolume.H"
+  ],
+  "src/thermo/liquidProperty/Measured.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/PropertySourceLog.H",
    "src/core/Types.H",
@@ -9323,29 +9441,10 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
-   "src/thermo/liquidProperty/DensityResolver.H"
-  ],
-  "src/thermo/liquidProperty/IdealMixing.cpp": [
-   "src/core/Constants.H",
-   "src/core/Dictionary.H",
-   "src/core/Dimensions.H",
-   "src/core/Identifiers.H",
-   "src/core/Origin.H",
-   "src/core/Types.H",
-   "src/solver/Convergence.H",
-   "src/thermo/Component.H",
-   "src/thermo/Database.H",
-   "src/thermo/LiquidPropertyDoor.H",
-   "src/thermo/PackageAudit.H",
-   "src/thermo/PropertyDomainError.H",
-   "src/thermo/RecordResolver.H",
-   "src/thermo/ThermoPackage.H",
-   "src/thermo/VapourAssociation.H",
-   "src/thermo/liquidProperty/DensityLeaf.H",
-   "src/thermo/liquidProperty/DensityMethod.H",
-   "src/thermo/liquidProperty/IdealMixing.H"
+   "src/thermo/liquidProperty/DensityResolver.H",
+   "src/thermo/liquidProperty/Measured.H",
+   "src/thermo/liquidProperty/SolutionLaw.H"
   ],
   "src/thermo/liquidProperty/PureFluidLeaf.cpp": [
    "src/core/Advisory.H",
@@ -9353,6 +9452,7 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/PropertySourceLog.H",
    "src/core/Types.H",
@@ -9390,6 +9490,29 @@
    "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/RecordVolumeLeaf.H"
+  ],
+  "src/thermo/liquidProperty/SolutionLaw.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
+   "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
+   "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/PropertyDomainError.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/liquidProperty/DensityMethod.H",
+   "src/thermo/liquidProperty/DensityResolver.H",
+   "src/thermo/liquidProperty/SolutionLaw.H"
   ],
   "src/thermo/membrane/FeedSpacer.cpp": [
    "src/core/Dictionary.H",
@@ -12495,6 +12618,7 @@
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
+   "src/thermo/ApproximationAuthorisation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/LiquidPropertyDoor.H",
@@ -13331,7 +13455,10 @@
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
+   "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -13780,8 +13907,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/phase/Phase.cpp",
    "src/thermo/phase/SaturatedVapour.cpp",
@@ -14145,8 +14275,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
@@ -14555,8 +14688,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
@@ -15034,8 +15170,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -15172,6 +15311,13 @@
    "src/outerDriver/DesignSpec.cpp",
    "src/solver/NewtonND.cpp",
    "src/solver/NewtonRaphson.cpp",
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/liquidProperty/DensityLeaf.cpp",
+   "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
+   "src/thermo/liquidProperty/PureFluidLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/membrane/transport/DSPM_DE.cpp",
@@ -15376,8 +15522,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
@@ -15721,7 +15870,9 @@
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/SaturatedVapour.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/WilkeChang.cpp",
@@ -16356,8 +16507,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/FittedRecord.cpp",
    "src/thermo/membrane/Membrane.cpp",
@@ -18075,8 +18229,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -18556,7 +18713,11 @@
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
-   "src/thermo/activityCoefficient/Wilson.cpp"
+   "src/thermo/activityCoefficient/Wilson.cpp",
+   "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/unitOperations/rotating/Pump.cpp"
   ],
   "src/thermo/AtomicWeights.H": [
    "src/streams/StreamStateIO.cpp",
@@ -18762,8 +18923,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -19071,8 +19235,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -19266,12 +19433,16 @@
    "src/postProcessing/sizing/ShellTubeHX.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
@@ -19428,8 +19599,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -19591,7 +19765,9 @@
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
-   "src/thermo/liquidProperty/PureFluidLeaf.cpp"
+   "src/thermo/liquidProperty/Measured.cpp",
+   "src/thermo/liquidProperty/PureFluidLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp"
   ],
   "src/thermo/RecordResolver.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -19765,8 +19941,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/membrane/MembraneModuleRegistry.cpp",
    "src/thermo/membrane/MembraneRegistry.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -20229,8 +20408,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -20488,8 +20670,11 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/thermo/reaction/Reaction.cpp",
@@ -21202,6 +21387,7 @@
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp"
   ],
@@ -21211,19 +21397,36 @@
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
    "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
-   "src/thermo/liquidProperty/RecordVolumeLeaf.cpp"
+   "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp"
   ],
   "src/thermo/liquidProperty/DensityResolver.H": [
-   "src/thermo/liquidProperty/DensityResolver.cpp"
+   "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp"
   ],
   "src/thermo/liquidProperty/IdealMixing.H": [
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp"
+  ],
+  "src/thermo/liquidProperty/MassWithoutVolume.H": [
+   "src/thermo/liquidProperty/DensityMethod.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp"
+  ],
+  "src/thermo/liquidProperty/Measured.H": [
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/liquidProperty/DensityMethod.cpp",
+   "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/Measured.cpp"
   ],
   "src/thermo/liquidProperty/PureFluidLeaf.H": [
    "src/thermo/liquidProperty/DensityMethod.cpp",
@@ -21232,6 +21435,12 @@
   "src/thermo/liquidProperty/RecordVolumeLeaf.H": [
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp"
+  ],
+  "src/thermo/liquidProperty/SolutionLaw.H": [
+   "src/thermo/liquidProperty/DensityMethod.cpp",
+   "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp"
   ],
   "src/thermo/membrane/FeedSpacer.H": [
    "src/thermo/membrane/FeedSpacer.cpp",

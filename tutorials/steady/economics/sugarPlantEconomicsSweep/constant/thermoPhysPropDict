@@ -67,3 +67,18 @@ transport
         diffusivity         { model Fuller; }
     }
 }
+
+// THE LIQUID DENSITY'S HYPOTHESIS (DEV.md 4c C378 pilot): the pump and the
+// CSTR take their liquid density from the property kernel, which refuses a
+// component with no liquid volume.  This case declares, with its bound set
+// from its own feed, that the listed components keep their mass and add no
+// volume -- what the pump did unannounced before the pilot.
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( CO2 N2 );
+        maxMassFraction 0.05;
+        reason          "the fermentor's feed carries dissolved CO2, a declared Henry solute whose partial molar volume this pilot does not read: it keeps its mass and adds no volume.  N2, the other declared Henry solute, is listed because a Newton perturbation of the recycle puts a trace of it in the feed.  The bound covers the recycle's seed (3 % CO2 by mole, w 0.033 in the mixed feed of the first pass); the converged feed carries far less";
+    }
+}

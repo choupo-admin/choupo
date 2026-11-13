@@ -42,3 +42,18 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+// THE LIQUID DENSITY'S HYPOTHESIS (DEV.md 4c C378 pilot): the pump and the
+// CSTR take their liquid density from the property kernel, which refuses a
+// component with no liquid volume.  This case declares, with its bound set
+// from its own feed, that the listed components keep their mass and add no
+// volume -- what the pump did unannounced before the pilot.
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( NaCl );
+        maxMassFraction 0.05;
+        reason          "seawater RO plant: the salt keeps its mass and adds no volume to the pumps' liquid density (its mass fraction is about 0.035); the engine's own bound on this reading is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
+    }
+}

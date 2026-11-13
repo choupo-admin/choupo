@@ -563,6 +563,37 @@ int run(const std::string& manifestPath, const std::string& outPath)
                 }
         }
     }
+    //  THE RESOLUTION IS KEYED ON THE PACKAGE, NEVER ON ITS ADDRESS (C378
+    //  pilot, ruling 6): packages with different pure-fluid selections for
+    //  the same set {water}, built one after the other in this process (the
+    //  allocator tends to give the next one the dead one's address), each
+    //  resolve their own method.  A failure exits the bench non-zero.
+    std::string reuseLine;
+    bool reuseOk = true;
+    {
+        Silence quiet;
+        const sVector pure { 1.0 };
+        const std::vector<std::pair<std::string, std::string>> runs = {
+            { "pureFluids { water { method IF97; } }\n", "pureFluid.IF97" },
+            { "", "referenceEquation.IAPWS95" },
+            { "pureFluids { water { method IF97; } }\n", "pureFluid.IF97" } };
+        const void* prev = nullptr;
+        int sameAddress = 0;
+        for (const auto& rn : runs)
+        {
+            const DictPtr d = Dictionary::fromString(systemText({ "water" }, rn.first),
+                                                     "<address-reuse check>");
+            auto pk = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(d, db));
+            if (prev == pk.get()) ++sameAddress;
+            prev = pk.get();
+            liquidProperty::Request q;
+            q.thermo = pk.get(); q.T = 298.15; q.P = 1.0e5; q.x = pure;
+            const std::string id = liquidProperty::density(q).methodId;
+            reuseLine += " " + id;
+            if (id != rn.second) reuseOk = false;
+        }
+        reuseLine += " (packages at a reused address: " + std::to_string(sameAddress) + ")";
+    }
     fs::current_path(here);
     os.close();
     labelsOut = nullptr;
@@ -588,10 +619,12 @@ int run(const std::string& manifestPath, const std::string& outPath)
               << kernelDiffer << " different";
     for (const auto& kv : kernelDifferByMethod) std::cout << "  [" << kv.first << " " << kv.second << "]";
     std::cout << "\n";
+    std::cout << "  resolution by package, not address: " << (reuseOk ? "ok" : "FAIL")
+              << " --" << reuseLine << "\n";
     char b[64];
     std::snprintf(b, sizeof(b), "%.1f", secs);
     std::cout << "  wall time " << b << " s\n";
-    return 0;
+    return reuseOk ? 0 : 1;
 }
 
 } // namespace propertyRouteBench
