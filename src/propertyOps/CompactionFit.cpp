@@ -28,6 +28,7 @@ License
 
 #include "CompactionFit.H"
 #include "FitAlgebra.H"
+#include "CompactionLaws.H"   // the two curves, forward and inverse: ONE home (C270)
 
 #include "core/Dimensions.H"
 #include "core/Dictionary.H"
@@ -330,13 +331,13 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
                     + " has relative density " + fmt("%g", D[r]) + " inside the"
                       " window; ln(1/(1 - D)) needs 0 < D < 1");
             x.push_back(P);
-            y.push_back(std::log(1.0 / (1.0 - D[r])));
+            y.push_back(compactionLaw::heckelOrdinate(D[r]));
         }
         requirePoints(x.size(), s, win);
         const Line L = fitLine(x, y);
         const scalar t = fitAlgebra::tCrit95(static_cast<int>(L.n) - 2);
         const scalar Py = 1.0 / L.m;
-        const scalar DA = 1.0 - std::exp(-L.q);
+        const scalar DA = compactionLaw::heckelInterceptDensity(L.q);
         std::cout << "\n  HECKEL  ln(1/(1 - D)) = K P + A     (Heckel, Trans. Metall. Soc."
                      " AIME 221 (1961) 671-675 and 1001-1008)\n"
                   << "    D the relative density of the compact (" << basis << "), P the"
@@ -377,9 +378,9 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         {
             const scalar P = d.at(r, cP);
             const bool in = (P >= lo && P <= hi);
-            const scalar yy = (D[r] > 0.0 && D[r] < 1.0) ? std::log(1.0 / (1.0 - D[r]))
+            const scalar yy = (D[r] > 0.0 && D[r] < 1.0) ? compactionLaw::heckelOrdinate(D[r])
                                                           : std::numeric_limits<scalar>::quiet_NaN();
-            const scalar yf = L.m * P + L.q;
+            const scalar yf = compactionLaw::heckelLine(L.m, L.q, P);
             tab.rows.push_back({ P, D[r], yy, yf, yy - yf, in ? 1.0 : 0.0 });
             char line[160];
             std::snprintf(line, sizeof(line), "    %9.3f  %8.4f  %12.5f  %10.5f  %+10.5f   %s\n",
@@ -391,7 +392,7 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         tables_.push_back(fittedCurve("heckelLine",
             "the fitted Heckel line over the declared window's points only",
             { "P_MPa", "MPa" }, { "lnInvPorosity_fit", "-" }, x,
-            [&](scalar P) { return L.m * P + L.q; }));
+            [&](scalar P) { return compactionLaw::heckelLine(L.m, L.q, P); }));
     }
 
     // ===================================================================
@@ -581,7 +582,7 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         for (std::size_t r = 0; r < d.nRows; ++r)
         {
             const scalar e = 1.0 - D[r];
-            const scalar sf = s0 * std::exp(-kb * e);
+            const scalar sf = compactionLaw::rdStrength(s0, kb, e);
             const scalar res = (sig[r] > 0.0) ? std::log(sig[r]) - std::log(sf)
                                               : std::numeric_limits<scalar>::quiet_NaN();
             tab.rows.push_back({ e, sig[r], sf, res, (e >= emin && e <= emax) ? 1.0 : 0.0 });
@@ -590,7 +591,7 @@ int CompactionFit::run(const DictPtr& dict, const ThermoPackage& /*thermo*/,
         tables_.push_back(fittedCurve("ryshkewitchLine",
             "the fitted Ryshkewitch-Duckworth curve over the porosities it was fitted on",
             { "porosity", "-" }, { "sigma_t_fit_MPa", "MPa" }, x,
-            [&](scalar e) { return s0 * std::exp(-kb * e); }));
+            [&](scalar e) { return compactionLaw::rdStrength(s0, kb, e); }));
     }
 
     if (reported && reported->found("source"))

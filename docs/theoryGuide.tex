@@ -24683,6 +24683,76 @@ It is the elastic solution for a disc loaded across a diameter, so it
 holds for flat faces only; a convex tablet needs another expression, which
 \code{compactionFit} does not carry.
 
+\subsection{From the fitted curves to the press: the inverse use}\label{sec:compaction-inverse}
+
+The two lines the bench fits are also a design tool when they are read
+backwards (DEV.md 4c C270).  The rated tablet press (\code{ratedMachine},
+kind \code{tabletPress}, \code{compaction \{\}} block) asks what pressure,
+and what force on one punch, makes a tablet of a declared tensile strength
+$\sigma_t^\ast$.  Inverting Eq.~(\ref{eq:ryshkewitch})
+\cite{Ryshkewitch1953,Duckworth1953} gives the porosity at which the curve
+reaches that strength, and inverting Eq.~(\ref{eq:heckel})
+\cite{Heckel1961a,Heckel1961b} the pressure at which the compact reaches the
+matching relative density $D^\ast = 1 - \varepsilon^\ast$:
+\begin{equation}
+  \varepsilon^\ast = \frac{1}{k_b}\ln\frac{\sigma_0}{\sigma_t^\ast},
+  \qquad
+  P^\ast = \frac{1}{K}\left(\ln\frac{1}{1-D^\ast} - A\right),
+  \qquad
+  F^\ast = P^\ast A_\text{tip},
+  \label{eq:compaction-inverse}
+\end{equation}
+with $A_\text{tip}$ the area of one punch tip.  The functions are the SAME
+ones the bench fits and prints (\file{src/propertyOps/CompactionLaws.H}), so
+there is no second transcription of either line.  For a flat-faced tablet
+of mass $m$ and the material's true density $\rho_\text{true}$ the
+thickness follows from the volume, $h = m/(\rho_\text{true} D^\ast
+A_\text{tip})$ (geometry).
+
+What the inversion can and cannot give, each said by the engine:
+\begin{itemize}
+  \item $\sigma_t^\ast \geq \sigma_0$ has no porosity: $\sigma_0$ is the
+  strength at zero porosity, and the engine refuses.
+  \item $D^\ast$ below $D_A = 1 - e^{-A}$ needs a negative pressure on the
+  line: the target lies outside what the line describes, and the engine
+  refuses.
+  \item $P^\ast$ outside the declared Heckel window is an extrapolation of
+  the fit, announced.
+  \item The two lines on different bases --- Heckel on in-die densities,
+  the strength curve on the porosity of ejected tablets --- are announced:
+  the ejected tablet has recovered elastically, and its height after
+  ejection exceeds the minimum in-die thickness (the elastic recovery that
+  Mohylyuk et al.\ \cite{Mohylyuk2024} compute from the two), so the
+  pressure found at the out-of-die porosity is not the pressure that makes
+  that tablet.
+  \item One material: a blend has no mixture rule here, as for the bench.
+\end{itemize}
+A minimum strength is a formulation decision; Mohylyuk et
+al.\ \cite{Mohylyuk2024} write that 2\,MPa is widely considered the
+minimum acceptable tensile strength of tablets.
+
+\paragraph{Dwell time: the speed a formulation allows.}  On a rotary press
+the punch head's flat of length $L$ passes under the compression roll on
+the turret's pitch circle of diameter $D_\text{pc}$; at $n$ revolutions per
+second the punch stays at its lowest point for
+\begin{equation}
+  t_\text{dwell} = \frac{L}{\pi D_\text{pc}\, n},
+  \qquad
+  n_\text{max} = \frac{L}{\pi D_\text{pc}\, t_\text{min}},
+  \label{eq:dwell}
+\end{equation}
+pure kinematics: a formulation that needs at least $t_\text{min}$ is
+pressed no faster than $n_\text{max}$, whatever the catalogue speed, and
+the press's capacity is the lower of the two speeds times its stations.
+Whether a formulation needs a minimum dwell is a property of the powder,
+measured: W\"unsch et al.\ \cite{Wunsch2020} found pure microcrystalline
+cellulose equally strong at dwell times between 10 and 130\,ms, while a
+starch gave weaker tablets at the shorter dwell times of a production press.
+An overall equipment effectiveness (availability $\times$ performance
+$\times$ quality) may scale the capacity; its quality factor already counts
+the rejected tablets, so a reject split in the flowsheet beside it counts
+them twice, and the engine says so.
+
 \subsection{What the bench claims, and what it does not}
 
 \begin{itemize}
@@ -24707,6 +24777,9 @@ holds for flat faces only; a convex tablet needs another expression, which
 \begin{tutoriallink}
 \file{tutorials/props/powder/compaction01\_mcc} --- microcrystalline cellulose,
 the main excipient of the apalutamide tablet case. \\
+\file{tutorials/batch/plant/tabletPress01\_dwell\_and\_force} --- the
+inverse use: the bench's MCC constants run backwards to the pressure and
+force of a 2\,MPa tablet, and a press whose dwell limit binds. \\
 \file{tutorials/props/powder/compaction02\_dcpd\_brittle} --- dicalcium
 phosphate, the brittle counterpart.  It stands where lactose (the main
 excipient of the donepezil tablet case) should: no open lactose dataset
@@ -30133,6 +30206,20 @@ sintered alumina and zirconia'', \emph{J.\ Am.\ Ceram.\ Soc.}, 36, 65--68
 
 \bibitem{Duckworth1953} Duckworth, W., ``Discussion of Ryshkewitch paper'',
 \emph{J.\ Am.\ Ceram.\ Soc.}, 36, 68 (1953).  Located, not read.
+
+\bibitem{Mohylyuk2024} Mohylyuk, V., Paulausks, A., Radzins, O., \&
+Lauberte, L., ``The effect of microcrystalline cellulose--CaHPO$_4$ mixtures
+in different volume ratios on the compaction and structural--mechanical
+properties of tablets'', \emph{Pharmaceutics}, 16(3), 362 (2024), DOI
+10.3390/pharmaceutics16030362, CC BY 4.0.  Read (full text, Europe PMC):
+the elastic recovery from the ejected height and the in-die minimum
+thickness, and the 2\,MPa minimum tensile strength.
+
+\bibitem{Wunsch2020} W\"unsch, I., Friesen, I., Puckhaber, D., Schlegel, T.,
+\& Finke, J. H., ``Scaling tableting processes from compaction simulator to
+rotary presses --- mind the sub-processes'', \emph{Pharmaceutics}, 12(4),
+310 (2020), DOI 10.3390/pharmaceutics12040310, CC BY 4.0.  Read (full text,
+Europe PMC): section 3 on dwell time, MCC and starch.
 
 \bibitem{FellNewton1970} Fell, J. T., \& Newton, J. M., ``Determination of
 tablet strength by the diametral-compression test'', \emph{J.\ Pharm.\

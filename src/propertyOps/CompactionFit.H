@@ -67,6 +67,12 @@ Description
           `sigma_t` column or computed from a diametral crushing force of a
           flat-faced cylinder, sigma_t = 2F/(pi d t) (Fell & Newton 1970).
 
+    ONE HOME FOR THE CURVES (DEV.md 4c C270): the Heckel and
+    Ryshkewitch-Duckworth lines this op fits and prints are the functions of
+    `CompactionLaws.H`, and the rated tablet press INVERTS the same functions
+    (`ratedMachine`, kind tabletPress, `compaction {}`): the constants fitted
+    here are the inputs a press check reads, with no second transcription.
+
     WHAT THE OP DOES NOT DO, said on its output: it fits ONE material.  A
     blend is not an excipient, and NO mixture rule (for Py, sigma_0 or
     k_b) is implemented -- a literature excipient stands in for the blend

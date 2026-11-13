@@ -153,6 +153,18 @@ as TWO boxes — a mixer where the spray lands on the cores, and a dryer
 where the hot air takes the water off — which is the mass and energy
 balance of ONE machine.
 
+**The press can be CHECKED for two of these, when the case declares the
+data.**  The `ratedMachine` sizer (`system/postDict`, kind `tabletPress`)
+rates the press on the dwell time the formulation needs (`dwell {}`) and
+finds the compaction pressure and punch force a tablet of a target tensile
+strength needs from the formulation's fitted Heckel and
+Ryshkewitch-Duckworth curves (`compaction {}`), and an overall equipment
+effectiveness may scale its capacity (`effectiveness {}`) -- DEV.md 4c
+C270, worked in `tutorials/batch/plant/tabletPress01_dwell_and_force`.
+This case declares none of them (no formulation data was read for it), and
+every run says the press was NOT checked for dwell time or compaction
+force.
+
 **Nothing dissolves in this model.**  The HPC is carried through the binder
 tank as a solid, the HPMC and the macrogol through the coating suspension;
 the heat of solution is neglected.  **The isotherm is the starch's alone**:

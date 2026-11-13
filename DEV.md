@@ -6255,6 +6255,38 @@ accepts today, and that is a policy call.
 > READS an open source (a review on compaction dwell time, verified on Crossref, or a
 > pharmaceutics textbook chapter Vitor supplies) before any sentence of it enters the engine,
 > a lesson or the pack.
+> **2026-11-13, Vitor, reading what apalutamide01 says of its press: "Mas não há um modelo
+> de design que entra com propriedades mecânicas dos excipientes?!" -- and to the proposal
+> (dwell plus a compaction check): "Avança com os dois, um único material ajustado."  BUILT
+> (branch feat/c270-press-dwell-and-compaction):** the `ratedMachine` kind tabletPress takes
+> three OPTIONAL blocks beside `rating`, each with source and reason: `dwell { punchFlat;
+> pitchCircle; minimumDwellTime; }` (t = L/(pi D n), n_max = L/(pi D t_min), the
+> dwell-limited capacity published beside the catalogue's, the utilisation on the LOWER,
+> a binding limit announced); `effectiveness { availability; performance; quality; }` (OEE
+> scales the capacity; quality < 1 on a press whose flowsheet already splits off rejects is
+> announced as counted twice); `compaction { heckel { K|Py; A; Pmin; Pmax; basis }
+> ryshkewitch { sigma0; kb; basis } targetTensileStrength; punchTipArea;
+> maxCompressionForce; [trueDensity] }` (ONE fitted material, no mixture rule, said on every
+> run: porosity from R-D inverted, pressure from Heckel inverted, force = P x A_tip,
+> thickness of a flat-faced tablet; refused: target >= sigma0, a non-positive constant, a
+> solid fraction below the line's zero-pressure density; announced: outside the Heckel
+> window, in-die against out-of-die, force above announceAbove of the maximum).  The curves
+> have ONE home, `src/propertyOps/CompactionLaws.H`, which the `compactionFit` bench now
+> calls (its two witnesses' goldens unmoved).  Absent blocks: the run says the press was NOT
+> checked for dwell time / compaction force; apalutamide01, donepezil01, donepezil02 moved
+> no number.  Witness `tutorials/batch/plant/tabletPress01_dwell_and_force` (the bench's MCC
+> constants copied from compaction01_mcc's golden and held to it by the gate; 75 rpm
+> catalogue -> 50.9 rpm for 10 ms; 2 MPa -> 29.7 MPa, 2.97 kN).  Gate
+> `check_tablet_machines` arm (f).  Sources READ (full text, Europe PMC, Crossref-checked,
+> CC BY 4.0): Wuensch et al., Pharmaceutics 12 (2020) 310 (MCC equally strong at 10-130 ms
+> dwell; a starch weaker at production-press dwell); Mohylyuk et al., Pharmaceutics 16
+> (2024) 362 (2 MPa the minimum acceptable tensile strength; elastic recovery from ejected
+> height vs in-die thickness).  NOT DONE, and Vitor's: the batch plan does not re-time the
+> press stage on the dwell-limited capacity (the entry said "the batch plan uses the
+> lower"; the smallest step that moves no number was taken: the sizer rates on the lower and
+> refuses a press that no longer fits the declared operating time); the EduTool page; any
+> mixture rule; any prediction of the minimum dwell.  Record:
+> `docs/design/a-machine-fits-the-batch.md` (Item 3).
 
 > **C269 (Vitor, 2026-11-09, on the C266 pharmaceutical findings: "Avança.  Eu revejo depois.
 > O que a teoria vê não precisa de ser martelado numericamente!"): THE WALK'S FINDINGS ARE

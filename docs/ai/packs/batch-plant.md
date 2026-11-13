@@ -1,6 +1,6 @@
 # Pack: a batch plant (tablets): batch plan, machines, clean utilities, quotes, crew
 
-budget: 5400 words (~8640 tokens)
+budget: 5500 words (~8800 tokens)
 
 Read this pack when the plant runs in LOTS (tablets, capsules, fine
 chemicals): how many lots a year, which step paces the plant, whether a
@@ -161,6 +161,11 @@ batchPlan
 * `ratedMachine` is NOT costed (no correlation) and NOT placed on the plot
   plan; the money is a `quote`, the place is a room.  A `quote` on a unit
   whose sizer refused STOPS the run (`That refusal is the finding`).
+* A press only (DEV.md 4c C270): optional `dwell {}` (rated on the formulation's
+  minimum dwell, the LOWER capacity used), `effectiveness {}` (OEE scales the
+  capacity) and `compaction {}` (pressure and punch force from the fitted
+  Heckel and Ryshkewitch-Duckworth curves); grammar in pack `pharmaceutical`
+  section 10.  Absent: announced as not checked.
 * Pumps: `kind volumeRate` (no batch plan): see `design-cost`.
 * Hand estimate before you run: load = lot mass / itemMass / hours; capacity
   = stations x rpm x 60.  A 55-station press at 60 rpm makes 198 000 tablets/h.

@@ -95,6 +95,7 @@ const TABLE: Record<string, UnitSpec> = {
   min: { factor: 60.0, affine: false },
   h: { factor: 3600.0, affine: false },
   hr: { factor: 3600.0, affine: false },
+  ms: { factor: 1.0e-3, affine: false },   // millisecond: a tablet press's dwell time (DEV.md 4c C270)
   day: { factor: 86400.0, affine: false },
   yr: { factor: 365.0 * 86400.0, affine: false },
 
@@ -103,6 +104,13 @@ const TABLE: Record<string, UnitSpec> = {
   "1/min": { factor: 1.0 / 60.0, affine: false },
   "1/h": { factor: 1.0 / 3600.0, affine: false },
   rpm: { factor: 1.0 / 60.0, affine: false },   // revolutions per minute = 1/min
+
+  // force → N (DEV.md 4c C270: the force on a press punch) -- mirrors src/core/Units.cpp
+  N: { factor: 1.0, affine: false },
+  kN: { factor: 1.0e3, affine: false },
+
+  // inverse pressure → 1/Pa (the Heckel slope K, DEV.md 4c C270)
+  "1/MPa": { factor: 1.0e-6, affine: false },
 
   // length → m
   m: { factor: 1.0, affine: false },

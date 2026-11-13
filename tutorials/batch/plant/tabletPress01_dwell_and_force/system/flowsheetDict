@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  tabletPress01_dwell_and_force -- ONE rotary tablet press.  The README is
+  the narrative; this file is the topology.
+
+      finalBlend -> [tabletPress] -> tabletCores
+                                 +-> tabletRejects
+
+  THE PRESS IS A PLACEHOLDER IN THE FLOWSHEET: a `splitter` conserves mass
+  and models nothing of the machine.  The machine is CHECKED by the sizing
+  pass (system/postDict, `type ratedMachine`, kind tabletPress), which reads
+  the lot from the batch plan and the formulation's needs from the case.
+
+  THE BASIS: 100 kg/h of final blend (pure microcrystalline cellulose, a
+  placebo), the steady material balance per hour of pressing; the batch
+  plan scales it to the lot.  An author-set round number.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        //  1 % of the tablets are REJECTED at the press (weight, hardness,
+        //  start-up) -- AUTHOR-SET.  Because the rejects are counted HERE,
+        //  the press's declared quality factor is 1 (system/postDict): an
+        //  overall equipment effectiveness with a quality below 1 would
+        //  count them a second time.
+        name        tabletPress;
+        type        splitter;
+        in          finalBlend;
+        outputs     ( tabletCores  tabletRejects );
+        operation   { fractions ( 0.99  0.01 ); }
+    }
+);
+
+// ************************************************************************* //

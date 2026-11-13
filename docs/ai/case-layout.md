@@ -820,6 +820,35 @@ and is NOT blocked by the item) and not placed on the plot plan (its room is).
 No rating is ever defaulted.  Worked cases:
 `tutorials/batch/plant/apalutamide01_tablets`, `donepezil01_tablets`.
 
+A `tabletPress` takes three OPTIONAL blocks beside `rating` (DEV.md 4c C270),
+each with its `source` and `reason`:
+
+```
+dwell         { punchFlat 8 mm;  pitchCircle 0.30 m;  minimumDwellTime 10 ms;  source "...";  reason "..."; }
+effectiveness { availability 0.90;  performance 0.95;  quality 1.0;  source "...";  reason "..."; }
+compaction
+{
+    material "...";                          // ONE fitted material: no mixture rule
+    heckel      { K 0.00906 1/MPa;  A 0.6576;  Pmin 30 MPa;  Pmax 170 MPa;  basis inDie;  source "...";  reason "..."; }
+    ryshkewitch { sigma0 34.17 MPa;  kb 7.173;  basis outOfDie;  source "...";  reason "..."; }
+    targetTensileStrength 2 MPa;  punchTipArea 99.93 mm2;  maxCompressionForce 80 kN;
+    trueDensity 1.6374 g/cm3;               // optional: the flat-faced tablet's thickness
+    source "...";  reason "...";
+}
+```
+
+`dwell`: the dwell at the catalogue speed `L / (pi D n)`, the speed that
+gives the minimum `L / (pi D t_min)`, and its capacity; the utilisation uses
+the LOWER capacity and a binding limit is announced.  `effectiveness`:
+OEE = A x P x Q scales the capacity; a quality below 1 on a press whose
+flowsheet already splits off rejects is announced as counted twice.
+`compaction`: the porosity `ln(sigma0/sigma_t)/kb`, the pressure `(ln(1/(1 -
+D)) - A)/K` (`K` or `Py = 1/K`, exactly one), the force `P x A_tip` against
+the maximum; refused at or above `sigma0`, announced outside the Heckel
+window, across `inDie`/`outOfDie`, and above `announceAbove` of the maximum.
+Absent, the run says the press was NOT checked for dwell time or compaction
+force.  Worked case: `tutorials/batch/plant/tabletPress01_dwell_and_force`.
+
 **THE CLEAN UTILITIES -- the `cleanUtilities` pass (DEV.md 4c C195).**  Declared
 BEFORE `costing` (so its supply air can be priced; it was AFTER `economics` until
 DEV.md 4c C210), it runs after the layout and reads the building the layout

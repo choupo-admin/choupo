@@ -1,0 +1,138 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  postDict -- the BATCH PLAN that gives the press its lot and its hours, and
+  the RATED PRESS, checked three ways (DEV.md 4c C270).  Every number is
+  declared with its source; the ones no source gave are AUTHOR-SET
+  ASSUMPTIONS and say so.  README.md walks through the arithmetic.
+\*---------------------------------------------------------------------------*/
+
+batchPlan
+{
+    product   tabletCores;
+
+    production
+    {
+        perYear  20000 kg;      // of tablet cores: 50 million placebo tablets of 0.40 g
+        source   "author-set assumption (DEV.md 4c C270), not a market study";
+        reason   "a year large enough to keep one press busy most of its shifts, so that its real capacity matters";
+    }
+
+    lot
+    {
+        rule     declared;
+        stream   finalBlend;
+        mass     200 kg;
+        source   "author-set assumption (DEV.md 4c C270), not a validated lot size";
+        reason   "one bin of final blend, 500 000 tablets of 0.40 g, pressed in one shift";
+    }
+
+    trains
+    (
+        {
+            train           tableting;
+            availableTime   3840 h;     // 2 shifts x 8 h x 5 days x 48 weeks
+            lotsPerCampaign 10;
+            changeover      8 h;
+            source  "author-set assumption (DEV.md 4c C270)";
+            reason  "a tableting suite on two day shifts, a campaign of ten lots between full cleans";
+        }
+    );
+
+    stages
+    (
+        {
+            stage  compression;  train tableting;  type semicontinuous;
+            units  ( tabletPress );  holds finalBlend;
+            chargeTime 1 h;  operatingTime 7 h;  dischargeTime 0 h;  cleanTime 1 h;
+            source "author-set assumption (DEV.md 4c C270)";
+            reason "the press set up for the lot (tooling, weight and strength checks), run for 7 h, then cleared";
+        }
+    );
+}
+
+sizing
+{
+    units
+    (
+        { unitName tabletPress;  type ratedMachine;  material SS316;
+          designRules
+          {
+              kind tabletPress;
+
+              //  THE CATALOGUE: what the press's data sheet promises.
+              rating
+              {
+                       stations 36;
+                       turretSpeed 75;
+                       compressionsPerRevolution 1;
+                       itemMass 0.40 g;
+                       source "author-set assumption (DEV.md 4c C270), not a vendor data sheet: a mid-size single-sided rotary press, 36 stations at 75 rpm; the 0.40 g placebo tablet is the case's own choice";
+                       reason "the nameplate: 36 x 75 x 60 = 162 000 tablets/h, the number a press is bought on";
+              }
+
+              //  THE DWELL LIMIT: how fast the press may really turn for THIS
+              //  formulation.  t_dwell = L_flat / (pi D_pitch n).
+              dwell
+              {
+                       punchFlat         8 mm;
+                       pitchCircle       0.30 m;
+                       minimumDwellTime  10 ms;
+                       source "punchFlat and pitchCircle: author-set assumptions for the press above, not a data sheet (replace them with the press's tooling drawing).  minimumDwellTime: author-set, read against Wuensch et al., Pharmaceutics 12 (2020) 310 (CC BY 4.0, section 3.1), who found pure MCC tablets equally strong at dwell times between 10 and 130 ms -- 10 ms is the shortest dwell that study shows for MCC, not a measured minimum of this blend";
+                       reason "a formulation that needs a minimum dwell sets the press's speed, not the press maker: at 75 rpm the 8 mm flat dwells 6.8 ms under the roll, below the 10 ms declared";
+              }
+
+              //  THE OVERALL EQUIPMENT EFFECTIVENESS: availability x
+              //  performance x quality.  Quality is 1 because the flowsheet's
+              //  splitter already rejects 1 % of the tablets.
+              effectiveness
+              {
+                       availability 0.90;
+                       performance  0.95;
+                       quality      1.0;
+                       source "author-set assumptions (DEV.md 4c C270), not measured on any line";
+                       reason "stops and slow running are this press's own; the rejects are already counted by the flowsheet (system/flowsheetDict), so quality is 1 here or they would be counted twice";
+              }
+
+              //  THE FORCE A TABLET OF THE TARGET STRENGTH NEEDS, from the
+              //  curves the compaction bench fitted (ONE material, no
+              //  mixture rule: the blend here IS that material).
+              compaction
+              {
+                       material "MCC Avicel PH200 (the compaction bench, op mcc_inDie)";
+                       heckel
+                       {
+                           K       0.00906082550054 1/MPa;
+                           A       0.657612232409;
+                           Pmin    30 MPa;
+                           Pmax    170 MPa;
+                           basis   inDie;
+                           source  "tutorials/props/powder/compaction01_mcc, operation mcc_inDie: its golden heckel_K_perMPa and heckel_A, fitted on its declared window 30-170 MPa to the in-die densities of van der Haven et al., Sci. Data 13 (2026) 1468 (CC BY 4.0)";
+                           reason  "the bench's own numbers, copied so the chain bench -> constants -> pressure -> force can be followed; check_tablet_machines holds them to the bench's golden";
+                       }
+                       ryshkewitch
+                       {
+                           sigma0  34.1707092759 MPa;
+                           kb      7.17292374574;
+                           basis   outOfDie;
+                           source  "tutorials/props/powder/compaction01_mcc, operation mcc_inDie: its golden ryshkewitch_sigma0_MPa and ryshkewitch_kb, fitted to the diametral crushing of OUT-OF-DIE tablets in van der Haven et al. 2026 (CC BY 4.0)";
+                           reason  "the bench's own numbers; the porosity they were fitted on is the ejected tablet's, a different basis from the Heckel line's, and the run says so";
+                       }
+                       targetTensileStrength  2 MPa;
+                       punchTipArea           99.93 mm2;
+                       maxCompressionForce    80 kN;
+                       trueDensity            1.6374 g/cm3;
+                       source "targetTensileStrength: Mohylyuk et al., Pharmaceutics 16 (2024) 362 (CC BY 4.0, section 3.1), who write that 2 MPa is widely considered the minimum acceptable tensile strength of tablets.  punchTipArea: pi/4 x (11.28 mm)^2 of the round flat-faced punch the bench's dataset was pressed with (geometry).  maxCompressionForce: author-set assumption for the press above, not a data sheet.  trueDensity: the effective true density compaction01_mcc declares, from the same dataset";
+                       reason "the porosity a 2 MPa tablet needs, the pressure that gives it, the force on one punch against the press's maximum, and the thickness of the flat-faced 0.40 g tablet";
+              }
+          } }
+    );
+}
+
+// ************************************************************************* //

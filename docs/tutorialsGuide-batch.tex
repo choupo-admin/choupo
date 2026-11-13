@@ -1401,7 +1401,7 @@ DRY GRANULATION, TABLETING, COATING, PACKAGING asdPowder + MCC + croscarmellose 
 
 TWO RECYCLES, both declared in system/solverDict: the drying gas (gasRecycle) and the compactor fines (finesRecycle). The recovered acetone is NOT recycled in this base case: it goes to a tank, for QC and reuse -- the README says why, and closing that loop is a group's question.
 
-WHAT IS A PLACEHOLDER. The blenders, the roller compactor, the mill, the screen, the tablet press and the packaging line are FLOW PRIMITIVES (a `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of the machine -- no blend uniformity, no ribbon density, no particle-size reduction, no compaction force, no tablet hardness. Choupo has no such equipment model; none is invented here. The coating pan is TWO boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air takes the water off), which is the mass and energy balance of one machine.
+WHAT IS A PLACEHOLDER. The blenders, the roller compactor, the mill, the screen, the tablet press and the packaging line are FLOW PRIMITIVES (a `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of the machine -- no blend uniformity, no ribbon density, no particle-size reduction, no compaction force, no tablet hardness. The flowsheet has no such equipment model; none is invented here. (The SIZER can check the press's dwell time and the compaction force a target tablet strength needs WHEN the case declares the formulation's compaction curves and dwell need -- `dwell \{\}` and `compaction \{\}`, DEV.md 4c C270, witness tabletPress01\_dwell\_and\_force; this case declares neither, and its run says the press was not checked for them.) The coating pan is TWO boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air takes the water off), which is the mass and energy balance of one machine.
 
 \end{tutnarrative}
 \tutreadme{A BASE CASE for a pharmaceutical-industry project group (DEV.md 4c C97, phase A; re-based on a sourced design basis in C110). The plant makes film-coated tablets of apalutamide: the active pharmaceutical ingredient (API) is bought, everything else is made on site --- the spray-dried solid dispersion, the granules, the tablets, the coat and the packs. It runs (a few seconds from a cold start), it converges, its mass and energy balances close, and it is deliberately NOT optimised --- every number a group would change is a plain key, and every one says where it came from.}
@@ -1488,7 +1488,7 @@ FINAL BLEND, TABLETING, COATING, PACKAGING milledGranules + mgstFeed $\to$ [fina
 
 NO RECYCLE, NO SOLVENT. Unlike apalutamide01\_tablets there is no spray dryer, no organic solvent, no nitrogen loop, no solvent recovery and no hazardous area: an aqueous wet granulation and an aqueous coat.
 
-WHAT IS A PLACEHOLDER. The high-shear granulator, the mill, the final blender, the tablet press and the packaging line are FLOW PRIMITIVES (a `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of the machine -- no granule growth, no granule size, no blend uniformity (THE critical quality question of a low-dose tablet, README section 8), no compaction force, no tablet hardness. Choupo has no such equipment model; none is invented here. The two DRYERS are physics: `solidDryer` dries to the starch's sorption isotherm at the INLET air's humidity (a batch dried to its end point ends in equilibrium with the fresh air), with the energy balance on the package's enthalpy. The coating pan is TWO boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air takes the water off), which is the mass and energy balance of one machine.
+WHAT IS A PLACEHOLDER. The high-shear granulator, the mill, the final blender, the tablet press and the packaging line are FLOW PRIMITIVES (a `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of the machine -- no granule growth, no granule size, no blend uniformity (THE critical quality question of a low-dose tablet, README section 8), no compaction force, no tablet hardness. The flowsheet has no such equipment model; none is invented here. (The SIZER can check the press's dwell time and the compaction force a target tablet strength needs WHEN the case declares the formulation's compaction curves and dwell need -- `dwell \{\}` and `compaction \{\}`, DEV.md 4c C270, witness tabletPress01\_dwell\_and\_force; this case declares neither, and its run says the press was not checked for them.) The two DRYERS are physics: `solidDryer` dries to the starch's sorption isotherm at the INLET air's humidity (a batch dried to its end point ends in equilibrium with the fresh air), with the energy balance on the package's enthalpy. The coating pan is TWO boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air takes the water off), which is the mass and energy balance of one machine.
 
 \end{tutnarrative}
 \tutreadme{A BASE CASE for a pharmaceutical-industry project group (DEV.md 4c C104, built on the stated defaults of C110). The plant makes film-coated tablets of donepezil hydrochloride by wet granulation: the active pharmaceutical ingredient (API) is bought, everything else is made on site --- the granules, the tablets, the coat and the packs. It runs (in seconds), its mass and energy balances close, and it is deliberately NOT optimised --- every number a group would change is a plain key, said to be an assumption where it is declared.}
@@ -1575,7 +1575,7 @@ FINAL BLEND, TABLETING, COATING, PACKAGING milledGranules + mgstFeed $\to$ [fina
 
 NO RECYCLE, NO SOLVENT. Unlike apalutamide01\_tablets there is no spray dryer, no organic solvent, no nitrogen loop, no solvent recovery and no hazardous area: an aqueous wet granulation and an aqueous coat.
 
-WHAT IS A PLACEHOLDER. The high-shear granulator, the mill, the final blender, the tablet press and the packaging line are FLOW PRIMITIVES (a `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of the machine -- no granule growth, no granule size, no blend uniformity (THE critical quality question of a low-dose tablet, README section 8), no compaction force, no tablet hardness. Choupo has no such equipment model; none is invented here. The two DRYERS are physics: `solidDryer` dries to the starch's sorption isotherm at the INLET air's humidity (a batch dried to its end point ends in equilibrium with the fresh air), with the energy balance on the package's enthalpy. The coating pan is TWO boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air takes the water off), which is the mass and energy balance of one machine.
+WHAT IS A PLACEHOLDER. The high-shear granulator, the mill, the final blender, the tablet press and the packaging line are FLOW PRIMITIVES (a `mixer`, a `splitter`): they conserve mass and energy and model NOTHING of the machine -- no granule growth, no granule size, no blend uniformity (THE critical quality question of a low-dose tablet, README section 8), no compaction force, no tablet hardness. The flowsheet has no such equipment model; none is invented here. (The SIZER can check the press's dwell time and the compaction force a target tablet strength needs WHEN the case declares the formulation's compaction curves and dwell need -- `dwell \{\}` and `compaction \{\}`, DEV.md 4c C270, witness tabletPress01\_dwell\_and\_force; this case declares neither, and its run says the press was not checked for them.) The two DRYERS are physics: `solidDryer` dries to the starch's sorption isotherm at the INLET air's humidity (a batch dried to its end point ends in equilibrium with the fresh air), with the energy balance on the package's enthalpy. The coating pan is TWO boxes, a `mixer` (the spray lands on the cores) and a `solidDryer` (the hot air takes the water off), which is the mass and energy balance of one machine.
 
 \end{tutnarrative}
 \tutreadme{1. Explain the base result. The plant makes 150 million tablets (34 828 kg) in 115 lots and loses money: NPV -28.96 M EUR. Find the term of COM\_d that makes the loss (compare 2.73 C\_OL with 1.23 (C\_RM + C\_UT) in the Economic Appraisal), and use the Bases table of the batch plan so that 300 kg, 305.9 kg, 168 h, 880 h, 2079 h and 3840 h each mean one thing. 2. Find the constraint that matters. Two different words: the limiting stage (sets T\_L) of each train --- drying (4.25 h a lot) on granulation, packaging (11 h a 10 mg lot, 20 h a 5 mg lot) on tableting --- and the machine with the least capacity margin, the granulator at 92.8 \% of its bowl. Say which one limits the lot and which one the year. 3. Propose one improvement and justify it with a new run. Change ONE declaration (the crew, the lot, outOfPhase 2 on packaging, the campaign length), run again, and show the number that moved and the one that did not.}
@@ -1600,6 +1600,51 @@ WHAT IS A PLACEHOLDER. The high-shear granulator, the mill, the final blender, t
 \goldrow{stream}{coatingExhaust}{F}{0.0709548135813}
 \goldrow{stream}{coatingExhaust}{T}{317.588908471}
 \goldmore{1459}
+\end{tutgolden}
+
+\clearpage
+\tutentry{tabletPress01\_dwell\_and\_force}{tutorials/batch/plant/tabletPress01\_dwell\_and\_force}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (tabletPress) at (0.0,-0.0) {\textbf{tabletPress}\\[-1pt]{\tiny splitter}};
+  \draw[->] ($(tabletPress.west)+(-1.05,0.00)$) -- ($(tabletPress.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {finalBlend};
+  \draw[->] ($(tabletPress.east)+(0,-0.17)$) -- ($(tabletPress.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {tabletCores};
+  \draw[->] ($(tabletPress.east)+(0,0.17)$) -- ($(tabletPress.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {tabletRejects};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{THE TABLET PRESS, RATED ON DWELL TIME AND ON COMPACTION FORCE (DEV.md 4c C270). One rotary press makes placebo tablets of microcrystalline cellulose for a plant that runs in lots: the flowsheet is a mass split (99 \% cores, 1 \% rejects), a BATCH PLAN gives the lot and the press's operating time, and the `ratedMachine` sizer checks the press three ways -- its catalogue speed against the formulation's minimum dwell time (the dwell limit binds: 51 rpm, not the catalogue's 75), a declared overall equipment effectiveness, and the compaction pressure and punch force a 2 MPa tablet needs, found by inverting the Heckel and Ryshkewitch-Duckworth curves that tutorials/props/powder/compaction01\_mcc FITTED to open measurements of MCC. The press geometry, speed, maximum force and the plant's year are author-set assumptions.}
+\begin{tutnarrative}
+ONE rotary tablet press. The README is the narrative; this file is the topology.
+
+finalBlend $\to$ [tabletPress] $\to$ tabletCores +$\to$ tabletRejects
+
+THE PRESS IS A PLACEHOLDER IN THE FLOWSHEET: a `splitter` conserves mass and models nothing of the machine. The machine is CHECKED by the sizing pass (system/postDict, `type ratedMachine`, kind tabletPress), which reads the lot from the batch plan and the formulation's needs from the case.
+
+THE BASIS: 100 kg/h of final blend (pure microcrystalline cellulose, a placebo), the steady material balance per hour of pressing; the batch plan scales it to the lot. An author-set round number.
+
+\end{tutnarrative}
+\tutreadme{One rotary tablet press makes placebo tablets of microcrystalline cellulose (MCC) for a plant that runs in lots (DEV.md 4c C270). The case asks the two questions a press catalogue does not answer:}
+\tutreadme{1. How fast can this press really turn for this powder? The catalogue gives a turret speed. The powder needs a minimum time under the compression roll, the dwell time, and that time sets the speed. 2. How hard must the press push to make a tablet that is strong enough? The answer comes from the two compaction curves the compaction bench fitted to open measurements of MCC, run backwards.}
+\tutreadme{The case is sealed: everything it reads is in its own constant/.}
+\tutreadme{- The flowsheet (system/flowsheetDict) is one splitter: 100 kg/h of final blend in, 99 \% tablet cores and 1 \% rejects out. It is a mass balance and nothing else: the splitter knows nothing about punches, speeds or forces. - The batch plan (system/postDict, batchPlan) gives the press a lot of 200 kg of blend (500 000 tablets of 0.40 g) and 7 hours to press it. - The sizing pass (system/postDict, sizing, type ratedMachine, kind tabletPress) checks the press. This is where all the arithmetic below happens, and the run prints every step of it.}
+\tutreadme{Every number that no source gave is an author-set assumption, and the dictionary says so beside it: the press (36 stations, 75 rpm, an 8 mm punch flat, a 0.30 m pitch circle, an 80 kN maximum force), the year, the lot and the effectiveness factors. Replace them with your press's data sheet and your own plan.}
+\tutreadme{The punch head has a flat. While the flat passes under the roll, the punch stays at its lowest point and the powder is held at full compression. At a turret speed of n revolutions per second, a point on the pitch circle of diameter D moves at pi D n, so the flat of length L stays under the roll for}
+\begin{tutgolden}
+\goldrow{stream}{finalBlend}{F}{0.000171318824722}
+\goldrow{stream}{finalBlend}{T}{298.15}
+\goldrow{stream}{tabletCores}{F}{0.000169605636475}
+\goldrow{stream}{tabletCores}{T}{298.15}
+\goldrow{stream}{tabletRejects}{F}{1.71318824722e-06}
+\goldrow{stream}{tabletRejects}{T}{298.15}
+\goldrow{equipment}{tabletPress}{basis}{load\_=\_tablets\_per\_hour\_=\_the\_mass\_the\_press's\_inlet\_carries\_per\_lot\_/\_the\_pressed\_tablet's\_mass\_/\_the\_stage's\_operating\_time\_(read\_from\_the\_batch\_plan);\_capacity\_=\_machines\_x\_stations\_x\_turret\_rpm\_x\_60\_x\_compressions\_per\_revolution\_(nameplate;\_the\_DWELL\_LIMIT\_BINDS:\_rated\_at\_n\_=\_L\_flat\_/\_(pi\_D\_pitch\_t\_min),\_below\_the\_catalogue\_speed;\_x\_the\_declared\_overall\_equipment\_effectiveness\_(availability\_x\_performance\_x\_quality));\_COMPACTION\_(one\_fitted\_material,\_MCC\_Avicel\_PH200\_(the\_compaction\_bench,\_op\_mcc\_inDie),\_no\_mixture\_rule):\_porosity\_from\_Ryshkewitch-Duckworth\_inverted\_at\_the\_target\_strength,\_pressure\_from\_Heckel\_inverted\_at\_its\_solid\_fraction,\_force\_=\_pressure\_x\_punch\_tip\_area.\_The\_rating\_is\_the\_CASE's\_(tabletPress,\_declared\_with\_its\_source);\_the\_flowsheet's\_press\_is\_a\_mass\_split\_and\_models\_no\_compaction:\_the\_sizer\_checks\_the\_dwell\_time\_and\_the\_compaction\_force\_ONLY\_where\_the\_case\_declares\_the\_formulation's\_needs\_(`dwell\_\{\_\}`,\_`compaction\_\{\_\}`),\_and\_an\_overall\_equipment\_effectiveness\_only\_where\_it\_declares\_one\_(`effectiveness\_\{\_\}`)}
+\goldrow{equipment}{tabletPress}{tagNo}{TP-101}
+\goldrow{equipment}{tabletPress}{values.availability}{0.9}
+\goldrow{equipment}{tabletPress}{values.capacity\_dwellLimited}{110007.896665}
+\goldrow{equipment}{tabletPress}{values.capacity\_effective}{94056.7516487}
+\goldrow{equipment}{tabletPress}{values.capacity\_machine}{162000}
+\goldrow{equipment}{tabletPress}{values.compactionPressure}{29.7460137671}
+\goldrow{equipment}{tabletPress}{values.compressionsPerRevolution}{1}
+\goldmore{72}
 \end{tutgolden}
 
 \subsection{reactor}
