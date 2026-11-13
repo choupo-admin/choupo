@@ -70,7 +70,8 @@ are yours to argue if you prefer them.
 | The intermediate is spray dried with HPMCAS | *Materials* 16 (2023) 6616, section 3.1 (a secondary review); consistent with the patent (1.3) | stated (secondary) |
 | **The quantitative formula** (the table in section 2) — dispersion 1:3 apalutamide : HPMCAS-**LG**, 700 mg core, 21 mg Opadry II coat | US 12,303,493 B2, Examples 3.1-3.3 (1.4) | stated **in the originator's patent example — consistent with, but not confirmed as, the registered formula**, which every regulator redacts |
 | **The spray-drying solvent**: the patent's scale-up example uses dichloromethane / methanol 40:60 at 5 wt % solids; its acetone examples (laboratory, HPMCAS-LF) are also 5 wt % | US 12,303,493 B2, Ex. 3.1, 4.1, 6.1 (1.4, 4.2) | stated (patent); the COMMERCIAL solvent is **not found** |
-| Apalutamide C21H15F4N5O2S, 477.43 g/mol, Form B, non-hygroscopic, mp 194-196 °C | EPAR-2018 2.2.2 (1.3); molar mass recomputed here from the formula | stated |
+| Apalutamide as supplied: Form B, non-hygroscopic, mp 194-196 °C | EPAR-2018 2.2.2 (1.3) | stated |
+| Apalutamide C21H15F4N5O2S, 477.43 g/mol | no document the dossier read is quoted for the formula (the TGA AusPAR, cited for it by an earlier version of `constant/components/apalutamide.dat`, could not be opened); the molar mass is recomputed here from the formula | **not verified** |
 | Hazard: Repr. 1B (H360), STOT RE 2 (H373); **no exposure limit published** | the supplier's SDS (MedKoo, rev. 11 Jun 2020) (2) | stated; OEL **not found** |
 | Commercial batch sizes | redacted everywhere (1.3) | **not found** |
 
@@ -91,8 +92,8 @@ different core (no plain MCC) and coat, and its composition and weight are
 240 mg line needs the composition first.
 
 The TGA's AusPAR for apalutamide (2019), which the first version of this
-case cited, could not be opened by the dossier's session: read it before
-your next revision.
+case cited, could not be opened by the dossier's session, and it is cited
+nowhere in the case now: read it before your next revision.
 
 ## 2. The production basis
 
@@ -232,7 +233,7 @@ DRY GRANULATION, TABLETING, COATING, PACKAGING
 | `blower`, `gasHeater`, `exhaustCooler`, `solventCondenser`, `airHeater` | `compressor`, `phaseChanger` | **physics**: duties and the blower's work, on the package's enthalpy |
 | `condensatePot` | `isothermalFlash` | **physics**: how much acetone stays in the nitrogen at -10 C (Raoult) — the recovery |
 | `coatingDryer` | `solidDryer` | **physics**: the water the hot air takes off the coated tablets, the outlet temperature, and the moisture the tablets keep (a sorption isotherm) |
-| `acetoneTank`, `recoveredTank` | `storageTank` | the holdup (inventory) a hold time implies: 14 d of acetone is 30.3 m3 of liquid, held at 85 % fill in a 35.6 m3 tank (`V_stored` and `V_R` on its sheet); the plot plan draws the box of an upright cylinder of that volume (3.6 m x 3.6 m), the recovered-acetone tank 16.4 m3 (2.8 m x 2.8 m) |
+| `acetoneTank`, `recoveredTank` | `storageTank` | the holdup (inventory) a hold time implies: 14 d of acetone is 30.3 m3 of liquid, held at 85 % fill in a 35.6 m3 tank (`V_stored` and `V_R` on its sheet); the plot plan draws the box of an upright cylinder of that volume (3.6 m x 3.6 m), the recovered-acetone tank 16.4 m3 (2.8 m x 2.8 m).  The recovered acetone is stored at 263.15 K (-10 C), the condensate pot's outlet: the run announces "a REFRIGERATED tank (insulation, double containment, boil-off handling).  The only citable tank correlation in this engine prices an ATMOSPHERIC API fixed-roof tank, so the capital cost of this storage is a LOWER BOUND" -- that tank's cost is a floor |
 | `solutionPrep`, `coatingSuspensionPrep`, `blender` | `mixer` at a declared 25 C | mixing, and the small duty that temperature implies |
 | `rollerCompactor`, `finalBlender`, `coatingPan` | `mixer` | **mass and energy balance only** |
 | `mill`, `screen`, `tabletPress`, `packagingLine` | `splitter` | **mass balance only** (the screen's 15 % fines and the press's 1 % rejects are declared splits) |
@@ -419,7 +420,20 @@ facilities — replace it with quotes if you have them), vent treatment for
 the purge, dust collection, cleaning-in-place, validation and
 qualification.  **Not in the operating cost:** the disposal of the
 recovered acetone (it is no longer sold — the dossier's red team, item 11 —
-and a contractor's price was not found).
+and a contractor's price was not found); and the running energy of the
+clean utilities the same run SIZES — the HVAC fan (30.4 kW), its winter
+heating (79.3 kW) and summer cooling (52.9 kW), and the generation of the
+purified water (112 m3 a year).  They are sized and NOT priced.  The
+utility bill printed, `C_UT` = 2 052 EUR/yr, is only the process units the
+utility allocation serves: `airHeater`, `blender`, `exhaustCooler`,
+`gasHeater`, `solventCondenser` and the `blower`.  For the order of
+magnitude: a GMP building is ventilated whether or not a train runs, so
+ASSUME 8 760 h a year; the fan alone is then 30.4 kW x 8 760 h = 266 MWh a
+year, about 26.6 kEUR at the 0.10 EUR/kWh this run prices the blower's
+electricity at — some thirteen times the whole printed bill (11.7 kEUR if
+it ran only the solid-dose train's declared 3 840 h).  The heating and
+cooling are design-day PEAKS, not averages: their energy over a year needs
+the site's climate, which the case does not carry.
 
 **The labour: a declared crew, and Turton's correlation beside it.**  Two
 numbers are printed, and you should be able to explain both.
@@ -468,7 +482,7 @@ outdoors, as it does in industry:
 
 | Where | What | Why there |
 |---|---|---|
-| Spray-drying suite (ground floor, **double height** 0–10 m, north wall) | `SD`, the spray dryer | Contained (the dispersion is discharged as an open powder), hazardous area **zone 2** (acetone in a closed, inerted loop); the chamber's explosion vent is ducted out through the north wall.  Double height for the atomiser platform above the chamber (the engine's chamber is 1.2 m × 2.5 m; the room is 10 m). |
+| Spray-drying suite (ground floor, **double height** 0–10 m, north wall) | `SD`, the spray dryer | Contained (the dispersion is discharged as an open powder), hazardous area **zone 2** (acetone vapour in a closed loop of nitrogen, inerted so that the gas inside holds too little oxygen to burn — section 8); the chamber's explosion vent is ducted out through the north wall.  Double height for the atomiser platform above the chamber (the engine's chamber is 1.2 m × 2.5 m; the room is 10 m). |
 | Nitrogen-loop technical room (ground floor, north-east corner) | `gasHeater`, `blower`, `exhaustCooler`, `solventCondenser`, `condensatePot` | Beside the suite (the gas ducts pass through the wall they share), on two outside walls, entered from outside for maintenance, **zone 2**, held 5 Pa below outside by its extract so a leak goes to the extract and not into the building. |
 | Solution-preparation room (ground floor, south-east corner) | `solutionPrep` | Contained (the API and HPMCAS are tipped into the acetone under a downflow booth), **zone 1** (the open manway), on the east wall where the acetone line comes in. |
 | Coating-preparation room (ground floor, beside coating) | `coatingSuspensionPrep` | The film-coating suspension, piped through the wall to the pan coater. |
@@ -494,10 +508,13 @@ indoors and none outdoors that the layout reaches: listed with that reason.
 dispersion, the blends, granules and tablet cores are listed as "solids
 only: moved in containers or by conveyor".
 
-**One finding is left on purpose**: the site has ONE entrance
+**The run publishes three layout findings** (`[layout] ... 3 finding(s)`),
+and all three are left for you on purpose.  One: the site has ONE entrance
 (`singleEntrance`: a fire brigade arriving while that road is blocked has no
 second way in — where would you put a second gate, and which road serves
-it?).  The earlier exercise (a coating-suspension tank 4 m outside the
+it?).  Two and three: the fresh-acetone and the recovered-acetone tanks
+stand in no declared bund (`unbundedLiquid`, one finding per tank), the
+tank-farm row above says why and leaves the bund for you to size.  The earlier exercise (a coating-suspension tank 4 m outside the
 building) is gone: the tank now stands in its room, where it belongs.  In
 its place, **a question the engine does not check**: the spray dryer's
 explosion vent discharges through the north wall of its suite, 1 m from the
@@ -587,8 +604,17 @@ room.
   nitrogen that stream carries out of the loop) is a numerical surface, not
   a measured gas solubility; no Henry pair for N2 in acetone is in the
   catalogue (DEV.md 4c C256).
-- **The oxygen in the loop.** The nitrogen loop exists to keep the acetone
-  below its flammable limit; nothing here computes the oxygen it tolerates.
+- **The oxygen in the loop.** The drying gas is nitrogen so that the gas in
+  the dryer holds too little OXYGEN to burn, whatever its acetone content:
+  that is what inerting means.  The acetone is not kept low — this run's
+  loop gas carries 5.18 mol % acetone into the dryer (`dryingGas`) and
+  11.60 mol % out of it (`exhaustGas`), and that content is not what makes
+  the loop safe.  Nothing here computes the oxygen limit or checks the
+  oxygen content of the loop: the model's loop carries no oxygen at all,
+  because its make-up is pure nitrogen and no air leak is modelled.  The
+  limiting oxygen concentration (and the solvent's flammable limits, for
+  the start-up, the purge and a leak) must be taken from a safety data
+  source by whoever designs the plant; this case states none.
 - **Solvent recycle.** The recovered acetone goes to a tank, not back to the
   solution tank: reusing it in a GMP process needs its quality proven, and
   closing that loop needs a make-up controlled to a specification (an outer

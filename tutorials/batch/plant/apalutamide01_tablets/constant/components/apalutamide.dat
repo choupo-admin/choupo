@@ -14,9 +14,15 @@
   Bought from an API manufacturer and NOT made here.  In this plant it is
   dissolved with HPMCAS in the spray-drying solvent and leaves the spray
   dryer as the drug half of an amorphous solid dispersion (ASD).  Formula
-  C21H15F4N5O2S and molar mass 477.43 g/mol: Australian Public Assessment
-  Report for Apalutamide (TGA, 2019); the molar mass is recomputed here from
-  the formula with the standard atomic weights (477.43).
+  C21H15F4N5O2S: NOT VERIFIED against a source read by the curator.  An
+  earlier version of this record cited the TGA's Australian Public
+  Assessment Report (AusPAR, 2019) for it, a report the design-basis dossier
+  (docs/design/apalutamide-design-basis-dossier.md, the paragraph under its
+  sources table) says could not be opened; no document the dossier read is
+  quoted there for the formula.  Check it against the US prescribing
+  information (dossier `USPI`, read for other facts) or the CHMP assessment
+  report before reusing this record.  The molar mass is recomputed here from
+  that formula with the standard atomic weights (477.43 g/mol).
 
   WHAT THIS RECORD IS FOR, AND WHAT IT IS NOT.  It carries what a SOLID that
   is only MOVED, MIXED, DRIED and PRESSED needs in this plant: a molar mass,

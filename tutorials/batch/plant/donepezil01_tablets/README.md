@@ -229,6 +229,19 @@ humidity, no latent load, no room heat gain -- and 3.14 m3 of purified water a
 lot (0.07 + 0.07 m3 of process water and 3.0 m3 of machine cleans), 580 m3 a
 year, a peak of 1.33 m3/h, a 1.67 m3/h generator and a 5.3 m3 tank at 4 h.
 Every number is an author-set assumption; no standard's table is shipped.
+**These are sized and NOT priced: their running energy is not in the
+operating cost.**  The utility bill printed, `C_UT` = 1 314 EUR/yr, is only
+the process units the utility allocation serves (the two air heaters'
+steam and the final blender's chilled water); the fan, the heating and
+cooling of the fresh air and the generation of the purified water add
+nothing to it.  For the order of magnitude: a GMP building is ventilated
+whether or not a train runs, so ASSUME 8 760 h a year; the fan alone is
+then 51.5 kW x 8 760 h = 452 MWh a year, about 45 kEUR at the 0.10 EUR/kWh
+of the case's electricity record (27.8 EUR/GJ) — some thirty times the
+whole printed bill (198 MWh and 20 kEUR if it ran only the trains' declared
+3 840 h).  The heating and cooling are design-day PEAKS, not averages:
+their energy over a year needs the site's climate, which the case does not
+carry.
 **The cleaning is counted by the plan (DEV.md 4c C210, E3).**  `batchPlan {
 cleaning }` declares, for the six wet-cleaned machines (binder tank, granulator,
 fluid-bed dryer, final blender, coating-suspension tank, coating pan), the
