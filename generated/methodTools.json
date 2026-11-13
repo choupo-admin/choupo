@@ -251,8 +251,8 @@
       ]
     }
   ],
-  "liveTools": 86,
-  "registryTools": 86,
+  "liveTools": 87,
+  "registryTools": 87,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -959,6 +959,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=bode"
+    },
+    {
+      "id": "operator-panels",
+      "label": "Operator panels and alarms",
+      "blurb": "Choose what an operator sees, in what form, and which alarms.",
+      "discipline": "Hydraulics & control",
+      "teaches": "How to design what an operator sees from a process that publishes dozens of variables: start from the operator's questions (is it normal, where is it heading, what do I do) and give each the least information that answers it; show a value against its range and limits, as a trend when the direction matters, with colour kept for the abnormal and always doubled by a word or a shape; arrange overview, unit and detail; give every alarm an action, one cause one alarm, and watch the flood; and let a panel grow from the simplest one that works -- on a batch electrodialysis rig the engine runs, with the facts the engine reports about each panel.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=operator-panels"
     },
     {
       "id": "data-reconciliation",

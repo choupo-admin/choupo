@@ -1,0 +1,28 @@
+case	where	item	value	class	note
+# COUNTS (by hand, grouping a block of identical author-set lines as one item; approximate to +-10 %)
+apalutamide01_tablets	all	sourced, source named in place	~24	sourced	formula (6 core ingredients, 2 intra/extra splits, coat mass, coat water, 5 wt %), 75 kg/h, 46 C target, Q, lot 400 kg, tablet price, API price, compactor 400 kg/h, press 80-150 k/h -> 4 h, blender 1.2 m3 class, pan 150-400 kg, pack of 112, building benchmark: every one CHECKED here against docs/design/apalutamide-design-basis-dossier.md and agreeing; the dossier's own primary sources (patent, EPAR, SmPC, sales report) NOT read by this reviewer: unverified
+apalutamide01_tablets	all	author-set, said where declared	~150	author-set-said	coat split, hold times, temperatures, blower, nozzle dP, chamber, viscosity, purge, screen, rejects, every stage time/density/fill, trains, cleaning water, ratings, HVAC rates, every quote, the crew, P, 16 raw-material prices, U values, pot residence time, discount/tax/life, WC days (3 of 4), land price, sensitivity ends, every solid property (rho_p, Cp, GAB, formation placeholders) in its record's provenance
+apalutamide01_tablets	all	neither	12	neither	listed below
+donepezil01_tablets	all	sourced, source named in place	~6	sourced	API 10 mg, lactose 174.33 mg, the 5 mg figures, the qualitative excipient and coat lists, the packs: cited to the UK/Irish SmPCs, NOT read by this reviewer (unverified); MW of the salt and the 9.12 mg base equivalent CHECKED by recomputation
+donepezil01_tablets	all	author-set, said where declared	~120	author-set-said	the README section 1 table states plainly that the route and every other quantity are NOT verified
+donepezil01_tablets	all	neither	8	neither	listed below
+donepezil02_two_strengths	all	neither (beyond donepezil01's, inherited)	0	neither	every product, demand, price, clean and changeover number carries an author-set source line
+# NEITHER LIST
+apalutamide01_tablets	system/flowsheetDict acetoneTank, recoveredTank	fillFraction	0.85	neither	the hold times beside it are said AUTHOR-SET; the fill fraction is not
+apalutamide01_tablets	system/flowsheetDict gasHeater, exhaustCooler	P	1.10 bar	neither	also contradicts the blower comment ("the pressure it reaches is a RESULT"): the heater RAISES 1.0695 -> 1.10 bar (finding PH-04)
+apalutamide01_tablets	system/flowsheetDict solventCondenser, condensatePot	P	1.0 bar	neither	the recovery depends on it (K = Psat/P)
+apalutamide01_tablets	system/postDict economics	siteFactor	0.50	neither	Turton's grass-roots fraction, not said so on its line
+apalutamide01_tablets	system/postDict costing	usdToEur	0.92	neither	the dossier uses the same 0.92 with no source either
+apalutamide01_tablets	system/postDict economics	constructionPeriod	1	neither	-
+apalutamide01_tablets	system/postDict economics	salvageFraction	0.0	neither	-
+apalutamide01_tablets	system/postDict economics workingCapital	minimumCash	15 day	neither	rawMaterialStock, receivables, payables are said ASSUMED
+apalutamide01_tablets	src/postProcessing/EconomicsPass.cpp:3281 (engine, not the case)	positions per operator-per-shift	4.5	neither (hard-coded, no key)	applied to the DECLARED crew; README tells the student to question it but the grammar offers no key (finding PH-01)
+apalutamide01_tablets	src/postProcessing/EconomicsPass.cpp:3310 (engine default)	operatorAnnualHours	1960 h	neither (default, printed in the arithmetic, not announced as a default)	-
+apalutamide01_tablets	constant/components/apalutamide.dat, hpmcas.dat headers	formula / MW / "ASD made by spray drying"	-	sourced-but-unread	cite the TGA AusPAR, which README s1 and dossier lines 31-34 say could not be opened; the dossier sources the same facts to the EPAR (finding PH-07)
+apalutamide01_tablets	constant/components/*.dat (10 excipient records)	"Listed among the ... excipients of the US label (via <an aggregator site>)"	-	sourced via an aggregator	README and dossier cite the primary label (DailyMed setid / SmPC 6.1); the records cite an aggregator's arrangement (finding PH-11)
+donepezil01_tablets	system/postDict economics	siteFactor / usdToEur / constructionPeriod / salvageFraction / minimumCash	0.50 / 0.92 / 1 / 0.0 / 15 day	neither	as for apalutamide
+donepezil01_tablets	engine	4.5 positions factor / 1960 h	-	neither	as for apalutamide; here it decides the SIGN of the NPV (finding PH-01)
+donepezil01_tablets	system/postDict economics	N_np	2	author-set-said	("the two air heaters") -- listed only because it differs from apalutamide's 5 for the same kind of plant
+# SOLID-PROPERTY DEFAULTS (the known weak area)
+apalutamide01_tablets	constant/components (12 solids)	rho_p, solid Cp, formation datum	ASSUMED / PLACEHOLDER	author-set-said	every one says so in its provenance block; the run lists all 12 records as UNVERIFIED (reviewStatus interim). No silent default was found: the dryers name the solids that ride through DRY (no isotherm), the spray dryer names the harmonic-mean particle density. NOT said anywhere: the excipients enter the plant BONE-DRY (an MCC or a croscarmellose carries several % moisture as received -- reviewer's understanding, unverified), so the coating dryer's 0.61 % tablet moisture is a lower bound
+donepezil01_tablets	constant/components (11 solids)	rho_p, solid Cp, GAB of the starch	ASSUMED	author-set-said	same posture; lactose monohydrate's crystal water rides as part of the "dry" solid (correct for a monohydrate below its dehydration temperature -- reviewer's understanding, unverified)

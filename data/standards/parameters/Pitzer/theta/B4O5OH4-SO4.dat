@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer like-charge mixing parameter theta(B4O5OH4,SO4) --- the two anions B4O5OH4 and SO4.
+  Role: the binary mixing (second-virial) correction of the two anions, active in the pitzerHMW engine whenever both coexist; it works with the psi term and never replaces the single-pair beta / Cphi sets.
+  Source: Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 4, p. 2773, read from the page image.
+  Fitted by the authors at 25 C: in-sample.  No temperature dependence is given.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind theta;
+a B4O5OH4;
+b SO4;
+value 0.12;
+source "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 4, p. 2773 (25 C)";
+
+provenance
+{
+    origin        literature;
+    source        "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 4, p. 2773";
+    method        "value transcribed from the paper's table; no calculation";
+    readings      "theta07: read three times (text layer, page image at 200 dpi, page image at 300 dpi), data/curation/batches/boron_c198/readings.tsv";
+    fitBasis      inSample;   // the paper's own fit: these values reproduce the paper, they do not test it
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "25 C: the paper gives no temperature dependence for any of these terms";
+    }
+}

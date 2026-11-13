@@ -1629,6 +1629,76 @@ gas, isothermal; no wall, no distributor pressure drop, no jets; no elutriation
 rate and no freeboard; no reactor model.  Every correlation is empirical, and
 the published accuracies are not quoted because they have not been checked.
 
+\subsection{Operator panels and alarms}\label{sec:edu-operator-panels}
+
+\declaredanchor{sec:operatorPanels}
+
+\noindent\textit{\small Tool:} \code{tool=operator-panels}.  \textit{\small
+Case it starts from:} \file{batch/electrodialysis/edbatch01\_constant\_current},
+cloned with at most one declared value changed for a disturbance and with the
+page's own \file{system/panelDict} in place of the shipped one.
+
+\subsubsection*{The question}
+
+\emph{My process publishes dozens of variables: what do I put in front of the
+operator, in what form, and which alarms?}
+
+The batch electrodialysis rig publishes 25 series at 41 written instants.
+The page shows the same run twice --- every number the engine publishes, and
+the six elements of the panel the case declares --- and asks the student
+what is happening, first from the numbers and then from the panel, under
+one of four runs: as designed, the rectifier set past the stack's rating, a
+lower current efficiency, and a richer diluate.  It then maps the operator's
+tasks to the least information that answers each, draws one value four ways
+(a bare number, on its scale, as a trend, as a lamp), arranges overview, unit
+and detail, moves an alarm limit, runs a naive panel that puts an alarm on
+everything that moves, grows a panel in three stages, and ends with an
+exercise: a panel with five planted defects.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+Every run, and every fact about a panel, is the engine's: \code{choupoBatch}
+reads the panel after the time loop and reports which limit is crossed and
+when, which element never moves, which limit is never approached, which
+column is not published, which alarms watch the same column, and how many
+alarms are active at once.  The page writes the panels and draws the worked
+one as a lesson-local illustration; an element is coloured only where the
+engine's alarm interval covers the time cursor.  The one count the page makes
+itself --- alarm onsets inside any ten minutes, against a handling rate the
+student sets --- is labelled as the page's, on an assumption the page
+labels.  The design record \file{docs/design/operator-panels-good-practice.md}
+holds the native runs, the tests and the table of every practice rule with
+its checking status.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+Pick the lower current efficiency and move the cursor to the end: nothing
+alarms, and the demineralisation trend's ideal line falls with the run,
+because the unit computes it with the same efficiency --- the reference moved
+with the fault.  Pick the rectifier set too high: the current-density bar is
+in alarm from the first second and the lamp lights at 1150\,s instead of 1600\,s.  In
+step~5 move the limit to $0.25$ and to $3$ and read the facts
+\code{alwaysViolated} and \code{limitOutsideRange}; then run the naive panel on
+the designed run and count the alarms that start together near the end.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That more information makes a better panel.}  Every element costs the
+operator's attention, and every alarm interrupts him.  A panel that shows
+everything shows nothing, and a panel where everything alarms has no alarm.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+Nothing on the page is a grade.  Only the first slice of the panel exists in
+the engine: there is no workspace that draws a case's panel, no draft, no
+tuning and no lock yet.  The unit takes no change in the middle of a run, so a
+disturbance is a second run.  The facts are resolved to the 50\,s write grid.
+The practice of alarm management and operator displays is written from
+reasoning and not checked against the published standards, which were not
+read; the alarm-handling rate is an assumption of the page.
+
 \subsection{Membranes: a UF/NF batch, concentrated and washed}\label{sec:edu-batch-membrane}
 
 \declaredanchor{ch:membrane}

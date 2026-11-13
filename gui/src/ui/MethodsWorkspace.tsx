@@ -358,6 +358,9 @@ const BatchAdsorptionTool = lazy(() =>
 const ChromatographyTool = lazy(() =>
   import("./methods/ChromatographyTool.js")
     .then((m) => ({ default: m.ChromatographyTool })));
+const OperatorPanelsTool = lazy(() =>
+  import("./methods/OperatorPanelsTool.js")
+    .then((m) => ({ default: m.OperatorPanelsTool })));
 const FluidisedBedsTool = lazy(() =>
   import("./methods/FluidisedBedsTool.js")
     .then((m) => ({ default: m.FluidisedBedsTool })));
@@ -674,6 +677,7 @@ export function MethodsWorkspace() {
             : tool === "electrolyte-models" ? <ElectrolyteModelsTool />
             : tool === "batch-adsorption" ? <BatchAdsorptionTool />
             : tool === "chromatography" ? <ChromatographyTool />
+            : tool === "operator-panels" ? <OperatorPanelsTool />
             : tool === "fluidised-beds" ? <FluidisedBedsTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />

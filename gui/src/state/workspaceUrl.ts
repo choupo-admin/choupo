@@ -155,6 +155,10 @@ export function resolveWorkspaceSearch(search: string): WorkspaceBoot {
   //  one home that spells this address; nothing else builds it by hand.
   if (w === "literature") return { key: "literature", canonical: null };
 
+  //  The operator panel (DEV.md 4c C371): ?workspace=panel opens the Panel view of
+  //  a case that declares one; a case without says so in one line.
+  if (w === "panel") return { key: "panel", canonical: null };
+
   //  The landing hero deep-links the Control Room on a ctrl case
   //  (?case=ctrl02_disturbance_rejection&view=control).
   const v = params.get("view");

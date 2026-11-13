@@ -1,0 +1,40 @@
+/*---------------------------------------------------------------------------*\
+  property_route_bench.manifest -- the grid and the binaries of the
+  characterisation bench of the liquid-property routes (DEV.md 4c C378,
+  slice 0, step 1; docs/design/thermophysical-slice0-plan.md section 5).
+
+  Read by `choupoProps --property-route-bench <this file>`; hashed per
+  (record, property) by bin/curate/check_property_route_bench.py against
+  bin/curate/property_route_bench.sha256.tsv.  Changing this file changes
+  every hash: re-record with the gate's --record and say why in the commit.
+
+  Every component record of data/standards/components is benched alone;
+  the binaries below are the mixture calls.  Each covers a route class:
+  water with an alcohol, a ketone and an acid (the aqueous-organic mixtures
+  whose viscosity the record measured -60 %), two molecular pairs on the
+  anchored route (aromatics, alkanes), and two pairs with a component
+  above its critical temperature on part of the grid (NH3-N2, CO2-water),
+  where the liquid density refuses by name.
+\*---------------------------------------------------------------------------*/
+
+// K: the review's cryogenic points (90, 120), the density maximum of water
+// (277.15), 25 C, and the range to 300 C.
+temperatures ( 90 120 200 250 273.15 277.15 298.15 323.15 373.15 473.15 573.15 );
+
+// Pa: 1, 50 and 500 bar.
+pressures    ( 1e5 5e6 5e7 );
+
+// mole fraction of the FIRST component of each binary.
+fractions    ( 0.25 0.5 0.75 );
+
+binaries
+{
+    waterEthanol     ( water ethanol );
+    waterAcetone     ( water acetone );
+    waterMethanol    ( water methanol );
+    aceticAcidWater  ( aceticAcid water );
+    benzeneToluene   ( benzene toluene );
+    hexaneOctane     ( nHexane nOctane );
+    ammoniaNitrogen  ( NH3 N2 );
+    carbonDioxideWater ( CO2 water );
+}

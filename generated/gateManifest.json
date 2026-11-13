@@ -1700,6 +1700,11 @@
       "exit": 0,
       "claim": "check_fixed_bed_scheme: OK -- pulse moments vs the closed form at 100/200 cells (vanLeer without a grid term, upwind only with v dz/2); batch13 mesh: orders upwind 1.04 / vanLeer 2.13; width at 100 cells 313.5 / 231.5 s vs 219.59; bounded at Dax = 0; mass (and batch20's energy, padded blocks) closed at round-off; RK4 bound 6u/dz refuses and holds; announcement, refusal and the solutionControl switch",
       "seconds": 47.6
+    },
+    "check_property_route_bench": {
+      "exit": 0,
+      "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded (records 696, binaries 8, blocks 4974, values 81003, refusals 74163, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 3.6
     }
   }
 }

@@ -1,0 +1,27 @@
+d3a: points 186, inside the correlation's window 186
+  AAD 0.055 % (0.75 kg/m3), bias -0.031 % (-0.42 kg/m3), max 0.206 % (2.81 kg/m3) at T=303.15 K, w_NaOH=0.3400, P=100.0 kPa
+  stated U of the measurements: 2-2.2 kg/m3 (mean 2.10); points with |dev| > U: 6 of 186
+  T=303.15 K: n=31 bias -0.088 % AAD 0.091 %
+  T=313.15 K: n=31 bias -0.055 % AAD 0.063 %
+  T=323.15 K: n=31 bias -0.024 % AAD 0.046 %
+  T=333.15 K: n=31 bias -0.001 % AAD 0.039 %
+  T=343.15 K: n=31 bias +0.008 % AAD 0.043 %
+  T=353.15 K: n=31 bias -0.023 % AAD 0.049 %
+d3b: points 116, inside the correlation's window 80
+  AAD 0.353 % (3.56 kg/m3), bias -0.353 % (-3.56 kg/m3), max 0.875 % (7.70 kg/m3) at T=473.15 K, w_NaOH=0.0079, P=10000.0 kPa
+  stated U of the measurements: 1.779-2.651 kg/m3 (mean 2.15); points with |dev| > U: 52 of 80
+  T=323.15 K: n=38 bias -0.232 % AAD 0.232 %
+  T=373.15 K: n=13 bias -0.297 % AAD 0.297 %
+  T=423.15 K: n=13 bias -0.399 % AAD 0.399 %
+  T=473.15 K: n=16 bias -0.652 % AAD 0.652 %
+d3b at 2 MPa: points 23, inside the correlation's window 23
+  AAD 0.120 % (1.26 kg/m3), bias -0.120 % (-1.26 kg/m3), max 0.200 % (1.99 kg/m3) at T=323.15 K, w_NaOH=0.0039, P=2000.0 kPa
+  stated U of the measurements: 1.999-2.61 kg/m3 (mean 2.22); points with |dev| > U: 0 of 23
+  T=323.15 K: n=23 bias -0.120 % AAD 0.120 %
+d3b at 10 MPa: points 93, inside the correlation's window 57
+  AAD 0.448 % (4.48 kg/m3), bias -0.448 % (-4.48 kg/m3), max 0.875 % (7.70 kg/m3) at T=473.15 K, w_NaOH=0.0079, P=10000.0 kPa
+  stated U of the measurements: 1.779-2.651 kg/m3 (mean 2.13); points with |dev| > U: 52 of 57
+  T=323.15 K: n=15 bias -0.403 % AAD 0.403 %
+  T=373.15 K: n=13 bias -0.297 % AAD 0.297 %
+  T=423.15 K: n=13 bias -0.399 % AAD 0.399 %
+  T=473.15 K: n=16 bias -0.652 % AAD 0.652 %

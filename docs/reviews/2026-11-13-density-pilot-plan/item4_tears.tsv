@@ -1,0 +1,27 @@
+case	iteration	file	present(x>0)	smallest_positive	set_changed_from_previous
+process03_recycle	000000	iterations/000000/streamFaces	aceticAcid ethanol ethylAcetate water	0.1395	
+process03_recycle	000001	iterations/000001/streamFaces	aceticAcid ethanol ethylAcetate water	0.1395	no
+process03_recycle	000002	iterations/000002/streamFaces	aceticAcid ethanol ethylAcetate water	0.1458	no
+process03_recycle	000003	iterations/000003/streamFaces	aceticAcid ethanol ethylAcetate water	0.1458	no
+recycle_autoinit_tear	000000	iterations/000000/streamFaces	aceticAcid ethanol ethylAcetate water	0.1395	
+recycle_autoinit_tear	000001	iterations/000001/streamFaces	aceticAcid ethanol ethylAcetate water	0.1395	no
+recycle_autoinit_tear	000002	iterations/000002/streamFaces	aceticAcid ethanol ethylAcetate water	0.1458	no
+recycle_autoinit_tear	000003	iterations/000003/streamFaces	aceticAcid ethanol ethylAcetate water	0.1458	no
+process05_isomerization_recycle	000000	iterations/000000/streamFaces	nPentane neoPentane	0.1157	
+process05_isomerization_recycle	000001	iterations/000001/streamFaces	nPentane neoPentane	0.1157	no
+process05_isomerization_recycle	000002	iterations/000002/streamFaces	nPentane neoPentane	0.1038	no
+process05_isomerization_recycle	000003	iterations/000003/streamFaces	nPentane neoPentane	0.1036	no
+recycle02_dominant_eigenvalue	000000	iterations/000000/streamFaces	nPentane neoPentane	0.1157	
+recycle02_dominant_eigenvalue	000004	iterations/000004/streamFaces	nPentane neoPentane	0.1039	no
+recycle02_dominant_eigenvalue	000005	iterations/000005/streamFaces	nPentane neoPentane	0.1036	no
+recycle02_dominant_eigenvalue	000006	iterations/000006/streamFaces	nPentane neoPentane	0.1036	no
+recycle02_dominant_eigenvalue	000007	iterations/000007/streamFaces	nPentane neoPentane	0.1036	no
+ChemicalPlantTutorial	000000	iterations/000000/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.02	
+ChemicalPlantTutorial	000001	iterations/000001/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.0225	no
+ChemicalPlantTutorial	000002	iterations/000002/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.0002509	no
+ChemicalPlantTutorial	000003	iterations/000003/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.0002508	no
+sugarPlantEconomicsSweep	000000	iterations/000000/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.02	
+sugarPlantEconomicsSweep	000001	iterations/000001/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.0225	no
+sugarPlantEconomicsSweep	000002	iterations/000002/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.0002443	no
+sugarPlantEconomicsSweep	000003	iterations/000003/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.0002442	no
+sugarPlantEconomicsSweep	000004	iterations/000004/FERMENTATION/streamFaces	CO2 ethanol sucrose water	0.0002442	no

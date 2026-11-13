@@ -3446,6 +3446,134 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C378, THE PILOT'S PLAN IS WRITTEN AND RULED (2026-11-13; branch
+> `c378-pilot-plan`, c48786fd3; its document, the density pilot plan,
+> lands with the door, whose files it cites).**  MEASURED REACH: 32 shipped
+> cases hold a pump or a CSTR (37 units); 27 are away from 25 C; 4 carry
+> dissolved ions through a pump (membrane21, 22, 27, swro01); 10 have
+> water in a mixture; 30 of 32 will re-record (a CSTR at 350 K moves about
+> -7 % in volumetric flow), 6 must declare `massWithoutVolume`.  TWO
+> DEFECTS FOUND by the plan's runs, each its own commit BEFORE the pilot:
+> the pure-fluid route ignores the phase asked, so a SATURATED condensate
+> on IF97 is priced as vapour (rankine02's pump inlet: 4.45 kg/m3 where
+> the liquid branch gives 893.99; the pump is not hurt today only because
+> it bypasses the kernel); and cstr02 feeds a VAPOUR that the CSTR prices
+> on liquid volumes (about 186 times off).  RULINGS on its seven
+> questions: (1) the water leaf takes the reference equation WITH pressure
+> where a record names the fluid, and the seal copies that record into the
+> case; (2) the CSTR takes its density at the FEED state -- its model
+> already says "constant volumetric flow, the feed's" (CSTR.cpp:241), and
+> the table says so; (3) a method is resolved per constituent set at its
+> FIRST request and frozen for the run ("at assembly" cannot hold for a
+> set first met during the solve), and a stream that would resolve
+> differently in a later pass is refused; (4) the demonstration CSTRs
+> declare a reaction whose reactant is absent from the feed, said in the
+> header; (5) a marked point outside its box is refused, the law appearing
+> in a check-only variant; (6) cstr02 is corrected first, through the
+> equation of state; (7) water + ethanol is SCORED at 298.15 and 323.15 K
+> and REPORTED at 348.15 K, where the ethanol leaf, not the mixing, is the
+> error -- decided before any run.  ALSO RULED: the solution-property
+> record lives in `parameters/solution/` and is independent of any
+> activity model's own record for the same pair; the second entry of the
+> door used by the pump and the CSTR is migration scaffolding, named so,
+> counted by a gate and removed when the last consumer has moved; the CO2
+> demonstration is selection and refusal only, not scored.  THE PASS
+> THRESHOLDS, written before the pilot runs (from
+> docs/design/density-pilot-thresholds.md, with ruling 7): water -- the
+> units' flow and residence time equal the kernel's value to 1e-9, the
+> kernel within 0.001 % (reference equation) or 0.005 % (IF97) of the
+> twelve printed anchors, a maximum between 275 and 280 K, 500 bar
+> different from 1 bar, FAIL if any unit reads 996.96 kg/m3 at 500 bar;
+> water + ethanol at 0.1 MPa, two isotherms -- AAD <= 2.0 %, maximum <=
+> 3.6 % against the first laboratory, AAD <= 2.3 %, maximum <= 3.7 %
+> against the second, the printed evidence within 0.05 points of the
+> harness; NaOH -- the record reproduces the law to 1e-6, AAD <= 0.10 %
+> and maximum <= 0.30 % against the independent set at 0.1 MPa, AAD <=
+> 0.20 % and maximum <= 0.30 % up to 2 MPa, 10 MPa reported and not
+> scored; the measured point -- Q = 8.2386e-4 m3/s and tau = 1213.8 s
+> reproduced to 1e-6, a domain error outside the box; NaCl in water +
+> ethanol -- a refusal naming the three constituents, the kind of record
+> missing and the remedy, on the pump, the CSTR and the bench, FAIL on any
+> number or on a refusal for another reason.
+
+> **C371 S2 LANDED (2026-11-13; 3eb1b66e1): THE PANEL WORKSPACE, READ-ONLY,
+> with the reviewing session's lesson on panels and alarms.**  Built on
+> that session's adapter (`panelPayload.ts`) and sharing its drawing
+> primitives.  The lesson's sixteen practice rules were READ against two
+> public documents (the review guide for human-system interfaces,
+> Revision 3, 558 pages; the UK regulator's alarm-handling sheet): none
+> contradicted, six with a difference, three reworded on the page, the
+> only alarm rates in hand cited; the standards sold by their publishers
+> were not read and Revision 4 could not be obtained.  Held by --gui 47/0
+> on the merged tree, typecheck, the electrodialysis cases 5/0, the page's
+> 28 tests after the source check; seen only as headless renders.  OPEN
+> for the engine's panel slice (given to the reviewing session, C383): a
+> unit per column, an interval for a limit without an alarm, its five
+> notes.  OPEN in the workspace: scales on the trends, the grid's holes.
+> **C378 SLICE 0 NOT LANDED YET (2026-11-13): the reviewing session read
+> the branch (DR-01..DR-14) and found two false printed sources (water's
+> surface tension and viscosity labelled with a formulation that defines
+> neither; the electrodialysis kinematic viscosity missing from the
+> table), consumers the inventory missed, and a ratchet that caught 4 of
+> its 18 probe lines.  All fourteen rows went back to the general before
+> any golden is re-recorded.**
+
+> **C198 LANDED (2026-11-13): SEAWATER BORON ON PITZER.**  Every
+> parameter of Felmy & Weare (1986) read from page images, three readings
+> each (the text layer of the PDF misreads two chemical potentials by 90
+> units); the five borate formation constants DERIVED from the standard
+> chemical potentials of the two primaries (Vitor brought Harvie, Moller &
+> Weare 1984 and Dickson 1990 the same night) and equal to the public
+> databank's to four decimals, so the records keep their values with
+> `origin derived` and the databank as the cross-check.  ANCHORS:
+> borax-saturated water against the paper's Table 1 (the authors' own
+> model output: in-sample, said so); Dickson's synthetic seawater at S =
+> 35 against his MEASURED conditional constant (Table 3, p. 762, total
+> proton scale, molality): the model is 0.044 above in ln K*, ten times the
+> measurement's +-0.004, inside a tolerance set by the conversion between
+> proton scales (the engine's own bisulfate) and the emf scatter the
+> borate terms were fitted on.  FOUND, open: eleven major-ion pairs of the
+> catalogue (Na-Cl, Na-SO4, K-Cl, Ca-Cl, Mg-Cl, Mg-SO4, ...) are a later
+> revision of the databank, not the 1984 set the borate terms were fitted
+> WITH -- a mixed parameter set, to be measured by running the seawater
+> case on the 1984 values case-locally; fifteen pair records print the
+> 1984 paper's numbers and cite the databank (re-attributable).  BRAIN had
+> listed the Dickson comparison as held when no shipped case held it:
+> corrected, and now true.  Validation by reach: no engine code; the new
+> case and 62 electrolyte cases in scope 0 FAIL, --fast 85/0, the species
+> and record gates; no full sweep; --gui not run.
+> MEASURED AFTER LANDING (a private note and a scratch directory of 34
+> variants; nothing tracked changed): the hypothesis that the mixed
+> parameter set explains the gap is REFUTED.  With every active term on
+> the 1984 values (read twice from Harvie et al.'s Tables 1 and 2) ln K*
+> goes from -19.7115 to -19.7004, AWAY from Dickson's -19.7556; the
+> Na-SO4 pair alone carries the +0.011; the borax solution does not move
+> at all (it holds none of those ions).  The largest identifiable part of
+> the gap is the proton-scale conversion: with the bisulfate ratio a
+> seawater constant gives (0.28, from a secondary evaluation, not read)
+> instead of the engine's 0.305 the gap would be 0.026, which is inside
+> the emf scatter of the borate fit.  DECIDED: nothing changes in the
+> catalogue for boron; the Theory Guide says what was measured; a named,
+> selectable 1984 set is not built (it would need HSO4 terms the catalogue
+> lacks and would not close this gap); a bisulfate constant for seawater
+> read from its primary is the open item.
+
+> **C383 (Vitor, 2026-11-13: "quando e que a outra sessao pode comecar a
+> trabalhar?").**  NOW, in named territories.  C364 is AMENDED, not
+> lifted: there is still ONE WRITER TO MAIN (the laptop integrates, each
+> landing with its validation), but the cloud session no longer only
+> reviews -- it BUILDS ON BRANCHES the fixes of its own findings and the
+> EduTool pages (C369), in territories the laptop names in SESSIONS.md so
+> that no branch touches a file a running general holds.  It never pushes
+> main beyond docs/reviews/ and its own messages; each branch is announced
+> with the validation it ran and what it did not.  Open to it at once:
+> the read-only review of branch c378-slice0; EL-03..09 (electrolyte
+> kernels and their headers); SC-01, SC-02 and SC-08 (cases and
+> documents only).  After the door lands (the same unit files): SC-03..07,
+> SP-07..10 and the five notes on the panel's engine slice.  SP-06 (a
+> melting temperature in the record grammar) is an architecture decision
+> and stays with the laptop.
+
 > **C382 (Vitor, 2026-11-12, night, asked whether water and other
 > prevalent fluids have a special place; told the open point, he answered
 > "faz como achares melhor").**  DECIDED BY THE ARCHITECT: a fluid is
@@ -3739,6 +3867,116 @@ accepts today, and that is a policy call.
 > every datum follows, an exception would leave no way to state a
 > deliberate choice, and the danger named is the silence, which the
 > printed deviation removes.
+
+> **C378, THE PILOT'S DATA AND TODAY'S BASELINE ON MAIN (2026-11-13;
+> data/curation/batches/density_pilot/, docs/design/density-pilot-thresholds.md,
+> status OPEN).**  No engine file changed.  The measured points (1870, nine
+> articles) are NOT in git: the mirror they were found through reserves
+> bulk import, so the batch keeps the scripts that regenerate them, the
+> summary statistics, twelve printed anchors of the water article and ONE
+> cited point for the measured-point demonstration (the branch was
+> squash-merged so that the removed files never entered history).
+> TODAY'S ENGINE AGAINST MEASUREMENT: water on the generic route 1.8 % low
+> on average at 1 bar (3.5 % at the boiling point, 7.6 % at 100 MPa), on
+> the reference route within 0.002 %; the pump one constant, 996.96 kg/m3,
+> at every temperature and pressure; water + ethanol 2.9 % low on average,
+> 5.1 % at worst, of which the excess volume alone explains 1.75 %; NaOH:
+> the published law within 0.055 % of an independent laboratory, while the
+> pump (the salt's volume left out) is 15 % off on average and 34 % at
+> worst.  SEVEN CORRECTIONS to the pilot table of the record, all taken
+> (liquid water at 1 bar ends at 372.756 K; the article's grid; three
+> isotherms for water + ethanol; no 10 wt % point in the NaOH set; the
+> 0.04 % is the paper's own figure on its own data; one CO2 set has the
+> stated temperatures; the pump does NOT refuse the salt in mixed solvent
+> today, it answers 4 % off on average).  THREE CONSEQUENCES for the
+> pilot's scope, to be decided when its thresholds are written: the water
+> leaf INSIDE a mixture stays on the generic route today (2.6 % low at
+> 348 K), so a mixture demonstration can pass for the wrong reason; the
+> CO2 demonstration needs pressure on that leaf (its 2 % is larger than
+> the 1.6 % effect of the dissolved gas); and the refusal demonstration
+> requires the pump to stop answering, which moves existing cases with
+> dissolved salts from a number to a declared hypothesis.
+
+> **C378, THE LIQUID VOLUMES READ AT THE WRONG TEMPERATURE: EVIDENCE ON
+> MAIN (2026-11-13; data/curation/batches/vliq_datum_temperature/,
+> docs/design/liquid-volume-datum-temperature.md).**  No record and no
+> engine file changed.  TWENTY-ONE records, not seventeen: Cl2, H2S, SO2
+> and nButane also store a boiling-point volume and state nothing (the
+> engine's density at 25 C is about +13, +19, +7 and +4 % for them).  Every
+> record that could be cross-checked stores a volume at ITS OWN normal
+> boiling point, within 2.1 %.  RULED: the correction ASSIGNS A
+> TEMPERATURE and replaces no value -- an optional `VliqT` beside `Vliq`
+> (default 298.15 K), equal to the record's `Tb` for those records, 273.15
+> K for CO2, 465 K for hitecSalt; the handbook appendix used for the
+> comparison is a cross-check and enters no record; six records stay
+> unresolved and pinned by name (propane, propylene, H2O2, HCHO, HCN,
+> NO2); hitecSalt's molar mass (87.4 against 84.29 from its own
+> composition) is its own defect and commit; sucrose's value belongs in a
+> solution record.  The reader change lands after the door.  REACH read
+> by hand: nButane and propane in six columns and the Cavett train, H2S in
+> the sour-water stripper, Cl2 in the chlorination case, a CH4 flash that
+> is refused today, CO2 in eight liquid-candidate cases.
+
+> **C378, A READING WHILE THE DOOR IS BUILT (2026-11-12, night): the
+> density model for electrolyte solutions now in the literature folder,
+> put against rule 9.**  Laliberte & Cooper (J. Chem. Eng. Data 49 (2004)
+> 1141) give an apparent specific volume PER ELECTROLYTE (59 of them) as a
+> function of temperature and of the total solute mass fraction (their eq
+> 10), and add the apparent volumes to water's (eq 6); on 29 systems of
+> two electrolytes, one of three and one of five the residual has a
+> standard deviation of 1.39 kg/m3 (pp. 1148, 1150), against 2.75 when
+> each electrolyte ignores the others (eq 9).  CONSEQUENCE FOR THE DESIGN:
+> it is a named published rule for several salts, so rule 9 admits it; but
+> its parameters belong to SALTS, not to ions, so for one ion inventory
+> the answer depends on how the ions are paired into salts -- the
+> invariance test of rule 9 does not hold by construction.  It is
+> therefore admissible only with a pairing rule that is declared,
+> deterministic and printed (or with the salts as the case fed them, said
+> so), and the size of the non-invariance is to be MEASURED on NaCl + KNO3
+> against NaNO3 + KCl with the paper's own parameters before the
+> electrolyte-density slice is designed.  Nothing built.
+> MEASURED the same night (a private note and its script; the model was
+> first verified against the paper's printed values for 14 salts and
+> against measured water): for one ion inventory described by two sets of
+> salts, at 25 and 60 C and ionic strength 1 to 4 mol/kg, the DENSITY
+> moves by at most 0.15 % (1.70 kg/m3, NH4Cl + NaNO3 against NH4NO3 +
+> NaCl at I = 4; NaCl + KNO3 against NaNO3 + KCl at most 0.04 %), below
+> the model's own 1.39 kg/m3 scatter in 14 of 16 in-range rows; the
+> VISCOSITY model of the same author (2007, per salt as well) moves by up
+> to 4.9 % at I = 4, the size of its own single-solute scatter (3.5 %).
+> The author states the dependence himself in the 2009 paper (p. 1733).
+> One measured exchangeable set exists in the data mirror (KCl + NaNO3 +
+> water) and cannot tell the two pairings apart.  RULING for the
+> electrolyte slices: such a model is used with the salts AS THE CASE
+> FEEDS THEM; a bare ion inventory is paired by one deterministic,
+> printed rule; a pairing the parameter table cannot support, or a salt
+> outside its stated range, is refused; and the run states that the
+> answer depends on the pairing and by how much it was found to (density:
+> a few tenths of a kg/m3; viscosity: a few percent at high ionic
+> strength).  The 2009 revised coefficients are in a supplement that is
+> not in the folder.
+
+> **C378 SLICE 0, STEP 1 LANDED (2026-11-12, night): THE CHARACTERISATION
+> BENCH.**  `choupoProps --property-route-bench` (a flag, not an
+> operation) evaluates every liquid-property route the kernel has today --
+> density with its pure-fluid routes, viscosity, surface tension,
+> diffusivity -- for all 696 component records and 8 binaries on 11
+> temperatures x 3 pressures: 4974 blocks, 81003 values and 74163 refusals
+> with their full text, one hash per block in
+> `bin/curate/property_route_bench.sha256.tsv`, recorded BEFORE any edit of
+> a property routine (no file under src/thermo/ changed).  Gate
+> `check_property_route_bench` (full sweep and --fast; 3.5 s) names every
+> block that moves; the self-test changes one digit of methanol's liquid
+> volume and observes five blocks named, two of them surface tensions.
+> DETERMINISTIC across runs, locale and thread count.  FOUND: 64 records
+> cannot be assembled into a package (no MW, no s_298, no vapour-pressure
+> block), so only their refusal is pinned; 357 refusal messages embedded
+> an absolute path (replaced by a marker in the bench; the messages
+> themselves are unchanged); the reference equations of CO2, N2 and CH4
+> carry no viscosity or surface tension.  Held by --fast 85/0, a props
+> scope 7/0, the whole gate self-test, the integration gates.  The plan
+> (docs/design/thermophysical-slice0-plan.md) was accepted with its three
+> disagreements; step 2, the door, is next.
 
 > **C377 LANDED IN FULL (2026-11-12, night; dc0ed4a4b).**  The NaOH-water
 > model from the published correlation, the exact boiling-point rise and

@@ -1,0 +1,37 @@
+consumer	in_laptop_count	in_slice_table	file_line	how_priced
+cstr	yes	yes (liquidVolume, bypass)	src/unitOperations/reactor/CSTR.cpp:245-252, :661-668	sum z_i Vliq_i, record 25 C volume, every package component
+pfr	yes	yes (liquidVolume, bypass)	src/unitOperations/reactor/PFR.cpp:193-200, :690-700	sum z_i Vliq_i; the multi-reaction path only with a concentration law
+pressureExchanger	yes	yes (liquidVolume, bypass)	src/unitOperations/rotating/PressureExchanger.cpp:192, :217-222	Vliq ideal mix, ions out of the volume
+pump	yes	yes (liquidDensity, bypass)	src/unitOperations/rotating/Pump.cpp:104, :239, :319-330	MW/v_mix from Vliq; 1000 if v_mix = 0; ions out of the volume
+sprayDryer	yes	yes (liquidDensity, bypass)	src/unitOperations/heatTransfer/SprayDryer.cpp:594-618	solvent Vliq (one solvent) or Vliq ideal mix (several); 1000 fallback
+crystalliser (MSMPR, FVM)	yes	yes (liquidVolume, bypass)	src/unitOperations/crystallisation/Crystalliser.cpp:505-512, :802-809	sum F z_i Vliq_i, a component with no Vliq adds 0
+crystalliser antisolvent (gammaPMMixed)	no (part of the laptop's CrystallisationSaturation row)	no	src/unitOperations/crystallisation/Crystalliser.cpp:381	antisolvent Vliq as an activity-model parameter
+CrystallisationSaturation	yes	no (the slice's plan files it as a model parameter, plan section 1.6)	src/unitOperations/crystallisation/CrystallisationSaturation.cpp:124	antisolvent Vliq into gammaPMMixed
+EDCell helpers	yes	indirectly (each consumer prints constant.diluteCarrier)	src/unitOperations/electrochem/EDCell.cpp:159, :229, :336; EDCell.H:103	constant 1000 (diluteCarrierDensity)
+electrodialysisStack density (velocity)	yes	yes	src/unitOperations/electrochem/ElectrodialysisStack.cpp:348-350	constant 1000 through diluteCarrierDensity
+electrodialysisStack density (specific energy)	no	no (not routed; same value)	src/unitOperations/electrochem/ElectrodialysisStack.cpp:837	bare literal division by 1000.0
+spiralWoundModule	yes	yes	src/unitOperations/membrane/SpiralWoundModule.cpp:320-324	rho_feed declared, else constant 1000
+RatedTestInversion	yes	yes (as the module's liquidDensity)	src/unitOperations/membrane/RatedTestInversion.cpp:224-228	rho_feed declared, else constant 1000
+batchElectrodialysis density	yes	yes	src/unitOperations/batch/BatchElectrodialysis.cpp:323, :327, :604	RHO_CARRIER 1000
+batchDiafilter	no (laptop) / yes (plan)	yes	src/unitOperations/batch/BatchDiafilter.cpp:145-156	declared rho, else 1000 announced; rho_diafiltrate (:166) defaults to rho, not recorded separately
+WilkeChang solute volume	yes	no (thermo-internal, plan 1.6)	src/thermo/transport/WilkeChang.cpp:45	solute Vliq (25 C) inside the correlation
+SaturatedVapour Poynting	yes	no (thermo-internal, plan 1.6)	src/thermo/phase/SaturatedVapour.cpp:148, :153	Vliq in exp(Vliq (P-Psat)/RT)
+Wilson molar volumes	yes	no (thermo-internal, plan 1.6)	src/thermo/activityCoefficient/Wilson.cpp:108, :111	Vliq ratio in Lambda_ij
+SolubilityParameter (props op)	yes	no (props bench, plan 1.1)	src/propertyOps/SolubilityParameter.cpp:124, :142	Vliq 25 C
+-- independent census, NOT in the slice's printed table --				
+ED stack kernel viscosity (Stokes-Einstein, kinematic nu)	no	no	src/unitOperations/electrochem/ElectrodialysisStack.cpp:378-384 via src/thermo/transport/StokesEinstein.cpp:48-49	package viscosityLiquid of the pure solvent, nu = mu/1000
+ED stack kinematic viscosity default	no	no	src/unitOperations/electrochem/ElectrodialysisStack.cpp:373	nu_solvent = 1.0e-6 when no viscosity model
+ED stack legacy kinematic viscosity	no	no	src/unitOperations/electrochem/ElectrodialysisStack.cpp:436	nu = 1.0e-6 (ed01: Sc = 1e-6/1.68e-9 = 595.24 printed)
+batchElectrodialysis kernel viscosity	no	no	src/unitOperations/batch/BatchElectrodialysis.cpp:324-329	Stokes-Einstein mu, nu_ = mu/RHO_CARRIER
+batchElectrodialysis kinematic default	no	no	src/unitOperations/batch/BatchElectrodialysis.H:290	nu_ = 1.0e-6
+membrane polarisation Stokes-Einstein viscosity	no	no (the ion D0 line prints the record, not the viscosity)	src/unitOperations/membrane/massTransfer/Polarisation.cpp:653	package viscosityLiquid via stokesEinstein::factor
+DSPM-DE Stokes-Einstein viscosity	no	no	src/unitOperations/membrane/transport/DSPM_DE.cpp:539	package viscosityLiquid via stokesEinstein::factor
+pellet liquid diffusivity	no	no	src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp:135	package diffusivityLiquid, direct call
+pipe declared surface tension (Friedel, BeggsBrill)	no	no (declared in the type table; never recorded)	src/unitOperations/hydraulics/Pipe.cpp:306-307, :332-333	twoPhase.surfaceTension declared
+column tray-efficiency sigma fallback	no	no	src/unitOperations/distillation/DistillationColumn.cpp:5214	geo.sigma (declared) when the package has no model
+phaseChanger condensation sigma	no	printed although unused	src/unitOperations/heatTransfer/PhaseChanger.cpp:861-868	kernel sigma evaluated into a context NusseltFilm does not read
+dynamicTank inlet density	no	printed under a unit called 'dynamicTank'	src/unitOperations/dynamic/DynamicTank.cpp:198	door with who = literal "dynamicTank"
+Williams-Otto plant density	no	no (pinned only in the ratchet debt)	src/unitOperations/dynamic/WilliamsOttoPlant.cpp:47, :141-145	constexpr RHO0 = 50 lb/ft3
+aqueous laboratory analysis inlet density	no	no	src/streams/StreamStateIO.cpp:1448-1550, :2732-2760	rhoWaterKell(T_sample) + solute mass
+spiralWoundModule kernel diffusivity	no	yes, but a direct package call outside the door (no state recorded)	src/unitOperations/membrane/SpiralWoundModule.cpp:447, :876-880	thermo.diffusivityLiquid, NamedSource
+any unit wrapped by quasiSteady (choupoSemiContinuous)	no	no: no table, no propertySources block	src/unitOperations/flowsheet/Flowsheet.cpp:1156 is the only Scope; src/dynamicDriver sets none	every useHere() records nothing without a Scope
