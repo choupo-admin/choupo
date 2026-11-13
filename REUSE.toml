@@ -1,0 +1,82 @@
+# Machine-readable licensing manifest, in the REUSE specification's REUSE.toml
+# form (version 3.3 of the specification).  It says, for the paths below, what
+# the root NOTICE and LICENSES/README.md already say, and nothing more.
+#
+# WHAT IT COVERS: (1) the guides' sources and PDFs under docs/ (a separate work
+# from the code); (2) files of the code roots that cannot hold a comment (JSON,
+# a tab-separated registry) -- the code itself carries the two header lines in
+# the file (bin/curate/check_source_headers.py).
+# WHAT IT DOES NOT COVER, on purpose: data/ (licensed per record), tutorials/,
+# the guides' preamble and version files, docs/*.md, logos and brand assets,
+# third-party material (gui/public, bin/curate/enrtl_ref, the NanoFiltran
+# sources), published data tables.  This file does NOT claim that the
+# repository is REUSE-compliant.
+version = 1
+
+# Files that cannot hold a comment: NOTICE -- "Source code, cases, tests, and
+# machine-readable examples are licensed under GNU GPL-3.0-or-later".
+[[annotations]]
+path = [
+  "gui/package.json",
+  "gui/tsconfig.json",
+  "gui/schemas/**",
+  "gui/src/ui/methods/lessonReferences.json",
+  "gui/tests/fixtures/*.json",
+  ".claude/settings.json",
+  "bin/curate/feature_documented_debt.tsv",
+  "bin/curate/golden_bands.tsv",
+  "bin/curate/liquid_property_ratchet_debt.tsv",
+  "bin/curate/platform_divergence_debt.tsv",
+  "bin/curate/property_route_bench.manifest",
+  "bin/curate/property_route_bench.sha256.tsv",
+  "bin/curate/property_route_labels.sha256.tsv",
+  "bin/curate/property_source_witnesses.tsv",
+  "bin/curate/property_source_words.tsv",
+  "bin/curate/vliq_datum_debt.tsv",
+]
+SPDX-FileCopyrightText = "Copyright (C) 2026 Vítor Geraldes"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# The guides.  NOTICE: the guides are copyright (C) 2026 by their named
+# authors; prose, figures and explanatory text are CC BY-SA 4.0 "except where
+# noted"; code excerpts, case files and other machine-readable examples
+# included in a guide are GPL-3.0-or-later, which this table cannot express.
+# The Properties Guide and the Theory Guide are authored by Vítor Geraldes,
+# Pedro Mendes and Miguel Rodrigues.
+[[annotations]]
+path = [
+  "docs/propsGuide.tex",
+  "docs/propsGuide.pdf",
+  "docs/propsGuide-operations.tex",
+  "docs/theoryGuide.tex",
+  "docs/theoryGuide.pdf",
+  "docs/theoryGuide-unitAcceptanceTable.tex",
+]
+SPDX-FileCopyrightText = [
+  "Copyright (C) 2026 Vítor Geraldes",
+  "Copyright (C) 2026 Pedro Mendes",
+  "Copyright (C) 2026 Miguel Rodrigues",
+]
+SPDX-License-Identifier = "CC-BY-SA-4.0"
+
+# The Developer Guide and the remaining manuals are authored by Vítor Geraldes
+# alone.
+[[annotations]]
+path = [
+  "docs/developerGuide.tex",
+  "docs/developerGuide.pdf",
+  "docs/designGuide.tex",
+  "docs/designGuide.pdf",
+  "docs/eduToolsGuide.tex",
+  "docs/eduToolsGuide.pdf",
+  "docs/explorerGuide.tex",
+  "docs/explorerGuide.pdf",
+  "docs/userGuide.tex",
+  "docs/userGuide.pdf",
+  "docs/tutorialsGuide.tex",
+  "docs/tutorialsGuide.pdf",
+  "docs/tutorialsGuide-*.tex",
+  "docs/tutorialsGuide-sdemValidation.tex",
+]
+SPDX-FileCopyrightText = "Copyright (C) 2026 Vítor Geraldes"
+SPDX-License-Identifier = "CC-BY-SA-4.0"
