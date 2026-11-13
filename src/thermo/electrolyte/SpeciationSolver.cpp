@@ -161,6 +161,20 @@ void refuseUnlessChargeBalanced(
 // Read the optional analytic K(T) block (`analytic ( A1 .. A5 );` + an optional
 // `validC ( lo hi );`).  Absence-tolerant -- an entry without it keeps the dH /
 // flat path unchanged.  FAILS LOUDLY on a malformed coefficient count.
+// The record-level `provenance { dH { origin; method; } }` of a reaction
+// record (ES-01).  Absence-tolerant: a record without it reads as no mark.
+DatumMark readDHMark(const DictPtr& e)
+{
+    DatumMark m;
+    if (!e->found("provenance")) return m;
+    auto pv = e->subDict("provenance");
+    if (!pv->found("dH")) return m;
+    auto d = pv->subDict("dH");
+    m.origin = d->lookupWordOrDefault("origin", "");
+    m.method = d->lookupWordOrDefault("method", "");
+    return m;
+}
+
 KTcorrection readKT(const DictPtr& e)
 {
     KTcorrection kt;
@@ -357,6 +371,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             r.logK25  = e->lookupScalar("logK25");
             r.hasDH   = e->found("dH");
             if (r.hasDH) r.dH = e->lookupScalar("dH");
+            r.dHmark  = readDHMark(e);
             r.kt      = readKT(e);
             r.source  = e->lookupWordOrDefault("source", "undeclared");
             refuseUnlessChargeBalanced("speciation: formation reaction",
@@ -440,6 +455,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
                     g.logK25  = e->lookupScalar("logK25");
                     g.hasDH   = e->found("dH");
                     if (g.hasDH) g.dH = e->lookupScalar("dH");
+                    g.dHmark  = readDHMark(e);
                     g.kt      = readKT(e);
                     g.source  = e->lookupWordOrDefault("source", "undeclared");
                     gases_.push_back(std::move(g));
@@ -491,6 +507,7 @@ SpeciationSolver::SpeciationSolver(const std::string& activityModel)
             m.logK25  = e->lookupScalar("logK25");
             m.hasDH   = e->found("dH");
             if (m.hasDH) m.dH = e->lookupScalar("dH");
+            m.dHmark  = readDHMark(e);
             m.kt      = readKT(e);
             m.source  = e->lookupWordOrDefault("source", "undeclared");
             refuseUnlessChargeBalanced("speciation: mineral dissolution",
@@ -679,6 +696,9 @@ double SpeciationSolver::mineralLogK_T(const std::string& mineral, double T,
     for (const auto& m : minerals_) if (m.mineral == mineral) { me = &m; break; }
     if (!me) { hasEntry = false; return 0.0; }
     hasEntry = true;
+    if (me->hasDH && !me->kt.hasAnalytic && T != 298.15)
+        electrolyte::announceEstimatedReactionEnthalpy(
+            me->mineral, me->dHmark.origin, me->dHmark.method);
     return logK_T(me->logK25, me->hasDH, me->dH, me->kt, T);
 }
 
@@ -770,9 +790,17 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
     // and NO bucket is touched (the off-25 guard) -- so the run is byte-identical
     // at 298.15 K BY CONSTRUCTION (every existing golden lives there).
     const bool offT = std::fabs(T - 298.15) > 0.01;
+    //  ES-01: a dH whose record marks it as not measured is announced where
+    //  the van 't Hoff term is applied -- the same condition logK_T applies it
+    //  under (dH present, no analytic, T other than 298.15 K) -- so a run at
+    //  exactly 25 C, which never moves log K with it, says nothing.
     auto kT = [&](const std::string& name, double logK25, bool hasDH, double dH,
-                  const KTcorrection& kt) -> double
+                  const KTcorrection& kt, const DatumMark* mark,
+                  const std::string& record) -> double
     {
+        if (mark && hasDH && !kt.hasAnalytic && T != 298.15)
+            electrolyte::announceEstimatedReactionEnthalpy(
+                record.empty() ? name : record, mark->origin, mark->method);
         const double v = logK_T(logK25, hasDH, dH, kt, T);
         if (!offT) return v;                     // at 25 C: classify nothing
         if (kt.hasAnalytic)
@@ -1045,7 +1073,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
         // into the idx machinery so the mass action / Jacobian see it like
         // any other unknown (a.nuH stays authoritative for the given-pH path).
         if (solveH && a.nuH != 0.0) a.idx.emplace_back(int(iH), a.nuH);
-        a.logK = kT(r.species, r.logK25, r.hasDH, r.dH, r.kt);
+        a.logK = kT(r.species, r.logK25, r.hasDH, r.dH, r.kt, &r.dHmark, r.record);
         {
             std::ostringstream w;
             w << "reachable from " << (need.empty() ? "the solvent" : need)
@@ -1126,7 +1154,7 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             // exchange half-reactions carry no analytic in phreeqc.dat (the dH /
             // flat path is unchanged); pass an empty KTcorrection.
             const double lk = kT(xr.species, xr.logK25, xr.hasDH, xr.dH,
-                                 KTcorrection{});
+                                 KTcorrection{}, nullptr, std::string());
             // fold the CEC constant into logK (as a ln10-scaled equivalent):
             //   effective logK*ln10 = ln10*lk + ln(CEC/z) - z*ln(CEC)
             a.logK = lk + (std::log(CEC / xr.nuSite) - xr.nuSite * std::log(CEC)) / ln10c;
@@ -1262,7 +1290,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
                   .gas->gas + " both pin the master '" + mast[std::size_t(pin.row)]
                 + "' -- one master mole balance cannot serve two gas pins");
         pin.logKT = kT(gasName + "(g)", pin.gas->logK25, pin.gas->hasDH,
-                       pin.gas->dH, pin.gas->kt);
+                       pin.gas->dH, pin.gas->kt,
+                       &pin.gas->dHmark, pin.gas->gas);
         pinOfRow[std::size_t(pin.row)] = int(pins.size());
         pins.push_back(pin);
     }
@@ -2349,7 +2378,8 @@ SpeciationResult SpeciationSolver::solve(const SpeciationInput& in, int verbosit
             logIAP += nu * std::log10(r->activity);
         }
         if (!ok) continue;                             // absent ion: SI not defined
-        out.SI[m.mineral] = logIAP - kT(m.mineral, m.logK25, m.hasDH, m.dH, m.kt);
+        out.SI[m.mineral] = logIAP - kT(m.mineral, m.logK25, m.hasDH, m.dH, m.kt,
+                                        &m.dHmark, m.mineral);
     }
 
     // -- K(T) FORM announcement (off-25 only; at 25 C every entry returns logK25

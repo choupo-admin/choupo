@@ -165,6 +165,16 @@ class AqueousActivity;   // the per-ion aqueous gamma model (default: Davies)
 // optional [Tlo,Thi] in CELSIUS is the fitted validity range (announced, never a
 // silent extrapolation).  An entry carries AT MOST one of {analytic, dH}; the
 // priority is analytic > dH > flat (each announced).
+// The record-level per-value provenance of a reaction enthalpy, read from
+// `provenance { dH { origin; method; } }` (ES-01, 2026-11-13).  Empty = the
+// record declares none.  Read beside the number, announced only where the
+// van 't Hoff term moves log K with it (SaltFromCatalogue.H, one home).
+struct DatumMark
+{
+    std::string origin;
+    std::string method;
+};
+
 struct KTcorrection
 {
     bool                hasAnalytic = false;
@@ -182,6 +192,7 @@ struct SpeciationReaction
     double      logK25 = 0.0;                         // formation constant, 25 C
     bool        hasDH  = false;                       // van't Hoff slope present?
     double      dH     = 0.0;                         // [J/mol] reaction enthalpy
+    DatumMark   dHmark;                               // its provenance (ES-01)
     KTcorrection kt;                                  // analytic K(T) (optional)
     std::string source;
     std::string record;                               // source file STEM
@@ -196,6 +207,7 @@ struct GasEntry
     double      logK25 = 0.0;                         // dissolution: K = a_species / p_gas [atm]
     bool        hasDH  = false;
     double      dH     = 0.0;                         // [J/mol]
+    DatumMark   dHmark;                               // its provenance (ES-01)
     KTcorrection kt;                                  // analytic K(T) (optional)
     std::string source;
     // Optional VAPOUR DIMERISATION of the gas (carboxylic acids):
@@ -216,6 +228,7 @@ struct MineralEntry
     double      logK25  = 0.0;                        // dissolution K, 25 C
     bool        hasDH   = false;
     double      dH      = 0.0;                        // [J/mol]
+    DatumMark   dHmark;                               // its provenance (ES-01)
     KTcorrection kt;                                  // analytic K(T) (optional)
     std::string source;
 };
