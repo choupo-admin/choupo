@@ -1,0 +1,5 @@
+sabotage	edit	gate_result_run1	gate_result_run2
+S1	ionAqReference: the announce call guarded by if (false)	FAIL (a) 0 lines, not in JSON	FAIL (a) 0 lines, not in JSON
+S2	announceEstimatedSpeciesDatum: return early when the word resolves to estimated	FAIL (a)	FAIL (a)
+S3 (reviewer)	return early for predictive, assumed, placeholder AND disable the cpAq announcement in ThermoPackageBuilder	OK (gate passes; probe: estimated 1 line, predictive/assumed/placeholder 0)	OK
+restore	git checkout -- both files; make all -j2; gate OK; git status shows only this review directory	-	-

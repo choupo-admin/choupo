@@ -1,0 +1,7 @@
+check	result
+bin/runTests --scope (the 23 cases of cases.txt, the first review's 14 among them; run on a local branch c378-slice0 at a067ea80ba, deleted afterwards, because check_workspace_truth refuses a detached HEAD)	PASS 28 / FAIL 0: all 23 cases 'checked vs reference' (ed04 and ctrl12 also their anchors), plus golden-closure-static, mass_closure, campaign_closure, energy_closure, element_balance, energy_boundary_pinned
+check_property_route_bench (clean tree)	OK: 4975 blocks bit for bit, and the door describes each as recorded; door against the old call 134343 compared, 0 disagreements
+check_property_source_witnesses (clean tree)	OK: 9 (unit, property) sources in 6 witness cases
+check_liquid_property_ratchet (clean tree)	OK: 85 sites (vliq 23, direct 12, literal 18, conversion 32) within pins; 18 fixtures caught
+check_property_sources_pinned	FAIL as designed at this stage: 94 published source rows unpinned in 16 cases of the --fast set, 0 pinned rows disagree (the first review counted 89; the new rows are the fixes' new consumers)
+expected files	no 'source' row in any tutorials/**/expected
