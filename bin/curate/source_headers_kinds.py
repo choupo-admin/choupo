@@ -323,8 +323,8 @@ def classify_all(root: Path = ROOT):
 # ---------------------------------------------------------------------------
 # Reading a file's notice
 # ---------------------------------------------------------------------------
-COPY_RE = re.compile(r"Copyright \(C\) (\d{4})(?:-(\d{4}))? ([^|*\n\r]*?)\s*(?:\||$)",
-                     re.M)
+COPY_RE = re.compile(r"Copyright \(C\) (\d{4})(?:-(\d{4}))? ([^|*\n\r]*?)\s*(?:\||\*/|$)",
+                     re.M | re.I)
 SPDX_RE = re.compile(r"SPDX-License-Identifier:\s*" + re.escape(SPDX_ID))
 
 

@@ -88,9 +88,7 @@ def plan(kind: str, raw: bytes, authors_norm):
     nl = newline_of(raw)
     nls = nl.decode()
     head = text[:K.WINDOW]
-    ms = [m for m in re.finditer(
-        r"Copyright \(C\) (\d{4})(?:-(\d{4}))? ([^|*\n\r]*?)\s*(?:\||$)", head,
-        re.M | re.I)]
+    ms = list(K.COPY_RE.finditer(head))
     names = [m.group(3).strip() for m in ms]
     has_spdx = bool(K.SPDX_RE.search(head))
     ours = [n for n in names if K.is_author_name(n, authors_norm)]
