@@ -305,6 +305,29 @@ NOT a fitted law -- against Archer (1992) NaCl it is off by tens of per cent at
 273 K and 373 K at 3-6 mol/kg while Pitzer stays within 2.1 % (Theory Guide,
 eNRTL "Temperature dependence").  For NaCl-water off 25 C use Pitzer.
 
+**Boron in seawater and borax brines: the borate set of Felmy & Weare (C198, 2026-11-13).**
+Under `pitzerHMW` the catalogue carries boric acid (`H3BO3`, neutral), the
+orthoborate (`BOH4`), two polyborates (`B3O3OH4`, `B4O5OH4`) and the Ca / Mg
+borate ion pairs (`CaBOH4`, `MgBOH4`), with their Pitzer terms read from
+Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771, Tables 3-5 (25 C,
+every record names table and page): 8 binary pairs, 8 theta + 3 psi, 5 lambda
+(H3BO3 with Cl, SO4, B3O3OH4, Na, K) and 2 zeta (H3BO3-H-Cl, H3BO3-Na-SO4).
+Use them like any ion: list `H3BO3` in `analyticalTotals` and put the formation
+records in the network (`networkScope restricted; network ( water-dissociation
+BOH4-formation CaBOH4-formation MgBOH4-formation );`: the posture of the
+parameterisation is the major ions UNPAIRED and the borate pairs explicit).
+The Pitzer route's constant for `BOH4` is -9.239; the catalogue's
+`BOH4-formation` is the Davies route's (-9.24 plus an enthalpy), so a Pitzer
+case carries its own `constant/chemistry/BOH4-formation.dat` (see
+`borate01_felmyWeare`).  Tell a user: 25 C only (no term has a temperature
+dependence; a run away from 298.15 K is announced); the formation constants are
+the public-domain databank's, not derived from the paper's mu0/RT; no
+polyborate-Mg or -Ca interaction exists in the paper; no borate solid is
+shipped.  Seawater at pH 8.2: apparent pK (free, molal) 8.677 against Dickson's
+8.690.  Evidence: `data/curation/batches/boron_c198/readings.tsv`; regenerate
+the records with `bin/curate/boron_c198.py`.  Theory Guide, section "Borate in
+the HMW model".
+
 **Caustic soda to 50 wt %: `model OlssonNaOH;` (C377 b, 2026-11-12).**  The
 Na-OH Pitzer pair is fitted to Parker's heats of dilution up to 6 mol/kg
 (19 wt %) at 25 C.  For concentrated caustic (an evaporator to 50 wt %, 25

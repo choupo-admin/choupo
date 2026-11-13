@@ -1,0 +1,15 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+  chemistry/BOH4-formation.dat (CASE-LOCAL, the Pitzer route) -- orthoborate from its masters:
+      H3BO3 + H2O  <=>  BOH4 + H+          logK25 = -9.239
+
+  The constant of the Felmy & Weare (1986) parameterisation (Geochim. Cosmochim. Acta 50, 2771, Table 2, p. 2773:
+  mu0/RT of B(OH)4- = -465.20, of B(OH)3(aq) = -390.81), as carried by the public-domain databank pitzer.dat
+  (log_k -9.239, delta_h 0).  It overrides the catalogue's Davies-route record (-9.24 with an enthalpy) for THIS case:
+  a constant belongs to the parameterisation it was fitted in, and the two are never mixed (the D2 rule).  25 C only;
+  no enthalpy is written because neither source gives one.
+\*-----------------------------------------------------------------------------*/
+recordType aqueousSpeciation;
+schemaVersion 1;
+
+species BOH4; masters ( { ion H3BO3; nu 1; } { ion H; nu -1; } ); nuWater 1;
+      logK25 -9.239; source "USGS PHREEQC pitzer.dat (public domain), log_k -9.239, delta_h 0 (not stated); Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771, Table 2, p. 2773 (mu0/RT -465.20 and -390.81)";

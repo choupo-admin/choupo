@@ -1,0 +1,4 @@
+id	reaction	dG_over_RT	logK_from_paper_mu0	logK_in_record	note
+BOH4	B(OH)3 + H2O = B(OH)4- + H+	21.2735	-9.2390	-9.239	CROSS-CHECK ONLY: uses mu0(H2O)/RT = -95.6635 of Harvie, Moller & Weare (1984), which is NOT in the literature folder and was not read; it is recalled, and its agreement to 4 digits is the evidence it is right, not an origin
+B3O3OH4	3 B(OH)3 = B3O3(OH)4- + 2 H2O + H+	17.3330	-7.5276	-7.528	CROSS-CHECK ONLY: uses mu0(H2O)/RT = -95.6635 of Harvie, Moller & Weare (1984), which is NOT in the literature folder and was not read; it is recalled, and its agreement to 4 digits is the evidence it is right, not an origin
+B4O5OH4	4 B(OH)3 = B4O5(OH)4 2- + 3 H2O + 2 H+	37.1495	-16.1338	-16.134	CROSS-CHECK ONLY: uses mu0(H2O)/RT = -95.6635 of Harvie, Moller & Weare (1984), which is NOT in the literature folder and was not read; it is recalled, and its agreement to 4 digits is the evidence it is right, not an origin

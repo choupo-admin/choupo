@@ -1,0 +1,102 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  borate01_felmyWeare --- boron in the Pitzer-HMW model, every parameter read
+  from its primary: Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783.
+
+  WHAT THE CASE ANSWERS.  Boric acid is a weak acid that is also a neutral
+  molecule, an orthoborate ion, two polyborate ions and (in seawater) two ion
+  pairs with calcium and magnesium.  Can the engine's Pitzer model, loaded with
+  the paper's tables and nothing else, reproduce the paper's own species
+  distribution, and does it then land on Dickson's apparent constant of boric
+  acid in seawater?  Two operations, both `speciate` at 25 C:
+
+   1. borax_table1 -- water saturated with borax (Na2B4O7.10H2O).  Totals: Na
+      0.323 and boron 0.646 mol/kg (Na : B = 1 : 2, the borax stoichiometry,
+      `totalsBasis stoichiometric`); the pH is SOLVED.  Network: water
+      dissociation, B(OH)4-, B3O3(OH)4-, B4O5(OH)4 2-.
+      Table 1 (p. 2772) prints the answer:  B(OH)3 .081, B(OH)4- .131,
+      B3O3(OH)4- .050, B4O5(OH)4 2- .071 mol/kg.
+      Choupo:  .0794, .1311, .0517, .0701 (pH 9.27).
+   2. seawater_boron_pH82 -- the reference seawater of
+      docs/design/boron-in-seawater-apparent-pka-study.md section 3 at the GIVEN
+      pH 8.2 (Br folded into Cl, Sr into Ca, carbonate left out: the study says
+      why), with the posture of the parameterisation: the major ions unpaired,
+      CaB(OH)4+ and MgB(OH)4+ explicit.  Choupo: pK*F = 8.6765 against Dickson's
+      8.6896 (free scale, molal): the borate fraction is 0.6 % low in free boric
+      acid.
+
+  WHAT IS HELD, AND HOW FAR IT CAN BE TRUSTED (read this before the numbers).
+   * The ANCHOR rows of the `expected` file are the paper's Table 1 and the
+     Dickson value above.  Table 1 is CALCULATED BY THE PAPER'S OWN MODEL, from
+     the very parameters that were fitted to the data: it is IN-SAMPLE.  Its
+     agreement shows that the tables were transcribed and the engine implements
+     the same sums (neutral lambda and zeta terms, ion pairs, polyborate
+     virials); it does not test the model against nature.
+   * The Dickson row is PARTLY INDEPENDENT.  The seawater measurement is not in
+     the paper's fit, but the Na, Ca and Mg borate terms were fitted to the emf
+     data of the same laboratory family (Hershey et al. 1985; Dickson,
+     unpublished, for K).  Dickson's pK*B itself is quoted from the study, not
+     read from Dickson (1990), and moved to the free scale there.
+   * The formation constants of B(OH)4-, the polyborates and the two ion pairs
+     are the public-domain databank's (pitzer.dat); the paper prints the
+     standard chemical potentials (Table 2) from which they follow with the
+     chemical potentials of H2O, Ca2+ and Mg2+ of Harvie, Moller & Weare (1984),
+     which the project does not hold.  The three that need only H2O (B(OH)4-,
+     B3O3(OH)4-, B4O5(OH)4 2-) reproduce to 4 digits with the recalled H2O value
+     (data/curation/batches/boron_c198/formation_check.tsv); the
+     Ca pair agrees (log K -7.5887) with a recalled
+     Ca2+ value; the Mg pair is carried unchecked.
+   * 25 C only.  The paper gives no temperature dependence; the engine announces
+     any run away from 298.15 K.
+   * The case is not sealed: the records come from data/standards.  Not read
+     here: the Searles Lake application (Tables 6-14, solids), which needs
+     mineral records the engine does not carry for these salts.
+
+  The pH scale is the HMW one (free H+ activity, single-ion convention); the
+  seawater pH 8.2 is GIVEN on that scale.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    // -- 1. Borax-saturated water, 25 C: the species distribution of Table 1 (p. 2772).
+    //    Totals are the stoichiometry of Na2B4O7: Na = 0.323 and
+    //    boron = 0.081 + 0.131 + 3 x 0.050 + 4 x 0.071 = 0.646 mol/kg (Na : B = 1 : 2).
+    //    The pH is not given: electroneutrality closes it.
+    {
+        name        borax_table1;
+        type        speciate;
+        temperature 298.15;
+        analyticalTotals      { Na 0.323 mol/kg; H3BO3 0.646 mol/kg; }
+        totalsBasis stoichiometric;   // what was dissolved (borax), not a measured analysis
+        pH          solve;
+        networkScope restricted;
+        network      ( water-dissociation BOH4-formation B3O3OH4-formation B4O5OH4-formation );
+        reason       "the borate network of the Felmy & Weare parameterisation: boric acid, the orthoborate and the two polyborates; no ion pairing of the major ions";
+        diagSpecies ( Na H3BO3 BOH4 B3O3OH4 B4O5OH4 H );
+        output      { file borax_table1.csv; }
+    }
+
+    // -- 2. Seawater boron at pH 8.2, 25 C (reference seawater of the study
+    //    docs/design/boron-in-seawater-apparent-pka-study.md section 3, Br folded into Cl and Sr into Ca).
+    {
+        name        seawater_boron_pH82;
+        type        speciate;
+        temperature 298.15;
+        analyticalTotals { Na 0.48606 mol/kg; Mg 0.0547421 mol/kg; Ca 0.0107508 mol/kg;
+                           K 0.0105797 mol/kg; Cl 0.566638 mol/kg; SO4 0.0292643 mol/kg;
+                           H3BO3 4.3116e-4 mol/kg; }
+        pH          8.2;
+        networkScope restricted;
+        network      ( water-dissociation BOH4-formation CaBOH4-formation MgBOH4-formation );
+        reason       "the posture of the parameterisation: the major ions unpaired, the calcium and magnesium borate ion pairs explicit";
+        diagSpecies ( H H3BO3 BOH4 CaBOH4 MgBOH4 );
+        output      { file seawater_boron_pH82.csv; }
+    }
+);

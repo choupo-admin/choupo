@@ -1,0 +1,51 @@
+id	kind	subject	a	b	c	value	unit	table	page	text_layer	image_200dpi	image_300dpi	note
+mu01	mu0	B(OH)3				-390.81	-	Table 2	2773	-300.81	-390.81	-390.81	DISAGREE: the text layer reads 3 as 0; both page-image readings give -390.81; confirmed by arithmetic: with -390.81 the B(OH)4- value gives pK 9.239 (formation_check.tsv)
+mu02	mu0	BOH4				-465.2	-	Table 2	2773	-465.20	-465.2	-465.2	
+mu03	mu0	B3O3OH4				-963.77	-	Table 2	2773	-963.77	-963.77	-963.77	
+mu04	mu0	B4O5OH4				-1239.1	-	Table 2	2773	-1239.10	-1239.1	-1239.1	
+mu05	mu0	CaBOH4				-692.3	-	Table 2	2773	-692.30	-692.3	-692.3	
+mu06	mu0	MgBOH4				-651.89	-	Table 2	2773	-651.89	-651.89	-651.89	
+mu07	mu0	borax				-2224.16	-	Table 2	2773	-2224.16	-2224.16	-2224.16	solid; not shipped (needs a solid-phase record and mu0 of Na+, which the paper does not carry)
+mu08	mu0	B(OH)3(s)				-390.88	-	Table 2	2773	-300.88	-390.88	-390.88	DISAGREE: the text layer reads 3 as 0; images -390.88; solid, not shipped
+mu09	mu0	KB5O8.4H2O				-1770.26	-	Table 2	2773	-1770.26	-1770.26	-1770.26	solid at 30 C; not shipped
+mu10	mu0	K2B4O7.4H2O				-1663.47	-	Table 2	2773	-1663.47	-1663.47	-1663.47	solid at 30 C; not shipped
+mu11	mu0	NaBO2.4H2O				-761.42	-	Table 2	2773	-761.42	-761.42	-761.42	solid; not shipped
+mu12	mu0	NaB5O8.5H2O				-1854.8	-	Table 2	2773	-1854.80	-1854.8	-1854.8	solid; not shipped
+mu13	mu0	teepleite				-725.77	-	Table 2	2773	-725.77	-725.77	-725.77	solid at 20 C; not shipped
+mu14	mu0	northupite				-989.6	-	text	2776	-989.6	-989.6	-989.6	from F. J. Millero, personal communication, quoted in the text (page 2776, text layer only: no table); solid; not shipped
+pair01_beta0	beta0	Na-BOH4	Na	BOH4		-0.0427	-	Table 3	2773	-0.0427	-0.0427	-0.0427	
+pair01_beta1	beta1	Na-BOH4	Na	BOH4		0.089	-	Table 3	2773	0.089	0.089	0.089	
+pair01_Cphi	Cphi	Na-BOH4	Na	BOH4		0.0114	-	Table 3	2773	0.0114	0.0114	0.0114	
+pair02_beta0	beta0	Na-B3O3OH4	Na	B3O3OH4		-0.056	-	Table 3	2773	-0.056	-0.056	-0.056	
+pair02_beta1	beta1	Na-B3O3OH4	Na	B3O3OH4		-0.91	-	Table 3	2773	-0.91	-0.91	-0.91	
+pair03_beta0	beta0	Na-B4O5OH4	Na	B4O5OH4		-0.11	-	Table 3	2773	-0.11	-0.11	-0.11	
+pair03_beta1	beta1	Na-B4O5OH4	Na	B4O5OH4		-0.4	-	Table 3	2773	-0.4	-0.4	-0.4	
+pair04_beta0	beta0	K-BOH4	K	BOH4		0.035	-	Table 3	2773	0.035	0.035	0.035	
+pair04_beta1	beta1	K-BOH4	K	BOH4		0.14	-	Table 3	2773	0.14	0.14	0.14	
+pair05_beta0	beta0	K-B3O3OH4	K	B3O3OH4		-0.13	-	Table 3	2773	-0.13	-0.13	-0.13	
+pair06_beta0	beta0	K-B4O5OH4	K	B4O5OH4		-0.022	-	Table 3	2773	-0.022	-0.022	-0.022	
+pair07_beta0	beta0	MgBOH4-Cl	MgBOH4	Cl		0.16	-	Table 3	2773	0.16	0.16	0.16	
+pair08_beta0	beta0	CaBOH4-Cl	CaBOH4	Cl		0.12	-	Table 3	2773	0.12	0.12	0.12	
+theta01	theta	BOH4-Cl	BOH4	Cl		-0.065	-	Table 4	2773	-0.065	-0.065	-0.065	
+psi01	psi	BOH4-Cl-Na	BOH4	Cl	Na	-0.0073	-	Table 4	2773	illegible	-0.0073	-0.0073	column psi_Na+: the common cation is Na; the text layer prints this cell as -.OC>73
+theta02	theta	BOH4-SO4	BOH4	SO4		-0.012	-	Table 4	2773	-0.012	-0.012	-0.012	
+theta03	theta	B3O3OH4-Cl	B3O3OH4	Cl		0.12	-	Table 4	2773	0.12	0.12	0.12	
+psi03	psi	B3O3OH4-Cl-Na	B3O3OH4	Cl	Na	-0.024	-	Table 4	2773	-0.024	-0.024	-0.024	column psi_Na+: the common cation is Na
+theta04	theta	B3O3OH4-SO4	B3O3OH4	SO4		0.1	-	Table 4	2773	0.1	0.1	0.1	
+theta05	theta	B3O3OH4-HCO3	B3O3OH4	HCO3		-0.1	-	Table 4	2773	-0.1	-0.1	-0.1	
+theta06	theta	B4O5OH4-Cl	B4O5OH4	Cl		0.074	-	Table 4	2773	0.074	0.074	0.074	
+psi06	psi	B4O5OH4-Cl-Na	B4O5OH4	Cl	Na	0.026	-	Table 4	2773	0.026	0.026	0.026	column psi_Na+: the common cation is Na
+theta07	theta	B4O5OH4-SO4	B4O5OH4	SO4		0.12	-	Table 4	2773	0.12	0.12	0.12	
+theta08	theta	B4O5OH4-HCO3	B4O5OH4	HCO3		-0.087	-	Table 4	2773	-0.087	-0.087	-0.087	
+lam01	lambda	B(OH)3-Cl	H3BO3	Cl		0.091	-	Table 5	2774	0.091	0.091	0.091	neutral-anion
+lam02	lambda	B(OH)3-SO4	H3BO3	SO4		0.018	-	Table 5	2774	0.018	0.018	0.018	neutral-anion
+lam03	lambda	B(OH)3-B3O3OH4	H3BO3	B3O3OH4		-0.2	-	Table 5	2774	-0.2	-0.2	-0.2	neutral-anion
+lam04	lambda	B(OH)3-Na	H3BO3	Na		-0.097	-	Table 5	2774	-0.097	-0.097	-0.097	neutral-cation
+lam05	lambda	B(OH)3-K	H3BO3	K		-0.14	-	Table 5	2774	-0.14	-0.14	-0.14	neutral-cation
+zeta01	zeta	B(OH)3-H-Cl	H3BO3	H	Cl	-0.0102	-	Table 5	2774	-.0102	-.0102	-.0102	column zeta_H+
+zeta02	zeta	B(OH)3-Na-SO4	H3BO3	Na	SO4	0.046	-	Table 5	2774	.046	.046	.046	column zeta_Na+; the paper adjusted lambda(B(OH)3,SO4) to agree with this higher-order term (p. 2773)
+tab1_1	check	Na				0.323	mol/kg	Table 1	2772	0.323	0.323	0.323	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
+tab1_2	check	B(OH)3				0.081	mol/kg	Table 1	2772	0.081	0.081	0.081	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
+tab1_3	check	B(OH)4-				0.131	mol/kg	Table 1	2772	0.131	0.131	0.131	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
+tab1_4	check	B3O3(OH)4-				0.05	mol/kg	Table 1	2772	0.05	0.05	0.05	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
+tab1_5	check	B4O5(OH)4 2-				0.071	mol/kg	Table 1	2772	0.071	0.071	0.071	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
