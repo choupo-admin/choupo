@@ -2377,7 +2377,11 @@ with Geankoplis's half-layer `D_pc` beside it (`cutSizeHalfLayer_Dpc_um`, the
 `innerRadius`, `discHalfAngle` (`deg` accepted); Sigma = 2 pi n w^2
 (r_2^3 - r_1^3)/(3 g tan theta) (de Haan et al. eq. 9.52, Ambler's flow factor
 C = 1).  Both need `speed` (`rpm` accepted) and the declared `sedimentSolids`
-(the sludge's solids mass fraction).  No hindered settling, no drive power.
+(the sludge's solids mass fraction).  No hindered settling, no drive power: the
+feed's solids volume fraction is printed, published (`solidsVolumeFraction_feed`)
+and ANNOUNCED with its number on the advisory log -- unhindered (dilute) Stokes
+settling is assumed at that fraction; no threshold is set and the engine does not
+judge whether the feed is dilute.
 ```
 type      sedimentingCentrifuge;
 model     discStack;
@@ -2390,7 +2394,7 @@ operation
 ```
 KPIs: every classifier KPI (`sediment_`/`centrate_` names, the actual-curve d50 in um, the closures)
 plus `omega_rad_s`, `gForce_wall`, `sigma_m2`, `cutSize_d50_um`, `Re_cut`,
-`vWall_cut_m_s`, `gradeEfficiency_at_d50`, and for the tubular bowl
+`vWall_cut_m_s`, `gradeEfficiency_at_d50`, `solidsVolumeFraction_feed`, and for the tubular bowl
 `bowlVolume_m3`, `residenceTime_s`, `sigmaHalfLayer_m2`,
 `cutSizeHalfLayer_Dpc_um`, `gradeEfficiency_at_Dpc`.
 Theory: `sec:sedimentingCentrifuge` (`sec:centrifuge-tubularBowl`,

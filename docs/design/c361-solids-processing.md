@@ -636,21 +636,24 @@ Reads its feed with `readClassifierFeed` and splits with `splitOnPartition`
 
 | quantity | as implemented | units | source | code |
 |---|---|---|---|---|
-| angular speed | omega = 2 pi N (N from `speed` in rpm -> rev/s) | rad/s | G eq. 30.2-4 | `SedimentingCentrifuge.cpp:89` |
-| feed volume flow | Q = m_l/rho_l + m_s/rho_s | m3/s | ours | `:85` |
-| tubular bowl volume | V = pi b (r_2^2 - r_1^2) | m3 | G p. 1436 | `:103` |
-| tubular Sigma | Sigma = omega^2 V / (g ln(2 r_2^2/(r_1^2 + r_2^2))) | m2 | Ambler 1959 eqs. 24-28, p. 191 (the exact form; his eq. 33 is the approximation); de Haan, Eral & Schuur 2nd ed. eqs. 9.44-9.46, p. 309 | `:104` |
-| tubular Sigma, half-layer cut | Sigma_G = omega^2 V / (2 g ln(2 r_2/(r_1 + r_2))) | m2 | G eq. 30.2-19, p. 1439 | `:105` |
-| disc-stack Sigma | Sigma = 2 pi n omega^2 (r_2^3 - r_1^3) / (3 g tan theta) | m2 | de Haan et al. eq. 9.52, p. 311; Ambler eq. 46, p. 194, with C = 1 | `:119` |
-| cut size | Q = 2 v_g(d50) Sigma, v_g = d^2 (rho_s - rho_l) g/(18 mu) -> d50 = (9 mu Q / (drho g Sigma))^1/2 | m | Ambler eq. 9; G eq. 30.2-18 | `:125` |
-| G's critical diameter | D_pc from Sigma_G by the same relation | m | G eq. 30.2-12, p. 1436 | `:142` |
-| Stokes' window | Re = d50 v_wall rho_l / mu < 1, v_wall = d50^2 drho omega^2 r_2/(18 mu) | - | G eq. 30.2-13, p. 1437; N_Re < 1, G section 30.1B, p. 1413 | `:126-127` |
-| tubular grade efficiency | k = d^2 drho omega^2 tau/(18 mu), tau = V/Q; r* = max(r_1, r_2 e^-k); E = (r_2^2 - r*^2)/(r_2^2 - r_1^2) | - | DERIVED here: G eq. 30.2-10 integrated from a starting radius r, with Ambler's eq. 26 premise (feed spread uniformly over the annulus); E(d50) = 1/2 exactly | `:153-155` |
-| disc grade efficiency | E = min(1, (d/d50)^2 / 2) | - | DERIVED here: Ambler eqs. 43-44, p. 194, with f(y) = 1 (the case in which his C = 1): the captured fraction is the drift across the gap, v_g Sigma / Q | `:157` |
-| sediment | Y = SUM_k E_k f_k of the solids; its liquid Y m_s (1 - w_s)/w_s | kg/s | ours (w_s declared) | `:170-175` |
+| angular speed | omega = 2 pi N (N from `speed` in rpm -> rev/s) | rad/s | G eq. 30.2-4 | `SedimentingCentrifuge.cpp:90` |
+| feed volume flow | Q = m_l/rho_l + m_s/rho_s | m3/s | ours | `:86` |
+| tubular bowl volume | V = pi b (r_2^2 - r_1^2) | m3 | G p. 1436 | `:104` |
+| tubular Sigma | Sigma = omega^2 V / (g ln(2 r_2^2/(r_1^2 + r_2^2))) | m2 | Ambler 1959 eqs. 24-28, p. 191 (the exact form; his eq. 33 is the approximation); de Haan, Eral & Schuur 2nd ed. eqs. 9.44-9.46, p. 309 | `:105` |
+| tubular Sigma, half-layer cut | Sigma_G = omega^2 V / (2 g ln(2 r_2/(r_1 + r_2))) | m2 | G eq. 30.2-19, p. 1439 | `:106` |
+| disc-stack Sigma | Sigma = 2 pi n omega^2 (r_2^3 - r_1^3) / (3 g tan theta) | m2 | de Haan et al. eq. 9.52, p. 311; Ambler eq. 46, p. 194, with C = 1 | `:120` |
+| cut size | Q = 2 v_g(d50) Sigma, v_g = d^2 (rho_s - rho_l) g/(18 mu) -> d50 = (9 mu Q / (drho g Sigma))^1/2 | m | Ambler eq. 9; G eq. 30.2-18 | `:126` |
+| G's critical diameter | D_pc from Sigma_G by the same relation | m | G eq. 30.2-12, p. 1436 | `:143` |
+| Stokes' window | Re = d50 v_wall rho_l / mu < 1, v_wall = d50^2 drho omega^2 r_2/(18 mu) | - | G eq. 30.2-13, p. 1437; N_Re < 1, G section 30.1B, p. 1413 | `:127-128` |
+| tubular grade efficiency | k = d^2 drho omega^2 tau/(18 mu), tau = V/Q; r* = max(r_1, r_2 e^-k); E = (r_2^2 - r*^2)/(r_2^2 - r_1^2) | - | DERIVED here: G eq. 30.2-10 integrated from a starting radius r, with Ambler's eq. 26 premise (feed spread uniformly over the annulus); E(d50) = 1/2 exactly | `:154-156` |
+| disc grade efficiency | E = min(1, (d/d50)^2 / 2) | - | DERIVED here: Ambler eqs. 43-44, p. 194, with f(y) = 1 (the case in which his C = 1): the captured fraction is the drift across the gap, v_g Sigma / Q | `:158` |
+| sediment | Y = SUM_k E_k f_k of the solids; its liquid Y m_s (1 - w_s)/w_s | kg/s | ours (w_s declared) | `:171-176` |
 
 Windows: Stokes (enforced); dilute free settling (hindered settling, G eq.
-30.1-16, is NOT applied -- the case's solids fraction is printed);
+30.1-16, is NOT applied -- the feed's solids VOLUME fraction phi_s =
+(m_s/rho_s)/Q is printed, published as `solidsVolumeFraction_feed` and
+ANNOUNCED on the advisory log with that number; no threshold is set and the
+engine does not judge whether the feed is dilute);
 Brownian threshold and agglomeration (Ambler pp. 195-196) not modelled.  No
 drive power.
 

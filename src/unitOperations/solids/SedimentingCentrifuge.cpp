@@ -29,6 +29,7 @@ License
 #include "unitOperations/solids/SedimentingCentrifuge.H"
 #include "unitOperations/solids/ClassifierCore.H"
 #include "unitOperations/solids/SolidLiquidCore.H"
+#include "core/Advisory.H"
 #include "core/Dimensions.H"
 #include "thermo/ThermoPackage.H"
 
@@ -202,6 +203,30 @@ int SedimentingCentrifuge::solve(const DictPtr& dict, const ThermoPackage& therm
     }
     profile_ = prof;
 
+    //  ---- the settling regime: DILUTE, announced with its number -----------
+    //  Sigma theory (Ambler 1959) settles every particle as if it were alone:
+    //  Stokes' velocity, no crowding.  Hindered settling (Geankoplis eq.
+    //  30.1-16) is NOT applied, so the feed's solids VOLUME fraction is
+    //  printed, published and announced.  No threshold is set: whether this
+    //  feed is dilute enough is the reader's judgement, not the engine's.
+    const scalar phiS = (f.mSolids / rhoS) / Q;
+    kpis_["solidsVolumeFraction_feed"] = phiS;
+    {
+        std::ostringstream m;
+        m << std::defaultfloat << std::setprecision(4)
+          << "unhindered (dilute) Stokes settling is assumed at a feed solids "
+             "volume fraction of " << phiS << ": each particle settles as if it "
+             "were alone; hindered settling (Geankoplis eq. 30.1-16) is not "
+             "modelled.  Where crowding slows the settling, the printed cut size "
+             "is too small.  Whether this feed is dilute enough is not judged "
+             "here.";
+        const std::string unitName = dict->name().empty()
+            ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
+        if (AdvisoryLog::instance().add("model", "info", me + " " + unitName, m.str())
+            && verbosity >= 1)
+            std::cout << "  [" << me << "] " << unitName << ": " << m.str() << "\n";
+    }
+
     if (verbosity >= 1)
     {
         std::cout << "\n=================  Sedimenting Centrifuge Result  ================\n"
@@ -210,6 +235,8 @@ int SedimentingCentrifuge::solve(const DictPtr& dict, const ThermoPackage& therm
                   << "  Slurry:       " << Q << " m3/s (" << Q * 3600.0 << " m3/h);  "
                   << f.mSolids << " kg/s solids;  rho_s " << rhoS << ", rho_l " << rhoL
                   << " kg/m3, mu " << mu << " Pa s (package)\n"
+                  << "  Solids:       volume fraction of the feed slurry phi_s = "
+                  << phiS << " (dilute settling assumed, not judged)\n"
                   << "  Speed:        omega = " << omega << " rad/s;  " << omega * omega * r2 / g
                   << " g at the wall\n";
         if (model == "tubularBowl")
