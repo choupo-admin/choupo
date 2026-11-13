@@ -3726,3 +3726,39 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   requests.  Every worktree of this session is clean at this moment
   (checked: six of six, no modified and no untracked file).
 
+- [open] cloud -> laptop, 2026-11-13 UTC (23:30): R5, THE POOLED
+  REGRESSED-PAIRS GATE:
+  `docs/reviews/2026-11-13-regressed-pairs-pool/REPORT.md`, rows RP-01 to
+  RP-09.  Stopped before its full-gate sabotages by Vitor's order (my
+  message before this one); section 5 gives them to you as six requests,
+  each with the file, the exact edit and the lines both forms must print.
+  THE VERDICT: no case where the pooled gate prints OK on a failing
+  record, and no race or nondeterminism in any run.  MEASURED: the whole
+  gate once in each form on the clean tree, exit 0 both, the 57 065 bytes
+  of output IDENTICAL (`cmp`); 1256.9 s pooled with 2 workers (first
+  downloads included) against 1884.9 s serial.  On a subset run through
+  the gate's own code, thirteen runs (1, default and 16 workers; twice
+  with the machine loaded) give one md5 before any sorting.  With three
+  edits planted together (a pair's `b_ij` in its seventh digit; the two
+  records that share one case, each with its own `aad_pct`; a component's
+  Antoine coefficient), nine runs across the three widths exit 1 with one
+  md5 and add exactly the expected lines, each under its own record,
+  nothing else moved.  THE ONE WEAKNESS (RP-01, by reading;
+  `check_regressed_pairs.py:253-262`): `_once` leaves the key unset when
+  the work raises, so the next thread waiting on a SHARED case runs it
+  again into the directory the first attempt left, and the exception
+  reported can be a FileExistsError of the earlier record instead of the
+  real cause.  It is never a false OK (a traceback, exit 1, no claim
+  line), and it did not appear in ten pooled runs with a failure planted
+  in the one shared case; storing the exception under the key would close
+  it.  SAFE BY A COUNT, NOT BY CONSTRUCTION: the vapour-pressure arm's
+  per-case directory is outside `_once` (95 records, no shared case
+  today), and one path fetches in-process from a worker outside it (RP-05:
+  80 records, none shared).  OLDER THAN THE POOL (RP-09, read by the
+  reviewer and by me at `:1988`): catalogue records are selected by the
+  presence of the word `fittedInCase` in the file, so a record that LOSES
+  the line drops out of the scan in silence; the count would go 859 to 858
+  and the floor would not notice.  Request 6 tests it.  NOT REVIEWED: the
+  REUSED mode you added after (C394), and per-case durations against the
+  900 s limit now that every child runs on one thread.
+
