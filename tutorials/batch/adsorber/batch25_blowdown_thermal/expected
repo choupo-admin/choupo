@@ -14,7 +14,6 @@ kpi     bed                    T_out_final_K    295.066441477    1e-4
 kpi     bed                    carrier_fabricated_mol 4.17443857259e-14 1e-4
 kpi     bed                    deltaP_first_to_out_Pa -0.000206758486456 1e-4
 kpi     bed                    gasInventory_mol 0.0407808424401  1e-4
-kpi     bed                    mass_closure_CO2 0                1e-4
 kpi     bed                    n_CO2_final      0                1e-4
 kpi     bed                    n_He_final       4.07808424401e-05 1e-4
 kpi     bed                    carrier_makeup_rel 1.0348253844e-14 1e-4
