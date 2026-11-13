@@ -18,3 +18,5 @@ tutorials/ctrl/ctrl21_tank_level_control	tank	liquidDensity	declared:kernel
 tutorials/ctrl/ctrl12_williams_otto	plant	liquidDensity	declared:bypass
 tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup	UF	liquidDensity	declared:bypass
 tutorials/steady/reactors/cstr01_first_order	reactor	liquidDensity	idealMixing[anchoredRackett]
+tutorials/steady/reactors/pfr01_first_order	reactor	liquidVolume	bypass.recordVliq25C
+tutorials/steady/membranes/membrane27_swro_energy_recovery	PX	liquidVolume	bypass.recordVliq25C.ionsNoVolume

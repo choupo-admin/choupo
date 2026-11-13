@@ -42,6 +42,30 @@ ALLOWED = {
     "src/applications/choupoProps/PropertyRouteBench.cpp": 4,   # the sweep, the address-reuse check, the domain-trial check (two calls)
 }
 CALL = re.compile(r"\bliquidProperty::density\s*\(")
+#  THE UNQUALIFIED CALL (C378 pilot review, S3: the docstring promised it and
+#  the pattern did not look).  In a file that opens `namespace liquidProperty`
+#  or brings the entry in by `using`, a bare `density(` that is not a member
+#  call (`.`/`->`), not another scope's (`::`), and not the definition or the
+#  declaration (`Result density(`) is a call of the entry.
+OPENS = re.compile(r"\bnamespace\s+liquidProperty\b|\busing\s+(?:Choupo::)?liquidProperty::density\b"
+                   r"|\busing\s+namespace\s+(?:Choupo::)?liquidProperty\b")
+BARE = re.compile(r"(?<![\w.>:])density\s*\(")
+DEFN = re.compile(r"\bResult\s+density\s*\(")
+
+
+#  A NAMESPACE ALIAS (review PC-06): `namespace lp = liquidProperty;` then
+#  `lp::density(`.
+ALIAS = re.compile(r"\bnamespace\s+(\w+)\s*=\s*(?:::)?(?:Choupo::)?liquidProperty\s*;")
+
+
+def calls(text):
+    t = strip(text)
+    n = len(CALL.findall(t))
+    for a in ALIAS.findall(t):
+        n += len(re.findall(rf"\b{re.escape(a)}::density\s*\(", t))
+    if OPENS.search(t):
+        n += len(BARE.findall(t)) - len(DEFN.findall(t))
+    return n
 
 
 def strip(t):
@@ -56,7 +80,7 @@ def main():
         if p.suffix not in (".cpp", ".H") or not p.is_file():
             continue
         rel = str(p.relative_to(ROOT))
-        n = len(CALL.findall(strip(p.read_text(encoding="utf-8", errors="replace"))))
+        n = calls(p.read_text(encoding="utf-8", errors="replace"))
         if n:
             found[rel] = n
     bad = []
