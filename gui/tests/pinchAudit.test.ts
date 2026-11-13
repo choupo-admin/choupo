@@ -140,7 +140,9 @@ describe("C304 C -- no interior pinch, at this dTmin, for this population", () =
   });
   it("PEQ: the targets chip and the status line say it; no bare 'no pinch' anywhere", () => {
     const t = text(page(PEQ));
-    expect(t).toContain("Q_C,min 41100 kW · no interior pinch — threshold problem at ΔTmin = 10 K for this stream population");
+    //  the targets are tiles now: Q_C,min and the pinch temperature are two of them
+    expect(t).toContain("Cold utility, Q_C,min 41100 kW");
+    expect(t).toContain("Pinch temperature, T* no interior pinch");
     expect(pinchStatusLine(pinchFromEngine(PEQ)!, u))
       .toContain("no interior pinch — threshold problem at ΔTmin = 10 K for this stream population.");
     expect(t).not.toMatch(/\bno pinch\b(?! analysis| targets| KPI)/i);
@@ -153,6 +155,44 @@ describe("C304 C -- no interior pinch, at this dTmin, for this population", () =
     const t = text(page(P01));
     expect(t).toContain("pinch T* 353 K");
     expect(t).not.toContain("no interior pinch");
+  });
+});
+
+describe("rehearsal 2026-11-13 -- the Pinch tab opens on the targets and the curves", () => {
+  it("the four targets are the first content, before the curves and the prose", () => {
+    const h = page(P01);
+    const iTiles = h.indexOf("data-pinch-targets");
+    const iCurves = h.indexOf("hot composite (sources)");
+    const iProse = h.indexOf("Watch the curves the engine published");
+    expect(iTiles).toBeGreaterThan(-1);
+    expect(iCurves).toBeGreaterThan(iTiles);
+    //  the prose is in the DOM only inside a CLOSED disclosure (aria-hidden)
+    expect(iProse).toBeGreaterThan(-1);
+    expect(h.slice(Math.max(0, iProse - 400), iProse)).toContain("aria-hidden=\"true\"");
+    const t = text(h);
+    expect(t).toContain("Hot utility, Q_H,min 108 kW");
+    expect(t).toContain("Cold utility, Q_C,min 40 kW");
+    expect(t).toContain("Pinch temperature, T* 353 K");
+    expect(t).toContain("Minimum approach, ΔTmin 20 K");
+  });
+  it("the explanation is behind a 'How to read this' disclosure, closed", () => {
+    const h = page(P01);
+    expect(h).toContain("data-how-to-read");
+    expect(text(h)).toContain("How to read this");
+  });
+  it("no internal class name reaches the screen; the engine's words do", () => {
+    for (const run of [P01, PEQ]) {
+      const t = text(page(run));
+      for (const w of ["interiorPinch", "severalPinches", "thresholdNoHotUtility",
+                       "thresholdNoColdUtility", "thresholdNoUtility"])
+        expect(t).not.toContain(w);
+    }
+    expect(text(page(P01))).toContain("Interior pinch: the cascade touches zero at one interior temperature");
+    expect(text(page(PEQ))).toContain("Threshold problem, no hot utility needed");
+  });
+  it("a chip never truncates: every chip wraps instead of cutting with an ellipsis", () => {
+    const h = page(P01);
+    expect(h).not.toContain("text-overflow:ellipsis");
   });
 });
 
