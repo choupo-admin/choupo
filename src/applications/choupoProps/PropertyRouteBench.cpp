@@ -167,6 +167,13 @@ std::string systemText(const std::vector<std::string>& comps,
     return t + extra;
 }
 
+//  THE DOOR'S DESCRIPTION, per state (review DR-11): the method id and the
+//  label the door returns, written beside the values in a second file whose
+//  blocks are hashed apart -- a route tagged with another route's words, or a
+//  label edited away from its route, moves these blocks while every value
+//  stays put.
+std::ofstream* labelsOut = nullptr;
+
 class Writer
 {
 public:
@@ -176,6 +183,7 @@ public:
     void block(const std::string& record, const std::string& property)
     {
         os_ << "## " << record << "\t" << property << "\n";
+        if (labelsOut) *labelsOut << "## " << record << "\t" << property << "\n";
         ++blocks_;
     }
     void value(const std::string& state, double v)
@@ -240,6 +248,7 @@ struct DoorCheck
 long doorCompared = 0, doorDisagreed = 0;
 std::vector<std::string> doorFirst;
 
+
 //  Evaluate `f` over the grid; one line per state.
 void sweep(const Grid& g, Writer& w, const std::string& xTag,
            const std::function<double(double, double)>& f, DoorCheck dc = {})
@@ -260,9 +269,12 @@ void sweep(const Grid& g, Writer& w, const std::string& xTag,
             std::string dMsg;
             try
             {
-                dv = liquidProperty::evaluate(*dc.pk,
-                    static_cast<liquidProperty::Property>(dc.prop), T, P, *dc.x).value;
+                const liquidProperty::Result r = liquidProperty::evaluate(*dc.pk,
+                    static_cast<liquidProperty::Property>(dc.prop), T, P, *dc.x);
+                dv = r.value;
                 dOk = true;
+                if (labelsOut)
+                    *labelsOut << s << "\t" << r.methodId << "\t" << r.label << "\n";
             }
             catch (const std::exception& e) { dMsg = e.what(); }
             catch (...) { dMsg = "(non-standard)"; }
@@ -341,6 +353,10 @@ int run(const std::string& manifestPath, const std::string& outPath)
     fs::create_directories(out.parent_path());
     std::ofstream os(out);
     if (!os) throw std::runtime_error("property-route bench: cannot write " + out.string());
+    const fs::path labelsPath = out.parent_path() / "labels.tsv";
+    std::ofstream labels(labelsPath);
+    if (!labels) throw std::runtime_error("property-route bench: cannot write " + labelsPath.string());
+    labelsOut = &labels;
     Writer w(os, dataRoot);
 
     auto list = [](const std::vector<std::string>& v) {
@@ -487,6 +503,8 @@ int run(const std::string& manifestPath, const std::string& outPath)
     }
     fs::current_path(here);
     os.close();
+    labelsOut = nullptr;
+    labels.close();
 
     const double secs = std::chrono::duration<double>(
         std::chrono::steady_clock::now() - t0).count();
