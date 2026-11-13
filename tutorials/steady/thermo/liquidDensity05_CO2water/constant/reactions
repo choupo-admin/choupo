@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  THE DEMONSTRATION'S REACTION, WHOSE REACTANT IS ABSENT (DEV.md 4c C378,
+  ruling 4).  A CSTR needs a reaction; this one's rate is first order in
+  acetic acid, which the feed does not carry, so the rate is zero and the
+  reactor is a vessel of volume V_R that the liquid passes through: its
+  residence time tau = V_R rho / m_dot is the density the case demonstrates.
+  Esterification AcOH + EtOH -> EtOAc + H2O, mass-conserving
+  (60.052 + 46.069 = 88.106 + 18.015).  The kinetics are ILLUSTRATIVE.
+\*---------------------------------------------------------------------------*/
+absentAcid
+{
+    stoichiometry
+    (
+        { component aceticAcid;    nu -1;  order 1; }
+        { component ethanol;       nu -1;  order 0; }
+        { component ethylAcetate;  nu  1;  order 0; }
+        { component water;         nu  1;  order 0; }
+    );
+    kinetics
+    {
+        type   Arrhenius;
+        A      1.0e3;        // 1/s -- illustrative
+        Ea     5.0e4;        // J/mol
+    }
+}

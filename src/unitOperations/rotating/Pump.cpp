@@ -28,6 +28,7 @@ License
 
 #include "Pump.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/ApproximationAuthorisation.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "solver/NewtonRaphson.H"
 #include "core/Advisory.H"
@@ -87,49 +88,27 @@ int Pump::solve(const DictPtr& dict,
             "Pump: eta must satisfy 0 < eta <= 1 (got "
             + std::to_string(eta) + ")");
 
-    // ---- Liquid molar volume (incompressible) ---------------------------
-    //   v_mix = Σ x_i v_liq,i   [m^3/mol].  Requires every component to
-    //   carry Vliq in its.dat (liquids do).
-    //
-    //  A DISSOLVED ION is not a liquid and has no Vliq (C146, 2026-10-24: an
-    //  interstage booster in a membrane array pumps a brine written ion by
-    //  ion).  Its volume is not invented: it is left OUT of the sum, so the
-    //  volume flow is the solvent's -- the dilute-solution reading -- and the
-    //  run ANNOUNCES it with the mole fraction it neglected.  Only a component
-    //  with a declared aqueous bridge qualifies; any other component without
-    //  Vliq still refuses.
-    scalar v_mix = 0.0, x_ions = 0.0;
-    std::string ions;
+    // ---- Liquid density (incompressible): THE PROPERTY KERNEL ------------
+    //   rho at the INLET state from the kernel's methods (C378 pilot,
+    //   thermo/liquidProperty/): the method is resolved once per
+    //   constituent set and the kernel records the use; v_mix = MW_mix / rho.
+    //   A dissolved ion with no volume is no longer left out silently: the
+    //   case declares `approximations { massWithoutVolume { ... } }` (mass
+    //   kept, no volume, bounded), or the kernel refuses by name.
+    scalar MW_mix = 0.0;                                // kg/kmol
+    for (std::size_t i = 0; i < n; ++i) MW_mix += x[i] * thermo.comp(i).MW();
+    liquidProperty::Request densityAsk;
+    densityAsk.thermo = &thermo; densityAsk.T = T_in; densityAsk.P = P_in; densityAsk.x = x;
+    const scalar rho   = liquidProperty::density(densityAsk).value;   // kg/m^3
+    const scalar M_mix = MW_mix * 1.0e-3;               // kg/mol
+    const scalar v_mix = M_mix / rho;                   // m^3/mol
+    //  The components the case's hypothesis covers (no liquid enthalpy datum
+    //  either): the heat capacity below is the rest's, per mole of solution.
+    scalar x_ions = 0.0;
     for (std::size_t i = 0; i < n; ++i)
-    {
-        const scalar vi = thermo.comp(i).Vliq();
-        if (x[i] > 0.0 && vi <= 0.0)
-        {
-            if (thermo.comp(i).hasAqueousMapping())
-            {
-                x_ions += x[i];
-                ions   += (ions.empty() ? "" : " ") + thermo.comp(i).name();
-                continue;
-            }
-            throw std::runtime_error(
-                "Pump: component '" + thermo.comp(i).name()
-                + "' has no liquid molar volume (Vliq) in its.dat --- "
-                "required for the incompressible pump model");
-        }
-        v_mix += x[i] * vi;
-    }
-    if (x_ions > 0.0)
-    {
-        char b[200];
-        std::snprintf(b, sizeof(b), "dissolved ion(s) (%s) carry no liquid"
-            " molar volume: the volume flow is the solvent's (dilute-solution"
-            " reading, and its heat capacity likewise; ion mole fraction %.3g"
-            " neglected)", ions.c_str(),
-            static_cast<double>(x_ions));
-        AdvisoryLog::instance().add("approximation", "info",
-            "pump '" + (dict->name().empty() ? type() : dict->name()) + "'", b);
-        if (verbosity >= 2) std::cout << "  [pump] " << b << "\n";
-    }
+        if (x[i] > 0.0 && ApproximationAuthorisation::instance().massWithoutVolume()
+                              .count(thermo.comp(i).name()))
+            x_ions += x[i];
 
     const scalar F_mol_s = F * 1000.0;                  // mol/s
     const scalar Q_vol   = F_mol_s * v_mix;             // m^3/s  (set by the feed)
@@ -282,7 +261,8 @@ int Pump::solve(const DictPtr& dict,
         if (x_ions > 0.0)
         {
             for (std::size_t i = 0; i < n; ++i)
-                if (thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+                if (ApproximationAuthorisation::instance().massWithoutVolume()
+                        .count(thermo.comp(i).name()))
                     xCp[i] = 0.0;
             solventShare = 1.0 - x_ions;
             for (auto& v : xCp) v /= solventShare;
@@ -360,21 +340,8 @@ int Pump::solve(const DictPtr& dict,
 
     const scalar W_isen_kW = (W_shaft * eta) / 1000.0;
 
-    // Pump head h = dP / (rho g).  rho = MW_mix / v_mix, with
-    // MW_mix in kg/mol (Component.MW() is kg/kmol -> /1000).
-    scalar MW_mix = 0.0;                                // kg/kmol
-    for (std::size_t i = 0; i < n; ++i) MW_mix += x[i] * thermo.comp(i).MW();
-    const scalar rho = (v_mix > 0.0)
-        ? (MW_mix / 1000.0) / v_mix                     // kg/m^3
-      : liquidSource::pumpHeadDensityFallback.value;
-    if (!(v_mix > 0.0))
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::pumpHeadDensityFallback);
+    // Pump head h = dP / (rho g), rho the kernel's (above).
     const scalar head_m = dP / (rho * 9.80665);
-    if (v_mix > 0.0)
-        PropertySourceLog::instance().useHere("liquidDensity", x_ions > 0.0
-            ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
-            liquidProperty::statedDatumTemperatures(thermo, x), "",
-            "bypass", took(rho, T_in, P_in, compositionKey(x)), "not applied");
 
     if (verbosity >= 2)
     {
@@ -432,8 +399,9 @@ int Pump::solve(const DictPtr& dict,
 }
 
 //  WHAT THE PUMP ACCEPTS (DEV.md 4c C188 item 5): a liquid, and nothing
-//  else -- every component it is handed is pumped (its volume is the
-//  liquid's, a dissolved ion's left out and announced in solve()).
+//  else -- every component it is handed is pumped (its density is the
+//  property kernel's; a component without a volume needs the case's
+//  declared hypothesis massWithoutVolume, else the kernel refuses).
 UnitAcceptance Pump::acceptance() const
 {
     UnitAcceptance a;

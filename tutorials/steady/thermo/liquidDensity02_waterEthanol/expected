@@ -1,0 +1,44 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.0399534705298    1e-4
+stream  feed                   T                298.15             1e-4
+stream  product                F                0.0399534705298    1e-4
+stream  product                T                298.178514303      1e-4
+stream  pumped                 F                0.0399534705298    1e-4
+stream  pumped                 T                298.178514303      1e-4
+kpi     P1                     F                0.0399534705298    1e-4
+kpi     P1                     P_in             100000             1e-4
+kpi     P1                     P_out            300000             1e-4
+kpi     P1                     T_in             298.15             1e-4
+kpi     P1                     T_out            298.178514303      1e-4
+kpi     P1                     W_hydraulic      225.15500557       1e-4
+kpi     P1                     W_shaft          321.650007958      1e-4
+kpi     P1                     W_shaft_kW       0.321650007958     1e-4
+kpi     P1                     dP               200000             1e-4
+kpi     P1                     dT               0.0285143033732    1e-4
+kpi     P1                     eta              0.7                1e-4
+kpi     P1                     head_m           22.9594209613      1e-4
+kpi     P1                     v_molar_liq      2.81771523956e-05  1e-4
+kpi     R1                     F_in_kmol_h      143.832493907      1e-4
+kpi     R1                     F_out_kmol_h     143.832493907      1e-4
+kpi     R1                     Q_kW             0                  1e-4
+kpi     R1                     T                298.178514303      1e-4
+kpi     R1                     T_out            298.178514303      1e-4
+kpi     R1                     V_R              1                  1e-4
+kpi     R1                     k_absentAcid     1.7426760038e-06   1e-4
+kpi     R1                     nReactions       1                  1e-4
+kpi     R1                     newtonResidual   0                  1e-4
+kpi     R1                     tau_s            888.292693343      1e-4
+kpi     R1                     xi_absentAcid_mol_per_s 0                  1e-4
+boundary global               H_feeds_kW       -11357.7997459     1e-4
+boundary global               Q_boundary_kW    0.321650007958     1e-4
+boundary global               H_products_kW    -11357.7032509     1e-4
+boundary global               residual_kW      0.22515500557      abs:3.217e-06
+boundary global               W_shaft_kW       0.321650007958     1e-4
+utility P1                     power.electricity.duty_kW 0.338578955745     1e-4
+utility P1                     power.electricity.T -1                 1e-4
+utility P1                     power.electricity.kg_s 0                  1e-4
+utility P1                     power.electricity.eur_h 0.033884981891     1e-4
+source  P1                     liquidDensity    idealMixing[referenceEquation.IAPWS95+anchoredRackett] exact
+source  R1                     liquidDensity    idealMixing[referenceEquation.IAPWS95+anchoredRackett] exact

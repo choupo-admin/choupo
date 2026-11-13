@@ -208,7 +208,7 @@ def probe(tmp, record_text, comps, unit="pump"):
 BASE = """name        {name};
 formula     XH2;
 MW          20.0;
-Tc          300.0;
+Tc          400.0;   // below the probe's 330 K: see A2's note (C378 pilot)
 Pc          40.0;
 omega       0.1;
 Tb          200.0;
@@ -273,13 +273,22 @@ try:
         Tref, T = 298.15, 330.0
         a0, a1 = 30.0, 0.01
         h_ig = a0 * (T - Tref) + 0.5 * a1 * (T * T - Tref * Tref)
-        Tc, Tb, HvTb = 300.0, 200.0, 12000.0
+        #  THE PROBE IS NOW SUBCRITICAL (C378 liquid-density pilot,
+        #  2026-11-13).  It was built with Tc = 300 K < 330 K so the Watson
+        #  term vanished.  The pump now takes its liquid density from the
+        #  property kernel, which REFUSES a pure-liquid volume above Tc (a
+        #  dissolved gas has no Rackett liquid; its remedy is a declared
+        #  `massWithoutVolume`, which also takes it out of the pump's Cp
+        #  share) -- so a supercritical probe never reached this leg.  With
+        #  Tc = 400 K the record's own volume prices the density and the
+        #  Watson term is finite; the form recomputed below is the same.
+        Tc, Tb, HvTb = 400.0, 200.0, 12000.0
         hvap = 0.0 if T >= Tc else HvTb * ((Tc - T) / (Tc - Tb)) ** 0.38
         notes["expected"] = h_ig - hvap
-        if not math.isclose(hvap, 0.0):
-            fails.append("A2: the probe was built so that T > Tc and the"
-                         " Watson term is zero; it is not, so the check below"
-                         " is measuring something else")
+        if not hvap > 0.0:
+            fails.append("A2: the probe was built so that T < Tc and the"
+                         " Watson term is finite; it is not, so the check"
+                         " below is measuring something else")
 
     # ---- A3: a NONVOLATILE must still refuse -----------------------------
     d = os.path.join(tmp, "nonvol")

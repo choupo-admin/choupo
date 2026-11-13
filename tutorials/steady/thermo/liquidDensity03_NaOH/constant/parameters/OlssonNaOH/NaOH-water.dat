@@ -1,0 +1,123 @@
+// [imported] origin "data/standards/parameters/OlssonNaOH/NaOH-water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  OlssonNaOH -- the NaOH-water solution correlations of Olsson, Jernqvist &
+  Aly (1997): vapour pressure and enthalpy of aqueous sodium hydroxide from
+  dilute to 80 wt % NaOH, 0-200 degC.  (The paper also correlates density
+  and viscosity; those are transcribed in the design note for the C378
+  study and are NOT part of this record or of the model.)
+
+  Role: the coefficient record behind the electrolyte model `OlssonNaOH`
+  (src/thermo/electrolyte/OlssonNaOH.{H,cpp}), selected in a case by
+  `equilibrium { aqueous { activityModel { model OlssonNaOH; } } }`.  The
+  EQUATIONS are that C++; the NUMBERS are here; the EXPLANATION is the
+  Theory Guide section `sec:olsson-naoh` and docs/design/naoh-water-olsson1997.md.
+
+  How the numbers were read: the source PDF is a scan whose text layer is
+  unreliable.  Every equation and every coefficient below was read off the
+  PAGE IMAGES (rendered with pdftoppm at 150 dpi for the whole page and again
+  at 300 dpi cropped to each table), each table twice, and the two readings
+  were compared digit by digit (they agreed; the text layer, read third,
+  agrees wherever it is legible).  The reading table, page by page, is in
+  docs/design/naoh-water-olsson1997.md.
+
+  Variables, AS THE PAPER WRITES THEM (nomenclature, pp. 792-793):
+    x   mass fraction of WATER [kg water / kg solution]  (NOT of NaOH)
+    t   temperature [degC]
+    P   vapour pressure of the solution [kPa]
+    H   specific enthalpy of the solution [kJ/kg solution]; reference: liquid
+        water at 0 degC and NaOH at infinite dilution at 20 degC (p. 786)
+
+  Licence of the numbers: the coefficients of a published correlation are
+  facts, cited to their paper.
+\*-----------------------------------------------------------------------------*/
+recordType    electrolyteSolutionCorrelation;
+schemaVersion 1;
+
+model OlssonNaOH;
+
+pair { cation Na; anion OH; }
+salt    NaOH;
+solvent water;
+
+citation "J. Olsson, A. Jernqvist and G. Aly, Thermophysical Properties of Aqueous NaOH-H2O Solutions at High Concentrations, Int. J. Thermophys. 18(3) (1997) 779-793";
+read     "2026-11-12, page images at 150 and 300 dpi, each table twice";
+
+//  ---- VAPOUR PRESSURE -- Eqs. (1)-(5), pp. 782-783 -----------------------
+//  ln P = (a1 + a2 t) / (t - a3)            Eq. (2) rearranged (p. 782)
+//  a1 = sum_{i=0..8}  kP_i (ln x)^i          Eq. (3)
+//  a2 = sum_{i=0..10} lP_i (ln x)^i          Eq. (4)
+//  a3 = sum_{i=0..10} mP_i (ln x)^i          Eq. (5)
+vapourPressure
+{
+    k   ( -113.93947  209.82305  494.77153  6860.8330  2676.6433
+          -21740.328  -34750.872  -20122.157  -4102.9890 );                 // Table II, p. 783
+    l   ( 16.240074  -11.864008  -223.47305  -1650.3997  -5997.3118
+          -12318.744  -15303.153  -11707.480  -5364.9554  -1338.5412
+          -137.96889 );                                                     // Table II, p. 783
+    m   ( -226.80157  293.17155  5081.8791  36752.126  131262.00
+          259399.54  301696.22  208617.90  81774.024  15648.526
+          906.29769 );                                                      // Table II, p. 783
+    //  Table III, p. 783: x_min for t in [tFrom, tTo); x_max = 1
+    validity
+    (
+        { tFrom   0; tTo  20; xMin 0.582; }
+        { tFrom  20; tTo  60; xMin 0.500; }
+        { tFrom  60; tTo  70; xMin 0.353; }
+        { tFrom  70; tTo 150; xMin 0.300; }
+        { tFrom 150; tTo 200; xMin 0.200; }
+    );
+    accuracy "p. 784: 512 data; average absolute and relative errors 2.01 kPa and 2.07 %; for the bubble point 0.48 K and 0.13 %";
+}
+
+//  ---- ENTHALPY -- Eqs. (12)-(16), pp. 787-788 -----------------------------
+//  H = c1 + c2 t + c3 t^2 + c4 t^3                              Eq. (12)
+//  c1 = (k0 + k2 x + k4 x^2 + k6 x^3)/(1 + k1 x + k3 x^2 + k5 x^3 + k7 x^4)  Eq. (13)
+//  c2 = sum_{i=0..8} l_i x^i;  c3 = sum_{i=0..7} m_i x^i;  c4 = sum_{i=0..7} n_i x^i   Eqs. (14)-(16)
+enthalpy
+{
+    k   ( 1288.4485  -0.49649131  -4387.8908  -4.0915144  4938.2298
+          7.2887292  -1841.1890  -3.0202651 );                              // Table VI, p. 787
+    l   ( 2.3087919  -9.0004252  167.59914  -1051.6368  3394.3378
+          -6115.0986  6220.8249  -3348.8098  743.87432 );                   // Table VI, p. 787
+    m   ( 0.02302860  -0.37866056  2.4529593  -8.2693542  15.728833
+          -16.944427  9.6254192  -2.2410628 );                              // Table VI, p. 787
+    //  printed as "x E-5" in the table; multiplied out here
+    n   ( -8.5131313e-5  136.52823e-5  -875.68741e-5  2920.0398e-5
+          -5488.2983e-5  5841.8034e-5  -3278.7483e-5  754.45993e-5 );       // Table VI, p. 787
+    //  Table VII, p. 788
+    validity
+    (
+        { tFrom   0; tTo   4; xMin 0.780; }
+        { tFrom   4; tTo  10; xMin 0.680; }
+        { tFrom  10; tTo  15; xMin 0.580; }
+        { tFrom  15; tTo  26; xMin 0.540; }
+        { tFrom  26; tTo  37; xMin 0.440; }
+        { tFrom  37; tTo  48; xMin 0.400; }
+        { tFrom  48; tTo  60; xMin 0.340; }
+        { tFrom  60; tTo  71; xMin 0.300; }
+        { tFrom  71; tTo  82; xMin 0.280; }
+        { tFrom  82; tTo  93; xMin 0.240; }
+        { tFrom  93; tTo 204; xMin 0.220; }
+    );
+    accuracy "pp. 788-789: 901 measured and extrapolated data; average absolute and relative errors 0.32 kJ/kg and 0.08 %, maximum 2.15 kJ/kg and 1.24 %; measured enthalpies used for x 0.20-0.52, enthalpies built from measured heat capacities above x 0.52; heat capacities for 100-200 degC at x 0.5-0.9 EXTRAPOLATED (p. 786)";
+}
+
+//  ---- THE HANDOVER TO PITZER AT LOW MOLALITY (Choupo's, not the paper's) --
+//  Measured 2026-11-12 (docs/design/naoh-water-olsson1997.md, Sec. 4): the
+//  vapour-pressure correlation's water activity is not reliable in dilute
+//  solution -- its absolute error (2 kPa average) is the size of the whole
+//  vapour-pressure lowering there, and its temperature derivative near x = 1
+//  swings by tens of percent -- and the enthalpy correlation cannot resolve
+//  the heat of dilution below a few mol/kg (0.32 kJ/kg of solution is 1.3
+//  kJ/mol of NaOH at 1 mol/kg).  Below `fromMolality` the model is the
+//  Na-OH Pitzer pair (calorimetrically fitted to Parker up to 6 mol/kg);
+//  above `toMolality` it is this record; in between ln a_w and L_phi are each
+//  blended with a smooth step.  Above the band L_phi carries the paper's full
+//  temperature dependence plus ONE constant, fixed at 25 C at `toMolality`
+//  where the Pitzer pair is calibrated (Theory Guide sec:olsson-naoh, which
+//  also tabulates the seam).
+handover
+{
+    fromMolality 4.0;     // mol/kg -- pure Pitzer below
+    toMolality   6.0;     // mol/kg -- pure correlation above; the Na-OH pair's lphiValidityMax
+}

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1847,
+  "cases": 1846,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -21827,62 +21827,6 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/batch/reactor/batch30_fast_equilibrium_full": {
-   "application": "choupoBatch",
-   "unitTypes": [
-    "batchReactor"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/batch/reactor/batch31_fast_equilibrium_reduced": {
-   "application": "choupoBatch",
-   "unitTypes": [
-    "batchReactor"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/batch/reactor/batch32_fast_intermediate_full": {
-   "application": "choupoBatch",
-   "unitTypes": [
-    "batchReactor"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/batch/reactor/batch33_fast_intermediate_reduced": {
-   "application": "choupoBatch",
-   "unitTypes": [
-    "batchReactor"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
   "tutorials/batch/recipes/recipe01_react_then_distill": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -27622,20 +27566,6 @@
    "roles": [],
    "hasGolden": true
   },
-  "tutorials/steady/heat/hx02_condensing_steam": {
-   "application": "choupoSolve",
-   "unitTypes": [
-    "heatExchanger"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
   "tutorials/steady/heat/hxWorkflow1_design_from_duty": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29453,6 +29383,97 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/thermo/liquidDensity01_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity02_waterEthanol": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity03_NaOH": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "OlssonNaOH"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity04_NaOHpoint": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "OlssonNaOH"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity05_CO2water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
   "tutorials/steady/thermo/perUnitThermo01_srk_nrtl": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -29709,36 +29730,6 @@
    },
    "roles": [],
    "hasGolden": true
-  },
-  "tutorials/unsteady/unsteady07_fast_tank_full": {
-   "application": "choupoSemiContinuous",
-   "unitTypes": [
-    "dynamicCSTR"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
-  },
-  "tutorials/unsteady/unsteady08_fast_tank_reduced": {
-   "application": "choupoSemiContinuous",
-   "unitTypes": [
-    "dynamicCSTR",
-    "quasiSteady",
-    "storageTank"
-   ],
-   "thermo": {
-    "formulation": "gammaPhi",
-    "activityModels": [
-     "ideal"
-    ]
-   },
-   "roles": [],
-   "hasGolden": true
   }
  },
  "indices": {
@@ -29791,10 +29782,6 @@
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/reactor/batch28_dosing_vessel_limit",
-    "tutorials/batch/reactor/batch30_fast_equilibrium_full",
-    "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
-    "tutorials/batch/reactor/batch32_fast_intermediate_full",
-    "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -31260,9 +31247,7 @@
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady05_tank_valve_drain",
-    "tutorials/unsteady/unsteady06_reactor_fill_and_react",
-    "tutorials/unsteady/unsteady07_fast_tank_full",
-    "tutorials/unsteady/unsteady08_fast_tank_reduced"
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
    ],
    "choupoSolve": [
     "tutorials/batch/plant/apalutamide01_tablets",
@@ -31474,7 +31459,6 @@
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
-    "tutorials/steady/heat/hx02_condensing_steam",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
@@ -31588,6 +31572,12 @@
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/basis01_two_unit_chain",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity03_NaOH",
+    "tutorials/steady/thermo/liquidDensity04_NaOHpoint",
+    "tutorials/steady/thermo/liquidDensity05_CO2water",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/thermoTest/model2_pitzer_evaporator",
@@ -31703,10 +31693,6 @@
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/reactor/batch28_dosing_vessel_limit",
-    "tutorials/batch/reactor/batch30_fast_equilibrium_full",
-    "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
-    "tutorials/batch/reactor/batch32_fast_intermediate_full",
-    "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial"
@@ -31809,6 +31795,12 @@
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
     "tutorials/steady/reactors/cstr08_furusawa_bistable",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity03_NaOH",
+    "tutorials/steady/thermo/liquidDensity04_NaOHpoint",
+    "tutorials/steady/thermo/liquidDensity05_CO2water",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/userops/userOp03_case_rate_law"
    ],
    "cyclone": [
@@ -31893,9 +31885,7 @@
     "tutorials/unsteady/unsteady02_tanks_in_series",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady06_reactor_fill_and_react",
-    "tutorials/unsteady/unsteady07_fast_tank_full",
-    "tutorials/unsteady/unsteady08_fast_tank_reduced"
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
    ],
    "dynamicTank": [
     "tutorials/ctrl/ctrl21_tank_level_control",
@@ -32022,7 +32012,6 @@
     "tutorials/steady/heat/heatExchanger03_pure_water_plateau",
     "tutorials/steady/heat/heatExchanger04_bell_delaware_rating",
     "tutorials/steady/heat/heatExchanger05_bell_delaware_auto",
-    "tutorials/steady/heat/hx02_condensing_steam",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/power/combined01_brayton_rankine",
@@ -32218,12 +32207,15 @@
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/pump01_water",
-    "tutorials/steady/rotating/pump02_pressure_spec"
+    "tutorials/steady/rotating/pump02_pressure_spec",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity05_CO2water",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol"
    ],
    "quasiSteady": [
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady08_fast_tank_reduced"
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
    ],
    "ramp": [
     "tutorials/ctrl/ctrl17_signal_shapes"
@@ -32337,8 +32329,7 @@
    "storageTank": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
-    "tutorials/plant/swro01_campoDalias",
-    "tutorials/unsteady/unsteady08_fast_tank_reduced"
+    "tutorials/plant/swro01_campoDalias"
    ],
    "stripper": [
     "tutorials/steady/absorption/stripper01_NH3_water"
@@ -33269,7 +33260,9 @@
    ],
    "OlssonNaOH": [
     "tutorials/props/electrolyte/olsson01_naoh_high_concentration",
-    "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt"
+    "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt",
+    "tutorials/steady/thermo/liquidDensity03_NaOH",
+    "tutorials/steady/thermo/liquidDensity04_NaOHpoint"
    ],
    "Pitzer": [
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
@@ -34612,10 +34605,6 @@
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/reactor/batch28_dosing_vessel_limit",
-    "tutorials/batch/reactor/batch30_fast_equilibrium_full",
-    "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
-    "tutorials/batch/reactor/batch32_fast_intermediate_full",
-    "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -34860,7 +34849,6 @@
     "tutorials/steady/heat/heatlink01_condenser_to_heater",
     "tutorials/steady/heat/heatlink02_condenser_feed_preheat",
     "tutorials/steady/heat/hx01_heater",
-    "tutorials/steady/heat/hx02_condensing_steam",
     "tutorials/steady/heat/hxWorkflow1_design_from_duty",
     "tutorials/steady/heat/hxWorkflow2_rate_designed",
     "tutorials/steady/heat/mheatx01_two_hot_one_cold",
@@ -34965,6 +34953,9 @@
     "tutorials/steady/solids/screen02_declared_rosinRammler",
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/userops/userOp01_yield_reactor",
@@ -34978,9 +34969,7 @@
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady05_tank_valve_drain",
-    "tutorials/unsteady/unsteady06_reactor_fill_and_react",
-    "tutorials/unsteady/unsteady07_fast_tank_full",
-    "tutorials/unsteady/unsteady08_fast_tank_reduced"
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
    ],
    "pitzerHMW": [
     "tutorials/props/electrolyte/davies01_band_edge",

@@ -1,6 +1,6 @@
 # case	unit	property	sourceId -- check_property_source_witnesses (C378 slice 0, review DR-11): one witness per source class
-tutorials/steady/rotating/pump01_water	pump01	liquidDensity	bypass.recordVliq25C
-tutorials/steady/membranes/membrane27_swro_energy_recovery	HPpump	liquidDensity	bypass.recordVliq25C.ionsNoVolume
+tutorials/steady/rotating/pump01_water	pump01	liquidDensity	referenceEquation.IAPWS95
+tutorials/steady/membranes/membrane27_swro_energy_recovery	HPpump	liquidDensity	idealMixing[referenceEquation.IAPWS95+massWithoutVolume]
 tutorials/steady/membranes/membrane27_swro_energy_recovery	RO	liquidDensity	default.rhoFeed1000
 tutorials/steady/membranes/membrane27_swro_energy_recovery	RO	liquidViscosity	declared.case
 tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr	cryst	liquidVolume	bypass.recordVliq25C.missingIsZero
@@ -17,3 +17,4 @@ tutorials/steady/membranes/membrane22_two_stage_nf_array_dspmde	Stage1	liquidDif
 tutorials/ctrl/ctrl21_tank_level_control	tank	liquidDensity	declared:kernel
 tutorials/ctrl/ctrl12_williams_otto	plant	liquidDensity	declared:bypass
 tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup	UF	liquidDensity	declared:bypass
+tutorials/steady/reactors/cstr01_first_order	reactor	liquidDensity	idealMixing[anchoredRackett]

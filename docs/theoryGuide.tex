@@ -2752,16 +2752,18 @@ the band.
 line per unit, property and source:
 \begin{verbatim}
 [liquid properties] Where each unit took its liquid properties from ...
-  methanolPump (pump)   liquid density   787.27 kg/m3 at 300.0 K, 1.01 bar
-      computed by the unit itself, not by the property kernel: each
-      component's 25 C molar volume, with no temperature or pressure effect
+  methanolPump (pump)   liquid density   785.12 kg/m3 at 300.0 K, 1.01 bar
+      property kernel: ideal mixing of liquid volumes, each component's
+      25 C molar volume scaled to temperature by Rackett; pressure not applied
   methanolTank (storageTank)   liquid density   785.12 kg/m3 at 300.0 K ...
       property kernel: ideal mixing of liquid volumes, each component's
       25 C molar volume scaled to temperature by Rackett; pressure not applied
-  [twice] the same liquid (300.0 K, 1.01 bar, one composition) is given
-      two densities: methanolPump (pump) 787.27 kg/m3, methanolTank ... 785.12
 \end{verbatim}
-(\code{tutorials/plant/aceticAcid02\_plant}).  The value is the variable the
+(\code{tutorials/plant/aceticAcid02\_plant}).  Until the pilot moved the pump
+onto the kernel (2026-11-13) its line read 787.27\,kg/m$^3$, ``computed by the
+unit itself, not by the property kernel: each component's 25 C molar volume'',
+and a closing \code{[twice]} line said that the same liquid had been given
+two densities.  The value is the variable the
 unit computed with; when a unit took several in the run (a column's trays,
 an iteration) the line gives the range and the count.  A \code{[mismatch]}
 line appears when a unit took a number from a kind of source its type does
@@ -2792,12 +2794,16 @@ model.
   component has no liquid volume at the state (a gas above its critical
   temperature dissolved in the liquid), several of these leave it out of the
   volume and keep its mass; the table names what was left out.
-\item \textbf{Computed by the unit itself} --- the pump, the pressure
-  exchanger, the CSTR and the liquid PFR, the MSMPR and FVM crystalliser, the
-  spray dryer: each component's 25\,$^\circ$C molar volume, with no
-  temperature or pressure effect.  The pump and the pressure exchanger give a
-  dissolved ion no volume and keep its mass; the crystalliser gives a
-  component without a volume none, and does not say so.
+\item \textbf{The property kernel's methods} (the pilot,
+  \S\ref{sec:liquid-density-methods}) --- the pump and the CSTR, since
+  2026-11-13: the liquid density at the inlet (pump) or feed (CSTR) state,
+  by the method resolved for the constituent set.
+\item \textbf{Computed by the unit itself} --- the pressure exchanger, the
+  liquid PFR, the MSMPR and FVM crystalliser, the spray dryer: each
+  component's 25\,$^\circ$C molar volume, with no temperature or pressure
+  effect.  The pressure exchanger gives a dissolved ion no volume and keeps
+  its mass; the crystalliser gives a component without a volume none, and
+  does not say so.
 \item \textbf{A constant of the unit} --- 1000\,kg/m$^3$ in the
   electrodialysis cell, stack and batch rig (the dilute carrier they are
   built on), in the spiral-wound module when the case declares no
@@ -2831,6 +2837,310 @@ its numerical review; do not size on them in silence:
 \end{itemize}
 These are the targets of the slices that follow; this one only makes them
 visible where they are used.
+
+\subsection{The liquid density as methods: resolution and precedence}\label{sec:liquid-density-methods}
+
+The pilot of the kernel's reorganisation (DEV.md 4c C378;
+\code{docs/design/density-pilot-plan.md}) serves ONE property, the liquid
+density, through \emph{methods}: code objects of one base,
+\code{DensityMethod} (\code{src/thermo/liquidProperty/}), registered by an
+explicit factory and called through a second entry of the door,
+\code{liquidProperty::density(const Request\&)}.  A method answers one
+request --- the density of a set of constituents at $(T,P)$ with the phase's
+own mole fractions --- and returns, with the number, its identifier, the
+words a student reads (written by the method that computed, never by the
+consumer), its leaves and the share each carries, whether pressure entered,
+and the three statements of quality.  The entry is migration scaffolding:
+only the pump and the CSTR call it, and \code{liquidProperty::evaluate}
+keeps serving every other consumer unchanged.
+
+\paragraph{Leaves and set methods.}  A \emph{leaf} is bound to one
+component and answers its liquid molar volume $v_i$; a \emph{set method}
+answers the density of the whole set.  The leaves:
+\begin{itemize}
+\item \code{recordVolume} --- the component record's own volume on the
+  route its data support, which the leaf's identifier names
+  (\code{recordVolume.anchoredRackett}, \code{.flatVliq}, \code{.bareRackett}:
+  the route is a fact of the record, read by \code{liquidVolumeRouteOf}) (the three routes of the paragraph \emph{The
+  one door} above: the record's \code{Vliq} at \code{VliqT} carried in $T$ by
+  Rackett's shape; the same volume held flat when the record has no critical
+  constants; Rackett alone, an estimate).  They call the package's
+  \code{liquidMolarVolumeOf}, so they are today's numbers, bit for bit.
+  Pressure is not applied.  Above the component's critical temperature the
+  volume is refused by name: a hard limit.
+\item \code{pureFluid} --- the case's \code{pureFluids} selection (IF97, or a
+  Helmholtz record by name) on its liquid branch
+  (\S\ref{sec:liquid-density-reference-leaf}).  The selection is an explicit
+  act of the case: it pins the component's leaf in every set.
+\end{itemize}
+The set method of the pilot's first step is additive volumes,
+\code{idealMixing}:
+\begin{equation}
+  \rho \;=\; \frac{\sum_{i\in S} x_i M_i}{\sum_{i\in S} x_i\, v_i(T,P)},
+  \qquad x \text{ normalised over } S,
+  \label{eq:liquid-density-ideal-mixing}
+\end{equation}
+term for term the arithmetic of the package's own liquid branch, so over the
+record leaves the two agree to the last bit (\code{check\_property\_route\_bench}
+counts it at every state of its grid).  It has no excess volume: for water +
+ethanol at 0.1\,MPa the measured mixture is about 1.8\,\% denser at
+298.15\,K, and no leaf can recover that.
+
+\paragraph{Resolution: once per constituent set, by facts.}  The
+constituent set $S$ of a request is the components with $x_i>0$ (one
+definition of ``present'' in the kernel).  The method is resolved at the
+set's \emph{first} request and frozen for the run --- a function of $S$ and
+of the data the case and the catalogue hold, never of $T$, $P$ or the
+amounts: there is no switch on a mole fraction.  The precedence is the routes
+record's rule~4:
+\begin{enumerate}
+\item a measurement the case marks for use (\S\ref{sec:liquid-density-measured});
+\item a record law for exactly $S$: for one constituent, the case's
+  \code{pureFluids} selection, else a reference equation that names it;
+  for two or more, a solution record (\S\ref{sec:liquid-density-solution-law});
+\item \code{idealMixing}, one leaf per constituent, each by
+  \code{pureFluid} $>$ \code{referenceEquation} $>$ the record's volume route
+  $>$ \code{massWithoutVolume} (only when declared,
+  \S\ref{sec:liquid-density-mass-without-volume}); a declared Henry solute
+  has no pure-liquid leaf (its volume in the liquid is a partial molar volume);
+\item refusal, naming every method passed over and why, and the remedy (a
+  volume for each constituent, or a solution record named by its file,
+  \code{parameters/solution/<set>.dat}).
+\end{enumerate}
+A resolution is kept per package identity and set for the run; a package met
+for the first time (another pass of an outer driver builds its own) resolves
+its sets again, and a set that would resolve to a \emph{different} method
+than earlier in the run is refused: the pass changed which data exist, which
+the run cannot hide.  The same liquid can therefore carry two printed
+densities while the migration lasts --- a valve on the slice-0 wrapper and a
+pump on the methods --- and the table's \code{[twice]} line says so.
+
+\subsection{The reference leaf and the liquid branch}\label{sec:liquid-density-reference-leaf}
+
+\paragraph{\code{referenceEquation}, by the fact.}  A Helmholtz record in
+\code{parameters/Helmholtz/} whose \code{fluid} is a component's name or one
+of its aliases --- today IAPWS-95 for water~\cite{IAPWS_R695}, Span--Wagner
+for CO$_2$~\cite{SpanWagner1996}, Setzmann--Wagner for CH$_4$~\cite{SetzmannWagner1991},
+and the N$_2$ record --- makes the leaf \code{referenceEquation} apply to
+that component, \emph{with pressure}, as a leaf inside a mixture and as the
+method of the one-constituent set.  The record is found as the equation
+itself is found: the case's own \code{constant/parameters/Helmholtz/} first
+(which wins), then the catalogue; a sealed case reads only its own copy, so
+the seal copies the record into the case.  Two records of one tier naming the
+same fluid are refused, naming both.  A case that selects
+\code{pureFluids \{ water \{ method IF97; \} \}} pins water to IF97 in every
+set, and the reference equation is printed as passed over.  The leaf's
+evidence is the record's own stated uncertainty (IAPWS-95: 0.0001\,\% in the
+liquid near ambient pressure up to 0.5\,\% at high pressure and temperature).
+
+Measured against the twelve printed anchors of Wagner and Pruss (Tables
+13.1--13.2 of the IAPWS-95 article; saturated states asked at
+$p_{\mathrm{sat}}(T)$ of the same formulation, as is the 0.1\,MPa bubble
+point at 372.756\,K): the reference leaf is within 0.00048\,\% at every
+anchor, and IF97 through the case's selection within 0.00072\,\%.  Without
+the reference leaf a water inside a mixture was the record's 25\,$^\circ$C
+volume carried by Rackett: $-2.6$\,\% at 348\,K and no pressure effect
+($-2$\,\% at 20\,MPa).
+
+\paragraph{The liquid branch, one band.}  Both pure-fluid leaves place the
+state by \code{pureFluidPhaseState}, the one decision of the engine
+(\S\ref{sec:pure-fluid-density-phase}, Eq.~\ref{eq:pure-fluid-liquid-branch}):
+above $p_{\mathrm{sat}}(T)(1+\epsilon)$ the liquid at $(T,P)$; inside the band
+$\epsilon = 10^{-6}$ the saturated liquid at $T$.  Beyond the band on the
+vapour side the two uses part:
+\begin{itemize}
+\item the \emph{one-constituent set} asked as a liquid is a \textbf{vapour}:
+  the request is refused with a typed domain error naming $p_{\mathrm{sat}}(T)$
+  and the remedy (``pure water at 373.15\,K and 1\,bar is a VAPOUR --- its
+  saturation pressure there is 101\,418\,Pa'').  A saturated condensate whose
+  pressure was computed by another formulation can fall outside the band of
+  this one: the pump inlet of \code{rankine02\_water} (446.516\,K,
+  858\,590\,Pa from IF97) is the IF97 liquid, 893.99\,kg/m$^3$, through that
+  case's selection, but IAPWS-95's own $p_{\mathrm{sat}}$ there is
+  858\,738\,Pa, so the same state asked of the reference leaf alone is a
+  vapour, $1.7\times10^{-4}$ below its line;
+\item \emph{but the package is the authority on a stream's phase}: a reference
+  equation taken by the fact is a density method, not the stream's equation of
+  state.  For the one-constituent set priced by \code{referenceEquation} the
+  state is read against two saturation pressures at $T$, the formulation's
+  $p_{\mathrm{ref}}$ and the package's own $p_{\mathrm{pkg}}$ for the component
+  (\code{ThermoPackage::Psat}, the record's correlation when the case selects no
+  pure fluid): at or above $p_{\mathrm{ref}}$ (the band) the liquid branch;
+  below $p_{\mathrm{ref}}$ but at or above $p_{\mathrm{pkg}}(1-\epsilon)$ ---
+  the sliver where the package holds a liquid and the formulation would call
+  it a vapour --- the formulation's \emph{saturated liquid} at $T$, announced
+  once per method and unit with both pressures and their relative gap (a
+  vacuum condensate at the record's bubble point must be pumpable); below
+  both, the domain error, naming both.  With the case's own \code{pureFluids}
+  selection the two lines are one line and the rule is the band alone;
+\item a \emph{leaf in a mixture} below its own $p_{\mathrm{sat}}$ is the
+  saturated liquid at $T$ --- the hypothetical-liquid convention the Rackett
+  leaves follow too --- announced once per method and unit.
+\end{itemize}
+At or above the record's critical temperature there is no liquid: a hard
+limit for both (CO$_2$ above 304.13\,K).  Below the triple point the
+formulation is asked at $(T,P)$ as it is: IF97 refuses there by its own name,
+IAPWS-95 describes the supercooled liquid.
+
+\subsection{A solution's own density law: \code{solutionLaw} and the form \code{polynomialTSqrtX}}\label{sec:liquid-density-solution-law}
+
+A solution's density is a property of its constituent \emph{set}, not of
+either component, so its law lives in the solution tier,
+\code{parameters/solution/<set>.dat}, named by the set sorted
+case-insensitively (\code{NaOH-water}), the case's
+\code{constant/parameters/solution/} first.  The record's
+\code{liquidDensity} block states what it returns (\code{solutionDensity},
+kg/m$^3$ of the solution), the registered FORM of its law, the composition
+variable (a mass fraction \code{w[<component>]} of a constituent), the
+coefficients, a domain of bands (each a temperature range and a range of the
+variable) --- HARD: the law is never extrapolated --- and its evidence.  The
+method \code{solutionLaw} applies to a request whose constituent set
+\emph{equals} the record's: a third constituent passes it over.  It stands
+above \code{idealMixing} (tier 2b), and the hypothesis
+\code{massWithoutVolume} never stands in front of it.  A record of this tier
+may carry the law and no heat of solution: the enthalpy registry then does
+not register it (a heat of solution that does not exist is never read).  It
+is independent of any activity model's own record for the same pair: the
+coefficients of the model \code{OlssonNaOH} (\S\ref{sec:olsson-naoh}) live
+apart, and the density law applies whatever activity model the case chooses.
+
+\paragraph{The form \code{polynomialTSqrtX}.}  Olsson, Jernqvist and
+Aly~\cite{OlssonJernqvistAly1997}, Eqs.~(6)--(9), p.~785:
+\begin{equation}
+  \rho = b_1 + b_2\,t + b_3\,t^2, \qquad
+  b_j = \sum_{k=0}^{5} c_{jk}\, x^{k/2},
+  \qquad t = T - 273.15\,\mathrm{K},\quad x = w_{\mathrm{H_2O}},
+  \label{eq:naoh-density-olsson}
+\end{equation}
+$\rho$ in kg/m$^3$, $t$ in $^\circ$C, $x$ the mass fraction of WATER; the 18
+coefficients are the paper's Table~IV (the record's rows \code{b1},
+\code{b2}, \code{b3}), the window its Table~III (p.~783): $x\ge0.800$ for
+0--10\,$^\circ$C, 0.700 for 10--20, 0.500 for 20--60, 0.400 for 60--70, 0.300
+for 70--150, 0.200 for 150--200.  The law carries no pressure term; the run
+says so once per unit.  \emph{In sample}: 156 points of Krey (1972), mean
+0.48\,kg/m$^3$ (0.04\,\%), maximum 2.41\,kg/m$^3$ (0.23\,\%), pp.~785--786 ---
+the authors fitted to these.  \emph{Out of sample}: 186 points of Galindo-Luna
+et al.\ (2019), 303--353\,K, 0.1\,MPa, 20--50\,wt\,\%, AAD 0.055\,\%, maximum
+0.206\,\%; against Hnedkovsky et al.\ (2007) the law is 0.12\,\% low at 2\,MPa
+and 0.45\,\% low at 10\,MPa, the compressibility it does not carry.  The
+law's pure-water end is not the reference water ($+0.23$\,\% at 273.16\,K,
+$-0.09$\,\% at 298.15\,K against IAPWS-95): a liquid crossing from the set
+$\{\mathrm{water}\}$ to $\{\mathrm{NaOH, water}\}$ steps by that much.
+
+\subsection{A measurement as a method, with a hard box: \code{measured}}\label{sec:liquid-density-measured}
+
+A case may hold a measured density of its own liquid
+(\code{constant/experiments/<name>.dat}, the experiments format: provenance,
+\code{columns}, one row of \code{data}, with \code{property liquidDensity},
+\code{solvent}, \code{uncertainty} and a \code{box} of temperature, pressure
+and mass fractions) and mark it in its thermophysical system:
+\code{volumetric \{ liquid \{ measured \{ <name> \{ use method; replaces \{
+method solutionLaw; record NaOH-water; \} reason "..."; \} \} \} \}}.  Marked
+\code{use method}, the measurement IS the density of its constituent set
+inside its box, on every stream (tier 1); outside the box it is a domain
+error and never hands over to another method, so the method stays fixed and
+no residual is discontinuous.  It displaces a catalogue method only by an
+explicit act: \code{replaces} must name the method that applies; none named
+where one applies, or one named that does not apply, is refused.  The
+replaced method's value at the state is printed beside it with the
+deviation, and the deviation is COUNTED as a finding when it exceeds that
+method's stated maximum deviation (a solution record's
+\code{maxDeviation}).  A box wider than the measurement's uncertainty --- the
+replaced law's span over the box's corners exceeds it --- is a hypothesis:
+\code{reason} is then mandatory, and values away from the measured point
+carry origin \code{assumed}; with no law to judge the box, \code{reason} is
+always mandatory.  Marked \code{use check}, the measurement is never used:
+inside its box the run prints it beside the computed value with the
+deviation, outside ``not at its conditions'' with the distance.
+
+\subsection{The hypothesis \code{massWithoutVolume} and its bound}\label{sec:liquid-density-mass-without-volume}
+
+\code{approximations \{ massWithoutVolume \{ components ( NaCl );
+maxMassFraction 0.05; reason "..."; \} \}} declares that the listed
+components keep their mass and add no volume to additive volumes:
+\begin{equation}
+  \rho = \frac{\sum_{\text{all }i} x_i M_i}{\sum_{i\,\text{not listed}} x_i v_i}
+  \;=\; \frac{\rho_{\mathrm{rest}}}{1 - w_{\mathrm{listed}}}\quad\text{(one listed solute).}
+  \label{eq:mass-without-volume}
+\end{equation}
+It is the last leaf of a component (any volume the catalogue holds wins) and
+never stands in front of a solution record.  It is bounded: when the SUM of
+the listed components' mass fractions in the liquid exceeds
+\code{maxMassFraction} the request is a domain error naming the bound and
+that the case declared it.  The run's table prints one \code{[hypothesis]}
+line per unit with the largest share the hypothesis stood at and the bound
+(the result block lists it under \code{propertySources.hypotheses}); a bound
+is set from the case's own feed, its converged state AND the solver's
+perturbations of it (the two fermentor cases: 4.2e-4 against a bound of
+1e-3).  For 1\,\% by mass of a salt in water it gives
+1010.1\,kg/m$^3$; a measured brine at 1\,mol/kg is about 1.8\,\% denser than
+water by the engine's own bound (\code{AqueousVolumetric.H}).  Without the
+declaration a component with no volume is refused: no neutral value enters a
+mean.
+
+\subsection{The domain error as a rejectable trial}\label{sec:liquid-density-domain-error}
+
+A state outside a method's hard domain (a measurement's box, a law's bands,
+the hypothesis' bound, a liquid above the critical temperature, the vapour
+side of the band) or not a state (an empty composition) makes the pilot's
+entry throw \code{PropertyDomainTrial}, which derives from
+\code{InfeasibleTrial}: a solver that can reject a step --- Wegstein's
+extrapolation, the Newton line search on tears, the safeguarded 1-D Newton
+--- rejects it and tries another; a seed, a converged or a final state
+reaches the run's handler and fails with the message and its remedy.  A
+missing datum is a resolution failure, raised at the set's first request,
+never a property of a state.  The slice-0 wrapper keeps throwing
+\code{PropertyDomainError}, so no other consumer changes behaviour.  What
+is demonstrated, and what is not: a seed or a substitution step outside a
+hard domain refuses by name (the fermentor case with its former tear seed of
+3\,mol\,\% CO$_2$ stops on ``the case's hypothesis massWithoutVolume does not
+stand here''); that the entry's refusal reaches the caller as an
+\code{InfeasibleTrial} --- and a missing datum does not --- is held by the
+route bench at the level the solvers catch it.  A recycle whose accelerated
+iterate overshoots a box and is then rejected was not constructed end to end.
+
+\paragraph{``Pressure not applied''.}  A method that takes no pressure (the
+record volumes, a solution law) says so on every row of the run's table.
+The \emph{advisory} is raised only above 2\,MPa, once per method and unit:
+a liquid's isothermal compressibility is about $5\times10^{-10}$ per Pa
+(water $4.6\times10^{-10}$ at 25\,$^\circ$C), so 2\,MPa is a 0.1\,\% density
+effect, the order a golden's $10^{-4}$ tolerance can see
+(\code{pressureAnnouncedAbove} in \code{DensityResolver.cpp}).  Of the shipped
+cases only the second-pass booster of \code{plant/swro01\_campoDalias} raises
+it (5.6\,MPa, boron on its flat record volume); the other reverse-osmosis
+boosters price water by its reference equation, with pressure, and their
+salt has mass and no volume to compress.
+
+\subsection{The pilot's demonstrations}\label{sec:liquid-density-demonstrations}
+
+Six cases under \code{tutorials/steady/thermo/}, each feed $\to$ pump $\to$
+CSTR (a reaction whose reactant is absent, so the reactor is a vessel of
+volume $V_R$): water (\code{liquidDensity01\_water}, the reference equation
+by the fact, 997.047\,kg/m$^3$ at 1\,bar and 1018.44 at 500\,bar), water +
+ethanol (\code{liquidDensity02\_waterEthanol}, additive volumes), aqueous NaOH
+by the solution record (\code{liquidDensity03\_NaOH}) and by the case's
+measured point (\code{liquidDensity04\_NaOHpoint}: $\tau = 1213.8$\,s and
+$Q = 8.2386\times10^{-4}$\,m$^3$/s for 1\,kg/s, by hand from the point), CO$_2$
+dissolved in water refused for want of a partial molar volume
+(\code{liquidDensity05\_CO2water}), NaCl in water + ethanol refused for want
+of a solution record (\code{liquidDensity06\_NaClwaterEthanol}).  The caustic
+cases have no pump: a pump's discharge temperature needs the liquid's heat
+capacity, which NaOH's record does not carry --- a gap outside this pilot.
+\code{check\_density\_pilot} runs them on scratch copies and holds, for EACH
+method a unit can receive, that the pump's and the CSTR's density equal the
+kernel's own double to $10^{-9}$ at two states the method prices
+differently; the twelve printed IAPWS-95 anchors (within 0.0005\,\%); the
+mechanism of additive volumes at $x=0.5$ to $10^{-16}$; the law against the
+eighteen constants; the measured point's box and its witness (the point set
+to 1000 and to 1500\,kg/m$^3$ leaves $\tau/\rho$ unchanged); the refusals word
+for word; and the package's saturation line of the three zones above.
+
+A finding about a record, not about the kernel, met while measuring the two
+lines: the vapour-pressure correlation of \code{water.dat} (Antoine, declared
+window 273--373\,K) puts water's saturation pressure 19\,\% above IAPWS-95's
+at 610\,K (the reference's is 15.9\,\% below the record's), where it is
+extrapolated.  The kernel reads it as the package's
+line, as it must; it is not changed here.
 
 \section{Heat capacity}\label{ch:heat}
 
@@ -15492,18 +15802,23 @@ taken at its declaration and not re-solved, so a gas declared
 \begin{equation}
   Q \;=\;
   \begin{cases}
-    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}) & \beta = 0
+    F \, \bar M / \rho_L(T,P,\zv) & \beta = 0
       \ \text{(liquid feed)},\\[3pt]
     F \, \bar M / \rho_V(T,P,\zv) = F\, v_V(T,P,\zv) & \beta = 1
       \ \text{(vapour feed)},\\[3pt]
-    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}),\ \text{announced}
+    F \, \bar M / \rho_L(T,P,\zv),\ \text{announced}
       & 0 < \beta < 1,
   \end{cases}
   \label{eq:cstr-feed-volumetric-flow}
 \end{equation}
-with $V_i^{\mathrm{liq}}$ each component record's 25\,$^\circ$C liquid volume
-(no temperature or pressure effect; the liquid-property reorganisation of
-\S\ref{sec:liquid-property-sources} moves it later) and $\rho_V$ the package's
+with $\rho_L$ the property kernel's liquid density AT THE FEED STATE, over the
+constituents present in the feed, by the method resolved for that constituent
+set (\S\ref{sec:liquid-density-methods}: a reference equation, additive
+volumes, a solution record's law or the case's measurement; a constituent
+with no volume refused unless the case declares \code{massWithoutVolume},
+\S\ref{sec:liquid-density-mass-without-volume}) --- until the 2026-11 pilot
+each component record's flat 25\,$^\circ$C volume, $-7.1$\,\% on the
+esterification CSTRs at 350\,K --- and $\rho_V$ the package's
 vapour density from the equation of state the case declares ($v_V=RT/P$ for
 the ideal gas).  A two-phase feed keeps the liquid basis --- this unit is a
 stirred liquid, and a trace of dissolved gas flashing at the feed (the
@@ -23729,7 +24044,11 @@ of the above.  The work raises the pressure directly,
    \Delta P = \frac{\eta\,W_{\text{shaft}}}{\dot n\,\bar v}, \qquad
    P_{\text{out}} = P_{\text{in}} + \Delta P,
 \end{equation}
-with $\bar v$ the liquid molar volume; the small inefficiency dissipates
+with $\bar v = \bar M/\rho_L$ the liquid molar volume at the INLET state,
+$\rho_L$ the property kernel's liquid density by the method resolved for the
+liquid's constituent set (\S\ref{sec:liquid-density-methods}; pure water by its
+reference equation, with pressure; a dissolved salt with mass and no volume
+only when the case declares \code{massWithoutVolume}); the small inefficiency dissipates
 as a tiny temperature rise $\Delta T = (1-\eta)w_{\text{real}}/C_{p,L}$.
 A closed form --- the incompressible limit needs no equation of state
 and no iteration.
@@ -29407,6 +29726,13 @@ Table~A10.
   from the Melting Line to 625\,K at Pressures up to 1000\,MPa,
   \emph{J.\ Phys.\ Chem.\ Ref.\ Data} 20 (1991) 1061--1155.
 
+\bibitem{OlssonJernqvistAly1997} Olsson, J., Jernqvist, \AA., \& Aly, G.,
+``Thermophysical Properties of Aqueous NaOH--H$_2$O Solutions at High
+Concentrations'', \emph{Int.\ J.\ Thermophys.}, 18(3), 779--793 (1997).
+Vapour pressure (Eqs.~(1)--(5), Tables~II--III) and enthalpy (Eqs.~(12)--(16),
+Tables~VI--VII) of NaOH(aq), 0--200$^\circ$C, water mass fraction 0.2--1;
+the coefficients of the \code{OlssonNaOH} model.
+
 \bibitem{Renon} Renon, H., \& Prausnitz, J. M., ``Local Compositions in
 Thermodynamic Excess Functions for Liquid Mixtures'', \emph{AIChE J.},
 14, 135--144 (1968). Original NRTL paper.
@@ -29874,13 +30200,6 @@ publication allowed.
 pp.~1348--1350 of the 5th edition).  The linear, Freundlich and Langmuir forms,
 the log--log and $1/q$ against $1/c$ plots, and the batch balance whose plot
 against $c$ meets the isotherm.
-
-\bibitem{OlssonJernqvistAly1997} Olsson, J., Jernqvist, \AA., \& Aly, G.,
-``Thermophysical Properties of Aqueous NaOH--H$_2$O Solutions at High
-Concentrations'', \emph{Int.\ J.\ Thermophys.}, 18(3), 779--793 (1997).
-Vapour pressure (Eqs.~(1)--(5), Tables~II--III) and enthalpy (Eqs.~(12)--(16),
-Tables~VI--VII) of NaOH(aq), 0--200$^\circ$C, water mass fraction 0.2--1;
-the coefficients of the \code{OlssonNaOH} model.
 
 \bibitem{Parker1965} Parker, V. B., \emph{Thermal Properties of Aqueous
 Uni-univalent Electrolytes}, National Standard Reference Data Series

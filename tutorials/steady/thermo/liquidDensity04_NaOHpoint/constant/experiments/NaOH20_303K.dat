@@ -1,0 +1,36 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ONE MEASURED POINT of the case's own caustic (the D3b demonstration's
+  "laboratory measurement", DEV.md 4c C378).  Galindo-Luna, Gomez-Arias,
+  Ibarra-Bahena, Morales-Flores and Romero, J. Chem. Eng. Data 64 (2019)
+  5302-5311, DOI 10.1021/acs.jced.9b00536: 303.15 K, 0.1 MPa, w[NaOH] 0.200,
+  1213.8 kg/m3, expanded uncertainty 2.0 kg/m3 (read from the ThermoML
+  archive's copy of the article's table, not yet from the article itself).
+  The BOX is where the case lets the point stand: +-1.5 K and +-0.001 in
+  w[NaOH], over which the record's law spans +-1.86 kg/m3, inside U (so the
+  box is judged, not a hypothesis).  Raw SI: K, Pa, mass fraction.
+\*---------------------------------------------------------------------------*/
+provenance
+{
+    source       measured;
+    reviewStatus transcribedNotCheckedAgainstArticle;
+    citation     "Galindo-Luna, Y. R.; Gomez-Arias, E.; Ibarra-Bahena, J.; Morales-Flores, A.; Romero, R. J. (2019). New Concentration Correlations of NaOH Aqueous Solutions for a Thermodynamic Process. J. Chem. Eng. Data 64, 5302-5311. doi:10.1021/acs.jced.9b00536 -- the point at 303.15 K, w[NaOH] 0.20";
+    archiveFile  "acs.jced.9b00536.xml";
+    archive      "the ThermoML archive (NIST/TRC), the user's local mirror";
+    doi          "10.1021/acs.jced.9b00536";
+    sha256       "ad8fcdb690300e190450f67a6d1950bc8a0b9761481521184c8b33f37fe3b3d6";
+}
+system      ( NaOH water );
+property    liquidDensity;
+solvent     water;
+columns     ( { name T; unit K; } { name P; unit kPa; } { name w[NaOH]; unit -; } { name rho; unit kg/m3; } );
+data        ( 303.15  100  0.200  1213.8 );
+uncertainty 2.0;           // kg/m3, expanded (95 %)
+box         { T ( 301.65 304.65 ); P ( 50e3 1500e3 ); w[NaOH] ( 0.199 0.201 ); }   // K, Pa, -

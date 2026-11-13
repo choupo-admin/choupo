@@ -76,7 +76,7 @@ Description
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
 #include "thermo/electrolyte/AqueousVolumetric.H"
-
+#include "propertyOps/PropertyEvaluator.H"   // the liquid-density probe (C378 pilot)
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/SurfaceTensionModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
@@ -92,7 +92,7 @@ Description
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/membrane/MembraneRegistry.H"
 #include "thermo/membrane/MembraneModuleRegistry.H"
-
+#include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -104,7 +104,7 @@ Description
 #include <sstream>
 #include <stdexcept>
 #include <string>
-
+#include <cstdio>
 using namespace Choupo;
 namespace fs = std::filesystem;
 
@@ -358,7 +358,7 @@ try
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)
     electrolyte::AqueousVolumetricModel::registerBuiltins();   // the volumetric-model slot (rung 0/1)
-    PureFluidModel    ::registerBuiltins();   // pure-component absolute props (IF97)
+    PureFluidModel    ::registerBuiltins();   liquidProperty::DensityMethod::registerBuiltins();   // pure-fluid models (IF97); the liquid-density methods (C378 pilot)
     EquationOfState ::registerBuiltins();
     TransportModel  ::registerBuiltins();
     SurfaceTensionModel::registerBuiltins();
@@ -435,6 +435,7 @@ try
     {
         const std::string a = argv[i];
         if (a == "--gap-report" || a == "--plan" || a == "--file-traffic") continue;
+        if (a.rfind("--liquid-density-probe=", 0) == 0) continue;   // the C378 probe (below)
         //  A FLAG IS NOT A FILENAME.  This loop used to take the first
         //  non-`--gap-report` argument as the case directory, whatever it
         //  looked like, so a mistyped flag became a directory name and the
@@ -674,6 +675,40 @@ try
     if (gapReport)
     {
         emitGapReport(thermo, std::cout);
+        return 0;
+    }
+
+    //  THE LIQUID-DENSITY PROBE (C378 pilot): the kernel's liquid density of
+    //  this case's package at the states of a file (`T P name x name x ...`
+    //  per line, K and Pa), printed to the last bit (%.17g) -- what the
+    //  demonstrations and the behavioural witness compare a unit's number
+    //  with.  A refusal prints its message.  Through the props bench key, so
+    //  the probe is the bench's caller of the kernel, not a new one.
+    for (int gi = 1; gi < argc; ++gi)
+    {
+        const std::string a = argv[gi];
+        if (a.rfind("--liquid-density-probe=", 0) != 0) continue;
+        std::ifstream in(a.substr(std::string("--liquid-density-probe=").size()));
+        if (!in) throw std::runtime_error("choupoProps: cannot read " + a);
+        std::string line;
+        while (std::getline(in, line))
+        {
+            std::istringstream ls(line);
+            double T = 0, P = 0;
+            if (!(ls >> T >> P)) continue;
+            sVector x(thermo.n(), 0.0);
+            std::string nm; double v;
+            while (ls >> nm >> v) x[thermo.indexOf(nm)] = v;
+            try
+            {
+                char b[64];
+                std::snprintf(b, sizeof b, "%.17g",
+                    propertyOps::evaluateProperty("rho_liquid_kernel", thermo, T, P, x));
+                std::cout << "probe\t" << line << "\t" << b << "\n";
+            }
+            catch (const std::exception& e)
+            { std::cout << "probe\t" << line << "\tREFUSED\t" << e.what() << "\n"; }
+        }
         return 0;
     }
 

@@ -121,10 +121,36 @@ def witness_numbers():
     return vmax, km, vr, fa, vliq
 
 
-def closed_form_extent():
-    """F_A0 X = V Vmax cA/(Km + cA), cA = cA0 (1 - X), cA0 = 1/Vliq (pure A)."""
+def feed_concentration(out, unit="reactorExpr"):
+    """cA0 of the pure-A feed, kmol/m3, from the density the reactor TOOK.
+
+    Until 2026-11-13 this was 1/Vliq, the record's 25 C volume, because that
+    was what the CSTR used at any temperature.  The C378 liquid-density pilot
+    moved the CSTR's liquid basis onto the property kernel, which scales that
+    volume to the feed's 350 K by Rackett; the reactor now holds a less dense
+    liquid, and a closed form on the old basis measured the density, not the
+    rate law.  The density is READ from the run's own propertySources row
+    for the reactor (%.12g), so this arm stays a check of the KINETICS: the
+    density's own correctness is check_density_pilot's.  The row is required
+    to name the kernel, so a reactor that went back to a private volume
+    fails here by name rather than by a moved extent."""
+    js = result_json(out)
+    rows = (js or {}).get("propertySources", {}).get("used", [])
+    for r in rows:
+        if (r.get("unit") == unit and r.get("property") == "liquidDensity"
+                and r.get("valueMin") is not None):
+            if not r.get("kernel"):
+                raise ValueError(f"{unit}'s liquid density did not come from the property kernel")
+            mw = float(re.search(r"^MW\s+([0-9.eE+-]+);",
+                                 (CASE / "constant/components/isomerA.dat").read_text(),
+                                 re.M).group(1))           # kg/kmol
+            return float(r["valueMin"]) / mw
+    raise ValueError(f"no liquidDensity row for {unit} in the run's propertySources")
+
+
+def closed_form_extent(ca0):
+    """F_A0 X = V Vmax cA/(Km + cA), cA = cA0 (1 - X), cA0 = rho/MW (pure A)."""
     vmax, km, vr, fa, vliq = witness_numbers()
-    ca0 = 1.0 / vliq / 1000.0                       # kmol/m3
     # fa X (Km + ca0 (1-X)) = vr vmax ca0 (1-X)   -> a X^2 + b X + c = 0
     a = -fa * ca0
     b = fa * (km + ca0) + vr * vmax * ca0
@@ -191,7 +217,7 @@ def main() -> int:
         fails.append("(a) the witness did not publish both extents")
     else:
         xc, xe = float(xc.group(1)), float(xe.group(1))
-        exact = closed_form_extent()
+        exact = closed_form_extent(feed_concentration(out))
         if abs(xc - xe) > 1e-12 * abs(xe):
             fails.append(f"(a) the C++ law gives {xc!r} mol/s and the expression "
                          f"{xe!r} -- one law, two answers")
@@ -341,7 +367,7 @@ def main() -> int:
         else:
             #  f(350 K) = 2 exactly: the CSTR is the same law at twice Vmax.
             vmax, km, vr, fa, vliq = witness_numbers()
-            ca0 = 1.0 / vliq / 1000.0
+            ca0 = feed_concentration(outp)
             a = -fa * ca0; bq = fa * (km + ca0) + vr * 2 * vmax * ca0; c = -vr * 2 * vmax * ca0
             d = math.sqrt(bq * bq - 4 * a * c)
             x2 = [r for r in ((-bq + d) / (2 * a), (-bq - d) / (2 * a)) if 0 <= r <= 1][0]

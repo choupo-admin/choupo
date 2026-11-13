@@ -12,9 +12,9 @@ Every run prints, just before its result block, one line per unit:
 
 ```
 [liquid properties] Where each unit took its liquid properties from in this run (values as used; nothing is changed by this table)
-  methanolPump (pump)   liquid density   787.27 kg/m3 at 300.0 K, 1.01 bar   computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect
-  methanolTank (storageTank)   liquid density   785.12 kg/m3 at 300.0 K, 1.01 bar   property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied
-  [twice] the same liquid (300.0 K, 1.01 bar, one composition) is given two densities: ...
+  pump01 (pump)   liquid density   997.14 kg/m3 at 298.1 K, 3 bar   property kernel: the Helmholtz reference equation IAPWS95 of water (taken because a record names the fluid), liquid branch at the temperature and pressure; ...
+  P1 (pipe)   liquid density   996.93 .. 996.95 kg/m3 (13 values) at 298.2 K, 3.45 .. 4.8 bar   property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied
+  [hypothesis] massWithoutVolume (NaCl) in Booster (pump): largest share 0.034 of the declared bound 0.05
 ```
 
 * The number is the one the unit computed with.  A range and a count mean
@@ -22,6 +22,10 @@ Every run prints, just before its result block, one line per unit:
 * "property kernel" means the case's thermophysical package priced it.
   "computed by the unit itself" means the unit did NOT ask the package: its
   number does not follow the case's property choices.
+* `[hypothesis]`: a declared `massWithoutVolume` was used by that unit; the
+  largest share it stood at and the bound.  A pump and a pipe on one water
+  can differ (above: the pump on the methods, the pipe on the older route,
+  2e-4 apart) until every unit has moved.
 * `[twice]`: two units priced the same liquid state at two densities.  Say
   so to the student; do not average them, and do not size on one silently.
 * `[mismatch]`: a unit took a number from a kind of source its type does not
@@ -67,8 +71,9 @@ Every run prints, just before its result block, one line per unit:
 |---|---|---|
 | valve, storageTank, pipe, heatExchanger (geometry), phaseChanger (geometry), hydrocyclone, cakeFilter, thickener, sedimentingCentrifuge, dynamicTank, dynamicCSTR, every sizing pass | property kernel | property kernel (pipe and column: a value declared in the unit wins) |
 | distillationColumn (tray rating, computed efficiency, packing) | property kernel | kernel or declared; liquid diffusivity is the column's OWN Wilke-Chang, whatever model the case selects |
-| pump, pressureExchanger | the unit's own: 25 C molar volumes, no T or P; a dissolved ion keeps its mass, adds no volume | -- |
-| cstr, pfr (liquid), crystalliser (MSMPR, FVM) | the unit's own: 25 C molar volumes, no T or P (crystalliser: a component without one adds nothing, unannounced) | -- |
+| pump, cstr | the property kernel's METHODS (section 3b): at the pump's inlet / the CSTR's feed state, the method of the constituent set (reference equation with pressure, additive volumes, a solution law, the case's measurement); a component with no volume refused unless `massWithoutVolume` is declared | -- |
+| pressureExchanger | the unit's own: 25 C molar volumes, no T or P; a dissolved ion keeps its mass, adds no volume | -- |
+| pfr (liquid), crystalliser (MSMPR, FVM) | the unit's own: 25 C molar volumes, no T or P (crystalliser: a component without one adds nothing, unannounced) | -- |
 | sprayDryer | the unit's own: the solvent's 25 C molar volume, else 1000 kg/m3 | kernel if the case selects a model, else its own defaults (1 mPa s, 72 mN/m) |
 | spiralWoundModule | `rho_feed` if declared, else 1000 kg/m3 | declared, else kernel, else 1 mPa s and 1.6e-9 m2/s |
 | electrodialysisStack, batchElectrodialysis | 1000 kg/m3 (the dilute carrier) | kinematic viscosity: the solvent's kernel viscosity / 1000 kg/m3 if a model is declared, else the constant 1e-6 m2/s |
@@ -122,10 +127,112 @@ Every run prints, just before its result block, one line per unit:
 * Viscosity, surface tension and diffusivity need a `transport {}` model;
   a unit without one either refuses or uses the default the table names.
 * `approximations {}`: the words are `idealBinaryPair`,
-  `componentOutsideActivityModel`, `idealMolecularVLE`; each block needs a
+  `componentOutsideActivityModel`, `idealMolecularVLE`, `massWithoutVolume`
+  (`components`, `maxMassFraction` mandatory); each block needs a
   non-empty `reason "...";`, and any other word is refused.
-* There is NO key today to declare a measured density, a solution
-  correlation, `massWithoutVolume` or `neglectedIn`.  Do not write them.
+* For the PUMP and the CSTR only (C378 pilot, section 3b): a measured
+  density (`volumetric { liquid { measured { ... } } }`), a solution
+  record's density law and `approximations { massWithoutVolume { ... } }`
+  exist.  Every other unit ignores them.  `neglectedIn` does not exist.
+
+## 3b. The liquid density as methods (C378 pilot)
+
+The pump and the CSTR take their liquid density from the kernel's METHODS
+(`src/thermo/liquidProperty/`), through `liquidProperty::density`; every
+other unit stays on the slice-0 wrapper (section 2).  The method is chosen
+once per constituent set (the components with x > 0), at the set's first
+request, and frozen for the run -- never by T, P or the amounts:
+
+| method | kind | what it answers |
+|---|---|---|
+| `recordVolume` (its id names the route: `recordVolume.anchoredRackett`, `.flatVliq`, `.bareRackett`) | leaf | the record's `Vliq` on its route (anchored on Rackett at `VliqT`; flat; Rackett alone, an estimate); no pressure |
+| `pureFluid` | leaf / one-constituent set | the case's `pureFluids` selection, liquid branch, with pressure |
+| `referenceEquation` | leaf / one-constituent set | a Helmholtz record in `parameters/Helmholtz/` whose `fluid` is the component (water, CO2, CH4, N2 today), by that fact, with pressure; case-local copy first |
+| `idealMixing` | set | additive volumes over one leaf per constituent; no excess volume.  Its id `idealMixing[...]` is the slice-0 door's `liquidVolume.idealMix[...]` under another name: ONE arithmetic, two ids until the wrapper consumers migrate |
+| `massWithoutVolume` | leaf | the declared hypothesis: mass kept, no volume, bounded by `maxMassFraction` |
+| `solutionLaw` | set | a solution record's own density law for exactly the set (form `polynomialTSqrtX`: NaOH-water) |
+| `measured` | set | the case's measurement marked `use method`, constant inside its hard box |
+
+Precedence for a set: a marked measurement; a record law for exactly the set
+(one constituent: `pureFluids`, else a reference equation; two or more: a
+solution record); `idealMixing`; refusal naming every method passed over and
+the remedy.  A declared Henry solute has no pure-liquid leaf.
+
+### The grammar the pilot reads
+
+A solution record, `parameters/solution/<set>.dat` (set sorted
+case-insensitively; case-local `constant/parameters/solution/` first):
+
+```
+solute      NaOH;
+solvent     water;
+liquidDensity
+{
+    returns           solutionDensity;     // kg/m3 of the solution
+    form              polynomialTSqrtX;    // rho = b1 + b2 t + b3 t^2, b_j = sum c_jk x^(k/2)
+    variable          w[water];            // the composition variable: a mass fraction
+    temperatureOrigin 273.15 K;            // t = T - origin
+    b1 ( ...6 numbers... );  b2 ( ... );  b3 ( ... );
+    domain ( { T ( 273.15 283.15 ); w[water] ( 0.800 1 ); } ... );   // K; HARD
+    pressure          notCarried;
+    provenance { origin literature; citation "..."; uncertainty "..."; maxDeviation 2.41 kg/m3; read "..."; }
+}
+```
+
+A measurement of the case, `constant/experiments/<name>.dat`:
+
+```
+provenance  { source "..."; citation "..."; }
+property    liquidDensity;
+solvent     water;                          // the constituent whose fraction is the rest
+columns     ( { name T; unit K; } { name P; unit kPa; } { name w[NaOH]; unit -; } { name rho; unit kg/m3; } );
+data        ( 303.15 100 0.200 1213.8 );    // ONE point
+uncertainty 2.0;                            // kg/m3, expanded
+box         { T ( 301.65 304.65 ); P ( 50e3 1500e3 ); w[NaOH] ( 0.199 0.201 ); }   // K, Pa, -
+```
+
+marked in `constant/thermoPhysPropDict` (top level):
+
+```
+volumetric { liquid { measured
+{
+    NaOH20_303K { use method; replaces { method solutionLaw; record NaOH-water; } reason "..."; }
+    NaOH20_333K { use check; }
+} } }
+```
+
+and the hypothesis, in the one `approximations` block:
+
+```
+approximations { massWithoutVolume { components ( NaCl ); maxMassFraction 0.05; reason "..."; } }
+```
+
+Refusals and their remedies: a set no method prices names every method
+passed over ("no solution record covers this set ...
+parameters/solution/ethanol-NaCl-water.dat ...; idealMixing needs a volume
+for every constituent: 'NaCl' has no liquid volume ...") -- remedy a
+solution record, a volume in the record, or the hypothesis; a marked
+measurement outside its box is a domain error, never handed over; `use
+method` without `replaces` where a catalogue method applies, or naming one
+that does not apply, is refused; a box wider than the uncertainty needs a
+`reason`; the hypothesis above its bound is a domain error naming the
+bound; a law outside its bands is a domain error naming the bands.  A domain
+error is a rejectable trial (`PropertyDomainTrial`): a recycle solver may
+reject the step; a converged state fails with the remedy.
+
+The liquid branch of the two pure-fluid leaves is the engine's one band
+(1e-6 of p_sat): a ONE-constituent set asked as a liquid more than the band
+below p_sat(T) is a VAPOUR and is refused ("pure water at 373.15 K and 1 bar
+is a VAPOUR -- its saturation pressure there is p_sat(T) = 101418 Pa");
+remedy: a pressure at or above p_sat(T).  A leaf inside a mixture below its
+own p_sat is the saturated liquid at T, announced once per method and unit.
+At or above the critical temperature there is no liquid (refused).  For a pure set
+priced by `referenceEquation` (no `pureFluids`), the package's own
+saturation line (`ThermoPackage::Psat`) decides the phase: between the
+reference's line and the package's, the reference's saturated liquid,
+announced with both pressures; below both, refused.  The
+props bench key `rho_liquid_kernel` (choupoProps, `propertyScan1D`) asks the
+same methods for the state's composition.
 
 ## 4. Known deviations -- do not size on them silently
 
@@ -139,8 +246,8 @@ numerical review):
   refused.  STILL OPEN: a SEALED case keeps its frozen copy of each record
   until its seal is refreshed; propane, propylene, H2O2, HCHO, HCN and NO2
   carry a `Vliq` whose temperature no source states (pinned debt);
-* the units that read `Vliq` themselves (pump, pressure exchanger, CSTR,
-  liquid PFR, crystallisers, spray dryer) take the stored datum flat, at
+* the units that read `Vliq` themselves (pressure exchanger, liquid PFR,
+  crystallisers, spray dryer) take the stored datum flat, at
   whatever `VliqT` it belongs to; their table line names the records that
   state one ("molar volume at the temperature its record states (CH4 at
   111.66 K; any other at 25 C)") and says "25 C" only when none does;

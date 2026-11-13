@@ -38,6 +38,7 @@ Description
       Single-value:         T   P
       Pure / mixture VLE:   Psat_<comp>   T_bubble   T_dew
       Pure liquid:          Cp_liquid_<comp>   rho_liquid_<comp> [kg/m3]
+      Liquid (kernel):      rho_liquid_kernel [kg/m3]  (the C378 methods)
       Activity model:       gamma_<comp>
       Ideal-gas mixture:    H_ig   S_ig   Cp_ig
       Real-gas mixture:     Z   v_molar   H_R   S_R   H_real   S_real

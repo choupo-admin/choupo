@@ -1,0 +1,77 @@
+// [imported] origin "data/standards/chemistry/aceticAcid-dissolution.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+recordType gasLiquidEquilibrium;
+schemaVersion 2;
+
+// Acetic acid gas-liquid transfer (gasSpecies = the component's declared
+// formula, the gasOf contract: water -> H2O, aceticAcid -> C2H4O2)
+// (Henry-type, PHREEQC convention a(dissolved) = K * p[atm]):
+// HAc(g) = HAc(aq).
+// K25 from Sander (2015) Compilation of Henry's law constants, ACP 15,
+// 4399 (acetic acid, Hcp ~ 4.1e3 M/atm -> logK25 3.61); dH from the same
+// compilation's d(ln H)/d(1/T) ~ 6200 K -> -51.5 kJ/mol (exothermic).
+
+// Equilibrium-parameterisation identity (ADR 2026-07-26, D2 migration wave):
+// the Sander H_xp pair parameters/Henry/aceticAcid-water.dat declares its
+// identity on the COMPONENT name (aceticAcid); this record's gas key is the
+// formula token -- the family gate normalises through the component's
+// declared formula, never by textual similarity.
+gasSpecies       C2H4O2;
+dissolvedSpecies CH3COOH;
+solvent          water;
+convention       PHREEQC-gasMolal-v1;
+
+reaction "CH3COOH(g) = CH3COOH";
+      logK25 3.61; dH -51500; source "Sander, R. (2015) Atmos. Chem. Phys. 15, 4399 (CC-BY 3.0): acetic acid Hcp ~ 4.1e3 M/atm at 298 K, d(lnH)/d(1/T) ~ 6200 K";
+
+// VAPOUR dimerisation of acetic acid (the carboxylic-acid signature):
+//   2 CH3COOH(g) = (CH3COOH)2(g),  K_dim = p_D/p_M^2 [atm^-1]
+// K25 = 10^3.107 = 1280 atm^-1, dH = -63.18 kJ/mol (Chao & Zwolinski 1978,
+// Tables 11/12 ETHANOIC acid; corrected 2026-11-03 -- the note below).
+vapourDimerisation
+{
+    logK25  3.107;
+    dH      -63180;
+    //  ADOPTED FROM THE PRIMARY, 2026-08-24.  This block asked for a
+    //  re-check; the re-check was done with the paper in hand and the
+    //  stored pair (-58.5 kJ/mol, logK 3.146) was NOT the paper's.  On
+    //  the owner's ruling the paper's own numbers are now carried:
+    //
+    //    dH_dim  = -63.18 kJ/mol   Table 14 (p. 373), "Derived from
+    //                              calculation / This work", 15.10 kcal/mol
+    //                              at 298.15 K.  (The paper's own formation
+    //                              properties give -63.80; the 0.6 kJ is
+    //                              two-decimal kJ against two-decimal kcal.)
+    //    logK25  = 2.555           from the paper's tabulated log Kf
+    //                              (dimer 125.543 - 2 x monomer 61.494);
+    //                              cross-checked on its dfG values
+    //                              (-716.59 - 2 x -351.00 = -14.59 kJ/mol
+    //                              -> log K 2.556).
+    //
+    //  What the change costs, MEASURED on flash13 before adopting: the
+    //  compositions and pH do not move at all; V/F goes 0.5804 -> 0.5766
+    //  (-0.7 %), the flash duty 669.3 -> 665.8 kW (-0.5 %), and the dimer
+    //  ASSOCIATION heat 4x smaller (-1.0278 -> -0.2506 kW) because a
+    //  4x smaller K forms 4x less dimer.  35 cases mirror this record and
+    //  were resealed and re-recorded with it.
+    //
+    //  The retired pair is not disowned: -58.5 kJ/mol = 13.98 kcal/mol sits
+    //  inside the spread of ten studies the same Table 14 lists (11.4 to
+    //  17.0 kcal/mol).  It was simply never this paper's, and this record
+    //  said it was.
+    //  CORRECTED 2026-11-03 (docs/design/acetic-acid-latent-heat-closure.md):
+    //  the 2026-08-24 logK 2.555 and the dfG cross-check above were read from
+    //  the METHANOIC (formic) tables 4/6/8 of the same paper -- the record
+    //  carried acetic acid's dH with formic acid's K, 3.5x too small.  The
+    //  ETHANOIC tables give log K = 134.265 (dimer, Table 12) - 2 x 65.579
+    //  (monomer, Table 11) = 3.107 atm^-1; Table 16 (Keq 1.26e3 at 298.15 K,
+    //  dimer fraction 0.972 at 1 atm) reproduces only with it.  dH is
+    //  unchanged (-927.68 - 2 x -432.25 = -63.18 kJ/mol, exactly).
+    source  "Chao & Zwolinski, J. Phys. Chem. Ref. Data 7 (1978) 363, Table 14 (dH, 'This work' row) and the tabulated ideal-gas properties of the ethanoic acid monomer and dimer (logK) -- PRIMARY PAGES READ 2026-08-24; record: docs/design/interim-review-2026-08-24.md";
+}
+
+// Structured review metadata (D6 v2, 2026-07-26): preferred over the
+// free-text INTERIM marker above; records gain this block when touched or
+// reviewed (no mega-wave).  `reviewStatus interim;` blocks promotion.
+reviewStatus interim;
+reviewReason ( primarySourceRecheck );
+reviewOwner  IST;
