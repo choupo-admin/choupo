@@ -71,8 +71,16 @@ Description
     theta/psi/E_theta sum is empty and the model reduces EXACTLY to
     PitzerSingleSalt -- verify() proves it to floating point for every binary in
     pairs.dat (the skeptic's gate), to the Debye-Huckel limiting law as I -> 0,
-    and checks the J(x) kernel vs the published tabulated anchors.  (The remaining
-    v2 deferral is the full beta(T)/theta(T) temperature surface, 25 C base here.)
+    and checks the J(x) kernel vs the published tabulated anchors.
+
+    TEMPERATURE.  A_phi(T) follows the solvent; the pair virials beta0, beta1
+    and Cphi follow T through the SAME record forms and the SAME functions the
+    single-salt kernel uses (Pair::applyT in PitzerHMW.cpp: the declared
+    linear slots or the Silvester-Pitzer 1977 eqs 30-32, a deviation that
+    vanishes at 298.15 K; a pair record declaring neither keeps its 25 C
+    values).  The mixing terms theta, psi, lambda and zeta carry NO
+    temperature dependence: they are the 25 C values at every T -- the
+    deferral that remains.
 
     Neutral / non-ion species (z == 0, e.g. dissolved gases, the exchange site
     X-) are EXCLUDED from every sum and get gamma = 1, exactly as Davies excludes
@@ -131,12 +139,16 @@ public:
     // set actually in play, not a black box.
     void announceParameters(const IonState& st, std::ostream& os) const override;
 
-    // TIER-1 self-test (the skeptic's gate): for EVERY binary in pairs.dat,
-    // assert this multi-ion model's single-salt-solution mean ln gamma_pm
-    // reproduces PitzerSingleSalt::lnGammaPM to floating point, and check the
-    // I -> 0 Debye-Huckel limiting law.  Returns the max single-salt deviation
-    // across all binaries (0 in exact arithmetic; ~1e-13 from FP reassociation).
-    // Prints the limiting-law anchor at verbosity >= 3.  Mirrors IF97::verify().
+    // TIER-1 self-test (the skeptic's gate): for EVERY binary in the Pitzer
+    // pairs catalogue, assert this multi-ion model's single-salt-solution mean
+    // ln gamma_pm AND osmotic coefficient phi reproduce PitzerSingleSalt's
+    // lnGammaPM / osmoticCoefficient to floating point, and check the I -> 0
+    // Debye-Huckel limiting law.  Returns the LARGER of the two max relative
+    // single-salt deviations (gamma, phi) across all binaries (0 in exact
+    // arithmetic; ~1e-14 from FP reassociation) -- so a caller's threshold
+    // gates both.  The limiting-law ratio and the J(x) kernel deviation are
+    // PRINTED at verbosity >= 3 and are not part of the returned number.
+    // Mirrors IF97::verify().
     // `onlyIons` (Codex seal-audit, 2026-07-18): restrict the single-salt
     // oracle to the pairs whose cation AND anion are in the set -- the
     // per-run gate checks the CASE's ions only (an NaCl run must not depend

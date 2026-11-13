@@ -96,9 +96,9 @@ export const molalityAtI = (s: SaltDef, I: number): number =>
 // ---- the constants the page's arithmetic uses (each the engine's own) ----------
 
 /** The osmotic Debye-Hueckel slope of water at 25 C on the molality scale,
- *  src/thermo/electrolyte/PitzerForm.H:88 (aPhiRef25). */
+ *  src/thermo/electrolyte/PitzerForm.H:106 (aPhiRef25). */
 export const A_PHI_25 = 0.3915;
-/** Davies' log10 slope at 25 C, src/thermo/electrolyte/AqueousActivity.cpp:131
+/** Davies' log10 slope at 25 C, src/thermo/electrolyte/AqueousActivity.cpp:164
  *  (0.51), written there as 3 A_phi / ln 10 rounded. */
 export const A_DAVIES_25 = 0.51;
 /** Molar mass of water, kg/mol: the 18.015 g/mol the Pitzer kernel's water

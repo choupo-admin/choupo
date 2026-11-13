@@ -33,8 +33,12 @@ License
   case carries inline (cited).  The math is thermo/electrolyte/
   ENRTLMixedSolvent.H (closed form, glass-box).
 
-  Dictionary form (all taus/X:Z default to the published water-ethanol-NaCl
-  values; override to run another alcohol/salt):
+  Dictionary form (the segment taus and X:Z default to the published
+  water-ethanol-NaCl values; the ion<->OH pair IS the aqueous NaCl eNRTL
+  pair and is read from the catalogue record parameters/eNRTL/Na-Cl.dat;
+  any of them may be declared in `salt {}` / `alcohol {}` to run another
+  alcohol/salt, and a declared aqueous tau that differs from the record is
+  printed beside it):
 
         {
             name     esteso;

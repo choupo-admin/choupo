@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1833,
+  "cases": 1834,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 24
+  "anchored": 25
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -22998,6 +22998,16 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/electrolyte/borate01_felmyWeare": {
+   "application": "choupoProps",
+   "ops": [
+    "speciate"
+   ],
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/props/electrolyte/citricAcid01_speciation": {
    "application": "choupoProps",
    "thermo": {
@@ -30913,6 +30923,7 @@
     "tutorials/props/electrolyte/aminoBuffers01_tris_glycine",
     "tutorials/props/electrolyte/archer01_nacl_cold_to_hot",
     "tutorials/props/electrolyte/bjerrum01_carbonate_pH",
+    "tutorials/props/electrolyte/borate01_felmyWeare",
     "tutorials/props/electrolyte/citricAcid01_speciation",
     "tutorials/props/electrolyte/composition01_nacl",
     "tutorials/props/electrolyte/davies01_band_edge",
@@ -36771,6 +36782,7 @@
     "tutorials/props/molecular/solubility01_hildebrand_ladder"
    ],
    "speciate": [
+    "tutorials/props/electrolyte/borate01_felmyWeare",
     "tutorials/props/electrolyte/edwards01_sour_water_activity",
     "tutorials/props/electrolyte/edwards02_table7_vle",
     "tutorials/props/electrolyte/edwards03_table8_vle",

@@ -6041,18 +6041,30 @@
    "src/thermo/RecordResolver.H"
   ],
   "src/propertyOps/ENRTLMixedSolventOp.cpp": [
+   "src/core/Advisory.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/PublishedTable.H",
+   "src/core/ThermoResolution.H",
    "src/core/Types.H",
    "src/propertyOps/ENRTLMixedSolventOp.H",
    "src/propertyOps/PropertyOperation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/FitGrade.H",
+   "src/thermo/PairAudit.H",
    "src/thermo/RecordResolver.H",
-   "src/thermo/electrolyte/ENRTLMixedSolvent.H"
+   "src/thermo/ReviewRecord.H",
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/electrolyte/ENRTLMixedSolvent.H",
+   "src/thermo/electrolyte/ENRTLSingleSalt.H",
+   "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H",
+   "src/thermo/electrolyte/PitzerForm.H",
+   "src/thermo/electrolyte/PitzerSingleSalt.H",
+   "src/thermo/electrolyte/SaltFromCatalogue.H",
+   "src/thermo/electrolyte/SolventProperties.H"
   ],
   "src/propertyOps/ENRTLMultiSaltOp.cpp": [
    "src/core/Advisory.H",
@@ -13011,6 +13023,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/EnthalpyConcentration.cpp",
@@ -15741,6 +15754,7 @@
    "src/postProcessing/sizing/VesselSize.cpp",
    "src/postProcessing/views/RunPublications.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -18892,6 +18906,7 @@
    "src/unitOperations/heatTransfer/Heater.cpp"
   ],
   "src/thermo/FitGrade.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -19187,6 +19202,7 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/PairAudit.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -19518,6 +19534,7 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/ReviewRecord.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -19681,6 +19698,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20379,6 +20397,7 @@
    "src/propertyOps/ENRTLMultiSaltOp.cpp"
   ],
   "src/thermo/electrolyte/ENRTLSingleSalt.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20433,6 +20452,7 @@
    "src/unitOperations/heatTransfer/Evaporator.cpp"
   ],
   "src/thermo/electrolyte/ElectrolyteTemperatureSpan.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20481,6 +20501,7 @@
    "src/thermo/electrolyte/OlssonNaOH.cpp"
   ],
   "src/thermo/electrolyte/PitzerForm.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20517,6 +20538,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp"
   ],
   "src/thermo/electrolyte/PitzerSingleSalt.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20557,6 +20579,7 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/thermo/electrolyte/SaltFromCatalogue.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",
@@ -20590,6 +20613,7 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/thermo/electrolyte/SolventProperties.H": [
+   "src/propertyOps/ENRTLMixedSolventOp.cpp",
    "src/propertyOps/ENRTLMultiSaltOp.cpp",
    "src/propertyOps/ElectrolyteFit.cpp",
    "src/propertyOps/Exchange.cpp",

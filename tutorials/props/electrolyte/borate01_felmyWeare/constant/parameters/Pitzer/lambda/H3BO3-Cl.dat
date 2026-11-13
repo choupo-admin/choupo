@@ -1,0 +1,28 @@
+// [imported] origin "data/standards/parameters/Pitzer/lambda/H3BO3-Cl.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  Pitzer neutral-species interaction parameter lambda(H3BO3,Cl) --- dissolved boric acid with the ion Cl.
+  Role: the salting-out second virial of the NEUTRAL boric acid with one ion, in the pitzerHMW engine.  Convention of the paper (p. 2773): lambda(B(OH)3,H) = 0.
+  Source: Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 5, p. 2774, read from the page image.
+  Fitted by the authors at 25 C: in-sample.  No temperature dependence is given.
+\*-----------------------------------------------------------------------------*/
+recordType electrolyteMixingParameter;
+schemaVersion 1;
+kind lambda;
+n H3BO3;
+ion Cl;
+value 0.091;
+source "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 5, p. 2774 (25 C)";
+
+provenance
+{
+    origin        literature;
+    source        "Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 5, p. 2774";
+    method        "value transcribed from the paper's table; no calculation";
+    readings      "lam01: read three times (text layer, page image at 200 dpi, page image at 300 dpi), data/curation/batches/boron_c198/readings.tsv";
+    fitBasis      inSample;   // the paper's own fit: these values reproduce the paper, they do not test it
+    validity
+    {
+        temperature { min 298.15 K; max 298.15 K; }
+        note        "25 C: the paper gives no temperature dependence for any of these terms";
+    }
+}

@@ -337,11 +337,13 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
         const double dev = electrolyte::PitzerHMW::verify(verbosity);
         if (!(dev < 1.0e-9))
             throw std::runtime_error("speciate verifyGlobal: PitzerHMW"
-                " full-catalogue self-check FAILED (max rel deviation "
+                " full-catalogue self-check FAILED (max rel deviation of"
+                " gamma_pm and phi "
                 + std::to_string(dev) + " > 1e-9)");
         if (verbosity >= 2)
             std::cout << "  [verifyGlobal] PitzerHMW single-salt oracle:"
-                         " FULL catalogue swept, max rel dev "
+                         " FULL catalogue swept, max rel dev (gamma_pm and"
+                         " phi) "
                       << dev << " (< 1e-9)\n";
     }
 

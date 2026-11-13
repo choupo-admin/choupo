@@ -108,8 +108,10 @@ Description
                  factor as the Pitzer/eNRTL kernels
                  (SolventProperties::debyeHuckelFactor).  Neutral species:
                  gamma = 1 (no Setchenow b*I term in v1 -- stated honestly).
-                 Trustworthy to I ~ 0.5 mol/kg, indicative beyond -- the band
-                 is the MODEL's declaration (AqueousActivity::validityDomain),
+                 Trustworthy to I ~ 0.5 mol/kg (gamma_pm within 10 % for the
+                 median 1-1 or 2-1 salt; some salts exceed it from I ~ 0.15),
+                 indicative beyond -- the band and its criterion are the
+                 MODEL's declaration (AqueousActivity::validityDomain),
                  and the solver raises the model's own advisory beyond it.
       * a_w      ln a_w = -(M_w/1000) sum_i m_i  (osmotic coefficient phi = 1
                  -- the dilute-solution approximation, announced).
