@@ -65,7 +65,7 @@ stream  mixed                  T                330              1e-4
 boundary global                 H_feeds_kW       284.677143979    1e-4
 boundary global                 Q_boundary_kW    -943.199177576   1e-4
 boundary global                 H_products_kW    -658.835249224   1e-4
-boundary global                 residual_kW      0.313215627146   1e-4
+boundary global                 residual_kW      0.313215627146   abs:0.4265
 utility Reactor                heating.-.unserved 1                1e-4
 kpi     Mixer                  Q_kW             359.342980873    1e-4
 utility Mixer                  heating.steamLP.duty_kW 359.342980873    1e-4

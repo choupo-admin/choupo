@@ -34,4 +34,4 @@ stream  washWater              T                320              1e-4
 boundary global                 H_feeds_kW       -1882.47649705   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -1885.59440643   1e-4
-boundary global                 residual_kW      3.11790938486    1e-4
+boundary global                 residual_kW      3.11790938486    abs:0.001

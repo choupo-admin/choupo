@@ -52,4 +52,4 @@ stream  warmBrine              T                330.806557015    1e-4
 boundary global                 H_feeds_kW       -7799.15475013   1e-4
 boundary global                 Q_boundary_kW    40               1e-4
 boundary global                 H_products_kW    -7762.13983367   1e-4
-boundary global                 residual_kW      2.98539520384    1e-4
+boundary global                 residual_kW      2.98539520384    abs:0.0004

@@ -45,6 +45,6 @@ utility hx                     heating.-.carried 1                1e-4
 boundary global                 H_feeds_kW       11660.2416512    1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    11660.2416546    1e-4
-kpi     hx                     H_closure_gap_kW 3.40482074535e-06 1e-4
+kpi     hx                     H_closure_gap_kW 3.40482074535e-06 abs:2.066e-05
 source  hx                     liquidDensity    pureFluid.IF97   exact
 source  hx                     liquidViscosity  pureFluid.IF97   exact

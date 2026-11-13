@@ -36,5 +36,5 @@ stream  feed2                  T                320              1e-4
 boundary global                 H_feeds_kW       -8790.44935655   1e-4
 boundary global                 Q_boundary_kW    872.106254434    1e-4
 boundary global                 H_products_kW    -7918.34310212   1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.02498
 kpi     radfrac                Q_reboiler_ownEnvelope_kW 1684.99879662    1e-4

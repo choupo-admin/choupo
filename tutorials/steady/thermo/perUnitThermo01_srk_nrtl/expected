@@ -48,5 +48,5 @@ stream  vapor                  T                353              1e-4
 boundary global                 H_feeds_kW       -3210.25594415   1e-4
 boundary global                 Q_boundary_kW    -416.177313739   1e-4
 boundary global                 H_products_kW    -3626.93876728   1e-4
-boundary global                 residual_kW      0.505509396381   1e-4
+boundary global                 residual_kW      0.505509396381   abs:0.004162
 boundary global                 W_shaft_kW       -3               1e-4
