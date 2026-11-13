@@ -60,6 +60,7 @@ Description
 
 #pragma once
 
+#include "core/PropertySourceLog.H"
 #include "core/Types.H"
 
 #include <string>
@@ -83,6 +84,28 @@ struct Factor
     scalar      muRef  = 0.0;   // mu(T0) [Pa.s]
     std::string solvent;        // the component the viscosity was asked for
 };
+
+//- WHAT WAS DONE to an ion's 25 C D0, read from the factor that was applied
+//  (review DX-01, DX-07): none because the unit runs at the curation
+//  temperature, Stokes-Einstein because the package prices a liquid
+//  viscosity, or nothing although T differs because it does not.  THE ONE
+//  decision: the polarisation builder and the pore law both ask it, so the
+//  table's tag cannot disagree with the factor the code used.
+enum class Basis { atCuration, stokesEinstein, uncorrected };
+inline Basis basis(const Factor& f)
+{
+    return f.T == referenceTemperature ? Basis::atCuration
+         : f.priced                    ? Basis::stokesEinstein
+                                       : Basis::uncorrected;
+}
+
+//- The liquid-property table's tag that tells that truth.
+const NamedSource& ionD0Source(Basis b);
+
+//- Record, under the unit being solved, that its ions' D0 were read from the
+//  species records on this basis (a no-op outside a unit's solve).  Used by
+//  a transport law that applies the factor itself.
+void recordIonD0(const Factor& f);
 
 //- The factor at T for the package's solvent: the declared `solvent` of
 //  the package, else `water`.  Not priced (value 1) when the package

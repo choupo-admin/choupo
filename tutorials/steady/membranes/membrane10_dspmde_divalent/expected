@@ -60,3 +60,6 @@ source  NF_MgSO4               liquidDensity    default.rhoFeed1000 exact
 source  NF_MgSO4               liquidViscosity  default.water1e-3 exact
 source  NF_NaCl                liquidDensity    default.rhoFeed1000 exact
 source  NF_NaCl                liquidViscosity  default.water1e-3 exact
+source  NF_CaCl2               liquidDiffusivity record.speciesD0.at25C exact
+source  NF_MgSO4               liquidDiffusivity record.speciesD0.at25C exact
+source  NF_NaCl                liquidDiffusivity record.speciesD0.at25C exact

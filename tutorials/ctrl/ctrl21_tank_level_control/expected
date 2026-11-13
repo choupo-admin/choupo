@@ -34,4 +34,4 @@ kpi     tank                   level_final      1.99999993543      1e-4
 kpi     tank                   n_water_final    349.315021066      1e-4
 kpi     tank                   t_end            3000               1e-4
 kpi     tank                   volume_final     6.28318510432      1e-4
-source  dynamicTank_'tank'     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  tank                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact

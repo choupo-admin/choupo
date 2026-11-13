@@ -49,8 +49,20 @@ def run(case: Path):
     blocks = RESULT.findall(p.stdout)
     if not blocks:
         return None, f"no result block (exit {p.returncode})"
-    used = (json.loads(blocks[-1]).get("propertySources") or {}).get("used", [])
-    return {(u["unit"], u["property"]): u["sourceId"] for u in used}, None
+    ps = json.loads(blocks[-1]).get("propertySources") or {}
+    used = ps.get("used", [])
+    #  A unit may take one property from several sources (a pore-model
+    #  module: the case's declared film diffusivity AND the ions' D0), so the
+    #  witness holds a SET per (unit, property).
+    got = {}
+    for u in used:
+        got.setdefault((u["unit"], u["property"]), set()).add(u["sourceId"])
+    #  What each unit DECLARED at assembly (review DX-06): a witness row whose
+    #  fourth column reads `declared:<class>` holds that, so a binary that
+    #  stops declaring is seen.
+    for d in ps.get("declared", []):
+        got.setdefault((d["unit"], d["property"]), set()).add("declared:" + d["class"])
+    return got, None
 
 
 def main() -> int:
@@ -69,8 +81,8 @@ def main() -> int:
         if err:
             bad.append(f"{case}: {err}")
             continue
-        if got.get((unit, prop)) != sid:
-            bad.append(f"{case}: {unit} {prop} published {got.get((unit, prop))!r}, "
+        if sid not in got.get((unit, prop), set()):
+            bad.append(f"{case}: {unit} {prop} published {sorted(got.get((unit, prop), set()))!r}, "
                        f"the witness says {sid!r}")
     if bad:
         print(f"{NAME}: FAIL -- {len(bad)} witness row(s) disagree")

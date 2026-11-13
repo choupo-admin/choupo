@@ -23,11 +23,11 @@
   period + phase)`), the dynamic binary integrates the plant, and
   `frequencyResponse {}` least-squares fits `a + b sin(wt) + c cos(wt)` to the
   outlet after the start-up transient is discarded
-  (src/dynamicDriver/DynamicDriver.cpp:1991-2023): amplitude
-  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:2004, phase
-  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:2006, and the share of
+  (src/dynamicDriver/DynamicDriver.cpp:1992-2024): amplitude
+  `hypot(b, c)` at src/dynamicDriver/DynamicDriver.cpp:2005, phase
+  `atan2(c, b)` at src/dynamicDriver/DynamicDriver.cpp:2007, and the share of
   the output variance the single sinusoid does NOT explain at
-  src/dynamicDriver/DynamicDriver.cpp:2023.  One run is
+  src/dynamicDriver/DynamicDriver.cpp:2024.  One run is
   ONE POINT of a Bode diagram, measured.  Everything this module contributes
   to that plane is the EXPERIMENT DESIGN — which frequencies to ask for, and
   what time step and run length each one needs — plus arithmetic on the
@@ -75,7 +75,7 @@ import type { ScalarOverride } from "../../case/methodRun.js";
 /** One frequency's answer: how much bigger the output swing is, and how far
  *  behind it runs.  `phaseRad` is NEGATIVE for a lag, which is the sign
  *  convention the engine's own fit publishes (`out_phase_rad` at
- *  src/dynamicDriver/DynamicDriver.cpp:2018 is the lag of the outlet behind the drive). */
+ *  src/dynamicDriver/DynamicDriver.cpp:2019 is the lag of the outlet behind the drive). */
 export interface Response {
   mag: number;
   phaseRad: number;
@@ -135,7 +135,7 @@ export function integratorResponse(omegaRadS: number): Response {
  *  delay.  The one delay this tree contains is a numerical artefact of the
  *  dynamic driver — one driver step between a routed outlet and the inlet
  *  that reads it, announced as such
- *  (src/unitOperations/dynamic/DynamicUnitOperation.H:143-146) — and it is
+ *  (src/unitOperations/dynamic/DynamicUnitOperation.H:151-154) — and it is
  *  not a declarable dead time. */
 export function deadTimeResponse(thetaS: number, omegaRadS: number): Response {
   return { mag: 1, phaseRad: -omegaRadS * thetaS };

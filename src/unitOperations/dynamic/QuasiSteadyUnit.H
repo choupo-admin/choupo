@@ -96,6 +96,10 @@ public:
     void step(scalar /*t*/, scalar /*dt*/) override { refresh(); }
 
     bool hasInventory() const override { return false; }
+
+    //- The consumer is the wrapped steady unit, so it declares under ITS
+    //  type (the steady path's rule), with this unit's case name.
+    void declarePropertySources() const override;
     std::vector<std::string> inletPorts() const override { return inletNames_; }
     std::size_t nOutlets() const override { return outletNames_.size(); }
     ContinuousStream outletStreamAt(std::size_t k) const override;

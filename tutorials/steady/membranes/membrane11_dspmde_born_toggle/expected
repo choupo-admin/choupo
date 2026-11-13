@@ -32,3 +32,5 @@ source  NF_born                liquidDensity    default.rhoFeed1000 exact
 source  NF_born                liquidViscosity  default.water1e-3 exact
 source  NF_noBorn              liquidDensity    default.rhoFeed1000 exact
 source  NF_noBorn              liquidViscosity  default.water1e-3 exact
+source  NF_born                liquidDiffusivity record.speciesD0.at25C exact
+source  NF_noBorn              liquidDiffusivity record.speciesD0.at25C exact
