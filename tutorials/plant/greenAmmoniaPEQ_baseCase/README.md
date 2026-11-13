@@ -472,13 +472,27 @@ is an author-set assumption. They are outside the battery limit, so none is
 costed (their running cost is already in C_UT) and no capital is invented
 for them. They leave the plot, the land and every balance unchanged.
 
-**What still hangs, and why.** The utilities are not piped: the engine
-routes a pipe for a stream of the flowsheet, and the cooling water, the
-refrigerant and the flare header are not streams of this case. Two things
-a real plant has and this case does not compute: the refrigeration
-compressor's shaft power and the flare's emergency relief load (the flare
-is placed on the normal vent load only). The steam the converter raises is
-a credit, not equipment, so no steam system is drawn.
+**The utility lines (2026-11-13, DEV.md 4c C268 slice 2).** A utility is
+not a stream of the flowsheet, so the engine routes nothing for one by
+itself; `layoutDict` now DECLARES thirteen lines in `utilityLines` and the
+engine routes them on the pipe rack, on tiers above the process pipes' (no
+process route moves), and checks them like a process pipe: the cooling
+water from the tower to each of the four coolers and back (eight lines,
+carrying 47.3, 123.9, 131.2 and 169.1 kg/s, the run's own utility
+allocation), the refrigerant between the package and the Chiller (two, 15.06
+kg/s) and a flare header from the separator and the two let-down drums (three,
+no flow: the case declares no relief valve, and its three vent gases are
+already piped to the fence as process streams). EVERY LINE IS UNSIZED:
+the layout sizes no pipe. They are listed under the pipe register in
+Reports -> Plant layout (3D) and drawn there by service.
+
+**What still hangs, and why.** No steam line: the run draws 0.04 kg/s of
+low-pressure steam for the separator and the let-down drum (82 kW), from a
+steam system outside this battery limit with no item on the plot to start a
+line from; the steam the converter raises is a credit, not equipment. Two
+things a real plant has and this case does not compute: the refrigeration
+compressor's shaft power and the flare's emergency relief load (the flare is
+placed on the normal vent load only).
 
 ## Engine notes
 

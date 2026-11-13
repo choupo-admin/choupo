@@ -263,6 +263,10 @@
           "label": "pipe-racks"
         },
         {
+          "title": "Utility lines: cooling water, refrigerant and the flare header",
+          "label": "utility-lines"
+        },
+        {
           "title": "Tank farms and the choice of storage",
           "label": "tank-farms-and-the-choice-of-storage"
         },

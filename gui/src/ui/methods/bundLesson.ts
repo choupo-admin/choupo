@@ -279,7 +279,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
     title: "Net volume and useful capacity: whose footprint counts",
     body: "Subtract every tank's displaced volume at the wall top from the "
       + "geometric capacity and you have the net volume -- what Choupo's "
-      + "layout check publishes (src/postProcessing/layout/PlantLayout.cpp:4445) "
+      + "layout check publishes (src/postProcessing/layout/PlantLayout.cpp:4457) "
       + "and holds against the case's rule.  But think about the tank that "
       + "fails.  If its shell is torn away, its footprint is free; if it "
       + "leaks through a hole, the liquid inside falls until it stands at the "
@@ -485,7 +485,7 @@ export const BUND_STEPS: readonly LessonStep[] = [
       + "the ammonia witnesses in Choupo's tutorials use impounding areas, "
       + "and the green-ammonia case's refrigerated tanks a bund.  Choupo's "
       + "layout check sizes an impounding area by its pit "
-      + "(src/postProcessing/layout/PlantLayout.cpp:4449) and announces a pit "
+      + "(src/postProcessing/layout/PlantLayout.cpp:4461) and announces a pit "
       + "inside its own catch area; this page draws a bund and does not size "
       + "a pit.",
   },

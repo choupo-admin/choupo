@@ -1787,6 +1787,53 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             os << " }";
         }
         os << (L.notRouted.empty() ? "]" : "\n    ]");
+        //  UTILITY LINES (DEV.md 4c C268 slice 2): only when the case declares
+        //  any, so no earlier result moves.  One line per record with an `"id"`
+        //  (`utility:<name>`); the numbers the golden `layout` kind pins
+        //  (`length`, `utilityFlow`) and the words (`service`, `from`, `to`,
+        //  `sizeState`) come BEFORE the free text and the route.
+        if (!L.utilityLines.empty())
+        {
+            auto uport = [&](const char* key, const LayoutPort& pt) {
+                if (pt.item.empty() || pt.point.size() != 3) return;
+                os << ", \"" << key << "\": { \"item\": " << esc(pt.item)
+                   << ", \"port\": " << esc(pt.port)
+                   << ", \"origin\": " << esc(pt.origin)
+                   << ", \"point\": [" << num(pt.point[0]) << ", "
+                   << num(pt.point[1]) << ", " << num(pt.point[2]) << "]";
+                if (pt.leaves.size() == 3)
+                    os << ", \"leaves\": [" << num(pt.leaves[0]) << ", "
+                       << num(pt.leaves[1]) << ", " << num(pt.leaves[2]) << "]";
+                os << " }";
+            };
+            os << ",\n    \"utilityLines\": [";
+            for (std::size_t i = 0; i < L.utilityLines.size(); ++i)
+            {
+                const auto& u = L.utilityLines[i];
+                os << (i ? ",\n" : "\n") << "      { \"id\": " << esc("utility:" + u.name)
+                   << ", \"name\": " << esc(u.name)
+                   << ", \"service\": " << esc(u.service)
+                   << ", \"family\": " << esc(u.family)
+                   << ", \"fromKind\": \"item\", \"from\": " << esc(u.from)
+                   << ", \"toKind\": \"item\", \"to\": " << esc(u.to)
+                   << ", \"sizeState\": " << esc(u.sizeState)
+                   << ", \"lane\": " << u.lane << ", \"tier\": " << u.tier
+                   << ", \"length\": " << num(u.length);
+                if (u.hasFlow) os << ", \"utilityFlow\": " << num(u.flow);
+                uport("fromPort", u.fromPort);
+                uport("toPort", u.toPort);
+                os << ", \"route\": [";
+                for (std::size_t q = 0; q < u.route.size(); ++q)
+                    os << (q ? ", " : "") << "[" << num(u.route[q][0]) << ", "
+                       << num(u.route[q][1]) << ", " << num(u.route[q][2]) << "]";
+                os << "], \"sizeNote\": " << esc(u.sizeNote);
+                if (!u.carries.empty())
+                    os << ", \"carries\": " << esc(u.carries)
+                       << ", \"flowSource\": " << esc(u.flowSource);
+                os << ", \"reason\": " << esc(u.reason) << " }";
+            }
+            os << "\n    ]";
+        }
         //  THE PLOT (DEV.md 4c C82): one line for the whole plot, one per
         //  sector, each with an `"id"` so the golden `layout` kind pins
         //  `plotArea` and `footprintArea` on it.  The rule is the engine's
@@ -2122,7 +2169,15 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
            << ", \"findings\": " << L.findings.size()
            << ", \"pipes\": " << L.pipes.size()
            << ", \"notRouted\": " << L.notRouted.size()
-           << ", \"pipeLength\": " << num(pipeLength) << " }\n  }";
+           << ", \"pipeLength\": " << num(pipeLength);
+        if (!L.utilityLines.empty())
+        {
+            scalar ul = 0;
+            for (const auto& u : L.utilityLines) ul += u.length;
+            os << ", \"utilityLines\": " << L.utilityLines.size()
+               << ", \"utilityLength\": " << num(ul);
+        }
+        os << " }\n  }";
     }
 
     //  ---- building: the GMP interior (DEV.md 4c C97), its own block -------

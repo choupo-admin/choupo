@@ -72,7 +72,7 @@ import {
 } from "../../case/layoutColour.js";
 import { layoutKpis, type LayoutFacts } from "../../case/layoutFacts.js";
 import { tourOf, type TourStep } from "../../case/layoutTour.js";
-import type { LayoutScene, Vec3 } from "../../case/plantLayout.js";
+import { UTILITY_FAMILY_WORDS, utilityColour, type LayoutScene, type Vec3 } from "../../case/plantLayout.js";
 
 /** Below this width (px) the layer starts folded and sheets replace panels. */
 export const COMPACT_WIDTH = 560;
@@ -441,6 +441,16 @@ export function mountInteraction(c: InteractionContext): InteractionHandle {
     }
     colourBox.appendChild(h("div", { opacity: "0.8", marginTop: "3px" },
       "Particles: stylised. The engine publishes no line velocity; speed only grows with the mass flow."));
+    //  UTILITY LINES (C268 slice 2): a fixed colour per service family, the words beside it.
+    const fams: string[] = [];
+    for (const u of scene.utilityLines) if (!fams.includes(u.family)) fams.push(u.family);
+    if (fams.length > 0) {
+      colourBox.appendChild(h("div", { fontWeight: "700", marginTop: "6px" }, "Utility lines (declared, unsized)"));
+      for (const f of fams)
+        colourBox.appendChild(h("div", { display: "flex", gap: "5px", alignItems: "center" }, undefined, [
+          h("span", { width: "14px", height: "4px", background: css(utilityColour(f)), borderRadius: "2px", flex: "0 0 auto" }),
+          h("span", null, UTILITY_FAMILY_WORDS[f] ?? f)]));
+    }
   }
 
   //  ---- the minimap (bottom-left) -------------------------------------

@@ -829,6 +829,7 @@ function shapeLayout(l: NonNullable<ResultPayload["layout"]>): PlantLayout {
     unplaced: arr(l.unplaced).filter((u): u is string => typeof u === "string"),
     internal: arr(l.internal).filter((u): u is string => typeof u === "string"),
     ...shapePipes(l),
+    ...shapeUtilityLines(l),
     ...shapeSummary(l),
     ...shapePlot(l),
     ...shapeRoads(l),
@@ -1135,6 +1136,41 @@ function shapePipes(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayou
   };
 }
 
+//  THE UTILITY LINES the case declared (DEV.md 4c C268 slice 2), passed
+//  through as the engine published them: a line whose route is not three
+//  finite numbers per point is DROPPED, never drawn at the origin.  Absent
+//  when the case declares none.
+function shapeUtilityLines(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLayout> {
+  if (!Array.isArray(l.utilityLines) || l.utilityLines.length === 0) return {};
+  const fin = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+  const str = (v: unknown): string => (typeof v === "string" ? v : "");
+  const portOf = (key: "fromPort" | "toPort", v: LayoutPortInfo | undefined) =>
+    v && typeof v.item === "string" && Array.isArray(v.point) && v.point.length === 3
+      && v.point.every(fin)
+      ? { [key]: { item: v.item, port: str(v.port), origin: str(v.origin), role: str(v.role),
+                   point: [v.point[0], v.point[1], v.point[2]] as [number, number, number] } }
+      : {};
+  const lines = l.utilityLines
+    .filter((u) => typeof u.name === "string" && fin(u.length) && Array.isArray(u.route)
+      && u.route.length >= 2
+      && u.route.every((q) => Array.isArray(q) && q.length === 3 && q.every(fin)))
+    .map((u) => ({
+      id: str(u.id) || `utility:${str(u.name)}`,
+      name: str(u.name), service: str(u.service), family: str(u.family),
+      fromKind: str(u.fromKind), from: str(u.from), toKind: str(u.toKind), to: str(u.to),
+      ...portOf("fromPort", u.fromPort), ...portOf("toPort", u.toPort),
+      lane: fin(u.lane) ? u.lane : -1, tier: fin(u.tier) ? u.tier : 0,
+      length: u.length as number,
+      sizeState: str(u.sizeState) || "unsized", sizeNote: str(u.sizeNote),
+      ...(typeof u.carries === "string" && u.carries ? { carries: u.carries } : {}),
+      ...(fin(u.utilityFlow) ? { utilityFlow: u.utilityFlow } : {}),
+      ...(typeof u.flowSource === "string" && u.flowSource ? { flowSource: u.flowSource } : {}),
+      reason: str(u.reason),
+      route: (u.route as number[][]).map((q) => [q[0], q[1], q[2]] as [number, number, number]),
+    }));
+  return lines.length > 0 ? { utilityLines: lines } : {};
+}
+
 //  THE SUMMARY the engine counts (placed, unplaced, internal, findings,
 //  pipes, notRouted, pipeLength): carried so a surface that SHOWS a count --
 //  the exported page's footer (DEV.md 4c C81) -- reads the engine's, never
@@ -1146,7 +1182,10 @@ function shapeSummary(l: NonNullable<ResultPayload["layout"]>): Partial<PlantLay
                s.pipeLength].every(fin)) return {};
   return { summary: { placed: s.placed as number, unplaced: s.unplaced as number,
     internal: s.internal as number, findings: s.findings as number, pipes: s.pipes as number,
-    notRouted: s.notRouted as number, pipeLength: s.pipeLength as number } };
+    notRouted: s.notRouted as number, pipeLength: s.pipeLength as number,
+    //  C268 slice 2: only when the case declares utility lines.
+    ...(fin(s.utilityLines) && fin(s.utilityLength)
+      ? { utilityLines: s.utilityLines, utilityLength: s.utilityLength } : {}) } };
 }
 
 // Pass the emitted economics block through verbatim (the C++ already shapes it
@@ -1381,8 +1420,14 @@ interface ResultPayload {
     notRouted?: { stream?: string; reason?: string; fromUnit?: string; toUnit?: string;
                   solids?: boolean; indoor?: boolean;
       anchor?: unknown[] }[];
+    utilityLines?: { id?: string; name?: string; service?: string; family?: string;
+      fromKind?: string; from?: string; toKind?: string; to?: string;
+      fromPort?: LayoutPortInfo; toPort?: LayoutPortInfo; lane?: number; tier?: number;
+      length?: number; sizeState?: string; sizeNote?: string; carries?: string;
+      utilityFlow?: number; flowSource?: string; reason?: string; route?: number[][] }[];
     summary?: { placed?: number; unplaced?: number; internal?: number; findings?: number;
-      pipes?: number; notRouted?: number; pipeLength?: number };
+      pipes?: number; notRouted?: number; pipeLength?: number;
+      utilityLines?: number; utilityLength?: number };
     plot?: { margin?: number; marginDeclared?: boolean; marginReason?: string;
       xMin?: number; xMax?: number; yMin?: number; yMax?: number;
       plotArea?: number; footprintArea?: number; footprintShare?: number;

@@ -1333,6 +1333,23 @@ export function mountLayoutScene(m: LayoutModules, el: HTMLDivElement, scene: La
       plan.push({ key, s: (k * drawn) / n, speed: p.speed, points: p.points });
     }
   }
+  //  UTILITY LINES (DEV.md 4c C268 slice 2): thin tubes of constant radius
+  //  (no line is sized, so a thickness would claim a size) in the SERVICE's
+  //  colour, no particles (no flow direction is animated for a service the
+  //  engine carries no state for), with the engine's words in the tooltip.
+  //  They share the pipes' toggle: they are pipes.
+  for (const u of scene.utilityLines) {
+    const geo = pipeGeometry(u.points, u.radius);
+    if (!geo) continue;
+    keep(geo);
+    const mat = keep(new THREE.MeshStandardMaterial({ color: u.colour,
+      transparent: true, opacity: 0.9, roughness: 0.4, metalness: 0.1 }));
+    const tube = new THREE.Mesh(geo, mat);
+    tube.userData.pick = { kind: "pipe", id: u.id };
+    tube.userData.tooltip = u.tooltip;
+    pipeGroup.add(tube);
+    pickables.push(tube);
+  }
   const instanced = new Map<string, T3.InstancedMesh>();
   const used = new Map<string, number>();
   for (const [key, w] of want) {

@@ -875,6 +875,11 @@ export interface PlantLayout {
    *  convention, not a vendor's nozzle schedule (engine-written, once). */
   portConvention?: string;
   notRouted?: LayoutNotRouted[];
+  /** UTILITY LINES (DEV.md 4c C268 slice 2): the lines the case declared
+   *  (cooling water, refrigerant, flare header), routed on the rack above
+   *  the process pipes and checked like them.  Absent when the case declares
+   *  none; the GUI draws them and routes none. */
+  utilityLines?: LayoutUtilityLine[];
   /** The engine's own counts (DEV.md 4c C81 carries them to the exported
    *  page); absent on a result written before the engine published them. */
   summary?: LayoutSummary;
@@ -1172,6 +1177,8 @@ export interface LayoutNotRouted {
 export interface LayoutSummary {
   placed: number; unplaced: number; internal: number; findings: number;
   pipes: number; notRouted: number; pipeLength: number;
+  /** Only when the case declares utility lines. */
+  utilityLines?: number; utilityLength?: number;
 }
 
 /** The rack the pipes run on: along plan x, its centre line at plan `y`, the
@@ -1195,6 +1202,30 @@ export interface LayoutJunction { unit: string; type: string; x: number; y: numb
 export interface LayoutPortInfo {
   item: string; port: string; origin: string; role: string;
   point: [number, number, number];
+}
+
+/** One declared utility line (DEV.md 4c C268 slice 2).  `route` runs in the
+ *  direction of flow; `length` is the engine's.  `sizeState` is "unsized":
+ *  the layout sizes no pipe.  `utilityFlow` (kg/s) is the run's own
+ *  allocation row where the case named one. */
+export interface LayoutUtilityLine {
+  id: string;
+  name: string;
+  service: string;
+  family: string;
+  fromKind: string; from: string;
+  toKind: string; to: string;
+  fromPort?: LayoutPortInfo;
+  toPort?: LayoutPortInfo;
+  lane: number; tier: number;
+  length: number;
+  sizeState: string;
+  sizeNote: string;
+  carries?: string;
+  utilityFlow?: number;
+  flowSource?: string;
+  reason: string;
+  route: [number, number, number][];
 }
 
 export interface LayoutPipe {

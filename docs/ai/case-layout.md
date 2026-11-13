@@ -1662,6 +1662,25 @@ plot { margin 10 m; reason "..."; }   // optional; absent: 0 m, announced
   inside the footprint, below the item's top) is ANNOUNCED as `pipeClash`,
   by name -- move the item or give the pipe waypoints.  No pressure drop and
   no cost yet.
+* UTILITY LINES (C268 slice 2): a utility is not a flowsheet stream, so the
+  engine routes nothing for one; the case DECLARES each line in `utilityLines`
+  (`name; service; from; to; [fromPort {}] [toPort {}]; [carries { unit; utility; }];
+  reason`), `service` one of `coolingWaterSupply`, `coolingWaterReturn`,
+  `refrigerantSupply`, `refrigerantReturn`, `flareHeader`, `from` and `to`
+  PLACED items, the flow running from `from` to `to`.  The engine routes the line
+  on the SAME rack by the same rule as a process pipe, on a tier ABOVE every
+  process pipe's (no process route moves; one tier per service family, a supply
+  beside its return), its two ends on ports of their items (the top unless a
+  face is declared; several lines on one item are spread across its cross
+  extent).  EVERY LINE IS UNSIZED and published `sizeState unsized`: no process
+  pipe is sized either.  `carries` names a unit and a utility; the engine reads
+  that row of the run's utility allocation (kg/s) as `utilityFlow` and refuses a
+  row the run does not carry.  Refused by name: an unknown service, a name
+  twice, `from` equal `to`, an item not placed, a face that is not one, an
+  `elevation` off the item.  Findings (each a draft to move): `utilityClash`,
+  `utilityCrossesRoad`, `utilityThroughBund`, `utilityNotRouted` (an end
+  indoors).  Published under `layout.utilityLines`, beside the pipes, only when
+  declared.  Witness: `tutorials/plant/greenAmmoniaPEQ_baseCase`.
 * THE PLOT (C82): the engine publishes the plot area -- the axis-aligned
   envelope of every declared sector area, every placed footprint, every
   routed pipe and (C97) every room of a declared `building {}`, grown on

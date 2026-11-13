@@ -698,6 +698,189 @@ def arm_refusals(work):
                   " naming its defect")
 
 
+# --------------------------------------------------- utility lines (C268 s2) --
+#  (u) UTILITY LINES.  A utility is not a flowsheet stream; the case DECLARES
+#  each line (`utilityLines`) and the engine routes it on the pipe rack above
+#  the process pipes' lanes.  On the reference plant (13 lines) each claim is
+#  RECOMPUTED here from the published block, never read back from the
+#  engine's own verdict:
+#    * every route is orthogonal (one axis per segment), starts at the
+#      published fromPort point and ends at the toPort point, its `length` is
+#      the polyline's own, its ends are the declared items, every line is
+#      `unsized` and carries its sentence;
+#    * the lane of every line is ABOVE every process pipe's (recomputed from
+#      the published pipes) and the families keep to their own tiers;
+#    * a line that carries a flow publishes the run's own allocation row
+#      (`utilityAllocation` of the result: unit, utility, kg_s);
+#    * THE PROOF THAT NO EXISTING ROW MOVED: the same case with the block
+#      removed publishes the same `pipes`, `plot`, `fence`, `bunds` and
+#      summary counts byte for byte -- the new block is the only difference;
+#    * refusals fire through the real reader (exit 2, naming the defect): an
+#      unknown service, an unplaced item, a name twice, `from` equal `to`, a
+#      face that is not one, an allocation the run does not carry;
+#    * a tall item placed across a tower line's run is announced
+#      `utilityClash` for exactly the lines whose route passes through it,
+#      recomputed here from the published routes.
+PEQ = ROOT / "tutorials/plant/greenAmmoniaPEQ_baseCase"
+UTILITY_BLOCK = re.compile(r"\nutilityLines\n\(.*?\n\);\n", re.S)
+
+
+def arm_utility(work):
+    if not PEQ.exists():
+        fail("(u) the reference plant tutorials/plant/greenAmmoniaPEQ_baseCase is missing")
+        return
+    d = prepare(work, "util_plain", PEQ)
+    out, err, rc = solve(d)
+    j = result_json(out)
+    if rc != 0 or j is None:
+        fail(f"(u) the reference plant exited {rc}")
+        return
+    lay = j["layout"]
+    U = lay.get("utilityLines", [])
+    if len(U) != 13:
+        fail(f"(u) the reference plant publishes {len(U)} utility lines, expected 13")
+        return
+    items = {i["id"]: i for i in lay["items"]}
+    lanes = [p["lane"] for p in lay["pipes"] if p["lane"] >= 0]
+    per = lay["pipeRack"]["lanesPerTier"]
+    top_process = max(lanes)
+    alloc = {(a["unit"], a["utility"]): a["kg_s"]
+             for a in j.get("utilityAllocation", []) if a.get("allocated")}
+    total = 0.0
+    for u in U:
+        r = u["route"]
+        for a, b in zip(r, r[1:]):
+            moved = sum(1 for k in range(3) if abs(a[k] - b[k]) > 1e-9)
+            if moved != 1:
+                fail(f"(u) {u['id']}: a segment moves along {moved} axes (a route is orthogonal)")
+        for end, port in (("from", "fromPort"), ("to", "toPort")):
+            if u[port]["item"] != u[end] or u[end] not in items:
+                fail(f"(u) {u['id']}: {port} lands on {u[port]['item']}, not on {u[end]}")
+        if any(abs(r[0][k] - u["fromPort"]["point"][k]) > 1e-9 for k in range(3)):
+            fail(f"(u) {u['id']}: the route does not start at the fromPort point")
+        if any(abs(r[-1][k] - u["toPort"]["point"][k]) > 1e-9 for k in range(3)):
+            fail(f"(u) {u['id']}: the route does not end at the toPort point")
+        ln = sum(abs(a[k] - b[k]) for a, b in zip(r, r[1:]) for k in range(3))
+        if abs(ln - u["length"]) > 1e-6 * max(1.0, ln):
+            fail(f"(u) {u['id']}: length {u['length']} is not its polyline's {ln}")
+        total += u["length"]
+        if u["sizeState"] != "unsized" or "UNSIZED" not in u["sizeNote"]:
+            fail(f"(u) {u['id']}: a line the layout does not size must say it is unsized")
+        if u["lane"] <= top_process or u["tier"] != u["lane"] // per:
+            fail(f"(u) {u['id']}: lane {u['lane']} is not above the process pipes' (top lane {top_process})")
+        if "carries" in u:
+            unit, util = [t.strip() for t in u["carries"].split("/")]
+            if abs(alloc.get((unit, util), -1.0) - u["utilityFlow"]) > 1e-9 * max(1.0, u["utilityFlow"]):
+                fail(f"(u) {u['id']}: utilityFlow {u['utilityFlow']} is not the run's allocation of {unit} on {util}")
+        elif "utilityFlow" in u:
+            fail(f"(u) {u['id']}: a flow with no `carries` to name its source")
+    fam = {}
+    for u in U:
+        fam.setdefault(u["family"], set()).add(u["tier"])
+    tiers = [t for ts in fam.values() for t in ts]
+    for a in fam:
+        for b in fam:
+            if a < b and fam[a] & fam[b]:
+                fail(f"(u) the families {a} and {b} share a rack tier")
+    if abs(lay["summary"]["utilityLength"] - total) > 1e-6 * total or lay["summary"]["utilityLines"] != 13:
+        fail("(u) the summary's utility counts are not the lines'")
+    if lay["findings"]:
+        fail("(u) the reference plant raises findings: " + ", ".join(f["id"] for f in lay["findings"]))
+
+    # no existing row moved: the same case without the block
+    d0 = prepare(work, "util_without", PEQ, lambda t: UTILITY_BLOCK.sub("\n", t))
+    out0, err0, rc0 = solve(d0)
+    j0 = result_json(out0)
+    if rc0 != 0 or j0 is None:
+        fail(f"(u) the reference plant without its utility lines exited {rc0}")
+        return
+    l0 = j0["layout"]
+    if "utilityLines" in l0:
+        fail("(u) a case with no `utilityLines` publishes a utility block")
+    for k in ("pipes", "plot", "fence", "bunds", "items", "roads", "junctions", "pipeRack"):
+        if lay.get(k) != l0.get(k):
+            fail(f"(u) declaring utility lines MOVED the published `{k}`")
+    s1 = dict(lay["summary"]); s1.pop("utilityLines"); s1.pop("utilityLength")
+    if s1 != l0["summary"]:
+        fail("(u) declaring utility lines moved the layout summary's own counts")
+
+    # refusals, each through the real reader
+    def first_line(t, svc="coolingWaterSupply"):
+        return t
+    cases = {
+        "an unknown service": (lambda t: t.replace("service   coolingWaterSupply;", "service   steamSupply;", 1),
+                               [r"steamSupply.*not a service this layout knows"]),
+        "an item that is not placed": (lambda t: t.replace('to        "N2Cooler";', 'to        "nowhere";', 1),
+                                       [r"item `nowhere` is not placed"]),
+        "a name used twice": (lambda t: t.replace('"CW-Intercooler-supply"', '"CW-N2Cooler-supply"', 1),
+                              [r"declared twice"]),
+        "from equal to": (lambda t: t.replace('to        "N2Cooler";', 'to        "coolingTower";', 1),
+                          [r"`from` and `to` are both"]),
+        "a face that is not one": (lambda t: t.replace("toPort    { side west; elevation 2 m; }", "toPort    { side sideways; }", 1),
+                                   [r"side sideways"]),
+        "an allocation the run does not carry": (lambda t: t.replace("utility coolingWater; }", "utility chilledWater; }", 1),
+                                                  [r"names an allocation the run does not carry"]),
+    }
+    n = 0
+    for label, (edit, pats) in cases.items():
+        dd = prepare(work, "util_ref_" + re.sub(r"\W", "_", label), PEQ, edit)
+        o, e, c = solve(dd)
+        if c != 2:
+            fail(f"(u) {label}: exit {c}, expected the refusal's 2")
+            continue
+        for pt in pats:
+            if not re.search(pt, o + e, re.S):
+                fail(f"(u) {label}: the refusal does not say /{pt}/")
+        n += 1
+
+    # a tall item across the tower lines' run: exactly the lines through it
+    box = ('    { nonProcess "tallBox"; kind building; x 112 m; y 10 m; z 0 m;'
+           ' orientation alongX; footprint { length 4 m; width 4 m; height 30 m; }'
+           ' source "gate sabotage"; reason "a tall box across the tower lines"; }\n')
+    dd = prepare(work, "util_clash", PEQ,
+                 lambda t: t.replace("items\n(\n", "items\n(\n" + box, 1))
+    o, e, c = solve(dd)
+    jc = result_json(o)
+    if c != 0 or jc is None:
+        fail(f"(u) the clash copy exited {c}")
+        return
+    pub = {f["a"] for f in jc["layout"]["findings"] if f["kind"] == "utilityClash" and f["b"] == "tallBox"}
+    want = set()
+    for u in jc["layout"]["utilityLines"]:
+        for a, b in zip(u["route"], u["route"][1:]):
+            # plan rectangle x 110..114, y 8..12, z 0..30: a segment strictly through it
+            lo = [min(a[k], b[k]) for k in range(3)]; hi = [max(a[k], b[k]) for k in range(3)]
+            if lo[0] < 114 and hi[0] > 110 and lo[1] < 12 and hi[1] > 8 and lo[2] < 30 and hi[2] > 0:
+                if not (hi[0] == lo[0] and (lo[0] <= 110 or lo[0] >= 114)) and not (hi[1] == lo[1] and (lo[1] <= 8 or lo[1] >= 12)):
+                    want.add(u["name"]); break
+    if not want or pub != want:
+        fail(f"(u) utilityClash names {sorted(pub)}, recomputed from the routes: {sorted(want)}")
+    # a sizer that REFUSES an end's item refuses the ITEM, never the run: the
+    # lines to it are listed not routed (a finding naming the refusal), the
+    # others route, and the run exits 0 (found by check_design_sheet)
+    def no_fouling(t):
+        return t.replace("""                                 fouling { tubeSide  0.0002  m2.K/W;    // clean process gas
+                                           shellSide 0.00035 m2.K/W; }  // treated tower water
+""", "", 1)
+    dp = prepare(work, "util_refused", PEQ)
+    pd = dp / "system" / "postDict"
+    pd.write_text(no_fouling(pd.read_text()))
+    o, e, c = solve(dp)
+    jr = result_json(o)
+    if c != 0 or jr is None:
+        fail(f"(u) a utility line to an item whose sizer refused made the run exit {c} -- a refused design refuses the ITEM, never the run")
+    else:
+        names = {f["a"] for f in jr["layout"]["findings"] if f["kind"] == "utilityNotRouted"}
+        if names != {"CW-N2Cooler-supply", "CW-N2Cooler-return"}:
+            fail(f"(u) the lines to the refused N2Cooler are not listed not-routed: {sorted(names)}")
+        if len(jr["layout"].get("utilityLines", [])) != 11:
+            fail("(u) the other eleven lines did not route round a refused item")
+    claims.append(f"13 utility lines on the reference plant, each recomputed (orthogonal, its ends on the"
+                  f" published ports, length = its polyline, every one unsized, lanes above the process pipes',"
+                  f" its flow the run's own allocation row), declaring them moves no published row ({n} refusals"
+                  f" by name; a tall item across the tower lines raises utilityClash for exactly the {len(want)} lines through it)")
+
+
 ROADS_BLOCK = re.compile(r"\nroads\n\{.*?\n\}\n", re.S)
 
 
@@ -3418,6 +3601,7 @@ def main():
         arm_site(work)
         arm_indoor(work)
         arm_bunds(work)
+        arm_utility(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
