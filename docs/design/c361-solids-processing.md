@@ -313,7 +313,7 @@ Windows: whiten -- monotone (the fish-hook beta form, eq. 25 p. 683, is NOT
 built); rosinRammler -- a monotone S-curve; tabulated -- the case's own grid,
 never interpolated to another.  Anchors (`verify()`), all IDENTITIES: whiten
 c(d50c) = 1/2 for any a (the definition of d50c, p. 683); rosinRammler
-c(d50) = 1 - e^-0.693 = 0.49997; tabulated -- nothing to compute, said so.
+c(d50) = 1 - e^-0.693 = 0.49993; tabulated -- nothing to compute, said so.
 The whiten identity holds for any curve through u = a at d = d50c, so it
 cannot see the shape (review SC-02, 2026-11-12: the shape was reshaped and
 nothing failed).  Since 2026-11-13 `classifier01_whiten_quartzSlurry` holds

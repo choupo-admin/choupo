@@ -152,7 +152,7 @@ private:
 //      c(d) = 1 - exp[ -0.693 (d/d50)^m ]
 //
 //  King prints the constant as 0.693 (ln 2 to three figures); it is kept as
-//  printed, so c(d50) = 0.49997, not 1/2 -- the anchor says so.
+//  printed, so c(d50) = 0.49993 (1 - exp(-0.693) = 0.4999264), not 1/2 -- the anchor says so.
 class RosinRammlerPartition : public PartitionCurve
 {
 public:
@@ -205,7 +205,7 @@ public:
         RosinRammlerPartition r;
         r.m_ = 5.9; r.d50_ = 1.0e-3;
         return anchorOf(r.value(1.0e-3), 1.0 - std::exp(-0.693), "identity",
-            "King 2001 eq. 4.41 p. 89 at d = d50: 1 - exp(-0.693) = 0.49997");
+            "King 2001 eq. 4.41 p. 89 at d = d50: 1 - exp(-0.693) = 0.49993");
     }
 private:
     scalar value(scalar d) const
