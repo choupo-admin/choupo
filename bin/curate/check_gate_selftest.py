@@ -342,6 +342,16 @@ SABOTAGES += [
                "a temperature it does not belong to (C378).  The gate must "
                "name CO2, not pass.",
     },
+    {
+        "gate": "check_source_headers.py",
+        "kind": "detection",
+        "file": "bin/curate/gate_claim.py",
+        "find": "# Copyright (C) 2026 V\u00edtor Geraldes\n",
+        "replace": "",
+        "why": "a code file that loses its copyright line (DEV.md 4c C393) "
+               "must make arm (a) name it: the gate is the only thing that "
+               "keeps a file copied out of the tree carrying its holder.",
+    },
 ]
 
 SOURCE_SABOTAGES = [
@@ -426,17 +436,7 @@ SOURCE_SABOTAGES = [
         "why": "silences the announcement of a species datum that is not a "
                "measurement.  The witness consumes an estimated hfAq, so arm "
                "(a) must see the missing line and the missing advisory.",
-    },    {
-        "gate": "check_source_headers.py",
-        "kind": "detection",
-        "file": "bin/curate/gate_claim.py",
-        "find": "# Copyright (C) 2026 V\u00edtor Geraldes\n",
-        "replace": "",
-        "why": "a code file that loses its copyright line (DEV.md 4c C393) "
-               "must make arm (a) name it: the gate is the only thing that "
-               "keeps a file copied out of the tree carrying its holder.",
-    },
-]
+    },]
 
 
 def platform_dir():
