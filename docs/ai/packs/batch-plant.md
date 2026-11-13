@@ -185,6 +185,8 @@ batchPlan
   source; reason; }` feeds Turton's N_OL = sqrt(6.29 + 31.7 P^2 + 0.23 N_np)
   (printed as a comparison once a crew is declared; `N_np` = non-particulate
   steps).  Absent both, P = 0 is announced.
+  The crew is multiplied by 4.5 (round the clock); on two shifts declare
+  `operatorCover { positionsPerShift n; source; reason; }`.
 * Solid-dose units are placeholders: say so in DESIGN.md (no compaction
   force, no blend uniformity, no granule size).
 

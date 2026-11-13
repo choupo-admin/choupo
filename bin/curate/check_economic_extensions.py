@@ -72,6 +72,18 @@ and the published cash flow, never from the engine's source.
       other word refuses by name; the witness itself (no loss year) publishes
       no loss KPI.
 
+  (j) THE OPERATORS' COVER (2026-11-13, review row PH-01): a declared crew is
+      multiplied by 4.5 positions per operator-per-shift unless the case
+      declares `operatorCover { positionsPerShift <n>; source; reason; }`.
+      On the witness with a crew added: the default prices 4.5 x the crew
+      and publishes no cover KPI; the declared cover of 2.0 prices 2.0 x the
+      crew, publishes `operatorCover_positionsPerShift`, and C_OL is lower in
+      exactly the ratio 2.0 / 4.5; a cover below 1, a cover with no source
+      and an unknown key refuse by name.  On a batch plant whose trains run
+      3840 h (donepezil01_tablets) the default is ANNOUNCED once, class
+      `assumed`, naming the 4.5 and the hours, and declaring the cover
+      silences it and scales C_OL the same way.
+
 NOT CHECKED, said plainly: that the classification of the cost into fixed and
 variable is the right one (it is a modelling choice, printed); that a price per
 m2 is realistic (the case's); and the royalty/break-even interaction beyond the
@@ -155,6 +167,16 @@ def prepare(work, name, edit=None, layout_edit=None, econ_edit=None):
 
 def run(d):
     p = subprocess.run([str(BIN), str(d)], capture_output=True, text=True, cwd=str(ROOT), timeout=900)
+    out = p.stdout + p.stderr
+    (d.parent / (d.name + ".out")).write_text(out + f"\n__rc={p.returncode}\n")
+    return out, p.returncode
+
+
+def _run_batch(d):
+    """Run a case with the binary its controlDict names (choupoBatch for the batch plants)."""
+    app = re.search(r"application\s+(\w+);", (d / "system/controlDict").read_text())
+    exe = ROOT / (app.group(1) if app else "choupoSolve")
+    p = subprocess.run([str(exe), str(d)], capture_output=True, text=True, cwd=str(ROOT), timeout=1800)
     out = p.stdout + p.stderr
     (d.parent / (d.name + ".out")).write_text(out + f"\n__rc={p.returncode}\n")
     return out, p.returncode
@@ -518,6 +540,69 @@ def main():
         if rb == 0 or "taxOnLoss" not in ob:
             fail("(i) `taxOnLoss carryForward;` did not refuse by name")
 
+    # (j) the operators' cover ---------------------------------------------------
+    crew = ('    operatingCrew\n    {\n        areas ( { area "plant"; operatorsPerShift 2; } );\n'
+            '        source "gate twin"; reason "gate twin";\n    }\n')
+    cover = '    operatorCover { positionsPerShift 2.0; source "gate twin"; reason "gate twin"; }\n'
+
+    def with_blocks(*blocks):
+        return lambda t: t.replace("    refuseOnMissingPrice 1;\n", "    refuseOnMissingPrice 1;\n" + "".join(blocks), 1)
+    cdef = prepare(work, "coverDefault", with_blocks(crew)) if not reuse else work / "coverDefault"
+    odef, rdef = go(cdef)
+    Kdef = kpis(odef)
+    cdec = prepare(work, "coverDeclared", with_blocks(crew, cover)) if not reuse else work / "coverDeclared"
+    odec, rdec = go(cdec)
+    Kdec = kpis(odec)
+    if rdef != 0 or rdec != 0 or "operatingPositions" not in Kdef or "operatingPositions" not in Kdec:
+        fail(f"(j) the crew twins did not run clean (rc {rdef}, {rdec})")
+    else:
+        if not close(Kdef["operatingPositions"], 9.0, tol=1e-9) or "operatorCover_positionsPerShift" in Kdef:
+            fail(f"(j) default cover: positions {Kdef['operatingPositions']} (expected 4.5 x 2 = 9) or a cover KPI published")
+        if not close(Kdec["operatingPositions"], 4.0, tol=1e-9) or Kdec.get("operatorCover_positionsPerShift") != 2.0:
+            fail(f"(j) declared cover 2.0: positions {Kdec['operatingPositions']} (expected 4) / KPI {Kdec.get('operatorCover_positionsPerShift')}")
+        if not close(Kdec["C_OL"] * 4.5, Kdef["C_OL"] * 2.0, tol=1.0):
+            fail(f"(j) C_OL {Kdec['C_OL']} vs default {Kdef['C_OL']} is not in the ratio 2.0 / 4.5")
+        if "[assumed] economics: the declared operating crew" in odef:
+            fail("(j) the announcement fired with no batch plan (no calendar is declared)")
+    for nm, blocks, needle in (
+            ("coverBelowOne", (crew, cover.replace("2.0", "0.5")), "at least one person"),
+            ("coverNoSource", (crew, cover.replace('source "gate twin"; ', "")), "`source"),
+            ("coverUnknownKey", (crew, cover.replace("positionsPerShift 2.0;", "positionsPerShift 2.0; hours 5;")), "unknown key")):
+        d = prepare(work, nm, with_blocks(*blocks)) if not reuse else work / nm
+        o, r = go(d)
+        if r == 0:
+            fail(f"(j) {nm}: expected a refusal, the run exited 0")
+        elif needle not in o:
+            fail(f"(j) {nm}: refused but the message does not name `{needle}`")
+    # the announcement, on a batch plant whose trains run 3840 h
+    don = ROOT / "tutorials/batch/plant/donepezil01_tablets"
+    if don.exists():
+        def don_case(name, edit):
+            d = work / name
+            if d.exists():
+                shutil.rmtree(d)
+            shutil.copytree(don, d, ignore=shutil.ignore_patterns("reports", "converged", "design", "iterations"))
+            if edit:
+                pp = d / "system/postDict"
+                pp.write_text(edit(pp.read_text()))
+            return d
+        dd = don_case("donBase", None) if not reuse else work / "donBase"
+        # donepezil01 is a choupoBatch case: the runner is the case's own binary
+        odd, rdd = _run_batch(dd) if not reuse else stored(dd)
+        Kdd = kpis(odd)
+        msgs = [l for l in odd.splitlines() if "[assumed] economics: the declared operating crew" in l]
+        if rdd != 0 or len(msgs) != 1 or "4.5 positions" not in msgs[0] or "3840 h/yr" not in msgs[0]:
+            fail(f"(j) donepezil01: expected ONE `assumed` line naming 4.5 and 3840 h/yr (rc {rdd}, {len(msgs)} line(s): {msgs[:1]})")
+        elif "operatorCover" not in msgs[0]:
+            fail("(j) donepezil01: the announcement does not name the remedy `operatorCover`")
+        dc = don_case("donCover", lambda t: t.replace("    operatingCrew\n", cover + "    operatingCrew\n", 1)) if not reuse else work / "donCover"
+        odc, rdc = (_run_batch(dc) if not reuse else stored(dc))
+        Kdc = kpis(odc)
+        if rdc != 0 or "[assumed] economics: the declared operating crew" in odc:
+            fail(f"(j) donepezil01 with the cover declared: rc {rdc} or the announcement still fires")
+        elif "C_OL" in Kdd and "C_OL" in Kdc and not close(Kdc["C_OL"] * 4.5, Kdd["C_OL"] * 2.0, tol=1.0):
+            fail(f"(j) donepezil01: C_OL {Kdc['C_OL']} vs {Kdd['C_OL']} is not in the ratio 2.0 / 4.5")
+
     if a.keep is None and not a.reuse:
         shutil.rmtree(work, ignore_errors=True)
     if fails:
@@ -529,7 +614,7 @@ def main():
           "(operating recomputed, NPV a root of the real pipeline), the price break-even (twin NPV zero for a product and a raw material, revenue recomputed from the cash flow, 3 refusals), the royalty window (years 1.." + str(expiry) +
           ", both bases), the three working capitals, 8 refusals, absence silent, all pinned; tax on a loss: "
           "the credit reading announced and summed, `taxOnLoss none` zero in every loss year and the NPV lower by "
-          "exactly the discounted credit, a bad word refused.  NOT CHECKED: the fixed/variable classification, "
+          "exactly the discounted credit, a bad word refused; the operators' cover: the default 4.5 and a declared 2.0 price the crew in exactly that ratio, 3 refusals, the default announced once on a 3840 h batch plan and silenced by the declaration.  NOT CHECKED: the fixed/variable classification, "
           "any price's realism")
     return 0
 

@@ -251,7 +251,8 @@ batch plan, sizing, clean utilities, costing and economics on top
 ### Labour (operators per shift, crew)
 * Computes: Turton's operators per shift with its particulate-step term
   (`key:particulateSteps`), or a crew you declare by area
-  (`key:operatingCrew`), priced by your wage.
+  (`key:operatingCrew`), priced by your wage, with the shift cover (default
+  4.5, round the clock) a declared judgement (`key:operatorCover`).
 * Missing: labour scheduled from the batch plan.
 * Witness: `tutorials/batch/plant/donepezil01_tablets`.
 

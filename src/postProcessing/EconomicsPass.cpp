@@ -3276,9 +3276,78 @@ int EconomicsPass::run(SimulationResult& result)
     const scalar N_OL_per_shift =
         std::sqrt(6.29 + 31.7 * P_particulate * P_particulate + 0.23 * N_np);
     //  THE ONE HOME of the positions factor: ~4.5 shift-positions cover one
-    //  operating position around the clock.  Both routes -- the correlation
-    //  and a declared crew -- go through it.
-    constexpr scalar positionsPerOperatorPerShift = 4.5;
+    //  operating position around the clock (8760 h / the ~1960 h one person
+    //  works).  Both routes -- the correlation and a declared crew -- go
+    //  through it.  `operatorCover { positionsPerShift <n>; source; reason; }`
+    //  is the case's own judgement of that cover (PH-01, review of
+    //  2026-11-13): two day shifts need about two, not 4.5.  ABSENT, the 4.5
+    //  stands and every number is what it was.
+    scalar positionsPerOperatorPerShift = 4.5;
+    bool        coverDeclared = false;
+    std::string coverSource, coverReason;
+    if (econDict_->found("operatorCover"))
+    {
+        const std::string where = "economics { operatorCover { ... } }";
+        if (!std::holds_alternative<DictPtr>(econDict_->entryValue("operatorCover")))
+            throw std::runtime_error("economics: `operatorCover` must be a block"
+                " -- `operatorCover { positionsPerShift <n>; source \"...\";"
+                " reason \"...\"; }`.");
+        const DictPtr cv = econDict_->subDict("operatorCover");
+        for (const auto& k : cv->keys())
+            if (k != "positionsPerShift" && k != "source" && k != "reason")
+                throw std::runtime_error(where + ": unknown key `" + k + "` --"
+                    " the block reads `positionsPerShift`, `source` and"
+                    " `reason`.");
+        for (const char* key : { "source", "reason" })
+            if (!cv->found(key) || cv->lookupWord(key).empty())
+                throw std::runtime_error(where + ": `" + key + " \"...\";` is"
+                    " not declared -- the cover is the case's judgement of how"
+                    " many people one operating position takes through the"
+                    " plant's calendar, and it owes its reader where the number"
+                    " comes from (`source`) and why it is this plant's"
+                    " (`reason`).  Nothing is defaulted.");
+        if (!cv->found("positionsPerShift"))
+            throw std::runtime_error(where + ": `positionsPerShift <n>;` is not"
+                " declared -- the people one shift position takes through the"
+                " calendar (the engine's default covers a plant that never stops).");
+        positionsPerOperatorPerShift = cv->lookupScalar("positionsPerShift");
+        if (!std::isfinite(positionsPerOperatorPerShift)
+            || positionsPerOperatorPerShift < 1.0)
+        {
+            std::ostringstream m;
+            m << where << ": `positionsPerShift " << positionsPerOperatorPerShift
+              << ";` -- one shift position needs at least one person, so the"
+                 " cover is 1 or more (the default is the round-the-clock one).";
+            throw std::runtime_error(m.str());
+        }
+        coverDeclared = true;
+        coverSource = cv->lookupWord("source");
+        coverReason = cv->lookupWord("reason");
+    }
+    //  A DECLARED CREW on a calendar that is not round the clock, the cover
+    //  left at the default: the 4.5 was written for a plant that never stops,
+    //  and the batch plan's trains say they do (PH-01).  Announced once.
+    if (crewDeclared && !coverDeclared && result.batchPlan.present)
+    {
+        scalar longest = 0.0;
+        for (const auto& t : result.batchPlan.trains)
+            longest = std::max(longest, t.availableTime);
+        if (longest > 0.0 && longest < 0.90 * 8760.0)
+        {
+            std::ostringstream m;
+            m << "the declared operating crew is multiplied by "
+              << positionsPerOperatorPerShift << " positions per operator-per-"
+                 "shift (round-the-clock cover, the engine's default), but the"
+                 " batch plan's longest train is available " << std::setprecision(0)
+              << std::fixed << longest << " h/yr, not round the clock.  The labour is"
+                 " priced on the default; declare `operatorCover { positionsPerShift"
+                 " <n>; source \"...\"; reason \"...\"; }` to own the cover (about"
+                 " available hours / operatorAnnualHours for one crew on that"
+                 " calendar).";
+            if (AdvisoryLog::instance().add("assumed", "warning", "economics", m.str()))
+                std::cout << "  [assumed] economics: " << m.str() << "\n";
+        }
+    }
     scalar crewPerShift = 0.0;
     for (const auto& a : crewAreas) crewPerShift += a.operatorsPerShift;
     //  The operators per shift that PRICE the labour: the declared crew when
@@ -3597,6 +3666,10 @@ int EconomicsPass::run(SimulationResult& result)
                   << positionsPerOperatorPerShift << ")\n"
                   << "      source: " << crewSource << "\n"
                   << "      reason: " << crewReason << "\n";
+        if (coverDeclared)
+            std::cout << "      cover x " << positionsPerOperatorPerShift
+                      << " DECLARED (`operatorCover`) -- source: " << coverSource
+                      << "\n      reason: " << coverReason << "\n";
     }
     //  THE PARTICULATE TERM IS ON THE LINE (C98), declared or not, so the
     //  arithmetic printed is the arithmetic done.
@@ -4413,6 +4486,7 @@ int EconomicsPass::run(SimulationResult& result)
     //  they are the first two and are not repeated.
     econ["operatorsPerShift"]  = operatorsPerShiftUsed;
     econ["operatingPositions"] = operatorsTotal;
+    if (coverDeclared) econ["operatorCover_positionsPerShift"] = positionsPerOperatorPerShift;
     econ["C_OL"]               = C_OL;
     if (crewDeclared)
     {
