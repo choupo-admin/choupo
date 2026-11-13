@@ -73,7 +73,7 @@ def main():
     real_stdout, sys.stdout = sys.stdout, out
     try:
         fails = []
-        G.arm_a_b_c(fails)
+        G.arms(fails)
         T.main(["--check"])
         K.census()
     except AssertionError as e:

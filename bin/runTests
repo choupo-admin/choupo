@@ -7168,6 +7168,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/srchdrv.$$
+    # header-tool test (2026-11-13, DEV.md 4c C393): the tool refuses another holder's notice in every common spelling, keeps a byte-order mark first, refuses an unknown kind; the gate fails a replaced holder, a co-holder, a header in a string or docstring, a second notice.
+    if gate_exec "$ROOT/bin/curate/test_source_headers_tool.py" > /tmp/srchdrt.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "source-headers-tool-test" "$(head -1 /tmp/srchdrt.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/test_source_headers_tool.py)\n" "source-headers-tool-test"
+        cat /tmp/srchdrt.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/srchdrt.$$
     # liquid-volume datum gate (2026-11-13, DEV.md 4c C378, TR-12).  A record's `Vliq` belongs to `VliqT` (absent = 298.15 K); a temperature stated in the `Vliq` comment must agree with the key, a record with Tc < 330 K carrying `Vliq` must state its temperature, and the six unresolved records stay pinned by name in bin/curate/vliq_datum_debt.tsv (two-sided).
     if gate_exec "$ROOT/bin/curate/check_vliq_datum.py" > /tmp/vliqdatum.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "vliq-datum-gate" "$(head -1 /tmp/vliqdatum.$$)"
