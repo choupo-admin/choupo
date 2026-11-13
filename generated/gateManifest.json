@@ -1748,8 +1748,8 @@
     },
     "check_source_headers": {
       "exit": 0,
-      "claim": "source-headers: OK -- every tracked code file (9 kinds) carries the copyright line and the licence identifier; the exclusion table is two-sided; author arm: OK",
-      "seconds": 0.5
+      "claim": "source-headers: OK -- every tracked code file (9 kinds) carries the holder line and the licence identifier in its leading comment, no excluded third-party or held file carries one, the exclusion table and the manifest are two-sided; author arm: OK",
+      "seconds": 2.7
     }
   }
 }
