@@ -39,6 +39,7 @@ import type { GmpBuilding } from "./buildingPayload.js";
 import type { PhaseSplitScanBlock } from "./phaseSplitPayload.js";
 import type { PostProcessingBlock } from "../case/postProcessing.js";
 import type { BatchPlan } from "./batchPlanPayload.js";
+import type { PanelReport } from "./panelPayload.js";
 import type { CaseFiles } from "../case/types.js";
 import type { DynamicInstants } from "../case/dynamicInstants.js";
 
@@ -804,6 +805,10 @@ export interface RunResult {
    *  (adapters/batchPlanPayload).  Absent unless the case declares one; the
    *  GUI draws it (Reports, case/batchGantt) and computes nothing. */
   batchPlan?: BatchPlan;
+  /** THE OPERATOR PANEL (DEV.md 4c C371 S1): the facts the engine reported
+   *  about the case's `system/panelDict` (adapters/panelPayload).  Absent
+   *  unless the case declares one; a reader draws it and derives no fact. */
+  panel?: PanelReport;
 }
 
 /** One hazardous-area zone envelope: a vertical cylinder about the item's

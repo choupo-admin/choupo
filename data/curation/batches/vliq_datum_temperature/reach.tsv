@@ -1,0 +1,438 @@
+component	case	min_stream_T_K	Tc_K	class
+CO2	tutorials/batch/adsorber/batch09_adsorber_co2		304.13	NO-STREAMS
+N2	tutorials/batch/adsorber/batch10_adsorber_co2_n2		126.2	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch10_adsorber_co2_n2		304.13	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch11_adsorber_henry		304.13	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch12_adsorber_refused_P		304.13	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch13_breakthrough_co2		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch13_breakthrough_co2		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch14_transport_only		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch14_transport_only		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch15_mesh_study		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch15_mesh_study		5.19	NO-STREAMS
+He	tutorials/batch/adsorber/batch16_ergun_profile		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch17_dilute_ergun_limit		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch17_dilute_ergun_limit		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch18_ergun_conservation		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch18_ergun_conservation		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch19_feed_switch_purge		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch19_feed_switch_purge		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch20_thermal_breakthrough		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch20_thermal_breakthrough		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch21_tsa_hot_purge		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch21_tsa_hot_purge		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch22_wall_cooled		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch22_wall_cooled		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch23_tsa_cycles		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch23_tsa_cycles		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch24_blowdown_inert		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch24_blowdown_inert		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch24_tsa_until_css		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch24_tsa_until_css		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch25_blowdown_thermal		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch25_blowdown_thermal		5.19	NO-STREAMS
+CO2	tutorials/batch/adsorber/batch29_pulse_two_schemes		304.13	NO-STREAMS
+He	tutorials/batch/adsorber/batch29_pulse_two_schemes		5.19	NO-STREAMS
+H2	tutorials/batch/combustion/ignition01_h2o2		33.18	NO-STREAMS
+N2	tutorials/batch/combustion/ignition01_h2o2		126.2	NO-STREAMS
+O2	tutorials/batch/combustion/ignition01_h2o2		154.58	NO-STREAMS
+H2	tutorials/batch/combustion/ignition01_h2o2_eulersi		33.18	NO-STREAMS
+N2	tutorials/batch/combustion/ignition01_h2o2_eulersi		126.2	NO-STREAMS
+O2	tutorials/batch/combustion/ignition01_h2o2_eulersi		154.58	NO-STREAMS
+H2	tutorials/batch/combustion/ignition01_h2o2_rk4		33.18	NO-STREAMS
+N2	tutorials/batch/combustion/ignition01_h2o2_rk4		126.2	NO-STREAMS
+O2	tutorials/batch/combustion/ignition01_h2o2_rk4		154.58	NO-STREAMS
+H2	tutorials/batch/combustion/ignition02_h2air_slack		33.18	NO-STREAMS
+N2	tutorials/batch/combustion/ignition02_h2air_slack		126.2	NO-STREAMS
+O2	tutorials/batch/combustion/ignition02_h2air_slack		154.58	NO-STREAMS
+H2	tutorials/batch/combustion/nox01_zeldovich_postflame		33.18	NO-STREAMS
+N2	tutorials/batch/combustion/nox01_zeldovich_postflame		126.2	NO-STREAMS
+NO	tutorials/batch/combustion/nox01_zeldovich_postflame		180.0	NO-STREAMS
+O2	tutorials/batch/combustion/nox01_zeldovich_postflame		154.58	NO-STREAMS
+N2O	tutorials/batch/combustion/nox01_zeldovich_postflame		309.57	NO-STREAMS
+N2	tutorials/batch/drying/dryer01_sucrose_tray		126.2	NO-STREAMS
+sucrose	tutorials/batch/drying/dryer01_sucrose_tray			NO-TC
+N2	tutorials/batch/drying/dryer02_characteristic_curves		126.2	NO-STREAMS
+sucrose	tutorials/batch/drying/dryer02_characteristic_curves			NO-TC
+N2	tutorials/batch/plant/apalutamide01_tablets	263.15	126.2	GAS-ONLY
+O2	tutorials/batch/plant/apalutamide01_tablets	298.15	154.58	GAS-ONLY
+N2	tutorials/batch/plant/donepezil01_tablets	298.15	126.2	GAS-ONLY
+O2	tutorials/batch/plant/donepezil01_tablets	298.15	154.58	GAS-ONLY
+N2	tutorials/batch/plant/donepezil02_two_strengths	298.15	126.2	GAS-ONLY
+O2	tutorials/batch/plant/donepezil02_two_strengths	298.15	154.58	GAS-ONLY
+CO	tutorials/batch/reactor/batch04_reversible_wgs		132.85	NO-STREAMS
+H2	tutorials/batch/reactor/batch04_reversible_wgs		33.18	NO-STREAMS
+CO2	tutorials/batch/reactor/batch04_reversible_wgs		304.13	NO-STREAMS
+sucrose	tutorials/batch/reactor/batch05_crystalliser			NO-TC
+N2	tutorials/plant/ChemicalPlantTutorial		126.2	NO-STREAMS
+CO2	tutorials/plant/ChemicalPlantTutorial		304.13	NO-STREAMS
+sucrose	tutorials/plant/ChemicalPlantTutorial			NO-TC
+CO	tutorials/plant/aceticAcid02_plant	309.50	132.85	GAS-ONLY
+H2	tutorials/plant/acetonePlant		33.18	NO-STREAMS
+H2	tutorials/plant/ammonia02_full_plant	250.00	33.18	GAS-ONLY
+N2	tutorials/plant/ammonia02_full_plant	250.00	126.2	GAS-ONLY
+Ar	tutorials/plant/ammonia02_full_plant	250.00	150.86	GAS-ONLY
+H2	tutorials/plant/greenAmmonia02_feasibility150bar	253.15	33.18	GAS-ONLY
+N2	tutorials/plant/greenAmmonia02_feasibility150bar	253.15	126.2	GAS-ONLY
+Ar	tutorials/plant/greenAmmonia02_feasibility150bar	253.15	150.86	GAS-ONLY
+H2	tutorials/plant/greenAmmonia02_feasibility50bar	253.15	33.18	GAS-ONLY
+N2	tutorials/plant/greenAmmonia02_feasibility50bar	253.15	126.2	GAS-ONLY
+Ar	tutorials/plant/greenAmmonia02_feasibility50bar	253.15	150.86	GAS-ONLY
+H2	tutorials/plant/greenAmmonia03_basicDesign		33.18	NO-STREAMS
+N2	tutorials/plant/greenAmmonia03_basicDesign		126.2	NO-STREAMS
+Ar	tutorials/plant/greenAmmonia03_basicDesign		150.86	NO-STREAMS
+H2	tutorials/plant/greenAmmoniaPEQ_baseCase	253.15	33.18	GAS-ONLY
+N2	tutorials/plant/greenAmmoniaPEQ_baseCase	253.15	126.2	GAS-ONLY
+Ar	tutorials/plant/greenAmmoniaPEQ_baseCase	253.15	150.86	GAS-ONLY
+CH4	tutorials/plant/hda	300.00	190.56	GAS-ONLY
+H2	tutorials/plant/hda	300.00	33.18	GAS-ONLY
+CH4	tutorials/plant/lithiumBrinePlant		190.56	NO-STREAMS
+CO	tutorials/plant/lithiumBrinePlant		132.85	NO-STREAMS
+H2	tutorials/plant/lithiumBrinePlant		33.18	NO-STREAMS
+N2	tutorials/plant/lithiumBrinePlant		126.2	NO-STREAMS
+O2	tutorials/plant/lithiumBrinePlant		154.58	NO-STREAMS
+CO2	tutorials/plant/lithiumBrinePlant		304.13	NO-STREAMS
+N2	tutorials/plant/lithiumBrinePlant/sectors/FINISHING		126.2	NO-STREAMS
+O2	tutorials/plant/lithiumBrinePlant/sectors/FINISHING		154.58	NO-STREAMS
+CO2	tutorials/plant/lithiumBrinePlant/sectors/FINISHING		304.13	NO-STREAMS
+CH4	tutorials/plant/lithiumBrinePlant/sectors/HOTAIR		190.56	NO-STREAMS
+CO	tutorials/plant/lithiumBrinePlant/sectors/HOTAIR		132.85	NO-STREAMS
+H2	tutorials/plant/lithiumBrinePlant/sectors/HOTAIR		33.18	NO-STREAMS
+N2	tutorials/plant/lithiumBrinePlant/sectors/HOTAIR		126.2	NO-STREAMS
+O2	tutorials/plant/lithiumBrinePlant/sectors/HOTAIR		154.58	NO-STREAMS
+CO2	tutorials/plant/lithiumBrinePlant/sectors/HOTAIR		304.13	NO-STREAMS
+CO2	tutorials/props/adsorption/isotherm01_eval_13x_co2		304.13	NO-STREAMS
+CO2	tutorials/props/adsorption/isotherm02_fit_jaschik		304.13	NO-STREAMS
+CO2	tutorials/props/adsorption/isotherm03_fit_refusals		304.13	NO-STREAMS
+CO2	tutorials/props/compare/compare_eos_co2		304.13	NO-STREAMS
+H2	tutorials/props/gibbs/landscape01_ammonia_synthesis		33.18	NO-STREAMS
+N2	tutorials/props/gibbs/landscape01_ammonia_synthesis		126.2	NO-STREAMS
+CO	tutorials/props/gibbs/landscape02_water_gas_shift		132.85	NO-STREAMS
+H2	tutorials/props/gibbs/landscape02_water_gas_shift		33.18	NO-STREAMS
+CO2	tutorials/props/gibbs/landscape02_water_gas_shift		304.13	NO-STREAMS
+CH4	tutorials/props/gibbs/landscape03_steam_reforming		190.56	NO-STREAMS
+CO	tutorials/props/gibbs/landscape03_steam_reforming		132.85	NO-STREAMS
+H2	tutorials/props/gibbs/landscape03_steam_reforming		33.18	NO-STREAMS
+CO2	tutorials/props/gibbs/landscape03_steam_reforming		304.13	NO-STREAMS
+CH4	tutorials/props/gibbs/landscape04_methane_combustion		190.56	NO-STREAMS
+CO	tutorials/props/gibbs/landscape04_methane_combustion		132.85	NO-STREAMS
+H2	tutorials/props/gibbs/landscape04_methane_combustion		33.18	NO-STREAMS
+N2	tutorials/props/gibbs/landscape04_methane_combustion		126.2	NO-STREAMS
+O2	tutorials/props/gibbs/landscape04_methane_combustion		154.58	NO-STREAMS
+CO2	tutorials/props/gibbs/landscape04_methane_combustion		304.13	NO-STREAMS
+CH4	tutorials/props/gibbs/landscape05_thermal_no		190.56	NO-STREAMS
+CO	tutorials/props/gibbs/landscape05_thermal_no		132.85	NO-STREAMS
+H2	tutorials/props/gibbs/landscape05_thermal_no		33.18	NO-STREAMS
+N2	tutorials/props/gibbs/landscape05_thermal_no		126.2	NO-STREAMS
+NO	tutorials/props/gibbs/landscape05_thermal_no		180.0	NO-STREAMS
+O2	tutorials/props/gibbs/landscape05_thermal_no		154.58	NO-STREAMS
+CO2	tutorials/props/gibbs/landscape05_thermal_no		304.13	NO-STREAMS
+H2	tutorials/props/gibbs/landscape06_nitrogen_fixation_routes		33.18	NO-STREAMS
+N2	tutorials/props/gibbs/landscape06_nitrogen_fixation_routes		126.2	NO-STREAMS
+O2	tutorials/props/gibbs/landscape06_nitrogen_fixation_routes		154.58	NO-STREAMS
+CO2	tutorials/props/gibbs/landscape06_nitrogen_fixation_routes		304.13	NO-STREAMS
+CH4	tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways		190.56	NO-STREAMS
+CO	tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways		132.85	NO-STREAMS
+H2	tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways		33.18	NO-STREAMS
+N2	tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways		126.2	NO-STREAMS
+CO2	tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways		304.13	NO-STREAMS
+sucrose	tutorials/props/gibbs/landscape07_sugar_nitrogen_all_pathways			NO-TC
+H2	tutorials/props/gibbs/nh3_equilibrium_map		33.18	NO-STREAMS
+N2	tutorials/props/gibbs/nh3_equilibrium_map		126.2	NO-STREAMS
+H2	tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff		33.18	NO-STREAMS
+N2	tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff		126.2	NO-STREAMS
+O2	tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff		154.58	NO-STREAMS
+CO2	tutorials/props/gibbs/reactionEnthalpy01_haber_kirchhoff		304.13	NO-STREAMS
+N2	tutorials/props/heat/psychro01_n2_water		126.2	NO-STREAMS
+H2	tutorials/props/hydraulics/letdown02_valve_fluid_properties	253.01	33.18	GAS-ONLY
+N2	tutorials/props/hydraulics/letdown02_valve_fluid_properties	253.01	126.2	GAS-ONLY
+Ar	tutorials/props/hydraulics/letdown02_valve_fluid_properties	253.01	150.86	GAS-ONLY
+nButane	tutorials/props/molecular/cosmoSAC02_lvpp_selection_lin2002		425.12	NO-STREAMS
+N2	tutorials/props/molecular/entropy01_air_ledger	400.00	126.2	GAS-ONLY
+O2	tutorials/props/molecular/entropy01_air_ledger	400.00	154.58	GAS-ONLY
+CH4	tutorials/props/molecular/envelope01_natural_gas		190.56	NO-STREAMS
+ethane	tutorials/props/molecular/envelope01_natural_gas		305.32	NO-STREAMS
+nButane	tutorials/props/molecular/envelope01_natural_gas		425.12	NO-STREAMS
+propane	tutorials/props/molecular/envelope01_natural_gas		369.83	NO-STREAMS
+nButane	tutorials/props/molecular/envelope02_c3c4c5_branch_stop		425.12	NO-STREAMS
+propane	tutorials/props/molecular/envelope02_c3c4c5_branch_stop		369.83	NO-STREAMS
+N2	tutorials/props/molecular/exergy01_air_dead_state	298.15	126.2	GAS-ONLY
+O2	tutorials/props/molecular/exergy01_air_dead_state	298.15	154.58	GAS-ONLY
+CH4	tutorials/props/molecular/mixrules01_natural_gas	250.00	190.56	GAS-ONLY
+N2	tutorials/props/molecular/mixrules01_natural_gas	250.00	126.2	GAS-ONLY
+CO2	tutorials/props/molecular/mixrules01_natural_gas	250.00	304.13	LIQUID-CANDIDATE
+CH4	tutorials/props/molecular/pcsaft02_states_crosscheck		190.56	NO-STREAMS
+nButane	tutorials/props/molecular/pcsaft02_states_crosscheck		425.12	NO-STREAMS
+propane	tutorials/props/molecular/pcsaft02_states_crosscheck		369.83	NO-STREAMS
+CH4	tutorials/props/molecular/ppr78Kij01_ch4_co2_h2	280.00	190.56	GAS-ONLY
+H2	tutorials/props/molecular/ppr78Kij01_ch4_co2_h2	280.00	33.18	GAS-ONLY
+CO2	tutorials/props/molecular/ppr78Kij01_ch4_co2_h2	280.00	304.13	LIQUID-CANDIDATE
+H2	tutorials/props/molecular/srk01_h2n2_density		33.18	NO-STREAMS
+N2	tutorials/props/molecular/srk01_h2n2_density		126.2	NO-STREAMS
+CO	tutorials/props/reactor/thiele01_sphere_first_order	573.15	132.85	GAS-ONLY
+N2	tutorials/props/reactor/thiele01_sphere_first_order	573.15	126.2	GAS-ONLY
+CO	tutorials/props/reactor/thiele02_prater_temperature	573.15	132.85	GAS-ONLY
+N2	tutorials/props/reactor/thiele02_prater_temperature	573.15	126.2	GAS-ONLY
+H2	tutorials/props/safety/relief01_ammonia_loop_gas	593.15	33.18	GAS-ONLY
+N2	tutorials/props/safety/relief01_ammonia_loop_gas	593.15	126.2	GAS-ONLY
+Ar	tutorials/props/safety/relief01_ammonia_loop_gas	593.15	150.86	GAS-ONLY
+CO2	tutorials/props/scan/scan2d01_co2_compressibility		304.13	NO-STREAMS
+H2	tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP		33.18	NO-STREAMS
+CH4	tutorials/props/thermo/temperature02_engineers_ladder		190.56	NO-STREAMS
+H2	tutorials/props/thermo/temperature02_engineers_ladder		33.18	NO-STREAMS
+N2	tutorials/props/thermo/temperature02_engineers_ladder		126.2	NO-STREAMS
+O2	tutorials/props/thermo/temperature02_engineers_ladder		154.58	NO-STREAMS
+Ar	tutorials/props/thermo/temperature02_engineers_ladder		150.86	NO-STREAMS
+CO2	tutorials/props/thermoTest/atoms01_formula_parser		304.13	NO-STREAMS
+N2	tutorials/props/transport/transport01_gas_bench	373.15	126.2	GAS-ONLY
+O2	tutorials/props/transport/transport01_gas_bench	373.15	154.58	GAS-ONLY
+CO2	tutorials/props/transport/transport01_gas_bench	373.15	304.13	GAS-ONLY
+CH4	tutorials/props/transport/transport02_chapman_enskog	300.00	190.56	GAS-ONLY
+H2	tutorials/props/transport/transport02_chapman_enskog	300.00	33.18	GAS-ONLY
+N2	tutorials/props/transport/transport02_chapman_enskog	300.00	126.2	GAS-ONLY
+O2	tutorials/props/transport/transport02_chapman_enskog	300.00	154.58	GAS-ONLY
+CO2	tutorials/props/transport/transport02_chapman_enskog	300.00	304.13	LIQUID-CANDIDATE
+Ar	tutorials/props/transport/transport02_chapman_enskog	300.00	150.86	GAS-ONLY
+N2	tutorials/steady/absorption/absorber01_NH3_water	298.15	126.2	GAS-ONLY
+N2	tutorials/steady/absorption/absorption01_CO2_water	298.15	126.2	GAS-ONLY
+CO2	tutorials/steady/absorption/absorption01_CO2_water	298.15	304.13	LIQUID-CANDIDATE
+H2	tutorials/steady/absorption/acetone05_luyben_absorber	318.00	33.18	GAS-ONLY
+N2	tutorials/steady/absorption/stripper01_NH3_water	315.97	126.2	GAS-ONLY
+sucrose	tutorials/steady/crystallisation/crystalliser01_sugar	293.15		NO-TC
+sucrose	tutorials/steady/crystallisation/crystalliser02_msmpr	293.15		NO-TC
+sucrose	tutorials/steady/crystallisation/crystalliser03_pbe_size_independent	293.15		NO-TC
+sucrose	tutorials/steady/crystallisation/crystalliser04_size_dependent_growth	293.15		NO-TC
+nButane	tutorials/steady/distillation/column07_naphtaliSandholm	272.04	425.12	LIQUID-CANDIDATE
+nButane	tutorials/steady/distillation/column08_radfrac_multidraw	290.00	425.12	LIQUID-CANDIDATE
+propane	tutorials/steady/distillation/column08_radfrac_multidraw	290.00	369.83	LIQUID-CANDIDATE
+CO2	tutorials/steady/distillation/column13_sour_water_stage_identity	350.00	304.13	GAS-ONLY
+nButane	tutorials/steady/distillation/column14_klemola_c4_splitter	314.20	425.12	LIQUID-CANDIDATE
+propane	tutorials/steady/distillation/column14_klemola_c4_splitter	314.20	369.83	LIQUID-CANDIDATE
+nButane	tutorials/steady/distillation/column15_klemola_ideal_trays	314.20	425.12	LIQUID-CANDIDATE
+propane	tutorials/steady/distillation/column15_klemola_ideal_trays	314.20	369.83	LIQUID-CANDIDATE
+nButane	tutorials/steady/distillation/column19_mtbe_reactive_mesh	323.15	425.12	LIQUID-CANDIDATE
+propane	tutorials/steady/distillation/column19_mtbe_reactive_mesh	323.15	369.83	LIQUID-CANDIDATE
+nButane	tutorials/steady/distillation/column20_mtbe_kinetic_mesh	323.15	425.12	LIQUID-CANDIDATE
+propane	tutorials/steady/distillation/column20_mtbe_kinetic_mesh	323.15	369.83	LIQUID-CANDIDATE
+CO2	tutorials/steady/distillation/stripper01_sour_water	360.00	304.13	GAS-ONLY
+CO2	tutorials/steady/distillation/stripper02_sour_water_h2s	360.00	304.13	GAS-ONLY
+H2S	tutorials/steady/distillation/stripper02_sour_water_h2s	360.00	373.4	LIQUID-CANDIDATE
+sucrose	tutorials/steady/drying/convDryer01_sugar_curve	330.00		NO-TC
+N2	tutorials/steady/drying/evapDryer01_nacl	400.00	126.2	GAS-ONLY
+N2	tutorials/steady/drying/evapDryer02_energy_limited	400.00	126.2	GAS-ONLY
+sucrose	tutorials/steady/drying/solidDryer01_sugar	330.00		NO-TC
+sucrose	tutorials/steady/drying/solidDryer02_starved_air	330.00		NO-TC
+sucrose	tutorials/steady/drying/sprayDryer01_sugar	298.15		NO-TC
+sucrose	tutorials/steady/drying/sprayDryer02_residence_sweep	298.15		NO-TC
+sucrose	tutorials/steady/drying/sprayDryer03_pressure_nozzle	298.15		NO-TC
+sucrose	tutorials/steady/drying/sprayDryer04_profiles	298.15		NO-TC
+sucrose	tutorials/steady/drying/sprayDryer05_whey	298.15		NO-TC
+sucrose	tutorials/steady/drying/sprayDryer06_rea	298.15		NO-TC
+sucrose	tutorials/steady/drying/sprayDryer07_design	298.15		NO-TC
+H2	tutorials/steady/economics/economics03_startup_years	250.00	33.18	GAS-ONLY
+N2	tutorials/steady/economics/economics03_startup_years	250.00	126.2	GAS-ONLY
+Ar	tutorials/steady/economics/economics03_startup_years	250.00	150.86	GAS-ONLY
+sucrose	tutorials/steady/economics/economics04_building_royalty_breakeven	298.15		NO-TC
+N2	tutorials/steady/economics/sugarPlantEconomicsSweep		126.2	NO-STREAMS
+CO2	tutorials/steady/economics/sugarPlantEconomicsSweep		304.13	NO-STREAMS
+sucrose	tutorials/steady/economics/sugarPlantEconomicsSweep			NO-TC
+sucrose	tutorials/steady/evaporation/evaporator02_triple_effect_sugar	295.00		NO-TC
+sucrose	tutorials/steady/evaporation/evaporator09_nacl_sucrose_brine	298.15		NO-TC
+CO2	tutorials/steady/flash/analysis01_water_analysis_inlet	313.15	304.13	GAS-ONLY
+CO2	tutorials/steady/flash/analysis02_weighted_least_squares	313.15	304.13	GAS-ONLY
+CO2	tutorials/steady/flash/flash08_co2_water_package	298.15	304.13	LIQUID-CANDIDATE
+CH4	tutorials/steady/flash/flash09_n2ch4_stryjek	149.82	190.56	LIQUID-CANDIDATE
+N2	tutorials/steady/flash/flash09_n2ch4_stryjek	149.82	126.2	GAS-ONLY
+CH4	tutorials/steady/flash/flash10_ch4propane_pcsaft	273.15	190.56	GAS-ONLY
+propane	tutorials/steady/flash/flash10_ch4propane_pcsaft	273.15	369.83	LIQUID-CANDIDATE
+CO2	tutorials/steady/flash/flash14_calcite_carbonate_basis	313.15	304.13	GAS-ONLY
+CO2	tutorials/steady/flash/flash16_calcite_precipitation	313.15	304.13	GAS-ONLY
+CO2	tutorials/steady/flash/flash18_water_analysis_basis	313.15	304.13	GAS-ONLY
+CO2	tutorials/steady/flash/flash19_organic_and_precipitate	313.15	304.13	GAS-ONLY
+CO2	tutorials/steady/flash/flash21_brine_co2_pitzer	313.15	304.13	GAS-ONLY
+H2	tutorials/steady/flowsheets/acetone03_luyben_reaction_section	389.00	33.18	GAS-ONLY
+H2	tutorials/steady/flowsheets/ammonia01_synthesis_loop	250.00	33.18	GAS-ONLY
+N2	tutorials/steady/flowsheets/ammonia01_synthesis_loop	250.00	126.2	GAS-ONLY
+Ar	tutorials/steady/flowsheets/ammonia01_synthesis_loop	250.00	150.86	GAS-ONLY
+CH4	tutorials/steady/flowsheets/cavett01_recycle_train	322.04	190.56	GAS-ONLY
+N2	tutorials/steady/flowsheets/cavett01_recycle_train	322.04	126.2	GAS-ONLY
+CO2	tutorials/steady/flowsheets/cavett01_recycle_train	322.04	304.13	GAS-ONLY
+ethane	tutorials/steady/flowsheets/cavett01_recycle_train	322.04	305.32	GAS-ONLY
+H2S	tutorials/steady/flowsheets/cavett01_recycle_train	322.04	373.4	LIQUID-CANDIDATE
+nButane	tutorials/steady/flowsheets/cavett01_recycle_train	322.04	425.12	LIQUID-CANDIDATE
+propane	tutorials/steady/flowsheets/cavett01_recycle_train	322.04	369.83	LIQUID-CANDIDATE
+CO	tutorials/steady/flowsheets/proxy01_gas_loop	245.34	132.85	GAS-ONLY
+H2	tutorials/steady/flowsheets/proxy01_gas_loop	245.34	33.18	GAS-ONLY
+CO2	tutorials/steady/flowsheets/proxy01_gas_loop	245.34	304.13	LIQUID-CANDIDATE
+N2	tutorials/steady/gas-solid/bagFilter01_dust	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/cyclone01_dust_removal	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/cyclone02_leith_licht	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/cyclone03_iozia_leith	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/cyclone04_high_loading	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/cyclone05_dirgo_leith_validation	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/cyclone06_barth	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/gasSolidSplitter01_ideal	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/gasSolidSplitter02_rosinRammler	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/gasSolidSplitter03_tabular_psd	300.00	126.2	GAS-ONLY
+N2	tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd	300.00	126.2	GAS-ONLY
+CO	tutorials/steady/gibbs/claus01_thermal_stage		132.85	NO-STREAMS
+H2	tutorials/steady/gibbs/claus01_thermal_stage		33.18	NO-STREAMS
+N2	tutorials/steady/gibbs/claus01_thermal_stage	298.15	126.2	GAS-ONLY
+O2	tutorials/steady/gibbs/claus01_thermal_stage	298.15	154.58	GAS-ONLY
+CO2	tutorials/steady/gibbs/claus01_thermal_stage	305.10	304.13	GAS-ONLY
+H2S	tutorials/steady/gibbs/claus01_thermal_stage	305.10	373.4	LIQUID-CANDIDATE
+SO2	tutorials/steady/gibbs/claus01_thermal_stage		430.75	NO-STREAMS
+CO	tutorials/steady/gibbs/gibbs01_water_gas_shift	800.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs01_water_gas_shift	800.00	33.18	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs01_water_gas_shift	800.00	304.13	GAS-ONLY
+CH4	tutorials/steady/gibbs/gibbs02_steam_reforming	1000.00	190.56	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs02_steam_reforming	1000.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs02_steam_reforming	1000.00	33.18	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs02_steam_reforming	1000.00	304.13	GAS-ONLY
+CH4	tutorials/steady/gibbs/gibbs03_methane_combustion	1800.00	190.56	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs03_methane_combustion	1800.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs03_methane_combustion	1800.00	33.18	GAS-ONLY
+N2	tutorials/steady/gibbs/gibbs03_methane_combustion	1800.00	126.2	GAS-ONLY
+O2	tutorials/steady/gibbs/gibbs03_methane_combustion	1800.00	154.58	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs03_methane_combustion	1800.00	304.13	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep	800.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep	800.00	33.18	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs04_wgs_temperature_sweep	800.00	304.13	GAS-ONLY
+CH4	tutorials/steady/gibbs/gibbs05_adiabatic_flame	298.15	190.56	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs05_adiabatic_flame	1491.58	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs05_adiabatic_flame	1491.58	33.18	GAS-ONLY
+N2	tutorials/steady/gibbs/gibbs05_adiabatic_flame	298.15	126.2	GAS-ONLY
+O2	tutorials/steady/gibbs/gibbs05_adiabatic_flame	298.15	154.58	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs05_adiabatic_flame	1491.58	304.13	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs06_h2_flame_radicals	298.15	33.18	GAS-ONLY
+N2	tutorials/steady/gibbs/gibbs06_h2_flame_radicals	298.15	126.2	GAS-ONLY
+NO	tutorials/steady/gibbs/gibbs06_h2_flame_radicals	2385.84	180.0	GAS-ONLY
+O2	tutorials/steady/gibbs/gibbs06_h2_flame_radicals	298.15	154.58	GAS-ONLY
+CH4	tutorials/steady/gibbs/gibbs06_thermal_nox	1800.00	190.56	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs06_thermal_nox	1800.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs06_thermal_nox	1800.00	33.18	GAS-ONLY
+N2	tutorials/steady/gibbs/gibbs06_thermal_nox	1800.00	126.2	GAS-ONLY
+NO	tutorials/steady/gibbs/gibbs06_thermal_nox	1800.00	180.0	GAS-ONLY
+O2	tutorials/steady/gibbs/gibbs06_thermal_nox	1800.00	154.58	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs06_thermal_nox	1800.00	304.13	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs07_wgs_cooled	350.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs07_wgs_cooled	350.00	33.18	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs07_wgs_cooled	350.00	304.13	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash	350.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash	350.00	33.18	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs08_wgs_cooled_reactiveflash	350.00	304.13	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin	350.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin	350.00	33.18	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs09_wgs_cooled_directmin	350.00	304.13	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs10_ammonia_fugacity	700.00	33.18	GAS-ONLY
+N2	tutorials/steady/gibbs/gibbs10_ammonia_fugacity	700.00	126.2	GAS-ONLY
+CH4	tutorials/steady/gibbs/gibbs11_carbon_deposition	1000.00	190.56	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs11_carbon_deposition		132.85	NO-STREAMS
+H2	tutorials/steady/gibbs/gibbs11_carbon_deposition		33.18	NO-STREAMS
+CO2	tutorials/steady/gibbs/gibbs11_carbon_deposition		304.13	NO-STREAMS
+CH4	tutorials/steady/gibbs/gibbs12_element_potential_newton	1000.00	190.56	GAS-ONLY
+CO	tutorials/steady/gibbs/gibbs12_element_potential_newton	800.00	132.85	GAS-ONLY
+H2	tutorials/steady/gibbs/gibbs12_element_potential_newton		33.18	NO-STREAMS
+N2	tutorials/steady/gibbs/gibbs12_element_potential_newton	700.00	126.2	GAS-ONLY
+NO	tutorials/steady/gibbs/gibbs12_element_potential_newton		180.0	NO-STREAMS
+O2	tutorials/steady/gibbs/gibbs12_element_potential_newton	700.00	154.58	GAS-ONLY
+CO2	tutorials/steady/gibbs/gibbs12_element_potential_newton		304.13	NO-STREAMS
+H2	tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction	688.15	33.18	GAS-ONLY
+N2	tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction	688.15	126.2	GAS-ONLY
+Ar	tutorials/steady/gibbs/gibbs13_adiabatic_approach_direction	688.15	150.86	GAS-ONLY
+N2	tutorials/steady/heat/coolingTower01_merkel	298.15	126.2	GAS-ONLY
+H2	tutorials/steady/hydraulics/letdown01_ammonia_flashing	253.15	33.18	GAS-ONLY
+N2	tutorials/steady/hydraulics/letdown01_ammonia_flashing	253.15	126.2	GAS-ONLY
+Ar	tutorials/steady/hydraulics/letdown01_ammonia_flashing	253.15	150.86	GAS-ONLY
+N2	tutorials/steady/hydraulics/pipe02_airwater_twophase	298.15	126.2	GAS-ONLY
+sucrose	tutorials/steady/optimisation/designSpec01_triple_equal_areas	295.00		NO-TC
+N2	tutorials/steady/power/brayton01_gas_turbine	298.15	126.2	GAS-ONLY
+O2	tutorials/steady/power/brayton01_gas_turbine	298.15	154.58	GAS-ONLY
+CH4	tutorials/steady/power/combined01_brayton_rankine	600.00	190.56	GAS-ONLY
+N2	tutorials/steady/power/combined01_brayton_rankine	600.00	126.2	GAS-ONLY
+O2	tutorials/steady/power/combined01_brayton_rankine	600.00	154.58	GAS-ONLY
+CO2	tutorials/steady/power/combined01_brayton_rankine	1051.19	304.13	GAS-ONLY
+CH4	tutorials/steady/power/combined02_brayton_rankine_shaft	300.00	190.56	GAS-ONLY
+N2	tutorials/steady/power/combined02_brayton_rankine_shaft	300.00	126.2	GAS-ONLY
+O2	tutorials/steady/power/combined02_brayton_rankine_shaft	300.00	154.58	GAS-ONLY
+CO2	tutorials/steady/power/combined02_brayton_rankine_shaft	820.46	304.13	GAS-ONLY
+CO	tutorials/steady/reactors/aceticAcid01_gibbsReactor	460.00	132.85	GAS-ONLY
+H2	tutorials/steady/reactors/acetone02_luyben_reactor	389.00	33.18	GAS-ONLY
+H2	tutorials/steady/reactors/ammonia03_quench_converter	250.00	33.18	GAS-ONLY
+N2	tutorials/steady/reactors/ammonia03_quench_converter	250.00	126.2	GAS-ONLY
+Ar	tutorials/steady/reactors/ammonia03_quench_converter	250.00	150.86	GAS-ONLY
+H2	tutorials/steady/reactors/ammoniaReactor01_fixedConversion	250.00	33.18	GAS-ONLY
+N2	tutorials/steady/reactors/ammoniaReactor01_fixedConversion	250.00	126.2	GAS-ONLY
+Ar	tutorials/steady/reactors/ammoniaReactor01_fixedConversion	250.00	150.86	GAS-ONLY
+H2	tutorials/steady/reactors/ammoniaReactor02_equilibrium	250.00	33.18	GAS-ONLY
+N2	tutorials/steady/reactors/ammoniaReactor02_equilibrium	250.00	126.2	GAS-ONLY
+Ar	tutorials/steady/reactors/ammoniaReactor02_equilibrium	250.00	150.86	GAS-ONLY
+H2	tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach	250.00	33.18	GAS-ONLY
+N2	tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach	250.00	126.2	GAS-ONLY
+Ar	tutorials/steady/reactors/ammoniaReactor03_equilibriumApproach	250.00	150.86	GAS-ONLY
+H2	tutorials/steady/reactors/ammoniaReactor04_kineticSizing	250.00	33.18	GAS-ONLY
+N2	tutorials/steady/reactors/ammoniaReactor04_kineticSizing	250.00	126.2	GAS-ONLY
+Ar	tutorials/steady/reactors/ammoniaReactor04_kineticSizing	250.00	150.86	GAS-ONLY
+CH4	tutorials/steady/reactors/ammoniaRoutes01_screening	298.15	190.56	GAS-ONLY
+H2	tutorials/steady/reactors/ammoniaRoutes01_screening	700.00	33.18	GAS-ONLY
+N2	tutorials/steady/reactors/ammoniaRoutes01_screening	298.15	126.2	GAS-ONLY
+O2	tutorials/steady/reactors/ammoniaRoutes01_screening	298.15	154.58	GAS-ONLY
+CO2	tutorials/steady/reactors/ammoniaRoutes01_screening		304.13	NO-STREAMS
+Ar	tutorials/steady/reactors/ammoniaRoutes01_screening	298.15	150.86	GAS-ONLY
+HCl	tutorials/steady/reactors/chlorophenol01_chlorination		324.55	NO-STREAMS
+Cl2	tutorials/steady/reactors/chlorophenol01_chlorination	298.15	416.9	LIQUID-CANDIDATE
+CH4	tutorials/steady/reactors/conversion01_hda	900.00	190.56	GAS-ONLY
+H2	tutorials/steady/reactors/conversion01_hda	900.00	33.18	GAS-ONLY
+CO	tutorials/steady/reactors/cstr02_reversible_wgs	600.00	132.85	GAS-ONLY
+H2	tutorials/steady/reactors/cstr02_reversible_wgs	600.00	33.18	GAS-ONLY
+CO2	tutorials/steady/reactors/cstr02_reversible_wgs	600.00	304.13	GAS-ONLY
+CH4	tutorials/steady/reactors/equil01_reforming	1100.00	190.56	GAS-ONLY
+CO	tutorials/steady/reactors/equil01_reforming	600.00	132.85	GAS-ONLY
+H2	tutorials/steady/reactors/equil01_reforming	600.00	33.18	GAS-ONLY
+CO2	tutorials/steady/reactors/equil01_reforming	600.00	304.13	GAS-ONLY
+CH4	tutorials/steady/reactors/equil02_methanol_declared_pathways		190.56	NO-STREAMS
+CO	tutorials/steady/reactors/equil02_methanol_declared_pathways	525.00	132.85	GAS-ONLY
+H2	tutorials/steady/reactors/equil02_methanol_declared_pathways	525.00	33.18	GAS-ONLY
+CO2	tutorials/steady/reactors/equil02_methanol_declared_pathways	525.00	304.13	GAS-ONLY
+N2	tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways	1100.00	126.2	GAS-ONLY
+NO	tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways		180.0	NO-STREAMS
+O2	tutorials/steady/reactors/equil03_ammonia_oxidation_declared_pathways	1100.00	154.58	GAS-ONLY
+CH4	tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways	900.00	190.56	GAS-ONLY
+CO	tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways		132.85	NO-STREAMS
+H2	tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways		33.18	NO-STREAMS
+CO2	tutorials/steady/reactors/equil04_reforming_carbon_declared_pathways		304.13	NO-STREAMS
+CO	tutorials/steady/reactors/ladder01_wgs_three_rungs	600.00	132.85	GAS-ONLY
+H2	tutorials/steady/reactors/ladder01_wgs_three_rungs		33.18	NO-STREAMS
+CO2	tutorials/steady/reactors/ladder01_wgs_three_rungs		304.13	NO-STREAMS
+CO	tutorials/steady/reactors/pfr02_reversible_wgs	600.00	132.85	GAS-ONLY
+H2	tutorials/steady/reactors/pfr02_reversible_wgs	600.00	33.18	GAS-ONLY
+CO2	tutorials/steady/reactors/pfr02_reversible_wgs	600.00	304.13	GAS-ONLY
+N2	tutorials/steady/reactors/pfr05_cooled_multitubular	625.00	126.2	GAS-ONLY
+O2	tutorials/steady/reactors/pfr05_cooled_multitubular	625.00	154.58	GAS-ONLY
+CH4	tutorials/steady/reactors/screen01_methanol_routes	525.00	190.56	GAS-ONLY
+CO	tutorials/steady/reactors/screen01_methanol_routes	525.00	132.85	GAS-ONLY
+H2	tutorials/steady/reactors/screen01_methanol_routes	525.00	33.18	GAS-ONLY
+O2	tutorials/steady/reactors/screen01_methanol_routes	525.00	154.58	GAS-ONLY
+CO2	tutorials/steady/reactors/screen01_methanol_routes	525.00	304.13	GAS-ONLY
+N2	tutorials/steady/rotating/compressor01_air	298.15	126.2	GAS-ONLY
+O2	tutorials/steady/rotating/compressor01_air	298.15	154.58	GAS-ONLY
+N2	tutorials/steady/rotating/compressor02_designspec_pout	298.15	126.2	GAS-ONLY
+O2	tutorials/steady/rotating/compressor02_designspec_pout	298.15	154.58	GAS-ONLY
+N2	tutorials/steady/rotating/compressorTurbine01_turbo_booster	298.15	126.2	GAS-ONLY
+O2	tutorials/steady/rotating/compressorTurbine01_turbo_booster	298.15	154.58	GAS-ONLY
+N2	tutorials/steady/rotating/turbine01_air	582.94	126.2	GAS-ONLY
+O2	tutorials/steady/rotating/turbine01_air	582.94	154.58	GAS-ONLY
+CH4	tutorials/steady/separation/psa01_h2_psa	313.00	190.56	GAS-ONLY
+CO	tutorials/steady/separation/psa01_h2_psa	313.00	132.85	GAS-ONLY
+H2	tutorials/steady/separation/psa01_h2_psa	313.00	33.18	GAS-ONLY
+N2	tutorials/steady/separation/psa01_h2_psa	313.00	126.2	GAS-ONLY
+CO2	tutorials/steady/separation/psa01_h2_psa	313.00	304.13	GAS-ONLY
+CO2	tutorials/steady/separation/tsa01_co2_twin_bed	298.00	304.13	LIQUID-CANDIDATE
+He	tutorials/steady/separation/tsa01_co2_twin_bed	298.00	5.19	GAS-ONLY
+CO2	tutorials/steady/separation/tsa02_refused_capacity	298.00	304.13	LIQUID-CANDIDATE
+He	tutorials/steady/separation/tsa02_refused_capacity	298.00	5.19	GAS-ONLY
+N2	tutorials/steady/solids/pneumaticConveyor01_sand	298.00	126.2	GAS-ONLY
+N2	tutorials/steady/solids/pneumaticConveyor02_bends	298.00	126.2	GAS-ONLY
+N2	tutorials/steady/thermo/basis01_two_unit_chain	313.15	126.2	GAS-ONLY
+CO2	tutorials/steady/thermo/basis01_two_unit_chain	313.15	304.13	GAS-ONLY
+hitecSalt	tutorials/steady/utilities/utility02_hitec_csp_heater	756.86		NO-TC
