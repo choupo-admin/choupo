@@ -1,0 +1,79 @@
+unit	T_K	declared_phase	branch_runs_exit0_inside_band	branch_jump_inside_band	branch_worst_key	branch_min	branch_max	main_equivalent_jump_inside_band	main_equivalent_worst_key	main_min	main_max	branch_first_error
+heater	373.15	liquid	9	no	kpi.dT	-1.40242603e-05	1.39980122e-05	yes	kpi.dT	-1.48731942e-08	27.2569836	
+heater	373.15	gas	9	no	kpi.dT	27.2569801	27.2569851	yes	kpi.dT	-1.48731942e-08	27.2569836	
+heater	446.5158944	liquid	9	no	kpi.dT	-2.10130056e-05	2.1097158e-05	yes	kpi.dT	-1.48589834e-08	22.4674083	
+heater	446.5158944	gas	9	no	kpi.dT	22.4673933	22.4674149	yes	kpi.dT	-1.48589834e-08	22.4674083	
+heater	550.0	liquid	9	no	kpi.dT	-3.28246022e-05	3.26934937e-05	yes	kpi.dT	1.49011612e-08	12.431719	
+heater	550.0	gas	9	no	kpi.dT	12.4316714	12.4317467	yes	kpi.dT	1.49011612e-08	12.431719	
+cooler	373.15	liquid	9	yes	kpi.Q_latent_kW	0	39.6503599	yes	kpi.Q_latent_kW	0	39.65036	
+cooler	373.15	gas	9	yes	kpi.Q_sensible_kW	-3.98370582e-07	39.6503582	yes	kpi.Q_sensible_kW	-5.24129086e-07	39.6503588	
+cooler	446.5158944	liquid	9	yes	kpi.Q_latent_kW	0	35.7000758	yes	kpi.Q_latent_kW	0	35.7000764	
+cooler	446.5158944	gas	9	yes	kpi.Q_sensible_kW	-3.60919175e-07	35.7000742	yes	kpi.Q_sensible_kW	-9.9821684e-07	35.7000742	
+cooler	550.0	liquid	9	yes	kpi.Q_latent_kW	0	27.1574469	yes	kpi.Q_latent_kW	0	27.1574504	
+cooler	550.0	gas	9	yes	kpi.Q_sensible_kW	-1.27364785e-12	27.1574488	yes	kpi.Q_sensible_kW	-2.90398458e-06	27.1574489	
+valve	373.15	liquid	0	no		0	0	not run				ERROR: Flowsheet: unit 'U' failed to converge
+valve	373.15	gas	9	no	kpi.dT	-0.674521645	-0.674515563	not run				ERROR: Flowsheet: unit 'U' failed to converge
+valve	446.5158944	liquid	0	no		0	0	not run				ERROR: Flowsheet: unit 'U' failed to converge
+valve	446.5158944	gas	9	no	kpi.dT	-2.71691793	-2.71689322	not run				ERROR: Flowsheet: unit 'U' failed to converge
+valve	550.0	liquid	0	no		0	0	not run				ERROR: Flowsheet: unit 'U' failed to converge
+valve	550.0	gas	0	no		0	0	not run				ERROR: Flowsheet: unit 'U' failed to converge
+pipe	373.15	liquid	0	no		0	0	not run				ERROR: Pipe 'U': inlet stream 'probe' resolves to a vapour fraction V/F = 1 at its own (T = 373.15 K, P = 101418 Pa) [su
+pipe	373.15	gas	0	no		0	0	not run				ERROR: Pipe 'U': inlet stream 'probe' resolves to a vapour fraction V/F = 1 at its own (T = 373.15 K, P = 101418 Pa) [su
+pipe	446.5158944	liquid	0	no		0	0	not run				ERROR: Pipe: no liquid viscosity available.  Add a `transport { liquidViscosity { model Vogel; } }` block to the thermoP
+pipe	446.5158944	gas	0	no		0	0	not run				ERROR: Pipe: no liquid viscosity available.  Add a `transport { liquidViscosity { model Vogel; } }` block to the thermoP
+pipe	550.0	liquid	0	no		0	0	not run				ERROR: Pipe 'U': inlet stream 'probe' resolves to a vapour fraction V/F = 1 at its own (T = 550 K, P = 6.11706e+06 Pa) [
+pipe	550.0	gas	0	no		0	0	not run				ERROR: Pipe 'U': inlet stream 'probe' resolves to a vapour fraction V/F = 1 at its own (T = 550 K, P = 6.11706e+06 Pa) [
+mixer	373.15	liquid	9	no	bnd.H_feeds_kW	9.58141595	9.58141596	yes	bnd.H_products_kW	9.58141596	96.4008602	
+mixer	373.15	gas	9	no	kpi.T_out	373.149986	373.150014	yes	bnd.H_products_kW	9.58141596	96.4008602	
+mixer	446.5158944	liquid	9	no	bnd.H_feeds_kW	15.2788989	15.2788989	yes	bnd.H_products_kW	15.2788989	99.8450469	
+mixer	446.5158944	gas	9	no	kpi.T_out	446.515873	446.515915	yes	bnd.H_products_kW	15.2788989	99.8450469	
+mixer	550.0	liquid	9	no	bnd.H_feeds_kW	24.2131381	24.2131383	yes	bnd.H_products_kW	24.2131382	100.28119	
+mixer	550.0	gas	9	no	kpi.T_out	549.999967	550.000033	yes	bnd.H_products_kW	24.2131382	100.28119	
+splitter	373.15	liquid	9	no		0	0	yes	bnd.H_feeds_kW	7.55007128	48.2004302	
+splitter	373.15	gas	9	no		0	0	yes	bnd.H_feeds_kW	7.55007128	48.2004302	
+splitter	446.5158944	liquid	9	no		0	0	yes	bnd.H_feeds_kW	13.2224493	49.9225241	
+splitter	446.5158944	gas	9	no		0	0	yes	bnd.H_feeds_kW	13.2224493	49.9225241	
+splitter	550.0	liquid	9	no		0	0	yes	bnd.H_feeds_kW	21.983151	50.1405984	
+splitter	550.0	gas	9	no		0	0	yes	bnd.H_feeds_kW	21.983151	50.1405984	
+storageTank	373.15	liquid	9	no		0	0	not run				
+storageTank	373.15	gas	9	no		0	0	not run				
+storageTank	446.5158944	liquid	9	no		0	0	not run				
+storageTank	446.5158944	gas	9	no		0	0	not run				
+storageTank	550.0	liquid	9	no		0	0	not run				
+storageTank	550.0	gas	9	no		0	0	not run				
+turbine	373.15	liquid	0	no		0	0	not run				ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+turbine	373.15	gas	0	no		0	0	not run				ERROR: rotating: inner Newton on T(S) did not converge (discharge state outside the EoS comfort range --- check W_shaft 
+turbine	446.5158944	liquid	0	no		0	0	not run				ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+turbine	446.5158944	gas	0	no		0	0	not run				ERROR: rotating: inner Newton on T(S) did not converge (discharge state outside the EoS comfort range --- check W_shaft 
+turbine	550.0	liquid	0	no		0	0	not run				ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+turbine	550.0	gas	0	no		0	0	not run				ERROR: rotating: inner Newton on T(S) did not converge (discharge state outside the EoS comfort range --- check W_shaft 
+compressor	373.15	liquid	0	no		0	0	no		0	0	ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+compressor	373.15	gas	9	no	kpi.dT	46.5973143	46.5974351	no	kpi.dT	46.5973746	46.5973755	
+compressor	446.5158944	liquid	0	no		0	0	no		0	0	ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+compressor	446.5158944	gas	9	no	kpi.dT	51.702573	51.7027087	yes	kpi.dT_isen	0.0570629337	43.325909	
+compressor	550.0	liquid	0	no		0	0	no		0	0	ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+compressor	550.0	gas	9	no	kpi.dT	56.4985067	56.4986556	yes	kpi.dT_isen	1.05041538	51.7427616	
+pump	373.15	liquid	9	no	kpi.head_m	5.18666197	5.18666716	yes	bnd.H_feeds_kW	7.55007128	48.2004302	
+pump	373.15	gas	0	no		0	0	no		0	0	ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+pump	446.5158944	liquid	9	no	kpi.head_m	43.9095539	43.9095978	yes	bnd.H_feeds_kW	13.2224493	49.9225241	
+pump	446.5158944	gas	0	no		0	0	no		0	0	ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+pump	550.0	liquid	9	no	kpi.W_shaft	69.0844626	69.0845317	yes	kpi.dT	1.01093395	35.7622814	
+pump	550.0	gas	0	no		0	0	no		0	0	ERROR: Flowsheet: an AUTHORED inlet is not accepted by the unit that consumes it (checked before any unit runs -- DEV.md
+heatExchanger	373.15	liquid	9	yes	kpi.H_closure_gap_kW	-40.649888	1.30548639e-09	yes	kpi.H_closure_gap_kW	-40.6498882	6.19396978e-10	
+heatExchanger	373.15	gas	9	yes	kpi.H_closure_gap_kW	-43.6868799	-3.03652102	yes	kpi.H_closure_gap_kW	-43.68688	-3.03652102	
+heatExchanger	446.5158944	liquid	9	yes	kpi.H_closure_gap_kW	-36.8231024	2.84199331e-11	yes	kpi.H_closure_gap_kW	-36.823103	1.26947697e-09	
+heatExchanger	446.5158944	gas	9	yes	kpi.H_closure_gap_kW	-42.8617653	-6.16169116	yes	kpi.H_closure_gap_kW	-42.8617659	-6.16169117	
+heatExchanger	550.0	liquid	9	yes	kpi.H_closure_gap_kW	-29.1515587	-7.81891885e-10	yes	kpi.H_closure_gap_kW	-29.1515622	-7.08300973e-10	
+heatExchanger	550.0	gas	9	yes	kpi.H_closure_gap_kW	-39.3362316	-11.1787877	yes	kpi.H_closure_gap_kW	-39.3362351	-11.1787877	
+isothermalFlash	373.15	liquid	9	no	kpi.Q_kW	40.6753354	40.6753357	yes	kpi.Q	24.9767165	40675.3356	
+isothermalFlash	373.15	gas	9	no	kpi.Q	24.9766194	24.9768423	yes	kpi.Q	24.9767165	40675.3356	
+isothermalFlash	446.5158944	liquid	9	no	kpi.Q	36823.8171	36823.8182	yes	kpi.Q	123.743492	36823.8177	
+isothermalFlash	446.5158944	gas	9	no	kpi.Q	123.743048	123.744129	yes	kpi.Q	123.743492	36823.8177	
+isothermalFlash	550.0	liquid	9	no	kpi.Q	28813.5412	28813.5468	yes	kpi.Q_kW	0.656099409	28.813544	
+isothermalFlash	550.0	gas	9	no	kpi.Q	656.097413	656.102929	yes	kpi.Q_kW	0.656099409	28.813544	
+adiabaticFlash	373.15	liquid	0	no		0	0	not run				refused)
+adiabaticFlash	373.15	gas	9	no	kpi.T_drop	0.674515565	0.674521647	not run				refused)
+adiabaticFlash	446.5158944	liquid	0	no		0	0	not run				refused)
+adiabaticFlash	446.5158944	gas	9	no	kpi.T_drop	2.71689614	2.71692085	not run				refused)
+adiabaticFlash	550.0	liquid	0	no		0	0	not run				refused)
+adiabaticFlash	550.0	gas	0	no		0	0	not run				refused)

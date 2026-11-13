@@ -1,0 +1,9 @@
+id	fix_reverted	smallest_change	new_gate	condenser01	cstr02	rankine02	scoped_conservation_gates	verdict
+S1_density_ignores_phase	defect 1 (density)	ThermoPackage.cpp density(): v_molar(T, st.pEval) -> v_molar(T, P_Pa)	OK (survives; not its subject)	FAIL (h_condensation 2865 vs 9693, Q -506.6 vs -928.0 kW)	PASS	PASS	PASS	caught by condenser01's golden only (route bench not run here)
+S2_cstr_never_vapour	defect 2 (cstr)	CSTR.cpp feedBasisOf: the vapour return disabled	OK (survives; not its subject)	PASS	FAIL (tau_s 1344.04 vs 7.216)	PASS	PASS	caught by cstr02's golden
+S3a_pump_drops_phase	defect 3 (pump)	Pump.cpp: both H_real calls without DensityPhase::Liquid	FAIL (pump dT 125.46 K at e<0, 1.172 K at e>=0; report arm too)	PASS	PASS	PASS	PASS	caught by the gate only; rankine02's golden passes on this platform
+S3b_compressor_drops_phase	defect 3 (compressor)	Compressor.cpp: inlet H_real/S_real without DensityPhase::Vapour	FAIL (T_out 561.13 K at e<0, 446.74 K at e>=0)	PASS	PASS	PASS	PASS	caught by the gate only
+S3c_turbine_drops_phase	defect 3 (turbine)	Turbine.cpp: inlet H_real/S_real without DensityPhase::Vapour	OK (survives)	PASS	PASS	PASS	PASS	SURVIVES everything run
+S3d_overloads_ignore_phase	defect 3 (package overloads)	ThermoPackage.cpp H_real/S_real(…, phase): h_molar/s_molar at P_Pa	FAIL (pump and compressor arms)	PASS	PASS	PASS	PASS	caught by the gate only
+S4_stream_pressure_is_P	fourth item (stream functions)	PureFluidModel.cpp pureFluidStreamPressure: return p_Pa	FAIL (report arm: H_feeds_kW 49.92 at e<0 vs 13.22)	PASS	PASS	PASS	PASS	caught by the gate only
+S5_satvapour_on_liquid_side	defects 1 and 3 (vapour branch)	PureFluidModel.cpp pureFluidPhaseState: saturated vapour evaluated at p_sat (the liquid side) instead of p_sat(1-1e-9)	OK (survives; compressor fed saturated steam to 20 bar reported T_out 446.74 K, consistent across e)	FAIL (Q -506.6 vs -928.0 kW)	PASS	PASS	PASS	gate survives; caught by condenser01's golden

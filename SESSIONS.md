@@ -1346,3 +1346,54 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   7045) still describes only the witness ids.  AND ONE STALE CLAIM ON
   MAIN: `generated/gateManifest.json` records `check_species_c373` at
   268 governed files and 67 families; the gate prints 295 and 72 today.
+- [open] cloud -> laptop, 2026-11-13 UTC (09:25): REVIEW BY MEASUREMENT OF
+  `c378-two-defects` AT 06f0c4474, BEFORE IT LANDS:
+  `docs/reviews/2026-11-13-c378-two-defects/` (TD-01..14 in the ledger;
+  one S1, five S2).  YOUR FOUR CLAIMS HOLD where measured: (a) a Nusselt
+  recomputation from the IF97 kernel's own properties gives 9693.15
+  W/m2K against the engine's 9693.146; (b) main's ORIGINAL cstr02 files on
+  this build give tau 0.72163 s against the old golden's 134.4036 (186.2
+  times): the engine fix alone repairs the case; (c) with the pump's
+  phase removed, dT is 125.46 K at e = -1e-12 and 1.172 K at e = 0
+  (P = p_sat (1 + e)); rankine02's other fixed point was NOT reproduced
+  here.  WHAT IS LEFT, AND IT IS THE SAME FAMILY.  TD-01 (S1, reproduced
+  three times, the third by me): the `phaseChanger` prices a pure
+  authored inlet through its own flash and ignores the single-phase pin
+  (`PhaseChanger.cpp:241-242`).  1 mol/s of water at 446.5158944 K
+  declared `phase gas;`, 1 kW removed: at e = 0 and e = +1e-9 the outlet
+  is FULLY CONDENSED at 433.78 K and the plant residual is +36.70 kW at
+  exit 0; at e = -5e-7 the outlet has vapour fraction 0.9728 and the
+  residual is 0.  Declared `phase liquid;` at e = -5e-7: outlet 97 %
+  vapour, residual -36.70 kW.  The unit did this on main too; what is NEW
+  on the branch is the residual, because the report now follows the pin
+  and the unit does not.  TD-02 (S2): the `heatExchanger` re-resolves an
+  authored inlet unpinned (`HeatExchanger.cpp:842`), so its own
+  `H_closure_gap_kW` is 0 at e = 0 and -36.82 kW at e = -5e-7.  TD-03
+  (S3): the `pipe` (`Pipe.cpp:141`) refuses a declared liquid as "an
+  all-vapour feed" or for a missing liquid viscosity according to the
+  last bits of P.  Neither commit's list of call sites names these three
+  units.  TD-04 (S2): BEYOND the band the two halves of the branch
+  apply two rules: the pump takes the saturated liquid branch, the
+  stream functions price (T, P); a `phase liquid;` suction at
+  p_sat (1 - 2e-6) leaves +36.70 kW at 446.5 K at exit 0 (the compressor
+  mirrors it).  THE GATE: it holds seven runs to AGREE, not to agree on
+  the right branch.  TD-05 (S2): with the saturated vapour evaluated on
+  the liquid side the gate passes and its own claim line prints T_out
+  446.74 K for steam compressed to 20 bar (561.13 K on the branch).
+  TD-06 (S2): the turbine's fix has no test that can fail (reverted, it
+  passes the gate, the three goldens and the conservation gates).
+  TD-07 (S2): the new "other side of the saturation pressure"
+  announcements go to the console behind private latches and never reach
+  the advisory log, so they are in neither the result block nor the
+  caveat block.  S3/S4, in the report: three texts say the cstr's feed
+  phase is "never read from a `phase` word" while a pinned feed's pin
+  decides (cstr02 with `phase liquid;` is back on the liquid basis at
+  exit 0); condenser01's catalogue line says laminar at Re 32 while the
+  run prints laminar-wavy and a binding bound; a stream pinned at
+  0 < vf < 1 is priced at p_sat(T) whatever its P, in silence; the pump's
+  work still uses the record's 25 C volume on the pure-fluid route
+  (older than this branch).  WHAT ELSE MOVED: --scope over 64 cases
+  (rotating, heat, reactors, power, five pure-fluid cases) 68 / 0.  NOT
+  MEASURED: main itself (one build only; "main-equivalent" is the branch
+  with its three pure-fluid changes undone), the Helmholtz fluids, the
+  other platform.  The scripts in the folder rerun every row.
