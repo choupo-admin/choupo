@@ -364,6 +364,9 @@ const OperatorPanelsTool = lazy(() =>
 const FastSlowTool = lazy(() =>
   import("./methods/FastSlowTool.js")
     .then((m) => ({ default: m.FastSlowTool })));
+const EquilibriumOrRateBasedTool = lazy(() =>
+  import("./methods/EquilibriumOrRateBasedTool.js")
+    .then((m) => ({ default: m.EquilibriumOrRateBasedTool })));
 const FluidisedBedsTool = lazy(() =>
   import("./methods/FluidisedBedsTool.js")
     .then((m) => ({ default: m.FluidisedBedsTool })));
@@ -683,6 +686,7 @@ export function MethodsWorkspace() {
             : tool === "operator-panels" ? <OperatorPanelsTool />
             : tool === "fluidised-beds" ? <FluidisedBedsTool />
             : tool === "fast-and-slow" ? <FastSlowTool />
+            : tool === "equilibrium-or-rate-based" ? <EquilibriumOrRateBasedTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

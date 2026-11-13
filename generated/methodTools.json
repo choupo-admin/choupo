@@ -38,7 +38,7 @@
     {
       "id": "distillation",
       "title": "Distillation",
-      "intro": "From what a standard state means to the cost of the column: one separation, seen six ways.",
+      "intro": "From what a standard state means to the cost of the column: one separation, seen seven ways.",
       "steps": [
         {
           "tool": "standard-state",
@@ -69,6 +69,12 @@
           "label": "Distillation shortcut (FUG)",
           "why": "Shortcut estimate of minimum stages, minimum reflux and the feed stage before a rigorous column.",
           "href": "/app/?workspace=methods&tool=fug&path=distillation"
+        },
+        {
+          "tool": "equilibrium-or-rate-based",
+          "label": "Equilibrium stages or rate-based?",
+          "why": "Asks whether equilibrium stages with one efficiency are enough for the column, and how wrong they can be.",
+          "href": "/app/?workspace=methods&tool=equilibrium-or-rate-based&path=distillation"
         },
         {
           "tool": "plant-cost",
@@ -276,8 +282,8 @@
       ]
     }
   ],
-  "liveTools": 88,
-  "registryTools": 88,
+  "liveTools": 89,
+  "registryTools": 89,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -576,6 +582,20 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=fug"
+    },
+    {
+      "id": "equilibrium-or-rate-based",
+      "label": "Equilibrium stages or rate-based?",
+      "blurb": "Decide when equilibrium stages with one efficiency are enough for a column.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "When an equilibrium-stage column with one Murphree efficiency is enough and when it is not: the engine runs one column at seven efficiencies on a per-cent and on a ppm specification (the same 0.1 of efficiency moves the first by a fifth and the second fourfold) and counts the trays a target needs; it computes one sieve tray's efficiency by three correlations beside the measurement; and published comparisons say where one efficiency failed (components that transfer at different rates, azeotropic boundaries, reactive absorption), gathered in a decision table that names the origin of every row.",
+      "origins": [
+        "engine",
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=equilibrium-or-rate-based"
     },
     {
       "id": "psychro",
