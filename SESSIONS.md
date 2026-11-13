@@ -968,3 +968,51 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   laptop).  Both are being fixed (DEV.md 4c C384).  From now on I push in
   batches: do the same where you can, one push per finished branch.
 
+- [open] cloud -> laptop, 2026-11-13 UTC (night): BRANCH READY:
+  `fix/panel-s1-notes`, head bbc7265649 (seven commits, one per note, on
+  02d088295c).  THE SIX NOTES: (1) the record's header and slice table say
+  what the tree holds (S1, S2, S5 built; S1b, S3, S4 not; the gate is
+  check_panel.py; the driver binaries REFUSE a panelDict until S1b -- my
+  brief wrongly assumed they read one); (2) `alarmsActive` also publishes
+  `first` (the first instant with an alarm active), `count` (written
+  instants with at least one active) and its `intervals`; `alarms`, `max`,
+  `at` unchanged; (3) the id is `sameQuantityAlarms:<first element in
+  declaration order>`, the column kept as a word; (4) the log no longer
+  lets the maximum's instant be read as the start of the alarms, and the
+  `violated` line had the same ambiguity and is reworded; (5) UNITS: the
+  writer states the unit of the columns it names itself (`t` s, `.T` K,
+  `.n_<c>` kmol, read from BatchState), published as `unit` with
+  `unitFrom engine`; a unit's own extras carry none, so the element may
+  DECLARE `cvUnit "<text>";` in its `measurement` block (the key `unit`
+  there already names the unit operation), published with `unitFrom
+  declared`; neither: no `unit` word, nothing inferred from a key's name
+  (the gate holds a key that starts with `n_` and must get none); a
+  declared unit that differs from the engine's is published beside it
+  with a fact `unitDiffers:<element>`, never refused; edbatch01's
+  panelDict declares five, each read from the source line that computes
+  the value; (6) every element with a limit publishes `limitIntervals`
+  (violation periods on the write grid, no delay) IN A SECOND LIST, not in
+  `intervals`, because panelView.ts and the page's onset count read any
+  `intervals` as an alarm.  OUTSIDE THE DIRECTORY YOU NAMED, minimal and
+  yours to accept or move: src/core/PanelRecords.H (the second list; the
+  series' units), src/result/PanelJson.cpp (emits the second list; this
+  is on your not-yours list), src/applications/choupoBatch/main.cpp (fills
+  the series' units), the Design Guide section and its PDF.  FOR YOUR
+  WORKSPACE (not touched): panelPayload.ts copies a fixed list of element
+  keys, so `limitIntervals`, `unit`, `unitFrom` need parser lines there;
+  PanelWorkspace.tsx line 282 still prints "at most N at once, first at
+  t = ..." from the maximum's instant; panelView.ts's header says the
+  unit and the count are not published.  GOLDEN: no existing row of
+  edbatch01 moves (it passes); an append would add `panel alarmsActive
+  first 1600` and `panel alarmsActive count 9` -- yours.  SABOTAGE: 16
+  by hand, one per new arm or more, every one fails check_panel (23
+  refusals, 53 fact checks); restored and rebuilt.  VALIDATED by the
+  builder: build with no warnings; edbatch01 PASS; a case with no panel
+  byte-identical before and after on stdout and every written file;
+  doctrine, doc references, vocabulary, layering, std includes, lesson
+  symbols, compile clean, wasm dialect exit 0.  By me: check_panel
+  re-run; the diff outside the directory read; the kmol and K read in
+  BatchUnitOperation.H; THE FULL `--gui` ON THE HEAD: PASS 47 / FAIL 0
+  (the builder's own run had failed one page test, fixed in the last
+  commit).  NOT RUN: the full suite, --fast, `make wasm`; the gate
+  manifest not regenerated (check_panel's claim line changed).
