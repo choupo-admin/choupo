@@ -490,7 +490,7 @@ export const SIMPLICITY_STEPS: readonly LessonStep[] = [
       + "exactly as the engine publishes it), and Churchill's blend draws one "
       + "smooth line through the band.  That line is an interpolation that "
       + "keeps a solver continuous, not a prediction, and a pipe the engine "
-      + "finds in the band says so in the run's caveat block (Pipe.cpp:555-556).  "
+      + "finds in the band says so in the run's caveat block (Pipe.cpp:559-560).  "
       + "The Nusselt correlations behave the same way: Dittus-Boelter below "
       + "1e4 is outside its window, and there its gap to Gnielinski opens "
       + "fastest -- from a few percent near Re = 1e4 to tens of percent at "

@@ -151,7 +151,7 @@ export const LETDOWN_STEPS: readonly LessonStep[] = [
         + "specification", unit: "Pa" },
     ],
     note: "The engine's valve: src/unitOperations/valve/Valve.H:32 states "
-      + "the isenthalpic balance, and src/unitOperations/valve/Valve.cpp:147 "
+      + "the isenthalpic balance, and src/unitOperations/valve/Valve.cpp:148 "
       + "is the residual its Newton drives to zero, flashing the stream at "
       + "the outlet pressure at every trial temperature and pricing both "
       + "ends on the surface the plant's energy report uses.",
@@ -220,10 +220,10 @@ u &= \frac{4\,Q}{\pi D^2}
       { sym: "\\pi", means: "the ratio of a circle's circumference to its "
         + "diameter, 3.14159...", unit: "–" },
     ],
-    note: "src/unitOperations/valve/Valve.cpp:263 is where the valve "
+    note: "src/unitOperations/valve/Valve.cpp:264 is where the valve "
       + "builds Q at each end: the liquid density from the record's Vliq "
       + "carried in temperature by Rackett, the vapour density from the "
-      + "equation of state (src/thermo/ThermoPackage.cpp:2270).  The "
+      + "equation of state (src/thermo/ThermoPackage.cpp:2271).  The "
       + "dissolved hydrogen, nitrogen and argon have no liquid density at "
       + "-20 °C and are priced at the density of the rest; the run says so.",
   },

@@ -193,7 +193,7 @@ describe("what a cut costs", () => {
     //  4 components: Wegstein (F, z1..z4, T, P) = 7; Newton (F1..F4, T, P) = 6.
     //  C259 (2026-11-09): these were 6 / 5 / 10, the counts from before the
     //  pressure became a tear variable (DEV.md 4c C186 (5)); the engine packs
-    //  P in both branches (Flowsheet.cpp:1811 and :3529), so the pinned
+    //  P in both branches (Flowsheet.cpp:1814 and :3529), so the pinned
     //  numbers had frozen the stale arithmetic rather than the engine's.
     expect(v.variablesWegstein).toBe(7);
     expect(v.variablesNewton).toBe(6);
