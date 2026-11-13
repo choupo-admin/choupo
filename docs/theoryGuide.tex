@@ -2721,16 +2721,18 @@ the band.
 line per unit, property and source:
 \begin{verbatim}
 [liquid properties] Where each unit took its liquid properties from ...
-  methanolPump (pump)   liquid density   787.27 kg/m3 at 300.0 K, 1.01 bar
-      computed by the unit itself, not by the property kernel: each
-      component's 25 C molar volume, with no temperature or pressure effect
+  methanolPump (pump)   liquid density   785.12 kg/m3 at 300.0 K, 1.01 bar
+      property kernel: ideal mixing of liquid volumes, each component's
+      25 C molar volume scaled to temperature by Rackett; pressure not applied
   methanolTank (storageTank)   liquid density   785.12 kg/m3 at 300.0 K ...
       property kernel: ideal mixing of liquid volumes, each component's
       25 C molar volume scaled to temperature by Rackett; pressure not applied
-  [twice] the same liquid (300.0 K, 1.01 bar, one composition) is given
-      two densities: methanolPump (pump) 787.27 kg/m3, methanolTank ... 785.12
 \end{verbatim}
-(\code{tutorials/plant/aceticAcid02\_plant}).  The value is the variable the
+(\code{tutorials/plant/aceticAcid02\_plant}).  Until the pilot moved the pump
+onto the kernel (2026-11-13) its line read 787.27\,kg/m$^3$, ``computed by the
+unit itself, not by the property kernel: each component's 25 C molar volume'',
+and a closing \code{[twice]} line said that the same liquid had been given
+two densities.  The value is the variable the
 unit computed with; when a unit took several in the run (a column's trays,
 an iteration) the line gives the range and the count.  A \code{[mismatch]}
 line appears when a unit took a number from a kind of source its type does
@@ -2761,12 +2763,16 @@ model.
   component has no liquid volume at the state (a gas above its critical
   temperature dissolved in the liquid), several of these leave it out of the
   volume and keep its mass; the table names what was left out.
-\item \textbf{Computed by the unit itself} --- the pump, the pressure
-  exchanger, the CSTR and the liquid PFR, the MSMPR and FVM crystalliser, the
-  spray dryer: each component's 25\,$^\circ$C molar volume, with no
-  temperature or pressure effect.  The pump and the pressure exchanger give a
-  dissolved ion no volume and keep its mass; the crystalliser gives a
-  component without a volume none, and does not say so.
+\item \textbf{The property kernel's methods} (the pilot,
+  \S\ref{sec:liquid-density-methods}) --- the pump and the CSTR, since
+  2026-11-13: the liquid density at the inlet (pump) or feed (CSTR) state,
+  by the method resolved for the constituent set.
+\item \textbf{Computed by the unit itself} --- the pressure exchanger, the
+  liquid PFR, the MSMPR and FVM crystalliser, the spray dryer: each
+  component's 25\,$^\circ$C molar volume, with no temperature or pressure
+  effect.  The pressure exchanger gives a dissolved ion no volume and keeps
+  its mass; the crystalliser gives a component without a volume none, and
+  does not say so.
 \item \textbf{A constant of the unit} --- 1000\,kg/m$^3$ in the
   electrodialysis cell, stack and batch rig (the dilute carrier they are
   built on), in the spiral-wound module when the case declares no
@@ -3030,7 +3036,12 @@ It is the last leaf of a component (any volume the catalogue holds wins) and
 never stands in front of a solution record.  It is bounded: when the SUM of
 the listed components' mass fractions in the liquid exceeds
 \code{maxMassFraction} the request is a domain error naming the bound and
-that the case declared it.  For 1\,\% by mass of a salt in water it gives
+that the case declared it.  The run's table prints one \code{[hypothesis]}
+line per unit with the largest share the hypothesis stood at and the bound
+(the result block lists it under \code{propertySources.hypotheses}); a bound
+is set from the case's own feed, its converged state AND the solver's
+perturbations of it (the two fermentor cases: 4.2e-4 against a bound of
+1e-3).  For 1\,\% by mass of a salt in water it gives
 1010.1\,kg/m$^3$; a measured brine at 1\,mol/kg is about 1.8\,\% denser than
 water by the engine's own bound (\code{AqueousVolumetric.H}).  Without the
 declaration a component with no volume is refused: no neutral value enters a
@@ -3048,7 +3059,57 @@ extrapolation, the Newton line search on tears, the safeguarded 1-D Newton
 reaches the run's handler and fails with the message and its remedy.  A
 missing datum is a resolution failure, raised at the set's first request,
 never a property of a state.  The slice-0 wrapper keeps throwing
-\code{PropertyDomainError}, so no other consumer changes behaviour.
+\code{PropertyDomainError}, so no other consumer changes behaviour.  What
+is demonstrated, and what is not: a seed or a substitution step outside a
+hard domain refuses by name (the fermentor case with its former tear seed of
+3\,mol\,\% CO$_2$ stops on ``the case's hypothesis massWithoutVolume does not
+stand here''); that the entry's refusal reaches the caller as an
+\code{InfeasibleTrial} --- and a missing datum does not --- is held by the
+route bench at the level the solvers catch it.  A recycle whose accelerated
+iterate overshoots a box and is then rejected was not constructed end to end.
+
+\paragraph{``Pressure not applied''.}  A method that takes no pressure (the
+record volumes, a solution law) says so on every row of the run's table.
+The \emph{advisory} is raised only above 2\,MPa, once per method and unit:
+a liquid's isothermal compressibility is about $5\times10^{-10}$ per Pa
+(water $4.6\times10^{-10}$ at 25\,$^\circ$C), so 2\,MPa is a 0.1\,\% density
+effect, the order a golden's $10^{-4}$ tolerance can see
+(\code{pressureAnnouncedAbove} in \code{DensityResolver.cpp}).  Of the shipped
+cases only the second-pass booster of \code{plant/swro01\_campoDalias} raises
+it (5.6\,MPa, boron on its flat record volume); the other reverse-osmosis
+boosters price water by its reference equation, with pressure, and their
+salt has mass and no volume to compress.
+
+\subsection{The pilot's demonstrations}\label{sec:liquid-density-demonstrations}
+
+Six cases under \code{tutorials/steady/thermo/}, each feed $\to$ pump $\to$
+CSTR (a reaction whose reactant is absent, so the reactor is a vessel of
+volume $V_R$): water (\code{liquidDensity01\_water}, the reference equation
+by the fact, 997.047\,kg/m$^3$ at 1\,bar and 1018.44 at 500\,bar), water +
+ethanol (\code{liquidDensity02\_waterEthanol}, additive volumes), aqueous NaOH
+by the solution record (\code{liquidDensity03\_NaOH}) and by the case's
+measured point (\code{liquidDensity04\_NaOHpoint}: $\tau = 1213.8$\,s and
+$Q = 8.2386\times10^{-4}$\,m$^3$/s for 1\,kg/s, by hand from the point), CO$_2$
+dissolved in water refused for want of a partial molar volume
+(\code{liquidDensity05\_CO2water}), NaCl in water + ethanol refused for want
+of a solution record (\code{liquidDensity06\_NaClwaterEthanol}).  The caustic
+cases have no pump: a pump's discharge temperature needs the liquid's heat
+capacity, which NaOH's record does not carry --- a gap outside this pilot.
+\code{check\_density\_pilot} runs them on scratch copies and holds, for EACH
+method a unit can receive, that the pump's and the CSTR's density equal the
+kernel's own double to $10^{-9}$ at two states the method prices
+differently; the twelve printed IAPWS-95 anchors (within 0.0005\,\%); the
+mechanism of additive volumes at $x=0.5$ to $10^{-16}$; the law against the
+eighteen constants; the measured point's box and its witness (the point set
+to 1000 and to 1500\,kg/m$^3$ leaves $\tau/\rho$ unchanged); the refusals word
+for word; and the package's saturation line of the three zones above.
+
+A finding about a record, not about the kernel, met while measuring the two
+lines: the vapour-pressure correlation of \code{water.dat} (Antoine, declared
+window 273--373\,K) puts water's saturation pressure 19\,\% above IAPWS-95's
+at 610\,K (the reference's is 15.9\,\% below the record's), where it is
+extrapolated.  The kernel reads it as the package's
+line, as it must; it is not changed here.
 
 \section{Heat capacity}\label{ch:heat}
 
@@ -15710,18 +15771,23 @@ taken at its declaration and not re-solved, so a gas declared
 \begin{equation}
   Q \;=\;
   \begin{cases}
-    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}) & \beta = 0
+    F \, \bar M / \rho_L(T,P,\zv) & \beta = 0
       \ \text{(liquid feed)},\\[3pt]
     F \, \bar M / \rho_V(T,P,\zv) = F\, v_V(T,P,\zv) & \beta = 1
       \ \text{(vapour feed)},\\[3pt]
-    F \sum_i z_i \, V_i^{\mathrm{liq}}(298.15\,\mathrm{K}),\ \text{announced}
+    F \, \bar M / \rho_L(T,P,\zv),\ \text{announced}
       & 0 < \beta < 1,
   \end{cases}
   \label{eq:cstr-feed-volumetric-flow}
 \end{equation}
-with $V_i^{\mathrm{liq}}$ each component record's 25\,$^\circ$C liquid volume
-(no temperature or pressure effect; the liquid-property reorganisation of
-\S\ref{sec:liquid-property-sources} moves it later) and $\rho_V$ the package's
+with $\rho_L$ the property kernel's liquid density AT THE FEED STATE, over the
+constituents present in the feed, by the method resolved for that constituent
+set (\S\ref{sec:liquid-density-methods}: a reference equation, additive
+volumes, a solution record's law or the case's measurement; a constituent
+with no volume refused unless the case declares \code{massWithoutVolume},
+\S\ref{sec:liquid-density-mass-without-volume}) --- until the 2026-11 pilot
+each component record's flat 25\,$^\circ$C volume, $-7.1$\,\% on the
+esterification CSTRs at 350\,K --- and $\rho_V$ the package's
 vapour density from the equation of state the case declares ($v_V=RT/P$ for
 the ideal gas).  A two-phase feed keeps the liquid basis --- this unit is a
 stirred liquid, and a trace of dissolved gas flashing at the feed (the
@@ -23947,7 +24013,11 @@ of the above.  The work raises the pressure directly,
    \Delta P = \frac{\eta\,W_{\text{shaft}}}{\dot n\,\bar v}, \qquad
    P_{\text{out}} = P_{\text{in}} + \Delta P,
 \end{equation}
-with $\bar v$ the liquid molar volume; the small inefficiency dissipates
+with $\bar v = \bar M/\rho_L$ the liquid molar volume at the INLET state,
+$\rho_L$ the property kernel's liquid density by the method resolved for the
+liquid's constituent set (\S\ref{sec:liquid-density-methods}; pure water by its
+reference equation, with pressure; a dissolved salt with mass and no volume
+only when the case declares \code{massWithoutVolume}); the small inefficiency dissipates
 as a tiny temperature rise $\Delta T = (1-\eta)w_{\text{real}}/C_{p,L}$.
 A closed form --- the incompressible limit needs no equation of state
 and no iteration.

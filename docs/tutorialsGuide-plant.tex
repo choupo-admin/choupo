@@ -111,7 +111,7 @@ THE TANKS (DEV.md 4c C87). The methanol is BOUGHT and held in a feed tank before
 \tutreadme{Decision variables (all in system/flowsheetDict unless noted):}
 \begin{tutgolden}
 \goldrow{stream}{acidProduct}{F}{0.0272384183327}
-\goldrow{stream}{acidProduct}{T}{404.142129302}
+\goldrow{stream}{acidProduct}{T}{404.140216461}
 \goldrow{stream}{coGas}{F}{0.0242908377497}
 \goldrow{stream}{coGas}{T}{330}
 \goldrow{stream}{coRecycle}{F}{0.0230762958622}
@@ -679,20 +679,20 @@ THE PLOT PLAN (system/layoutDict) is Choupo's design of a plant of this scale up
 \tutreadme{Six trains, one building (DEV.md 4c C199). The case study says six skids of 16 442 m3/day, and an industrial SWRO plant is built so: identical trains, each with its own high-pressure pump, its own array of pressure exchangers and its own vessel racks. The flowsheet is solved ONCE at plant flow (six identical trains in parallel carry six times a train's flow) and the SIZING is done per train: system/postDict declares trains \{ count 6; ... \} and the pumps, the exchanger arrays and the vessel banks yield items train1 .. train6 with their per-train numbers beside the plant's. A pump is rated by the largest machine one make builds (Sulzer MSD-RO, 1600 m3/h: one per train at 50 \% load, plus a declared spare), the exchanger array is 6 devices of the Energy Recovery PX Q650 window per train under its 83 bar limit, and each pass's vessels stand in racks (233 vessels of 7.64 m in 5 racks of four tiers, the loading clearance of one vessel length at the east end of each bank). The 42 items stand in the four rooms of one reverse-osmosis building in system/layoutDict. What the open sources did not give -- the rack pitch, the aisle, the loading clearance -- is declared assumed and says so.}
 \tutreadme{What a student should notice. 1. The document's "feed pressure" figures (5.52 and 1.03 MPa) are TEST pressures: 47.2 \% recovery of this seawater needs 58.6 bar, and the second pass needs 10.74 bar for 87 \%. The header shows the arithmetic. 2. Boron is where the engine stops. The module does not couple the pH to the transport, so boron is one lumped solute with a constant rejection read from the manufacturer's two pH-labelled tests; the gate pins that relabelling the pH moves nothing. The follow-up is named in the header and in docs/design/a-desalination-plant-from-a-case-study.md. 3. The loop through the exchanger is a knife-edge with a spurious solution; 0/ is a converged state for that reason. 4. The plot plan announces six findings (five water tanks with no bund, one entrance) and leaves them. 5. The pump count is ceil(flow per train / the largest pump): with 6 trains it is 1 per train; with ONE train the same high-pressure flow (4791 m3/h) would need 3 pumps in parallel (declare installed \{ count 3; \}; the sizer says so when you do not).}
 \begin{tutgolden}
-\goldrow{stream}{boosted}{F}{80.1343858417}
-\goldrow{stream}{boosted}{T}{298.164615425}
-\goldrow{stream}{brine}{F}{81.7112864112}
+\goldrow{stream}{boosted}{F}{80.1343859256}
+\goldrow{stream}{boosted}{T}{298.164577931}
+\goldrow{stream}{brine}{F}{81.711286496}
 \goldrow{stream}{brine}{T}{298.15}
-\goldrow{stream}{conc2}{F}{9.46243885204}
-\goldrow{stream}{conc2}{T}{298.208306901}
-\goldrow{stream}{conc2a}{F}{22.1440707933}
-\goldrow{stream}{conc2a}{T}{298.208306901}
-\goldrow{stream}{disinfected}{F}{63.3914931649}
+\goldrow{stream}{conc2}{F}{9.46243869659}
+\goldrow{stream}{conc2}{T}{298.208301593}
+\goldrow{stream}{conc2a}{F}{22.1440706819}
+\goldrow{stream}{conc2a}{T}{298.208301593}
+\goldrow{stream}{disinfected}{F}{63.3914932451}
 \goldrow{stream}{disinfected}{T}{298.15}
-\goldrow{stream}{feed1}{F}{155.352283581}
+\goldrow{stream}{feed1}{F}{155.352283426}
 \goldrow{stream}{feed1}{T}{298.15}
-\goldrow{stream}{feed2}{F}{72.853932017}
-\goldrow{stream}{feed2}{T}{298.208306901}
+\goldrow{stream}{feed2}{F}{72.8539319417}
+\goldrow{stream}{feed2}{T}{298.208301593}
 \goldmore{3663}
 \end{tutgolden}
 

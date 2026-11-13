@@ -12,9 +12,9 @@ Every run prints, just before its result block, one line per unit:
 
 ```
 [liquid properties] Where each unit took its liquid properties from in this run (values as used; nothing is changed by this table)
-  methanolPump (pump)   liquid density   787.27 kg/m3 at 300.0 K, 1.01 bar   computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect
-  methanolTank (storageTank)   liquid density   785.12 kg/m3 at 300.0 K, 1.01 bar   property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied
-  [twice] the same liquid (300.0 K, 1.01 bar, one composition) is given two densities: ...
+  pump01 (pump)   liquid density   997.14 kg/m3 at 298.1 K, 3 bar   property kernel: the Helmholtz reference equation IAPWS95 of water (taken because a record names the fluid), liquid branch at the temperature and pressure; ...
+  P1 (pipe)   liquid density   996.93 .. 996.95 kg/m3 (13 values) at 298.2 K, 3.45 .. 4.8 bar   property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied
+  [hypothesis] massWithoutVolume (NaCl) in Booster (pump): largest share 0.034 of the declared bound 0.05
 ```
 
 * The number is the one the unit computed with.  A range and a count mean
@@ -22,6 +22,10 @@ Every run prints, just before its result block, one line per unit:
 * "property kernel" means the case's thermophysical package priced it.
   "computed by the unit itself" means the unit did NOT ask the package: its
   number does not follow the case's property choices.
+* `[hypothesis]`: a declared `massWithoutVolume` was used by that unit; the
+  largest share it stood at and the bound.  A pump and a pipe on one water
+  can differ (above: the pump on the methods, the pipe on the older route,
+  2e-4 apart) until every unit has moved.
 * `[twice]`: two units priced the same liquid state at two densities.  Say
   so to the student; do not average them, and do not size on one silently.
 * `[mismatch]`: a unit took a number from a kind of source its type does not
@@ -55,8 +59,9 @@ Every run prints, just before its result block, one line per unit:
 |---|---|---|
 | valve, storageTank, pipe, heatExchanger (geometry), phaseChanger (geometry), hydrocyclone, cakeFilter, thickener, sedimentingCentrifuge, dynamicTank, dynamicCSTR, every sizing pass | property kernel | property kernel (pipe and column: a value declared in the unit wins) |
 | distillationColumn (tray rating, computed efficiency, packing) | property kernel | kernel or declared; liquid diffusivity is the column's OWN Wilke-Chang, whatever model the case selects |
-| pump, pressureExchanger | the unit's own: 25 C molar volumes, no T or P; a dissolved ion keeps its mass, adds no volume | -- |
-| cstr, pfr (liquid), crystalliser (MSMPR, FVM) | the unit's own: 25 C molar volumes, no T or P (crystalliser: a component without one adds nothing, unannounced) | -- |
+| pump, cstr | the property kernel's METHODS (section 3b): at the pump's inlet / the CSTR's feed state, the method of the constituent set (reference equation with pressure, additive volumes, a solution law, the case's measurement); a component with no volume refused unless `massWithoutVolume` is declared | -- |
+| pressureExchanger | the unit's own: 25 C molar volumes, no T or P; a dissolved ion keeps its mass, adds no volume | -- |
+| pfr (liquid), crystalliser (MSMPR, FVM) | the unit's own: 25 C molar volumes, no T or P (crystalliser: a component without one adds nothing, unannounced) | -- |
 | sprayDryer | the unit's own: the solvent's 25 C molar volume, else 1000 kg/m3 | kernel if the case selects a model, else its own defaults (1 mPa s, 72 mN/m) |
 | spiralWoundModule | `rho_feed` if declared, else 1000 kg/m3 | declared, else kernel, else 1 mPa s and 1.6e-9 m2/s |
 | electrodialysisStack, batchElectrodialysis | 1000 kg/m3 (the dilute carrier) | kinematic viscosity: the solvent's kernel viscosity / 1000 kg/m3 if a model is declared, else the constant 1e-6 m2/s |
@@ -221,8 +226,8 @@ numerical review):
   refused.  STILL OPEN: a SEALED case keeps its frozen copy of each record
   until its seal is refreshed; propane, propylene, H2O2, HCHO, HCN and NO2
   carry a `Vliq` whose temperature no source states (pinned debt);
-* the units that read `Vliq` themselves (pump, pressure exchanger, CSTR,
-  liquid PFR, crystallisers, spray dryer) take the stored datum flat, at
+* the units that read `Vliq` themselves (pressure exchanger, liquid PFR,
+  crystallisers, spray dryer) take the stored datum flat, at
   whatever `VliqT` it belongs to; their table line names the records that
   state one ("molar volume at the temperature its record states (CH4 at
   111.66 K; any other at 25 C)") and says "25 C" only when none does;

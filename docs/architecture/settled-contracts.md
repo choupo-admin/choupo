@@ -3752,3 +3752,29 @@ computation reads `.value`.  Gates: `check_liquid_property_ratchet` ·
 `check_property_route_bench` (the door against the kernel, bit for bit, on
 every record and route) · `check_property_sources_pinned`.  Record:
 [`docs/design/thermophysical-slice0-plan.md`](../design/thermophysical-slice0-plan.md).
+
+### A LIQUID DENSITY IS RESOLVED PER CONSTITUENT SET, ONCE, AND NEVER HANDED OVER (2026-11-13, DEV.md 4c C378 pilot)
+
+**A LIQUID DENSITY IS RESOLVED PER CONSTITUENT SET, ONCE, AND NEVER HANDED
+OVER (2026-11-13, DEV.md 4c C378 pilot).**  The property kernel prices a
+liquid's density through METHODS (`src/thermo/liquidProperty/`, one base
+`DensityMethod`, an explicit factory).  The method is chosen for the
+CONSTITUENT SET (the components with x > 0) at the set's first request and
+frozen for the run, by facts the case and the catalogue hold -- a measurement
+the case marks for use; a record law for exactly the set (`pureFluids`, a
+reference equation that names the fluid, a solution record); `idealMixing`
+over one leaf per constituent; refusal naming every method passed over and
+the remedy -- never by T, P or the amounts.  A method's domain is HARD: a
+state outside it (a measurement's box, a law's bands, the hypothesis
+`massWithoutVolume`'s bound, the vapour side of a pure fluid's band) is a
+typed domain error (`PropertyDomainTrial`, rejectable by a solver), never a
+hand-over to another method.  The decision is keyed on the package's serial,
+never its address; a set that would resolve differently later in the run is
+refused.  The method's words are written by the method that computed.
+Today the pump and the CSTR use it (`liquidProperty::density`, migration
+scaffolding whose callers `check_liquid_density_entry_callers` counts); every
+other consumer stays on the slice-0 door until it moves.  Gates:
+`check_density_pilot` (the demonstrations and the behavioural witness) ·
+`check_property_route_bench` (the kernel against the package, bit for bit,
+and the address and domain-trial checks) · `check_liquid_density_entry_callers`.
+Record: [`docs/design/density-pilot-plan.md`](../design/density-pilot-plan.md).

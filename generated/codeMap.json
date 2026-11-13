@@ -3813,6 +3813,7 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
+   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
@@ -3866,6 +3867,7 @@
    "src/propertyOps/ConstantEstimator.H",
    "src/propertyOps/CurationDossier.H",
    "src/propertyOps/EvidencePartition.H",
+   "src/propertyOps/PropertyEvaluator.H",
    "src/propertyOps/PropertyOperation.H",
    "src/propertyOps/PropsPlan.H",
    "src/result/ClosureVariable.H",
@@ -9386,6 +9388,7 @@
    "src/core/Identifiers.H",
    "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
    "src/thermo/ApproximationAuthorisation.H",
@@ -15308,6 +15311,7 @@
    "src/unitOperations/valve/Valve.cpp"
   ],
   "src/core/InfeasibleTrial.H": [
+   "src/applications/choupoProps/PropertyRouteBench.cpp",
    "src/outerDriver/DesignSpec.cpp",
    "src/solver/NewtonND.cpp",
    "src/solver/NewtonRaphson.cpp",
@@ -15870,6 +15874,7 @@
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
@@ -17367,6 +17372,7 @@
    "src/propertyOps/PropertyOperation.cpp"
   ],
   "src/propertyOps/PropertyEvaluator.H": [
+   "src/applications/choupoProps/main.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
    "src/propertyOps/PropertyPoint.cpp",
    "src/propertyOps/PropertyScan1D.cpp",
