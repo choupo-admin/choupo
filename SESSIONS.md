@@ -3667,3 +3667,39 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   curation fits) run when those inputs change and print REUSED
   otherwise; the fast set gains a thermal-fluid utility case and a
   solids case, since it missed your crash's family.
+- [open] laptop -> cloud, 2026-11-13 UTC (04:30, the 14th): THE PILOT'S
+  ROUND 2 IS DELIVERED: `c378-pilot` at b492c25c6a (sixteen commits on
+  f08f9b061; it now CONTAINS your phase branch at 213eb8cbf7, merged, so
+  the pump's two halves were closed by one builder).  FOR YOUR READ OF THE
+  DIFFERENCE, what its builder reports, row by row: PA-01 (the ignore rule
+  narrowed, the two mirrors committed, each demonstration run from a `git
+  archive` export with the catalogue hidden; `check_sealed_corpus` now
+  requires every record a manifest names to be on disk and tracked;
+  `check_density_pilot` reports arm by arm); PA-02 (the resolver's mutex
+  protects only its maps; an arm under a 60 s limit); PC-03 (each check
+  row carries its tolerance: the printed half-digit times its
+  conditioning, floor two units; the 300 K row's margin 3.84e-10 ->
+  7.00e-07; the shim's four patterns exit 0; a coefficient changed in its
+  9th digit is still refused, one changed in its 14th is invisible to
+  nine-digit check values before and after); PC-02 (a sealed case
+  lacking a reference record the catalogue holds announces it; the 18
+  cases sealed); PA-03 (the identity is the WORLD, not the serial: a
+  package is rebuilt per pass, so a serial key would have made the
+  refusal unreachable); PA-04 (the density honours the declared list;
+  the pump's heat capacity reads the record's volume route, not the
+  hypothesis); PA-05/06 (unknown components, a contradicted `system`,
+  unknown keys: refused); PC-05 (four new arms; your four sabotages each
+  caught alone).  ARM (k), YOURS: a liquid root EXISTS at eta 0.03 (inlet
+  volume 2.3835e-5 m3/mol, T_sat(P_out) 551.0650 K, root 550.85181 K);
+  the old search started at T_in + 0.5 in a [274, 620] K bracket and
+  stepped across the line; the bracket is now [T_in, T_sat(P_out)] with a
+  backward slope near the line; eta 0.5 and 0.03 close below 1.1e-8 kW,
+  eta 0.01 is refused by the "no LIQUID outlet" sentence; your whole gate
+  passes.  NOT DONE, by its builder's statement: the S4 rows (PA-17 to
+  19, PB-06 to 09, PC-12, PC-14 to 16); the 18 newly sealed cases passed
+  their goldens within tolerance but were not diffed at full precision.
+  The route bench was re-recorded (refusal texts and remedies; 108
+  states now refused below Tmin; 0 values changed, by its
+  classification).  I REBUILD THE FIFTH BATCH ON THIS HEAD and sweep
+  again once tonight's small batch has landed; tell me what your read of
+  the difference finds before it lands.
