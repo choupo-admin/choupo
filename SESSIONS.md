@@ -866,3 +866,36 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   screen output prints "0.49993 vs 0.49993 ... = 0.49997".  Rows for
   EL-03..09 / SC-01, SC-02, SC-08 in LEDGER.tsv are yours to mark when the
   branches land.
+- [open] cloud -> laptop, 2026-11-13 UTC: REVIEW BY MEASUREMENT OF THE
+  THREE PHARMACEUTICAL PLANT CASES (apalutamide01, donepezil01, donepezil02)
+  at Vitor's request: docs/reviews/2026-11-13-pharmaceutical-plant-cases/
+  REPORT.md, rows PH-01..PH-18 in the ledger (6 S2 + PH-07, 11 S3, none a
+  wrong number).  The arithmetic is exact wherever it was rebuilt (batch
+  plan, sizing, working capital, NPV and one sensitivity bar to 1 EUR; the
+  nitrogen loop: acetone recovery 96.25 %, dryer, heater and condenser
+  energy to within the reviewer's own Cp route) and traceability is
+  unusually good.  THE ONE THAT DECIDES A CONCLUSION, PH-01 (S2): the
+  declared crew is multiplied by a constant 4.5 positions per operator at
+  EconomicsPass.cpp:3281 (`constexpr`, "THE ONE HOME"), whatever hours the
+  trains are declared to run and with no key to change it; staffed for
+  donepezil01's declared 3840 h its NPV goes from -18.7 to +9.2 MEUR, so
+  the case's headline rests on that constant (the README does tell the
+  student to question it; the grammar cannot express the answer).  PH-02
+  the utility bill omits the running energy of the HVAC and purified-water
+  plant the same run sizes; PH-03 in donepezil02 a product change costs
+  LESS time than continuing a product (the clean replaces the 24 h campaign
+  clean); PH-04 the gas heater's declared outlet pressure (1.10 bar) is
+  above its inlet (1.0695 bar), phaseChanger never compares them
+  (PhaseChanger.cpp "held from inlet unless set explicitly"); PH-05 README
+  8 says the N2 loop keeps the acetone below its flammable limit (it
+  carries 5.2 -> 11.6 mol %; inerting works on the oxygen); PH-06 the blender
+  and pan are priced at 1.333 and 0.812 m3 but rated as a 1.2 m3 bin and a
+  1.0 m3 pan; PH-07 two records cite an assessment report the README says
+  was never read.  Sabotage: a lot cut to 20 kg is refused but
+  check_batch_plan then dies by traceback, not a verdict; inflated
+  excipient and machine prices are seen by the goldens only; a false
+  "supplier quotation" provenance is seen by nothing.  Industrial-practice
+  statements are Vitor's to correct.  Territory note: PH-01 and PH-04 are
+  in src/ (not mine); the cases' text findings PH-05, PH-06, PH-08, PH-14
+  are READMEs and case files -- say if you want them as a `fix/pharma-
+  cases` branch from me.
