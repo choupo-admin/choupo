@@ -44,7 +44,8 @@ License
   DEGASES -- the pH and the calcite SI jump ABOVE the closed curve) -- the
   calcite SI curves DIFFER, and that contrast is the lesson.  Speciation/SI
   math (and the full contract): thermo/electrolyte/SpeciationSolver (Davies
-  activity -- trustworthy to I ~ 0.5 mol/kg, indicative beyond).
+  activity -- its band, ~0.5 mol/kg, and the measured criterion behind it
+  are declared once, in AqueousActivity::validityDomain).
 
   Dictionary form:
 

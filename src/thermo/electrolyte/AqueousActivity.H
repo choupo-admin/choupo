@@ -175,13 +175,16 @@ struct ActivityDomain
     std::string bandLabel;     // what the band is ("trust range")
     std::string consequence;   // what a result beyond it is
     std::string beyondPhrase;  // short form for a banner ("indicative beyond")
+    std::string criterion;     // what "trustworthy" means, MEASURED (an error
+                               // limit and against what); empty: none stated
 
     bool stated() const { return I_max > 0.0; }
     bool beyond(double I) const { return stated() && I > I_max; }
 
     // "~0.5 mol/kg trust range" -- the band as the model names it.
     std::string band() const;
-    // "trustworthy to I ~ 0.5 mol/kg, indicative beyond" (banner form), or
+    // "trustworthy to I ~ 0.5 mol/kg (<criterion>), indicative beyond"
+    // (banner form; the parenthesis only when a criterion is stated), or
     // "no ionic-strength bound stated" when the model states none.
     std::string bannerPhrase() const;
     // "<subject> activity at I = 1.66 mol/kg -- beyond its <band>;
