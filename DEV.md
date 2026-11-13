@@ -3447,7 +3447,7 @@ accepts today, and that is a policy call.
 > readable; the others need Vitor's copies.
 
 > **C378, THE PILOT'S PLAN IS WRITTEN AND RULED (2026-11-13; branch
-> `c378-pilot-plan`, c48786fd3, docs/design/density-pilot-plan.md -- it
+> `c378-pilot-plan`, c48786fd3; its document, the density pilot plan,
 > lands with the door, whose files it cites).**  MEASURED REACH: 32 shipped
 > cases hold a pump or a CSTR (37 units); 27 are away from 25 C; 4 carry
 > dissolved ions through a pump (membrane21, 22, 27, swro01); 10 have
