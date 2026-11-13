@@ -1,0 +1,32 @@
+# aceticAcid02_plant
+engine used=10 adapter used=10
+engine keys: used,declared,declaredNotUsed,mismatches,pricedTwice,constantBesideComputed,modelParameters
+engine declared=16 declaredNotUsed=8 mismatches=0 pricedTwice=1 constantBesideComputed=0 modelParameters=0
+ROW 0 acidTank (storageTank) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=47 kernel=true -> SHOWN: liquid density | 1026.42 .. 1026.43 kg/m3 | at 313.1 K, 1.5 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied; CO left out (no liquid volume at that state)
+ROW 1 inventory 'acidTank/tank1' (sizing) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=1 kernel=true -> SHOWN: liquid density | 1026.43 kg/m3 | at 313.1 K, 1.5 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied; CO left out (no liquid volume at that state)
+ROW 2 inventory 'methanolTank/tank1' (sizing) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=1 kernel=true -> SHOWN: liquid density | 785.12 kg/m3 | at 300.0 K, 1.01 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied
+ROW 3 letdown (valve) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=94 kernel=true -> SHOWN: liquid density | 870.66 .. 915.19 kg/m3 | at 401.0 .. 432.1 K, 1.5 .. 30 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied; CO and dimethylEther left out (no liquid volume at that state)
+ROW 4 lightsColumn (distillationColumn) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=940 kernel=true -> SHOWN: liquid density | 910.83 .. 915.90 kg/m3 | at 399.9 .. 404.1 K, 1.5 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied; CO and dimethylEther left out (no liquid volume at that state)
+ROW 5 lightsColumn (distillationColumn) surfaceTension declared.case calls=893 kernel=false -> SHOWN: surface tension | 19 mN/m | at 399.9 .. 404.1 K, 1.5 bar | [declared] the value the case declares for this unit
+ROW 6 methanolPump (pump) liquidDensity bypass.recordVliq25C calls=47 kernel=false -> SHOWN: liquid density | 787.27 kg/m3 | at 300.0 K, 1.01 bar | [bypass] computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect
+ROW 7 methanolTank (storageTank) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=47 kernel=true -> SHOWN: liquid density | 785.12 kg/m3 | at 300.0 K, 1.01 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied
+ROW 8 storage 'acidTank' (sizing) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=1 kernel=true -> SHOWN: liquid density | 1026.43 kg/m3 | at 313.1 K, 1.5 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied; CO left out (no liquid volume at that state)
+ROW 9 storage 'methanolTank' (sizing) liquidDensity liquidVolume.idealMix[anchoredRackett] calls=1 kernel=true -> SHOWN: liquid density | 785.12 kg/m3 | at 300.0 K, 1.01 bar | [kernel] property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to temperature by Rackett; pressure not applied
+NOT-IN-PRINTED: "liquid density   1026.42 .. 1026.43 kg/m3 at 313.1 K, 1.5 bar   property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scaled to te"
+NOT-IN-PRINTED: "liquid density   870.66 .. 915.19 kg/m3 at 401.0 .. 432.1 K, 1.5 .. 30 bar   property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume"
+NOT-IN-PRINTED: "liquid density   910.83 .. 915.90 kg/m3 at 399.9 .. 404.1 K, 1.5 bar   property kernel: ideal mixing of liquid volumes, each component's 25 C molar volume scale"
+report groups=9 report rows=10 console lines (non-finding)=8
+rendered report data-liquid-row count=10
+declaredNotUsed in engine (rendered? false): lightsColumn (distillationColumn) liquidDiffusivity
+declaredNotUsed in engine (rendered? false): lightsColumn (distillationColumn) liquidViscosity
+declaredNotUsed in engine (rendered? false): acidCooler (phaseChanger) liquidDensity
+declaredNotUsed in engine (rendered? false): acidCooler (phaseChanger) liquidViscosity
+declaredNotUsed in engine (rendered? false): acidCooler (phaseChanger) surfaceTension
+declaredNotUsed in engine (rendered? false): preheater (phaseChanger) liquidDensity
+declaredNotUsed in engine (rendered? false): preheater (phaseChanger) liquidViscosity
+declaredNotUsed in engine (rendered? false): preheater (phaseChanger) surfaceTension
+PANEL acidTank: rowsOfUnit=2 [acidTank | storage 'acidTank'] rendered rows=2
+PANEL letdown: rowsOfUnit=1 [letdown] rendered rows=1
+PANEL lightsColumn: rowsOfUnit=2 [lightsColumn | lightsColumn] rendered rows=2
+PANEL methanolPump: rowsOfUnit=1 [methanolPump] rendered rows=1
+PANEL methanolTank: rowsOfUnit=2 [methanolTank | storage 'methanolTank'] rendered rows=2
