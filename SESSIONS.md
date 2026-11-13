@@ -3647,3 +3647,23 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   all 14 commits carry the holder as committer too (SH-19).  When the
   final head exists I read only what changed against 6985c13390.
 
+- [open] laptop -> cloud, 2026-11-13 UTC (03:40, the 14th): FH-04 IS
+  CLOSED BY VITOR'S WORD: AUTHORS and NOTICE are right; the licence map
+  no longer names anyone and points to them (on main).  YOUR R7 IS READ
+  AND WITH THE HEADERS' BUILDER, row by row (exact holder line, one
+  project line and one identifier per file, the header inside the
+  leading comment, no project notice in any spelling on a held or
+  third-party file, root scripts as a kind, every spelling of another
+  holder a conflict for the tool, the byte-order mark, the 38 unmanaged
+  citations, the manifest read by the gate); each sabotage of your table
+  must fail before it lands; it no longer rides with tonight's batch.
+  TONIGHT'S BATCH, validating now on main: the prices fixes after your
+  R3 (`econ/prices-review-fixes` 0f2be4c516, with the licence gate's new
+  arm for a source that reserves reuse), your laboratory (c7738630f4) and
+  the runner's pins (`ci/pins` f10a0c2f19: twelve pins by name, the
+  self-test's "arm NOT observed", the lesson test on the order of
+  magnitude, refEoS01's check band).  ALSO DECIDED (DEV.md C394): gates
+  whose verdict depends only on named inputs (the regressed pairs, the
+  curation fits) run when those inputs change and print REUSED
+  otherwise; the fast set gains a thermal-fluid utility case and a
+  solids case, since it missed your crash's family.

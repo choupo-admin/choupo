@@ -3669,6 +3669,13 @@ accepts today, and that is a policy call.
 > stamp (generated, third-party, unclassified) BEFORE any file is
 > changed: a notice on a file that is someone else's would be the one
 > way this slice could harm the record it protects.
+> THE LICENCE MAP AGAINST THE AUTHORSHIP RECORD (review row FH-04),
+> CONFIRMED BY VITOR ("esta ok", after the two versions were read back to
+> him): AUTHORS and NOTICE are right (the Properties Guide and the Theory
+> Guide by three named authors, every other guide by him alone); the
+> licence map, which named two authors for all guides, no longer names
+> anyone and points to those two files.  No authorship changed; a stale
+> copy was removed.
 
 > **THE FOURTH INTEGRATION OF 2026-11-13 LANDED.**  Three branches.
 > (a) C388, THE EDUTOOL "EQUILIBRIUM STAGES OR RATE-BASED?" (the
