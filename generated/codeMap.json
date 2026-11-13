@@ -1187,6 +1187,9 @@
   "LayoutTypical": [
    "src/core/ResultRecords.H"
   ],
+  "LayoutUtilityLine": [
+   "src/core/ResultRecords.H"
+  ],
   "LayoutWind": [
    "src/core/ResultRecords.H"
   ],

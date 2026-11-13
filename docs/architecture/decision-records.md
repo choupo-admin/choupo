@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 246 records already exist
+## 1. Why an index, when 247 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 246 design records, **172 state a rejected alternative and 74 do not** —
+- Of 247 design records, **172 state a rejected alternative and 75 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -347,6 +347,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`reference-equations-of-state.md`](../design/reference-equations-of-state.md) | slice record | no | **2026-11-12, C333 slice 1** -- one Helmholtz kernel for a reference equation of state, the coefficients as records; no rejected alternative stated. |
 | [`where-to-find-property-data.md`](../design/where-to-find-property-data.md) | slice record | no | **2026-11-12, C322** -- an EduTool on sources and licences of property data, on a new shelf; no rejected alternative stated. |
 | [`residue-curve-maps.md`](../design/residue-curve-maps.md) | slice record | no | **2026-11-12, C366** -- the residue-curve-map EduTool computes its maps in the page from the engine's bubble points; PROPOSES an engine op `residueCurveMap`, not built (no second consumer yet). |
+| [`fluidised-bed-hydrodynamics.md`](../design/fluidised-bed-hydrodynamics.md) | slice record | no | **2026-11-12, the `fluidised-beds` EduTool** -- minimum fluidisation, regimes, expansion and bubbles computed in the page (the engine has no fluidised bed, and the page says so and tests it); reports two engine shapes met and not fixed (the pneumatic conveyor's terminal-velocity iteration returns its last iterate unverified; the drag law's 0.4 % jump at Re = 1000); no rejected alternative stated. |
 | [`fixed-bed-numerics-c375.md`](../design/fixed-bed-numerics-c375.md) | slice record | yes | **2026-11-12, C375** -- the fixed bed's first-order upwind scheme widened breakthrough fronts by the grid (v dz/2); a van Leer limited scheme becomes the default and upwind stays selectable (rejected: keeping upwind as default with a finer grid, 1250 cells for the same accuracy); two open defects on profile writing recorded. |
 
 ### Historical
@@ -400,7 +401,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**74 of 246 records state no rejected alternative.**  For a FORUM or a STUDY
+**75 of 247 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
