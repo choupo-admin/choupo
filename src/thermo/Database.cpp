@@ -465,6 +465,12 @@ DictPtr Database::componentDict(const std::string& name) const
             for (const auto& k : local->keys())
                 dict->insert(k, local->entryValue(k));   // full shadow/replacement
 
+        //  `VliqT` is the temperature OF `Vliq` (C378): a local file that
+        //  writes its own `Vliq` and no `VliqT` states a 25 C volume, and
+        //  must not inherit the base record's datum temperature.
+        if (local->found("Vliq") && !local->found("VliqT") && dict->found("VliqT"))
+            dict->erase("VliqT");
+
         // No silent crutch: a Joback ESTIMATE leaves Psat / Vliq / standardThermochemistry
         // as declared GAPS (omitted).  If the FROZEN standard backfills them, the
         // merged component is a HYBRID (estimated constants + curated gap data) --

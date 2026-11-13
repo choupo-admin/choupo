@@ -94,7 +94,16 @@ public:
     scalar omega() const { return omega_; }   // acentric factor [-]
     scalar Tb()    const { return Tb_;    }   // normal boiling point [K]
     scalar Hvap_Tb() const { return Hvap_Tb_; } // latent heat at Tb [J/mol]
-    scalar Vliq()  const { return Vliq_;  }   // liquid molar volume at 25 °C [m³/mol]
+    scalar Vliq()  const { return Vliq_;  }   // liquid molar volume at VliqT() [m³/mol]
+    //  THE TEMPERATURE THE `Vliq` DATUM BELONGS TO [K] (DEV.md 4c C378,
+    //  review row TR-12; docs/design/liquid-volume-datum-temperature.md).
+    //  Absent in the record, it is 298.15 K, so every record that does not
+    //  write it reads exactly as before.  The cryogens and the gases stored
+    //  a volume at their normal boiling point that the engine read as a
+    //  25 C volume; `VliqT` says which temperature the number is at, and
+    //  replaces no value.
+    scalar VliqT() const { return VliqT_; }
+    bool   hasVliqT() const { return hasVliqT_; }   // declared, not defaulted
 
     //  The PUBLISHED Hildebrand solubility parameter [Pa^0.5], when the
     //  record declares one.  It is an ANCHOR, never an input: the engine
@@ -341,6 +350,9 @@ public:
     // and every brine reported "no molecular formula declared" about a record
     // that has one.  ONE parse, two callers.
     void   readIdentity(const DictPtr& d);
+    //  `VliqT`, the temperature of the `Vliq` datum (C378): one reader for
+    //  both sites that read `Vliq`.
+    void   readVliqT(const DictPtr& d);
 
     // Read the component -> aqueous-species bridge from a substance record
     // (`aqueousMapping`, or `dissociatesTo`, or a mineral's own dissolution).
@@ -789,6 +801,8 @@ private:
     scalar hansenR0_ = 0;             // Pa^0.5, a solute's radius; 0 = none
     std::string reviewReason_;
     scalar      Vliq_    = 0.0;
+    scalar      VliqT_   = 298.15;   // K, the datum's temperature (C378)
+    bool        hasVliqT_ = false;
     scalar      solPar_  = 0.0;   // published Hildebrand delta [Pa^0.5]
     DictPtr     liquidCondDict_;  // liquidThermalConductivity{} block, raw
     scalar      Hf298_   = 0.0;

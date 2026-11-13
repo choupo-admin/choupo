@@ -2477,6 +2477,114 @@ real data arrive, and both are overlaid on data, never substituted for
 it.
 \end{intuition}
 
+\subsection{The record's own volume, at its own temperature}\label{sec:liquid-volume-datum-temperature}
+
+When a component record carries a measured liquid molar volume
+\code{Vliq}, the liquid density does not use bare Rackett: the measured
+value sets the \emph{level} and Rackett only the \emph{shape},
+\begin{equation}\label{eq:rackett-anchored}
+V^{\mathrm L}_i(T) \;=\; V_i^{\mathrm{datum}}\,
+\frac{V^{\mathrm{Rackett}}_i(T)}{V^{\mathrm{Rackett}}_i(T_i^{\mathrm{datum}})},
+\qquad T < T_{c,i},
+\end{equation}
+where $V_i^{\mathrm{datum}}$ is the record's \code{Vliq} and
+$T_i^{\mathrm{datum}}$ the temperature it belongs to, the record's
+\code{VliqT} (kelvin).  When the record writes no \code{VliqT},
+$T_i^{\mathrm{datum}}=298.15$\,K and \eqref{eq:rackett-anchored} is the
+25\,$^\circ$C anchoring every record without the key has always had.
+The code is \code{ThermoPackage::liquidMolarVolumeOf}, the one home of the
+choice, read by the density, by Li's volume fractions and by Butler's
+molar areas.  Without critical constants the volume is held flat at the
+datum, and the run says at which temperature.
+
+\paragraph{Why the key exists (DEV.md 4c C378, review row TR-12).}  Twenty
+records stored a volume at their normal boiling point (or, for CO$_2$, at
+273\,K, and for the nitrate salt at 465\,K) that the engine read as a
+25\,$^\circ$C volume.  The consequences were large where they showed: the
+liquid CO$_2$ density at 298.15\,K came out $936$\,kg/m$^3$ against the
+reference equation's saturated liquid $710.5$\,kg/m$^3$ ($+31.8\,\%$),
+ethane's $546$ against $319$ by the same Rackett carried from its boiling
+point, and liquid N$_2$ and CH$_4$ were \emph{refused}, because
+$V^{\mathrm{Rackett}}(298.15\,\mathrm{K})$ has no value above $T_c$.  The
+correction assigns the temperature and replaces no value: each record keeps
+its number, with a line saying how the temperature was established (the
+record's own statement, or the evidence batch
+\code{data/curation/batches/vliq\_datum\_temperature}, which checks every
+one against an independent liquid volume carried to the boiling point,
+within $2.1\,\%$ where a check exists).
+
+\begin{center}
+\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+record & \code{VliqT} [K] & how known & $\rho^{\mathrm L}(298.15\,\mathrm K)$ before $\to$ after [kg/m$^3$]\\
+\midrule
+CH$_4$, CO, H$_2$, N$_2$, NO, O$_2$ & $T_b$ & the record's ``at $T_b$'' & refused $\to$ refused ($T>T_c$)\\
+CO$_2$ & 273.15 & the record's ``at 273\,K'' & $936.4 \to 725.6$ (ref.\ eq.\ $710.5$)\\
+hitecSalt & 465 & the record's ``at 465\,K'' & flat (no $T_c$); label only\\
+Ar, He, O$_3$, ethylene & $T_b$ & evidence batch, class A3 & refused $\to$ refused ($T>T_c$)\\
+ethane & 184.55 & evidence batch, A4 & $545.7 \to 318.7$\\
+acetylene & 188.40 & evidence batch, A4 & $620.0 \to 375.9$ ($T/T_c=0.967$)\\
+N$_2$O & 184.67 & evidence batch, A4 & $1215.8 \to 745.7$ ($T/T_c=0.963$)\\
+HCl & 188.00 & evidence batch, A4 & $1195.4 \to 822.8$\\
+Cl$_2$ & 239.18 & evidence batch, A6 & $1575.7 \to 1414.7$\\
+H$_2$S & 212.85 & evidence batch, A6 & $976.6 \to 804.9$\\
+SO$_2$ & 263.13 & evidence batch, A6 & $1459.3 \to 1367.6$\\
+$n$-butane & 272.65 & evidence batch, A6 & $604.2 \to 575.1$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Below their critical temperature the cryogens now have a liquid: N$_2$ at
+90\,K gives $748.8$\,kg/m$^3$ against the engine's reference equation
+$745.0$ ($+0.5\,\%$), CH$_4$ at 120\,K $416.2$ against $409.9$
+($+1.5\,\%$); both were refused before.
+
+Close to the critical point (ethane, acetylene, N$_2$O and HCl at
+25\,$^\circ$C, $T/T_c$ between $0.92$ and $0.98$) the anchored Rackett is an
+extrapolation along a saturation line that ends a few kelvin above; the
+numbers are now of the right size, not certified.  The property-route bench
+(\code{check\_property\_route\_bench}) names every block this moved: the
+liquid density of the eighteen records with critical constants that the grid
+reaches, of \code{air} (N$_2$, O$_2$, Ar), and the density and Butler
+surface tension of the NH$_3$+N$_2$ and CO$_2$+water binaries; H$_2$ and He
+lie above their $T_c$ at every grid temperature, and hitecSalt has no $T_c$
+(its volume is flat; only its label changed).
+
+\paragraph{The refusals.}  \code{VliqT} without \code{Vliq} is refused at
+load (a temperature of nothing), and so is \code{VliqT} at or above
+\code{Tc} (no saturated liquid exists there).  A request at $T\geq T_c$ is
+refused at that state exactly as before: the datum's temperature never
+moves that boundary.  Six records whose stored volume belongs to no
+temperature a source in hand states (propane, propylene, H$_2$O$_2$,
+HCHO, HCN, NO$_2$) are left as they are and pinned by name; the gate
+\code{check\_vliq\_datum} holds a temperature written in a \code{Vliq}
+comment to the key, asks every record with $T_c<330$\,K that carries
+\code{Vliq} to state its temperature, and keeps that list from growing.
+
+\paragraph{The other readers of the datum.}  Each says which temperature it
+wants.  The solubility parameter wants the volume at the temperature it is
+evaluated at, and Hansen's volume-fraction rule the volume at the
+temperature of the triples: for a record that states \code{VliqT} both now
+ask \eqref{eq:rackett-anchored} there.  Wilson's
+$\Lambda_{ij}=(V_j/V_i)\exp(\cdots)$ wants both volumes at 25\,$^\circ$C,
+the convention its pairs are regressed under; a parametrised Wilson pair
+over a record that states another \code{VliqT} is refused by name (no
+catalogue Wilson pair names one).  Wilke-Chang \emph{wants} the solute's
+volume at its normal boiling point, which is what these records store; it
+reads the datum as stored.  The Poynting factor keeps its constant-volume
+form with the stored datum.  The units that still read the volume
+themselves (pump, pressure exchanger, CSTR, liquid PFR, crystallisers,
+spray dryer; \S\ref{sec:liquid-property-sources}) read the datum flat, at
+whatever temperature it belongs to; they move to the one door in their own
+slice.
+
+\paragraph{What it does not fix.}  A sealed case carries its own copy of
+each record, frozen by its seal; the correction reaches it when the seal is
+refreshed, not before.  \code{sucrose}'s \code{Vliq} is an apparent molar
+volume in solution, not a pure-liquid volume, and has no \code{VliqT};
+\code{hitecSalt}'s molar mass is a separate defect.
+
 % ---------------------------------------------------------------------
 \section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}
 
@@ -2504,8 +2612,10 @@ grid) --- and a refusal is the kernel's own message, now typed
 (\code{PropertyDomainError}: outside a hard domain, an invalid state, a
 missing datum).  The liquid density of a component is chosen once per
 component by \code{ThermoPackage::liquidVolumeRouteOf}: the record's
-25\,$^\circ$C volume scaled to temperature by Rackett (\S\ref{ch:rackett})
-when the record has a volume and critical constants; that volume held flat
+volume at its datum temperature (\code{VliqT}, 25\,$^\circ$C when absent)
+scaled to temperature by Rackett
+(\S\ref{sec:liquid-volume-datum-temperature}) when the record has a volume
+and critical constants; that volume held flat
 when it has no critical constants; Rackett alone, an estimate, when it has no
 volume; a refusal when it has neither.  The mixture is ideal mixing of these
 volumes.  A case that selects \code{pureFluids \{ water \{ method IF97; \} \}}

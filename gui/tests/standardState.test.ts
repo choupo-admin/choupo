@@ -108,7 +108,7 @@ describe("the lesson", () => {
 
   it("cites the engine where it prices the three terms", () => {
     const s = all(7);
-    expect(s).toContain("src/thermo/Component.cpp:1608");
+    expect(s).toContain("src/thermo/Component.cpp:1640");
     expect(s).toContain("src/thermo/ThermoPackage.cpp:1489");
     expect(s).toContain("src/propertyOps/PropertyPoint.cpp:85");
     //  C259: the two line numbers had drifted (1554, 1393) after the

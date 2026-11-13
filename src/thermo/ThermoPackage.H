@@ -806,6 +806,13 @@ public:
     //  decision liquidMolarVolumeOf() switches on (one home).
     enum class LiquidVolumeRoute { anchoredRackett, flatVliq, bareRackett, none };
     LiquidVolumeRoute liquidVolumeRouteOf(std::size_t i) const;
+    //  The liquid molar volume of ONE component at T [m3/mol], by the route
+    //  the liquid density takes for it (its `Vliq` anchored on Rackett at the
+    //  record's `VliqT`, 298.15 K when absent; a flat `Vliq`; or bare
+    //  Rackett -- each announced once).  density() mixes these; the liquid
+    //  mixing rules read them (C331); a reader of the stored datum that wants
+    //  it at another temperature asks here (C378).
+    scalar liquidMolarVolumeOf(std::size_t i, scalar T_K) const;
     //  The pure-fluid component that carries `z`, when a case selected one
     //  and the phase is effectively pure in it (throws on a mixture, as the
     //  property methods do).
@@ -839,11 +846,6 @@ private:
     std::vector<std::string>
     loadComponentSet(std::vector<std::string> names, const Database& db);
 
-    //  The liquid molar volume of ONE component at T [m3/mol], by the route
-    //  the liquid density takes for it (its 25 C `Vliq` anchored on Rackett,
-    //  a flat `Vliq`, or bare Rackett -- each announced once).  density()
-    //  mixes these; the liquid mixing rules read them (C331).
-    scalar liquidMolarVolumeOf(std::size_t i, scalar T_K) const;
     //  What a liquid mixing rule may read from this package.
     LiquidMixingContext liquidMixingContext() const;
 

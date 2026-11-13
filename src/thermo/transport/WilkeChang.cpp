@@ -42,7 +42,7 @@ scalar WilkeChang::diffusivityLiquidBinary(const Component& solute,
     const scalar phi   = solvent.associationFactor();       // [-]
     const scalar Mb    = solvent.MW();                       // g/mol
     const scalar etaB  = muSolvent_PaS * 1.0e3;              // Pa·s -> cP
-    const scalar Va_m3 = solute.Vliq();                      // m³/mol
+    const scalar Va_m3 = solute.Vliq();  // m³/mol, as stored: the correlation's V_A is at Tb, where the C378 `VliqT` records' datum is
     if (Va_m3 <= 0.0)
         throw std::runtime_error("WilkeChang: solute '" + solute.name()
             + "' has no Vliq (solute molar volume) in its.dat.");

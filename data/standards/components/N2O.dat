@@ -22,6 +22,7 @@ omega       0.142;              // [-]
 Tb          184.67;             // K
 HvapTb      16550;              // J/mol
 Vliq        3.62e-5;            // m^3/mol
+VliqT       184.67;      // K -- the temperature Vliq belongs to: the stored value is a volume at the normal boiling point: batch vliq_datum_temperature (evidence.tsv; the value is unchanged)
 //  ANCHOR, never an input.  The engine DERIVES the Hildebrand
 //  parameter from HvapTb and Vliq (the tree stores no derivative);
 //  this is what ChemSep v8.3 computed independently, so the

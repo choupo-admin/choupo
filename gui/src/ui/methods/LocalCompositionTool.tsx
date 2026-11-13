@@ -99,7 +99,7 @@ export const LC_STEPS = [
     assumes: "The energy of a neighbourhood is the sum of independent "
       + "pairwise contributions, and the Boltzmann factor uses the same T "
       + "for all pairs.",
-    cites: "Wilson.cpp:243 · NRTL.cpp:376 · UNIQUAC.cpp:257 — each of the "
+    cites: "Wilson.cpp:268 · NRTL.cpp:376 · UNIQUAC.cpp:257 — each of the "
       + "three exponentials below is this factor, differently dressed",
   },
   {
@@ -120,7 +120,7 @@ export const LC_STEPS = [
     assumes: "Local volume fractions, not local mole fractions; and "
       + "complete miscibility, which is where the LLE limitation comes "
       + "from rather than from any parameter.",
-    cites: "Wilson.cpp:243 (Λ), Wilson.cpp:255-268 (γ)",
+    cites: "Wilson.cpp:268 (Λ), Wilson.cpp:280-293 (γ)",
   },
   {
     n: 4,
@@ -241,7 +241,7 @@ export function LocalCompositionTool(): JSX.Element {
           <Code>ln γ_1 = 1 − ln 1.5 − 1/1.5 = −0.0721</Code> (γ_1 ≈ 0.930) and
           {" "}<Code>ln γ_2 = 1 − ln 0.75 − 2/1.5 = −0.0457</Code> (γ_2 ≈
           0.955), not 1.  Λ = 1 is a separate choice the code makes
-          (<Code>Wilson.cpp:242</Code>), and it is that choice, not a zero
+          (<Code>Wilson.cpp:267</Code>), and it is that choice, not a zero
           energy, that makes the pair neutral.
         </Text>
         <Text size="sm" mt={6}>
@@ -263,7 +263,7 @@ export function LocalCompositionTool(): JSX.Element {
         </Text>
         <Text size="xs" c={INK} mt={6}>
           <Code style={{ fontSize: 11 }}>NRTL.cpp:194, NRTL.cpp:235-261,
-          NRTL.cpp:320 · Wilson.cpp:242 · UNIQUAC.cpp:186 ·
+          NRTL.cpp:320 · Wilson.cpp:267 · UNIQUAC.cpp:186 ·
           thermo/ApproximationAuthorisation</Code>
         </Text>
       </Alert>

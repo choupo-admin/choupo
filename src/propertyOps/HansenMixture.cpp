@@ -202,7 +202,13 @@ int HansenMixture::run(const DictPtr& dict,
         s.name = nm; s.index = idx;
         s.dD = c->hansenD(); s.dP = c->hansenP(); s.dH = c->hansenH();
         s.Tref = c->hansenTref();
-        s.Vliq = c->Vliq();
+        //  The volume-fraction rule reads the solvents' volumes at one
+        //  temperature, the Tref their triples belong to.  A record that
+        //  states its `Vliq` at another temperature (`VliqT`, C378) is asked
+        //  through the one home of the liquid volume at Tref; any other
+        //  record keeps its stored 25 C datum, as before.
+        s.Vliq = c->hasVliqT() ? thermo.liquidMolarVolumeOf(idx, s.Tref)
+                               : c->Vliq();
         s.MW   = c->MW();
         solvents.push_back(s);
     }

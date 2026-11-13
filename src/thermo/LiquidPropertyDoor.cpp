@@ -17,9 +17,12 @@
 #include "core/PropertySourceLog.H"
 #include "thermo/ThermoPackage.H"
 
+#include <cstdio>
 #include <limits>
+#include <map>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace Choupo {
 namespace liquidProperty {
@@ -52,6 +55,38 @@ const char* routeLabel(Route r)
         case Route::none:            return "no route";
     }
     return "?";
+}
+
+std::string kelvin(scalar T)
+{
+    char b[32];
+    std::snprintf(b, sizeof b, "%.6g K", T);
+    return b;
+}
+
+//  The route's label with the temperature its datum belongs to.  When every
+//  component on the route is at 25 C (no `VliqT`), it is routeLabel() word
+//  for word; when all share one stated temperature, that temperature replaces
+//  "25 C"; when they differ, each component is named with its own.
+std::string routeLabelAt(Route r, const std::vector<std::string>& who)
+{
+    if (r != Route::anchoredRackett && r != Route::flatVliq) return routeLabel(r);
+    std::set<std::string> temps;
+    for (const auto& w : who) temps.insert(w.substr(w.find(" at ") + 4));
+    if (temps.empty() || (temps.size() == 1 && *temps.begin() == "25 C"))
+        return routeLabel(r);
+    std::string where;
+    if (temps.size() == 1) where = "molar volume at " + *temps.begin();
+    else
+    {
+        where = "molar volume at its datum temperature (";
+        for (std::size_t k = 0; k < who.size(); ++k)
+            where += (k ? ", " : "") + who[k];
+        where += ")";
+    }
+    return r == Route::anchoredRackett
+        ? "each component's " + where + " scaled to temperature by Rackett"
+        : "each component's " + where + ", with no temperature effect (its record has no critical constants)";
 }
 
 const char* routeOrigin(Route r)
@@ -125,11 +160,21 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         scalar zs = 0.0;
         for (std::size_t k = 0; k < x.size(); ++k) if (x[k] > 0.0) zs += x[k];
         std::set<Route> routes;
+        //  THE DATUM'S TEMPERATURE, per route that reads `Vliq` (C378): a
+        //  record that states `VliqT` is named with it; the rest are at
+        //  25 C, so a request that touches no `VliqT` record is labelled
+        //  word for word as before.
+        std::map<Route, std::vector<std::string>> datumT;
         for (std::size_t k = 0; k < x.size() && k < thermo.n(); ++k)
             if (x[k] > 0.0)
             {
                 const Route rt = thermo.liquidVolumeRouteOf(k);
                 routes.insert(rt);
+                const Component& ck = thermo.comp(k);
+                if (rt == Route::anchoredRackett || rt == Route::flatVliq)
+                    datumT[rt].push_back(ck.hasVliqT()
+                        ? ck.name() + " at " + kelvin(ck.VliqT())
+                        : ck.name() + " at 25 C");
                 r.leaves.push_back({ thermo.comp(k).name(),
                                      std::string("liquidVolume.") + routeId(rt),
                                      zs > 0.0 ? x[k] / zs : 0.0 });
@@ -140,7 +185,7 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         for (const Route rt : routes)
         {
             r.methodId += std::string(first ? "" : "+") + routeId(rt);
-            r.label    += std::string(first ? "" : "; ") + routeLabel(rt);
+            r.label    += std::string(first ? "" : "; ") + routeLabelAt(rt, datumT[rt]);
             if (r.quality.origin.empty() || std::string(routeOrigin(rt)) == "estimated")
                 r.quality.origin = routeOrigin(rt);
             first = false;
