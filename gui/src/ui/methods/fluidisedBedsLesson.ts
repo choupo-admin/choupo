@@ -59,7 +59,12 @@ export const FLUID_STEPS: readonly LessonStep[] = [
       + "velocity and grows without limit), and prints the quadratic formula's answer "
       + "beside it as a check.  Beside both it prints Wen and Yu's correlation, which "
       + "replaces the voidage terms by two fitted constants so that u_mf can be "
-      + "estimated without knowing the voidage at all.",
+      + "estimated without knowing the voidage at all.  The laboratory, opened from the "
+      + "button above, is the same arithmetic drawn as columns side by side, one kind of "
+      + "particle in each: you turn up the gas, record the pressure drop and the bed "
+      + "height, read u_mf and the velocity at which the particles are carried away off "
+      + "your own points, and only then see the page's values.  Its dots are a drawing; "
+      + "its heights, voids, pressure drops and regimes are this page's numbers.",
     derivation: [
       { step: "A force balance on the bed at the point of fluidisation, per unit of "
           + "cross-section: the pressure drop carries the particles' weight less their "
