@@ -9,6 +9,36 @@ class that
 [`thermophysical-property-routes.md`](thermophysical-property-routes.md) row TR-12
 named, and widens it: the census finds 21 records of one kind, not 17.
 
+## 0. The architect's ruling on this evidence (2026-11-13)
+
+1. **THE CORRECTION ASSIGNS A TEMPERATURE; IT DOES NOT REPLACE A VALUE.**
+   The evidence shows that each affected record's stored volume IS a
+   volume at that record's normal boiling point (within 2.1 % on all
+   eighteen that could be cross-checked).  So the correction keeps every
+   record's own value, with the provenance it already has, and states the
+   temperature it belongs to: `VliqT` = the record's own `Tb` for the
+   classes A1, A3, A4 and A6; 273.15 K for CO2; 465 K for hitecSalt.
+2. **THE HANDBOOK'S APPENDIX IS A CROSS-CHECK, NOT A VALUE'S HOME.**  Its
+   liquid volumes are printed with the permission of a data centre; the
+   numbers in `evidence.tsv` are there to show the comparison and are NOT
+   entered into any record.  Where a better datum is wanted later it comes
+   from a primary measurement or from a reference equation the engine
+   already carries (N2, CH4, CO2, water), origin word `derived`.
+3. **TWENTY-ONE RECORDS, not seventeen** (Cl2, H2S, SO2 and nButane store a
+   boiling-point volume and say nothing), and six UNRESOLVED (propane,
+   propylene, H2O2, HCHO, HCN, NO2): those six are pinned by name as known
+   debt until a measured liquid density with its temperature is read for
+   each; none is changed on a guess.
+4. **hitecSalt's molar mass** (87.4, a mass-fraction mean of molar masses;
+   the mole-fraction mean of its own stated composition is 84.29) is a
+   separate defect with its own commit and its own list of moved rows.
+5. **sucrose's value leaves the component** for a solution record when the
+   solution slice is built; until then the record says what the number is.
+6. **ORDER:** the grammar (`VliqT`, default 298.15 K, every existing record
+   reading as today) and the reader change land AFTER the door (the same
+   engine files), as one commit that moves numbers, with the bench naming
+   every block it moves and the cases re-recorded from a list.
+
 ## 1. The defect
 
 A component record's `Vliq` is read as the liquid molar volume AT 298.15 K

@@ -3740,6 +3740,26 @@ accepts today, and that is a policy call.
 > deliberate choice, and the danger named is the silence, which the
 > printed deviation removes.
 
+> **C378, THE LIQUID VOLUMES READ AT THE WRONG TEMPERATURE: EVIDENCE ON
+> MAIN (2026-11-13; data/curation/batches/vliq_datum_temperature/,
+> docs/design/liquid-volume-datum-temperature.md).**  No record and no
+> engine file changed.  TWENTY-ONE records, not seventeen: Cl2, H2S, SO2
+> and nButane also store a boiling-point volume and state nothing (the
+> engine's density at 25 C is about +13, +19, +7 and +4 % for them).  Every
+> record that could be cross-checked stores a volume at ITS OWN normal
+> boiling point, within 2.1 %.  RULED: the correction ASSIGNS A
+> TEMPERATURE and replaces no value -- an optional `VliqT` beside `Vliq`
+> (default 298.15 K), equal to the record's `Tb` for those records, 273.15
+> K for CO2, 465 K for hitecSalt; the handbook appendix used for the
+> comparison is a cross-check and enters no record; six records stay
+> unresolved and pinned by name (propane, propylene, H2O2, HCHO, HCN,
+> NO2); hitecSalt's molar mass (87.4 against 84.29 from its own
+> composition) is its own defect and commit; sucrose's value belongs in a
+> solution record.  The reader change lands after the door.  REACH read
+> by hand: nButane and propane in six columns and the Cavett train, H2S in
+> the sour-water stripper, Cl2 in the chlorination case, a CH4 flash that
+> is refused today, CO2 in eight liquid-candidate cases.
+
 > **C378, A READING WHILE THE DOOR IS BUILT (2026-11-12, night): the
 > density model for electrolyte solutions now in the literature folder,
 > put against rule 9.**  Laliberte & Cooper (J. Chem. Eng. Data 49 (2004)

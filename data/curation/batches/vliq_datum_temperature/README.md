@@ -11,6 +11,10 @@ The engine reads a record's `Vliq` as the liquid molar volume AT 298.15 K
 something else; the census below re-derives that list and finds four more of the
 same kind and six it cannot resolve.
 
+**Ruling (2026-11-13, in the design note's section 0):** the correction keeps each record's
+own stored value and assigns the temperature it belongs to; the handbook values in
+`evidence.tsv` are a CROSS-CHECK and enter no record.
+
 ## Files
 
 | file | what it is |
