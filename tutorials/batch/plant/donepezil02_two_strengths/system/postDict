@@ -110,10 +110,10 @@ batchPlan
             //  titanium dioxide in a yellow coat that already carries it.
             stages
             (
-                { stage suspensionPreparation;  changeoverTo { strength5 8 h; }
+                { stage suspensionPreparation;  changeoverTo { strength5 32 h; }   // 24 h campaign clean + 8 h
                   source "author-set assumption, not a cleaning-validation result";
                   reason "colour carry-over: the yellow pigment of the 10 mg suspension must be rinsed out of the tank, the pump and the lines before the white 5 mg coat; one more rinse and a visual-clean check than the other direction"; }
-                { stage coating;  changeoverTo { strength5 12 h; }
+                { stage coating;  changeoverTo { strength5 36 h; }   // 24 h campaign clean + 12 h
                   source "author-set assumption, not a cleaning-validation result";
                   reason "colour carry-over: the perforated pan, the spray guns and the exhaust ductwork hold yellow iron oxide that would speck a white coat; a full wet clean with a swab/rinse check is the longest clean of the plant"; }
             );
@@ -144,12 +144,12 @@ batchPlan
                   reason "twice the tablets in a 300 kg lot, on a line rated in tablets a minute"; }
                 //  THE CLEAN AFTER THE WHITE 5 mg, BEFORE THE YELLOW 10 mg:
                 //  the shorter one (see strength10 above).
-                { stage suspensionPreparation;  changeoverTo { strength10 3 h; }
+                { stage suspensionPreparation;  changeoverTo { strength10 27 h; }   // 24 h campaign clean + 3 h
                   source "author-set assumption, not a cleaning-validation result";
-                  reason "the white suspension leaves only titanium dioxide, which the yellow coat already contains: a rinse is enough"; }
-                { stage coating;  changeoverTo { strength10 6 h; }
+                  reason "the white suspension leaves only titanium dioxide, which the yellow coat already contains: a rinse on top of the campaign clean is enough"; }
+                { stage coating;  changeoverTo { strength10 30 h; }   // 24 h campaign clean + 6 h
                   source "author-set assumption, not a cleaning-validation result";
-                  reason "the pan is washed and checked for residue, but a trace of white pigment is invisible in the yellow coat: half the clean the other direction needs"; }
+                  reason "the pan is washed and checked for residue, but a trace of white pigment is invisible in the yellow coat: half the increment the other direction needs"; }
             );
             source   "author-set market assumption, not a market study: 60 million 5 mg tablets a year (two fifths of 150 million), at the packed tablet's 0.145115 g = half of the 10 mg tablet's (the SmPCs' half-weight pair, README section 1) = 8 707 kg";
             reason   "the starting dose and the lower-volume strength; the split is the group's market study to replace";
@@ -226,11 +226,11 @@ batchPlan
     //  says otherwise.  `holds` names the stream whose flowsheet mass the
     //  stage handles per lot -- the mass is READ, never typed here.
     //  `productChangeover` is the clean between campaigns of DIFFERENT
-    //  products at that stage, the default the products' `changeoverTo`
-    //  override where the direction matters.  THE SAME API in both strengths:
-    //  no cross-contamination of one drug by another is at stake, only line
-    //  clearance (no strength mixed up) and the colour of the coat, so these
-    //  are shorter than a changeover between two APIs would be.
+    //  products at that stage (the products' `changeoverTo` override it where
+    //  the direction matters): the train's 24 h campaign clean PLUS the
+    //  product's own part, never less (DEV.md 4c C389).  THE SAME API in both
+    //  strengths: the increments are line clearance (no strength mixed up) and
+    //  the colour of the coat, smaller than a change between two APIs.
     stages
     (
         //  ---- train granulation ----------------------------------------
@@ -241,8 +241,8 @@ batchPlan
             fillFraction 0.8;
             chargeTime   0.5 h;  processTime 1 h;  cleanTime 1 h;
             dischargeTime throughFedStage;   // pumped into the granulator while it granulates
-            productChangeover 2 h;
-            source "author-set assumption (DEV.md 4c C110); the density is water's, rounded up for the polymer; the 2 h product change is a rinse and a line-clearance check, an assumption";
+            productChangeover 26 h;          // 24 h campaign clean + 2 h
+            source "author-set assumption (DEV.md 4c C110); the density is water's, rounded up for the polymer; the product change is the train's 24 h campaign clean plus 2 h of rinse and line-clearance check, an assumption";
             reason "one tank of binder solution per lot, held until the granulator has taken it";
         }
         {
@@ -250,8 +250,8 @@ batchPlan
             units  ( granulator );  holds wetMass;
             bulkDensity  550 kg/m3;  fillFraction 0.6;   // a high-shear bowl at 60 % of its volume
             chargeTime 0.5 h;  processTime 0.5 h;  dischargeTime 0.25 h;  cleanTime 1.5 h;
-            productChangeover 6 h;
-            source "author-set assumption (DEV.md 4c C110), not a measured bulk density; the 6 h product change is a full wet clean of bowl, impeller and chopper with a rinse check, an assumption";
+            productChangeover 30 h;          // 24 h campaign clean + 6 h
+            source "author-set assumption (DEV.md 4c C110), not a measured bulk density; the product change is the train's 24 h campaign clean plus 6 h for the rinse check of bowl, impeller and chopper against the other strength, an assumption";
             reason "dry mixing, binder addition and wet massing in one load; discharged wet straight into the fluid-bed bowl";
         }
         {
@@ -259,16 +259,16 @@ batchPlan
             units  ( fluidBedDryer fbdAirHeater );  holds wetMass;
             bulkDensity  550 kg/m3;  fillFraction 0.5;   // the bowl, with room for the bed to expand
             chargeTime 0.25 h;  processTime 1.5 h;  dischargeTime 0.5 h;  cleanTime 2 h;
-            productChangeover 5 h;
-            source "author-set assumption (DEV.md 4c C110); the 1.5 h is the drying time the flowsheet basis is built on (system/flowsheetDict); the 5 h product change is the bowl wash and the filter-bag change, an assumption";
+            productChangeover 29 h;          // 24 h campaign clean + 5 h
+            source "author-set assumption (DEV.md 4c C110); the 1.5 h is the drying time the flowsheet basis is built on (system/flowsheetDict); the product change is the train's 24 h campaign clean plus 5 h for the filter-bag change and its check, an assumption";
             reason "the wet mass dried in one load to its end-point moisture, then cooled with ambient air and discharged";
         }
         {
             stage  milling;  train granulation;  type semicontinuous;
             units  ( mill );  holds driedGranules;
             chargeTime 0.25 h;  operatingTime 2 h;  dischargeTime 0 h;  cleanTime 1 h;
-            productChangeover 2 h;
-            source "author-set assumption (DEV.md 4c C110); the 2 h product change is a dry clean (vacuum and wipe-down), an assumption";
+            productChangeover 26 h;          // 24 h campaign clean + 2 h
+            source "author-set assumption (DEV.md 4c C110); the product change is the train's 24 h campaign clean plus 2 h of dry clean (vacuum and wipe-down) and its check, an assumption";
             reason "the dried granules sized through a screen mill into the blending bin";
         }
         {
@@ -276,8 +276,8 @@ batchPlan
             units  ( finalBlender );  holds finalBlend;
             bulkDensity  500 kg/m3;  fillFraction 0.6;
             chargeTime 0.5 h;  processTime 0.25 h;  dischargeTime 0.5 h;  cleanTime 1 h;
-            productChangeover 3 h;
-            source "author-set assumption (DEV.md 4c C110); the 3 h product change is a rinse of the bin blender and the bins, an assumption";
+            productChangeover 27 h;          // 24 h campaign clean + 3 h
+            source "author-set assumption (DEV.md 4c C110); the product change is the train's 24 h campaign clean plus 3 h of rinse of the bin blender and the bins, an assumption";
             reason "the lubricant blended in for a few minutes in a bin blender; the bin is the lot's store until release";
         }
 
@@ -287,8 +287,8 @@ batchPlan
             units  ( tabletPress );  holds finalBlend;
             feeds  coating;
             chargeTime 1.5 h;  operatingTime 7 h;  dischargeTime 0 h;  cleanTime 1.5 h;
-            productChangeover 4 h;
-            source "author-set assumption (DEV.md 4c C110); the 4 h product change is the press's dry clean and the change of the tooling to the other strength's punches and dies, an assumption";
+            productChangeover 28 h;          // 24 h campaign clean + 4 h
+            source "author-set assumption (DEV.md 4c C110); the product change is the train's 24 h campaign clean plus 4 h to change the tooling to the other strength's punches and dies, an assumption";
             reason "a rotary press set up for the lot (tooling, weight and hardness checks) and run at about 150 000 tablets an hour (the 10 mg lot; the 5 mg lot runs 14 h)";
         }
         {
@@ -298,7 +298,7 @@ batchPlan
             bulkDensity  1050 kg/m3;  fillFraction 0.7;
             chargeTime 0.5 h;  processTime 1.5 h;  cleanTime 0.5 h;
             dischargeTime throughFedStage;   // sprayed onto the cores through the coating
-            productChangeover 3 h;           // overridden by each product's changeoverTo (colour)
+            productChangeover 27 h;          // 24 h + 3 h; overridden by each product's changeoverTo (colour)
             source "author-set assumption (DEV.md 4c C110); the density is of the order of a 12 wt % pigmented HPMC suspension";
             reason "the coating suspension is made for each lot and sprayed while the pan coats";
         }
@@ -307,7 +307,7 @@ batchPlan
             units  ( coatingPan coatingDryer coatingAirHeater );  holds tabletCores;
             bulkDensity  750 kg/m3;  fillFraction 0.65;   // tablet bed in a perforated pan
             chargeTime 0.5 h;  processTime 4 h;  dischargeTime 0.5 h;  cleanTime 1.5 h;
-            productChangeover 6 h;           // overridden by each product's changeoverTo (colour)
+            productChangeover 30 h;          // 24 h + 6 h; overridden by each product's changeoverTo (colour)
             source "author-set assumption (DEV.md 4c C110)";
             reason "one lot of cores coated in one pan load to a 3 % weight gain";
         }
@@ -315,8 +315,8 @@ batchPlan
             stage  packaging;  train tableting;  type semicontinuous;
             units  ( packagingLine );  holds packagedTablets;
             chargeTime 1 h;  operatingTime 9 h;  dischargeTime 0 h;  cleanTime 1 h;
-            productChangeover 4 h;
-            source "author-set assumption (DEV.md 4c C110); the 4 h product change is the line clearance of printed foil, cartons and leaflets of the other strength (no strength mixed up), an assumption";
+            productChangeover 28 h;          // 24 h campaign clean + 4 h
+            source "author-set assumption (DEV.md 4c C110); the product change is the train's 24 h campaign clean plus 4 h of line clearance of printed foil, cartons and leaflets of the other strength (no strength mixed up), an assumption";
             reason "a PVC/aluminium blister line (the reference product's pack, SmPC section 6.5) set up and cleared for each lot, run at about 120 000 tablets an hour (the 10 mg lot; the 5 mg lot runs 18 h)";
         }
     );
