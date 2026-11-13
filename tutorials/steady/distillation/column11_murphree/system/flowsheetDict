@@ -30,15 +30,20 @@
 
   Compare against column09 (same column, E_MV = 1):
 
-      distillate benzene   98.12 %  (ideal)   ->   95.05 %  (E_MV = 0.70)
-      bottoms    toluene   98.12 %  (ideal)   ->   95.05 %
+      distillate benzene   95.10 %  (ideal)   ->   91.79 %  (E_MV = 0.70)
+      bottoms    toluene   95.10 %  (ideal)   ->   91.79 %
 
   Fourteen real trays do less than fourteen ideal ones.  That is the whole content
   of a tray efficiency, and it is why a column designed on ideal stages and built
   on real trays comes up short.  Sweep E_MV and watch the limit close:
 
       E_MV   0.50    0.70    0.90    0.99    0.999   1.000
-      x_D   0.9100  0.9505  0.9738  0.9806  0.9812  0.98125   <- the ideal stage
+      x_D   0.8802  0.9179  0.9421  0.9502  0.9509  0.9510   <- the ideal stage
+
+  (Re-measured 2026-11-13 with this tree's engine; the table printed here
+  before was from an earlier engine, and the golden had moved since.  The
+  EduTool "Equilibrium stages or rate-based?" runs this case at seven
+  efficiencies, as shipped and as a taller trace-specification column.)
 
   Nothing is switched on at E_MV = 1; the effective K collapses to K and the case
   reproduces column09 to the last bit.

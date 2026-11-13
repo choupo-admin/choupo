@@ -3016,6 +3016,110 @@
           }
         }
       ]
+    },
+    "equilibrium-or-rate-based": {
+      "references": [
+        {
+          "text": "Taylor, R.; Wilkinson, P.; Kooijman, H. (2010). Rate-based modeling of two commercial scale H2S stripping columns. In: de Haan, A. B.; Kooijman, H.; Górak, A. (Eds.), Distillation Absorption 2010, pp. 401–406.",
+          "url": "https://skoge.folk.ntnu.no/prost/proceedings/distillation10/DA2010%20Conference%20Proceedings/5.%20Modeling%20&%20Simulation/OR30%20Taylor%20Rate%20Based%20Modeling%20of%20Two%20Commercial.pdf",
+          "note": "Two commercial H2S strippers: one assumed efficiency put the bottoms impurity orders of magnitude below the plant; 5 ppm with valve trays and the AIChE coefficients, 12 ppm with sieve trays and the Chan and Fair coefficients (its Table 2); component efficiencies differ by component and along the column; the quoted sentence of the reference card.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "open proceedings PDF fetched from the URL and read in full with pdftotext (6 pages, 401-406): title, authors, editors, the 50 % efficiency, 0.08 ppm against 15 ppm (Table 2), the 20-60 % and 40-60 % efficiencies, the quoted sentence of the abstract, and the thermodynamic-model sentence of section 4 (equilibrium-or-rate-based commission); no DOI found on Crossref by title",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Springer, P. A. M.; van der Molen, S.; Krishna, R. (2002). Influence of unequal component efficiencies on trajectories during distillation of a quaternary azeotropic mixture. International Conference on Distillation & Absorption 2002, Baden-Baden, paper 3.2-1. ISBN 3-931384-37-3.",
+          "url": "https://skoge.folk.ntnu.no/prost/proceedings/distillation02/dokument/32-1.pdf",
+          "note": "Measured trajectories crossed a distillation boundary; the nonequilibrium model followed them, the equilibrium-stage model failed even qualitatively.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "open proceedings PDF fetched from the URL and read with pdftotext (abstract, introduction, references); conference title, place, dates and ISBN read from the proceedings' start.pdf; paper number 3.2-1 from the proceedings' keyword index (equilibrium-or-rate-based commission); no DOI for this conference paper on Crossref (the title search returns a different later journal paper on a homogeneous mixture)",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Pelkonen, S.; Górak, A.; Ohligschläger, A.; Kaesemann, R. (2001). Experimental study on multicomponent distillation in packed columns. Chem. Eng. Process. 40(3), 235–243.",
+          "doi": "10.1016/S0255-2701(00)00117-3",
+          "note": "Experiment AMIW3 (acetone, methanol, 2-propanol, water on structured packing, total reflux): the equilibrium-stage model and an equal-diffusivity model predicted a 2-propanol reboiler where the experiment and the nonequilibrium model gave water.  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/S0255-2701(00)00117-3: authors Pelkonen, Górak, Ohligschläger and Kaesemann, title, container (Chemical Engineering and Processing), volume 40, issue 3, pages 235-243, year 2001 matched (equilibrium-or-rate-based, second round).  The paper's content (section 5 and Fig. 5, pp. 241-242, experiment AMIW3 of Table 5) was read on its page images by the project's coordinating session on 2026-11-13; this page's author did not open it",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Thiele, R.; Faber, R.; Repke, J.-U.; Thielert, H.; Wozny, G. (2006). Design of industrial reactive absorption processes in sour gas treatment using rigorous modelling and accurate experimentation. Distillation and Absorption 2006, IChemE Symposium Series No. 152, pp. 469–480.",
+          "url": "https://skoge.folk.ntnu.no/prost/proceedings/distillation06/CD-proceedings/paper045.pdf",
+          "note": "An equilibrium model failed to predict the selective removal of H2S and over-predicted CO2 absorption against pilot measurements.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "open proceedings PDF fetched from the URL and read with pdftotext: title, authors, series number, pages 469-480 printed on the pages, the introduction and the Figure 1 comparison (equilibrium-or-rate-based commission); a journal version exists on Crossref (10.1205/cherd06091) and was NOT read, so it is not the work cited",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Jakobsson, K.; Aittamaa, J.; Keskinen, K. I.; Ilme, J. (2002). Plate efficiencies of industrial scale dehexaniser. International Conference on Distillation & Absorption 2002, Baden-Baden, paper 3.2-4. ISBN 3-931384-37-3.",
+          "url": "https://skoge.folk.ntnu.no/prost/proceedings/distillation02/dokument/32-4.pdf",
+          "note": "Equilibrium stages with efficiencies are often used; efficiencies vary from plate to plate and component to component; both efficiency and rate-based models rest on mass-transfer correlations often developed from binary, small-scale data.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "open proceedings PDF fetched from the URL and read with pdftotext (abstract, introduction, discussion and conclusions); conference details from the proceedings' start.pdf (equilibrium-or-rate-based commission); no DOI found on Crossref by title",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Krishnamurthy, R.; Taylor, R. (1985). A nonequilibrium stage model of multicomponent separation processes. Part I: Model description and method of solution. AIChE J. 31(3), 449–456.",
+          "doi": "10.1002/aic.690310312",
+          "note": "Unequal and unbounded component efficiencies in multicomponent mixtures (pp. 449-450); the equation counts of its own formulation, 70 against 160 and 550 against no fewer than 1 300, 2c+1 against 5c+1 variables per stage, a considerable difference but a minor drawback (pp. 453-454).  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690310312: authors Krishnamurthy and Taylor, title, AIChE Journal, volume 31, issue 3, pages 449-456, March 1985 matched (equilibrium-or-rate-based, third round); the DOI is Crossref's and is not printed on the paper's pages. The content was read by the project's coordinating session on 2026-11-13 from the file's text layer and NOT opened for this page; the coordinator re-checked the two equation counts, the minor-drawback remark (p. 454) and the unequal-and-unbounded statement (p. 450) against the text himself; the other rows used here (p. 449, unequal efficiencies set equal for lack of anything better; p. 453, 2c+1 against 5c+1) were not re-checked",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Taylor, R.; Krishna, R. (2000). Modelling reactive distillation. Chem. Eng. Sci. 55(22), 5183–5229.",
+          "doi": "10.1016/S0009-2509(00)00120-2",
+          "note": "Component efficiencies with three or more components (section 3.7, p. 5205); equilibrium with an efficiency against nonequilibrium on reactive tray columns (section 5.3, p. 5210); what a nonequilibrium model needs (p. 5209) and the data that are lacking, preliminary against final design, dynamics (section 7, p. 5220).  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/S0009-2509(00)00120-2: authors Taylor and Krishna, title, Chemical Engineering Science, volume 55, issue 22, pages 5183-5229, November 2000 matched (equilibrium-or-rate-based, third round). The content was read by the project's coordinating session on 2026-11-13 from the file's text layer and NOT opened for this page; the coordinator re-checked p. 5205 (unequal efficiencies above one and below zero) and p. 5220 (preliminary and final design, dynamics, the missing data) himself; the p. 5209 list of what the model needs and the section 5.3 comparison on p. 5210 (close agreement only when the tray efficiency could be predicted correctly) were read by the reading general and NOT re-checked by the coordinator",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Taylor, R.; Kooijman, H. A. (2014). Mass Transfer in Distillation. In: Distillation: Fundamentals and Principles, pp. 97–143.",
+          "doi": "10.1016/B978-0-12-386547-2.00003-X",
+          "note": "On a tray, plug-flow liquid against fully mixed raises the overall transfer rate by up to about 20 % (section 3.8, pp. 126-127).  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/B978-0-12-386547-2.00003-X: authors Taylor and Kooijman, title 'Mass Transfer in Distillation', container 'Distillation', pages 97-143, 2014 matched (equilibrium-or-rate-based, third round); the DOI is printed on the chapter's first page per the reading note. The content was read by the project's coordinating session on 2026-11-13 from the file's text layer and NOT opened for this page; the coordinator re-checked the 20 % of the tray flow model (pp. 126-127) himself",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Yanagi, T.; Sakata, M. (1982). Performance of a commercial scale 14% hole area sieve tray. Ind. Eng. Chem. Process Des. Dev. 21(4), 712–717.",
+          "doi": "10.1021/i200019a029",
+          "note": "The measured efficiencies of demonstration 2, as the tree transcribes them (not re-read for this page).",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/i200019a029: authors Yanagi and Sakata, title, container, volume 21, issue 4, pages 712-717, year 1982 matched (equilibrium-or-rate-based commission); the paper itself was not opened for this page",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Murphree, E. V. (1925). Rectifying Column Calculations. Ind. Eng. Chem. 17(7), 747–750.",
+          "doi": "10.1021/ie50187a044",
+          "note": "The definition of the vapour efficiency the engine reads.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1021/ie50187a044: author Murphree, title, container, volume 17, issue 7, pages 747-750, year 1925 matched (equilibrium-or-rate-based commission)",
+            "date": "2026-11-13"
+          }
+        }
+      ]
     }
   }
 }

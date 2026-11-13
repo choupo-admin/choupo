@@ -547,6 +547,23 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["fastSlow.test.ts"],
     stdout: true,
   },
+  //  The `equilibrium-or-rate-based` EduTool's demonstration 2: the three
+  //  tray-efficiency witnesses' own outerDict sweeps over the F-factor.
+  {
+    caseDir: "tutorials/steady/distillation/trayEfficiency01_yanagi14",
+    file: "sweep_fFactor.csv",
+    readBy: ["equilibriumOrRateBased.test.ts"],
+  },
+  {
+    caseDir: "tutorials/steady/distillation/trayEfficiency05_chanFair_yanagi14",
+    file: "sweep_fFactor.csv",
+    readBy: ["equilibriumOrRateBased.test.ts"],
+  },
+  {
+    caseDir: "tutorials/steady/distillation/trayEfficiency06_syedaChuang_yanagi14",
+    file: "sweep_fFactor.csv",
+    readBy: ["equilibriumOrRateBased.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

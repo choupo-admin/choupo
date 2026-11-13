@@ -81,7 +81,7 @@ export type MethodToolId =
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
-  | "operator-panels" | "fluidised-beds" | "fast-and-slow";
+  | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -215,13 +215,14 @@ export const METHOD_PATHS: MethodPath[] = [
   {
     id: "distillation",
     title: "Distillation",
-    intro: "From what a standard state means to the cost of the column: one separation, seen six ways.",
+    intro: "From what a standard state means to the cost of the column: one separation, seen seven ways.",
     steps: [
       { tool: "standard-state", why: "Fixes what the enthalpies and equilibrium constants behind every later page are measured from." },
       { tool: "flash-operating-line", why: "One equilibrium stage: the material balance line meets the equilibrium curve, the building block of a column." },
       { tool: "mccabe", why: "Stacks those stages: reflux ratio and feed quality decide how many are needed." },
       { tool: "ponchon-savarit", why: "Drops the constant-molar-overflow assumption by putting enthalpy on the diagram." },
       { tool: "fug", why: "Shortcut estimate of minimum stages, minimum reflux and the feed stage before a rigorous column." },
+      { tool: "equilibrium-or-rate-based", why: "Asks whether equilibrium stages with one efficiency are enough for the column, and how wrong they can be." },
       { tool: "plant-cost", why: "Turns the sized equipment into what the plant costs to build." },
     ],
   },
@@ -950,6 +951,30 @@ export const METHOD_TOOLS: MethodTool[] = [
       + "two asymptotes, with the rigorous MESH column's own stage count for "
       + "the same separation drawn beside it.",
     theory: "ch:fug",
+  },
+  //  COMMISSIONED 2026-11-13 by Vitor ("Podes fazer um EduTool com estas
+  //  recomendacoes e heuristicas? Isto e tremendamente importante!"), after a
+  //  question on whether real columns need rate-based models.  Two engine
+  //  demonstrations (column11_murphree at seven efficiencies on a bulk and a
+  //  trace column; the three trayEfficiency witnesses at total reflux beside
+  //  the tree's measured points), findings read in four published
+  //  comparisons, and a decision table in which every row names its origin.
+  //  Record: docs/design/equilibrium-or-rate-based.md.
+  {
+    id: "equilibrium-or-rate-based", blurb: "Decide when equilibrium stages with one efficiency are enough for a column.",
+    label: "Equilibrium stages or rate-based?",
+    discipline: "Separations & phase equilibria", kind: "selection", status: "live",
+    origins: ["engine", "page", "reference", "assumption"],
+    teaches: "When an equilibrium-stage column with one Murphree efficiency is "
+      + "enough and when it is not: the engine runs one column at seven "
+      + "efficiencies on a per-cent and on a ppm specification (the same 0.1 of "
+      + "efficiency moves the first by a fifth and the second fourfold) and "
+      + "counts the trays a target needs; it computes one sieve tray's "
+      + "efficiency by three correlations beside the measurement; and published "
+      + "comparisons say where one efficiency failed (components that transfer "
+      + "at different rates, azeotropic boundaries, reactive absorption), "
+      + "gathered in a decision table that names the origin of every row.",
+    theory: "ch:ratebased",
   },
   {
     id: "psychro", blurb: "Locate humid-air states and drying paths on a psychrometric chart.", label: "Psychrometric chart",
