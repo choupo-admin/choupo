@@ -1870,8 +1870,8 @@ if (flowsheetDict->found("cycle"))
                         belowResolution.emplace_back(sym, aF - a0);
                         continue;
                     }
-                    const scalar r  = std::abs(aF - a0)
-                                    / std::max({ a0, aF, 1.0e-15 });
+                    //  max(a0, aF) > resolution > 0 here: no floor needed.
+                    const scalar r  = std::abs(aF - a0) / std::max(a0, aF);
                     ck["element_" + sym + "_closure_rel"] = r;   // RAW, shown
                     elemWorst = std::max(elemWorst, r);
                 }

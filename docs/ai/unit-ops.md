@@ -3018,8 +3018,8 @@ the bed writes no `<t>/<unit>.profile`.
 
 Per species the bed publishes its ledger closure `mass_closure_<i>`
 (`|M_in + hold0 - holdup - M_out| / (M_in + hold0)`; the trajectory column
-`model_closure_<i>`) only for a species IN PLAY: fed now or ever, or present
-in the initial gas or loading.  A component the case neither feeds nor holds
+`model_closure_<i>`) only for a species IN PLAY (fed now or ever, or present
+in the initial gas or loading) whose scale is not zero.  A component the case neither feeds nor holds
 has the exact answer zero: its rows are held at exactly zero after every
 accepted step (announced once), it publishes `mass_residual_<i>_mol` instead
 of a ratio, and its trajectory cell is empty -- no ratio where there is no

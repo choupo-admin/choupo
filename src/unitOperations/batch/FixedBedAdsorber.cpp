@@ -3178,12 +3178,11 @@ FixedBedAdsorber::trajectoryExtras() const
         // DISCRETISATION identity of the solved equations, not physical
         // conservation -- the physical residual of the constant-(u, P, T)
         // assumption lives in carrier_makeup_rel, where it BITES.  CI-00:
-        // a species not in play has no scale, so its cell is EMPTY (NaN
-        // here; the CSV writes nothing) until a recipe feeds it.
+        // no ratio without a scale (not in play, or fed but nothing in yet):
+        // the cell is EMPTY (NaN here; the CSV writes nothing).
         const LedgerClosure lc = ledgerClosure_(a);
         ex.emplace_back("model_closure_" + compNames_[adsIdx_[a]],
-            lc.inPlay ? std::abs(lc.residual)
-                        / std::max(lc.scale, scalar(1.0e-30))
+            (lc.inPlay && lc.scale > 0.0) ? std::abs(lc.residual) / lc.scale
                       : std::numeric_limits<scalar>::quiet_NaN());
     }
     return ex;
@@ -3328,12 +3327,12 @@ std::map<std::string, scalar> FixedBedAdsorber::kpis() const
             k["q_min_" + nm] = qMinField_[a];
         }
         //  Closure (the trajectory column's home, ledgerClosure_).  CI-00:
-        //  no ratio where there is no scale -- a species not in play
-        //  publishes its residual in mol, never a residual over a floor.
+        //  no ratio where there is no scale -- a species not in play (or
+        //  fed with nothing in yet) publishes its residual in mol, never a
+        //  residual over a floor.
         const LedgerClosure lc = ledgerClosure_(a);
-        if (lc.inPlay)
-            k["mass_closure_" + nm] = std::abs(lc.residual)
-                / std::max(lc.scale, scalar(1.0e-30));
+        if (lc.inPlay && lc.scale > 0.0)
+            k["mass_closure_" + nm] = std::abs(lc.residual) / lc.scale;
         else
             k["mass_residual_" + nm + "_mol"] = lc.residual;
         scalar qs = 0.0;
