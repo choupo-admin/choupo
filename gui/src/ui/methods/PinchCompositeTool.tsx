@@ -1244,7 +1244,7 @@ export function PinchCompositeTool(
               {origin}
             </Stack>
           </Collapse>
-          {figure(pane, "clamp(340px, calc(100vh - 340px), 560px)")}
+          {figure(pane, "clamp(340px, calc(var(--choupo-vh) - 340px), 560px)")}
           {targetTiles ? chipsOf(false) : chips}
           {streamsBlock}
           {cascadeBlock}
