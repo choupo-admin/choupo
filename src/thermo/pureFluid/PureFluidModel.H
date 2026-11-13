@@ -202,4 +202,44 @@ private:
     static std::map<std::string, Factory>& registry();
 };
 
+// ---------------------------------------------------------------------------
+//  THE PHASE A PURE-FLUID DENSITY IS ASKED FOR (DEV.md 4c C378, pilot plan
+//  section 11 step 2).  A formulation draws both phases and, at a given
+//  (T, P) below its critical temperature, answers with the one that is
+//  stable there.  A consumer that asks for the LIQUID density of a stream
+//  sitting on the saturation line (a pump suction is saturated liquid by
+//  construction) got the vapour root whenever the last bit of P fell below
+//  p_sat(T): water on IF97 at 446.52 K returned 4.45 kg/m3 for 893.99.
+//  The ONE decision, read by ThermoPackage::density and by the liquid-
+//  property door's label:
+//    * no saturation line at T (at or above the critical temperature, or
+//      below the triple point): (T, P) as asked -- one fluid;
+//    * LIQUID asked: P above p_sat (1 + band) -> the liquid branch at (T, P);
+//      otherwise the SATURATED LIQUID at T (evaluated at p = p_sat, which
+//      every formulation's router puts on the liquid side, the state the
+//      liquid viscosity and conductivity routes already use);
+//    * VAPOUR asked, symmetric: P below p_sat (1 - band) -> (T, P); otherwise
+//      the SATURATED VAPOUR at T (just below p_sat, as Hvapour does).
+//  `farAcross` is set when the state asked is more than the band on the
+//  other side of the line -- a state the phase asked does not have, which
+//  the caller announces.
+// ---------------------------------------------------------------------------
+enum class PureFluidDensityBranch
+{
+    oneFluid, liquidBranch, saturatedLiquid, vapourBranch, saturatedVapour
+};
+
+struct PureFluidDensityState
+{
+    scalar                 pEval     = 0.0;    // Pa: the pressure to evaluate v at
+    PureFluidDensityBranch branch    = PureFluidDensityBranch::oneFluid;
+    bool                   farAcross = false;
+};
+
+//  Relative band around p_sat(T) inside which a state is ON the line.
+constexpr scalar pureFluidSaturationBand = 1.0e-6;
+
+PureFluidDensityState pureFluidDensityState(const PureFluidModel& m, scalar T_K,
+                                            scalar p_Pa, bool liquidAsked);
+
 } // namespace Choupo

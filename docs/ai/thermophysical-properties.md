@@ -62,6 +62,15 @@ Every run prints, just before its result block, one line per unit:
 * `pureFluids { water { method IF97; } }` (or `method Helmholtz; equation
   IAPWS95;`) prices PURE water by that formulation, with pressure.  A liquid
   that mixes water with anything else is refused while it is selected.
+  The phase asked is honoured (every pure-fluid formulation: IF97 and the
+  Helmholtz records of water, CO2, N2, CH4): below the critical
+  temperature, a LIQUID density asked at P > p_sat(T) (1 + 1e-6) is the
+  liquid branch at (T, P); asked at or below that, it is the SATURATED
+  LIQUID at T, never the vapour root, and a liquid asked more than 1e-6
+  below p_sat is announced once per run.  A VAPOUR density is symmetric
+  (at or above p_sat (1 - 1e-6): the saturated vapour at T).  At or above
+  the critical temperature, and below the triple point, the phase asked
+  changes nothing.  Theory Guide `sec:pure-fluid-density-phase`.
 * Viscosity, surface tension and diffusivity need a `transport {}` model;
   a unit without one either refuses or uses the default the table names.
 * `approximations {}`: the words are `idealBinaryPair`,

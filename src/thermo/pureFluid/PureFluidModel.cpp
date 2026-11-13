@@ -155,6 +155,42 @@ scalar PureFluidModel::T_sat(scalar p_Pa) const
 }
 
 // ===========================================================================
+//  The phase a density is asked for (PureFluidModel.H, defect 1 of C378's
+//  pilot): the one decision, saturated branch on and across the line.
+// ===========================================================================
+PureFluidDensityState pureFluidDensityState(const PureFluidModel& m, scalar T_K,
+                                            scalar p_Pa, bool liquidAsked)
+{
+    PureFluidDensityState s;
+    s.pEval = p_Pa;
+    const auto w = m.saturationWindow();
+    if (!(T_K >= w.first && T_K < w.second))
+        return s;                                   // no saturation line: one fluid
+    const scalar ps = m.p_sat(T_K);
+    if (liquidAsked)
+    {
+        if (p_Pa > ps * (1.0 + pureFluidSaturationBand))
+        {
+            s.branch = PureFluidDensityBranch::liquidBranch;
+            return s;
+        }
+        s.branch    = PureFluidDensityBranch::saturatedLiquid;
+        s.pEval     = ps;                           // the router's liquid side
+        s.farAcross = p_Pa < ps * (1.0 - pureFluidSaturationBand);
+        return s;
+    }
+    if (p_Pa < ps * (1.0 - pureFluidSaturationBand))
+    {
+        s.branch = PureFluidDensityBranch::vapourBranch;
+        return s;
+    }
+    s.branch    = PureFluidDensityBranch::saturatedVapour;
+    s.pEval     = ps * (1.0 - 1.0e-9);              // just below: the vapour side
+    s.farAcross = p_Pa > ps * (1.0 + pureFluidSaturationBand);
+    return s;
+}
+
+// ===========================================================================
 //  Explicit factory (no auto-registration macros)
 // ===========================================================================
 

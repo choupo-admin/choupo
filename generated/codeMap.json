@@ -1731,6 +1731,9 @@
   "Pump": [
    "src/unitOperations/rotating/Pump.H"
   ],
+  "PureFluidDensityState": [
+   "src/thermo/pureFluid/PureFluidModel.H"
+  ],
   "PureFluidModel": [
    "src/thermo/pureFluid/PureFluidModel.H"
   ],

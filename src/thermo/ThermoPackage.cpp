@@ -2294,8 +2294,25 @@ scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
                           << m.densityFormulation() << " (rho = MW / v_molar)\n";
                 announced = true;
             }
+            //  THE PHASE ASKED IS HONOURED (C378 pilot, defect 1): on or
+            //  across the saturation line, the saturated branch of the phase
+            //  asked, never the other root (pureFluid/PureFluidModel.H).
+            const PureFluidDensityState st = pureFluidDensityState(
+                m, T, P_Pa, ph == DensityPhase::Liquid);
+            static bool announcedAcross = false;
+            if (st.farAcross && !announcedAcross)
+            {
+                std::cout << "density: a pure-fluid "
+                          << (ph == DensityPhase::Liquid ? "LIQUID" : "VAPOUR")
+                          << " density was asked at T = " << T << " K, P = " << P_Pa
+                          << " Pa, on the other side of the saturation pressure ("
+                          << m.p_sat(T) << " Pa); the saturated "
+                          << (ph == DensityPhase::Liquid ? "liquid" : "vapour")
+                          << " at T is returned\n";
+                announcedAcross = true;
+            }
             const scalar Mi = components_[*i].MW() / 1000.0;   // kg/mol
-            const scalar vm = m.v_molar(T, P_Pa);             // m³/mol
+            const scalar vm = m.v_molar(T, st.pEval);         // m³/mol
             if (!(vm > 0.0) || !std::isfinite(vm))
                 throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: pure-fluid"
                     " v_molar is not a finite positive number");

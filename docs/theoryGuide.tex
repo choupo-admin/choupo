@@ -2516,6 +2516,45 @@ IF97 density, the surface tension IAPWS R1-76, and each line of the run names
 the formulation behind its own property (every pure-fluid model states one
 per property, read by both the kernel's announcement and the door).
 
+\paragraph{The phase a pure fluid is asked for.}\label{sec:pure-fluid-density-phase}
+A pure-fluid formulation (IF97~\cite{IAPWS_R797}, or a reference Helmholtz
+equation for water~\cite{IAPWS_R695}, CO$_2$~\cite{SpanWagner1996}, N$_2$ or
+CH$_4$~\cite{SetzmannWagner1991}) draws both phases with one surface and, at a state
+$(T,P)$ below its critical temperature, answers with the phase that is stable
+there: the liquid for $P\ge p_{\mathrm{sat}}(T)$, the vapour below.  A
+consumer that asks for a \emph{liquid} density wants the liquid even when the
+state it carries sits on the saturation line --- a pump suction is saturated
+liquid by construction, and the last bit of a pressure computed from
+$T_{\mathrm{sat}}$ can fall either side of $p_{\mathrm{sat}}(T)$.  Until
+2026-11 the route ignored the phase asked: water on IF97 at 446.52\,K, asked
+for its liquid density one part in $10^{7}$ below $p_{\mathrm{sat}}$
+(8.587\,bar), returned 4.45\,kg/m$^3$, the vapour, for 893.98.  The kernel now
+honours the phase asked (\code{pureFluidDensityState},
+\code{src/thermo/pureFluid/PureFluidModel.H}):
+\begin{equation}
+  \rho_L(T,P) \;=\;
+  \begin{cases}
+    M / v(T, P)                         & P > p_{\mathrm{sat}}(T)\,(1+\epsilon),\\[2pt]
+    M / v\bigl(T, p_{\mathrm{sat}}(T)\bigr) = M / v'(T) & \text{otherwise},
+  \end{cases}
+  \qquad \epsilon = 10^{-6},
+  \label{eq:pure-fluid-liquid-branch}
+\end{equation}
+where $v'(T)$ is the saturated-liquid volume of the same formulation (IF97
+region~1, or region~3's liquid branch above 623.15\,K; a Helmholtz equation's
+liquid root at its own Maxwell saturation pressure) --- the state at which the
+liquid viscosity and thermal conductivity of a pure fluid were already
+evaluated.  A liquid asked more than $\epsilon$ below $p_{\mathrm{sat}}$ is a
+state the liquid does not have; the saturated liquid at $T$ is returned and
+the run says so once.  A \emph{vapour} density is symmetric: at
+$P \ge p_{\mathrm{sat}}(T)(1-\epsilon)$ it is the saturated vapour at $T$.  At
+or above the critical temperature, and below the triple point, there is no
+saturation line and the phase asked changes nothing.  The door's label says
+which: ``liquid branch at the temperature and pressure; at or below the
+saturation pressure, the saturated liquid at T''.  The enthalpy routes are
+not covered by this rule: \code{H\_real} takes no phase and still answers the
+stable phase at $(T,P)$.
+
 \paragraph{The table.}  Just before the result block every run prints one
 line per unit, property and source:
 \begin{verbatim}
