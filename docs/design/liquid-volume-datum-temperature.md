@@ -7,7 +7,9 @@ Evidence: [`data/curation/batches/vliq_datum_temperature/`](../../data/curation/
 class that
 [`thermophysical-slice0-plan.md`](thermophysical-slice0-plan.md) section 1.7 and
 [`thermophysical-property-routes.md`](thermophysical-property-routes.md) row TR-12
-named, and widens it: the census finds 21 records of one kind, not 17.
+named, and widens it: the census finds 21 records of one kind, not 17 -- 20 that gain
+`VliqT`, and sucrose, the 21st, whose `Vliq` is not a pure-liquid volume and is not
+this slice's (section 4).
 
 ## 0. The architect's ruling on this evidence (2026-11-13)
 
@@ -24,7 +26,8 @@ named, and widens it: the census finds 21 records of one kind, not 17.
    entered into any record.  Where a better datum is wanted later it comes
    from a primary measurement or from a reference equation the engine
    already carries (N2, CH4, CO2, water), origin word `derived`.
-3. **TWENTY-ONE RECORDS, not seventeen** (Cl2, H2S, SO2 and nButane store a
+3. **TWENTY-ONE RECORDS, not seventeen: twenty gain `VliqT`, the twenty-first is
+   sucrose (section 4)** (Cl2, H2S, SO2 and nButane store a
    boiling-point volume and say nothing), and six UNRESOLVED (propane,
    propylene, H2O2, HCHO, HCN, NO2): those six are pinned by name as known
    debt until a measured liquid density with its temperature is read for
@@ -52,7 +55,7 @@ its number belongs to another temperature, so it is silently read as if it were 
 | another stated T | CO2 (273 K), hitecSalt (465 K) | the reference equation gives 47.45 cm3/mol at 273.15 K against 47.0 stored; Janz & Tomkins, 1.941 g/cm3 at 470 K |
 | no T, Tc < 298.15 K | Ar, He, O3, ethylene | also a volume at Tb (within 1.5 %) |
 | no T, Tc 298-330 K | ethane, acetylene, N2O, HCl | also a volume at Tb (within 0.7 %) |
-| found here: no T, Tc far above 298 K | Cl2, H2S, SO2, nButane | a volume at Tb or near it; the engine's 25 C density is +13 %, +19 %, +7 %, +4 % |
+| found here: no T, Tc far above 298 K | Cl2, H2S, SO2, nButane | a volume at Tb or near it; the engine's 25 C density was +13 %, +19 %, +7 %, +4 % above a handbook value carried to 25 C; the correction's own change of the engine's 25 C density (former over new, measured on the branch) is +11.38 %, +21.32 %, +6.71 %, +5.06 % (review VT-03).  n-butane's stored volume equals the measured saturated volume at 269.92 K, 2.7 K below Tb (VT-04) |
 | not a pure-liquid volume | sucrose | an apparent molar volume in solution, no T, no source |
 | unresolved, no source in hand | propane, propylene, H2O2, HCHO, HCN, NO2 | listed in `evidence.tsv`, class A7 |
 

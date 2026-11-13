@@ -58,8 +58,9 @@ Every run prints, just before its result block, one line per unit:
 * Liquid density needs, per component, a `Vliq` (at `VliqT`, 25 C when the
   record writes none) or the critical constants; with neither it refuses
   by name.  With both, the record's volume is anchored at `VliqT` and
-  Rackett carries it in temperature.  `VliqT` without `Vliq`, or at or
-  above `Tc`, is refused at load.  Above a component's critical
+  Rackett carries it in temperature.  `VliqT` without `Vliq`, at or
+  above `Tc`, below `triplePoint.T`, or written in another dimension, is
+  refused at load.  Above a component's critical
   temperature it refuses; several kernel consumers then leave that component
   out of the volume and keep its mass, and the table says so.
 * `pureFluids { water { method IF97; } }` (or `method Helmholtz; equation

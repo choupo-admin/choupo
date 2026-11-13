@@ -136,7 +136,7 @@ void Component::readIdentity(const DictPtr& d)
 void Component::readVliqT(const DictPtr& d)
 {
     hasVliqT_ = d->found("VliqT");
-    VliqT_    = hasVliqT_ ? d->lookupScalar("VliqT") : 298.15;
+    VliqT_    = hasVliqT_ ? d->lookupScalar("VliqT", Dims::temperature) : 298.15;
     if (!hasVliqT_) return;
     if (!(Vliq_ > 0.0))
         throw std::runtime_error("component '" + name_ + "': `VliqT` is"
@@ -145,9 +145,9 @@ void Component::readVliqT(const DictPtr& d)
             " it to qualify.  Declare `Vliq` (m^3/mol) beside it, or remove"
             " `VliqT`.");
     if (!(VliqT_ > 0.0) || !std::isfinite(VliqT_))
-        throw std::runtime_error("component '" + name_ + "': `VliqT` must be"
-            " a positive temperature in kelvin (read "
-            + std::to_string(VliqT_) + ").");
+        throw std::runtime_error("component '" + name_ + "': `VliqT` fails"
+            " its lower bound: it must be a positive temperature (read "
+            + std::to_string(VliqT_) + " K).");
 }
 
 // The component -> aqueous-species bridge, TYPED AT LOAD (the loader
@@ -324,8 +324,8 @@ void Component::readFromDict(const DictPtr& d)
     //  datum at or above Tc is not one (docs/design/liquid-volume-datum-
     //  temperature.md, grammar line 3).
     if (hasVliqT_ && Tc_ > 0.0 && VliqT_ >= Tc_)
-        throw std::runtime_error("component '" + name_ + "': `VliqT` = "
-            + std::to_string(VliqT_) + " K is at or above the critical"
+        throw std::runtime_error("component '" + name_ + "': `VliqT` fails"
+            " its upper bound: " + std::to_string(VliqT_) + " K is at or above the critical"
             " temperature Tc = " + std::to_string(Tc_) + " K.  A liquid"
             " molar volume belongs to a temperature below Tc, where a"
             " saturated liquid exists; state the temperature the measured"
@@ -675,6 +675,14 @@ void Component::readFromDict(const DictPtr& d)
         subTripleT_ = tp->lookupScalarOrDefault("T", 0.0);
         subTripleP_ = tp->lookupScalarOrDefault("P", 0.0);
     }
+    //  `VliqT` below the triple point is a volume of no stable liquid (C378,
+    //  review VT-02): refused when the record declares `triplePoint.T`.
+    if (hasVliqT_ && subTripleT_ > 0.0 && VliqT_ < subTripleT_)
+        throw std::runtime_error("component '" + name_ + "': `VliqT` fails"
+            " its lower bound: " + std::to_string(VliqT_) + " K is below the"
+            " record's triple point `triplePoint.T` = "
+            + std::to_string(subTripleT_) + " K, where no stable liquid"
+            " exists.  State the temperature the measured volume was taken at.");
     // The sublimation-curve inputs (fusion / sublimation latent heats); a REAL
     // sublimation-pressure correlation, when one exists, is its own block.
     if (d->found("sublimation"))

@@ -2553,7 +2553,10 @@ lie above their $T_c$ at every grid temperature, and hitecSalt has no $T_c$
 
 \paragraph{The refusals.}  \code{VliqT} without \code{Vliq} is refused at
 load (a temperature of nothing), and so is \code{VliqT} at or above
-\code{Tc} (no saturated liquid exists there).  A request at $T\geq T_c$ is
+\code{Tc} (no saturated liquid exists there), below the record's
+\code{triplePoint.T} when it declares one, or not positive.  The key is read
+as a temperature: a value written with another dimension
+(\code{VliqT 50 Pa;}) is refused by the parser's own message.  A request at $T\geq T_c$ is
 refused at that state exactly as before: the datum's temperature never
 moves that boundary.  Six records whose stored volume belongs to no
 temperature a source in hand states (propane, propylene, H$_2$O$_2$,

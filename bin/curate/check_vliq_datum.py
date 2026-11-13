@@ -25,6 +25,15 @@ WHAT IT CHECKS, over data/standards/components/*.dat:
   (d) the debt list is TWO-SIDED: every pinned record exists, carries
       `Vliq`, and does NOT carry `VliqT` -- a record that gained one is
       paid, and its pin must be removed in the same commit.
+  (e) every `VliqT` line is a temperature in kelvin -- a bare number or
+      one followed by `K` -- so a line this gate cannot read is a finding,
+      never a record treated as having no key (review VT-01);
+  (f) the engine refuses a `VliqT` of the wrong dimension: a scratch copy
+      of tutorials/steady/flash/flash09_n2ch4_stryjek whose CH4 record
+      carries `VliqT 50 Pa;` is run with <root>/choupoSolve and must exit
+      non-zero naming `VliqT` (review VT-01: it used to be read as 50 K in
+      silence).  A missing binary REFUSES: an arm that cannot run does not
+      pass.
 
 WHAT IT DOES NOT CHECK.  Whether a stated temperature is the RIGHT one (the
 evidence batch data/curation/batches/vliq_datum_temperature/ is that
@@ -33,7 +42,10 @@ drift is reported by check_seal_drift); a temperature written only in
 prose away from the `Vliq` line.
 """
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,7 +55,7 @@ NAME = "check_vliq_datum"
 TOL = 0.5          # K
 TC_SCREEN = 330.0  # K
 
-SCALAR = r"^{key}\s+([-+0-9.eE]+)\s*;"
+SCALAR = r"^{key}\s+([-+0-9.eE]+)(?:\s+K)?\s*;"
 LINE = re.compile(r"^Vliq\s+[-+0-9.eE]+\s*;(.*)$", re.M)
 
 
@@ -65,6 +77,39 @@ def stated_temperature(comment, Tb):
     return None
 
 
+VLIQT_LINE = re.compile(r"^VliqT\b(.*)$", re.M)
+VLIQT_FORM = re.compile(r"^\s+[-+0-9.eE]+(\s+K)?\s*;")
+PROBE_CASE = ROOT / "tutorials" / "steady" / "flash" / "flash09_n2ch4_stryjek"
+
+
+def probe_wrong_dimension():
+    """Arm (f): `VliqT 50 Pa;` must be refused by the engine.  Returns a finding or None."""
+    exe = ROOT / "choupoSolve"
+    if not exe.exists():
+        return f"arm (f) cannot run: {exe} does not exist (build the tree)"
+    with tempfile.TemporaryDirectory(prefix="vliqdatum_") as tmp:
+        case = Path(tmp) / "case"
+        shutil.copytree(PROBE_CASE, case)
+        rec = case / "constant" / "components" / "CH4.dat"
+        if not rec.exists():
+            return f"arm (f) cannot run: {rec.relative_to(case)} is not in the probe case"
+        t = rec.read_text(encoding="utf-8")
+        m = re.search(r"^Vliq\s[^\n]*\n", t, re.M)
+        if not m:
+            return "arm (f) cannot run: the probe record carries no `Vliq`"
+        t = re.sub(r"^VliqT\b[^\n]*\n", "", t, flags=re.M)
+        m = re.search(r"^Vliq\s[^\n]*\n", t, re.M)
+        rec.write_text(t[:m.end()] + "VliqT 50 Pa;\n" + t[m.end():], encoding="utf-8")
+        env = {"CHOUPO_HOME": str(ROOT), "PATH": "/usr/bin:/bin", "LC_ALL": "C"}
+        p = subprocess.run([str(exe), "."], cwd=case, env=env, capture_output=True,
+                           text=True, timeout=300)
+        out = p.stdout + p.stderr
+        if p.returncode == 0 or "VliqT" not in out:
+            return ("arm (f): `VliqT 50 Pa;` was NOT refused by the engine (exit "
+                    f"{p.returncode}) -- a pressure read as a temperature in silence")
+    return None
+
+
 def main():
     debt = {}
     for ln in DEBT.read_text(encoding="utf-8").splitlines():
@@ -83,6 +128,12 @@ def main():
         VT = scalar(t, "VliqT")
         Tc = scalar(t, "Tc")
         Tb = scalar(t, "Tb")
+        for lm in VLIQT_LINE.finditer(t):
+            if not VLIQT_FORM.match(lm.group(1)):
+                fails.append(f"{name}: `VliqT{lm.group(1).split('//')[0].rstrip()}` is not a "
+                             "temperature in kelvin (a bare number, or one followed by `K`)")
+        if VT is None and VLIQT_LINE.search(t):
+            VT = float("nan")
         if VT is not None:
             n_vliqT += 1
             if V is None or V <= 0:
@@ -120,6 +171,10 @@ def main():
         if not (COMP / f"{name}.dat").exists():
             fails.append(f"{name}: pinned in {DEBT.name} but there is no record of that name")
 
+    probe = probe_wrong_dimension()
+    if probe:
+        fails.append(probe)
+
     if fails:
         print(f"{NAME}: FAIL -- {len(fails)} finding(s):")
         for f in fails:
@@ -127,7 +182,8 @@ def main():
         return 1
     print(f"{NAME}: OK -- {n_vliq} records carry `Vliq`, {n_vliqT} state its temperature as "
           f"`VliqT`, {n_stated} state one in the `Vliq` comment and agree with the key; "
-          f"{len(debt)} unresolved pinned by name ({', '.join(sorted(debt))}).  NOT CHECKED: "
+          f"{len(debt)} unresolved pinned by name ({', '.join(sorted(debt))}); the engine refuses "
+          "`VliqT 50 Pa;` (run on a scratch copy).  NOT CHECKED: "
           "whether a stated temperature is right, case-local sealed copies, prose away from "
           "the `Vliq` line.")
     return 0

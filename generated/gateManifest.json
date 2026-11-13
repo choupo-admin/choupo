@@ -1718,8 +1718,8 @@
     },
     "check_vliq_datum": {
       "exit": 0,
-      "claim": "check_vliq_datum: OK -- 531 records carry `Vliq`, 20 state its temperature as `VliqT`, 498 state one in the `Vliq` comment and agree with the key; 6 unresolved pinned by name (H2O2, HCHO, HCN, NO2, propane, propylene).  NOT CHECKED: whether a stated temperature is right, case-local sealed copies, prose away from the `Vliq` line.",
-      "seconds": 0.4
+      "claim": "check_vliq_datum: OK -- 531 records carry `Vliq`, 20 state its temperature as `VliqT`, 498 state one in the `Vliq` comment and agree with the key; 6 unresolved pinned by name (H2O2, HCHO, HCN, NO2, propane, propylene); the engine refuses `VliqT 50 Pa;` (run on a scratch copy).  NOT CHECKED: whether a stated temperature is right, case-local sealed copies, prose away from the `Vliq` line.",
+      "seconds": 0.2
     }
   }
 }

@@ -402,7 +402,7 @@ export const LANDSCAPE_STEPS: readonly LessonStep[] = [
       + "this page, `Reaction::equilibrium` (Reaction.cpp:136–149), prices "
       + "every species with `g_pure_ig` — the ideal-gas rung — and that rung "
       + "refuses a record tabulated on the solid standard state by name "
-      + "(Component.cpp:1616–1628).  Measured when this page was written: a "
+      + "(Component.cpp:1624–1636).  Measured when this page was written: a "
       + "`gibbsMap` with glucose beside the gases refused with \"reading them "
       + "here would be wrong by a heat of sublimation\".  The Gibbs reactor "
       + "(2026-09-27) and the map (2026-09-29) now take a declared pure solid "

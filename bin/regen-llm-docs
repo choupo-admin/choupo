@@ -422,7 +422,9 @@ def _glossary() -> str:
   Write it whenever the measured volume is not a 25 C value (a gas's
   volume at its normal boiling point: N2, CH4; CO2 at 273.15 K); the
   liquid density then anchors Rackett there, V(T) = Vliq Rackett(T) /
-  Rackett(VliqT).  Refused at load without `Vliq` or at or above `Tc`.
+  Rackett(VliqT).  Read as a temperature (another dimension is refused);
+  refused at load without `Vliq`, at or above `Tc`, or below the record's
+  `triplePoint.T`.
   Twenty catalogue records carry it (C378); gate `check_vliq_datum`.
 - `Antoine { ... }` — `log10(Psat [bar]) = A − B/(T + C)` for VLE (a
   coefficient checked or fitted on ln is off by ln 10; the engine is
