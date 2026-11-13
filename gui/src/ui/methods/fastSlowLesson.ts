@@ -291,14 +291,14 @@ export const SIMPLE_LAWS: readonly SimpleLaw[] = [
       + "tank it is fed from.",
     where: "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup wraps the module as "
       + "quasiSteady; the engine announces such a unit as solved at the SAME INSTANT as "
-      + "its inlet (DynamicDriver.cpp:777).",
+      + "its inlet (DynamicDriver.cpp:778).",
     price: "Nothing accumulates in the module, so the transient has the tank's time "
       + "constant alone; a module with real holdup would need its own.",
   },
   {
     law: "No law at all: a loop with no vessel on it",
     slaved: "Everything: every unit on the loop has been made quasi-steady.",
-    where: "The engine refuses to integrate it (DynamicDriver.cpp:819-822): \"form a "
+    where: "The engine refuses to integrate it (DynamicDriver.cpp:820-823): \"form a "
       + "loop in which NO unit holds an inventory (all quasiSteady) -- such a loop has "
       + "no time constant and is a steady recycle.  Put a vessel (e.g. dynamicCSTR) on "
       + "the loop, or solve it with choupoSolve's tear machinery.\"",
