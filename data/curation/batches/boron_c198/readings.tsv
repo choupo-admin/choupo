@@ -49,3 +49,15 @@ tab1_2	check	B(OH)3				0.081	mol/kg	Table 1	2772	0.081	0.081	0.081	CALCULATED by
 tab1_3	check	B(OH)4-				0.131	mol/kg	Table 1	2772	0.131	0.131	0.131	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
 tab1_4	check	B3O3(OH)4-				0.05	mol/kg	Table 1	2772	0.05	0.05	0.05	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
 tab1_5	check	B4O5(OH)4 2-				0.071	mol/kg	Table 1	2772	0.071	0.071	0.071	CALCULATED by the paper's own model for a solution in equilibrium with borax in pure water at 25 C: an output of the fit (in-sample), not a measurement
+hv_H2O	mu0	H2O				-95.6635	-	Table 4	728	illegible (printed as Y5.6615)	-95.6635	-95.6635	Harvie, Moller & Weare 1984; journal page 728 (pdf page 6)
+hv_H	mu0	H+				0	-	Table 4	728	O.	0.	0.	zero by convention
+hv_Ca	mu0	Ca2+				-223.3	-	Table 4	728	-223.30	-223.30	-223.30	
+hv_Mg	mu0	Mg2+				-183.468	-	Table 4	728	-183.468	-183.468	-183.468	
+dick_lnK	check	ln(K*/m0) boric acid, S 35, 298.15 K				-19.7556	-	Table 3	762	-19.7556	-19.7556	-19.7556	total hydrogen ion scale, molality (mol per kg of water); column S = 35.0, row T = 298.15 K; the paper fits eq (21) to these values
+dick_unc	check	uncertainty of ln K*				0.004	-	text	764	0.004	-	0.004	printed: about +-0.1 mV in E*, i.e. about +-0.004 in ln K*; the fit residual of eq (21) is 0.0042 (p. 763, text); agreement with Hansson 1973 within 0.04 in ln K* (p. 764)
+dick_sw1	check	synthetic seawater S 35: NaCl				0.42764	mol/kg	Table 1	756	0.42764	-	0.42764	composition of the synthetic seawater of the cells (no bromide, strontium, fluoride, carbonate); the cell solutions replace 2m of the NaCl by m of borax
+dick_sw2	check	synthetic seawater S 35: Na2SO4				0.02927	mol/kg	Table 1	756	0.02927	-	0.02927	composition of the synthetic seawater of the cells (no bromide, strontium, fluoride, carbonate); the cell solutions replace 2m of the NaCl by m of borax
+dick_sw3	check	synthetic seawater S 35: KCl				0.01058	mol/kg	Table 1	756	0.01058	-	0.01058	composition of the synthetic seawater of the cells (no bromide, strontium, fluoride, carbonate); the cell solutions replace 2m of the NaCl by m of borax
+dick_sw4	check	synthetic seawater S 35: MgCl2				0.05474	mol/kg	Table 1	756	0.05474	-	0.05474	composition of the synthetic seawater of the cells (no bromide, strontium, fluoride, carbonate); the cell solutions replace 2m of the NaCl by m of borax
+dick_sw5	check	synthetic seawater S 35: CaCl2				0.01075	mol/kg	Table 1	756	0.01075	-	0.01075	composition of the synthetic seawater of the cells (no bromide, strontium, fluoride, carbonate); the cell solutions replace 2m of the NaCl by m of borax
+dick_I	check	synthetic seawater S 35: ionic strength				0.7225	mol/kg	Table 1	756	0.7225	-	-	text layer only

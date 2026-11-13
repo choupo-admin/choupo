@@ -1,16 +1,39 @@
 /*--------------------------------*- Choupo -*--------------------------------*\
   chemistry/MgBOH4-formation.dat -- the magnesium borate ion pair, written from its masters:  Mg2+ + B(OH)3 + H2O = MgB(OH)4+ + H+
 
-  logK25 = -7.84: the constant of the public-domain databank (pitzer.dat), which states no primary.  The paper
-  (Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783) prints the standard chemical potential of the species, mu0/RT = -651.89 (Table 2, p. 2773);
-  a constant needs the mu0 of the other species of the reaction as well, which are Harvie, Moller & Weare (1984)'s
-  and are not in the literature folder, so the constant is NOT derived here: that waits for the primary.
-  25 C only; the paper and the databank give no enthalpy, so none is written (a case at another temperature is
-  announced by the engine as running outside the data).  The identity is the PITZER route's (D2): never mixed with
-  the Davies route's  BOH4-formation  (logK -9.24 plus an enthalpy).
+  logK25 = -7.84 is DERIVED from the standard chemical potentials mu0/RT printed in Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783 (Table 2, p. 2773)
+  and in Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723-751 (Table 4, p. 728); the arithmetic
+  is in data/curation/batches/boron_c198/formation_check.tsv (delta mu0/RT = 18.0515, log K = -7.83967).  The
+  public-domain databank (pitzer.dat) carries the same constant to its three decimals: a cross-check, not the origin.
+  25 C only; neither paper gives an enthalpy, so none is written (a case at another temperature is announced by the
+  engine as running outside the data).  The identity is the PITZER route's (D2): never mixed with the Davies route's
+  BOH4-formation of the catalogue (logK -9.24 plus an enthalpy).
 \*-----------------------------------------------------------------------------*/
 recordType aqueousSpeciation;
 schemaVersion 1;
 
 species MgBOH4; masters ( { ion Mg; nu 1; } { ion H3BO3; nu 1; } { ion H; nu -1; } ); nuWater 1;
-      logK25 -7.84; source "USGS PHREEQC pitzer.dat (public domain), log_k -7.84, delta_h 0 (not stated); the species' mu0/RT is -651.89 in Felmy & Weare, Geochim. Cosmochim. Acta 50 (1986) 2771-2783, Table 2, p. 2773";
+      logK25 -7.84; source "derived from mu0/RT of Felmy & Weare (1986) Table 2 p. 2773 and Harvie, Moller & Weare (1984) Table 4 p. 728; cross-check: USGS PHREEQC pitzer.dat (public domain) log_k -7.84";
+
+provenance
+{
+    logK25
+    {
+        origin        derived;
+        method        "log K = -(sum of mu0/RT of the products minus sum of the reactants)/ln 10, mu0/RT of B-OH species from Felmy & Weare (1986) Table 2 and of H2O, H+, Ca2+, Mg2+ from Harvie, Moller & Weare (1984) Table 4; reaction 1 x magnesium ion + 1 x boric acid aq + 1 x water  ->  1 x magnesium orthoborate ion pair + 1 x hydrogen ion; delta mu0/RT = 18.0515; log K = -7.83967";
+        inputs
+        (
+            { quantity "mu0/RT of magnesium ion"; value -183.468; table "Table 4, p. 728"; doi "10.1016/0016-7037(84)90098-X"; }
+            { quantity "mu0/RT of boric acid aq"; value -390.81; table "Table 2, p. 2773"; doi "10.1016/0016-7037(86)90226-7"; }
+            { quantity "mu0/RT of water"; value -95.6635; table "Table 4, p. 728"; doi "10.1016/0016-7037(84)90098-X"; }
+            { quantity "mu0/RT of magnesium orthoborate ion pair"; value -651.89; table "Table 2, p. 2773"; doi "10.1016/0016-7037(86)90226-7"; }
+            { quantity "mu0/RT of hydrogen ion"; value 0.0; table "Table 4, p. 728"; doi "10.1016/0016-7037(84)90098-X"; }
+        );
+        databankCrossCheck "the public-domain databank pitzer.dat carries log K -7.84; difference +0.00033, inside the rounding of the databank's three decimals";
+        uncertainty   "not quantified: the two papers print mu0/RT to two or three decimals, so log K is good to about 0.001";
+        validity { temperature { min 298.15 K; max 298.15 K; } note "25 C: no enthalpy is printed in either paper"; }
+        reviewStatus  autoPromoted;
+        review        { by none; }
+        reviewReason  "derived by bin/curate/boron_c198.py from numbers read from page images; not yet read back by a human";
+    }
+}

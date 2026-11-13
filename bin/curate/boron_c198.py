@@ -8,12 +8,11 @@ data/curation/batches/boron_c198/readings.tsv holds every number the paper print
 its table, its page and three readings of it (text layer, page image at 200 dpi, page image at 300 dpi).
 The governed records are the eight cation-anion pairs (Table 3), the theta / psi mixing terms of Table 4,
 the lambda / zeta terms of the neutral B(OH)3 of Table 5, and the formation records of the two
-calcium / magnesium ion pairs and the two polyborates.
+calcium / magnesium ion pairs and the two polyborates (derived from Table 2 and Harvie et al. Table 4).
 
-The formation constants are NOT computed here.  The paper prints standard chemical potentials mu0/RT
-(Table 2), and a constant needs the mu0 of H2O, Ca2+ and Mg2+, which are Harvie, Moller & Weare (1984)'s
-and are not in the literature folder.  The constants are those of the public-domain databank
-(sources.tsv PW1), and the derivation from the primary waits for Harvie et al. (1984).
+The formation constants are DERIVED here from mu0/RT: the borate paper's Table 2 and Harvie, Moller & Weare
+(1984) Table 4 (rows hv_* of readings.tsv); formation_check.tsv holds the arithmetic and the comparison with
+the public-domain databank.
 """
 import sys
 from pathlib import Path
@@ -96,24 +95,90 @@ def mixing_record(kind, fields, value, desc, role, table, page, ids):
     return "\n".join(hdr) + body + provenance("value transcribed from the paper's table; no calculation", ids, table, page)
 
 
-def chem_record(name, masters, nuw, logk, mu, rx):
+DOI_FW = "10.1016/0016-7037(86)90226-7"
+DOI_HMW = "10.1016/0016-7037(84)90098-X"
+# reaction table: record, masters, nuWater, databank logK, text, reactants {id: n}, products {id: n}
+REACTIONS = [
+    ("BOH4", [("H3BO3", 1), ("H", -1)], 1, -9.239, "orthoborate from its masters:  B(OH)3 + H2O = B(OH)4- + H+",
+     {"mu01": 1, "hv_H2O": 1}, {"mu02": 1, "hv_H": 1}),
+    ("B3O3OH4", [("H3BO3", 3), ("H", -1)], -2, -7.528, "the first polyborate, written from the neutral master:  3 B(OH)3 = B3O3(OH)4- + 2 H2O + H+",
+     {"mu01": 3}, {"mu03": 1, "hv_H2O": 2, "hv_H": 1}),
+    ("B4O5OH4", [("H3BO3", 4), ("H", -2)], -3, -16.134, "the second polyborate, written from the neutral master:  4 B(OH)3 = B4O5(OH)4 2- + 3 H2O + 2 H+",
+     {"mu01": 4}, {"mu04": 1, "hv_H2O": 3, "hv_H": 2}),
+    ("CaBOH4", [("Ca", 1), ("H3BO3", 1), ("H", -1)], 1, -7.589, "the calcium borate ion pair, written from its masters:  Ca2+ + B(OH)3 + H2O = CaB(OH)4+ + H+",
+     {"hv_Ca": 1, "mu01": 1, "hv_H2O": 1}, {"mu05": 1, "hv_H": 1}),
+    ("MgBOH4", [("Mg", 1), ("H3BO3", 1), ("H", -1)], 1, -7.84, "the magnesium borate ion pair, written from its masters:  Mg2+ + B(OH)3 + H2O = MgB(OH)4+ + H+",
+     {"hv_Mg": 1, "mu01": 1, "hv_H2O": 1}, {"mu06": 1, "hv_H": 1}),
+]
+import math
+
+NAMES = {"mu01": "boric acid aq", "mu02": "orthoborate ion", "mu03": "triborate ion", "mu04": "tetraborate ion",
+         "mu05": "calcium orthoborate ion pair", "mu06": "magnesium orthoborate ion pair",
+         "hv_H2O": "water", "hv_H": "hydrogen ion", "hv_Ca": "calcium ion", "hv_Mg": "magnesium ion"}
+
+
+def derive(by, reac, prod):
+    g = sum(n * float(by[k]["value"]) for k, n in prod.items()) - sum(n * float(by[k]["value"]) for k, n in reac.items())
+    return g, -g / math.log(10.0)
+
+
+def src_of(k, by):
+    r = by[k]
+    return (f"{CITE}, {r['table']}, p. {r['page']}" if k.startswith("mu")
+            else f"Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723-751, {r['table']}, p. {r['page']}")
+
+
+def provenance_derived(name, by, reac, prod, logk, g, lk):
+    ins = ""
+    for k, n in list(reac.items()) + list(prod.items()):
+        r = by[k]
+        doi = DOI_FW if k.startswith("mu") else DOI_HMW
+        ins += (f"            {{ quantity \"mu0/RT of {NAMES[k]}\"; value {float(r['value'])!r}; "
+                f"table \"{r['table']}, p. {r['page']}\"; doi \"{doi}\"; }}\n")
+    rx = " + ".join(f"{n} x {NAMES[k]}" for k, n in reac.items()) + "  ->  " + " + ".join(f"{n} x {NAMES[k]}" for k, n in prod.items())
+    return (
+        "\nprovenance\n{\n    logK25\n    {\n"
+        "        origin        derived;\n"
+        f"        method        \"log K = -(sum of mu0/RT of the products minus sum of the reactants)/ln 10, mu0/RT of B-OH species from Felmy & Weare (1986) Table 2 and of H2O, H+, Ca2+, Mg2+ from Harvie, Moller & Weare (1984) Table 4; reaction {rx}; delta mu0/RT = {g:.4f}; log K = {lk:.5f}\";\n"
+        "        inputs\n        (\n" + ins + "        );\n"
+        f"        databankCrossCheck \"the public-domain databank pitzer.dat carries log K {logk}; difference {lk - logk:+.5f}, inside the rounding of the databank's three decimals\";\n"
+        "        uncertainty   \"not quantified: the two papers print mu0/RT to two or three decimals, so log K is good to about 0.001\";\n"
+        "        validity { temperature { min 298.15 K; max 298.15 K; } note \"25 C: no enthalpy is printed in either paper\"; }\n"
+        "        reviewStatus  autoPromoted;\n"
+        "        review        { by none; }\n"
+        "        reviewReason  \"derived by bin/curate/boron_c198.py from numbers read from page images; not yet read back by a human\";\n"
+        "    }\n}\n")
+
+
+def chem_record(name, masters, nuw, logk, rx, reac, prod, by, case_local=False):
+    g, lk = derive(by, reac, prod)
     hdr = [
         TOP,
-        f"  chemistry/{name}-formation.dat -- {rx}",
+        f"  chemistry/{name}-formation.dat{' (CASE-LOCAL, the Pitzer route)' if case_local else ''} -- {rx}",
         "",
-        f"  logK25 = {logk}: the constant of the public-domain databank (pitzer.dat), which states no primary.  The paper",
-        f"  ({CITE}) prints the standard chemical potential of the species, mu0/RT = {mu} (Table 2, p. 2773);",
-        "  a constant needs the mu0 of the other species of the reaction as well, which are Harvie, Moller & Weare (1984)'s",
-        "  and are not in the literature folder, so the constant is NOT derived here: that waits for the primary.",
-        "  25 C only; the paper and the databank give no enthalpy, so none is written (a case at another temperature is",
-        "  announced by the engine as running outside the data).  The identity is the PITZER route's (D2): never mixed with",
-        "  the Davies route's  BOH4-formation  (logK -9.24 plus an enthalpy).",
+        f"  logK25 = {logk} is DERIVED from the standard chemical potentials mu0/RT printed in {CITE} (Table 2, p. 2773)",
+        "  and in Harvie, Moller & Weare, Geochim. Cosmochim. Acta 48 (1984) 723-751 (Table 4, p. 728); the arithmetic",
+        f"  is in data/curation/batches/boron_c198/formation_check.tsv (delta mu0/RT = {g:.4f}, log K = {lk:.5f}).  The",
+        "  public-domain databank (pitzer.dat) carries the same constant to its three decimals: a cross-check, not the origin.",
+        "  25 C only; neither paper gives an enthalpy, so none is written (a case at another temperature is announced by the",
+        "  engine as running outside the data).  The identity is the PITZER route's (D2): never mixed with the Davies route's",
+        "  BOH4-formation of the catalogue (logK -9.24 plus an enthalpy).",
         BOT]
     mst = "".join(f" {{ ion {i}; nu {n}; }}" for i, n in masters)
     body = (f"\nrecordType aqueousSpeciation;\nschemaVersion 1;\n\nspecies {name}; masters ({mst} ); nuWater {nuw};\n"
-            f"      logK25 {logk}; source \"USGS PHREEQC pitzer.dat (public domain), log_k {logk}, delta_h 0 (not stated); "
-            f"the species' mu0/RT is {mu} in {CITE}, Table 2, p. 2773\";\n")
-    return "\n".join(hdr) + body
+            f"      logK25 {logk}; source \"derived from mu0/RT of Felmy & Weare (1986) Table 2 p. 2773 and Harvie, Moller & Weare (1984) Table 4 p. 728; "
+            f"cross-check: USGS PHREEQC pitzer.dat (public domain) log_k {logk}\";\n")
+    return "\n".join(hdr) + body + provenance_derived(name, by, reac, prod, logk, g, lk)
+
+
+def formation_table(by):
+    rows = ["id\treaction\tdelta_mu0_over_RT\tlogK_derived\tlogK_databank\tdifference\tinputs"]
+    for name, mst, nuw, logk, txt, reac, prod in REACTIONS:
+        g, lk = derive(by, reac, prod)
+        ins = "; ".join(f"{n} x {NAMES[k]} {float(by[k]['value'])} ({by[k]['table']} p. {by[k]['page']})"
+                        for k, n in list(prod.items()) + [(k, -n) for k, n in reac.items()])
+        rows.append(f"{name}\t{txt.split(':')[-1].strip()}\t{g:.4f}\t{lk:.5f}\t{logk}\t{lk - logk:+.5f}\t{ins}")
+    return "\n".join(rows) + "\n"
 
 
 def render():
@@ -157,14 +222,12 @@ def render():
                 "the higher-order neutral term of boric acid with a cation and an anion together, in the pitzerHMW engine.",
                 "Table 5", "2774", r["id"])
     # chemistry
-    out[CHEM / "B3O3OH4-formation.dat"] = chem_record("B3O3OH4", [("H3BO3", 3), ("H", -1)], -2, -7.528, by["mu03"]["value"],
-        "the first polyborate, written from the neutral master:  3 B(OH)3 = B3O3(OH)4- + 2 H2O + H+")
-    out[CHEM / "B4O5OH4-formation.dat"] = chem_record("B4O5OH4", [("H3BO3", 4), ("H", -2)], -3, -16.134, by["mu04"]["value"],
-        "the second polyborate, written from the neutral master:  4 B(OH)3 = B4O5(OH)4 2- + 3 H2O + 2 H+")
-    out[CHEM / "CaBOH4-formation.dat"] = chem_record("CaBOH4", [("Ca", 1), ("H3BO3", 1), ("H", -1)], 1, -7.589, by["mu05"]["value"],
-        "the calcium borate ion pair, written from its masters:  Ca2+ + B(OH)3 + H2O = CaB(OH)4+ + H+")
-    out[CHEM / "MgBOH4-formation.dat"] = chem_record("MgBOH4", [("Mg", 1), ("H3BO3", 1), ("H", -1)], 1, -7.84, by["mu06"]["value"],
-        "the magnesium borate ion pair, written from its masters:  Mg2+ + B(OH)3 + H2O = MgB(OH)4+ + H+")
+    for name, mst, nuw, logk, txt, reac, prod in REACTIONS:
+        if name == "BOH4":
+            out[ROOT / "tutorials/props/electrolyte/borate01_felmyWeare/constant/chemistry/BOH4-formation.dat"] = chem_record(name, mst, nuw, logk, txt, reac, prod, by, True)
+        else:
+            out[CHEM / f"{name}-formation.dat"] = chem_record(name, mst, nuw, logk, txt, reac, prod, by)
+    out[BATCH / "formation_check.tsv"] = formation_table(by)
     return out
 
 

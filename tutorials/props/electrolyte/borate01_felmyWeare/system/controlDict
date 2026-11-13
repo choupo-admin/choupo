@@ -7,5 +7,5 @@
 |        |     O ptimization  |                                               |
 \*-----------------------------------------------------------------------------*/
 application   choupoProps;
-description   "Borate in Pitzer-HMW (Felmy & Weare 1986): borax-saturated water against the paper's Table 1, and seawater boron speciation (comparison with the seawater conditional constant pending).";
+description   "Borate in Pitzer-HMW (Felmy & Weare 1986): borax-saturated water against the paper's Table 1, and seawater boron against Dickson's measured conditional constant.";
 verbosity     3;

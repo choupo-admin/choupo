@@ -6457,9 +6457,11 @@ $\text{B(OH)}_4^-$, $-963.77$ and $-1239.10$ for the polyborates, $-692.30$
 and $-651.89$ for the Ca and Mg pairs), and a constant follows as
 $\ln K=-\Delta\mu^\circ/RT$ once the chemical potentials of $\text{H}_2\text{O}$,
 $\text{Ca}^{2+}$ and $\text{Mg}^{2+}$ of Harvie et al.\ (1984) are added.  The
-project does not hold that paper, so the constants are the public-domain
-databank's, the paper prints the species' $\mu^\circ/RT$ (Table~2, read), and
-the derivation of the constants from the primary waits for Harvie et al.\ (1984).
+constants are \emph{derived} that way, with $\mu^\circ/RT$ of $\text{H}_2\text{O}$,
+$\text{H}^+$, $\text{Ca}^{2+}$ and $\text{Mg}^{2+}$ read from Table~4 (p.~728) of
+Harvie et al.\ (1984): $-9.2390$, $-7.5276$, $-16.1338$, $-7.5886$ and
+$-7.8397$, each within $4\times10^{-4}$ of the public-domain databank's three
+decimals, which are kept (\file{formation\_check.tsv} holds the arithmetic).
 No enthalpy is given by either source, so none is written: a run at another
 temperature is announced.  The Pitzer route's $\log K=-9.239$ is the
 parameterisation's own and is never mixed with the Davies route's $-9.24$ with
@@ -6500,11 +6502,20 @@ $\text{B}_3\text{O}_3(\text{OH})_4^-$ $.050$, $\text{B}_4\text{O}_5(\text{OH})_4
 $.071$\,mol/kg; the engine gives $.0794$, $.1311$, $.0517$, $.0701$ (pH~9.27).
 Table~1 is the paper's own model output, so this is \emph{in-sample}: it shows
 that the tables were transcribed and the sums implemented alike, not that the
-model is right.  (ii)~Reference seawater at pH~8.2 with the pairs explicit: the engine gives
-the borate speciation, which is pinned at its own value.  The comparison with
-the conditional constant of boric acid in seawater is reported from a secondary
-evaluation and is pending: it becomes an anchor only when the primary
-(Dickson 1990) is read.
+model is right.  (ii)~Dickson's synthetic seawater ($S=35$, his Table~1) at pH~8.2, the pairs
+explicit.  Dickson (1990), Table~3 (p.~762), prints
+$\ln(K^*/m^\circ)=-19.7556$ for boric acid at 298.15\,K on the \emph{total}
+hydrogen-ion scale, in mol per kg of water, uncertain by $\pm0.004$ (p.~764).
+The engine's pH is the free proton, the paper's scale counts the proton bound
+to sulfate, $m^*(\text{H})=m(\text{H})+m(\text{HSO}_4)$, so bisulfate is in the
+network and the engine's own value is used (the paper says its constant is hard
+to know in seawater).  The model gives $-19.7115$: $0.044$ above the paper,
+outside its stated uncertainty, and $0.85\,\%$ in the free boric acid; it is an
+anchor row with a $1.2\,\%$ tolerance justified in the case's \file{expected}
+file.  It is only partly independent: the borate paper does not list Dickson's
+seawater data among its fit, but its Na, Ca and Mg terms were fitted to
+emf data of the same laboratory family (Hershey et al.\ 1985) and its K terms to
+Dickson's unpublished KCl emf data.
 
 \paragraph{Limits.}  $25\,^\circ$C only; no temperature surface exists for any
 term.  The polyborate interactions with Mg and Ca were never parameterised (the

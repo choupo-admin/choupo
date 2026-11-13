@@ -321,11 +321,12 @@ The Pitzer route's constant for `BOH4` is -9.239; the catalogue's
 case carries its own `constant/chemistry/BOH4-formation.dat` (see
 `borate01_felmyWeare`).  Tell a user: 25 C only (no term has a temperature
 dependence; a run away from 298.15 K is announced); the formation constants are
-the public-domain databank's (the derivation from the primary waits for Harvie et al. 1984); no
+the public-domain databank's (they are derived from the mu0/RT of the two papers' tables and agree with the databank to 4e-4 in log K); no
 polyborate-Mg or -Ca interaction exists in the paper; no borate solid is
-shipped.  The comparison with the conditional constant of boric acid in seawater
-is reported from a secondary evaluation and is pending (an anchor only once
-the primary is read).  Evidence: `data/curation/batches/boron_c198/readings.tsv`; regenerate
+shipped.  Seawater: the case anchors the free boric acid against Dickson (1990) Table 3,
+ln(K*/m0) = -19.7556 (total scale, molality, +-0.004); the engine is 0.044 higher
+(0.85 % in m_H3BO3), outside the paper's uncertainty and inside the 1.2 % tolerance;
+partly independent.  Evidence: `data/curation/batches/boron_c198/readings.tsv`; regenerate
 the records with `bin/curate/boron_c198.py`.  Theory Guide, section "Borate in
 the HMW model".
 
