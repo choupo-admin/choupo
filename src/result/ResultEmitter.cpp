@@ -926,6 +926,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
                     if (!c.quoteScaleStage.empty())
                         os << ", \"scaledWithStage\": " << esc(c.quoteScaleStage)
                            << ", \"exponentSource\": " << esc(c.quoteExponentSource);
+                    if (!c.quoteScaleInstalledBy.empty())
+                        os << ", \"scaledOnInstalledSizeOf\": " << esc(c.quoteScaleInstalledBy);
                 }
                 os << " }";
             }
@@ -972,6 +974,8 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
             if (!c.quoteScaleStage.empty())
                 os << ", \"scaledWithStage\": " << esc(c.quoteScaleStage)
                    << ", \"exponentSource\": " << esc(c.quoteExponentSource);
+            if (!c.quoteScaleInstalledBy.empty())
+                os << ", \"scaledOnInstalledSizeOf\": " << esc(c.quoteScaleInstalledBy);
             os << " } }";
         }
         os << "\n  ]";
@@ -2211,7 +2215,7 @@ void emitResultJson(std::ostream& os, const SimulationResult& r)
 
     //  ---- batchPlan: the batch plant on the balance (DEV.md 4c C99) -------
     //  Only when the postDict declares `batchPlan {}`; result/BatchPlanJson.cpp.
-    emitBatchPlanJson(os, r.batchPlan);
+    emitBatchPlanJson(os, r.batchPlan, r.sizings);
 
     //  ---- panel: the operator panel and the facts about it (DEV.md 4c C371) ---
     //  Only when the case declares `system/panelDict`; result/PanelJson.cpp.

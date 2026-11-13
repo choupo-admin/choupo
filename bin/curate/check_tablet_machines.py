@@ -100,6 +100,21 @@ the run's own stream masses (never read back from the item it is compared to):
       the three shipped plants announce both absences and publish no C270
       value (their goldens are held by the suite).
 
+  (g) ONE SIZE, THE INSTALLED ONE (2026-11-13, DEV.md 4c C389 (4), PH-06).
+      For every `batchVolume` machine of the three plants: `V_required` is
+      the plan stage's published volume per unit, `V_installed` the DECLARED
+      nominalVolume, `fill_installed` the lot's working volume (recomputed in
+      (a)) over the installed count x nominal volume (per product too), the
+      product of the three is the lot's working volume, the fill is not above
+      maxFill, and the plan's JSON stage record carries the same installed
+      size and names the unit; every `scaling {}` quote on such a unit is
+      recomputed BY HAND -- value x installed count x (declared nominalVolume
+      / referenceSize)^exponent -- against the published C_p, and the
+      printed arithmetic names the installed size.  Probes on apalutamide01:
+      the final blender's bin declared 1.0 m3 (fill 0.8 > maxFill 0.7) is
+      refused naming the fill; with its rating block removed, its quote is
+      priced on the plan's size again and no installed size is published.
+
 NOT CHECKED: the vendor numbers (they are the case's, declared assumptions),
 whether the air-change rates are right for a product (a risk assessment), and
 the physics of any machine (there is none, beyond the press's declared dwell
@@ -135,6 +150,15 @@ rebuilt: see the commit message of the slice for the outputs.
   S16 the double-count announcement removed
   S17 the basis-mismatch announcement fired on every run (`if (true)`)
   S18 the "NOT checked for dwell time" announcement removed
+BY-HAND SABOTAGES (2026-11-13, C389 (4), arm g), each rebuilt, the gate run,
+restored and rebuilt:
+  S19 DeclaredQuote.cpp: the installed machine ignored (`inst` always null):
+      caught by (g) on all eleven machines (C_p on the plan's size, and the
+      printed arithmetic not naming the installed size)
+  S20 RatedMachineSize.cpp: `V_required` set to the nominal volume: caught by
+      (g) (V_required 1.2 against 1.333 on the final blender, and the rest)
+  S21 RatedMachineSize.cpp: the refusal's fill sentence dropped: caught by
+      (g)'s overfill probe only
 Exit 1 listing failures."""
 import json
 import math
@@ -159,7 +183,8 @@ fails = []
 counts = {"machines": 0, "rooms": 0, "grades": 0, "uses": 0, "refusals": 0,
           "hvacCosts": 0, "cleaning": 0, "productFits": 0, "productCleans": 0,
           "productWater": 0, "pressNumbers": 0, "benchConstants": 0,
-          "pressAnnouncements": 0, "pressFixtures": 0, "pressNegatives": 0}
+          "pressAnnouncements": 0, "pressFixtures": 0, "pressNegatives": 0,
+          "installedSizes": 0, "installedQuotes": 0}
 
 
 def fail(msg):
@@ -417,6 +442,8 @@ def arm_case(case):
             need("%s %s productsChecked" % (case.name, u), it["productsChecked"], len(plist))
             counts["productFits"] += len(plist)
         counts["machines"] += 1
+        if kind == "batchVolume":
+            arm_installed_size(case, js, out, post, u, dr, n, it, loads)
 
     # (b) HVAC ----------------------------------------------------------
     b = lay["building"]
@@ -663,6 +690,87 @@ def arm_case(case):
             if '"declared-quote"' not in line:
                 fail("%s: the blender quote is not priced beside its sized item" % case.name)
     return out
+
+
+def arm_installed_size(case, js, out, post, u, dr, n, it, loads):
+    """(g) ONE SIZE, THE INSTALLED ONE (DEV.md 4c C389 (4), PH-06): the
+    requirement, the installed size and the fill, and the quote on it."""
+    r = dr["rating"]
+    Vnom = val(r, "nominalVolume")
+    stname = next(s["name"] for s in js["batchPlan"]["stages"] if u in s["units"])
+    sj = next(s for s in js["batchPlan"]["stages"] if s["name"] == stname)
+    need("%s %s V_required" % (case.name, u), it["V_required"], sj["volumePerUnit"])
+    need("%s %s V_installed" % (case.name, u), it["V_installed"], Vnom)
+    fill = max(loads.values()) / (n * Vnom)
+    need("%s %s fill_installed" % (case.name, u), it["fill_installed"], fill)
+    need("%s %s fill x N x V_installed = lot working volume" % (case.name, u),
+         it["fill_installed"] * n * it["V_installed"], it["V_working_required"])
+    if it["fill_installed"] > float(r["maxFill"][0]) + 1e-12:
+        fail("%s %s: fill %.6g above maxFill ran" % (case.name, u, it["fill_installed"]))
+    for pn, ld in loads.items():
+        if pn:
+            need("%s %s fill_installed_%s" % (case.name, u, pn),
+                 it["fill_installed_" + pn], ld / (n * Vnom))
+    need("%s stage %s volumeInstalledPerUnit" % (case.name, stname),
+         sj.get("volumeInstalledPerUnit", float("nan")), Vnom)
+    if sj.get("installedBy") != u:
+        fail("%s stage %s: installedBy %r, expected %r"
+             % (case.name, stname, sj.get("installedBy"), u))
+    # the quote, by hand: value x installed count x (V_nominal / reference)^n
+    for q in post["costing"].get("quotes", []):
+        if not isinstance(q, dict) or q.get("unit") != [u] or "scaling" not in q:
+            continue
+        sc = q["scaling"]
+        cp = float(q["value"][0]) * n * (Vnom / val(sc, "referenceSize")) ** float(sc["exponent"][0])
+        e = next((x for x in js.get("equipment", []) if x.get("item") == u), None)
+        got = e and e.get("cost", {}).get("purchased")
+        if got is None:
+            fail("%s %s: no purchased cost published" % (case.name, u))
+        else:
+            need("%s %s quote C_p on the installed size" % (case.name, u), got, cp)
+        if "scaled on the INSTALLED size of ratedMachine '%s'" % u not in out:
+            fail("%s %s: the printed arithmetic does not name the installed size" % (case.name, u))
+        counts["installedQuotes"] += 1
+    counts["installedSizes"] += 1
+
+
+def arm_installed_probes():
+    """(g) probes: an overfilled installed bin refuses naming its fill; a
+    scaled quote on a unit with no rated machine reads the plan's size."""
+    case = CASES[0]
+    with tempfile.TemporaryDirectory() as td:
+        fb = "the 400 kg final-blend lot in a 1.2 m3 bin"
+        out, err, rc = fixture(td, case, "overfill", {"postDict": lambda t: sub(
+            sub(t, "nominalVolume 1.2 m3;\n                       maxFill 0.7;\n                       source \"docs/design/apalutamide-design-basis-dossier.md section 4.3 (an estimate): a 1 000-1 200 L IBC/bin blender for the final blend",
+                "nominalVolume 1.0 m3;\n                       maxFill 0.7;\n                       source \"docs/design/apalutamide-design-basis-dossier.md section 4.3 (an estimate): a 1 000-1 200 L IBC/bin blender for the final blend"),
+            fb, fb)})
+        blob = out + err
+        if rc == 0 or "fill at the installed size would be 0.8, above maxFill 0.7" not in blob:
+            fail("(g) overfill: a 0.8 fill in a 1.0 m3 bin with maxFill 0.7 is not refused"
+                 " naming its fill (exit %d):\n%s" % (rc, blob[-600:]))
+        # no rated machine on the final blender: the quote reads the plan
+        def strip(t):
+            i = t.index("        { unitName finalBlender;  type ratedMachine;")
+            j = t.index("        { unitName tabletPress;  type ratedMachine;")
+            return t[:i] + t[j:]
+        out, err, rc = fixture(td, case, "noRated", {"postDict": strip})
+        js = result_json(out)
+        if rc != 0 or js is None:
+            fail("(g) noRated: the case without the final blender's rating does not run")
+        else:
+            sj = next(s for s in js["batchPlan"]["stages"] if "finalBlender" in s["units"])
+            q = next(q for q in read_dict(Path(td) / "noRated" / "system" / "postDict")
+                     ["costing"]["quotes"] if isinstance(q, dict) and q.get("unit") == ["finalBlender"])
+            sc = q["scaling"]
+            cp = float(q["value"][0]) * sj["unitsInstalled"] * (
+                sj["volumePerUnit"] / val(sc, "referenceSize")) ** float(sc["exponent"][0])
+            e = next(x for x in js["equipment"] if x.get("item") == "finalBlender")
+            need("(g) noRated finalBlender quote on the plan's size", e["cost"]["purchased"], cp)
+            if "volumeInstalledPerUnit" in sj:
+                fail("(g) noRated: a stage with no rated machine publishes an installed size")
+            if "scaled with batch-plan stage 'finalBlending'" not in out:
+                fail("(g) noRated: the printed arithmetic does not read the plan's stage")
+        counts["refusals"] += 2
 
 
 def arm_refusals():
@@ -975,6 +1083,7 @@ def main():
     for c in CASES:
         arm_case(c)
     arm_refusals()
+    arm_installed_probes()
     arm_press()
     if fails:
         print("check_tablet_machines: FAILED")
@@ -1016,12 +1125,20 @@ def main():
           "and one that refuses the fit, the blocks stripped: announced unchecked and nothing "
           "new published); %d shipped plants announce both absences and publish no C270 value.  "
           "NOT CHECKED: whether a minimum dwell or a target strength is right for a "
-          "formulation (the case's declarations), and any mixture rule (there is none)."
+          "formulation (the case's declarations), and any mixture rule (there is none).  "
+          "ONE SIZE (C389 (4), arm g): %d batch machines publish the plan's requirement, "
+          "the declared installed volume and the fill at it (fill x N x V_installed = "
+          "the lot's working volume), the plan's stage record draws the installed size, "
+          "and %d scaled quotes recompute by hand on the installed size and count; an "
+          "overfilled installed bin refuses naming its fill, and a quote on a unit with "
+          "no rated machine still reads the plan's size.  No lower fill bound is "
+          "declared, so none is checked."
           % (counts["machines"], counts["rooms"], counts["grades"], counts["uses"],
              counts["hvacCosts"], counts["cleaning"], counts["refusals"],
              counts["productFits"], counts["productCleans"], counts["productWater"],
              counts["pressNumbers"], counts["benchConstants"], counts["pressAnnouncements"],
-             counts["pressFixtures"], counts["pressNegatives"]))
+             counts["pressFixtures"], counts["pressNegatives"],
+             counts["installedSizes"], counts["installedQuotes"]))
     return 0
 
 

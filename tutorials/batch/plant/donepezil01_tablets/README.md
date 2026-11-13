@@ -109,7 +109,9 @@ pressed:
 Lot `B` = 305.9 kg of product, **143 lots a year**.  Equipment per lot: the
 binder tank 0.097 m3 and the coating-suspension tank 0.100 m3 (both SIZED
 from the plan: `volume fromBatchPlan;`), the granulator bowl 1.11 m3, the
-fluid-bed bowl 1.34 m3, the bin blender 1.00 m3, the coater 0.61 m3, the
+fluid-bed bowl 1.34 m3, the bin blender 1.00 m3 and the coater 0.61 m3 REQUIRED
+at the plan's fill (the machines installed and priced, `ratedMachine`: 1.2,
+1.5, 1.0 and 1.0 m3), the
 mill 149 kg/h, the press 42.9 kg/h (about 150 000 tablets an hour) and the
 packaging line 34.0 kg/h.
 
@@ -200,11 +202,11 @@ Mass balance 100.000 %; first law closes (residual below 0.0001 kW).
 | Air heaters | 72.1 kW each (LP steam), 21.6 m2 each |
 | Coated tablets | 206.88 kg/h = 712 800 tablets/h at the flowsheet basis (**0.2902 g** each) |
 | Batch plan (section 2a) | lot 305.9 kg of product (300 kg of blend), 143 lots a year; `T_L` 4.25 h (granulation, the fluid bed) and 11 h (tableting, packaging) |
-| Fixed capital (the two heaters, the two tanks, the quoted machines scaled with the batch plan, and the building, see 6) | 19.80 MEUR (of it, the building alone 8.3 and the HVAC from the supply air 1.24 MEUR of bare-module cost, see below; the machines are QUOTED placeholders) |
+| Fixed capital (the two heaters, the two tanks, the quoted machines scaled with the batch plan, and the building, see 6) | 20.33 MEUR (of it, the building alone 8.3 and the HVAC from the supply air 1.24 MEUR of bare-module cost, see below; the machines are QUOTED placeholders) |
 | Land (the layout's plot, 12 321 m2 at 80 EUR/m2) | 0.99 MEUR |
 | Operating labour (the DECLARED crew, 10 a shift) | 45 operating positions, 3.70 MEUR/yr (Turton's correlation, for comparison: 152.5 positions, 12.55 MEUR/yr) |
 | Revenue / raw materials / COM_d | 15.0 / 0.93 / 14.8 MEUR/yr (150 million tablets: 210 equivalent hours of the flowsheet) |
-| NPV (10 %, 10 yr) / IRR | −18.7 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
+| NPV (10 %, 10 yr) / IRR | −19.6 MEUR / none (the plant never breaks even) — **not decision-grade, see 6** |
 
 **The two dryers are over-aired.**  Each exhaust leaves at a quarter of
 saturation and 17 K below its inlet: most of the heat bought goes out of
@@ -285,14 +287,14 @@ invent one; `system/postDict` DECLARES a price for each, in `costing {
 quotes ( ... ); }`, scaled with the batch plan by the six-tenths rule
 (declared on each quote):
 
-| item | quote (installed, 2026 EUR), at its reference size | kind | scaled to (batch plan) |
+| item | quote (installed, 2026 EUR), at its reference size | kind | scaled to (the installed batch machine, else the batch plan) |
 |---|---|---|---|
-| `granulator` (high shear, with its dosing pump and wet mill) | 700 000 at 1 m3 | equipment | 1.11 m3: 746 634 |
-| `fluidBedDryer` (with its air handling; the heater is costed apart) | 900 000 at 1 m3 | equipment | 1.34 m3: 1 070 930 |
+| `granulator` (high shear, with its dosing pump and wet mill) | 700 000 at 1 m3 | equipment | installed 1.2 m3: 780 920 (the plan requires 1.11) |
+| `fluidBedDryer` (with its air handling; the heater is costed apart) | 900 000 at 1 m3 | equipment | installed 1.5 m3: 1 147 882 (the plan requires 1.34) |
 | `mill` | 150 000 at 100 kg/h | equipment | 149 kg/h: 190 743 |
-| `finalBlender` | 300 000 at 1 m3 | equipment | 1.00 m3: 300 000 |
+| `finalBlender` | 300 000 at 1 m3 | equipment | installed 1.0 m3: 300 000 |
 | `tabletPress` | 1 000 000 at 100 kg/h | equipment | 42.9 kg/h: 601 470 |
-| `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 at 1 m3 | equipment | 0.61 m3: 594 236 |
+| `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 at 1 m3 | equipment | installed 1.0 m3: 800 000 (the plan requires 0.61) |
 | `packagingLine` | 1 500 000 at 50 kg/h | equipment | 34.0 kg/h: 1 189 791 |
 | `productionBuilding` (the GMP building, 44 m x 36 m, WITHOUT the HVAC) | 8 300 000 | facility | not scaled |
 | `hvacGrade D` / `hvacGrade CNC` (the supply air, see the clean utilities above) | 12 / 5 EUR per m3/h | facility | 98 200 / 13 140 m3/h: 1 178 400 / 65 700 |
@@ -315,13 +317,13 @@ declared) is printed beside it for comparison: 33.9 a shift.
 **Break-even, sensitivity and the three working capitals (declared
 2026-11-08, DEV.md 4c C210 E5).**  `economics { breakEven {} }` prints the
 operating break-even x = F / (R - V) and the production fraction s at which
-NPV = 0 (on this case: x = 1.19 and s = 1.28 -- the plant breaks even only
+NPV = 0 (on this case: x = 1.20 and s = 1.30 -- the plant breaks even only
 above its nameplate); `sensitivity { price.packagedTablets { relative ( -0.3
 0.3 ); } discountRate { absolute ( 0.08 0.15 ); } labourRate { relative ( -0.2
 0.2 ); } }` prints the tornado (the apalutamide case declares one);
 `workingCapitalMethods { fractionOfSales 0.15; fractionOfFixedCapital 0.15;
 source "..."; reason "..."; }` prints the itemised build-up beside the two
-fraction rules (itemised 3.15 MEUR, 15 % of sales 2.25, 15 % of FCI 2.97: a
+fraction rules (itemised 3.15 MEUR, 15 % of sales 2.25, 15 % of FCI 3.05: a
 spread of x1.4).  All three blocks are in `system/postDict`, every end an
 author-set assumption said so on its line; `relative` ends are DEVIATIONS from
 the base (`( -0.3 0.3 )` is +-30 %).  Grammar: `docs/ai/packs/design-cost.md`
@@ -344,15 +346,15 @@ decision-grade until the quotes, the staffing and the prices are yours.
 
 **Which tax reading this NPV is.**  Every operating year of this plant is a
 loss, and the cash flow CREDITS tax in each of them (`taxOnLoss credit`,
-the default of the `economics` block): tau x the loss, 556 kEUR a year for
-the seven years the plant depreciates, 3.89 MEUR in all and 2.71 MEUR of the
+the default of the `economics` block): tau x the loss, 592 kEUR a year for
+the seven years the plant depreciates, 4.15 MEUR in all and 2.88 MEUR of the
 NPV — which assumes the owner has OTHER taxable profit to set the loss
 against, as a group with a consolidated return has.  The run announces it
 (`[assumed] economics` in the caveat block; `taxCreditOnLoss` and
 `taxCreditOnLoss_NPV` in the economics KPIs).  A stand-alone project has no
 such profit: declare `taxOnLoss none;` in `system/postDict` and the loss
 years pay no tax and earn no credit (no loss carry-forward is modelled), and
-the NPV falls by exactly that 2.71 MEUR, to −21.4 MEUR.
+the NPV falls by exactly that 2.88 MEUR, to −22.5 MEUR.
 
 ## 7. Plant layout
 

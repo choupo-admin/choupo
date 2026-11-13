@@ -192,7 +192,7 @@ export const CAMPAIGN_PLAN_STEPS: readonly LessonStep[] = [
       + "(BatchPlanPass.H:219-220). With directional cleans, two products "
       + "pay both directions once whichever goes first, because the plan "
       + "wraps the clean after the last campaign to the first product: "
-      + "donepezil02 in the engine half is 880.2 h and 2079 h either way. "
+      + "donepezil02 in the engine half is 928.2 h and 2127 h either way. "
       + "From three products the cycle matters: A then B then C then A pays "
       + "different pairs of directions than A then C then B then A, and the "
       + "order is a real decision. The cheapest of the orders is not "

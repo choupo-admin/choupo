@@ -34,7 +34,9 @@ touched.
       units minus the declared ones.
   (b) THE CONSEQUENCES: each `volume fromBatchPlan;` vessel's published size
       is its stage's volume per unit; each scaled quote's C_p is value x
-      units x (size / referenceSize)^exponent with the stage's size and the
+      units x (size / referenceSize)^exponent with the stage's size (or, for
+      a unit whose `ratedMachine` batchVolume declares the machine bought,
+      its declared nominalVolume and installed count -- C389 (4)) and the
       DECLARED reference and exponent; the economics' streamFactor is Q / (r_P
       x 8760).
   (c) THE ANNOUNCEMENTS reach all three surfaces: stderr `[batchPlan]`, the
@@ -97,7 +99,9 @@ share).  Every number in it is the probe's, chosen to exercise one rule each.
       the 8 h every other product change takes; both recompute.
   (j) ONE PRODUCT THROUGH `products` IS THE ONE-PRODUCT PLAN: every lot,
       cycle, offset, busy hour, size, finding and purchased cost to 1e-9
-      against the unmodified witness.
+      against the witness with its rated machines removed, as the probe's
+      are (a rated batch machine prices its quote on the installed size,
+      C389 (4), and the probe cannot carry one).
   (k) REFUSALS, each named: `production` beside `products`; no
       `campaignOrder`; an order that is not a permutation; a stage with no
       `productChangeover`; `productChangeover` and `campaignOrder` in a
@@ -134,6 +138,21 @@ THE BASES AND THE DOSAGE FORM (2026-11-09, DEV.md 4c C264).
       the fluid share of the mass from F_mass and F_solid_mass.  A
       plan-level `dosageUnit` in a multiproduct plan, and one without a unit
       on its mass, are refused by name.
+
+A PRODUCT CLEAN SHORTER THAN THE CAMPAIGN CHANGEOVER (2026-11-13, DEV.md 4c
+C389 (4), PH-03).  A change of product is the train's campaign clean AND the
+product's own part, so the engine ANNOUNCES each declared `productChangeover`
+or `changeoverTo` value below its train's `changeover` (kind
+`productCleanShort`, per declaration; nothing refused, no number moved).
+
+  (o) The multiproduct probe (every clean below its train's changeover)
+      announces each of its ten declarations, the `changeoverTo` one naming
+      its stage, its train, its declaration, the changeover and that a
+      product change would cost less than continuing, on stderr, the caveat
+      block and the findings with the two durations; the same probe with
+      every clean EQUAL to its train's changeover is silent; and
+      donepezil02 (each product clean = the campaign clean + its increment)
+      is silent.  (h) and (i) recompute the same findings on their probes.
 
 By-hand sabotages (2026-10-19), each run against this gate:
   S1  BatchPlanPass.cpp: `t.cycleTime = s.effectiveCycle` -> `s.cycleTime`
@@ -182,6 +201,13 @@ arms (h)-(k) with the engine rebuilt:
       drying train's limiting stage and cycle, the one-product twin).
   S11 BatchPlanPass.cpp: the `campaignOrder` requirement dropped (the
       declaration order taken in silence): caught by (k) noOrder only.
+
+By-hand sabotages of the short-product-clean announcement (2026-11-13), each
+run against the whole gate with the engine rebuilt, then restored + `make all`:
+  S12 BatchPlanPass.cpp: the announcement dropped (`if (true) return;`):
+      caught by (h), (i) and (o) (findings [] against the ten recomputed).
+  S13 BatchPlanPass.cpp: `c < co - 1e-9` -> `c < co + 1e-9` (an EQUAL clean
+      announced): caught by (o) only, on its equal-clean probe.
 """
 
 import json
@@ -607,7 +633,18 @@ def check_consequences(tag, j, R):
         sc = q["scaling"]
         ref = val(sc, "referenceSize")
         size = st["Vu"] if st["type"] == "batch" else st["Ru"]
-        cp = float(q["value"][0]) * st["nip"] * st["nop"] * (size / ref) ** float(sc["exponent"][0])
+        units = st["nip"] * st["nop"]
+        #  A batch machine the case's `ratedMachine` declares BOUGHT is priced
+        #  on its INSTALLED size and count (C389 (4), PH-06), read here from
+        #  the declaration; check_tablet_machines arm (g) holds the rest.
+        rm = next((u for u in pd["sizing"]["units"] if u["unitName"] == [n]
+                   and u["type"] == ["ratedMachine"]
+                   and u["designRules"]["kind"] == ["batchVolume"]), None)
+        if rm and st["type"] == "batch":
+            size = val(rm["designRules"]["rating"], "nominalVolume")
+            if "installed" in rm["designRules"]:
+                units = int(float(rm["designRules"]["installed"]["count"][0]))
+        cp = float(q["value"][0]) * units * (size / ref) ** float(sc["exponent"][0])
         e = eq.get(n)
         got = e and e["cost"]["purchased"]
         if got is None or not close(got, cp):
@@ -680,11 +717,14 @@ PRODUCTS = """
 """
 
 
-def strip_rated_machines(t, keep_cleaning=False):
+def strip_rated_machines(t, keep_cleaning=False, only_machines=False):
     """The multiproduct probes test the BATCH PLAN, not the sizers: a
     `ratedMachine` entry and the `cleanUtilities` pass each refuse a
     multiproduct plan by name (DEV.md 4c C195, a stated limit of both), so
-    the probe's copy drops them."""
+    the probe's copy drops them.  `only_machines`: drop the rated machines
+    alone (arm (j)'s single twin, whose scaled quotes must then read the
+    plan's size as the probe's do -- C389 (4), a rated batch machine is
+    priced on its installed size)."""
     out = []
     i = 0
     while True:
@@ -706,6 +746,8 @@ def strip_rated_machines(t, keep_cleaning=False):
         out.append(t[i:s])
         i = k + 1
     t = "".join(out)
+    if only_machines:
+        return t
     # The clean-utilities pass also reads the single-product plan's lot and Gantt.
     m = re.search(r"\ncleanUtilities\n\{", t)
     if m:
@@ -967,6 +1009,17 @@ def recompute_multi(case_dir, j):
     for pn in order:
         if PR[pn]["own"]:
             findings.add(f"ownBalance:{pn}")
+    #  (o) a declared product clean below its train's campaign changeover,
+    #  per declaration, a `changeoverTo` the order does not use included.
+    for n, b in base.items():
+        if b["pco"] is not None and b["pco"] < trains[b["train"]]["co"] - 1e-9:
+            findings.add(f"productCleanShort:{n}")
+    for pn in names:
+        for o in pdecl[pn].get("stages", []):
+            n = word(o, "stage")
+            for nx in o.get("changeoverTo", {}):
+                if val(o["changeoverTo"], nx) < trains[base[n]["train"]]["co"] - 1e-9:
+                    findings.add(f"productCleanShort:{pn}:{n}:{nx}")
     claimed = set(u for b in base.values() for u in b["units"])
     unplanned = [u for u in unit_type if u not in claimed]
     Qt = sum(PR[pn]["Q"] for pn in order)
@@ -1507,6 +1560,74 @@ def arm_multiproduct(work):
                       " clean before strengthC)")
 
 
+DONEPEZIL02 = ROOT / "tutorials/batch/plant/donepezil02_two_strengths"
+
+
+def arm_product_clean(work):
+    """(o) a product clean shorter than its train's campaign changeover is
+    ANNOUNCED, per declaration; one equal to it, or above it, is silent."""
+    pd = read_dict(WITNESS / "system" / "postDict")["batchPlan"]
+    co = {word(t, "train"): val(t, "changeover") for t in pd["trains"]}
+    train_of = {word(s, "stage"): word(s, "train") for s in pd["stages"]}
+    # the probe (h) declares every clean below its train's changeover
+    d = copy_witness(work, "clean_short", multi_edit())
+    out, err, rc, j = solve(d)
+    if rc != 0 or not j:
+        fail(f"(o) the short-clean probe did not run (exit {rc})")
+        return
+    ids = {f["id"]: f for f in j["batchPlan"]["findings"]}
+    want = {f"productCleanShort:{n}" for n in PCO} | {"productCleanShort:strengthB:coating:strengthC"}
+    got = {k for k in ids if k.startswith("productCleanShort:")}
+    if got != want:
+        fail(f"(o) short product cleans announced {sorted(got)}, expected {sorted(want)}")
+    f = ids.get("productCleanShort:strengthB:coating:strengthC")
+    if f:
+        m = f["message"]
+        need = ["stage 'coating'", "train 'solidDose'", "changeoverTo { strengthC 10 h; }",
+                f"`changeover {co['solidDose']:g} h`", "less time than continuing the same product"]
+        miss = [x for x in need if x not in m]
+        if miss:
+            fail(f"(o) the changeoverTo announcement does not name {miss}: {m}")
+        if not (close(f["value"], 10.0, 1e-9) and close(f["limit"], co["solidDose"], 1e-9)):
+            fail(f"(o) the finding carries {f['value']} / {f['limit']}, declared 10 / {co['solidDose']}")
+        if f"[batchPlan] {m}" not in err:
+            fail("(o) the changeoverTo announcement is not on stderr")
+        if f"productCleanShort:strengthB:coating:strengthC: {m}" not in out:
+            fail("(o) the changeoverTo announcement is not in the end-of-run caveat block")
+    f = ids.get("productCleanShort:solutionPreparation")
+    if f and "`productChangeover 0 h`" not in f["message"]:
+        fail(f"(o) the stage announcement does not quote its declaration: {f['message']}")
+    # EQUAL is silent: every clean set to its train's changeover exactly
+    eq = {n: f"{co[train_of[n]]:g} h" for n in PCO}
+    d2 = copy_witness(work, "clean_equal", multi_edit(pco=eq, extra=lambda t: sub(
+        t, "changeoverTo { strengthC 10 h; }", f"changeoverTo {{ strengthC {co['solidDose']:g} h; }}")))
+    out2, err2, rc2, j2 = solve(d2)
+    if rc2 != 0 or not j2:
+        fail(f"(o) the equal-clean probe did not run (exit {rc2})")
+        return
+    if any(f["id"].startswith("productCleanShort:") for f in j2["batchPlan"]["findings"]) \
+            or "shorter than the train's campaign" in err2:
+        fail("(o) a product clean EQUAL to its train's changeover was announced")
+    # the case: donepezil02 declares every product clean as the campaign
+    # clean plus its increment, so it says nothing
+    dd = work / "donepezil02"
+    if dd.exists():
+        shutil.rmtree(dd)
+    shutil.copytree(DONEPEZIL02, dd, ignore=shutil.ignore_patterns(
+        "reports", "converged", "design", "iterations", "expected"))
+    out3, err3, rc3, j3 = solve(dd)
+    if rc3 != 0 or not j3:
+        fail(f"(o) donepezil02 did not run (exit {rc3})")
+        return
+    if any(f["id"].startswith("productCleanShort:") for f in j3["batchPlan"]["findings"]) \
+            or "shorter than the train's campaign" in err3:
+        fail("(o) donepezil02 announces a product clean shorter than its campaign changeover")
+    claims.append(f"(o) a product clean below its train's campaign changeover is announced"
+                  f" per declaration ({len(want)} on the probe, a changeoverTo among them)"
+                  " on stderr, the caveat block and the findings; equal is"
+                  " silent, and donepezil02 (campaign clean + increment) is silent")
+
+
 #  The one product's demand is READ from the witness's own `production {}`,
 #  never typed here: a copy of it went stale the day the witness was re-based
 #  on its design-basis dossier (C110 G1, 30000 -> 10156 kg), and arm (j) then
@@ -1533,7 +1654,7 @@ def witness_per_year():
 
 def arm_one_product(work):
     """(j) one product through the multiproduct path IS the single plan."""
-    ds = copy_witness(work, "single_ref")
+    ds = copy_witness(work, "single_ref", lambda t: strip_rated_machines(t, only_machines=True))
     outs, errs, rcs, js = solve(ds)
     d = copy_witness(work, "one", multi_edit(products=ONE_PRODUCT % witness_per_year(), pco=None))
     out, err, rc, j = solve(d)
@@ -1762,6 +1883,7 @@ def main():
         arm_multi_refusals(work)
         arm_multi_golden(work)
         arm_dosage(work)
+        arm_product_clean(work)
     finally:
         if not keep:
             shutil.rmtree(work, ignore_errors=True)
