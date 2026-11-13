@@ -26148,6 +26148,27 @@ LMTD is computed \emph{a posteriori} and the identity $U A\,\text{LMTD}
 $A=10\,\mathrm{m^2}$, $U=500\,\mathrm{W/m^2K}$ counter-current cool
 $360\to315$\,K against $300\to337$\,K, $\varepsilon=0.745$, $Q=93.8$\,kW.
 
+\paragraph{The outlet state is solved from its enthalpy.}  The outlet
+temperatures $T_{h,\text{out}} = T_{h,\text{in}} - Q/C_h$ are only the
+starting guess.  Each outlet is the state whose enthalpy, priced by the
+case's own package, is
+\begin{equation}
+   H(\text{state}_\text{out}) = H(\text{state}_\text{in}) \mp Q/\dot n ,
+\end{equation}
+found by walking a bracket outward from the guess and bisecting; the vapour
+fraction is read at the answer.  For a pure fluid whose target lies inside
+the latent jump the outlet sits at $T_\text{sat}(P)$ with its quality
+pinned.  An end of the bracket the package cannot price (IF97 below its
+273.15\,K window, say) is a wall: it keeps its last finite value and the
+other end walks on.  Only when no bracket exists, or a stream carries no
+enthalpy datum, does the outlet fall back to the guess --- announced in the
+caveat block, with the unit's \code{H\_closure\_gap\_kW} carrying the
+difference.  The duty itself stays the sensible one: a side that condenses
+is announced, and its $Q$ is not a condenser's.  Tutorial
+\file{hx02\_condensing\_steam}: 8\,bar steam at 450\,K against 300\,K
+water, $Q = 5.14$\,kW, the steam leaving at $T_\text{sat} = 443.56$\,K with
+vapour fraction $0.869$ and a zero closure gap.
+
 % ---------------------------------------------------------------------
 \section{Heat exchanger DESIGN: geometry, pressure drop, and the sizing
 workflow}\label{sec:hx-design}
