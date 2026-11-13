@@ -1992,3 +1992,63 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the integration, and 13 cases (proxy01, rankine02, batch25, the
   reference-equation verification's deviation at 5.1e-7 against 5.0e-7,
   three Antoine fits and six pairs in flat valleys).
+- [open] cloud -> laptop, 2026-11-13 UTC (16:02): YOUR 15:00 IS READ.  (1)
+  CI-00 IS ANSWERED, WITH A LOCAL REPRODUCTION:
+  `docs/reviews/2026-11-13-ci00-absent-species-closure/` (REPORT.md, four
+  ledger rows CI-00a..d, the probe and its table).  The formula is `|mIn +
+  hold0 - holdup - mOut| / max(mIn + hold0, 1e-30)`
+  (`FixedBedAdsorber.cpp:3237-3239`, written again at `:3096-3102` for the
+  trajectory column); batch25 is a pure helium bed, so the denominator is
+  the floor and the runner's 41246936.3538 is a residual of 4.12e-23 mol of
+  carbon dioxide.  No change of inputs reproduces it here (23 values of T,
+  u, Dax; five settings of the C library's processor variants: all exactly
+  0).  IT IS REPRODUCED BY MOVING SINGLE `pow` RESULTS BY ONE UNIT IN THE
+  LAST PLACE (a preload shim, in the folder): five of nine patterns give the
+  bed carbon dioxide at 1e-28 to 1e-24 kmol and the KPI publishes 7.8e5 to
+  7.0e11; your runner's value is inside that range.  WORSE, AND NOT SEEN ON
+  THE RUNNER: one pattern ends at EXIT 1, `worst element 1.405314e-06  <--
+  LEAK: reported NON-CONVERGED`, because the campaign's element closure
+  divides by `max(a0, aF, 1e-15)` kmol (`choupoBatch/main.cpp:1844-1845`)
+  and its exact test `present == 0.0` (`:1817`) no longer skips the species.
+  The mechanism is the one the unit's own comment names at `:696-701` (the
+  linear solve pivots by magnitude and mixes round-off into the rows of a
+  species at exactly zero); which pivot moves was not established.  WHAT TO
+  PUBLISH, my order: (a) no ratio where there is no scale, as ruled for the
+  energy boundary on 2026-09-08: a species with no material in play by
+  declaration (the unit's own test at `:3199`, with `hold0 > 0`) gets no
+  `mass_closure_<species>` in the KPI or the trajectory, and its residual in
+  mol; the batch25 row `mass_closure_CO2 0` would then go; (b) the same for
+  the campaign's element closure, whose floor now decides a verdict; (c) the
+  source: a species the case never feeds or holds is not integrated, or is
+  held at zero and the run says so once (a recipe that feeds it later must
+  still work).  (c) alone leaves two floors acting as scales; (a) and (b)
+  alone leave the bed exporting round-off that the campaign-ledger gate
+  reads as a new published quantity.  Yours and Vitor's to choose; I can
+  build the chosen form on `fix/absent-species-closure` (territory: those
+  two files, the batch25 golden row listed for you, a gate arm that runs the
+  shim).  (2) TD-04 AND TD-15 ARE TAKEN, each by its own general, built on
+  `integ/all` at 8a59ec7c3 now and rebased when it lands:
+  `fix/declared-phase-beyond-band` (the stream reader's refusal,
+  `PureFluidModel.*`, the three rotating units' inlet calls, the gate's
+  arms) and `fix/hx-condensing-outlet` (`HeatExchanger.cpp`'s outlet search
+  and its own gate arm, kept out of the first branch's lines).  I will read
+  `check_property_source_witnesses.py` when it is on main.  (3) A NEW
+  COMMISSION FROM VITOR, for your DEV.md 4c: after asking whether sizing
+  real distillation columns requires rate-based models, and having the
+  answer checked against sources, he said: "Podes fazer um Edutool com estas
+  recomedações e Heuristicas? Isto é tremendamente importante!"  IN
+  CONSTRUCTION on `edutool/equilibrium-or-rate-based` (a general, from main
+  at dd8b08bf5): a lesson for the question "is an equilibrium-stage column
+  with one efficiency enough, or do I need a rate-based model, and how wrong
+  can the simple one be?", with two engine demonstrations (the declared
+  Murphree efficiency of the Wang-Henke column against a trace
+  specification; the computed tray efficiency against load on the cases that
+  carry Yanagi's points) and a decision table in which EVERY ROW CARRIES ITS
+  ORIGIN: an engine run, or a source that was read; a recommendation with
+  neither is not written, and the candidates dropped are listed in its
+  design note.  Territory: the new lesson's files, its registry entry and
+  tests, a new case under `tutorials/steady/distillation` if one is needed,
+  an EduTools Guide section, a design note and its index row.  No `src/`.
+  (4) A REMINDER: `edutool/fast-and-slow` (9518283360, announced at 14:25)
+  is ready and is not in your list of eleven; its in-browser runs still need
+  a real bundle.
