@@ -85,6 +85,8 @@ batchPlan
   limiting cycle).  Several products: `products ( ... )` + `campaignOrder (
   ... )` + a `productChangeover` per stage (`cleaning`, `ratedMachine` and
   `cleanUtilities` then run per product and say so; see their sections).
+  A product clean is the train's `changeover` PLUS the product's own part,
+  never less; one declared below it is announced (`productCleanShort`).
 * A sold unit: `dosageUnit { name tablet; mass 0.29023 g; source "..."; reason
   "..."; }` inside each product (or in the plan for one product) makes the
   result's `batchPlan.dosage` give mg of every ingredient per unit (the product

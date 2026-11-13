@@ -170,6 +170,23 @@ defaults, each one Vítor may reverse:
   train's `changeover` when the same product follows; after a product's LAST
   campaign, the clean before the NEXT product -- and that clean REPLACES the
   same-product changeover, it is not added to it.
+* **A product clean is never shorter than the campaign changeover**
+  (2026-11-13, DEV.md 4c C389 (4), review finding PH-03).  A change of
+  product is the train's full clean and line clearance AND the product's own
+  part (the verification of the clean, the change parts, the colour), so a
+  case declares each `productChangeover` and `changeoverTo` value as the
+  train's `changeover` PLUS its own increment -- `donepezil02_two_strengths`
+  does (24 h + 2-12 h), which keeps the colour direction the case teaches;
+  a flat floor at 24 h would have erased it.  The rule REPLACES stays the
+  arithmetic; what changed is the declaration.  The engine ANNOUNCES a
+  declared product clean below its train's `changeover` (finding
+  `productCleanShort`, stderr, the caveat block, `batchPlan.findings`): per
+  DECLARATION, not on the train's `max_j c_j`, because each `c_j` is that
+  stage's own busy time and a max would hide a short stage behind a long
+  one; a `changeoverTo` the order does not use is read too; equal is
+  silent; nothing is refused and no number moves.  Gate arm (o).  The
+  measurement and the two candidates:
+  [`pharma-cases-two-proposed-case-changes.md`](pharma-cases-two-proposed-case-changes.md) section 1.
 * **The campaigns of two products never overlap on a train.**  Every stage
   is cleaned at once once the campaign has left the train, so the train waits
   `max_j c_j`, and each stage is charged its OWN `c_j` in its busy hours.  It
@@ -228,4 +245,5 @@ gate from a copy of the witness (no new tutorial), recomputed independently
 (per product, per (product, stage), per (product, train), the aggregates, the
 year's Gantt, the findings); the declared order moving the year by exactly the
 clean `changeoverTo` adds; one product through `products` against the
-one-product plan; twenty refusals; the golden rows of every new record.
+one-product plan; twenty refusals; the golden rows of every new record;
+and (o), the short product clean announced per declaration.

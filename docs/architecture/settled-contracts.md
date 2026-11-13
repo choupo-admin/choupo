@@ -1882,9 +1882,11 @@ stage only what is the product's, its balance is the flowsheet's ONE
 balance unless `massPerProduct` declares a stream's own (ANNOUNCED, because
 the economics prices every product on the one balance); a stage is sized
 for the product needing the most (`sizingProduct`); the clean before the
-next product REPLACES the same-product changeover; campaigns never overlap
+next product REPLACES the same-product changeover, and is declared as that
+changeover PLUS the product's own part (C389 (4): one declared below it is
+ANNOUNCED, `productCleanShort`, per declaration); campaigns never overlap
 on a train.  One product through `products` IS the one-product plan (gate,
-1e-9).  Gate `check_batch_plan` (h)-(l); record section 6 of
+1e-9).  Gate `check_batch_plan` (h)-(l), (o); record section 6 of
 `docs/design/a-batch-plant-on-a-steady-balance.md`.
 
 ### A PHASE SPLIT SCANNED ALONG T OR P IS ONE FLASH PER POINT (2026-10-20, DEV.md 4c C118)

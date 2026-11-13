@@ -1965,6 +1965,52 @@ int BatchPlanPass::run(SimulationResult& result)
                     " fromBatchPlan;`) prices every product's raw materials and"
                     " utilities on it.");
 
+        //  A PRODUCT CLEAN SHORTER THAN THE CAMPAIGN CHANGEOVER (2026-11-13,
+        //  DEV.md 4c C389 (4), PH-03).  A change of product is the train's
+        //  full clean and line clearance AND the product's own part, so a
+        //  declared product clean below the train's `changeover` makes
+        //  changing product cost less time than continuing one.  Compared
+        //  PER DECLARATION, never on the train's C_i = max_j c_ij: each c_ij
+        //  is that stage's own busy time after the product's last campaign,
+        //  and a max would hide a short stage behind a long one.  Every
+        //  declaration is read, a `changeoverTo` the order does not use
+        //  included (the student may reorder).  Equal is silent; nothing
+        //  is refused and no number moves.
+        auto cleanShort = [&](const BatchStage& s, scalar c, const std::string& subject,
+                              const std::string& what)
+        {
+            const scalar co = plan.trains[trainIndex.at(s.train)].changeover;
+            if (!(c < co - 1e-9)) return;
+            announce(plan, "productCleanShort", subject, c, co,
+                "stage '" + s.name + "' (train '" + s.train + "'): " + what
+                + " is shorter than the train's campaign `changeover "
+                + fmt(co) + " h`: changing product would cost less time than"
+                " continuing the same product.  A change of product is the"
+                " campaign clean and line clearance PLUS the product's own part"
+                " -- declare it as " + fmt(co) + " h plus that increment.");
+        };
+        for (std::size_t k = 0; NP >= 2 && k < NS; ++k)    // one product: no
+        {                                                  //  product clean exists
+            const BatchStage& s = plan.stages[k];
+            cleanShort(s, s.productChangeover, s.name,
+                       "the clean between products `productChangeover "
+                       + fmt(s.productChangeover) + " h`");
+        }
+        for (const auto& P : prods)
+            for (const auto& kv : P.over)
+            {
+                if (!kv.second->found("changeoverTo")) continue;
+                const BatchStage& s = plan.stages[stageIndex.at(kv.first)];
+                const DictPtr to = kv.second->subDict("changeoverTo");
+                for (const auto& nx : to->keys())
+                {
+                    const scalar c = hoursOf(to, nx.c_str(), kv.first);
+                    cleanShort(s, c, P.rec.name + ":" + s.name + ":" + nx,
+                               "the clean after product '" + P.rec.name + "' before '"
+                               + nx + "' `changeoverTo { " + nx + " " + fmt(c) + " h; }`");
+                }
+            }
+
         for (const auto& fu : result.topology)
             if (!unitOwner.count(fu.name)) plan.unplannedUnits.push_back(fu.name);
 
