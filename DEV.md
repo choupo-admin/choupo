@@ -3500,9 +3500,29 @@ accepts today, and that is a policy call.
 > RATE-BASED SLICES, revised: B1 binary packed bed at total reflux
 > (being built); B2 trays; B3 a feed and a general reflux; B4a three or
 > more components on the effective-diffusivity film, held to the
-> ternary general-reflux measurement; B4b the Maxwell-Stefan film and
-> the boundary witness.  "Rate-based distillation is in Choupo" is said
-> after B4a.
+> ternary general-reflux measurement; B4b the boundary case as a LIMIT
+> WITNESS.  "Rate-based distillation is in Choupo" is said after B4a.
+> B4b NARROWED THE SAME DAY, after Vitor argued that the Maxwell-Stefan
+> film is rigour beyond its data ("uma caminhada de complexidade em
+> direcao ao abismo").  THE ARCHITECT AGREES IN PART, for a reason of
+> uncertainty and not of taste.  In the VAPOUR film the formulation
+> costs no fitted parameter (binary gas diffusivities are predicted
+> well and there is no thermodynamic factor), so it stays possible.  In
+> the LIQUID film it needs diffusivities at finite concentration (an
+> interpolation rule between two infinite-dilution values) and the
+> thermodynamic factor, a second derivative of the excess Gibbs energy
+> that an activity model fitted to phase equilibria does not pin; and
+> both sit under film coefficients known to tens of per cent (the
+> chapter read on 2026-11-13 puts the tray flow model ALONE at up to 20
+> % of the overall transfer rate).  A refinement smaller than the
+> uncertainty of what it multiplies is not built ahead of a case that
+> needs it.  THEREFORE: the liquid Maxwell-Stefan film is NOT PLANNED;
+> B4b is the boundary case run on the effective-diffusivity film and
+> shown beside its measurement, saying in the run and on the page that
+> this is where the simple film gives the wrong product: the limit is
+> TAUGHT, not hidden and not papered over with a model nobody can
+> parameterise.  A vapour-film Maxwell-Stefan option is built only if a
+> measured case in the tree shows it changes an answer.
 
 > **C329, SECOND PART: TO BE BUILT AS SOON AS POSSIBLE (Vitor,
 > 2026-11-13, to the reviewing session, which relayed it: asked how
