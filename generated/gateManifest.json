@@ -1703,13 +1703,18 @@
     },
     "check_property_route_bench": {
       "exit": 0,
-      "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded (records 696, binaries 8, blocks 4974, values 81003, refusals 74163, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 3.6
+      "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 4974, values 81003, refusals 74163, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357; door against the old call: 134343 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 15.4
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
-      "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 23 raw liquid-property site(s) (21 `.Vliq()` reads, 2 literals), each within its pin; none new.  NOT CHECKED: a raw number spelled another way, thermo/ and propertyOps/.",
-      "seconds": 0.2
+      "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 85 raw liquid-property site(s) (vliq 23, direct 12, literal 18, conversion 32), each within its pin; none new; the door review's 18 probe lines all caught.  NOT CHECKED: a value built with no literal (a variable read under an unrelated key, a constant spelled otherwise in another header), a conversion line that names no volume or flow, thermo/ and propertyOps/; a kg/kmol conversion on a volume line is counted (pinned).",
+      "seconds": 1.9
+    },
+    "check_property_source_witnesses": {
+      "exit": 0,
+      "claim": "check_property_source_witnesses: OK -- 9 (unit, property) sources in 6 witness case(s) are the tags their code takes.  NOT CHECKED: any case outside the witnesses (the goldens' `source` rows will hold those), or whether a source is right.",
+      "seconds": 25.7
     }
   }
 }
