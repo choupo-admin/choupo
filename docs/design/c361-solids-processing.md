@@ -599,21 +599,23 @@ H = H_0.  Lists are SI (s, m): a list does not carry a unit word.
 
 | quantity | as implemented | source | code |
 |---|---|---|---|
-| slope at a test time | v = -dH/dt of the parabola through that point and its two neighbours (the interior point nearest t) | ours (numerical; a student draws the tangent by eye) | `Thickener.cpp:49-67` |
-| Kynch's layer at (t, H) | H_i = H + v t; C = C_0 H_0 / H_i | Talmage & Fitch 1955 eqs. 4-6, pp. 38-39; Wills & Napier-Munn 2006 eq. 15.4, p. 387 | `:162-165` |
-| underflow line | H_u = C_0 H_0 / C_u | T&F step 1, p. 39 | `:144` |
-| curve crossing | t_x where the (linearly interpolated) test crosses H_u | T&F p. 39 | `:170-174` |
-| `talmageFitch` | tangent at the declared compression time t_c; if H_u < H(t_c): t_u = (H_i - H_u)/v; else t_u = t_x; A = W t_u / (C_0 H_0) | T&F eqs. 7-10 and steps 1-5, p. 39; Wills eq. 15.6, p. 387; Perry 9th ed. eq. 18-54, p. 18-64 | `:177-195`, `:216` |
-| `coeClevenger` | A = max over the test's layers with C < C_u of W (1/C - 1/C_u)/v | Coe & Clevenger 1916 as Wills eq. 15.5, p. 387 prints it, with (C, v) from Kynch's construction as Wills p. 387 says may be done | `:210` |
-| the identity | Coe-Clevenger at the compression layer = Talmage-Fitch's tangent area (algebra: H_i - H_u = v t_u) | Wills derives eq. 15.6 from 15.5, p. 387 | `:221-225` |
-| underflow liquid | (1 - C_u/rho_s) rho_l / C_u kg per kg of solids | definition of C_u | `:229` |
-| overflow | the DIFFERENCE, componentwise; every solid to the underflow (ideal) | balance | `:240` |
-| unit area | A/W in m2 per (t/d) | T&F eq. 10 (their units ft2/(ton/day)) | `:265` |
+| slope at a test time | v = -dH/dt of the parabola through that point and its two neighbours (the interior point nearest t) | ours (numerical; a student draws the tangent by eye) | `Thickener.cpp:51-69` |
+| Kynch's layer at (t, H) | H_i = H + v t; C = C_0 H_0 / H_i | Talmage & Fitch 1955 eqs. 4-6, pp. 38-39; Wills & Napier-Munn 2006 eq. 15.4, p. 387 | `:166-169` |
+| underflow line | H_u = C_0 H_0 / C_u | T&F step 1, p. 39 | `:147` |
+| curve crossing | t_x where the (linearly interpolated) test crosses H_u | T&F p. 39 | `:174-178` |
+| `talmageFitch` | tangent at the declared compression time t_c; if H_u < H(t_c): t_u = (H_i - H_u)/v; else t_u = t_x; A = W t_u / (C_0 H_0) | T&F eqs. 7-10 and steps 1-5, p. 39; Wills eq. 15.6, p. 387; Perry 9th ed. eq. 18-54, p. 18-64 | `:181-200`, `:221` |
+| `coeClevenger` | A = max over the test's layers with C < C_u of W (1/C - 1/C_u)/v | Coe & Clevenger 1916 as Wills eq. 15.5, p. 387 prints it, with (C, v) from Kynch's construction as Wills p. 387 says may be done | `:215` |
+| the identity | Coe-Clevenger at the compression layer = Talmage-Fitch's tangent area (algebra: H_i - H_u = v t_u) | Wills derives eq. 15.6 from 15.5, p. 387 | `:226-230` |
+| underflow liquid | (1 - C_u/rho_s) rho_l / C_u kg per kg of solids | definition of C_u | `:234` |
+| overflow | the DIFFERENCE, componentwise; every solid to the underflow (ideal) | balance | `:245` |
+| unit area | A/W in m2 per (t/d) | T&F eq. 10 (their units ft2/(ton/day)) | `:270` |
 
 Window: Kynch's postulate (the settling velocity a function of the local
 concentration only, T&F p. 38); free settling governs the area; the test at
 the expected feed concentration (T&F p. 40; a deviation above 5 % is
-announced).  Area only: depth, compression time and safety factor (Wills
+announced at every verbosity, on the advisory log, with both concentrations
+and the deviation).  The printed compression slope names the three test
+points of its parabola (the point nearest t and its two neighbours).  Area only: depth, compression time and safety factor (Wills
 p. 386 asks for at least two) are not applied.
 
 Keys, none with a default: `settlingTest { initialConcentration [kg/m3];

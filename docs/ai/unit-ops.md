@@ -2336,7 +2336,11 @@ A = W t_u/(C_0 H_0) (Talmage & Fitch 1955 eqs. 7-10; Wills & Napier-Munn 2006
 eq. 15.6).  `model coeClevenger`: the largest over the test's layers of
 W (1/C - 1/C_u)/v (Wills eq. 15.5) with (C, v) from Kynch's construction.  The
 underflow carries every solid; the overflow is the difference.  A C_u outside what
-the test reached is refused.
+the test reached is refused.  A test run more than 5 % away from the feed's own
+concentration is used as declared and ANNOUNCED on the advisory log at every
+verbosity (both concentrations and the deviation; Talmage & Fitch p. 40).  The
+printed compression slope names its method: the derivative at t of the parabola
+through the test point nearest t and its two neighbours.
 ```
 type      thickener;
 model     talmageFitch;

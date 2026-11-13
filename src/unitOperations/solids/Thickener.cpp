@@ -46,9 +46,10 @@ namespace Choupo {
 namespace {
 
 //  The parabola through three neighbouring test points around `t`: its
-//  value and slope at t.  j is the middle point, clamped to the interior.
+//  value and slope at t.  j is the middle point, clamped to the interior,
+//  and is handed back so the run can say WHICH three points it used.
 void localParabola(const std::vector<scalar>& t, const std::vector<scalar>& H,
-                   scalar x, scalar& Hx, scalar& dHdt)
+                   scalar x, scalar& Hx, scalar& dHdt, std::size_t& jMid)
 {
     const std::size_t n = t.size();
     std::size_t j = 1;
@@ -66,6 +67,7 @@ void localParabola(const std::vector<scalar>& t, const std::vector<scalar>& H,
     const scalar d2 = ((x - x0) + (x - x1)) / ((x2 - x0) * (x2 - x1));
     Hx   = y0 * L0 + y1 * L1 + y2 * L2;
     dHdt = y0 * d0 + y1 * d1 + y2 * d2;
+    jMid = j;
 }
 
 } // namespace
@@ -160,7 +162,8 @@ int Thickener::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbo
     for (std::size_t j = 0; j < np; ++j)
     {
         scalar Hx, d;
-        localParabola(tt, HH, tt[j], Hx, d);
+        std::size_t jm;
+        localParabola(tt, HH, tt[j], Hx, d, jm);
         vK[j]  = std::max(0.0, -d);
         HiK[j] = HH[j] + vK[j] * tt[j];                            // tangent intercept
         CK[j]  = C0 * H0 / HiK[j];                                 // Wills eq. 15.4
@@ -177,6 +180,7 @@ int Thickener::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbo
         }
     scalar tComp = 0.0, Hc = 0.0, vc = 0.0, Hic = 0.0, Cc = 0.0, tuTF = 0.0;
     bool tangentUsed = false;
+    std::size_t jPar = 0;                       // middle point of the slope's parabola
     const bool needComp = (model == "talmageFitch");
     if (oper->found("compressionTime"))
     {
@@ -185,7 +189,7 @@ int Thickener::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbo
             throw std::runtime_error(me + ": `compressionTime` must lie inside the "
                 "test, 0 < t < " + std::to_string(tt.back()) + " s.");
         scalar d;
-        localParabola(tt, HH, tComp, Hc, d);
+        localParabola(tt, HH, tComp, Hc, d, jPar);
         vc  = -d;
         if (!(vc > 0.0))
             throw std::runtime_error(me + ": the curve does not fall at the "
@@ -339,7 +343,10 @@ int Thickener::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbo
                   << Hu << " m (the curve crosses it at " << tCross << " s)\n";
         if (Atf > 0.0)
             std::cout << "  Compression:  t = " << tComp << " s, H = " << Hc
-                      << " m, slope v = " << vc << " m/s, tangent meets the H axis at "
+                      << " m, slope v = " << vc << " m/s (the derivative at t of the "
+                         "parabola through the three test points t = " << tt[jPar - 1]
+                      << ", " << tt[jPar] << ", " << tt[jPar + 1] << " s -- the "
+                         "point nearest t and its two neighbours), tangent meets the H axis at "
                       << Hic << " m (C = " << Cc << " kg/m3)\n"
                       << "  Talmage-Fitch: t_u = " << tuTF << " s ("
                       << (tangentUsed ? "tangent at the compression point"
