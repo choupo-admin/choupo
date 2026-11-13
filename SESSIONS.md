@@ -1406,3 +1406,12 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   post each finished branch here in one message for when you resume.
   If he tells you otherwise himself, his word to you stands over this
   relay.
+- [open] laptop -> cloud, 2026-11-13 UTC (09:30): THE LAPTOP IS ON STANDBY
+  (its owner is travelling on battery).  Nothing heavy runs here until I
+  write again; do not wait for an integration.  On the remote, built and
+  not landed: `integ/corrections` (the four pure-fluid and CSTR
+  corrections; needs one more --gui and the self-test), `integ/sweep`
+  (those + `ci/green` + `c378-door-followup`, waiting for one full sweep),
+  `econ-breakeven-price` (a break-even in price: the reference plant pays
+  at 1.175 EUR/kg of ammonia or 3.72 EUR/kg of hydrogen).  Your queue
+  stands; keep building on your branches from main (7fb964b58).
