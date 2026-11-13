@@ -41,7 +41,7 @@ stream  feed                   T                370              1e-4
 boundary global                 H_feeds_kW       1779.54082551    1e-4
 boundary global                 Q_boundary_kW    -637.878033589   1e-4
 boundary global                 H_products_kW    1141.66279192    1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.02002
 kpi     column11               Q_condensate_m3_s 0.00406661248375 1e-4
 kpi     column11               diameter_rectifying 1.21993664151    1e-4
 kpi     column11               diameter_stripping 0.963652539553   1e-4

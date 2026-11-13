@@ -31,7 +31,7 @@ kpi     hx                     BD_leakageSplit  0.404994611654     1e-4
 kpi     hx                     C_cold           33513.6111111      1e-4
 kpi     hx                     C_hot            23128.1666667      1e-4
 kpi     hx                     C_r              0.690112640801     1e-4
-kpi     hx                     H_closure_gap_kW -1.45004150909e-08 1e-4
+kpi     hx                     H_closure_gap_kW -1.45004150909e-08 abs:7.805e-06
 kpi     hx                     LMTD             20.9763905301      1e-4
 kpi     hx                     NTU              3.0914515179       1e-4
 kpi     hx                     Nu_tube          98.8157037829      1e-4

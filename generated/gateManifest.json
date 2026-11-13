@@ -1704,17 +1704,17 @@
     "check_property_route_bench": {
       "exit": 0,
       "claim": "check_property_route_bench: OK -- 4975 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 4974, values 81129, refusals 74037, packages not assembled 448; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 357; door against the old call: 134343 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 24.4
+      "seconds": 6.5
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
-      "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 84 raw liquid-property site(s) (vliq 23, direct 12, phaseVariable 0, literal 19, conversion 30), each within its pin; none new; the two door reviews' 27 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; counted and pinned although false: a kg/kmol or kmol/mol conversion on a volume line and PackingRBF.H's dPflood 1025 Pa/m; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
-      "seconds": 1.6
+      "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 85 raw liquid-property site(s) (vliq 23, direct 12, literal 18, conversion 32), each within its pin; none new; the door review's 18 probe lines all caught.  NOT CHECKED: a value built with no literal (a variable read under an unrelated key, a constant spelled otherwise in another header), a conversion line that names no volume or flow, thermo/ and propertyOps/; a kg/kmol conversion on a volume line is counted (pinned).",
+      "seconds": 3.9
     },
     "check_property_source_witnesses": {
       "exit": 0,
-      "claim": "check_property_source_witnesses: OK -- (a) 3 source(s) built outside src/core/PropertySourceLog.H: 2 pair a tag's id with that tag's words, 1 with a string-literal id (pinned per file); (b) 10 (unit, property) sources in 7 witness case(s) are the tags their code takes; (c) the 17 published entries carrying a header tag's id carry its words; (d) the words of all 23 tags match bin/curate/property_source_words.tsv.  NOT CHECKED: any case outside the witnesses, whether a source is right, an addendum's words after '; ', and the door's own ids and labels (held by check_property_route_bench's label hashes).",
-      "seconds": 15.8
+      "claim": "check_property_source_witnesses: OK -- 10 (unit, property) sources in 7 witness case(s) are the tags their code takes.  NOT CHECKED: any case outside the witnesses (the goldens' `source` rows will hold those), or whether a source is right.",
+      "seconds": 8.8
     },
     "check_vliq_datum": {
       "exit": 0,
@@ -1731,10 +1731,10 @@
       "claim": "check_property_sources_pinned: OK -- 16 case(s) publishing liquid-property sources, every (unit, property) pinned by a `source` row (the --fast set, run live (no suite cache)).",
       "seconds": 25.7
     },
-    "check_pure_fluid_phase_asked": {
+    "check_golden_bands": {
       "exit": 0,
-      "claim": "check_pure_fluid_phase_asked: OK -- at seven suction pressures p_sat(T)(1+e), e from -1e-6 to +1e-6 including 0 and +-1e-12, T = 446.5158944 K on IF97 water: the feed pump (liquid, to 80 bar) gives dT = 1.17209206 K and the compressor fed saturated steam (vapour, to 20 bar) T_out = 561.129929 K, each the same to 1e-06 K, and the pump case's plant-boundary H_feeds_kW = 13.2224493 and H_products_kW the same to 1e-6 relative over the five runs inside the band, every run on the pure-fluid route; the branch held outside the engine: T_out above T_sat(20 bar) + 1 K = 486.5345 K and the pump's dT within (0, 2.5627] K; at five pressures inside the band (|e| <= 5e-7) phaseChanger cooling declared steam by 1 kW stays on its plateau (vf_out = 0.972752) and a declared liquid at 550 K leaves liquid (T_out = 539.183993 K), the heatExchanger's H_closure_gap_kW stays within 1e-6 kW, the pipe takes the liquid path (rho = 755.8060 kg/m3), each the same at every e and with the plant residual within 1e-6 kW; the turbine's two inlet calls carry DensityPhase::Vapour (by source: no saturated-steam turbine run converges, water being a wet fluid).  NOT CHECKED: the values beyond those bounds, a pure stream beyond the band whose vapour fraction contradicts its T and P, a wet turbine exhaust, a heatExchanger fed a declared saturated vapour.",
-      "seconds": 2.0
+      "claim": "check_golden_bands: OK -- all 183105 golden row(s) have a class (condition 4109, count 8294, direct 127111, objective 42715, parameter 752, residual_boundary 77, residual_hx 18, residual_ledger 29); the 124 closure-residual row(s) carry the absolute form on disk (77 boundary row(s) on FORM alone, no cached output carried the term); the cross-platform transformation gives a count 2.0, a condition number 2.0, an objective 1e-2 and a parameter 5e-2 and leaves direct, exact and anchor rows alone; the comparator failed a wrong value and passed a right one in the relative, abs: and exact forms, strict and cross, and a count and an objective off by a factor failed strict, passed cross and failed cross at ten times (18 runs).  NOT CHECKED: that a band is physically right, that direct rows are tight, anchor and exact rows.",
+      "seconds": 46.5
     }
   }
 }

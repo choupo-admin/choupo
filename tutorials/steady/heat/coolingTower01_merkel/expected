@@ -26,6 +26,6 @@ stream  humidAir               T                307.613817692    1e-4
 boundary global                 H_feeds_kW       -8000.98138148   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -8002.54796411   1e-4
-boundary global                 residual_kW      1.5593846013     1e-4
+boundary global                 residual_kW      1.5593846013     abs:0.001
 utility tower01                heating.-.carried 1                1e-4
-kpi     tower01                H_closure_gap_kW -1.39277111799   1e-4
+kpi     tower01                H_closure_gap_kW -1.39277111799   abs:3.643e-07

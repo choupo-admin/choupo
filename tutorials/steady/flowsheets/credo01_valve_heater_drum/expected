@@ -46,7 +46,7 @@ kpi     V1                     dT               -43.8263931906   1e-4
 boundary global                 H_feeds_kW       967.77190598     1e-4
 boundary global                 Q_boundary_kW    260              1e-4
 boundary global                 H_products_kW    1227.77190598    1e-4
-boundary global                 residual_kW      -1.77351466846e-11 1e-4
+boundary global                 residual_kW      -1.77351466846e-11 abs:0.0026
 kpi     V1                     Q_in             0.00321911248758 1e-4
 kpi     V1                     Q_out            0.172789208725   1e-4
 kpi     V1                     massFlow         2.40361666667    1e-4

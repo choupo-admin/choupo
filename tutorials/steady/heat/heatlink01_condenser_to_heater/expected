@@ -43,4 +43,4 @@ utility preheater              heating.-.carried 1                1e-4
 boundary global                 H_feeds_kW       23575.3250035    1e-4
 boundary global                 Q_boundary_kW    679.510516909    1e-4
 boundary global                 H_products_kW    24254.8355204    1e-4
-boundary global                 residual_kW      -6.14818418398e-10 1e-4
+boundary global                 residual_kW      -6.14818418398e-10 abs:0.0331

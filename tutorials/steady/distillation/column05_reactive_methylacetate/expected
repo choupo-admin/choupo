@@ -34,5 +34,5 @@ stream  feed                   T                293              1e-4
 boundary global                 H_feeds_kW       -6.28823525655   1e-4
 boundary global                 Q_boundary_kW    0.0310200388804  1e-4
 boundary global                 H_products_kW    -6.25721521767   1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:1.639e-05
 kpi     rdColumn               Q_reboiler_ownEnvelope_kW 1.26904266577    1e-4

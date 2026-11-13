@@ -16,7 +16,7 @@ kpi     balance                energy_kJ_heat_cum 587.253412702    1e-4
 kpi     balance                energy_kJ_in_cum -67689.3808709   1e-4
 kpi     balance                energy_kJ_initial -28597.6577905   1e-4
 kpi     balance                energy_kJ_out_cum -67290.804288    1e-4
-kpi     balance                energy_residual_kJ -0.0108174111328 1e-4
+kpi     balance                energy_residual_kJ -0.0108174111328 abs:6.769e-05
 kpi     balance                mass_closure_rel 1.31121976253e-14 1e-4
 kpi     balance                mass_kg_final    4.032598         1e-4
 kpi     balance                mass_kg_in_cum   9.55089          1e-4

@@ -236,14 +236,14 @@ equipment waterCooler            basis            A_=_Q/(U*LMTD)_with_U_and_LMTD
 boundary global                 H_feeds_kW       -39777909.9013   1e-4
 boundary global                 Q_boundary_kW    -10331.8126531   1e-4
 boundary global                 H_products_kW    -39788240.2833   1e-4
-boundary global                 residual_kW      -1.38172628731   1e-4
+boundary global                 residual_kW      -1.38172628731   abs:0.6636
 utility separator              cooling.refrigerationNH3.duty_kW -38345.6151178   1e-4
 utility separator              cooling.refrigerationNH3.T 250              1e-4
 utility separator              cooling.refrigerationNH3.kg_s 27.990828118     1e-4
 utility separator              cooling.refrigerationNH3.eur_h 2186.62035648    1e-4
 stream  productStored          F                0.961520200819   1e-4
 stream  productStored          T                250              1e-4
-kpi     FEHE                   H_closure_gap_kW 4.14365786128e-07 1e-4
+kpi     FEHE                   H_closure_gap_kW 4.14365786128e-07 abs:0.00115
 kpi     T201                   densityPricedFraction 0.999208557485   1e-4
 kpi     T201                   density_kg_m3    666.702933233    1e-4
 kpi     T201                   fillFraction     0.8              1e-4
@@ -257,7 +257,7 @@ kpi     T201                   massFlow_kg_s    16.3780005555    1e-4
 kpi     T201                   residenceTime_s  172800           1e-4
 kpi     T201                   vesselVolume_m3  5306.18352439    1e-4
 kpi     T201                   volumetricFlow_m3_s 0.0245656644647  1e-4
-kpi     waterCooler            H_closure_gap_kW -1.25699443743e-06 1e-4
+kpi     waterCooler            H_closure_gap_kW -1.25699443743e-06 abs:0.000574
 boundary mass                   process_in_kg_per_h 70636.62         1e-4
 boundary mass                   process_out_kg_per_h 70634.8765245    1e-4
 boundary mass                   process_closure_pct 99.9975317682    1e-4

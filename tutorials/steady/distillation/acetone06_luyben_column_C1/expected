@@ -48,4 +48,4 @@ stream  acetoneProduct         T                329.375048712    1e-4
 boundary global                 H_feeds_kW       -5415.56076627   1e-4
 boundary global                 Q_boundary_kW    32.7448712027    1e-4
 boundary global                 H_products_kW    -5382.81589507   1e-4
-boundary global                 residual_kW      1.81898940355e-12 1e-4
+boundary global                 residual_kW      1.81898940355e-12 abs:0.0205

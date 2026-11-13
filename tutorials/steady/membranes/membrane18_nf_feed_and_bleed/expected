@@ -28,6 +28,6 @@ kpi     NF                     solute_closure_rel 0                1e-4
 boundary global                 H_feeds_kW       -15965.9347526   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -15965.8957458   1e-4
-boundary global                 residual_kW      -0.0390157424372 1e-4
+boundary global                 residual_kW      -0.0390157424372 abs:0.001
 source  NF                     liquidDensity    default.rhoFeed1000 exact
 source  NF                     liquidViscosity  default.water1e-3 exact

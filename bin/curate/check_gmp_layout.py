@@ -869,7 +869,8 @@ def arm_golden(work):
     out, err, rc = run([str(ROOT / "bin/runTests"), "--record", str(d)], timeout=1200)
     exp = d / "expected"
     if rc != 0 or not exp.exists():
-        fail(f"(f) runTests --record on the clean probe exited {rc}")
+        fail(f"(f) runTests --record on the clean probe exited {rc}; its last output lines follow (the exit alone told nothing on the CI runner):\n"
+             + "\n".join((out + err).splitlines()[-25:]))
         return
     rows = [l for l in exp.read_text().splitlines() if l.startswith("layout ")]
     want = {"buildingSummary": False, "room:": False, "door:": False, "flow:": False}

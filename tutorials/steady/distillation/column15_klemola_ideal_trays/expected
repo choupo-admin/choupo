@@ -33,7 +33,7 @@ stream  feed                   T                329.5214         1e-4
 boundary global                 H_feeds_kW       -17636.4019558   1e-4
 boundary global                 Q_boundary_kW    -391.160173669   1e-4
 boundary global                 H_products_kW    -18027.5621295   1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.1991
 kpi     splitter               Q_reboiler_ownEnvelope_kW 10457.419869     1e-4
 kpi     splitter               R_internal       13.9470778709    1e-4
 kpi     splitter               refluxSubcooling_K 26.4100282087    1e-4

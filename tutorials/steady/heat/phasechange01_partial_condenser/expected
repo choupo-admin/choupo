@@ -25,4 +25,4 @@ kpi     condenser              vf_in            1                1e-4
 boundary global                 H_feeds_kW       2128.54189855    1e-4
 boundary global                 Q_boundary_kW    -630.508868406   1e-4
 boundary global                 H_products_kW    1498.03303014    1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.006305

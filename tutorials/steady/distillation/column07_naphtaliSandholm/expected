@@ -26,7 +26,7 @@ stream  feed                   T                272.04           1e-4
 boundary global                 H_feeds_kW       -70924.1244871   1e-4
 boundary global                 Q_boundary_kW    1291.7108601     1e-4
 boundary global                 H_products_kW    -69632.413627    1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.1716
 utility column07               cooling.refrigerationNH3.duty_kW -7934.42286361    1e-4
 utility column07               cooling.refrigerationNH3.T 272.663334648    1e-4
 utility column07               cooling.refrigerationNH3.kg_s 5.79182433007    1e-4

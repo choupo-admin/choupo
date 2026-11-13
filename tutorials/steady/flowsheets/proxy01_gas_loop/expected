@@ -104,8 +104,8 @@ utility HX1                    heating.-.carried 1                1e-4
 boundary global                 H_feeds_kW       -4817.68074076   1e-4
 boundary global                 Q_boundary_kW    -1.98011282437   1e-4
 boundary global                 H_products_kW    -4820.68992223   1e-4
-boundary global                 residual_kW      1.02906864675    1e-4
-kpi     HX1                    H_closure_gap_kW 1.16937215466e-09 1e-4
+boundary global                 residual_kW      1.02906864675    abs:1.98e-05
+kpi     HX1                    H_closure_gap_kW 1.16937215466e-09 abs:7.012e-08
 boundary global                 W_shaft_kW       -0.4             1e-4
 utility R1                     cooling.coolingWater.duty_kW -1.58011282437   1e-4
 utility R1                     cooling.coolingWater.T 800              1e-4

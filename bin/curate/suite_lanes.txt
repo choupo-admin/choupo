@@ -325,6 +325,7 @@ POST | SERIAL | bin/curate/check_relief_valve.py                   | writes repo
 POST | PAR    | bin/curate/check_bund_arithmetic.py                | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 POST | SERIAL | bin/curate/check_converter_shell.py                | not reached by the traced sweep
 POST | SERIAL | bin/curate/check_energy_boundary_pinned.py         | not reached by the traced sweep
+POST | SERIAL | bin/curate/check_golden_bands.py                 | runs bin/runTests on a temp copy of a batch case (nested walk)
 POST | SERIAL | bin/curate/check_impossible_phase_pins.py          | not reached by the traced sweep
 POST | SERIAL | bin/curate/check_mass_closure.py                   | not reached by the traced sweep
 POST | SERIAL | bin/curate/check_campaign_closure.py               | reads the walk output cache; runs live cases when standalone

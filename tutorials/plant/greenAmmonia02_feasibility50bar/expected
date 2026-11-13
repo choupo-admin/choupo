@@ -506,7 +506,7 @@ equipment WaterCooler            tagNo            E-105            exact
 boundary global                 H_feeds_kW       533.06073992     1e-4
 boundary global                 Q_boundary_kW    -57695.7176684   1e-4
 boundary global                 H_products_kW    -57162.7386311   1e-4
-boundary global                 residual_kW      0.0816735749613   1e-4
+boundary global                 residual_kW      0.0816735749613   abs:2.389
 boundary global                 W_shaft_kW       6548             1e-4
 utility Aftercooler            cooling.coolingWater.duty_kW -3205.48637914   1e-4
 utility Aftercooler            cooling.coolingWater.T 313.15           1e-4

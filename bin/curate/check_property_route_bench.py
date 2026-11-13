@@ -39,6 +39,16 @@ manifest's binaries, activity-model effects (the bench's liquid is ideal),
 and the per-unit `thermo {}` override.  Liquid thermal conductivity (not in
 slice 0).
 
+THE PLATFORM (C384, 2026-11-13).  A hexfloat pinned bit for bit is a claim about
+ONE platform: the libm a binary calls differs in the last bit between C
+libraries and CPUs, and on the CI runner 588 of 4975 blocks answered differently
+while every one equals its pin on the recording machine.  The pin file therefore
+states the platform it was recorded on (`# platform`: CPU, architecture, C
+library, compiler and the SIMD features glibc dispatches on, all READ from the
+running system by platform_fingerprint()).  On another platform the gate prints
+`NO SUBJECT` with both fingerprints and exits 0 (bin/runTests prints it as
+NOSUBJ, never as a pass); on the recording platform nothing changes.
+
 THE BINARY.  It runs <root>/choupoProps and REFUSES when it is missing: a
 bench that cannot run must not pass.  It does not rebuild.
 
@@ -51,10 +61,15 @@ bench that cannot run must not pass.  It does not rebuild.
 """
 import hashlib
 import os
+import platform
+import re
 import subprocess
 import sys
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from golden_bands import platform_fingerprint   # ONE fingerprint function (C384)
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "bin" / "curate" / "property_route_bench.manifest"
@@ -64,6 +79,16 @@ OUT = ROOT / "build" / "propertyRouteBench" / "bench.tsv"
 LABEL_HASHES = ROOT / "bin" / "curate" / "property_route_labels.sha256.tsv"
 LABELS = ROOT / "build" / "propertyRouteBench" / "labels.tsv"
 NAME = "check_property_route_bench"
+
+
+def pinned_platform():
+    if not HASHES.exists():
+        return None
+    for line in HASHES.read_text(encoding="utf-8").splitlines():
+        m = re.match(r"# platform\t(.*)$", line)
+        if m:
+            return m.group(1)
+    return None
 
 
 def run_bench():
@@ -132,6 +157,19 @@ def read_hashes(path=HASHES):
 
 def main() -> int:
     record = "--record" in sys.argv[1:]
+    here = platform_fingerprint()
+    if not record:
+        there = pinned_platform()
+        if there is None:
+            print(f"{NAME}: FAIL -- {HASHES.relative_to(ROOT)} does not state the platform it was recorded on "
+                  "(a `# platform` line); re-record with --record on the platform the pins are true on")
+            return 1
+        if there != here:
+            print(f"NO SUBJECT: the route bench is pinned bit for bit on ANOTHER platform, so it asserts nothing here "
+                  f"(not run, not a pass).  recorded on: {there} || running on: {here}")
+            print(f"{NAME}: NO SUBJECT -- recorded on [{there}]; this system is [{here}].  The bench's hexfloats "
+                  "are true on the recording platform only; on that platform nothing changes.")
+            return 0
     secs, summary = run_bench()
     got, order = blocks(OUT)
     if len(got) < 1000:
@@ -145,7 +183,8 @@ def main() -> int:
                   "(build/propertyRouteBench/labels.tsv); review DR-11"]
         llines += [f"{k[0]}\t{k[1]}\t{labels[k]}" for k in lorder]
         LABEL_HASHES.write_text("\n".join(llines) + "\n", encoding="utf-8")
-        lines = ["# record\tproperty route\tsha256 of its block in build/propertyRouteBench/bench.tsv",
+        lines = [f"# platform\t{here}",
+                 "# record\tproperty route\tsha256 of its block in build/propertyRouteBench/bench.tsv",
                  "# written by bin/curate/check_property_route_bench.py --record; "
                  "DEV.md 4c C378 slice 0 (TR-16)"]
         lines += [f"{k[0]}\t{k[1]}\t{got[k]}" for k in order]

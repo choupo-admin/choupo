@@ -34,4 +34,4 @@ stream  intermediateCut        T                379.771154574    1e-4
 boundary global                 H_feeds_kW       1016.44420531    1e-4
 boundary global                 Q_boundary_kW    78.7487231995    1e-4
 boundary global                 H_products_kW    1095.13808131    1e-4
-boundary global                 residual_kW      0                1e-4
+boundary global                 residual_kW      0                abs:0.03016

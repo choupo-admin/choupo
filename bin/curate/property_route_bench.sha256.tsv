@@ -1,3 +1,4 @@
+# platform	cpu=13th Gen Intel(R) Core(TM) i7-13620H; arch=x86_64; libc=glibc 2.39; cxx=g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; simd=sse4_1,avx,avx2,fma
 # record	property route	sha256 of its block in build/propertyRouteBench/bench.tsv
 # written by bin/curate/check_property_route_bench.py --record; DEV.md 4c C378 slice 0 (TR-16)
 @routes	header	18c8d86b4798ec72e056b812b29807f599b90ec5ccbf2991d0b8fec654116323
