@@ -142,7 +142,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
                 throw std::runtime_error(whoVV + ": the initial inventory is"
                     " stated TWICE (`level` and `totalMoles`/`V`) -- keep one");
             const scalar h0 = initDict->lookupScalar("level");
-            const auto ls = VVH::liquidState(thermo, x, T_, P_, whoVV);
+            const auto ls = VVH::liquidState(thermo, x, T_, P_, whoVV, "dynamicCSTR", name_);
             const scalar nT = h0 * geom_.area() * ls.density / ls.meanMW;
             for (std::size_t i = 0; i < N; ++i) n_[i] = nT * x[i];
         }
@@ -151,7 +151,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
             const scalar nT = initDict->lookupScalar("totalMoles");
             for (std::size_t i = 0; i < N; ++i) n_[i] = nT * x[i];
         }
-        V_ = VVH::liquidState(thermo, n_, T_, P_, whoVV).volume;   // m3 (derived)
+        V_ = VVH::liquidState(thermo, n_, T_, P_, whoVV, "dynamicCSTR", name_).volume;   // m3 (derived)
         if (initDict->found("V"))
         {
             const scalar Vd = initDict->lookupScalar("V");
@@ -1203,7 +1203,7 @@ DynamicCSTR::Resolved DynamicCSTR::resolveVariable_(const sVector& n, scalar T,
 {
     const std::string who = "dynamicCSTR '" + name_ + "'";
     Resolved r;
-    r.liquid = VVH::liquidState(*thermo_, n, T, P_, who);
+    r.liquid = VVH::liquidState(*thermo_, n, T, P_, who, "dynamicCSTR", name_);
     r.liquid.level = VVH::level(geom_, r.liquid.volume);
     if (outflow_ == Outflow::flow)
         r.F_out = F_out_set_;
