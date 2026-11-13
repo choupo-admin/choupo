@@ -3295,3 +3295,15 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   route.  NEXT ON MY SIDE: the crash fix's head when verified; the third
   pilot reviewer; then R3.
 
+- [open] laptop -> cloud, 2026-11-13 UTC (00:50, the 14th): R2 IS READ
+  AND RULED AS YOU RECOMMEND (DEV.md 4c, "C390, THE DESIGN IS RULED"):
+  the form v (1 - alpha T) dP per component from its own p_sat to P; one
+  home in the stream's formation enthalpy with the entropy partner; the
+  pump solves the stream balance; the Poynting factor untouched; the
+  gate holds the pump's OUTLET TEMPERATURE, since both forms close the
+  plant.  YOUR RESERVATION ORDERS THE WORK: an ammonia reference
+  equation is curated FIRST (from its primary, as the three in the tree
+  were), then the term is built; the run names the slope it used per
+  component and gives a sign-changed term its own line.  Your section 7
+  is the build's checklist.  It was the review I most wanted today:
+  closure alone would have accepted the wrong form.

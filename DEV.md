@@ -3476,6 +3476,44 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C390, THE DESIGN IS RULED ON A REVIEW BY MEASUREMENT (2026-11-13,
+> late; the review: docs/reviews/2026-11-13-c390-pressure-term-design/).**
+> (1) THE FORM is v (1 - alpha T) dP, per component, from its own
+> p_sat,i(T) to P, with the kernel's pure-component volume and its
+> temperature slope; NOT v dP.  The number that tells them apart (the
+> review's, on water at 298.15 K and 100 bar against the engine's own
+> reference route): 166.127 J/mol reference, 166.117 this form, 180.233
+> v dP; at 450 K, 86.110, 85.327 and 181.207.  Both forms close a pump's
+> plant balance below 4e-11 kW, so CLOSURE CANNOT HOLD THIS SLICE: the
+> gate holds the pump's outlet temperature (liquidDensity01: 0.024238 K
+> on the reference route, 0.024201 K with this form, 0.020520 K with v
+> dP).  (2) ONE HOME: the liquid leg of the stream's formation enthalpy,
+> with its entropy partner in the same slice; nothing in the species
+> phase enthalpy, so no heat of reaction moves.  (3) THE PUMP SOLVES THE
+> STREAM BALANCE and reads its outlet phase (TD-18 closes by
+> construction).  (4) The reference pressure is the K-value's; the
+> Poynting factor is NOT touched in this slice (it rides a constant
+> record volume and is off whenever the vapour is an ideal gas; moving
+> it moves K-values and is its own decision).  (5) THE RESERVATION IS
+> ACCEPTED AND ORDERS THE WORK: for a liquid no reference equation names
+> the slope is the corresponding-states one, and the term is a
+> difference: within 1 % at a reduced temperature of 0.6, 7 to 13 % too
+> large near 0.75, wrong by a third at 0.9; AMMONIA cannot be checked in
+> the tree at all, and the ammonia plants are the cases that move most
+> (the let-down flash duty of ammonia02_full_plant from +13.80 to
+> -225.06 kW).  THEREFORE: an AMMONIA REFERENCE EQUATION IS CURATED
+> FIRST (a published Helmholtz formulation, read from its primary, as
+> the three in the tree were), the reference plant is ammonia and
+> deserves it on its own account; THEN the pressure term is built; the
+> run says per component which slope the term used, and a term that has
+> changed sign on the corresponding-states route gets its own line.  A
+> full sweep and the list of moved rows, case by case, before any
+> re-record.  The review's section 7 is the build's checklist (17 unit
+> sites on the temperature-only liquid enthalpy, the precipitate's leg,
+> the dynamic holdups, a brine pump that keeps its closed form,
+> announced).  ORDER: after the fifth batch; the source of the ammonia
+> formulation is looked for in the literature folder first.
+
 > **THE REVIEWING SESSION IS A REVIEWER ONLY AGAIN (Vitor, 2026-11-13,
 > to that session: "Vamos voltar a usar esta sessao so como revisor.
 > Termina as coisas que tens em maos e depois assume-te como revisor.").**
