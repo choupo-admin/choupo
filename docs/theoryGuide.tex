@@ -23857,7 +23857,7 @@ in $\mathrm{Re}_{\mathrm{mf}} = \rho_g u_{\mathrm{mf}} d_p/\mu$,
 = \frac{g\,d_p^3\,\rho_g(\rho_p-\rho_g)}{\mu^2},
 \label{eq:fb-umf}
 \end{equation}
-whose positive root Wen and Yu wrote as
+whose positive root Wen and Yu\cite{WenYu1966} wrote as
 $\mathrm{Re}_{\mathrm{mf}} = \sqrt{C_1^2 + C_2\,\mathrm{Ar}} - C_1$ with two
 fitted constants; $C_2 = \varepsilon_{\mathrm{mf}}^3/1.75$ fixes
 $\varepsilon_{\mathrm{mf}} \approx 0.415$ for a sphere, and $C_1$ then absorbs a
@@ -23865,13 +23865,14 @@ shape factor.  A single particle is carried up when the gas is faster than its
 terminal velocity $u_t$, the root of $C_D(\mathrm{Re}_t)\,\mathrm{Re}_t^2 =
 \tfrac43\,\mathrm{Ar}$ with Schiller and Naumann's drag coefficient, the law the
 pneumatic conveyor uses (\S\ref{sec:pneumatic-conveying}).  Between the two lie
-the regimes: for a fine (Geldart A) powder a window of bubble-free expansion,
+the regimes: for a fine (Geldart A\cite{Geldart1973}) powder a window of bubble-free expansion,
 then bubbling, turbulent fluidisation, and fast fluidisation or pneumatic
-transport.  In the two-phase picture the gas beyond $u_{\mathrm{mf}}$ rises as
+transport\cite{KuniiLevenspiel1991}.  In the two-phase picture the gas beyond $u_{\mathrm{mf}}$ rises as
 bubbles; the bed expands to $H = L_{\mathrm{mf}}/(1-\bar\delta)$ with $\bar\delta$
 the mean bubble fraction, and bubble gas that does not exchange into the cloud
 on its way up bypasses the solid --- which is why a catalyst converts less in
-a fluidised bed than the same catalyst in a plug-flow packed bed.
+a fluidised bed than the same catalyst in a plug-flow packed
+bed\cite{KuniiLevenspiel1991}.
 
 \emph{What Choupo computes.}  No unit operation is a fluidised bed: the engine
 computes no $u_{\mathrm{mf}}$, no expansion and no bubble.  It has
@@ -29512,6 +29513,22 @@ on air-water (and similar) pipe data; Choupo's default \code{twoPhase} model.
 1974.  The modified solids-friction correlation for dilute-phase
 pneumatic conveying, vertical and horizontal, used by Choupo's
 \code{pneumaticConveyor}.
+
+\bibitem{WenYu1966} Wen, C.~Y., \& Yu, Y.~H., ``A generalized method for
+predicting the minimum fluidization velocity'', \emph{AIChE J.}\ \textbf{12}(3)
+(1966) 610--612, doi:10.1002/aic.690120343.  The minimum-fluidisation
+correlation of Section~\ref{sec:fluidised-bed}; its constants are not yet
+checked against the paper.
+
+\bibitem{Geldart1973} Geldart, D., ``Types of gas fluidization'',
+\emph{Powder Technol.}\ \textbf{7}(5) (1973) 285--292,
+doi:10.1016/0032-5910(73)80037-3.  The powder groups of
+Section~\ref{sec:fluidised-bed}; not yet checked against the paper.
+
+\bibitem{KuniiLevenspiel1991} Kunii, D., \& Levenspiel, O., \emph{Fluidization
+Engineering}, 2nd ed., Butterworth-Heinemann, 1991, ISBN 978-0-409-90233-4.
+The regime sequence and the bubble, cloud and emulsion picture of
+Section~\ref{sec:fluidised-bed}; not yet checked against the book.
 
 \bibitem{IoziaLeith1989} Iozia, D. L. \& Leith, D., \emph{Aerosol Sci.
 Technol.}\ \textbf{10}, 491, 1989.  The flow-pattern cut-size model,
