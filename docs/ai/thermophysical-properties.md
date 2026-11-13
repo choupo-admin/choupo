@@ -48,6 +48,18 @@ Every run prints, just before its result block, one line per unit:
 * The result JSON carries the same in `propertySources` (`used`,
   `declared`, `declaredNotUsed`, `mismatches`, `pricedTwice`); a golden pins
   each unit's source with a row of kind `source`.
+* WHERE THE WEB APP SHOWS THE TABLE.  Select a unit on the canvas after a run:
+  its Property panel has a section "Liquid properties used" (property, number,
+  state, the source in the engine's words, and the engine's class word
+  `kernel`, `bypass` or `declared`).  A unit with no row shows nothing.  The
+  Reports workspace has a section "Liquid properties used" for the whole run:
+  the engine's `[twice]`, `[mismatch]` and `[constant]` findings first, then a
+  table grouped by consumer.  Both read `propertySources` and compute
+  nothing; a field the app does not know (the kernel adds some) is shown in a
+  "more" row.  A sizing item is named by the engine as `inventory 'Separator'`
+  or `ShellTubeHX: unit 'Aftercooler' (design)`; the unit's panel lists the
+  rows that quote its name and says which consumer took each.  Code:
+  `gui/src/adapters/propertySourcesPayload.ts`, `gui/src/ui/LiquidPropertySources.tsx`.
 
 ## 2. What each unit uses today
 

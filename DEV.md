@@ -3476,6 +3476,221 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **THE THIRD INTEGRATION OF 2026-11-13 LANDED, AND WITH IT THE PRICE
+> RULING OF C389 (2).**  Four branches on one merged tree.
+> (a) THE GREEN-AMMONIA CASES CARRY PUBLIC PRICES (the architect's
+> decision, delegated by C389 (2); Vitor reviews afterwards).  The three
+> round figures an author had set (ammonia 1.00, hydrogen 4.50, nitrogen
+> 0.05 EUR/kg) are replaced, in the FOUR cases of the family so that the
+> stage comparison keeps one price basis, by: ammonia 0.530 EUR/kg, the
+> European Union's import unit value of anhydrous ammonia in 2025
+> computed from the official trade statistics (1 427 171 639 EUR for
+> 2 693 549 t; a customs value at the border, used as the market price of
+> CONVENTIONAL ammonia); hydrogen 8.0 EUR/kg, the energy regulators'
+> agency's statement of the average COST of renewable hydrogen in the
+> Union (its market monitoring report of 2 December 2025, range 7 to 10
+> by country of origin; the case reads that cost as what the plant pays
+> at its fence, and says that this reading is the case's, not the
+> source's); nitrogen 0.0175 EUR/kg, the highest of six modelled
+> production costs in a public techno-economic paper of October 2024,
+> converted at the central bank's 2024 average rate.  WHY THESE: each was
+> READ in its source by the general that proposed it and RE-READ by an
+> independent verifier that fetched the three documents again and redid
+> the arithmetic (the three figures confirmed; its caveats bound the
+> WORDS: a cost is called a cost, the import value is not a gate price,
+> "on-site" and a dating of the paper's "Present" column were dropped
+> because the passages do not say them).  WHY THE MARKET PRICE OF
+> CONVENTIONAL AMMONIA AS THE SELLING PRICE: no transaction price of
+> renewable ammonia could be read; the premium the plant needs is what
+> the engine's break-even shows, never an assumption.  WHAT THE PLANT NOW
+> SHOWS (greenAmmoniaPEQ_baseCase): NPV -404.78 -> -3 235.19 M EUR;
+> production cost 1.1195 -> 1.8621 EUR/kg; it pays with ammonia at 1.929
+> EUR/kg (3.6 times the market figure) or with hydrogen at 1.785 EUR/kg
+> (below the lowest figure read, 4.95); the NPV includes the engine's
+> credit for tax on losses, 1 652.4 M EUR undiscounted, and the README
+> says so.  ROWS MOVED, all of kind `kpi economics` and no other: 23
+> (base case), 18 (basic design), 42 and 42 (the two feasibility cases);
+> four rows REMOVED in the feasibility goldens (two IRR ends of the
+> tornado: no IRR exists at these prices and the engine no longer
+> publishes them).  No stream, equipment, utility, boundary or closure
+> row moved.  The sensitivity ends are the ranges read (ammonia 0.439 to
+> 0.726, hydrogen 4.95 to 10.0, nitrogen 0.01594 to 0.01754), each cited.
+> ONE DIRECTION REVERSED and its prose was corrected with it: in the
+> generated stage comparison the heat recovery no longer exceeds the
+> whole NPV difference between feasibility and basic design (+191.06
+> against +289.84 M EUR; the start-up years now account for +142.41).
+> OPEN FOR VITOR'S REVIEW: whether the reference scenario should instead
+> buy hydrogen at an index (two were read as cross-checks, about 6
+> EUR/kg); the case changes by one number and one provenance block.
+> (b) THE APP SHOWS WHERE A UNIT TOOK ITS LIQUID PROPERTIES FROM
+> (the property-sources panel's branch): the Property panel of a unit and the
+> Reports workspace draw the engine's `propertySources` block; until now
+> that table existed only in the run log, and the architect had told
+> Vitor to look for it on the site.  Seen by the architect as headless
+> renders only.  Its class words (`kernel`, `bypass`) are the engine's
+> own and read as jargon: an engine-side follow-up.
+> (c) C386, THE EDUTOOL ON THE SEPARATION OF SCALES (`fast-and-slow`, the
+> reviewing session's): three pairs of full and reduced cases (two tanks,
+> a fast equilibrium, a reactive intermediate), six new cases.
+> (d) C329's design record amended with the four decisions.  CORRECTION
+> to the entry below: the general-reflux paper has FOUR authors (Mori,
+> Oda, Aragaki and Kunimoto), as the reviewing session read in the
+> publisher's record; the architect had copied three from another
+> paper's reference list.
+> VALIDATION, sized by reach (prices reach only the economics pass of
+> four cases; the panel reaches `gui/` only; the EduTool adds cases and
+> a page): build; every guide re-rendered; `--scope` over the plants, the
+> economics cases, the unsteady cases, the batch reactors and the
+> rotating cases 55 PASS / 0 FAIL with mass, element and energy closures
+> and the pinned ledgers held; `--fast` 86 PASS / 0 FAIL / 5
+> EXPECTED-FAIL; `--gui` 46 PASS / 1 FAIL, the one failure being eight
+> lesson citations whose lines the merges had moved: re-pointed by the
+> tool, the three test files re-run (251 tests) and the typecheck at exit
+> 0; the whole `--gui` was not repeated after that edit of line numbers.
+> No full sweep: no path every case goes through was touched.  NOT SEEN
+> in a browser.
+> **ALSO RULED TODAY.**  TD-17 (the reviewing session's question): a
+> COMPRESSOR or a TURBINE fed a computed inlet that its own
+> thermophysical world places beyond the band on the LIQUID side REFUSES
+> by name, as the pump refuses the mirror case: a unit's acceptance is
+> read in its own world, and a gas machine compressing a liquid at exit
+> 0 is a wrong plant, not an accounting entry.  The latent heat a
+> neighbouring world hid stays visible because the refusal names both
+> worlds and the distance.
+> **C390 (the architect, 2026-11-13, on Vitor's question "Nao tem termo
+> de pressao?! E os gases? E vapores?").**  MEASURED the same hour: a
+> vapour on an equation of state carries its pressure in the enthalpy
+> (compressor01_air closes to 0.0000 kW, the Brayton cycle to 0.0002
+> kW); a pure fluid on a reference formulation does, liquid included
+> (rankine02's pump: 0.0000 kW); the GENERIC LIQUID does not: its
+> enthalpy depends on temperature alone, so the useful part of a pump's
+> shaft work, v dP, appears in no stream, and pump01_water leaves 1.3 kW
+> of 2.0 unclosed, exactly its declared efficiency, announced by the unit
+> and pinned in the energy gate.  DECISION: after the pilot, the generic
+> liquid enthalpy gains its pressure term with the volume the density
+> kernel returns (the same v); the two pump cases leave the pinned list;
+> every case with a liquid under pressure moves slightly and the rows
+> are listed with their reason.  One choice is left to that slice, on
+> numbers: v dP alone or v (1 - alpha T) dP.
+> **C391 (Vitor, 2026-11-13, a DISCUSSION, with his explicit "nao quero
+> que facas nada"): an interactive "digital twin" of a dynamic case.**
+> His reading: a case that runs in real time can be interacted with; a
+> slow one must be simulated whole and the interaction replayed.  WHAT
+> WAS MEASURED: the shipped time-integrated cases run hundreds to
+> thousands of times faster than their process (2000 s of batch
+> electrodialysis in about 6 s, a 100-cell adsorption bed over 4200 s in
+> about 8 s), so the criterion is the cost of ONE interaction step, not
+> real time.  THE ARCHITECT'S POSITION: without a real installation and
+> its data this is an interactive dynamic simulator, and the name should
+> say so; the cheap honest route is interaction BY TURNS on the
+> restartable instants the driver already writes (stop, change an input,
+> re-integrate from there), each session saved as a case with its recipe
+> of actions so that it is reproducible; a reduced model for what is too
+> slow, shown beside the full one (C386).  NOT STARTED and not this
+> month.  HIS STANDING REQUEST on this topic: the architect is to oppose
+> him with established practice before following any instruction, since
+> he has little experience of it.
+
+> **C329, SECOND PART: THE FOUR DECISIONS, TAKEN BY THE ARCHITECT ON A
+> STUDY OF PRACTICE (2026-11-13; delegated by C389 (3); the study is
+> private, in the Studies folder, and names what it read: three
+> textbooks, the handbook's distillation section, two commercial manuals,
+> the papers in the folder, and the source of the open-source simulator
+> the earlier studies surveyed).**
+> (1) THE MULTICOMPONENT EFFICIENCY.  DECLARED: one Murphree vapour
+> efficiency per tray (or per section), the same for every component;
+> never on the condenser or the reboiler.  COMPUTED from the internals in
+> a column of more than two components: a pseudo-binary efficiency on
+> two DECLARED keys, applied to every component.  A per-component
+> efficiency is OUTPUT only, printed with the warning that it is
+> unbounded (the texts agree that component efficiencies in a
+> multicomponent mixture can be negative or above one); it is never an
+> input.  This is the practice the texts describe and the one the
+> measured industrial column in the tree was analysed with.
+> (2) THE EXPLICIT INTERFACIAL MODEL IS A NEW MODEL WORD of the
+> distillation column (`rateBased`), not an option of the equilibrium
+> column; the efficiency computed from the internals stays a block on
+> the full MESH.  The case declares the internals, the correlations
+> (one default per kind of internal, named in the output), the flow model
+> of each phase and the number of segments of a packed section; the film
+> is algebraic; condenser and reboiler stay equilibrium stages.  First
+> slice: the binary packed segment.  For three components or more the
+> film is Maxwell-Stefan: an effective- or equal-diffusivity shortcut is
+> NOT offered there, because near a distillation boundary it predicts the
+> wrong product (the packed-column paper read today, its section 5).
+> (3) THE VALIDATION LADDER, three rungs, each for what it can decide:
+> the total-reflux multicomponent profiles of that paper (do the models
+> end on the right side of the boundary?); ONE measured column at a
+> general reflux (below); the industrial butane fractionator already in
+> the subset, held to the efficiencies its authors back-calculated, not
+> to the products alone.  The two binary total-reflux sets stay the
+> anchor of the correlations.
+> (4) THE GENERAL-REFLUX MEASUREMENT IS Mori, Oda and Aragaki (J. Chem.
+> Eng. Japan 29 (1996) 307-314), obtained today (open access) and in the
+> folder: methanol, ethanol and water at atmospheric pressure on a
+> structured packing, 0.21 m by 2.20 m packed, reflux ratio 6.42 with a
+> subcooled reflux and a cold feed.  ITS LIMITS, SAID: one run; a
+> near-ideal system with no distillation boundary, so it cannot tell the
+> two formulations apart; its Table 5 gives the END compositions and the
+> profiles are in a figure, to be digitised with three readings before
+> any number enters a case.  It was read from page images by a study
+> general; nothing of it is in the tree yet.
+> THE ORDER OF SLICES in the design record stands with these four
+> written in; the reviewing session amends its record.
+
+> **C389 (Vitor, 2026-11-13, answering what the architect needed from
+> him: "4. decide tu de forma sensata e de acordo com as boas praticas.
+> 3. Ve como dizem as boas praticas ou [the open-source simulator the
+> C378 study surveyed].  2. Decide e eu depois logo revejo").**  THREE
+> DELEGATIONS, each answered here.
+> (4) THE TWO PRACTICE QUESTIONS OF THE PHARMACEUTICAL CASES, RULED.
+> PH-03: a change of PRODUCT is the full clean and line clearance of the
+> suite AND the product's own part (the verification of the clean, the
+> change parts, the colour), so it can never cost less time than the
+> same-product campaign clean.  The cases declare each product clean as
+> the train's campaign changeover PLUS its own increment (the proposal's
+> candidate B: it keeps the colour direction the case teaches, which a
+> flat floor would erase); 62 rows of kind `batch` move in
+> donepezil02_two_strengths, listed in the proposal note.  With it, in
+> the engine: a declared product clean shorter than the train's campaign
+> changeover is ANNOUNCED.  PH-06: a machine has ONE size, the INSTALLED
+> one its rated-machine block declares (equipment is bought in catalogue
+> sizes).  What the batch plan computes from the lot and the target fill
+> is a REQUIREMENT held against it; the fill at the installed size is a
+> RESULT, published and checked against the declared range; the quote is
+> priced on the installed size.  Today the final blender and the coating
+> pan are priced at 1.333 and 0.812 m3 while the checks declare a 1.2 m3
+> bin and a 1.0 m3 pan.  Both go to the reviewing session, which wrote
+> the proposal and holds the tablet plants' territory.
+> (2) THE REFERENCE PLANT'S PRICES: the author-set round figures (NH3
+> 1.00, H2 4.50, N2 0.05 EUR/kg) are replaced by PUBLIC figures, each
+> dated and cited from a source that was read, with the conversion
+> written; the break-even prices of C385 stay beside the NPV.  A general
+> proposes the table (source, date, value, unit, conversion) BEFORE the
+> case is touched; the re-record lists its rows.  He reviews afterwards.
+> (3) THE FOUR DECISIONS OF C329'S SECOND PART are taken by the architect
+> AFTER a study of practice: the literature in the folder (the
+> nonequilibrium-stage papers, the two packed-column papers read today)
+> and that simulator's source, read for organisation only; the notes
+> name it and stay in the private Studies folder.  READ TODAY BY THE
+> ARCHITECT, AND IT CHANGES THE RECORD: the packed-column paper the
+> design record proposes as the general-reflux measurement (Pelkonen et
+> al., Chem. Eng. Process. 40 (2001) 235-243) is at TOTAL REFLUX in every
+> run (its section 6 says so; Tables 3 to 5 are composition profiles
+> along the packing for three non-ideal systems, ternary and quaternary,
+> on three structured packings).  It was in the literature folder since
+> 2026-11-11; the architect gave its DOI as a missing article without
+> searching the folder, and Vitor downloaded it a second time.  WHAT IT
+> IS GOOD FOR: the multicomponent total-reflux validation the tree
+> lacks (today's total-reflux path is binary), and, for C388, its Fig. 5:
+> near a distillation boundary the equilibrium-stage model and an
+> equal-diffusivity model fill the reboiler with 2-propanol where the
+> experiment and the Maxwell-Stefan model fill it with water: the simple
+> model predicts the wrong PRODUCT.  A measured column at a general
+> reflux named by that paper's own Table 1: Mori, Oda and Aragaki, J.
+> Chem. Eng. Japan 29 (1996) 307-314 (methanol, ethanol, water; partial
+> reflux; six compositions along the column), to be obtained and read.
+
 > **THE SINGLE INTEGRATION OF 2026-11-13 IS ON MAIN (d0e3bfab0): ELEVEN
 > BRANCHES, ONE FULL SWEEP.**  THE SWEEP'S WRITTEN REASON: the golden
 > comparator and thirteen value-extraction helpers of `bin/runTests`

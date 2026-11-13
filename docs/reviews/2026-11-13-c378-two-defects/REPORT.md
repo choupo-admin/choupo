@@ -160,3 +160,17 @@ water at 446.5158944 K, e = -5e-7, 0, +1e-9).
   The builder traced it to the outlet search (its bracket walks below the
   IF97 triple point and the unit falls back, announced, to its sensible
   temperature).  It is older than both branches and is recorded as TD-15.
+
+## 10. After the TD-04 branch (`fix/declared-phase-beyond-band` at 09a9c92db8)
+
+The reviewing session ran its own probe on that build (IF97 water at 373.15,
+446.5158944 and 550 K).  A pump suction declared `phase liquid;` at
+e = -2e-6 and a compressor inlet declared `phase gas;` at e = +2e-6 are
+refused by name before any unit runs; at |e| = 5e-7, and at 2e-6 on the
+declared side, both run with a plant residual below 1e-6 kW.  Two findings
+came out of the work and are recorded as TD-16 (the pump's discharge search
+falls back to the inlet temperature in silence: eta 0.01 at 550 K leaves
++0.1816 kW at exit 0, reproduced here) and TD-17 (across a model boundary
+the compressor prices a vapour-labelled inlet as the liquid its own world
+finds, where the pump refuses the mirror case; the builder's measurement,
+not reproduced here).

@@ -249,10 +249,35 @@
           "href": "/app/?workspace=methods&tool=tear-streams&path=recycle-numerics"
         }
       ]
+    },
+    {
+      "id": "fast-and-slow",
+      "title": "Why correlations are simple",
+      "intro": "The question, the mechanism at work on running models, and one more instance of it.",
+      "steps": [
+        {
+          "tool": "correlation-simplicity",
+          "label": "Why engineering correlations are simple",
+          "why": "Asks the question: dimensional analysis alone does not make a correlation simple, so what does?",
+          "href": "/app/?workspace=methods&tool=correlation-simplicity&path=fast-and-slow"
+        },
+        {
+          "tool": "fast-and-slow",
+          "label": "When the fast obeys the slow: separation of time scales",
+          "why": "Shows the mechanism at work: the engine runs a full and a reduced model, and the reduced one is a simple law inside a window of the ratio of time scales.",
+          "href": "/app/?workspace=methods&tool=fast-and-slow&path=fast-and-slow"
+        },
+        {
+          "tool": "thiele",
+          "label": "Catalyst pellet (Thiele modulus)",
+          "why": "One more instance: the pellet's interior settles on the bulk, and what is left is one number, the effectiveness factor.",
+          "href": "/app/?workspace=methods&tool=thiele&path=fast-and-slow"
+        }
+      ]
     }
   ],
-  "liveTools": 87,
-  "registryTools": 87,
+  "liveTools": 88,
+  "registryTools": 88,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -628,6 +653,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=correlation-simplicity"
+    },
+    {
+      "id": "fast-and-slow",
+      "label": "When the fast obeys the slow: separation of time scales",
+      "blurb": "Drop a fast variable, measure the error, see why correlations stay simple.",
+      "discipline": "Modelling & scale-up",
+      "teaches": "Which variables of a stiff model can stop being integrated: those whose time scale is short against the slow one, replaced by the relation that makes their own rate zero, with an error that falls with the ratio of the two time scales.  Three case studies, each a guess, the engine running the full and the reduced model, and a slider that makes the fast part slower until the reduction fails: a small tank behind a big one (the small tank as a quasi-steady unit), a fast equilibrium feeding a slow step (one pool at k K/(1+K)) and a reactive intermediate (a rate law in the stable species), the last the same equation as the first.  The cost of the full model counted from the integrator, the reduced law counted against the full one, and its validity window at your tolerance -- which is why engineering correlations are simple.",
+      "origins": [
+        "engine",
+        "page",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=fast-and-slow"
     },
     {
       "id": "letdown",

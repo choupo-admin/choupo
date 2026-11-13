@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1840,
+  "cases": 1846,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -21827,6 +21827,62 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/batch/reactor/batch30_fast_equilibrium_full": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch31_fast_equilibrium_reduced": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch32_fast_intermediate_full": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/batch/reactor/batch33_fast_intermediate_reduced": {
+   "application": "choupoBatch",
+   "unitTypes": [
+    "batchReactor"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/batch/recipes/recipe01_react_then_distill": {
    "application": "choupoBatch",
    "unitTypes": [
@@ -29639,6 +29695,36 @@
    },
    "roles": [],
    "hasGolden": true
+  },
+  "tutorials/unsteady/unsteady07_fast_tank_full": {
+   "application": "choupoSemiContinuous",
+   "unitTypes": [
+    "dynamicCSTR"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/unsteady/unsteady08_fast_tank_reduced": {
+   "application": "choupoSemiContinuous",
+   "unitTypes": [
+    "dynamicCSTR",
+    "quasiSteady",
+    "storageTank"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
   }
  },
  "indices": {
@@ -29691,6 +29777,10 @@
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/reactor/batch28_dosing_vessel_limit",
+    "tutorials/batch/reactor/batch30_fast_equilibrium_full",
+    "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
+    "tutorials/batch/reactor/batch32_fast_intermediate_full",
+    "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -31156,7 +31246,9 @@
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady05_tank_valve_drain",
-    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react",
+    "tutorials/unsteady/unsteady07_fast_tank_full",
+    "tutorials/unsteady/unsteady08_fast_tank_reduced"
    ],
    "choupoSolve": [
     "tutorials/batch/plant/apalutamide01_tablets",
@@ -31596,6 +31688,10 @@
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/reactor/batch28_dosing_vessel_limit",
+    "tutorials/batch/reactor/batch30_fast_equilibrium_full",
+    "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
+    "tutorials/batch/reactor/batch32_fast_intermediate_full",
+    "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial"
@@ -31782,7 +31878,9 @@
     "tutorials/unsteady/unsteady02_tanks_in_series",
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react",
+    "tutorials/unsteady/unsteady07_fast_tank_full",
+    "tutorials/unsteady/unsteady08_fast_tank_reduced"
    ],
    "dynamicTank": [
     "tutorials/ctrl/ctrl21_tank_level_control",
@@ -32108,7 +32206,8 @@
    ],
    "quasiSteady": [
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
-    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup"
+    "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
+    "tutorials/unsteady/unsteady08_fast_tank_reduced"
    ],
    "ramp": [
     "tutorials/ctrl/ctrl17_signal_shapes"
@@ -32222,7 +32321,8 @@
    "storageTank": [
     "tutorials/batch/plant/apalutamide01_tablets",
     "tutorials/plant/aceticAcid02_plant",
-    "tutorials/plant/swro01_campoDalias"
+    "tutorials/plant/swro01_campoDalias",
+    "tutorials/unsteady/unsteady08_fast_tank_reduced"
    ],
    "stripper": [
     "tutorials/steady/absorption/stripper01_NH3_water"
@@ -34496,6 +34596,10 @@
     "tutorials/batch/reactor/batch26_cooling_failure",
     "tutorials/batch/reactor/batch27_semibatch_dosing",
     "tutorials/batch/reactor/batch28_dosing_vessel_limit",
+    "tutorials/batch/reactor/batch30_fast_equilibrium_full",
+    "tutorials/batch/reactor/batch31_fast_equilibrium_reduced",
+    "tutorials/batch/reactor/batch32_fast_intermediate_full",
+    "tutorials/batch/reactor/batch33_fast_intermediate_reduced",
     "tutorials/batch/recipes/recipe01_react_then_distill",
     "tutorials/batch/recipes/recipe02_setpoint_ramp",
     "tutorials/batch/recipes/recipe03_conditional_partial",
@@ -34857,7 +34961,9 @@
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady04_uf_feed_and_bleed_startup",
     "tutorials/unsteady/unsteady05_tank_valve_drain",
-    "tutorials/unsteady/unsteady06_reactor_fill_and_react"
+    "tutorials/unsteady/unsteady06_reactor_fill_and_react",
+    "tutorials/unsteady/unsteady07_fast_tank_full",
+    "tutorials/unsteady/unsteady08_fast_tank_reduced"
    ],
    "pitzerHMW": [
     "tutorials/props/electrolyte/davies01_band_edge",

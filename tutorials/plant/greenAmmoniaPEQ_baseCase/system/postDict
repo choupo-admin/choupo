@@ -216,8 +216,9 @@
   the StorageFlash cools to -35 C and the coldest utility boils at -33.3 C,
   so C_UT is a LOWER BOUND and says so.
 
-  ECONOMICS (slice 4).  Prices are in constant/economics, every one an
-  AUTHOR-SET assumption (its header says so).  The appraisal knobs below
+  ECONOMICS (slice 4).  Prices are in constant/economics, every one a CITED
+  public figure with its source, date and arithmetic (its header says which
+  kind each is).  The appraisal knobs below
   are ammonia02's, also assumptions.  N_np, the number of processing steps
   Turton's labour correlation counts (compressors, exchangers, reactors;
   not drums, tanks or pumps), is COUNTED from this flowsheet: 4 + 6 + 1 =
@@ -504,8 +505,10 @@ economics
     //  THE BREAK-EVEN IN PRICE: at what price of the product does the NPV
     //  reach zero (the minimum selling price of ammonia), and what is the
     //  highest price of hydrogen the plant can bear, every other price held.
-    //  The declared prices are author-set assumptions (constant/economics);
-    //  these two numbers say how far from them the plant pays.
+    //  The declared prices are cited public figures (constant/economics): the
+    //  ammonia price is the market price of CONVENTIONAL ammonia, so the
+    //  first number is the premium this plant needs over it, and the second
+    //  how far the cited hydrogen cost is above what the plant can bear.
     breakEven
     {
         price ( ProductNH3 H2Feed );

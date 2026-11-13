@@ -92,21 +92,22 @@ The consequences the run shows, in order:
 
 | M EUR/yr | 150 bar | **50 bar** |
 |---|---|---|
-| revenue R | 387.73 | 387.73 |
-| raw materials C_RM | 331.65 | 331.65 |
-| **R − C_RM** | **56.08** | **56.08** |
+| revenue R (ammonia at 0.530 EUR/kg) | 206.09 | 206.09 |
+| raw materials C_RM (H₂ at 8.0, N₂ at 0.0175 EUR/kg) | 566.43 | 566.43 |
+| **R − C_RM** | **−360.33** | **−360.34** |
 | electricity | 11.35 | 5.44 |
-| heating the converter feed | 25.91 | 23.34 |
-| ammonia refrigeration | 9.10 | 14.04 |
-| cooling water and LP steam | 0.94 | 1.19 |
-| HP steam raised (credit) | −15.81 | −11.40 |
-| C_UT | 31.50 | 32.62 |
-| **R − C_RM − C_UT** | **24.58** | **23.46** |
+| heating the converter feed | 26.40 | 23.75 |
+| ammonia refrigeration | 9.41 | 14.15 |
+| cooling water and LP steam | 0.95 | 1.21 |
+| HP steam raised (credit) | −15.69 | −11.22 |
+| C_UT | 32.42 | 33.32 |
+| **R − C_RM − C_UT** | **−392.75** | **−393.65** |
 
 R − C_RM does not move: the products and the raw materials are the same
-molecules. What moves is the energy, and at these author-set prices the
+molecules. What moves is the energy, and at the cited prices the
 compression saved is paid back by refrigeration and lost steam: the
-unintegrated margin is 1.1 M EUR/yr **lower** at 50 bar. Both margins are
+unintegrated margin is 0.9 M EUR/yr **lower** at 50 bar (both margins are
+negative: see the 150 bar case). Both margins are
 upper bounds for the same reason (the `StorageFlash`'s −35 °C duty, which
 no catalogue utility serves).
 
@@ -120,46 +121,47 @@ the comparison a group should make with the basic-design stage in hand,
 not this one.
 
 The fixed capital, sized on assumed U values and costed by Turton, is
-35.2 M EUR against 41.4 M EUR at 150 bar (a 55 bar g design pressure, one
+35.9 M EUR against 42.1 M EUR at 150 bar (a 55 bar g design pressure, one
 compressor fewer, carbon steel wherever the 700 K rule allows; the run's
-equipment table itemises it); the NPV is −489 M EUR
-against −493 M EUR. Class 4 is −30 % / +50 %: those two capitals are inside
+equipment table itemises it); the NPV is −3 319 M EUR
+against −3 325 M EUR. Class 4 is −30 % / +50 %: those two capitals are inside
 each other's band, so at this stage they **cannot** decide between the two
 pressures — the point the *Front-End Loading* EduTool draws.
 
 **The sensitivity says the same, with numbers.** `system/postDict` ends
 with the same `sensitivity {}` block as the 150 bar case (DEV.md 4c C68;
-the FCI's ends are the declared accuracy band, every other end an
-author-set assumption — prices and the three utility bills ±20 %, discount
-rate 8 % / 12 %, stream factor 0.85 / 0.95). Its tornado
-(`reports/economics/sensitivity.csv`), M EUR, base NPV −488.80, beside the
+the FCI's ends are the declared accuracy band, the three prices' ends
+are cited, as in the 150 bar case — ammonia 0.439 / 0.726, hydrogen 4.95 /
+10.0, nitrogen 0.0159 / 0.0175 EUR/kg; the three utility bills ±20 %, discount
+rate 8 % / 12 % and stream factor 0.85 / 0.95 are round figures). Its tornado
+(`reports/economics/sensitivity.csv`), M EUR, base NPV −3 319.20, beside the
 150 bar swings:
 
 | input (low / high end) | NPV at low | NPV at high | swing | swing at 150 bar |
 |---|---|---|---|---|
-| H₂ price (3.60 / 5.40 EUR/kg) | −20.30 | −957.30 | 937.00 | 937.00 |
-| NH₃ price (0.80 / 1.20 EUR/kg) | −949.91 | −27.69 | 922.22 | 922.23 |
-| discount rate (8 % / 12 %) | −536.83 | −448.40 | 88.43 | 88.06 |
-| hot-oil bill, `dowthermA` (×0.8 / ×1.2) | −453.83 | −523.76 | 69.93 | 77.62 (molten salt) |
-| **FCI, the accuracy band** (24.61 / 52.73 M EUR) | −468.11 | −523.28 | 55.17 | 64.94 |
-| N₂ price (0.04 / 0.06 EUR/kg) | −464.69 | −512.91 | 48.22 | 48.22 |
-| stream factor (0.85 / 0.95) | −467.71 | −509.88 | 42.17 | 41.24 |
-| HP-steam credit (×0.8 / ×1.2) | −505.87 | −471.73 | 34.14 | 47.35 |
-| electricity bill (×0.8 / ×1.2) | −480.65 | −496.94 | 16.29 | 34.01 |
+| H₂ price (4.95 / 10.0 EUR/kg) | −1 731.50 | −4 360.31 | 2 628.81 | 2 628.79 |
+| discount rate (8 % / 12 %) | −3 722.57 | −2 982.45 | 740.12 | 740.10 |
+| NH₃ price (0.439 / 0.726 EUR/kg) | −3 529.61 | −2 866.01 | 663.60 | 663.62 |
+| stream factor (0.85 / 0.95) | −3 141.74 | −3 496.66 | 354.92 | 354.18 |
+| hot-oil bill, `dowthermA` (×0.8 / ×1.2) | −3 283.63 | −3 354.77 | 71.13 | 79.09 (molten salt) |
+| **FCI, the accuracy band** (25.14 / 53.88 M EUR) | −3 298.06 | −3 354.43 | 56.37 | 66.00 |
+| HP-steam credit (×0.8 / ×1.2) | −3 336.00 | −3 302.40 | 33.61 | 47.01 |
+| electricity bill (×0.8 / ×1.2) | −3 311.05 | −3 327.35 | 16.29 | 34.01 |
+| N₂ price (0.0159 / 0.0175 EUR/kg) | −3 315.44 | −3 319.30 | 3.86 | 3.86 |
 
-The two alternatives differ in NPV by **4.3 M EUR** — less than the
-smallest bar of either tornado — and the inputs that dominate both (the
-hydrogen and ammonia prices) move the two loops by the same amount to the
-nearest 0.01 M EUR, because the same molecules are bought and sold. So
-nothing a price does can rank the two pressures; what differs is only what
-each loop buys: half the electricity swing (less compression), a smaller
-steam credit (−11.40 against −15.81 M EUR/yr in the margin table above),
-and a capital band whose own swing (55.2 M EUR) is nearly thirteen times
-the difference. As at 150 bar,
-no single input flips the NPV's sign (hydrogen at 3.60 EUR/kg leaves
-−20.3 M EUR, IRR 6.38 %), and the discount-rate and stream-factor bars
-point the "wrong" way because the plant loses money on every hour it runs.
-A sensitivity, not an uncertainty analysis: no probability is attached to
+The two alternatives differ in NPV by **5.7 M EUR** — less than every bar
+of either tornado but the nitrogen price's (3.86 M EUR) — and the inputs that
+dominate both (the hydrogen and ammonia prices) move the two loops by the
+same amount to within 0.02 M EUR, because the same molecules are bought and
+sold. So nothing a price does can rank the two pressures; what differs is
+only what each loop buys: half the electricity swing (less compression), a
+smaller steam credit (−11.22 against −15.69 M EUR/yr in the margin table
+above), and a capital band whose own swing (56.4 M EUR) is ten times the
+difference. As at 150 bar, no single input flips the NPV's sign (hydrogen at
+4.95 EUR/kg leaves −1 732 M EUR, no IRR), and the discount-rate and
+stream-factor bars point the "wrong" way because the plant loses money on
+every hour it runs. The NPV includes the engine's assumed tax credit on
+losses (869.0 M EUR here). A sensitivity, not an uncertainty analysis: no probability is attached to
 any end.
 
 ## What this case does NOT claim

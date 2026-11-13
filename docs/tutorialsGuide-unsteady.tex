@@ -268,3 +268,94 @@ ENERGY. Both species carry a formation datum, so the vessel takes the CANONICAL 
 \goldmore{18}
 \end{tutgolden}
 
+\clearpage
+\tutentry{unsteady07\_fast\_tank\_full}{tutorials/unsteady/unsteady07\_fast\_tank\_full}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (SLOW) at (0.0,-0.0) {\textbf{SLOW}\\[-1pt]{\tiny dynamicCSTR}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FAST) at (2.9,-0.0) {\textbf{FAST}\\[-1pt]{\tiny dynamicCSTR}};
+  \draw[->] ($(SLOW.west)+(-1.05,0.00)$) -- ($(SLOW.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (SLOW) -- (FAST) node[midway, above, font=\tiny] {s12};
+  \draw[->] ($(FAST.east)+(0,0.00)$) -- ($(FAST.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Two tanks in series, a big one and a small one, BOTH integrated in time: the outlet after a step in the feed, the full model the reduced twin unsteady08 is compared with}
+\begin{tutnarrative}
+two mixing tanks in series, a BIG one and a SMALL one, and the question every model of a plant meets: does the small one need to be integrated at all?
+
+THE PLANT. A feed of 1e-3 kmol/s runs through SLOW (1 kmol held, time constant tau\_s = 1000 s) and then FAST (0.05 kmol held, tau\_f = 50 s). Both tanks start full of compA; from t = 0 the feed is pure compB, the tracer. No reaction, no jacket: the two synthetic components (the unsteady02 pair, 30 kg/kmol each) carry nothing but their identity.
+
+THE FULL MODEL (this case). Both tanks are vessels (`dynamicCSTR`), each integrated in time, so the outlet of FAST lags the outlet of SLOW by about tau\_f. Its twin unsteady08\_fast\_tank\_reduced replaces FAST by its quasi-steady relation -- a tank that holds nothing that accumulates, so its outlet IS its inlet -- and the two answers differ by that lag alone. The ratio of the two time scales is
+
+eps = tau\_f / tau\_s = 0.05,
+
+and the largest gap between the two outlet tracer fractions is, in closed form for these two linear tanks,
+
+x\_full(t) - x\_red(t) = tau\_f (e\textasciicircum{}(-t/tau\_s) - e\textasciicircum{}(-t/tau\_f)) / (tau\_s - tau\_f),
+
+whose maximum is eps\textasciicircum{}(1/(1-eps)) = 0.0428 here. The EduTool page "When the fast obeys the slow" runs both cases with the small tank's holdup changed and draws that gap against eps.
+
+WHAT THE STEP COSTS. The router hands SLOW's outlet to FAST once per driver step (one-step explicit, announced by the [routing] line), so the driver step must stay short against tau\_f: 0.25 s is a 40th of the smallest tau\_f the page uses (10 s), and the fixed RK4 step is stable only below 2.785 tau\_f. The reduced twin has no such limit from FAST.
+
+\end{tutnarrative}
+\tutreadme{Two mixing tanks in series under choupoSemiContinuous: SLOW holds 1 kmol (time constant 1000 s at the 1e-3 kmol/s feed) and FAST holds 0.05 kmol (50 s). Both start full of compA; from t = 0 the feed is pure compB. Both tanks are dynamicCSTR vessels, integrated in time. 5000 s, 0.25 s steps.}
+\tutreadme{1. The lag. FAST's outlet follows SLOW's outlet about 50 s late. In trajectory.csv the tracer fraction leaving FAST is FAST.n\_compB / (FAST.n\_compA + FAST.n\_compB). 2. The reduced twin. unsteady08\_fast\_tank\_reduced replaces FAST by its quasi-steady relation (outlet = inlet). The largest gap between the two outlets is 0.0428 at the ratio of time scales 0.05, and the closed form for two linear tanks gives the same, eps\textasciicircum{}(1/(1-eps)). 3. The step. SLOW hands its outlet to FAST once per driver step, so the step must be short against FAST's time constant (the [routing] line says so).}
+\tutreadme{The EduTool page "When the fast obeys the slow" runs this case and its twin with FAST's holdup changed.}
+\begin{tutgolden}
+\goldrow{kpi}{FAST}{F\_in\_final}{0.001}
+\goldrow{kpi}{FAST}{T\_final}{330}
+\goldrow{kpi}{FAST}{n\_compA\_final}{0.000354673156816}
+\goldrow{kpi}{FAST}{n\_compB\_final}{0.0496453268432}
+\goldrow{kpi}{FAST}{t\_end}{5000}
+\goldrow{kpi}{FAST}{z\_in\_compA\_final}{0.00673794699909}
+\goldrow{kpi}{FAST}{z\_in\_compB\_final}{0.993262053001}
+\goldrow{kpi}{SLOW}{F\_in\_final}{0.001}
+\goldrow{kpi}{SLOW}{T\_final}{330}
+\goldrow{kpi}{SLOW}{n\_compA\_final}{0.00673794699909}
+\goldrow{kpi}{SLOW}{n\_compB\_final}{0.993262053001}
+\goldrow{kpi}{SLOW}{t\_end}{5000}
+\goldrow{kpi}{SLOW}{z\_in\_compA\_final}{0}
+\goldrow{kpi}{SLOW}{z\_in\_compB\_final}{1}
+\goldmore{8}
+\end{tutgolden}
+
+\clearpage
+\tutentry{unsteady08\_fast\_tank\_reduced}{tutorials/unsteady/unsteady08\_fast\_tank\_reduced}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (SLOW) at (0.0,-0.0) {\textbf{SLOW}\\[-1pt]{\tiny dynamicCSTR}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (FAST) at (2.9,-0.0) {\textbf{FAST}\\[-1pt]{\tiny quasiSteady}};
+  \draw[->] ($(SLOW.west)+(-1.05,0.00)$) -- ($(SLOW.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] (SLOW) -- (FAST) node[midway, above, font=\tiny] {s12};
+  \draw[->] ($(FAST.east)+(0,0.00)$) -- ($(FAST.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {product};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The same two tanks with the small one replaced by its quasi-steady relation (a storageTank wrapped as quasiSteady, outlet = inlet): the reduced model of unsteady07}
+\begin{tutnarrative}
+the REDUCED twin of unsteady07\_fast\_tank\_full: the same two tanks, the same step in the feed, with the SMALL tank replaced by its quasi-steady relation.
+
+THE REDUCTION. If the small tank's time constant tau\_f is short against the big tank's tau\_s, its content follows its inlet almost at once, and in the limit it holds nothing that changes: its outlet IS its inlet. That relation is what a `storageTank` computes (outlet = inlet, plus the holdup its declared residence time implies, published as a number and never integrated), and `quasiSteady` re-solves it on SLOW's outlet at every accepted instant ("SAME INSTANT" in the [routing] line). So the engine runs ONE differential equation where the full model runs two.
+
+WHAT IS KEPT AND WHAT IS LOST. The residence time below (50 s, the full model's tau\_f) changes no number on the outlet: it only sizes the holdup the storageTank publishes (kpi\_holdupMass\_kg, what FAST would hold if it were at steady state with its inlet). The lag of about tau\_f is what is lost, and unsteady07 measures it: the largest gap between the two outlet tracer fractions is 0.0428 at eps = 0.05, and it grows with eps.
+
+\end{tutnarrative}
+\tutreadme{The reduced twin of unsteady07\_fast\_tank\_full: the same feed step and the same big tank SLOW, with the small tank FAST written as a storageTank wrapped as quasiSteady. Its outlet IS its inlet, re-solved at every accepted instant; nothing in it is integrated.}
+\tutreadme{1. One differential equation instead of two. Only SLOW carries a holdup in trajectory.csv; FAST publishes the holdup its declared residence time implies (FAST.kpi\_holdupMass\_kg), a number and not a state. 2. What is lost. The outlet is SLOW's outlet, with no lag. Against the full twin the largest gap in the outlet tracer fraction is 0.0428. 3. The routing line says SAME INSTANT for FAST: a unit with no inventory is solved on its inlet at the instant, never a step late.}
+\begin{tutgolden}
+\goldrow{kpi}{FAST}{F\_product\_final}{0.001}
+\goldrow{kpi}{FAST}{kpi\_densityPricedFraction\_final}{1}
+\goldrow{kpi}{FAST}{kpi\_density\_kg\_m3\_final}{288.800250979}
+\goldrow{kpi}{FAST}{kpi\_fillFraction\_final}{0.8}
+\goldrow{kpi}{FAST}{kpi\_holdupMass\_compA\_kg\_final}{0.0101069204986}
+\goldrow{kpi}{FAST}{kpi\_holdupMass\_kg\_final}{1.5}
+\goldrow{kpi}{FAST}{kpi\_holdupVolume\_m3\_final}{0.00519390130347}
+\goldrow{kpi}{FAST}{kpi\_massFlow\_kg\_s\_final}{0.03}
+\goldrow{kpi}{FAST}{kpi\_residenceTime\_s\_final}{50}
+\goldrow{kpi}{FAST}{kpi\_vesselVolume\_m3\_final}{0.00649237662933}
+\goldrow{kpi}{FAST}{kpi\_volumetricFlow\_m3\_s\_final}{0.000103878026069}
+\goldrow{kpi}{FAST}{t\_end}{5000}
+\goldrow{kpi}{SLOW}{F\_in\_final}{0.001}
+\goldrow{kpi}{SLOW}{T\_final}{330}
+\goldmore{14}
+\end{tutgolden}
+

@@ -153,15 +153,14 @@ tables below this section were read off the run BEFORE C66's beds and C69's
 one diameter (sub-percent moves; the golden is the authority, and it moves
 with the list put to Vitor).
 
-### The gross margin, and why it nearly doubled
+### The gross margin, and what moved it
 
-The margin after the energy, R − C_RM − C_UT, is about double the feasibility case's
-(the numbers, by utility service, are in the generated section below). The difference is the feed/effluent exchanger the feasibility case's pinch
+The margin after the energy, R − C_RM − C_UT, is 26 M EUR/yr less negative than the feasibility case's (−366.7 against −392.8 M EUR/yr at the cited prices: it is negative in both, because the hydrogen alone costs 2.7 times the ammonia's price; the numbers, by utility service, are in the generated section below). The difference is the feed/effluent exchanger the feasibility case's pinch
 targeted (minimum heating zero): built here, it carries the 64 MW the
 feasibility flowsheet bought as molten salt. Both margins are upper
 bounds for the same reason (the `StorageFlash`'s −35 °C duty, which no
-catalogue utility serves); every price is the base case's author-set
-assumption.
+catalogue utility serves); every price is the base case's cited public
+figure (`constant/economics`, the same three as the feasibility cases').
 
 ### The pinch: what the heat targets of this plant show
 
@@ -354,7 +353,7 @@ reached here).
 
 The same plant at two stages: [`greenAmmonia02_feasibility150bar`](../greenAmmonia02_feasibility150bar) (illustrated design stage FEL-2) and this case (FEL-3, process side). Both declare `estimateClass 4` with the same -30 / +50 % band: the class is the author's statement of how far the project is defined, so it did not move with the stage. Every number below comes from the engine's runs of the two cases (the one exception is labelled where it appears); the *why* column traces each difference to what changed between them, and says so where a difference could not be traced. The 50 bar alternative is a different design, not a stage, and is not a column here.
 
-**Read this first: most of the NPV difference is NOT the better models.** The feasibility flowsheet has no feed/effluent exchanger *by construction* — its converter feed is heated by molten salt bought as a utility, which its own pinch pass says the next stage can recover — and this case builds that exchanger. That one flowsheet decision is worth more than the whole NPV difference; the model refinements (kinetic beds, Ergun, Kern, one converter shell, a costed catalyst) together move the NPV the OTHER way. The appraisal's start-up years are a changed assumption, measured separately below.
+**Read this first: most of the NPV difference is NOT the better models.** The feasibility flowsheet has no feed/effluent exchanger *by construction* — its converter feed is heated by molten salt bought as a utility, which its own pinch pass says the next stage can recover — and this case builds that exchanger. That one flowsheet decision is worth more than the part of the NPV difference that the plant's own changes make (the difference less the start-up years, a changed assumption); the model refinements (kinetic beds, Ergun, Kern, one converter shell, a costed catalyst) together move the NPV the OTHER way. The appraisal's start-up years are a changed assumption, measured separately below.
 
 ### Production and consumptions
 
@@ -411,30 +410,30 @@ Bare-module cost C_BM by equipment group, M EUR. FCI = 1.18 ΣC_BM + 0.50 ΣC_BM
 | appraisal | feasibility | basic design | difference | why |
 |---|---|---|---|---|
 | FCI, M EUR | 42.06 | 59.92 | +17.86 | The equipment above, through the same Turton rule. |
-| working capital, M EUR | 52.86 | 49.84 | -3.02 | Built up from the same days: the product stock is valued at the cost of manufacture and the minimum cash is 15 days of it, so both fall with COM_d. |
-| TCI, M EUR | 94.91 | 109.75 | +14.84 | FCI + WC. |
-| revenue R, M EUR/yr | 388.86 | 388.81 | -0.05 | The production above, at the same price. |
-| raw materials C_RM, M EUR/yr | 331.65 | 331.65 | +0.00 | The same declared make-up at the same prices. |
+| working capital, M EUR | 48.87 | 45.86 | -3.02 | Built up from the same days: the product stock is valued at the cost of manufacture and the minimum cash is 15 days of it, so both fall with COM_d. |
+| TCI, M EUR | 90.93 | 105.77 | +14.84 | FCI + WC. |
+| revenue R, M EUR/yr | 206.09 | 206.07 | -0.03 | The production above, at the same price. |
+| raw materials C_RM, M EUR/yr | 566.43 | 566.43 | +0.00 | The same declared make-up at the same prices. |
 | utilities C_UT (net of the steam credit), M EUR/yr | 32.42 | 6.37 | -26.05 | Almost all of it the molten salt no longer bought; the split by service is in the decomposition below. |
 | operating labour C_OL, M EUR/yr | 1.114 | 1.156 | +0.042 | Turton's operator count from a DECLARED equipment count `N_np`: 12 (4 compressors, 7 exchangers, 1 reactor) → 15 (4, 8, 3 beds). The three beds share one shell; counting them as three is the author's choice. |
-| COM_d, M EUR/yr | 458.42 | 429.71 | -28.71 | 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT): the utilities fall, the capital-driven term rises. |
-| R − C_RM − C_UT, M EUR/yr | 24.78 | 50.78 | +26.00 | An upper bound in both (the unpriced −35 °C duty). |
+| COM_d, M EUR/yr | 747.19 | 718.49 | -28.71 | 0.180 FCI + 2.73 C_OL + 1.23 (C_RM + C_UT): the utilities fall, the capital-driven term rises. |
+| R − C_RM − C_UT, M EUR/yr | -392.75 | -366.73 | +26.02 | An upper bound in both (the unpriced −35 °C duty). |
 | construction and start-up | 1 yr, all capital at start-up; full production from year 1 | 3 yr, capital ( 0.25 0.45 0.3 ); ramp-up ( 0.7 0.9 ); start-up cost 0.08 × FCI | — | **A changed ASSUMPTION** (author-set, DEV.md 4c C63), not a consequence of any model; its effect is measured below. |
 | discount rate, tax, life | 0.1, 0.21, 15 yr | 0.1, 0.21, 15 yr | — | The same; the script fails if any appraisal input it does not trace differs. |
-| NPV at 10 %, M EUR | -494.61 | -337.28 | +157.34 | Decomposed below. |
+| NPV at 10 %, M EUR | -3 324.94 | -3 035.10 | +289.84 | Decomposed below. |
 | IRR | not defined (NPV(i) has no sign change) | not defined (NPV(i) has no sign change) | — | The plant loses money in every operating year at these prices, in both. |
 | discounted payback | never within the project life | never within the project life | — | As IRR. |
 | estimate class (declared) | 4 (-30 / +50 %) | 4 (-30 / +50 %) | — | The author's statement of the project's definition. A design stage is not an AACE class: the cost method is Turton's equipment-factored estimate at both stages. |
 
 ### Where the NPV moved
 
-From -494.61 to -337.28 M EUR. The first step re-runs the feasibility case with the basic design's start-up years — a changed ASSUMPTION, measured by the engine. The remaining steps are the plant's differences at the basic design's timeline: the engine's cash-flow rule is linear in each of them, so they split exactly (this script reproduces the engine's NPV of all three runs before it prints a single row).
+From -3 324.94 to -3 035.10 M EUR. The first step re-runs the feasibility case with the basic design's start-up years — a changed ASSUMPTION, measured by the engine. The remaining steps are the plant's differences at the basic design's timeline: the engine's cash-flow rule is linear in each of them, so they split exactly (this script reproduces the engine's NPV of all three runs before it prints a single row).
 
 | step | NPV effect, M EUR | kind of change |
 |---|---|---|
-| feasibility, as published | -494.61 | |
-| the appraisal's start-up years (construction 1 → 3 yr, ramp-up, start-up cost), measured by re-running the feasibility case with them | +10.03 | **changed assumption** |
-| revenue: slightly less ammonia (the purge) | -0.28 | reactor model |
+| feasibility, as published | -3 324.94 | |
+| the appraisal's start-up years (construction 1 → 3 yr, ramp-up, start-up cost), measured by re-running the feasibility case with them | +142.41 | **changed assumption** |
+| revenue: slightly less ammonia (the purge) | -0.15 | reactor model |
 | cooling water (the effluent cooler gone into the FEHE) | +4.92 | **heat recovery built** |
 | electricity (recycle compressor re-tuned for the Ergun drop) | -0.34 | pressure-drop model |
 | converter-feed heating no longer bought (molten salt) | +186.01 | **heat recovery built** |
@@ -450,21 +449,21 @@ From -494.61 to -337.28 M EUR. The first step re-runs the feasibility case with 
 | capital: the five other exchangers | +0.39 | exchanger model |
 | capital: separator and let-down drums (3) | -0.66 | reactor model |
 | capital: NH3 storage tanks (2) | +0.95 | reactor model (production) |
-| working capital (follows COM_d) | +2.30 | follows the above |
-| **basic design, as published** | **-337.28** | |
+| working capital (follows COM_d) | +2.29 | follows the above |
+| **basic design, as published** | **-3 035.10** | |
 
 | by kind | NPV effect, M EUR |
 |---|---|
 | heat recovery built | +191.06 |
-| model fidelity | -37.21 |
+| model fidelity | -37.08 |
 | scope (not costed before) | -8.16 |
-| changed assumption | +10.03 |
+| changed assumption | +142.41 |
 | count | -0.68 |
-| follows the above | +2.30 |
+| follows the above | +2.29 |
 
-**So:** building the heat recovery the feasibility flowsheet left out is worth +191.06 M EUR — more than the whole difference. The model refinements together are worth -37.21 M EUR (the converter shell around a catalyst volume 2.8 times the space-velocity rule's, the interbed coolers, less steam, more refrigeration), costing the catalyst the feasibility left out -8.16, and the start-up years +10.03. A student who reads the +157.34 M EUR as "the better model found money" has it backwards: at feasibility the same exchanger was already visible in the pinch target, and the better models made the plant dearer.
+**So:** building the heat recovery the feasibility flowsheet left out is worth +191.06 M EUR — more than the part of the difference the plant's own changes make (+147.43 M EUR, the difference less the start-up years). The model refinements together are worth -37.08 M EUR (the converter shell around a catalyst volume 2.8 times the space-velocity rule's, the interbed coolers, less steam, more refrigeration), costing the catalyst the feasibility left out -8.16, and the start-up years +142.41. A student who reads the +289.84 M EUR as "the better model found money" has it backwards: at feasibility the same exchanger was already visible in the pinch target, and the better models made the plant dearer.
 
-**The start-up years are worth a different amount on each plant, and that is not a rounding matter.** On the feasibility plant (engine run) they move the NPV by +10.03 M EUR; on the basic-design plant by -1.71 M EUR (this one computed with this script's transcription of the cash-flow rule, which reproduced the engine's three NPVs — not an engine run). Two parts of the timeline scale with the plant and pull opposite ways: both plants lose money in every operating year at these prices, so the ramp-up (producing 70 % and 90 % in the first years) loses LESS, and gains more on the plant that loses more per year — the feasibility one; while the capital compounded over the construction years and the start-up cost weigh more on the plant with the larger FCI — the basic design. Taken in that other order — the plant first, at the feasibility's one-year timeline — the plant differences are worth +159.05 M EUR instead of +147.30.
+**The start-up years are worth a different amount on each plant, and that is not a rounding matter.** On the feasibility plant (engine run) they move the NPV by +142.41 M EUR; on the basic-design plant by +130.66 M EUR (this one computed with this script's transcription of the cash-flow rule, which reproduced the engine's three NPVs — not an engine run). Two parts of the timeline scale with the plant and pull opposite ways: both plants lose money in every operating year at these prices, so the ramp-up (producing 70 % and 90 % in the first years) loses LESS, and gains more on the plant that loses more per year — the feasibility one; while the capital compounded over the construction years and the start-up cost weigh more on the plant with the larger FCI — the basic design. Taken in that other order — the plant first, at the feasibility's one-year timeline — the plant differences are worth +159.18 M EUR instead of +147.43.
 
 **Not comparable, and said rather than adjusted:** the catalyst charge is costed only at the basic design; the 8 relief valves exist only at the basic design and are costed at neither; the interbed coolers' shells are counted twice at the basic design; the FEHE is costed at its designed 1 810 m² while the flowsheet converges on a declared 2 000 m²; and the start-up years were declared only for the basic design.
 <!-- END GENERATED: bin/curate/gen_ammonia_stage_comparison.py -->

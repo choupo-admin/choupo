@@ -1,0 +1,69 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unsteady07_fast_tank_full -- two mixing tanks in series, a BIG one and a
+  SMALL one, and the question every model of a plant meets: does the small
+  one need to be integrated at all?
+
+  THE PLANT.  A feed of 1e-3 kmol/s runs through SLOW (1 kmol held, time
+  constant tau_s = 1000 s) and then FAST (0.05 kmol held, tau_f = 50 s).
+  Both tanks start full of compA; from t = 0 the feed is pure compB, the
+  tracer.  No reaction, no jacket: the two synthetic components (the
+  unsteady02 pair, 30 kg/kmol each) carry nothing but their identity.
+
+  THE FULL MODEL (this case).  Both tanks are vessels (`dynamicCSTR`), each
+  integrated in time, so the outlet of FAST lags the outlet of SLOW by
+  about tau_f.  Its twin unsteady08_fast_tank_reduced replaces FAST by its
+  quasi-steady relation -- a tank that holds nothing that accumulates, so
+  its outlet IS its inlet -- and the two answers differ by that lag alone.
+  The ratio of the two time scales is
+
+      eps = tau_f / tau_s = 0.05,
+
+  and the largest gap between the two outlet tracer fractions is, in
+  closed form for these two linear tanks,
+
+      x_full(t) - x_red(t) = tau_f (e^(-t/tau_s) - e^(-t/tau_f)) / (tau_s - tau_f),
+
+  whose maximum is eps^(1/(1-eps)) = 0.0428 here.  The EduTool page "When
+  the fast obeys the slow" runs both cases with the small tank's holdup
+  changed and draws that gap against eps.
+
+  WHAT THE STEP COSTS.  The router hands SLOW's outlet to FAST once per
+  driver step (one-step explicit, announced by the [routing] line), so the
+  driver step must stay short against tau_f: 0.25 s is a 40th of the
+  smallest tau_f the page uses (10 s), and the fixed RK4 step is stable
+  only below 2.785 tau_f.  The reduced twin has no such limit from FAST.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        SLOW;
+        type        dynamicCSTR;
+        in          feed;
+        outputs     ( s12 );
+        operation
+        {
+            UA           0.0;             // W/K: no jacket
+            T_jacket     330.0 K;
+        }
+    }
+    {
+        name        FAST;
+        type        dynamicCSTR;
+        in          s12;
+        outputs     ( product );
+        operation
+        {
+            UA           0.0;             // W/K: no jacket
+            T_jacket     330.0 K;
+        }
+    }
+);

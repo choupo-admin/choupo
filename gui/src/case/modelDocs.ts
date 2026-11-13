@@ -236,6 +236,16 @@ export function theoryLink(type: string): string {
     : guideUrl("theoryGuide");
 }
 
+// The Theory Guide section that explains the "Liquid properties used" rows
+// (Property panel and Reports): where a unit takes its liquid density,
+// viscosity, surface tension and diffusivity from, and what the three classes
+// the engine distinguishes (kernel / bypass / declared) mean.  A real \label
+// of docs/theoryGuide.tex (checked by check_guide_anchors via the test).
+export const LIQUID_PROPERTY_SOURCES_DEST = "sec:liquid-property-sources";
+export function liquidPropertySourcesLink(): string {
+  return guideUrl("theoryGuide", LIQUID_PROPERTY_SOURCES_DEST);
+}
+
 // Props-mode item GROUP -> the Properties-Guide section that derives the theory
 // behind that estimate / test / fit.  (propsGuide.tex labels via destlabel.)
 const PROPS_DEST: Record<string, string> = {

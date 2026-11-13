@@ -3561,7 +3561,12 @@ file `0/<stream>` (its t = 0 value when routed); it has no
 nothing).  The first law across it is NOT claimed (the ledger
 withholds the rung, naming why).  Example:
 `unsteady03_nf_feed_and_bleed_startup` (the start-up of membrane18's loop; it
-ends on membrane18's steady answer).
+ends on membrane18's steady answer).  The quasi-steady form of a small MIXING TANK
+is a `storageTank` wrapped as `quasiSteady` (outlet = inlet, its declared
+`residenceTime` only sizes the holdup it publishes): `unsteady08_fast_tank_reduced`
+is `unsteady07_fast_tank_full` with its small tank reduced that way (the
+`fast-and-slow` EduTool compares them).  A `mixer` with ONE inlet is not a
+pass-through: it reads `inputStreams`, which a single inlet does not supply.
 
 **WHO SETS THE FLOW OF A LOOP (refused before integrating since 2026-11-12,
 review row TI-02).**  A constant-volume `dynamicCSTR` passes `F_out = F_in`

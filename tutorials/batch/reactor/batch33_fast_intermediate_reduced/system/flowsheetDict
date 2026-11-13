@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|       \|/    P roperties    |  Licence:  GPL-3.0-or-later                   |
+|      \\|//   U nits         |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  batch33_fast_intermediate_reduced -- the REDUCED twin of
+  batch32_fast_intermediate_full.
+
+  THE REDUCTION.  When I is consumed much faster than it is made, its two
+  rates balance, k1 n_A = k2 n_I, and P is made at the rate A is used:
+
+      dn_P/dt = k1 n_A
+
+  This case runs that one law, A -> P, written as an `expression` law in
+  constant/reactions.  compB (the intermediate) stays declared and stays at
+  zero: the reduced model does not carry it.
+
+  WHAT IS KEPT.  One rate constant, k1, and the two stable species.  k2
+  does not appear: it only decides how little I there is, never how fast P
+  is made.  What is lost is the I in transit, which batch32 measures.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        reactor;
+        type        batchReactor;
+
+        operation
+        {
+            mode         isothermal;
+            T_setpoint   350.0 K;
+        }
+
+        reactions  ( A_to_P );
+    }
+);

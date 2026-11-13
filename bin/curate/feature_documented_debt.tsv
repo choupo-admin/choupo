@@ -34,5 +34,4 @@ SizeDistribution	tabular	guide+catalogue
 SurfaceTensionModel	StoredCorrelation	guide+catalogue
 TransportModel	constantRejection	guide
 UnitOperation	convectiveDryer	guide
-UnitOperation	storageTank	guide
 UnitOperation	tsaTwinBed	guide

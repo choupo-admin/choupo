@@ -2167,6 +2167,174 @@ WHAT IS NOT MODELLED: as batch26 and batch27 (no vapour phase, no decomposition,
 \goldmore{53}
 \end{tutgolden}
 
+\clearpage
+\tutentry{batch30\_fast\_equilibrium\_full}{tutorials/batch/reactor/batch30\_fast\_equilibrium\_full}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A fast reversible step feeding a slow one, A <$\to$ B fast and B $\to$ C slow, ALL THREE rates integrated: the full model batch31 is compared with}
+\begin{tutnarrative}
+a fast reversible step feeding a slow one, every rate integrated:
+
+A <-$\to$ B kf = 0.1 1/s, kr = 0.025 1/s (K = kf/kr = 4, fast) B --$\to$ C k = 0.001 1/s (slow)
+
+Isothermal at 350 K, first order throughout, Ea = 0 so each rate constant is exactly the number written in constant/reactions.
+
+THE QUESTION. A and B interconvert a hundred times faster than B leaves for C. After a short first moment they sit at equilibrium with each other, n\_B = K n\_A, and the pair behaves as ONE pool that drains into C at the rate of the B it contains:
+
+d(n\_A + n\_B)/dt = -k n\_B = -k K/(1+K) (n\_A + n\_B)
+
+That is partial equilibrium, and batch31\_fast\_equilibrium\_reduced runs exactly that law, on one pool, with no kf and no kr. The two answers for n\_C differ by the delay of the first moment, while B is still forming: measured with these numbers the largest gap is 0.62 \% of the charge, and it falls as kf/k grows. The EduTool page "When the fast obeys the slow" changes kf and kr together (K held at 4) and draws the gap.
+
+THE COST. The fast pair sets a rate constant of kf + kr = 0.125 1/s. An explicit fixed RK4 step would have to stay below 2.785/0.125 = 22 s, and below 0.0028 s at the page's largest ratio; the adaptive Rosenbrock23 integrator declared in controlDict prints every step it takes.
+
+No species carries formation data and none is needed: isothermal mode holds T, so the heat of reaction is not used (the run says so), the same posture as batch03\_consecutive.
+
+\end{tutnarrative}
+\tutreadme{An isothermal batch reactor with A <$\to$ B (kf = 0.1, kr = 0.025 1/s, K = 4) and B $\to$ C (k = 0.001 1/s), every rate integrated by the adaptive Rosenbrock23 integrator. 10 mol of A, 6000 s.}
+\tutreadme{1. The first moment. A and B reach equilibrium with each other within tens of seconds; after that n\_B / n\_A stays at 4 while both drain to C. 2. The reduced twin. batch31\_fast\_equilibrium\_reduced runs one pool decaying at k K/(1+K). The largest gap in n\_C between the two is 0.62 \% of the charge, and it shrinks as kf/k grows. 3. The step history. At verbosity 3 the log prints every step the integrator accepts; count them against the reduced twin's.}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{1}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{3.66373598126e-15}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.5}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.5}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{1.83186799063e-15}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.01}
+\goldrow{kpi}{campaign}{moles\_kmol\_initial}{0.01}
+\goldrow{kpi}{campaign}{transfers\_H\_invalid}{0}
+\goldrow{kpi}{campaign}{transfers\_H\_valid}{0}
+\goldrow{kpi}{campaign}{transfers\_logged}{0}
+\goldmore{8}
+\end{tutgolden}
+
+\clearpage
+\tutentry{batch31\_fast\_equilibrium\_reduced}{tutorials/batch/reactor/batch31\_fast\_equilibrium\_reduced}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The same reactor reduced by partial equilibrium: A and B as ONE pool decaying at k K/(1+K), written as one expression law}
+\begin{tutnarrative}
+the REDUCED twin of batch30\_fast\_equilibrium\_full.
+
+THE REDUCTION. When A <$\to$ B is fast against B $\to$ C, A and B stay at equilibrium with each other, n\_B = K n\_A, and only their sum moves:
+
+d(pool)/dt = -k K/(1+K) pool, pool = n\_A + n\_B
+
+So this case runs ONE reaction, pool $\to$ C, at that rate, written as an `expression` law in constant/reactions. Here compA STANDS FOR THE POOL: at t = 0 it holds the whole charge, and at any time the share that is B is K/(1+K) = 0.8 of it. compB stays declared (the two cases share one component list) and stays at zero.
+
+WHAT IS KEPT. Two numbers, k and K. The fast rate constants kf and kr do not appear at all: any pair with the same ratio gives this answer. That is the reduction's real gain -- it needs one parameter fewer, and it is the parameter that is hardest to measure. What is lost is the first moment, while B forms from A: batch30 measures it.
+
+\end{tutnarrative}
+\tutreadme{The reduced twin of batch30\_fast\_equilibrium\_full. A and B are lumped into one pool (carried as compA) that drains to C at k K/(1+K), written in constant/reactions as a type expression law. No kf and no kr appear.}
+\tutreadme{1. Two parameters instead of three. k and K are all the law needs. 2. What is lost. The moment while B forms from A: against the full twin the largest gap in n\_C is 0.62 \% of the charge. 3. compA is the pool, not A alone: 0.8 of it is B at every instant.}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{1}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{1.11022302463e-15}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.5}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.5}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{5.55111512313e-16}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.01}
+\goldrow{kpi}{campaign}{moles\_kmol\_initial}{0.01}
+\goldrow{kpi}{campaign}{transfers\_H\_invalid}{0}
+\goldrow{kpi}{campaign}{transfers\_H\_valid}{0}
+\goldrow{kpi}{campaign}{transfers\_logged}{0}
+\goldmore{8}
+\end{tutgolden}
+
+\clearpage
+\tutentry{batch32\_fast\_intermediate\_full}{tutorials/batch/reactor/batch32\_fast\_intermediate\_full}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A $\to$ I $\to$ P with the intermediate I consumed fast, BOTH rates integrated: the full model batch33 is compared with}
+\begin{tutnarrative}
+a reactive intermediate, every rate integrated:
+
+A --k1-$\to$ I --k2-$\to$ P k1 = 0.001 1/s, k2 = 0.1 1/s
+
+(I is compB and P is compC.) Isothermal at 350 K, first order, Ea = 0.
+
+THE QUESTION. I is used up a hundred times faster than it is made, so it never accumulates: after a short first moment its amount is whatever makes its two rates equal, n\_I = (k1/k2) n\_A, small and following A. Then P is made as fast as A is consumed:
+
+That is the quasi-steady intermediate, and batch33\_fast\_intermediate\_reduced runs exactly that law, A $\to$ P, with no k2. The two answers for n\_P differ by the I that is in transit: measured with these numbers the largest gap is 0.95 \% of the charge. For a closed system the difference in P is the amount of I itself, so the gap and the largest n\_I are the same number. The EduTool page changes k2 and draws it.
+
+THE SAME EQUATION AS TWO TANKS. The gap here, at k1/k2 = eps, is the gap between two mixing tanks in series at tau\_f/tau\_s = eps (unsteady07/unsteady08): eps\textasciicircum{}(1/(1-eps)) in both, because both are a fast first-order system driven by a slow one.
+
+No species carries formation data and none is needed: isothermal mode holds T, so the heat of reaction is not used, as in batch03\_consecutive.
+
+\end{tutnarrative}
+\tutreadme{An isothermal batch reactor with A $\to$ I $\to$ P (k1 = 0.001, k2 = 0.1 1/s; I is compB, P is compC), both rates integrated. 10 mol of A, 5000 s.}
+\tutreadme{1. I never accumulates. After a short first moment n\_I stays near (k1/k2) n\_A, under 1 \% of the charge. 2. The reduced twin. batch33\_fast\_intermediate\_reduced makes P at k1 n\_A directly. The largest gap in n\_P is 0.95 \% of the charge, and it equals the largest n\_I: in a closed vessel the missing P is the I in transit. 3. Two tanks in disguise. The gap at k1/k2 = eps is the gap of unsteady07/unsteady08 at the same eps: the same equation.}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{1}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{4.4408920985e-16}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.5}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.5}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{2.22044604925e-16}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.01}
+\goldrow{kpi}{campaign}{moles\_kmol\_initial}{0.01}
+\goldrow{kpi}{campaign}{transfers\_H\_invalid}{0}
+\goldrow{kpi}{campaign}{transfers\_H\_valid}{0}
+\goldrow{kpi}{campaign}{transfers\_logged}{0}
+\goldmore{8}
+\end{tutgolden}
+
+\clearpage
+\tutentry{batch33\_fast\_intermediate\_reduced}{tutorials/batch/reactor/batch33\_fast\_intermediate\_reduced}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (reactor) at (0.0,-0.0) {\textbf{reactor}\\[-1pt]{\tiny batchReactor}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The same reactor reduced by the quasi-steady intermediate: A $\to$ P at the rate A makes I, written as one expression law}
+\begin{tutnarrative}
+the REDUCED twin of batch32\_fast\_intermediate\_full.
+
+THE REDUCTION. When I is consumed much faster than it is made, its two rates balance, k1 n\_A = k2 n\_I, and P is made at the rate A is used:
+
+This case runs that one law, A $\to$ P, written as an `expression` law in constant/reactions. compB (the intermediate) stays declared and stays at zero: the reduced model does not carry it.
+
+WHAT IS KEPT. One rate constant, k1, and the two stable species. k2 does not appear: it only decides how little I there is, never how fast P is made. What is lost is the I in transit, which batch32 measures.
+
+\end{tutnarrative}
+\tutreadme{The reduced twin of batch32\_fast\_intermediate\_full: one law, A $\to$ P at k1 c\_A, written in constant/reactions as a type expression law. The intermediate is not carried; k2 does not appear.}
+\tutreadme{1. One rate constant in the stable species alone. 2. What is lost. The I in transit: 0.95 \% of the charge at most, against the full twin.}
+\begin{tutgolden}
+\goldrow{kpi}{campaign}{energy\_balance\_available}{0}
+\goldrow{kpi}{campaign}{energy\_records\_invalid}{1}
+\goldrow{kpi}{campaign}{energy\_records\_valid}{0}
+\goldrow{kpi}{campaign}{mass\_closure\_rel}{4.4408920985e-16}
+\goldrow{kpi}{campaign}{mass\_kg\_external\_out}{0}
+\goldrow{kpi}{campaign}{mass\_kg\_final}{0.5}
+\goldrow{kpi}{campaign}{mass\_kg\_initial}{0.5}
+\goldrow{kpi}{campaign}{mass\_residual\_kg}{2.22044604925e-16}
+\goldrow{kpi}{campaign}{moles\_kmol\_external\_out}{0}
+\goldrow{kpi}{campaign}{moles\_kmol\_final}{0.01}
+\goldrow{kpi}{campaign}{moles\_kmol\_initial}{0.01}
+\goldrow{kpi}{campaign}{transfers\_H\_invalid}{0}
+\goldrow{kpi}{campaign}{transfers\_H\_valid}{0}
+\goldrow{kpi}{campaign}{transfers\_logged}{0}
+\goldmore{8}
+\end{tutgolden}
+
 \subsection{recipes}
 \grouptheory{recipes}
 \clearpage
