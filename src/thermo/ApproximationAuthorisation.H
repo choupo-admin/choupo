@@ -81,7 +81,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-
+#include <algorithm>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -172,6 +172,24 @@ public:
         if (ap->found("massWithoutVolume"))
         {
             auto mw = ap->subDict("massWithoutVolume");
+            //  An unknown key, or a listed name that is not one of the case's
+            //  components, would be a hypothesis read by nothing (C378 pilot
+            //  review, PA-05): refused, naming what the block reads.
+            for (const auto& k : mw->keys())
+                if (k != "components" && k != "maxMassFraction" && k != "reason")
+                    throw std::runtime_error("approximations.massWithoutVolume: unknown"
+                        " word '" + k + "'.  The block reads components, maxMassFraction"
+                        " and reason.");
+            if (topLevel->found("components") && mw->found("components"))
+            {
+                const auto caseComps = topLevel->lookupWordList("components");
+                for (const auto& w : mw->lookupWordList("components"))
+                    if (std::find(caseComps.begin(), caseComps.end(), w) == caseComps.end())
+                        throw std::runtime_error("approximations.massWithoutVolume:"
+                            " component '" + w + "' is not one of the case's"
+                            " components, so the hypothesis would cover nothing.  Remedy:"
+                            " list only components of `components ( ... );`.");
+            }
             if (!mw->found("components") || !mw->found("maxMassFraction"))
                 throw std::runtime_error("approximations.massWithoutVolume needs"
                     " `components ( ... );` and `maxMassFraction <w>;` -- the"
