@@ -42,7 +42,9 @@ carries 94 % of the drop: conveying solids IS a pressure-drop problem.
   `u_p = u_g − slip`, iterated because `C_D` depends on the slip Reynolds
   number.  `mu_w` is the particle–wall friction coefficient,
   `particleWallFriction` in the operation block; this case declares none, so
-  the unit uses 0.4 (published as the `particleWallFriction` KPI);
+  the unit uses its default 0.4, which the run ANNOUNCES as an assumption (a
+  site line, the end-of-run caveat block and the result JSON) and publishes
+  as the `particleWallFriction` KPI;
 - drag: Schiller–Naumann `C_D`, for the slip and for `u_t`;
 - gas friction: Fanning (Blasius turbulent / 16/Re laminar);
 - solids friction: Yang (1974), on the voidage and `u_t/u_p`.  This line's

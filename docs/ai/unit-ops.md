@@ -2071,18 +2071,22 @@ on a particle (Schiller–Naumann `C_D` at the slip Reynolds number, iterated)
 balances its wall friction plus the gravity component along the pipe,
 `slip² C_D = (4/3) d_p ρ_p g (sin θ + μ_w cos θ)/ρ_g` with `sin θ = dz/L` and
 `u_p = u_g − slip` (≈ `u_t` vertical, ≈ `u_t √μ_w` horizontal).  `μ_w` is
-`operation.particleWallFriction`, 0.4 when undeclared (published as a KPI and
-printed in the verbosity ≥ 2 banner).  Gas friction Fanning (Blasius above
+`operation.particleWallFriction`; undeclared, the unit uses 0.4 and
+ANNOUNCES it as an assumption (site line, end-of-run caveat block, result
+JSON) — a declared value announces nothing.  It is published as a KPI and
+printed in the verbosity ≥ 2 banner.  Gas friction Fanning (Blasius above
 Re 2100, 16/Re below); solids friction Yang (1974), on the voidage
 `1−ε = ρ*/ρ_p` and `u_t/u_p` — his vertical equation when `|dz/L| > 0.5`,
-else the horizontal one, which adds the Froude number `u_g/√(gD)`; the run
-warns when ε leaves the correlation's range.  REPORTS the Rizk
+else the horizontal one, which adds the Froude number `u_g/√(gD)`; a voidage
+outside the window the unit applies (0.994 ≤ ε ≤ 0.9995, printed with the
+message) is announced as an extrapolation on the advisory log at every
+verbosity.  REPORTS the Rizk
 saltation velocity and **warns aloud if `u_g` falls below it** (settling /
 blockage risk) — never a silent clip.  Hardware-only operation block;
 every velocity, the suspended density and ΔP are results.  The particle size
 is the Sauter mean of the inlet PSD.  Needs a gas viscosity,
 `transport { vapour { viscosity { model Chung; } } }` in the
-thermoPhysPropDict, and the solid component's `solid { rho_p; }` (a missing
+thermoPhysPropDict (absent, the run refuses naming that block), and the solid component's `solid { rho_p; }` (a missing
 density refuses by name; several solids: volume-additive mean).
 ```
 type      pneumaticConveyor;
@@ -2096,9 +2100,12 @@ operation { geometry { D 0.1 m;  L 8 m;  dz 2 m;          // diameter, length, r
 ```
 Each `bends` entry takes a `type` — `longRadius` (**default**, exit ratio
 0.75), `shortRadius` (0.50) or `blindTee` (0.25, the solids nearly stop: high
-dP, near-zero erosion) — or an explicit `exitRatio`.  An unrecognised `type`
-REFUSES, naming the three; the word is checked even when `exitRatio` overrides
-the ratio, because the run PRINTS it beside the bend's loss.
+dP, near-zero erosion) — and, optionally, an `exitRatio` that overrides the
+type's ratio.  An unrecognised `type` REFUSES, naming the three; the word is
+checked even when `exitRatio` overrides the ratio, because the run PRINTS it
+beside the bend's loss.  Any OTHER key in a bend entry (a radius `RoverD`, an
+angle) REFUSES by name: no bend geometry enters the re-acceleration loss, so
+such a key would do nothing.
 
 KPIs: `deltaP` (+ the five-way breakdown), `u_gas`, `u_particle`,
 `u_terminal`, `u_saltation`, `solidsLoading`, `suspensionDensity`.

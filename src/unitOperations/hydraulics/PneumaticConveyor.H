@@ -54,8 +54,10 @@ Description
 
     The slip s is iterated on C_D at the slip Reynolds number.  mu_w is the
     particle-wall Coulomb friction coefficient, `particleWallFriction` in the
-    operation block (0.4 when the case declares none); the run publishes it as
-    a KPI and prints it in the verbosity >= 2 banner.  The balance has two
+    operation block; when the case declares none the unit uses 0.4 and
+    ANNOUNCES it (site line, advisory log, end-of-run caveat block, result
+    JSON), while a declared value announces nothing.  The run publishes mu_w
+    as a KPI and prints it in the verbosity >= 2 banner.  The balance has two
     limits: a vertical line, s ~ u_t (drag = gravity), and a horizontal one,
     s ~ u_t sqrt(mu_w) (drag = wall friction); both hold up to the gas
     buoyancy, which the balance leaves out, and the horizontal one also up to
@@ -65,7 +67,16 @@ Description
 
     The conveyor REPORTS the saltation velocity u_salt and warns aloud if the
     gas velocity falls below it (risk of saltation / line blockage) -- a
-    first-class, announced design check, never a silent clip.
+    first-class, announced design check, never a silent clip.  A voidage
+    outside the window the unit applies to Yang's friction (0.994 <= eps <=
+    0.9995, the bounds printed with the advisory) is an extrapolation and is
+    raised on the advisory log at every verbosity.
+
+    Each `bends ( ... )` entry may carry `type` (longRadius | shortRadius |
+    blindTee) and `exitRatio`, nothing else: any other key -- a bend radius,
+    an angle -- would do nothing, so it is REFUSED by name.  A case with no
+    gas viscosity model is refused naming the `transport { vapour {
+    viscosity { ... } } }` block of constant/thermoPhysPropDict.
 
     Hardware-only operation block (the credo): pipe diameter, length, vertical
     rise; every velocity, the suspended density and the pressure drop are

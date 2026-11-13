@@ -18,7 +18,14 @@
   Run both cases and compare the dP breakdown: the bends add ~10% (long-radius) to ~25% (blind tees) of the dP while adding NO length.  Swap a bend `type longRadius;`
   for `type blindTee;` and watch its re-acceleration cost jump (ratio 0.75 ->
   0.25) -- the blind tee trades pressure for near-zero erosion.
+  A bend entry carries `type` (longRadius | shortRadius | blindTee: exit
+  ratio 0.75 / 0.50 / 0.25; longRadius when omitted) and, optionally, an
+  `exitRatio` that overrides the type's ratio -- and nothing else: the
+  bend radius and angle do not enter the re-acceleration loss, so the unit
+  refuses any other key by name.
   Solids friction: Yang (1974); particle velocity: force balance; Rizk saltation.
+  mu_w (particleWallFriction) is not declared here: the run uses the default
+  0.4 and announces it.
 \*---------------------------------------------------------------------------*/
 type        pneumaticConveyor;
 operation
@@ -28,12 +35,12 @@ operation
         D 0.1 m;  L 8 m;  dz 2 m;
         bends
         (
-            { RoverD 8; type longRadius; }
-            { RoverD 8; type longRadius; }
-            { RoverD 8; type longRadius; }
-            { RoverD 8; type longRadius; }
-            { RoverD 8; type longRadius; }
-            { RoverD 8; type longRadius; }
+            { type longRadius; }
+            { type longRadius; }
+            { type longRadius; }
+            { type longRadius; }
+            { type longRadius; }
+            { type longRadius; }
         );
     }
 }
