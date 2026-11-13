@@ -23,8 +23,9 @@ The FAST tier has NO pin: it must be green by itself.
 Columns of the debt file (TAB separated):
   case | row | runner_value | maintainer_value | class | reason | remedy | max_details
 `case` is the case's short name or the gate's name as the sweep prints it;
-`row` is `kind.name.key` as the sweep prints a mismatch, or `-` for a whole
-gate or a case that fails for a reason other than a KPI mismatch.
+`row` is `kind.name.key` as the sweep prints a mismatch, `-` for a whole
+gate or a case that fails for a reason other than a KPI mismatch, or `*` for
+EVERY row of that case (an optimiser's flat valley; see main()).
 """
 import re
 import sys
@@ -99,8 +100,16 @@ def main(argv):
     problems = []
     if not tally:
         problems.append("the log has no final tally line: the sweep did not finish")
-    new = sorted(k for k in fails if k not in pinned)
-    healed = sorted(k for k in pinned if k not in fails)
+    #  A pin whose row is `*` covers EVERY row of that case: the rows an optimiser's
+    #  flat valley moves depend on the runner's CPU (the same job ran on two EPYC
+    #  models in one day), so a row-by-row pin of a fit would turn red on a runner
+    #  whose valley is a little different.  A new FAILING CASE is still new, and a
+    #  wildcard pin heals only when its case has no failing row at all.
+    covered = lambda k: k in pinned or (k[0], "*") in pinned
+    new = sorted(k for k in fails if not covered(k))
+    healed = sorted(k for k in pinned
+                    if (k[1] == "*" and not any(c == k[0] for c, _ in fails))
+                    or (k[1] != "*" and k not in fails))
     grown = sorted(k for k, n in fails.items() if k in pinned and pinned[k] is not None and n > pinned[k])
     for k in new:
         problems.append(f"NEW failure: {k[0]} {k[1]}")
