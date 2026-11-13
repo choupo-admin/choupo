@@ -152,10 +152,11 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     title: "What the engine cannot show, and what a rate-based model found on real columns",
     body: "The engine cannot give two components of one mixture different efficiencies, "
       + "and it has no rate-based column, so the cases where one efficiency is not "
-      + "enough are taken from published comparisons: four read for this page, and one "
-      + "read by the project's coordinating session and not opened for this page.  Each "
-      + "card below says what was compared, what the equilibrium-stage model got wrong, "
-      + "and the source.",
+      + "enough are taken from published work: four papers read for this page, and four "
+      + "read by the project's coordinating session and not opened for this page (the "
+      + "Pelkonen card below, and three papers behind rows of the decision table and of "
+      + "the costs, each marked where it is used).  Each card below says what was "
+      + "compared, what the equilibrium-stage model got wrong, and the source.",
   },
   {
     n: 5,
@@ -272,9 +273,13 @@ export const DECISION_ROWS: readonly DecisionRow[] = [
       + "rates: light gases with heavy hydrocarbons, a solute stripped with steam.",
     use: "A rate-based model, or at least efficiencies that differ by component and "
       + "along the column.",
-    why: "Computed component efficiencies went from about 20 % to 60 % along one column "
+    why: "With three or more components the component efficiencies are almost always "
+      + "unequal, and can exceed one or fall below zero: species transfer at different "
+      + "rates, and the efficiencies are set equal only for lack of anything better.  "
+      + "Computed component efficiencies went from about 20 % to 60 % along one column "
       + "and differed between light and heavy components; one number cannot hold that.",
-    origin: "Taylor, Wilkinson and Kooijman (2010); Jakobsson et al. (2002)",
+    origin: "Taylor, Wilkinson and Kooijman (2010); Jakobsson et al. (2002); "
+      + "Krishnamurthy and Taylor (1985), read by the project's coordinating session; Taylor and Krishna (2000), read by the project's coordinating session",
   },
   {
     situation: "Azeotropic distillation of three or more components near a distillation "
@@ -293,6 +298,15 @@ export const DECISION_ROWS: readonly DecisionRow[] = [
     why: "The equilibrium model got the selectivity of H2S over CO2 wrong against pilot "
       + "measurements.",
     origin: "Thiele et al. (2006)",
+  },
+  {
+    situation: "A reactive column: reaction and separation in the same column.",
+    use: "Equilibrium stages for preliminary design; a rate-based model for final design "
+      + "and control, and for the column's dynamics.",
+    why: "A review of reactive distillation reports that nonequilibrium studies have shown "
+      + "where equilibrium models fall short for final design and control, and its "
+      + "authors hold the nonequilibrium model essential for describing the dynamics.",
+    origin: "Taylor and Krishna (2000), read by the project's coordinating session",
   },
   {
     situation: "Any column, before the choice between the two.",
@@ -318,6 +332,34 @@ export const EQ_RB_COSTS: readonly { text: string; origin: string }[] = [
       + "and the AIChE coefficients and 12 ppm with sieve trays and the Chan and Fair "
       + "coefficients.",
     origin: "Jakobsson et al. (2002); Taylor, Wilkinson and Kooijman (2010)",
+  },
+  {
+    text: "What a rate-based model needs is the scarce part: design data for the trays or "
+      + "packing, from which the transfer coefficients, areas and hold-ups come; "
+      + "hydrodynamic and mass-transfer parameters; and physical properties such as "
+      + "diffusion coefficients, viscosity and surface tension.  For reactive columns the "
+      + "authors report the hydrodynamic and mass-transfer parameters to be badly lacking.",
+    origin: "Taylor and Krishna (2000), read by the project's coordinating session",
+  },
+  {
+    text: "On a tray, the flow pattern assumed for the liquid alone raises the overall "
+      + "transfer rate by up to about 20 %, plug flow against fully mixed.",
+    origin: "Taylor and Kooijman (2014), read by the project's coordinating session",
+  },
+  {
+    text: "In the reactive tray-column comparisons one review reports, an equilibrium "
+      + "model with an efficiency agreed closely with the rate-based model only when "
+      + "the tray efficiency could be predicted correctly.",
+    origin: "Taylor and Krishna (2000), read by the project's coordinating session",
+  },
+  {
+    text: "The size of the problem, as one paper counts it for its own formulation: a "
+      + "ten-stage column with three components is 70 equations on equilibrium stages "
+      + "against 160 on nonequilibrium stages, and fifty stages with five components "
+      + "are 550 against no fewer than 1 300; per stage, 2c + 1 variables against "
+      + "5c + 1, for c components.  The authors call the difference considerable, but "
+      + "a minor drawback once the sparse equations are solved as such.",
+    origin: "Krishnamurthy and Taylor (1985), read by the project's coordinating session",
   },
   {
     text: "On the two strippers, with 60 or more components, the authors found no "

@@ -3070,6 +3070,36 @@
           }
         },
         {
+          "text": "Krishnamurthy, R.; Taylor, R. (1985). A nonequilibrium stage model of multicomponent separation processes. Part I: Model description and method of solution. AIChE J. 31(3), 449–456.",
+          "doi": "10.1002/aic.690310312",
+          "note": "Unequal and unbounded component efficiencies in multicomponent mixtures (pp. 449-450); the equation counts of its own formulation, 70 against 160 and 550 against no fewer than 1 300, 2c+1 against 5c+1 variables per stage, a considerable difference but a minor drawback (pp. 453-454).  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1002/aic.690310312: authors Krishnamurthy and Taylor, title, AIChE Journal, volume 31, issue 3, pages 449-456, March 1985 matched (equilibrium-or-rate-based, third round); the DOI is Crossref's and is not printed on the paper's pages. The content was read by the project's coordinating session on 2026-11-13 from the file's text layer and NOT opened for this page; the coordinator re-checked the two equation counts, the minor-drawback remark (p. 454) and the unequal-and-unbounded statement (p. 450) against the text himself; the other rows used here (p. 449, unequal efficiencies set equal for lack of anything better; p. 453, 2c+1 against 5c+1) were not re-checked",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Taylor, R.; Krishna, R. (2000). Modelling reactive distillation. Chem. Eng. Sci. 55(22), 5183–5229.",
+          "doi": "10.1016/S0009-2509(00)00120-2",
+          "note": "Component efficiencies with three or more components (section 3.7, p. 5205); equilibrium with an efficiency against nonequilibrium on reactive tray columns (section 5.3, p. 5210); what a nonequilibrium model needs (p. 5209) and the data that are lacking, preliminary against final design, dynamics (section 7, p. 5220).  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/S0009-2509(00)00120-2: authors Taylor and Krishna, title, Chemical Engineering Science, volume 55, issue 22, pages 5183-5229, November 2000 matched (equilibrium-or-rate-based, third round). The content was read by the project's coordinating session on 2026-11-13 from the file's text layer and NOT opened for this page; the coordinator re-checked p. 5205 (unequal efficiencies above one and below zero) and p. 5220 (preliminary and final design, dynamics, the missing data) himself; the p. 5209 list of what the model needs and the section 5.3 comparison on p. 5210 (close agreement only when the tray efficiency could be predicted correctly) were read by the reading general and NOT re-checked by the coordinator",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Taylor, R.; Kooijman, H. A. (2014). Mass Transfer in Distillation. In: Distillation: Fundamentals and Principles, pp. 97–143.",
+          "doi": "10.1016/B978-0-12-386547-2.00003-X",
+          "note": "On a tray, plug-flow liquid against fully mixed raises the overall transfer rate by up to about 20 % (section 3.8, pp. 126-127).  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/B978-0-12-386547-2.00003-X: authors Taylor and Kooijman, title 'Mass Transfer in Distillation', container 'Distillation', pages 97-143, 2014 matched (equilibrium-or-rate-based, third round); the DOI is printed on the chapter's first page per the reading note. The content was read by the project's coordinating session on 2026-11-13 from the file's text layer and NOT opened for this page; the coordinator re-checked the 20 % of the tray flow model (pp. 126-127) himself",
+            "date": "2026-11-13"
+          }
+        },
+        {
           "text": "Yanagi, T.; Sakata, M. (1982). Performance of a commercial scale 14% hole area sieve tray. Ind. Eng. Chem. Process Des. Dev. 21(4), 712–717.",
           "doi": "10.1021/i200019a029",
           "note": "The measured efficiencies of demonstration 2, as the tree transcribes them (not re-read for this page).",

@@ -400,7 +400,7 @@ export function EquilibriumOrRateBasedTool(): JSX.Element {
         {step(5)}
 
         <Panel title="the decision aid" origin={["engine", "reference"]}
-          originNote="every row names its origin; a row with neither a demonstration nor a paper behind it was left out">
+          originNote="every row names its origin; a row with neither a demonstration nor a paper behind it was left out; papers read by the project's coordinating session are marked so">
           <Stack gap={8}>
             {DECISION_ROWS.map((r) => (
               <Box key={r.situation} px="sm" py={6}
@@ -415,7 +415,7 @@ export function EquilibriumOrRateBasedTool(): JSX.Element {
         </Panel>
 
         <Panel title="what each choice costs" origin={["engine", "reference"]}
-          originNote="each sentence names its origin">
+          originNote="each sentence names its origin; papers read by the project's coordinating session, not opened for this page, are marked so">
           <Stack gap={6}>
             {EQ_RB_COSTS.map((c) => (
               <Text key={c.text} size="sm">

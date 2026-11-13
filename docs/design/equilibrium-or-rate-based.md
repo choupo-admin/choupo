@@ -134,9 +134,10 @@ point only as (R), from Taylor et al. (2010).
 |---|---|---|
 | binary or near-ideal, per-cent specification, trays between weeping and flood | equilibrium stages with one efficiency | E: demonstrations 1 (bulk) and 2 |
 | trace (ppm) specification over many trays | equilibrium stages only with the efficiency known to a few points; otherwise a margin in trays | E: demonstration 1 (trace); R: Taylor, Wilkinson & Kooijman 2010 (0.08 ppm predicted, 15 ppm in the plant) |
-| multicomponent, components transferring at very different rates | rate-based, or efficiencies by component and stage | R: Taylor et al. 2010 (20-60 % and 40-60 % along one column); Jakobsson et al. 2002 |
+| multicomponent, components transferring at very different rates | rate-based, or efficiencies by component and stage; with three or more components the component efficiencies are almost always unequal and can exceed one or fall below zero | R: Taylor et al. 2010 (20-60 % and 40-60 % along one column); Jakobsson et al. 2002; Krishnamurthy & Taylor 1985 (pp. 449-450, rows K5, K6); Taylor & Krishna 2000 (section 3.7, p. 5205, row R3) -- the last two read by the coordinating session |
 | azeotropic, three or more components, near a distillation boundary | rate-based with multicomponent diffusion; there the equilibrium-stage model predicted the wrong PRODUCT, not a wrong percentage | R: Springer, van der Molen & Krishna 2002; Pelkonen, Górak, Ohligschläger & Kaesemann 2001 (read by the coordinating session, see section 6) |
 | reactive absorption or desorption (sour gas) | rate-based with the reactions | R: Thiele et al. 2006 |
+| reactive column (reaction and separation in one column) | equilibrium stages for preliminary design; rate-based for final design and control, and for the dynamics | R: Taylor & Krishna 2000, section 7, p. 5220 (rows R30, R31), read by the coordinating session |
 | any column, first | check the VLE model | R: Taylor et al. 2010 (thermodynamic model alone moved H2S by orders of magnitude) |
 
 Costs: one uncertain efficiency (E: demonstration 2); mass-transfer
@@ -145,16 +146,46 @@ small-scale data; on one column the rate-based model gave 5 ppm with valve trays
 and the AIChE coefficients and 12 ppm with sieve trays and the Chan and Fair
 coefficients (Taylor's Table 2 changes the tray type too, so this is not a
 comparison of two correlations alone)
-(R: Jakobsson 2002, Taylor 2010); on the two strippers no significant penalty
-in speed, convergence or property availability (R: Taylor 2010) -- stated on
-the page as the counterweight it is.
+(R: Jakobsson 2002, Taylor 2010); what a rate-based model needs -- design data
+for the hardware, hydrodynamic and mass-transfer parameters, diffusion
+coefficients, viscosity, surface tension -- and that for reactive columns those
+parameters are badly lacking (R: Taylor & Krishna 2000, pp. 5209 and 5220, rows
+R11, R33); the tray flow model alone moving the overall transfer rate by up to
+about 20 %, plug flow against fully mixed (R: Taylor & Kooijman 2014, pp.
+126-127, row C5); in reactive tray-column comparisons, close agreement of an
+equilibrium model with an efficiency only when the tray efficiency could be
+predicted correctly (R: Taylor & Krishna 2000, section 5.3, p. 5210, row R16;
+placed in the COSTS panel, not in the first row, because it is about reactive
+columns; read by the reading general and not re-checked by the coordinator);
+the size of the problem as Krishnamurthy & Taylor count it for their own
+formulation -- 70 against 160 equations for ten stages and three components,
+550 against no fewer than 1 300 for fifty stages and five, 2c+1 against 5c+1
+variables per stage, a considerable difference but a minor drawback (R: 1985,
+pp. 453-454, rows K13, K17; no ratio is stated, by them or by the page); on
+the two strippers no significant penalty in speed, convergence or property
+availability (R: Taylor 2010) -- stated on the page as the counterweight it
+is.  The rows from Krishnamurthy & Taylor, Taylor & Krishna and Taylor &
+Kooijman were read by the coordinating session and not opened for this page (section 6).
 
 ## 5. Candidates dropped for lack of a source
 
-From the coordinator's summary, each tried and not backed by anything read:
+From the coordinator's summary, each tried and not backed by anything read.
+Updated in the third round from section 7 of the coordinating session's
+reading note (`docs/reviews/2026-11-13-c388-three-papers-read.md`), which
+searched the three further papers for exactly these:
 
 * **"about five times the unknowns per stage"** for a rate-based model: no
-  source read states it.  Dropped.
+  source states it.  REPLACED by the only numbers any source gives, the
+  equation counts of Krishnamurthy & Taylor (1985) for their own formulation
+  (section 4, costs); the page states no ratio, since the authors state none.
+* **Trace or ppm specifications as a trigger for a rate-based model**: still
+  without a source after the three papers (none mentions trace components,
+  ppm or high purity as a trigger).  It stays on the page as an ENGINE
+  demonstration only: the page's own finding, not a published heuristic.
+* **A table of when to use which model**: none of the papers read has one;
+  the decision table is this page's assembly of separately sourced rows.
+* **A cost ratio or timing of the two models**: none (one review calls the
+  computational cost largely moot, qualitatively; not used).
 * **"for close-boiling near-ideal separations the uncertainty of the VLE and
   of the efficiency usually dominates"**: nothing read says "usually".  What
   survives is the engine statement (row 1) and Taylor's single-case sentence
@@ -203,6 +234,27 @@ NOT opened by this page's author (second round of the slice):
   10.1021/ie970333d), which add that near the boundary the answer also
   depends on the vapour-liquid equilibrium parameter set; that paper is NOT
   cited on the page.
+
+Read by the project's COORDINATING SESSION on 2026-11-13 from the files' text
+layer (a reading general, with named rows re-checked by the coordinator), NOT
+opened by this page's author (third round); the reading note with every row,
+section and page is `docs/reviews/2026-11-13-c388-three-papers-read.md`:
+
+* Krishnamurthy & Taylor, AIChE J. 31 (1985) 449-456, doi
+  10.1002/aic.690310312 (Crossref's; not printed on the pages).  Rows K5, K6,
+  K13, K17.  Re-checked by the coordinator: the equation counts and the
+  minor-drawback remark (p. 454), unequal and unbounded efficiencies (p. 450).
+* Taylor & Krishna, Chem. Eng. Sci. 55 (2000) 5183-5229, doi
+  10.1016/S0009-2509(00)00120-2.  Rows R3, R11, R16, R30, R31, R33.
+  Re-checked: pp. 5205 and 5220.  NOT re-checked: R11 (p. 5209) and R16
+  (p. 5210).
+* Taylor & Kooijman, in Distillation: Fundamentals and Principles (2014),
+  pp. 97-143, doi 10.1016/B978-0-12-386547-2.00003-X.  Row C5, re-checked.
+
+All three DOIs confirmed on Crossref by this page's author too.  The page
+paraphrases every row, quotes none, keeps the authors' hedges, and marks each
+place it uses one of these papers as read by the coordinating session; neither
+the page nor the EduTools Guide points into `docs/reviews/`.
 
 **Not readable, and what it would add.**  Taylor, Krishna & Kooijman, "Real-
 world modeling of distillation", Chem. Eng. Prog., July 2003, pp. 28-39 (the

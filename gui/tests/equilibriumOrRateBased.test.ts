@@ -226,8 +226,30 @@ describe("equilibrium-or-rate-based: the lesson", () => {
     //  Five cards, six rows, seven references; the card whose paper this page
     //  did not open carries no quotation and says who read it.
     expect(REFERENCE_FINDINGS.length).toBe(5);
-    expect(DECISION_ROWS.length).toBe(6);
-    expect(list.length).toBe(7);
+    expect(DECISION_ROWS.length).toBe(7);
+    expect(list.length).toBe(10);
+    //  The four papers this page did not open: each reference entry says so,
+    //  and every place the page uses one of them marks who read it.
+    const entries = refs.lessons["equilibrium-or-rate-based"]!.references as
+      { text: string; verified: { evidence: string } }[];
+    const unopened = ["Pelkonen", "Krishnamurthy", "Taylor, R.; Krishna", "Taylor, R.; Kooijman"];
+    for (const u of unopened) {
+      const e = entries.find((x) => x.text.startsWith(u))!;
+      expect(e, u).toBeDefined();
+      expect(e.verified.evidence.toLowerCase(), u).toMatch(/not opened for this page|this page's author did not open it/);
+    }
+    for (const r of [...DECISION_ROWS, ...EQ_RB_COSTS])
+      for (const part of r.origin.split(";").map((x) => x.trim()))
+        if (/^(Krishnamurthy and Taylor|Taylor and Krishna|Taylor and Kooijman)/.test(part))
+          expect(part, part).toContain("read by the project's coordinating session");
+    expect(EQ_RB_STEPS.find((x) => x.n === 4)!.body)
+      .toContain("four papers read for this page, and four read by the project's coordinating session");
+    const reactive = DECISION_ROWS.find((r) => r.situation.startsWith("A reactive column"))!;
+    expect(reactive.origin).toContain("Taylor and Krishna (2000)");
+    expect(DECISION_ROWS.find((r) => r.situation.startsWith("A multicomponent"))!.origin)
+      .toContain("Krishnamurthy and Taylor (1985)");
+    const sizes = EQ_RB_COSTS.find((c) => c.text.startsWith("The size of the problem"))!.text;
+    for (const n of ["70", "160", "550", "1 300", "2c + 1", "5c + 1"]) expect(sizes).toContain(n);
     const p = REFERENCE_FINDINGS.find((f) => f.source.startsWith("Pelkonen"))!;
     expect(p.quote).toBeNull();
     expect(p.setting).toContain("not opened for this page");
