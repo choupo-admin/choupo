@@ -59,6 +59,8 @@ import {
   type SizeClass,
 } from "../../case/fluidisedBeds.js";
 import { Panel, Wide, XYPlot, fmt } from "./AdsorptionIsothermsTool.js";
+import { GASES, PARTICLES } from "../../case/fluidisedBedPresets.js";
+import { LAB_U_START, columnsFromPage, encodeLab } from "../../case/fluidisationLab.js";
 import { LessonLimits, LessonReferences, lessonStepper } from "./lessonStep.js";
 import { FLUID_LIMITS, FLUID_STEPS } from "./fluidisedBedsLesson.js";
 
@@ -70,22 +72,6 @@ const ERGUN = "#2a78d6", WEIGHT = "#d4572a", ANSWER = "#1baf7a", WENYU = "#8a5cd
 
 const step = lessonStepper(FLUID_STEPS);
 const num = (v: number | string): number => (v === "" ? NaN : Number(v));
-
-/** Example particles, this page's own illustrative numbers, not measurements. */
-const PARTICLES: readonly { id: string; label: string; d_um: number; rhoP: number; eps: number; F: number }[] = [
-  { id: "sand", label: "Sand-like, 200 µm, 2600 kg/m³", d_um: 200, rhoP: 2600, eps: 0.42, F: 0 },
-  { id: "catalyst", label: "Cracking-catalyst-like, 70 µm, 1500 kg/m³", d_um: 70, rhoP: 1500, eps: 0.45, F: 0.15 },
-  { id: "fine", label: "A fine powder, 15 µm, 1200 kg/m³", d_um: 15, rhoP: 1200, eps: 0.55, F: 1 },
-  { id: "grain", label: "Grain-like, 3 mm, 1200 kg/m³", d_um: 3000, rhoP: 1200, eps: 0.40, F: 0 },
-];
-
-/** Gases by molar mass (g/mol); the viscosity is typed by the student. */
-const GASES: readonly { id: string; label: string; M: number }[] = [
-  { id: "air", label: "air (M = 28.96 g/mol)", M: 28.96 },
-  { id: "N2", label: "nitrogen (M = 28.01 g/mol)", M: 28.01 },
-  { id: "CO2", label: "carbon dioxide (M = 44.01 g/mol)", M: 44.01 },
-  { id: "He", label: "helium (M = 4.003 g/mol)", M: 4.003 },
-];
 
 const GROUP_COLOR: Readonly<Record<GeldartGroup, string>> = {
   C: "#9b9b9b", A: "#2a78d6", B: "#1baf7a", D: "#d4572a",
@@ -400,6 +386,31 @@ export function FluidisedBedsTool(): JSX.Element {
               <Text size="sm">{refused}</Text>
             </Alert>
           )}
+        </Panel>
+
+        <Panel title="the laboratory" origin="page"
+          originNote="the same arithmetic as this page, drawn as columns you can watch">
+          <Text size="sm">
+            In the laboratory you turn up the gas on up to three columns side by side, one kind of
+            particle in each, watch what each bed does and read its instruments; you record your
+            readings, find from your own points the velocity at which each bed fluidises and the
+            one at which it is carried away, and only then see what this page computes.  It opens
+            in a new tab with the gas, the bed and the particle set above, beside example particles
+            of other Geldart groups.  The dots in it are a drawing, not a simulation.
+          </Text>
+          <Group>
+            <Button size="xs" disabled={!ok} onClick={() => {
+              const own = pid !== "own"
+                ? { kind: pid, d_um: num(dS), rhoP: num(rhoPS), eps, F }
+                : { kind: "own", d_um: num(dS), rhoP: num(rhoPS), eps, F };
+              const q = encodeLab({
+                gasId, T_C: num(TS), P_bar: num(PS), mu_uPas: num(muS), Lmf, Dt: num(DtS) > 0 ? num(DtS) : 1,
+                orificesPerM2: num(orS) > 0 ? num(orS) : 1000, Dg_cm2s: num(DgS) > 0 ? num(DgS) : 0.2,
+                u: LAB_U_START, columns: columnsFromPage(own, gas),
+              });
+              window.open(`${window.location.pathname}?${q}`, "_blank", "noopener");
+            }}>Open the laboratory (new tab)</Button>
+          </Group>
         </Panel>
 
         {step(1)}
