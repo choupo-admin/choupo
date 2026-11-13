@@ -3446,6 +3446,28 @@ accepts today, and that is a policy call.
 > any engine slice.  Only Mazzoleni and the two NREL reports are freely
 > readable; the others need Vitor's copies.
 
+> **C371 S2 LANDED (2026-11-13; 3eb1b66e1): THE PANEL WORKSPACE, READ-ONLY,
+> with the reviewing session's lesson on panels and alarms.**  Built on
+> that session's adapter (`panelPayload.ts`) and sharing its drawing
+> primitives.  The lesson's sixteen practice rules were READ against two
+> public documents (the review guide for human-system interfaces,
+> Revision 3, 558 pages; the UK regulator's alarm-handling sheet): none
+> contradicted, six with a difference, three reworded on the page, the
+> only alarm rates in hand cited; the standards sold by their publishers
+> were not read and Revision 4 could not be obtained.  Held by --gui 47/0
+> on the merged tree, typecheck, the electrodialysis cases 5/0, the page's
+> 28 tests after the source check; seen only as headless renders.  OPEN
+> for the engine's panel slice (given to the reviewing session, C383): a
+> unit per column, an interval for a limit without an alarm, its five
+> notes.  OPEN in the workspace: scales on the trends, the grid's holes.
+> **C378 SLICE 0 NOT LANDED YET (2026-11-13): the reviewing session read
+> the branch (DR-01..DR-14) and found two false printed sources (water's
+> surface tension and viscosity labelled with a formulation that defines
+> neither; the electrodialysis kinematic viscosity missing from the
+> table), consumers the inventory missed, and a ratchet that caught 4 of
+> its 18 probe lines.  All fourteen rows went back to the general before
+> any golden is re-recorded.**
+
 > **C198 LANDED (2026-11-13): SEAWATER BORON ON PITZER.**  Every
 > parameter of Felmy & Weare (1986) read from page images, three readings
 > each (the text layer of the PDF misreads two chemical potentials by 90

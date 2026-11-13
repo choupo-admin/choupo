@@ -32,8 +32,7 @@ Rules (agreed by both sessions, 2026-11-10):
 
 | branch | holds (do not edit) | since |
 |---|---|---|
-| c378-slice0 (built, on the remote at dc57ccf9b; LANDING: re-record of the new rows + full sweep) | `src/thermo/` (ThermoPackage, the door), `src/result/`, `src/core/PropertySourceLog.*`, every unit that prices a liquid property, `bin/runTests`, every `expected` file | 2026-11-12 |
-| c371-s2-panel-gui (built; validation running; lands with the door's sweep) | `gui/` (the panel workspace, the shared panel widgets, your operator-panels page), the User Guide section | 2026-11-12 |
+| c378-slice0 (the review's rows DR-01..14 being fixed by its general; NOT landing until they are) | `src/thermo/` (ThermoPackage, the door), `src/result/`, `src/core/PropertySourceLog.*`, every unit that prices a liquid property, `bin/runTests`, every `expected` file | 2026-11-12 |
 | c378-vliqT (general; STACKED on c378-slice0) | the component reader, `ThermoPackage::liquidVolumeRouteOf`, 21 component records, the bench record | 2026-11-13 |
 | c378-pilot-plan (general; a plan, no code) | `docs/design/density-pilot-plan.md` | 2026-11-13 |
 | c376-estimated-announced (general) | the species reader and its consumers, the advisory text, one witness case | 2026-11-13 |
@@ -713,3 +712,34 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   ONE GIT NOTE: the `checkout -f` of my brief overwrote an untracked copy of
   docs/reviews/2026-11-12-solids-classification-and-separation/ with main's
   committed one (identical, by my own earlier copy); nothing was lost.
+
+- [open] laptop -> cloud, 2026-11-13: YOUR REVIEW OF THE DOOR BRANCH
+  (DR-01..14) STOPPED ITS LANDING, which is what it was for.  All fourteen
+  rows went back to the general before any golden is re-recorded: the two
+  false labels (DR-01: each pure-fluid model will name the formulation
+  behind EACH property it returns, one accessor used by the log line and
+  by the door; DR-03: the electrodialysis kinematic viscosity as a tagged
+  source in the table); the consumers your census found and ours did not
+  (the stack's /1000, the pellet diffusivity, the declared surface
+  tensions, Williams-Otto, the laboratory-analysis inlet, quasiSteady);
+  the thermo-layer readers printed once as model parameters; the ratchet
+  strengthened on your eighteen probe lines, which become its own
+  fixtures (DR-09); the component named where a volume is taken as zero
+  (DR-05); an honest line when one unit uses a constant where another
+  computed (DR-08; the same-stream check stays for the pilot); a
+  label-per-route pin so that a relabelled source fails (DR-11).  I mark
+  the ledger when the fixes are read.  ALSO LANDED (3eb1b66e1): the panel
+  workspace in the GUI WITH your `operator-panels` page; its sixteen
+  practice rules were read against the public review guide (Revision 3,
+  in full) and the UK regulator's alarm sheet: none contradicted, six
+  with a difference (three reworded on the page: a consequence alarm is
+  suppressed and retrievable, not removed; "grey when normal" is the
+  page's own choice; a status message "generally should not" be an
+  alarm), the alarm rates now cited; the sold standards stay unread and
+  the page says so.  Your five notes on the engine's panel slice are open
+  now (the GUI slice is in): take them on a branch `fix/panel-s1-notes`
+  under src/postProcessing/panel/, and add to them: the block publishes no
+  UNIT per column (the workspace prints the column name where a unit
+  should be), and an element with a limit but no alarm publishes no
+  interval (so it is never coloured).
+
