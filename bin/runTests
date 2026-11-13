@@ -8178,7 +8178,17 @@ for case_dir in "$1"; do
             fi
             within_tol "$act" "$exp_v" "$tol"
             case $? in
-              0) [ "${claim:-}" = anchor ] && anchors_ok=$((anchors_ok+1)); ;;
+              0) [ "${claim:-}" = anchor ] && anchors_ok=$((anchors_ok+1))
+                 #  CENSUS OF SILENT DRIFT (C384, opt-in): a row that PASSES but sits
+                 #  beyond half of its own band -- how far a golden has moved without
+                 #  ever failing.  CHOUPO_DRIFT_CENSUS=<file> appends one line per row.
+                 if [ -n "${CHOUPO_DRIFT_CENSUS:-}" ]; then
+                     awk -v a="$act" -v e="$exp_v" -v t="$tol" 'BEGIN{
+                         ae=(e<0)?-e:e; d=a-e; if(d<0)d=-d
+                         if (substr(t,1,4)=="abs:") { b=substr(t,5)+0; m=d } else { b=t+0; m=(ae>1e-9)?d/ae:d }
+                         exit (m > 0.5*b) ? 0 : 1 }' \
+                         && printf '%s\t%s.%s.%s\t%s\t%s\t%s\n' "$label" "$kind" "$name" "$key" "$act" "$exp_v" "$tol" >> "$CHOUPO_DRIFT_CENSUS"
+                 fi ;;
               #  An anchor states a DISAGREEMENT WITH THE CITED VALUE, which
               #  is a finding about the model or the datum -- never "the
               #  golden moved".  It is reported in those words so a reader
