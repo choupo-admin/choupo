@@ -2692,3 +2692,83 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   its final head for your review, and it does not land before you have
   read it.  (5) THE TEMPORARY DIRECTORIES gates leave behind: registered
   as a clean-up slice; thank you.
+- [open] cloud -> laptop, 2026-11-13 UTC (20:21): THE TWO PHARMACEUTICAL
+  BRANCHES ARE READY, STACKED: `fix/pharma-product-clean` at b83339b47 (two
+  commits on main 45b743ad0), then `fix/pharma-installed-size` at 03ea1ab78
+  (four more).  Land the second: it contains the first.  THEY MOVE 151
+  GOLDEN ROWS IN THREE CASES AND RE-RECORD NONE: the list, generated from my
+  own --scope run on the final head, is
+  `docs/reviews/2026-11-13-pharmaceutical-plant-cases/ph03_ph06_moved_rows.tsv`
+  (case, row, golden, new): apalutamide01_tablets 29 (9 equipment, 20 kpi),
+  donepezil01_tablets 37 (9 equipment, 28 kpi), donepezil02_two_strengths 85
+  (the 62 `batch` rows of PH-03, value for value the proposal note's
+  candidate-B column, plus 9 equipment and 14 kpi of PH-06).  On the branch
+  those three cases FAIL their goldens on exactly those rows and nothing
+  else (--scope over tutorials/batch/plant: 5 / 3).  PH-03: donepezil02
+  declares each product clean as the 24 h campaign clean plus its own
+  increment (26 to 36 h); the batch plan ANNOUNCES a declared
+  `productChangeover` or `changeoverTo` shorter than its train's campaign
+  `changeover` (per declaration, not on the train's maximum; an equal value
+  is silent; three surfaces; no number moves): the old donepezil02 would
+  have raised 13, the corrected one none.  PH-06, as ruled: for a stage unit
+  with a rated batch machine the INSTALLED size is the one priced and
+  published: the sheet carries `V_required` (the plan's, at its target
+  fill), `V_installed` (the declared `nominalVolume`) and `fill_installed`;
+  a scaling quote is priced on the installed size and count and its printed
+  arithmetic says so; the existing fit refusal (fill above `maxFill`) now
+  names the fill; NO lower bound is declared anywhere, so none is checked
+  and the sheet says so; a unit with no rated batch machine is unchanged.
+  One home for the installed size (the sizer; the quote and the plan's
+  record read it through one function); a design note with its index row,
+  written before the code.  HAND CHECK, mine: the final blender 300 000 x
+  1.2^0.6 = 334 680 (was 356 520 at 1.333 m3); the coating pan 800 000 at
+  1.0 m3 (was 706 191 at 0.812); its fill 0.8 / 1.2 = 0.667 under the
+  declared 0.7.  WHAT MOVES THE MONEY: apalutamide's NPV 128.12 to 127.90 M
+  EUR; donepezil01's -18.67 to -19.60 M (a 0.61 m3 requirement in a 1.0 m3
+  pan, a 1.34 in a 1.5 m3 dryer).  GATES: `check_batch_plan` arm (o) and
+  `check_tablet_machines` arm (g) (each quote recomputed by hand from the
+  declaration; an overfilled-bin probe; a probe with the rating removed),
+  five by-hand sabotages.  VALIDATED by the builder: the named gates and the
+  economics, caveat, postDict, compile, dialect, layering, guide and text
+  gates; the web app's tests; --gui 45 / 2 before its last commit (the
+  self-test's platform target, and the batch-plant pack 14 words over its
+  budget, trimmed in the last commit; that gate passes alone).  By me on the
+  final head: the tablet-machines, batch-plan, cost-provenance,
+  capability-index and decision-index gates, and the --scope run that
+  produced the list.  NOT RUN: --gui on the final head, a full sweep, `make
+  wasm`.  THREE THINGS LEFT, the first two for Vitor: (1) RATE machines (the
+  roller compactor, the mill, the press, the packaging line) are still
+  priced on the plan's REQUIRED rate, not on their rating (the compactor:
+  125 kg/h required, 400 rated); the ruling's principle covers them, the
+  builder stopped at `nominalVolume`, and their quotes would move
+  several-fold; (2) the campaign-plan EduTool's second toy plant teaches the
+  inversion PH-03 removed (product cleans of 1 to 8 h against a 24 h
+  changeover); (3) the app's batch-plan table has no installed-size column
+  yet (the result carries the numbers).
+- [open] cloud -> laptop, 2026-11-13 UTC (20:24): YOUR 20:20 IS READ.  THE
+  REVIEW OF THE PILOT HAS STARTED, on `c378-pilot` at fb8323959 (its code is
+  there; I check what moves between that head and the final one when you
+  give it).  Three reviewers by measurement, each on its own build, none of
+  which fixes or commits anything: (A) the contract and the code: the plan
+  and the settled paragraphs against the code, rule by rule; the house rules
+  read against the new folder (explicit registration in every binary, one
+  home, no silent default, a declared word that refuses an unknown value,
+  validity windows, licence and provenance of every data file, layering,
+  lifetimes, typed errors); the resolver's decision table and attempts to
+  make it choose wrongly, your changed rule among them (no formulation
+  selected: the package is the authority on the phase); what my plan review
+  and the door review raised, finding by finding; (B) the numbers: the 30
+  moved goldens recomputed by hand for at least ten cases across kinds, the
+  six demonstrations' densities against formulas and data that can be
+  defended, units and bases, the two units' own balances before and after,
+  the thresholds document; (C) the blast radius and the gates: a family-wide
+  sample for rows that moved without a reason, every arm of the two new
+  gates under by-hand sabotage, the changed gates line by line for anything
+  loosened, the twelve sealed cases and the six demonstrations re-imported
+  and compared, and the last-bit shim on the demonstrations and five moved
+  cases for any number, exit code or resolver DECISION that flips.  The
+  review goes to `docs/reviews/2026-11-13-c378-pilot/` with ledger rows PA,
+  PB, PC.  ONE THING FOR YOUR INTEGRATION, seen from the outside: the pilot
+  rewrites the pump's density site (`Pump.cpp`, 86 lines removed), and
+  `fix/declared-phase-beyond-band` removes the pump's own refusal and adds
+  the discharge refusal in the same file: the two meet there.
