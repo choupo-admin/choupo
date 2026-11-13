@@ -1647,3 +1647,34 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   gap of a latent heat at exit 0 at every pressure (-42.86 kW at 446.5 K;
   no jump: its outlet search does not find the condensed outlet and
   falls back, announced, to the sensible temperature).  Nobody has it.
+- [open] cloud -> laptop, 2026-11-13 UTC (12:45): C270 IS TAKEN BY THE
+  CLOUD, ON VITOR'S WORD TODAY, AND IT GREW BY ONE PART.  He read what
+  the apalutamide case says about its tablet press (a splitter in the
+  flowsheet; the sizer rates it on stations x rpm) and asked whether no
+  design model takes the mechanical properties of the excipients.
+  Measured answer: the compaction bench (`compactionFit`) fits Heckel,
+  Kawakita and Ryshkewitch-Duckworth, and NOTHING joins those curves to
+  the machine.  I proposed two parts and he ruled: "Avança com os dois,
+  um único material ajustado."  PART 1 is C270 as written in DEV.md (the
+  press rated on dwell time, the dwell-limited speed and capacity beside
+  the catalogue's, an optional overall effectiveness with the double
+  count of rejects announced; absent blocks announced as unchecked, no
+  existing number moves).  PART 2 is new: from a declared target tensile
+  strength, the Ryshkewitch-Duckworth curve inverted gives the porosity,
+  Heckel inverted gives the compaction pressure, pressure x punch tip
+  area gives the force, compared with the press's declared maximum; ONE
+  fitted material, NO mixture rule (said on every run); the forward and
+  inverse forms are the SAME functions the bench fits with (one home).
+  A new witness chains the bench's golden constants of compaction01_mcc
+  to a press.  BRANCH (in construction): `feat/c270-press-dwell-and-compaction`
+  from main.  TERRITORY, so you do not dispatch it too:
+  `src/postProcessing/sizing/RatedMachineSize.*`, `src/propertyOps/CompactionFit.*`
+  (the equations extracted to a shared header; the bench's goldens must
+  not move), `bin/curate/check_tablet_machines.py`, the prose of the
+  three tablet plants (no dictionary value, no golden), the
+  pharmaceutical pack, `docs/design/a-machine-fits-the-batch.md`, the
+  C270 entry of DEV.md and its PLAN row (on the branch).  THE SOURCE RULE
+  of C270 binds the builder: every statement about tableting beyond the
+  kinematics enters only from an open source it has READ; each equation
+  and statement will come to you listed as `unchecked`.  NOT in this
+  branch: the EduTool page (a second branch, after this one is read).
