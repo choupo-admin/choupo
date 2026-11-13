@@ -1979,7 +1979,8 @@ elements
         name        overLimiting;                   // unique word
         title       "Limiting current";
         kind        lamp;                           // number | bar | trend | lamp
-        measurement { unit rig;  cv i_over_ilim; }  // or { controller C; cv SP|PV|MV; }
+        measurement { unit rig;  cv i_over_ilim;    // or { controller C; cv SP|PV|MV; }
+                      cvUnit "-"; }                 // optional: the column's unit, as text
         range       { min 0;  max 2.5; }            // required for bar and lamp
         limit       { high 1;                       // low and/or high
                       source "the unit's own film model";
@@ -2005,6 +2006,14 @@ messages ( { name overLimiting; from overLimiting; on high; text "..."; }
   is published in (`_V`, `_A_per_m2`, `_S_per_m` in the column name); a named
   unit (`313.15 K`) is converted to SI.  The engine cannot check the dimension:
   no trajectory column declares one.
+* The column's UNIT, published on the element as `unit`: the writer's where
+  the column is its own (`t` s, `<vessel>.T` K, `<vessel>.n_<component>` kmol;
+  `unitFrom engine`), else the case's `measurement { cvUnit "..."; }` (free
+  text, read from the unit's own source, `"-"` for dimensionless;
+  `unitFrom declared`), else none -- never guessed from the key's name.  A
+  `cvUnit` that differs from the writer's is published beside it as
+  `unitDeclared` with the fact `unitDiffers`.  `cvUnit` is refused on a
+  `reference` and when empty.
 * REFUSED by name, with the remedy: an unknown key (with a suggestion), an
   unknown `kind`, an element with no `reason`, a `limit` with neither end or
   without `source` or `reason`, an `alarm` without a `limit` or an `action`, a
@@ -2021,7 +2030,8 @@ messages ( { name overLimiting; from overLimiting; on high; text "..."; }
   `delay`);
   `neverApproached` (no violation and the closest approach over 0.5 of the
   range; 0.5 is a default of the design record, not taken from a standard);
-  `controllerWithoutElement`; `sameQuantityAlarms` (same column, id
+  `controllerWithoutElement`; `unitDiffers` (the case's `cvUnit` is not the
+  writer's unit); `sameQuantityAlarms` (same column, id
   `sameQuantityAlarms:<first element>` with the column as a word; two series
   that are functions of each other are not detected); `alarmsActive` (with the
   `delay` applied on the write grid: `max` active at once and `at`, the first

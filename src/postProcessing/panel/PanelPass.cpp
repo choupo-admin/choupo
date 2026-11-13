@@ -175,6 +175,7 @@ struct Measure
     bool        controller = false;
     std::string owner;       // unit or controller name
     std::string cv;          // column key, or SP | PV | MV
+    std::string cvUnit;      // the unit the CASE declares for it ("" = none)
     std::string column() const { return owner + "." + cv; }
 };
 
@@ -204,13 +205,21 @@ Measure readMeasure(const Dictionary& e, const std::string& key,
 {
     const std::string w = where + " `" + key + "`";
     DictPtr b = needBlock(e, key, where);
-    checkKeys(*b, w, {"unit", "controller", "cv"});
+    if (key == "reference" && b->found("cvUnit"))
+        refuse(w + ": `cvUnit` is declared on the `measurement`; the reference"
+               " is drawn on the measurement's scale, in its unit.");
+    checkKeys(*b, w, {"unit", "controller", "cv", "cvUnit"});
     const bool hasU = b->found("unit"), hasC = b->found("controller");
     if (hasU == hasC)
         refuse(w + " names a quantity by `unit <u>; cv <key>;` or by"
                " `controller <C>; cv SP|PV|MV;`, one of the two.");
     Measure m;
     m.cv = needText(*b, "cv", w, "name the published column, e.g. `cv U_V;`.");
+    if (b->found("cvUnit"))
+        m.cvUnit = needText(*b, "cvUnit", w, "write the unit the column is"
+            " published in, read from the unit that publishes it, e.g."
+            " `cvUnit \"V\";` (`\"-\"` for a dimensionless one), or delete the"
+            " line.");
     if (hasU)
     {
         m.owner = needText(*b, "unit", w, "name a unit of the flowsheet.");
@@ -621,6 +630,39 @@ PanelRecord evaluate(const Dictionary&      d,
         if (el.hasAlarm) alarmsOnColumn[col].push_back(el.name);
 
         const int ci = series.column(col);
+
+        //  THE UNIT OF THE COLUMN.  The writer's, where it states one (a fact
+        //  of the code that writes the column); else the case's `cvUnit`;
+        //  else NONE is published -- never guessed from the key's name.  A
+        //  declaration that disagrees with the writer is published beside it
+        //  and said, not refused.
+        {
+            const std::string eu = series.unitOf(ci);
+            const std::string& du = el.meas.cvUnit;
+            if (!eu.empty())
+            {
+                word(er, "unit", eu);
+                word(er, "unitFrom", "engine");
+                if (!du.empty() && du != eu)
+                {
+                    word(er, "unitDeclared", du);
+                    PanelRow f = row("unitDiffers:" + el.name);
+                    word(f, "column", col);
+                    word(f, "unit", eu);
+                    word(f, "unitDeclared", du);
+                    addFact(std::move(f), "element `" + el.name + "`: the case"
+                            " declares `cvUnit \"" + du + "\"` for `" + col
+                            + "`, which the run writes in " + eu + "; the"
+                            " engine's unit is the one the numbers are in, and"
+                            " the declaration is published beside it.");
+                }
+            }
+            else if (!du.empty())
+            {
+                word(er, "unit", du);
+                word(er, "unitFrom", "declared");
+            }
+        }
         if (el.hasRef && series.column(el.ref.column()) < 0)
         {
             PanelRow f = row("notPublished:" + el.name + ":reference");

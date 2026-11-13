@@ -714,15 +714,24 @@ if (flowsheetDict->found("cycle"))
     PublishedSeries panelSeries;
     if (panelOn)
     {
-        panelSeries.labels.push_back("t");
+        //  The unit of each column where THIS writer knows it: `t` is the
+        //  integrator's time in s, `.n_<c>` and `.T` are the vessel's
+        //  BatchState::n [kmol] and ::T [K] (BatchUnitOperation.H).  A
+        //  `trajectoryExtras()` key carries no declared unit: "".
+        auto addCol = [&](const std::string& label, const char* unit)
+        {
+            panelSeries.labels.push_back(label);
+            panelSeries.units.push_back(unit);
+        };
+        addCol("t", "s");
         for (const auto& unit : units)
             for (std::size_t i = 0; i < thermo.n(); ++i)
-                panelSeries.labels.push_back(unit->name() + ".n_" + thermo.comp(i).name());
+                addCol(unit->name() + ".n_" + thermo.comp(i).name(), "kmol");
         for (const auto& unit : units)
-            panelSeries.labels.push_back(unit->name() + ".T");
+            addCol(unit->name() + ".T", "K");
         for (const auto& unit : units)
             for (const auto& [k, v] : unit->trajectoryExtras())
-                panelSeries.labels.push_back(unit->name() + "." + k);
+                addCol(unit->name() + "." + k, "");
     }
 
     auto writeSnapshot = [&](scalar t)

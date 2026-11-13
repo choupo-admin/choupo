@@ -82,7 +82,7 @@ admits no mid-run disturbance; (d) the Control Room never opens on it.
 | `name` | word, unique | identity; the facts and the golden rows use it |
 | `title` | string | what the operator reads |
 | `kind` | `number`, `bar`, `trend`, `lamp` | the first four; others are later slices (§9) |
-| `measurement` | `{ unit <u>; cv <key>; }` or `{ controller <C>; cv SP|PV|MV; }` | resolves to the published column `<u>.<key>` / `<C>.<cv>`; the controller block's shape reused verbatim |
+| `measurement` | `{ unit <u>; cv <key>; }` or `{ controller <C>; cv SP|PV|MV; }`, optionally `cvUnit "<text>";` | resolves to the published column `<u>.<key>` / `<C>.<cv>`; the controller block's shape reused verbatim.  `cvUnit` (added 2026-11-13, review note 5) is the case's statement of the unit the column is published in, free text (`"V"`, `"A/m2"`, `"-"` for dimensionless), read from the unit's source; it is not `unit`, which already names the unit operation in this block; refused on a `reference` (drawn on the measurement's scale) and when empty |
 | `reference` | same shape as `measurement`, optional, `trend` only | a second series drawn faint (actual against ideal, PV against SP) |
 | `range { min; max; }` | scalars | the scale of the element; required for `bar`, `lamp` |
 | `limit { low; high; source; reason; }` | at least one of `low`/`high`; `source` and `reason` strings, both required | ONE block for a limit and a band (a band is a limit with both ends) |
@@ -102,6 +102,25 @@ example writes it in a comment beside each raw value.  `delay` and
 The engine cannot check a limit's dimension against its series, because no
 trajectory column declares its dimension today: that is stated, not hidden
 (§10, open item 7).
+
+**The unit of a column, as published (2026-11-13, review note 5; a stated
+default the owner can reverse).**  Measured first: no unit operation
+declares a unit for a key it publishes (`trajectoryExtras()` returns
+`(key, value)` pairs, `BatchUnitOperation.H`; the driver's `stateLabels()`
+are names), so there is no home to read one from.  Three cases, in order:
+(a) where the column is the WRITER's own and its unit is a fact of the code
+that writes it, the writer states it (`PublishedSeries::units`, filled by
+choupoBatch: `t` in s, a vessel's `.T` in K and `.n_<component>` in kmol,
+`BatchState` in `BatchUnitOperation.H`), published as `unit` with
+`unitFrom engine`; (b) otherwise the case may declare it,
+`measurement { ...; cvUnit "V"; }`, published as `unit` with
+`unitFrom declared`; (c) neither: no `unit` word at all -- never a guess from
+the key's name (`_V`, `_A_per_m2` are names, not declarations, and
+`n_conc_water` begins with `n_` and is a unit's own key).  A `cvUnit` that
+differs as text from the writer's unit is not refused: `unit` stays the
+writer's, `unitDeclared` carries the case's, and the fact
+`unitDiffers:<element>` says so.  The unit is a word for a reader; it does
+not make the engine check a limit's dimension (open item 7 stands).
 
 ### 3.3 Field-by-field check of the proposed grammar (`panelDict.proposed`)
 
@@ -285,6 +304,7 @@ would sit beside the integrator).
 | `violated` | count `k` of `n` written instants beyond a limit (strictly), first and last instant; the periods themselves are the element's `limitIntervals` | always published when a limit exists; `k = 0` is reported as `neverViolated`, `k = n` as `alwaysViolated` |
 | `neverApproached` | `k = 0` and the closest approach, `(high - max)/(range.max - range.min)` (or the `low` mirror), exceeds 0.5 | a limit in the far half of its own scale from every point was not exercised; 0.5 is a stated default of this record, not taken from any practice, and the closest approach is always published so a student can judge with another number |
 | `controllerWithoutElement` | a PID in the flowsheet whose `PV` is shown by no element (`measurement { controller C; cv PV; }`, or the same `unit`/`cv` as its measurement block) | a declared loop the operator cannot see |
+| `unitDiffers` | the case's `cvUnit` differs, as text, from the unit the writer states for that column; words `column`, `unit` (the writer's), `unitDeclared` | the numbers are in the writer's unit; the declaration is shown beside it, never silently dropped and never refused |
 | `sameQuantityAlarms` | more than one `alarm` whose elements resolve to the same column.  Id `sameQuantityAlarms:<the first of those elements in declaration order>`, like every other fact naming an element; the column rides as the word `column`, all the elements as `elements`, their number as `count` | one cause, one alarm; two series that are functions of each other (`I_A`, `i_A_per_m2`) are NOT detected, and this is said in the gate |
 | `alarmsActive` | per instant, the count of elements in alarm (`delay` applied on the write grid).  Published: `alarms` (declared), `max` (the largest count at one written instant) and `at` (the first instant that maximum is reached -- it can be the last written instant, so it is NOT the start of the alarms), `first` (the first written instant with at least one alarm active; absent when none ever is), `count` (the number of written instants with at least one alarm active) and, as the row's `intervals`, the periods with at least one alarm active.  The per-instant count itself is not published: it is derivable from each alarmed element's own `intervals` | the count of active alarms is always shown, and when and for how long any alarm was active is published, not left to be inferred from the maximum |
 | `message:<name>` | first instant each message's trigger holds, as `fired` 0 or 1 and `t` when it fires | a message that never fires is published with `fired` 0 and no `t` |
@@ -307,7 +327,9 @@ never reads a number out of a sentence.  As built:
 `{"id": "element:<name>"}` carries the panel as read (`kind`, `column`,
 `referenceColumn`, `authored`, `alarmOn`, `rangeMin`/`rangeMax`,
 `limitLow`/`limitHigh`, `alarmDelay`, `placeColumn`/`placeRow`/`placeWidth`/
-`placeHeight`), `published` 0 or 1, and on a published column `min`, `max`,
+`placeHeight`), the column's `unit` with `unitFrom` `engine` or `declared`
+(and `unitDeclared` when a declaration disagrees with the writer; absent when
+neither states one), `published` 0 or 1, and on a published column `min`, `max`,
 `first`, `last`, `n`, with a limit `violated` and `closestApproach` (and
 `closestApproachFraction` with a range) and `limitIntervals` `[[t0, t1], ...]`
 (the periods the limit is violated on the write grid, no delay -- on EVERY

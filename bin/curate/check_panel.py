@@ -28,7 +28,8 @@ names the risk it holds:
       neither end, an alarm with no limit / no action, a delay with no unit,
       a bar with no range, a placement outside the grid / on a held cell / with
       no grid, a duplicate name, a message naming no element, an empty panel,
-      a lock with no reason, a `reference` on a lamp.
+      a lock with no reason, a `reference` on a lamp, a `cvUnit` on a
+      `reference`, an empty `cvUnit`.
   (d) EVERY FACT, on a fixture built to trigger it, and RECOMPUTED HERE from
       trajectory.csv (an independent reader of the same file): notPublished,
       constant, outOfRange, limitOutsideRange, violated (k of n, first, last),
@@ -39,7 +40,9 @@ names the risk it holds:
       one and those periods as intervals), a message that fires and one
       that never does; the limit-violation periods (`limitIntervals`) of every
       element with a limit, alarm or not, apart from the alarm's `intervals`;
-      the `sameQuantityAlarms` id naming an element; the alarmsActive and
+      the `sameQuantityAlarms` id naming an element; the unit of a column
+      (the writer's where it knows it, else the case's `cvUnit`, else none,
+      never guessed from the key; a disagreement published with a fact); the alarmsActive and
       violated log lines not reading the maximum's instant as a start; and
       the panel reaches all three surfaces: the `[panel]`
       log lines, the `panel` JSON block, and the golden `panel` kind (the
@@ -297,6 +300,11 @@ REFUSALS = [
     ("lock without reason",
      panel(el(), head='lock { by "me"; date "2026-11-12"; }'),
      "`lock` has no `reason`"),
+    ("cvUnit on a reference",
+     panel(el(extra='        reference { unit rig; cv U_V; cvUnit "V"; }')),
+     "the reference is drawn on the measurement's scale"),
+    ("empty cvUnit", panel(el(meas='{ unit rig;  cv U_V;  cvUnit ""; }')),
+     "has no `cvUnit`"),
     ("reference on a lamp",
      panel(el(kind="lamp", extra="        reference { unit rig; cv U_V; }")),
      "belongs to a `trend`"),
@@ -344,11 +352,11 @@ def approx(a, b, tol=1e-9):
 FACT_ELEMENTS = """
     { name notPub;   kind trend; measurement { unit rig; cv noSuchColumn; }
       reason "a column the run does not publish"; }
-    { name tempConst; kind number; measurement { unit rig; cv T; }
+    { name tempConst; kind number; measurement { unit rig; cv T; cvUnit "degC"; }
       range { min 273.15 K; max 333.15 K; }
       limit { high 330; source "fixture"; reason "far from the run"; }
       reason "constant, never violated, never approached"; }
-    { name voltRange; kind trend; measurement { unit rig; cv U_V; }
+    { name voltRange; kind trend; measurement { unit rig; cv U_V; cvUnit "V"; }
       range { min 0; max 5; }
       limit { high 20; source "fixture"; reason "outside its own scale"; }
       reason "the scale hides the run; the limit is off the scale"; }
@@ -367,10 +375,14 @@ FACT_ELEMENTS = """
       limit { high 1; source "fixture"; reason "regime boundary"; }
       alarm { on high; delay 500 s; action "act much later"; }
       reason "a delay longer than the excursion: never active"; }
-    { name alwaysLow; kind number; measurement { unit rig; cv T; }
+    { name alwaysLow; kind number; measurement { unit rig; cv T; cvUnit "K"; }
       range { min 273.15 K; max 500; }
       limit { low 400; source "fixture"; reason "above the run"; }
       reason "violated at every instant"; }
+    { name nWater; kind trend; measurement { unit rig; cv n_water; }
+      reason "a vessel amount: the writer states its unit"; }
+    { name nConc; kind trend; measurement { unit rig; cv n_conc_water; }
+      reason "a unit's own key that merely starts with n_: no unit is guessed"; }
 """
 FACT_MESSAGES = """
     { name fires;  from lamp;      on high; text "fires"; }
@@ -557,6 +569,27 @@ def arm_facts(work):
          and E["element:lampLate"].get("intervals") == [],
          "the fixture no longer holds a limit without an alarm that is violated, and an"
          " alarm whose delay hides a violation its limitIntervals still show")
+    # (note 5, 2026-11-13) THE UNIT OF A COLUMN: the writer's where it knows
+    # it (t, a vessel's .T in K, its .n_<component> in kmol), else the case's
+    # cvUnit, else NONE -- never guessed from a key's name (n_conc_water starts
+    # with n_ and is a unit's own key).  A declaration that disagrees with the
+    # writer is published beside it with a fact, not refused.
+    def U(name):
+        er = E.get("element:" + name, {})
+        return (er.get("unit"), er.get("unitFrom"), er.get("unitDeclared"))
+    need(U("nWater") == ("kmol", "engine", None),
+         f"rig.n_water carries the writer's unit kmol: got {U('nWater')}")
+    need(U("alwaysLow") == ("K", "engine", None) and "unitDiffers:alwaysLow" not in ids,
+         f"rig.T declared K as the writer has it: got {U('alwaysLow')}")
+    need(U("tempConst") == ("K", "engine", "degC") and "unitDiffers:tempConst" in ids
+         and F["unitDiffers:tempConst"].get("unitDeclared") == "degC",
+         f"a cvUnit that disagrees with the writer is not published beside it"
+         f" with a unitDiffers fact: got {U('tempConst')}")
+    need(U("voltRange") == ("V", "declared", None),
+         f"a unit's own key with a declared cvUnit: got {U('voltRange')}")
+    need(U("nConc") == (None, None, None) and U("lamp") == (None, None, None),
+         f"a unit was published where neither the writer nor the case states one"
+         f" (guessed from the key's name?): nConc {U('nConc')}, lamp {U('lamp')}")
     # controllerWithoutElement: C1 measures rig.T, tempConst shows rig.T -> shown;
     # the fixture below removes it.
     need("controllerWithoutElement:C1" not in ids,
@@ -610,6 +643,7 @@ def arm_facts(work):
                   " neverViolated / alwaysViolated (k, n, first, last, closest approach),"
                   " neverApproached, controllerWithoutElement, sameQuantityAlarms,"
                   " limit-violation intervals of every limited element apart from the alarm's,"
+                  " the unit of a column (writer's, declared, or none, never guessed),"
                   " alarmsActive with a delay (maximum and its instant, first instant any"
                   " alarm is active, instants with one, their intervals), three messages; on the log, the JSON block")
 

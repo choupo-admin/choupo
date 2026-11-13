@@ -66,6 +66,19 @@ struct PublishedSeries
 {
     std::vector<std::string>         labels;   // "t", "<owner>.<key>", ...
     std::vector<std::vector<scalar>> rows;     // rows[k][labels index]
+    //  The unit of a column where the WRITER itself knows it as a fact of
+    //  the code that writes it ("s" for `t`, "K" for a vessel's `.T`, "kmol"
+    //  for its `.n_<component>`), else "".  Parallel to `labels` when
+    //  filled; a writer that fills none leaves it empty.  Never inferred from
+    //  a label: no unit declares the unit of a key it publishes today.
+    std::vector<std::string>         units;
+
+    //- The writer's unit of column i, "" when it states none.
+    std::string unitOf(int i) const
+    {
+        return (i >= 0 && static_cast<std::size_t>(i) < units.size())
+            ? units[static_cast<std::size_t>(i)] : std::string();
+    }
 
     //- Index of a label, -1 when the run did not publish it.
     int column(const std::string& label) const

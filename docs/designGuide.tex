@@ -2814,6 +2814,12 @@ blocks give a \code{grid} with placements, a \code{style}, a
 \code{limit} written without a named unit is in the unit the column is
 published in (its name says so: \code{U\_V}, \code{i\_A\_per\_m2}); no
 trajectory column declares its dimension, so the engine cannot check it.
+The column's unit is published on the element as a word: the writer's own
+where the column is the writer's (time in s, a vessel's temperature in K and
+amounts in kmol), else what the case declares with
+\code{measurement \{ ...; cvUnit "V"; \}}, else none --- never guessed from
+the column's name. A declaration that disagrees with the writer is published
+beside it, with the fact \emph{unit differs}.
 
 \textbf{Refused, by name.} What makes the file not a panel: an unknown key,
 unit, controller or kind, an element with no \code{reason}, a limit with

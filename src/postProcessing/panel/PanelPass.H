@@ -54,11 +54,19 @@ Description
       Element, sameQuantityAlarms, alarmsActive, message (fired or not).
     NOT BUILT here: `draftDiffers` (it needs the draft rules of slice S3).
 
-    The numbers carry the unit the series is published in: no trajectory
-    column declares its dimension today, so a `range` or `limit` written
-    without a named unit is read as that column's own unit, and the engine
-    cannot check the dimension (record, open item 7).  A scalar written with
-    a named unit (`313.15 K`) is converted to SI.
+    The numbers carry the unit the series is published in.  The UNIT of an
+    element's column is published as the word `unit` where it is known: from
+    the WRITER where the column is the writer's own (`t` s, a vessel's `.T`
+    K, its `.n_<component>` kmol -- `PublishedSeries::units`,
+    `unitFrom engine`), else from the case's `measurement { cvUnit "..."; }`
+    (`unitFrom declared`), else not at all -- never guessed from a key's
+    name; a declaration that disagrees with the writer is published beside it
+    (`unitDeclared`) with the fact `unitDiffers`.  No unit operation declares
+    the unit of a key it publishes today, so the engine still cannot check a
+    `range` or `limit` against its column's dimension (record, open item 7);
+    such a value written without a named unit is read in the column's own
+    unit, and a scalar written with a named unit (`313.15 K`) is converted to
+    SI.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
