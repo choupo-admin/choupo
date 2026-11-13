@@ -24998,7 +24998,9 @@ correlation's own zero, $h_T$ above about 0.6\,mm).  No parameter is fitted
 (King p.~90), and King states no accuracy for it.  ANCHOR (identity at a
 printed point, King p.~87): the factors are unity at the standard condition,
 $B(0.5)\,C(0.25) = 1$.  An area utilisation factor above $1$ means the screen
-is overloaded; the run says so.
+is overloaded: the split is computed as declared, and the run announces it on
+the advisory log with the AUF, the undersize transmitted and the theoretical
+capacity (a larger \dict{area} is the remedy).
 
 \paragraph{Model \texttt{declared}.}\label{sec:screen-declared}  The case gives
 a \dict{partition \{\}} curve, a \dict{bypass} (fines misplaced to the
@@ -25266,7 +25268,13 @@ that line as its profile (\code{V\_m3}, \code{t\_s}, \code{t\_over\_V\_s\_m3},
 $\alpha_0$ is therefore read in SI, its dimensions having no integer form.
 The case gives EITHER a measured \dict{specificCakeResistance} $\alpha$ OR the
 pair \dict{alpha0}, \dict{compressibility} $s$ (both or neither; one beside
-the other is refused).
+the other is refused).  A negative $s$ is refused by name: $\alpha$ would FALL
+as the pressure drop rises, a cake that opens as it is squeezed, which this law
+has no reading for.  $0 \le s \le 1$ is the usual range and is silent.  An $s$
+above $1$ runs as declared and is announced: then
+$K_p = \mu\,\alpha_0\,c_S\,(-\Delta p)^{s-1}/A^2$ GROWS with the pressure drop,
+so where the cake resistance dominates the medium's a HIGHER pressure drop gives
+LESS filtrate; the engine does not judge whether that $s$ describes the slurry.
 
 \paragraph{What the slurry fixes: the cake moisture and $c_S$.}  The cake
 moisture is DECLARED, as $m$, the kg of WET cake per kg of DRY cake
@@ -25442,7 +25450,9 @@ the compression zone, a flocculant and the safety factor (Wills p.~386 asks for
 at least two) are not applied.  WINDOW: Kynch's postulate (the settling
 velocity a function of the local concentration alone, Talmage \& Fitch p.~38);
 free settling governs the area; the test run at the expected feed
-concentration (Talmage \& Fitch p.~40; a deviation above $5\,\%$ is announced).
+concentration (Talmage \& Fitch p.~40; a test more than $5\,\%$ away from the
+feed's own concentration is used as declared and announced on the advisory log
+at every verbosity, with both concentrations and the deviation).
 
 \paragraph{Kynch's construction.}  The settling velocity at a test point is the
 slope $v = -dH/dt$, the parabola through that point and its two neighbours (the
@@ -25612,14 +25622,20 @@ $v_{\text{wall}} = d_{50}^{2}\Delta\rho\,\omega^{2}r_2/(18\mu)$, must be below $
 (Geankoplis eq.~30.2-13, p.~1437; $N_{Re}<1$, section~30.1B, p.~1413), or the unit
 refuses, and the message says the remedy: $Re$ at the cut grows as $Q^{3/2}/\omega$,
 so a faster bowl or a lower throughput.  Hindered settling (Geankoplis eq.~30.1-16)
-is NOT applied (the solids fraction is printed), nor Ambler's turbulent $\Sigma$
+is NOT applied: every particle settles as if it were alone.  The feed's solids
+VOLUME fraction $\phi_s = (\dot m_s/\rho_s)/Q$ is printed, published
+(\code{solidsVolumeFraction\_feed}) and announced with its number on the
+advisory log --- unhindered (dilute) Stokes settling is assumed at that
+fraction, and where crowding slows the settling the printed cut size is too
+small; no threshold is set, and the engine does not judge whether the feed is
+dilute.  Nor are Ambler's turbulent $\Sigma$
 (eqs.~34--39), the Brownian threshold and agglomeration (pp.~195--196), or the
-drive power.  KEYS (none has a default): \dict{speed} and \dict{sedimentSolids},
+drive power modelled.  KEYS (none has a default): \dict{speed} and \dict{sedimentSolids},
 and those of the model.  KPIs: every classifier KPI of \S\ref{sec:classification}
 under the words \code{sediment}/\code{centrate} (\code{d50\_um}, both products'
 $d_{10}\dots d_{90}$, the closures), \code{omega\_rad\_s}, \code{gForce\_wall},
 \code{sigma\_m2}, \code{cutSize\_d50\_um}, \code{Re\_cut}, \code{vWall\_cut\_m\_s},
-\code{gradeEfficiency\_at\_d50}; for the tubular bowl also \code{bowlVolume\_m3},
+\code{gradeEfficiency\_at\_d50}, \code{solidsVolumeFraction\_feed}; for the tubular bowl also \code{bowlVolume\_m3},
 \code{residenceTime\_s}, \code{sigmaHalfLayer\_m2}, \code{cutSizeHalfLayer\_Dpc\_um},
 \code{gradeEfficiency\_at\_Dpc}.
 
