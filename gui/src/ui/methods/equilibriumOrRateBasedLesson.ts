@@ -85,7 +85,7 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
       + "the interface, from mass-transfer coefficients and an interfacial area, and "
       + "the efficiency becomes something it computes rather than something you "
       + "declare.",
-    formula: String.raw`y_{i,j} = E_{\mathrm{MV}}\,y^{*}_{i,j} + \left(1 - E_{\mathrm{MV}}\right) y_{i,j+1}, \qquad y^{*}_{i,j} = K_{i,j}\,x_{i,j}`,
+    formula: String.raw`\begin{aligned} y_{i,j} &= E_{\mathrm{MV}}\,y^{*}_{i,j} + \left(1 - E_{\mathrm{MV}}\right) y_{i,j+1} \\ y^{*}_{i,j} &= K_{i,j}\,x_{i,j} \end{aligned}`,
     where: [
       { sym: "y_{i,j}", means: "mole fraction of component i in the vapour leaving tray j" },
       { sym: "E_{\\mathrm{MV}}", means: "the Murphree vapour efficiency, one number per tray in the engine" },

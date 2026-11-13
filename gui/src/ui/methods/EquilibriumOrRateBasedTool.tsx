@@ -132,6 +132,14 @@ function EfficiencySweepBlock(): JSX.Element {
               <Text size="sm">{sweep.errs.find((e) => e)}</Text>
             </Alert>
           )}
+          {!sweep.busy && sweep.results.some((r) => r) && xs.every((x) => x === null) && (
+            <Alert color="gray" variant="light" title="nothing to compare">
+              <Text size="sm">
+                The runs finished but none publishes a distillate stream with toluene in it, so
+                nothing is drawn rather than a number the engine did not publish.
+              </Text>
+            </Alert>
+          )}
           {line.length > 1 && (
             <XYPlot ariaLabel="toluene in the distillate against the Murphree efficiency, logarithmic"
               xLabel="Murphree efficiency E_MV [-]" yLabel="toluene in the distillate [mole fraction]" ylog
@@ -288,6 +296,14 @@ function TrayEfficiencyBlock(): JSX.Element {
           {err && (
             <Alert color="red" variant="light" title="a run did not finish">
               <Text size="sm">{err}</Text>
+            </Alert>
+          )}
+          {!busy && !err && runs.every((r) => r.results[0]) && sweeps.every((s) => !s) && (
+            <Alert color="gray" variant="light" title="nothing to compare">
+              <Text size="sm">
+                The runs finished but none carries the sweep file ({SWEEP_CSV}) this page draws,
+                so nothing is drawn rather than a curve the engine did not publish.
+              </Text>
             </Alert>
           )}
           {sweeps.some((s) => s) && (
