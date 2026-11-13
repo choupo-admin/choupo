@@ -28,6 +28,7 @@ License
 
 #include "unitOperations/solids/Thickener.H"
 #include "unitOperations/solids/SolidLiquidCore.H"
+#include "core/Advisory.H"
 #include "core/Dimensions.H"
 #include "thermo/ThermoPackage.H"
 
@@ -301,6 +302,27 @@ int Thickener::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbo
     }
     profile_ = prof;
 
+    //  ---- the one window the method checks: the test concentration ------
+    //  Talmage & Fitch (p. 40) ask for a settling test at the expected feed
+    //  concentration.  A test run elsewhere is still used as declared, so the
+    //  deviation is ANNOUNCED (every verbosity, on the advisory log), never
+    //  refused and never corrected.
+    std::string testNote;
+    if (std::abs(Cfeed - C0) / C0 > 0.05)
+    {
+        std::ostringstream m;
+        m << std::defaultfloat << std::setprecision(5)
+          << "the settling test was run at C_0 = " << C0 << " kg/m3 and the feed "
+             "is at " << Cfeed << " kg/m3 (" << 100.0 * (Cfeed - C0) / C0
+          << " % from the test); the area is computed from the test as declared.  "
+             "Talmage & Fitch (p. 40) ask for a test at the expected feed "
+             "concentration; a test at the feed's own concentration is the remedy.";
+        testNote = m.str();
+        const std::string unitName = dict->name().empty()
+            ? dict->lookupWordOrDefault("name", "(unnamed)") : dict->name();
+        AdvisoryLog::instance().add("validity", "warning", me + " " + unitName, testNote);
+    }
+
     if (verbosity >= 1)
     {
         std::cout << "\n=====================  Thickener Result  =========================\n"
@@ -311,11 +333,8 @@ int Thickener::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbo
                   << ", rho_l " << rhoL << " kg/m3\n"
                   << "  Test:         C_0 = " << C0 << " kg/m3, H_0 = " << H0 << " m, "
                   << np << " points to t = " << tt.back() << " s\n";
-        if (std::abs(Cfeed - C0) / C0 > 0.05)
-            std::cout << "  [thickener] NOTE: the test was run at C_0 = " << C0
-                      << " kg/m3 and the feed is at " << Cfeed << " kg/m3; Talmage "
-                         "& Fitch (p. 40) ask for a test at the expected feed "
-                         "concentration.\n";
+        if (!testNote.empty())
+            std::cout << "  [thickener] NOTE: " << testNote << "\n";
         std::cout << "  Underflow:    C_u = " << Cu << " kg/m3 -> H_u = C_0 H_0 / C_u = "
                   << Hu << " m (the curve crosses it at " << tCross << " s)\n";
         if (Atf > 0.0)
