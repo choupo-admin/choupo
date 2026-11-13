@@ -3476,6 +3476,59 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C394 (Vitor, 2026-11-13, on the sweep's wall clock: "O set de casos
+> tem mesmo de ser aqueles 500?  Nao ha forma de usar um subset que seja
+> representativo?" and, of the regressed-pairs gate: "Esses pares tem de
+> ser corridos na suite?").**  MEASURED on tonight's full sweep (2232
+> result lines, 70 min walked): the simulation cases are 36 min of
+> one-core work, the gates 259.  DECISIONS.  (1) A GATE WHOSE VERDICT
+> DEPENDS ONLY ON NAMED INPUTS RUNS WHEN THOSE INPUTS CHANGE.  The
+> regressed-pairs gate (about 850 fit cases, 1800 runs) reads the pair
+> records, their fit cases, the fitting operation and the activity
+> models it calls, and itself; with none of them changed its verdict
+> cannot change.  It, the roughly 1260 curation fits and the other
+> data-integrity gates of that kind get a key over exactly those inputs
+> (the dependency files the build already writes give the engine half);
+> on an unchanged key the suite prints the earlier verdict AS REUSED,
+> with the key and the date it was taken, never as a fresh PASS; a clean
+> checkout has no earlier verdict and runs everything, so the hosted
+> full tier and a release always do.  This is rule 4's "evidence is
+> reused while it still describes what enters main", made mechanical.
+> (2) THE FAST SET GAINS WHAT IT MISSED TODAY: the crash of the fifth
+> batch passed `--fast` (86 / 0) because no case of the set carries a
+> pure stream of a component with no vapour-pressure model; one utility
+> case on a thermal fluid and one solids case enter `tutorials/FASTSET`
+> with the fifth batch.  A subset is completed by what it fails to
+> catch.  (3) The self-test of the gates (383 s) runs its arms in a
+> pool, as the pairs gate now does.  NOT DONE: cutting cases from the
+> full sweep; they are not where the time is.
+
+> **C389, THE PRICES REVIEWED AT THEIR SOURCES (2026-11-13, late;
+> docs/reviews/2026-11-13-c389-prices/, rows PR-01 to PR-14).**  The
+> three adopted numbers reproduce at their sources (value, unit, year,
+> page, quotient), and the reviewers would have ruled the two readings
+> the same way.  WRONG AROUND THEM, and ruled: the ammonia sensitivity
+> range mixed three quantities (a foreign estimated price, the base, a
+> later year): it becomes the lowest and highest MONTHLY unit values of
+> the same dataset and year (PR-04); the hydrogen low end was a
+> calculated auction offtake price beside a modelled cost: the range
+> becomes the source's own 7 to 10 (PR-05); a sibling case's README
+> still taught the old prices (PR-03); two README numbers rested on
+> nothing (PR-09, PR-10).  A general applies them on a branch, the moved
+> sensitivity rows listed before any re-record.  CORRECTION to the
+> landing's entry: the paper DOES date its "Present" column (PR-13).
+> RULED ON THE LICENCE QUESTION (PR-01; Vitor reviews): the nitrogen
+> figure's source reserves commercial use of the publication.  ONE cited
+> number read from a primary publication is a fact stated with its
+> source, not a redistribution of the publication, and it is the
+> practice this tree follows for every journal article that reserves
+> all rights; what the policy excludes is a NonCommercial COMPILATION as
+> a value's origin, because there the arrangement is what would be
+> copied.  The value stays; its provenance block says the reservation
+> exists.  OPEN, engine side (PR-07): the economics pass reads each
+> price's origin and prints nothing; a run should show where its prices
+> came from.
+
 > **C390, THE DESIGN IS RULED ON A REVIEW BY MEASUREMENT (2026-11-13,
 > late; the review: docs/reviews/2026-11-13-c390-pressure-term-design/).**
 > (1) THE FORM is v (1 - alpha T) dP, per component, from its own
