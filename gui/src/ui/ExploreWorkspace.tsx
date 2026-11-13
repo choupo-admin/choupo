@@ -1219,7 +1219,7 @@ export function ExploreWorkspace() {
       }. ${
         scalingActivity === "pitzer"
           ? "Pitzer-HMW activity (validated vs HMW-1984 seawater) — quantitative to I ≈ 6 mol/kg in brines"
-          : "Davies activity — quantitative to I ≈ 0.5 mol/kg, indicative beyond"
+          : "Davies activity — quantitative to I ≈ 0.5 mol/kg (γ± within 10 % of measured for a typical 1-1 or 2-1 salt), indicative beyond"
       }. SI > 0 ⇒ the mineral precipitates.${
         scalingEquil
           ? ` Equilibrium ON: ${SCALING_EQUIL_MINERALS.join(", ")} driven to SI = 0 — plot SIeq_<m> (clamped) or scale_<m> (the deposit curve${scalingFeedFlow > 0 ? ", kgday_<m> rated by feed flow" : ""}). EQUILIBRIUM CEILING — the thermodynamic maximum, NOT a kinetic deposit prediction.`
@@ -1615,7 +1615,7 @@ export function ExploreWorkspace() {
                   segment — it is the one scaling control that FORKS the SI
                   curve, and SEEING the fork is the lesson.  Everything else in
                   the water analysis folds into the "Water analysis ▾" popover. */}
-              <Tooltip label="Davies (extended Debye-Hückel): single I-controlled curve, quantitative to I ≈ 0.5 mol/kg, indicative beyond.  Pitzer HMW: ion-specific virial interactions (e.g. the Ca-SO4 2:2 pairing), validated vs HMW-1984 seawater to I ≈ 6 mol/kg.  The SI curves track at low I and FORK in brine — the recovery decision flips on the model." multiline w={320} withArrow>
+              <Tooltip label="Davies (extended Debye-Hückel): single I-controlled curve, quantitative to I ≈ 0.5 mol/kg (γ± within 10 % of measured for a typical 1-1 or 2-1 salt), indicative beyond.  A salt with a 2- anion (a sulfate) is off already at I ≈ 0.3 unless the speciation carries its ion pair.  Pitzer HMW: ion-specific virial interactions (e.g. the Ca-SO4 2:2 pairing), validated vs HMW-1984 seawater to I ≈ 6 mol/kg.  The SI curves track at low I and FORK in brine — the recovery decision flips on the model." multiline w={320} withArrow>
                 <Box>
                   <SegmentedControl size="xs" color="accent" value={scalingActivity}
                     onChange={(v) => setScalingActivity((v as "davies" | "pitzer") ?? "davies")}
@@ -2290,7 +2290,7 @@ export function ExploreWorkspace() {
               ionic strength I = {iEnds.first.toPrecision(3)} → {iEnds.last.toPrecision(3)} mol/kg
               across the scan — {scalingActivity === "pitzer"
                 ? "Pitzer-HMW activity is quantitative to I ≈ 6 mol/kg (brine-grade)"
-                : "Davies activity is quantitative to I ≈ 0.5 mol/kg"}
+                : "Davies activity is quantitative to I ≈ 0.5 mol/kg (γ± within 10 % for a typical 1-1 or 2-1 salt)"}
             </Text>);
           const nFlags = alerts.length;
           return (
