@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  hydrocyclone01_quartz_willsTable91 / thermoPhysPropDict
+
+  A quartz slurry in water.  The hydrocyclone does no work and exchanges no
+  heat; the liquid's density (Rackett, from water's record) and the solid's
+  particle density are read only for the printed C_V and pulp density.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( silica water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal; standardState pureLiquid; }
+    vapour  { fugacityModel idealGas; }
+}

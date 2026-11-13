@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  classifier01_whiten_quartzSlurry
+
+  A CLASSIFIER ON WHITEN'S PARTITION CURVE, CARRYING A LIQUID.  A quartz
+  slurry (100 t/h of solids in 57 t/h of water) is split by the generic
+  `classifier` unit on the `whiten` corrected curve,
+
+      c(d) = 1 - (e^a - 1) / (e^(a d/d50c) + e^a - 2)
+
+  (Nageswararao, Wiseman & Napier-Munn 2004, eq. 21, p. 681, written there
+  for the overflow; the engine divides by the water split and complements
+  it), with a bypass R to the coarse product, a_k = R + (1 - R) c_k, and a
+  DECLARED fraction of the water leaving with the coarse product.
+
+  WHAT IT DEMONSTRATES: the `whiten` curve's SHAPE, and the classifier's
+  fluid branch (`fluidToCoarse`).  The curve's only built-in check is the
+  identity c(d50c) = 1/2, which holds for ANY curve through u = a at
+  d = d50c; this case holds the WHOLE curve instead.  The solids split
+  Y = SUM a_k w_k, the cut sizes read off the grid, the imperfection and the
+  coarse product's water are recomputed by an independent closed-form
+  script (verification/whitenClosedForm.py, Python standard library, not
+  transcribed from the C++), and those values are the hand-written rows at
+  the top of `expected`, held at 1e-6.  Reshaping the curve while keeping
+  c(d50c) = 1/2 moves them, and the case fails.
+
+  WHAT ITS NUMBERS ARE NOT: a validation.  a = 3.0, d50c = 200 um, R = 0.30
+  and the water split 0.35 are ILLUSTRATIVE values chosen for this case
+  (the paper says a is "determined by test work" for each feed, p. 681), and
+  no measured partition is compared.  The transcription of eq. 21 from the
+  paper was not re-read for this case (the paper is not in the tree): the
+  form checked here is the one the engine and the design record
+  (docs/design/c361-solids-processing.md 7.3) state, so a transcription
+  error shared by both would pass.  UNCHECKED: eq. 21 against the paper.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "A size classifier on Whiten's partition curve (a = 3, d50c = 200 um, bypass 0.30) splitting a quartz slurry, with 35 % of the water declared to the coarse product: the whole curve held to an independent closed-form recomputation, not only its c(d50c) = 1/2 identity.";
+verbosity     3;
+citations
+(
+    "Nageswararao, K.; Wiseman, D.M.; Napier-Munn, T.J. (2004) Two empirical hydrocyclone models revisited. Miner. Eng. 17, 671-687, eq. 21, p. 681 (the Whiten form of the efficiency curve)."
+    "King, R.P. (2001) Modeling and Simulation of Mineral Processing Systems. Butterworth-Heinemann. Section 4.2, eqs. 4.20-4.29 (classification on size classes)."
+);

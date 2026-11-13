@@ -2195,7 +2195,9 @@ leaves no d25), `feed_`/`coarse_`/`fine_` `d10_um .. d90_um d32_um Sv_m2_m3`,
 actual partition, both products' fractions per class.
 Theory: `sec:classifier` (the curves `sec:partition-curve`).  Case:
 `tutorials/steady/solids/circuit01_herbstFuerstenau_closedCircuit` (the closed
-grinding circuit; see `docs/ai/patterns.md`).
+grinding circuit; see `docs/ai/patterns.md`) and
+`tutorials/steady/solids/classifier01_whiten_quartzSlurry` (the `whiten` curve on
+a slurry with `fluidToCoarse`, held to an independent closed form).
 
 ### `screen`
 A vibrating screen on the case's `sizeGrid`; the unit's `model` word selects how

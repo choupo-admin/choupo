@@ -24512,7 +24512,12 @@ p.~681 (Whiten's curve, written there for the OVERFLOW recovery; divided by $C$
 and complemented here to the coarse side).  $d_{50c}$ is the corrected cut
 size, $a>0$ the sharpness ($a=0$ is no classification).  WINDOW: monotone; the
 fish-hook form of the paper (eq.~25, p.~683) is NOT built.  ANCHOR (identity):
-$c(d_{50c}) = 1/2$ for any $a$, the definition of $d_{50c}$ (p.~683).
+$c(d_{50c}) = 1/2$ for any $a$, the definition of $d_{50c}$ (p.~683).  That
+identity holds for EVERY curve through $u = a$ at $d = d_{50c}$, so it cannot
+see the shape: \file{classifier01\_whiten\_quartzSlurry} holds the whole curve
+instead, its solids split and cut sizes recomputed in closed form by an
+independent script beside the case (illustrative parameters, a verification,
+not a validation).
 
 \subsubsection{Partition curve \texttt{rosinRammler}}\label{sec:partition-rr}
 \begin{equation}

@@ -12560,6 +12560,39 @@ Herbst \& Fuerstenau's design circuit (1980, Fig. 2 and pp. 18-24): fresh feed +
 \end{tutgolden}
 
 \clearpage
+\tutentry{classifier01\_whiten\_quartzSlurry}{tutorials/steady/solids/classifier01\_whiten\_quartzSlurry}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (classifier) at (0.0,-0.0) {\textbf{classifier}\\[-1pt]{\tiny classifier}};
+  \draw[->] ($(classifier.west)+(-1.05,0.00)$) -- ($(classifier.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(classifier.east)+(0,-0.17)$) -- ($(classifier.east)+(1.05,-0.17)$) node[at end, below, font=\tiny, anchor=north east] {coarse};
+  \draw[->] ($(classifier.east)+(0,0.17)$) -- ($(classifier.east)+(1.05,0.17)$) node[at end, above, font=\tiny, anchor=south east] {fine};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A size classifier on Whiten's partition curve (a = 3, d50c = 200 um, bypass 0.30) splitting a quartz slurry, with 35 \% of the water declared to the coarse product: the whole curve held to an independent closed-form recomputation, not only its c(d50c) = 1/2 identity.}
+\begin{tutnarrative}
+One classifier on the `whiten` partition curve with a bypass, on a slurry: the water split is declared (`fluidToCoarse`), because a partition curve says nothing about the liquid. Illustrative parameters; the whole curve is held to an independent closed form (see controlDict).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{classifier}{solidsTo\_coarse}{0.680624162457}
+\goldrow{kpi}{classifier}{d50c\_um}{198.194324003}
+\goldrow{kpi}{classifier}{d50\_um}{140.256034619}
+\goldrow{kpi}{classifier}{fluidTo\_coarse}{0.35}
+\goldrow{stream}{coarse}{F}{0.622298227105}
+\goldrow{stream}{fine}{F}{0.718945495117}
+\goldrow{stream}{coarse}{T}{298.15}
+\goldrow{stream}{feed}{F}{1.34124372222}
+\goldrow{stream}{feed}{T}{298.15}
+\goldrow{stream}{fine}{T}{298.15}
+\goldrow{kpi}{classifier}{anchor\_partition\_dev}{0}
+\goldrow{kpi}{classifier}{bypass}{0.3}
+\goldrow{kpi}{classifier}{coarse\_Sv\_m2\_m3}{29453.1399675}
+\goldrow{kpi}{classifier}{coarse\_d10\_um}{47.4877531182}
+\goldmore{25}
+\end{tutgolden}
+
+\clearpage
 \tutentry{filter01\_caco3\_rotaryDrum}{tutorials/steady/solids/filter01\_caco3\_rotaryDrum}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
