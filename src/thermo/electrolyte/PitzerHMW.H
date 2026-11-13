@@ -71,8 +71,16 @@ Description
     theta/psi/E_theta sum is empty and the model reduces EXACTLY to
     PitzerSingleSalt -- verify() proves it to floating point for every binary in
     pairs.dat (the skeptic's gate), to the Debye-Huckel limiting law as I -> 0,
-    and checks the J(x) kernel vs the published tabulated anchors.  (The remaining
-    v2 deferral is the full beta(T)/theta(T) temperature surface, 25 C base here.)
+    and checks the J(x) kernel vs the published tabulated anchors.
+
+    TEMPERATURE.  A_phi(T) follows the solvent; the pair virials beta0, beta1
+    and Cphi follow T through the SAME record forms and the SAME functions the
+    single-salt kernel uses (Pair::applyT in PitzerHMW.cpp: the declared
+    linear slots or the Silvester-Pitzer 1977 eqs 30-32, a deviation that
+    vanishes at 298.15 K; a pair record declaring neither keeps its 25 C
+    values).  The mixing terms theta, psi, lambda and zeta carry NO
+    temperature dependence: they are the 25 C values at every T -- the
+    deferral that remains.
 
     Neutral / non-ion species (z == 0, e.g. dissolved gases, the exchange site
     X-) are EXCLUDED from every sum and get gamma = 1, exactly as Davies excludes
