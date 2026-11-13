@@ -3,7 +3,7 @@
   that read as laws of nature and are properties of THIS tool.
 
   1. "exactly two pure batch operations" -- the unit's diafiltrate rate is
-     only ever zero or the permeate rate (BatchDiafilter.cpp:390): that is a
+     only ever zero or the permeate rate (BatchDiafilter.cpp:397): that is a
      scope, and the page says diafiltration at variable volume exists.
   2. "in real equipment the flux falls" -- it falls when something makes it:
      the osmotic pressure rising with concentration is recomputed here
@@ -13,7 +13,7 @@
   3. "a stirred vessel cannot [correlate k_film]" -- stirred-cell correlations
      exist; the unit is declared a pressure and an area, so none could be fed
      (the refusal text names stirrer speed and geometry as what it is NOT told,
-     BatchDiafilter.cpp:129-137).
+     BatchDiafilter.cpp:130-138).
 \*---------------------------------------------------------------------------*/
 
 import { readFileSync } from "node:fs";
@@ -45,7 +45,7 @@ describe("the page states its scope, not a law", () => {
     expect(b).not.toContain("There are exactly two pure batch operations");
     expect(b).toContain("This tool treats two batch modes");
     expect(b).toContain("diafiltration at variable volume");
-    expect(src[390 - 1]).toContain("constantVolume_ ? f.Q_p : 0.0");
+    expect(src[397 - 1]).toContain("constantVolume_ ? f.Q_p : 0.0");
   });
   it("step 6: the flux CAN fall, for named reasons", () => {
     const b = step(6);
@@ -60,7 +60,7 @@ describe("the page states its scope, not a law", () => {
     expect(l).not.toContain("CAN correlate");
     expect(l).toContain("Correlations for stirred cells exist in the membrane literature");
     expect(l).toContain("no geometry or stirrer speed to feed any correlation");
-    const refusal = src.slice(129 - 1, 137).join(" ");
+    const refusal = src.slice(130 - 1, 138).join(" ");
     expect(refusal).toContain("stirrer speed");
     expect(refusal).toContain("geometry");
   });
