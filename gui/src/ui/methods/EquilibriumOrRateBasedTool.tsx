@@ -383,7 +383,7 @@ export function EquilibriumOrRateBasedTool(): JSX.Element {
         {step(4)}
 
         <Panel title="taken from the references, not from the engine" origin="reference"
-          originNote="each card was read in the paper it names, listed under References">
+          originNote="each card was read in the paper it names, listed under References; the Pelkonen card was read by the project's coordinating session and not opened for this page">
           <Stack gap={8}>
             {REFERENCE_FINDINGS.map((f) => (
               <Box key={f.source} px="sm" py={6}

@@ -135,13 +135,16 @@ point only as (R), from Taylor et al. (2010).
 | binary or near-ideal, per-cent specification, trays between weeping and flood | equilibrium stages with one efficiency | E: demonstrations 1 (bulk) and 2 |
 | trace (ppm) specification over many trays | equilibrium stages only with the efficiency known to a few points; otherwise a margin in trays | E: demonstration 1 (trace); R: Taylor, Wilkinson & Kooijman 2010 (0.08 ppm predicted, 15 ppm in the plant) |
 | multicomponent, components transferring at very different rates | rate-based, or efficiencies by component and stage | R: Taylor et al. 2010 (20-60 % and 40-60 % along one column); Jakobsson et al. 2002 |
-| azeotropic, three or more components, near a distillation boundary | rate-based with multicomponent diffusion | R: Springer, van der Molen & Krishna 2002 |
+| azeotropic, three or more components, near a distillation boundary | rate-based with multicomponent diffusion; there the equilibrium-stage model predicted the wrong PRODUCT, not a wrong percentage | R: Springer, van der Molen & Krishna 2002; Pelkonen, Górak, Ohligschläger & Kaesemann 2001 (read by the coordinating session, see section 6) |
 | reactive absorption or desorption (sour gas) | rate-based with the reactions | R: Thiele et al. 2006 |
 | any column, first | check the VLE model | R: Taylor et al. 2010 (thermodynamic model alone moved H2S by orders of magnitude) |
 
 Costs: one uncertain efficiency (E: demonstration 2); mass-transfer
 coefficients and interfacial area from correlations often fitted on binary,
-small-scale data, and two such correlations gave 5 and 12 ppm on one column
+small-scale data; on one column the rate-based model gave 5 ppm with valve trays
+and the AIChE coefficients and 12 ppm with sieve trays and the Chan and Fair
+coefficients (Taylor's Table 2 changes the tray type too, so this is not a
+comparison of two correlations alone)
 (R: Jakobsson 2002, Taylor 2010); on the two strippers no significant penalty
 in speed, convergence or property availability (R: Taylor 2010) -- stated on
 the page as the counterweight it is.
@@ -180,6 +183,27 @@ Read for this page (each in its own scratch directory, with `pdftotext`):
   IChemE Symp. Ser. 152, pp. 469-480 -- open proceedings.
 * Yanagi & Sakata 1982 and Murphree 1925 -- verified on Crossref only.
 
+Read by the project's COORDINATING SESSION on 2026-11-13 on its page images,
+NOT opened by this page's author (second round of the slice):
+
+* Pelkonen, Górak, Ohligschläger, Kaesemann, Chem. Eng. Process. 40 (2001)
+  235-243, doi 10.1016/S0255-2701(00)00117-3 (bibliographic data confirmed on
+  Crossref by both).  Section 5 and Fig. 5 (pp. 241-242), experiment AMIW3 of
+  its Table 5: acetone, methanol, 2-propanol and water at total reflux and
+  atmospheric pressure on 3 m of structured packing in a 100 mm column, the
+  composition at the 2 m distributor fixed; the nonequilibrium-stage model
+  agrees with the experiment (the reboiler fills with water), the
+  equilibrium-stage model and an equal-diffusivity model predict 2-propanol;
+  the paper attributes it to diffusional interactions near the distillation
+  boundary of the 2-propanol + water azeotrope.  It is the fifth reference
+  card and the second origin of the azeotrope row; the page paraphrases it and
+  quotes nothing, since nobody on this page's side can hold a quote to it.
+  The same session read the figures of a companion paper (Pelkonen,
+  Kaesemann, Górak, Ind. Eng. Chem. Res. 36 (1997) 5392-5398, doi
+  10.1021/ie970333d), which add that near the boundary the answer also
+  depends on the vapour-liquid equilibrium parameter set; that paper is NOT
+  cited on the page.
+
 **Not readable, and what it would add.**  Taylor, Krishna & Kooijman, "Real-
 world modeling of distillation", Chem. Eng. Prog., July 2003, pp. 28-39 (the
 University of Amsterdam repository record lists volume 98; the issue is July
@@ -194,8 +218,10 @@ Affiliations and the program the 2010 paper used are not named on the page
 
 ## 7. Phase 2
 
-* When the general-reflux rate-based mode is built (design record on branch
-  `design/c329-ratebased-general-reflux`, not on main), demonstration 1 can
+* When the general-reflux rate-based mode is built (design record
+  [`c329-ratebased-at-general-reflux.md`](c329-ratebased-at-general-reflux.md),
+  now on main; the page tells students only that the mode is planned and not
+  built), demonstration 1 can
   run the SAME column rate-based beside the efficiency model.
 * Component efficiencies that differ (a multicomponent tray efficiency) would
   let the engine show row 3 instead of quoting it.

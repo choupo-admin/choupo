@@ -152,7 +152,8 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     title: "What the engine cannot show, and what a rate-based model found on real columns",
     body: "The engine cannot give two components of one mixture different efficiencies, "
       + "and it has no rate-based column, so the cases where one efficiency is not "
-      + "enough are taken from published comparisons, each read for this page.  Each "
+      + "enough are taken from published comparisons: four read for this page, and one "
+      + "read by the project's coordinating session and not opened for this page.  Each "
       + "card below says what was compared, what the equilibrium-stage model got wrong, "
       + "and the source.",
   },
@@ -182,7 +183,8 @@ export const REFERENCE_FINDINGS: readonly ReferenceFinding[] = [
       + "efficiency of 50 % for every component.",
     found: "With equal efficiencies the equilibrium-stage model put 0.08 ppm of H2S in "
       + "the bottoms of one column where the plant measured 15 ppm; the rate-based "
-      + "model gave 5 and 12 ppm with two different mass-transfer correlations.  The "
+      + "model gave 5 ppm with the trays modelled as valve trays and the AIChE "
+      + "coefficients, and 12 ppm with sieve trays and the Chan and Fair coefficients.  The "
       + "component efficiencies it computed went from about 20 % at the top to 60 % at "
       + "the bottom for the light components, and from about 40 % to 60 % for the heavy "
       + "ones; some Murphree efficiencies lay outside zero to one.  Changing only the "
@@ -199,6 +201,20 @@ export const REFERENCE_FINDINGS: readonly ReferenceFinding[] = [
       + "A nonequilibrium model with Maxwell-Stefan diffusion followed the experiments; "
       + "the equilibrium-stage model failed even qualitatively, because the components' "
       + "Murphree efficiencies differ.",
+    quote: null,
+  },
+  {
+    source: "Pelkonen, Górak, Ohligschläger and Kaesemann (2001)",
+    setting: "Acetone, methanol, 2-propanol and water at total reflux and atmospheric "
+      + "pressure on 3 m of structured packing in a 100 mm column, with the composition "
+      + "at the distributor 2 m up held fixed.  Read by the project's coordinating "
+      + "session, not opened for this page.",
+    found: "The models led to different reboiler products: the nonequilibrium-stage "
+      + "model agreed with the experiment, in which the reboiler filled with water, "
+      + "while the equilibrium-stage model and a model with equal diffusivities "
+      + "predicted that it filled with 2-propanol.  The paper attributes the difference "
+      + "to diffusional interactions near a distillation boundary, the one set by the "
+      + "2-propanol and water azeotrope.",
     quote: null,
   },
   {
@@ -264,9 +280,12 @@ export const DECISION_ROWS: readonly DecisionRow[] = [
     situation: "Azeotropic distillation of three or more components near a distillation "
       + "boundary.",
     use: "A rate-based model with multicomponent diffusion.",
-    why: "Measured trajectories crossed the boundary, which an equilibrium-stage model "
-      + "cannot do; the nonequilibrium model followed them.",
-    origin: "Springer, van der Molen and Krishna (2002)",
+    why: "There the equilibrium-stage model predicted the wrong product, not a wrong "
+      + "percentage: on a packed column it filled the reboiler with 2-propanol where "
+      + "the experiment filled it with water, and in a tray column the measured "
+      + "trajectories crossed a boundary an equilibrium-stage model cannot cross.  The "
+      + "nonequilibrium model followed the experiments in both.",
+    origin: "Springer, van der Molen and Krishna (2002); Pelkonen et al. (2001)",
   },
   {
     situation: "Reactive absorption or desorption, such as sour gas treatment.",
@@ -295,7 +314,9 @@ export const EQ_RB_COSTS: readonly { text: string; origin: string }[] = [
   {
     text: "A rate-based model needs mass-transfer coefficients and an interfacial area "
       + "for the trays or packing, from correlations often developed on binary data in "
-      + "small columns, and two such correlations gave 5 and 12 ppm for the same column.",
+      + "small columns; on one column the rate-based model gave 5 ppm with valve trays "
+      + "and the AIChE coefficients and 12 ppm with sieve trays and the Chan and Fair "
+      + "coefficients.",
     origin: "Jakobsson et al. (2002); Taylor, Wilkinson and Kooijman (2010)",
   },
   {

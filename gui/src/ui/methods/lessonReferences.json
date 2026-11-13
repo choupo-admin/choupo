@@ -3022,7 +3022,7 @@
         {
           "text": "Taylor, R.; Wilkinson, P.; Kooijman, H. (2010). Rate-based modeling of two commercial scale H2S stripping columns. In: de Haan, A. B.; Kooijman, H.; Górak, A. (Eds.), Distillation Absorption 2010, pp. 401–406.",
           "url": "https://skoge.folk.ntnu.no/prost/proceedings/distillation10/DA2010%20Conference%20Proceedings/5.%20Modeling%20&%20Simulation/OR30%20Taylor%20Rate%20Based%20Modeling%20of%20Two%20Commercial.pdf",
-          "note": "Two commercial H2S strippers: one assumed efficiency put the bottoms impurity orders of magnitude below the plant; component efficiencies differ by component and along the column; the quoted sentence of the reference card.",
+          "note": "Two commercial H2S strippers: one assumed efficiency put the bottoms impurity orders of magnitude below the plant; 5 ppm with valve trays and the AIChE coefficients, 12 ppm with sieve trays and the Chan and Fair coefficients (its Table 2); component efficiencies differ by component and along the column; the quoted sentence of the reference card.",
           "verified": {
             "method": "pdf",
             "evidence": "open proceedings PDF fetched from the URL and read in full with pdftotext (6 pages, 401-406): title, authors, editors, the 50 % efficiency, 0.08 ppm against 15 ppm (Table 2), the 20-60 % and 40-60 % efficiencies, the quoted sentence of the abstract, and the thermodynamic-model sentence of section 4 (equilibrium-or-rate-based commission); no DOI found on Crossref by title",
@@ -3036,6 +3036,16 @@
           "verified": {
             "method": "pdf",
             "evidence": "open proceedings PDF fetched from the URL and read with pdftotext (abstract, introduction, references); conference title, place, dates and ISBN read from the proceedings' start.pdf; paper number 3.2-1 from the proceedings' keyword index (equilibrium-or-rate-based commission); no DOI for this conference paper on Crossref (the title search returns a different later journal paper on a homogeneous mixture)",
+            "date": "2026-11-13"
+          }
+        },
+        {
+          "text": "Pelkonen, S.; Górak, A.; Ohligschläger, A.; Kaesemann, R. (2001). Experimental study on multicomponent distillation in packed columns. Chem. Eng. Process. 40(3), 235–243.",
+          "doi": "10.1016/S0255-2701(00)00117-3",
+          "note": "Experiment AMIW3 (acetone, methanol, 2-propanol, water on structured packing, total reflux): the equilibrium-stage model and an equal-diffusivity model predicted a 2-propanol reboiler where the experiment and the nonequilibrium model gave water.  Read by the project's coordinating session, not opened for this page.",
+          "verified": {
+            "method": "crossref",
+            "evidence": "api.crossref.org/works/10.1016/S0255-2701(00)00117-3: authors Pelkonen, Górak, Ohligschläger and Kaesemann, title, container (Chemical Engineering and Processing), volume 40, issue 3, pages 235-243, year 2001 matched (equilibrium-or-rate-based, second round).  The paper's content (section 5 and Fig. 5, pp. 241-242, experiment AMIW3 of Table 5) was read on its page images by the project's coordinating session on 2026-11-13; this page's author did not open it",
             "date": "2026-11-13"
           }
         },

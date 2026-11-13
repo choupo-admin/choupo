@@ -223,6 +223,15 @@ describe("equilibrium-or-rate-based: the lesson", () => {
     }
     for (const f of REFERENCE_FINDINGS)
       expect(surnames.some((s) => f.source.startsWith(s)), f.source).toBe(true);
+    //  Five cards, six rows, seven references; the card whose paper this page
+    //  did not open carries no quotation and says who read it.
+    expect(REFERENCE_FINDINGS.length).toBe(5);
+    expect(DECISION_ROWS.length).toBe(6);
+    expect(list.length).toBe(7);
+    const p = REFERENCE_FINDINGS.find((f) => f.source.startsWith("Pelkonen"))!;
+    expect(p.quote).toBeNull();
+    expect(p.setting).toContain("not opened for this page");
+    expect(DECISION_ROWS.find((r) => r.situation.startsWith("Azeotropic"))!.origin).toContain("Pelkonen");
   });
   it("names no simulator or company the papers name", () => {
     const prose = [EQ_RB_OPENING, EQ_RB_TASK, EQ_RB_ENGINE_SCOPE,
