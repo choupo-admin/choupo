@@ -743,3 +743,52 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   should be), and an element with a limit but no alarm publishes no
   interval (so it is never coloured).
 
+- [open] cloud -> laptop, 2026-11-13 UTC: BRANCH READY: `fix/el-03-09`,
+  head 7d7c8dfa4e (nine commits, one per finding id, on 56ccdb41ce), your
+  territory (1).  EL-03 the Pitzer pair bridge now carries the record's
+  `tCorrelationForm` (the three records that declare it no longer print
+  "not declared"; two new engine arms in check_electrolyte_records: the
+  declared forms are read as declared, two contradicting case-local fixtures
+  REFUSE; sabotage of the carry line fails all 5 arm rows).  EL-04, EL-05,
+  EL-08 text.  EL-05 NOT UNIFIED: the four 25 C Debye-Hueckel anchors
+  (Pitzer 0.3915, eNRTL 0.39094, Davies 0.39144, Edwards 0.39213) are now
+  listed once in PitzerForm.H and the "same A_phi" claims corrected;
+  unifying on 0.3915 would move non-Pitzer goldens in their last digits and
+  moves gamma about 0.11 % (1-1, I = 1) to 0.44 % (2-2) -- YOURS to decide.
+  EL-06 `ENRTLMixedSolvent` no longer hard-codes 8.886 / -4.549: the op reads
+  parameters/eNRTL/Na-Cl.dat (a case may declare its own; the run prints
+  both).  ONE CASE reaches it, `enrtl_mixed_nacl_ethanol_esteso`, sealed, and
+  it declares 8.886 itself citing Chen & Song Table 2; its golden does NOT
+  move; on a scratch copy reading 8.885 from the record AAD_total_pct goes
+  4.3065 -> 4.3267 (third digit, all 8 AAD rows), so I left the case's
+  declared value alone -- I could not check the paper, and another paper's
+  number under that citation would be falsely sourced; the case comment says
+  so.  EL-07 `PitzerHMW::verify` now returns max(gamma, phi) deviation and
+  both refusal messages name both.  EL-09 NOT DONE AS BRIEFED, deliberately:
+  against all 67 evaluated 298.15 K tables (limit: 10 % in gamma+/-) the
+  band does NOT depend on the CATION's charge (median I where 10 % is
+  passed: 0.52 for 1-1, 0.56 for 2-1); what depends on charge is a 2-
+  ANION, 15-47 % off already at I = 0.30 and rescued only by its ion pair.
+  So the banner now STATES its criterion (new `ActivityDomain::criterion`),
+  the threshold and the advisory sentence unchanged, every announcement
+  fires where it did; arm (c) of check_activity_domain recomputes both
+  medians from the tables.  VALIDATED by the builder: build clean; `--scope`
+  on 111 cases that mention Pitzer, eNRTL, Davies, speciate,
+  electrolyteGammaPhi, aqueousSpeciation or aqueousAnalysis: PASS 116 / FAIL
+  0 / EXPECTED-FAIL 1 (flash15, deliberate), scoped conservation gates
+  green; 21 gates exit 0; sabotage of the new arms caught.  By me: two of
+  the changed gates re-run OK, the EL-03 diff read, no file of your closed
+  list touched.  RE-POINTING in its own commit (13 managed citations; the
+  SourWaterTool.tsx citation the re-pointer does not track edited by hand,
+  1697-1704).  NOT RUN: the full suite, the full --gui, `make wasm`;
+  `generated/gateManifest.json` not regenerated (two gate claim lines
+  changed); the Davies "I = 0.5" prose in ExploreWorkspace.tsx and the
+  Theory/Props guides is not updated.  TWO NOTES: the builder also edited
+  src/propertyOps/{ENRTLMixedSolventOp,Speciate,ScalingScan} -- outside the
+  directories you named, the same family, please look; and the review
+  probe docs/reviews/2026-11-12-electrolyte-models/enrtl_kernel_probe.cpp
+  relied on the kernel's old default taus and would now print NaN.  ALSO:
+  Vitor asked me to review the PHARMACEUTICAL PLANT CASES (apalutamide01,
+  donepezil01, donepezil02, their batch plan, quote and GMP layout); it
+  runs now, results in docs/reviews/ when done.  `fix/sc-cases` is still
+  being built.
