@@ -24110,8 +24110,11 @@ Reynolds number).  Two limits make it physical: for a VERTICAL line
 ($\theta=90^\circ$) the balance is drag $=$ gravity, so the slip equals the
 terminal velocity $u_t$; for a HORIZONTAL line ($\theta=0$) it is drag $=$ wall
 friction, so the slip is $u_t\sqrt{\mu_w}$.  This REPLACES a fitted slip
-correlation --- there is no black formula and no fallback; $\mu_w$, the
-particle--wall friction coefficient, is declared and announced.
+correlation --- there is no black formula and no fallback.  $\mu_w$, the
+particle--wall friction coefficient, is \texttt{particleWallFriction} in the
+operation block; when the case declares none, Choupo uses $0.4$ and ANNOUNCES
+it as an assumption (at its site, in the end-of-run caveat block and in the
+result), while a declared value is used as given and announced nowhere.
 
 \subsection{Solids friction: Yang (1974)}
 The solids friction factor is the hard part --- particles differ in size,
@@ -24143,7 +24146,13 @@ most important safety number in a conveying design is the MARGIN
 \begin{equation}
   \frac{u_g}{u_{\text{salt}}} \ge 1.5\text{--}2 ,
 \end{equation}
-which Choupo reports as a headline KPI and flags in red when it approaches~1.
+which Choupo publishes as the KPI \texttt{saltationMargin} (beside
+$u_{\text{salt}}$ itself, \texttt{u\_saltation}).  When $u_g$ falls BELOW
+$u_{\text{salt}}$ --- a margin under~1 --- the run prints (at verbosity
+$\ge 1$) a warning that the
+solids may settle and block the line; a margin between~1 and the
+$1.5$--$2$ band raises nothing, so reading it against that band is the
+designer's job.
 Under-velocity plugging --- not the pressure drop --- is the number-one real
 failure of a conveying line; a beautiful $\Delta P$ on a line that will plug is
 worthless.
