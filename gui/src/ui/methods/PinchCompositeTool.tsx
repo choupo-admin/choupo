@@ -111,9 +111,16 @@ License
 import { useMemo, useState } from "react";
 import { lessonStepper, LessonReferences } from "./lessonStep.js";
 import {
-  Alert, Badge, Box, Button, Group, Loader, SegmentedControl, Stack, Table,
+  Alert, Badge, Box, Button, Collapse, Group, Loader, SegmentedControl, Stack, Table,
   Text, Title,
 } from "@mantine/core";
+
+/** A chip never truncates a number: Mantine's Badge cuts its label with an
+ *  ellipsis, so every chip of this page wraps instead. */
+const CHIP_STYLES = {
+  root: { textTransform: "none", whiteSpace: "normal", height: "auto", maxWidth: "100%" },
+  label: { whiteSpace: "normal", overflow: "visible", textOverflow: "clip" },
+} as const;
 
 import {
   useMethodRun, useMethodRunSweep, type ScalarOverride,
@@ -628,7 +635,7 @@ function MatchesTable({ matches, u }: { matches: CandidateMatch[]; u: PinchUnits
                   {flag ? (
                     <Badge variant="light" size="sm"
                       color={flag === "infeasible" ? "red" : "orange"}
-                      styles={{ root: { textTransform: "none" } }}>
+                      styles={CHIP_STYLES}>
                       {flag === "infeasible"
                         ? "not temperature-feasible at dTmin"
                         : "CP rule violated at the pinch"}
@@ -746,6 +753,8 @@ export function PinchCompositeTool(
       : { ...DEFAULT_PREFS, sigFigs: dispPrefs?.sigFigs ?? DEFAULT_PREFS.sigFigs }),
     [source, dispPrefs]);
   const [pane, setPane] = useState<Pane>("composite");
+  //  the case tab's "How to read this" disclosure (closed: the curves come first)
+  const [howOpen, setHowOpen] = useState(false);
 
   // ---- Classroom knobs (values are session state; collapse persists). ------
   const [knobValues, setKnobValues] = useState<{ [id: string]: number }>(
@@ -881,11 +890,11 @@ export function PinchCompositeTool(
 
   /* The reported numbers, all the engine's: the targets, the class of the
      problem and the maximum recovery. */
-  const chips = (
+  const chipsOf = (withTargets: boolean) => (
     <Group gap={8} align="center" wrap="wrap">
-      {active && !emptyCurrentRun && (
+      {withTargets && active && !emptyCurrentRun && (
         <Badge variant="light" color="gray" size="lg"
-          styles={{ root: { textTransform: "none" } }}>
+          styles={CHIP_STYLES}>
           {kpis
             ? `engine targets · Q_H,min ${u.Q(kpis["Q_H_min_kW"]!, 1)} ${u.qLabel} · `
               + `Q_C,min ${u.Q(kpis["Q_C_min_kW"]!, 1)} ${u.qLabel} · `
@@ -901,7 +910,7 @@ export function PinchCompositeTool(
       {active && !emptyCurrentRun && populationScope(kpis, u) && (
         <Badge variant="light"
           color={populationScope(kpis, u)!.partial ? "red" : "gray"} size="lg"
-          styles={{ root: { textTransform: "none" } }}>
+          styles={CHIP_STYLES}>
           {populationScope(kpis, u)!.label}
         </Badge>
       )}
@@ -913,7 +922,7 @@ export function PinchCompositeTool(
            published by PinchPass; three of them reached no surface.  */}
       {active && !emptyCurrentRun && excess && (
         <Badge variant="light" color="orange" size="lg"
-          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
+          styles={CHIP_STYLES}>
           {excess}
         </Badge>
       )}
@@ -922,19 +931,23 @@ export function PinchCompositeTool(
            the maximum the targets allow, and the difference.  */}
       {active && !emptyCurrentRun && recovery && (
         <Badge variant="light" color="teal" size="lg"
-          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
+          styles={CHIP_STYLES}>
           {recovery}
         </Badge>
       )}
-      {classText && summary && (
+      {/* (the targets tiles of the case tab carry the classification words
+          themselves, so the chip is not repeated there) */}
+      {withTargets && classText && summary && (
         <Badge variant="light" color={hasPinch ? "teal" : "yellow"} size="lg"
-          styles={{ root: { textTransform: "none", whiteSpace: "normal", height: "auto" } }}>
-          {`${summary.class} · ${classText}`}
+          styles={CHIP_STYLES}>
+          {/* the engine's own classification words; its internal class name
+              (interiorPinch, ...) is not shown to the reader */}
+          {classText}
         </Badge>
       )}
       {kpis && kpis["Q_recovery_max_kW"] != null && (
         <Badge variant="light" color="gray" size="lg"
-          styles={{ root: { textTransform: "none" } }}>
+          styles={CHIP_STYLES}>
           {(() => {
             //  an identity on one line: ONE absolute precision (u.group)
             const rec = kpis["Q_recovery_max_kW"]!, dQ = kpis["Q_H_min_kW"]! - kpis["Q_C_min_kW"]!;
@@ -948,6 +961,42 @@ export function PinchCompositeTool(
       )}
     </Group>
   );
+  const chips = chipsOf(true);
+
+  /* THE TARGETS, FIRST (the case's Pinch tab; rehearsal 2026-11-13).  The four
+     numbers the page exists to give, each the engine's own (the `pinch` KPI
+     row), as tiles above the curves.  The engine's classification words sit
+     under them.  Nothing is computed here. */
+  const targetTiles = kpis && active && !emptyCurrentRun ? (
+    <Box data-pinch-targets="">
+      <Box style={{ display: "grid", gap: 8,
+        gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}>
+        {[
+          { id: "qh", label: "Hot utility, Q_H,min",
+            value: `${u.Q(kpis["Q_H_min_kW"]!, 1)} ${u.qLabel}` },
+          { id: "qc", label: "Cold utility, Q_C,min",
+            value: `${u.Q(kpis["Q_C_min_kW"]!, 1)} ${u.qLabel}` },
+          { id: "tp", label: "Pinch temperature, T*",
+            value: hasPinch && kpis["T_pinch_K"] != null
+              ? `${u.T(kpis["T_pinch_K"]!, 2)} ${u.tLabel}` : "no interior pinch" },
+          { id: "dt", label: "Minimum approach, ΔTmin",
+            value: `${u.dT(kpis["dTmin_K"]!, 0)} ${u.tLabel}` },
+        ].map((t) => (
+          <Box key={t.id} data-pinch-target={t.id}
+            style={{ border: "1px solid var(--mantine-color-default-border)",
+              borderRadius: 6, padding: "6px 10px", minWidth: 0 }}>
+            <Text size="xs" c="dimmed">{t.label}</Text>
+            <Text fw={700} size="lg" style={{ lineHeight: 1.2 }}>{t.value}</Text>
+          </Box>
+        ))}
+      </Box>
+      {classText && (
+        <Text size="sm" mt={6} data-pinch-class="">
+          {classText.charAt(0).toUpperCase() + classText.slice(1)}
+        </Text>
+      )}
+    </Box>
+  ) : null;
 
   /* ONE renderer for the lesson, hoisted above everything that branches: the
      steps must not be able to exist on one path and vanish on another (the
@@ -1035,7 +1084,7 @@ export function PinchCompositeTool(
   /* The figure, with its empty states, for one view.  The EduTool draws it
      twice -- the composites alone in Understand, the switchable view beside
      the knobs in Experiment -- from this ONE definition. */
-  const figure = (show: Pane, height: number) => (
+  const figure = (show: Pane, height: number | string) => (
     <Box pos="relative" style={{ minWidth: 0, height }}>
       {/* Honest empty state — ONLY for the "Current run" source; the
           classroom source feeds itself. */}
@@ -1169,13 +1218,34 @@ export function PinchCompositeTool(
 
   // ---- The case's own Pinch tab: the instrument layout, unchanged. ---------
   if (fixedSource) {
+    //  ORDER (rehearsal 2026-11-13): the four targets, then the curves at a
+    //  height that fits a 1440x900 window, then everything else.  The
+    //  explanation is a disclosure ("How to read this"), closed by default.
     return (
       <Box style={{ flex: 1, minHeight: 0, overflowY: "auto" }} px="md" py="sm">
-        <Stack gap="md" style={{ maxWidth: 940, margin: "0 auto" }}>
-          {watchText}
-          {origin}
-          {chips}
-          {knobsBesideFigure}
+        <Stack gap="sm" style={{ maxWidth: 1100, margin: "0 auto" }}>
+          {targetTiles}
+          <Group justify="space-between" align="center" gap="sm">
+            <SegmentedControl size="xs" value={pane}
+              onChange={(v) => setPane(v as Pane)}
+              data={[
+                { label: "Composites", value: "composite" },
+                { label: "Grand composite", value: "gcc" },
+                { label: `Candidates (${matches.length})`, value: "matches" },
+              ]} />
+            <Button size="compact-xs" variant="subtle" color="gray"
+              data-how-to-read="" onClick={() => setHowOpen((o) => !o)}>
+              {howOpen ? "Hide: how to read this" : "How to read this"}
+            </Button>
+          </Group>
+          <Collapse in={howOpen}>
+            <Stack gap="xs">
+              {watchText}
+              {origin}
+            </Stack>
+          </Collapse>
+          {figure(pane, "clamp(340px, calc(var(--choupo-vh) - 340px), 560px)")}
+          {targetTiles ? chipsOf(false) : chips}
           {streamsBlock}
           {cascadeBlock}
           {engineNote}

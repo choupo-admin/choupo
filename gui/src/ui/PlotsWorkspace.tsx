@@ -92,6 +92,7 @@ import { GanttPlot } from "./plotting/GanttPlot.js";
 import { hasCampaignSequence } from "../case/campaignLedger.js";
 import { DeclaredViews } from "./DeclaredViews.js";
 import { declaredViewsOf } from "../case/postProcessing.js";
+import { defaultPlotKey } from "../case/defaultPlot.js";
 import {
   declaredMemberNames, unitPlotTree, unitSelection, UNIT_PLOT_LABEL,
   type UnitNode, type UnitPlotKey,
@@ -343,25 +344,11 @@ export function PlotsWorkspace() {
       setView("scanCsv");
       return;
     }
-    //  A case that declares views lands on them (C271): its own question first.
-    if (declaredViewsOf(result.postProcessing).length > 0) { setView("views"); return; }
-    // GLOBAL balances are the landing surface for a batch / ctrl run --
-    // the trajectory stays one click away (Vitor 2026-07-19: the balances
-    // were real but hidden behind the trajectory).
-    if (result.kpis?.["campaign"]) setView("campaignBalance");
-    else if (result.csvFiles?.["balanceTrajectory.csv"] !== undefined
-             || result.csvFiles?.["balanceTrajectory.meta"] !== undefined)
-      setView("dynamicBalance");
-    else if (result.trajectory) setView("trajectory");
-    else if (Object.keys(result.csvFiles ?? {}).some(
-               (k) => k.endsWith("elementBalance.csv")
-                   || k.endsWith("elementBalance.meta")))
-      setView("elementBalance");
-    else if ((result.profiles?.length ?? 0) > 0) setView("profile");
-    else if (result.txy) setView("txy");
-    else if (scanCsvs.length > 0) setView("scanCsv");
-    else if (result.convergence.length > 0) setView("convergence");
-    else setView("massBalance");
+    //  THE LANDING PLOT is chosen in ONE place (case/defaultPlot.ts): the
+    //  case's declared views, then the time-based surfaces, then a unit's
+    //  PROFILE (a column opens on its stage profile, not on a two-bar element
+    //  balance), then the balances and the rest.
+    setView(defaultPlotKey(result, scanCsvs) as PlotKey);
   }, [result, scanCsvs]);
 
   // Per-group collapse state.  All expanded by default; chevrons

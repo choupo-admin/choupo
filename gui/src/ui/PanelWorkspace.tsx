@@ -77,6 +77,7 @@ import { openPanelPopOut } from "../state/usePanelPopOut.js";
 import {
   alarmCountAt, drawingRange, widgetsAt, type PanelTrajectory, type WidgetView,
 } from "../case/panelView.js";
+import { panelEmptyState } from "../case/panelEmptyState.js";
 import { ALARM, GRID, Lamp, MiniTrend, QUIET, ScaleBar, sig } from "./panelWidgets.js";
 
 /** Below this width the grid collapses to a single column in reading order. */
@@ -121,7 +122,7 @@ function Body({ w, t, ts }: { w: WidgetView; t: number; ts: number[] }): JSX.Ele
           <ValueLine w={w} />
           <MiniTrend t={ts} y={w.series} yRef={w.referenceSeries} range={range}
             limit={w.limitHigh} limitLow={w.limitLow} intervals={w.intervals} cursor={t}
-            alarmOn={alarmOn} height={w.place && w.place.height >= 4 ? 120 : 70}
+            alarmOn={alarmOn} height={w.place && w.place.height >= 4 ? 120 : 70} axes fill
             aria={`${w.title}: trend of ${w.column} over the run`} />
           {w.referenceColumn && <Text size="xs" c="dimmed">dotted: {w.referenceColumn}</Text>}
         </>
@@ -165,6 +166,10 @@ function Cell({ w, t, ts, placed, columns }: {
       component="section" aria-label={w.title}
       style={{
         border: `${inAlarm ? 2 : 1}px solid ${inAlarm ? ALARM : GRID}`, borderRadius: 4, padding: 8, minWidth: 0,
+        //  a card takes the height of the grid area it is placed in (the grid
+        //  stretches it), so cards of different content heights leave no
+        //  card-sized hole beside a tall neighbour
+        boxSizing: "border-box", display: "flex", flexDirection: "column",
         ...(placed && p ? {
           gridColumn: `${p.column} / span ${Math.min(p.width, columns - p.column + 1)}`,
           gridRow: `${p.row} / span ${p.height}`,
@@ -259,7 +264,7 @@ export function PanelBoard({ report, trajectory, caseName }: {
   const grid: ReactNode = (
     <Box ref={ref}
       style={{
-        display: "grid", gap: 8, alignItems: "start",
+        display: "grid", gap: 8, alignItems: "stretch",
         gridTemplateColumns: placedMode ? `repeat(${columns}, minmax(0, 1fr))` : "minmax(0, 1fr)",
         ...(placedMode ? { gridTemplateRows: `repeat(${rows}, minmax(48px, auto))` } : {}),
       }}>
@@ -301,13 +306,10 @@ export function PanelWorkspace(): JSX.Element {
   const report = runResult?.panel;
   const trajectory = runResult?.trajectory;
   if (!report || !trajectory) {
+    const empty = panelEmptyState(declared, runResult);
     return (
-      <Box p="xl">
-        <Text c="dimmed" maw={640}>
-          {declared
-            ? "This case declares a panel (system/panelDict).  Run it: the panel draws what the engine reports about the run."
-            : "This case declares no panel.  The panel is declared in system/panelDict and read by the engine after a time-integrated run; the Panel guide says what to write."}
-        </Text>
+      <Box p="xl" data-panel-empty={empty.kind}>
+        <Text c="dimmed" maw={640}>{empty.text}</Text>
       </Box>
     );
   }

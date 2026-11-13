@@ -53,6 +53,7 @@ import { massBalance } from "../case/balances.js";
 import { useStore } from "../state/store.js";
 import { dTText, dutyFixed, dutyText } from "../case/resultUnits.js";
 import { closureLine, closureWordOf, closureWords } from "../case/closureByConstruction.js";
+import { groupAdvisories, groupLoci, GROUP_LOCI_SHOWN } from "../case/advisoryGroups.js";
 import {
   dutyLabel,
   flowBasis,
@@ -202,25 +203,57 @@ export function StreamsSummary({
           <Text size="xs" fw={600} tt="uppercase" c="dimmed" style={{ letterSpacing: 0.4 }}>
             Solver advisories ({result.advisories.length})
           </Text>
-          {result.advisories.slice(0, MAX_BAND_ROWS).map((a, i) => (
-            <Group key={i} gap={6} align="baseline" wrap="nowrap">
+          {/* ONE LINE PER KIND (rehearsal 2026-11-13: 35 lines of one notice).
+              The key is the engine's own category (+ severity); the engine's
+              texts are listed verbatim behind the group's disclosure. */}
+          {groupAdvisories(result.advisories).map((g, gi) => {
+            const icon = (
               <IconAlertTriangle
                 size={13}
-                color={a.severity === "warning"
+                color={g.severity === "warning"
                   ? "var(--mantine-color-yellow-5)"
                   : "var(--mantine-color-blue-4)"}
                 style={{ flexShrink: 0, transform: "translateY(2px)" }}
               />
-              <Text size="xs" ff="monospace" c={a.severity === "warning" ? "yellow.4" : "dimmed"}>
-                <Text span fw={600}>[{a.category}] {a.locus}:</Text> {a.message}
-              </Text>
-            </Group>
-          ))}
-          {result.advisories.length > MAX_BAND_ROWS && (
-            <Text size="xs" ff="monospace" c="dimmed">
-              +{result.advisories.length - MAX_BAND_ROWS} more — see Log
-            </Text>
-          )}
+            );
+            const colour = g.severity === "warning" ? "yellow.4" : "dimmed";
+            if (g.items.length === 1) {
+              const a = g.items[0]!;
+              return (
+                <Group key={gi} gap={6} align="baseline" wrap="nowrap">
+                  {icon}
+                  <Text size="xs" ff="monospace" c={colour}>
+                    <Text span fw={600}>[{a.category}] {a.locus}:</Text> {a.message}
+                  </Text>
+                </Group>
+              );
+            }
+            const loci = groupLoci(g);
+            const shown = loci.slice(0, GROUP_LOCI_SHOWN).join(", ");
+            return (
+              <details key={gi} data-advisory-group={g.category}>
+                <summary style={{ cursor: "pointer", listStyle: "none" }}>
+                  <Group gap={6} align="baseline" wrap="nowrap" style={{ display: "inline-flex" }}>
+                    {icon}
+                    <Text size="xs" ff="monospace" c={colour}>
+                      <Text span fw={600}>[{g.category}] {g.items.length} advisories</Text>
+                      {shown !== "" && (
+                        <>{" "}({shown}{loci.length > GROUP_LOCI_SHOWN ? ", ..." : ""})</>
+                      )}
+                      {" "}— show all
+                    </Text>
+                  </Group>
+                </summary>
+                <Stack gap={2} mt={2} ml={19}>
+                  {g.items.map((a, i) => (
+                    <Text key={i} size="xs" ff="monospace" c={colour}>
+                      <Text span fw={600}>[{a.category}] {a.locus}:</Text> {a.message}
+                    </Text>
+                  ))}
+                </Stack>
+              </details>
+            );
+          })}
         </Stack>
       )}
 

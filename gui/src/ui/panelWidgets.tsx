@@ -61,37 +61,61 @@ export const sig = (v: number | undefined, n = 4): string =>
 /** A small trend, drawn at its container's width.  `limit` is the high
  *  limit (the lesson's name for it), `limitLow` the low one; `intervals` are
  *  the engine's alarm intervals, drawn as a band along the foot. */
-export function MiniTrend({ t, y, yRef, range, limit, limitLow, intervals, cursor, alarmOn, height = 90, aria }: {
+export function MiniTrend({ t, y, yRef, range, limit, limitLow, intervals, cursor, alarmOn, height = 90, aria, axes = false, fill = false }: {
   t: readonly number[]; y: readonly number[]; yRef?: readonly number[];
   range: [number, number]; limit?: number; limitLow?: number;
   intervals?: readonly (readonly [number, number])[];
   cursor?: number; alarmOn?: boolean; height?: number; aria: string;
+  /** A SCALE: the minimum and maximum of the drawn range at the left, the
+   *  run's first and last written instant at the foot.  Both are the numbers
+   *  the drawing already uses; no unit is invented (the engine publishes the
+   *  column name only), and time is the trajectory's seconds. */
+  axes?: boolean;
+  /** Take the height the card has (a tall placed card leaves room): `height`
+   *  is the least.  The drawing is laid over the measured box, so it adds
+   *  nothing to the height that box is measured from. */
+  fill?: boolean;
 }): JSX.Element {
-  const { ref, width } = useElementSize();
-  const W = Math.max(80, Math.round(width || 260)), H = height, m = 4;
+  const { ref, width, height: boxH } = useElementSize();
+  const W = Math.max(80, Math.round(width || 260)), m = 4;
+  const ml = axes ? 40 : m, mb = axes ? 14 : m;
+  const H = (fill ? Math.max(height, Math.round(boxH || 0)) : height) + (axes && !fill ? 14 : 0);
+  const t0 = axes ? (t[0] ?? 0) : 0;
   const tMax = t[t.length - 1] || 1;
-  const X = (x: number): number => m + (W - 2 * m) * x / tMax;
+  const span = axes ? (tMax - t0 || 1) : tMax;
+  const X = (x: number): number => ml + (W - ml - m) * (x - t0) / span;
   const Y = (v: number): number => {
     const c = Math.min(Math.max(v, range[0]), range[1]);
-    return m + (H - 2 * m) * (1 - (c - range[0]) / (range[1] - range[0]));
+    return m + (H - m - mb) * (1 - (c - range[0]) / (range[1] - range[0]));
   };
   const path = (s: readonly number[]): string => s.map((v, i) => `${i ? "L" : "M"}${X(t[i]!).toFixed(1)},${Y(v).toFixed(1)}`).join("");
   return (
-    <Box ref={ref} style={{ width: "100%" }}>
-      <svg width={W} height={H} role="img" aria-label={aria} style={{ display: "block" }}>
-        <rect x={0.5} y={0.5} width={W - 1} height={H - 1} fill="none" stroke={GRID} />
+    <Box ref={ref} style={fill
+      ? { width: "100%", flex: "1 1 auto", minHeight: height + (axes ? 14 : 0), position: "relative" }
+      : { width: "100%" }}>
+      <svg width={W} height={H} role="img" aria-label={aria}
+        style={fill ? { display: "block", position: "absolute", left: 0, top: 0 } : { display: "block" }}>
+        <rect x={axes ? ml + 0.5 : 0.5} y={0.5} width={axes ? W - ml - 1 : W - 1} height={axes ? H - mb - 1 : H - 1} fill="none" stroke={GRID} />
         {(intervals ?? []).map(([a, b], k) => (
-          <rect key={k} x={X(a)} y={H - m - 3} width={Math.max(2, X(b) - X(a))} height={3} fill={ALARM} />
+          <rect key={k} x={X(a)} y={H - mb - 3} width={Math.max(2, X(b) - X(a))} height={3} fill={ALARM} />
         ))}
         {limit !== undefined && (
-          <line x1={m} x2={W - m} y1={Y(limit)} y2={Y(limit)} stroke={QUIET} strokeDasharray="4 3" />
+          <line x1={ml} x2={W - m} y1={Y(limit)} y2={Y(limit)} stroke={QUIET} strokeDasharray="4 3" />
         )}
         {limitLow !== undefined && (
-          <line x1={m} x2={W - m} y1={Y(limitLow)} y2={Y(limitLow)} stroke={QUIET} strokeDasharray="4 3" />
+          <line x1={ml} x2={W - m} y1={Y(limitLow)} y2={Y(limitLow)} stroke={QUIET} strokeDasharray="4 3" />
+        )}
+        {axes && (
+          <g fontSize={10} fill={INK} data-trend-scale="">
+            <text x={ml - 4} y={m + 8} textAnchor="end">{sig(range[1], 4)}</text>
+            <text x={ml - 4} y={H - mb - 2} textAnchor="end">{sig(range[0], 4)}</text>
+            <text x={ml} y={H - 2} textAnchor="start">{`t = ${sig(t[0] ?? 0, 5)} s`}</text>
+            <text x={W - m} y={H - 2} textAnchor="end">{`${sig(tMax, 5)} s`}</text>
+          </g>
         )}
         {yRef && <path d={path(yRef)} fill="none" stroke={QUIET} strokeWidth={1.2} strokeDasharray="2 2" />}
         <path d={path(y)} fill="none" stroke={alarmOn ? ALARM : TEXT} strokeWidth={1.6} />
-        {cursor !== undefined && <line x1={X(cursor)} x2={X(cursor)} y1={m} y2={H - m} stroke={INK} strokeWidth={0.8} />}
+        {cursor !== undefined && <line x1={X(cursor)} x2={X(cursor)} y1={m} y2={H - mb} stroke={INK} strokeWidth={0.8} />}
       </svg>
     </Box>
   );

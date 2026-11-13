@@ -2989,6 +2989,15 @@ reason of its limit.  Below the widgets the engine's \emph{facts} about the
 panel are listed as it wrote them (an element that never moves, a limit that
 is never approached, the instants a limit is crossed): facts, not a grade.
 
+\paragraph{The scale of a trend.}  A trend carries a scale: the minimum and
+maximum of the range it is drawn on at the left, and the run's first and last
+written instant at the foot.  Where a placed card is taller than its
+neighbours the grid stretches it, so no gap is left beside a tall card.  When
+the case declares a panel and a run has finished but the engine published no
+panel block, the view says that the engine predates the operator panel
+(running again does not help; the engine has to be updated) instead of asking
+for a run.
+
 \paragraph{The time cursor.}  One slider moves every widget together over the
 instants the run wrote; it works from the keyboard (arrows, \emph{Home},
 \emph{End}).  A crossing is seen on the written instants: an excursion
@@ -3389,6 +3398,14 @@ printed \emph{cascade row by cascade row}, which is the point: the targets
 are checkable by hand from what the run prints.  The theory, the
 arithmetic and a fully hand-worked example are in the Theory Guide's section \emph{Pinch analysis: the target before
 the network}.
+
+\paragraph{In the browser.}  The case's \emph{Pinch} tab opens on the four
+targets the engine published --- the hot and cold utility ($Q_{H,\min}$,
+$Q_{C,\min}$), the pinch temperature and $\Delta T_{\min}$ --- with the
+engine's own classification words under them, and then the composite curves,
+sized to fit the window; the explanation of how to read the curves is behind
+\emph{How to read this}.  A partial analysis keeps its red banner above all of
+this.
 
 \subsection{Reading the answer}
 
@@ -4492,6 +4509,22 @@ table, thermo foundation) open on demand as workspaces.
 Stream colour encodes phase and comes straight from the solver ($vf$
 plus solid mass fraction); it never changes on hover or selection ---
 selection is signalled by a halo, not a recolour.
+
+\paragraph{What the Plots and Streams views open on.}  After a run the
+\emph{Plots} view lands on a unit's \emph{Profile} when a unit published one
+(a column opens on its stage profile; before, it opened on the two-bar element
+balance, which is still one click away under \emph{Balance}).  A column's
+profile draws one panel per kind of quantity on the shared stage axis ---
+temperature, the liquid mole fractions, the reaction extent as bars --- and
+never puts two kinds on one axis; the components that stay below 2\,\% of the
+liquid everywhere start switched off in the legend, and the vapour fractions,
+activity coefficients, $\ln K_a$ and the reaction rate are one chip away
+(\emph{Show}).  The series are grouped by the names the engine writes
+(\code{x\_}, \code{y\_}, \code{gamma\_}, \code{extent\_kmol\_h}); the engine
+publishes no kind or unit per series.  The \emph{Streams} view groups the
+solver's advisories of one kind into one line with a count (for example
+\emph{[provenance] 6 advisories}); \emph{show all} lists the engine's texts
+verbatim.
 
 \subsection{A properties case: the Workflow}\label{sec:gui-workflow}
 
