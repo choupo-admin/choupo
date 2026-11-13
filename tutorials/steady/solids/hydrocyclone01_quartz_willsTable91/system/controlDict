@@ -20,12 +20,26 @@
     R = 65.2 x 0.34 / (100 x 0.57) = 0.39 (p. 215);
     column 8, % of each size to the underflow; d50 = 177.5 um.
   HERE: the corrected curve (eq. 9.15 inverted on column 8) and R = 0.39 are
-    DECLARED; the unit predicts the split, both products' size analyses and
-    their dilutions.  Kelsall's bypass a_k = R + (1 - R) c_k (Wills eq. 9.15
-    written forward) is the model under test.
+    DECLARED, and the unit recomputes the split, both products' size
+    analyses and their dilutions with Kelsall's bypass a_k = R + (1 - R) c_k
+    (Wills eq. 9.15 written forward).
+  WHAT THIS CASE IS, AND IS NOT: a RECONSTRUCTION, not a prediction and not
+    a validation.  Both declared inputs were derived from Table 9.1 itself,
+    so the two `anchor` rows of `expected` return the book's own inputs:
+    the underflow dilution 0.34 is the number R = 0.39 was computed from
+    (through U/F), and the declared curve puts the actual partition of the
+    148-209 um class at 0.39 + 0.61 x 0.1803 = 0.49998, so d50 lands in that
+    class by construction.  They are an IDENTITY CHECK that the engine's
+    bookkeeping (eq. 9.15 forward, the water split, the ln-x interpolation)
+    is the book's, and nothing more.  The one number the case COMPUTES that
+    was not typed in is the solids split U/F = SUM a_k w_k = 0.65568,
+    against 0.65204 from the book's own column 8 summed over the same feed
+    (0.652 printed): its +0.56 % is the cost of writing the -74 um class's
+    negative corrected recovery as 0, measured -- not a prediction error,
+    because no input here is independent of the table.
   WHAT IT CANNOT REPRODUCE, and why: the book's -74 um class reaches the
     underflow LESS than the water does (37.2 % against 39 %), so its
-    corrected recovery would be negative; it is written 0, and the predicted
+    corrected recovery would be negative; it is written 0, and the recomputed
     underflow carries 0.54 % of the feed more than the book's (see
     `expected`).  That is Kelsall's assumption failing on real data, shown,
     not hidden.

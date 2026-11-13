@@ -24661,7 +24661,7 @@ $R_f$ from the geometry is not built (\S\ref{sec:classification-deferred}).
 \file{hydrocyclone01\_quartz\_willsTable91} runs Wills \& Napier-Munn
 Table~9.1 (pp.~215--216) FORWARD: the book derives the partition curve from
 the two products' sieve analyses; here that curve (Wills column 8, corrected by
-$R_f = 0.39$) and the water split are given and the products predicted.  THE
+$R_f = 0.39$) and the water split are given and the products recomputed.  THE
 COMPARISON IS THEREFORE IN-SAMPLE: the curve comes from the same table, so
 agreement shows the arithmetic is the book's, and says nothing about a model's
 power to predict a cyclone.
@@ -24684,7 +24684,15 @@ water's $39\,\%$, so Kelsall's correction gives it a negative corrected
 recovery ($-0.0295$); a recovery cannot be negative, so it is declared $0$, which
 sends $(0.39-0.372)\times0.301 = 0.54\,\%$ of the feed's solids to the underflow
 that the book's test did not.  Kelsall's assumption failing on measured data,
-shown, not tuned away.
+shown, not tuned away.  What the two rows marked ``anchor'' are, exactly: they
+return the book's OWN inputs.  $R_f = 0.39$ was computed from the underflow
+dilution $0.34$ (through $U/F$), and the declared curve puts the actual
+partition of the 148--209\,$\mu$m class at $0.39 + 0.61\times0.1803 = 0.49998$,
+so $d_{50}$ lands in that class by construction.  They check that the
+engine's bookkeeping is the book's (an identity check), not that any model
+predicts a cyclone.  The one number computed here that was not typed in is
+$U/F = 0.6557$, against $0.6520$ from the book's own column~8 summed over the
+same feed; its gap is the zeroed finest class, measured.
 
 \subsubsection{A closed grinding circuit}\label{sec:grinding-circuit}
 

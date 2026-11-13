@@ -2258,8 +2258,10 @@ KPIs: those of `classifier` (names `underflow_`/`overflow_`) plus
 `feed_dilution`, `underflow_dilution`, `overflow_dilution`.
 Theory: `sec:hydrocyclone` (`sec:hydrocyclone-declared`).  Case:
 `tutorials/steady/solids/hydrocyclone01_quartz_willsTable91` (Wills & Napier-Munn
-Table 9.1 run forward: two anchors, two stated gaps from Kelsall's assumption
-failing on the finest class).
+Table 9.1 run forward, IN SAMPLE: its two `anchor` rows return the book's own
+inputs -- an identity check of the bookkeeping, not a validation -- and its one
+computed number, U/F, carries the stated gap from Kelsall's assumption failing
+on the finest class).
 
 ### `cakeFilter`
 A cake filter on a SLURRY (a liquid carrying solids; not a gas-borne powder),
