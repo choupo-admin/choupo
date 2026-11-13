@@ -469,7 +469,7 @@ outdoors, as it does in industry:
 
 | Where | What | Why there |
 |---|---|---|
-| Spray-drying suite (ground floor, **double height** 0–10 m, north wall) | `SD`, the spray dryer | Contained (the dispersion is discharged as an open powder), hazardous area **zone 2** (acetone in a closed, inerted loop); the chamber's explosion vent is ducted out through the north wall.  Double height for the atomiser platform above the chamber (the engine's chamber is 1.2 m × 2.5 m; the room is 10 m). |
+| Spray-drying suite (ground floor, **double height** 0–10 m, north wall) | `SD`, the spray dryer | Contained (the dispersion is discharged as an open powder), hazardous area **zone 2** (acetone vapour in a closed loop of nitrogen, inerted so that the gas inside holds too little oxygen to burn — section 8); the chamber's explosion vent is ducted out through the north wall.  Double height for the atomiser platform above the chamber (the engine's chamber is 1.2 m × 2.5 m; the room is 10 m). |
 | Nitrogen-loop technical room (ground floor, north-east corner) | `gasHeater`, `blower`, `exhaustCooler`, `solventCondenser`, `condensatePot` | Beside the suite (the gas ducts pass through the wall they share), on two outside walls, entered from outside for maintenance, **zone 2**, held 5 Pa below outside by its extract so a leak goes to the extract and not into the building. |
 | Solution-preparation room (ground floor, south-east corner) | `solutionPrep` | Contained (the API and HPMCAS are tipped into the acetone under a downflow booth), **zone 1** (the open manway), on the east wall where the acetone line comes in. |
 | Coating-preparation room (ground floor, beside coating) | `coatingSuspensionPrep` | The film-coating suspension, piped through the wall to the pan coater. |
@@ -588,8 +588,17 @@ room.
   nitrogen that stream carries out of the loop) is a numerical surface, not
   a measured gas solubility; no Henry pair for N2 in acetone is in the
   catalogue (DEV.md 4c C256).
-- **The oxygen in the loop.** The nitrogen loop exists to keep the acetone
-  below its flammable limit; nothing here computes the oxygen it tolerates.
+- **The oxygen in the loop.** The drying gas is nitrogen so that the gas in
+  the dryer holds too little OXYGEN to burn, whatever its acetone content:
+  that is what inerting means.  The acetone is not kept low — this run's
+  loop gas carries 5.18 mol % acetone into the dryer (`dryingGas`) and
+  11.60 mol % out of it (`exhaustGas`), and that content is not what makes
+  the loop safe.  Nothing here computes the oxygen limit or checks the
+  oxygen content of the loop: the model's loop carries no oxygen at all,
+  because its make-up is pure nitrogen and no air leak is modelled.  The
+  limiting oxygen concentration (and the solvent's flammable limits, for
+  the start-up, the purge and a leak) must be taken from a safety data
+  source by whoever designs the plant; this case states none.
 - **Solvent recycle.** The recovered acetone goes to a tank, not back to the
   solution tank: reusing it in a GMP process needs its quality proven, and
   closing that loop needs a make-up controlled to a specification (an outer
