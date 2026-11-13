@@ -905,12 +905,14 @@ inline std::optional<scalar> declaredInletEnthalpy(const DictPtr&       streamDi
     if (!streamDict) return std::nullopt;
     if (streamDict->lookupScalarOrDefault("phasePinned", 0.0) < 0.5)
         return std::nullopt;
-    if (const auto q = pinnedPureQuality(streamDict, z))
-        return thermo.H_stream_formation(T, P, *q, z);
-    const scalar vf = streamDict->lookupScalarOrDefault("vf", 0.0);
-    if (auto sp = twoPhaseSplit(T, P, z, true, vf, thermo, locus, "duty"))
-        return hOfState(*sp, T, P, z, thermo);
-    return thermo.H_stream_formation(T, P, vf, z);
+    //  `resolveStreamThermalState` is the one reading of a pinned dict: a
+    //  pure two-phase pin comes back as its quality with no split, a pinned
+    //  single phase as its carried vf, a pinned two-phase mixture as its
+    //  equilibrium split.
+    const auto st = resolveStreamThermalState(streamDict, T, P, z, thermo,
+                                              locus, "duty");
+    if (st.split) return hOfState(*st.split, T, P, z, thermo);
+    return thermo.H_stream_formation(T, P, st.vf, z);
 }
 
 //  The phase an inlet DECLARES as single, or `std::nullopt`: 0 for a pinned
