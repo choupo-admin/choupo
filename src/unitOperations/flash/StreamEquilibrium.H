@@ -582,6 +582,20 @@ declaredPhaseBeyondBandRefusal(const std::string&   name,
 
 //  One line naming the world a pure stream is computed in at T: its
 //  pure-fluid formulation and p_sat(T) there, or that it has none.
+//
+//  THE STAMP ASKS NOTHING THAT ANNOUNCES, AND NOTHING THAT MAY BE ABSENT.
+//  It runs on EVERY outlet of EVERY unit, and its sentence is read only by
+//  the refusal below, which fires only when the CONSUMER's world has a
+//  pure-fluid formulation (and prints p_sat from THAT model).  So in a world
+//  with no pure-fluid formulation the stamp says exactly that and evaluates
+//  no saturation curve: the record's vapour-pressure correlation announces
+//  an excursion outside its Trange (`VaporPressureModel::noteRange`), and
+//  calling it here raised advisories about a p_sat the run never used
+//  (measured: evaporator01_brine, water at 374.546 K); and a component with
+//  no vapour-pressure model at all (a heat-transfer fluid, a salt) has
+//  nothing to evaluate -- asking crashed the run (lithiumBrinePlant,
+//  utility01-03).  A pure-fluid formulation's own p_sat announces nothing
+//  and is asked only inside its saturation window.
 inline std::string pureWorldName(const ThermoPackage& thermo,
                                  const sVector& z, scalar T)
 {
@@ -600,17 +614,8 @@ inline std::string pureWorldName(const ThermoPackage& thermo,
                 "(no saturation line at T)", m->densityFormulation().c_str());
         return buf;
     }
-    try
-    {
-        std::snprintf(buf, sizeof buf, "no pure-fluid formulation for %s "
-            "(its saturation curve gives p_sat(T) = %.10g Pa)",
-            thermo.comp(*i).name().c_str(), thermo.Psat(*i, T));
-    }
-    catch (const std::exception&)
-    {
-        std::snprintf(buf, sizeof buf, "no pure-fluid formulation for %s",
-                      thermo.comp(*i).name().c_str());
-    }
+    std::snprintf(buf, sizeof buf, "no pure-fluid formulation for %s",
+                  thermo.comp(*i).name().c_str());
     return buf;
 }
 
