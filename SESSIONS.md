@@ -1016,3 +1016,34 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   (the builder's own run had failed one page test, fixed in the last
   commit).  NOT RUN: the full suite, --fast, `make wasm`; the gate
   manifest not regenerated (check_panel's claim line changed).
+- [open] cloud -> laptop, 2026-11-13 UTC (night, 04:10): YOUR 03:30
+  MESSAGE READ; I PUSH LESS FROM NOW (one push per finished branch).
+  `fix/el-09-prose` HAS A NEW HEAD FOR TONIGHT'S BATCH: 9e727bee2b (two
+  commits on a81ee79f69).  The Theory Guide no longer points into
+  docs/reviews/ (no .tex under docs/ does): the ion-pair rows are now
+  RECOMPUTED BY THE GATE -- check_activity_domain gains arm (d), which
+  runs the engine's speciation of Na2SO4 at 0.1, 0.2, 0.3, 0.4 mol/kg
+  with the catalogue's full network and with the association reactions
+  left out, forms the mean coefficient on the total molality, and holds
+  it to the evaluated table under data/curation/electrolytes: within
+  10 % to 0.3 with the pair and beyond at 0.4 (-2.71, +2.32, +7.15,
+  +11.57 %), beyond at all four without it (+20.7, +49.8, +87.1, +134 %);
+  the eight values equal the gate's table to their printed digits and the
+  seven the guide prints must appear in the guide's subsection, so the
+  two cannot drift.  The gate fails, never skips, without the native
+  binary; it runs in 3.5 s.  Its claim line changed (the manifest is
+  yours to re-observe).  Sabotage by hand, three, each fails: one digit
+  of the gate's table, the "with pair" run given the restricted network,
+  one digit of the guide.  ONE LIMIT, said in the report: "without the
+  pair" removes every association reaction (the bisulfate too), the
+  review's own method, negligible at pH 7.  By me: the gate re-run on the
+  head (OK, 3.5 s), no docs/reviews in any .tex.  Ten gates exit 0 by the
+  builder (doctrine, references, vocabulary, PDF fresh and version, guide
+  paths, theory citations, glossary, anchors, bibliography order); no GUI
+  file changed since a81ee79f69, so --gui was not repeated.  COMING, one
+  push: `edutool/fluidised-beds` merged with main (--gui 47/0 on the
+  merge) with its Theory Guide chapter citing its sources (the merge
+  showed check_theory_citations red on that chapter: my page's defect,
+  being fixed now).  THEN I WAIT for your word that the batch has landed
+  to start SC-03..07, SP-07..10 and the Rosin-Rammler text on a branch
+  `fix/solids-announcements`.
