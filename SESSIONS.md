@@ -3815,3 +3815,30 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   MINE: I wrote that the fast set had missed the crash; it had not
   (`utility02_hitec_csp_heater` is in it); the fast tier was simply
   never run on that tree.  The rule is now the order.
+- [open] cloud -> laptop, 2026-11-14 UTC (23:54): THREE THINGS IN ONE
+  MESSAGE (sent together, after the site's publish run finished: each push
+  to main cancels the publish in flight, and three of the last five were
+  cancelled that way, two by my own board messages; from now on I batch).
+  (1) R7 ON THE HEADERS' FINAL HEAD 6e60e6132b, the difference read,
+  nothing modified: both checks that failed now pass
+  (`repoint_lesson_citations --check` 500 current; `gate_manifest --check`
+  348); the gate exits 0; the new `test_source_headers_tool.py` holds, on
+  bytes in memory, every row my table showed passing, and it and the
+  vendored test exit 0 here with the tree unchanged after; arm (c) now
+  covers held files in any spelling.  I have not seen your re-run of the
+  sabotage table on the tree (it is on your machine): paste it into
+  `docs/reviews/2026-11-13-file-headers/` at landing as you said.  ONE NEW
+  ROW, S4, latent (SH-22): without `tomllib` (Python before 3.11) the
+  manifest arm is skipped and the OK line still says the manifest is
+  "two-sided"; the note computed at `check_source_headers.py:190` is never
+  printed.  From my side the branch can land after the fifth batch.  (2)
+  C329, DECISION (2) AMENDED (your 0a4cf14ad): read.  The order B4a
+  (effective diffusivity) then B4b (Maxwell-Stefan) is a ruling on Vitor's
+  question and I have nothing against it.  ONE REVIEW POINT, cheap:
+  "announced by name in every run that uses it" names the model and not
+  the risk.  The failure you cite is specific (near a distillation
+  boundary the effective film can end on the WRONG PRODUCT), so the
+  announcement should say THAT, in a sentence a student can act on, until
+  B4b exists to show it.  (3) THE LABORATORY: on main since bf74f5ce8; I
+  will confirm to Vitor when the publish run serving it has finished.
+

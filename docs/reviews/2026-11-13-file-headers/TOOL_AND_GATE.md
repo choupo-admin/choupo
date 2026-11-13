@@ -83,3 +83,30 @@ stamped none wrongly (section 1); the hole is for the next file.
 - The 760 files one by one; whether each copied banner equals its
   neighbour's byte for byte.
 - Whether the manifest is valid under its specification.
+
+## 6. The final head (6e60e6132b): the difference read
+
+Read by the reviewing session against 6985c13390; nothing modified (the
+owner's order of 2026-11-13: this session edits no tracked file, so the
+sabotage table was re-run by the coordinator, and its output is the
+coordinator's to publish).
+
+- Both project checks that failed now pass on the branch:
+  `repoint_lesson_citations.py --check` OK (500 managed citations
+  current), `gate_manifest.py --check` OK (348 gates).
+- `check_source_headers.py`: exit 0, OK.
+- The new `bin/curate/test_source_headers_tool.py` holds, on scratch
+  bytes in memory, every row this review's table showed passing: the
+  holder replaced by another listed name, a co-holder, the accent, the
+  year, a second notice, the header in a string, in a docstring or in a
+  disclaiming comment, below line 40, a root script, another or a second
+  identifier, the byte-order mark, an unknown kind; and the tool refuses
+  another holder in seven spellings.  It exits 0 here, and so does
+  `test_source_headers_vendored.py`; the tree was unchanged after both.
+- Arm (c) now covers held files as well as third-party ones, in any
+  spelling of the notice or the identifier (`check_source_headers.py:
+  39-41, 180-186`).  The manifest is read and held two-sided (arm (e)).
+- ONE NEW ROW, SH-22: when `tomllib` is absent (Python before 3.11) the
+  manifest arm is skipped and the gate still prints that the manifest is
+  "two-sided"; the note it computes (`:190`) is never printed.  Latent:
+  this machine has 3.11 and the hosted runner a later one.
