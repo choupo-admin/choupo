@@ -2852,7 +2852,10 @@ words a student reads (written by the method that computed, never by the
 consumer), its leaves and the share each carries, whether pressure entered,
 and the three statements of quality.  The entry is migration scaffolding:
 only the pump and the CSTR call it, and \code{liquidProperty::evaluate}
-keeps serving every other consumer unchanged.
+keeps serving every other consumer unchanged.  In particular the
+time-integrated units (the dynamic tank's holdup) still price water by the
+record's volume carried by Rackett while a steady pump prices the same water
+by its reference equation: they were left out of the pilot by decision.
 
 \paragraph{Leaves and set methods.}  A \emph{leaf} is bound to one
 component and answers its liquid molar volume $v_i$; a \emph{set method}
@@ -2899,21 +2902,36 @@ record's rule~4:
   \code{pureFluids} selection, else a reference equation that names it;
   for two or more, a solution record (\S\ref{sec:liquid-density-solution-law});
 \item \code{idealMixing}, one leaf per constituent, each by
-  \code{pureFluid} $>$ \code{referenceEquation} $>$ the record's volume route
-  $>$ \code{massWithoutVolume} (only when declared,
-  \S\ref{sec:liquid-density-mass-without-volume}); a declared Henry solute
-  has no pure-liquid leaf (its volume in the liquid is a partial molar volume);
+  \code{massWithoutVolume} for a component the case lists under that
+  hypothesis (whatever volume its record holds,
+  \S\ref{sec:liquid-density-mass-without-volume}), else \code{pureFluid} $>$
+  \code{referenceEquation} $>$ the record's volume route; a declared Henry
+  solute has no pure-liquid leaf (its volume in the liquid is a partial molar
+  volume);
 \item refusal, naming every method passed over and why, and the remedy (a
   volume for each constituent, or a solution record named by its file,
   \code{parameters/solution/<set>.dat}).
 \end{enumerate}
-A resolution is kept per package identity and set for the run; a package met
-for the first time (another pass of an outer driver builds its own) resolves
-its sets again, and a set that would resolve to a \emph{different} method
-than earlier in the run is refused: the pass changed which data exist, which
-the run cannot hide.  The same liquid can therefore carry two printed
+The run says each resolution once per method and unit: ``\code{[liquid
+density] pump P1: \{ethanol, water\} by idealMixing[...] (origin ...;
+evidence); passed over: ...}'' --- the method, the quality its answer
+states, and every method the order passed over with its reason.  Every
+refusal of the entry ends in its remedy.
+
+A resolution is kept per \emph{world} and set for the run.  The world is
+every per-component fact the resolution reads from a package: the name, the
+case's pure-fluid selection, whether the formulation makes the component a
+Henry solute, and the volume route its record offers.  A unit's own
+\code{thermo \{\}} that changes one of them is a second world and a second
+recipe, never a contradiction of the first.  A package met for the first
+time (another pass of an outer driver builds its own) resolves its sets
+again, and a set of the SAME world that would resolve to a \emph{different}
+method than earlier in the run is refused: the pass changed which data exist,
+which the run cannot hide.  The same liquid can therefore carry two printed
 densities while the migration lasts --- a valve on the slice-0 wrapper and a
-pump on the methods --- and the table's \code{[twice]} line says so.
+pump on the methods --- and the table says so: \code{[twice]} when two
+consumers priced one exact state, \code{[two methods]} when one composition
+was priced by two methods anywhere in the run, with each consumer's range.
 
 \subsection{The reference leaf and the liquid branch}\label{sec:liquid-density-reference-leaf}
 
@@ -2977,10 +2995,19 @@ vapour side the two uses part:
   saturated liquid at $T$ --- the hypothetical-liquid convention the Rackett
   leaves follow too --- announced once per method and unit.
 \end{itemize}
+The other side of the two lines is announced too: where the package's line
+is ABOVE the formulation's (water's record Antoine, fitted to 373\,K and
+extrapolated, lies above IAPWS-95 from about 311\,K), a state between them is
+a vapour to the package and a compressed liquid to the formulation; the
+kernel, asked for a liquid density, prices the formulation's liquid and says
+so once per method and unit.
+
 At or above the record's critical temperature there is no liquid: a hard
-limit for both (CO$_2$ above 304.13\,K).  Below the triple point the
-formulation is asked at $(T,P)$ as it is: IF97 refuses there by its own name,
-IAPWS-95 describes the supercooled liquid.
+limit for both (CO$_2$ above 304.13\,K).  Below the lowest temperature of a
+reference record's own \code{validity} block (\code{Tmin}, 251.165\,K for
+IAPWS-95, the lowest point of the melting curve) the reference leaf is not
+asked: a domain error naming the limit.  A case's own selection is asked at
+$(T,P)$ as it is: IF97 refuses below its range by its own name.
 
 \subsection{A solution's own density law: \code{solutionLaw} and the form \code{polynomialTSqrtX}}\label{sec:liquid-density-solution-law}
 
@@ -3032,8 +3059,9 @@ $\{\mathrm{water}\}$ to $\{\mathrm{NaOH, water}\}$ steps by that much.
 A case may hold a measured density of its own liquid
 (\code{constant/experiments/<name>.dat}, the experiments format: provenance,
 \code{columns}, one row of \code{data}, with \code{property liquidDensity},
-\code{solvent}, \code{uncertainty} and a \code{box} of temperature, pressure
-and mass fractions) and mark it in its thermophysical system:
+\code{solvent}, \code{uncertainty}, a \code{box} of temperature, pressure
+and mass fractions, and \code{system}, the set its columns describe) and mark
+it in its thermophysical system:
 \code{volumetric \{ liquid \{ measured \{ <name> \{ use method; replaces \{
 method solutionLaw; record NaOH-water; \} reason "..."; \} \} \} \}}.  Marked
 \code{use method}, the measurement IS the density of its constituent set
@@ -3051,7 +3079,11 @@ replaced law's span over the box's corners exceeds it --- is a hypothesis:
 carry origin \code{assumed}; with no law to judge the box, \code{reason} is
 always mandatory.  Marked \code{use check}, the measurement is never used:
 inside its box the run prints it beside the computed value with the
-deviation, outside ``not at its conditions'' with the distance.
+deviation, outside ``not at its conditions'' with the distance.  Every
+declared measurement is used, checked or refused, never dropped: a column or
+solvent that names no component of the case (\code{w[NaHO]} for NaOH), a
+\code{system} its columns contradict, and a word the file or its box does not
+read are each refused by name, with the words that are read.
 
 \subsection{The hypothesis \code{massWithoutVolume} and its bound}\label{sec:liquid-density-mass-without-volume}
 
@@ -3063,8 +3095,15 @@ components keep their mass and add no volume to additive volumes:
   \;=\; \frac{\rho_{\mathrm{rest}}}{1 - w_{\mathrm{listed}}}\quad\text{(one listed solute).}
   \label{eq:mass-without-volume}
 \end{equation}
-It is the last leaf of a component (any volume the catalogue holds wins) and
-never stands in front of a solution record.  It is bounded: when the SUM of
+It is read by the DENSITY only, and it means what it says for every
+component it lists: a listed component adds no volume even when its record
+holds one, and a set with a listed constituent is mixed by additive volumes,
+never by the set's solution law (which cannot hold the hypothesis).  The
+pump's heat capacity does not read it: the solvent-only heat capacity of a
+dilute solution is decided, as before the pilot, by the component being a
+dissolved ion with no liquid volume of its own, and announced.  A listed name
+that is not a component of the case, or a word the block does not read, is
+refused.  It is bounded: when the SUM of
 the listed components' mass fractions in the liquid exceeds
 \code{maxMassFraction} the request is a domain error naming the bound and
 that the case declared it.  The run's table prints one \code{[hypothesis]}
@@ -3100,7 +3139,9 @@ route bench at the level the solvers catch it.  A recycle whose accelerated
 iterate overshoots a box and is then rejected was not constructed end to end.
 
 \paragraph{``Pressure not applied''.}  A method that takes no pressure (the
-record volumes, a solution law) says so on every row of the run's table.
+record volumes, a solution law) says so on every row of the run's table;
+additive volumes whose leaves differ say which: ``pressure applied to water;
+not applied to ethanol''.
 The \emph{advisory} is raised only above 2\,MPa, once per method and unit:
 a liquid's isothermal compressibility is about $5\times10^{-10}$ per Pa
 (water $4.6\times10^{-10}$ at 25\,$^\circ$C), so 2\,MPa is a 0.1\,\% density
@@ -9955,7 +9996,20 @@ A record carries its publication's own check values, and
 \file{ReferenceFluid::read} evaluates \emph{every one} at every load: a value
 is reproduced when it agrees within half a unit in the last digit the
 publication \emph{printed}.  One miss refuses the record --- a mistranscribed
-coefficient is worse than no equation.  For a paper written on a molar basis
+coefficient is worse than no equation.  A row whose evaluation AMPLIFIES a
+last-bit change carries its own tolerance: the half digit times its
+conditioning $\kappa$, never less than two units of the last printed digit.
+The one such row kind is a pressure at a given density,
+$p = \rho R T\,(1 + \delta\,\alpha^r_\delta)$, for which
+$\kappa = \rho R T / |p|$ (about 1400 for liquid water at 300\,K and
+996.556\,kg/m$^3$, the row that passed with a margin of
+$3.8\times10^{-10}$ relative and flipped when a mathematical library moved
+some \code{pow} results by one unit in the last place).  Every other row
+keeps the half digit; the check result states each row's tolerance and
+conditioning (verbosity 3 of the \code{referenceEoS} operation).  What the
+contract cannot see: a change of a coefficient in its last printed digit
+(about $10^{-13}$ relative) moves no nine-digit check value; a change in its
+ninth digit fails the reduced Helmholtz rows.  For a paper written on a molar basis
 the record's values are converted (density $\times M$, energies
 $\times 1000/M$, with the paper's own $M$) and carry a
 \code{printedScale}, so the comparison is made on the number as it appears

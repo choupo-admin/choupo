@@ -12650,7 +12650,6 @@
    "src/solver/Convergence.H",
    "src/solver/NewtonRaphson.H",
    "src/streams/ProcessStream.H",
-   "src/thermo/ApproximationAuthorisation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/LiquidPropertyDoor.H",
@@ -18755,8 +18754,7 @@
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
-   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
-   "src/unitOperations/rotating/Pump.cpp"
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp"
   ],
   "src/thermo/AtomicWeights.H": [
    "src/streams/StreamStateIO.cpp",

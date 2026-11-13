@@ -43,16 +43,21 @@ namespace {
 //  reproduced once (ReferenceFluid::load caches the record itself).
 const PureFluidModel& referenceModel(const std::string& equation, scalar mw)
 {
+    //  The mutex protects the cache map only; the model is built OUTSIDE it
+    //  (a factory may run a case's own registered code -- C378 review PA-02).
     static std::mutex m;
     static std::map<std::pair<std::string, double>, std::unique_ptr<PureFluidModel>> cache;
+    {
+        std::lock_guard<std::mutex> lk(m);
+        const auto it = cache.find({ equation, mw });
+        if (it != cache.end()) return *it->second;
+    }
+    const DictPtr d = Dictionary::fromString(
+        "method Helmholtz;\nequation " + equation + ";\n", "<referenceEquation leaf>");
+    std::unique_ptr<PureFluidModel> built = PureFluidModel::New(d, mw);
     std::lock_guard<std::mutex> lk(m);
     auto& slot = cache[{ equation, mw }];
-    if (!slot)
-    {
-        const DictPtr d = Dictionary::fromString(
-            "method Helmholtz;\nequation " + equation + ";\n", "<referenceEquation leaf>");
-        slot = PureFluidModel::New(d, mw);
-    }
+    if (!slot) slot = std::move(built);          // a racing thread's copy wins; ours is dropped
     return *slot;
 }
 
@@ -83,6 +88,7 @@ PureFluidLeaf::PureFluidLeaf(const Binding& b, Kind k)
         model_    = &referenceModel(equation_, comp().MW());
         const auto& f = helmholtz::ReferenceFluid::load(equation_);
         uncertainty_ = f.uncertainty();
+        Tmin_        = f.Tmin();
     }
     Tc_ = model_->saturationWindow().second;
 }
@@ -106,6 +112,15 @@ scalar PureFluidLeaf::volumeAt(scalar T, scalar P, bool asSet) const
             + " is at or above its critical temperature (" + fmt("%.6g K", Tc_)
             + ", " + model_->densityFormulation() + "): there is no liquid to price.",
             "a temperature below the critical one");
+    //  THE RECORD'S OWN LOWER LIMIT (C378 pilot review, S3): below the Tmin
+    //  its `validity` block states, the reference equation is not asked.
+    if (Tmin_ > 0.0 && T < Tmin_)
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+            "liquid density: " + c + " at T = " + fmt("%.6g K", T) + " is below the"
+            " lowest temperature of " + id() + "'s stated validity (Tmin "
+            + fmt("%.6g K", Tmin_) + ", the record's `validity` block)",
+            "a temperature at or above the record's Tmin, or a method selected for"
+            " the supercooled liquid");
     const PureFluidPhaseState st = pureFluidPhaseState(*model_, T, P, true);
     if (st.farAcross)
     {
@@ -169,6 +184,33 @@ scalar PureFluidLeaf::volumeAt(scalar T, scalar P, bool asSet) const
                 "liquidDensityLeafSaturated:" + id() + ":" + site,
                 "approximation", "info", "liquid density (" + site + ")", msg))
             std::cout << "  [liquid density] " << msg << "\n";
+    }
+    //  THE OTHER SIDE OF THE TWO LINES (C378 pilot review, S3).  Where the
+    //  package's line is ABOVE the reference equation's (water's extrapolated
+    //  Antoine above about 311 K), a state between them is a vapour to the
+    //  package and a compressed liquid to the formulation.  The kernel prices
+    //  the formulation's liquid -- it was asked for a liquid density -- and
+    //  says so once per method and site, as the mirror zone does.
+    else if (asSet && kind_ == Kind::referenceEquation)
+    {
+        scalar pPkg = std::numeric_limits<scalar>::quiet_NaN();
+        try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) {}
+        if (pPkg == pPkg && P < pPkg * (1.0 - pureFluidSaturationBand))
+        {
+            std::string type, unit;
+            const std::string site = PropertySourceLog::instance().current(type, unit)
+                                   ? type + " " + unit : std::string("no unit");
+            const std::string msg = "the liquid density of pure " + c + " by " + id()
+                + " at T = " + fmt("%.6g K", T) + ", P = " + fmt("%.8g Pa", P)
+                + ": the package's own saturation line puts this state in the VAPOUR"
+                  " (p_sat " + fmt("%.8g Pa", pPkg) + "), the reference equation's in the"
+                  " liquid (p_sat " + fmt("%.8g Pa", model_->p_sat(T)) + "); priced as the"
+                  " formulation's compressed liquid";
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "liquidDensityAboveRefLine:" + id() + ":" + site,
+                    "approximation", "info", "liquid density (" + site + ")", msg))
+                std::cout << "  [liquid density] " << msg << "\n";
+        }
     }
     const scalar vm = model_->v_molar(T, st.pEval);
     if (!(vm > 0.0) || !std::isfinite(vm))

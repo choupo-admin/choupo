@@ -115,6 +115,8 @@ std::string sourceText(const PropertySourceLog::Used& u)
         s += "; pressure not applied";
     else if (u.pressureNote == "not applied (saturated liquid)")
         s += "; pressure not applied (the saturated liquid)";
+    else if (u.pressureNote.compare(0, 11, "applied to ") == 0)
+        s += "; pressure " + u.pressureNote;          // per leaf (C378 pilot review, S3)
     if (!u.leftOut.empty())
         s += "; " + andList(u.leftOut) + " left out (no liquid volume at that state)";
     return s;
@@ -446,6 +448,48 @@ void PropertySourceLog::printUsed(std::ostream& os) const
     }
     for (const auto& m : mismatches()) os << "  [mismatch] " << m << "\n";
     for (const auto& p : pricedTwice()) os << "  [twice] " << p << "\n";
+    //  SAME LIQUID, TWO METHODS (C378 pilot review, PA-13).  `[twice]` keys
+    //  on an exact (T, P, composition) and so never fired where it mattered
+    //  most: a pump on the kernel's methods and a pipe on the slice-0 door
+    //  price one water at neighbouring states.  This line keys on the
+    //  composition alone and names each consumer's method and range, while
+    //  the migration leaves a liquid with two methods in one run.
+    {
+        struct Seen { std::string who, id; double lo, hi; };
+        std::map<std::size_t, std::vector<Seen>> byComposition;
+        for (const auto& kv : used_)
+        {
+            const Used& u = kv.second;
+            if (u.property != "liquidDensity") continue;
+            std::map<std::size_t, std::pair<double, double>> range;
+            for (const auto& st : u.states)
+            {
+                auto it = range.find(std::get<2>(st.first));
+                if (it == range.end()) range[std::get<2>(st.first)] = { st.second, st.second };
+                else { it->second.first = std::min(it->second.first, st.second);
+                       it->second.second = std::max(it->second.second, st.second); }
+            }
+            for (const auto& r : range)
+                byComposition[r.first].push_back({ u.unit + " (" + u.type + ")", u.sourceId,
+                                                   r.second.first, r.second.second });
+        }
+        for (const auto& b : byComposition)
+        {
+            std::set<std::string> ids;
+            for (const auto& s : b.second) ids.insert(s.id);
+            if (ids.size() < 2) continue;
+            std::string line = "one liquid composition is priced by " + std::to_string(ids.size())
+                             + " methods in this run: ";
+            for (std::size_t k = 0; k < b.second.size(); ++k)
+            {
+                const auto& s = b.second[k];
+                line += (k ? "; " : "") + s.who + " " + s.id + " "
+                      + (s.hi - s.lo > 5.0e-3 ? number("%.2f", s.lo) + " .. " + number("%.2f", s.hi)
+                                              : number("%.2f", s.lo)) + " kg/m3";
+            }
+            os << "  [two methods] " << line << "\n";
+        }
+    }
     for (const auto& c : constantBesideComputed()) os << "  [constant] " << c << "\n";
     for (const auto& h : hypotheses_)
     {

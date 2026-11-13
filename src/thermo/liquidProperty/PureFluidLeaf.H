@@ -92,6 +92,7 @@ private:
     std::unique_ptr<PureFluidModel> owned_;
     std::string                     equation_;      // the Helmholtz record, when one
     std::string                     uncertainty_;   // the record's stated uncertainty
+    scalar                          Tmin_ = 0.0;    // the reference record's own lower validity limit
     scalar                          Tc_ = 0.0;      // no liquid at or above
 };
 

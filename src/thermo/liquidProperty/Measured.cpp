@@ -122,6 +122,10 @@ void MeasurementDeclarations::readFrom(const DictPtr& top)
                 throw std::runtime_error(here + ": `replaces` belongs to `use method`;"
                     " a check replaces nothing.");
             const DictPtr r = dec->subDict("replaces");
+            for (const auto& kk : r->keys())
+                if (kk != "method" && kk != "record")
+                    throw std::runtime_error(here + ".replaces: unknown word '" + kk
+                        + "' (method, record).");
             m.replacesMethod = r->lookupWord("method");
             m.replacesRecord = r->lookupWordOrDefault("record", "");
         }
@@ -178,7 +182,54 @@ void MeasurementDeclarations::readFrom(const DictPtr& top)
                 " least one mass fraction w[<component>].");
         m.w[m.solvent] = 1.0 - wsum;
         m.constituents.push_back(m.solvent);
+
+        //  EVERY DECLARED MEASUREMENT IS USED, CHECKED OR REFUSED -- never
+        //  dropped (C378 pilot review, PA-05).  A column naming a component
+        //  the case does not have (`w[NaHO]`) made a set no unit ever asks
+        //  for, and the catalogue's law priced the unit in silence.  So: every
+        //  key of the file is one the reader knows; every constituent is one
+        //  of the case's components; and the file's `system` is exactly the
+        //  set its columns describe.
+        static const char* const fileKeys[] = { "provenance", "system", "property",
+            "solvent", "columns", "data", "uncertainty", "box" };
+        for (const auto& k : f->keys())
+            if (std::find(std::begin(fileKeys), std::end(fileKeys), k) == std::end(fileKeys))
+                throw std::runtime_error(where + ": unknown word '" + k + "'.  A density"
+                    " point reads provenance, system, property, solvent, columns, data,"
+                    " uncertainty and box.");
+        if (top->found("components"))
+        {
+            const auto comps = top->lookupWordList("components");
+            for (const auto& c : m.constituents)
+                if (std::find(comps.begin(), comps.end(), c) == comps.end())
+                    throw std::runtime_error(here + " (" + where + "): '" + c + "' is not"
+                        " one of the case's components, so no constituent set of this run"
+                        " can match the measurement and it would never be used.  Remedy:"
+                        " name the columns `w[<component>]` and the `solvent` by the"
+                        " case's component names.");
+        }
+        if (f->found("system"))
+        {
+            auto sys = f->lookupWordList("system");
+            auto mine = m.constituents;
+            std::sort(sys.begin(), sys.end());
+            std::sort(mine.begin(), mine.end());
+            if (sys != mine)
+                throw std::runtime_error(where + ": `system` names a set its columns do"
+                    " not describe (the mass-fraction columns and the solvent give the"
+                    " set of the measurement).  Remedy: make `system ( ... );` and the"
+                    " `w[...]` columns plus `solvent` name the same components.");
+        }
         const DictPtr box = f->subDict("box");
+        for (const auto& k : box->keys())
+        {
+            const bool known = k == "T" || k == "P"
+                || (k.compare(0, 2, "w[") == 0 && k.back() == ']'
+                    && m.w.count(k.substr(2, k.size() - 3)) && k.substr(2, k.size() - 3) != m.solvent);
+            if (!known)
+                throw std::runtime_error(where + " box: unknown word '" + k + "'.  The box"
+                    " reads T, P and one w[<component>] per mass-fraction column.");
+        }
         m.boxT = pairOf(box, "T", where + " box");
         m.boxP = pairOf(box, "P", where + " box");
         for (const auto& kv : m.w)

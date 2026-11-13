@@ -123,7 +123,10 @@ void ReferenceFluid::read(const std::string& equation)
             throw std::runtime_error(path_ + ": check value NOT reproduced -- "
                 + c.table + ", " + c.label + ": published " + g9(c.published, 12)
                 + ", computed " + g9(c.computed, 12) + " (" + std::to_string(c.digits)
-                + " significant digits printed).  A coefficient is mistranscribed "
+                + " significant digits printed; tolerance " + g9(c.tolerance, 3)
+                + (c.conditioning > 1.0 ? ", the half digit times the row's conditioning "
+                                          + g9(c.conditioning, 4) : std::string())
+                + ").  A coefficient is mistranscribed "
                   "or a term is wrong; fix it, do not loosen the comparison.");
 }
 
@@ -510,22 +513,45 @@ namespace {
 //  (a molar-basis paper: rho x M, h x 1000/M) is judged on the PRINTED
 //  number's last digit -- the record states the factor as `printedScale`,
 //  so pub/scale is the number on the page.
+//
+//  EACH ROW CARRIES ITS OWN TOLERANCE (C378 pilot review, PC-03).  A check
+//  states agreement with the publication's digits in a variable where that
+//  agreement is meaningful.  Half a unit in the last printed digit is the
+//  right tolerance for a WELL-CONDITIONED row (kappa = 1: a value computed
+//  directly from the Helmholtz derivatives).  A row whose computation
+//  AMPLIFIES a last-bit change is judged on that half digit times its
+//  conditioning `kappa`, with a floor of two units of the last printed
+//  digit: the pressure of a LIQUID at a given density is the small
+//  difference of two large terms, p = rho R T (1 + delta ar_d), so a
+//  relative change eps in the residual term moves p by about
+//  eps rho R T / p -- kappa = rho R T / |p|, about 1400 for water at 300 K
+//  and 996.556 kg/m3.  Judged on the half digit alone that row passed with a
+//  margin of 3.8e-10 relative and flipped when a math library moved some
+//  `pow` results by one unit in the last place.  A wrong coefficient still
+//  moves the well-conditioned rows (the reduced Helmholtz derivatives, cv,
+//  w, the saturation states) far beyond their half digit.
 CheckResult judge(const std::string& table, const std::string& label,
-                  scalar pub, scalar calc, int digits, scalar scale = 1.0)
+                  scalar pub, scalar calc, int digits, scalar scale = 1.0,
+                  scalar kappa = 1.0)
 {
     CheckResult c;
     c.table = table; c.label = label;
     c.published = pub; c.computed = calc; c.digits = digits;
+    c.conditioning = std::max<scalar>(1.0, kappa);
     if (pub == 0.0)
     {
         c.relDev = std::fabs(calc);
+        c.tolerance = 1.0e-12;
         c.ok = std::fabs(calc) < 1.0e-12;
         return c;
     }
     c.relDev = std::fabs(calc - pub) / std::fabs(pub);
     const scalar e   = std::floor(std::log10(std::fabs(pub / scale)));
     const scalar ulp = std::pow(10.0, e - digits + 1) * std::fabs(scale);
-    c.ok = std::fabs(calc - pub) <= 0.5 * ulp * (1.0 + 1.0e-9);
+    c.tolerance = c.conditioning > 1.0
+        ? std::max(2.0 * ulp, 0.5 * ulp * c.conditioning)
+        : 0.5 * ulp;
+    c.ok = std::fabs(calc - pub) <= c.tolerance * (1.0 + 1.0e-9);
     return c;
 }
 
@@ -567,7 +593,13 @@ std::vector<CheckResult> ReferenceFluid::verify() const
             const scalar sc = e->lookupScalarOrDefault("printedScale", 1.0);
             const State s = at(T, rho);
             const std::string at_ = "T = " + g9(T) + " K, rho = " + g9(rho) + " kg/m3: ";
-            if (e->found("p"))  out.push_back(judge(tab, at_ + "p",  e->lookupScalar("p",  Dims::pressure),     s.p, dig, sc));
+            if (e->found("p"))
+            {
+                //  kappa = rho R T / |p| (see judge): the row's own amplification.
+                const scalar pPub  = e->lookupScalar("p", Dims::pressure);
+                const scalar kappa = pPub != 0.0 ? rho * R_ * T / std::fabs(pPub) : 1.0;
+                out.push_back(judge(tab, at_ + "p", pPub, s.p, dig, sc, kappa));
+            }
             if (e->found("cv")) out.push_back(judge(tab, at_ + "cv", e->lookupScalar("cv", Dims::heatCapacity), s.cv, dig, sc));
             if (e->found("cp")) out.push_back(judge(tab, at_ + "cp", e->lookupScalar("cp", Dims::heatCapacity), s.cp, dig, sc));
             if (e->found("w"))  out.push_back(judge(tab, at_ + "w",  e->lookupScalar("w",  Dims::velocity),     s.w, dig, sc));

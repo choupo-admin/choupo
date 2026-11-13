@@ -1,7 +1,12 @@
 # The density pilot: methods, resolution, records and the two units (C378)
 
-Kind: PLAN.  Status: OPEN -- nothing built; no file under `src/`, `gui/`,
-`data/`, `tutorials/` or `bin/` changed.  Bound by
+Kind: PLAN.  Status: BUILT on branch `c378-pilot` (2026-11-13, steps 1-9),
+reviewed by measurement (docs/reviews/2026-11-13-c378-pilot/) and corrected
+in a second round (PA-01..05, PB-01 and the S3 rows); NOT yet on `main`.
+What was built is described by the Theory Guide's
+`sec:liquid-density-methods` and the settled contract; this plan stays the
+record of the decisions as they were taken, and its `file:line` references
+are to the planning tree named below, not to the built one.  Bound by
 [`thermophysical-property-routes.md`](thermophysical-property-routes.md) (first
 section, amendment blocks, TR-01..21), [`density-pilot-thresholds.md`](density-pilot-thresholds.md)
 (baseline, thresholds, the seven corrections of its section 4) and
@@ -415,3 +420,19 @@ the declared correlation; `neglectedIn`; viscosity; Laliberte's rule.
 | D4 with no new correlation | cannot be scored; and routes record 3.2's idealMixing on CO2's pure liquid gives the wrong SIGN (-0.35 % against +1.6 % measured) | D4 on the diluteSolution form, where the declared solute role passes idealMixing over |
 | one file per constituent set | NaOH-water already has an activity-model record; a density law there would hang on an activity-model choice | two files of two kinds; the solution record is the property home |
 | the pilot moves only the pump and the CSTR | the slice-0 `evaluate` already serves seven consumer files | a second entry; one liquid carries two printed densities until S2 |
+
+## 14. As built: where the build departed from this plan
+
+Recorded here so the settled contract's record says what was built (review
+row PA-16, 2026-11-13); each was also stated in its commit.
+
+| planned | built | why |
+|---|---|---|
+| leaf names with dots (`recordVolume.anchoredRackett` registered per route) | one registered `recordVolume`; the route is a fact of the record and only the leaf's id names it | a registered name with a dot cannot be documented or refused by name like the others |
+| the pump and the CSTR the only callers of the entry | a third caller, the props bench key `rho_liquid_kernel`, and the route bench's checks; `check_liquid_density_entry_callers` counts every one | the kernel has to be probed at states no shipped case reaches (ruling 1 at hand-back A) |
+| a pure set below p_sat(T) is a vapour, refused | below the reference equation's line but above the package's, the reference's saturated liquid, announced; the other side announced too | the package is the authority on a stream's phase (ruling 3 at hand-back A, PB-05) |
+| the seal copies the records a case names | the importer also copies every Helmholtz record whose `fluid` names a component | a sealed case could not otherwise find the reference equation that applies "by the fact" |
+| caustic demonstrations through a pump and a CSTR | CSTR only | the electrolyte formulation has no liquid heat capacity for NaOH, which the pump's temperature rise needs |
+| "pressure not applied" announced on every use | announced only above 2 MPa (`pressureAnnouncedAbove`); the table column always says it, per leaf where leaves differ | ruling 2 at hand-back B: an advisory on every pump was noise |
+| the decision keyed on the package's address | cached on the package's serial; the "resolves differently" refusal keyed on the world (PA-03) | an address is reused by the allocator (ruling 6); a serial is not a world |
+| `massWithoutVolume` the last leaf, after any volume the catalogue holds | honoured for every listed component, and read by the density only (PA-04) | one reading of a declaration; the pump's heat capacity is not a volume question |

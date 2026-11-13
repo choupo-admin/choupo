@@ -131,6 +131,11 @@ struct CheckResult
     scalar computed  = 0.0;
     int    digits    = 0;    // significant digits printed
     scalar relDev    = 0.0;
+    //  The row's tolerance and the conditioning it was derived from (C378
+    //  pilot review, PC-03): half a unit in the last printed digit, times the
+    //  amplification of a last-bit change in the evaluation for that row.
+    scalar tolerance    = 0.0;
+    scalar conditioning = 1.0;
     bool   ok        = false;
 };
 

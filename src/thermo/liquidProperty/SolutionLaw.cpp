@@ -161,10 +161,24 @@ SolutionLaw::SolutionLaw(const Binding& b)
     }
     std::sort(recSet.begin(), recSet.end());
     if (recSet != set_)
-        throw std::logic_error("SolutionLaw: the record's set differs from the request's");
+        throw std::runtime_error(where + ": the record states the set "
+            + setDisplayName(*thermo_, recSet) + " (one solute, one solvent) and was found"
+            " for the set " + setName_ + ".  The solution record holds a binary only;"
+            " a law for a set of three or more has no record kind yet (C378 pilot"
+            " review, PA-08).");
 
     const DictPtr ld = r->subDict("liquidDensity");
     const std::string w = where + " liquidDensity";
+    //  An unknown key is refused, naming the keys this block reads (C378
+    //  pilot review, PA-05): a word the reader skips is a statement nobody
+    //  executes.  The form's own coefficient rows are its keys (b1-b3).
+    for (const auto& k : ld->keys())
+        if (k != "returns" && k != "form" && k != "variable" && k != "temperatureOrigin"
+            && k != "domain" && k != "pressure" && k != "provenance"
+            && k != "b1" && k != "b2" && k != "b3")
+            throw std::runtime_error(w + ": unknown word '" + k + "'.  The block reads"
+                " returns, form, variable, temperatureOrigin, domain, pressure,"
+                " provenance and the form's coefficient rows (polynomialTSqrtX: b1, b2, b3).");
     const std::string ret = ld->lookupWord("returns");
     if (ret != "solutionDensity")
         throw std::runtime_error(w + ": `returns " + ret + "` -- the pilot reads"
@@ -191,6 +205,10 @@ SolutionLaw::SolutionLaw(const Binding& b)
         if (!band->found("T") || !band->found(var))
             throw std::runtime_error(w + ": each `domain` band carries both limits,"
                 " `T (Tlo Thi);` (K) and `" + var + " (lo hi);`.");
+        for (const auto& k : band->keys())
+            if (k != "T" && k != var)
+                throw std::runtime_error(w + ": a `domain` band reads `T` and `" + var
+                    + "`; unknown word '" + k + "'.");
         const auto t = band->lookupList("T");
         const auto x = band->lookupList(var);
         if (t.size() != 2 || x.size() != 2 || !(t[0] < t[1]) || !(x[0] < x[1]))

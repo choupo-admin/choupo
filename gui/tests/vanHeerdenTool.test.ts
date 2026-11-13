@@ -134,12 +134,12 @@ describe("the knob map — every target resolves against the real raw text", () 
     expect(k!.file).toBe("system/flowsheetDict");
     expect(k!.key).toBe("T_guess");
     expect(k!.def).toBe(340);
-    // Its range must reach past the outer roots (292.22 K and 336.48 K on
+    // Its range must reach past the outer roots (292.43 K and 336.55 K on
     // the authored case, its golden) or the branch cannot be switched from
     // the panel.  (C259: the witness is cstr08; cstr05's 300.42 / 405.90 K
     // were roots that case no longer has.)
-    expect(k!.min).toBeLessThan(292.22);
-    expect(k!.max).toBeGreaterThan(336.49);
+    expect(k!.min).toBeLessThan(292.43);
+    expect(k!.max).toBeGreaterThan(336.56);
   });
 
   it("methodCase clones the witness with the full default knob set", () => {
@@ -318,24 +318,24 @@ describe("findVanHeerdenFeeds — the G/R column pair is the contract", () => {
 // ---- The marker classifier --------------------------------------------------
 // The engine's own markers, as cstr08_furusawa_bistable publishes them
 // (log.choupoSolve / result JSON; its golden pins steadyStates 3 and
-// T_out 336.484249478).  C259: until 2026-11-09 these were cstr05's roots
+// T_out 336.55135184).  C259: until 2026-11-09 these were cstr05's roots
 // (300.42 / 345.54 / 405.90 K), which that case has not produced since the
 // acetic-acid correction -- it has ONE steady state:
-//   [{x: 292.22089207, label: "steady state 1"},
-//    {x: 303.029831836, label: "steady state 2"},
-//    {x: 336.484249478, label: "steady state 3 (reported)"}]
+//   [{x: 292.427640706, label: "steady state 1"},
+//    {x: 302.613126693, label: "steady state 2"},
+//    {x: 336.55135184, label: "steady state 3 (reported)"}]
 
 const WITNESS_MARKERS: ProfileMarker[] = [
-  { x: 292.22089207, label: "steady state 1" },
-  { x: 303.029831836, label: "steady state 2" },
-  { x: 336.484249478, label: "steady state 3 (reported)" },
+  { x: 292.427640706, label: "steady state 1" },
+  { x: 302.613126693, label: "steady state 2" },
+  { x: 336.55135184, label: "steady state 3 (reported)" },
 ];
 
 describe("classifySteadyStates — ordering over engine numbers", () => {
   it("three roots: the MIDDLE one is flagged unstable", () => {
     const s = classifySteadyStates(WITNESS_MARKERS);
     expect(s.map((x) => x.T)).toEqual(
-      [292.22089207, 303.029831836, 336.484249478]);
+      [292.427640706, 302.613126693, 336.55135184]);
     expect(s.map((x) => x.unstable)).toEqual([false, true, false]);
     expect(s.map((x) => x.order)).toEqual([0, 1, 2]);
   });
@@ -343,7 +343,7 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
   it("the '(reported)' suffix is PARSED off the label, never guessed", () => {
     const s = classifySteadyStates(WITNESS_MARKERS);
     expect(s.map((x) => x.reported)).toEqual([false, false, true]);
-    expect(reportedState(s)!.T).toBe(336.484249478);
+    expect(reportedState(s)!.T).toBe(336.55135184);
     // The label survives verbatim — the tool never rewrites the engine's own
     // annotation.
     expect(s[2]!.label).toBe("steady state 3 (reported)");
@@ -356,12 +356,12 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
     // "reported = last" would be wrong here and right on the default —
     // which is exactly how such a bug survives.
     const cold: ProfileMarker[] = [
-      { x: 292.22089207, label: "steady state 1 (reported)" },
-      { x: 303.029831836, label: "steady state 2" },
-      { x: 336.484249478, label: "steady state 3" },
+      { x: 292.427640706, label: "steady state 1 (reported)" },
+      { x: 302.613126693, label: "steady state 2" },
+      { x: 336.55135184, label: "steady state 3" },
     ];
     const s = classifySteadyStates(cold);
-    expect(reportedState(s)!.T).toBe(292.22089207);
+    expect(reportedState(s)!.T).toBe(292.427640706);
     expect(s[1]!.unstable).toBe(true);        // the middle one, regardless
   });
 
@@ -370,9 +370,9 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
       WITNESS_MARKERS[1]!];
     const s = classifySteadyStates(shuffled);
     expect(s.map((x) => x.T)).toEqual(
-      [292.22089207, 303.029831836, 336.484249478]);
+      [292.427640706, 302.613126693, 336.55135184]);
     expect(s[1]!.unstable).toBe(true);
-    expect(reportedState(s)!.T).toBe(336.484249478);
+    expect(reportedState(s)!.T).toBe(336.55135184);
   });
 
   it("ONE root: no unstable claim at all", () => {
@@ -426,8 +426,8 @@ describe("classifySteadyStates — ordering over engine numbers", () => {
 describe("ignitionSpan — the practical meaning of multiplicity", () => {
   it("is ignited minus extinguished on the witness's own roots", () => {
     const s = classifySteadyStates(WITNESS_MARKERS);
-    expect(ignitionSpan(s)).toBeCloseTo(336.484249478 - 292.22089207, 9);
-    expect(ignitionSpan(s)).toBeCloseTo(44.263357408, 9);
+    expect(ignitionSpan(s)).toBeCloseTo(336.55135184 - 292.427640706, 9);
+    expect(ignitionSpan(s)).toBeCloseTo(44.123711134, 9);
   });
 
   it("is null with fewer than two roots — a span of zero would read as data", () => {
@@ -478,7 +478,7 @@ describe("interpolateAt — reads a published column, never finds a root", () =>
     const y = interpolateAt(T, G, reportedState(s)!.T)!;
     expect(y).toBeGreaterThan(8.5);
     expect(y).toBeLessThan(8.6);
-    expect(y).toBeCloseTo(8.5 + 0.1 * (336.484249478 - 336.0), 12);
+    expect(y).toBeCloseTo(8.5 + 0.1 * (336.55135184 - 336.0), 12);
   });
 
   it("is null outside the sampled range, or on a degenerate input", () => {

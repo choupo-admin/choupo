@@ -78,7 +78,9 @@ void announceOnce(const ReferenceFluid& f, int verbosity)
             os << "[referenceEoS]     " << (c.ok ? "ok  " : "FAIL") << "  "
                << c.table << "  " << c.label << ": published "
                << std::setprecision(10) << c.published << ", computed "
-               << std::setprecision(12) << c.computed << "\n";
+               << std::setprecision(12) << c.computed
+               << " (digits " << c.digits << ", tolerance " << std::setprecision(4)
+               << c.tolerance << ", conditioning " << c.conditioning << ")\n";
     }
     std::cout << os.str();
 }

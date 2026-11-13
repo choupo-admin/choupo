@@ -28,6 +28,9 @@ Every run prints, just before its result block, one line per unit:
   2e-4 apart) until every unit has moved.
 * `[twice]`: two units priced the same liquid state at two densities.  Say
   so to the student; do not average them, and do not size on one silently.
+* `[two methods]`: one liquid composition was priced by two methods in the
+  run (say, the pump on the kernel's methods and a pipe on the older route),
+  each with its range.  The same advice holds.
 * `[mismatch]`: a unit took a number from a kind of source its type does not
   declare.  It is an engine finding; report it.
 * `[constant]`: a unit took a CONSTANT liquid density (1000 kg/m3) while
@@ -149,14 +152,19 @@ request, and frozen for the run -- never by T, P or the amounts:
 | `pureFluid` | leaf / one-constituent set | the case's `pureFluids` selection, liquid branch, with pressure |
 | `referenceEquation` | leaf / one-constituent set | a Helmholtz record in `parameters/Helmholtz/` whose `fluid` is the component (water, CO2, CH4, N2 today), by that fact, with pressure; case-local copy first |
 | `idealMixing` | set | additive volumes over one leaf per constituent; no excess volume.  Its id `idealMixing[...]` is the slice-0 door's `liquidVolume.idealMix[...]` under another name: ONE arithmetic, two ids until the wrapper consumers migrate |
-| `massWithoutVolume` | leaf | the declared hypothesis: mass kept, no volume, bounded by `maxMassFraction` |
+| `massWithoutVolume` | leaf | the declared hypothesis: mass kept, no volume, bounded by `maxMassFraction`; honoured for EVERY listed component, even one whose record has a volume (and a set with a listed constituent is mixed by additive volumes, never by its solution law).  Read by the density only: the pump's heat capacity does not read it |
 | `solutionLaw` | set | a solution record's own density law for exactly the set (form `polynomialTSqrtX`: NaOH-water) |
 | `measured` | set | the case's measurement marked `use method`, constant inside its hard box |
 
 Precedence for a set: a marked measurement; a record law for exactly the set
 (one constituent: `pureFluids`, else a reference equation; two or more: a
 solution record); `idealMixing`; refusal naming every method passed over and
-the remedy.  A declared Henry solute has no pure-liquid leaf.
+the remedy.  A declared Henry solute has no pure-liquid leaf.  The run prints
+each resolution once per method and unit (`[liquid density] <unit>: <set> by
+<method> (origin ...; evidence); passed over: ...`), and every refusal ends in
+its remedy.  The resolution is kept per WORLD (the components' names,
+pure-fluid selections, Henry status and volume routes): a unit's own
+`thermo {}` that changes one of them is a second world, not a contradiction.
 
 ### The grammar the pilot reads
 
@@ -183,6 +191,7 @@ A measurement of the case, `constant/experiments/<name>.dat`:
 
 ```
 provenance  { source "..."; citation "..."; }
+system      ( NaOH water );                 // the set the columns describe
 property    liquidDensity;
 solvent     water;                          // the constituent whose fraction is the rest
 columns     ( { name T; unit K; } { name P; unit kPa; } { name w[NaOH]; unit -; } { name rho; unit kg/m3; } );
@@ -207,6 +216,12 @@ and the hypothesis, in the one `approximations` block:
 approximations { massWithoutVolume { components ( NaCl ); maxMassFraction 0.05; reason "..."; } }
 ```
 
+Every key of these blocks is one the reader knows; an unknown key is
+refused, naming the keys the block reads.  A measurement whose columns or
+solvent name no component of the case, or whose `system` contradicts its
+columns, is refused (it could never be used); a `massWithoutVolume` name
+that is not a component of the case is refused.
+
 Refusals and their remedies: a set no method prices names every method
 passed over ("no solution record covers this set ...
 parameters/solution/ethanol-NaCl-water.dat ...; idealMixing needs a volume
@@ -230,7 +245,12 @@ At or above the critical temperature there is no liquid (refused).  For a pure s
 priced by `referenceEquation` (no `pureFluids`), the package's own
 saturation line (`ThermoPackage::Psat`) decides the phase: between the
 reference's line and the package's, the reference's saturated liquid,
-announced with both pressures; below both, refused.  The
+announced with both pressures; below both, refused.  Where the package's
+line is ABOVE the reference's (water above about 311 K), a state between them
+is priced as the reference's compressed liquid and announced once.  Below a
+reference record's own `Tmin` (IAPWS-95: 251.165 K) the reference leaf
+refuses.  Additive volumes whose leaves differ say so in the pressure column
+("pressure applied to water; not applied to ethanol").  The
 props bench key `rho_liquid_kernel` (choupoProps, `propertyScan1D`) asks the
 same methods for the state's composition.
 

@@ -70,7 +70,7 @@ struct DensityResolution
     std::vector<std::string> partRecords;  // the record each leaf reads ("" when none)
     std::string              record;       // the record a direct method reads ("" when none)
     std::string              methodId;     // the id the method gives itself
-    std::vector<std::string> passedOver;   // "method: reason"
+    std::vector<std::string> passedOver;   // "method: reason" (printed once per method and site, and in the refusal)
     std::vector<DensityResolution> under;  // the catalogue method a measurement replaces (0 or 1)
 };
 
@@ -80,15 +80,6 @@ DensityResolution resolveDensity(const ThermoPackage& thermo, const sVector& x);
 
 //  The method object of a resolution, bound to `thermo`.
 std::shared_ptr<const DensityMethod> build(const DensityResolution& r, const ThermoPackage& thermo);
-
-//  Every resolution of the run, in the order first met (for the table).
-std::vector<DensityResolution> densityResolutionsOfRun();
-
-//  The hypothesis massWithoutVolume's use in the run: the components it
-//  covered (as listed in one liquid) -> the largest sum of their mass
-//  fractions it stood at (IdealMixing notes; the table prints it).
-void noteMassWithoutVolume(const std::string& components, double w);
-std::map<std::string, double> massWithoutVolumeOfRun();
 
 //  "{ethanol, NaCl, water}" and "ethanol-NaCl-water": the set's names,
 //  sorted case-insensitively (the solution records' file names).
