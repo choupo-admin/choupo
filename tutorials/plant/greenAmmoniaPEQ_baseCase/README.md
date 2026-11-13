@@ -317,9 +317,19 @@ provenance block), and the three are different kinds of number:
 No transaction or contract price of renewable ammonia could be read, so none
 is assumed: the case sells at the market price of the **conventional** product,
 and the premium the plant needs is not an input, it is what the engine's
-break-even prints (below). The ranges the sources span (ammonia 0.439-0.726,
-hydrogen 4.95-10.0, nitrogen 0.0159-0.0175 EUR/kg, each end cited in the
-provenance block) are the ends of the feasibility cases' `sensitivity {}`.
+break-even prints (below). The ends of the feasibility cases' `sensitivity {}`
+are each on the basis of its base price, cited in the provenance block:
+ammonia 0.380-0.692 EUR/kg (the lowest and highest monthly EU import unit
+value of 2025, June and November, from the same Eurostat dataset); hydrogen
+7.0-10.0 EUR/kg (ACER's own range of the cost of renewable hydrogen by
+country of origin; the market index the same report gives, "averaging
+approximately 8.2 EUR/kg" in 2025, p. 41, the HYDRIX65 index of the European
+Energy Exchange, supports reading the 8.0 cost as a price); nitrogen
+0.0159-0.0175 EUR/kg (OIES Table 2, six "Present" values, 2024). Figures of
+another kind are context in the blocks, not ends: a US free-on-board estimate
+and a nine-month 2026 value for ammonia, and 4.95 EUR/kg for hydrogen, the
+average offtake price ACER calculated for ammonia producers from the bids of
+a subsidised auction (p. 26).
 
 At these prices **the plant loses money, and that is the finding**: the
 hydrogen alone costs 0.1803 kg H₂/kg NH₃ x 8.0 = 1.44 EUR per kg of ammonia,
@@ -336,7 +346,10 @@ of tax credited over the 15 years, undiscounted; the run announces it, with
 the KPIs `lossYears`, `taxCreditOnLoss` and `taxCreditOnLoss_NPV`). A
 stand-alone project has no such profit; declare `taxOnLoss none;` in the
 `economics` block for that reading, and the NPV falls by that amount, to
-about −4 076 MEUR. Neither reading carries a loss forward.
+−4 075.85 MEUR (a run of a scratch copy of this case with `taxOnLoss none;`
+added to the `economics` block: `choupoSolve` on it prints `NPV(i=0.100) =
+-4075849101 EUR`, `taxCreditOnLoss` 0, the break-evens unchanged at 1.9291 and
+1.7853 EUR/kg). Neither reading carries a loss forward.
 
 **At what price does it pay?** "Never" teaches little, so the `economics`
 block declares `breakEven { price ( ProductNH3 H2Feed ); }` and the run
@@ -347,7 +360,7 @@ conventional market price of 0.530 (KPI `breakEven_price_ProductNH3`): that
 is the premium a renewable-ammonia buyer would have to pay for the plant to
 break even at the cited hydrogen cost. The **highest price of hydrogen the
 plant can bear** is **1.785 EUR/kg**, 22 % of the cited 8.0 and below the
-lowest figure read (4.95; `breakEven_price_H2Feed`). The first is above the
+bottom of ACER's 7-10 EUR/kg range (`breakEven_price_H2Feed`). The first is above the
 cost of making a kilogram (`productionCostPerKg` 1.862 EUR/kg, which is COM_d
 over the year's ammonia) because a price that only covered COM_d would leave
 nothing to recover the 145 MEUR of total capital: pre-tax, at the 10 %
@@ -357,10 +370,12 @@ the capital, the utility bill that is a lower bound) and say what the plant
 needs, not what the market will pay. At the two break-even prices every
 operating year has a positive taxable income, so the two break-evens are the
 same under either tax reading above. For comparison only, and not like for
-like: IRENA's 2022 outlook estimates the cost of renewable ammonia at 720
-USD/t (0.68 EUR/kg at the ECB 2022 average) for the best solar and wind sites
-in 2020, with hydrogen made on site; this plant buys hydrogen at the EU's
-cost today.
+like: IRENA's Innovation Outlook, Renewable Ammonia (2022) estimates "the
+range of USD 720 - 1 400 per tonne" for the production cost of renewable
+ammonia in new plants today (pdf p. 16), 720 being the estimate for the best
+solar and wind sites (p. 12): 0.68 to 1.33 EUR/kg at the ECB 2022 average of
+1.0530 USD per EUR, with hydrogen made on site; this plant buys hydrogen at
+the EU's cost today.
 
 ### Utilities: what serves each duty, and the converter's steam credit
 

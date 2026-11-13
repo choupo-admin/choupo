@@ -131,17 +131,18 @@ pressures — the point the *Front-End Loading* EduTool draws.
 **The sensitivity says the same, with numbers.** `system/postDict` ends
 with the same `sensitivity {}` block as the 150 bar case (DEV.md 4c C68;
 the FCI's ends are the declared accuracy band, the three prices' ends
-are cited, as in the 150 bar case — ammonia 0.439 / 0.726, hydrogen 4.95 /
-10.0, nitrogen 0.0159 / 0.0175 EUR/kg; the three utility bills ±20 %, discount
+are cited, as in the 150 bar case — ammonia 0.380 / 0.692 (monthly EU import
+unit values of 2025), hydrogen 7.0 / 10.0 (ACER's range), nitrogen 0.0159 /
+0.0175 EUR/kg; the three utility bills ±20 %, discount
 rate 8 % / 12 % and stream factor 0.85 / 0.95 are round figures). Its tornado
 (`reports/economics/sensitivity.csv`), M EUR, base NPV −3 319.20, beside the
 150 bar swings:
 
 | input (low / high end) | NPV at low | NPV at high | swing | swing at 150 bar |
 |---|---|---|---|---|
-| H₂ price (4.95 / 10.0 EUR/kg) | −1 731.50 | −4 360.31 | 2 628.81 | 2 628.79 |
+| H₂ price (7.0 / 10.0 EUR/kg) | −2 798.64 | −4 360.31 | 1 561.67 | 1 561.66 |
 | discount rate (8 % / 12 %) | −3 722.57 | −2 982.45 | 740.12 | 740.10 |
-| NH₃ price (0.439 / 0.726 EUR/kg) | −3 529.61 | −2 866.01 | 663.60 | 663.62 |
+| NH₃ price (0.380 / 0.692 EUR/kg) | −3 666.03 | −2 944.62 | 721.41 | 721.42 |
 | stream factor (0.85 / 0.95) | −3 141.74 | −3 496.66 | 354.92 | 354.18 |
 | hot-oil bill, `dowthermA` (×0.8 / ×1.2) | −3 283.63 | −3 354.77 | 71.13 | 79.09 (molten salt) |
 | **FCI, the accuracy band** (25.14 / 53.88 M EUR) | −3 298.06 | −3 354.43 | 56.37 | 66.00 |
@@ -158,7 +159,7 @@ only what each loop buys: half the electricity swing (less compression), a
 smaller steam credit (−11.22 against −15.69 M EUR/yr in the margin table
 above), and a capital band whose own swing (56.4 M EUR) is ten times the
 difference. As at 150 bar, no single input flips the NPV's sign (hydrogen at
-4.95 EUR/kg leaves −1 732 M EUR, no IRR), and the discount-rate and
+7.0 EUR/kg leaves −2 799 M EUR, no IRR), and the discount-rate and
 stream-factor bars point the "wrong" way because the plant loses money on
 every hour it runs. The NPV includes the engine's assumed tax credit on
 losses (869.0 M EUR here). A sensitivity, not an uncertainty analysis: no probability is attached to

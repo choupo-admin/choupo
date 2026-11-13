@@ -143,16 +143,22 @@ electricity, reformer fuel and CO₂ handling decide the result. So every
 route is priced twice, on its raw materials and then after the energy it
 needs, each energy term an **assumed specific consumption** per kg of NH₃.
 
-**Prices.** Three come from the PEQ base case; the rest are AUTHOR-SET
-ASSUMPTIONS, round figures of the right order chosen so the arithmetic can
-run. None is market data, and none cites a source, because none was read.
-Replace each with a dated, cited figure before quoting a margin.
+**Prices.** All but the electricity are AUTHOR-SET ASSUMPTIONS of this
+screen, round figures of the right order chosen so the arithmetic can run.
+None is market data, and none cites a source, because none was read. The
+first three were the PEQ base case's prices until 2026-11-13; that case
+(`greenAmmoniaPEQ_baseCase/constant/economics`) now carries CITED public
+figures instead (ammonia 0.530, hydrogen 8.0, nitrogen 0.0175 EUR/kg, each
+with its source and arithmetic), and this screen has NOT been re-priced at
+them: its table below is worked at its own round figures, so its margins are
+a statement about those figures only. Replace each with a dated, cited figure
+before quoting a margin.
 
 | item | price | where it comes from |
 |---|---|---|
-| ammonia (product) | 1.00 EUR/kg | PEQ base data, `greenAmmoniaPEQ_baseCase/constant/economics` (itself author-set there: "a green premium over grey ammonia, assumed") |
-| hydrogen | 4.50 EUR/kg | PEQ base data, the same file (author-set there) |
-| nitrogen (ASU) | 0.05 EUR/kg | PEQ base data, the same file (author-set there) |
+| ammonia (product) | 1.00 EUR/kg | author-set assumption of this screen (a green premium over grey ammonia, assumed); the base case's cited figure is 0.530 |
+| hydrogen | 4.50 EUR/kg | author-set assumption of this screen; the base case's cited figure is 8.0 |
+| nitrogen (ASU) | 0.05 EUR/kg | author-set assumption of this screen; the base case's cited figure is 0.0175 |
 | electricity | 27.8 EUR/GJ = 0.100 EUR/kWh | `data/standards/utilities/electricity.dat`, the record the PEQ base case imports (an industrial tariff of the order of Turton et al., Table 8.3) |
 | natural gas (CH₄) | 0.50 EUR/kg | author-set assumption |
 | process water | 0.002 EUR/kg | author-set assumption |
@@ -211,24 +217,32 @@ engine's numbers move.
 * **Green breaks even at 0.097 EUR/kWh** on these assumptions
   (10.27 kWh per kg NH₃). Electricity price and electrolyser efficiency are
   the two numbers a green feasibility study has to defend.
-* **The two green rows do not agree, and the disagreement is in the PEQ
-  base data.** At 0.100 EUR/kWh, a hydrogen price of 4.50 EUR/kg buys
+* **The two green rows do not agree, and the disagreement is in the
+  screen's own prices.** At 0.100 EUR/kWh, a hydrogen price of 4.50 EUR/kg buys
   45.0 kWh per kg of H₂ — only 1.35 times the engine's floor fed steam, with
   nothing left for the electrolyser's capital. Either the hydrogen price is
   low for that electricity price, or the electricity a green plant buys is
-  cheaper than the catalogue's industrial tariff. A screen exists to find
-  exactly this before a group designs a plant on it.
+  cheaper than the catalogue's industrial tariff. (The base case's cited
+  hydrogen cost, 8.0 EUR/kg, is 1.8 times this screen's figure: at 0.100
+  EUR/kWh it would buy 80 kWh per kg of H₂.) A screen exists to find exactly
+  this before a group designs a plant on it.
 * **Blue beats grey once CO₂ costs more than about 31 EUR/t** (compression
   plus storage, 0.035 EUR/kg NH₃, over the 1.142 kg of CO₂ it avoids). Below
   that price, capture is a cost.
-* **One product, one price.** The base data's 1.00 EUR/kg includes a green
-  premium. Grey and blue ammonia would not earn it, so their margins here
-  are upper bounds by whatever that premium is.
-* **Rung 1 and rung 2 disagree on the same green battery limit:** 0.160
-  EUR/kg here, 0.145 EUR/kg in `greenAmmonia02_feasibility150bar` (its
-  `grossMargin_RM`, 56.08 M EUR/yr on 387 732 t/yr). The difference is the
-  hydrogen the loop purges and flashes off, which an input-output balance
-  cannot see because it sends every hydrogen atom to ammonia.
+* **One product, one price.** This screen's 1.00 EUR/kg includes an assumed
+  green premium. Grey and blue ammonia would not earn it, so their margins
+  here are upper bounds by whatever that premium is.
+* **Rung 1 and rung 2 are not compared at the same prices any more.** The
+  feasibility case now runs at the cited 0.530 / 8.0 / 0.0175 EUR/kg, this
+  screen at its own round 1.00 / 4.50 / 0.05, so the 0.160 EUR/kg above and
+  the feasibility case's margin are different numbers. At the cited prices
+  the screen's own ratios (0.1776 kg H₂ and 0.82 kg N₂ per kg NH₃, read from
+  the table's raw-material row) would give 0.530 - 1.420 - 0.014 = -0.905
+  EUR/kg (worked by hand, not a run), against -0.929 EUR/kg in
+  `greenAmmonia02_feasibility150bar` (its `grossMargin_RM`, -360.33 M EUR/yr
+  on 387 732 t/yr). The difference, 0.024 EUR/kg, is the hydrogen the loop
+  purges and flashes off, which an input-output balance cannot see because it
+  sends every hydrogen atom to ammonia.
 
 ## What level 1 does not see
 
