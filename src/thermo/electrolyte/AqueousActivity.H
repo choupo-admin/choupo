@@ -76,7 +76,7 @@ Description
     accessor `gammaNamed(name, z)` alongside `gamma(z)`; the Davies builtin
     leaves `gammaNamed` null and keeps the charge-only form, so the solver falls
     back to `gamma(z)` everywhere for Davies and that path stays byte-identical.
-    PitzerHMW (builtin "pitzer") fills `name`/`gammaNamed`; the solver prefers
+    PitzerHMW (builtin "pitzerHMW") fills `name`/`gammaNamed`; the solver prefers
     the named accessor whenever it is set.
 
     The water activity: ln a_w = -(M_w/1000) phi sum_i m_i.  The osmotic

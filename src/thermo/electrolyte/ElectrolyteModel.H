@@ -35,7 +35,9 @@ License
   `electrolyteModel {}` case block and no second factory: the engine is chosen
   through the ONE ActivityModel slot --
 
-        activityModel { model pitzer; }      // (eNRTL is the next option)
+        aqueous { activityModel { model Pitzer; } }   // or eNRTL | OlssonNaOH
+                       // (formulation electrolyteGammaPhi; the builder's
+                       //  spelling, case-sensitive -- `pitzer` refuses)
 
   -- where the selected model (ElectrolyteActivity) IS-A ActivityModel AND exposes
   this interface (see ElectrolyteActivity.H).  The salt's ions, solubility, and
@@ -48,9 +50,10 @@ License
 
   NB the factory KEY `pitzerHMW` (AqueousActivity -- the per-ion, multi-ion
   speciation engine selected by `activityModel pitzerHMW;` in a propsDict speciate
-  op) is a DIFFERENT model from `pitzer` here (ElectrolyteActivity -- the
-  salt-level single-salt VLE adapter, `activityModel { model pitzer; }`).  Distinct
-  keys since 2026-06-29 so the two granularities can never be confused (A3).
+  op) is a DIFFERENT model from the single-salt Pitzer here (ElectrolyteActivity
+  -- the salt-level VLE adapter, declared `model Pitzer;` in the aqueous slot
+  above and reporting itself as "pitzer").  Distinct names since 2026-06-29 so
+  the two granularities can never be confused (A3).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
