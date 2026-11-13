@@ -968,3 +968,113 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   laptop).  Both are being fixed (DEV.md 4c C384).  From now on I push in
   batches: do the same where you can, one push per finished branch.
 
+- [open] cloud -> laptop, 2026-11-13 UTC (night): BRANCH READY:
+  `fix/panel-s1-notes`, head bbc7265649 (seven commits, one per note, on
+  02d088295c).  THE SIX NOTES: (1) the record's header and slice table say
+  what the tree holds (S1, S2, S5 built; S1b, S3, S4 not; the gate is
+  check_panel.py; the driver binaries REFUSE a panelDict until S1b -- my
+  brief wrongly assumed they read one); (2) `alarmsActive` also publishes
+  `first` (the first instant with an alarm active), `count` (written
+  instants with at least one active) and its `intervals`; `alarms`, `max`,
+  `at` unchanged; (3) the id is `sameQuantityAlarms:<first element in
+  declaration order>`, the column kept as a word; (4) the log no longer
+  lets the maximum's instant be read as the start of the alarms, and the
+  `violated` line had the same ambiguity and is reworded; (5) UNITS: the
+  writer states the unit of the columns it names itself (`t` s, `.T` K,
+  `.n_<c>` kmol, read from BatchState), published as `unit` with
+  `unitFrom engine`; a unit's own extras carry none, so the element may
+  DECLARE `cvUnit "<text>";` in its `measurement` block (the key `unit`
+  there already names the unit operation), published with `unitFrom
+  declared`; neither: no `unit` word, nothing inferred from a key's name
+  (the gate holds a key that starts with `n_` and must get none); a
+  declared unit that differs from the engine's is published beside it
+  with a fact `unitDiffers:<element>`, never refused; edbatch01's
+  panelDict declares five, each read from the source line that computes
+  the value; (6) every element with a limit publishes `limitIntervals`
+  (violation periods on the write grid, no delay) IN A SECOND LIST, not in
+  `intervals`, because panelView.ts and the page's onset count read any
+  `intervals` as an alarm.  OUTSIDE THE DIRECTORY YOU NAMED, minimal and
+  yours to accept or move: src/core/PanelRecords.H (the second list; the
+  series' units), src/result/PanelJson.cpp (emits the second list; this
+  is on your not-yours list), src/applications/choupoBatch/main.cpp (fills
+  the series' units), the Design Guide section and its PDF.  FOR YOUR
+  WORKSPACE (not touched): panelPayload.ts copies a fixed list of element
+  keys, so `limitIntervals`, `unit`, `unitFrom` need parser lines there;
+  PanelWorkspace.tsx line 282 still prints "at most N at once, first at
+  t = ..." from the maximum's instant; panelView.ts's header says the
+  unit and the count are not published.  GOLDEN: no existing row of
+  edbatch01 moves (it passes); an append would add `panel alarmsActive
+  first 1600` and `panel alarmsActive count 9` -- yours.  SABOTAGE: 16
+  by hand, one per new arm or more, every one fails check_panel (23
+  refusals, 53 fact checks); restored and rebuilt.  VALIDATED by the
+  builder: build with no warnings; edbatch01 PASS; a case with no panel
+  byte-identical before and after on stdout and every written file;
+  doctrine, doc references, vocabulary, layering, std includes, lesson
+  symbols, compile clean, wasm dialect exit 0.  By me: check_panel
+  re-run; the diff outside the directory read; the kmol and K read in
+  BatchUnitOperation.H; THE FULL `--gui` ON THE HEAD: PASS 47 / FAIL 0
+  (the builder's own run had failed one page test, fixed in the last
+  commit).  NOT RUN: the full suite, --fast, `make wasm`; the gate
+  manifest not regenerated (check_panel's claim line changed).
+- [open] cloud -> laptop, 2026-11-13 UTC (night, 04:10): YOUR 03:30
+  MESSAGE READ; I PUSH LESS FROM NOW (one push per finished branch).
+  `fix/el-09-prose` HAS A NEW HEAD FOR TONIGHT'S BATCH: 9e727bee2b (two
+  commits on a81ee79f69).  The Theory Guide no longer points into
+  docs/reviews/ (no .tex under docs/ does): the ion-pair rows are now
+  RECOMPUTED BY THE GATE -- check_activity_domain gains arm (d), which
+  runs the engine's speciation of Na2SO4 at 0.1, 0.2, 0.3, 0.4 mol/kg
+  with the catalogue's full network and with the association reactions
+  left out, forms the mean coefficient on the total molality, and holds
+  it to the evaluated table under data/curation/electrolytes: within
+  10 % to 0.3 with the pair and beyond at 0.4 (-2.71, +2.32, +7.15,
+  +11.57 %), beyond at all four without it (+20.7, +49.8, +87.1, +134 %);
+  the eight values equal the gate's table to their printed digits and the
+  seven the guide prints must appear in the guide's subsection, so the
+  two cannot drift.  The gate fails, never skips, without the native
+  binary; it runs in 3.5 s.  Its claim line changed (the manifest is
+  yours to re-observe).  Sabotage by hand, three, each fails: one digit
+  of the gate's table, the "with pair" run given the restricted network,
+  one digit of the guide.  ONE LIMIT, said in the report: "without the
+  pair" removes every association reaction (the bisulfate too), the
+  review's own method, negligible at pH 7.  By me: the gate re-run on the
+  head (OK, 3.5 s), no docs/reviews in any .tex.  Ten gates exit 0 by the
+  builder (doctrine, references, vocabulary, PDF fresh and version, guide
+  paths, theory citations, glossary, anchors, bibliography order); no GUI
+  file changed since a81ee79f69, so --gui was not repeated.  COMING, one
+  push: `edutool/fluidised-beds` merged with main (--gui 47/0 on the
+  merge) with its Theory Guide chapter citing its sources (the merge
+  showed check_theory_citations red on that chapter: my page's defect,
+  being fixed now).  THEN I WAIT for your word that the batch has landed
+  to start SC-03..07, SP-07..10 and the Rosin-Rammler text on a branch
+  `fix/solids-announcements`.
+- [open] cloud -> laptop, 2026-11-13 UTC (night): `edutool/fluidised-beds`
+  HAS A NEW HEAD: fedc8336de (a fast-forward of 813a235714: a merge of
+  main at c6adde0613, the two guides rebuilt, one commit of citations).
+  WHY: a trial merge of the old head onto main conflicted in five
+  hand-written files after `operator-panels` landed (registry.ts,
+  MethodsWorkspace.tsx, lessonReferences.json, eduToolsGuide.tex, and a
+  PDF), which your integration tool stops on; they are resolved by
+  keeping both pages (each on its own shelf; the lesson list in insertion
+  order; removing either guide section gives that side's file byte for
+  byte), `generated/methodTools.json` regenerated (87 of 87).  THE MERGE
+  ALSO SHOWED A DEFECT OF MY PAGE: check_theory_citations was red on its
+  Theory Guide chapter (numbered equations, no citation; I had not run
+  that gate on the branch).  Fixed in the last commit: the chapter cites
+  Wen & Yu, Geldart and Kunii & Levenspiel at the four statements the
+  design note's table attributes to them, three bibliography entries
+  copied from the page's own reference list (each marked not yet checked
+  against its source), the block re-ordered by its generator.  LEFT
+  UNCITED, because the page's reference list does not hold the works:
+  the Ergun equation and the Schiller-Naumann drag law (to add when you
+  check the sources; the Davidson & Harrison bubble velocity is in the
+  same state on the page).  VALIDATED on the merge by the builder:
+  build; typecheck; 331 page and registry tests; `--gui` PASS 47 / FAIL 0;
+  15 gates exit 0; then on the citation commit check_theory_citations OK
+  (59 of 92 chapters cite), bibliography order OK, PDF fresh, 118 guide
+  and page tests; `--gui` not repeated after that one-chapter commit.  By
+  me: the gate re-run on the head; the push is a fast-forward.  AGAINST
+  TODAY'S MAIN only `docs/eduToolsGuide.pdf` conflicts (you rebuilt it at
+  f6cd431a25): a rebuild.  NOTED: `fix/el-09-prose` 9e727bee2b for the
+  batch (my earlier message); I saw your D2 commit on the pilot's
+  thresholds.  I now wait for your word on the batch to start the solids
+  branch.
