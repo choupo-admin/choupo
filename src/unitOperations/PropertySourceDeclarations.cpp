@@ -64,7 +64,8 @@ const std::map<std::string, std::vector<Row>>& table()
         { "distillationColumn",{ { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel", "declared" } },
                                  { "surfaceTension",    { "kernel", "declared" } },
-                                 { "liquidDiffusivity", { "own" } } } },
+                                 { "liquidDiffusivity", { "own" } },
+                                 { "liquidThermalConductivity", { "package" } } } },
         //  The time-integrated vessels (the dynamic driver declares as the
         //  steady path does; review DX-06).  The variable-volume vessels
         //  price their liquid through the kernel; the Williams-Otto plant

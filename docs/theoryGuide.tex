@@ -29320,7 +29320,13 @@ case & 100 segments & 200 & 400 \\
 \end{tabular}
 \end{center}
 The difference falls by four for every doubling, as two second-order schemes
-of one equation must, and it is far inside the stated tolerance.  Why so far
+of one equation must, and it is far inside the stated tolerance.  What this
+agreement is and is not: the two codes call the same correlation and property
+functions at matching states, so it proves the reduction (the rows above do
+become the transfer-unit equation), the wiring and the second order; it is no
+evidence about the non-equilibrium physics (the film energy terms, the
+interface temperature, the non-equimolar fluxes), which the limit switches
+off.  Why so far
 inside, found \emph{after} the run: at total reflux $y^*$ moves with $y$, so the
 rate that matters is not $1/H_{OG}$ but $(\lambda-1)/H_{OG}$, a fifth of it on
 these beds ($\lambda\approx1.2$), and the error scales with its square.  The
@@ -29365,6 +29371,12 @@ case & HETP vs TU & $-N_{oX}/N_{pX}$ & $\max|T_I-T_V|$ & $\max|T_L-T_I|$ & $V_{t
 \hline
 \end{tabular}
 \end{center}
+The first column, ``HETP vs TU'', is at equal \emph{reboiler} load (the same
+F-factor at the reboiler in both models).  At equal \emph{bed-mean} load, the
+abscissa of the comparison with the measurement below, the two models differ
+by $-0.015$ to $+0.009\,\%$ on \code{ratebased01}: most of the $+0.19\,\%$ is
+the vapour growing $0.9\,\%$ up the bed (a different load profile for the same
+reboiler load), not interface physics.
 The rising vapour is superheated over the interface by a few tenths of a
 kelvin (it comes from hotter sections and the vapour film resists heat); the
 liquid sits within hundredths of a kelvin of it.  The two fluxes are not
@@ -29378,12 +29390,22 @@ closes to $10^{-16}$ of the boil-up, and the column's first law is published
 \emph{verified}: the reboiler's own envelope meets $-Q_{\mathrm{condenser}}$ to
 $2\times10^{-13}$~kW, because every segment's three energy rows are solved
 (dropping the interface row leaves a $3.8$~kW gap on \code{ratebased01}; the
-gate's self-test sabotages exactly that).  In the limit mode the closure is
+gate's self-test sabotages exactly that).  What that check is: summed over the
+bed, the vapour, liquid and interface energy rows reduce to $Q_{\mathrm{cond}} +
+Q_{\mathrm{reb,own}} = -\lambda_{\mathrm{ref}}\sum_k(\text{interface row})_k$, an
+\emph{identity} of the three rows; whatever the two film energy terms
+$\gamma_V(T_I-\bar T_V)$ and $\gamma_L(\bar T_L-T_I)$ contain cancels in it.
+It tests that the rows were solved and that the enthalpies are priced
+consistently, not that the film heat-transfer physics is right (the run's own
+\emph{blind to} line says so).  In the limit mode the closure is
 published \emph{not verified}, because no energy row is solved there.
 
 \paragraph{Against the measurement.}
 Schulz et al.'s HETP read off their Fig.~2b (the first delivery's digitisation,
-nothing re-read), against the bed-mean F-factor, both models swept over the
+nothing re-read), against the bed-mean F-factor taken as
+$(F_{top}+F_{bottom})/2$ (every digit of the table below is reproduced by
+\code{docs/reviews/2026-11-14-ratebased-b1/measured.py}, which parses the
+digitised points from the design record and reads the two sweeps), both models swept over the
 reboiler F-factor in steps of 0.05 and interpolated; nothing fitted, the same
 inputs as Section~\ref{sec:packing-schulz}:
 \begin{center}
@@ -29416,13 +29438,31 @@ $0.0079\,\%$) agrees with it.  The reflux composition moves by at most
 $1.4\times10^{-5}$.  100 segments, the transfer-unit bed's own count, is the
 default.
 
+\paragraph{Known limitation: the liquid diffusivity's solute volume.}
+The liquid film's diffusivity is Wilke--Chang's, which defines the solute volume
+$V_A$ at the normal boiling point; the component records the four cases use
+give the liquid molar volume at 298~K, and that is the one the code reads (the
+run announces ``25 C volume'').  Replacing it by the boiling-point volume
+lowers the liquid diffusivity by $7.6\,\%$ and raises $H_{OG}$ at mid-bed of
+\code{ratebased01} by $0.72\,\%$.  The transfer-unit bed reads the same volume
+and carries the same effect.  It is a property-model matter, left as it is
+here and recorded so that no one reads the HETP to a better accuracy than this.
+
 \paragraph{Validity window.}
 A binary; an ideal-gas vapour; a liquid on an activity model, with the
 thermodynamic factor taken as one (announced, with $s_L$); a corrugated
 structured packing with one of the two correlations; total reflux; the
 low-flux film coefficients (rate factor printed, below $10^{-3}$ on these
 beds).  The flow model is plug flow in both phases, the only one in this slice,
-and the films are algebraic.  Everything outside is refused by name with the
+and the films are algebraic.  Both components must be present at the reboiler (a zero mole fraction
+is refused: a pure fluid has no relative volatility and no HETP), and the
+packing height, the diameter, the top pressure, the F-factor and a whole-number
+segment count are checked before the solve.  The liquid thermal conductivity
+that sets the liquid film's heat-transfer coefficient is named in the run's
+property-sources table (``package.liquidThermalConductivity'').
+The formation-enthalpy availability is probed at the reboiler's own
+state, so the extrapolation notes of the caveat block name a temperature the bed
+reaches.  Everything outside is refused by name with the
 slice that will lift it: three or more components (B4a, the
 effective-diffusivity film), trays (B2), a feed or a reflux ratio (B3), and a
 vapour on an equation of state (this slice).  Gate:

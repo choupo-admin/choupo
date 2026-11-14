@@ -57,6 +57,7 @@ Display displayOf(const std::string& property)
     if (property == "liquidViscosity")   return { "liquid viscosity",    "mPa s",   1.0e3,  "%.4g" };
     if (property == "surfaceTension")    return { "surface tension",     "mN/m",    1.0e3,  "%.4g" };
     if (property == "liquidDiffusivity") return { "liquid diffusivity",  "m2/s",    1.0,    "%.3g" };
+    if (property == "liquidThermalConductivity") return { "liquid thermal conductivity", "W/(m K)", 1.0, "%.4g" };
     if (property == "liquidKinematicViscosity") return { "liquid kinematic viscosity", "m2/s", 1.0, "%.3g" };
     //  Not a liquid property: the CSTR's all-vapour feed (C378 pilot, defect 2).
     if (property == "vapourVolume")      return { "vapour molar volume", "cm3/mol", 1.0e6,  "%.2f" };

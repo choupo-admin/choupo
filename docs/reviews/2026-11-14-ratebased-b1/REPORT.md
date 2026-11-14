@@ -137,3 +137,53 @@ largest KPI move 4.9e-11 relative.
 The WebAssembly build and anything in a browser; the page of the web app
 that was corrected with this slice; the second packing correlation's
 internals; the gate's self-test arm (it needs a source edit).
+
+## 9. Answer (2026-11-14, branch c329/b1-review-rows)
+
+Every defect reproduced on a scratch copy before it was touched; before and
+after below.  Reproducers: the probes of the review, rerun on this build.
+
+| row | status | before | after |
+|---|---|---|---|
+| RB-01 | fixed, both beds | `pXylene 0`: HETP 0.0127579629 m at exit 0, closure verified; `oXylene 0`: HETP `-nan`, exit 0 (rate-based AND the transfer-unit `totalReflux` bed: `-nan` in both) | exit 2 on all four runs: "totalReflux.composition has oXylene at 0.000000: a binary packed bed needs BOTH components present at the reboiler (a pure fluid has no relative volatility and no HETP).  Give each a positive mole fraction."  A non-finite HETP or discretisation estimate is also refused by name before it is published; the shipped cases are byte-identical (ratebased01 HETP 0.15558249 before and after) |
+| RB-02 | fixed by honest label | closure "verified", blind-to line named only the duty split | the closure's `blindTo` and `check` text now say that, summed over the bed, it is an identity of the three energy rows (the reference latent heat times the sum of the interface row): it fails on an unsolved row or an inconsistent enthalpy pricing, never on wrong film energy terms; the Theory Guide says the same.  An independent check of the film terms does not exist in the tree (no second route to the interface heat); none was invented |
+| RB-03 | reported | see the sentence below | guide text (limit agreement) now states what the agreement proves |
+| RB-04 | fixed | tolerance r_max^2/2 = 0.83 to 1.74 % against differences of 0.0025 to 0.016 % | tolerance 0.01 r_max^2 = 0.0165 to 0.0348 %; 0.01 is 2.2 times the worst measured coefficient (differences are 0.0019, 0.0046, 0.0015, 0.0034 of r_max^2); margin per case 5.4, 2.2, 6.6, 2.9; the gate prints it |
+| RB-05 | fixed | p-/o-xylene UNIFAC: gamma = 1 exactly, all KPIs equal to the ideal run within 1e-10 | p-xylene + ethylbenzene, UNIFAC gamma(pXylene, EB) = 0.9745, 0.9980 at x = 0.2/0.8 (0.9911, 0.9892 at 0.5; 0.9997, 0.9702 at 0.9; 320 K); the same pair run ideal is the control and the gate requires alpha to move by > 1 % and HETP by > 0.05 %: measured alpha -2.76 %, HETP +0.140 % |
+| RB-06 | fixed | liquid conductivity absent from the table | `liquidThermalConductivity`, source `package.liquidThermalConductivity`, printed per column and pinned by one appended golden row on each of ratebased01-04; no number moved (diff of the four goldens ignoring whitespace: four added `source` rows and nothing else) |
+| RB-07 | fixed | header: r_max^2/12 | header says: the estimate is the Richardson one, |HETP(M) - HETP(M/2)|/3, measured on the bed; not a rule on r |
+| RB-08 | fixed | height 0: "non-finite Jacobian column 0"; negative height: "Newton did not converge" / flooding; negative P: an equation-of-state message; `segments 10.7` truncated to 10 at exit 0 | each refused before the solve, by name: "`packing { height }` must be positive; read 0.000000 m", "...read -2.200000 m", "the top pressure `P` must be positive; read -10000.000000 Pa", "`segments` must be a whole number; read 10.700000"; also diameter and F-factor; four gate arms |
+| RB-09 | fixed (moved, not removed) | probe at 350 K raised the caveat lines at a state no segment visits | the probe's job (turn a record with no formation enthalpy into a refusal with a remedy) is kept and it now asks at the reboiler's own bubble point; the ratebased02 caveat names 311.6 K, the real bottom of the bed.  The two extrapolation lines remain, truthfully: the bed (307.8 to 314.5 K) does leave one component's heat-capacity range |
+| RB-10 | reported | `feed F1;` stripped, exit 0 | not fixable inside the column: the key is stripped in `buildAugmentedDict` (src/unitOperations/flowsheet/UnitInputs.cpp:116), shared by every unit; the unit never sees it.  The dead refusal in RateBasedSegment.cpp now carries a comment saying so.  Remedy needs the flowsheet layer (a unit that takes no feed must refuse a wired input) |
+| RB-11 | fixed | comment: exact for "the only phases this slice accepts" | comment says exact for an ideal-gas vapour and an ideal-solution liquid, and that a non-ideal liquid is accepted with its partial molar enthalpies read off the mixture |
+| RB-12 | reported | | the guide's table is now captioned (equal reboiler load) and states the equal-bed-mean-load figure; proposed DEV.md sentence below |
+| RB-13 | reported, comment not changed | | WilkeChang.cpp is under src/thermo/, in another slice's territory: not edited.  The comment to correct is there (:48 says the record's volume is at Tb; these records give 298 K).  The Theory Guide now states the limitation: 7.6 % lower diffusivity and +0.72 % H_OG at mid-bed of ratebased01 with the boiling-point volume, shared with the transfer-unit bed |
+| RB-14 | fixed | guide table had no stated load, no tool | the guide states the load, (F_top + F_bottom)/2, and names `docs/reviews/2026-11-14-ratebased-b1/measured.py`, the reviewer's script that parses the digitised points from the design record and reproduces the table (not rerun here; it reads the two sweeps) |
+| RB-15 | fixed | the report: "this plant declares no duty", Q_heat 0, residual_pct unavailable, for a feedless column exchanging about 410 kW each way | src/reporting/EnergyBalanceReport.cpp: a `distillationColumn` with no process stream and duty items is a boundary exchanger, not a sink (its duties are added to the plant boundary and to the exchanged-energy scale): ratebased01 now publishes residual_denom_kW 819.896, residual_pct 0, available true, Q_heat 0 (the net).  Reach: only a distillation column with no process stream; 19 cases of the scope and `--fast` unchanged.  Note the 0 % is the identity of RB-02 again (feedless plant: residual = net duty) and is not more evidence than that |
+
+RB-03, sentence proposed for DEV.md: "The rate-based segment in its limit
+`transferUnits` agrees with the transfer-unit bed to 0.0025-0.016 % at 100
+segments; that proves the reduction, the wiring and second-order convergence
+(both codes call the same correlation and property functions), and is no
+evidence about the non-equilibrium model (film energy terms, interface
+temperature, non-equimolar fluxes), which the limit switches off."
+
+RB-12, sentence proposed for DEV.md: "The rate-based HETP is +0.03 to +0.19 %
+above the transfer-unit bed at equal REBOILER load; at equal bed-mean load
+(the abscissa of the comparison with the measurement) the two differ by -0.015
+to +0.009 % on the first case, because most of the difference is the vapour
+growing 0.9 % up the bed, not interface physics."  The Theory Guide repeats
+no unqualified "+0.19 %" any more (the one remaining table is captioned by its
+load); no other tracked guide text repeated it.
+
+Gates and checks (this build): `bin/runTests --fast -j3` 87 PASS / 0 FAIL /
+5 EXPECTED-FAIL; `--scope` over ratebased01-04, packing01-04,
+totalReflux01_c6c7_yanagiRun628 and trayEfficiency01-07 (the other feedless
+columns): 19 PASS / 0 FAIL, with energy_closure, element_balance,
+energy_boundary_pinned and golden-closure-static PASS (mass and campaign
+closure had no subject: none of those cases reports one);
+check_ratebased_segment OK (34 s; 12 refusals by name, the non-ideal arm
+moves alpha -2.76 %, HETP +0.14 %); check_property_source_witnesses OK after
+re-pinning one tag; repoint_lesson_citations OK (500 current); Theory Guide
+PDF rebuilt with `make -B theory`.  Goldens: four `source` rows appended, no
+value row moved.

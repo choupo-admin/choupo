@@ -128,8 +128,11 @@ struct SegmentLayout
 
 //- Fewer segments than this are refused by name.  A declared count above it
 //  is still refused when the box scheme's own error estimate, printed after
-//  the solve (r_max^2 / 12, r = dz / H_OG of a segment), exceeds
-//  `maxDiscretisationError`; the refusal names the count that would pass.
+//  the solve, exceeds `maxDiscretisationError`; the refusal names the count
+//  that would pass.  The estimate is a Richardson one, MEASURED on the bed:
+//  |HETP(M) - HETP(M/2)| / 3 (second order), the bed solved on half the
+//  segments first.  (It is not a rule on r = dz / H_OG: at 10 segments r
+//  can be above 1 and the measured estimate still 0.3 %.)
 constexpr int    minSegments            = 10;
 constexpr double maxDiscretisationError = 1.0e-2;
 
