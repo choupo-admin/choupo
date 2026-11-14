@@ -12,7 +12,7 @@
 
 ---
 
-## 1. Why an index, when 254 records already exist
+## 1. Why an index, when 255 records already exist
 
 The decisions were recorded.  What did not exist was any way to ask **"has
 this been decided, and where?"** — and that question is the whole reason the
@@ -27,7 +27,7 @@ Three concrete costs, all observed:
 - `project-philosophy.md` §5 lists eleven CLOSED decisions and, until this
   file, could not point at the argument for any of them (correspondence C5,
   recorded UNVERIFIABLE).
-- Of 254 design records, **177 state a rejected alternative and 77 do not** —
+- Of 255 design records, **178 state a rejected alternative and 77 do not** —
   so for two in five, the reasoning that would prevent re-litigation is
   absent, and nothing said so.
 
@@ -356,6 +356,7 @@ is this index failing its own purpose; they move below with their rulings.
 | [`c329-ratebased-at-general-reflux.md`](../design/c329-ratebased-at-general-reflux.md) | PROPOSAL | yes | **DESIGN 2026-11-13, C329 part 2, nothing built** -- a computed tray efficiency or HETP at a GENERAL reflux (formulation A) and the explicit two-film interfacial stage (formulation B), measured against the solvers as they are: the Murphree relation lives only on the Wang-Henke path (folded into an effective K with a lagged vapour), the full MESH is the one general-reflux model with a solved stage energy balance and is solved dense (62.5 s on the 75-stage Klemola splitter, about 53 of them in five dense full-MESH iterations), and no measurement in the tree is at a general reflux.  Proposes: y as unknowns in the full MESH (block-tridiagonal, 2n+1 per stage), the efficiency coupled by an announced outer fixed point, a packed section as Murphree segments of a derived E = 1 - exp(-dz/H_OG); B at 5n+5 per stage, first as a binary packed bed at total reflux held to the existing transfer-unit bed.  REJECTED: Murphree in the Newton by the Wang-Henke lag; eliminating y recursively (kills the band); the efficiency inside the Newton as the first build; the CMO MESH as host; round(H/HETP) stages; Klemola (nine components, valve trays, a Wang-Henke-only reflux key) as the first witness.  Owner's: the multicomponent efficiency, B's model word, the Klemola target. |
 | [`fast-and-slow.md`](../design/fast-and-slow.md) | slice record | yes | **2026-11-13, the `fast-and-slow` EduTool** -- three case studies (two tanks, a fast equilibrium, a reactive intermediate), each a full and a reduced tutorial case run by the engine, answering why correlations are simple; measured gap and cost tables; rejected: the reduced models as page formulas, the semi-continuous adaptive count as a cost (it measures the driver grid), and an engine step-count KPI (proposed, not built). |
 | [`equilibrium-or-rate-based.md`](../design/equilibrium-or-rate-based.md) | slice record | no | **2026-11-13, the `equilibrium-or-rate-based` EduTool** -- when equilibrium stages with one Murphree efficiency are enough: column11 at seven efficiencies on a bulk and a trace column, the trays a target needs, three tray-efficiency correlations beside the measurement; findings read in four open conference papers and four papers read by the coordinating session (the size of the problem, reactive columns, the data a rate-based model needs); a decision table whose every row names its origin; the candidates dropped for lack of a source are listed. |
+| [`several-laws-per-property.md`](../design/several-laws-per-property.md) | PROPOSAL | yes | **OPEN -- PROPOSAL 2026-11-14 (C398), with measurement; nothing built.** -- how a record holds, and a case chooses, the law of a thermophysical property: measured, one `model` per block for vapour pressure and the heat capacities, named forms for liquid viscosity and conductivity picked by ONE case word that refuses any record lacking it (never a silent mix), windows soft everywhere and unchecked for Andrade, Vogel and NASA7, 74 provenance entries filed inside the wrong block by a curation tool, methanol's and toluene's "Vogel" equal to their Andrade; water against IAPWS (Antoine +11 % at 473 K and +18 % at 573 K, liquid cp -26 % at 573 K, Vogel within 2 % to 473 K, density already the reference equation); 358 cases on that Antoine.  PROPOSED: several named laws per property, one preferred, each with soft and hard windows and its own provenance; the choice by data facts once at assembly, printed per unit and constituent; leaving a window announced (soft) or refused naming the law that covers the state (hard); ranges as ONE `piecewise` law with gate-checked joints; `table` as a method in records and cases (hard ends, declared interpolation, `linearLog` for vapour pressure and viscosity, derived quantities announced, never substituted); case pins beside the property (narrowing C397 point 5); legacy `model` words read as pins of all, zero goldens moved; water's IAPWS vapour-pressure law preferred after a staged re-measurement.  REJECTED: two laws switched by state; run-time choice by widest window or best evidence; extrapolating a case's table; clamping; linear interpolation in P for a vapour pressure; free-word per-component selectors |
 
 ### Historical
 
@@ -408,7 +409,7 @@ is not an argument.
 
 ## 5. What this index shows that no individual record could
 
-**77 of 254 records state no rejected alternative.**  For a FORUM or a STUDY
+**77 of 255 records state no rejected alternative.**  For a FORUM or a STUDY
 that is often fine.  For an ADR it means the decision is recorded without the
 argument that would prevent it being reopened — and reopening settled
 questions is the specific failure the constitutional layer exists to stop.
