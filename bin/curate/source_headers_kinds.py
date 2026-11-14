@@ -308,7 +308,7 @@ def code_kind(path: str, first_line: str = ""):
         return "site-js"
     if path.startswith(("bin/", "test/")) and e == ".mjs":
         return "script-js"
-    if path.startswith(("bin/", "test/")) and e == ".cpp":
+    if path.startswith(("bin/", "test/")) and e in (".cpp", ".c"):
         return "tool-cpp"
     if e == ".bat":
         return "batch"

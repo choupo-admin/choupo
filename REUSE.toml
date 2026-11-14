@@ -30,6 +30,7 @@ path = [
   "bin/curate/recording_platform.txt",
   "bin/curate/suite_lanes.txt",
   "bin/curate/feature_documented_debt.tsv",
+  "bin/curate/floor_scale_ratchet_debt.tsv",
   "bin/curate/golden_bands.tsv",
   "bin/curate/liquid_property_ratchet_debt.tsv",
   "bin/curate/platform_divergence_debt.tsv",

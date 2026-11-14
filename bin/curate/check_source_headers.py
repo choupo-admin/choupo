@@ -52,6 +52,13 @@ ARMS.
       either in one of its annotations or in COVERED_BY_NOTHING below, a short
       list "covered by nothing, by decision", with the reason per group.
 
+EXIT CODE RULE.  Exit 1 when any arm that RAN finds something; exit 0 when every
+arm that ran passed.  An arm that cannot run (the manifest arm without
+`tomllib`, Python before 3.11; the author arm without the pinned commit) is
+NAMED in the claim line in words and does not turn the run red: a runner with
+an old Python is not a defect of the tree, and the claim never says an arm held
+what it did not run.
+
 WHAT IT DOES NOT CHECK.  It does not read data records, tutorial cases, the
 guides' sources or any file outside the code roots and the root scripts (their
 licences are per record, per guide or per work; the root NOTICE and the manifest
@@ -73,7 +80,7 @@ import source_headers_kinds as K  # noqa: E402
 
 ROOT = K.ROOT
 # The head of origin/main the branch of this slice started from (full hash).
-PIN = "c2615e79fea790d8dc888210c286ee534d50b748"
+PIN = "2d4d75936d086086ae61fc53f58324bee4ca6a4a"
 
 # Excluded files that cannot hold a comment and that the manifest does not
 # annotate, BY DECISION, with the reason per group.  (pattern, reason)
@@ -133,7 +140,7 @@ def manifest_patterns():
     return pats
 
 
-def arms(fails):
+def arms(fails, notes):
     rows = K.classify_all()
     tracked = {p for p, _c, _d in rows}
     kinds = {k: 0 for k in K.KINDS}
@@ -187,7 +194,8 @@ def arms(fails):
     # (e) the manifest is read
     pats = manifest_patterns()
     if pats is None:
-        manifest_note = "manifest not read (no tomllib)"
+        notes.append("the manifest arm did NOT RUN (no tomllib: Python before 3.11), so REUSE.toml was "
+                     "not held against the tree")
     else:
         res = [(g, _glob_re(g)) for g in pats]
         for g, rx in res:
@@ -204,7 +212,6 @@ def arms(fails):
                 continue
             fails.append("COVERED-BY-NOTHING-UNDECIDED  %s  (cannot hold a comment, in no REUSE.toml "
                          "annotation and in no COVERED_BY_NOTHING group)" % path)
-        manifest_note = "manifest read"
     for gs, why in COVERED_BY_NOTHING:
         for g in gs:
             if not any(fnmatch.fnmatchcase(p, g) for p in tracked):
@@ -243,8 +250,9 @@ def main():
               "the gate does not guess")
         return 1
     fails = []
+    notes = []
     try:
-        kinds, _n = arms(fails)
+        kinds, _n = arms(fails, notes)
     except RuntimeError as e:
         print("source-headers: REFUSED -- " + str(e))
         return 1
@@ -260,9 +268,10 @@ def main():
                   % (len(fails) - 200))
         print("  " + dline)
         return 1
+    manifest = ("the manifest is two-sided" if not notes else notes[0])
     print("source-headers: OK -- every tracked code file (%d kinds) carries the holder line and the licence "
           "identifier in its leading comment, no excluded third-party or held file carries one, the "
-          "exclusion table and the manifest are two-sided; author arm: %s" % (len(kinds), dstate))
+          "exclusion table is two-sided; %s; author arm: %s" % (len(kinds), manifest, dstate))
     print("  %d code files read" % total)
     print("  " + dline)
     return 0
