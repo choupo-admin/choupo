@@ -469,7 +469,7 @@ describe("letdown: the lesson text", () => {
       "src/thermo/ThermoPackage.cpp:2363": "ThermoPackage::density",
       "src/unitOperations/flash/StreamEquilibrium.H:1018": "inline scalar priceState(",
       "src/propertyOps/PropertyPoint.cpp:89": "Cp_ig / (Cp_ig - constant::R)",
-      "src/propertyOps/PropertyEvaluator.cpp:187": "thermo.Psat(i, T)",
+      "src/propertyOps/PropertyEvaluator.cpp:167": "thermo.Psat(i, T)",
     };
     const text = LETDOWN_STEPS.map((s) => `${s.body} ${s.note ?? ""}`).join(" ");
     const cites = [...text.matchAll(/(src\/[A-Za-z0-9_/]+\.(?:H|cpp)):(\d+)/g)];

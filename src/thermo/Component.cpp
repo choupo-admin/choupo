@@ -50,7 +50,6 @@ License
 #include "thermo/transport/LiquidViscosityModel.H"
 #include "thermo/transport/LiquidConductivityModel.H"
 #include "thermo/SurfaceTensionModel.H"
-#include "thermo/PropertyDomainError.H"
 
 namespace Choupo {
 
@@ -1440,25 +1439,6 @@ scalar Component::Hvap_latent(scalar T) const
 const Component::DatumBridge298& Component::datumBridge298() const
 {
     if (bridgeResolved_) return bridge_;
-    //  THE DATUM TEMPERATURE MUST LIE IN THE VAPOUR-PRESSURE LAW'S HARD WINDOW
-    //  (C398 review rows CV-18, CV-27): checked HERE, when an enthalpy or an
-    //  entropy is actually priced through the bridge -- a run that only asks
-    //  the saturation pressure never comes here and is never refused for it.
-    if (const auto it = laws_.find("vaporPressure"); vp_ && it != laws_.end())
-    {
-        const recordLaws::Block& b = it->second;
-        const int k = b.indexOf(lawChoice("vaporPressure").law);
-        const recordLaws::Law& L = b.laws.at(std::size_t(k >= 0 ? k : (b.preferred >= 0 ? b.preferred : 0)));
-        if (L.hasDomain && !(298.15 >= L.domainLo && 298.15 <= L.domainHi))
-            throw HardWindowRefusal("component '" + name_ + "': an enthalpy or entropy of it is priced"
-                " through the elements datum, which carries it between its natural phase and the other"
-                " at 298.15 K through its vapour-pressure law (Component::datumBridge298) -- and the"
-                " chosen law " + L.label() + " (" + L.type + ") has the hard window "
-                + std::to_string(L.domainLo) + "-" + std::to_string(L.domainHi) + " K, which excludes"
-                " 298.15 K.  Widen the law's `domain` to include 298.15 K, or pin a law of the record"
-                " that covers it (" + recordLaws::pinPlace("vaporPressure") + ").",
-                "widen the domain to 298.15 K, or pin a covering law");
-    }
     bridge_.H = Hvap_latent(298.15);
     bridge_.pRefPa = vp_ ? vp().Psat_Pa(298.15) : 0.0;
     bridge_.associated = false;
@@ -1747,9 +1727,7 @@ namespace {
 //
 //  EVERY record heat-capacity law is held through this object (C398 review):
 //  it runs the law's first-use hook (the law describes itself, CV-07, and its
-//  datum's provenance is voiced, CN-06).  Its hard window is audited on the
-//  states the run reports, with the reference temperature of the integral
-//  (Component::auditHardWindows; review CV-13), never during an evaluation.
+//  datum's provenance is voiced, CN-06).
 class DomainBoundCp : public HeatCapacityModel
 {
 public:
@@ -1798,12 +1776,6 @@ void Component::buildVP_(std::size_t idx)
     if (!vpd->found("owner")) vpd->insert("owner", name_);
     vp_ = VaporPressureModel::New(vpd);
     vp_->setOnFirstUse(firstUse_<VaporPressureModel>("vaporPressure", idx));
-    if (L.hasDomain)
-    {
-        recordLaws::Block copy = blk;
-        vp_->setHardDomain(L.domainLo, L.domainHi, [copy, idx](scalar T)
-            { recordLaws::throwOutsideDomain(copy, idx, T, "vapour pressure"); });
-    }
 }
 
 void Component::buildCp_(const std::string& key, std::size_t idx)
@@ -1970,29 +1942,6 @@ std::string Component::lawSource(const std::string& property, const std::string&
     return sourceRule(self_->prov.empty() ? provenanceMap_ : self_->prov, property, law, pref);
 }
 
-void Component::auditLaws(scalar T, const std::string& where, bool enthalpy) const
-{
-    for (const char* property : { "vaporPressure", "idealGasHeatCapacity", "liquidHeatCapacity",
-                                  "solidHeatCapacity" })
-    {
-        if (!self_->used.count(property)) continue;
-        const auto it = laws_.find(property);
-        if (it == laws_.end()) continue;
-        const recordLaws::Block& b = it->second;
-        const int k = b.indexOf(lawChoice(property).law);
-        const std::size_t idx = std::size_t(k >= 0 ? k : (b.preferred >= 0 ? b.preferred : 0));
-        const recordLaws::Law& L = b.laws.at(idx);
-        if (!L.hasDomain) continue;
-        const std::string words = std::string(property) == "vaporPressure" ? "vapour pressure" : property;
-        if (T < L.domainLo || T > L.domainHi)
-            recordLaws::throwOutsideDomain(b, idx, T, words + " at " + where);
-        if (enthalpy && std::string(property) != "vaporPressure"
-            && (298.15 < L.domainLo || 298.15 > L.domainHi))
-            recordLaws::throwOutsideDomain(b, idx, 298.15, words + " integrated from the reference"
-                " temperature 298.15 K to " + where + " (the integral crosses the law's excluded range)");
-    }
-}
-
 void Component::consumeProperty(const std::string& property) const
 {
     const auto it = self_->deferred.find(property);
@@ -2034,7 +1983,6 @@ std::function<void(const Model&)> Component::firstUse_(const std::string& proper
     }
     return [self, property, window, token, type, name, by, lawName, preferredName, Tp, igLabel, TpIg](const Model& m)
     {
-        self->used.insert(property);
         if (recordLaws::traceOn())
         {
             double v = std::numeric_limits<double>::quiet_NaN();

@@ -3010,8 +3010,8 @@ void checkLiquidDomain(const Component& c, const std::string& rkey,
     const int idx = blk->indexOf(L.law);
     if (idx < 0) return;
     const auto& law = blk->laws[std::size_t(idx)];
-    //  The HARD window is audited on the reported states (auditState), never
-    //  here, during an evaluation (C398, the fourth review round's ruling).
+    //  A law has no hard window (C398: a future slice); its soft window is
+    //  announced below where the type does not announce it itself.
     //  THE SOFT WINDOW OF A TYPE THAT DOES NOT READ ONE (review row SB-04).
     //  Andrade's and Vogel's forms check nothing themselves, so a `Tmin`/`Tmax`
     //  written in their law was printed by the view as "announced outside"
@@ -3284,77 +3284,6 @@ std::string ThermoPackage::henryLine(const std::string& solute, const std::strin
     std::snprintf(b, sizeof b, ": H_ref %.8g Pa at %.6g K, dH_diss %.8g J/mol", Href, Tref, dH);
     return "henry pair " + solute + "-" + solvent + b + " (pair file parameters/Henry/" + solute + "-"
          + solvent + ".dat)";
-}
-
-void ThermoPackage::refuseUnauditedHardWindows() const
-{
-    auto refuse = [](const std::string& comp, const std::string& property, const recordLaws::Law& L)
-    {
-        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
-            "component '" + comp + "': its " + property + " law " + L.label() + " (" + L.type
-            + ") declares a hard window, `domain (" + std::to_string(L.domainLo) + " "
-            + std::to_string(L.domainHi) + ")` -- hard windows are audited on the steady and"
-              " props binaries only; the time-integrated driver does not audit them yet: remove"
-              " `domain` or run the case on choupoSolve.",
-            "remove `domain`, or run the case on choupoSolve");
-    };
-    for (std::size_t i = 0; i < n(); ++i)
-    {
-        const Component& c = components_[i];
-        for (const char* p : { "vaporPressure", "idealGasHeatCapacity", "liquidHeatCapacity", "solidHeatCapacity" })
-        {
-            const recordLaws::Block* b = c.recordLaws(p);
-            if (!b) continue;
-            const int k = b->indexOf(c.lawChoice(p).law);
-            const recordLaws::Law& L = b->laws.at(std::size_t(k >= 0 ? k : (b->preferred >= 0 ? b->preferred : 0)));
-            if (L.hasDomain) refuse(c.name(), p, L);
-        }
-        const std::pair<const std::vector<LiquidLaw>*, const char*> tables[] = {
-            { &liquidViscosityLaws_, "liquidViscosity" }, { &liquidConductivityLaws_, "liquidThermalConductivity" },
-            { &surfaceTensionLaws_, "surfaceTension" } };
-        for (const auto& [t, key] : tables)
-        {
-            if (i >= t->size() || (*t)[i].predictive || !(*t)[i].absent.empty()) continue;
-            const recordLaws::Block* b = c.recordLaws(key);
-            const recordLaws::Law* L = b ? b->find((*t)[i].law) : nullptr;
-            if (L && L->hasDomain) refuse(c.name(), key, *L);
-        }
-    }
-}
-
-void ThermoPackage::auditState(scalar T, const sVector& z, const std::string& where, bool enthalpy) const
-{
-    if (!(T > 0.0)) return;
-    std::optional<std::size_t> pure;
-    if (!pureFluid_.empty() && !z.empty())
-        try { pure = pureFluidRoute(pureFluid_, components_, z); } catch (const std::exception&) {}
-    for (std::size_t i = 0; i < n(); ++i)
-    {
-        if (!z.empty() && !(i < z.size() && z[i] > 0.0)) continue;
-        if (pure && *pure == i) continue;
-        const Component& c = components_[i];
-        c.auditLaws(T, where, enthalpy);
-        const std::pair<const std::vector<LiquidLaw>*, const char*> tables[] = {
-            { &liquidViscosityLaws_, "liquidViscosity" }, { &liquidConductivityLaws_, "liquidThermalConductivity" },
-            { &surfaceTensionLaws_, "surfaceTension" } };
-        const bool used[] = { i < liquidViscosityObj_.size() && liquidViscosityObj_[i] != nullptr,
-                              i < liquidConductivityObj_.size() && liquidConductivityObj_[i] != nullptr,
-                              i < surfaceTensionObj_.size() && surfaceTensionObj_[i] != nullptr };
-        for (int t = 0; t < 3; ++t)
-        {
-            if (!used[t] || i >= tables[t].first->size()) continue;
-            const LiquidLaw& L = (*tables[t].first)[i];
-            if (L.predictive || !L.absent.empty()) continue;
-            const recordLaws::Block* blk = c.recordLaws(tables[t].second);
-            if (!blk) continue;
-            const int idx = blk->indexOf(L.law);
-            if (idx < 0) continue;
-            const auto& law = blk->laws[std::size_t(idx)];
-            if (law.hasDomain && (T < law.domainLo || T > law.domainHi))
-                recordLaws::throwOutsideDomain(*blk, std::size_t(idx), T,
-                    std::string(tables[t].second) + " at " + where);
-        }
-    }
 }
 
 void ThermoPackage::verifyRecordLawPins(const std::vector<RecordLawPin>& pins,

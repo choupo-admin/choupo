@@ -345,15 +345,6 @@ public:
     { self_->deferred[property] = entry; }
     void consumeProperty(const std::string& property) const;
 
-    //  THE HARD WINDOW ON A REPORTED OR DECLARED STATE (C398, the ruling of the
-    //  fourth review round): every law of this record the run has evaluated
-    //  (vapour pressure, the heat capacities) is held to its `domain` at T,
-    //  and a heat-capacity law, when the state's enthalpy is priced, also at
-    //  the reference temperature its integral starts from.  Refuses by the
-    //  law's name with the covering law (recordLaws::throwOutsideDomain).
-    //  Never called during an iteration.
-    void auditLaws(scalar T, const std::string& where, bool enthalpy) const;
-
     // ---- Non-volatile / dissolved-solute extensions ---------------
     // Solutes like NaCl, glucose, MgSO4 are loaded as Components but with
     // `nonvolatile true;` in the.dat: Antoine / Cp blocks are then optional
@@ -969,7 +960,6 @@ private:
         std::map<std::string, OriginInfo> prov;
         std::map<std::string, DictPtr>    deferred;
         std::shared_ptr<std::string> pkg = std::make_shared<std::string>();   // its package's identity (CV-20, CV-26)
-        std::set<std::string> used;   // the properties whose law this run has evaluated
     };
     std::shared_ptr<RecordSelf> self_ = std::make_shared<RecordSelf>();
     //  The first-use hook of a law object: it receives the object itself.

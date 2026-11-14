@@ -2915,8 +2915,20 @@ both.
 
 Every law keeps its type's own SOFT window --- \code{Trange (lo hi)},
 \code{Tmin}/\code{Tmax}, or \code{Tlow}/\code{Thigh} --- outside which the
-value is still returned and the extrapolation is announced once.  A law may
-add a HARD window, \code{domain (lo hi);} in K.  It is checked on the states
+value is still returned and the extrapolation is announced once.  A HARD
+window --- a range outside which the law would be refused --- is not supported
+yet: the record grammar refuses \code{domain} by name, and the law declares its
+soft window instead.  The reason is recorded because the feature was built and
+withdrawn.  It was first checked inside the searches, and each review round
+found a search it had missed; it was then checked on the states a run reports,
+and the audit still left reported states unvisited (a dew point, most property
+operations, rate-based, exchanger and dryer temperatures, unconverged plans)
+and misfired (a reactor's scan grid audited as states; a law held at every
+stream that carries its component, so water's own window refused a 950\,K
+combustion gas).  A hard window will be designed in its own slice (DEV.md 4c,
+C398 hard-window slice).  What follows is the record of the withdrawn design.
+
+Withdrawn design.  It was checked on the states
 the run REPORTS and DECLARES, never during an iteration: a law evaluates
 wherever a search takes it --- a seed, a Newton step, the slope probe a
 millikelvin past a bound, a column's initial profile --- and one audit after
@@ -2942,21 +2954,7 @@ until they do, a run of any of them REFUSES at assembly, by name, a package
 whose chosen law declares a \code{domain}: remove \code{domain}, or run the case
 on \code{choupoSolve}.
 
-\paragraph{The datum temperature must lie in a vapour-pressure law's window.}
-The elements datum carries a component between its natural phase and the
-other at 298.15\,K through its vapour-pressure law: the latent heat and the
-saturation pressure there (\code{Component::datumBridge298}) enter every
-liquid or vapour enthalpy and entropy of the component.  A chosen
-vapour-pressure law whose \code{domain} excludes 298.15\,K would refuse all of
-them, so when a run prices an enthalpy or an entropy through that bridge, the
-bridge refuses, naming the law: widen the \code{domain} to include 298.15\,K,
-or pin a law of the record that covers it.  A run that only asks the
-saturation pressure never crosses the bridge and is not refused for it.  A heat-capacity law
-with a hard window also refuses an integral $H(T,T_{\mathrm{ref}})$ or
-$S(T,T_{\mathrm{ref}})$ whose path from $T_{\mathrm{ref}}$ leaves the window
-(a \code{domain (300 400)} liquid law was integrated from 298.15\,K through
-its own excluded range until the review), and no enthalpy fallback turns that
-refusal into a degraded datum.  A law that declares no window (Andrade's and
+A law that declares no window (Andrade's and
 Vogel's forms carry none) prints ``no window declared'' in the view and is not
 refused; one that declares \code{Tmin}/\code{Tmax} is announced outside them.  NASA7's two ranges and their joint
 (\code{Tlow}, \code{Tcommon}, \code{Thigh}) are part of the law and are

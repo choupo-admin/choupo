@@ -224,9 +224,9 @@ def numbers(case, keys=None):
 
 
 def batch_refusal_arm():
-    """The time-integrated binaries audit no hard window yet: a batch01 copy
-    whose ethanol vapour-pressure law declares `domain` must be REFUSED at
-    assembly, by name (C398, the coordinator's ruling).  -> problem or None."""
+    """A HARD WINDOW IS NOT SUPPORTED YET (C398, ruled after the fifth review
+    round): the record grammar refuses `domain` by name.  A batch01 copy whose
+    ethanol vapour-pressure law declares one must be refused.  -> problem or None."""
     with tempfile.TemporaryDirectory(prefix="pins_batch_") as tmp:
         d = Path(tmp) / "batch01"
         shutil.copytree(ROOT / "tutorials/batch/reactor/batch01_first_order", d,
@@ -240,8 +240,8 @@ def batch_refusal_arm():
                            env=env, timeout=900, cwd=str(d))
         text = r.stdout + r.stderr
         if r.returncode == 0:
-            return "batch01 with a `domain` ran to exit 0 -- the time-integrated driver must refuse it"
-        if "the time-integrated driver does not audit them yet" not in text:
+            return "batch01 with a `domain` ran to exit 0 -- the record grammar must refuse it"
+        if "a hard window is not supported yet" not in text:
             return "batch01 with a `domain` failed, but not with the named refusal: " + text.strip()[-200:]
     return None
 
@@ -285,7 +285,7 @@ def main():
         if problem:
             fails.append(problem)
         else:
-            lines.append("choupoBatch refuses a `domain` at assembly, by name")
+            lines.append("the record grammar refuses a `domain`, by name")
     if fails:
         print(f"{NAME}: FAIL ({len(fails)})")
         for x in fails:
@@ -294,8 +294,7 @@ def main():
     print(f"{NAME}: OK -- a pinned record law gives every number the same law gives when"
           f" preferred, in {len(arms)} arms: the five formulations and the paths a pin takes"
           f" ({'; '.join(lines)})."
-          "  NOT CHECKED: whether either law is right; the time-integrated binaries beyond their"
-          " refusal of a `domain`.")
+          "  NOT CHECKED: whether either law is right; the time-integrated binaries.")
     return 0
 
 

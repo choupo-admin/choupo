@@ -639,7 +639,7 @@ try
     {
     const int verbosity = vb;
     thermoAnnounceLevel() = vb;
-    ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr); resolvedView::printSystemOnce(thermo, thermoDict); thermo.refuseUnauditedHardWindows();   // CV-12
+    ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr); resolvedView::printSystemOnce(thermo, thermoDict);   // CV-12
 
     // ---- Build dynamic units -----------------------------------------
     auto unitList = fsDict->lookupDictList("units");

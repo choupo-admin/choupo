@@ -4553,7 +4553,6 @@ int Flowsheet::solve(const DictPtr& dict,
         [&](const DictPtr& u) -> const ThermoPackage&
         { return thermoFor(u->lookupWord("name"), u, thermo); });
     printModelBoundaries(modelBoundaries_, verbosity);
-    if (planConverged) auditHardWindows(units, thermo);   // C398: the reported states, once
 
     // Non-zero on a non-converged recycle: the caller (runSimulation) maps
     // this to result.converged = false, so reports and the converged/ writer
@@ -5508,70 +5507,6 @@ void Flowsheet::printContextView(const std::string& constantDir, const DictPtr& 
     for (const auto& u : contextSelectors_[constantDir]) by.push_back("unit '" + u + "'");
     if (by.empty()) by.push_back("the units of this sector that name no thermo of their own");
     resolvedView::print(std::cout, "sector dictionary " + file, pkg, resolved, c, by);
-}
-
-//  THE HARD WINDOWS ON THE STATES THE RUN REPORTS (C398, the fourth review
-//  round's ruling).  A record law evaluates wherever a search takes it; what
-//  is held to its `domain` is what the run publishes and what the case
-//  declared: every stream of the registry (inlets, 0/ streams, products), on
-//  the system's package and on the package of each unit that has its own, and
-//  every internal state a unit publishes (its profile's process temperature).
-//  A state outside a law's window is refused by the law, naming the state.
-void Flowsheet::auditHardWindows(const std::vector<DictPtr>& units, const ThermoPackage& global)
-{
-    auto auditStream = [&](const ThermoPackage& pk, const std::string& name)
-    {
-        const auto it = streams_.find(name);
-        if (it == streams_.end()) return;
-        const ProcessStream& st = it->second;
-        if (!(st.T > 0.0) || st.z.empty()) return;
-        bool any = false;
-        for (double v : st.z) any = any || v > 0.0;
-        if (!any) return;
-        pk.auditState(st.T, st.z, "the state of stream '" + name + "' (T = " + std::to_string(st.T)
-                      + " K, as the run reports it)", true);
-    };
-    for (const auto& [name, st] : streams_) auditStream(global, name);
-    for (const auto& u : units)
-    {
-        const std::string un = u->lookupWordOrDefault("name", "?");
-        const ThermoPackage& pk = thermoFor(un, u, global);
-        if (&pk != &global)
-        {
-            std::vector<std::string> names;
-            for (const char* key : { "in", "out" })
-                if (u->found(key) && std::holds_alternative<std::string>(u->entryValue(key)))
-                    names.push_back(u->lookupWord(key));
-            for (const char* key : { "inputs", "outputs" })
-                if (u->found(key) && std::holds_alternative<std::vector<std::string>>(u->entryValue(key)))
-                    for (const auto& n : u->lookupWordList(key)) names.push_back(n);
-            for (const auto& n : names) auditStream(pk, n);
-        }
-        //  A saturation temperature a unit REPORTS as its answer (bubble or dew
-        //  point), at the composition of the stream it was asked for.
-        if (const auto kit = unitKpis_.find(un); kit != unitKpis_.end())
-            for (const char* key : { "T_bubble", "T_dew" })
-                if (const auto v = kit->second.find(key); v != kit->second.end())
-                {
-                    sVector z;
-                    const std::string in = u->found("in") && std::holds_alternative<std::string>(u->entryValue("in"))
-                                         ? u->lookupWord("in") : std::string();
-                    if (const auto sit = streams_.find(in); sit != streams_.end()) z = sit->second.z;
-                    pk.auditState(v->second, z, std::string("the ") + key + " that unit '" + un + "' reports (T = "
-                                  + std::to_string(v->second) + " K)", false);
-                }
-        const auto pit = unitProfiles_.find(un);
-        if (pit == unitProfiles_.end()) continue;
-        for (const char* col : { "T", "T_K" })
-        {
-            const auto cit = pit->second.columns.find(col);
-            if (cit == pit->second.columns.end()) continue;
-            for (std::size_t k = 0; k < cit->second.size(); ++k)
-                pk.auditState(cit->second[k], {}, "the internal state of unit '" + un + "' ("
-                              + pit->second.xAxis + " " + std::to_string(k) + ", T = "
-                              + std::to_string(cit->second[k]) + " K, as the run reports it)", true);
-        }
-    }
 }
 
 } // namespace Choupo

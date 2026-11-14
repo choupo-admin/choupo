@@ -367,7 +367,7 @@ F_L^2 &= \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}}\\
       + "F_L = 0.9 is that library's own keyword default.  The vapour "
       + "pressure the bench compares it with is the engine's: Psat_NH3 at "
       + "the second throttle's inlet temperature "
-      + "(src/propertyOps/PropertyEvaluator.cpp:187, the record's Antoine "
+      + "(src/propertyOps/PropertyEvaluator.cpp:167, the record's Antoine "
       + "curve), from the letdown02 witness.",
   },
   {
