@@ -3585,12 +3585,20 @@ accepts today, and that is a policy call.
 > property, the pure-component model per constituent, the MIXING RULE
 > (marked "default of <model>" when the case wrote none), the interaction
 > parameters it consumes with their origin, or the model that computes
-> the mixture directly.  Measured on main: liquid viscosity
-> logMoleAverage (default) and GrunbergNissan; liquid conductivity
-> massFractionAverage (default), Filippov, Li; surface tension
-> moleFractionAverage (default), Butler; vapour viscosity Wilke and
-> vapour conductivity Wassiljewa with Mason-Saxena, fixed in code (shown
-> in the view; a key the day a second rule exists).  (V2) The view
+> the mixture directly.  On main: liquid viscosity logMoleAverage and
+> GrunbergNissan; liquid conductivity massFractionAverage, Filippov, Li;
+> surface tension moleFractionAverage, Butler.  CORRECTED the same day
+> by the slice-(a) builder: the DEFAULTS are GrunbergNissan, Li and
+> Butler (LiquidViscosityMixingRule.cpp:242, LiquidConductivityMixingRule
+> .cpp:213, SurfaceTensionMixingRule.cpp:319, set by C331); the
+> architect had read type-name strings as defaults.  The vapour mixture
+> viscosity is Wilke over per-component values (Chung prices each
+> component alone, ThermoPackage.cpp:2060-2103) and the vapour
+> conductivity Wassiljewa with Mason-Saxena, fixed in code (shown in the
+> view; a key the day a second rule exists).  A FOURTH factory default,
+> beside SL-04's three: a `transport {}` without a vapour viscosity
+> still answers with Chung (TransportModel.cpp:53); it joins SL-04 for
+> slice (b).  (V2) The view
 > covers `volumetric` and `caloric`: the liquid density's method per set
 > with the rule and data that decided it, the vapour route, the energy
 > basis, each phase's enthalpy route, the Cp law per constituent and
