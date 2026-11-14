@@ -3476,6 +3476,110 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C396 (Vitor, 2026-11-14: "tambem vais criar a forma de fazer o
+> design da coluna?  E de representar num esquema (semelhante ao do
+> permutador de calor) a forma detalhada interna da coluna?  Com parte de
+> cima, de baixo etc?").**  WHAT EXISTS, read the same turn: the column
+> sizer publishes five items (the shell on one diameter with both
+> section requirements, the tray stack, the condenser, the reboiler, the
+> reflux drum), with cost and a sheet; tray hydraulics rate or design a
+> tray; the app draws the tower from those sheets (tray lines, a
+> schematic weir and downcomer, the feed stage, the auxiliaries the run
+> sized, to scale where legible).  WHAT IS MISSING, and is this
+> commission: (1) THE DESIGN OF A PACKED COLUMN: the diameter from the
+> packing's own hydraulics at a declared approach to flooding, the bed
+> height from the segments the rate-based model solves, the number of
+> beds, and a sheet for it; (2) the design mode of the rate-based model
+> itself (a purity asked, the height found), after its rating mode is
+> validated; (3) THE INTERNALS DRAWN FROM TOP TO BOTTOM: the vapour
+> outlet and the reflux inlet with its distributor, each bed with its
+> support, a collector and a redistributor between beds, the feed
+> inlet, the sump and the reboiler return.  THE RULE THE DRAWING ALREADY
+> FOLLOWS STAYS: it draws what the engine sized and marks as schematic
+> what it did not; so an internal the engine has no rule for (a
+> distributor, a redistribution height) is first given a sourced rule in
+> the engine or is drawn labelled "not sized".  A study of practice for
+> those rules is written before any of it is built.  ORDER: after the
+> rate-based slices B1 to B3, because the design mode needs them.
+> ALSO REGISTERED, as a CANDIDATE and not a commission (his question the
+> same hour: can the rate-based model carry reactions?): slice B5, a
+> reaction in the liquid HOLDUP of each segment or tray (the kinetics
+> library and the holdup correlations exist); a reaction inside the
+> film (enhancement factors) is not planned, for the reason the liquid
+> Maxwell-Stefan film is not.  A survey of measured reactive columns is
+> being read (three papers already in the folder).
+
+> **C395 (Vitor, 2026-11-14, to the reviewing session, which relayed it:
+> he wants THE LIMITATION OF THE HETP explained in the EduTools; the
+> scope is his to approve before it is built).**  WHAT IS THERE TODAY,
+> as that session read it on main: the page on equilibrium stages or
+> rate-based never says HETP; the Kremser page says a packed count needs
+> an HTU or an HETP and does not convert; the column's stage sheet
+> already DRAWS the local HETP along a packed bed with no word on what
+> it means.  PROPOSED TO HIM, by that session and endorsed here: a
+> section on the equilibrium-or-rate-based page saying that the HETP is
+> not a property of the packing (it moves with the flows, with the
+> system and along the bed), so turning a stage count into a height
+> hides the mass transfer; its picture is the engine's own local HETP
+> along the bed of a packed case of the tree, and, once slice B1 lands,
+> the same bed solved by the rate-based segments beside it.  Not built
+> until he has said yes to the emphasis.
+> **THE SITE'S PUBLICATION AND THE BOARD (2026-11-14).**  Each push to
+> main cancels a publication in flight; three of five were cancelled on
+> the night of the 13th by board messages of both sessions.  From now on
+> this session batches its pushes to main (one push carries the record,
+> the board and the plan together) and does not push a board message
+> alone while a publication is running unless the other session is
+> blocked on it.
+
+> **C329, DECISION (2) AMENDED ON VITOR'S QUESTION (2026-11-14: "Achas
+> que multicomponente com Maxwell-Stefan faz realmente falta?  Isso e
+> realmente usado na pratica?").**  The decision of 2026-11-13 offered NO
+> effective-diffusivity film for three components or more.  AMENDED,
+> with the reason: MULTICOMPONENT is needed (real columns are, and the
+> one general-reflux measurement in hand, the 1996 packed column, is a
+> ternary); MAXWELL-STEFAN specifically is needed only where it changes
+> the answer.  What was read says both things: a review of reactive
+> columns reports a study that found the extra effort of a
+> nonequilibrium model justified and LITTLE difference between the full
+> Maxwell-Stefan film and an effective diffusivity (the reading note of
+> 2026-11-13, row R14); the packed-column paper shows the equal-
+> diffusivity film ending on the WRONG PRODUCT near a distillation
+> boundary.  So, in the house's own manner (simple, data-anchored
+> sub-models, selectable, nothing silent): for three components or more
+> the FIRST film model built is the EFFECTIVE DIFFUSIVITY one, announced
+> by name in every run that uses it; the Maxwell-Stefan film (which
+> needs the thermodynamic factor of the activity models and liquid
+> diffusivities at finite concentration, both absent today) comes after
+> it as a second selectable model, with the boundary case as the witness
+> that shows a student WHEN the simple film fails.  ORDER OF THE
+> RATE-BASED SLICES, revised: B1 binary packed bed at total reflux
+> (being built); B2 trays; B3 a feed and a general reflux; B4a three or
+> more components on the effective-diffusivity film, held to the
+> ternary general-reflux measurement; B4b the boundary case as a LIMIT
+> WITNESS.  "Rate-based distillation is in Choupo" is said after B4a.
+> B4b NARROWED THE SAME DAY, after Vitor argued that the Maxwell-Stefan
+> film is rigour beyond its data ("uma caminhada de complexidade em
+> direcao ao abismo").  THE ARCHITECT AGREES IN PART, for a reason of
+> uncertainty and not of taste.  In the VAPOUR film the formulation
+> costs no fitted parameter (binary gas diffusivities are predicted
+> well and there is no thermodynamic factor), so it stays possible.  In
+> the LIQUID film it needs diffusivities at finite concentration (an
+> interpolation rule between two infinite-dilution values) and the
+> thermodynamic factor, a second derivative of the excess Gibbs energy
+> that an activity model fitted to phase equilibria does not pin; and
+> both sit under film coefficients known to tens of per cent (the
+> chapter read on 2026-11-13 puts the tray flow model ALONE at up to 20
+> % of the overall transfer rate).  A refinement smaller than the
+> uncertainty of what it multiplies is not built ahead of a case that
+> needs it.  THEREFORE: the liquid Maxwell-Stefan film is NOT PLANNED;
+> B4b is the boundary case run on the effective-diffusivity film and
+> shown beside its measurement, saying in the run and on the page that
+> this is where the simple film gives the wrong product: the limit is
+> TAUGHT, not hidden and not papered over with a model nobody can
+> parameterise.  A vapour-film Maxwell-Stefan option is built only if a
+> measured case in the tree shows it changes an answer.
+
 > **C329, SECOND PART: TO BE BUILT AS SOON AS POSSIBLE (Vitor,
 > 2026-11-13, to the reviewing session, which relayed it: asked how
 > rate-based distillation stood and told that the build of the
@@ -3552,12 +3656,14 @@ accepts today, and that is a policy call.
 > checkout has no earlier verdict and runs everything, so the hosted
 > full tier and a release always do.  This is rule 4's "evidence is
 > reused while it still describes what enters main", made mechanical.
-> (2) THE FAST SET GAINS WHAT IT MISSED TODAY: the crash of the fifth
-> batch passed `--fast` (86 / 0) because no case of the set carries a
-> pure stream of a component with no vapour-pressure model; one utility
-> case on a thermal fluid and one solids case enter `tutorials/FASTSET`
-> with the fifth batch.  A subset is completed by what it fails to
-> catch.  (3) The self-test of the gates (383 s) runs its arms in a
+> (2) CORRECTION, the same night: THE FAST SET DID NOT MISS THE CRASH.
+> It holds `utility02_hitec_csp_heater`, one of the four cases that
+> crashed.  What happened is that the fast tier was never RUN on the
+> phase branch nor on the merged tree before the sweep (its builder ran
+> a scope of 48 cases; the architect went straight to the full sweep).
+> So no case is added, and the rule is the order: `--fast` runs FIRST on
+> every merged tree, and a sweep starts only when it passes; a builder
+> that touches a path every case goes through runs it too.  (3) The self-test of the gates (383 s) runs its arms in a
 > pool, as the pairs gate now does.  NOT DONE: cutting cases from the
 > full sweep; they are not where the time is.
 
