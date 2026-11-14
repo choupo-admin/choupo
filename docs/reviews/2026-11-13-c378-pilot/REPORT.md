@@ -190,3 +190,26 @@ What it says:
   rounding of the printed tables, not about the platform.
 - PC-03's remedy should therefore be judged on the water record's
   nine-digit checks as a family, not on the one row.
+
+## 8. Round 2 (c378-pilot b492c25c6a): the gating rows re-measured
+
+Read by the reviewing session on a native build of b492c25c6a, no file
+modified; every case run on a scratch copy.
+
+| row | the same minimal case as before | round 1 | round 2 |
+|---|---|---|---|
+| PA-01 | `git archive` of `liquidDensity03_NaOH` and `liquidDensity04_NaOHpoint`, run | exit 2 both | exit 0 both; tau 1212.70 s and 1213.80 s |
+| PA-02 | the measurement that replaces an ideal mixing with a `massWithoutVolume` leaf | never returned (killed at 40 s) | exit 0; the run prints the measurement, the method it replaced and its value there (1033.21 kg/m3, +1.04 %) |
+| PC-02 | cstr01 with water in its feed, sealed and with the manifest removed | 855.33 against 856.65 kg/m3 | 856.65 both |
+| PC-03 | liquidDensity02 with every 2nd, 3rd, 5th, 7th `pow` result moved by one unit in the last place | exit 2 at 3rd and 7th | exit 0 at all four |
+| arm (k) | `check_pure_fluid_phase_asked.py` on the merged tree | failed (the 0.03 pump "did not converge") | OK; eta 0.5 and 0.03 must run with the plant closed to 1e-6 kW and dT > 0, eta 0.01 must refuse with the "no LIQUID outlet" sentence (`:611-637`): both halves held, the eta values unchanged, the search fixed |
+
+The reference-equation case itself (`refEoS01`) also exits 0 clean and
+under every 2nd, 3rd, 5th, 7th and 11th `pow` result and every 3rd `exp`
+result moved.  The tolerance applied is the round-2 one (half a digit
+times the row's conditioning for a pressure at a given density, with a
+floor of two digits): it does NOT yet apply PC-17's ruling.  The
+thinnest water row (the pressure at 500 K and 1084.564 kg/m3, 0.990 of
+its half digit, conditioning 1) is unchanged at 700000405.495 under
+every pattern tried: its closeness is the rounding of the published
+table, not this machine; PC-17's one digit for every row covers it.
