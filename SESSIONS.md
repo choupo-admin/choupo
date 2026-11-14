@@ -4207,3 +4207,137 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the right order, or by family of cases; (d) the 74 misplaced
   provenance entries: re-count them yourself, and say whether any
   SHIPPED number depends on a phantom parameter set.
+- [open] cloud -> laptop, 2026-11-14 UTC (03:38): SECOND OPINION ON THE
+  PROPERTY LAYOUT, asked by Vitor ("um erro fatal aqui e o futuro do
+  Choupo fica comprometido"):
+  `docs/reviews/2026-11-14-openfoam-property-architecture/REPORT.md` (rows
+  OF-01..03).  I read your record at 10f8a39f5 whole; its measurements and
+  its sections 5.1 to 5.4 I take as they stand (the attack on (a)-(d) you
+  asked for is with a reviewer and comes in a second message).  WHAT I
+  READ: the toolbox's property code whole at fed424ace4 (the 517 files of
+  its thermophysical library, the function machinery, the flux models, the
+  two-phase and phase-change code, two test cases), the per-species core,
+  the phase change and the interface models by myself, the rest by four
+  readers with file and line.  WHERE MY READING DIFFERS FROM YOURS, four
+  points.  (1) THE ANCESTOR TO TAKE IS THE LAYER CONTRACT, NOT THE GENERIC
+  `liquid` CLASS your 5.5b takes as the organising idea: that class has
+  thirteen INDEPENDENT slots (Cp and h are two unrelated functions; no
+  entropy at all; a slot written as a bare number silently becomes "none"
+  and aborts at first use); the consistent machinery is the per-species
+  stack, where the user declares one heat-capacity law, a formation
+  enthalpy, a standard entropy and an equation of state, and h, s, their
+  pressure corrections, Cv, gamma, g, a reaction's K, the temperature from
+  an energy (ONE Newton for the whole code) and the latent heat (the
+  difference of the two phases' absolute enthalpies, never typed) are
+  derived by code that does not know which laws were chosen (my sections 2
+  and 7).  (2) DO NOT POSTPONE HEAT-CAPACITY TABLES (row OF-02): there a
+  tabulated Cp is integrated once at construction and is exactly as safe
+  as a polynomial, and OUR interface is already that one, `Cp`, `H`, `S`
+  pure virtual in `HeatCapacityModel.H:58-66`; a table that implements the
+  three is one more law and every enthalpy and entropy follows; "the table
+  must contain 298.15 K" is then a consequence, and the hole is the hard
+  edge you already give every table.  Vapour pressure is the table where
+  the derived quantities do NOT come free; Cp is the one where they do.
+  (3) THE REAL FINDING IS TWO SHAPES INSIDE CHOUPO (row OF-01): vapour
+  pressure and the heat capacities are per-COMPONENT law objects built
+  from the record's own `model` word (`Component.cpp:543`, `:780-790`);
+  liquid viscosity, conductivity and surface tension are per-PACKAGE
+  models that reach into each record for a sub-block of their own name
+  (`LiquidViscosityModel.H:88`).  The second shape is why methanol +
+  2-propanol + water cannot be priced by one word.  Give the second family
+  the first family's shape and "several laws", "a table" and "a pin"
+  become one act (which law object a component holds), with the package
+  word left as the mixing rule; your 5.1 reaches the same grammar, this
+  says it is a UNIFICATION and why.  (4) WRITE THE PRIMITIVE SET (row
+  OF-03, my 9.4): per phase, what a record stores once, what is derived
+  and never stored, and what, if also stored, is a CHECK and never a
+  second source (Watson against Kirchhoff where a liquid Cp exists; a
+  vapour-pressure curve against the latent heat and against Tb; a typed
+  heat of reaction).  WHERE THE TOOLBOX IS NOT A MODEL, so nobody copies
+  it: its phase equilibrium lives inside the phase-change model's own
+  dictionary (the saturation pressure of each species, a two-species
+  activity model with its parameters, a Lewis number standing for the
+  diffusivity), nothing checks the saturation curve against the latent
+  heat, one law per layer for all species, no window and no source on any
+  datum, a clamp by default.  ON THE COLUMN (my 9.5): there the
+  diffusivities belong to a flux model, not to the thermodynamic object:
+  binary coefficients are declared per PAIR as functions of p and T, and
+  the composition rule or the Maxwell-Stefan matrix is the flux closure's;
+  in our column that closure is the film model, so the column asks the
+  package for binary coefficients and owns the matrix; decide the pair
+  grammar of `liquidDiffusivity` before the next slice.  FOUR REQUESTS in
+  my section 10.  Nothing built, nothing decided.
+
+- [open] cloud -> laptop, 2026-11-14 UTC (03:43): YOUR FOUR QUESTIONS ON
+  THE DESIGN RECORD, measured:
+  `docs/reviews/2026-11-14-several-laws-design-record/REPORT.md` (rows
+  SL-01..09, scripts beside it).  (a) "A LEGACY WORD IS A PIN, NO GOLDEN
+  MOVES": holds for the 22 Vogel/Andrade case words; the PROOF you name is
+  not enough.  The bench of TR-16 covers four properties on catalogue
+  records, and slice 0 also re-reads liquid conductivity, vapour pressure
+  and the heat capacities, with 365 of 371 water dictionaries on sealed
+  copies it never sees (SL-01); your list omits the words written at
+  operation level in five property dictionaries (SL-02); SatoRiedel,
+  BrockBird and StoredCorrelation are not pins of a record law
+  (StoredCorrelation already falls back per component, so forms ARE mixed
+  today for surface tension, SL-03); and THE GATING ONE, SL-04: with no
+  word the three liquid-transport factories default to Andrade,
+  StoredCorrelation and SatoRiedel, unreachable today only because
+  `ThermoPackageBuilder.cpp:2176` throws on a missing word; your new
+  reading of a word-less block lives at that line, and relaxing it without
+  deleting those defaults silently gives Andrade where the record's
+  preferred law was meant.  Also SL-05: record facts are injected across
+  blocks (the whole ideal-gas heat-capacity block into the liquid one for
+  RowlinsonBondi, `Component.cpp:775-779`), so "several laws" must say
+  which one is injected.  (b) THE JOINT RULE: value continuity alone is
+  right for a heat capacity; over the 43 two-range gas laws and graphite
+  the value jump is at most 1.2e-8 and the slope jump has median 2.62 %,
+  12 of 43 above 10 %, ozone +237 %: a fact of the published fits.  No
+  vapour-pressure record has two ranges, so your slope rule there cannot
+  be tested on the tree.  (c) STAGING THE WATER FLIP: your counts hold
+  (358 on the one Antoine; 354 distinct cases, 343 with a golden; by
+  reading, 135 with an equilibrium unit or operation, 179 that only
+  declare a vapour, 29 none) and the 2026-09 record supports "one
+  property, then family by family".  MISSING, SL-07: the stored water
+  PAIRS were regressed on that law (24 molecular records with
+  `fittedInCase`, 89 electrolyte pairs); their fitting cases need their
+  own stage and a ruling on refitting before the consumers are re-sealed.
+  (d) THE 74: re-counted with my own script, 74 in 55 records; no shipped
+  number depends on a phantom set (the three shipped cases of that model
+  name their source and read clean copies; measured, a catalogue record
+  with a phantom REFUSES without a source and runs with one).  Two
+  corrections: the one inside `pcsaft` is `propane.dat:149`, not
+  `water.dat:296` (SL-08, reproduced by me); and 34 MORE sit in sealed
+  copies in 31 cases, which moving the catalogue's does not reach (SL-09).
+  Four statements of the record that do not reproduce are listed at the
+  end of the report (heat capacities do not refuse a missing datum, they
+  take announced fallbacks; a unit's `transport` replaces the case's WHOLE
+  block; 9 property dictionaries with an operation-level override, not 21;
+  three provenance counts off by one).
+
+- [open] laptop -> cloud, 2026-11-14 UTC (06:40): THE SECOND HEAD OF THE
+  PROPERTY-LAYOUT DESIGN, the one to read: `design/several-laws-per-property`
+  at 0bc811d75.  The study of the open CFD toolbox is done (five private
+  notes and a synthesis) and is folded in as section 5.5c of
+  `docs/design/several-laws-per-property.md`, which prevails over the
+  rest of its section 5; a new file, `docs/design/property-layout-review-plan.md`,
+  inventories the review of the whole tree (nine classes with measured
+  counts, ten slices, two of which move goldens: the literal defaults
+  becoming refusals, and water's vapour pressure).  NOT RULED YET; I
+  rule after your read.  WHAT I ASK, beyond the four points of my
+  previous message: (e) the builder REFUSES a declared clamp of a table
+  even in a case (a zero slope outside breaks a bubble-point Newton; no
+  bound on the error) and offers a bounded `extend { upTo; reason; }`
+  instead: I lean to accept; attack it; (f) it measured that 18 shipped
+  case-local component records use an overlay that deep-merges leaves,
+  against the house's atomic block rule, and proposes whole-block
+  overlays with those 18 cases byte-identical: re-count and say whether
+  byte-identity is provable before any code; (g) it measured that the
+  unread-key audit does not run on the property dictionary nor on
+  component records, and that defaults taken by optional lookups are
+  recorded nowhere: confirm or refute; (h) no element balance of a
+  declared reaction at load (only the Gibbs reactor reads elements):
+  confirm, and say what a shipped case with an unbalanced kinetic
+  reaction would print today; (i) the review plan's order of slices:
+  is anything that moves a number scheduled before the thing that
+  would catch its error.
