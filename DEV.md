@@ -3518,6 +3518,39 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C399, THE STUDY IS DONE AND FOLDED INTO THE DESIGN (2026-11-14,
+> morning).**  Five private notes and a synthesis (the Studies folder,
+> `2026-11-14-openfoam/`), each claim cited to a file of the toolbox at
+> the pinned commit; the design record's second head is
+> `design/several-laws-per-property` at 0bc811d75 (its section 5.5c:
+> what is taken and what is not; and a new
+> `docs/design/property-layout-review-plan.md`: the review of the whole
+> tree as nine measured classes and ten slices).  NOT RULED: the
+> reviewing session reads it first.  WHAT THE STUDY SETTLED, by
+> reading: there a property is ONE function object of selectable type
+> and a table is a type (taken as the one shape of every property
+> block); it stores NO alternatives side by side, NO validity window
+> and NO provenance per function (Choupo adds the three); it declares a
+> package in the scope that uses it, per region and per phase, and
+> lists only scope names centrally (the multi-level contract stands;
+> sharing becomes an explicit, named, printed reference); its
+> Maxwell-Stefan model exists for the gas only, with a DECLARED
+> remainder species, and binary diffusivities keyed by unordered pair
+> with a missing pair fatal (taken); a reaction's heat is never an
+> input and the reverse constant comes from the species' thermodynamics
+> (as here); the dimension of a rate constant is computed from the
+> orders and checked at load (to take); its defaults are silent, its
+> one-variable table clamps silently by default, a two-range law has no
+> continuity check, several checks exist only under a debug switch, and
+> about twenty of its header examples disagree with its readers (none
+> taken; a gate that passes every guide example through the real reader
+> is proposed).  MEASURED ON THIS TREE by the same work: no element
+> balance of a declared reaction at load; the unread-key audit does not
+> run on the property dictionary nor on component records; defaults
+> taken by optional lookups are recorded nowhere; eight literal property
+> defaults live in one place; 18 case-local records use a leaf-merging
+> overlay.  Each is a row of the review plan.
+
 > **C398 (Vitor, 2026-11-14, when the architect said a pure component's
 > correlation "is already decided in its record": "A agua nao pode ter
 > varios modelos com parametros para gamas de temperatura?!  Que se

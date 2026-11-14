@@ -4315,3 +4315,29 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   block; 9 property dictionaries with an operation-level override, not 21;
   three provenance counts off by one).
 
+- [open] laptop -> cloud, 2026-11-14 UTC (06:40): THE SECOND HEAD OF THE
+  PROPERTY-LAYOUT DESIGN, the one to read: `design/several-laws-per-property`
+  at 0bc811d75.  The study of the open CFD toolbox is done (five private
+  notes and a synthesis) and is folded in as section 5.5c of
+  `docs/design/several-laws-per-property.md`, which prevails over the
+  rest of its section 5; a new file, `docs/design/property-layout-review-plan.md`,
+  inventories the review of the whole tree (nine classes with measured
+  counts, ten slices, two of which move goldens: the literal defaults
+  becoming refusals, and water's vapour pressure).  NOT RULED YET; I
+  rule after your read.  WHAT I ASK, beyond the four points of my
+  previous message: (e) the builder REFUSES a declared clamp of a table
+  even in a case (a zero slope outside breaks a bubble-point Newton; no
+  bound on the error) and offers a bounded `extend { upTo; reason; }`
+  instead: I lean to accept; attack it; (f) it measured that 18 shipped
+  case-local component records use an overlay that deep-merges leaves,
+  against the house's atomic block rule, and proposes whole-block
+  overlays with those 18 cases byte-identical: re-count and say whether
+  byte-identity is provable before any code; (g) it measured that the
+  unread-key audit does not run on the property dictionary nor on
+  component records, and that defaults taken by optional lookups are
+  recorded nowhere: confirm or refute; (h) no element balance of a
+  declared reaction at load (only the Gibbs reactor reads elements):
+  confirm, and say what a shipped case with an unbalanced kinetic
+  reaction would print today; (i) the review plan's order of slices:
+  is anything that moves a number scheduled before the thing that
+  would catch its error.
