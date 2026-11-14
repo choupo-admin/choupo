@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  propsDict  --  variants01_ethanol_water_line  (Properties & data mode:
+  runCase <case> props)
+
+  The same liquid as the pipe's feed (20 mol % ethanol, 300 K, 3 bar),
+  priced twice on the ONE property dictionary of the case:
+    muSystem    on the system (Andrade liquid viscosity);
+    muVariant   on the variant `vogelLaw`, selected with `thermo vogelLaw;` --
+                the same line the pipe writes.
+  muVariant's liquid viscosity is the number the pipe receives (the gate
+  check_variant_same_values compares them to 1e-12); its surface tension is
+  the system's, because the variant replaced only the liquid-viscosity
+  property block.  The difference between the two viscosities is the
+  difference between the two laws at this state, nothing else.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        muSystem;
+        type        propertyPoint;
+        state
+        {
+            T       300 K;
+            P       3 bar;
+            composition { ethanol 0.2; water 0.8; }
+        }
+        properties  ( viscosity_liquid surface_tension );
+    }
+    {
+        name        muVariant;
+        type        propertyPoint;
+        thermo      vogelLaw;             // the variant the pipe selects
+        state
+        {
+            T       300 K;
+            P       3 bar;
+            composition { ethanol 0.2; water 0.8; }
+        }
+        properties  ( viscosity_liquid surface_tension );
+    }
+);

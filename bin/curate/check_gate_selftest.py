@@ -186,6 +186,28 @@ SABOTAGES = [
                "gate must refuse rather than report '0 of 76 pages carry "
                "references' as a pass.",
     },
+    {
+        "gate": "check_variant_same_values.py",
+        "kind": "vacuity",
+        "file": "tutorials/steady/thermo/variants01_ethanol_water_line/system/flowsheetDict",
+        "find": "        thermo      vogelLaw;",
+        "replace": "        thermo_DISABLED_BY_SELFTEST      vogelLaw;",
+        "why": "C398 slice (a): with the pipe no longer selecting the variant "
+               "it prices on the system, so its liquid viscosity is not the "
+               "one the operation on variant 'vogelLaw' receives -- the gate's "
+               "claim (c) must fail rather than compare two unrelated numbers "
+               "and pass.",
+    },
+    {
+        "gate": "check_variant_same_values.py",
+        "kind": "detection",
+        "file": "tutorials/steady/thermo/variants01_ethanol_water_line/system/propsDict",
+        "find": "        thermo      vogelLaw;",
+        "replace": "        thermo_DISABLED_BY_SELFTEST      vogelLaw;",
+        "why": "with the operation no longer selecting the variant, muVariant "
+               "equals muSystem: arm (d), the guard against a selection that "
+               "silently falls back to the system, and claim (c) must fail.",
+    },
 ]
 
 

@@ -19,6 +19,8 @@
 #include "thermo/SystemClassifier.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "thermo/liquidProperty/Measured.H"   // the case's marked measurements (C378 pilot)
+#include "thermo/PropertyVariants.H"   // named variants of the case system (C398 slice (a))
+#include "thermo/TransportGrammar.H"   // the one table of transport property blocks
 #include <cmath>
 #include <filesystem>
 #include <iomanip>
@@ -2040,6 +2042,7 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
     // arrives as the `chem` object -- never inside the system dict.
     refuseRetiredTopLevel(pkg);
     refuseUnreadAqueousKeys(pkg);
+    propertyVariants::validate(pkg);   // every variant, selected or not (C398)
     if (pkg->found("chemistry"))
         throw std::runtime_error("thermophysicalPropertySystem: the"
             " active-chemistry selection is not declared here -- it lives in"
@@ -2147,6 +2150,11 @@ static DictPtr v2TransportDict(const DictPtr& v2)
             {"interface", "surfaceTension",   "surfaceTension"},
         };
         auto tr = v2->subDict("transport");
+        //  ONE TABLE OF PROPERTY BLOCKS (TransportGrammar.H, C398 slice (a)):
+        //  a name the loop below would skip -- a misspelt property, the flat
+        //  spelling of a block beside the phase-structured one, a key inside
+        //  a block nothing copies -- is refused by name instead of dropped.
+        transportGrammar::validate(tr, "thermophysicalPropertySystem: transport");
         transportDict = std::make_shared<Dictionary>("transport");
         for (const auto& mrow : maps)
         {

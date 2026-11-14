@@ -13603,6 +13603,40 @@ Pedagogical caveat: the stream that crosses from the turbine (SRK) into the flas
 \goldmore{35}
 \end{tutgolden}
 
+\clearpage
+\tutentry{variants01\_ethanol\_water\_line}{tutorials/steady/thermo/variants01\_ethanol\_water\_line}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (line) at (0.0,-0.0) {\textbf{line}\\[-1pt]{\tiny pipe}};
+  \draw[->] ($(line.west)+(-1.05,0.00)$) -- ($(line.west)+(0,0.00)$) node[at start, above, font=\tiny, anchor=south west] {feed};
+  \draw[->] ($(line.east)+(0,0.00)$) -- ($(line.east)+(1.05,0.00)$) node[at end, above, font=\tiny, anchor=south east] {delivered};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Named variants: a pipe and a property check select the same variant of the case's one property dictionary (ethanol-water, liquid viscosity Vogel vs the system's Andrade)}
+\begin{tutnarrative}
+propsDict -- variants01\_ethanol\_water\_line (Properties \& data mode: runCase <case> props)
+
+The same liquid as the pipe's feed (20 mol \% ethanol, 300 K, 3 bar), priced twice on the ONE property dictionary of the case: muSystem on the system (Andrade liquid viscosity); muVariant on the variant `vogelLaw`, selected with `thermo vogelLaw;` -- the same line the pipe writes. muVariant's liquid viscosity is the number the pipe receives (the gate check\_variant\_same\_values compares them to 1e-12); its surface tension is the system's, because the variant replaced only the liquid-viscosity property block. The difference between the two viscosities is the difference between the two laws at this state, nothing else.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{delivered}{F}{0.277777777778}
+\goldrow{stream}{delivered}{T}{300}
+\goldrow{stream}{feed}{F}{0.277777777778}
+\goldrow{stream}{feed}{T}{300}
+\goldrow{kpi}{line}{F}{0.277777777778}
+\goldrow{kpi}{line}{P\_in}{300000}
+\goldrow{kpi}{line}{P\_out}{296046.64182}
+\goldrow{kpi}{line}{dP\_elevation}{0}
+\goldrow{kpi}{line}{dP\_fittings}{0}
+\goldrow{kpi}{line}{dP\_friction}{3953.35817975}
+\goldrow{kpi}{line}{deltaP}{3953.35817975}
+\goldrow{kpi}{line}{density}{901.28574127}
+\goldrow{kpi}{line}{frictionFactor}{0.020412696263}
+\goldrow{kpi}{line}{head\_loss\_m}{0.44728361351}
+\goldmore{12}
+\end{tutgolden}
+
 \subsection{thermoTest}
 \grouptheory{thermoTest}
 \clearpage

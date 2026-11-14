@@ -1221,6 +1221,31 @@ blocks (\code{pureLiquid}, \code{infiniteDilution}); the old per-model
 \code{methods/<name>.dat} ceremony records were retired once the dispatch
 became fully native.
 
+\subsection{Named variants, the atom of replacement and the resolved view}\label{sec:property-variants-dev}
+
+Slice~(a) of the property layout (DEV.md 4c C398); the physics and the
+grammar are in the Theory Guide, \emph{One property dictionary, named
+variants, and the resolved view}.  Where the code lives:
+\begin{itemize}
+\item \file{src/thermo/PropertyVariants.\{H,cpp\}} --- the ONE reader of
+  \code{variants \{\}}: validation (called by the builder on every system),
+  the body of a named variant (an unknown name refused with the declared
+  list), the stamped fragment a unit's \code{thermo <name>;} becomes.
+\item \file{src/thermo/ThermoOverride.H} --- the ONE typed merge, now with the
+  property block as the atom inside \code{transport}; a fragment
+  \code{volumetric} refused until slice~(c).  \file{src/thermo/PropertyContext.H}
+  applies the same atom to \code{inherits} and keeps \code{variants} per file.
+\item \file{src/thermo/TransportGrammar.H} --- the one table of transport
+  property blocks, read by the builder and by the fragment validation.
+\item \file{src/unitOperations/flowsheet/VariantSelection.H} --- a unit's name
+  resolved against its node's dictionary; the per-run registry of sector
+  contexts; the unread-key audit of every sector file's variants.
+\item \file{src/thermo/ResolvedView.\{H,cpp\}} --- the view (stdout only;
+  the result-JSON form comes with C400); it reads the package's objects and a
+  deep copy of the dictionary, so it marks nothing read.
+\end{itemize}
+The gate is \code{check\_variant\_same\_values}.
+
 \subsection{Status}
 
 The legacy salt-level electrolyte front-end is fully retired: the

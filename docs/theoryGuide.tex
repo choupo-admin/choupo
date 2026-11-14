@@ -2593,6 +2593,143 @@ volume in solution, not a pure-liquid volume, and has no \code{VliqT};
 \code{hitecSalt}'s molar mass is a separate defect.
 
 % ---------------------------------------------------------------------
+\section{One property dictionary, named variants, and the resolved view}\label{sec:property-variants}
+
+A case declares its thermophysical properties in ONE file,
+\file{constant/thermoPhysPropDict}.  Its blocks --- \code{equilibrium},
+\code{caloric}, \code{volumetric}, \code{transport}, \code{pureFluids} --- are
+the case's \emph{system}.  Until slice~(a) of the property layout
+(DEV.md 4c C398, ruled 2026-11-14) a unit that needed one property priced
+differently had to repeat a fragment of the system inline in its own block,
+and a fragment replaced the whole \code{transport} block: changing one
+viscosity law meant copying every other transport law too.  This section
+states what replaced that, and why.
+
+\subsection{Named variants}\label{sec:property-variants-named}
+
+The file may add a block \code{variants}, a set of \emph{named variants} of
+the system.  Each variant states only what differs and derives directly from
+the file's own system --- one base, so no chain and no cycle:
+\begin{lstlisting}
+transport
+{
+    liquid    { viscosity      { model Andrade;   } }
+    interface { surfaceTension { model BrockBird; } }
+}
+variants
+{
+    vogelLaw { transport { liquid { viscosity { model Vogel; } } } }
+}
+\end{lstlisting}
+A unit (\file{system/flowsheetDict}) or a property operation
+(\file{system/propsDict}) selects a variant by name with one line,
+\code{thermo vogelLaw;}.  An inline \code{thermo \{ ... \}} keeps reading as
+before, as an \emph{unnamed} variant.  The engine resolves a named variant
+by the same typed merge an inline fragment goes through
+(\file{src/thermo/ThermoOverride.H}), through one reader
+(\file{src/thermo/PropertyVariants.H}); so a pipe and a property check that
+name the same variant receive the package the one builder assembled from the
+same merged text, and the gate \code{check\_variant\_same\_values} holds that
+they receive the same liquid viscosity at the same state (to the printed
+precision, a relative $5\times10^{-12}$).  Every variant a run uses is
+built before the run computes anything.
+
+Refused, each by name: a variant that names another (\code{thermo},
+\code{inherits}, \code{derivedFrom}, \code{base}, \code{from} inside a
+variant); \code{components} or \code{chemistry} in a variant (a variant changes
+how the system's properties are computed, never which components it holds);
+an unknown variant name (the refusal lists the declared ones).  A variant
+nobody selects is \emph{announced}, not refused, by the unread-key audit after
+the run: a \code{choupoSolve} and a \code{choupoProps} run read the same
+\file{constant/}, so a variant only the property check uses is, correctly,
+unused by the solve.
+
+\paragraph{Sectors.}  A sector keeps its own dictionary (the plant-and-sectors
+contract), which \code{inherits} the plant's and may hold variants of its own.
+A unit inside a sector resolves \code{thermo <name>;} against its sector's
+file; a sector's variants derive from the sector's resolved system, and the
+plant's variants are not inherited --- each file's variants are its own.
+
+\subsection{The atom of replacement}\label{sec:property-variants-atom}
+
+Inside \code{transport} the atom a variant, an inline fragment and a sector's
+\code{inherits} replace is the PROPERTY BLOCK,
+\code{transport.<phase>.<property>}: the variant above replaces
+\code{transport.liquid.viscosity} whole and keeps
+\code{transport.interface.surfaceTension} from the system.  Inside
+\code{volumetric} the atom is the phase block, \code{volumetric.<phase>}.
+\code{equilibrium} and \code{caloric} are replaced as before --- a fragment
+per equilibrium slot, a sector's \code{inherits} whole --- and a variant that
+changes them is a second world: the energy report accounts the step at the
+unit's boundary as a model boundary.  The names a transport block may be
+spelt with are one table (\file{src/thermo/TransportGrammar.H}):
+\begin{center}
+\begin{tabular}{ll}
+\code{vapour}    & \code{viscosity}, \code{thermalConductivity}, \code{diffusivity} \\
+\code{liquid}    & \code{viscosity}, \code{thermalConductivity}, \code{diffusivity} \\
+\code{interface} & \code{surfaceTension} \\
+\end{tabular}
+\end{center}
+and inside a block the builder reads \code{model}, \code{mixingRule} and
+\code{interaction}.  A name outside the table --- a misspelt property, or the
+flat spelling \code{liquidViscosity \{\}} beside \code{liquid \{ viscosity
+\{\} \}}, the same block written twice --- used to be dropped in silence; it
+is refused.  Measured over 3877 shipped dictionaries before the change: no
+case carried one, and no shipped case moved under the per-property atom (no
+\code{inherits} dictionary and no unit fragment declares \code{transport};
+the 147 operation fragments that do sit on systems without one).
+
+\paragraph{A limit of this slice, not of the design.}  A variant or fragment
+may not yet carry a \code{volumetric} block: the liquid-density measurements
+are read into one table per run (\file{src/thermo/liquidProperty/Measured.cpp})
+until slice~(c), so a second package would replace the system's measurements
+for every unit.  The engine refuses it by name.
+
+\subsection{The resolved view}\label{sec:property-variants-view}
+
+Before the solve, at verbosity $\ge 2$, the engine prints the RESOLVED VIEW
+of every property context the run uses --- the case's system, each sector
+dictionary a unit resolves against, each named variant and each inline
+fragment (an inline fragment's view is printed when its unit is first built,
+so that a run without variants prints exactly what it printed before) ---
+every line beginning with \code{[properties]}.  For each property the package
+can be asked it prints two columns:
+\begin{description}
+\item[CHOICE] where the choice was made: the file's system, a sector file or
+  the parent it inherits, \code{variants.<name>}, or the inline \code{thermo
+  \{\}} of a unit.  A choice belongs to the level that \emph{resolved} it,
+  never to the level that selected the variant.
+\item[DATA] what runs and where its data come from: for each transport
+  property, the pure-component law per constituent (with its source and
+  window), the mixing rule --- named, and marked as the property's default
+  when the case wrote none (the defaults are those of the factories:
+  Grunberg--Nissan for liquid viscosity, Li for liquid conductivity, Butler
+  for surface tension; Wilke for the vapour viscosity and Wassiljewa with the
+  Mason--Saxena factors for the vapour conductivity are fixed in code) --- and
+  the interaction parameters it consumes or the pair it misses and what that
+  pair is treated as; the liquid density's route per component and the
+  kernel's order of methods; the vapour density's route; the energy basis
+  (\code{elementsDatum}); each phase's enthalpy route with the excess or
+  departure terms it includes; the heat-capacity and vapour-pressure law per
+  constituent.
+\end{description}
+A fingerprint of the resolved definition heads each view: two runs that print
+the same fingerprint for a variant built it from the same text.  Values are
+SI.  What the view does not show yet, and says so: a law's form with its
+coefficient units (the law types do not declare them: slice~(b)); the unit a
+record value was declared in (the component reader does not keep it); the
+liquid-density method of each constituent \emph{set}, which the kernel decides
+at the set's first request and the \code{[liquid properties]} table prints
+after the run (\S\ref{sec:liquid-property-sources}).  Found while building it:
+a \code{transport \{\}} block that names no vapour viscosity still gives the
+package a gas viscosity, Chung's, by the factory's default --- the view prints
+``NOT DECLARED, yet the package answers with Chung''.
+
+The witness is \file{tutorials/steady/thermo/variants01\_ethanol\_water\_line}:
+a pipe and a property operation select the variant \code{vogelLaw}, a second
+operation prices the same liquid on the system.
+
+% ---------------------------------------------------------------------
 \section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}
 
 A unit that needs the density, viscosity, surface tension or diffusivity

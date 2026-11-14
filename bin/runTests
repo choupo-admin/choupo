@@ -4853,6 +4853,24 @@ PYEOF
     fi
     rm -f /tmp/fitsim.$$
 
+    # Variant-same-values gate (2026-11-14, DEV.md 4c C398 slice (a), ruling
+    # point 7): a unit (choupoSolve) and a property operation (choupoProps)
+    # that select the same named variant of the case's one property
+    # dictionary receive the same liquid viscosity at one state, to the
+    # printed precision; the system's differs (not vacuous); a block the
+    # variant does not declare stays the system's; a derived variant, an
+    # unknown name and both spellings of one block are refused, an unused
+    # variant announced.  Self-test arms: check_gate_selftest.
+    if gate_exec "$ROOT/bin/curate/check_variant_same_values.py" > /tmp/varsame.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "variant-same-values-gate" "$(grep -m1 '^check_variant_same_values: OK' /tmp/varsame.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_variant_same_values.py)\n" "variant-same-values-gate"
+        cat /tmp/varsame.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/varsame.$$
+
     # Props-order gate (2026-10-26, DEV.md 4c C172 slice 2): the ORDER of a
     # properties workflow is an engine fact.  choupoProps runs its operations
     # in declared order, and propsPlan::validate refuses, before operation

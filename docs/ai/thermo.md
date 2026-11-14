@@ -599,6 +599,39 @@ Chapman-Enskog binary DIFFUSIVITY — the Ω(1,1)* collision-integral fit is not
 citable from any source in the tree (record:
 `docs/design/transport-correlations-as-objects.md` §8).
 
+## variants — named variants of the system, and the resolved view (C398)
+
+`constant/thermoPhysPropDict` is the ONE place a case declares its
+properties.  Its blocks are the case's system; `variants {}` adds named
+variants, each stating ONLY what differs and deriving DIRECTLY from the
+system (one base: no chain, no cycle).  A unit or a props operation selects
+one with `thermo <name>;`; an inline `thermo { ... }` still reads, as an
+unnamed variant.  Grammar, refusals and a worked example:
+[`dict-syntax.md`](dict-syntax.md) → "Named variants".
+
+- **The atom inside `transport` is the PROPERTY BLOCK**
+  (`transport.<phase>.<property>`), inside `volumetric` the phase block; a
+  variant, an inline fragment and a sector's `inherits` all replace that
+  much and keep the rest.  `equilibrium` and `caloric` are replaced as
+  before (a variant that changes them is a model boundary).  A transport
+  name outside `vapour/liquid/interface` × {`viscosity`,
+  `thermalConductivity`, `diffusivity`, `surfaceTension`} — e.g. the flat
+  `liquidViscosity {}` — is REFUSED, not dropped.
+- **THE RESOLVED VIEW**: before the solve (verbosity ≥ 2) the engine prints,
+  for the system, each sector dictionary a unit uses, each named variant and
+  each inline fragment, every property the package can be asked with two
+  columns — CHOICE (where it was decided: system, sector file, parent via
+  `inherits`, `variants.<name>`, a unit's inline block) and DATA (the law per
+  constituent, the mixing rule — marked "default" when the case wrote none —
+  the interaction pairs it reads or misses, the density routes, the energy
+  basis and enthalpy routes).  Every line starts `[properties]`; a
+  fingerprint heads each view.  Read it before asking "which viscosity did
+  this unit use?".
+- The factory defaults the view names when no `mixingRule` is written:
+  Grunberg–Nissan (liquid viscosity), Li (liquid conductivity), Butler
+  (surface tension).  A `transport {}` block with no vapour viscosity still
+  answers a gas viscosity, by Chung (the factory default; the view says so).
+
 ## The three-tier model-parameter rule
 
 A model's parameter lives at the **highest tier where it is true** — the
@@ -706,9 +739,12 @@ The five binaries all hand the authored dict to
 The builder **assembles, never estimates** — a missing datum is a curation
 problem solved before the run (`curation-protocol.md`), not a runtime guess.
 After assembly the package is passed to every unit op's `solve(dict, thermo,
-verbosity)`.  Units consume only the slice they need.  A per-unit
-`thermo {}` override REPLACES the models for that unit only (components stay
-global) — the boundary is announced, see `energy.md` §model boundaries.
+verbosity)`.  Units consume only the slice they need.  A unit (or a props
+operation) that selects a variant -- `thermo <name>;`, or an inline `thermo
+{}` -- gets that variant's package for itself only (components stay global);
+a variant that changes `equilibrium` or `caloric` is a model boundary, see
+`energy.md` §model boundaries.  Before the solve the engine prints the
+RESOLVED VIEW of every property context the run uses (see "variants" above).
 
 ## Enthalpy reference state (the `phase` field in `standardThermochemistry`)
 

@@ -339,6 +339,22 @@ private:
                                    const DictPtr&       udict,
                                    const ThermoPackage& global);
 
+    //  NAMED VARIANTS (DEV.md 4c C398): resolve every inline root unit's
+    //  `thermo <name>;` against the case system, and BUILD each selected
+    //  variant now -- complete before any calculation -- printing its
+    //  resolved view once (thermo/ResolvedView.H).
+    void selectNamedVariants(std::vector<DictPtr>& units, const ThermoPackage& global);
+    //  The resolved view of a package thermoFor just built from a fragment
+    //  (a named variant, once per variant; an inline fragment, once per unit).
+    void printFragmentView(const std::string& uname, const DictPtr& fragment,
+                           const DictPtr& merged, const ThermoPackage& pkg,
+                           const std::string& base);
+    //  The resolved view of a SECTOR dictionary a unit resolved against
+    //  (once per dictionary; the root system's is printed by the binary).
+    void printContextView(const std::string& constantDir, const DictPtr& resolved,
+                          const ThermoPackage& pkg);
+    std::map<std::string, std::vector<std::string>> variantSelectors_;
+
     // Installs the case's declared convergence contract (system/solverDict
     // `reactiveEquilibrium { ... }`) on a package this class just BUILT --
     // the per-unit thermo{} worlds.  The global package is served by

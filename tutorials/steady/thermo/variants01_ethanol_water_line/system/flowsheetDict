@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  flowsheetDict  --  variants01_ethanol_water_line  (Process mode)
+
+  A single PIPE carrying a liquid ethanol-water mixture (20 mol % ethanol,
+  300 K, 3 bar, 1000 kmol/h) through 50 m of 0.1 m commercial-steel line.
+  The pipe SELECTS the variant `vogelLaw` of the case's property dictionary
+  with one line, `thermo vogelLaw;`: its Reynolds number, and so its friction
+  factor and pressure drop, are priced on the Vogel liquid viscosity, while
+  the rest of the system (the ideal gamma-phi equilibrium, the liquid
+  density routes, the surface tension) is the system's.  The run prints the
+  resolved view of the variant before the solve -- CHOICE says the liquid
+  viscosity was decided in `variants.vogelLaw`, every other row in the system
+  -- and the [liquid properties] table after it says which viscosity the
+  pipe took, and the number.
+
+    feed (liquid, 3 bar)  ->  [line pipe, thermo vogelLaw]  ->  delivered
+\*---------------------------------------------------------------------------*/
+units
+(
+    {
+        name        line;
+        type        pipe;
+        model       Churchill;
+        thermo      vogelLaw;             // the variant of constant/thermoPhysPropDict
+        in          feed;
+        outputs     ( delivered );
+        operation
+        {
+            geometry
+            {
+                D          0.1     m;
+                L          50.0    m;
+                roughness  4.6e-5  m;   // commercial steel
+                dz         0.0     m;
+            }
+        }
+    }
+);

@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  delivered              F                0.277777777778     1e-4
+stream  delivered              T                300                1e-4
+stream  feed                   F                0.277777777778     1e-4
+stream  feed                   T                300                1e-4
+kpi     line                   F                0.277777777778     1e-4
+kpi     line                   P_in             300000             1e-4
+kpi     line                   P_out            296046.64182       1e-4
+kpi     line                   dP_elevation     0                  1e-4
+kpi     line                   dP_fittings      0                  1e-4
+kpi     line                   dP_friction      3953.35817975      1e-4
+kpi     line                   deltaP           3953.35817975      1e-4
+kpi     line                   density          901.28574127       1e-4
+kpi     line                   frictionFactor   0.020412696263     1e-4
+kpi     line                   head_loss_m      0.44728361351      1e-4
+kpi     line                   regime           2                  1e-4
+kpi     line                   reynolds         94038.8136572      1e-4
+kpi     line                   velocity         0.927110800917     1e-4
+kpi     line                   viscosity        0.00088856049215   1e-4
+boundary global               H_feeds_kW       -79041.0320175     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -79041.0320175     1e-4
+closure line                   raw_kW           -1.45519152284e-11 1e0
+closure line                   step_kW          0                  1e-4
+closure line                   remaining_kW     -1.45519152284e-11 1e0
+source  line                   liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  line                   liquidViscosity  Vogel/GrunbergNissan exact

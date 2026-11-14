@@ -2679,4 +2679,57 @@ scalar ThermoPackage::S_real(scalar T, scalar P_Pa, const sVector& y,
     return S_real(T, P_Pa, y);
 }
 
+//  ---- WHAT THE PACKAGE ANSWERS A TRANSPORT PROPERTY WITH (C398 slice (a)) --
+//  Read from the objects the package holds, never from the dictionary, so the
+//  resolved view says what runs -- including the gas-viscosity model a
+//  `transport {}` block without a vapour viscosity still gets from its
+//  factory's default (readTransportBlock above, TransportModel::New).
+//  Placed at the end of the file so no line a lesson cites above it moved.
+ThermoPackage::TransportMethodInfo
+ThermoPackage::transportMethodInfo(const std::string& key) const
+{
+    TransportMethodInfo r;
+    if (key == "viscosity" && transport_)
+    { r.model = transport_->modelName(); r.modelCitation = transport_->citation();
+      r.modelWindow = transport_->validityWindow(); }
+    else if (key == "thermalConductivity" && thermalConductivity_)
+    { r.model = thermalConductivity_->modelName();
+      r.modelCitation = thermalConductivity_->citation();
+      r.modelWindow = thermalConductivity_->validityWindow(); }
+    else if (key == "diffusivity" && diffusivity_)
+    { r.model = diffusivity_->modelName(); r.modelCitation = diffusivity_->citation();
+      r.modelWindow = diffusivity_->validityWindow(); }
+    else if (key == "liquidViscosity" && liquidViscosity_)
+    {
+        r.model = liquidViscosity_->modelName();
+        r.modelCitation = liquidViscosity_->citation();
+        r.modelWindow = liquidViscosity_->validityWindow();
+        if (liquidViscosityMixing_)
+        { r.rule = liquidViscosityMixing_->ruleName();
+          r.ruleCitation = liquidViscosityMixing_->citation();
+          r.ruleWindow = liquidViscosityMixing_->validityWindow(); }
+    }
+    else if (key == "liquidConductivity" && liquidConductivity_)
+    {
+        r.model = liquidConductivity_->modelName();
+        r.modelCitation = liquidConductivity_->citation();
+        r.modelWindow = liquidConductivity_->validityWindow();
+        if (liquidConductivityMixing_)
+        { r.rule = liquidConductivityMixing_->ruleName();
+          r.ruleCitation = liquidConductivityMixing_->citation();
+          r.ruleWindow = liquidConductivityMixing_->validityWindow(); }
+    }
+    else if (key == "liquidDiffusivity" && liquidDiffusivity_)
+        r.model = liquidDiffusivity_->modelName();
+    else if (key == "surfaceTension" && surfaceTension_)
+    {
+        r.model = surfaceTension_->modelName();
+        if (surfaceTensionMixing_)
+        { r.rule = surfaceTensionMixing_->ruleName();
+          r.ruleCitation = surfaceTensionMixing_->citation();
+          r.ruleWindow = surfaceTensionMixing_->validityWindow(); }
+    }
+    return r;
+}
+
 } // namespace Choupo

@@ -1,0 +1,33 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    muSystem               Cp_ig            40.0844606         1e-4
+diag    muSystem               H_R              0                  1e-4
+diag    muSystem               H_ig             -240376.709919     1e-4
+diag    muSystem               H_real           -240376.709919     1e-4
+diag    muSystem               P                300000             1e-4
+diag    muSystem               S_R              0                  1e-4
+diag    muSystem               S_ig             202.665137774      1e-4
+diag    muSystem               S_real           202.665137774      1e-4
+diag    muSystem               T                300                1e-4
+diag    muSystem               Z                1                  1e-4
+diag    muSystem               gamma            1.26170799956      1e-4
+diag    muSystem               surface_tension  0.0547559634371    1e-4
+diag    muSystem               v_molar          0.008314462618     1e-4
+diag    muSystem               viscosity        7.88574384019e-06  1e-4
+diag    muSystem               viscosity_liquid 0.000906541876223  1e-4
+diag    muVariant              Cp_ig            40.0844606         1e-4
+diag    muVariant              H_R              0                  1e-4
+diag    muVariant              H_ig             -240376.709919     1e-4
+diag    muVariant              H_real           -240376.709919     1e-4
+diag    muVariant              P                300000             1e-4
+diag    muVariant              S_R              0                  1e-4
+diag    muVariant              S_ig             202.665137774      1e-4
+diag    muVariant              S_real           202.665137774      1e-4
+diag    muVariant              T                300                1e-4
+diag    muVariant              Z                1                  1e-4
+diag    muVariant              gamma            1.26170799956      1e-4
+diag    muVariant              surface_tension  0.0547559634371    1e-4
+diag    muVariant              v_molar          0.008314462618     1e-4
+diag    muVariant              viscosity        7.88574384019e-06  1e-4
+diag    muVariant              viscosity_liquid 0.00088856049215   1e-4

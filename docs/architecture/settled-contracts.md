@@ -3762,6 +3762,45 @@ computation reads `.value`.  Gates: `check_liquid_property_ratchet` ·
 every record and route) · `check_property_sources_pinned`.  Record:
 [`docs/design/thermophysical-slice0-plan.md`](../design/thermophysical-slice0-plan.md).
 
+### A CASE DECLARES ITS PROPERTIES IN ONE DICTIONARY; A UNIT SELECTS A NAMED VARIANT (2026-11-14, DEV.md 4c C398 ruled, slice (a))
+
+**A CASE DECLARES ITS PROPERTIES IN ONE DICTIONARY; A UNIT SELECTS A NAMED
+VARIANT (2026-11-14, DEV.md 4c C398 ruled, slice (a)).**  The blocks of
+`constant/thermoPhysPropDict` ARE the case's system; the file may add
+`variants {}`, named variants that state only what differs and derive
+DIRECTLY from the file's own system (one base: no chain, no cycle; a variant
+naming another is refused).  A unit (`system/flowsheetDict`) and a property
+operation (`system/propsDict`) select one by name, `thermo <name>;`; an inline
+`thermo { ... }` keeps reading, as an unnamed variant.  The words `package`,
+`packages`, `derivedFrom` and `propertyPackage` are not used.  THE ATOM OF
+REPLACEMENT inside `transport` is the property block
+(`transport.<phase>.<property>`, the names one table,
+`src/thermo/TransportGrammar.H`), inside `volumetric` the phase block --
+the same for a variant, an inline fragment and a sector's `inherits`;
+`equilibrium` and `caloric` are replaced as before, and a variant that changes
+them is a model boundary.  A SECTOR KEEPS ITS OWN DICTIONARY and may hold
+variants of its own; the plant's are not inherited.  Every variant a run uses
+is resolved complete before it computes; a variant nobody selects is
+announced by the unread-key audit, not refused (a solve and a props run read
+one `constant/`).  Before the solve the engine prints the RESOLVED VIEW of
+every property context the run uses, two columns per property: CHOICE (where
+the choice was made, never the level that selected it) and DATA (law,
+mixing rule marked default when unwritten, interaction pairs read or missed,
+density and enthalpy routes).  The reasons, from the ruling: one place to
+read how a case is priced; a small change written as a small change (a
+whole-block fragment made the unit copy almost all of `transport` to change
+one law); the plant-and-sectors contract preserved; and, Vitor's rule carried
+by the reviewer, "preserve what is already good in Choupo; where a difference
+is only a matter of style, it is not worth changing".  Limit of this slice,
+not of the design: a variant or fragment may not carry `volumetric` until
+slice (c) (the liquid-density measurements are one table per run).  Code:
+`src/thermo/PropertyVariants.{H,cpp}`, `src/thermo/ThermoOverride.H`,
+`src/thermo/ResolvedView.{H,cpp}`,
+`src/unitOperations/flowsheet/VariantSelection.H`.  Gate:
+`check_variant_same_values`.  Record:
+[`docs/design/several-laws-per-property.md`](../design/several-laws-per-property.md),
+THE RULING.
+
 ### A LIQUID DENSITY IS RESOLVED PER CONSTITUENT SET, ONCE, AND NEVER HANDED OVER (2026-11-13, DEV.md 4c C378 pilot)
 
 **A LIQUID DENSITY IS RESOLVED PER CONSTITUENT SET, ONCE, AND NEVER HANDED

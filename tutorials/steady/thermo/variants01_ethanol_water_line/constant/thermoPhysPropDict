@@ -1,0 +1,82 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict -- variants01_ethanol_water_line
+
+  WHAT IT IS.  The ONE property dictionary of this case (DEV.md 4c C398,
+  slice (a)).  Its blocks ARE the case's system: an ideal gamma-phi mixture
+  of ethanol and water, the liquid viscosity on the two-constant Andrade
+  law of each record (ln mu = A + B/T), the surface tension by Brock-Bird.
+
+  ONE NAMED VARIANT, `vogelLaw`, declares the ONE thing it changes: the liquid
+  viscosity block, priced on the three-constant Vogel law of each record
+  (ln mu = A + B/(T - C)).  A variant derives DIRECTLY from the system
+  above -- never from another variant -- and the property block is the
+  atom it replaces: `transport.liquid.viscosity` is replaced whole, and
+  `transport.interface.surfaceTension` is kept from the system, untouched.
+
+  WHO SELECTS IT.  The pipe in system/flowsheetDict (`thermo vogelLaw;`) and
+  the operation `muVariant` in system/propsDict.  Both receive the package
+  built from the same merged text by the same builder; the gate
+  check_variant_same_values holds that they receive the same liquid
+  viscosity at the same state, to 1e-12.  Both runs print the RESOLVED
+  VIEW of the system and of the variant before they compute anything.
+
+  SOURCES.  The records' own laws (constant/components/, sealed copies):
+  the Andrade and Vogel coefficients and their provenance are in each
+  record's liquidViscosity block.
+  WHAT IT DOES NOT CLAIM.  Which of the two laws is closer to a
+  measurement -- that is not this case's question; it shows how a case
+  holds two choices in one file and where each number came from.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( ethanol water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel ideal;            // gamma = 1 identically (Raoult)
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { model Andrade; }    // ln mu = A + B/T, each record's `andrade` block
+    }
+    interface
+    {
+        surfaceTension { model BrockBird; }
+    }
+}
+
+variants
+{
+    vogelLaw                            // only what differs from the system above
+    {
+        transport
+        {
+            liquid
+            {
+                viscosity { model Vogel; }   // ln mu = A + B/(T - C), each record's `vogelLaw` block
+            }
+        }
+    }
+}

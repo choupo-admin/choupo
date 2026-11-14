@@ -91,6 +91,9 @@ Description
 #include "thermo/Database.H"
 #include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
+#include "thermo/ResolvedView.H"     // the resolved view (C398)
+#include "thermo/PropertyVariants.H"  // named variants of the property dictionary (C398)
+#include "unitOperations/flowsheet/VariantSelection.H"   // sector dictionaries' variants (C398)
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/SaturationCurves.H"
 #include "thermo/ThermoPackage.H"
@@ -187,6 +190,9 @@ static SimulationResult runSimulation(const DictPtr&     flowsheetDict,
         throw std::runtime_error("choupoSolve: no constant/thermoPhysPropDict"
             " -- every case declares its thermophysical system (v2 grammar).");
     ThermoPackage thermo = ThermoPackageBuilder::build(packageDict, db, chem);
+    if (thermoAnnounce(2) && announceOnce("resolvedView:system"))   // C398: before the solve
+        resolvedView::print(std::cout, "system", thermo, packageDict,
+            resolvedView::systemChoice(packageDict), {});
 
     // Run-block (integrity teeth): refuse to SOLVE on an UNVERIFIED estimate of a
     // REQUIRED property unless the package opts in with `acceptUnverified true;`.
@@ -1592,6 +1598,15 @@ try
         if (outerDict)
             dictAudit::report(dictAudit::auditTree(*outerDict, "outerDict"),
                               verbosity);
+        //  The property dictionary's VARIANTS get the same audit (C398): a
+        //  variant no unit selected is announced as never read, and so is a
+        //  key inside a selected variant that nothing consulted.
+        if (packageDict)
+            if (const DictPtr vb = propertyVariants::variantsBlock(packageDict))
+                dictAudit::report(dictAudit::auditTree(*vb,
+                    "constant/thermoPhysPropDict variants"), verbosity);
+        flowsheetVariants::auditSectorVariants(verbosity);   // and each sector's
+
 
         // Layer 3b: controlDict `reports {... }` chain.
         runReports(result);

@@ -97,6 +97,16 @@ void collectDeclarations(const DictPtr&                  node,
     auto declareFrom = [&](const DictPtr& u, const std::string& name)
     {
         if (!u->found("thermo")) return;
+        //  `thermo <name>;` selects a variant of the case's property
+        //  dictionary (C398): kept as its name here, resolved against the
+        //  system by the ONE reader (PropertyVariants.H) once collected.
+        if (propertyVariants::selectsByName(u))
+        {
+            auto stub = std::make_shared<Dictionary>("thermo");
+            stub->insert(propertyVariants::selectedKey(), u->lookupWord("thermo"));
+            out[name] = stub;
+            return;
+        }
         DictPtr th;
         try { th = u->subDict("thermo"); }
         catch (const std::exception&) { th = nullptr; }
@@ -266,6 +276,31 @@ ModelBoundaryLedger::ModelBoundaryLedger(const DictPtr&         flowsheetDict,
     //  "" = the case directory, which is the process's cwd at solve time --
     //  the same base flattenNode resolves member folders against.
     collectDeclarations(flowsheetDict_, "", "", declared_, declarations_, declaredBase_);
+    //  A unit that selected a NAMED variant: its declaration is the variant's
+    //  body, read through the same reader the solver uses.  A name the case
+    //  system does not resolve (a sector's own variant) leaves the unit
+    //  undeclared here -- a named gap, as for any declaration the auditor
+    //  cannot read; the solver refuses an unknown name by itself.
+    for (auto it = declared_.begin(); it != declared_.end();)
+    {
+        const DictPtr& th = it->second;
+        if (th->keys().size() == 1 && th->keys().front() == propertyVariants::selectedKey())
+        {
+            const std::string vn = th->lookupWord(propertyVariants::selectedKey());
+            DictPtr f;
+            try
+            {
+                if (packageDict_ && propertyVariants::names(packageDict_).size())
+                    f = propertyVariants::stampedFragment(propertyVariants::body(
+                        packageDict_, vn, "energyBalance audit of unit '" + it->first + "'"), vn);
+            }
+            catch (const std::exception&) { f = nullptr; }
+            if (f && fragmentDeclaresWorld(f)) { it->second = f; ++it; }
+            else it = declared_.erase(it);
+            continue;
+        }
+        ++it;
+    }
     reportWorld_ = describeThermoWorld(packageDict_);
 
     if (!declared_.empty() && (!db_ || !packageDict_))

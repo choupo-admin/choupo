@@ -1770,6 +1770,11 @@
       "exit": 0,
       "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside r_max^2/2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 8 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
       "seconds": 31.7
+    },
+    "check_variant_same_values": {
+      "exit": 0,
+      "claim": "check_variant_same_values: OK -- (a) both modes of variants01 run; (b) both print the resolved view of variant 'vogelLaw' with one fingerprint and the same DATA rows; (c) the pipe and operation muVariant receive the same liquid viscosity (0.00088856 Pa s at 300 K, 3 bar) to the printed precision (%.12g, relative <= 5e-12); (d) the system's is different (0.000906542), so the selection is live; (e) the surface tension, a block the variant does not declare, is the system's; (f-i) a derived variant, an unknown name and both spellings of one block are refused, an unused variant is announced.  ONE property (liquid viscosity) at ONE state on ONE flat case: NOT sector variants, NOT a variant that changes equilibrium, NOT agreement below 5e-12",
+      "seconds": 0.1
     }
   }
 }
