@@ -3518,6 +3518,35 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C400 (Vitor, 2026-11-14: "e nao te esquecas dos Guias e
+> eventualmente um EduTool para explicar aos alunos como isto tudo fica
+> arquitetado").**  A COMMISSION.  (1) THE GUIDES: every slice of C398
+> carries its Theory Guide section, docs/ai entry and Tutorials Guide
+> entry (rule 4d, already in each brief); IN ADDITION, when slice (b)
+> lands, the Theory Guide's property-architecture chapter opens with an
+> overview written for a reader who has never seen the code: the six
+> homes (component record, pair record, experiments file, asset record,
+> property dictionary with its variants, the unit's selection), what
+> each holds and never holds, the decision per property (mixture
+> measured / direct mixture model / pure laws plus a mixing rule;
+> missing datum refused), and one figure of the chain from a record's
+> law to the number a unit uses; docs/ai/thermophysical-properties.md
+> gets the same map for an assistant authoring a case.  (2) AN EDUTOOL,
+> decided by the architect (rule 00): "Where does this number come
+> from?" -- the student picks a case (the ternary witness first), a unit
+> and a property, and follows the chain the engine's resolved view
+> prints: which variant the unit selected, which law of which record each
+> constituent used and its window, which mixing rule and which
+> interaction parameters (or which declared zero), which measurement
+> displaced which method, and the value; then changes one choice in a
+> variant and sees what moves.  It reads the engine's resolved view,
+> computes nothing of its own, and every claim cites file:line (the
+> lesson-citation gates).  BUILT AFTER slice (b), because before it the
+> view has no several laws to show; the page is scoped with its
+> questions written first (what a student must be able to answer after
+> it).  Accepts: the overview section with its label and figure, the
+> page, the Theory link from the page to the section, the gates.
+
 > **C398, RULED, SECOND ADDENDUM (2026-11-14; a third outside reading,
 > which APPROVES the ruled design for implementation and asks four
 > corrections, all accepted).**  (V1) The resolved view names, for every
