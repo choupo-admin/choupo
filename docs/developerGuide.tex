@@ -2102,6 +2102,18 @@ module-level \code{SCAN\_ROOTS}.  Three of the four gates the sweep of
 \code{integ/c398ab} failed scan by directory and name no file; the plan now
 lists all four.
 
+\paragraph{Every script \code{bin/runTests} runs directly is executable.}
+Most gates are called with no interpreter in front, so a gate committed as
+mode \code{100644} fails with ``Permission denied'' --- and only the full
+sweep reaches most gate sites, so the failure surfaced an hour into a sweep,
+twice in two days.  \file{bin/curate/gate\_exec\_bits.py} reads
+\code{bin/runTests}' own sites and git's modes in a fraction of a second;
+\code{bin/runTests} runs it in \emph{every} mode before anything else (the
+sweep, \code{--fast}, \code{--scope}, \code{--gui}, \code{--witnesses},
+\code{--record}, a named case) and \code{bin/integrate --plan} runs it on the
+branch's head.  A refusal names each file and the remedy,
+\code{chmod +x} and \code{git update-index --chmod=+x}.
+
 
 % Source: bin/runTests:507-518 (the flag and its contract), :833-842 (the
 % not-recordable markers; a case with no golden is skipped), :845-849 and

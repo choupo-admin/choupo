@@ -97,6 +97,9 @@ a human, leaving the worktree where it stopped:
               every gate whose SCAN ROOTS hold a touched file (a gate that
               walks src/ or globs data/standards/**/*.dat names no file;
               bin/curate/gate_scan_roots.py reads the roots from its source);
+      exec    every bin/curate script bin/runTests runs directly is mode
+              100755 at the branch's head (bin/curate/gate_exec_bits.py
+              --rev); a refusal names the files and the plan exits 1;
       --gui   when gui/ moved, or when lines moved in a src/ file an EduTool
               lesson cites by file:line;
       --fast  when a factory REGISTRATION or the build system moved;
@@ -1158,7 +1161,15 @@ def main(argv):
             f"({base_sha[:10]}): {len(files)} file(s) the branch changes.")
         say(f"  (maps read from {TOOL_ROOT}; the merged tree may differ)")
         print_plan(reach(TOOL_ROOT, mb, files))
-        return 0
+        #  EXECUTABLE BITS (C394): a gate bin/runTests runs directly and that
+        #  is committed as 100644 fails only in a full sweep; the plan reads
+        #  the branch's own modes and says so before anything is merged.
+        p = subprocess.run([sys.executable, str(TOOL_ROOT / "bin" / "curate" /
+                                                "gate_exec_bits.py"),
+                            "--rev", br_sha], capture_output=True, text=True)
+        say("  exec bits: " + (p.stdout.strip() or p.stderr.strip())
+            .replace("\n", "\n    "))
+        return 1 if p.returncode else 0
 
     if git(repo, "merge-base", "--is-ancestor", br_sha, base_sha,
            check=False) is not None:

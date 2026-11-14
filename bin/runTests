@@ -1460,6 +1460,23 @@ if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
 #  is SKIPPED: creating one is a recording decision, not a sweep side-effect.
 if [ "${1:-}" = "--record-append" ]; then RECORD=1; RECORD_APPEND=1; shift; fi
 
+#  EVERY SCRIPT THIS FILE RUNS DIRECTLY IS EXECUTABLE -- IN EVERY MODE
+#  (DEV.md 4c C394, 2026-11-14).  A gate committed as mode 100644 fails with
+#  "Permission denied" at its site, and only the full sweep reaches most
+#  sites: check_ratebased_segment.py and check_packing_record.py were both
+#  committed that way within two days and surfaced an hour into a sweep.  The
+#  check reads this file's own sites and git's modes, in a fraction of a
+#  second, so it runs here, before any mode branches, record and --gui
+#  included; a refusal ABORTS with the files and the remedy named.
+if ! "$ROOT/bin/curate/gate_exec_bits.py" > /tmp/execbits.$$ 2>&1; then
+    printf "FAIL  %-40s  (run bin/curate/gate_exec_bits.py)\n" "gate-exec-bits"
+    cat /tmp/execbits.$$
+    rm -f /tmp/execbits.$$
+    echo "ABORTED: a script bin/runTests runs directly is not executable (DEV.md 4c C394).  No mode may skip this."
+    exit 1
+fi
+rm -f /tmp/execbits.$$
+
 #  THE STATIC CLOSURE GATE RUNS IN EVERY MODE (2026-11-09, DEV.md 4c C258).
 #  A golden file that PINS a violated mass, element or energy balance is a
 #  defect no run can reveal ("unchanged" is all a sweep says of it), and
