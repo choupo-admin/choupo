@@ -17,11 +17,8 @@ HeatCapacityModel	NASA7	catalogue
 HeatCapacityModel	NASA9	catalogue
 HeatCapacityModel	RowlinsonBondi	guide+catalogue
 HeatCapacityModel	chemsepCp16	guide+catalogue
-HeatCapacityModel	polynomial	guide
 HeatTransferCorrelation	DittusBoelter	guide
 IsothermModel	langmuir	guide+catalogue
-LiquidViscosityModel	Vogel	guide
-LiquidViscosityModel	chemsepEq101	catalogue
 ODEIntegrator	EulerSI	guide+catalogue
 ODEIntegrator	Rosenbrock23	catalogue
 PhaseChangeHTC	NusseltFilm	guide
@@ -31,7 +28,6 @@ Report	energyStreams	catalogue
 Report	profiles	catalogue
 Signal	prbs	catalogue
 SizeDistribution	tabular	guide+catalogue
-SurfaceTensionModel	StoredCorrelation	guide+catalogue
 TransportModel	constantRejection	guide
 UnitOperation	convectiveDryer	guide
 UnitOperation	tsaTwinBed	guide

@@ -46,11 +46,12 @@ scalar Vogel::viscosityLiquidPure(const Component& c, scalar T) const
         throw std::runtime_error("Vogel viscosity: component '" + c.name()
             + "' has no `liquidViscosity` block in its.dat.");
     auto lv = c.liquidViscosityDict();
-    if (!lv->found("vogel"))
+    const std::string law = law_.empty() ? std::string("vogel") : law_;
+    if (!lv->found(law))
         throw std::runtime_error("Vogel viscosity: component '" + c.name()
-            + "' has a liquidViscosity block but no `vogel { A; B; C; }`"
+            + "' has a liquidViscosity block but no `" + law + " { A; B; C; }`"
             " sub-block.");
-    auto v = lv->subDict("vogel");
+    auto v = lv->subDict(law);
     const scalar A = v->lookupScalar("A");
     const scalar B = v->lookupScalar("B");
     const scalar C = v->lookupScalarOrDefault("C", 0.0);

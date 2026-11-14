@@ -31,6 +31,8 @@ License
 #include "SatoRiedel.H"
 #include "LiquidConductivityMixingRule.H"
 
+#include "thermo/RecordLaws.H"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -50,7 +52,18 @@ void LiquidConductivityModel::registerModel(const std::string& name, Factory f)
 
 std::unique_ptr<LiquidConductivityModel> LiquidConductivityModel::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("model", "SatoRiedel");
+    if (!dict->found("model"))
+        throw std::runtime_error("liquid thermal conductivity: the block names no `model` -- the factory"
+            " default (SatoRiedel) was removed (DEV.md 4c C398, review row SL-04): a"
+            " property block that names no model is either a liquid property"
+            " block read per constituent from the records, or refused.  Write"
+            " `model <word>;` -- registered:" + []
+            {
+                std::string s;
+                for (const auto& kv : registry()) s += " " + kv.first;
+                return s;
+            }());
+    const std::string name = dict->lookupWord("model");
     auto it = registry().find(name);
     if (it == registry().end())
     {
@@ -64,6 +77,14 @@ std::unique_ptr<LiquidConductivityModel> LiquidConductivityModel::New(const Dict
 
 void LiquidConductivityModel::registerBuiltins()
 {
+    //  U3 (C398): each type's form and coefficient units, in ONE place.
+    recordLaws::declareForm("liquidThermalConductivity", "chemsepEq16",
+        "k/(W/(m K)) = A + exp(B/(T/K) + C + D (T/K) + E (T/K)^2); A in W/(m K), B in K,"
+        " C dimensionless, D in 1/K, E in 1/K^2");
+    for (const char* w : { "SatoRiedel", "satoRiedel" })
+        recordLaws::declareForm("liquidThermalConductivity", w,
+            "PREDICTIVE: k/(W/(m K)) = (1.1053/sqrt(M/(g/mol))) [3 + 20 (1 - Tr)^(2/3)]"
+            " / [3 + 20 (1 - Tbr)^(2/3)] from Tc, Tb, M; no record law");
     //  The measured rung: ChemSep form 16, 420 of 431 records.
     registerModel("chemsepEq16", [](const DictPtr& d) { return std::make_unique<ChemSepCond16>(d); });
     registerModel("SatoRiedel", [](const DictPtr& d) { return std::make_unique<SatoRiedel>(d); });
@@ -78,6 +99,11 @@ std::vector<std::string> LiquidConductivityModel::availableModels()
     std::vector<std::string> out;
     for (const auto& [k, _] : registry()) out.push_back(k);
     return out;
+}
+
+bool LiquidConductivityModel::hasModel(const std::string& name)
+{
+    return registry().count(name) > 0;
 }
 
 } // namespace Choupo

@@ -5541,6 +5541,47 @@ NOT MODELLED, said plainly (the run says it too): nucleation and supercooling --
 \end{tutgolden}
 
 \clearpage
+\tutentry{purelaws02\_water\_two\_vapour\_pressure\_laws}{tutorials/props/thermo/purelaws02\_water\_two\_vapour\_pressure\_laws}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{psatPreferred\_350K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{psatPreferred\_450K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{psatPreferred\_550K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{psatSR1\_350K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{psatSR1\_450K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{psatSR1\_550K}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Several named laws in one record: a case-local water record holding two vapour-pressure laws (the catalogue's Antoine, preferred, and the IAPWS saturation equation as Wagner's form, with a hard window), priced once on the preferred law and once with the IAPWS law pinned beside the property, at 350, 450 and 550 K}
+\begin{tutnarrative}
+purelaws02 -- the saturation pressure of water at 350, 450 and 550 K, two ways.
+
+psatPreferred\_$\ast$ the record's preferred law, `antoine`: inside its soft window (273-373 K) it is the catalogue's number; above it the law is extrapolated, and the run says so once. psatSR1\_$\ast$ the variant `iapws`: the IAPWS law `SR1` pinned beside the property (the reason is printed with the choice). Its hard window is 273.16-647.096 K: every point here is inside it.
+
+What a student reads: the two laws agree to about 2.5 \% at 373 K and part by more than 10 \% at 473 K and above, where the Antoine law is no longer inside the window it was fitted on (docs/design/several-laws-per-property.md section 4 measures the same against IAPWS-IF97). Neither law is switched for the other by the state: each operation uses the one law it chose.
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{psatPreferred\_350K}{Cp\_ig}{34.055209}
+\goldrow{diag}{psatPreferred\_350K}{H\_R}{0}
+\goldrow{diag}{psatPreferred\_350K}{H\_ig}{-240070.657473}
+\goldrow{diag}{psatPreferred\_350K}{H\_real}{-240070.657473}
+\goldrow{diag}{psatPreferred\_350K}{P}{100000}
+\goldrow{diag}{psatPreferred\_350K}{Psat\_water}{42168.7918954}
+\goldrow{diag}{psatPreferred\_350K}{S\_R}{0}
+\goldrow{diag}{psatPreferred\_350K}{S\_ig}{194.26122203}
+\goldrow{diag}{psatPreferred\_350K}{S\_real}{194.26122203}
+\goldrow{diag}{psatPreferred\_350K}{T}{350}
+\goldrow{diag}{psatPreferred\_350K}{Z}{1}
+\goldrow{diag}{psatPreferred\_350K}{gamma}{1.32300782948}
+\goldrow{diag}{psatPreferred\_350K}{v\_molar}{0.029100619163}
+\goldrow{diag}{psatPreferred\_450K}{Cp\_ig}{34.918502}
+\goldmore{64}
+\end{tutgolden}
+
+\clearpage
 \tutentry{refEoS01\_iapws95\_verification}{tutorials/props/thermo/refEoS01\_iapws95\_verification}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -5893,6 +5934,45 @@ The golden master locks every computed value at reltol 1e-4.
 \goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{v\_molar}{0.0247895702956}
 \goldrow{diag}{sigma\_acetone0500\_moleFractionAverage}{viscosity}{7.98074944224e-06}
 \goldmore{266}
+\end{tutgolden}
+
+\clearpage
+\tutentry{purelaws01\_methanol\_isopropanol\_water}{tutorials/props/transport/purelaws01\_methanol\_isopropanol\_water}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{muRecords\_293K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{muRecords\_323K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{muRecords\_343K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{muWaterPin\_293K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{muWaterPin\_323K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{muWaterPin\_343K}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{One law per constituent: the liquid viscosity of methanol + 2-propanol + water, which no single model word could price (Vogel refuses 2-propanol, chemsepEq101 refuses water), priced with each record's own preferred law and a mixing rule; then water pinned to its other law, with the reason}
+\begin{tutnarrative}
+purelaws01 -- the same liquid at 293.15, 323.15 and 343.15 K, two ways.
+
+muRecords\_$\ast$ the system's block: every constituent on its record's preferred law (methanol vogel, 2-propanol chemsepEq101, water vogel). muWaterPin\_$\ast$ the same, with water PINNED to its `andrade` law beside the property; the reason is printed with the choice. Only the property block named in the operation's `thermo \{\}` is replaced (the atom of C398 slice (a)).
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{muRecords\_293K}{Cp\_ig}{52.946438458}
+\goldrow{diag}{muRecords\_293K}{H\_R}{0}
+\goldrow{diag}{muRecords\_293K}{H\_ig}{-239088.331583}
+\goldrow{diag}{muRecords\_293K}{H\_real}{-239088.331583}
+\goldrow{diag}{muRecords\_293K}{P}{100000}
+\goldrow{diag}{muRecords\_293K}{S\_R}{0}
+\goldrow{diag}{muRecords\_293K}{S\_ig}{248.411727049}
+\goldrow{diag}{muRecords\_293K}{S\_real}{248.411727049}
+\goldrow{diag}{muRecords\_293K}{T}{293.15}
+\goldrow{diag}{muRecords\_293K}{Z}{1}
+\goldrow{diag}{muRecords\_293K}{gamma}{1.18628936903}
+\goldrow{diag}{muRecords\_293K}{v\_molar}{0.0243738471647}
+\goldrow{diag}{muRecords\_293K}{viscosity\_liquid}{0.00110212717208}
+\goldrow{diag}{muRecords\_323K}{Cp\_ig}{55.8149235786}
+\goldmore{64}
 \end{tutgolden}
 
 \clearpage

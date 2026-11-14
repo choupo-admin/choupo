@@ -84,7 +84,21 @@ public:
     static void registerType(const std::string& name, Factory f);
     static std::unique_ptr<SurfaceTensionModel> New(const DictPtr& dict);
     static void registerBuiltins();
+    //  Is `name` a registered type of this family?  (C398 slice (b): a
+    //  record law's name doubles as its type when it names one.)
+    static bool hasModel(const std::string& name);
     static std::vector<std::string> availableModels();
+
+    //  THE LAW OF THE RECORD THIS OBJECT READS (C398 slice (b)): the name of
+    //  the sub-block of the component's property block -- `vogel`,
+    //  `chemsepEq101`, a case's own name -- bound by the package when it
+    //  builds one law object per constituent.  Empty: the type's own
+    //  sub-block name (today's reading, unchanged).
+    void bindLaw(const std::string& law) { law_ = law; }
+    const std::string& boundLaw() const { return law_; }
+
+protected:
+    std::string law_;
 
 private:
     static std::map<std::string, Factory>& registry();

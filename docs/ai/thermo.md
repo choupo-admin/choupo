@@ -537,13 +537,48 @@ Pick by need:
 | Gas viscosity (low pressure) | **`Chung`** — uses Tc/Pc/ω/MW, zero new data (non-polar truncation, Vc estimated, both announced); or **`ChapmanEnskog`** — kinetic theory over the record's `lennardJones { sigma [0 1 0 0 0] <m>; epsOverK <K> K; provenance {…} }` block (REFUSES by name without it; `bin/curate/propose_lennard_jones.py` drafts the block from Svehla 1962 into `data/local/`, a case may adopt it locally). |
 | Gas thermal conductivity | **`Eucken`** — `λ = (Cp+5R/4)·μ/M`, no extra data (exact for a monatomic gas, an approximation for polyatomics, flagged); or **`modifiedEucken`** — Svehla 1962 eq. (2), `λ = (R/M)[15/4 + 1.32(Cp/R − 5/2)]·μ`, the internal modes weighted 1.32. |
 | Gas binary diffusivity | **`Fuller`** — needs `diffusionVolume` on each component (water/N2/O2/CO2/CH4/H2/CO ship it). |
-| Liquid viscosity | **`Vogel`** (3-param `ln μ = A+B/(T-C)`, water 0.2 % RMS) or **`Andrade`** (2-param). |
+| Liquid viscosity | **no word** — each constituent on its record's preferred law (`viscosity { }`; C398 slice (b)); or **`Vogel`** / **`Andrade`** / **`chemsepEq101`** — the law of that NAME for every constituent (refuses a record without it). |
 | Liquid thermal conductivity | **`SatoRiedel`** (parameter-free, organics). |
 | Liquid binary diffusivity | **`WilkeChang`** (needs `associationFactor`). |
 | Surface tension | **`BrockBird`** (corresponding states). |
 
 When a unit op needs a transport property the system doesn't supply, the
 solver throws a clear error naming the missing slot.
+
+### One law per constituent, the legacy words, and a pin (C398 slice (b))
+
+For liquid viscosity, liquid thermal conductivity and surface tension the
+package holds ONE law per constituent, from its own record; the block's
+`mixingRule` combines the pure values.  The block may name NO model:
+
+```
+transport { liquid { viscosity { } } }      // methanol vogel, 2-propanol chemsepEq101, water vogel
+```
+
+A word still reads as before: `Andrade` / `Vogel` / `chemsepEq101` /
+`chemsepEq16` = a pin of the law of that NAME for every constituent;
+`SatoRiedel` / `BrockBird` = predictive, no record law; `StoredCorrelation` =
+the record's `tauPower` law, else Brock-Bird for that component (announced).
+A CASE PIN of one constituent's law sits beside the property:
+
+```
+transport { liquid { viscosity { pin ( { component water; law andrade; reason "..."; } ); } } }
+equilibrium { vaporPressure { pin ( { component water; law SR1; reason "..."; } ); } }
+caloric { liquidHeatCapacity { pin ( ... ); } }     // idealGasHeatCapacity, solidHeatCapacity too
+```
+
+Refused: an unknown component, a law the record does not hold (the error
+lists the laws it has), a component pinned twice, a pin without `law` or
+`reason`.  The law is chosen ONCE per constituent, printed in the resolved
+view (law, type, who chose it, window), never switched by the state; its
+object is built at first evaluation, so a constituent at x = 0 is never
+refused.  NO factory default answers for a block without a word: a vapour
+property block must name its model (no record law exists for it), and a
+`transport {}` with no vapour viscosity has NONE (a consumer is refused,
+naming the line to write).  A `propertyPoint` whose package cannot supply a
+gas viscosity, gas conductivity or surface tension omits that key and says
+so in one line.  Witnesses: `props/transport/purelaws01_methanol_isopropanol_water`,
+`props/thermo/purelaws02_water_two_vapour_pressure_laws`.
 
 ### Liquid mixing rules (`mixingRule`, C331)
 
@@ -629,8 +664,12 @@ unnamed variant.  Grammar, refusals and a worked example:
   this unit use?".
 - The factory defaults the view names when no `mixingRule` is written:
   Grunberg–Nissan (liquid viscosity), Li (liquid conductivity), Butler
-  (surface tension).  A `transport {}` block with no vapour viscosity still
-  answers a gas viscosity, by Chung (the factory default; the view says so).
+  (surface tension).  A `transport {}` block with no vapour viscosity has no
+  gas viscosity since slice (b) (the Chung default was deleted, SL-04).
+- Since slice (b) the view prints, per constituent, each record law the run
+  uses (vapour pressure, the heat capacities, the liquid transport laws) —
+  name, type, who chose it, window — and every law type's form with its
+  coefficient units.
 
 ## The three-tier model-parameter rule
 

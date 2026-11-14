@@ -38,8 +38,17 @@ WHAT IT DOES NOT CHECK, said plainly.  Whether any value is RIGHT: the
 hashes pin what the engine answers, not physics (section 9 of the plan
 lists what is known wrong).  States off the grid.  Mixtures other than the
 manifest's binaries, activity-model effects (the bench's liquid is ideal),
-and the per-unit `thermo {}` override.  Liquid thermal conductivity (not in
-slice 0).
+and the per-unit `thermo {}` override.
+
+SLICE (b) OF C398 (2026-11-14, review rows SL-01/SL-02).  The bench also pins,
+for every catalogue record AND for every distinct sealed copy under
+tutorials/**/constant/components (grouped by content, its paths listed in
+labels.tsv), what the pure-component laws answer on the grid's temperatures:
+the vapour pressure and the ideal-gas, liquid and solid heat capacities (Cp
+and H from 298.15 K) through the component's law objects, the liquid thermal
+conductivity per registered model, and, for the sealed copies, the liquid
+viscosity and surface-tension routes.  A sealed copy's message names its case
+by path, with the checkout replaced by `<root>`.
 
 THE PLATFORM (C384, 2026-11-13).  A hexfloat pinned bit for bit is a claim about
 ONE platform: the libm a binary calls differs in the last bit between C
@@ -60,6 +69,8 @@ bench that cannot run must not pass.  It does not rebuild.
     reads: src/thermo/pureFluid/ src/thermo/equationOfState/ReferenceFluid.cpp
     reads: src/thermo/equationOfState/ReferencePureFluid.cpp src/thermo/iapws/
     reads: data/standards/components/ data/standards/parameters/Helmholtz/
+    reads: src/thermo/vaporPressure/ src/thermo/heatCapacity/ src/thermo/Component.cpp
+    reads: src/thermo/RecordLaws.cpp tutorials/
 """
 import hashlib
 import os

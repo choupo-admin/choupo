@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "Several named laws in one record: a case-local water record holding two vapour-pressure laws (the catalogue's Antoine, preferred, and the IAPWS saturation equation as Wagner's form, with a hard window), priced once on the preferred law and once with the IAPWS law pinned beside the property, at 350, 450 and 550 K";
+verbosity     2;

@@ -71,6 +71,9 @@ public:
     static void registerModel(const std::string& name, Factory f);
     static std::unique_ptr<HeatCapacityModel> New(const DictPtr& dict);
     static void registerBuiltins();
+    //  Is `name` a registered type of this family?  (C398 slice (b): a
+    //  record law's name doubles as its type when it names one.)
+    static bool hasModel(const std::string& name);
 
 private:
     static std::map<std::string, Factory>& registry();

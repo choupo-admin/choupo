@@ -441,7 +441,36 @@ def _glossary() -> str:
 - `liquidHeatCapacity { coefficients ( ... ); }` — for sensible H_liq.
 - `standardThermochemistry { dHf_298; s_298; }` — for K_eq + adiabatic flames.
 - `diffusionVolume <Sigma_v>;` — for Fuller diffusivity.
-- `liquidViscosity { andrade { ... } vogel { ... } }` — model-specific.
+- `liquidViscosity { preferred vogel; andrade { A; B; } vogel { A; B; C; } }`
+  — named laws (below); with one law, no `preferred`.
+- **SEVERAL NAMED LAWS IN ONE BLOCK (C398 slice (b)).**  Any of the seven
+  pure-component blocks (`vaporPressure`, `idealGasHeatCapacity`,
+  `liquidHeatCapacity`, `solidHeatCapacity`, `liquidViscosity`,
+  `liquidThermalConductivity`, `surfaceTension`) may hold several named laws,
+  one sub-block each, with `preferred <name>;` (REQUIRED with two or more,
+  never written with one).  A law's type is its `model` word, or its name
+  when the name is a registered type (`andrade`, `vogel`, `chemsepEq101`,
+  `chemsepEq16`, `tauPower`).  The old shapes read unchanged: a block with a
+  `model` word is one law; a bare `surfaceTension { A; B; Tc; n; Tmin;
+  Tmax; }` is one law of type `tauPower` (σ = A τ^n + B τ^(n+1), τ = 1 −
+  T/Tc).  Each law keeps its type's SOFT window (`Trange` / `Tmin` `Tmax` /
+  `Tlow` `Thigh`: announced outside) and may add a HARD window `domain (lo
+  hi);` in K (outside it the law is refused, naming the record's other laws
+  that cover the state; it never switches).  A law's source goes in the
+  record's one provenance block, by property and law: `provenance {
+  vaporPressure { SR1 { origin literature; method "..."; } } }`.  A law may
+  carry `check { T 298.15 K; value <v> <unit>; tolerance <fraction>; }` — a
+  value from its own source, read back through the law by the gate
+  `check_record_law_values` (the only way a coefficient in another unit is
+  caught).  Each type's form and coefficient units: Theory Guide
+  §"Several named laws in a record".  The five records holding two viscosity
+  laws (benzene, ethanol, methanol, toluene, water) mark `preferred vogel;`.
+- **WHAT A RECORD STORES (A3).**  Primitives once (formation datum in the
+  natural phase, the Cp laws, `HvapTb`, the vapour-pressure laws, `Vliq`);
+  never a derived quantity (h/s/g of another phase, a latent heat at T ≠ Tb,
+  a slope of Psat); a redundant datum only as a CHECK (`dGf_298`).  Gate
+  `check_record_primitives`.  A property's provenance entry lives ONLY in
+  the record's top-level `provenance {}` (gate `check_provenance_home`).
 - `liquidThermalConductivity { chemsepEq16 { A; B; C; D; E; Tmin; Tmax; } }`
   — `k = A + exp(B/T + C + D T + E T²)` W/(m K), read when the case selects
   `transport { liquid { thermalConductivity { model chemsepEq16; } } }`.

@@ -136,8 +136,8 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "b32cd13a8a4783d0ce02bf84800b74462e3fd46d8983942f70e958da3c731aae";
-            computationalSha256 "f9080a8aa18a3730b43c799b58ec335cab2bf5258c4cc955a781cda5ed311d9b";
+            sha256        "0b03bff84fda7c3f99e85d26ea4dea3de2881d44ae73ac968ba84cfb8560271b";
+            computationalSha256 "6dcd9ef6b4d87fe8419d49a6345577fe6d44c3bd34455e8c65652b390d7ba33f";
             origin        "data/standards/components/water.dat";
             originSha256  "374ccb2ee48a45af9782204286a7e4de134729f99653a95af0a2d3d24b23e0c1";
             release       Choupo-2608;

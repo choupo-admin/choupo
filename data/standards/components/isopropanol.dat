@@ -172,33 +172,6 @@ provenance
         uncertainty   "not quantified; validate against saturation data";
         notes         "computed from ChemSep Tc/Pc/omega";
     }
-}
-
-cosmo
-{
-    LVPP-HFTZVP-2018
-    {
-        model       COSMOSAC;
-        variant     "LVPP-HFTZVP-2018";
-        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
-        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 2-PROPANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey KFZMGEQAYNKOFK-UHFFFAOYSA-N (full match); the archive files this molecule twice with identical profiles: 2-PROPANOL.gout, ISOPROPANOL.gout; formula C3H8O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
-        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
-        licence     MIT;
-        installed   true;
-        area        106.238395;   // sum of the profile below; GAMESS prints 106.24
-        volume      91.54;
-        sigmaProfile  (
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.031736     0.424243     1.149223     1.044537     0.093345
-               0.852484     1.118228     1.063108     0.852780     0.334256     0.424787
-               0.718663     1.410127     4.579947    11.354920    16.493469     9.812401
-               8.906533     6.809466    13.365966     7.587567     1.695885     0.985785
-               1.028506     1.058220     0.700487     0.905785     0.313136     0.358248
-               0.939185     0.848737     1.358624     2.243808     0.770111     0.402889
-               1.728066     1.741332     0.731805     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000
-        );
-    }
     surfaceTension
     {
         origin        fitted;
@@ -241,5 +214,32 @@ cosmo
             aad_pct     2.414670;
             max_pct     3.774444;
         }
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 2-PROPANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey KFZMGEQAYNKOFK-UHFFFAOYSA-N (full match); the archive files this molecule twice with identical profiles: 2-PROPANOL.gout, ISOPROPANOL.gout; formula C3H8O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        106.238395;   // sum of the profile below; GAMESS prints 106.24
+        volume      91.54;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.031736     0.424243     1.149223     1.044537     0.093345
+               0.852484     1.118228     1.063108     0.852780     0.334256     0.424787
+               0.718663     1.410127     4.579947    11.354920    16.493469     9.812401
+               8.906533     6.809466    13.365966     7.587567     1.695885     0.985785
+               1.028506     1.058220     0.700487     0.905785     0.313136     0.358248
+               0.939185     0.848737     1.358624     2.243808     0.770111     0.402889
+               1.728066     1.741332     0.731805     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
     }
 }

@@ -75,6 +75,7 @@ License
 #include <filesystem>
 #include <iostream>
 #include <map>
+#include <set>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -110,6 +111,12 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         liquidViscosityMixing_    = std::move(o.liquidViscosityMixing_);
         liquidConductivityMixing_ = std::move(o.liquidConductivityMixing_);
         surfaceTensionMixing_     = std::move(o.surfaceTensionMixing_);
+        liquidViscosityLaws_      = std::move(o.liquidViscosityLaws_);
+        liquidConductivityLaws_   = std::move(o.liquidConductivityLaws_);
+        surfaceTensionLaws_       = std::move(o.surfaceTensionLaws_);
+        liquidViscosityObj_       = std::move(o.liquidViscosityObj_);
+        liquidConductivityObj_    = std::move(o.liquidConductivityObj_);
+        surfaceTensionObj_        = std::move(o.surfaceTensionObj_);
         solventName_        = std::move(o.solventName_);
         declaredAqueousSolvent_ = std::move(o.declaredAqueousSolvent_);
         declaredSolutes_    = std::move(o.declaredSolutes_);
@@ -503,9 +510,13 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
     // implied) stays ACCEPTED for old cases -- a degenerate form, like the
     // flat pre-v2 grammar.  The v2-native assembly maps the phase-structured
     // authored form onto this canonical config first.
-    transport_ = td->found("viscosity")
-               ? TransportModel::New(td->subDict("viscosity"))
-               : TransportModel::New(td);
+    //  A block that names no vapour viscosity gets NONE (C398, SL-04): the
+    //  factory's Chung default was a number nobody declared.  A consumer that
+    //  asks is refused at first use, naming the property and the line to write.
+    if (td->found("viscosity"))
+        transport_ = TransportModel::New(td->subDict("viscosity"));
+    else if (td->found("model"))
+        transport_ = TransportModel::New(td);
     if (td->found("thermalConductivity"))
         thermalConductivity_ =
             ThermalConductivityModel::New(td->subDict("thermalConductivity"));
@@ -514,29 +525,33 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
     // Liquid transport.
     //  Each liquid property's block also names its MIXING RULE (C331):
     //  `mixingRule <name>;` beside `model`, the factory's default otherwise.
+    //  The block's WORD, when it writes one, is built as the package's model
+    //  (it names a predictive model, or the law every constituent is pinned
+    //  to); with no word the block is read per constituent from the records
+    //  (C398 slice (b)).  The laws of each constituent: resolveLiquidLaws.
     if (td->found("liquidViscosity"))
     {
-        liquidViscosity_ =
-            LiquidViscosityModel::New(td->subDict("liquidViscosity"));
-        liquidViscosityMixing_ =
-            LiquidViscosityMixingRule::New(td->subDict("liquidViscosity"));
+        const DictPtr b = td->subDict("liquidViscosity");
+        if (b->found("model")) liquidViscosity_ = LiquidViscosityModel::New(b);
+        liquidViscosityMixing_ = LiquidViscosityMixingRule::New(b);
+        resolveLiquidLaws("liquidViscosity", b);
     }
     if (td->found("liquidConductivity"))
     {
-        liquidConductivity_ =
-            LiquidConductivityModel::New(td->subDict("liquidConductivity"));
-        liquidConductivityMixing_ =
-            LiquidConductivityMixingRule::New(td->subDict("liquidConductivity"));
+        const DictPtr b = td->subDict("liquidConductivity");
+        if (b->found("model")) liquidConductivity_ = LiquidConductivityModel::New(b);
+        liquidConductivityMixing_ = LiquidConductivityMixingRule::New(b);
+        resolveLiquidLaws("liquidConductivity", b);
     }
     if (td->found("liquidDiffusivity"))
         liquidDiffusivity_ =
             LiquidDiffusivityModel::New(td->subDict("liquidDiffusivity"));
     if (td->found("surfaceTension"))
     {
-        surfaceTension_ =
-            SurfaceTensionModel::New(td->subDict("surfaceTension"));
-        surfaceTensionMixing_ =
-            SurfaceTensionMixingRule::New(td->subDict("surfaceTension"));
+        const DictPtr b = td->subDict("surfaceTension");
+        if (b->found("model")) surfaceTension_ = SurfaceTensionModel::New(b);
+        surfaceTensionMixing_ = SurfaceTensionMixingRule::New(b);
+        resolveLiquidLaws("surfaceTension", b);
     }
 }
 
@@ -2078,10 +2093,11 @@ scalar ThermoPackage::viscosityGas(scalar T, const sVector& y) const
             return m.mu(T, m.p_sat(T));
         }
     if (!transport_)
-        throw std::runtime_error("ThermoPackage::viscosityGas: no transport"
-            " model --- add `transport { viscosity { model Chung; } }` to the"
-            " thermoPackage, or `transport Chung;` under propertyMethods in"
-            " the propertyPackage.");
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "ThermoPackage::viscosityGas: the vapour viscosity has no model ---"
+            " the property dictionary declares no `transport { vapour {"
+            " viscosity { model <word>; } } }` (Chung or ChapmanEnskog), and"
+            " since C398 (SL-04) no factory default answers in its place.");
     const std::size_t N = n();
     sVector eta(N, 0.0), M(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
@@ -2174,18 +2190,18 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
             }
             return m.mu(T, m.p_sat(T));   // saturated-liquid state
         }
-    if (!liquidViscosity_)
+    if (liquidViscosityLaws_.empty())
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::viscosityLiquid: no model ---"
-            " add `transport { liquidViscosity { model Andrade; } }` to the"
-            " thermoPackage (a propertyPackage's propertyMethods `transport`"
-            " slot covers gas viscosity only).");
+            " add `transport { liquid { viscosity { } } }` to the property"
+            " dictionary (each constituent then takes its record's preferred"
+            " law), or name a law for all with `model <word>;`.");
     // The pure values at T, then the declared mixing rule (C331;
     // transport/LiquidViscosityMixingRule.H).
     const std::size_t N = n();
     sVector mu(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
         if (x[i] > 0.0)
-            mu[i] = liquidViscosity_->viscosityLiquidPure(components_[i], T);
+            mu[i] = pureLiquidViscosity(i, T);
     return liquidViscosityMixing_->mix(T, x, mu, liquidMixingContext());   // Pa·s
 }
 
@@ -2204,18 +2220,18 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
             }
             return m.lambda(T, m.p_sat(T));   // saturated-liquid state
         }
-    if (!liquidConductivity_)
+    if (liquidConductivityLaws_.empty())
         throw std::runtime_error("ThermoPackage::thermalConductivityLiquid: no"
-            " model --- add `transport { liquidConductivity { model"
-            " SatoRiedel; } }` to the thermoPackage (a propertyPackage's"
-            " propertyMethods `transport` slot covers gas viscosity only).");
+            " model --- add `transport { liquid { thermalConductivity { } } }`"
+            " to the property dictionary (each constituent then takes its"
+            " record's preferred law), or name a model with `model <word>;`.");
     // The pure values at T, then the declared mixing rule (C331;
     // transport/LiquidConductivityMixingRule.H).
     const std::size_t N = n();
     sVector lam(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
         if (x[i] > 0.0)
-            lam[i] = liquidConductivity_->conductivityLiquidPure(components_[i], T);
+            lam[i] = pureLiquidConductivity(i, T);
     return liquidConductivityMixing_->mix(T, x, lam, liquidMixingContext());   // W/(m·K)
 }
 
@@ -2226,13 +2242,12 @@ scalar ThermoPackage::diffusivityLiquid(scalar T, std::size_t i, std::size_t j) 
             " add `transport { liquidDiffusivity { model WilkeChang; } }` to the"
             " thermoPackage (a propertyPackage's propertyMethods `transport`"
             " slot covers gas viscosity only).");
-    if (!liquidViscosity_)
+    if (liquidViscosityLaws_.empty())
         throw std::runtime_error("ThermoPackage::diffusivityLiquid: needs the"
-            " solvent viscosity --- add a `liquidViscosity` model alongside"
-            " (in the thermoPackage's transport{} block).");
+            " solvent viscosity --- add a `liquid { viscosity { } }` block"
+            " alongside (in the property dictionary's transport{} block).");
     // i = solute, j = solvent.
-    const scalar muB =
-        liquidViscosity_->viscosityLiquidPure(components_.at(j), T);
+    const scalar muB = pureLiquidViscosity(j, T);
     return liquidDiffusivity_->diffusivityLiquidBinary(components_.at(i), components_.at(j), T, muB);
 }
 
@@ -2253,18 +2268,18 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
             }
             return m.sigma(T);
         }
-    if (!surfaceTension_)
+    if (surfaceTensionLaws_.empty())
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::surfaceTension: no model ---"
-            " add `transport { surfaceTension { model BrockBird; } }` to the"
-            " thermoPackage (a propertyPackage's propertyMethods `transport`"
-            " slot covers gas viscosity only).");
+            " add `transport { interface { surfaceTension { } } }` to the"
+            " property dictionary (each constituent then takes its record's"
+            " preferred law), or name a model with `model <word>;`.");
     // The pure values at T, then the declared mixing rule (C331;
     // transport/SurfaceTensionMixingRule.H).
     const std::size_t N = n();
     sVector sig(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
         if (x[i] > 0.0)
-            sig[i] = surfaceTension_->sigmaPure(components_[i], T);
+            sig[i] = pureSurfaceTension(i, T);
     return surfaceTensionMixing_->mix(T, x, sig, liquidMixingContext());   // N/m
 }
 
@@ -2699,21 +2714,25 @@ ThermoPackage::transportMethodInfo(const std::string& key) const
     else if (key == "diffusivity" && diffusivity_)
     { r.model = diffusivity_->modelName(); r.modelCitation = diffusivity_->citation();
       r.modelWindow = diffusivity_->validityWindow(); }
-    else if (key == "liquidViscosity" && liquidViscosity_)
+    //  A block with no model word (C398 slice (b)) has no package model but
+    //  still has its mixing rule: the view must name the rule either way.
+    else if (key == "liquidViscosity" && (liquidViscosity_ || liquidViscosityMixing_))
     {
-        r.model = liquidViscosity_->modelName();
-        r.modelCitation = liquidViscosity_->citation();
-        r.modelWindow = liquidViscosity_->validityWindow();
+        if (liquidViscosity_)
+        { r.model = liquidViscosity_->modelName();
+          r.modelCitation = liquidViscosity_->citation();
+          r.modelWindow = liquidViscosity_->validityWindow(); }
         if (liquidViscosityMixing_)
         { r.rule = liquidViscosityMixing_->ruleName();
           r.ruleCitation = liquidViscosityMixing_->citation();
           r.ruleWindow = liquidViscosityMixing_->validityWindow(); }
     }
-    else if (key == "liquidConductivity" && liquidConductivity_)
+    else if (key == "liquidConductivity" && (liquidConductivity_ || liquidConductivityMixing_))
     {
-        r.model = liquidConductivity_->modelName();
-        r.modelCitation = liquidConductivity_->citation();
-        r.modelWindow = liquidConductivity_->validityWindow();
+        if (liquidConductivity_)
+        { r.model = liquidConductivity_->modelName();
+          r.modelCitation = liquidConductivity_->citation();
+          r.modelWindow = liquidConductivity_->validityWindow(); }
         if (liquidConductivityMixing_)
         { r.rule = liquidConductivityMixing_->ruleName();
           r.ruleCitation = liquidConductivityMixing_->citation();
@@ -2721,15 +2740,335 @@ ThermoPackage::transportMethodInfo(const std::string& key) const
     }
     else if (key == "liquidDiffusivity" && liquidDiffusivity_)
         r.model = liquidDiffusivity_->modelName();
-    else if (key == "surfaceTension" && surfaceTension_)
+    else if (key == "surfaceTension" && (surfaceTension_ || surfaceTensionMixing_))
     {
-        r.model = surfaceTension_->modelName();
+        if (surfaceTension_) r.model = surfaceTension_->modelName();
         if (surfaceTensionMixing_)
         { r.rule = surfaceTensionMixing_->ruleName();
           r.ruleCitation = surfaceTensionMixing_->citation();
           r.ruleWindow = surfaceTensionMixing_->validityWindow(); }
     }
     return r;
+}
+
+//  ---- ONE LAW PER CONSTITUENT FOR THE LIQUID TRANSPORT PROPERTIES ------------
+//  (DEV.md 4c C398, slice (b), addendum A1.)  Placed at the end of the file so
+//  no line a lesson cites above it moved.
+
+namespace {
+
+//  The record block a package key reads.
+std::string recordKeyOf(const std::string& key)
+{
+    return key == "liquidConductivity" ? std::string("liquidThermalConductivity") : key;
+}
+
+std::string propertyWords(const std::string& key)
+{
+    return key == "liquidViscosity"    ? "liquid viscosity"
+         : key == "liquidConductivity" ? "liquid thermal conductivity" : "surface tension";
+}
+
+//  THE LEGACY WORDS (SL-03), one table.  A word of the first kind is a pin of
+//  the record law of that NAME for every constituent (the words are
+//  case-insensitive aliases, so word -> law name is this table, not an
+//  identity); a predictive word names no record law; StoredCorrelation reads
+//  the record's law and falls back, per component and announced, to
+//  Brock-Bird.
+enum class WordKind { pin, predictive, stored };
+WordKind wordKind(const std::string& key, const std::string& w, std::string& law)
+{
+    if (key == "liquidViscosity")
+    {
+        if (w == "Andrade" || w == "andrade") { law = "andrade"; return WordKind::pin; }
+        if (w == "Vogel"   || w == "vogel")   { law = "vogel";   return WordKind::pin; }
+        law = w;   // chemsepEq101: the sub-block of the same name
+        return WordKind::pin;
+    }
+    if (key == "liquidConductivity")
+    {
+        if (w == "SatoRiedel" || w == "satoRiedel") return WordKind::predictive;
+        law = w;   // chemsepEq16
+        return WordKind::pin;
+    }
+    if (w == "StoredCorrelation" || w == "storedCorrelation") return WordKind::stored;
+    //  The record law TYPE written as a word: the record's own law, with no
+    //  Brock-Bird fallback (a record without the block is refused there).
+    if (w == "tauPower") return WordKind::stored;
+    return WordKind::predictive;   // BrockBird and its spellings
+}
+
+} // namespace
+
+const std::vector<ThermoPackage::LiquidLaw>& ThermoPackage::liquidLaws(const std::string& key) const
+{
+    if (key == "liquidViscosity")    return liquidViscosityLaws_;
+    if (key == "liquidConductivity") return liquidConductivityLaws_;
+    return surfaceTensionLaws_;
+}
+
+void ThermoPackage::resolveLiquidLaws(const std::string& key, const DictPtr& block)
+{
+    const std::string rkey  = recordKeyOf(key);
+    const std::string words = propertyWords(key);
+    const std::size_t N = components_.size();
+    std::vector<LiquidLaw> laws(N);
+
+    //  THE CASE'S PINS, beside the property: refused when the component is
+    //  not in the system, when one component is pinned twice, when the
+    //  reason is missing, and when its record holds no law of that name.
+    std::map<std::size_t, std::pair<std::string, std::string>> pins;   // i -> (law, reason)
+    if (block->found("pin"))
+    {
+        if (!block->hasDictList("pin"))
+            throw std::runtime_error("transport " + words + ": `pin` is a list of"
+                " entries, `pin ( { component <name>; law <name>; reason \"...\"; } );`");
+        for (const auto& e : block->lookupDictList("pin"))
+        {
+            const std::string c = e->lookupWordOrDefault("component", "");
+            const std::string l = e->lookupWordOrDefault("law", "");
+            const std::string r = e->lookupWordOrDefault("reason", "");
+            std::size_t i = N;
+            for (std::size_t k = 0; k < N; ++k) if (components_[k].name() == c) { i = k; break; }
+            if (i == N)
+            {
+                std::string have;
+                for (const auto& comp : components_) have += (have.empty() ? "" : ", ") + comp.name();
+                throw std::runtime_error("transport " + words + ": pin names component '" + c
+                    + "', which is not in the system (" + have + ").");
+            }
+            if (l.empty() || r.empty())
+                throw std::runtime_error("transport " + words + ": the pin of '" + c + "' needs"
+                    " both `law <name>;` and `reason \"...\";` -- a pin displaces the record's"
+                    " preferred law, and the run says why.");
+            if (pins.count(i))
+                throw std::runtime_error("transport " + words + ": '" + c + "' is pinned twice;"
+                    " one constituent holds one law.");
+            const recordLaws::Block* blk = components_[i].recordLaws(rkey);
+            if (!blk)
+            {
+                const std::string err = components_[i].lawsError(rkey);
+                throw std::runtime_error("transport " + words + ": pin of '" + c + "' law `" + l
+                    + "`: " + (err.empty() ? "the record has no " + rkey + " block, so it has"
+                                             " no law to pin." : err));
+            }
+            if (blk->indexOf(l) < 0)
+                throw std::runtime_error("transport " + words + ": pin of '" + c + "' law `" + l
+                    + "`: the record has no law of that name -- its laws are: " + blk->names());
+            pins[i] = { l, r };
+        }
+    }
+
+    const std::string word = block->found("model") ? block->lookupWord("model") : std::string();
+    for (std::size_t i = 0; i < N; ++i)
+    {
+        LiquidLaw& L = laws[i];
+        const Component& c = components_[i];
+        if (pins.count(i))
+        {
+            const recordLaws::Block* blk = c.recordLaws(rkey);
+            const auto& law = blk->laws[std::size_t(blk->indexOf(pins.at(i).first))];
+            L.law  = law.name;
+            L.type = law.type;
+            L.by   = "case pin (reason: " + pins.at(i).second + ")";
+            continue;
+        }
+        if (!word.empty())
+        {
+            std::string lawName;
+            switch (wordKind(key, word, lawName))
+            {
+            case WordKind::predictive:
+                L.law = word; L.type = word; L.predictive = true;
+                L.by = "the block's word `" + word + "`: predictive, no record law";
+                break;
+            case WordKind::pin:
+                L.law = lawName; L.type = word;
+                L.by = "the block's word `" + word + "`: a pin of the law `" + lawName
+                     + "` for every constituent";
+                break;
+            case WordKind::stored:
+            {
+                L.type = word;
+                const recordLaws::Block* blk = c.recordLaws(rkey);
+                if (!c.hasSurfaceTension() && word == "tauPower")
+                    L.absent = "surface tension of " + c.name() + ": the record has no"
+                               " surfaceTension block, so the law type `tauPower` has no law"
+                               " to read -- add the block with its source, or name a"
+                               " predictive model (`model BrockBird;`)";
+                else if (!c.hasSurfaceTension())
+                    L.by = "the block's word `" + word + "`: the record has no surfaceTension"
+                           " block, so Brock-Bird answers for this component (announced)";
+                else if (!blk)
+                    L.absent = c.lawsError(rkey);
+                else if (blk->preferred < 0)
+                    L.absent = "surface tension of " + c.name() + ": the record holds laws ("
+                             + blk->names() + ") and marks none preferred -- mark one in the"
+                               " record, or pin one beside the property";
+                else
+                {
+                    L.law = blk->laws[std::size_t(blk->preferred)].name;
+                    L.by  = "the block's word `" + word + "`: the record's "
+                          + std::string(blk->laws.size() == 1 ? "one law" : "preferred law");
+                }
+                break;
+            }
+            }
+            continue;
+        }
+        //  NO WORD: the record's preferred law.  An absence is a NAMED refusal
+        //  at the constituent's first evaluation (SL-04: no factory default).
+        const recordLaws::Block* blk = c.recordLaws(rkey);
+        if (!blk)
+        {
+            const std::string err = c.lawsError(rkey);
+            L.absent = !err.empty() ? err
+                : words + " of " + c.name() + ": the record has no " + rkey + " block, so no"
+                  " law of it prices this property -- add the block with its source, or"
+                  " name a predictive model for the property (`model <word>;`)";
+            continue;
+        }
+        if (blk->preferred < 0)
+        {
+            L.absent = words + " of " + c.name() + ": the record holds " + std::to_string(blk->laws.size())
+                     + " laws (" + blk->names() + ") and marks none preferred -- mark one in the"
+                       " record (`preferred <name>;`), or pin one beside the property"
+                       " (`pin ( { component " + c.name() + "; law <name>; reason \"...\"; } );`)";
+            continue;
+        }
+        const auto& law = blk->laws[std::size_t(blk->preferred)];
+        L.law  = law.name;
+        L.type = law.type;
+        L.by   = blk->laws.size() == 1 ? "the record's one law" : "the record's preferred law";
+    }
+    if (key == "liquidViscosity")
+    { liquidViscosityLaws_ = std::move(laws); liquidViscosityObj_.clear(); liquidViscosityObj_.resize(N); }
+    else if (key == "liquidConductivity")
+    { liquidConductivityLaws_ = std::move(laws); liquidConductivityObj_.clear(); liquidConductivityObj_.resize(N); }
+    else
+    { surfaceTensionLaws_ = std::move(laws); surfaceTensionObj_.clear(); surfaceTensionObj_.resize(N); }
+}
+
+namespace {
+
+//  The hard window of a constituent's record law (`domain`), checked at every
+//  evaluation; the law never switches.
+void checkLiquidDomain(const Component& c, const std::string& rkey,
+                       const ThermoPackage::LiquidLaw& L, scalar T, const std::string& words)
+{
+    if (L.predictive) return;
+    const recordLaws::Block* blk = c.recordLaws(rkey);
+    if (!blk) return;
+    const int idx = blk->indexOf(L.law);
+    if (idx < 0) return;
+    const auto& law = blk->laws[std::size_t(idx)];
+    if (law.hasDomain && (T < law.domainLo || T > law.domainHi))
+        recordLaws::throwOutsideDomain(*blk, std::size_t(idx), T, words);
+}
+
+DictPtr modelDict(const std::string& type)
+{
+    auto d = std::make_shared<Dictionary>("law");
+    d->insert("model", EntryValue(type));
+    return d;
+}
+
+} // namespace
+
+scalar ThermoPackage::pureLiquidViscosity(std::size_t i, scalar T) const
+{
+    const LiquidLaw& L = liquidViscosityLaws_.at(i);
+    if (!L.absent.empty())
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, L.absent);
+    if (L.predictive) return liquidViscosity_->viscosityLiquidPure(components_[i], T);
+    checkLiquidDomain(components_[i], "liquidViscosity", L, T, "liquid viscosity");
+    auto& obj = liquidViscosityObj_.at(i);
+    if (!obj) { obj = LiquidViscosityModel::New(modelDict(L.type)); obj->bindLaw(L.law); }
+    return obj->viscosityLiquidPure(components_[i], T);
+}
+
+scalar ThermoPackage::pureLiquidConductivity(std::size_t i, scalar T) const
+{
+    const LiquidLaw& L = liquidConductivityLaws_.at(i);
+    if (!L.absent.empty())
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, L.absent);
+    if (L.predictive) return liquidConductivity_->conductivityLiquidPure(components_[i], T);
+    checkLiquidDomain(components_[i], "liquidThermalConductivity", L, T, "liquid thermal conductivity");
+    auto& obj = liquidConductivityObj_.at(i);
+    if (!obj) { obj = LiquidConductivityModel::New(modelDict(L.type)); obj->bindLaw(L.law); }
+    return obj->conductivityLiquidPure(components_[i], T);
+}
+
+scalar ThermoPackage::pureSurfaceTension(std::size_t i, scalar T) const
+{
+    const LiquidLaw& L = surfaceTensionLaws_.at(i);
+    if (!L.absent.empty())
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, L.absent);
+    if (L.predictive) return surfaceTension_->sigmaPure(components_[i], T);
+    checkLiquidDomain(components_[i], "surfaceTension", L, T, "surface tension");
+    auto& obj = surfaceTensionObj_.at(i);
+    if (!obj) { obj = SurfaceTensionModel::New(modelDict(L.type)); obj->bindLaw(L.law); }
+    return obj->sigmaPure(components_[i], T);
+}
+
+//  ---- A CASE PIN OF A RECORD LAW HELD BY THE COMPONENT (C398 slice (b)) ----
+//  The vapour-pressure and heat-capacity laws are built by the component; a
+//  pin beside the property replaces the record's preferred law ONCE, here, at
+//  assembly, before any evaluation:
+//      equilibrium { vaporPressure { pin ( { component; law; reason; } ); } }
+//      caloric { idealGasHeatCapacity | liquidHeatCapacity | solidHeatCapacity
+//                { pin ( ... ); } }
+//  (A variant that changes `equilibrium` or `caloric` replaces the block whole
+//  and is announced as a model boundary: THE RULING, point 2.)
+void ThermoPackage::applyRecordLawPins(const DictPtr& system)
+{
+    struct Home { const char* block; const char* property; };
+    static const Home homes[] = {
+        { "equilibrium", "vaporPressure" },
+        { "caloric",     "idealGasHeatCapacity" },
+        { "caloric",     "liquidHeatCapacity" },
+        { "caloric",     "solidHeatCapacity" },
+    };
+    for (const auto& h : homes)
+    {
+        if (!system->found(h.block)) continue;
+        const DictPtr outer = system->subDict(h.block);
+        if (!outer->found(h.property)) continue;
+        const std::string where = std::string(h.block) + "." + h.property;
+        const DictPtr b = outer->subDict(h.property);
+        for (const auto& k : b->keys())
+            if (k != "pin")
+                throw std::runtime_error(where + ": `" + k + "` is read by nothing -- this"
+                    " block holds the case's pins of the records' laws, `pin ( { component"
+                    " <name>; law <name>; reason \"...\"; } );`.");
+        if (!b->found("pin") || !b->hasDictList("pin"))
+            throw std::runtime_error(where + ": write `pin ( { component <name>; law <name>;"
+                " reason \"...\"; } );`.");
+        std::set<std::string> seen;
+        for (const auto& e : b->lookupDictList("pin"))
+        {
+            const std::string c = e->lookupWordOrDefault("component", "");
+            const std::string l = e->lookupWordOrDefault("law", "");
+            const std::string r = e->lookupWordOrDefault("reason", "");
+            std::size_t i = components_.size();
+            for (std::size_t k = 0; k < components_.size(); ++k)
+                if (components_[k].name() == c) { i = k; break; }
+            if (i == components_.size())
+            {
+                std::string have;
+                for (const auto& comp : components_) have += (have.empty() ? "" : ", ") + comp.name();
+                throw std::runtime_error(where + ": pin names component '" + c + "', which is"
+                    " not in the system (" + have + ").");
+            }
+            if (l.empty() || r.empty())
+                throw std::runtime_error(where + ": the pin of '" + c + "' needs both `law"
+                    " <name>;` and `reason \"...\";`.");
+            if (!seen.insert(c).second)
+                throw std::runtime_error(where + ": '" + c + "' is pinned twice; one"
+                    " constituent holds one law.");
+            components_[i].pinLaw(h.property, l, r);
+        }
+    }
 }
 
 } // namespace Choupo

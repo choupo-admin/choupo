@@ -172,33 +172,6 @@ provenance
         uncertainty   "not quantified; validate against saturation data";
         notes         "computed from ChemSep Tc/Pc/omega";
     }
-}
-
-cosmo
-{
-    LVPP-HFTZVP-2018
-    {
-        model       COSMOSAC;
-        variant     "LVPP-HFTZVP-2018";
-        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
-        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 2-METHYL-1-BUTANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey connectivity block QPRQEDXDYOZYLA matches; the LVPP geometry is one stereoisomer (QPRQEDXDYOZYLA-RXMQYKEDSA-N), the catalogue record carries no stereo layer; formula C5H12O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
-        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
-        licence     MIT;
-        installed   true;
-        area        140.941339;   // sum of the profile below; GAMESS prints 140.94
-        volume      133.65;
-        sigmaProfile  (
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.467474     1.413185     1.243607     0.346233
-               0.499340     0.743540     1.662869     0.543410     0.485746     1.028124
-               0.214153     0.658935     2.598614     9.846717    16.026792    23.263891
-              15.432686    13.164576    13.307651    15.521568     6.520093     2.386691
-               1.066549     1.004494     0.444526     0.154223     0.328856     0.713289
-               0.966875     0.516677     1.297076     2.193442     1.520286     0.660619
-               1.408479     1.113940     0.176113     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000
-        );
-    }
     surfaceTension
     {
         origin        fitted;
@@ -227,5 +200,32 @@ cosmo
             aad_pct     0.105567;
             max_pct     0.161969;
         }
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 2-METHYL-1-BUTANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey connectivity block QPRQEDXDYOZYLA matches; the LVPP geometry is one stereoisomer (QPRQEDXDYOZYLA-RXMQYKEDSA-N), the catalogue record carries no stereo layer; formula C5H12O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        140.941339;   // sum of the profile below; GAMESS prints 140.94
+        volume      133.65;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.467474     1.413185     1.243607     0.346233
+               0.499340     0.743540     1.662869     0.543410     0.485746     1.028124
+               0.214153     0.658935     2.598614     9.846717    16.026792    23.263891
+              15.432686    13.164576    13.307651    15.521568     6.520093     2.386691
+               1.066549     1.004494     0.444526     0.154223     0.328856     0.713289
+               0.966875     0.516677     1.297076     2.193442     1.520286     0.660619
+               1.408479     1.113940     0.176113     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
     }
 }

@@ -34,6 +34,8 @@ License
 #include "NASA7Cp.H"
 #include "NASA9Cp.H"
 
+#include "thermo/RecordLaws.H"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -64,6 +66,22 @@ HeatCapacityModel::New(const DictPtr& dict)
 
 void HeatCapacityModel::registerBuiltins()
 {
+    //  U3 (C398): each type's form and coefficient units, in ONE place.
+    recordLaws::declareForm("heatCapacity", "polynomial",
+        "Cp/(J/(mol K)) = sum_i c_i (T/K)^i, i = 0, 1, 2, ...; c_i in J/(mol K^(i+1))");
+    recordLaws::declareForm("heatCapacity", "chemsepCp16",
+        "Cp/(J/(mol K)) = A + exp(B/(T/K) + C + D (T/K) + E (T/K)^2); A in J/(mol K),"
+        " B in K, C dimensionless, D in 1/K, E in 1/K^2");
+    recordLaws::declareForm("heatCapacity", "NASA7",
+        "Cp/R = a1 + a2 T + a3 T^2 + a4 T^3 + a5 T^4 (T in K), two ranges `low` and `high`"
+        " joined at Tcommon; a_k in K^-(k-1)");
+    recordLaws::declareForm("heatCapacity", "NASA9",
+        "Cp/R = a1 T^-2 + a2 T^-1 + a3 + a4 T + a5 T^2 + a6 T^3 + a7 T^4 (T in K), two ranges"
+        " joined at Tcommon");
+    recordLaws::declareForm("heatCapacity", "RowlinsonBondi",
+        "Cp,L = Cp,ig + R [1.586 + 0.49/(1 - Tr) + omega (4.2775 + 6.3 (1 - Tr)^(1/3)/Tr"
+        " + 0.4355/(1 - Tr))], Tr = T/Tc; no coefficients: Tc, omega and the record's"
+        " ideal-gas law (the preferred one, or the case's pin)");
     registerModel("polynomial",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<PolynomialCp>(d); });
@@ -87,6 +105,11 @@ void HeatCapacityModel::registerBuiltins()
     registerModel("NASA9",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<NASA9Cp>(d); });
+}
+
+bool HeatCapacityModel::hasModel(const std::string& name)
+{
+    return registry().count(name) > 0;
 }
 
 } // namespace Choupo

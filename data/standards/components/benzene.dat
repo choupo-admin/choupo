@@ -60,8 +60,16 @@ liquidHeatCapacity
 // liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
 // fitted to literature mu(T) over ~10-100 degC.
 associationFactor  1.0;
+//  PREFERRED: vogel (DEV.md 4c C398 slice (b)).  Both laws were fitted to the
+//  same data window (~10-100 degC); vogel is the three-parameter fit, so it
+//  is the closer of the two inside it, and it is the law most cases name
+//  (water: 23 case directories write Vogel, 3 Andrade; ethanol: 2 and 1).
+//  It is the record's one value of the property when a case's block names
+//  no model; a case word (`model Andrade;`) still pins its own law, so no
+//  shipped number moves.
 liquidViscosity
 {
+    preferred vogel;
     andrade { A -11.5804; B 1243.3; }
     vogel   { A -10.7929; B 794.4; C 63.0; }
 }

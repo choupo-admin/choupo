@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  purelaws01 -- methanol, 2-propanol and water in one liquid (DEV.md 4c C398,
+    slice (b), the witness of addendum A1).
+
+    WHAT IT SHOWS.  The liquid viscosity block below names NO model.  Each
+    constituent then takes the law its own record marks preferred -- methanol
+    and water their `vogel` law (both records hold `andrade` and `vogel`, and
+    say `preferred vogel;`), 2-propanol its only law, the five-constant form
+    `chemsepEq101` -- and the mixing rule combines the three pure values.
+    Before slice (b) a model word picked the SAME sub-block in every record,
+    so this mixture could not be priced at all: `model Vogel;` refuses
+    2-propanol (no `vogel` law) and `model chemsepEq101;` refuses methanol and
+    water.  The run's resolved view prints, per constituent, which law of
+    which record it took, who chose it and the law's window.
+
+    THE MIXING RULE.  None is written, so the property's default answers
+    (Grunberg-Nissan, C331), and with no interaction row declared every pair
+    is treated as G_ij = 0, which the rule announces: the mixture is the
+    log-mole average of the pure values.  No measured mixture viscosity is
+    claimed here; the case shows where each pure number comes from.
+
+    Activity model ideal: nothing here flashes.  Not sealed: the records come
+    from data/standards/components.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol isopropanol water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { }      // no word: each record's preferred law, mixed by the default rule
+    }
+}

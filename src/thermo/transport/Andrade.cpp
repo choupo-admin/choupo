@@ -45,11 +45,12 @@ scalar Andrade::viscosityLiquidPure(const Component& c, scalar T) const
         throw std::runtime_error("Andrade viscosity: component '" + c.name()
             + "' has no `liquidViscosity` block in its.dat.");
     auto lv = c.liquidViscosityDict();
-    if (!lv->found("andrade"))
+    const std::string law = law_.empty() ? std::string("andrade") : law_;
+    if (!lv->found(law))
         throw std::runtime_error("Andrade viscosity: component '" + c.name()
-            + "' has a liquidViscosity block but no `andrade { A; B; }`"
+            + "' has a liquidViscosity block but no `" + law + " { A; B; }`"
             " sub-block.");
-    auto a = lv->subDict("andrade");
+    auto a = lv->subDict(law);
     const scalar A = a->lookupScalar("A");
     const scalar B = a->lookupScalar("B");
     return kernel(A, B, T);

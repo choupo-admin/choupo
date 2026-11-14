@@ -126,6 +126,10 @@ public:
     //  from it once for every combination of models.)
     scalar Psat_Pa(scalar T_K) const
     {
+        //  THE HARD WINDOW of a record law (`domain (lo hi);`, C398 slice
+        //  (b)): outside it the law refuses -- a typed domain error naming
+        //  the record's other laws that cover T -- and never switches.
+        if (hasDomain_ && (T_K < domainLo_ || T_K > domainHi_)) onOutsideDomain_(T_K);
         noteRange(T_K);
         if (!cont_.ready) buildContinuation();
         if (T_K >= cont_.lo && T_K <= cont_.hi)
@@ -161,6 +165,11 @@ public:
     //  record declares none, and the branch degrades to the plain one.
     void setCriticalT(scalar Tc) { Tc_declared_ = Tc; }
 
+    //  Bind the law's hard window; `onOutside(T)` throws (Component builds
+    //  it from the record's laws, so the remedy can name them).
+    void setHardDomain(scalar lo, scalar hi, std::function<void(scalar)> onOutside)
+    { hasDomain_ = true; domainLo_ = lo; domainHi_ = hi; onOutsideDomain_ = std::move(onOutside); }
+
     // ---- Factory -----------------------------------------------------------
     using Factory = std::function<std::unique_ptr<VaporPressureModel>(const DictPtr&)>;
     static void registerModel(const std::string& name, Factory f);
@@ -168,6 +177,9 @@ public:
 
     // Registers the built-in models (Antoine,...).  Call once at startup.
     static void registerBuiltins();
+    //  Is `name` a registered type of this family?  (C398 slice (b): a
+    //  record law's name doubles as its type when it names one.)
+    static bool hasModel(const std::string& name);
 
 protected:
     //  The bare correlation.  A model implements THIS; callers never see it,
@@ -201,6 +213,9 @@ protected:
 
     std::string  owner_;
     scalar       Tc_declared_ = 0.0;
+    bool         hasDomain_ = false;
+    scalar       domainLo_ = 0.0, domainHi_ = 0.0;
+    std::function<void(scalar)> onOutsideDomain_;
     mutable bool announcedOutside_ = false;   // an excursion at an ANSWER was announced
     mutable bool announcedTrial_   = false;   // ... or at a trial state of a search (PO-02)
 

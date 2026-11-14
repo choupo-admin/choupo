@@ -69,9 +69,13 @@ namespace Choupo {
 class StoredCorrelation : public SurfaceTensionModel
 {
 public:
-    explicit StoredCorrelation(const DictPtr& dict) : fallback_(dict) {}
+    //  withFallback: the legacy word `StoredCorrelation` falls back to
+    //  Brock-Bird for a component without the block (announced); the record
+    //  law type `tauPower` does not (C398 slice (b)), it refuses by name.
+    explicit StoredCorrelation(const DictPtr& dict, bool withFallback = true)
+        : fallback_(dict), withFallback_(withFallback) {}
 
-    const std::string& modelName() const override { return name_; }
+    const std::string& modelName() const override { return withFallback_ ? name_ : lawName_; }
     scalar sigmaPure(const Component& c, scalar T_K) const override;
 
     // The stored power law: one home for the arithmetic.
@@ -79,7 +83,9 @@ public:
 
 private:
     inline static const std::string name_ = "StoredCorrelation";
+    inline static const std::string lawName_ = "tauPower";
     BrockBird fallback_;
+    bool withFallback_ = true;
 };
 
 } // namespace Choupo

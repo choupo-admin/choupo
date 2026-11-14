@@ -68,6 +68,7 @@ Description
 #include "propertyOps/ConstantEstimator.H"
 #include "thermo/Database.H"
 #include "PropertyRouteBench.H"
+#include "RecordLawChecks.H"
 #include "thermo/SealCheck.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
@@ -310,6 +311,10 @@ try
         "                          every liquid-property route over every\n"
         "                          component record, values as hexfloats\n"
         "                          (default OUT build/propertyRouteBench/bench.tsv)\n"
+        "  --record-law-checks [OUT]\n"
+        "                          every record law's `check {}` value read back\n"
+        "                          through the law (C398 U3; default OUT\n"
+        "                          build/recordLawChecks/checks.tsv)\n"
         "  --version, -V           print the banner (version and commit)\n"
         "  --help, -h              this text\n";
 
@@ -428,6 +433,16 @@ try
             const std::string outPath = (gi + 2 < argc && argv[gi + 2][0] != '-')
                 ? argv[gi + 2] : "build/propertyRouteBench/bench.tsv";
             return propertyRouteBench::run(argv[gi + 1], outPath);
+        }
+
+    //  THE CHECK VALUES OF THE RECORDS' LAWS (DEV.md 4c C398 U3;
+    //  RecordLawChecks.H).  A flag like the bench: it reads no case.
+    for (int gi = 1; gi < argc; ++gi)
+        if (std::string(argv[gi]) == "--record-law-checks")
+        {
+            const std::string outPath = (gi + 1 < argc && argv[gi + 1][0] != '-')
+                ? argv[gi + 1] : "build/recordLawChecks/checks.tsv";
+            return recordLawChecks::run(outPath);
         }
 
     //  THE FILE-TRAFFIC TABLE, as the engine holds it (src/propertyOps/

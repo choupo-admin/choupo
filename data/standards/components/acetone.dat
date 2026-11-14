@@ -89,61 +89,6 @@ provenance
     vaporPressure  "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
     constants      "cross-checked against CoolProp 7.2.0 (MIT) within ~1%";
     standardThermochemistry "individual literature value -- primary re-citation pending (IST review)";
-}
-
-// Molecular group decomposition, per method (the curation RECIPE: a group-
-// contribution estimator / UNIFAC reads it from HERE instead of re-typed per
-// case).  Method-keyed because Joback groups != UNIFAC groups.  Acetone = CH3-CO-CH3.
-// UNIQUAC van der Waals volume r and surface area q: the sum of the
-// record's own UNIFAC groups (1 CH3 + 1 CH3CO), R_k/Q_k of Hansen et al. 1991
-// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
-uniquac
-{
-    r   2.5735;
-    q   2.3360;
-}
-
-groups
-{
-    joback ( { group CH3; count 2; } { group ketone; count 1; } );
-    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } );
-}
-
-diffusionVolume  67.7;   // Fuller (FSG revised: 3C+6H+O) -- enables Lewis-number wet-bulb
-
-cosmo
-{
-    VT2005
-    {
-        model       COSMOSAC;
-        variant     "2002";
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0438-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-64-1";
-        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
-        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
-    }
-    LVPP-HFTZVP-2018
-    {
-        model       COSMOSAC;
-        variant     "LVPP-HFTZVP-2018";
-        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
-        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ACETONE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey CSCPPACGZOOCGX-UHFFFAOYSA-N (full match); formula C3H6O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
-        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
-        licence     MIT;
-        installed   true;
-        area        102.039675;   // sum of the profile below; GAMESS prints 102.04
-        volume      85.95;
-        sigmaProfile  (
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000     0.000000     0.105203     1.971327
-               9.923352     9.632329    12.992419     8.880851     7.036506     6.722447
-              15.529595     4.789188     1.434192     1.466586     1.024596     0.107694
-               0.091042     0.185602     1.113486     0.517621     0.822966     1.510640
-               1.301399     1.853276     2.329952     2.917110     3.804079     2.663409
-               1.312808     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000
-        );
-    }
     liquidViscosity
     {
         origin        fitted;
@@ -213,5 +158,60 @@ cosmo
             aad_pct     1.906626;
             max_pct     2.905962;
         }
+    }
+}
+
+// Molecular group decomposition, per method (the curation RECIPE: a group-
+// contribution estimator / UNIFAC reads it from HERE instead of re-typed per
+// case).  Method-keyed because Joback groups != UNIFAC groups.  Acetone = CH3-CO-CH3.
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (1 CH3 + 1 CH3CO), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   2.5735;
+    q   2.3360;
+}
+
+groups
+{
+    joback ( { group CH3; count 2; } { group ketone; count 1; } );
+    unifac ( { group CH3; count 1; } { group CH3CO; count 1; } );
+}
+
+diffusionVolume  67.7;   // Fuller (FSG revised: 3C+6H+O) -- enables Lewis-number wet-bulb
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0438-PROF.txt bundled in usnistgov/COSMOSAC; CAS 67-64-1";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ACETONE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey CSCPPACGZOOCGX-UHFFFAOYSA-N (full match); formula C3H6O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        102.039675;   // sum of the profile below; GAMESS prints 102.04
+        volume      85.95;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.105203     1.971327
+               9.923352     9.632329    12.992419     8.880851     7.036506     6.722447
+              15.529595     4.789188     1.434192     1.466586     1.024596     0.107694
+               0.091042     0.185602     1.113486     0.517621     0.822966     1.510640
+               1.301399     1.853276     2.329952     2.917110     3.804079     2.663409
+               1.312808     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
     }
 }

@@ -4871,6 +4871,45 @@ PYEOF
     fi
     rm -f /tmp/varsame.$$
 
+    # Record-law gates (2026-11-14, DEV.md 4c C398 slice (b)).
+    #  * check_record_law_values: every block of several named laws in a
+    #    catalogue record marks one `preferred`; every law's `check {}` value
+    #    reads back through the engine's own law within its tolerance
+    #    (choupoProps --record-law-checks, U3); the laws without a check are
+    #    a pinned debt that only shrinks.
+    #  * check_record_primitives: a record types no DERIVED quantity (A3,
+    #    amended by ruling (c)); dGf_298 is a CHECK whose comparison is pinned
+    #    as not yet computed; phase rungs are labelled.
+    #  * check_provenance_home: a property's provenance entry lives in the
+    #    record's provenance block (SL-09), catalogue, sealed and curation.
+    if gate_exec "$ROOT/bin/curate/check_record_law_values.py" > /tmp/check_record_law_values.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "record-law-values-gate" "$(grep -m1 '^check_record_law_values: OK' /tmp/check_record_law_values.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_record_law_values.py)\n" "record-law-values-gate"
+        cat /tmp/check_record_law_values.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_record_law_values.$$
+    if gate_exec "$ROOT/bin/curate/check_record_primitives.py" > /tmp/check_record_primitives.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "record-primitives-gate" "$(grep -m1 '^check_record_primitives: OK' /tmp/check_record_primitives.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_record_primitives.py)\n" "record-primitives-gate"
+        cat /tmp/check_record_primitives.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_record_primitives.$$
+    if gate_exec "$ROOT/bin/curate/check_provenance_home.py" > /tmp/check_provenance_home.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "provenance-home-gate" "$(grep -m1 '^check_provenance_home: OK' /tmp/check_provenance_home.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_provenance_home.py)\n" "provenance-home-gate"
+        cat /tmp/check_provenance_home.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_provenance_home.$$
+
     # Props-order gate (2026-10-26, DEV.md 4c C172 slice 2): the ORDER of a
     # properties workflow is an engine fact.  choupoProps runs its operations
     # in declared order, and propsPlan::validate refuses, before operation

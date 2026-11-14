@@ -126,6 +126,38 @@ species a component introduces, derivable from its reactions' stoichiometry)
 is either redundant or a trap: if it disagrees with the derivation, which
 one wins?
 
+## Several laws for one property (DEV.md 4c C398, slice (b))
+
+A property block of a component record may hold several NAMED laws.  The
+spellings below were settled through these rules; copy them, do not invent
+siblings:
+
+- One sub-block per law; the sub-block's NAME is the law's identifier.  Its
+  TYPE is its `model` word, or its name when the name is a registered type
+  (`andrade`, `vogel`, `chemsepEq101`, `chemsepEq16`, `tauPower`).
+- `preferred <name>;` marks the record's one value of the property: REQUIRED
+  with two or more laws, NEVER written with one (the amplifier rule: with one
+  law there is no other value).  It is a curation decision, never the order
+  of the laws.
+- The SOFT window keeps each type's existing keys (`Trange`, `Tmin`/`Tmax`,
+  `Tlow`/`Thigh`) -- a `window {}` key would give one quantity a second name.
+  The HARD window is `domain (lo hi);` in K, optional; outside it the law is
+  refused, never switched.
+- A law's SOURCE lives in the record's ONE `provenance {}` block, by
+  property and law: `provenance { vaporPressure { SR1 { origin ...; } } }`.
+  Never a provenance entry inside another block (gate
+  `check_provenance_home`).
+- `check { T <v> <unit>; value <v> <unit>; tolerance <fraction>; }` inside a
+  law is a value from the law's own source, read back through the law (gate
+  `check_record_law_values`): a CHECK, never a second source.
+- A record stores each quantity's PRIMITIVE once and never types a DERIVED
+  one (h/s/g of another phase, a latent heat at T other than Tb, a slope of
+  the vapour pressure); a redundant datum is accepted only as a CHECK
+  (`dGf_298`).  Gate `check_record_primitives`.
+- A CASE chooses a law only by naming one the record holds:
+  `pin ( { component <name>; law <name>; reason "..."; } );` beside the
+  property, in the case's property dictionary or a variant.
+
 ## Where Choupo goes further, and why it must not be traded away
 
 Both industrial simulators lose per-value provenance: the number arrives

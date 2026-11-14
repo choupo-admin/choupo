@@ -32,6 +32,8 @@ License
 #include "Vogel.H"
 #include "LiquidViscosityMixingRule.H"
 
+#include "thermo/RecordLaws.H"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -51,7 +53,18 @@ void LiquidViscosityModel::registerModel(const std::string& name, Factory f)
 
 std::unique_ptr<LiquidViscosityModel> LiquidViscosityModel::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("model", "Andrade");
+    if (!dict->found("model"))
+        throw std::runtime_error("liquid viscosity: the block names no `model` -- the factory"
+            " default (Andrade) was removed (DEV.md 4c C398, review row SL-04): a"
+            " property block that names no model is either a liquid property"
+            " block read per constituent from the records, or refused.  Write"
+            " `model <word>;` -- registered:" + []
+            {
+                std::string s;
+                for (const auto& kv : registry()) s += " " + kv.first;
+                return s;
+            }());
+    const std::string name = dict->lookupWord("model");
     auto it = registry().find(name);
     if (it == registry().end())
     {
@@ -65,6 +78,14 @@ std::unique_ptr<LiquidViscosityModel> LiquidViscosityModel::New(const DictPtr& d
 
 void LiquidViscosityModel::registerBuiltins()
 {
+    //  U3 (C398): each type's form and coefficient units, in ONE place.
+    for (const char* w : { "Andrade", "andrade" })
+        recordLaws::declareForm("liquidViscosity", w, "ln(mu/(Pa s)) = A + B/(T/K); A dimensionless, B in K");
+    for (const char* w : { "Vogel", "vogel" })
+        recordLaws::declareForm("liquidViscosity", w, "ln(mu/(Pa s)) = A + B/(T/K - C); A dimensionless, B and C in K");
+    recordLaws::declareForm("liquidViscosity", "chemsepEq101",
+        "ln(mu/(Pa s)) = A + B/(T/K) + C ln(T/K) + D (T/K)^E; A, C, E dimensionless, B in K,"
+        " D in K^-E");
     //  The DIPPR/ChemSep form 414 imported records state their
     //  viscosity in -- five parameters where Andrade has two.
     registerModel("chemsepEq101", [](const DictPtr& d) { return std::make_unique<ChemSepVisc101>(d); });
@@ -82,6 +103,11 @@ std::vector<std::string> LiquidViscosityModel::availableModels()
     std::vector<std::string> out;
     for (const auto& [k, _] : registry()) out.push_back(k);
     return out;
+}
+
+bool LiquidViscosityModel::hasModel(const std::string& name)
+{
+    return registry().count(name) > 0;
 }
 
 } // namespace Choupo

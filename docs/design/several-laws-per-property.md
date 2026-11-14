@@ -122,6 +122,16 @@ section 5).**
   | vapour pressure p_sat(T) | d ln p / dT for the Newtons | Clausius-Clapeyron's latent heat against the derived one; the curve's boiling point against `Tb` |
   | the liquid volume law (`Vliq`, `VliqT`) | the pressure term of the liquid enthalpy | -- |
 
+  *Amended 2026-11-14 by the architect's ruling (c) on the slice-(b) report:
+  the settled contract wins over this table (ice is a phase, 2026-08-07): a
+  phase rung in `standardThermochemistry` is a PRIMITIVE where the phase's
+  enthalpy is not derivable from another phase by the record's own laws, and
+  a CHECK (printed with its deviation) where it is; `check_record_primitives`
+  allows rungs and labels them.  Ruling (a): `dGf_298` is a CHECK, its
+  comparison pinned as not yet computed.  As built in slice (b): the gates
+  `check_record_primitives`, `check_record_law_values` and
+  `check_provenance_home`; Theory Guide section "Several named laws in a
+  record, chosen once per constituent" (`sec:record-laws`).*
 * **A4. A unit's block may not carry a property once the slot exists**:
   `liquidViscosity` inside `packing {}` (DistillationColumn.cpp:5574-5575,
   RateBasedSegment.cpp:233-234) and its siblings (section 3) are refused

@@ -1,0 +1,101 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  purelaws01 -- the same liquid at 293.15, 323.15 and 343.15 K, two ways.
+
+    muRecords_*   the system's block: every constituent on its record's
+                preferred law (methanol vogel, 2-propanol chemsepEq101,
+                water vogel).
+    muWaterPin_*  the same, with water PINNED to its `andrade` law beside the
+                property; the reason is printed with the choice.  Only the
+                property block named in the operation's `thermo {}` is
+                replaced (the atom of C398 slice (a)).
+
+    The golden master locks every computed value at reltol 1e-4.  */
+
+operations
+(
+    {
+        name        muRecords_293K;
+        type        propertyPoint;
+        state       { T 293.15 K;  P 1 bar;  composition { methanol 0.3;  isopropanol 0.3;  water 0.4; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muRecords_323K;
+        type        propertyPoint;
+        state       { T 323.15 K;  P 1 bar;  composition { methanol 0.3;  isopropanol 0.3;  water 0.4; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muRecords_343K;
+        type        propertyPoint;
+        state       { T 343.15 K;  P 1 bar;  composition { methanol 0.3;  isopropanol 0.3;  water 0.4; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muWaterPin_293K;
+        type        propertyPoint;
+        state       { T 293.15 K;  P 1 bar;  composition { methanol 0.3;  isopropanol 0.3;  water 0.4; } }
+        thermo
+        {
+            transport
+            {
+                liquid
+                {
+                    viscosity
+                    {
+                        pin ( { component water;  law andrade;
+                                reason "to compare the two-parameter fit with the record's preferred vogel law"; } );
+                    }
+                }
+            }
+        }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muWaterPin_323K;
+        type        propertyPoint;
+        state       { T 323.15 K;  P 1 bar;  composition { methanol 0.3;  isopropanol 0.3;  water 0.4; } }
+        thermo
+        {
+            transport
+            {
+                liquid
+                {
+                    viscosity
+                    {
+                        pin ( { component water;  law andrade;
+                                reason "to compare the two-parameter fit with the record's preferred vogel law"; } );
+                    }
+                }
+            }
+        }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muWaterPin_343K;
+        type        propertyPoint;
+        state       { T 343.15 K;  P 1 bar;  composition { methanol 0.3;  isopropanol 0.3;  water 0.4; } }
+        thermo
+        {
+            transport
+            {
+                liquid
+                {
+                    viscosity
+                    {
+                        pin ( { component water;  law andrade;
+                                reason "to compare the two-parameter fit with the record's preferred vogel law"; } );
+                    }
+                }
+            }
+        }
+        properties  ( viscosity_liquid );
+    }
+);

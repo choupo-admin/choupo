@@ -42,6 +42,7 @@ Description
 #include "core/Dictionary.H"
 #include "core/Origin.H"
 #include "core/Types.H"
+#include "thermo/RecordLaws.H"
 
 #include <map>
 #include <memory>
@@ -287,6 +288,31 @@ public:
     const HeatCapacityModel& cpLiquid()   const;       // .cpp
     const HeatCapacityModel& cpIdealGas() const;       // .cpp
     const HeatCapacityModel& cpSolid()    const;       // .cpp
+
+    // ---- SEVERAL NAMED LAWS PER PROPERTY (DEV.md 4c C398, slice (b)) ------
+    //  The laws a property block of this record holds (RecordLaws.H), for
+    //  vaporPressure, the three heat capacities and the three liquid
+    //  transport blocks; nullptr when the record has no such block.  A
+    //  transport block is parsed at its first request, never at reading, so
+    //  a record that is never priced for that property is never refused for
+    //  it.  `lawsError` holds why a block could not be read ("" when it was).
+    const recordLaws::Block* recordLaws(const std::string& property) const;
+    std::string lawsError(const std::string& property) const;
+
+    //  Which law the component holds, and who chose it: "the record's one
+    //  law", "the record's preferred law", or "case pin (reason ...)".  Set
+    //  at reading for vapour pressure and the heat capacities, and changed
+    //  only by pinLaw at package assembly.
+    struct LawChoice { std::string law; std::string type; std::string by; };
+    LawChoice lawChoice(const std::string& property) const;
+
+    //  A CASE PIN of one of this record's laws (vaporPressure or a heat
+    //  capacity), applied ONCE at package assembly: rebuilds the law object
+    //  from the named law and, for a pinned ideal-gas law, the RowlinsonBondi
+    //  liquid law that consumes it (SL-05).  Refused when the record has no
+    //  law of that name, listing the laws it has.
+    void pinLaw(const std::string& property, const std::string& law,
+                const std::string& reason);
 
     // ---- Non-volatile / dissolved-solute extensions ---------------
     // Solutes like NaCl, glucose, MgSO4 are loaded as Components but with
@@ -887,6 +913,15 @@ private:
     // ABSENT, the solid enthalpy path falls back to Cp_liquid -- so every
     // legacy .dat is byte-identical; only a .dat that ADDS the block changes.
     std::unique_ptr<HeatCapacityModel>  cpSolid_;
+
+    // Several named laws per property (C398 slice (b)): the parsed blocks,
+    // the choice per property, and the record dictionary the transport
+    // blocks are parsed from on request.
+    mutable std::map<std::string, recordLaws::Block> laws_;
+    mutable std::map<std::string, std::string>       lawsError_;
+    std::map<std::string, LawChoice>                 lawChoice_;
+    void buildVP_(std::size_t lawIndex);
+    void buildCp_(const std::string& property, std::size_t lawIndex);
 
     // Per-value provenance, parsed-if-present (side-channel; never the hot path).
     std::map<std::string, OriginInfo> provenanceMap_;

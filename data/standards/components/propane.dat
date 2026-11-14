@@ -85,6 +85,37 @@ provenance
     vaporPressure  "Rips 1963 (primary measured set)";
     constants      "cross-checked vs CoolProp 7.2.0 reference EOS";
     standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), ideal-gas, 298 K";
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 2.172868;
+        Trange        (253.08 333.3);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2010.07.026"; articleSha256 "3d18d9acb30e1dea4d922b3bc76382bce1a4afd0dd41d0ee3ec47c64b4bb6506"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2017.03.002"; articleSha256 "653a04ec2657b34a91caceae0ff36bdfdb77a5500e5b43776648eae03511707f"; pointsKept 11; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je034093m"; articleSha256 "bc6f29c146c8521b0ebf864ba8776b4ea9fa354f594f002da9db280d0ce08ad8"; pointsKept 72; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je901085t"; articleSha256 "5770c8a90d194ef0de88df7fb97e34491bf75ed4015290674c328386bf2d8bbc"; pointsKept 5; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     4;
+            pointsKept  94;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.986691;
+            max_pct     2.172868;
+        }
+    }
 }
 
 // UNIQUAC van der Waals volume r and surface area q: the sum of the
@@ -146,35 +177,4 @@ pcsaft
     sigma    3.6184;
     epsilonK 208.11;
     source   "Gross & Sadowski, Ind. Eng. Chem. Res. 40 (2001) 1244, Table 1";
-    surfaceTension
-    {
-        origin        fitted;
-        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
-        fittedBy      "bin/curate/transport_fit.py";
-        reviewStatus  autoPromoted;
-        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
-        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
-        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
-        fitGradeMaxRelativeError_pct 2.172868;
-        Trange        (253.08 333.3);   // K, the kept points -- outside it the engine announces an extrapolation
-        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
-        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
-        evidence
-        (
-                { doi "10.1016/j.fluid.2010.07.026"; articleSha256 "3d18d9acb30e1dea4d922b3bc76382bce1a4afd0dd41d0ee3ec47c64b4bb6506"; pointsKept 6; pointsDropped 0; provenance measured; }
-                { doi "10.1016/j.jct.2017.03.002"; articleSha256 "653a04ec2657b34a91caceae0ff36bdfdb77a5500e5b43776648eae03511707f"; pointsKept 11; pointsDropped 0; provenance measured; }
-                { doi "10.1021/je034093m"; articleSha256 "bc6f29c146c8521b0ebf864ba8776b4ea9fa354f594f002da9db280d0ce08ad8"; pointsKept 72; pointsDropped 0; provenance measured; }
-                { doi "10.1021/je901085t"; articleSha256 "5770c8a90d194ef0de88df7fb97e34491bf75ed4015290674c328386bf2d8bbc"; pointsKept 5; pointsDropped 0; provenance measured; }
-        );
-        acceptance
-        {
-            verdict     accepted;
-            studies     4;
-            pointsKept  94;
-            pointsDropped 0;
-            dropped     "none";
-            aad_pct     0.986691;
-            max_pct     2.172868;
-        }
-    }
 }

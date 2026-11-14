@@ -365,6 +365,7 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   Chung:        { guide: "theory", dest: "ch:viscosity" },     // gas viscosity, corresponding states
   Andrade:      { guide: "theory", dest: "ch:viscosity" },     // liquid viscosity, Arrhenius-in-1/T
   Vogel:        { guide: "theory", dest: "ch:viscosity" },     // liquid viscosity, VFT 3-param
+  tauPower:     { guide: "theory", dest: "sec:record-laws-forms" }, // a record's stored surface-tension law (C398 slice (b))
   conductivity: { guide: "theory", dest: "ch:thermal-cond" },
   Eucken:       { guide: "theory", dest: "ch:thermal-cond" },  // gas thermal conductivity
   SatoRiedel:   { guide: "theory", dest: "ch:thermal-cond" },  // liquid thermal conductivity
