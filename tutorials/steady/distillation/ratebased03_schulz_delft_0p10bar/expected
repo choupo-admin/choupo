@@ -1,7 +1,6 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-kpi     column                 DL_vignesVsLinear_maxRel 2.23267796922e-05 1e-4
 kpi     column                 HETP             0.183414281408   1e-4
 kpi     column                 HETP_halfSegments 0.183404230916   1e-4
 kpi     column                 P_bottom_bar     0.101484158275   1e-4
@@ -45,7 +44,7 @@ utility column                 cooling.coolingWater.T 343.021156779    1e-4
 utility column                 cooling.coolingWater.kg_s 11.7099146811    1e-4
 utility column                 cooling.coolingWater.eur_h 0.704843184483   1e-4
 source  column                 liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
-source  column                 liquidDiffusivity own.WilkeChang.mixtureViscosity exact
-source  column                 liquidViscosity  declared.case    exact
+source  column                 liquidDiffusivity effective.AndersonBabb[WilkeChang] exact
+source  column                 liquidViscosity  measured.schulz2018_0p10bar_liquidViscosity    exact
 source  column                 surfaceTension   BrockBird/Butler exact
-source  column                 liquidThermalConductivity package.liquidThermalConductivity exact
+source  column                 liquidThermalConductivity SatoRiedel/Li exact

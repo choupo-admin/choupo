@@ -43,7 +43,9 @@ For each witness this gate runs the case so and requires:
       predictive surface tension BrockBird -> SatoRiedel; a vapour viscosity
       Chung -> ChapmanEnskog; an activity model NRTL -> UNIQUAC; the ideal-
       gas law a RowlinsonBondi law holds, its type changed; a variant's
-      view stripped of its vapour-pressure lines (the reviewer's six, CV-20).
+      view stripped of its vapour-pressure lines (the reviewer's six, CV-20);
+      and, since C398 slice (d), a column's composition rule AndersonBabb ->
+      CaldwellBabb and a measured viscosity's box widened.
       An arm the comparison cannot see is a failure of this gate.
 
 NOT CHECKED: a law never evaluated in the witnesses (its view line is not
@@ -100,6 +102,15 @@ WITNESSES = [
     #  the two definitions are equal and only the pairs they took differ.
     ("tutorials/steady/flowsheets/esterification2sector@nrtlSystem", 4,
      ["pair ethylAcetate-water: perNode", "pair ethylAcetate-water: caseRoot"], []),
+    #  C398 slice (d): the rate-based column's measured mixture viscosity and
+    #  declared liquid diffusivity; the props witness's entry and the
+    #  association factor taken by default.
+    ("tutorials/steady/distillation/ratebased01_schulz_0p10bar", 4,
+     ["measured mixture value schulz2018_0p10bar_liquidViscosity (use method)",
+      "liquidDiffusivity composition rule AndersonBabb", "liquidDiffusivity thermodynamic factor: taken as 1"], []),
+    ("tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary", 4,
+     ["isopropanol as a solvent: associationFactor default 1.0, not in the record",
+      "liquidDiffusivity infinite dilution, methanol in water (kind infiniteDilution)"], []),
 ]
 
 
@@ -129,6 +140,10 @@ SABOTAGE = [
     ("a variant's view stripped of its vapour-pressure lines", "variants01_ethanol_water_line", "STRIP_VARIANT_VP"),
     ("the flash's own pair replaced by the system's (CV-01, CV-26)", "esterification2sector@nrtlSystem",
      "SWAP_FLASH_PAIR"),
+    ("the column's composition rule AndersonBabb -> CaldwellBabb (C398 (d))", "ratebased01_schulz_0p10bar",
+     lambda v: v.replace("composition rule AndersonBabb", "composition rule CaldwellBabb")),
+    ("a measured viscosity's box widened in the view (C398 (d))", "ratebased01_schulz_0p10bar",
+     lambda v: v.replace("box T 320-370 K", "box T 300-400 K")),
 ]
 
 LAW = re.compile(r"^\S+ \[\w+\]: law ")

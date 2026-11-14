@@ -2213,21 +2213,21 @@ static DictPtr v2TransportDict(const DictPtr& v2)
             //  (ThermoPackage::resolveLiquidLaws).  Every other block names
             //  its model, because no record law exists for it; the factory
             //  defaults that used to answer in silence are gone (SL-04).
-            if (!pb->found("model") && !liquidMixing)
+            if (!pb->found("model") && !liquidMixing && !(std::string(mrow.v1key) == "liquidDiffusivity" && pb->found("infiniteDilution")))   // C398 (d): named in `infiniteDilution`
                 throw std::runtime_error("thermophysicalPropertySystem:"
                     " transport " + std::string(mrow.v2phase) + "." + mrow.v2prop
                     + " names no `model`: this property has no record law to"
                       " read per constituent, so the block must name its model"
                       " (`model <word>;`).");
             auto mb = std::make_shared<Dictionary>(mrow.v1key);
-            if (pb->found("model"))
-                mb->insert("model", pb->entryValue("model"));
-            if (pb->found("pin"))
-                mb->insert("pin", pb->entryValue("pin"));
-            if (pb->found("mixingRule"))
-                mb->insert("mixingRule", pb->entryValue("mixingRule"));
-            if (pb->found("interaction"))
-                mb->insert("interaction", pb->entryValue("interaction"));
+            //  Every key the block's grammar reads (TransportGrammar.H), copied
+            //  as it is; C398 (d) adds the viscosity's `measured` and the
+            //  diffusivity's declared quantity (LiquidTransportDeclarations.H).
+            for (const char* k : { "model", "pin", "mixingRule", "interaction", "measured",
+                                   "returns", "composition", "infiniteDilution",
+                                   "thermodynamicFactor" })
+                if (pb->found(k))
+                    mb->insert(k, pb->entryValue(k));
             transportDict->insert(mrow.v1key, EntryValue(mb));
         }
 

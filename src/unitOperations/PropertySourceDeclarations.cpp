@@ -61,11 +61,15 @@ const std::map<std::string, std::vector<Row>>& table()
         { "phaseChanger",      { { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel" } },
                                  { "surfaceTension",    { "kernel" } } } },
+        //  C398 slice (d): the liquid viscosity, diffusivity and thermal
+        //  conductivity through the door; `declared` stays on the surface
+        //  tension for a tray hydraulics' `sigma` (aceticAcid02_plant), the
+        //  unit-block family that is next.
         { "distillationColumn",{ { "liquidDensity",     { "kernel" } },
-                                 { "liquidViscosity",   { "kernel", "declared" } },
+                                 { "liquidViscosity",   { "kernel" } },
                                  { "surfaceTension",    { "kernel", "declared" } },
-                                 { "liquidDiffusivity", { "own" } },
-                                 { "liquidThermalConductivity", { "package" } } } },
+                                 { "liquidDiffusivity", { "kernel" } },
+                                 { "liquidThermalConductivity", { "kernel" } } } },
         //  The time-integrated vessels (the dynamic driver declares as the
         //  steady path does; review DX-06).  The variable-volume vessels
         //  price their liquid through the kernel; the Williams-Otto plant

@@ -1,0 +1,65 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-14";
+    importerVersion    "3";
+    records
+    {
+        "components/isopropanol.dat"
+        {
+            type          imported;
+            sha256        "a7c7911a2f9a1f3c9fb4c3ec9a31475e29ce254a528522aa528799f6bd220c71";
+            computationalSha256 "1de8ec8f029b916d93c856a3a8ef8c3d518a1da267531efa6eceda4b7be0db80";
+            origin        "data/standards/components/isopropanol.dat";
+            originSha256  "4d7d94dac3ce807f44fdd8cf9c16cb188ba9bc05eb34dab09be88ce7c6ebc39d";
+            release       Choupo-2608;
+        }
+        "components/methanol.dat"
+        {
+            type          imported;
+            sha256        "d97965f928455cc1f5780f29df7df16f1ff504d48eaa54f04668d6266a50a277";
+            computationalSha256 "f5f0b2b3c983c7b4045618dca85e2da157cef021d9d93ceee0ea9a84b214cc82";
+            origin        "data/standards/components/methanol.dat";
+            originSha256  "c9e473c796e107b4962c40b0d4630dee7f3728b4ba08c758059f3ac42466d6f3";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "33da06e7208ec21be50dd8191801bdcc44713e4184d48d3d873df0a56a268c9b";
+            computationalSha256 "cb94bc85b40e67c057e0053db52692218945dd8bcaba7ca1ae8d9bc0ae82b1e6";
+            origin        "data/standards/components/water.dat";
+            originSha256  "3f0684c4d69d27a810fea0fad4f148bc000ec80ee6a2471a6cbd38c5ffbfc13c";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
+            release       Choupo-2608;
+        }
+    }
+}

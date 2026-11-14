@@ -65,7 +65,7 @@ export const EQ_RB_ENGINE_SCOPE = "Choupo has the first way and not the second. 
   + "(DistillationColumn.cpp:1729); the simultaneous MESH method refuses one rather "
   + "than solve ideal stages in its place (DistillationColumn.cpp:2397).  A binary "
   + "column at total reflux can compute its tray efficiency from the tray's geometry "
-  + "(DistillationColumn.cpp:5059, binary only).  The one rate-based column is a "
+  + "(DistillationColumn.cpp:5058, binary only).  The one rate-based column is a "
   + "binary packed bed at total reflux (`model rateBased;`, RateBasedSegment.cpp): no "
   + "trays, no feed, no third component.  So everything this page says about "
   + "rate-based models of tray columns, of columns with a feed and of mixtures of "
@@ -147,7 +147,7 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     note: "For a binary the Murphree efficiencies of the two components are the same "
       + "number, because both the vapour and its equilibrium value sum to one; the "
       + "engine computes the efficiency for a binary only and refuses a third component "
-      + "(DistillationColumn.cpp:5059).",
+      + "(DistillationColumn.cpp:5058).",
   },
   {
     n: 4,

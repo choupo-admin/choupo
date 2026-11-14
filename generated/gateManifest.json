@@ -1518,8 +1518,8 @@
     },
     "check_capability_index": {
       "exit": 0,
-      "claim": "check_capability_index: OK: 136 typed name(s) resolved against their registries, 61 path(s) present (57 witness case(s)), 20 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked); every brief and pack within its declared word budget; the ONE student prompt names only published URLs and existing packs, stay within 250 words and are carried verbatim by /llm/prompts.md, the landing and the Help module",
-      "seconds": 3.5
+      "claim": "check_capability_index: OK: 192 typed name(s) resolved against their registries, 92 path(s) present (87 witness case(s)), 56 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked); every brief and pack within its declared word budget; the ONE student prompt names only published URLs and existing packs, stay within 250 words and are carried verbatim by /llm/prompts.md, the landing and the Help module",
+      "seconds": 3.2
     },
     "check_bell_delaware": {
       "exit": 0,
@@ -1708,13 +1708,13 @@
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
-      "claim": "check_liquid_property_ratchet: OK -- 379 files of src/unitOperations and src/postProcessing hold 80 raw liquid-property site(s) (vliq 17, direct 14, phaseVariable 0, literal 19, conversion 30), each within its pin; none new; the two door reviews' 27 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; counted and pinned although false: a kg/kmol or kmol/mol conversion on a volume line and PackingRBF.H's dPflood 1025 Pa/m; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
-      "seconds": 1.3
+      "claim": "check_liquid_property_ratchet: OK -- 383 files of src/unitOperations and src/postProcessing hold 76 raw liquid-property site(s) (vliq 17, direct 10, phaseVariable 0, literal 19, conversion 30), each within its pin; none new; the two door reviews' 27 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; counted and pinned although false: a kg/kmol or kmol/mol conversion on a volume line and PackingRBF.H's dPflood 1025 Pa/m; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
+      "seconds": 1.4
     },
     "check_property_source_witnesses": {
       "exit": 0,
-      "claim": "check_property_source_witnesses: OK -- (a) 3 source(s) built outside src/core/PropertySourceLog.H: 2 pair a tag's id with that tag's words, 1 with a string-literal id (pinned per file); (b) 18 (unit, property) sources in 13 witness case(s) are the tags their code takes; (c) the 29 published entries carrying a header tag's id carry its words; (d) the words of all 23 tags match bin/curate/property_source_words.tsv.  NOT CHECKED: any case outside the witnesses, whether a source is right, an addendum's words after '; ', and the door's own ids and labels (held by check_property_route_bench's label hashes).",
-      "seconds": 9.3
+      "claim": "check_property_source_witnesses: OK -- (a) 3 source(s) built outside src/core/PropertySourceLog.H: 2 pair a tag's id with that tag's words, 1 with a string-literal id (pinned per file); (b) 21 (unit, property) sources in 15 witness case(s) are the tags their code takes; (c) the 25 published entries carrying a header tag's id carry its words; (d) the words of all 22 tags match bin/curate/property_source_words.tsv.  NOT CHECKED: any case outside the witnesses, whether a source is right, an addendum's words after '; ', and the door's own ids and labels (held by check_property_route_bench's label hashes).",
+      "seconds": 8.6
     },
     "check_vliq_datum": {
       "exit": 0,
@@ -1768,8 +1768,8 @@
     },
     "check_ratebased_segment": {
       "exit": 0,
-      "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside r_max^2/2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 8 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
-      "seconds": 31.7
+      "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside 0.01 r_max^2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 12 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
+      "seconds": 33.3
     },
     "check_variant_same_values": {
       "exit": 0,
@@ -1798,18 +1798,23 @@
     },
     "check_view_matches_calls": {
       "exit": 0,
-      "claim": "check_view_matches_calls: OK -- in 18 witnesses every object a package holds or calls (record laws with the value they compute, predictive and vapour transport models, mixing rules, activity models, pure-fluid formulations, binary and Henry pairs) is printed field for field by THAT package's own resolved view, and 8 sabotage arms fail (purelaws01_methanol_isopropanol_water 16 objects/0 pairs in 2 view(s); purelaws02_water_two_vapour_pressure_laws 6 objects/0 pairs in 2 view(s); variants01_ethanol_water_line 20 objects/0 pairs in 2 view(s); flash01_benzene_toluene 7 objects/0 pairs in 1 view(s); steam02_water_transport 10 objects/0 pairs in 1 view(s); esterification2sector 26 objects/6 pairs in 2 view(s); flash12_nh3_acetic_ethanol_reactive 9 objects/0 pairs in 1 view(s); evaporator06_nacl_pitzer 3 objects/0 pairs in 1 view(s); flash10_ch4propane_pcsaft 4 objects/0 pairs in 1 view(s); vlle03_audit_artificial 7 objects/3 pairs in 1 view(s); flash08_co2_water_package 6 objects/1 pairs in 1 view(s); compare_psat_ambrose_walton 5 objects/0 pairs in 1 view(s); acetone06_luyben_column_C1 11 objects/0 pairs in 1 view(s); sprayDryer01_sugar 18 objects/0 pairs in 1 view(s); mixing01_water_acetone 59 objects/0 pairs in 8 view(s); batch01_first_order 10 objects/0 pairs in 1 view(s); ctrl01_cstr_temp_control 5 objects/0 pairs in 1 view(s); esterification2sector@nrtlSystem 26 objects/12 pairs in 2 view(s); sabotage 'who chose a law, printed as a constant': 11 mismatch(es), FAILS as it must; sabotage 'mixing rule GrunbergNissan -> Li': 2 mismatch(es), FAILS as it must; sabotage 'predictive surface tension BrockBird -> SatoRiedel': 1 mismatch(es), FAILS as it must; sabotage 'vapour viscosity Chung -> ChapmanEnskog': 8 mismatch(es), FAILS as it must; sabotage 'activity model NRTL -> UNIQUAC': 1 mismatch(es), FAILS as it must; sabotage 'RowlinsonBondi's ideal-gas law, its type changed': 1 mismatch(es), FAILS as it must; sabotage 'a variant's view stripped of its vapour-pressure lines': 2 mismatch(es), FAILS as it must; sabotage 'the flash's own pair replaced by the system's (CV-01, CV-26)': 1 mismatch(es), FAILS as it must).  NOT CHECKED: objects never built in the witnesses, the numbers, prose rows beyond the witnesses' own claims.",
-      "seconds": 1.5
+      "claim": "check_view_matches_calls: OK -- in 20 witnesses every object a package holds or calls (record laws with the value they compute, predictive and vapour transport models, mixing rules, activity models, pure-fluid formulations, binary and Henry pairs) is printed field for field by THAT package's own resolved view, and 10 sabotage arms fail (purelaws01_methanol_isopropanol_water 16 objects/0 pairs in 2 view(s); purelaws02_water_two_vapour_pressure_laws 6 objects/0 pairs in 2 view(s); variants01_ethanol_water_line 20 objects/0 pairs in 2 view(s); flash01_benzene_toluene 7 objects/0 pairs in 1 view(s); steam02_water_transport 10 objects/0 pairs in 1 view(s); esterification2sector 26 objects/6 pairs in 2 view(s); flash12_nh3_acetic_ethanol_reactive 9 objects/0 pairs in 1 view(s); evaporator06_nacl_pitzer 3 objects/0 pairs in 1 view(s); flash10_ch4propane_pcsaft 4 objects/0 pairs in 1 view(s); vlle03_audit_artificial 7 objects/3 pairs in 1 view(s); flash08_co2_water_package 6 objects/1 pairs in 1 view(s); compare_psat_ambrose_walton 5 objects/0 pairs in 1 view(s); acetone06_luyben_column_C1 11 objects/0 pairs in 1 view(s); sprayDryer01_sugar 18 objects/0 pairs in 1 view(s); mixing01_water_acetone 59 objects/0 pairs in 8 view(s); batch01_first_order 10 objects/0 pairs in 1 view(s); ctrl01_cstr_temp_control 5 objects/0 pairs in 1 view(s); esterification2sector@nrtlSystem 26 objects/12 pairs in 2 view(s); ratebased01_schulz_0p10bar 25 objects/0 pairs in 1 view(s); liquidDiffusivity01_pelkonen_ternary 31 objects/0 pairs in 3 view(s); sabotage 'who chose a law, printed as a constant': 11 mismatch(es), FAILS as it must; sabotage 'mixing rule GrunbergNissan -> Li': 2 mismatch(es), FAILS as it must; sabotage 'predictive surface tension BrockBird -> SatoRiedel': 1 mismatch(es), FAILS as it must; sabotage 'vapour viscosity Chung -> ChapmanEnskog': 8 mismatch(es), FAILS as it must; sabotage 'activity model NRTL -> UNIQUAC': 1 mismatch(es), FAILS as it must; sabotage 'RowlinsonBondi's ideal-gas law, its type changed': 1 mismatch(es), FAILS as it must; sabotage 'a variant's view stripped of its vapour-pressure lines': 2 mismatch(es), FAILS as it must; sabotage 'the flash's own pair replaced by the system's (CV-01, CV-26)': 1 mismatch(es), FAILS as it must; sabotage 'the column's composition rule AndersonBabb -> CaldwellBabb (C398 (d))': 1 mismatch(es), FAILS as it must; sabotage 'a measured viscosity's box widened in the view (C398 (d))': 1 mismatch(es), FAILS as it must).  NOT CHECKED: objects never built in the witnesses, the numbers, prose rows beyond the witnesses' own claims.",
+      "seconds": 9.5
     },
     "check_packing_record": {
       "exit": 0,
       "claim": "check_packing_record: OK -- a packing read from a record gives the inline bed's numbers exactly (packing05 = packing01, ratebased01 through the record, a sheet-metal record and its F_SE borrowed), prints every value's source row by row with estimate and random-lender marks, leaves no unread key, holds MontzB1-250 under Delft to stated KPIs and the witness's SulzerBX mirror to the catalogue, and refuses 18 inputs by name (unknown model first; out-of-range values in a record, installed or inline); it does NOT check that the records transcribe their papers or that a correlation suits a packing",
-      "seconds": 2.7
+      "seconds": 2.1
     },
     "check_scan_roots": {
       "exit": 0,
       "claim": "check_scan_roots: OK -- 69 of 360 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
       "seconds": 2.6
+    },
+    "check_liquid_diffusivity_declaration": {
+      "exit": 0,
+      "claim": "check_liquid_diffusivity_declaration: OK -- the witness returns its declared entry exactly and the Vignes value to 1e-12; 12 refusals each by name (9 of the grammar, 3 of the column).  NOT CHECKED: the migrated cases' numbers (their goldens), Wilke-Chang's fitness for a pair.",
+      "seconds": 0.2
     }
   }
 }

@@ -14907,6 +14907,162 @@ each binary $D_{ij}$ to a matrix that combines them rigorously.
 Reid Chapter~12 treats this in depth; we will not need it before
 v1.x of the simulator.
 
+\subsection{The liquid diffusivity a package returns}\label{sec:liquid-diffusivity-declared}
+
+A consumer of a liquid diffusivity needs one of two quantities: the
+infinite-dilution value of a NAMED solute in a NAMED solvent, or the
+effective diffusivity of a binary liquid at its composition (a column's
+liquid film).  The property dictionary declares which one the package
+returns, and how the second is built from the first (DEV.md~4c C398, slice
+(d); the design record \file{docs/design/several-laws-per-property.md},
+ruling~6):
+\begin{lstlisting}
+transport { liquid { diffusivity
+{
+    returns             effective;               // or infiniteDilution
+    composition         { rule AndersonBabb; }   // with `returns effective`
+    infiniteDilution
+    {
+        default { model WilkeChang; }            // every pair not listed
+        entries ( { solute methanol; solvent water; kind infiniteDilution;
+                    experiments methanolInWater288; } );
+    }
+    thermodynamicFactor { take 1; }              // with `returns effective`
+} } }
+\end{lstlisting}
+The legacy block \code{diffusivity \{ model WilkeChang; \}} reads as
+\code{returns infiniteDilution} with that default, unchanged.
+
+\paragraph{The direction is part of the datum.}  $D^{\circ}_{12}$ is the
+diffusivity of 1 at infinite dilution in 2, and $D^{\circ}_{21}$ is a
+different number (in the witness case, methanol in water $3.61\times10^{-9}$
+and water in methanol $8.99\times10^{-9}$~m$^2$/s at 328.62~K).  An entry
+names its \code{solute} and its \code{solvent}; its value is a constant with
+its unit, its stated temperature, its box and its source, or an experiments
+file (\file{constant/experiments/<name>.dat}: \code{property
+liquidDiffusivity}, \code{solute}, \code{solvent}, \code{kind}, columns
+\code{T} and \code{D} each with a unit, \code{box \{ T (lo hi); \}},
+\code{provenance \{ citation \}}).  A file whose solute and solvent are the
+entry's the other way round is refused, as is a column without a unit
+(cm$^2$/s against m$^2$/s is a factor $10^4$).  In this slice a file holds
+ONE point, used inside its box only and refused outside it; a series with an
+interpolation is the table type of slice~(c).  A box wider than the point
+needs a \code{reason}: no law judges it.  The kinds \code{fick},
+\code{maxwellStefan} and \code{self} are refused by name: no consumer reads
+them yet.
+
+\paragraph{The composition rules, as read.}  With $D^{\circ}_{12}$ and
+$D^{\circ}_{21}$ the two infinite-dilution values of a binary 1--2, $x_i$
+mole fractions and $\mu$ the mixture's viscosity:
+\begin{align}
+\text{\code{CaldwellBabb}:}\quad & D_{12} = x_2\,D^{\circ}_{12} + x_1\,D^{\circ}_{21},
+   \label{eq:caldwell-babb}\\
+\text{\code{Vignes}:}\quad & D_{12} = \bigl(D^{\circ}_{12}\bigr)^{x_2}\bigl(D^{\circ}_{21}\bigr)^{x_1},
+   \label{eq:vignes-declared}\\
+\text{\code{LefflerCullinan}:}\quad & D_{12}\,\mu = \bigl(D^{\circ}_{12}\mu_2\bigr)^{x_2}\bigl(D^{\circ}_{21}\mu_1\bigr)^{x_1},
+   \label{eq:leffler-cullinan}\\
+\text{\code{AndersonBabb}:}\quad & D_{12}\,\mu = x_2\,D^{\circ}_{12}\mu_2 + x_1\,D^{\circ}_{21}\mu_1 .
+   \label{eq:anderson-babb}
+\end{align}
+Eq.~\eqref{eq:caldwell-babb} is Taylor \& Kooijman's Eq.~(3.32) (Mass
+Transfer in Distillation, 2014, p.~108) and Poling, Prausnitz \& O'Connell's
+Eq.~(11-10.2) with the thermodynamic factor 1; Eq.~\eqref{eq:vignes-declared}
+is their Eq.~(3.33) and Poling's Eq.~(11-10.4); Eq.~\eqref{eq:leffler-cullinan}
+is Poling's Eq.~(11-10.5) (Leffler \& Cullinan 1970, not read);
+Eq.~\eqref{eq:anderson-babb} is the form as Poling 5th ed.\ states it on
+p.~11.34 (``the group $D_{AB}\mu/\alpha$ should be a linear function of mole
+fraction''), its two ends fixed by the infinite-dilution values; the original
+(Anderson \& Babb 1961) was not read.  In the first two, each $D^{\circ}$ is
+taken in its own solvent's PURE viscosity (the textbook definition of the
+correlation); in the last two the products $D^{\circ}_{12}\mu_2$ enter, and
+for a correlation in $1/\mu_{\mathrm{solvent}}$ such as Wilke-Chang
+\eqref{eq:wilke-chang} that product does not depend on the viscosity at all,
+so the engine computes $D^{\circ}_{12}\mu_2/\mu$ as Wilke-Chang evaluated IN
+THE MIXTURE'S VISCOSITY, term for term.  That is why the packed and tray
+columns, which before this slice built their own Wilke-Chang in the mixture's
+viscosity and combined it linearly, now declare \code{AndersonBabb} and give
+the same numbers bit for bit; and why the logarithmic comparison they
+printed under the name ``Vignes'' was Eq.~\eqref{eq:leffler-cullinan}, not
+Eq.~\eqref{eq:vignes-declared}.  For a declared entry the viscosity-corrected
+rules multiply the datum by its solvent's pure viscosity, which the package
+must then be able to give.
+
+\paragraph{The thermodynamic factor.}  The Fick diffusivity of a binary is
+the Maxwell-Stefan one times $\Gamma$ (Taylor \& Kooijman, Eq.~3.27); the
+rules above give the Maxwell-Stefan value.  \code{thermodynamicFactor \{ take
+1; \}} is required with \code{returns effective}, and is the only value this
+slice accepts: the effective value is $D_{12}$ itself, exact for an ideal
+solution, an effective-diffusivity film otherwise (DEV.md~4c C329,
+decision~(2) amended; a factor \code{from} the activity model has no consumer
+and is refused).
+
+\paragraph{Three components or more.}  An effective value of a liquid of
+three or more components is REFUSED.  Taylor \& Kooijman define the
+effective diffusivity $D_{i,\mathrm{eff}}$ (Eq.~3.26) but give no formula
+that reduces the pair values to it, and the multicomponent Vignes rule they
+report (Eqs.~3.38--3.41) is refused by name, \code{VignesKooijmanTaylor},
+until its source is read: as printed, Eq.~(3.40) carries $\mathcal{D}_{i,i}$
+on its left-hand side and Eq.~(3.41) gives the limiting diffusivity
+$\mathcal{D}_{i,j,x_k\to1} = (\mathcal{D}^{\circ}_{i,k}\mathcal{D}^{\circ}_{k,i})^{1/2}$,
+which does not contain $j$; the 1991 paper that proposed it is not in hand.
+\code{returns infiniteDilution} gives every pair of a ternary (the witness
+\file{tutorials/props/transport/liquidDiffusivity01\_pelkonen\_ternary}).
+
+\paragraph{The association factor.}  Wilke-Chang reads the SOLVENT's
+$\phi$ from its record (\code{associationFactor}); a record that writes none
+takes 1.0, and the resolved view says so for each constituent (``default
+1.0, not in the record'').  2-propanol's record is one: Wilke and Chang's
+recommendation, as Poling 5th ed.\ p.~11.22 reports it, gives 2.6 for water,
+1.9 for methanol, 1.5 for ethanol and 1.0 for an unassociated solvent, and no
+value for it; the default stays, as a listed record debt.
+
+\paragraph{What the run prints.}  The resolved view lists, for the block,
+the returned quantity, the default correlation and the viscosity it reads,
+every entry with its value, box and source, the rule with its equation and
+citation, the factor taken, and each solvent's association factor; a unit's
+\code{[liquid properties]} line names the rule and its source.  Gate
+\code{check\_liquid\_diffusivity\_declaration} holds the witness and every
+refusal above by its words; \code{check\_view\_matches\_calls} holds the
+view's lines to the objects the package calls.
+
+\paragraph{Validity window.}  A binary for \code{returns effective};
+infinite-dilution values inside their correlation's or their datum's window;
+nothing fitted (no number here was regressed against the papers the cases
+reproduce).
+
+\subsection{A measured liquid viscosity of a constituent set}\label{sec:measured-liquid-viscosity}
+
+A paper often prints ONE liquid viscosity for the liquid of its run (an
+average under operating conditions, or a representative value at a stated
+temperature and composition).  It is a mixture datum of a constituent SET,
+not a pure component's law, and its home is the property dictionary
+(DEV.md~4c C398, A4 and the architect's ruling~2 on slice~(d)), on the
+pattern of the measured liquid density (\file{liquidProperty/Measured.H}):
+\begin{lstlisting}
+transport { liquid { viscosity { measured
+{
+    schulz2018_0p10bar_liquidViscosity
+        { use method; reason "one value for the run, stood over the bed"; }
+} } } }
+\end{lstlisting}
+with \file{constant/experiments/<name>.dat}: \code{property
+liquidViscosity}, \code{system}, \code{solvent}, columns \code{mu} (required)
+and, where the source states them, \code{T} and \code{w[<c>]}, each with a
+unit; a \code{box} in $T$ and in the mass fraction of every constituent but
+the solvent; \code{provenance \{ citation \}}.  \code{use method}: inside the
+box the value IS the viscosity of that set, at every state; outside it a
+typed refusal, never a hand-over to a law.  \code{use check}: printed beside
+the computed value, never used.  No law judges the box against the value's
+uncertainty in this slice, so the \code{reason} is always required, and a
+value away from the stated point carries the origin \emph{assumed}.
+
+A column block does not carry a property: a \code{liquidViscosity} (or any
+property word) typed in \code{packing \{\}}, \code{efficiency \{\}} or any
+block of a column's \code{operation} is refused with the line to write here.
+The sixteen packed, rate-based and tray-efficiency tutorials that typed one
+carry it now as their measured value (Schulz et al.\ 2018 Table~1; Yanagi \&
+Sakata 1982 Table~II), each to the same number.
+
 \subsection{Where the ingredient data live}
 
 The pair property itself is computed, never stored; what each
@@ -14918,10 +15074,11 @@ diffusionVolume    50.36;   // Fuller Sigma-v, in the component's .dat
 associationFactor  2.6;     // Wilke-Chang phi (water; solvents only)
 \end{lstlisting}
 The case then declares the models in the \code{transport} block of
-\file{thermoPhysPropDict}: \code{diffusivity \{ model Fuller; \}} for
-the gas and \code{liquidDiffusivity \{ model WilkeChang; \}} for the
-dilute liquid (the latter needs a \code{liquidViscosity} model
-alongside, since Wilke-Chang divides by the solvent viscosity).
+\file{thermoPhysPropDict}: \code{vapour \{ diffusivity \{ model Fuller; \} \}}
+for the gas and \code{liquid \{ diffusivity \{ ... \} \}} for the liquid
+(section~\ref{sec:liquid-diffusivity-declared}; Wilke-Chang needs the
+solvent's viscosity, so a \code{liquid \{ viscosity \{ \} \}} block goes
+alongside).
 
 \begin{tutoriallink}
 \textbf{Status note.}  Diffusivity is wired in: the call surface is
@@ -29420,15 +29577,24 @@ conductivities.  These are derivations from the correlations' own forms, not
 new correlations; no heat-transfer measurement in a packed bed was read for
 them.
 
-\paragraph{The liquid diffusivity.}
-The package gives liquid diffusivities at infinite dilution only; the film
-needs the Fick diffusivity at the liquid's composition, $D = D_{MS}\,\Gamma$
-with $\Gamma$ the thermodynamic factor.  The model takes $D_{MS}$ as the two
-infinite-dilution Wilke--Chang values combined linearly in mole fraction (the
-transfer-unit bed's rule, so the limit below compares like with like; the run
-prints how far Vignes's logarithmic rule would differ: at most
-$2.2\times10^{-5}$ relative on the xylene beds) and $\Gamma$ as $1$: exact for
-an ideal solution, an \emph{effective-diffusivity} film otherwise.  That is the
+\paragraph{The liquid properties: asked of the package.}
+The column takes the liquid's density, viscosity, thermal conductivity and
+diffusivity from the package, through the property door, and none of its own
+(DEV.md~4c C398, A4): a property typed in \code{packing \{\}} is refused
+(section~\ref{sec:measured-liquid-viscosity}).  The film needs the Fick
+diffusivity at the liquid's composition, $D = D_{MS}\,\Gamma$ with $\Gamma$
+the thermodynamic factor; it takes the EFFECTIVE value the property dictionary
+declares (section~\ref{sec:liquid-diffusivity-declared}), and refuses a
+dictionary that declares none, with the line to write.  The shipped cases
+declare \code{AndersonBabb} on Wilke--Chang, Eq.~\eqref{eq:anderson-babb}:
+the rule this model computed before slice~(d), there described as ``the two
+infinite-dilution values combined linearly in mole fraction'' (in the
+mixture's viscosity), the same as the transfer-unit bed's, so the limit below
+compares like with like.  The logarithmic rule the run used to print beside
+it under the name ``Vignes'' was Leffler-Cullinan,
+Eq.~\eqref{eq:leffler-cullinan}, and is no longer printed: the declared rule
+is the one used, and the one named.  $\Gamma$ is taken as $1$ (declared):
+exact for an ideal solution, an \emph{effective-diffusivity} film otherwise.  That is the
 house's film model for the liquid (DEV.md~4c C329, decision~(2) amended): the
 thermodynamic factor is a second derivative of the excess Gibbs energy that an
 activity model fitted to phase equilibria does not pin, under film coefficients

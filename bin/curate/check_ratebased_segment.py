@@ -317,6 +317,14 @@ def main():
                  "components ( pXylene ethylBenzene );")
             edit(c, "constant/thermoPhysPropDict", "activityModel ideal;", f"activityModel {model};")
             edit(c, "system/flowsheetDict", "oXylene    0.80;", "ethylBenzene    0.80;")
+            #  The case's measured mixture viscosity (C398 slice (d)) is the
+            #  xylene pair's; this probe stands the same value on the new pair
+            #  in its temporary copy only, as the column block's typed value
+            #  did before the slice, so the control and the probe differ in
+            #  the activity model alone.
+            vf = "constant/experiments/schulz2018_0p10bar_liquidViscosity.dat"
+            edit(c, vf, "system      ( pXylene oXylene );", "system      ( pXylene ethylBenzene );")
+            edit(c, vf, "solvent     oXylene;", "solvent     ethylBenzene;")
             edit(c, "constant/propertyManifest", "sealed             true;", "sealed             false;")
             return c
         rc0, out0 = run(ethylbenzene_pair("pairIdeal", "ideal"))

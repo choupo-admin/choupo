@@ -373,6 +373,11 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   diffusivity:  { guide: "theory", dest: "ch:diffusivity" },
   Fuller:       { guide: "theory", dest: "ch:diffusivity" },   // gas binary diffusivity
   WilkeChang:   { guide: "theory", dest: "ch:diffusivity" },   // liquid infinite-dilution diffusivity
+  //  the composition rules of a declared liquid diffusivity (C398 slice (d))
+  CaldwellBabb:    { guide: "theory", dest: "sec:liquid-diffusivity-declared" },
+  Vignes:          { guide: "theory", dest: "sec:liquid-diffusivity-declared" },
+  LefflerCullinan: { guide: "theory", dest: "sec:liquid-diffusivity-declared" },
+  AndersonBabb:    { guide: "theory", dest: "sec:liquid-diffusivity-declared" },
   Scheibel:     { guide: "theory", dest: "ch:diffusivity" },
   // -- heat capacity (HeatCapacityModel.cpp) ------------------------------
   polynomial: { guide: "theory", dest: "ch:heat" },       // ideal-gas/liquid Cp = a + bT + cT^2 + ...

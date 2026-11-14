@@ -1,0 +1,94 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  liquidDiffusivity01 -- methanol, 2-propanol and water: the liquid
+    diffusivity block of C398 slice (d).
+
+    THE SYSTEM returns infinite-dilution values (`returns infiniteDilution`),
+    every pair by Wilke-Chang (Poling, Prausnitz & O'Connell, 5th ed., Eq.
+    11-9.1) in the PURE solvent's viscosity, which each record's preferred
+    liquid-viscosity law gives (the block below names no model: C398 slice
+    (b)).  Wilke-Chang reads the SOLVENT's association factor: water 2.6 and
+    methanol 1.9 are in their records; 2-propanol's record writes none, so it
+    is 1.0 by default -- the view prints "default 1.0, not in the record".
+
+    TWO VARIANTS (C398 ruling 1: one base, only what differs; the atom
+    replaced is the whole property block):
+      poling288        one declared entry, methanol in water, from
+                       constant/experiments/methanolInWater288.dat;
+      binaryEffective  `returns effective`, the Vignes rule, Gamma taken as 1.
+
+    Activity model ideal: nothing here flashes.  Sealed: the three records
+    are this case's own copies (constant/components).  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol isopropanol water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity   { }      // each record's preferred law (the solvent's, for Wilke-Chang)
+        diffusivity
+        {
+            returns          infiniteDilution;
+            infiniteDilution { default { model WilkeChang; } }
+        }
+    }
+}
+
+variants
+{
+    poling288
+    {
+        transport
+        {
+            liquid
+            {
+                diffusivity
+                {
+                    returns          infiniteDilution;
+                    infiniteDilution
+                    {
+                        default { model WilkeChang; }
+                        entries
+                        (
+                            { solute methanol;  solvent water;  kind infiniteDilution;
+                              experiments methanolInWater288; }
+                        );
+                    }
+                }
+            }
+        }
+    }
+    binaryEffective
+    {
+        transport
+        {
+            liquid
+            {
+                diffusivity
+                {
+                    returns             effective;
+                    composition         { rule Vignes; }
+                    infiniteDilution    { default { model WilkeChang; } }
+                    thermodynamicFactor { take 1; }
+                }
+            }
+        }
+    }
+}

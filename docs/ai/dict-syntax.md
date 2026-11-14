@@ -198,7 +198,8 @@ suffixes below are accepted -- anything else is a parse error.  Includes:
   (No `um/s` -- use `mm/s`, or `m/s` with the numeric value, e.g.
   `5.0e-5 m/s`.)
 - **Water permeability:** `m/s/bar`, `m/s/Pa`.
-- **Viscosity:** `Pa.s`, `cP`.
+- **Viscosity:** `Pa.s`, `cP`, `mPa.s`.
+- **Diffusivity:** `m2/s`, `cm2/s` (the unit of the published tables).
 - **Concentration:** `kmol/m3`, `mol/m3`, `mol/L`, `mmol/L`, `M`.
 - **Molality:** `mol/kg`, `mmol/kg` (per kg of solvent -- water analyses,
   electrolyte `totals`).

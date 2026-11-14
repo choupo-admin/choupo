@@ -1,0 +1,39 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Methanol at infinite dilution in water, 288 K: 1.26e-5 cm2/s, as Poling,
+  Prausnitz & O'Connell print it in Table 11-5 (the measurement is their
+  reference 10, which is not read here).  ONE point: its box is the point
+  itself, so the value is used at 288 K and refused at any other temperature
+  (a series with an interpolation is slice (c)'s table type).
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source       literature;
+    citation     "Poling, B.E.; Prausnitz, J.M.; O'Connell, J.P. (2001). The Properties of Gases and Liquids, 5th ed., McGraw-Hill, Table 11-5, p. 11.30";
+}
+
+property    liquidDiffusivity;
+system      ( methanol water );
+solute      methanol;
+solvent     water;
+kind        infiniteDilution;
+
+columns
+(
+    { name T; unit K;     }
+    { name D; unit cm2/s; }
+);
+data        ( 288 1.26e-5 );
+
+box
+{
+    T  ( 288 288 );
+}

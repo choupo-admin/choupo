@@ -809,6 +809,22 @@ LAWS_WITHOUT_CHECK = {
     "solidHeatCapacity":         15,
 }
 
+#  ASSOCIATION FACTOR TAKEN BY DEFAULT (C398 slice (d), the architect's ruling
+#  on its first hand-back).  Wilke-Chang reads the SOLVENT's association factor
+#  phi; a record that writes none is read as 1.0 (Component.cpp, the line that
+#  reads `associationFactor`), the "unassociated" value.  For an ASSOCIATING
+#  solvent that default is a datum nobody chose; the resolved view now says
+#  "default 1.0, not in the record", and check_liquid_diffusivity_declaration
+#  holds both halves: each record listed here still writes none (if it gains
+#  one, the debt is PAID and the entry leaves), and the witness's view prints
+#  the default for it.  Not changed here: no source for 2-propanol's phi was
+#  read (Poling 5th ed. p. 11.22 gives water, methanol, ethanol and "unassociated" only).
+ASSOCIATION_FACTOR_DEFAULTED = {
+    "isopropanol": "an associating solvent (an alcohol) read with the unassociated "
+                   "phi = 1.0; remedy: a value read in a source, written in the record "
+                   "with its citation",
+}
+
 #  RECORDS THE ENGINE CANNOT LOAD ALONE (C398 review row CV-08), counted by
 #  check_record_law_values from `choupoProps --record-law-checks`: a record
 #  that does not load leaves every law it holds outside that gate, so the

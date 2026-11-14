@@ -5886,6 +5886,42 @@ The brine is NaCl-dominated (3 mol/kg, near seawater) with CaSO4 (0.10 mol/kg) r
 \subsection{transport}
 \grouptheory{transport}
 \clearpage
+\tutentry{liquidDiffusivity01\_pelkonen\_ternary}{tutorials/props/transport/liquidDiffusivity01\_pelkonen\_ternary}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{topDinf}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{poling288}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{binaryEffective}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The liquid diffusivity a package returns (C398 slice (d)): the six infinite-dilution values of methanol, 2-propanol and water at the top of Pelkonen's packed column, one of them replaced by a measured value in a variant, and the effective value of the methanol-water binary by a declared rule}
+\begin{tutnarrative}
+liquidDiffusivity01 -- what `transport \{ liquid \{ diffusivity \{\} \} \}` returns, and in which direction (DEV.md 4c C398 slice (d)).
+
+topDinf the system: `returns infiniteDilution`, Wilke-Chang for every pair, at the top of Pelkonen et al.'s Clausthal column, run MIW9 (Chem. Eng. Process. 40 (2001) 235, Table 3: the reflux at 55.47 C, 960 mbar; the liquid at 1.790 m, methanol 0.8175, 2-propanol 0.1357, water by difference). The six values D0(solute in solvent) differ by direction -- the solvent's viscosity and association factor, the solute's volume. An EFFECTIVE value of this ternary is not asked: it is refused (no rule that reduces the pair values to it has been read; the view says so, and the gate check\_liquid\_diffusivity\_declaration holds the refusal). poling288 the variant `poling288`: methanol in water replaced by the measured value Poling 5th ed. Table 11-5 prints at 288 K; water in methanol stays Wilke-Chang. The datum is used at its own temperature only (its box is the point). binaryEffective the variant `binaryEffective`: `returns effective` with the Vignes rule, on the methanol-water binary at the top's temperature -- the value a column's liquid film would take.
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{topDinf}{Cp\_ig}{52.4624121959}
+\goldrow{diag}{topDinf}{D\_L\_inf\_isopropanol\_in\_methanol}{3.77139664281e-09}
+\goldrow{diag}{topDinf}{D\_L\_inf\_isopropanol\_in\_water}{2.46796832469e-09}
+\goldrow{diag}{topDinf}{D\_L\_inf\_methanol\_in\_isopropanol}{2.22155048635e-09}
+\goldrow{diag}{topDinf}{D\_L\_inf\_methanol\_in\_water}{3.61315997514e-09}
+\goldrow{diag}{topDinf}{D\_L\_inf\_water\_in\_isopropanol}{3.61607926198e-09}
+\goldrow{diag}{topDinf}{D\_L\_inf\_water\_in\_methanol}{8.98734831092e-09}
+\goldrow{diag}{topDinf}{H\_R}{0}
+\goldrow{diag}{topDinf}{H\_ig}{-211037.212535}
+\goldrow{diag}{topDinf}{H\_real}{-211037.212535}
+\goldrow{diag}{topDinf}{P}{96000}
+\goldrow{diag}{topDinf}{S\_R}{0}
+\goldrow{diag}{topDinf}{S\_ig}{257.012392533}
+\goldrow{diag}{topDinf}{S\_real}{257.012392533}
+\goldmore{33}
+\end{tutgolden}
+
+\clearpage
 \tutentry{mixing01\_water\_acetone}{tutorials/props/transport/mixing01\_water\_acetone}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

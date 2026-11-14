@@ -55,7 +55,7 @@ Description
 #include "thermo/SaturationCurves.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
-#include "thermo/transport/WilkeChang.H"
+#include "ColumnTypedProperties.H"
 
 #include <algorithm>
 #include <cmath>
@@ -81,7 +81,6 @@ struct SegmentCoefficients
     scalar m     = 0.0;                // slope of the equilibrium line at xbar
     scalar HG = 0.0, HL = 0.0, HOG = 0.0;  // m, at this segment's own loads
     scalar F  = 0.0, uL = 0.0, aeOverAp = 0.0, holdup = 0.0, flood = 0.0;
-    scalar DLlinear = 0.0, DLvignes = 0.0;
 };
 
 scalar relChange(scalar a, scalar b)
@@ -259,12 +258,14 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     }
     const std::size_t lk = pk->found("lightKey") ? thermo.indexOf(pk->lookupWord("lightKey")) : 0;
     const std::size_t hk = 1 - lk;
-    const scalar muLdecl = pk->found("liquidViscosity")
-        ? pk->lookupScalar("liquidViscosity", Dims::viscosity) : 0.0;
-    if (!(muLdecl > 0.0) && !thermo.hasLiquidViscosity())
-        throw std::runtime_error(who + "the packing model needs a liquid"
-            " viscosity -- a liquidViscosity model in the package or a measured"
-            " `liquidViscosity <Pa s>;` in `packing {}`.");
+    //  EVERY LIQUID PROPERTY FROM THE PACKAGE (C398, A4): a value typed in a
+    //  column block is refused before this (ColumnTypedProperties.H).
+    if (!thermo.hasLiquidViscosity())
+        throw std::runtime_error(who + "the packing model needs a liquid viscosity --"
+            " `transport { liquid { viscosity { } } }` in the package, or a measured"
+            " mixture value (`viscosity { measured { <name> { use method; reason"
+            " \"...\"; } } }`).");
+    columnTypedProperties::requireEffectiveLiquidDiffusivity(thermo, who);
     if (!thermo.hasTransport() || !thermo.hasDiffusivity() || !thermo.hasSurfaceTension())
         throw std::runtime_error(who + "the packing model needs the vapour"
             " viscosity and diffusivity and the surface tension from the package"
@@ -293,7 +294,6 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     scalar dz = Hbed / M;
     const rateBased::SegmentLayout lay{n};
     const std::size_t B = lay.block();
-    const WilkeChang wilkeChang(nullptr);
 
     //  ---- Thermodynamic helpers (one package, one surface) ----------------
     auto normalised = [&](const sVector& z)
@@ -436,21 +436,14 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         st.ULs = lm * Vref * ML / (rhoL * A_T);
         st.rhoG = rhoG; st.rhoL = rhoL;
         st.muG = thermo.viscosityGas(TVm, yv);
-        st.muL = (muLdecl > 0.0) ? muLdecl
-            : liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, TLm, Pm, xl).value;
+        st.muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, TLm, Pm, xl).value;
         st.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, TLm, Pm, xl).value;
         st.DG = thermo.diffusivityGas(TVm, Pm, 0, 1);
-        const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), TLm, st.muL);
-        const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), TLm, st.muL);
-        //  The transfer-unit bed's rule (linear in x between the two
-        //  infinite-dilution values); Vignes's logarithmic rule beside it,
-        //  measured and printed, never used.
-        st.DL = xl[0] * D10 + xl[1] * D01;
-        c.DLlinear = st.DL;
-        c.DLvignes = std::pow(D10, xl[0]) * std::pow(D01, xl[1]);
-        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::ownWilkeChang, "own", took(st.DL, TLm, Pm));
-        if (muLdecl > 0.0)
-            PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(muLdecl));
+        //  THE DECLARED QUANTITY (C398 slice (d)): the effective liquid
+        //  diffusivity of the binary by the property dictionary's composition
+        //  rule, the thermodynamic factor taken as 1 -- the same value the
+        //  transfer-unit bed takes, so the limit compares like with like.
+        st.DL = liquidProperty::evaluate(thermo, liquidProperty::Property::diffusivity, TLm, Pm, xl).value;
         scalar ys = 0.0;
         (void)ystarAndSlope(xl[lk], Pm, TLm, ys, c.m);
         st.lambda = c.m * vm / lm;
@@ -488,9 +481,8 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             const scalar cpL = (thermo.H_stream_formation(TLm + dT, Pm, 0.0, xl)
                               - thermo.H_stream_formation(TLm - dT, Pm, 0.0, xl)) / (2.0 * dT);
             const scalar lamG = thermo.thermalConductivityGas(TVm, yv);
-            const scalar lamL = thermo.thermalConductivityLiquid(TLm, xl);
-            PropertySourceLog::instance().useHere("liquidThermalConductivity",
-                liquidSource::packageLiquidConductivity, "package", took(lamL, TLm, Pm));
+            const scalar lamL = liquidProperty::evaluate(thermo,
+                liquidProperty::Property::thermalConductivity, TLm, Pm, xl).value;
             const scalar rcpG = cG * 1000.0 * cpV, rcpL = cL * 1000.0 * cpL;   // J/(m3 K)
             const scalar hGc = r.kG * rcpG * std::pow(lamG / rcpG / st.DG, 2.0 / 3.0);
             const scalar hLc = r.kL * rcpL * std::sqrt(lamL / rcpL / st.DL);
@@ -840,7 +832,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
 
     //  Discretisation estimate and per-segment quantities.
     scalar rMax = 0.0, ratioMin = 1e300, ratioMax = -1e300, ratioSum = 0.0;
-    scalar dTvMax = 0.0, dTlMax = 0.0, phiMax = 0.0, dlVig = 0.0, sumDP = 0.0, sumAe = 0.0, sumHold = 0.0, sumUL = 0.0, maxFlood = 0.0;
+    scalar dTvMax = 0.0, dTlMax = 0.0, phiMax = 0.0, sumDP = 0.0, sumAe = 0.0, sumHold = 0.0, sumUL = 0.0, maxFlood = 0.0;
     int ratioCount = 0;
     scalar shareMin = 1.0e300, shareMax = -1.0e300, shareSum = 0.0;
     profile_ = UnitProfile{};
@@ -868,7 +860,6 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         dTvMax = std::max(dTvMax, std::abs(TI - s.TVm));
         dTlMax = std::max(dTlMax, std::abs(s.TLm - TI));
         phiMax = std::max(phiMax, std::abs(wt) / c.betaV);
-        dlVig = std::max(dlVig, std::abs(c.DLvignes - c.DLlinear) / c.DLlinear);
         sumDP += c.dP; sumAe += c.aeOverAp; sumHold += c.holdup; sumUL += c.uL;
         maxFlood = std::max(maxFlood, c.flood);
         const scalar toFlux = Vref / (A_T * dz);    // kmol/(m3 s) of bed
@@ -923,9 +914,14 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
            " them its HETP is larger than this one, and nothing here measures by how much\n"
         << "  ends: reboiler = equilibrium stage on the declared liquid at the bed's bottom pressure;"
            " total condenser, the reflux the top vapour at its bubble point at the declared top pressure\n"
-        << "  liquid Fick diffusivity: the two infinite-dilution Wilke-Chang values combined linearly"
-           " in x (Vignes's rule would differ by at most " << std::setprecision(3) << 100.0 * dlVig
-        << " % on this bed), with the thermodynamic factor Gamma taken as 1"
+        << "  liquid Fick diffusivity: the effective value the property dictionary declares -- rule "
+        << liquidTransport::ruleName(thermo.liquidDiffusivityDeclaration().rule) << " ("
+        << liquidTransport::ruleEquation(thermo.liquidDiffusivityDeclaration().rule)
+        << ") on infinite-dilution values from "
+        << (thermo.liquidDiffusivityDeclaration().defaultModel.empty() ? std::string("the case's entries")
+            : thermo.liquidDiffusivityDeclaration().defaultModel
+              + (thermo.liquidDiffusivityDeclaration().entries.empty() ? "" : " and the case's entries"))
+        << ", with the thermodynamic factor Gamma taken as 1"
         << (idealLiquid ? " -- exact here: the liquid is an ideal solution.\n"
                         : (" -- NOT exact here: the activity model is `" + thermo.activity().modelName()
                            + "`.\n    RISK: the liquid film's flux is off by the factor Gamma (which can be far"
@@ -1028,7 +1024,6 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     kpis_["HETP_halfSegments"] = half.HETP;
     kpis_["dzOverHOG_max"] = rMax;
     kpis_["segments"] = M;
-    kpis_["DL_vignesVsLinear_maxRel"] = dlVig;
     kpis_["liquidFilmShare_min"] = shareMin;
     kpis_["liquidFilmShare_mean"] = shareSum / M;
     kpis_["liquidFilmShare_max"] = shareMax;

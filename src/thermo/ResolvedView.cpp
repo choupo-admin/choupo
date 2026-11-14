@@ -677,6 +677,30 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 if (pkg.hasPureFluid(i))
                     d.push_back("  when the phase is pure in it: " + pureFluidLine(pkg, i, pfKey));
         };
+        //  C398 slice (d): the liquid viscosity's measured mixture values and the
+        //  liquid diffusivity's declared quantity, in the lines the package
+        //  describes itself by (LiquidTransportDeclarations.H, describe).
+        std::vector<std::string> declared;
+        if (std::string(tr.key) == "liquidViscosity")
+            for (const auto& m : pkg.liquidViscosityMeasurements())
+                declared.push_back("  " + liquidTransport::describe(m, pkg.components()));
+        if (std::string(tr.key) == "liquidDiffusivity")
+        {
+            for (const auto& line : liquidTransport::describe(pkg.liquidDiffusivityDeclaration(), pkg.components()))
+                declared.push_back("  " + line);
+            if (pkg.liquidDiffusivityDeclaration().declared && !pkg.liquidDiffusivityDeclaration().defaultModel.empty())
+                for (std::size_t i = 0; i < n; ++i)
+                    declared.push_back("  " + pkg.comp(i).name() + " as a solvent: associationFactor "
+                        + (pkg.comp(i).associationFactorStated()
+                               ? si(pkg.comp(i).associationFactor()) + " (its record)"
+                               : std::string("default 1.0, not in the record")));
+        }
+        if (info.model.empty() && !hasLaws && !declared.empty())
+        {
+            d = declared;
+            out.row(std::string(tr.label) + " (" + where + ")", c, d);
+            continue;
+        }
         if (info.model.empty() && !hasLaws)
         {
             //  A PURE FLUID'S FORMULATION ANSWERS (review row CV-02): the row
@@ -698,9 +722,14 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         }
         else if (std::string(tr.key) == "liquidDiffusivity")
         {
-            d.push_back("binary infinite-dilution D_ij (solute i in solvent j) by " + info.model
-                        + ", reading the pure solvent's viscosity from the liquid viscosity law;");
-            d.push_back("  no composition rule in the package (a consumer that needs one builds it: C398 slice (d))");
+            if (pkg.liquidDiffusivityDeclaration().legacy)
+            {
+                d.push_back("binary infinite-dilution D_ij (solute i in solvent j) by " + info.model
+                            + ", reading the pure solvent's viscosity from the liquid viscosity law;");
+                d.push_back("  no composition rule declared (`returns effective; composition { rule <name>; }`"
+                            " makes the package return the effective value of a binary, C398 slice (d))");
+            }
+            d.insert(d.end(), declared.begin(), declared.end());
         }
         else if (hasLaws)
         {
@@ -759,6 +788,8 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             d.push_back(pure);
             pureFluidLines();
         }
+        if (std::string(tr.key) == "liquidViscosity")
+            d.insert(d.end(), declared.begin(), declared.end());   // C398 (d): the measured mixture values
         //  THE MODEL AND THE RULE THE PACKAGE HOLDS (review CV-20), in the
         //  fields their self-description prints.
         {

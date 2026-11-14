@@ -43,7 +43,7 @@ License
 #include "PackingRBF.H"
 #include "PackingDelft.H"
 #include "core/Constants.H"
-#include "thermo/transport/WilkeChang.H"
+#include "ColumnTypedProperties.H"
 #include "solver/NewtonRaphson.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
 #include "solver/NewtonND.H"
@@ -1315,7 +1315,7 @@ int DistillationColumn::solve(const DictPtr& dict,
                               const ThermoPackage& thermo,
                               int verbosity)
 {
-    auto operDict = dict->subDict("operation");
+    auto operDict = dict->subDict("operation");   columnTypedProperties::refuse(operDict, "DistillationColumn '" + dict->name() + "': ");   // C398 A4
 
     // Model selector.  The variant goes in the `model` slot RIGHT AFTER
     // `type` (the project-wide convention: type = which unit, model =
@@ -5038,7 +5038,6 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
 
     std::size_t lk = 0;
     bool entrainment = false;
-    scalar muLdecl = 0.0;
     TrayEfficiency::Geometry tg;
     TrayEfficiency::Model effModel = TrayEfficiency::Model::AIChE;
     std::string effModelName = "AIChE";
@@ -5069,13 +5068,12 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
                 " declare `transport { vapour { viscosity { model Chung; }"
                 " diffusivity { model Fuller; } } }` in the thermo package.");
         if (ed->found("lightKey")) lk = thermo.indexOf(ed->lookupWord("lightKey"));
-        if (ed->found("liquidViscosity"))
-            muLdecl = ed->lookupScalar("liquidViscosity", Dims::viscosity);
-        else if (!thermo.hasLiquidViscosity())
+        columnTypedProperties::requireEffectiveLiquidDiffusivity(thermo, "DistillationColumn '" + unit + "': ");
+        if (!thermo.hasLiquidViscosity())
             throw std::runtime_error("DistillationColumn '" + unit + "': the liquid"
-                " diffusivity (Wilke-Chang) needs a liquid viscosity, and the"
-                " package has no liquidViscosity model -- declare one, or a measured"
-                " `liquidViscosity <Pa s>;` in the efficiency block.");
+                " film needs a liquid viscosity, and the package has none -- declare"
+                " `transport { liquid { viscosity { } } }`, or a measured mixture value"
+                " (`viscosity { measured { <name> { use method; reason \"...\"; } } }`).");
         const std::string ent = ed->lookupWordOrDefault("entrainment", "FairMedian");
         if (ent != "FairMedian" && ent != "none")
             throw std::runtime_error("DistillationColumn '" + unit + "': "
@@ -5172,7 +5170,6 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
 
     //  ---- The computed efficiency of one tray on the current march -----
     std::vector<TrayEfficiency::Result> eff(N);
-    const WilkeChang wilkeChang(nullptr);
     auto trayEfficiency = [&](std::size_t j, scalar Phi)
     {
         const scalar rhoV = thermo.density(T[j], P, y[j], DensityPhase::Vapour);
@@ -5181,16 +5178,11 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         for (std::size_t i = 0; i < n; ++i) MWL += x[j][i] * thermo.comp(i).MW();
         const scalar muV = thermo.viscosityGas(T[j], y[j]);
         const scalar DV  = thermo.diffusivityGas(T[j], P, 0, 1);
-        const scalar muL = (muLdecl > 0.0) ? muLdecl : liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T[j], P, x[j]).value;
-        //  Infinite-dilution Wilke-Chang both ways, in the mixture's own
-        //  viscosity, combined linearly in mole fraction (Poling, Prausnitz &
-        //  O'Connell 5th ed. Eq. 11-10.2, thermodynamic factor 1).
-        const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), T[j], muL);
-        const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), T[j], muL);
-        const scalar DL  = x[j][0] * D10 + x[j][1] * D01;
-        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::ownWilkeChang, "own", took(DL, T[j], P));
-        if (muLdecl > 0.0)
-            PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(muLdecl));
+        const scalar muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T[j], P, x[j]).value;
+        //  The liquid diffusivity the property dictionary DECLARES (C398 slice
+        //  (d)): the effective value of the binary by the case's composition
+        //  rule, the thermodynamic factor taken as 1.
+        const scalar DL  = liquidProperty::evaluate(thermo, liquidProperty::Property::diffusivity, T[j], P, x[j]).value;
         //  The local slope of the equilibrium line for the light key.
         const scalar xl = x[j][lk];
         const scalar h  = std::min({1.0e-4, 0.5 * xl, 0.5 * (1.0 - xl)});
@@ -5580,19 +5572,18 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
     }
     const std::size_t lk = pk->found("lightKey") ? thermo.indexOf(pk->lookupWord("lightKey")) : 0;
     const std::size_t hk = 1 - lk;
-    const scalar muLdecl = pk->found("liquidViscosity")
-        ? pk->lookupScalar("liquidViscosity", Dims::viscosity) : 0.0;
-    if (!(muLdecl > 0.0) && !thermo.hasLiquidViscosity())
+    if (!thermo.hasLiquidViscosity())
         throw std::runtime_error("DistillationColumn '" + unit + "': the packing"
-            " model needs a liquid viscosity -- a liquidViscosity model in the"
-            " package or a measured `liquidViscosity <Pa s>;` in `packing {}`.");
+            " model needs a liquid viscosity -- `transport { liquid { viscosity { } } }`"
+            " in the package, or a measured mixture value (`viscosity { measured {"
+            " <name> { use method; reason \"...\"; } } }`).");
+    columnTypedProperties::requireEffectiveLiquidDiffusivity(thermo, "DistillationColumn '" + unit + "': ");
     if (!thermo.hasTransport() || !thermo.hasDiffusivity() || !thermo.hasSurfaceTension())
         throw std::runtime_error("DistillationColumn '" + unit + "': the packing"
             " model needs the vapour viscosity and diffusivity and the surface"
             " tension from the package (`transport {}`).");
     const int nSeg = static_cast<int>(pk->lookupScalarOrDefault("segments", 200.0));
     const scalar A_T = 0.25 * constant::pi * Dcol * Dcol;
-    const WilkeChang wilkeChang(nullptr);
 
     auto bubbleAt = [&](const sVector& xl, scalar P, scalar Tg)
     { bool ok = true; return bubbleTWithItsVapour(thermo, xl, P, Tg, 1.0e-12, &ok); };
@@ -5629,15 +5620,10 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         st.ULs = Vmol * ML / (rhoL * A_T);
         st.rhoG = rhoG; st.rhoL = rhoL;
         st.muG = thermo.viscosityGas(p.T, yv);
-        st.muL = (muLdecl > 0.0) ? muLdecl : liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, p.T, P, x).value;
+        st.muL = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, p.T, P, x).value;
         st.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, p.T, P, x).value;
         st.DG = thermo.diffusivityGas(p.T, P, 0, 1);
-        const scalar D01 = wilkeChang.diffusivityLiquidBinary(thermo.comp(0), thermo.comp(1), p.T, st.muL);
-        const scalar D10 = wilkeChang.diffusivityLiquidBinary(thermo.comp(1), thermo.comp(0), p.T, st.muL);
-        st.DL = x[0] * D10 + x[1] * D01;
-        PropertySourceLog::instance().useHere("liquidDiffusivity", liquidSource::ownWilkeChang, "own", took(st.DL, p.T, P));
-        if (muLdecl > 0.0)
-            PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(muLdecl));
+        st.DL = liquidProperty::evaluate(thermo, liquidProperty::Property::diffusivity, p.T, P, x).value;   // the declared quantity (C398 (d))
         st.lambda = p.lambda;
         const PackingRBF::Result r = delft ? PackingDelft::evaluate(dg, st)
                                            : PackingRBF::evaluate(pg, st);

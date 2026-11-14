@@ -1,0 +1,44 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The liquid viscosity of the p-xylene / o-xylene liquid in Schulz et al.'s
+  FRI bed at 0.02 bar: Table 1 prints ONE representative value per pressure,
+  "as employed in this study", beside its temperature (43 C) and liquid
+  composition (0.49, read here as the p-xylene fraction; the two isomers have
+  one molar mass in the case's records, so mass and mole fractions agree).
+  It is a property value the authors used, not a measured series: the box
+  below is the case's hypothesis, and its `reason` is written in
+  constant/thermoPhysPropDict.  Read by transport.liquid.viscosity.measured
+  (DEV.md 4c C398 slice (d)); until that slice it was typed in the column's
+  `packing {}` block, the same number.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source       literature;
+    citation     "Schulz, R.; Rietfort, T.; Jansen, H.; Olujic, Z. (2018). Experimental evidence on performance of an advanced gauze structured packing under deep vacuum distillation conditions. Chem. Eng. Trans. 69, 763-768. doi:10.3303/CET1869128, Table 1";
+}
+
+property    liquidViscosity;
+system      ( pXylene oXylene );
+solvent     oXylene;
+
+columns
+(
+    { name T;          unit K;    }      // 43 C as printed
+    { name mu;         unit Pa.s; }
+    { name w[pXylene]; unit -;    }
+);
+data        ( 316.15 5.39e-4 0.49 );
+
+box
+{
+    T           ( 270 340 );    // K: every liquid temperature the bed visits at this pressure
+    w[pXylene]  ( 0 1 );                  // the whole binary
+}

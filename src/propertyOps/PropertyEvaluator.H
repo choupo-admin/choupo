@@ -42,6 +42,8 @@ Description
       Activity model:       gamma_<comp>
       Ideal-gas mixture:    H_ig   S_ig   Cp_ig
       Real-gas mixture:     Z   v_molar   H_R   S_R   H_real   S_real
+      Liquid diffusivity:   D_L_inf_<solute>_in_<solvent>   D_L_effective
+                            (the declared quantity, C398 slice (d)) [m2/s]
 
     Throws with a clear, student-readable message if the keyword is
     not in the catalogue, or if the state is missing a piece of data

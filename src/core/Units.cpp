@@ -226,6 +226,13 @@ const std::map<std::string, UnitSpec>& table()
         // ----- viscosity → Pa·s -----------------------------------------
         { "Pa.s",    UnitSpec{ 1.0,         Dims::viscosity } },
         { "cP",      UnitSpec{ 1.0e-3,      Dims::viscosity } },   // centipoise
+        { "mPa.s",   UnitSpec{ 1.0e-3,      Dims::viscosity } },   // the same as cP (C398 (c)/(d): whichever lands second drops the duplicate line)
+
+        // ----- diffusivity → m²/s (C398 slice (d): a liquid infinite-dilution datum) --
+        //   cm2/s is the unit of the published tables (1e-4: the scale error
+        //   a unit-less column would hide, THIRD ADDENDUM U2).
+        { "m2/s",    UnitSpec{ 1.0,         Dims::diffusivity } },
+        { "cm2/s",   UnitSpec{ 1.0e-4,      Dims::diffusivity } },
 
         // ----- overall heat-transfer coefficient → W/(m²·K) -------------
         //   Used by Evaporator (and any future two-stream heat

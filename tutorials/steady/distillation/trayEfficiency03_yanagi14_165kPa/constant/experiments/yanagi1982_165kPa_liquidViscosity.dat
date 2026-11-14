@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The liquid viscosity of the cyclohexane / n-heptane liquid on Yanagi &
+  Sakata's FRI sieve trays at 165 kPa: Table II prints it as an AVERAGE
+  physical property "of the test systems under operating conditions", with
+  no temperature and no composition, so this file states neither and the box
+  below is the case's hypothesis (its `reason` is written in
+  constant/thermoPhysPropDict).  Read by transport.liquid.viscosity.measured
+  (DEV.md 4c C398 slice (d)); until that slice it was typed in the column's
+  `efficiency {}` block, the same number.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    source       literature;
+    citation     "Yanagi, T.; Sakata, M. (1982). Performance of a Commercial Scale 14% Hole Area Sieve Tray. Ind. Eng. Chem. Process Des. Dev. 21, 712-717. doi:10.1021/i200019a029, Table II";
+}
+
+property    liquidViscosity;
+system      ( cyclohexane nHeptane );
+solvent     nHeptane;
+
+columns
+(
+    { name mu; unit Pa.s; }      // 0.23 mPa s as printed
+);
+data        ( 2.3e-4 );
+
+box
+{
+    T                ( 350 400 );    // K: every liquid temperature the trays visit at this pressure
+    w[cyclohexane]   ( 0 1 );                  // the whole binary
+}
