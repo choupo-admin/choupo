@@ -152,6 +152,36 @@ outside this layout, the reaction checks of C399 (an element balance at load,
 the rate constant's dimension).  The rate-based column resumes after (e).
 The plan: [`property-layout-review-plan.md`](property-layout-review-plan.md).
 
+**SLICE (c) AS BUILT (2026-11-14; it supersedes 5.5's grammar, interpolant
+words and minimum points where they differ).**  The architect's rulings at
+the builder's first hand-back: (1) THE END RULE (c) -- a table refuses EVERY
+evaluation outside its points (answer or trial state; no state classified),
+at its own evaluation, with the typed domain error, the temperature to six
+decimals, "the computation asked for T = ..." and the remedies; the one way
+past an end is a CASE pin's `extend { upTo; downTo; reason; }` (the end
+segment's chord in the interpolation's variables, first excursion announced,
+the largest restated at end of run); `clamp` refused.  Rejected: an
+extrapolated trial value with refused reported states (needs the post-solve
+classification CV-28..32 found incomplete) and a consumer allow-list (a
+hand-kept list, and it would forbid a student's data in a pipe).  Known cost,
+demonstrated by `tutorials/props/heat/table03_trial_state_refused`: a
+consumer evaluating inside a search may be refused at a trial state.  (2)
+Liquid and solid heat capacities only; an ideal-gas table refused (A2(v)).
+(3) The grammar: a record's table is a named law `{ model table;
+interpolation; columns; data; }`, source in the provenance block, no window
+keys and no `extend`; a case's table is `constant/experiments/<name>.dat`
+(V3 grammar, many rows, `system` of exactly one component, `property`
+checked against the pin), cited by `pin ( { component; table <name>;
+interpolation; reason; [extend] } );` -- `table` OR `law`; the interpolation
+words are V3's (`linear`, `logLinear`, `logReciprocal`, `monotoneCubic`; a
+heat capacity `linear` or `monotoneCubic`, closed-form integrals, 298.15 K
+inside the points); a per-mass Cp converted with MW.  (4) Sources: CRC
+Handbook 82nd ed. p. 6-3 as the route, primaries Sengers & Watson (1986) and
+Marsh (1987).  U1: the density pilot's private unit table is gone
+(`src/thermo/liquidProperty/ExperimentsFile`, shared with slice (d)).  NOT IN
+THIS SLICE: a file beside a record, CSV, 2-D and mixture tables, a
+vapour-pressure table.  Theory Guide `sec:record-law-table`.
+
 ## The review rows, answered
 
 | row | what the record now says, or why not |
