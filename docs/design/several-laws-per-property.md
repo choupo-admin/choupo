@@ -2,6 +2,11 @@
 
 Kind: PROPOSAL, with measurement.  Status: OPEN -- written 2026-11-14 for the
 architect's ruling; nothing built, no engine, data, case or golden changed.
+SECOND HEAD (same day): the architect's eleven rulings R1-R11 and the reading
+of the toolbox this project's dictionaries descend from are folded in
+(section 5.5c, which prevails over the rest of section 5 where they differ); the review of
+the whole tree against the ruled design is planned in
+[`property-layout-review-plan.md`](property-layout-review-plan.md).
 Asked by Vítor: *"A água não pode ter vários modelos com parâmetros para gamas
 de temperatura?!  Que se passa aqui?!  ... temos de resolver esta confusão once
 and for all!"*, under his standing rule that thermophysical properties are
@@ -65,6 +70,15 @@ is the private study of 2026-11 and stays outside the tree.
   (2) water's preferred vapour-pressure law becomes the IAPWS equation, with
   the re-seal list; (3) the first table property is liquid viscosity, the
   second vapour pressure; heat-capacity and latent-heat tables wait.
+* **Second head (5.5c).**  The architect's rulings R1-R11, checked against the
+  toolbox the dictionaries descend from and against the tree: ten followed;
+  one amended (a table's `clamp` is refused even in a case, because a clamped
+  table has a zero slope outside and no bound on its error; a bounded `extend`
+  replaces it); one measured exception the rulings must reach (18 component
+  overlays merge leaves, against the atomic-block rule).  New: a block-level
+  `sameAs` reference between scopes, printed and sealed by hash; an effective
+  dictionary per scope with every default used; a gate that passes the 227
+  dictionary-shaped examples of docs/ai through the reader.
 
 ## 1. The record as it is (measurement A)
 
@@ -606,6 +620,77 @@ and `src/thermophysicalModels/specie/equationOfState/rhoTabulated/rhoTabulated.H
 
 No source is required by the toolbox for a table; here a table without a
 source is refused.
+
+### 5.5c What is taken from the toolbox this project's dictionaries descend from, and what is not (the architect's rulings R1-R11)
+
+The open CFD toolbox whose dictionary style this project follows (OpenFOAM,
+development line, commit fed424ace4) was read in full on the property,
+mixture, reaction, diffusion and dictionary questions; the reading notes and a
+synthesis table per theme are private (the private study of 2026-11).  The
+files that carry each point are named below by their path in that tree
+("TM/" = `src/thermophysicalModels/`).  Each ruling is marked FOLLOWED,
+AMENDED or CONTRADICTED with the measurement.
+
+| # | ruling (short) | the toolbox | Choupo today (measured) | verdict here |
+|---|---|---|---|---|
+| R1 | one shape for every property block: a type word and that type's data, plus window (soft, hard), source, several NAMED laws with one preferred; a table is a type; an unknown type lists the types valid for THAT property | one function object per property, `{ type <word>; ... }` (`src/OpenFOAM/primitives/functions/Function1/Function1/Function1New.C`; `TM/thermophysicalProperties/liquidProperties/liquid/liquid.H`, 13 slots), no window, no provenance, no alternatives | three shapes (section 1.1); each property has its own factory, so a factory's list is already per property (VaporPressureModel.cpp:61-72) | FOLLOWED: 5.1 is this shape.  Grammar consequence: the bare `surfaceTension { A; B; Tc; n; }` and the `model`-word blocks become named laws `{ model <type>; ... }`, read unchanged as one-law lists (5.4) |
+| R2 | tables inline or by file (the house's experiments format and CSV with explicit column indices), `units` per column with a dimension check, strictly increasing abscissa, declared interpolation, out of range REFUSED by default; an explicit `outOfBounds clamp;` allowed only as a declared, announced approximation in a CASE | inline `values` or `file` (`foam`, `csv` with integer `columns`), `units ([x] [y])`, strictly increasing x, `outOfBounds error warn clamp zero repeat` with DEFAULT `clamp` (`src/OpenFOAM/primitives/functions/Function1/Table/Table.C`, the `lookupOrDefault("outOfBounds", ..., clamp)`); its 2-D `uniformTable` is FATAL outside (`.../Function2/UniformTable2/UniformTable2.C`) | no table; the pilot's one-point file (Measured.cpp:95-106) | AMENDED on one point.  Everything else FOLLOWED (5.5 plus a CSV reader with `columns (i j)` and `nHeaderLine`).  `clamp` is REFUSED even in a case: a clamped table returns the end value with a ZERO slope outside (the toolbox's linear weights hold the end sample), so a bubble-point Newton on a clamped vapour pressure sees d ln P / dT = 0 and its step is undefined; and a clamp has no bound on its error.  The house already has the bounded form: a measurement's box wider than its uncertainty is a hypothesis with a reason (the kernel's third amendment block, point 3).  A case that needs a table beyond its points declares the LAW that carries it, or a bounded `extend { upTo <T>; reason; }` that is a hard box, printed with the excursion -- never an unbounded clamp |
+| R3 | a missing property is a named absence that fails at first use with property, constituent and remedy; never a default number | `none` function fails by name at first use (`.../Function1/None/None.C`); the generic liquid turns a short-form entry into `none` silently (`liquid.C`) | literal defaults in ONE home, `liquidSource` (src/core/PropertySourceLog.H:111-195): 1000 kg/m3 as `diluteCarrierDensity` (ElectrodialysisStack.cpp:348, EDCell.cpp:159), `rhoFeedDefault` (SpiralWoundModule.cpp:320, RatedTestInversion.cpp:224), `batchDiafilterRhoDefault`, `dropletDensityFallback` (SprayDryer.cpp:595-613); 1e-3 Pa s `waterViscosityKnob` (SprayDryer.cpp:126); 0.072 N/m `waterSurfaceTensionFallback` (SprayDryer.cpp:396, :424); 1.6e-9 m2/s `soluteDiffusivityLegacy` (SpiralWoundModule); 1e-6 m2/s `waterKinematicViscosity` (ElectrodialysisStack.cpp:391, :442; BatchElectrodialysis.cpp:336); and outside that home 1.8e-5 Pa s for a gas (Atomizer.H:86); `pumpHeadDensityFallback` is defined and no longer used (the pilot made it a refusal) | FOLLOWED; the list above is the debt it closes (review plan, class F) |
+| R4 | nothing thermodynamic derived silently from a table; a two-range law is one object with a common temperature, plus the continuity gate the toolbox lacks | tabulated density derives nothing and must be paired with tabulated energy and cp (`TM/specie/equationOfState/rhoTabulated/rhoTabulated.H`); `janaf` one object, ordering checks only, no continuity check (`TM/specie/thermo/janaf/janafThermo.C`); `hIcoTabulated` integrates a cp table exactly to h and s | NASA7/NASA9 one object; NASA9 C0 at its joint in all 43 records, slope free (5.2) | FOLLOWED (5.2, 5.5's dependent-properties table) |
+| R5 | mixing rules named per property in the property dictionary; each pure-law type declares which mixing it supports, refused by name otherwise; no averaging of non-linear coefficients | one mixture word fixes every rule; coefficient mixing averages non-linear parameters (`sutherland` As, Ts; `hPower` n0, Tref: `TM/specie/thermo/hPower`); `noCoefficientMixing(Type)` refuses a model at compile time (`TM/specie/specie/specie.H`) | per liquid property `mixingRule` (C331; LiquidViscosityMixingRule.cpp:256-257, LiquidConductivityMixingRule.cpp:227-229, SurfaceTensionMixingRule.cpp:333-334); pure VALUES are mixed, never coefficients (ThermoPackage.cpp:2187-2189); no pure-law type declares its supported rules | FOLLOWED; new: each law type carries `mixes ( logMoleAverage GrunbergNissan )`-style support in its C++ registration (not in data: the rule is a property of the type, the amplifier rule), checked at assembly |
+| R6 | packages are declared in the scope that uses them; sharing is an explicit, named, visible reference resolved at read time and printed with its origin; no silent inheritance; atomic block replacement (no key-by-key merge); the reference's grammar and what `seal` does with it; a per-scope effective dictionary including every default used | each region / phase / cloud reads its own file; no central registry; six text idioms for sharing (symlinks, `#include`, a case parameter file, `${file!key}` splice, a setup tool copying a material library, a relative include between scopes); default duplicate policy `merge` (`src/OpenFOAM/db/dictionary/entry/entryIO.C`) | unit `thermo {}` fragments replace whole blocks, `equilibrium` per slot (ThermoOverride.H:30-58); a sector dictionary `inherits "<path>"` (5 shipped, one plant); a key twice in a file is refused (Dictionary.cpp:558-575); BUT a case-local component record with `overlayOf` deep-merges its leaves (Database.cpp:450-461), and 18 shipped records use it | FOLLOWED, with one measured exception the ruling must reach: the record overlay IS a key-by-key merge.  Proposed: an overlay replaces whole top-level blocks of the record (a property's laws block, never a coefficient inside it); the 18 records are converted in the review (class B), each checked byte-identical in its run.  The reference, below |
+| R7 | pair-keyed quantities: unordered key, both spellings accepted, duplicate refused, missing pair refused with no default, no self pairs; values typed (a constant, a named estimation method with its inputs, a table); the remainder of a Maxwell-Stefan film DECLARED, the film refuses without it; per-side film models, an absent side announced as "resistance neglected" | `D { A-B ...; }`, both orders, a WARNING when both are given, FATAL when neither, self pairs required for the code's numerics, values Function2(p, T) (`src/ThermophysicalTransportModels/fluid/laminar/Fickian/Fickian.C`, `.../MaxwellStefan/MaxwellStefan.C`); MS refuses without `defaultSpecie`; sided interface models skip an absent side silently | Wilke-Chang constructed inside the column (DistillationColumn.cpp:5175-5189, 5586-5627; RateBasedSegment.cpp:263, 400-401); gas diffusivity one model for all; MS film decided, not built | FOLLOWED; "both spellings accepted" means EITHER is accepted and BOTH together is a duplicate, refused (stricter than the toolbox's warning).  Grammar: `transport { vapour { diffusivity { pairs { water-ethanol { model Fuller; } N2-O2 { value 2.0e-5 m2/s; source "..."; } } remainder N2; } } }` |
+| R8 | for the whole-tree review: rate-constant dimension from the declared orders checked at load; an element balance of every declared reaction at load; the reaction echoed as read; a reversible law with orders other than stoichiometry announced unless consistent | `kDimensions` from the orders (`TM/specie/reaction/reaction/reactionI.H`); element balance only in the CHEMKIN converter; runtime mass check for reversible reactions only, 0.1 kg/kmol (`.../Reversible/Reversible_reaction.C`); fractional reverse orders accepted silently | NO per-reaction element balance at load (grep of src/thermo/reaction and the reactors: only the Gibbs reactor reads `elements`, GibbsReactor.cpp:225-234, and that is its model); the boundary element closure after a steady run (ElementBalanceReport.cpp, gate check_element_balance) catches it later; a reversible law with non-mass-action orders is already REFUSED (Reaction.cpp:186-237) | FOLLOWED; the last point is already stricter than asked (refused, not announced); review plan class H |
+| R9 | units on table axes; a defaults printout driven by the lookups; a renamed key read under its old name WITH an announcement; duplicate key refused; a tool that lists valid models in context | `units ([x] [y])`; `#print` lists `/* defaults */` from a shadow dictionary the lookups fill (`.../dictionary/printDictionary/printDictionary.C`); `lookupBackwardsCompatible` silent unless both present; no unread-key detection | duplicate key refused (Dictionary.cpp:558-575); the unread-key audit exists (DictAudit.cpp:129-156) and runs on unit operation blocks (Flowsheet.cpp:1202-1204), props ops (choupoProps main.cpp:847-848), layoutDict and postDict (choupoSolve main.cpp:875, 1506, 1567) -- NOT on the property dictionary or the component records; no record of defaults in `lookup*OrDefault` (Dictionary.H:111-135); old key names accepted case by case (ScalingScan.cpp:170-173) | FOLLOWED; two gaps measured: the property dictionary and the records escape the unread-key audit, and defaults are not recorded |
+| R10 | NOT taken: silent clamp or extrapolation, debug-only checks, compiled code in dictionaries, template-nested type words, key-by-key merge, placeholder data, a restricted-licence databank, documentation that drifts from the reader | all present in the toolbox (clamp default; `...::debug &&` checks in `TM/specie/thermo/janaf/janafThermoI.H`; `#calc`, `coded`; `Reversible<FallOff<Arrhenius,Troe>>`; `merge`; urea's 1.0 N/m surface tension; `etc/thermoData/thermoData`'s commercial ban) | -- | FOLLOWED |
+| R11 | a gate that passes every dictionary example printed in the guides and docs/ai through the real reader | headers' examples drift from their readers in about twenty places across the reading | NO such gate exists (bin/curate searched); docs/ai holds 227 fenced blocks shaped like a dictionary (`count_review.py`) | FOLLOWED: `check_dict_examples` (review plan, class I): each fenced block tagged by its grammar (a property dictionary, a fragment, a component record, a unit block) is parsed by the engine's own Dictionary reader and validated by the reader of that grammar in a no-solve mode (the `choupo-lint` seam); a block that is deliberately partial carries a tag; the blocks that fail today are pinned and may only shrink |
+
+**The named reference (R6), through the record rules.**  Today `inherits
+"<path>";` takes a whole system by position.  Added: a BLOCK whose only
+content is a reference takes that block, whole, from another scope:
+
+```
+// sectors/BRINE/constant/thermoPhysPropDict
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits      "../../../constant";          // unchanged: the system, by path
+transport     { sameAs "../../../constant"; reason "the brine's transport is the plant's"; }
+```
+
+* `sameAs` names a scope (a `constant/` directory); the block of the same name
+  in that scope's effective dictionary is taken whole, never merged; a block
+  with `sameAs` and any other key is refused (atomic).  `reason` is required.
+* Resolved at read time, printed once per scope: `[property] sector BRINE:
+  transport sameAs ../../../constant (plant), sha256 <8 hex>`.
+* `seal` keeps the line and records the referenced block's hash in the
+  manifest beside the scope's own; a sector opened alone resolves the path
+  on disk exactly as `inherits` does today (the drill-in contract holds); a
+  changed referenced block is a seal drift, reported by the existing drift
+  report.  Cost: one reader branch, one manifest field, one line in the run
+  header.
+* A central file of NAMED packages that scopes import by name was weighed and
+  not proposed: it is the shape in which "which numbers did this unit use?"
+  has no local answer, and the toolbox, after its renamings, has no such
+  registry either.
+
+**The effective dictionary per scope (R6, R9).**  `bin/choupo-lint --effective
+<case> [--scope <sector|unit>]` prints the property dictionary each scope
+actually used: every block with the level it came from (case, sector,
+`sameAs`, unit fragment), every law resolved per constituent (5.3), and every
+default a lookup applied, generated by the lookups themselves (each
+`lookup*OrDefault` records `key value` into a per-dictionary shadow, the
+mechanism the DictAudit already uses for keys read).  The same rows go into
+the result record so the app shows them.
+
+**Amendments to sections 5.1-5.7 that follow from R1-R11.**  (a) 5.5 rule 1:
+`clamp` is refused, the bounded `extend` above is the only way past a table's
+end.  (b) 5.5 adds the CSV reader (`format csv; nHeaderLine n; columns (i j);
+units ([K] [Pa.s]);`).  (c) 5.3's pins and 5.5's tables are the "exceptions
+beside the property" of R6; the shared form is `sameAs`.  (d) every law type
+declares the mixing rules it supports (R5).  (e) the pair grammar of R7 is the
+form for diffusivities and, later, interface models.  (f) slice 0 of section 6
+adds the unread-key audit on the property dictionary and the records, and the
+defaults shadow.
 
 ### 5.6 The decision table, per property (input 2)
 
