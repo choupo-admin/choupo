@@ -263,11 +263,15 @@ Block parse(const DictPtr& block, const std::string& property,
 void throwOutsideDomain(const Block& b, std::size_t lawIndex, scalar T, const std::string& what)
 {
     const Law& L = b.laws.at(lawIndex);
+    //  The remedy is IN the message (review row SB-03): every printer of an
+    //  exception prints what(), and none reads the separate remedy field, so a
+    //  remedy kept only there named the covering law to nobody.
+    const std::string remedy = b.coveringRemedy(T, lawIndex);
     throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
         what + " of " + b.owner + ": law " + L.label() + " (" + L.type + ") refuses T = "
         + num(T) + " K, outside its hard window " + num(L.domainLo) + "-" + num(L.domainHi)
-        + " K",
-        b.coveringRemedy(T, lawIndex));
+        + " K; " + remedy,
+        remedy);
 }
 
 } // namespace recordLaws

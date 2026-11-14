@@ -88,8 +88,18 @@ def main():
     fails, derived_seen, dgf_seen, labels = [], set(), set(), []
     for f in sorted((ROOT / "data/standards/components").glob("*.dat")):
         rec = parse_file(f)
+        #  A salt: a record carrying a dissolution enthalpy (the salt-formation
+        #  contract's input), at any depth.
+        salt = "dissolutionEnthalpy" in f.read_text()
         for k, v, line in rec.entries:
             if isinstance(v, Block):
+                continue
+            if k in ("S_298", "s_298") and salt:
+                #  A SALT's solid entropy is a PRIMITIVE: the salt-formation
+                #  contract derives the enthalpy from the ions and the
+                #  dissolution enthalpy, and no dissolution entropy is stored
+                #  to derive the entropy (ruling, 2026-11-14).
+                labels.append(f"{f.stem}.{k}: PRIMITIVE (a salt's solid entropy)")
                 continue
             if k in FORMATION_OUTSIDE or LATENT.match(k) or k in SLOPE:
                 key = f"{f.name}:{k}"
@@ -132,9 +142,9 @@ def main():
             print("  " + x)
         return 1
     print(f"{NAME}: OK -- no record types a derived quantity beyond the pinned"
-          f" {len(PINNED_DERIVED)} (NaOH's solid formation datum, a second home under the salt"
+          f" {len(PINNED_DERIVED)} (NaOH's solid formation enthalpy, a second home under the salt"
           f" contract); dGf_298 CHECKs: {len(dgf_seen)}, comparison not yet computed (pinned);"
-          f" phase rungs: {len(labels)}" + (f" ({'; '.join(labels)})" if labels else ""))
+          f" labelled: {len(labels)}" + (f" ({'; '.join(labels)})" if labels else ""))
     return 0
 
 

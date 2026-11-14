@@ -26,6 +26,8 @@ Description
 #include "thermo/Database.H"
 #include "thermo/RecordLaws.H"
 #include "thermo/SurfaceTensionModel.H"
+#include "thermo/ThermoPackage.H"
+#include "thermo/ThermoPackageBuilder.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/transport/LiquidConductivityModel.H"
 #include "thermo/transport/LiquidViscosityModel.H"
@@ -98,6 +100,66 @@ double evaluate(const Component& c, const std::string& property,
     return m->sigmaPure(c, T);
 }
 
+//  THE REFERENCE FORMULATIONS THE TREE EVALUATES, one row each: a law fitted
+//  to one of them is checked by evaluating it (C398, ruling on `check {}`,
+//  2026-11-14), never by a value copied into the record.  `uncertainty` is
+//  the formulation's OWN published uncertainty over the states compared --
+//  a property of the reference, not of any fit to it.
+struct Formulation
+{
+    const char* name;
+    const char* property;
+    double      uncertainty;
+    const char* citation;
+    double (*evaluate)(const Database& db, double T);
+};
+
+double iapwsConductivity(const Database& db, double T)
+{
+    //  The saturated liquid, through the package: water on IF97 with the
+    //  IAPWS 2011 conductivity (src/thermo/iapws/IAPWSTransport.cpp), the
+    //  route a case declaring `pureFluids { water { method IF97; } }` reads.
+    static std::unique_ptr<ThermoPackage> pk;
+    if (!pk)
+    {
+        const DictPtr d = Dictionary::fromString(
+            "recordType thermophysicalPropertySystem;\nschemaVersion 2;\n"
+            "components ( water );\n"
+            "equilibrium { formulation gammaPhi; liquid { activityModel { model ideal; } }"
+            " vapour { fugacityModel idealGas; } }\n"
+            "pureFluids { water { method IF97; } }\n"
+            "transport { liquid { thermalConductivity { model SatoRiedel; } } }\n",
+            "<record-law check: IAPWS R15-11>");
+        pk = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(d, db));
+    }
+    return pk->thermalConductivityLiquid(T, { 1.0 });
+}
+
+const std::vector<Formulation>& formulations()
+{
+    static const std::vector<Formulation> f = {
+        { "IAPWS-R15-11", "liquidThermalConductivity", 0.007,
+          "IAPWS R15-11 (2011), background conductivity on the IF97 saturated-liquid"
+          " density; its estimated uncertainty on the saturated-liquid line, Sec. 2.5",
+          &iapwsConductivity },
+    };
+    return f;
+}
+
+const Formulation* formulationNamed(const std::string& n)
+{
+    for (const auto& f : formulations()) if (n == f.name) return &f;
+    return nullptr;
+}
+
+std::string knownFormulations()
+{
+    std::string s;
+    for (const auto& f : formulations())
+        s += std::string(s.empty() ? " (known: " : ", ") + f.name + " for " + f.property;
+    return s.empty() ? std::string() : s + ")";
+}
+
 Dimensions dimsOf(const std::string& property)
 {
     if (property == "vaporPressure")             return Dims::pressure;
@@ -167,6 +229,36 @@ int run(const std::string& outPath)
                 const DictPtr ck = L.body->subDict("check");
                 try
                 {
+                    if (ck->found("formulation"))
+                    {
+                        //  EVALUATED, NOT STORED: the law against a reference
+                        //  formulation the tree itself evaluates, over the law's
+                        //  soft window, within the formulation's own published
+                        //  uncertainty (one row per formulation: formulations()).
+                        const std::string fname = ck->lookupWord("formulation");
+                        const Formulation* F = formulationNamed(fname);
+                        if (!F || F->property != std::string(p))
+                            throw std::runtime_error("check { formulation " + fname + "; }"
+                                " names no reference formulation the tree evaluates for "
+                                + std::string(p) + knownFormulations());
+                        if (!L.hasSoft)
+                            throw std::runtime_error("a law checked against a formulation"
+                                " needs its window (the range the comparison spans)");
+                        double worst = 0.0, Tw = L.softLo, vw = 0.0, ew = 0.0;
+                        for (int k = 0; k <= 10; ++k)
+                        {
+                            const double T = L.softLo + (L.softHi - L.softLo) * k / 10.0;
+                            const double v = F->evaluate(db, T);
+                            const double e = evaluate(*c, p, L, T);
+                            if (std::abs((e - v) / v) >= std::abs(worst))
+                            { worst = (e - v) / v; Tw = T; vw = v; ew = e; }
+                        }
+                        os << rec << "\t" << p << "\t" << name << "\t" << L.type << "\tevaluated\t"
+                           << g(Tw) << "\t" << g(vw) << "\t" << g(ew) << "\t" << g(worst) << "\t"
+                           << g(F->uncertainty) << "\t" << fname << ": " << F->citation << "\n";
+                        ++checked;
+                        continue;
+                    }
                     const double T   = ck->lookupScalar("T", Dims::temperature);
                     const double v   = ck->lookupScalar("value", dimsOf(p));
                     const double tol = ck->lookupScalar("tolerance");

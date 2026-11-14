@@ -1891,6 +1891,12 @@
   "ReconciliationRequest": [
    "src/streams/AnalysisReconciler.H"
   ],
+  "RecordLawPin": [
+   "src/thermo/Database.H"
+  ],
+  "RecordLawPinScope": [
+   "src/thermo/Database.H"
+  ],
   "RecordVolumeLeaf": [
    "src/thermo/liquidProperty/RecordVolumeLeaf.H"
   ],
@@ -3868,15 +3874,23 @@
   ],
   "src/applications/choupoProps/RecordLawChecks.cpp": [
    "src/applications/choupoProps/RecordLawChecks.H",
+   "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/solver/Convergence.H",
+   "src/thermo/ChemistrySystem.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/PackageAudit.H",
    "src/thermo/RecordLaws.H",
+   "src/thermo/RecordResolver.H",
    "src/thermo/SurfaceTensionModel.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/ThermoPackageBuilder.H",
+   "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/CorrelationVerify.H",
    "src/thermo/transport/LiquidConductivityModel.H",
@@ -9545,6 +9559,7 @@
    "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
   "src/thermo/heatCapacity/NASA7Cp.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -13959,6 +13974,7 @@
    "src/thermo/equationOfState/PR.cpp",
    "src/thermo/equationOfState/ReferenceFluid.cpp",
    "src/thermo/heatCapacity/ChemSepCp16.cpp",
+   "src/thermo/heatCapacity/NASA7Cp.cpp",
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
@@ -14259,6 +14275,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/Controller.cpp",
@@ -18638,6 +18655,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/Controller.cpp",
@@ -19273,6 +19291,7 @@
   "src/thermo/ChemistrySystem.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
@@ -20019,6 +20038,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/Controller.cpp",
@@ -20669,6 +20689,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/Controller.cpp",
@@ -21183,6 +21204,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/Controller.cpp",
@@ -21430,6 +21452,7 @@
   "src/thermo/ThermoPackageBuilder.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
@@ -21452,6 +21475,7 @@
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoCtrl/main.cpp",
    "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/control/Controller.cpp",

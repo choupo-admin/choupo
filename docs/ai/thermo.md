@@ -569,7 +569,11 @@ caloric { liquidHeatCapacity { pin ( ... ); } }     // idealGasHeatCapacity, sol
 
 Refused: an unknown component, a law the record does not hold (the error
 lists the laws it has), a component pinned twice, a pin without `law` or
-`reason`.  The law is chosen ONCE per constituent, printed in the resolved
+`reason`.  A pin reaches every copy of the component a formulation takes
+(the reactive electrolyte engine's included); a formulation that could not
+apply it is refused, never printed as applied (gate `check_record_law_pins`).
+The time-integrated binaries (choupoBatch, choupoCtrl, choupoSemiContinuous)
+refuse a unit's `thermo`: declare the change in the case's system.  The law is chosen ONCE per constituent, printed in the resolved
 view (law, type, who chose it, window), never switched by the state; its
 object is built at first evaluation, so a constituent at x = 0 is never
 refused.  NO factory default answers for a block without a word: a vapour

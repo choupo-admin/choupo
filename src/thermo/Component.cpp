@@ -76,12 +76,12 @@ Component Component::identity(const std::string& name, scalar MW,
 
 void Component::setLiquidCp(const DictPtr& d)
 {
-    //  Stamp the owner here too -- this setter is the OTHER way a liquid Cp
-    //  reaches a component, and a warning that names its component on one
-    //  path and not the other is worse than one that never names it: the
-    //  reader learns to expect a name and then silently gets none.
-    if (!d->found("owner")) d->insert("owner", name_);
-    cpLiq_ = HeatCapacityModel::New(d);
+    //  THE OTHER WAY a liquid Cp reaches a component (an electrolyte builder
+    //  hands a salt's record block to its identity component): read through
+    //  the record-law parser, a case pin honoured (C398 slice (b), review row
+    //  SB-02).  The body is readLiquidCpBlock_ at the end of this file, so no
+    //  line an EduTool lesson cites below moved.
+    readLiquidCpBlock_(d);
 }
 
 std::vector<std::string> Component::cosmoSetNames() const
@@ -1885,6 +1885,9 @@ void Component::pinLaw(const std::string& property, const std::string& law,
                  ? " (a block of one unnamed law; a pin names a law of a block of several)"
                  : ""));
     lawChoice_[property] = { law, blk->laws[std::size_t(idx)].type, "case pin (reason: " + reason + ")" };
+    //  The 298.15 K datum bridge is computed from these laws on first use and
+    //  cached; a pin invalidates it (review row SB-05).
+    bridgeResolved_ = false;
     if (property == "vaporPressure") buildVP_(std::size_t(idx));
     else                             buildCp_(property, std::size_t(idx));
     //  SL-05: the liquid law that consumes the ideal-gas one follows the pin.
@@ -1899,6 +1902,33 @@ void Component::pinLaw(const std::string& property, const std::string& law,
     //  one per law.
     auto pv = provenanceMap_.find(property + "/" + law);
     if (pv != provenanceMap_.end()) provenanceMap_[property] = pv->second;
+}
+
+
+void Component::readLiquidCpBlock_(const DictPtr& d)
+{
+    //  THE OTHER WAY a liquid Cp reaches a component (an electrolyte builder
+    //  hands a salt's record block to its identity component).  It reads the
+    //  block through the same record-law parser as readFromDict (C398 slice
+    //  (b), review row SB-02): one law or several named laws with one
+    //  preferred, and a case pin of the salt's liquid heat capacity applies
+    //  here too (the builder's RecordLawPinScope is open).  buildCp_ stamps
+    //  the owner, so a warning names its component on both paths.
+    auto blk = recordLaws::parse(d, "liquidHeatCapacity", name_,
+                                 [](const std::string& w) { return HeatCapacityModel::hasModel(w); });
+    if (blk.preferred < 0)
+        throw std::runtime_error("Component '" + name_ + "': liquidHeatCapacity holds "
+            + std::to_string(blk.laws.size()) + " laws (" + blk.names() + ") and marks"
+            " none `preferred` -- write `preferred <name>;` in the block.");
+    const auto& L = blk.laws[std::size_t(blk.preferred)];
+    lawChoice_["liquidHeatCapacity"] = { L.name, L.type,
+        blk.laws.size() == 1 ? "the record's one law" : "the record's preferred law" };
+    laws_["liquidHeatCapacity"] = blk;
+    buildCp_("liquidHeatCapacity", std::size_t(blk.preferred));
+    if (const auto* pins = RecordLawPinScope::active())
+        for (const auto& p : *pins)
+            if (p.component == name_ && p.property == "liquidHeatCapacity")
+                pinLaw(p.property, p.law, p.reason);
 }
 
 } // namespace Choupo

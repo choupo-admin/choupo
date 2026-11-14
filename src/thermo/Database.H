@@ -44,8 +44,41 @@ Description
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Choupo {
+
+//  A CASE PIN OF A RECORD'S LAW, APPLIED WHERE THE COMPONENT IS BUILT
+//  (DEV.md 4c C398 slice (b), review row SB-01).  A pin of a vapour-pressure
+//  or heat-capacity law (`equilibrium.vaporPressure`, `caloric.<record
+//  block>`) must reach EVERY copy of the component the assembly takes: the
+//  reactive electrolyte engine, the electrolyte builders and the package
+//  each load their own copy.  So the builder opens a scope holding the
+//  system's pins for the whole assembly, and Database::loadComponent applies
+//  them to every component it builds while the scope is open -- one place,
+//  before any copy exists.  Scopes nest (a variant built inside another
+//  build uses its own pins).  One thread's scope is invisible to another.
+struct RecordLawPin
+{
+    std::string component;   // as the pin names it
+    std::string property;    // vaporPressure | idealGasHeatCapacity | liquidHeatCapacity | solidHeatCapacity
+    std::string law;
+    std::string reason;
+};
+
+class RecordLawPinScope
+{
+public:
+    explicit RecordLawPinScope(std::vector<RecordLawPin> pins);
+    ~RecordLawPinScope();
+    RecordLawPinScope(const RecordLawPinScope&) = delete;
+    RecordLawPinScope& operator=(const RecordLawPinScope&) = delete;
+    //  The pins of the innermost open scope, or nullptr.
+    static const std::vector<RecordLawPin>* active();
+private:
+    std::vector<RecordLawPin>        pins_;
+    const std::vector<RecordLawPin>* previous_;
+};
 
 class Database
 {

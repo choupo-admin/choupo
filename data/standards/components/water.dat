@@ -234,16 +234,16 @@ liquidThermalConductivity
         E     -1.5744065e-06;
         Tmin  273.16;
         Tmax  573.15;
-        //  CHECK (DEV.md 4c C398 U3): the fit's own target at one state, read
-        //  back through this law by bin/curate/check_record_law_values.py.
-        //  0.6064610 W/(m K) is the IAPWS R15-11 background conductivity on
-        //  the IF97 density of the saturated liquid at 298.15 K, from the
-        //  formulation already in the tree (src/thermo/iapws/IAPWSTransport.cpp,
-        //  `pureFluids { water { method IF97; } }`), the same kernel the
-        //  coefficients were fitted to; the fit's residual there is -0.18 %
-        //  (above), so the tolerance is 0.5 %.  A coefficient in another unit
-        //  would miss it by orders of magnitude.
-        check { T 298.15 K;  value 0.6064610 W/m/K;  tolerance 0.005; }
+        //  CHECK (DEV.md 4c C398 U3, and the ruling on `check {}` of
+        //  2026-11-14): this law was fitted to a reference formulation the
+        //  tree itself evaluates -- IAPWS R15-11 on the IF97 saturated-liquid
+        //  density (src/thermo/iapws/IAPWSTransport.cpp) -- so no value is
+        //  stored here: bin/curate/check_record_law_values EVALUATES the
+        //  formulation over this law's window (273.16-573.15 K) and requires
+        //  the law within the formulation's own uncertainty there (0.7 %,
+        //  R15-11 Sec. 2.5).  A coefficient in another unit or a logarithm in
+        //  another base misses by orders of magnitude.
+        check { formulation IAPWS-R15-11; }
     }
 }
 

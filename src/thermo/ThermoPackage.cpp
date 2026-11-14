@@ -2964,6 +2964,19 @@ void checkLiquidDomain(const Component& c, const std::string& rkey,
     const auto& law = blk->laws[std::size_t(idx)];
     if (law.hasDomain && (T < law.domainLo || T > law.domainHi))
         recordLaws::throwOutsideDomain(*blk, std::size_t(idx), T, words);
+    //  THE SOFT WINDOW OF A TYPE THAT DOES NOT READ ONE (review row SB-04).
+    //  Andrade's and Vogel's forms check nothing themselves, so a `Tmin`/`Tmax`
+    //  written in their law was printed by the view as "announced outside"
+    //  and announced by nobody.  Announced here, once per law and component.
+    const bool readsNoWindow = law.type == "andrade" || law.type == "Andrade"
+                            || law.type == "vogel"   || law.type == "Vogel";
+    if (readsNoWindow && law.hasSoft && (T < law.softLo || T > law.softHi))
+        AdvisoryLog::instance().addAnnouncedOnce(
+            "softWindow:" + rkey + ":" + L.law + "@" + c.name(), "validity", "warning",
+            "component '" + c.name() + "'",
+            words + " law " + law.label() + " evaluated at T = " + std::to_string(T)
+            + " K, OUTSIDE its declared range (" + std::to_string(law.softLo) + " "
+            + std::to_string(law.softHi) + ") -- extrapolated, still returned");
 }
 
 DictPtr modelDict(const std::string& type)
@@ -3013,14 +3026,21 @@ scalar ThermoPackage::pureSurfaceTension(std::size_t i, scalar T) const
 
 //  ---- A CASE PIN OF A RECORD LAW HELD BY THE COMPONENT (C398 slice (b)) ----
 //  The vapour-pressure and heat-capacity laws are built by the component; a
-//  pin beside the property replaces the record's preferred law ONCE, here, at
-//  assembly, before any evaluation:
+//  pin beside the property replaces the record's preferred law ONCE:
 //      equilibrium { vaporPressure { pin ( { component; law; reason; } ); } }
 //      caloric { idealGasHeatCapacity | liquidHeatCapacity | solidHeatCapacity
 //                { pin ( ... ); } }
-//  (A variant that changes `equilibrium` or `caloric` replaces the block whole
-//  and is announced as a model boundary: THE RULING, point 2.)
-void ThermoPackage::applyRecordLawPins(const DictPtr& system)
+//  (A variant that changes `equilibrium` or `caloric` replaces the block and
+//  is announced as a model boundary: THE RULING, point 2.)
+//
+//  WHERE IT IS APPLIED (review row SB-01).  Not here: a formulation may take
+//  its own copy of a component during assembly -- the reactive electrolyte
+//  engine captured one for its vapour pressures -- and a pin applied to the
+//  package's copy afterwards never reached it, while the view printed "case
+//  pin".  The builder reads the pins here, holds them in a RecordLawPinScope
+//  around the whole assembly, and Database::loadComponent applies each one to
+//  every copy it builds; verifyRecordLawPins then checks the package.
+std::vector<RecordLawPin> ThermoPackage::readRecordLawPins(const DictPtr& system)
 {
     struct Home { const char* block; const char* property; };
     static const Home homes[] = {
@@ -3029,6 +3049,7 @@ void ThermoPackage::applyRecordLawPins(const DictPtr& system)
         { "caloric",     "liquidHeatCapacity" },
         { "caloric",     "solidHeatCapacity" },
     };
+    std::vector<RecordLawPin> out;
     for (const auto& h : homes)
     {
         if (!system->found(h.block)) continue;
@@ -3047,27 +3068,44 @@ void ThermoPackage::applyRecordLawPins(const DictPtr& system)
         std::set<std::string> seen;
         for (const auto& e : b->lookupDictList("pin"))
         {
-            const std::string c = e->lookupWordOrDefault("component", "");
-            const std::string l = e->lookupWordOrDefault("law", "");
-            const std::string r = e->lookupWordOrDefault("reason", "");
-            std::size_t i = components_.size();
-            for (std::size_t k = 0; k < components_.size(); ++k)
-                if (components_[k].name() == c) { i = k; break; }
-            if (i == components_.size())
-            {
-                std::string have;
-                for (const auto& comp : components_) have += (have.empty() ? "" : ", ") + comp.name();
-                throw std::runtime_error(where + ": pin names component '" + c + "', which is"
-                    " not in the system (" + have + ").");
-            }
-            if (l.empty() || r.empty())
-                throw std::runtime_error(where + ": the pin of '" + c + "' needs both `law"
-                    " <name>;` and `reason \"...\";`.");
-            if (!seen.insert(c).second)
-                throw std::runtime_error(where + ": '" + c + "' is pinned twice; one"
-                    " constituent holds one law.");
-            components_[i].pinLaw(h.property, l, r);
+            RecordLawPin p;
+            p.component = e->lookupWordOrDefault("component", "");
+            p.property  = h.property;
+            p.law       = e->lookupWordOrDefault("law", "");
+            p.reason    = e->lookupWordOrDefault("reason", "");
+            if (p.component.empty() || p.law.empty() || p.reason.empty())
+                throw std::runtime_error(where + ": a pin needs `component <name>;`,"
+                    " `law <name>;` and `reason \"...\";`.");
+            if (!seen.insert(p.component).second)
+                throw std::runtime_error(where + ": '" + p.component + "' is pinned twice;"
+                    " one constituent holds one law.");
+            out.push_back(p);
         }
+    }
+    return out;
+}
+
+void ThermoPackage::verifyRecordLawPins(const std::vector<RecordLawPin>& pins,
+                                        const std::string& formulation) const
+{
+    for (const auto& p : pins)
+    {
+        const Component* c = nullptr;
+        for (const auto& comp : components_)
+            if (comp.name() == p.component) { c = &comp; break; }
+        if (!c)
+        {
+            std::string have;
+            for (const auto& comp : components_) have += (have.empty() ? "" : ", ") + comp.name();
+            throw std::runtime_error("pin of " + p.property + " law `" + p.law + "`: component '"
+                + p.component + "' is not in the system (" + have + ").");
+        }
+        const Component::LawChoice ch = c->lawChoice(p.property);
+        if (ch.law != p.law || ch.by.rfind("case pin", 0) != 0)
+            throw std::runtime_error("formulation " + formulation + " did not apply the pin of "
+                + p.component + "'s " + p.property + " law `" + p.law + "` (its package holds `"
+                + (ch.law.empty() ? std::string("its one law") : ch.law) + "`): a pin this"
+                " formulation cannot honour is refused rather than printed as applied.");
     }
 }
 

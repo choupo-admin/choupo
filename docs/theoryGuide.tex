@@ -2829,6 +2829,22 @@ pinned twice, a pin without its law or its reason.  A variant that changes
 \code{equilibrium} or \code{caloric} replaces the block and is announced as a
 model boundary (\S\ref{sec:property-variants-atom}).
 
+\paragraph{Where a pin is applied.}  A formulation may take its OWN copy of a
+component during assembly --- the reactive electrolyte engine reads its
+vapour pressures from one, an electrolyte builder hands a salt's liquid heat
+capacity to another --- so a pin applied to the package's components
+afterwards would leave those copies on the preferred law while the view
+printed the pin (it did, until review row SB-01).  The builder therefore
+holds the system's pins for the whole assembly (\code{RecordLawPinScope},
+\file{src/thermo/Database.H}), \code{Database::loadComponent} applies each one
+to every copy of its component it builds, and the package is checked
+afterwards: a formulation that did not apply a pin is refused by name.  The
+gate \code{check\_record\_law\_pins} holds it on one shipped witness per
+formulation: a pinned law gives every number the same law gives when
+preferred.  The time-integrated binaries build one package for the run and
+refuse a unit's \code{thermo} by name (per-unit thermodynamics is not
+supported by their driver).
+
 \paragraph{The facts a law consumes (SL-05).}  The component injects its own
 \code{Tc}, \code{Pc}, \code{omega} and \code{Tb} into its vapour-pressure law
 (a corresponding-states law needs them; a data-based law ignores them), and
@@ -2874,14 +2890,22 @@ for every type a run uses.  $T$ in K throughout.
 \code{tauPower} & $\sigma/(\mathrm{N\,m^{-1}}) = A\tau^n + B\tau^{n+1}$, $\tau = 1 - T/T_c$ with the block's own $T_c$ \\
 \end{tabular}
 \end{center}
-A law may carry a CHECK value from its own source,
-\code{check \{ T 298.15 K; value 0.6064610 W/m/K; tolerance 0.005; \}}: the
-gate \code{check\_record\_law\_values} evaluates every law that carries one
-through the engine's own law object (\code{choupoProps --record-law-checks})
-and fails one outside its tolerance --- the only way a coefficient written in
-another unit is caught.  The first is water's liquid conductivity, whose fit
-target (IAPWS R15-11) is in the tree; the laws without one are a pinned debt
-that only shrinks.
+A law may carry a CHECK, read back through the engine's own law object
+(\code{choupoProps --record-law-checks}, gate
+\code{check\_record\_law\_values}) --- the only way a coefficient written in
+another unit, or a logarithm in another base, is caught.  Two forms:
+\code{check \{ T <v> <unit>; value <v> <unit>; tolerance <fraction>; \}}
+holds a number the law's SOURCE PRINTS at that state (a check table of the
+published equation), and its \code{tolerance} is a TRANSCRIPTION tolerance ---
+half a unit of the last digit the source prints, as a fraction of the value
+--- never the residual of a fit; and \code{check \{ formulation <name>; \}},
+for a law fitted to a reference formulation the tree itself evaluates: no
+number is stored, the formulation is EVALUATED over the law's soft window and
+the law must lie within the formulation's own published uncertainty.  The
+first is water's liquid conductivity against IAPWS R15-11 on the IF97
+saturated-liquid density (worst $+0.64$\,\% at the triple point, within the
+formulation's 0.7\,\%); the laws without a check are a pinned debt that only
+shrinks.
 
 \subsection{Liquid transport: one law per constituent, and the legacy words}\label{sec:record-laws-transport}
 
@@ -2930,9 +2954,12 @@ CHECK where they can.  The gate \code{check\_record\_primitives} holds the
 table on the catalogue: it refuses a derived quantity typed in a record,
 labels each rung, and pins the debt it found --- the 45 \code{dGf\_298}
 checks whose comparison is not computed yet, and \code{NaOH}'s top-level
-solid \code{Hf\_298}/\code{S\_298}, a second home under the salt-formation
-contract (a salt's solid formation enthalpy is derived from its ions and its
-dissolution enthalpy).  The gate \code{check\_provenance\_home} holds that a
+solid \code{Hf\_298}, a second home under the salt-formation contract (a
+salt's solid formation enthalpy is derived from its ions and its dissolution
+enthalpy; the record's $-425600$\,J/mol is exactly that sum, and the gate
+\code{check\_ion\_pins} carries a third home of it, $-425610$).  The salt's
+solid ENTROPY \code{S\_298} is a PRIMITIVE: no dissolution entropy is stored
+to derive it, and the gate labels it so.  The gate \code{check\_provenance\_home} holds that a
 property's provenance entry lives in the record's provenance block: 74
 catalogue entries and 35 in sealed copies had been filed inside a
 sigma-profile set by a curation tool, where the provenance reader never saw

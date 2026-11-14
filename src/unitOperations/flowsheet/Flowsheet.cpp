@@ -5425,6 +5425,16 @@ void Flowsheet::printFragmentView(const std::string& uname, const DictPtr& fragm
     c.variant  = vname.empty() ? "inline thermo{} of unit '" + uname + "'"
                                : "variants." + vname + " (" + file + ")";
     c.fragment = fragment;
+    //  A SECTOR BASE that `inherits` its parent (review row SA-02): a block
+    //  the sector file does not declare came from the parent, and the view
+    //  says so -- the same reading printContextView gives the sector itself.
+    if (base != "constant" && std::filesystem::exists(file))
+    {
+        c.localFile = Dictionary::fromFile(file);
+        const std::string rel = c.localFile->lookupWordOrDefault("inherits", "");
+        c.inherited = rel.empty() ? c.system
+                                  : "the parent system, through `inherits \"" + rel + "\"`";
+    }
     const std::vector<std::string> by = vname.empty()
         ? std::vector<std::string>{ "unit '" + uname + "'" }
         : variantSelectors_[vname];

@@ -26,8 +26,9 @@
     log-mole average of the pure values.  No measured mixture viscosity is
     claimed here; the case shows where each pure number comes from.
 
-    Activity model ideal: nothing here flashes.  Not sealed: the records come
-    from data/standards/components.  */
+    Activity model ideal: nothing here flashes.  Sealed: the three records
+    are this case's own copies (constant/components, claimed in
+    constant/propertyManifest).  */
 
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;

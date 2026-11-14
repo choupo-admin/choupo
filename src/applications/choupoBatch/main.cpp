@@ -417,6 +417,8 @@ try
     seedBatchUnitsFrom0(unitList, verbosity);
 
     for (const auto& uDict : unitList)
+        refuseUnitThermoInTimeIntegrated(uDict, "choupoBatch");   // SA-01
+    for (const auto& uDict : unitList)
     {
         const std::string uname = uDict->lookupWord("name");
         const std::string utype = uDict->lookupWord("type");

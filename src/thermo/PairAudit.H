@@ -39,7 +39,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-
+#include <utility>
 namespace Choupo
 {
 
@@ -374,5 +374,15 @@ public:
         return true;
     }
 };
+
+//  WHERE A PAIR CAME FROM (C398, review row SA-03): a pair the builder loaded
+//  from a record file carries `resolvedFrom`; only an authored inline block is
+//  `inline`.  Returns {status, source}.
+inline std::pair<std::string, std::string> pairSourceOf(const DictPtr& p)
+{
+    const std::string from = p->lookupWordOrDefault("resolvedFrom", "");
+    if (from.empty()) return { "inline", "inline" };
+    return { from.rfind("data/standards/", 0) == 0 ? "standard" : "caseRoot", from };
+}
 
 } // namespace Choupo

@@ -1815,6 +1815,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                         || std::holds_alternative<std::string>(ev2))
                         p->insert(k, ev2);
                 }
+                p->insert("resolvedFrom", std::string("data/standards/" + rel));   // SA-03
                 pairDicts.push_back(p);
                 if (thermoAnnounce())
                     std::cout << "[builder] molecular backbone pair " << a
@@ -1886,6 +1887,7 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
                         || std::holds_alternative<std::string>(ev2))
                         p->insert(k, ev2);
                 }
+                p->insert("resolvedFrom", std::string("data/standards/" + rel));   // SA-03
                 pairDicts.push_back(p);
                 if (thermoAnnounce())
                     std::cout << "[builder] molecular backbone pair " << a
@@ -1991,10 +1993,19 @@ static ThermoPackage buildReactiveElectrolyte(const DictPtr& v2,
 ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& db,
                                             const ChemistrySystem* chem)
 {
-    ThermoPackage out = buildV2Dispatch(v2, db, chem);
     //  The case's pins of the records' vapour-pressure and heat-capacity laws
-    //  (C398 slice (b)), once, before any evaluation.
-    out.applyRecordLawPins(v2);
+    //  (C398 slice (b), review row SB-01): read and checked here, held in a
+    //  scope for the whole assembly, so Database::loadComponent applies each
+    //  one to EVERY copy of its component a formulation takes; then verified
+    //  on the package: a formulation that did not apply a pin is refused by
+    //  name rather than let the view print a choice the engine did not make.
+    const std::vector<RecordLawPin> pins = ThermoPackage::readRecordLawPins(v2);
+    ThermoPackage out = [&]
+    {
+        RecordLawPinScope scope(pins);
+        return buildV2Dispatch(v2, db, chem);
+    }();
+    out.verifyRecordLawPins(pins, v2->subDict("equilibrium")->lookupWordOrDefault("formulation", "?"));
 
     auto eq = v2->subDict("equilibrium");
     const bool hasAq = eq->found("aqueous");
@@ -2347,6 +2358,11 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                     || std::holds_alternative<std::string>(ev))
                     p->insert(k, ev);        // verbatim; skip nested blocks
             }
+            //  WHERE THE PAIR CAME FROM (review row SA-03): the record file it
+            //  was loaded from, which the activity model records as the pair's
+            //  source (an authored inline pair carries none and stays `inline`).
+            if (pd->found("source") && !p->found("resolvedFrom"))
+                p->insert("resolvedFrom", std::string(pd->lookupWord("source")));
             pairDicts.push_back(p);
         }
         if (!pairDicts.empty())
@@ -2737,6 +2753,9 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                         else if (pairRec->found("calorimetricFit"))
                             p->insert("calorimetricFit",
                                       pairRec->entryValue("calorimetricFit"));
+                        //  The record file it came from (review row SA-03):
+                        //  the activity model records it as the pair's source.
+                        p->insert("resolvedFrom", std::string(src));
                         pairDicts.push_back(p);
                     }
                     else

@@ -152,7 +152,7 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
         for (const auto& p : dict->lookupDictList("pairs"))
         {
             applyPair(p, "inline");
-            record(p->lookupWord("i"), p->lookupWord("j"), "inline", "inline", "inline");
+            record(p->lookupWord("i"), p->lookupWord("j"), pairSourceOf(p).first, pairSourceOf(p).second, pairSourceOf(p).second);
         }
 
     // ---- Phase 2: file lookup for any uncovered pair -----------------
