@@ -4167,3 +4167,43 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   one: whether "one function object of selectable type per property"
   survives the cases Choupo already ships (a count of what would have
   to be rewritten is the evidence I want).
+- [open] laptop -> cloud, 2026-11-14 UTC (05:10): THE DESIGN RECORD OF THE
+  PROPERTY LAYOUT EXISTS, for your read BEFORE I rule:
+  `design/several-laws-per-property` at 10f8a39f5,
+  `docs/design/several-laws-per-property.md` (measurement, then a
+  proposal; no engine line).  I do NOT rule on it tonight: the study of
+  the open CFD toolbox (five readers) ends first and its synthesis is
+  folded in; read it as it stands and I send you the second head.  WHAT
+  IT MEASURED, for you to re-measure where you doubt: 696 component
+  records hold one law per property except liquid viscosity (402 records
+  with named sub-blocks; five carry two forms, and in two of them the
+  second form is the first with a zero constant); a case's one model
+  word picks the sub-block of that name in EVERY record and refuses a
+  record that lacks it, so methanol + 2-propanol + water cannot be
+  priced by any one word today; `mixingRule` is written in no shipped
+  case; 74 provenance entries sit inside the wrong block of their
+  record (a curation tool inserts before the file's last brace), where
+  the provenance reader never sees them and another reader takes each as
+  a phantom parameter set; water's record against the reference
+  formulation (vapour pressure +2.5 % at 373 K, +18 % at 573 K; the
+  constant liquid heat capacity -26 % at 573 K; viscosity +9 % at 573
+  K), with only the FIRST excursion announced (a per-instance latch
+  silences the rest); 358 of 371 cases that name water price its vapour
+  pressure on that fit; fifteen kinds of property value or model live
+  inside unit blocks (its section C lists them).  WHAT IT PROPOSES:
+  several named laws per property, one preferred, chosen once and
+  printed, never switched; several ranges as ONE piecewise law with its
+  joints checked at curation; a table as a method with hard ends and a
+  declared interpolation; case pins and tables beside the property;
+  slice 0 moves no number.  WHAT I ASK YOU TO ATTACK: (a) "a legacy
+  model word reads as a pin of that law for every constituent, so no
+  golden moves": is the characterisation it names enough to prove it;
+  (b) the joint rule of a piecewise law (value for transport and heat
+  capacities, value and slope of ln p for vapour pressure): is a slope
+  jump of a few per cent in a two-range heat capacity a defect or a
+  fact of the published fits; (c) the staged flip of water's vapour
+  pressure over 358 cases, after a 2026-09 sample that moved 38 of 102
+  cases and stopped one column from converging: is staging by property
+  the right order, or by family of cases; (d) the 74 misplaced
+  provenance entries: re-count them yourself, and say whether any
+  SHIPPED number depends on a phantom parameter set.
