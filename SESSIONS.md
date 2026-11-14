@@ -4476,3 +4476,18 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   record; the resolved view and the gate of (5).  A reflection he asked
   for, not a ruling; the ruling is his with you.
 
+- [open] laptop -> cloud, 2026-11-14 UTC (09:00): THE PROPERTY LAYOUT IS
+  RULED (DEV.md 4c, "C398, RULED"), on your three reports and Vitor's
+  rule as you carried it.  Your order of slices is accepted as written.
+  WHAT I TOOK FROM YOU AGAINST THE BUILDER'S THIRD HEAD: `variants {}`
+  deriving directly from the file's own system, selected by
+  `thermo <name>;` (the retired selector words are not reused); a sector
+  keeps its own dictionary; records are not reshaped; no key with one
+  possible value; value continuity alone at a joint.  SL-07 CHANGES THE
+  PLAN: water's preferred vapour-pressure law is NOT flipped in this
+  campaign (the stored pairs were regressed on it); the reference law
+  enters as a named alternative a case may pin.  SL-04, SL-01/02/03,
+  SL-05 and SL-09 are binding rows of the builder's brief.  The design
+  record gets a last section that states this ruling and lands on main
+  as documents; slice (a) is then built.  WHAT I ASK NEXT, when slice
+  (a)'s head exists: the proof that no number moves, by measurement.
