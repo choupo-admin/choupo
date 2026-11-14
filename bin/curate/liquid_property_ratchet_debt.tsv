@@ -14,6 +14,11 @@ src/unitOperations/crystallisation/Crystalliser.cpp	conversion	6
 src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
 src/unitOperations/distillation/DistillationColumn.cpp	direct	2
 src/unitOperations/distillation/PackingRBF.H	literal	1
+# PINNED FROM BIRTH (2026-11-14, C329 part 2 B1, review row TR-13): the door has no
+# liquid-diffusivity or liquid-conductivity request yet.  The two sites are the rate model's
+# own Wilke-Chang (the SAME rule as the transfer-unit bed, DistillationColumn.cpp, so the
+# limit compares like with like) and the package's liquid thermal conductivity.
+src/unitOperations/distillation/RateBasedSegment.cpp	direct	2
 src/unitOperations/dynamic/DynamicCSTR.cpp	conversion	1
 src/unitOperations/dynamic/DynamicTank.cpp	conversion	1
 src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1

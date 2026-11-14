@@ -1332,18 +1332,12 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  IDEAL stages at exit 0 and the only notice was one "[dict] key written
     //  and never read" line mid-log, absent from the caveat block -- a student
     //  who declared a computed efficiency received E_MV = 1.
-    //  `model rateBased;` reads `packing {}` and refuses `efficiency {}` by
-    //  its own name (RateBasedSegment.cpp), so it is not checked here.
-    if (method != "totalReflux" && method != "rateBased")
+    if (method != "totalReflux" && method != "rateBased")   // rateBased: RateBasedSegment.cpp
         for (const char* blk : {"efficiency", "packing"})
             if (operDict->found(blk))
                 throw std::runtime_error("DistillationColumn '" + dict->name()
-                    + "': `" + blk + " { ... }` is read ONLY by `model totalReflux;`"
-                      " (a binary column at total reflux, C329)"
-                    + (std::string(blk) == "packing"
-                           ? std::string(" and `model rateBased;` (the same bed as"
-                                         " non-equilibrium segments)") : std::string())
-                    + " and this column"
+                    + "': `" + blk + " { ... }` is read ONLY by `model totalReflux;`" + (std::string(blk) == "packing" ? " and `model rateBased;`" : "")
+                    + " (binary columns at total reflux, C329) and this column"
                       " runs `model " + method + ";`, which would ignore it and"
                       " solve on ideal stages.  Select `model totalReflux;` to"
                       " compute the "
@@ -1356,8 +1350,7 @@ int DistillationColumn::solve(const DictPtr& dict,
                       " this column declare `murphreeEfficiency <E>;` where the"
                       " model reads it.");
 
-    //  A recovery specification wraps whichever method is selected: it drives
-    //  the RATE those methods already take.  See DistillationColumn.H.
+    //  A recovery specification wraps whichever method is selected (DistillationColumn.H).
     if (method == "totalReflux") return solveTotalReflux(dict, thermo, verbosity);
     if (method == "rateBased")   return solveRateBased(dict, thermo, verbosity);
     if (operDict->found("distillateRecovery"))
@@ -4889,7 +4882,7 @@ UnitAcceptance DistillationColumn::acceptance() const
         "package's K-values under constant molar overflow (a nonvolatile, K "
         "= 0, goes to the bottoms); the stage energy balance is NOT solved "
         "by the CMO method (the full MESH route solves it), and a Murphree "
-        "efficiency only where declared";
+        "efficiency only where declared (`model rateBased;`: a binary packed bed at total reflux, as non-equilibrium segments)";
     return a;
 }
 

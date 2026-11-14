@@ -1996,6 +1996,9 @@
   "SedimentingCentrifuge": [
    "src/unitOperations/solids/SedimentingCentrifuge.H"
   ],
+  "SegmentLayout": [
+   "src/unitOperations/distillation/RateBasedSegment.H"
+  ],
   "Selection": [
    "src/thermo/PricedDensity.H"
   ],
@@ -10452,6 +10455,40 @@
    "src/core/Types.H",
    "src/unitOperations/distillation/PackingRBF.H"
   ],
+  "src/unitOperations/distillation/RateBasedSegment.cpp": [
+   "src/core/Constants.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/PropertySourceLog.H",
+   "src/core/RegistryRefusal.H",
+   "src/core/Types.H",
+   "src/result/ClosureVariable.H",
+   "src/result/UnitProfile.H",
+   "src/solver/Convergence.H",
+   "src/solver/NewtonND.H",
+   "src/streams/ProcessStream.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
+   "src/thermo/PackageAudit.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/SaturationCurves.H",
+   "src/thermo/ThermoPackage.H",
+   "src/thermo/VapourAssociation.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/equationOfState/EquationOfState.H",
+   "src/thermo/transport/LiquidDiffusivityModel.H",
+   "src/thermo/transport/WilkeChang.H",
+   "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/distillation/DistillationColumn.H",
+   "src/unitOperations/distillation/PackingDelft.H",
+   "src/unitOperations/distillation/PackingRBF.H",
+   "src/unitOperations/distillation/RateBasedSegment.H",
+   "src/unitOperations/distillation/TrayHydraulics.H"
+  ],
   "src/unitOperations/distillation/ShortcutColumn.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -13621,6 +13658,7 @@
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayEfficiency.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
@@ -14015,6 +14053,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -14419,6 +14458,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -14875,6 +14915,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -15212,6 +15253,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -15517,6 +15559,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
    "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
@@ -15644,6 +15687,7 @@
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
    "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
    "src/unitOperations/heatTransfer/DryingCurve.cpp",
@@ -16205,6 +16249,7 @@
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
    "src/unitOperations/distillation/PackingRBF.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayEfficiency.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
@@ -17358,6 +17403,7 @@
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
@@ -17644,6 +17690,7 @@
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
@@ -17871,6 +17918,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -17982,6 +18030,7 @@
    "src/thermo/electrolyte/SpeciationSolver.cpp",
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
@@ -18196,6 +18245,7 @@
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
@@ -18576,6 +18626,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -18858,6 +18909,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -19025,6 +19077,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/VariableVolumeHoldup.cpp",
    "src/unitOperations/heatTransfer/HeatExchanger.cpp",
@@ -19195,6 +19248,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -19525,6 +19579,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -19735,6 +19790,7 @@
    "src/unitOperations/batch/BatchUnitOperation.cpp",
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
    "src/unitOperations/saturation/BubblePoint.cpp",
@@ -19979,6 +20035,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -20232,6 +20289,7 @@
    "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp",
    "src/unitOperations/dynamic/DynamicCSTR.cpp",
@@ -20344,6 +20402,7 @@
    "src/thermo/phase/Phase.cpp",
    "src/thermo/reaction/RateLaw.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
@@ -20785,6 +20844,7 @@
    "src/thermo/phase/SolidPhase.cpp",
    "src/thermo/phase/VaporPhase.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp",
    "src/unitOperations/reactor/EquilibriumReactor.cpp",
@@ -21210,7 +21270,8 @@
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
-   "src/unitOperations/distillation/DistillationColumn.cpp"
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
   ],
   "src/thermo/transport/LiquidMixingContext.H": [
    "src/applications/choupoProps/PropertyRouteBench.cpp",
@@ -21313,7 +21374,8 @@
   "src/thermo/transport/WilkeChang.H": [
    "src/thermo/transport/LiquidDiffusivityModel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
-   "src/unitOperations/distillation/DistillationColumn.cpp"
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
   ],
   "src/thermo/utility/Utility.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -21440,6 +21502,7 @@
    "src/unitOperations/batch/FixedBedAdsorber.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
@@ -21529,6 +21592,7 @@
    "src/unitOperations/batch/BatchStill.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/ShortcutColumn.cpp",
    "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
    "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
@@ -21653,16 +21717,22 @@
   ],
   "src/unitOperations/distillation/DistillationColumn.H": [
    "src/unitOperations/UnitOperation.cpp",
-   "src/unitOperations/distillation/DistillationColumn.cpp"
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
   ],
   "src/unitOperations/distillation/PackingDelft.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
-   "src/unitOperations/distillation/PackingDelft.cpp"
+   "src/unitOperations/distillation/PackingDelft.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
   ],
   "src/unitOperations/distillation/PackingRBF.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/PackingDelft.cpp",
-   "src/unitOperations/distillation/PackingRBF.cpp"
+   "src/unitOperations/distillation/PackingRBF.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
+  ],
+  "src/unitOperations/distillation/RateBasedSegment.H": [
+   "src/unitOperations/distillation/RateBasedSegment.cpp"
   ],
   "src/unitOperations/distillation/ShortcutColumn.H": [
    "src/unitOperations/UnitOperation.cpp",
@@ -21674,6 +21744,7 @@
   ],
   "src/unitOperations/distillation/TrayHydraulics.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
    "src/unitOperations/distillation/TrayHydraulics.cpp"
   ],
   "src/unitOperations/dynamic/BalanceSnapshot.H": [

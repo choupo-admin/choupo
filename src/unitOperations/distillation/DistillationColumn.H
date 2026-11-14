@@ -29,15 +29,9 @@ Class
     Choupo::DistillationColumn
 
 Description
-    Multicomponent distillation column.  The default model is the rigorous
-    bubble-point method (Wang-Henke) under Constant Molar Overflow (CMO): no
-    energy balance per stage, a Murphree efficiency only where declared.  The
-    other models, selected by the `model` word: `simultaneous` (the CMO MESH
-    by Newton), `fullMESH` (every stage's energy balance solved),
-    `totalReflux` (a binary column at total reflux, the efficiency or HETP
-    computed from the internals) and `rateBased` (a binary packed bed at
-    total reflux as NON-EQUILIBRIUM segments, RateBasedSegment.H).  The
-    description below is the Wang-Henke method's.
+    Multicomponent distillation column; default `model WangHenke;` (CMO, no
+    stage energy balance, a Murphree efficiency only where declared), also
+    simultaneous, fullMESH, totalReflux and rateBased (RateBasedSegment.H).
 
     Stage numbering (1-based from top).  `nStages` counts the EQUILIBRIUM
     stages, and the condenser TYPE (`operation { condenser { type

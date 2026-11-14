@@ -1655,7 +1655,7 @@ TWO CAVEATS THE RUN ANNOUNCES FOR ITSELF, repeated here so they are read before 
 
 The paper back-calculates a Murphree TRAY efficiency of 119.1 \% (74 real trays behaving as 88 ideal ones; overall column efficiency 118.9 \%). Above 100 \% is not an error: E\_MV compares the vapour leaving a tray with equilibrium against that tray's OUTLET liquid, and on a 2.9 m cross-flow tray the liquid enters rich and leaves lean, so the vapour has met liquid richer than the outlet. Nothing anywhere exceeds equilibrium. The engine ADMITS the value and announces it, and states what it does not check (the plug-flow ceiling, which needs the point efficiency and mV/L -- neither is declared).
 
-It is an INPUT. Predicting it needs a tray efficiency computed for a MULTICOMPONENT column with feeds and products. Choupo computes a tray efficiency (AIChE, Chan \& Fair, Syeda-Afacan-Chuang: `efficiency \{\}`, C329) only for a BINARY column at TOTAL REFLUX, and it has no rate-based (non-equilibrium) stage model with phase balances and interface fluxes at all; the paper spends its own length on that difficulty and its Table 4 shows ten published methods disagreeing across a factor of five. This case reads the measurement; it does not reproduce it.
+It is an INPUT. Predicting it needs a tray efficiency computed for a MULTICOMPONENT column with feeds and products. Choupo computes a tray efficiency (AIChE, Chan \& Fair, Syeda-Afacan-Chuang: `efficiency \{\}`, C329) only for a BINARY column at TOTAL REFLUX, and its one rate-based (non-equilibrium) model, `model rateBased;`, is a binary PACKED bed at total reflux: nothing for trays, feeds or nine components (C329 part 2, slices B2-B4a); the paper spends its own length on that difficulty and its Table 4 shows ten published methods disagreeing across a factor of five. This case reads the measurement; it does not reproduce it.
 
 The companion case column15\_klemola\_ideal\_trays is this column with murphreeEfficiency 1.0 and nothing else changed. The gap between the two is the pedagogical payload: how much of this separation the efficiency carries.
 
@@ -2191,6 +2191,106 @@ THE SWEEP moves the boil-up F-factor (reboiler vapour on the tower area) and sto
 \goldrow{kpi}{column}{fFactor\_bedTop}{1.8598717731}
 \goldmore{18}
 \end{tutgolden}
+
+\clearpage
+\tutentry{ratebased01\_schulz\_0p10bar}{tutorials/steady/distillation/ratebased01\_schulz\_0p10bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Rate-based (non-equilibrium) packed segments at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.10 bar top pressure (FRI, Schulz et al. 2018), Rocha-Bravo-Fair film coefficients, interface energy balance, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the SAME packed bed as packing01\_schulz\_0p10bar, solved as RATE-BASED (non-equilibrium) segments: `model rateBased;` (DEV.md 4c C329 part 2, slice B1).
+
+WHAT THIS CASE IS. Schulz et al.'s FRI bed (Montz-Pak A3-500M, 1.22 m, 2.2 m of packing, p-/o-xylene at total reflux, 0.10 bar at the top; Chem. Eng. Trans. 69 (2018) 763) with every input of packing01\_schulz\_0p10bar unchanged: geometry, top pressure, reboiler liquid, F-factor sweep, liquid viscosity. What changes is the column model. The transfer-unit bed integrates dy/dz = (y$\ast$ - y)/H\_OG with the vapour and the liquid exchanging equal and opposite moles at one temperature; here each of 100 segments carries the bulk vapour and liquid, the interface compositions, the two fluxes and three temperatures (vapour, liquid, interface), and the two fluxes are set by the two films AND the interface energy balance. Equations, count, derivation: Theory Guide, section "The rate-based packed segment" (sec:rateBasedSegment); code RateBasedSegment.\{H,cpp\}.
+
+THE CORRELATION: Rocha, Bravo \& Fair (IECR 32 (1993) 641, hydraulics; 35 (1996) 1660, mass transfer, gauze area Eq 14) -- the film coefficients k\_G, k\_L and the effective area a\_e, as in packing01\_schulz\_0p10bar.
+
+WHAT IT SHOWS THAT THE TRANSFER-UNIT BED CANNOT: the interface temperature between the two bulk temperatures along the bed (the rising vapour is superheated over the interface by a few tenths of a kelvin), the ratio of the two fluxes (not -1: the two xylenes' latent heats differ), the vapour flow changing up the bed, and the liquid film's share of the resistance. On the HETP the difference from packing01\_schulz\_0p10bar is a few tenths of a per cent at most: two isomers with nearly equal latent heats are the system where the two models SHOULD agree. That is a measurement of the model, not a claim that it is closer to the experiment.
+
+AGAINST THE MEASUREMENT: the comparison with Schulz Fig. 2b (digitised in docs/design/c329-ratebased-first-delivery.md, sections 11-12) is tabulated in the Theory Guide beside the transfer-unit bed's; the rate model is within a fraction of a per cent of the transfer-unit bed at every point, so it carries the same errors against the measurement.
+
+INPUTS: as packing01\_schulz\_0p10bar (its header lists which are measured, estimated and assumed; the corrugation geometry is ESTIMATED there). ADDED for the film heat-transfer coefficients: the thermal conductivity of both phases (constant/thermoPhysPropDict), estimated by Eucken (vapour) and Sato-Riedel (liquid); the coefficients follow from the packing model's own k\_G and k\_L by the heat/mass-transfer analogy. FITTED: nothing. WHAT IT DOES NOT CLAIM: that the rate model predicts the measured HETP better (it does not: see the table); that the heat-transfer analogy was checked against a measurement (none in the tree); anything about axial mixing or maldistribution (plug flow in both phases, stated in the run).
+
+THE SWEEP moves the boil-up F-factor exactly as packing01\_schulz\_0p10bar does. The KPI rows of `expected` are those of the sweep point the driver publishes, the converged point nearest the middle of the range: fFactor 1.6 (the declared 1.5 is what the case runs without its outerDict).
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{ratebased02\_schulz\_0p02bar}{tutorials/steady/distillation/ratebased02\_schulz\_0p02bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Rate-based (non-equilibrium) packed segments at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.02 bar top pressure (FRI, Schulz et al. 2018), Rocha-Bravo-Fair film coefficients, interface energy balance, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the SAME packed bed as packing02\_schulz\_0p02bar, solved as RATE-BASED (non-equilibrium) segments: `model rateBased;` (DEV.md 4c C329 part 2, slice B1).
+
+WHAT THIS CASE IS. Schulz et al.'s FRI bed (Montz-Pak A3-500M, 1.22 m, 2.2 m of packing, p-/o-xylene at total reflux, 0.02 bar at the top; Chem. Eng. Trans. 69 (2018) 763) with every input of packing02\_schulz\_0p02bar unchanged: geometry, top pressure, reboiler liquid, F-factor sweep, liquid viscosity. What changes is the column model. The transfer-unit bed integrates dy/dz = (y$\ast$ - y)/H\_OG with the vapour and the liquid exchanging equal and opposite moles at one temperature; here each of 100 segments carries the bulk vapour and liquid, the interface compositions, the two fluxes and three temperatures (vapour, liquid, interface), and the two fluxes are set by the two films AND the interface energy balance. Equations, count, derivation: Theory Guide, section "The rate-based packed segment" (sec:rateBasedSegment); code RateBasedSegment.\{H,cpp\}.
+
+THE CORRELATION: Rocha, Bravo \& Fair (IECR 32 (1993) 641, hydraulics; 35 (1996) 1660, mass transfer, gauze area Eq 14) -- the film coefficients k\_G, k\_L and the effective area a\_e, as in packing02\_schulz\_0p02bar.
+
+WHAT IT SHOWS THAT THE TRANSFER-UNIT BED CANNOT: the interface temperature between the two bulk temperatures along the bed (the rising vapour is superheated over the interface by a few tenths of a kelvin), the ratio of the two fluxes (not -1: the two xylenes' latent heats differ), the vapour flow changing up the bed, and the liquid film's share of the resistance. On the HETP the difference from packing02\_schulz\_0p02bar is a few tenths of a per cent at most: two isomers with nearly equal latent heats are the system where the two models SHOULD agree. That is a measurement of the model, not a claim that it is closer to the experiment.
+
+AGAINST THE MEASUREMENT: the comparison with Schulz Fig. 2b (digitised in docs/design/c329-ratebased-first-delivery.md, sections 11-12) is tabulated in the Theory Guide beside the transfer-unit bed's; the rate model is within a fraction of a per cent of the transfer-unit bed at every point, so it carries the same errors against the measurement.
+
+INPUTS: as packing02\_schulz\_0p02bar (its header lists which are measured, estimated and assumed; the corrugation geometry is ESTIMATED there). ADDED for the film heat-transfer coefficients: the thermal conductivity of both phases (constant/thermoPhysPropDict), estimated by Eucken (vapour) and Sato-Riedel (liquid); the coefficients follow from the packing model's own k\_G and k\_L by the heat/mass-transfer analogy. FITTED: nothing. WHAT IT DOES NOT CLAIM: that the rate model predicts the measured HETP better (it does not: see the table); that the heat-transfer analogy was checked against a measurement (none in the tree); anything about axial mixing or maldistribution (plug flow in both phases, stated in the run).
+
+THE SWEEP moves the boil-up F-factor exactly as packing02\_schulz\_0p02bar does. The KPI rows of `expected` are those of the sweep point the driver publishes, the converged point nearest the middle of the range: fFactor 1.6 (the declared 1.5 is what the case runs without its outerDict).
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{ratebased03\_schulz\_delft\_0p10bar}{tutorials/steady/distillation/ratebased03\_schulz\_delft\_0p10bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Rate-based (non-equilibrium) packed segments at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.10 bar top pressure (FRI, Schulz et al. 2018), Delft film coefficients, interface energy balance, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the SAME packed bed as packing03\_schulz\_delft\_0p10bar, solved as RATE-BASED (non-equilibrium) segments: `model rateBased;` (DEV.md 4c C329 part 2, slice B1).
+
+WHAT THIS CASE IS. Schulz et al.'s FRI bed (Montz-Pak A3-500M, 1.22 m, 2.2 m of packing, p-/o-xylene at total reflux, 0.10 bar at the top; Chem. Eng. Trans. 69 (2018) 763) with every input of packing03\_schulz\_delft\_0p10bar unchanged: geometry, top pressure, reboiler liquid, F-factor sweep, liquid viscosity. What changes is the column model. The transfer-unit bed integrates dy/dz = (y$\ast$ - y)/H\_OG with the vapour and the liquid exchanging equal and opposite moles at one temperature; here each of 100 segments carries the bulk vapour and liquid, the interface compositions, the two fluxes and three temperatures (vapour, liquid, interface), and the two fluxes are set by the two films AND the interface energy balance. Equations, count, derivation: Theory Guide, section "The rate-based packed segment" (sec:rateBasedSegment); code RateBasedSegment.\{H,cpp\}.
+
+THE CORRELATION: the Delft model (Olujic, Kamerbeek \& de Graauw 1999, in the working form of Fair et al., IECR 39 (2000) 1788, Tables 2 and 4) -- the film coefficients k\_G, k\_L and the effective area a\_e, as in packing03\_schulz\_delft\_0p10bar.
+
+WHAT IT SHOWS THAT THE TRANSFER-UNIT BED CANNOT: the interface temperature between the two bulk temperatures along the bed (the rising vapour is superheated over the interface by a few tenths of a kelvin), the ratio of the two fluxes (not -1: the two xylenes' latent heats differ), the vapour flow changing up the bed, and the liquid film's share of the resistance. On the HETP the difference from packing03\_schulz\_delft\_0p10bar is a few tenths of a per cent at most: two isomers with nearly equal latent heats are the system where the two models SHOULD agree. That is a measurement of the model, not a claim that it is closer to the experiment.
+
+AGAINST THE MEASUREMENT: the comparison with Schulz Fig. 2b (digitised in docs/design/c329-ratebased-first-delivery.md, sections 11-12) is tabulated in the Theory Guide beside the transfer-unit bed's; the rate model is within a fraction of a per cent of the transfer-unit bed at every point, so it carries the same errors against the measurement.
+
+INPUTS: as packing03\_schulz\_delft\_0p10bar (its header lists which are measured, estimated and assumed; the corrugation geometry is ESTIMATED there). ADDED for the film heat-transfer coefficients: the thermal conductivity of both phases (constant/thermoPhysPropDict), estimated by Eucken (vapour) and Sato-Riedel (liquid); the coefficients follow from the packing model's own k\_G and k\_L by the heat/mass-transfer analogy. FITTED: nothing. WHAT IT DOES NOT CLAIM: that the rate model predicts the measured HETP better (it does not: see the table); that the heat-transfer analogy was checked against a measurement (none in the tree); anything about axial mixing or maldistribution (plug flow in both phases, stated in the run).
+
+THE SWEEP moves the boil-up F-factor exactly as packing03\_schulz\_delft\_0p10bar does. The KPI rows of `expected` are those of the sweep point the driver publishes, the converged point nearest the middle of the range: fFactor 1.8 (the declared 1.5 is what the case runs without its outerDict).
+
+\end{tutnarrative}
+
+\clearpage
+\tutentry{ratebased04\_schulz\_delft\_0p02bar}{tutorials/steady/distillation/ratebased04\_schulz\_delft\_0p02bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Rate-based (non-equilibrium) packed segments at total reflux: Montz-Pak A3-500M with p-/o-xylene at 0.02 bar top pressure (FRI, Schulz et al. 2018), Delft film coefficients, interface energy balance, swept over the F-factor; nothing fitted}
+\begin{tutnarrative}
+the SAME packed bed as packing04\_schulz\_delft\_0p02bar, solved as RATE-BASED (non-equilibrium) segments: `model rateBased;` (DEV.md 4c C329 part 2, slice B1).
+
+WHAT THIS CASE IS. Schulz et al.'s FRI bed (Montz-Pak A3-500M, 1.22 m, 2.2 m of packing, p-/o-xylene at total reflux, 0.02 bar at the top; Chem. Eng. Trans. 69 (2018) 763) with every input of packing04\_schulz\_delft\_0p02bar unchanged: geometry, top pressure, reboiler liquid, F-factor sweep, liquid viscosity. What changes is the column model. The transfer-unit bed integrates dy/dz = (y$\ast$ - y)/H\_OG with the vapour and the liquid exchanging equal and opposite moles at one temperature; here each of 100 segments carries the bulk vapour and liquid, the interface compositions, the two fluxes and three temperatures (vapour, liquid, interface), and the two fluxes are set by the two films AND the interface energy balance. Equations, count, derivation: Theory Guide, section "The rate-based packed segment" (sec:rateBasedSegment); code RateBasedSegment.\{H,cpp\}.
+
+THE CORRELATION: the Delft model (Olujic, Kamerbeek \& de Graauw 1999, in the working form of Fair et al., IECR 39 (2000) 1788, Tables 2 and 4) -- the film coefficients k\_G, k\_L and the effective area a\_e, as in packing04\_schulz\_delft\_0p02bar.
+
+WHAT IT SHOWS THAT THE TRANSFER-UNIT BED CANNOT: the interface temperature between the two bulk temperatures along the bed (the rising vapour is superheated over the interface by a few tenths of a kelvin), the ratio of the two fluxes (not -1: the two xylenes' latent heats differ), the vapour flow changing up the bed, and the liquid film's share of the resistance. On the HETP the difference from packing04\_schulz\_delft\_0p02bar is a few tenths of a per cent at most: two isomers with nearly equal latent heats are the system where the two models SHOULD agree. That is a measurement of the model, not a claim that it is closer to the experiment.
+
+AGAINST THE MEASUREMENT: the comparison with Schulz Fig. 2b (digitised in docs/design/c329-ratebased-first-delivery.md, sections 11-12) is tabulated in the Theory Guide beside the transfer-unit bed's; the rate model is within a fraction of a per cent of the transfer-unit bed at every point, so it carries the same errors against the measurement.
+
+INPUTS: as packing04\_schulz\_delft\_0p02bar (its header lists which are measured, estimated and assumed; the corrugation geometry is ESTIMATED there). ADDED for the film heat-transfer coefficients: the thermal conductivity of both phases (constant/thermoPhysPropDict), estimated by Eucken (vapour) and Sato-Riedel (liquid); the coefficients follow from the packing model's own k\_G and k\_L by the heat/mass-transfer analogy. FITTED: nothing. WHAT IT DOES NOT CLAIM: that the rate model predicts the measured HETP better (it does not: see the table); that the heat-transfer analogy was checked against a measurement (none in the tree); anything about axial mixing or maldistribution (plug flow in both phases, stated in the run).
+
+THE SWEEP moves the boil-up F-factor exactly as packing04\_schulz\_delft\_0p02bar does. The KPI rows of `expected` are those of the sweep point the driver publishes, the converged point nearest the middle of the range: fFactor 1.8 (the declared 1.5 is what the case runs without its outerDict).
+
+\end{tutnarrative}
 
 \clearpage
 \tutentry{shortcut01\_benzene\_toluene}{tutorials/steady/distillation/shortcut01\_benzene\_toluene}

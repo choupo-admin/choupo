@@ -1316,6 +1316,22 @@ height / Fenske stages.  Binary only.  Examples: `packing01_schulz_0p10bar`,
 `model Delft;` (Olujic et al. 1999, working equations of Fair et al. 2000) reads
 `corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction` instead of
 `corrugationSide`/`surface`: `packing03_schulz_delft_0p10bar`, `packing04_schulz_delft_0p02bar`.
+
+**Rate-based packed bed** (`model rateBased;`, the SAME `totalReflux {}` and
+`packing {}` blocks): the bed as M non-equilibrium segments (`packing { segments
+100; }`), each with bulk vapour and liquid, interface compositions, the two
+fluxes and three temperatures; two films (the packing model's k_G, k_L, a_e),
+interface equilibrium, and the interface energy balance that fixes the two
+fluxes of a binary.  Needs the thermal conductivity of both phases in the package
+(`transport { vapour { thermalConductivity {...} } liquid { thermalConductivity
+{...} } }`).  Binary, packed, total reflux only; refused by name: a third
+component, a feed or reflux spec, trays, a non-ideal vapour.  A non-ideal liquid
+RUNS with the thermodynamic factor taken as 1, announced with the liquid film's
+share of the resistance.  `limit transferUnits;` is a check mode that reduces it to
+the transfer-unit bed.  Publishes the interface temperatures, the flux ratio and
+the liquid film's share along the bed.  Examples:
+`ratebased01_schulz_0p10bar` .. `ratebased04_schulz_delft_0p02bar`.
+Theory Guide: "The rate-based packed segment".
 ```
 { name column; type distillationColumn; model totalReflux;
   operation {
@@ -1494,7 +1510,7 @@ See [`energy.md`](energy.md) for the heat-port / heat-link / utility model.
 **What `distillationColumn` (alias `column`) accepts** (generated from `choupoSolve --describe-units`; judged on each process inlet, before any unit runs when the inlet is authored, else at the unit's own solve):
 
 * **Models:**
-  * Every component of every feed, equilibrated stage by stage on the package's K-values under constant molar overflow (a nonvolatile, K = 0, goes to the bottoms); the stage energy balance is NOT solved by the CMO method (the full MESH route solves it), and a Murphree efficiency only where declared.
+  * Every component of every feed, equilibrated stage by stage on the package's K-values under constant molar overflow (a nonvolatile, K = 0, goes to the bottoms); the stage energy balance is NOT solved by the CMO method (the full MESH route solves it), and a Murphree efficiency only where declared (`model rateBased;`: a binary packed bed at total reflux, as non-equilibrium segments).
 * **May pass through:**
   * Nothing: no pass-through is offered, so every component it is handed enters its equations or is refused.
 * **Refuses:**

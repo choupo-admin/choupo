@@ -162,8 +162,11 @@ against the Table-2 measurements, with the band set by the rounding computed in
 efficiency is carrying.
 
 **Stated as NOT portable, up front:** the efficiency itself is an input, not a
-prediction. Predicting it needs the rate-based programme Choupo deliberately
-does not have (`docs/architecture/project-philosophy.md`); the paper spends its
+prediction. Predicting it needs a rate-based or computed-efficiency model of a
+multicomponent VALVE-tray column with a feed, which Choupo does not have: its one
+rate-based model (`model rateBased;`, 2026-11-14) is a binary packed bed at total
+reflux, and no valve-tray correlation is in the tree (C329 part 2, design record
+`docs/design/c329-ratebased-at-general-reflux.md`, sections 6 and 7); the paper spends its
 own length on exactly that difficulty, and Table 4 shows ten published methods
 disagreeing across a factor of five. Tray hydraulics beyond what the MESH needs
 are transcribed in §2 for the reader and used by nothing.

@@ -133,9 +133,9 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     if (n != 2)
         throw std::runtime_error(who + "the package holds " + std::to_string(n)
             + " components; this slice is a BINARY.  Three or more components"
-              " need the Maxwell-Stefan film with the liquid's thermodynamic"
-              " factor (slice B4); an effective-diffusivity shortcut is not"
-              " offered (design record, section 7.2, decision 2).");
+              " on the rate-based segments are slice B4a (the effective-"
+              "diffusivity film, DEV.md 4c C329 decision (2) amended); for a"
+              " multicomponent column today select `model fullMESH;`.");
     if (thermo.hasReactiveEquilibrium())
         throw std::runtime_error(who + "the package resolves reactive"
             " equilibrium; a reacting film is not in this slice.");
@@ -146,16 +146,14 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             " slice takes it as the pure component's, which is exact for an"
             " ideal-gas vapour only.  Declare `fugacityModel idealGas;`, or use"
             " `model totalReflux;`.");
-    if (!thermo.hasActivity() || thermo.activity().modelName() != "ideal")
-        throw std::runtime_error(who + "the liquid is not an ideal solution"
-            " (activity model `" + (thermo.hasActivity() ? thermo.activity().modelName()
-                                                          : std::string("none"))
-            + "`).  The liquid film needs the FICK diffusivity at finite"
-              " concentration, D = D_MS * Gamma, and the package gives neither"
-              " the thermodynamic factor Gamma nor a finite-concentration D_MS;"
-              " for an ideal solution Gamma = 1 exactly and the infinite-"
-              "dilution values suffice (announced).  The thermodynamic factor"
-              " is slice B4.  Use `model totalReflux;` with `packing {}`.");
+    if (!thermo.hasActivity())
+        throw std::runtime_error(who + "the package prices the liquid without an"
+            " activity model (an equation-of-state liquid); the liquid film here"
+            " is written on an activity-model liquid (gamma-phi).");
+    //  A NON-IDEAL LIQUID RUNS, with the thermodynamic factor taken as 1 and
+    //  the risk said (DEV.md 4c C329, decision (2) amended and B4b narrowed:
+    //  the liquid Maxwell-Stefan film is not planned).
+    const bool idealLiquid = (thermo.activity().modelName() == "ideal");
     {
         const std::string ctype = operDict->found("condenser")
             ? operDict->subDict("condenser")->lookupWordOrDefault("type", "total") : "total";
@@ -311,6 +309,33 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     //  phases this slice accepts).
     std::vector<sVector> unitVec(n, sVector(n, 0.0));
     for (std::size_t i = 0; i < n; ++i) unitVec[i][i] = 1.0;
+    //  The liquid's partial molar enthalpies at the interface.  For an ideal
+    //  solution they ARE the pure liquids' (exact).  Otherwise they are read
+    //  off the mixture's own enthalpy, which carries the activity model's
+    //  excess enthalpy: for a binary H_1 = h + x_2 dh/dx_1, H_2 = h - x_1
+    //  dh/dx_1, the slope a central difference of step 1e-5.
+    auto liquidPartialMolar = [&](scalar T, scalar P, const sVector& xI)
+    {
+        sVector Hb(n, 0.0);
+        if (idealLiquid)
+        {
+            for (std::size_t i = 0; i < n; ++i)
+                Hb[i] = thermo.H_stream_formation(T, P, 0.0, unitVec[i]);
+            return Hb;
+        }
+        const sVector xn = normalised(xI);
+        const scalar h = 1.0e-5;
+        const scalar x1 = std::min(std::max(xn[0], h), 1.0 - h);
+        sVector xp(n), xmn(n);
+        xp[0] = x1 + h; xp[1] = 1.0 - xp[0];
+        xmn[0] = x1 - h; xmn[1] = 1.0 - xmn[0];
+        const scalar dh = (thermo.H_stream_formation(T, P, 0.0, xp)
+                         - thermo.H_stream_formation(T, P, 0.0, xmn)) / (2.0 * h);
+        const scalar hm = thermo.H_stream_formation(T, P, 0.0, xn);
+        Hb[0] = hm + xn[1] * dh;
+        Hb[1] = hm - xn[0] * dh;
+        return Hb;
+    };
     try
     {
         (void)hV(xN, 350.0, Ptop);
@@ -537,10 +562,11 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             if (!limitMode)
             {
                 scalar eV = c.gamV * (TI - s.TVm), eL = c.gamL * (s.TLm - TI);
+                const sVector HbarL = liquidPartialMolar(TI, Pm, xIv);
                 for (std::size_t i = 0; i < n; ++i)
                 {
                     eV += w[i] * thermo.H_stream_formation(TI, Pm, 1.0, unitVec[i]);
-                    eL += w[i] * thermo.H_stream_formation(TI, Pm, 0.0, unitVec[i]);
+                    eL += w[i] * HbarL[i];
                 }
                 const sVector yo(y, y + n), xo(x, x + n);
                 R[r++] = (v * hV(yo, TV, Pface[k]) - s.vin * hV(s.yin, s.TVin, s.PVin) - eV) / lamRef;
@@ -693,6 +719,21 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             throw std::runtime_error(who + "the coefficients did not settle in "
                 + std::to_string(maxPasses) + " outer passes (last relative change "
                 + std::to_string(lastChange) + ").");
+        //  THE HYDRAULIC LIMIT the transfer-unit bed applies: no steady bed
+        //  whose mean pressure drop exceeds the flooding drop (1025 Pa/m).
+        //  Rocha-Bravo-Fair floods inside its own holdup solve before this;
+        //  the Delft model has no flooding criterion of its own and would
+        //  otherwise run on to any load.
+        const scalar meanDrop = (Pface[M] - Ptop) / Hbed;
+        if (meanDrop > pg.dPflood)
+        {
+            std::ostringstream o;
+            o << who << "the bed's mean pressure drop " << meanDrop << " Pa/m exceeds the"
+                 " flooding drop " << pg.dPflood << " Pa/m at F = " << coef[M - 1].F
+              << " (m/s)(kg/m3)^0.5 -- beyond the hydraulic limit the transfer-unit bed"
+                 " applies, no steady bed is reported.";
+            throw std::runtime_error(o.str());
+        }
     };
 
     //  ---- The bed's HETP and end compositions on the current solve --------
@@ -756,13 +797,19 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     scalar rMax = 0.0, ratioMin = 1e300, ratioMax = -1e300, ratioSum = 0.0;
     scalar dTvMax = 0.0, dTlMax = 0.0, phiMax = 0.0, dlVig = 0.0, sumDP = 0.0, sumAe = 0.0, sumHold = 0.0, sumUL = 0.0, maxFlood = 0.0;
     int ratioCount = 0;
+    scalar shareMin = 1.0e300, shareMax = -1.0e300, shareSum = 0.0;
     profile_ = UnitProfile{};
     profile_.xAxis = "z";
     for (int k = 0; k < M; ++k)
     {
         const Mid s = midOf(X, k, true);
         const SegmentCoefficients& c = coef[k];
-        const scalar HOGk = dz * s.vm * (1.0 / c.betaV + c.m / c.betaL);
+        //  H_G = dz v/beta_V, H_L = dz l/beta_L, H_OG = H_G + (m v/l) H_L: the
+        //  liquid film's share of the overall resistance is (m v/l) H_L / H_OG.
+        const scalar HGk = dz * s.vm / c.betaV, HLk = dz * s.lm / c.betaL;
+        const scalar HOGk = HGk + c.m * s.vm / s.lm * HLk;
+        const scalar share = c.m * s.vm / s.lm * HLk / HOGk;
+        shareMin = std::min(shareMin, share); shareMax = std::max(shareMax, share); shareSum += share;
         rMax = std::max(rMax, dz / HOGk);
         const scalar wl = at(k, lay.w() + lk), wh = at(k, lay.w() + hk);
         const scalar wt = wl + wh;
@@ -794,6 +841,10 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         profile_.columns["V"].push_back(s.vm * Vref);
         profile_.columns["L"].push_back(s.lm * Vref);
         profile_.columns["HOG"].push_back(HOGk);
+        profile_.columns["HG"].push_back(HGk);
+        profile_.columns["HL"].push_back(HLk);
+        profile_.columns["m"].push_back(c.m);
+        profile_.columns["liquidFilmShare"].push_back(share);
     }
     if (discErr > rateBased::maxDiscretisationError)
     {
@@ -818,17 +869,37 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
                                        : "Rocha-Bravo-Fair (IECR 32 (1993) 641; 35 (1996) 1660)")
         << (modelDeclared ? " (declared)" : " (the default for a structured packing; `packing { model ...; }` selects)") << "\n"
         << "  flow: PLUG flow in both phases (box scheme: each film driven by the mean of the"
-           " segment's inlet and outlet); the films are algebraic (no discretisation inside a film)\n"
+           " segment's inlet and outlet); the films are algebraic (no discretisation inside a film).\n"
+           "    RISK: axial mixing and liquid maldistribution are not modelled; where a real bed has"
+           " them its HETP is larger than this one, and nothing here measures by how much\n"
         << "  ends: reboiler = equilibrium stage on the declared liquid at the bed's bottom pressure;"
            " total condenser, the reflux the top vapour at its bubble point at the declared top pressure\n"
-        << "  liquid Fick diffusivity: ideal solution (Gamma = 1), the two infinite-dilution Wilke-Chang"
-           " values combined linearly in x; Vignes's rule would differ by at most "
-        << std::setprecision(3) << 100.0 * dlVig << " % on this bed\n";
+        << "  liquid Fick diffusivity: the two infinite-dilution Wilke-Chang values combined linearly"
+           " in x (Vignes's rule would differ by at most " << std::setprecision(3) << 100.0 * dlVig
+        << " % on this bed), with the thermodynamic factor Gamma taken as 1"
+        << (idealLiquid ? " -- exact here: the liquid is an ideal solution.\n"
+                        : (" -- NOT exact here: the activity model is `" + thermo.activity().modelName()
+                           + "`.\n    RISK: the liquid film's flux is off by the factor Gamma (which can be far"
+                             " from 1 near a liquid-liquid split); the result leans on that only as far as"
+                             " the liquid film carries the resistance (its share below)\n"))
+        << "  liquid film's share of the overall resistance, (lambda H_L)/H_OG along the bed: min "
+        << std::setprecision(3) << shareMin << ", mean " << shareSum / M << ", max " << shareMax
+        << ".\n    k_L goes as D_L^(1/2) in both packing models, so a liquid diffusivity wrong by a factor"
+           " Gamma moves H_OG by share x (Gamma^(-1/2) - 1): Gamma = 0.5 would move it by up to "
+        << std::setprecision(3) << 100.0 * shareMax * (std::sqrt(2.0) - 1.0) << " % on this bed\n";
+    if (!limitMode)
+        rep << "  enthalpies across the interface: each flux carries the pure vapour's enthalpy (exact for the"
+               " ideal-gas vapour this slice accepts) and the liquid's partial molar enthalpy ("
+            << (idealLiquid ? "the pure liquid's: exact for an ideal solution" : "from the mixture's enthalpy, its excess enthalpy included")
+            << ").\n    RISK: the vapour is priced as an ideal gas; at higher pressure its own departure"
+               " from that enters the interface energy balance and with it the split of the two fluxes\n";
     if (!limitMode)
         rep << "  film heat transfer: the same coefficients by the heat/mass analogy (vapour Chilton-Colburn,"
                " (alpha/D)^(2/3); liquid penetration, (alpha/D)^(1/2)); low-flux coefficients, no"
                " high-flux correction (largest rate factor |N_t|/(c k_G) = "
-            << std::setprecision(3) << phiMax << ")\n";
+            << std::setprecision(3) << phiMax << ").\n    RISK: no heat-transfer measurement in a packed"
+               " bed checks the analogy; the interface temperature and the departure from equimolar"
+               " transfer below rest on it, the composition profile much less\n";
     rep << "  " << M << " segments of " << std::setprecision(4) << dz << " m; " << nUnknowns
         << " unknowns (" << B << " per segment), block-tridiagonal: "
         << (auditedAt ? "VERIFIED on the first Newton of the " + std::to_string(auditedAt)
@@ -904,8 +975,12 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     kpis_["massClosure_maxRel"] = massGap;
     kpis_["discretisationError_est"] = discErr;
     kpis_["HETP_halfSegments"] = half.HETP;
+    kpis_["dzOverHOG_max"] = rMax;
     kpis_["segments"] = M;
     kpis_["DL_vignesVsLinear_maxRel"] = dlVig;
+    kpis_["liquidFilmShare_min"] = shareMin;
+    kpis_["liquidFilmShare_mean"] = shareSum / M;
+    kpis_["liquidFilmShare_max"] = shareMax;
     if (!limitMode)
     {
         kpis_["fluxRatio_min"] = ratioMin;

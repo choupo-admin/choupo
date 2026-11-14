@@ -311,9 +311,10 @@
   It is an INPUT.  Predicting it needs a tray efficiency computed for a
   MULTICOMPONENT column with feeds and products.  Choupo computes a tray
   efficiency (AIChE, Chan & Fair, Syeda-Afacan-Chuang: `efficiency {}`, C329)
-  only for a BINARY column at TOTAL REFLUX, and it has no rate-based
-  (non-equilibrium) stage model with phase balances and interface fluxes at
-  all; the paper spends its own length on that difficulty and its Table 4
+  only for a BINARY column at TOTAL REFLUX, and its one rate-based
+  (non-equilibrium) model, `model rateBased;`, is a binary PACKED bed at total
+  reflux: nothing for trays, feeds or nine components (C329 part 2, slices
+  B2-B4a); the paper spends its own length on that difficulty and its Table 4
   shows ten published methods disagreeing across a factor of five.  This case
   reads the measurement; it does not reproduce it.
 

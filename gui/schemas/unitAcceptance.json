@@ -105,7 +105,7 @@
    "judged": "each process inlet, before any unit runs when the inlet is authored, else at the unit's own solve",
    "rule": "everyComponent",
    "models": [
-    "Every component of every feed, equilibrated stage by stage on the package's K-values under constant molar overflow (a nonvolatile, K = 0, goes to the bottoms); the stage energy balance is NOT solved by the CMO method (the full MESH route solves it), and a Murphree efficiency only where declared."
+    "Every component of every feed, equilibrated stage by stage on the package's K-values under constant molar overflow (a nonvolatile, K = 0, goes to the bottoms); the stage energy balance is NOT solved by the CMO method (the full MESH route solves it), and a Murphree efficiency only where declared (`model rateBased;`: a binary packed bed at total reflux, as non-equilibrium segments)."
    ],
    "mayPass": [
     "Nothing: no pass-through is offered, so every component it is handed enters its equations or is refused."
@@ -149,7 +149,7 @@
    "judged": "each process inlet, before any unit runs when the inlet is authored, else at the unit's own solve",
    "rule": "everyComponent",
    "models": [
-    "Every component of every feed, equilibrated stage by stage on the package's K-values under constant molar overflow (a nonvolatile, K = 0, goes to the bottoms); the stage energy balance is NOT solved by the CMO method (the full MESH route solves it), and a Murphree efficiency only where declared."
+    "Every component of every feed, equilibrated stage by stage on the package's K-values under constant molar overflow (a nonvolatile, K = 0, goes to the bottoms); the stage energy balance is NOT solved by the CMO method (the full MESH route solves it), and a Murphree efficiency only where declared (`model rateBased;`: a binary packed bed at total reflux, as non-equilibrium segments)."
    ],
    "mayPass": [
     "Nothing: no pass-through is offered, so every component it is handed enters its equations or is refused."
