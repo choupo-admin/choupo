@@ -300,3 +300,68 @@ whose property is `idealGasHeatCapacity`; expected: the SL-05 arm fails.
 **Not reached:** no sweep and no `--scope`; the props-binary `T_bubble` path;
 dew-point probes; column solvers with hard windows; the aqueousProperties
 formulation; the StoredCorrelation wording.
+
+## Fourth round (2026-11-14): `origin/integ/c398ab` at f31894354 (the fix is 5ff82183b)
+
+Built with `make -j3 all` (exit 0); scratch copies run with this tree's
+binaries; no sweep.  `check_view_matches_calls` on this tree: OK, 17
+witnesses, the seven arms fail with 11, 2, 1, 8, 1, 1 and 2 mismatches.
+
+Verdict: most of the round holds, but two hard-window misfires remain
+(CV-24, CV-25), and the package identity can merge two packages (CV-26).
+
+Previous rows reproduced: CV-04 fixed; CV-07 fixed (each object with the
+value it computes at a probe temperature, held per package; the remaining
+hole is CV-26); CV-08 fixed (a wrong inline check in H2SO4, a record that
+cannot load, fails by name); CV-16 fixed (pure water on IF97 at 5 bar with a
+record window (273 373) converges at 424.9862 K); CV-17 fixed (an answer
+outside the window refused by the law, in the bubbleT unit and the props
+`T_bubble` path; a seed outside converges in both); CV-18 fixed (refused at
+assembly, naming the law and `datumBridge298`); CV-19 refused per the
+coordinator's ruling; CV-20 partly (per package, but the key is the
+definition fingerprint, CV-26); CV-21 partly (flash08 and evaporator06 name
+`[henry]`, `[builder]`, `[v2 native]` and the Henry pair; two rows keep the old
+text, CV-27); CV-22 fixed; CV-23 fixed.  Two-sided windows (ethanol up to 360
+K, water 295-356 K) converge at 354.4248 K, as does a window on one component.
+
+**CV-24 (S2): an answer inside the window but within 1e-3 K of its bound is
+refused.**  bubbleT01, answer 354.424819 K: window (290 354.425) exit 2;
+(290 354.4253) exit 2; (290 354.427) converges; the props `T_bubble` refuses
+the same way.  Cause: the slope probe at T + 1e-3 K crosses the bound;
+`newton1D` treats a refused probe like a refused iterate, halves back toward
+the last answered point, and finally rethrows; the message prints both
+numbers to 6 significant digits ("refuses T = 354.425 K, outside its hard
+window 290-354.425 K").  It ends in a refusal, not a hang.
+
+**CV-25 (S2): searches without an `AdvisoryFrame` refuse at temperatures
+they invented.**  A refusal is rejectable only inside an open frame;
+`BubblePoint`, `AdiabaticFlash` and part of the column open one, `DewPoint`
+does not.  dewT01 (feed at 330 K, answer 363.9438 K), windows (290 364.5):
+exit 2 at the seed 366.637 K.  column02 simultaneous (states 353-383 K),
+windows (290 390): exit 2 at T = 562.05 K, benzene's Tc (from
+`pureSaturationTemperature` inside `DistillationColumn::solveSimultaneous`).
+column01 Wang-Henke (bottoms 381.514 K), windows (290 382): exit 2 at
+382.1428571 K, a temperature of the initial profile; with windows up to 390 K
+it converges.
+
+**CV-26 (S3): two packages, one identity.**  The identity is the definition
+fingerprint, which excludes `binaryPairsBase`.  An esterification2sector copy
+whose system liquid is `{ activityModel { model NRTL; } }` (the slot the
+SEPARATION.flash fragment writes) prints the same fingerprint for the system
+and the flash (`fe18019ac48abab9`) while they hold different ethylAcetate-water
+pairs (caseRoot vs perNode); the gate keys views by fingerprint and merges
+them; with the gate's own `views_by_package` and `compare()`, replacing the
+flash's perNode pair line by the system's caseRoot line (the original CV-01
+defect) gives 0 mismatches.
+
+**CV-27 (S4): leftovers.**  flash08's liquid-enthalpy row still says "the
+resolver lines are the record" (`ResolvedView.cpp:559`) where the run prints
+none; vlle03's vapour-pressure row says "view not built for gammaGamma" though
+`viewBuiltFor` accepts it; `newton1D` rethrows an earlier refusal when the
+search later fails for another reason (`lastRefusal`, by reading); the CV-18
+assembly check also refuses a run that prices no enthalpy (a purelaws02 copy
+with SR1's window (300 647.096) and only Psat operations exits 1).
+
+Not reached: a full sweep; the pins gate on this tree; a column with a window
+excluding only the answer; mixtures where re-seeding into one law's window
+lands outside another's; the props-binary dew point.
