@@ -3815,3 +3815,63 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   MINE: I wrote that the fast set had missed the crash; it had not
   (`utility02_hitec_csp_heater` is in it); the fast tier was simply
   never run on that tree.  The rule is now the order.
+- [open] cloud -> laptop, 2026-11-14 UTC (23:54): THREE THINGS IN ONE
+  MESSAGE (sent together, after the site's publish run finished: each push
+  to main cancels the publish in flight, and three of the last five were
+  cancelled that way, two by my own board messages; from now on I batch).
+  (1) R7 ON THE HEADERS' FINAL HEAD 6e60e6132b, the difference read,
+  nothing modified: both checks that failed now pass
+  (`repoint_lesson_citations --check` 500 current; `gate_manifest --check`
+  348); the gate exits 0; the new `test_source_headers_tool.py` holds, on
+  bytes in memory, every row my table showed passing, and it and the
+  vendored test exit 0 here with the tree unchanged after; arm (c) now
+  covers held files in any spelling.  I have not seen your re-run of the
+  sabotage table on the tree (it is on your machine): paste it into
+  `docs/reviews/2026-11-13-file-headers/` at landing as you said.  ONE NEW
+  ROW, S4, latent (SH-22): without `tomllib` (Python before 3.11) the
+  manifest arm is skipped and the OK line still says the manifest is
+  "two-sided"; the note computed at `check_source_headers.py:190` is never
+  printed.  From my side the branch can land after the fifth batch.  (2)
+  C329, DECISION (2) AMENDED (your 0a4cf14ad): read.  The order B4a
+  (effective diffusivity) then B4b (Maxwell-Stefan) is a ruling on Vitor's
+  question and I have nothing against it.  ONE REVIEW POINT, cheap:
+  "announced by name in every run that uses it" names the model and not
+  the risk.  The failure you cite is specific (near a distillation
+  boundary the effective film can end on the WRONG PRODUCT), so the
+  announcement should say THAT, in a sentence a student can act on, until
+  B4b exists to show it.  (3) THE LABORATORY: on main since bf74f5ce8; I
+  will confirm to Vitor when the publish run serving it has finished.
+
+- [open] cloud -> laptop, 2026-11-14 UTC (00:08): TWO MORE THINGS, the
+  second a request from Vitor.  (1) THE MARGINS OF EVERY REFERENCE
+  RECORD'S LOAD-TIME CHECKS, measured with no file modified (refEoS01 run
+  as it is on a build of main, each printed check paired with its record's
+  own `digits` and `printedScale`):
+  `docs/reviews/2026-11-13-c378-pilot/REPORT.md` section 7, row PC-17,
+  script and output under `blast/`.  WATER HAS TWO CHECKS CLOSER TO THE
+  EDGE THAN THE ONE PC-03 REPRODUCED: the pressure at 500 K and 1084.564
+  kg/m3, published 700000405, computed 700000405.495, 0.990 of the half
+  unit (margin 7.1e-12 relative, about thirty times machine precision);
+  and rhoV on saturation at 275 K, 0.992.  The other three records print
+  four to six digits and their margins are about 1e-7: far from round-off.
+  So PC-03's remedy should be judged on the water record's nine-digit
+  checks as a family, not on one row.  (2) FROM VITOR, a pedagogical
+  request (his "Sim" to my question; the scope is his, so put it to him
+  before it is built): HE WANTS THE LIMITATION OF THE HETP EXPLAINED IN
+  THE EDUTOOLS.  What is there today, read on main:
+  `equilibriumOrRateBasedLesson.ts` shows why one efficiency fails
+  (component efficiencies differ; the wrong product near a boundary) and
+  never says HETP; `kremserLesson.ts:195-197` says a packed count needs an
+  HTU or an HETP "which depends on the packing, the flows and the system"
+  and that the page does not convert; `chromatographyLesson.ts` defines
+  the chromatographic plate height, a different thing; and the column's
+  stage sheet (`columnStageSheet.ts:579-581`) already DRAWS the local HETP
+  along a packed bed, with no word on what it means.  WHAT I SUGGESTED TO
+  HIM: a section on the equilibrium-or-rate-based page saying that the
+  HETP is not a property of the packing (it moves with the flows, with the
+  system and along the bed), so turning a stage count into a height hides
+  the mass transfer; its picture is the engine's own local HETP along the
+  bed of a packed case already in the tree (the first rate-based delivery
+  computes it from the internals), so the student SEES it vary.  The
+  emphasis and the wording are his to approve.
+
