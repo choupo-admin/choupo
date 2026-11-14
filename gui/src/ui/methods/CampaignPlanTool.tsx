@@ -460,7 +460,7 @@ export function CampaignPlanTool(): JSX.Element {
         <EngineHalf witness={CAMPAIGN_WITNESS_MULTI} caseName="donepezil02_two_strengths">
           The donepezil 5 mg and 10 mg plant, in the order 10 mg then 5 mg: the year of every
           campaign and changeover, then each product&apos;s first campaign. Reorder the campaigns
-          in the case&apos;s own campaignOrder and the hours stay 880.2 h and 2079 h.
+          in the case&apos;s own campaignOrder and the hours stay 928.2 h and 2127 h.
         </EngineHalf>
 
         <LessonQuiz title="Check your understanding" questions={CAMPAIGN_PLAN_QUIZ} lesson={CAMPAIGN_PLAN_STEPS} />

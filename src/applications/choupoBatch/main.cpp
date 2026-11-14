@@ -96,10 +96,11 @@ Description
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
 #include "postProcessing/panel/PanelPass.H"
-
+#include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <variant>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
@@ -183,7 +184,7 @@ try
     ActivityModel   ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)
     electrolyte::AqueousVolumetricModel::registerBuiltins();   // the volumetric-model slot (rung 0/1)
-    PureFluidModel    ::registerBuiltins();   // pure-component absolute props (IF97)
+    PureFluidModel    ::registerBuiltins();   liquidProperty::DensityMethod::registerBuiltins();   // pure-fluid models (IF97); the liquid-density methods (C378 pilot)
     EquationOfState ::registerBuiltins();
     TransportModel  ::registerBuiltins();
     SurfaceTensionModel::registerBuiltins();
@@ -748,9 +749,15 @@ if (flowsheetDict->found("cycle"))
             for (auto v : unit->state().n) csv << "," << v;
         for (const auto& unit : units)
             csv << "," << unit->state().T;
+        //  A non-finite extra is a value the unit WITHHOLDS at this instant
+        //  (CI-00: a closure ratio with no scale yet): an EMPTY cell, so the
+        //  file stays rectangular and nobody reads a number that is not one.
         for (const auto& unit : units)
             for (const auto& [k, v] : unit->trajectoryExtras())
-                csv << "," << v;
+            {
+                csv << ",";
+                if (std::isfinite(v)) csv << v;
+            }
         csv << "\n";
 
         if (panelOn)
@@ -1836,15 +1843,51 @@ if (flowsheetDict->found("cycle"))
                 }
             }
             scalar elemWorst = 0.0;
+            //  CI-00b (2026-11-13): A FLOOR NEVER DECIDES A VERDICT.  An
+            //  element whose total is not above what the campaign's own
+            //  arithmetic resolves -- machine epsilon times the campaign's
+            //  total atoms, the size of the round-off any row of the state
+            //  carries -- has no relative closure: its absolute residual is
+            //  published (kmol of atoms) and printed, and it stays out of
+            //  element_worst_closure_rel.  (It used to divide by a floor of
+            //  1e-15 kmol, so 7e-22 kmol of a round-off species read as an
+            //  oxygen closure of 1.4e-6 and a correct run was NON-CONVERGED.)
+            std::vector<std::pair<std::string, scalar>> belowResolution;
+            scalar elemResolution = 0.0;
             if (unparsed.empty())
             {
+                scalar atomsTotal = 0.0;
+                for (const auto& [sym, a0] : elem0)
+                    atomsTotal += std::max(a0, elemF[sym]);
+                elemResolution =
+                    std::numeric_limits<scalar>::epsilon() * atomsTotal;
                 for (const auto& [sym, a0] : elem0)
                 {
                     const scalar aF = elemF[sym];
-                    const scalar r  = std::abs(aF - a0)
-                                    / std::max({ a0, aF, 1.0e-15 });
+                    if (!(std::max(a0, aF) > elemResolution))
+                    {
+                        ck["element_" + sym + "_residual_kmolatom"] = aF - a0;
+                        belowResolution.emplace_back(sym, aF - a0);
+                        continue;
+                    }
+                    //  max(a0, aF) > resolution > 0 here: no floor needed.
+                    const scalar r  = std::abs(aF - a0) / std::max(a0, aF);
                     ck["element_" + sym + "_closure_rel"] = r;   // RAW, shown
                     elemWorst = std::max(elemWorst, r);
+                }
+                if (!belowResolution.empty() && verbosity >= 1)
+                {
+                    std::cout << "[campaign] element(s) below the campaign's"
+                                 " resolution (total not above eps x "
+                              << std::scientific << elemResolution
+                                 / std::numeric_limits<scalar>::epsilon()
+                              << " kmol of atoms = " << elemResolution
+                              << " kmol):";
+                    for (const auto& [sym, res] : belowResolution)
+                        std::cout << " " << sym << " (residual " << res
+                                  << " kmol)";
+                    std::cout << std::fixed << " -- no relative closure, not"
+                                 " in the worst element, not in the verdict.\n";
                 }
                 ck["element_worst_closure_rel"] = elemWorst;
                 for (const auto ci : partialRelevant)
@@ -1930,6 +1973,9 @@ if (flowsheetDict->found("cycle"))
                           << (unparsed.empty()
                                 ? ", worst element " : ", elements n/a ")
                           << (unparsed.empty() ? elemWorst : 0.0) << std::fixed
+                          << (belowResolution.empty() ? ""
+                                : " (" + std::to_string(belowResolution.size())
+                                  + " element(s) below resolution, not in it)")
                           << (leak ? "  <-- LEAK: reported NON-CONVERGED"
                                    : "  (closed)")
                           << "\n";

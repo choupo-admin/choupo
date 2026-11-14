@@ -1,0 +1,27 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( water CO2 aceticAcid ethanol ethylAcetate );
+
+equilibrium
+{
+    formulation diluteSolution;
+    liquid
+    {
+        solvent  { component water; standardState pureLiquid; }
+        solutes
+        {
+            components ( CO2 ); standardState infiniteDilution; solutionModel henryDilute;
+            binaryParameters { CO2-water { source "data/standards/parameters/Henry/CO2-water.dat"; } }
+        }
+    }
+    vapour { fugacityModel idealGas; }
+}

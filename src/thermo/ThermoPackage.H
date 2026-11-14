@@ -71,7 +71,7 @@ Description
 #include "core/Types.H"
 #include "solver/Convergence.H"
 #include "thermo/VapourAssociation.H"
-
+#include <atomic>       // the package serial (C378 pilot)
 #include <map>
 #include <memory>
 #include <optional>
@@ -919,6 +919,17 @@ private:
     mutable bool        associationResolved_ = false;
     mutable std::size_t associationIndex_    = 0;      // n() when none
     mutable vapourAssociation::Dimerisation associationDim_;
+
+public:
+    //  A NUMBER OF ITS OWN, drawn at construction and carried by a move
+    //  (DEV.md 4c C378 pilot, ruling 6): the liquid-density resolver keys
+    //  its per-run decisions on it, never on the package's address, so a
+    //  package built where another one died inherits nothing from it.
+    unsigned long long serial() const { return serial_; }
+private:
+    static unsigned long long nextSerial()
+    { static std::atomic<unsigned long long> n{0}; return ++n; }
+    unsigned long long serial_ = nextSerial();
 };
 
 } // namespace Choupo

@@ -30,6 +30,7 @@ License
 #include "result/ResultEmitter.H"   // jsonNumber, jsonEscape: one formatter
 
 #include <cstddef>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -103,7 +104,29 @@ void emitBasesAndDosage(std::ostream& os, const BatchPlanRecord& p)
 //  `product:<p>`, `train:<t>` and `stage:<s>` (the aggregates the consumers
 //  read), `productTrain:<p>:<t>`, `productStage:<p>:<s>`, the year's Gantt
 //  and the findings.  A one-product plan never reaches here.
-void emitMultiProduct(std::ostream& os, const BatchPlanRecord& p)
+//  THE INSTALLED SIZE BESIDE THE REQUIREMENT (2026-11-13, DEV.md 4c C389
+//  (4), PH-06): a batch stage whose unit has a `ratedMachine` declaring the
+//  machine bought gains its installed volume, drawn from the sizing record
+//  through the one reader; `volumePerUnit` stays the plan's requirement.
+//  The first such unit of the stage, in its declared order.  A stage with
+//  none gains no key.
+void emitInstalled(std::ostream& os, const BatchStage& s,
+                   const std::map<std::string, EquipmentSizing>& sizings)
+{
+    if (s.type != "batch") return;
+    for (const auto& u : s.units)
+        if (const EquipmentSizing* m = installedBatchMachine(sizings, u))
+        {
+            os << ", \"volumeInstalledPerUnit\": " << num(m->values.at("V_installed"))
+               << ", \"machinesInstalled\": " << m->installed
+               << ", \"fillInstalled\": " << num(m->values.at("fill_installed"))
+               << ", \"installedBy\": " << esc(u);
+            return;
+        }
+}
+
+void emitMultiProduct(std::ostream& os, const BatchPlanRecord& p,
+                      const std::map<std::string, EquipmentSizing>& sizings)
 {
     os << ",\n  \"batchPlan\": {\n";
     os << "    \"summary\": { \"id\": \"batchPlan\""
@@ -206,6 +229,7 @@ void emitMultiProduct(std::ostream& os, const BatchPlanRecord& p)
             os << ", \"volume\": " << num(s.volume)
                << ", \"volumePerUnit\": " << num(s.volumePerUnit);
             if (s.maxVolume > 0.0) os << ", \"maxVolume\": " << num(s.maxVolume);
+            emitInstalled(os, s, sizings);
         }
         else
             os << ", \"rate\": " << num(s.rate)
@@ -295,12 +319,13 @@ void emitMultiProduct(std::ostream& os, const BatchPlanRecord& p)
 
 } // namespace
 
-void emitBatchPlanJson(std::ostream& os, const BatchPlanRecord& p)
+void emitBatchPlanJson(std::ostream& os, const BatchPlanRecord& p,
+                       const std::map<std::string, EquipmentSizing>& sizings)
 {
     if (!p.present) return;
     if (p.multiProduct())
     {
-        emitMultiProduct(os, p);
+        emitMultiProduct(os, p, sizings);
         return;
     }
     os << ",\n  \"batchPlan\": {\n";
@@ -379,6 +404,7 @@ void emitBatchPlanJson(std::ostream& os, const BatchPlanRecord& p)
                << ", \"volume\": " << num(s.volume)
                << ", \"volumePerUnit\": " << num(s.volumePerUnit);
             if (s.maxVolume > 0.0) os << ", \"maxVolume\": " << num(s.maxVolume);
+            emitInstalled(os, s, sizings);
         }
         else
             os << ", \"rate\": " << num(s.rate)

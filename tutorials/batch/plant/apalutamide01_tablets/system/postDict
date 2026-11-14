@@ -530,10 +530,10 @@ costing
     //  ex-works price (`basis purchased;` with its own `bareModuleFactor`
     //  and `bareModuleFactorSource`).  THE MACHINES SCALE WITH THE BATCH
     //  PLAN (DEV.md 4c C99): each machine's `value` is the price of ONE
-    //  machine of its `referenceSize` (a working volume for a batch stage, a
-    //  throughput for a semicontinuous one), and the item costs
-    //  units x value x (the stage's size per unit / referenceSize)^0.6 --
-    //  so a larger lot buys larger machines.  The building does not scale.  All are in 2026 money, the costing
+    //  machine of its `referenceSize` (a vessel volume for a batch stage, a
+    //  throughput for a semicontinuous one), and the item costs units x value
+    //  x (size / referenceSize)^0.6: a batch machine's INSTALLED size and count
+    //  where its `ratedMachine` declares them (C389), else the stage's size.  The building does not scale.  All are in 2026 money, the costing
     //  year, so no index is applied.  `kind equipment;` is a machine: in the
     //  FCI it also drives the auxiliary-facilities estimate (siteFactor x
     //  base) like any module; `kind facility;` is the building, which does

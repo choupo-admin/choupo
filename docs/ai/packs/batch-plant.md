@@ -85,6 +85,8 @@ batchPlan
   limiting cycle).  Several products: `products ( ... )` + `campaignOrder (
   ... )` + a `productChangeover` per stage (`cleaning`, `ratedMachine` and
   `cleanUtilities` then run per product and say so; see their sections).
+  A product clean is the train's `changeover` PLUS the product's own part,
+  never less; one declared below it is announced (`productCleanShort`).
 * A sold unit: `dosageUnit { name tablet; mass 0.29023 g; source "..."; reason
   "..."; }` inside each product (or in the plan for one product) makes the
   result's `batchPlan.dosage` give mg of every ingredient per unit (the product
@@ -148,6 +150,9 @@ batchPlan
 | `packagingLine` | `packsPerMinute` (plain), `itemsPerPack`, `itemMass` | N x packs/min x 60 packs/h | packs/h from the mass |
 * The stage's unit must be in the batch plan and the stage must be of the right
   type (`batchVolume` needs a batch stage, the others a semicontinuous one).
+* A `batchVolume` machine's ONE size is its `nominalVolume`: the sheet
+  publishes `V_required` (the plan's), `V_installed`, `fill_installed`
+  (<= `maxFill`).
 * Utilisation = load / capacity, printed in the Sizing table and the design
   sheet.  ABOVE 1 it REFUSES (shown as `FAILED`): `the machine does NOT fit
   the lot -- utilisation 1.02881 ... 2 machine(s) of this rating would carry
@@ -178,7 +183,8 @@ batchPlan
   reason "..."; } ... ); }`.  `basis purchased` needs the case's own
   `bareModuleFactor`.  `kind facility` (a building) is not multiplied by
   `siteFactor`.  Optional `scaling { referenceSize 1 m3; exponent 0.6;
-  exponentSource "..."; }`.  Quote one price per machine; a vessel sized by
+  exponentSource "..."; }` (a `batchVolume` rated machine's installed size,
+  else the stage's).  Quote one price per machine; a vessel sized by
   the plan (`type vessel`) is costed by Turton, no quote.
 * `economics { ... streamFactor fromBatchPlan; ... }`: the year's flows are
   Q, not hours x rate.  A numeric `streamFactor` beside a batch plan is

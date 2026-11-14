@@ -171,6 +171,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
     struct UnitRow
     {
         std::string name;
+        std::string type;                  // the unit's type (a pump's residual is named)
         int         kind = 0;              // 0 normal, 1 curation gap, 2 n/a
         scalar      hIn = 0.0, hOut = 0.0, dH = 0.0, items = 0.0;
         scalar      closure = 0.0;         // the RAW closure, as always
@@ -393,6 +394,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 
         UnitRow r;
         r.name = u.name;
+        r.type = u.type;
         r.kind = 0;
         r.hIn = e.hIn; r.hOut = e.hOut; r.dH = dH; r.items = items;
         r.supplied = supplied;
@@ -744,6 +746,17 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                 "before concluding anything, and note whether the auditor "
                 "could READ this unit's world at all.  Ledger: ")
                 : (impossible + "Ledger: ");
+            //  A PUMP'S RESIDUAL IS ATTRIBUTED (C378 pilot review, PB-01): on a
+            //  liquid surface with no pressure term the outlet cannot carry the
+            //  useful shaft work, eta x W_shaft, and the pump announces exactly
+            //  that in its own advisory.  Saying "cannot attribute" here, twenty
+            //  lines below that advisory, was false.
+            if (impossible.empty() && r.type == "pump")
+                remedy = "This residual is the pump's useful shaft work, eta x W_shaft"
+                         " (its `W_hydraulic` KPI): the liquid enthalpy of this surface"
+                         " carries no pressure term, so the outlet stream cannot hold"
+                         " it -- the pump's own advisory above says so and names the"
+                         " remedy, a pure-fluid method for the pumped liquid.  Ledger: ";
             remedy += "reports/balances/energyBalance_byUnit.csv";
             if (le && le->status != "none")
                 remedy = "The model-boundary audit did NOT account for this "

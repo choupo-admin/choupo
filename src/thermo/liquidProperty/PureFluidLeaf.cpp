@@ -1,0 +1,278 @@
+/*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+#include "PureFluidLeaf.H"
+
+#include "core/Advisory.H"
+#include "core/PropertySourceLog.H"
+#include "thermo/PropertyDomainError.H"
+#include "thermo/RecordResolver.H"
+#include "thermo/ThermoPackage.H"
+#include "thermo/equationOfState/ReferenceFluid.H"
+#include "thermo/pureFluid/PureFluidModel.H"
+
+#include <cmath>
+#include <cstdio>
+#include <iostream>
+#include <limits>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <stdexcept>
+#include <string>
+#include <utility>
+
+namespace Choupo {
+namespace liquidProperty {
+
+namespace {
+
+//  A reference equation's PureFluidModel, built once per process per
+//  (equation, molar mass): the record is parsed and its check values
+//  reproduced once (ReferenceFluid::load caches the record itself).
+const PureFluidModel& referenceModel(const std::string& equation, scalar mw)
+{
+    //  The mutex protects the cache map only; the model is built OUTSIDE it
+    //  (a factory may run a case's own registered code -- C378 review PA-02).
+    static std::mutex m;
+    static std::map<std::pair<std::string, double>, std::unique_ptr<PureFluidModel>> cache;
+    {
+        std::lock_guard<std::mutex> lk(m);
+        const auto it = cache.find({ equation, mw });
+        if (it != cache.end()) return *it->second;
+    }
+    const DictPtr d = Dictionary::fromString(
+        "method Helmholtz;\nequation " + equation + ";\n", "<referenceEquation leaf>");
+    std::unique_ptr<PureFluidModel> built = PureFluidModel::New(d, mw);
+    std::lock_guard<std::mutex> lk(m);
+    auto& slot = cache[{ equation, mw }];
+    if (!slot) slot = std::move(built);          // a racing thread's copy wins; ours is dropped
+    return *slot;
+}
+
+std::string fmt(const char* f, double v)
+{
+    char b[48];
+    std::snprintf(b, sizeof b, f, v);
+    return b;
+}
+
+} // namespace
+
+PureFluidLeaf::PureFluidLeaf(const Binding& b, Kind k)
+  : DensityLeaf(b), kind_(k)
+{
+    if (kind_ == Kind::caseSelection)
+    {
+        model_ = thermo_->pureFluidModel(i_);
+        if (!model_)
+            throw std::logic_error("PureFluidLeaf: component '" + comp().name()
+                + "' has no pureFluids selection in this case");
+    }
+    else
+    {
+        if (b.recordName.empty())
+            throw std::logic_error("PureFluidLeaf: a reference-equation leaf names its record");
+        equation_ = b.recordName;
+        model_    = &referenceModel(equation_, comp().MW());
+        const auto& f = helmholtz::ReferenceFluid::load(equation_);
+        uncertainty_ = f.uncertainty();
+        Tmin_        = f.Tmin();
+    }
+    Tc_ = model_->saturationWindow().second;
+}
+
+PureFluidLeaf::~PureFluidLeaf() = default;
+
+std::string PureFluidLeaf::id() const
+{
+    return kind_ == Kind::caseSelection ? "pureFluid." + model_->type()
+                                        : "referenceEquation." + equation_;
+}
+
+//  THE KERNEL'S LIQUID BRANCH (PureFluidLeaf.H): one decision of the state,
+//  pureFluidPhaseState's, and two answers on the vapour side of its band.
+scalar PureFluidLeaf::volumeAt(scalar T, scalar P, bool asSet) const
+{
+    const std::string c = comp().name();
+    if (T >= Tc_)
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+            "liquid density: " + c + " at T = " + fmt("%.6g K", T)
+            + " is at or above its critical temperature (" + fmt("%.6g K", Tc_)
+            + ", " + model_->densityFormulation() + "): there is no liquid to price.",
+            "a temperature below the critical one");
+    //  THE RECORD'S OWN LOWER LIMIT (C378 pilot review, S3): below the Tmin
+    //  its `validity` block states, the reference equation is not asked.
+    if (Tmin_ > 0.0 && T < Tmin_)
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+            "liquid density: " + c + " at T = " + fmt("%.6g K", T) + " is below the"
+            " lowest temperature of " + id() + "'s stated validity (Tmin "
+            + fmt("%.6g K", Tmin_) + ", the record's `validity` block)",
+            "a temperature at or above the record's Tmin, or a method selected for"
+            " the supercooled liquid");
+    const PureFluidPhaseState st = pureFluidPhaseState(*model_, T, P, true);
+    if (st.farAcross)
+    {
+        const scalar ps = model_->p_sat(T);
+        //  THE PACKAGE IS THE AUTHORITY ON A STREAM'S PHASE (ruling 3 at
+        //  hand-back A).  A reference equation taken BY THE FACT is a density
+        //  method, not the stream's equation of state: between its own line
+        //  p_ref and the package's line p_pkg for the component (its
+        //  saturation curve, ThermoPackage::Psat), where the package holds a
+        //  liquid and the formulation would call it a vapour, the request is
+        //  the formulation's SATURATED LIQUID at T, announced with both
+        //  pressures.  Below both lines the package too says vapour: refused.
+        //  With the case's own selection the two lines are one line.
+        scalar pPkg = std::numeric_limits<scalar>::quiet_NaN();
+        if (asSet && kind_ == Kind::referenceEquation)
+        {
+            try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) {}
+            if (pPkg == pPkg && P >= pPkg * (1.0 - pureFluidSaturationBand))
+            {
+                std::string type, unit;
+                const std::string site = PropertySourceLog::instance().current(type, unit)
+                                       ? type + " " + unit : std::string("no unit");
+                const std::string msg = "the liquid density of pure " + c + " by "
+                    + id() + " at T = " + fmt("%.6g K", T) + ", P = " + fmt("%.8g Pa", P)
+                    + ": the package's own saturation line puts this state in the liquid"
+                      " (p_sat " + fmt("%.8g Pa", pPkg) + "), the reference equation's"
+                      " below it (p_sat " + fmt("%.8g Pa", ps) + ", "
+                    + fmt("%+.3g", ps / pPkg - 1.0) + " relative); priced as the"
+                      " formulation's saturated liquid at T";
+                if (AdvisoryLog::instance().addAnnouncedOnce(
+                        "liquidDensityBetweenLines:" + id() + ":" + site,
+                        "approximation", "info", "liquid density (" + site + ")", msg))
+                    std::cout << "  [liquid density] " << msg << "\n";
+                return model_->v_molar(T, st.pEval);
+            }
+        }
+        if (asSet)
+            throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+                "liquid density of {" + c + "}: at T = " + fmt("%.6g K", T) + " and P = "
+                + fmt("%.6g Pa", P) + " pure " + c + " is a VAPOUR -- its saturation"
+                " pressure there is p_sat(T) = " + fmt("%.6g Pa", ps) + " ("
+                + model_->densityFormulation() + ")"
+                + (pPkg == pPkg ? ", and the package's own saturation line is at "
+                                  + fmt("%.6g Pa", pPkg) + ": both say vapour" : std::string())
+                + "; a liquid exists only at or above the line.  Remedy: a pressure at or above p_sat(T) (or a temperature"
+                " below the boiling point at P); a unit that holds a vapour asks for the"
+                " vapour's density.",
+                "a pressure at or above p_sat(T)");
+        //  A constituent of a MIXTURE below its own p_sat: the saturated liquid
+        //  at T, the hypothetical-liquid convention of the Rackett leaves.
+        std::string type, unit;
+        const std::string site = PropertySourceLog::instance().current(type, unit)
+                               ? type + " " + unit : std::string("no unit");
+        const std::string msg = "the liquid density's leaf " + id() + " prices " + c
+            + " at its SATURATED liquid at T (" + fmt("%.6g K", T) + "): in this mixture"
+            " the pressure (" + fmt("%.6g Pa", P) + ") is below " + c + "'s own"
+            " saturation pressure (" + fmt("%.6g Pa", ps) + "), where the pure liquid"
+            " does not exist -- the hypothetical-liquid convention the record-volume"
+            " leaves follow too";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "liquidDensityLeafSaturated:" + id() + ":" + site,
+                "approximation", "info", "liquid density (" + site + ")", msg))
+            std::cout << "  [liquid density] " << msg << "\n";
+    }
+    //  THE OTHER SIDE OF THE TWO LINES (C378 pilot review, S3).  Where the
+    //  package's line is ABOVE the reference equation's (water's extrapolated
+    //  Antoine above about 311 K), a state between them is a vapour to the
+    //  package and a compressed liquid to the formulation.  The kernel prices
+    //  the formulation's liquid -- it was asked for a liquid density -- and
+    //  says so once per method and site, as the mirror zone does.
+    else if (asSet && kind_ == Kind::referenceEquation)
+    {
+        scalar pPkg = std::numeric_limits<scalar>::quiet_NaN();
+        try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) {}
+        if (pPkg == pPkg && P < pPkg * (1.0 - pureFluidSaturationBand))
+        {
+            std::string type, unit;
+            const std::string site = PropertySourceLog::instance().current(type, unit)
+                                   ? type + " " + unit : std::string("no unit");
+            const std::string msg = "the liquid density of pure " + c + " by " + id()
+                + " at T = " + fmt("%.6g K", T) + ", P = " + fmt("%.8g Pa", P)
+                + ": the package's own saturation line puts this state in the VAPOUR"
+                  " (p_sat " + fmt("%.8g Pa", pPkg) + "), the reference equation's in the"
+                  " liquid (p_sat " + fmt("%.8g Pa", model_->p_sat(T)) + "); priced as the"
+                  " formulation's compressed liquid";
+            if (AdvisoryLog::instance().addAnnouncedOnce(
+                    "liquidDensityAboveRefLine:" + id() + ":" + site,
+                    "approximation", "info", "liquid density (" + site + ")", msg))
+                std::cout << "  [liquid density] " << msg << "\n";
+        }
+    }
+    const scalar vm = model_->v_molar(T, st.pEval);
+    if (!(vm > 0.0) || !std::isfinite(vm))
+        throw PropertyDomainError(PropertyDomainError::Kind::invalidState,
+            "liquid density: the formulation " + model_->densityFormulation()
+            + " gives no finite positive molar volume for '" + c + "' at T = "
+            + fmt("%.6g K", T));
+    return vm;
+}
+
+scalar PureFluidLeaf::molarVolume(scalar T, scalar P) const
+{
+    return volumeAt(T, P, false);
+}
+
+std::string PureFluidLeaf::routeKey() const { return id(); }
+
+int PureFluidLeaf::routeRank() const { return kind_ == Kind::caseSelection ? 1 : 2; }
+
+std::string PureFluidLeaf::routeWords(const std::vector<std::string>&) const
+{
+    return kind_ == Kind::caseSelection
+        ? comp().name() + " by the pure-fluid formulation " + model_->densityFormulation()
+          + " (the case's selection), liquid branch at the temperature and pressure"
+        : comp().name() + " by the " + model_->densityFormulation()
+          + " (a record names the fluid), liquid branch at the temperature and pressure";
+}
+
+std::string PureFluidLeaf::origin() const { return "regressed"; }
+
+std::string PureFluidLeaf::evidence() const
+{
+    return uncertainty_.empty() ? std::string("not quantified") : uncertainty_;
+}
+
+DensityAnswer PureFluidLeaf::evaluate(scalar T, scalar P, const sVector&) const
+{
+    DensityAnswer a;
+    a.v = volumeAt(T, P, true);
+    a.rho = (comp().MW() / 1000.0) / a.v;                      // kg/m3
+    a.methodId = id();
+    const bool line = pureFluidPhaseState(*model_, T, P, true).branch
+                   != PureFluidPhaseBranch::oneFluid;
+    const std::string what = kind_ == Kind::caseSelection
+        ? "the pure-fluid formulation " + model_->densityFormulation()
+        : "the " + model_->densityFormulation() + " of " + comp().name()
+          + " (taken because a record names the fluid)";
+    a.label = "property kernel: " + what
+            + (line ? ", liquid branch at the temperature and pressure; at or"
+                      " below the saturation pressure, the saturated liquid at T"
+                    : " at the temperature and pressure (no saturation line"
+                      " at this temperature: one fluid)");
+    a.leaves.push_back({ comp().name(), id(), 1.0 });
+    a.pressureApplied  = true;
+    a.quality.origin   = origin();
+    a.quality.provenance = kind_ == Kind::caseSelection
+        ? "the case's pureFluids selection (" + model_->type() + ")"
+        : helmholtz::ReferenceFluid::load(equation_).citation();
+    a.quality.domain   = "liquid branch below the critical temperature";
+    a.quality.evidence = evidence();
+    return a;
+}
+
+} // namespace liquidProperty
+} // namespace Choupo

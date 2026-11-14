@@ -226,7 +226,10 @@ private:
 //      the SATURATED VAPOUR at T (just below p_sat, as Hvapour does).
 //  `farAcross` is set when the state asked is more than the band on the
 //  other side of the line -- a state the phase asked does not have, which
-//  the caller announces.
+//  the caller announces: density() keeps the saturated branch above, while
+//  H_real / S_real price (T, P) by pureFluidStreamPressure (review TD-04),
+//  and an AUTHORED stream declaring such a phase is refused before any unit
+//  runs (flashState::declaredPhaseBeyondBandRefusal).
 // ---------------------------------------------------------------------------
 enum class PureFluidPhaseBranch
 {
@@ -255,8 +258,9 @@ PureFluidPhaseState pureFluidPhaseState(const PureFluidModel& m, scalar T_K,
 //  So INSIDE the band (pureFluidPhaseState's, not farAcross) vf = 0 is the
 //  saturated liquid and vf = 1 the saturated vapour; OUTSIDE it the stream
 //  is priced at (T, P) as before, bit for bit, whatever the fraction says
-//  (a fraction that contradicts T and P away from the line is not this
-//  rule's business).  0 < vf < 1 is not handled here (the callers' split).
+//  (the phase-taking H_real / S_real price by this rule too, TD-04; a
+//  DECLARED fraction that T and P contradict there is refused upstream).
+//  0 < vf < 1 is not handled here (the callers' split).
 scalar pureFluidStreamPressure(const PureFluidModel& m, scalar T_K,
                                scalar p_Pa, scalar vapFrac);
 

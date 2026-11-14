@@ -237,7 +237,10 @@ Description
     fit), with each product's share named.  ANNOUNCED in addition:
     `ownBalance:<product>`; `capacityMismatch:<product>:<stage>`;
     `lowUtilisation:<stage>` is a stage that limits NO product and whose
-    largest utilisation is below the threshold.
+    largest utilisation is below the threshold; `productCleanShort:<stage>`
+    or `:<product>:<stage>:<next>` is a DECLARED product clean below its
+    train's `changeover` (C389 (4): a product change is the campaign clean
+    PLUS the product's own part), per declaration, equal silent.
 
     THE CLEANING OF THE MACHINES (2026-11-03, DEV.md 4c C210, E3; several
     products since 2026-11-08, C249 d).  The plan knows the lots, the campaigns and the

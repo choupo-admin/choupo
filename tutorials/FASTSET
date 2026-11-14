@@ -187,6 +187,8 @@ tutorials/steady/separation/tsa02_refused_capacity
 tutorials/steady/solids/pneumaticConveyor01_sand
 tutorials/steady/solids/mill02_bond_crosscheck
 tutorials/steady/thermo/air01_heater_expand
+# steady/thermo contributes 2 (C378 pilot, 2026-11-13): the liquid-density kernel the pump and the CSTR take
+tutorials/steady/thermo/liquidDensity01_water
 tutorials/steady/thermoTest/model5_nrtl_flash
 tutorials/steady/userops/userOp01_yield_reactor
 tutorials/steady/utilities/utility02_hitec_csp_heater

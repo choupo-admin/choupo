@@ -44,3 +44,18 @@ transport
         viscosity { model Vogel; }
     }
 }
+
+// THE LIQUID DENSITY'S HYPOTHESIS (DEV.md 4c C378 pilot): the pump and the
+// CSTR take their liquid density from the property kernel, which refuses a
+// component with no liquid volume.  This case declares, with its bound set
+// from its own feed, that the listed components keep their mass and add no
+// volume -- what the pump did unannounced before the pilot.
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( NaCl CaCl2 MgSO4 );
+        maxMassFraction 0.005;
+        reason          "the NF feed's three salts keep their mass and add no volume to the booster pump's liquid density (their mass fraction in the feed is below 2e-3); the engine's own bound on this reading is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
+    }
+}

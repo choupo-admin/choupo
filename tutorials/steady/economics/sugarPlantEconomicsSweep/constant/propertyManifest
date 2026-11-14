@@ -25,6 +25,33 @@ propertyManifest
     importerVersion    "3";
     records
     {
+        "parameters/Helmholtz/SpanWagner1996.dat"
+        {
+            type          imported;
+            sha256        "b195dccec77ebca47f470255fb4de939126a1432b059a4752ee1e7fecfa447f5";
+            computationalSha256 "45e5b08168038ca401f0a99ec275378fa7fec8658671fc3c954dd201e1bff76a";
+            origin        "data/standards/parameters/Helmholtz/SpanWagner1996.dat";
+            originSha256  "b195dccec77ebca47f470255fb4de939126a1432b059a4752ee1e7fecfa447f5";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/Span2000.dat"
+        {
+            type          imported;
+            sha256        "d7c7e5479e5cc9dd0b5923cb2ab96a581cc49ebaed571f140054892688015fa5";
+            computationalSha256 "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
+            origin        "data/standards/parameters/Helmholtz/Span2000.dat";
+            originSha256  "d7c7e5479e5cc9dd0b5923cb2ab96a581cc49ebaed571f140054892688015fa5";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
+            release       Choupo-2608;
+        }
         "assets/SS304.dat"
         {
             type          imported;

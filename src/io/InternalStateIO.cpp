@@ -37,6 +37,7 @@ License
 //  INCLUDE WHAT THIS FILE USES, not what its own header happens to pull in --
 //  the `make wasm` lesson of 2026-08-27, held by `check_std_includes`.
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
@@ -919,8 +920,9 @@ bool writeHoldup(const std::string&               viewRoot,
     {
         o << "    extras\n    {\n";
         for (const auto& [k, v] : h.extras)
-            o << "        " << std::left << std::setw(16) << k << " "
-              << exact(v) << ";\n";
+            if (std::isfinite(v))      // a withheld (non-finite) view: absent
+                o << "        " << std::left << std::setw(16) << k << " "
+                  << exact(v) << ";\n";
         o << "    }\n";
     }
     o << "}\n";

@@ -7164,6 +7164,16 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/lpratchet.$$
+    # floor-scale ratchet gate (2026-11-13, DEV.md 4c, review CI-00d).  A ratio whose scale is floored with a tiny literal (a division by max(quantity, 1e-30) and its relatives) reports round-off as a closure when the quantity is absent: batch25 published 4.1e7 for a species the bed never held, on one math library and not on another.  The gate COUNTS such divisions per file against a pinned table, two-sided: a new one fails, and so does a pinned one that left without its row.  It classifies nothing: whether a pinned site is a defect is read site by site.
+    if gate_exec "$ROOT/bin/curate/check_floor_scale_ratchet.py" > /tmp/floorratchet.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "floor-scale-ratchet-gate" "$(grep -m1 '^check_floor_scale_ratchet: OK' /tmp/floorratchet.$$ || head -1 /tmp/floorratchet.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_floor_scale_ratchet.py)\n" "floor-scale-ratchet-gate"
+        cat /tmp/floorratchet.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/floorratchet.$$
     # liquid-volume datum gate (2026-11-13, DEV.md 4c C378, TR-12).  A record's `Vliq` belongs to `VliqT` (absent = 298.15 K); a temperature stated in the `Vliq` comment must agree with the key, a record with Tc < 330 K carrying `Vliq` must state its temperature, and the six unresolved records stay pinned by name in bin/curate/vliq_datum_debt.tsv (two-sided).
     if gate_exec "$ROOT/bin/curate/check_vliq_datum.py" > /tmp/vliqdatum.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "vliq-datum-gate" "$(head -1 /tmp/vliqdatum.$$)"
@@ -7174,6 +7184,26 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/vliqdatum.$$
+    # liquid-density entry callers gate (2026-11-13, DEV.md 4c C378 pilot).  The pilot's second entry, liquidProperty::density, is migration scaffolding: only the pump, the CSTR and the two bench probes of the kernel (the props key rho_liquid_kernel, the route bench) call it, each with a pinned count; a fourth file is a decision written into the gate.
+    if gate_exec "$ROOT/bin/curate/check_liquid_density_entry_callers.py" > /tmp/ldcallers.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "liquid-density-entry-callers-gate" "$(head -1 /tmp/ldcallers.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_liquid_density_entry_callers.py)\n" "liquid-density-entry-callers-gate"
+        cat /tmp/ldcallers.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ldcallers.$$
+    # density pilot gate (2026-11-13, DEV.md 4c C378 pilot).  The six cases of tutorials/steady/thermo/liquidDensity0* on scratch copies: for EACH method a pump or a CSTR can receive, the unit's density equals the kernel's own double to 1e-9 at two states; the twelve printed IAPWS-95 anchors; the additive-volume mechanism; the NaOH law against its 18 constants; the measured point, its box and its witness (1000 / 1500 kg/m3); the refusals of D4 and D5 word for word; the package's saturation line (ruling 3).
+    if gate_exec "$ROOT/bin/curate/check_density_pilot.py" > /tmp/densitypilot.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "density-pilot-gate" "$(tail -1 /tmp/densitypilot.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_density_pilot.py)\n" "density-pilot-gate"
+        cat /tmp/densitypilot.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/densitypilot.$$
     # property-source witnesses gate (2026-11-13, DEV.md 4c C378 slice 0, door review DR-11).  One witness case per liquid-property source class, run live: each unit publishes the tag its code takes; a site that picks another tag of the same class (no value moves) is caught here until the goldens carry `source` rows.
     if gate_exec "$ROOT/bin/curate/check_property_source_witnesses.py" > /tmp/srcwit.$$ 2>&1; then
         printf "PASS  %-40s  (%s)\n" "property-source-witnesses-gate" "$(head -1 /tmp/srcwit.$$)"

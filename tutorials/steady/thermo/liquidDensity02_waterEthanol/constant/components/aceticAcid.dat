@@ -1,0 +1,218 @@
+// [imported] origin "data/standards/components/aceticAcid.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: Acetic Acid  (CH3COOH, C2H4O2, CAS 64-19-7)
+  Note: vapour-phase dimerisation is not a pure-component property and is
+        therefore not declared in this component record.  Reactive VLE
+        formulations may activate the curated vapour-association
+        equilibrium from chemistry/ (aceticAcid-dissolution.dat's
+        vapourDimerisation block).
+  Sources: critical constants (Tc/Pc/omega/Tb/HvapTb/Vliq), Antoine
+           coefficients (marked 'individual literature value' at the block),
+           Cp polynomials and the ideal-gas formation datum -- primary
+           re-citation pending (IST review).  UNIQUAC r,q are the van der
+           Waals values (Abrams-Prausnitz) as used by Popken 2000, Table 2.
+\*---------------------------------------------------------------------------*/
+
+name        aceticAcid;
+formula     C2H4O2;
+CAS         64-19-7;
+
+MW          60.052;
+Tc          591.95;
+Pc          57.86;
+omega       0.4665;
+Tb          391.05;
+HvapTb      24390;
+//  WHICH VAPOUR THIS SPEAKS (2026-10-11, DEV.md 4c C65 item a): the
+//  measured latent heat to the real, ASSOCIATED vapour (82 % of the
+//  molecules dimerised at 298 K by chemistry/aceticAcid-dissolution.dat),
+//  while dHf_298 below is the ideal-gas MONOMER (NBS TN 270-3, -103.31
+//  kcal/mol).  The liquid rung derived from the pair therefore sits ~24 kJ/mol
+//  above NBS's liquid (-460.4 against -484.5 kJ/mol) IF bridged with this
+//  number alone.  Since DEV.md 4c C201 item 1 the engine DERIVES the bridge to
+//  the datum's own vapour: Component::datumBridge298 adds the heat of
+//  dissociating the dimers present in the saturated vapour (K and dH read from
+//  chemistry/aceticAcid-dissolution.dat's vapourDimerisation -- the ONE home,
+//  nothing is copied here), announced once per run.  HvapTb itself stays the
+//  measured value, which the other readers need
+//  (docs/design/one-record-two-vapours-acetic-acid.md).
+Vliq       5.752e-5;          // 57.52 cm³/mol at 25°C
+//  ANCHOR, never an input.  The engine DERIVES the Hildebrand
+//  parameter from HvapTb and Vliq (the tree stores no derivative);
+//  this is what ChemSep v8.3 computed independently, so the
+//  derivation has something to be wrong against.
+solubilityParameter 19060;   // Pa^0.5  [anchor, ChemSep v8.3, Artistic-2.0]
+
+
+standardThermochemistry
+{
+    dHf_298   -432250.0;        // J/mol  -- ideal-gas reference
+    s_298     282.500;         // J/(mol·K)  -- third-law absolute
+}
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)   (individual literature value)
+    coefficients  (4.68206   1642.540   -39.764);
+    Trange        (290  392);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (4.840   0.2549   -1.753e-4   4.949e-8);
+    Trange        (200  1500);
+}
+
+liquidHeatCapacity
+{
+    model         polynomial;
+    coefficients  (123.1);          // ~ 123 J/(mol·K) average
+    Trange        (290  390);
+}
+
+groups
+{
+    unifac ( { group CH3; count 1; } { group COOH; count 1; } );
+    joback ( { group CH3; count 1; } { group acid; count 1; } );
+}
+
+uniquac
+{
+    r   2.2024;
+    q   2.0720;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-0583-PROF.txt bundled in usnistgov/COSMOSAC; CAS 64-19-7";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
+    }
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file ACETIC_ACID.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey QTBSBXVTEAMEQO-UHFFFAOYSA-N (full match); formula C2H4O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        91.642087;   // sum of the profile below; GAMESS prints 91.64
+        volume      74.09;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.155518     0.835816
+               0.901890     0.776141     0.873453     1.449537     0.581909     0.000000
+               0.099776     1.202144     1.210149     0.075349     1.060314     4.463151
+               6.589651     7.006977     5.347889     5.459452     5.132690     9.841268
+               3.146660     0.933356     1.851696     1.259969     0.742303     1.629673
+               1.877006     2.717732     2.133192     0.969555     1.381549     3.130259
+               3.162411     1.374099     2.619429     4.354540     3.854761     1.412310
+               0.028513     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}
+
+// ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----
+// The canonical set of aqueous speciation equilibria this component
+// participates in (HAc = Ac- + H+, pKa 4.756).  The VAPOUR dimerisation
+// 2 HAc(g) = (HAc)2(g) is a vapour-phase reaction and deliberately NOT
+// part of this fact (it lives on the gas-liquid record).  The typed
+// bridge delivers the acetate family total, HAc = Acetate- + H+.
+aqueousSpeciation  aceticAcid;
+aqueousMapping ( { species Acetate; nu 1; } { species H; nu 1; } );
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -25.72067737;
+        B     2007.860289;
+        C     2.141075318;
+        D     0;
+        E     0;
+        Tmin  293.15;
+        Tmax  373.15;
+    }
+}
+
+surfaceTension
+{
+    A     0.0594918344;
+    B     0;
+    Tc    591.95;
+    n     1.127849284;
+    Tmin  298.15;
+    Tmax  343.15;
+}
+
+provenance
+{
+    liquidViscosity
+    {
+        origin        fitted;
+        method        "least squares on ln y of ln(mu/Pa.s) = A + B/T + C ln T (chemsepEq101 with D = 0), 3 parameter(s), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 1.355182;
+        Trange        (293.15 373.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C327)";
+        evidence
+        (
+                { doi "10.1016/j.fluid.2005.07.010"; articleSha256 "23c8a585abd18c1cbce60330a71038a78a7f2e1c4a2345b84a6292781b9474ef"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je0342825"; articleSha256 "00c0a6b6dd37ce6090d9b03e390eec021f9ce83c949ba6be1a2cc64ea5a7b94b"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je201211f"; articleSha256 "09c82f659e78d1053e1998badfa20cc3757a7c7f8859127c18e48e62b1cd0225"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je700755t"; articleSha256 "a26d229f13de4b89d35d6e23b9bf76d887403381500ac601770cfb783dc4a1ab"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je8003782"; articleSha256 "42efcd9fb15323a0644e7fe9cd6c3467776d590ec12c739d38a3289a9d4c68b4"; pointsKept 19; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je800635g"; articleSha256 "3dcf687defb60f1da08b8ed46b8f3d08222d8160a7eff66ec9e66d310dbd4131"; pointsKept 4; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     6;
+            pointsKept  34;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.932211;
+            max_pct     1.355182;
+        }
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 0.303602;
+        Trange        (298.15 343.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1021/je060084c"; articleSha256 "caefdfe690400448a8f41618ee354495db0f57a1b06e7d2d3239de0dc0a3e228"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je060390q"; articleSha256 "ecf0a8064734f1ca562d963ce13668336393d733e7ae42c501d02379761f1232"; pointsKept 7; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     2;
+            pointsKept  8;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.193224;
+            max_pct     0.303602;
+        }
+    }
+}

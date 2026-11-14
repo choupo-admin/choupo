@@ -20,21 +20,21 @@ a state on or across the line on the saturated branch of the phase asked.
 
 WHAT IT RUNS.  Two scratch cases built in a temporary directory from the
 shipped rankine02_water (its IF97 water and its pump), at seven suction
-pressures P = p_sat(T) (1 + e), e in (-1e-6, -1e-9, -1e-12, 0, +1e-12,
-+1e-9, +1e-6), T = 446.5158944 K (the case's condensate):
+pressures P = p_sat(T) (1 + e), e in (-5e-7, -1e-9, -1e-12, 0, +1e-12,
++1e-9, +5e-7), T = 446.5158944 K (the case's condensate) -- inside the band:
+since TD-04 a declared phase 1e-6 or more across the line is REFUSED (arm (g)),
+so the band's own edge would test the last bit of the refusal:
   (a) the feed pump alone, inlet declared `phase liquid;`, to 80 bar --
-      the seven pump dT must agree to 1e-6 K;
+      the five pump dT with |e| <= 1e-9 must agree to 1e-6 K and the two at
+      |e| = 5e-7 must stay on the same branch (within 0.01 K);
   (b) the mirror: a compressor fed the same water declared `phase gas;`
-      (saturated steam), P_out 20 bar, eta 0.8 -- the seven discharge
-      temperatures must agree to 1e-6 K;
+      (saturated steam), P_out 20 bar, eta 0.8 -- the discharge
+      temperatures held the same way;
   (c) the energy REPORT of the pump case: its plant-boundary terms
       (globalEnergyBoundary H_feeds_kW and H_products_kW) must agree across
       the FIVE runs strictly inside the band (|e| <= 1e-9) to 1e-6
-      relative (tighter than the goldens' 1e-4).  e = +-1e-6 is the band's
-      own edge, where by the rule the carried fraction stops naming the
-      branch and the stream is priced at (T, P): a witness there would test
-      the last bit of the edge, the very coin toss this gate exists to
-      remove.
+      relative (tighter than the goldens' 1e-4).  e = +-5e-7 is left out
+      as it always was: the arm holds the runs strictly on the line.
       The report prices the suction through H_stream_formation at the
       stream's carried vf = 0; since the fourth item of C378's pilot a pure
       stream inside the band is priced on the branch its vf names
@@ -85,16 +85,91 @@ pressures P = p_sat(T) (1 + e), e in (-1e-6, -1e-9, -1e-12, 0, +1e-12,
       Each must also close the plant boundary to 1e-6 kW, so a unit that
       prices its inlet on one branch while the report prices the other is
       named.
+  (g) a DECLARED phase its own (T, P) contradict beyond the band (review
+      TD-04: a pump whose suction was declared liquid 2e-6 below p_sat left
+      +40.65 / +36.70 / +28.16 kW on the plant boundary at 373.15 /
+      446.5159 / 550 K, at exit 0) is REFUSED before any unit runs: at the
+      three temperatures, a pump fed `phase liquid;` and a compressor fed
+      `phase gas;`, accepted at e = -5e-7 and +5e-7 and on the declared side
+      at 2e-6, refused at 2e-6 across the line (liquid -2e-6, gas +2e-6);
+      the refusal must name the stream and its file, T, the relative distance,
+      the phase word, the remedy `delete the phase word` and `P <p_sat> Pa;`
+      with p_sat(T) to 1e-9 of Eq. 30 here;
+  (h) the same refusal in a consuming unit's OWN thermophysical world: a
+      `phase liquid;` inlet at 424.986 K, P = p_sat_IF97 (1 + 2e-5), is
+      liquid in the case's IF97 and vapour beyond the band in the pump's own
+      IAPWS-95 `thermo {}`, and must be refused naming that unit;
+  (i) a COMPUTED inlet its consumer's own world places across the line
+      (review TD-17, the coordinator's ruling): a phaseChanger under its own
+      `thermo {}` puts its outlet on ITS saturation line, and the consumer's
+      world places that state 1.4e-4 across.  The compressor and the turbine
+      (vapour held; producer IAPWS-95, consumer IF97) and the pump (liquid
+      held; producer IF97, consumer IAPWS-95) must each refuse at the
+      hand-over, naming the unit, the inlet, the phase held, the consumer's
+      formulation, the side, p_sat(T), P/p_sat - 1 against the band, the
+      producing unit with ITS formulation, and the remedy;
+  (j) by SOURCE, and it says so: ThermoPackage's H_real and S_real with a
+      phase evaluate a pure fluid at pureFluidStreamPressure (the stream
+      functions' rule: (T, P) beyond the band) and announce it through
+      AdvisoryLog::addAnnouncedOnce.  No flowsheet run reaches that branch
+      any more (measured over all 31 runs of this gate: none prints it): an
+      authored inlet beyond the band is refused before any unit runs, a
+      computed one at the hand-over (i), and the pump's discharge search runs
+      only when a liquid root exists below T_sat(P_out) (k).  Also by source,
+      DynamicDriver.cpp applies the authored-inlet refusal to the
+      time-integrated binaries (no time-integrated template carries a
+      pure-fluid formulation).
+  (k) the pump never publishes an outlet it did not find: at 550 K, dP 1 bar,
+      inlet declared liquid at p_sat (1 + 5e-7), eta 0.5 and 0.03 run with
+      dT > 0 and the plant residual within 1e-6 kW, and eta 0.01 -- whose
+      losses heat the liquid past T_sat(P_out) -- refuses naming the pump,
+      the inlet, T_in, P_out, T_sat(P_out), the enthalpy asked against the
+      saturated liquid's, eta and both remedies (before: T_out = T_in,
+      published silently, +0.18 kW on the plant boundary at exit 0).
+  (l) a PURE stream of a component with NO vapour-pressure model, in a world
+      with no pure-fluid formulation, runs: a pump on pure dowthermA (the
+      record of utility01_dowtherm_preheat, which declares no vaporPressure)
+      exits 0, and a negative return code is reported as a crash (a signal),
+      never as a refusal.  By SOURCE, and it says so: the outlet stamp
+      (flashState::pureWorldName) asks no saturation curve outside a
+      pure-fluid formulation -- it once did, so it dereferenced the absent
+      model (SIGSEGV on lithiumBrinePlant and utility01-03) and, where a
+      correlation existed, announced excursions outside its Trange about a
+      p_sat the run never used (evaporator01_brine, water at 374.546 K);
+      and saturationPressure refuses by name before dereferencing an absent
+      correlation.
 p_sat(T) is IAPWS-IF97 region 4 (Wagner et al. 2000, Eq. 30), the same
 closed form the engine evaluates.  Each run must also announce the pure-fluid
 route (`pureFluids override (water)`), so a template that lost its IF97
 declaration cannot pass by agreeing on the incompressible pump.
 
+SABOTAGES of arms (g)-(k), each applied alone by hand, built, run, restored
+and rebuilt (2026-11-13): Sg the global-world refusal call removed -> (g)
+fails; Sh the own-world refusal call removed -> (h) fails; Si the hand-over
+refusal's throw removed -> (i) fails for all three units; Sw the producer's
+world no longer stamped on the stream -> (i) fails (the message cannot name
+the other formulation); Sj H_real with a phase back on the saturated branch
+beyond the band -> (j) fails; Sj2 the time-integrated call removed -> (j)
+fails; Sk1 the pump's enthalpy refusal disabled (the search then fails and
+raises its non-convergence, which does not name the cause) -> (k) fails;
+Sk2 the old code (no refusal, `T_out = r.converged ? r.x : T_in`) -> (k)
+fails.  Restoring the fallback line ALONE is not caught: the enthalpy
+refusal fires before the search in every case the arm builds.  Arm (l),
+the same day: Sl1 the branch's code restored (the stamp asks thermo.Psat in a
+generic world AND saturationPressure dereferences without its guard) -> (l)
+fails, the pump run reported as a CRASH with signal 11; Sl2 the stamp's Psat
+call restored alone (the guard then throws and the stamp's catch absorbs it,
+exit 0) -> (l) fails by source only; Sl3 the guard removed alone -> (l) fails
+by source only (no run reaches saturationPressure for a component with no
+model once the stamp asks nothing).
+
 WHAT IT DOES NOT CHECK.  The values to more than the bounds of arm (d)
 and (f) (rankine02's golden pins them); the turbine's BEHAVIOUR (arm (e)
-reads its source: no run can reach it); a pure stream BEYOND the band whose
-vapour fraction contradicts its T and P (priced at (T, P), not this gate's
-subject); a wet turbine exhaust (the unit does not hold that phase); a
+reads its source: no run can reach it); a turbine fed a computed inlet beyond
+the band (its T(S) search does not converge on a compressed liquid either);
+the time-integrated refusal's BEHAVIOUR (arm (j) reads its source); the
+pump's search non-convergence for any other cause (no case reaches it); a wet
+turbine exhaust (the unit does not hold that phase); a
 heatExchanger fed a declared saturated VAPOUR (its outlet search falls back,
 announced, to the sensible eps-NTU temperature at every e, and its first
 law is open by that fallback, not by the inlet).
@@ -109,6 +184,10 @@ law is open by that fallback, not by the inlet).
     reads: src/unitOperations/flash/StreamEquilibrium.H
     reads: src/thermo/pureFluid/PureFluidModel.cpp
     reads: src/thermo/ThermoPackage.cpp
+    reads: src/unitOperations/flowsheet/Flowsheet.cpp
+    reads: src/dynamicDriver/DynamicDriver.cpp
+    reads: src/thermo/pureFluid/SaturationCurve.cpp
+    reads: tutorials/steady/utilities/utility01_dowtherm_preheat
 """
 import json
 import math
@@ -124,15 +203,18 @@ ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_pure_fluid_phase_asked"
 TEMPLATE = ROOT / "tutorials" / "steady" / "power" / "rankine02_water"
 T_IN = 446.5158944
-EPS = (-1e-6, -1e-9, -1e-12, 0.0, 1e-12, 1e-9, 1e-6)
+EPS = (-5e-7, -1e-9, -1e-12, 0.0, 1e-12, 1e-9, 5e-7)
 TOL = 1.0e-6                     # K
-#  The two points AT the band's edge (|e| = 1e-6) fall inside the band on one
-#  platform and outside it on another (seen on the CI runner, 2026-11-13: the
-#  compressor's T_out moved by 1.6e-4 K at e = -1e-6, the honest effect of
-#  1e-6 in pressure on a state priced at its own (T, P)).  They are held to the
+#  The two OUTER points (|e| = 5e-7).  The band's edge itself (|e| = 1e-6)
+#  fell inside the band on one platform and outside it on another (seen on the
+#  CI runner, 2026-11-13: the compressor's T_out moved by 1.6e-4 K at
+#  e = -1e-6, the honest effect of 1e-6 in pressure on a state priced at its
+#  own (T, P)); since TD-04 a declared phase beyond the edge is REFUSED, so the
+#  edge is no longer run at all.  The outer points are still held to the
 #  BRANCH, not to the last digit: a phase flip moves the pump's dT by 124 K and
 #  the compressor's T_out by 114 K.
 EDGE_TOL = 1.0e-2                # K
+OUTER = 1.0e-7                   # |e| at or above this is an outer point
 RESULT = re.compile(r"<<<Choupo:result-begin>>>\n(.*?)\n<<<Choupo:result-end>>>", re.S)
 
 
@@ -353,6 +435,281 @@ def run(case: Path, unit: str, key: str):
     return (float(k[key]), geb), None
 
 
+# ---------------------------------------------------------------------------
+#  Arms (g)-(j): a declared phase its own (T, P) contradict beyond the band
+#  (review TD-04).
+# ---------------------------------------------------------------------------
+T_REVIEW = (373.15, 446.5158944, 550.0)
+CONTRADICTED = "DECLARED PHASE CONTRADICTED BY T AND P"
+AT_TP = "(T, P) is used, as the stream functions price it"
+HELMHOLTZ = "water { method Helmholtz; equation IAPWS95; }"
+
+
+def probe_case(tmp: Path, tag: str, units: str, streams: dict, global_method=None) -> Path:
+    """A scratch case from the template; `streams` maps name -> (T, P, phase)."""
+    d = tmp / tag
+    (d / "system").mkdir(parents=True)
+    (d / "0").mkdir()
+    shutil.copytree(TEMPLATE / "constant", d / "constant")
+    if global_method is not None or "pureFluids" in units:
+        # The Helmholtz record is not in the template's seal: unseal the copy.
+        (d / "constant" / "propertyManifest").unlink(missing_ok=True)
+    if global_method is not None:
+        tp = d / "constant" / "thermoPhysPropDict"
+        tp.write_text(tp.read_text().replace("water { method IF97; }", global_method))
+    shutil.copy(TEMPLATE / "system" / "controlDict", d / "system" / "controlDict")
+    (d / "system" / "flowsheetDict").write_text("units\n(\n" + units + "\n);\n")
+    for nm, (T, P, ph) in streams.items():
+        (d / "0" / nm).write_text(STATE.format(T=T, P=P, ph=ph))
+    return d
+
+
+def run_raw(case: Path):
+    env = dict(os.environ, CHOUPO_HOME=str(ROOT), LC_ALL="C")
+    p = subprocess.run([str(ROOT / "choupoSolve"), "."], cwd=case, env=env,
+                       capture_output=True, text=True, timeout=600)
+    blocks = RESULT.findall(p.stdout)
+    return p.returncode, (json.loads(blocks[-1]) if blocks else None), p.stdout + p.stderr
+
+
+def refusal_arm(tmp: Path, fail: list) -> int:
+    """Arm (g): refused beyond the band on the contradicting side, accepted inside it."""
+    n = 0
+    for T in T_REVIEW:
+        ps = psat_if97(T)
+        for kind, ph, bad in (("pump", "liquid", -2e-6), ("compressor", "gas", 2e-6)):
+            for e in (-5e-7, 5e-7, -bad, bad):
+                P = ps * (1.0 + e)
+                unit = (f"    {{ name U; type {kind}; in probe; outputs ( out ); "
+                        f"operation {{ P_out {1.5 * P!r} Pa; eta 0.8; }} }}")
+                out_ph = "liquid" if kind == "pump" else "gas"
+                rc, res, out = run_raw(probe_case(
+                    tmp, f"g_{kind}_{T!r}_{e!r}", unit,
+                    {"probe": (T, P, ph), "out": (T + 1.0, 1.5 * P, out_ph)}))
+                tag = f"{kind} `phase {ph};` at {T} K, P = p_sat (1 {e:+.0e})"
+                n += 1
+                if e != bad:
+                    if rc != 0 or res is None or CONTRADICTED in out:
+                        fail.append(f"(g) {tag}: not accepted (exit {rc}) -- inside the "
+                                    "band, or on the declared side, the pin decides")
+                    continue
+                if rc == 0 or CONTRADICTED not in out:
+                    fail.append(f"(g) {tag}: NOT refused (exit {rc}) -- a declared phase "
+                                "its T and P contradict beyond the band must be refused")
+                    continue
+                line = next((ln for ln in out.splitlines() if "stream 'probe'" in ln), "")
+                m = re.search(r"p_sat\(T\) = ([0-9.eE+-]+) Pa", line)
+                want = [f"stream 'probe' (0/probe)", f"T = {T:.10g} K",
+                        f"P/p_sat - 1 = {e:+.3e}", f"`phase {ph};`",
+                        "delete the phase word", f"`P {ps:.10g} Pa;`"]
+                miss = [w for w in want if w not in line]
+                if m is None or abs(float(m.group(1)) / ps - 1.0) > 1e-9:
+                    miss.append(f"p_sat(T) = {ps:.10g} Pa")
+                if miss:
+                    fail.append(f"(g) {tag}: the refusal does not name " + "; ".join(miss)
+                                + f" -- printed: {line[:300]}")
+    return n
+
+
+def own_world_arm(tmp: Path, fail: list) -> None:
+    """Arm (h): the rule applied in a consuming unit's own thermophysical world."""
+    T = 424.9862439
+    P = psat_if97(T) * (1.0 + 2.0e-5)     # liquid side in IF97, vapour side in IAPWS-95
+    unit = ("    { name U; type pump; in probe; outputs ( out ); "
+            f"operation {{ P_out {2.0 * P!r} Pa; eta 0.8; }} "
+            f"thermo {{ pureFluids {{ {HELMHOLTZ} }} }} }}")
+    rc, res, out = run_raw(probe_case(tmp, "h_own", unit, {
+        "probe": (T, P, "liquid"), "out": (T + 1.0, 2.0 * P, "liquid")}))
+    if rc == 0 or CONTRADICTED not in out or "OWN thermophysical world of unit 'U'" not in out:
+        fail.append(f"(h) a `phase liquid;` inlet at {T} K, P = p_sat_IF97 (1 + 2e-5) -- "
+                    "liquid in the case's IF97, vapour beyond the band in the pump's own "
+                    f"IAPWS-95 -- was not refused in the unit's own world (exit {rc})")
+
+
+def computed_inlet_arm(tmp: Path, fail: list) -> dict:
+    """Arm (i): a COMPUTED inlet its consumer's own world places across the line.
+
+    A phaseChanger computing in one pure-fluid world puts its outlet on ITS
+    saturation line; the consumer computes in another, where that state lies
+    1.4e-4 across.  The compressor and the turbine (vapour held) and the pump
+    (liquid held) must each REFUSE at the hand-over, naming both worlds and
+    the distance (review TD-17)."""
+    IF97 = "water { method IF97; }"
+    vap = {"feed": (400.0, 5.0e5, "liquid"), "mid": (430.0, 5.0e5, "gas"),
+           "out": (600.0, 1.0e6, "gas")}
+    liq = {"feed": (500.0, 5.0e5, "gas"), "mid": (420.0, 5.0e5, "liquid"),
+           "out": (430.0, 1.0e6, "liquid")}
+    prod = ("    {{ name prod; type phaseChanger; in feed; outputs ( mid ); "
+            "operation {{ outletState {state}; }} "
+            "thermo {{ pureFluids {{ {world} }} }} }}\n")
+    cases = (
+        ("compressor", "operation { P_out 10 bar; eta 0.8; }", "saturatedVapour",
+         HELMHOLTZ, None, vap, "VAPOUR", "liquid", "IAPWS-IF97",
+         "Helmholtz reference equation IAPWS95"),
+        ("turbine", "operation { W_shaft -0.1 kW; eta 0.85; }", "saturatedVapour",
+         HELMHOLTZ, None, vap, "VAPOUR", "liquid", "IAPWS-IF97",
+         "Helmholtz reference equation IAPWS95"),
+        ("pump", "operation { P_out 10 bar; eta 0.8; }", "saturatedLiquid",
+         IF97, HELMHOLTZ, liq, "LIQUID", "vapour",
+         "Helmholtz reference equation IAPWS95", "IAPWS-IF97"),
+    )
+    shown = {}
+    for kind, op, state, pworld, gworld, streams, held, side, own, other in cases:
+        units = (prod.format(state=state, world=pworld)
+                 + f"    {{ name U; type {kind}; in mid; outputs ( out ); {op} }}")
+        rc, res, out = run_raw(probe_case(tmp, f"i_{kind}", units, streams,
+                                          global_method=gworld))
+        line = next((ln for ln in out.splitlines() if "cannot take inlet 'mid'" in ln), "")
+        want = [f"{kind} 'U' cannot take inlet 'mid'", f"it holds a {held}",
+                f"own world (the pure-fluid formulation {own})", f"on the {side} side",
+                "p_sat(T) = ", "P/p_sat - 1 = ", "against the 1e-06 band",
+                "produced by unit 'prod'", f"the pure-fluid formulation {other}",
+                "Put producer and consumer in one thermophysical world",
+                "do not ask a saturated state to cross a model boundary"]
+        miss = [w for w in want if w not in line]
+        if rc == 0 or miss:
+            fail.append(f"(i) {kind} fed a computed {held.lower()} its own world puts "
+                        f"across the line: not refused naming {miss or 'it'} (exit {rc})")
+        shown[kind] = line
+    return shown
+
+
+def overload_source(fail: list) -> None:
+    """Arm (j), a SOURCE arm: the phase-taking caloric overloads price (T, P)
+    beyond the band by pureFluidStreamPressure and announce it through the
+    advisory log.  No flowsheet run reaches that branch any more: an authored
+    inlet beyond the band is refused before any unit runs, a computed one at
+    the hand-over (arm (i)), and the pump's discharge search runs only when
+    a liquid root exists below T_sat(P_out) (arm (k)) -- so the rule is held
+    by reading ThermoPackage.cpp, and says so."""
+    src = (ROOT / "src" / "thermo" / "ThermoPackage.cpp").read_text()
+    code = "\n".join(ln.split("//")[0] for ln in src.splitlines())
+    for fn, m in (("H_real", "h_molar"), ("S_real", "s_molar")):
+        body = re.search(r"scalar ThermoPackage::" + fn + r"\(scalar T, scalar P_Pa, "
+                         r"const sVector& y,\s*DensityPhase ph\) const\s*\{(.*?)\n\}",
+                         code, re.S)
+        if body is None:
+            fail.append(f"(j) source: ThermoPackage::{fn}(T, P, y, phase) not found")
+            continue
+        b = body.group(1)
+        if ("m." + m + "(T, pureFluidStreamPressure(") not in b.replace("\n", " ").replace("  ", " ") \
+                and not re.search(m + r"\(T,\s*pureFluidStreamPressure\(", b):
+            fail.append(f"(j) source: {fn} with a phase no longer evaluates the pure fluid "
+                        "at pureFluidStreamPressure (the stream functions' rule)")
+        if not re.search(r"announceAcross\([^;]*,\s*true\)", b):
+            fail.append(f"(j) source: {fn} with a phase no longer announces a state "
+                        "beyond the band priced at (T, P)")
+    if "AdvisoryLog::instance()" not in code or "addAnnouncedOnce(key" not in code:
+        fail.append("(j) source: announceAcross no longer rides AdvisoryLog::addAnnouncedOnce")
+
+
+def discharge_arm(tmp: Path, fail: list) -> dict:
+    """Arm (k): the pump never publishes an outlet it did not find."""
+    T = 550.0
+    P = psat_if97(T) * (1.0 + 5.0e-7)
+    shown = {}
+    for eta in (0.5, 0.03, 0.01):
+        unit = ("    { name U; type pump; in probe; outputs ( out ); "
+                f"operation {{ dP 1 bar; eta {eta}; }} }}")
+        rc, res, out = run_raw(probe_case(tmp, f"k_{eta}", unit, {
+            "probe": (T, P, "liquid"), "out": (T + 1.0, P + 1.0e5, "liquid")}))
+        tag = f"(k) pump at {T} K, dP 1 bar, eta {eta}"
+        if eta == 0.01:
+            line = next((ln for ln in out.splitlines() if "no LIQUID outlet" in ln), "")
+            want = ["pump 'U'", "inlet 'probe'", "T_in = 550 K", "P_out = ", "T_sat(P_out) = ",
+                    "the balance asks", "eta = 0.01", "saturated liquid's",
+                    "raise the discharge pressure or the efficiency",
+                    "a flashing discharge is not this unit's model"]
+            miss = [w for w in want if w not in line]
+            if rc == 0 or miss:
+                fail.append(f"{tag}: the losses heat the liquid past T_sat(P_out) and the "
+                            f"pump must refuse naming {miss or 'it'} (exit {rc})")
+            continue
+        if rc != 0 or res is None:
+            fail.append(f"{tag}: exit {rc} -- a liquid discharge exists here")
+            continue
+        r = float((res.get("globalEnergyBoundary") or {}).get("residual_kW", float("nan")))
+        dT = float(res["kpis"]["U"].get("dT", float("nan")))
+        if not abs(r) <= 1.0e-6 or not dT > 0.0:
+            fail.append(f"{tag}: plant residual {r:.6g} kW, dT {dT:.6g} K -- the "
+                        "discharge must carry the shaft work")
+        shown[eta] = dT
+    return shown
+
+
+def dynamic_source(fail: list) -> None:
+    """Arm (j'): the time-integrated binaries apply the same refusal (by source)."""
+    src = (ROOT / "src" / "dynamicDriver" / "DynamicDriver.cpp").read_text()
+    code = "\n".join(ln.split("//")[0] for ln in src.splitlines())
+    if "flashState::declaredPhaseBeyondBandRefusal(" not in code:
+        fail.append("(j) DynamicDriver.cpp no longer calls "
+                    "flashState::declaredPhaseBeyondBandRefusal on its authored inlets")
+
+
+INVOLATILE = ROOT / "tutorials" / "steady" / "utilities" / "utility01_dowtherm_preheat"
+
+
+def involatile_arm(tmp: Path, fail: list) -> int:
+    """Arm (l): a PURE stream of a component with NO vapour-pressure model, in
+    a world with no pure-fluid formulation, runs.  Every unit outlet is stamped
+    with the world it was computed in (TD-17); the stamp once asked that
+    component's saturation curve, dereferenced the absent model and killed the
+    run with SIGSEGV (lithiumBrinePlant, utility01-03).  Behaviour: a pump
+    (liquid held) on pure dowthermA, whose record declares no vaporPressure,
+    must exit 0 -- a negative return code is a SIGNAL and is reported as a
+    crash, never as a refusal.  Source, and it says so: pureWorldName asks no
+    saturation curve outside a pure-fluid formulation (the record's
+    correlation announces excursions, so the stamp raised advisories about a
+    p_sat the run never used), and saturationPressure refuses by name before
+    dereferencing an absent correlation."""
+    d = tmp / "l_involatile"
+    (d / "system").mkdir(parents=True)
+    (d / "0").mkdir()
+    shutil.copytree(INVOLATILE / "constant", d / "constant")
+    shutil.copy(INVOLATILE / "system" / "controlDict", d / "system" / "controlDict")
+    tp = (d / "constant" / "thermoPhysPropDict").read_text()
+    if "pureFluids" in tp:
+        fail.append("(l) the template's world declares pureFluids: it no longer probes a "
+                    "world with no pure-fluid formulation")
+    rec = (d / "constant" / "components" / "dowthermA.dat").read_text()
+    if re.search(r"^\s*vaporPressure\b", rec, re.M):
+        fail.append("(l) dowthermA.dat now declares a vaporPressure: the arm no longer "
+                    "probes a component with no vapour-pressure model")
+    (d / "system" / "flowsheetDict").write_text(
+        "units\n(\n    { name U; type pump; in probe; outputs ( out ); "
+        "operation { dP 2 bar; eta 0.8; } }\n);\n")
+    oil = "componentMolarFlows\n{{\n    dowthermA    150 kmol/h;\n}}\n\nT {T} K;\nP {P} Pa;\nphase liquid;\n"
+    (d / "0" / "probe").write_text(oil.format(T=450.0, P=5.0e5))
+    (d / "0" / "out").write_text(oil.format(T=451.0, P=7.0e5))
+    rc, res, out = run_raw(d)
+    if rc < 0:
+        fail.append(f"(l) a pump on pure dowthermA (no vapour-pressure model, no pure-fluid "
+                    f"formulation) CRASHED with signal {-rc} -- a stamp or a saturation "
+                    "query dereferenced an absent model")
+    elif rc != 0 or res is None:
+        tail = next((ln for ln in out.splitlines() if "rror" in ln), "")
+        fail.append(f"(l) a pump on pure dowthermA did not run (exit {rc}): {tail[:300]}")
+    src = (ROOT / "src" / "unitOperations" / "flash" / "StreamEquilibrium.H").read_text()
+    code = "\n".join(ln.split("//")[0] for ln in src.splitlines())
+    body = re.search(r"inline std::string pureWorldName\(.*?\n\}", code, re.S)
+    if body is None:
+        fail.append("(l) source: flashState::pureWorldName not found")
+    elif "Psat(" in body.group(0) or "saturationPressure(" in body.group(0):
+        fail.append("(l) source: pureWorldName asks a saturation curve outside a pure-fluid "
+                    "formulation -- the stamp runs on every outlet and must neither announce "
+                    "nor touch an absent model")
+    sc = (ROOT / "src" / "thermo" / "pureFluid" / "SaturationCurve.cpp").read_text()
+    sc = "\n".join(ln.split("//")[0] for ln in sc.splitlines())
+    tail = sc[sc.rfind("if (pf)"):] if "if (pf)" in sc else ""
+    after = tail[tail.find("\n    }"):] if "\n    }" in tail else ""
+    guard = after.find("hasVaporPressure()")
+    deref = after.find("c.vp().Psat_Pa(T_K)")
+    if not (0 <= guard < deref):
+        fail.append("(l) source: saturationPressure no longer refuses before dereferencing "
+                    "an absent vapour-pressure correlation when no pure-fluid method answers")
+    return rc
+
+
 def main() -> int:
     if not (ROOT / "choupoSolve").exists():
         print(f"{NAME}: FAIL -- {ROOT / 'choupoSolve'} does not exist; build the tree")
@@ -377,10 +734,10 @@ def main() -> int:
                         bound.append((e, r[1]))
             got[kind] = vals
             if len(vals) == len(EPS):
-                inside = [v for e, v in vals if abs(e) < 1.0e-6]
+                inside = [v for e, v in vals if abs(e) < OUTER]
                 centre = [v for e, v in vals if e == 0.0][0]
                 lo, hi = min(inside), max(inside)
-                edge = max(abs(v - centre) for e, v in vals if abs(e) >= 1.0e-6)
+                edge = max(abs(v - centre) for e, v in vals if abs(e) >= OUTER)
                 if hi - lo > TOL:
                     fail.append(f"{kind}: {unit}.{key} depends on the last bits of the "
                                 f"inlet pressure -- " + ", ".join(
@@ -389,12 +746,19 @@ def main() -> int:
                                   "the unit's inlet phase is decided by the formulation's "
                                   "router, not by the phase the unit holds")
                 elif edge > EDGE_TOL:
-                    fail.append(f"{kind}: {unit}.{key} changes branch at the band's edge "
+                    fail.append(f"{kind}: {unit}.{key} changes branch at |e| = 5e-7 "
                                 f"-- " + ", ".join(f"{e:+.0e}: {v:.9g}" for e, v in vals)
                                 + f" ({edge:.3g} K from the centre > {EDGE_TOL:g} K)")
         shown = unit_arms(tmp, fail)
+        n_refusal = refusal_arm(tmp, fail)
+        own_world_arm(tmp, fail)
+        computed_inlet_arm(tmp, fail)
+        disch = discharge_arm(tmp, fail)
+        involatile_arm(tmp, fail)
+    dynamic_source(fail)
+    overload_source(fail)
     for term in ("H_feeds_kW", "H_products_kW"):
-        vs = [(e, g.get(term)) for e, g in bound if abs(e) < 1.0e-6]
+        vs = [(e, g.get(term)) for e, g in bound if abs(e) <= 1.0e-9]
         if any(v is None for _, v in vs) or len(vs) != 5:
             fail.append(f"report: globalEnergyBoundary.{term} not published by every pump run")
             continue
@@ -429,12 +793,12 @@ def main() -> int:
         return 1
     pd = got["pump"][0][1]
     ct = got["compressor"][0][1]
-    print(f"{NAME}: OK -- at seven suction pressures p_sat(T)(1+e), e from -1e-6 to "
-          f"+1e-6 including 0 and +-1e-12, T = {T_IN} K on IF97 water: the feed pump "
+    print(f"{NAME}: OK -- at seven suction pressures p_sat(T)(1+e), e from -5e-7 to "
+          f"+5e-7 including 0 and +-1e-12, T = {T_IN} K on IF97 water: the feed pump "
           f"(liquid, to 80 bar) gives dT = {pd:.9g} K and the compressor fed saturated "
           f"steam (vapour, to 20 bar) T_out = {ct:.9g} K, each the same to {TOL:g} K over "
           f"the five pressures inside the band and on the same branch (within {EDGE_TOL:g} K) "
-          "at the two on its edge, "
+          "at the two outer ones (|e| = 5e-7), "
           f"and the pump case's plant-boundary H_feeds_kW = {bound[3][1]['H_feeds_kW']:.9g} "
           "and H_products_kW the same to 1e-6 relative over the five runs inside the "
           "band, every run on the pure-fluid route; the branch held outside the engine: "
@@ -448,9 +812,25 @@ def main() -> int:
           f"(rho = {shown[('pipe', 'liquid')][2]:.4f} kg/m3), each the same at every e and "
           "with the plant residual within 1e-6 kW; the turbine's two inlet calls carry "
           "DensityPhase::Vapour (by source: no saturated-steam turbine run converges, water "
-          "being a wet fluid).  NOT CHECKED: the values beyond those bounds, a pure stream beyond "
-          "the band whose vapour fraction contradicts its T and P, a wet turbine exhaust, a "
-          "heatExchanger fed a declared saturated vapour.")
+          "being a wet fluid).  BEYOND THE BAND (TD-04): "
+          f"{n_refusal} runs at 373.15, 446.5159 and 550 K -- a declared phase 2e-6 "
+          "across the line refused by name with p_sat(T) and both remedies, accepted at "
+          "+-5e-7 and on its own side; refused in a consuming unit's own IAPWS-95 world; "
+          "a computed inlet its consumer's own world places across the line (produced "
+          "in another pure-fluid world) refused at the hand-over by the compressor, the "
+          "turbine and the pump, each naming both worlds and the distance; the "
+          "time-integrated refusal by source; the caloric overloads' (T, P) rule beyond "
+          "the band by SOURCE (no flowsheet run reaches it); "
+          f"a pump discharge: eta 0.5 and 0.03 close (dT = {disch.get(0.5, float('nan')):.4f} "
+          f"and {disch.get(0.03, float('nan')):.4f} K), eta 0.01 heated past T_sat(P_out) "
+          "refused by name; a pump on pure dowthermA (no vapour-pressure model) in a "
+          "world with no pure-fluid formulation runs to exit 0, the outlet stamp asking "
+          "no saturation curve there and saturationPressure refusing before an absent "
+          "model (both by source).  "
+          "NOT CHECKED: the values beyond those bounds, the overloads' (T, P) branch "
+          "by behaviour, the time-integrated refusal's behaviour, the pump's search "
+          "failing for another cause, a wet turbine exhaust, a heatExchanger fed a "
+          "declared saturated vapour.")
     return 0
 
 

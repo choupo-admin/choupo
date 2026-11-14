@@ -317,7 +317,9 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2373 direct + 3701 per-value = 6074 across 3052 files**
+**census: 2374 direct + 3701 per-value = 6075 across 3053 files**
+
+(recounted 2026-11-13, DEV.md 4c C378 density pilot: one new solution-law record (`parameters/solution/NaOH-water.dat`, the Olsson 1997 density law) declares `origin literature` as a direct child: +1 direct, +1 file; and, before it,
 
 (recounted 2026-11-13, review finding ES-01: six chemistry records (`H2Maln`, `HMaln`, `Maln`, `H2Glut`, `HGlut`, `Glut` -formation) gain a per-value `estimated` entry for `dH`, the word of the least certain formation enthalpy their reaction enthalpy is the difference of (written by `bin/curate/species_c373.py`): +6 per-value, +6 files; and, before it,
 

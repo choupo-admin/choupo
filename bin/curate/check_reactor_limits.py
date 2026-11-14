@@ -283,9 +283,13 @@ def main() -> int:
                     failures.append("R2: the autocatalytic CSTR did not announce its"
                                     " TWO extent roots")
                     ok = False
-                elif "UNSTABLE [REPORTED]" not in out or "0.895" not in out:
+                #  X = 0.8788 since the C378 liquid-density pilot (2026-11-13;
+                #  0.8954 before): the CSTR's liquid basis is now the property
+                #  kernel's density at the feed's 350 K, Rackett-scaled from
+                #  the 25 C volume, so the same V_R holds fewer moles.
+                elif "UNSTABLE [REPORTED]" not in out or "0.8788" not in out:
                     failures.append("R2: the announcement does not mark the washout"
-                                    " UNSTABLE and REPORTED beside X = 0.895")
+                                    " UNSTABLE and REPORTED beside X = 0.8788")
                     ok = False
         cub = probe(c4, td / "r2_cubic")
         if (edit(cub / "system/flowsheetDict", "thermalMode  adiabatic;",

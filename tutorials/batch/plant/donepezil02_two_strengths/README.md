@@ -3,10 +3,10 @@
 ## Mission
 
 1. **Explain the base result.**  The plant makes 150 million tablets
-   (34 828 kg) in 115 lots and loses money: NPV −28.96 M EUR.  Find the term
+   (34 828 kg) in 115 lots and loses money: NPV −29.88 M EUR.  Find the term
    of COM_d that makes the loss (compare 2.73 C_OL with 1.23 (C_RM + C_UT) in
    the Economic Appraisal), and use the **Bases** table of the batch plan so
-   that 300 kg, 305.9 kg, 168 h, 880 h, 2079 h and 3840 h each mean one thing.
+   that 300 kg, 305.9 kg, 168 h, 928 h, 2127 h and 3840 h each mean one thing.
 2. **Find the constraint that matters.**  Two different words: the
    **limiting stage (sets T_L)** of each train — drying (4.25 h a lot) on
    granulation, packaging (11 h a 10 mg lot, 20 h a 5 mg lot) on tableting —
@@ -71,19 +71,22 @@ suspension and the plan announces `ownBalance`.
 
 Two trains decoupled by the final-blend store, as in `donepezil01_tablets`;
 `lotsPerCampaign 8` and a 24 h full clean between campaigns of ONE product.
-Between the two products every stage has its own clean (`productChangeover`)
-and the train waits for the slowest.  **The Gantt of the year**
+Between the two products every stage has its own clean (`productChangeover`):
+the train's 24 h campaign clean PLUS the product's own part (a rinse check,
+the press tooling, the printed packaging), never less, so changing product
+never costs less time than continuing one; a product clean declared below
+the campaign changeover is announced.  The train waits for the slowest.  **The Gantt of the year**
 (`campaignOrder ( strength10 strength5 )`):
 
 | | granulation train | tableting train |
 |---|---|---|
-| 10 mg: lots, campaigns, hours | 86 lots, 11 campaigns, 661 h | 86 lots, 11 campaigns, 1 341 h |
+| 10 mg: lots, campaigns, hours | 86 lots, 11 campaigns, 685 h | 86 lots, 11 campaigns, 1 365 h |
 | limiting stage, `T_L` | fluid-bed dryer, 4.25 h | packaging line, 11 h |
-| clean, 10 mg then 5 mg | **6 h** (granulator wash) | **12 h** (the coating pan) |
-| 5 mg: lots, campaigns, hours | 29 lots, 4 campaigns, 219 h | 29 lots, 4 campaigns, 738 h |
+| clean, 10 mg then 5 mg | **30 h** = 24 + 6 (granulator) | **36 h** = 24 + 12 (the coating pan) |
+| 5 mg: lots, campaigns, hours | 29 lots, 4 campaigns, 243 h | 29 lots, 4 campaigns, 762 h |
 | limiting stage, `T_L` | fluid-bed dryer, 4.25 h (the lot is the same) | packaging line, **20 h** |
-| clean, 5 mg then 10 mg (the year repeats) | 6 h | **6 h** |
-| **The year** | 15 campaigns, 2 product changes, **880 h = 22.9 %** of 3 840 h | 15 campaigns, 2 product changes, **2 079 h = 54.1 %** |
+| clean, 5 mg then 10 mg (the year repeats) | 30 h = 24 + 6 | **30 h** = 24 + 6 |
+| **The year** | 15 campaigns, 2 product changes, **928 h = 24.2 %** of 3 840 h | 15 campaigns, 2 product changes, **2 127 h = 55.4 %** |
 
 The tableting train is paced by the **packaging line for both products, but
 at 11 h a lot for one and 20 h for the other**: the limiting stage is a
@@ -95,9 +98,10 @@ for every stage, because the 5 mg lot is the same mass and only takes longer.
 yellow iron oxide left in the coating-suspension tank, the spray lines and the
 perforated pan shows as specks on a white tablet; a trace of white pigment in
 a yellow coat does not show.  So the clean *before the white 5 mg* is the
-long one — 8 h at the suspension tank and 12 h at the pan — and the clean
-before the yellow 10 mg the short one, 3 h and 6 h.  It is declared on the
-product that has just finished, `changeoverTo { strength5 12 h; }`
+long one — the 24 h campaign clean plus 8 h at the suspension tank and 12 h
+at the pan (32 h and 36 h) — and the clean before the yellow 10 mg the short
+one, 24 h plus 3 h and 6 h.  It is declared on the product that has just
+finished, `changeoverTo { strength5 36 h; }`
 (`BatchPlanPass.H:173-177` shows the grammar).  The hours are author-set
 placeholders, **not cleaning-validation results**: in a real plant they are
 the time to clean **and prove** the equipment clean (swab or rinse sampling
@@ -111,8 +115,8 @@ the second campaign would need a far longer one.
 
 `campaignOrder` is the student's decision; the engine never takes it.
 **With two products, in this plan, it does not change the year at all.**
-Swap it to `( strength5 strength10 )` and the hours are identical (880.2 h and
-2 079 h): the plan wraps the clean after the last campaign round to the
+Swap it to `( strength5 strength10 )` and the hours are identical (928.2 h and
+2 127 h): the plan wraps the clean after the last campaign round to the
 first product, so both directions are paid once whichever product goes first,
 and only the Gantt chart — who is made first — changes.  **The order becomes
 a decision with three or more products, and then only through the
@@ -123,7 +127,7 @@ What justifies one order over the other here is not the clean but the
 business: make the high-volume 10 mg first so its stock is built while the
 5 mg waits, and end the year on the product whose next clean is the short one.
 
-**What this plan does not do**, said (`BatchPlanPass.H:264-275`): one
+**What this plan does not do**, said (`BatchPlanPass.H:286-297`): one
 rotation a year (each product's campaigns back to back, so the 10 mg stock is
 built over 17 weeks of the year; several rotations trade changeovers for
 inventory and are not built); the two products never overlap on a train (the
@@ -178,7 +182,8 @@ of purified water, none of which reaches the bill.
    blended price in `constant/economics` (its header shows the division).
 3. **The cleans.**  `productChangeover` per stage, and `changeoverTo` where
    the direction matters (colour, a potent API after a non-potent one, an
-   allergen).  Replace every hour with your cleaning-validation protocol's.
+   allergen), each the train's campaign clean plus the product's own part.
+   Replace every hour with your cleaning-validation protocol's.
 4. **The order.**  Try both; then add a third product and watch the year move.
 5. **The lot and the campaign length.**  `lot`, `lotsPerCampaign`, the
    trains' `changeover` — and read which stage limits, and for which product.
@@ -191,7 +196,7 @@ of purified water, none of which reaches the bill.
 1. Is the clean before the white product really longer than the one after it
    — and by how much, for *your* pigment and *your* pan?  What does the
    cleaning-validation limit for a visible residue look like?
-2. The granulation suite is idle 77 % of the year even with both strengths.
+2. The granulation suite is idle 76 % of the year even with both strengths.
    What else would the site make on it, and what would that do to the clean?
 3. The packaging line limits the tableting train for both products.  Add a
    second line (out of phase: `outOfPhase 2`) or lengthen the shifts: which

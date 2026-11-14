@@ -1484,7 +1484,10 @@ volume for a batch stage, a mass rate for a semicontinuous one), and
 `C_p = value x CEPCI/cepci x rate x units x (size per unit /
 referenceSize)^exponent`, the size per unit and the number of units being the
 ones the batch plan published for the stage that groups the unit (the scale
-is the `S` column of `costs.csv` and the `quoteScale` factor).  REFUSED: no
+is the `S` column of `costs.csv` and the `quoteScale` factor) -- EXCEPT a unit
+whose `ratedMachine` of kind `batchVolume` declares the machine bought: it is
+priced on that INSTALLED `nominalVolume` and count, the plan's size being the
+requirement held against it (C389 (4)).  REFUSED: no
 batch plan ran before the costing, the unit in no stage, an `item` quote, a
 reference size with no unit or of the other kind, a missing exponent or
 `exponentSource` (the six-tenths rule is a convention, never a default).

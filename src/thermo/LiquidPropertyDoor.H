@@ -111,6 +111,26 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K, scalar P_Pa
 Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T_K,
                           scalar P_Pa, const sVector& x);
 
+//  ---- THE PILOT'S ENTRY (DEV.md 4c C378 pilot; docs/design/density-pilot-plan.md
+//  section 1, "Where the kernel is reached") ----------------------------------
+//  The liquid density of ONE liquid through the property kernel's METHODS
+//  (thermo/liquidProperty/): the method is resolved per constituent set (the
+//  components with x > 0) at the set's first request and frozen for the run
+//  (thermo/liquidProperty/DensityResolver.H), and the answer carries the
+//  method's id and its own words.  MIGRATION SCAFFOLDING: only the pump and
+//  the CSTR call it (a gate counts its callers); `evaluate` above, the
+//  slice-0 wrapper, keeps serving every other consumer unchanged, and this
+//  entry is removed when the last consumer has moved.
+struct Request
+{
+    const ThermoPackage* thermo = nullptr;
+    scalar               T = 0.0;          // K
+    scalar               P = 0.0;          // Pa
+    sVector              x;                // the liquid's mole fractions, package components
+    const Consumer*      who = nullptr;    // records the use when given
+};
+Result density(const Request& r);
+
 inline Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K,
                        scalar P_Pa, const sVector& x, const Consumer& who,
                        const std::string& leftOut = "")

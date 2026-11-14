@@ -385,16 +385,31 @@ price(const DictPtr& costingDict, const CostingModel& model,
                     " \"...\"; }` is not declared -- where the exponent comes"
                     " from (a cost-capacity exponent is a convention or a fit,"
                     " never the engine's).");
-            //  The stage's size per unit in the same SI as the reference.
-            const scalar sizeSI = (st->sizeKind == "volume")
+            //  The size per unit in the same SI as the reference.  A unit
+            //  whose `ratedMachine` declares the batch machine BOUGHT is
+            //  priced on that INSTALLED size and count (2026-11-13, DEV.md 4c
+            //  C389 (4), PH-06: a machine has ONE size; the plan's volume is
+            //  the requirement held against it, `installedBatchMachine` the
+            //  one reader); any other unit on the stage's planned size.
+            const EquipmentSizing* inst = (st->sizeKind == "volume")
+                ? installedBatchMachine(result.sizings, name) : nullptr;
+            const scalar sizeSI = inst ? inst->values.at("V_installed")
+                                : (st->sizeKind == "volume")
                                 ? st->volumePerUnit
                                 : st->ratePerUnit / 3600.0;
-            scale = st->unitsInstalled * std::pow(sizeSI / refSI, n_exp);
+            const scalar units = inst ? scalar(inst->installed)
+                                      : scalar(st->unitsInstalled);
+            scale = units * std::pow(sizeSI / refSI, n_exp);
             const scalar toShown = (st->sizeKind == "volume") ? 1.0 : 3600.0;
             cb.factors["scaleSize"]      = sizeSI * toShown;   // m3 | kg/h
             cb.factors["scaleReference"] = refSI * toShown;    // m3 | kg/h
             cb.factors["scaleExponent"]  = n_exp;
-            cb.factors["scaleUnits"]     = st->unitsInstalled;
+            cb.factors["scaleUnits"]     = units;
+            if (inst)
+            {
+                cb.factors["scaleRequiredSize"] = st->volumePerUnit;   // m3, the plan's
+                cb.quoteScaleInstalledBy = name;
+            }
             cb.factors["quoteScale"]     = scale;
             cb.quoteScaleStage     = st->name;
             cb.quoteExponentSource = sc->lookupWord("exponentSource");

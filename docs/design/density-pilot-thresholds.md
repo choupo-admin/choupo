@@ -84,6 +84,14 @@ table -0.30 % at 277 K (999.92), -0.01 % at 298 K (997.05), +2.6 % at 353.15 K
 (971.8 interpolated between the printed 350 and 355 K) and -2.1 % at 500 bar
 (1018.4).
 
+**The harness's rule for a saturated anchor (ruled 2026-11-13, the pilot's
+hand-back A).**  An anchor the table prints AT a saturated state -- the
+saturated-liquid rows of Table 13.1, and an isobar row at its boiling point
+(372.756 K at 0.1 MPa) -- is asked at p_sat(T) of the formulation under
+test, whatever rounding the table gives its pressure.  At the printed
+0.1 MPa the 372.756 K row lies 2.5e-6 below IAPWS-95's own line, beyond the
+engine's band of 1e-6, and would be priced as the vapour it then is.
+
 **Proposed PASS** (all):
 1. For a pump and a CSTR fed 1 kg/s of water, the volumetric flow and the
    residence time equal 1/rho and V rho/m_dot with rho the home's value, to 1e-9

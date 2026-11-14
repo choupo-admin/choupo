@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( NaOH water sucrose glucose );
+
+// NaOH-water on the aqueous electrolyte formulation with the Olsson,
+// Jernqvist and Aly (1997) activity model: its enthalpy route gives the pump's
+// heat capacity (NaOH's record carries no liquid heat capacity of its own).
+// The DENSITY law of the same paper is NOT this model's: it lives in the
+// solution record parameters/solution/NaOH-water.dat, and the kernel reads it
+// whatever activity model the case chooses (C378 pilot).
+equilibrium
+{
+    formulation electrolyteGammaPhi;
+    aqueous
+    {
+        activityModel { model OlssonNaOH; }
+        compositionBasis molality;
+    }
+    vapour { fugacityModel idealGas; }
+}
+caloric
+{
+    energyBasis elementsDatum;
+    aqueous { enthalpyRoute ionicReferencePlusExcess; }
+    vapour  { enthalpyRoute idealGasCp; }
+}
+
+// THE CASE'S MEASUREMENT AS THE METHOD OF {NaOH, water} (C378 pilot): inside
+// its box it IS the density, on every stream; outside it a domain error.  It
+// displaces the solution record's law by name, and the run prints the law's
+// value beside it with the deviation.
+volumetric
+{
+    liquid
+    {
+        measured
+        {
+            NaOH20_303K { use method; replaces { method solutionLaw; record NaOH-water; } reason "the laboratory point of our caustic"; }
+        }
+    }
+}

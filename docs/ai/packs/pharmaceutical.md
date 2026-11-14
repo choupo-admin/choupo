@@ -113,12 +113,12 @@ Grep the log for `FAILED`, `INCOMPLETE`, `WARNING`, `ERROR` before quoting any n
 Copy `tutorials/batch/plant/donepezil02_two_strengths`; its `system/postDict` is the model. In `batchPlan` replace `production` by:
 
 ```
-products ( { product strength10; perYear 26121 kg;  stages ( { stage coating; changeoverTo { strength5 12 h; } source "..."; reason "..."; } ); source "..."; reason "..."; }
+products ( { product strength10; perYear 26121 kg;  stages ( { stage coating; changeoverTo { strength5 36 h; } source "..."; reason "..."; } ); source "..."; reason "..."; }
            { product strength5;  perYear 8707 kg;   stages ( { stage compression; operatingTime 14 h; source "..."; reason "..."; } ); source "..."; reason "..."; } );
 campaignOrder ( strength10 strength5 );
 ```
 
-A product's `stages` entry overrides a stage's time for that product; `changeoverTo { <next> <hours> h; }` is the clean after it, which depends on the DIRECTION (yellow then white is longer). A lighter tablet needs `itemMassByProduct { strength5 0.14 g; }` inside the press and packaging `rating`. The plan reads ONE balance per kg of product, so both strengths must be the same blend at different weights. With two products the order of campaigns does not change the year; it matters from three.
+A product's `stages` entry overrides a stage's time for that product; `changeoverTo { <next> <hours> h; }` is the clean after it, which depends on the DIRECTION (yellow then white is longer). Every product clean (`productChangeover`, `changeoverTo`) is the train's campaign `changeover` PLUS the product's own part, never less (24 h + 12 h above); one below it is announced (`productCleanShort`). A lighter tablet needs `itemMassByProduct { strength5 0.14 g; }` inside the press and packaging `rating`. The plan reads ONE balance per kg of product, so both strengths must be the same blend at different weights. With two products the order of campaigns does not change the year; it matters from three.
 
 ## 9. Do it by hand, and say so in DESIGN.md
 

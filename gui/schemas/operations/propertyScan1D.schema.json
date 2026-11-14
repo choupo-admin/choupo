@@ -64,7 +64,7 @@
     "properties": {
       "type": "array",
       "title": "Properties to evaluate",
-      "description": "Properties to compute at each point and write to the CSV (e.g. Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, Z, v_molar, H_real, S_real).",
+      "description": "Properties to compute at each point and write to the CSV (e.g. Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, Z, v_molar, H_real, S_real, rho_liquid_<comp>).  rho_liquid_kernel is the liquid density of the state's composition through the property kernel's methods -- the one the pump and the CSTR use (Theory Guide sec:liquid-density-methods): its entry, so a set no method prices is refused here as the units refuse it.",
       "items": {
         "type": "string"
       },

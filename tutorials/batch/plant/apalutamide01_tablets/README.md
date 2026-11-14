@@ -169,8 +169,11 @@ density and fill an assumption, said so in its `source`):
 Lot `B` = 410.4 kg of product, **25 lots a year**.  Equipment per lot: the
 solution tank 4.29 m3 and the coating-suspension tank 0.074 m3 (both SIZED
 from the plan: `volume fromBatchPlan;`), the bin blender 1.19 m3 and the
-final blender 1.33 m3 (the dossier's 1 000-1 200 L IBC class), the coater
-0.81 m3, the compactor 125 kg/h (with its 15 % fines), the press 100 kg/h
+final blender 1.33 m3 and the coater 0.81 m3 REQUIRED at the plan's fill --
+held against the machines the case installs (`ratedMachine`): two 1.2 m3
+bins, run at a fill of 0.59 and 0.67 (above the plan's 0.6 for the final
+blend, inside its maxFill 0.7), and a 1.0 m3 pan at 0.53; each is priced on
+its installed size, the compactor 125 kg/h (with its 15 % fines), the press 100 kg/h
 (about 143 000 tablets an hour, inside the dossier's 80 000-150 000 for this
 tooling) and the packaging line 51 kg/h.
 
@@ -303,11 +306,11 @@ Mass balance 100.000 %; first law closes (residual below 0.001 kW).
 | Coated tablets | 11.222 kg/h = 15 468.75 tablets/h at the flowsheet basis (0.72546 g each: 700 mg core, 21 mg coat); they keep 0.069 kg/h of water, 0.61 % of their mass (1.49 % on the cellulose, the isotherm's basis) |
 | Coating dryer | exhaust 321.6 K; 1.230 kg/h of the coat's 1.299 kg/h of water evaporated |
 | Batch plan (section 2a) | lot 410.4 kg of product (400 kg of blend), 25 lots a year; `T_L` 42.6 h (spray drying, the solution tank) and 10 h (solid dose, packaging); both trains announced idle most of the year |
-| Fixed capital (the solvent section + the quoted solid-dose train, scaled with the batch plan, and the building, see 6) | 23.78 MEUR (of it, the HVAC from the supply air 0.33 MEUR, the quoted machines 15.78 MEUR of bare-module cost is QUOTED placeholders) |
+| Fixed capital (the solvent section + the quoted solid-dose train, scaled with the batch plan, and the building, see 6) | 23.91 MEUR (of it, the HVAC from the supply air 0.33 MEUR, the quoted machines 15.85 MEUR of bare-module cost is QUOTED placeholders) |
 | Land (the layout's plot, 16 056 m2 at 80 EUR/m2) | 1.28 MEUR |
 | Operating labour (the DECLARED crew, 11 a shift, see 6) | 49.5 operating positions, 4.07 MEUR/yr (Turton's correlation, for comparison: 152.5 positions, 12.55 MEUR/yr) |
 | Revenue / raw materials / COM_d | 56.0 / 6.88 / 23.9 MEUR/yr (10 156 kg of tablets: 905 equivalent hours of the flowsheet) |
-| NPV (10 %, 10 yr, at launch) / IRR | **+128.1 MEUR / 70.7 %** (discounted payback 1.6 yr); at the 2-competitor price, 8.8 EUR a tablet, +447.6 MEUR / 162 % — **not decision-grade, see 6** |
+| NPV (10 %, 10 yr, at launch) / IRR | **+127.9 MEUR / 70.5 %** (discounted payback 1.6 yr); at the 2-competitor price, 8.8 EUR a tablet, +447.3 MEUR / 161 % — **not decision-grade, see 6** |
 
 **Why it now makes money, and why that is not the end of the argument.**  A
 tablet sells for 4.0 EUR and costs about 1.70 EUR to make (COM_d per kg of
@@ -380,13 +383,13 @@ correlation for the solid-dose machines or the GMP building, and it does not
 invent one.  So `system/postDict` DECLARES a price for each, in
 `costing { quotes ( ... ); }`:
 
-| item | quote (installed, 2026 EUR), at its reference size | kind | scaled to (batch plan) |
+| item | quote (installed, 2026 EUR), at its reference size | kind | scaled to (the installed batch machine, else the batch plan) |
 |---|---|---|---|
 | `packagingLine` | 1 500 000 at 50 kg/h | equipment | 51.3 kg/h: 1 523 280 |
 | `tabletPress` | 1 000 000 at 100 kg/h | equipment | 100 kg/h: 1 000 000 |
-| `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 at 1 m3 | equipment | 0.81 m3: 706 191 |
+| `coatingPan` (with the `coatingDryer`, its drying half) | 800 000 at 1 m3 | equipment | installed 1.0 m3: 800 000 (the plan requires 0.81) |
 | `rollerCompactor` | 600 000 at 100 kg/h | equipment | 125.5 kg/h: 687 570 |
-| `blender` / `finalBlender` | 300 000 at 1 m3 each | equipment | 1.19 m3: 332 196 / 1.33 m3: 356 520 |
+| `blender` / `finalBlender` | 300 000 at 1 m3 each | equipment | installed 1.2 m3 each: 334 680 / 334 680 (the plan requires 1.19 / 1.33) |
 | `mill` (with the `screen`) | 150 000 at 100 kg/h | equipment | 125.5 kg/h: 171 893 |
 | `productionBuilding` (the GMP building, 62 m x 36 m, WITHOUT the HVAC) | 10 700 000 | facility | not scaled |
 | `hvacGrade CNC` (the supply air, see the clean utilities above) | 5 EUR per m3/h | facility | 65 670 m3/h: 328 350 |

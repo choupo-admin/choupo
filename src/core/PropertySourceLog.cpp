@@ -115,6 +115,8 @@ std::string sourceText(const PropertySourceLog::Used& u)
         s += "; pressure not applied";
     else if (u.pressureNote == "not applied (saturated liquid)")
         s += "; pressure not applied (the saturated liquid)";
+    else if (u.pressureNote.compare(0, 11, "applied to ") == 0)
+        s += "; pressure " + u.pressureNote;          // per leaf (C378 pilot review, S3)
     if (!u.leftOut.empty())
         s += "; " + andList(u.leftOut) + " left out (no liquid volume at that state)";
     return s;
@@ -153,6 +155,7 @@ void PropertySourceLog::clear()
     used_.clear();
     declared_.clear();
     parameters_.clear();
+    hypotheses_.clear();
     generation_.fetch_add(1, std::memory_order_relaxed);
 }
 
@@ -401,9 +404,23 @@ std::vector<std::string> PropertySourceLog::constantBesideComputed() const
     return out;
 }
 
+void PropertySourceLog::hypothesisHere(const std::string& word, const std::string& components,
+                                       double share, double bound)
+{
+    std::string type, unit;
+    if (!current(type, unit)) return;
+    std::lock_guard<std::mutex> g(mutex_);
+    Hypothesis& h = hypotheses_[{ word, unit }];
+    h.type = type;
+    h.components = components;
+    h.bound = bound;
+    if (h.count == 0 || share > h.largest) h.largest = share;
+    ++h.count;
+}
+
 void PropertySourceLog::printUsed(std::ostream& os) const
 {
-    if (used_.empty() && parameters_.empty()) return;
+    if (used_.empty() && parameters_.empty() && hypotheses_.empty()) return;
     os << "\n[liquid properties] Where each unit took its liquid properties from in"
           " this run (values as used; nothing is changed by this table)\n";
     //  Units of one type that share the property, the source AND the value
@@ -431,7 +448,57 @@ void PropertySourceLog::printUsed(std::ostream& os) const
     }
     for (const auto& m : mismatches()) os << "  [mismatch] " << m << "\n";
     for (const auto& p : pricedTwice()) os << "  [twice] " << p << "\n";
+    //  SAME LIQUID, TWO METHODS (C378 pilot review, PA-13).  `[twice]` keys
+    //  on an exact (T, P, composition) and so never fired where it mattered
+    //  most: a pump on the kernel's methods and a pipe on the slice-0 door
+    //  price one water at neighbouring states.  This line keys on the
+    //  composition alone and names each consumer's method and range, while
+    //  the migration leaves a liquid with two methods in one run.
+    {
+        struct Seen { std::string who, id; double lo, hi; };
+        std::map<std::size_t, std::vector<Seen>> byComposition;
+        for (const auto& kv : used_)
+        {
+            const Used& u = kv.second;
+            if (u.property != "liquidDensity") continue;
+            std::map<std::size_t, std::pair<double, double>> range;
+            for (const auto& st : u.states)
+            {
+                auto it = range.find(std::get<2>(st.first));
+                if (it == range.end()) range[std::get<2>(st.first)] = { st.second, st.second };
+                else { it->second.first = std::min(it->second.first, st.second);
+                       it->second.second = std::max(it->second.second, st.second); }
+            }
+            for (const auto& r : range)
+                byComposition[r.first].push_back({ u.unit + " (" + u.type + ")", u.sourceId,
+                                                   r.second.first, r.second.second });
+        }
+        for (const auto& b : byComposition)
+        {
+            std::set<std::string> ids;
+            for (const auto& s : b.second) ids.insert(s.id);
+            if (ids.size() < 2) continue;
+            std::string line = "one liquid composition is priced by " + std::to_string(ids.size())
+                             + " methods in this run: ";
+            for (std::size_t k = 0; k < b.second.size(); ++k)
+            {
+                const auto& s = b.second[k];
+                line += (k ? "; " : "") + s.who + " " + s.id + " "
+                      + (s.hi - s.lo > 5.0e-3 ? number("%.2f", s.lo) + " .. " + number("%.2f", s.hi)
+                                              : number("%.2f", s.lo)) + " kg/m3";
+            }
+            os << "  [two methods] " << line << "\n";
+        }
+    }
     for (const auto& c : constantBesideComputed()) os << "  [constant] " << c << "\n";
+    for (const auto& h : hypotheses_)
+    {
+        char b[160];
+        std::snprintf(b, sizeof b, "largest share %.3g of the declared bound %.3g", h.second.largest,
+                      h.second.bound);
+        os << "  [hypothesis] " << h.first.first << " (" << h.second.components << ") in "
+           << h.first.second << " (" << h.second.type << "): " << b << "\n";
+    }
     if (!parameters_.empty())
     {
         os << "  Parameters of thermodynamic models that read a component's 25 C"
@@ -503,7 +570,24 @@ std::string PropertySourceLog::json() const
           << ", \"reads\": " << jsonString(p.second) << " }";
         first = false;
     }
-    o << (first ? "" : "\n    ") << "]\n  }";
+    o << (first ? "" : "\n    ") << "]";
+    if (!hypotheses_.empty())
+    {
+        o << ",\n    \"hypotheses\": [";
+        first = true;
+        for (const auto& h : hypotheses_)
+        {
+            o << (first ? "\n      " : ",\n      ") << "{ \"word\": " << jsonString(h.first.first)
+              << ", \"unit\": " << jsonString(h.first.second)
+              << ", \"consumerType\": " << jsonString(h.second.type)
+              << ", \"components\": " << jsonString(h.second.components)
+              << ", \"largestShare\": " << jsonNumber(h.second.largest)
+              << ", \"bound\": " << jsonNumber(h.second.bound) << " }";
+            first = false;
+        }
+        o << "\n    ]";
+    }
+    o << "\n  }";
     return o.str();
 }
 

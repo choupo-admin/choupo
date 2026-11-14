@@ -87,45 +87,45 @@ int Pump::solve(const DictPtr& dict,
             "Pump: eta must satisfy 0 < eta <= 1 (got "
             + std::to_string(eta) + ")");
 
-    // ---- Liquid molar volume (incompressible) ---------------------------
-    //   v_mix = Σ x_i v_liq,i   [m^3/mol].  Requires every component to
-    //   carry Vliq in its.dat (liquids do).
-    //
-    //  A DISSOLVED ION is not a liquid and has no Vliq (C146, 2026-10-24: an
-    //  interstage booster in a membrane array pumps a brine written ion by
-    //  ion).  Its volume is not invented: it is left OUT of the sum, so the
-    //  volume flow is the solvent's -- the dilute-solution reading -- and the
-    //  run ANNOUNCES it with the mole fraction it neglected.  Only a component
-    //  with a declared aqueous bridge qualifies; any other component without
-    //  Vliq still refuses.
-    scalar v_mix = 0.0, x_ions = 0.0;
+    // ---- Liquid density (incompressible): THE PROPERTY KERNEL ------------
+    //   rho at the INLET state from the kernel's methods (C378 pilot,
+    //   thermo/liquidProperty/): the method is resolved once per
+    //   constituent set and the kernel records the use; v_mix = MW_mix / rho.
+    //   A dissolved ion with no volume is no longer left out silently: the
+    //   case declares `approximations { massWithoutVolume { ... } }` (mass
+    //   kept, no volume, bounded), or the kernel refuses by name.
+    scalar MW_mix = 0.0;                                // kg/kmol
+    for (std::size_t i = 0; i < n; ++i) MW_mix += x[i] * thermo.comp(i).MW();
+    liquidProperty::Request densityAsk;
+    densityAsk.thermo = &thermo; densityAsk.T = T_in; densityAsk.P = P_in; densityAsk.x = x;
+    const scalar rho   = liquidProperty::density(densityAsk).value;   // kg/m^3
+    const scalar M_mix = MW_mix * 1.0e-3;               // kg/mol
+    const scalar v_mix = M_mix / rho;                   // m^3/mol
+    //  THE HEAT CAPACITY IS NOT A VOLUME QUESTION (C378 pilot review, PA-04).
+    //  A dissolved ion carries no liquid enthalpy datum, so the liquid heat
+    //  capacity below is the solvent's, per mole of solution -- the C146
+    //  dilute-solution reading, decided as it was before the pilot: by the
+    //  component being a dissolved ion without a liquid volume of its own
+    //  (an aqueous bridge and no liquid-volume route in its record: no
+    //  Vliq and no critical constants), and ANNOUNCED.  The case's volume
+    //  hypothesis `massWithoutVolume` is read by the DENSITY only; it never
+    //  moves this share (a declaration on a component with a liquid Cp left
+    //  the density unchanged and raised dT by half before this was split).
+    scalar x_ions = 0.0;
     std::string ions;
     for (std::size_t i = 0; i < n; ++i)
-    {
-        const scalar vi = thermo.comp(i).Vliq();
-        if (x[i] > 0.0 && vi <= 0.0)
+        if (x[i] > 0.0 && thermo.liquidVolumeRouteOf(i) == ThermoPackage::LiquidVolumeRoute::none && thermo.comp(i).hasAqueousMapping())
         {
-            if (thermo.comp(i).hasAqueousMapping())
-            {
-                x_ions += x[i];
-                ions   += (ions.empty() ? "" : " ") + thermo.comp(i).name();
-                continue;
-            }
-            throw std::runtime_error(
-                "Pump: component '" + thermo.comp(i).name()
-                + "' has no liquid molar volume (Vliq) in its.dat --- "
-                "required for the incompressible pump model");
+            x_ions += x[i];
+            ions   += (ions.empty() ? "" : " ") + thermo.comp(i).name();
         }
-        v_mix += x[i] * vi;
-    }
     if (x_ions > 0.0)
     {
-        char b[200];
-        std::snprintf(b, sizeof(b), "dissolved ion(s) (%s) carry no liquid"
-            " molar volume: the volume flow is the solvent's (dilute-solution"
-            " reading, and its heat capacity likewise; ion mole fraction %.3g"
-            " neglected)", ions.c_str(),
-            static_cast<double>(x_ions));
+        char b[240];
+        std::snprintf(b, sizeof(b), "dissolved ion(s) (%s) carry no liquid enthalpy"
+            " datum: the liquid heat capacity is the solvent's, per mole of solution"
+            " (dilute-solution reading; ion mole fraction %.3g neglected)",
+            ions.c_str(), static_cast<double>(x_ions));
         AdvisoryLog::instance().add("approximation", "info",
             "pump '" + (dict->name().empty() ? type() : dict->name()) + "'", b);
         if (verbosity >= 2) std::cout << "  [pump] " << b << "\n";
@@ -212,17 +212,84 @@ int Pump::solve(const DictPtr& dict,
     }
     if (pureRoute)
     {
+        //  A computed inlet its world places across the line beyond the band
+        //  never reaches this point: the flowsheet refuses it at the hand-over
+        //  (flashState::heldPhaseBeyondBandRefusal, review TD-04 / TD-17).
         const scalar h_target = thermo.H_real(T_in, P_in, x, DensityPhase::Liquid) + w_real;
+        const std::string who = dict->name().empty() ? type() : dict->name();
+        //  The liquid branch's upper end at P_out: T_sat(P_out) when the
+        //  pure fluid has a saturation line there (set below), else the
+        //  search's old ceiling.
+        scalar T_liquidTop = 620.0;
+        //  THE PUMP NEVER PUBLISHES AN OUTLET IT DID NOT FIND (2026-05-30
+        //  rule, TD-04 follow-up).  Its model publishes a LIQUID: when the
+        //  enthalpy the balance asks for lies above the saturated liquid's at
+        //  P_out, the losses have heated the liquid past T_sat(P_out) and no
+        //  liquid outlet exists.  Decided by enthalpy, not by where a Newton
+        //  stopped; refused, never replaced by T_in.
+        if (const auto i = thermo.pureFluidCarrying(x))
+        {
+            const PureFluidModel& pm = *thermo.pureFluidModel(*i);
+            const auto w = pm.saturationWindow();
+            const scalar Ts = pm.T_sat(P_out);
+            if (Ts >= w.first && Ts < w.second
+                && P_out <= pm.p_sat(w.second - 1.0e-9))
+            {
+                const scalar hL = thermo.H_real(Ts, P_out, x, DensityPhase::Liquid);
+                T_liquidTop = Ts;
+                if (h_target > hL)
+                {
+                    char b[900];
+                    std::snprintf(b, sizeof b, "pump '%s': no LIQUID outlet "
+                        "carries the energy balance of inlet '%s'.  T_in = "
+                        "%.10g K, P_out = "
+                        "%.10g Pa, T_sat(P_out) = %.10g K; the balance asks "
+                        "h = %.6f J/mol (inlet + shaft work at eta = %.6g) "
+                        "against the saturated liquid's %.6f J/mol at P_out: "
+                        "the losses heat the liquid past its saturation "
+                        "temperature at the discharge pressure.  A pump model "
+                        "publishes a liquid: raise the discharge pressure or "
+                        "the efficiency; a flashing discharge is not this "
+                        "unit's model.", who.c_str(),
+                        feedDict->lookupWordOrDefault("streamName", "?").c_str(),
+                        T_in, P_out, Ts,
+                        h_target, eta, hL);
+                    throw std::runtime_error(b);
+                }
+            }
+        }
         auto f  = [&](scalar T){ return thermo.H_real(T, P_out, x, DensityPhase::Liquid) - h_target; };
+        //  The central difference of 0.25 K as before; within 0.25 K of
+        //  T_sat(P_out) a BACKWARD one, so the slope never asks the liquid
+        //  above the search's upper bracket.
         auto df = [&](scalar T){
             const scalar d = 0.25;
+            if (T + d > T_liquidTop) return (f(T) - f(T - d)) / d;
             return (f(T + d) - f(T - d)) / (2.0 * d);
         };
+        //  THE SEARCH STAYS ON THE LIQUID BRANCH (C378 pilot round 2, the
+        //  merge with the phase branch): the root lies in [T_in, T_sat(P_out)]
+        //  -- f(T_in) < 0 because the shaft work exceeds v dP, f(T_sat) >= 0
+        //  because the refusal above did not fire -- so that is the bracket.
+        //  With the old bracket [274, 620] K and a start at T_in + 0.5 K, a
+        //  discharge 0.9 K below its saturation line (550 K, dP 1 bar) sent
+        //  the Newton across the line and the search did not converge, though
+        //  the liquid root exists.  The finite-difference step is kept inside
+        //  the bracket too.
+        const scalar Tlo = T_in - 1.0e-6;
+        const scalar Thi = T_liquidTop;
         solver::NROptions o;
-        o.tolerance = 1.0e-4; o.maxIter = 60; o.lower = 274.0; o.upper = 620.0;
+        o.tolerance = 1.0e-4; o.maxIter = 60;
+        o.lower = Tlo < Thi ? Tlo : 274.0; o.upper = Thi;
         o.bracket = true; o.monotoneIncreasing = true; o.maxStep = 50.0;
-        auto r = solver::newton1D(f, df, T_in + 0.5, o);
-        T_out = r.converged ? r.x : T_in;
+        const scalar T0 = std::min(T_in + 0.5, 0.5 * (T_in + Thi));
+        auto r = solver::newton1D(f, df, T0, o);
+        if (!r.converged)
+            throw std::runtime_error("pump '" + who + "': the discharge "
+                "search H_real(T_out, P_out) = h_in + w did not converge on "
+                "the pure-fluid surface -- no outlet temperature is published "
+                "in place of one it did not find");
+        T_out = r.x;
     }
     else
     {
@@ -237,7 +304,7 @@ int Pump::solve(const DictPtr& dict,
         if (x_ions > 0.0)
         {
             for (std::size_t i = 0; i < n; ++i)
-                if (thermo.comp(i).Vliq() <= 0.0 && thermo.comp(i).hasAqueousMapping())
+                if (thermo.liquidVolumeRouteOf(i) == ThermoPackage::LiquidVolumeRoute::none && thermo.comp(i).hasAqueousMapping())
                     xCp[i] = 0.0;
             solventShare = 1.0 - x_ions;
             for (auto& v : xCp) v /= solventShare;
@@ -315,21 +382,8 @@ int Pump::solve(const DictPtr& dict,
 
     const scalar W_isen_kW = (W_shaft * eta) / 1000.0;
 
-    // Pump head h = dP / (rho g).  rho = MW_mix / v_mix, with
-    // MW_mix in kg/mol (Component.MW() is kg/kmol -> /1000).
-    scalar MW_mix = 0.0;                                // kg/kmol
-    for (std::size_t i = 0; i < n; ++i) MW_mix += x[i] * thermo.comp(i).MW();
-    const scalar rho = (v_mix > 0.0)
-        ? (MW_mix / 1000.0) / v_mix                     // kg/m^3
-      : liquidSource::pumpHeadDensityFallback.value;
-    if (!(v_mix > 0.0))
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::pumpHeadDensityFallback);
+    // Pump head h = dP / (rho g), rho the kernel's (above).
     const scalar head_m = dP / (rho * 9.80665);
-    if (v_mix > 0.0)
-        PropertySourceLog::instance().useHere("liquidDensity", x_ions > 0.0
-            ? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,
-            liquidProperty::statedDatumTemperatures(thermo, x), "",
-            "bypass", took(rho, T_in, P_in, compositionKey(x)), "not applied");
 
     if (verbosity >= 2)
     {
@@ -387,8 +441,9 @@ int Pump::solve(const DictPtr& dict,
 }
 
 //  WHAT THE PUMP ACCEPTS (DEV.md 4c C188 item 5): a liquid, and nothing
-//  else -- every component it is handed is pumped (its volume is the
-//  liquid's, a dissolved ion's left out and announced in solve()).
+//  else -- every component it is handed is pumped (its density is the
+//  property kernel's; a component without a volume needs the case's
+//  declared hypothesis massWithoutVolume, else the kernel refuses).
 UnitAcceptance Pump::acceptance() const
 {
     UnitAcceptance a;

@@ -1,0 +1,55 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  liquidDensity02_waterEthanol -- D2 of the liquid-density pilot (C378).
+  Water + ethanol, x_ethanol 0.25 (w_ethanol 0.4602), 298.15 K, 1 bar.  The
+  kernel prices {ethanol, water} by idealMixing: water by its IAPWS-95
+  reference equation, ethanol by its record's 25 C volume carried by
+  Rackett.  ADDITIVE VOLUMES HAVE NO EXCESS VOLUME: the measured mixture is
+  denser (Pecar and Dolecek 2005, 0.1 MPa: the method is 1.76 % low on
+  average at 298.15 K, 2.06 % at 323.15 K; about -1 cm3/mol of excess volume
+  at x = 0.4 that no leaf can supply).  The pilot SCORES 298.15 and
+  323.15 K and REPORTS 348.15 K, where the ethanol leaf (-1.9 %) is the
+  error (thresholds note 3.2 and DEV.md 4c C378).
+
+  The flowsheet of every liquid-density demonstration: feed (1 kg/s) ->
+  pump P1 (dP 2 bar, eta 0.7) -> CSTR R1 (V_R 1 m3, the reaction's reactant
+  absent, see constant/reactions) -> product.  By hand, with rho the
+  property kernel's liquid density printed in the run's table:
+      Q   = m_dot / rho                 (the pump's volumetric flow)
+      W   = Q dP / eta                  (its shaft power)
+      h   = dP / (rho g)                (its head)
+      tau = V_R rho / m_dot             (the CSTR's residence time, at its
+                                         feed, the pump's outlet state)
+  The pump prices its INLET state, the CSTR its FEED (the pump's outlet).
+  THE PUMP'S FIRST LAW IS OPEN, AND PINNED (check_energy_closure, 70 %):
+  the residual is exactly the useful shaft work, eta x W_shaft, which the
+  generic liquid enthalpy (no pressure term) cannot hold -- the pump's own
+  advisory says so -- and commission C390 closes it.
+  Theory Guide: sec:liquid-density-methods.  Gate: check_density_pilot.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        P1;
+        type        pump;
+        in          feed;
+        outputs     ( pumped );
+        operation   { dP 2 bar; eta 0.7; }
+    }
+    {
+        name        R1;
+        type        cstr;
+        in          pumped;
+        outputs     ( product );
+        operation   { V_R 1; }
+        reactions   ( absentAcid );
+    }
+);

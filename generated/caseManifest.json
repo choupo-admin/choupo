@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1851,
+  "cases": 1857,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -29525,6 +29525,97 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/thermo/liquidDensity01_water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity02_waterEthanol": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity03_NaOH": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "OlssonNaOH"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity04_NaOHpoint": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr"
+   ],
+   "thermo": {
+    "formulation": "electrolyteGammaPhi",
+    "activityModels": [
+     "OlssonNaOH"
+    ],
+    "aqueousChemistry": true
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/thermo/liquidDensity05_CO2water": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "diluteSolution"
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
+  "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "cstr",
+    "pump"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
   "tutorials/steady/thermo/perUnitThermo01_srk_nrtl": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -31664,6 +31755,12 @@
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
     "tutorials/steady/thermo/basis01_two_unit_chain",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity03_NaOH",
+    "tutorials/steady/thermo/liquidDensity04_NaOHpoint",
+    "tutorials/steady/thermo/liquidDensity05_CO2water",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/thermoTest/model2_pitzer_evaporator",
@@ -31885,6 +31982,12 @@
     "tutorials/steady/reactors/cstr06_jacketed",
     "tutorials/steady/reactors/cstr07_lhhw_methylAcetate",
     "tutorials/steady/reactors/cstr08_furusawa_bistable",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity03_NaOH",
+    "tutorials/steady/thermo/liquidDensity04_NaOHpoint",
+    "tutorials/steady/thermo/liquidDensity05_CO2water",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/userops/userOp03_case_rate_law"
    ],
    "cyclone": [
@@ -32298,7 +32401,11 @@
     "tutorials/steady/membranes/membrane27_swro_energy_recovery",
     "tutorials/steady/power/rankine02_water",
     "tutorials/steady/rotating/pump01_water",
-    "tutorials/steady/rotating/pump02_pressure_spec"
+    "tutorials/steady/rotating/pump02_pressure_spec",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity05_CO2water",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol"
    ],
    "quasiSteady": [
     "tutorials/unsteady/unsteady03_nf_feed_and_bleed_startup",
@@ -33349,7 +33456,9 @@
    ],
    "OlssonNaOH": [
     "tutorials/props/electrolyte/olsson01_naoh_high_concentration",
-    "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt"
+    "tutorials/steady/evaporation/evaporator11_naoh_olsson_50wt",
+    "tutorials/steady/thermo/liquidDensity03_NaOH",
+    "tutorials/steady/thermo/liquidDensity04_NaOHpoint"
    ],
    "Pitzer": [
     "tutorials/batch/crystallisation/batch13_nacl_pitzer",
@@ -35049,6 +35158,9 @@
     "tutorials/steady/solids/screen02_declared_rosinRammler",
     "tutorials/steady/solids/thickener01_settlingTest_talmageFitch",
     "tutorials/steady/thermo/air01_heater_expand",
+    "tutorials/steady/thermo/liquidDensity01_water",
+    "tutorials/steady/thermo/liquidDensity02_waterEthanol",
+    "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/userops/userOp01_yield_reactor",

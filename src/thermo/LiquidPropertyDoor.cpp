@@ -16,6 +16,7 @@
 
 #include "core/PropertySourceLog.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/liquidProperty/DensityLeaf.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 
 #include <cstdio>
@@ -32,71 +33,13 @@ namespace {
 
 using Route = ThermoPackage::LiquidVolumeRoute;
 
-//  THE ONE HOME of what each liquid-volume route is called, keyed by the
-//  route the package reports it took.
-const char* routeId(Route r)
-{
-    switch (r)
-    {
-        case Route::anchoredRackett: return "anchoredRackett";
-        case Route::flatVliq:        return "flatVliq";
-        case Route::bareRackett:     return "bareRackett";
-        case Route::none:            return "none";
-    }
-    return "?";
-}
-
-//  "CH4 at 111.66 K": a component and the temperature its `Vliq` belongs to.
-std::string datumOf(const Component& c)
-{
-    if (!c.hasVliqT()) return c.name() + " at 25 C";
-    char b[32];
-    std::snprintf(b, sizeof b, "%.6g K", c.VliqT());
-    return c.name() + " at " + b;
-}
-
-//  THE ONE HOME of a liquid-volume route's words, fed by the route and by
-//  the temperature each component's `Vliq` belongs to (C378).  `statedAt`
-//  names the components on the route whose record states `VliqT` ("CH4 at
-//  111.66 K"); empty, the words are the 25 C ones, byte for byte.  One stated
-//  temperature replaces "25 C"; several are named with their components.
+//  The route words have ONE home, the record-volume leaves of the kernel
+//  (liquidProperty/DensityLeaf.H); the slice-0 description of
+//  `ThermoPackage::density` reads them there.
+const char* routeId(Route r) { return recordRouteId(static_cast<int>(r)); }
 std::string routeLabel(Route r, const std::vector<std::string>& statedAt = {})
-{
-    std::string where = "25 C molar volume";
-    if (!statedAt.empty() && (r == Route::anchoredRackett || r == Route::flatVliq))
-    {
-        std::set<std::string> temps;
-        for (const auto& w : statedAt) temps.insert(w.substr(w.find(" at ") + 4));
-        if (temps.size() == 1) where = "molar volume at " + *temps.begin();
-        else
-        {
-            where = "molar volume at its datum temperature (";
-            for (std::size_t k = 0; k < statedAt.size(); ++k)
-                where += (k ? ", " : "") + statedAt[k];
-            where += ")";
-        }
-    }
-    switch (r)
-    {
-        case Route::anchoredRackett: return "each component's " + where + " scaled to temperature by Rackett";
-        case Route::flatVliq:        return "each component's " + where + ", with no temperature effect (its record has no critical constants)";
-        case Route::bareRackett:     return "an estimate by Rackett from the critical constants (no measured volume in the record)";
-        case Route::none:            return "no route";
-    }
-    return "?";
-}
-
-const char* routeOrigin(Route r)
-{
-    switch (r)
-    {
-        case Route::anchoredRackett: return "literature";   // the level; Rackett gives the shape
-        case Route::flatVliq:        return "literature";
-        case Route::bareRackett:     return "estimated";
-        case Route::none:            return "";
-    }
-    return "";
-}
+{ return recordRouteWords(static_cast<int>(r), statedAt); }
+const char* routeOrigin(Route r) { return recordRouteOrigin(static_cast<int>(r)); }
 
 } // namespace
 

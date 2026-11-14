@@ -3284,7 +3284,11 @@ carries as a mass balance only, \emph{does it fit the lot and the
 shift}: the load (working volume, kg/h, tablets/h or packs/h) read from
 the plan and the run, over a vendor rating the case declares with its
 source --- never defaulted --- and refused above 100\,\%, announced
-above 85\,\%. The app's Reports tab draws it: a machine-utilisation table,
+above 85\,\%. A batch machine has \emph{one} size, the one installed
+(\texttt{nominalVolume}): the plan's volume at its target fill is the
+requirement held against it, the fill at the installed size is published and
+checked against \texttt{maxFill} (no minimum is declared), and a scaled quote
+is priced on the installed size. The app's Reports tab draws it: a machine-utilisation table,
 the bottleneck first, with the engine's own utilisation, its ``announced''
 mark and the batch plan's stage utilisation beside it, and the Gantt chart of
 the first campaign (SVG download); nothing in it is recomputed by the app. It
@@ -3396,7 +3400,11 @@ Between \emph{campaigns} the whole train is cleaned and cleared
 (\texttt{changeover}); between campaigns of \emph{different} products
 every stage declares its own clean (\texttt{productChangeover}) and the
 train waits until the \emph{slowest} stage is clean
-(\file{BatchPlanPass.H}:195--217; \file{BatchPlanPass.cpp}:602). Why a
+(\file{BatchPlanPass.H}:195--217; \file{BatchPlanPass.cpp}:602). A
+change of product is the campaign clean and line clearance \emph{plus}
+the product's own part, so it is declared as the train's
+\texttt{changeover} plus an increment, never less; a product clean
+declared below it is announced (\texttt{productCleanShort}). Why a
 changeover costs hours, not minutes: the next product may only start on
 equipment shown to be clean, and that is \textbf{cleaning validation}
 --- documented evidence, by swab or rinse sampling against
@@ -3410,9 +3418,10 @@ Choupo does not compute them.
 The clean can depend on the \emph{direction}. In the donepezil case the
 10\,mg coat is yellow (iron oxide), the 5\,mg is white: a trace of
 yellow in a white coat shows, a trace of white in a yellow one does not.
-So the clean \emph{before the white product} is the long one (12\,h at
-the pan) and the clean before the yellow one short (6\,h): the case
-declares it as \texttt{changeoverTo \{ strength5 12 h; \}} on the
+So the clean \emph{before the white product} is the long one (the 24\,h
+campaign clean plus 12\,h at the pan) and the clean before the yellow one
+short (24\,h plus 6\,h): the case
+declares it as \texttt{changeoverTo \{ strength5 36 h; \}} on the
 product that has just finished (grammar \file{BatchPlanPass.H}:173--177; \file{BatchPlanPass.cpp}:476--482).
 
 \subsection{Single-product campaigns versus mixed
@@ -3433,7 +3442,7 @@ Two ways to share a plant between products. Choupo ships one.
   \textbf{Mixed (interleaved) sequencing}: A, B, A, B\ldots{} lot by lot.
   It shortens the inventory of each product but pays a changeover
   \emph{per lot}, and needs a scheduling optimiser. Not built
-  (\file{BatchPlanPass.H}:264--275).
+  (\file{BatchPlanPass.H}:286--297).
 \end{itemize}
 Choupo ships the first because it is the one whose arithmetic can be
 written on a page and checked by hand, and because for a drug product
@@ -3450,7 +3459,7 @@ is the student's: the engine never takes it
 (\file{BatchPlanPass.H}:159--162). One rotation a year is built (each
 product's campaigns back to back); several rotations, trading
 changeovers for finished-goods inventory, are not
-(\file{BatchPlanPass.H}:264--275).
+(\file{BatchPlanPass.H}:286--297).
 
 The equipment is sized for the product that needs the most: each vessel
 for $\max_i S_{ij} B_i$, and the case names which product that is
