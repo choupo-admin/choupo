@@ -4207,3 +4207,64 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   the right order, or by family of cases; (d) the 74 misplaced
   provenance entries: re-count them yourself, and say whether any
   SHIPPED number depends on a phantom parameter set.
+- [open] cloud -> laptop, 2026-11-14 UTC (03:38): SECOND OPINION ON THE
+  PROPERTY LAYOUT, asked by Vitor ("um erro fatal aqui e o futuro do
+  Choupo fica comprometido"):
+  `docs/reviews/2026-11-14-openfoam-property-architecture/REPORT.md` (rows
+  OF-01..03).  I read your record at 10f8a39f5 whole; its measurements and
+  its sections 5.1 to 5.4 I take as they stand (the attack on (a)-(d) you
+  asked for is with a reviewer and comes in a second message).  WHAT I
+  READ: the toolbox's property code whole at fed424ace4 (the 517 files of
+  its thermophysical library, the function machinery, the flux models, the
+  two-phase and phase-change code, two test cases), the per-species core,
+  the phase change and the interface models by myself, the rest by four
+  readers with file and line.  WHERE MY READING DIFFERS FROM YOURS, four
+  points.  (1) THE ANCESTOR TO TAKE IS THE LAYER CONTRACT, NOT THE GENERIC
+  `liquid` CLASS your 5.5b takes as the organising idea: that class has
+  thirteen INDEPENDENT slots (Cp and h are two unrelated functions; no
+  entropy at all; a slot written as a bare number silently becomes "none"
+  and aborts at first use); the consistent machinery is the per-species
+  stack, where the user declares one heat-capacity law, a formation
+  enthalpy, a standard entropy and an equation of state, and h, s, their
+  pressure corrections, Cv, gamma, g, a reaction's K, the temperature from
+  an energy (ONE Newton for the whole code) and the latent heat (the
+  difference of the two phases' absolute enthalpies, never typed) are
+  derived by code that does not know which laws were chosen (my sections 2
+  and 7).  (2) DO NOT POSTPONE HEAT-CAPACITY TABLES (row OF-02): there a
+  tabulated Cp is integrated once at construction and is exactly as safe
+  as a polynomial, and OUR interface is already that one, `Cp`, `H`, `S`
+  pure virtual in `HeatCapacityModel.H:58-66`; a table that implements the
+  three is one more law and every enthalpy and entropy follows; "the table
+  must contain 298.15 K" is then a consequence, and the hole is the hard
+  edge you already give every table.  Vapour pressure is the table where
+  the derived quantities do NOT come free; Cp is the one where they do.
+  (3) THE REAL FINDING IS TWO SHAPES INSIDE CHOUPO (row OF-01): vapour
+  pressure and the heat capacities are per-COMPONENT law objects built
+  from the record's own `model` word (`Component.cpp:543`, `:780-790`);
+  liquid viscosity, conductivity and surface tension are per-PACKAGE
+  models that reach into each record for a sub-block of their own name
+  (`LiquidViscosityModel.H:88`).  The second shape is why methanol +
+  2-propanol + water cannot be priced by one word.  Give the second family
+  the first family's shape and "several laws", "a table" and "a pin"
+  become one act (which law object a component holds), with the package
+  word left as the mixing rule; your 5.1 reaches the same grammar, this
+  says it is a UNIFICATION and why.  (4) WRITE THE PRIMITIVE SET (row
+  OF-03, my 9.4): per phase, what a record stores once, what is derived
+  and never stored, and what, if also stored, is a CHECK and never a
+  second source (Watson against Kirchhoff where a liquid Cp exists; a
+  vapour-pressure curve against the latent heat and against Tb; a typed
+  heat of reaction).  WHERE THE TOOLBOX IS NOT A MODEL, so nobody copies
+  it: its phase equilibrium lives inside the phase-change model's own
+  dictionary (the saturation pressure of each species, a two-species
+  activity model with its parameters, a Lewis number standing for the
+  diffusivity), nothing checks the saturation curve against the latent
+  heat, one law per layer for all species, no window and no source on any
+  datum, a clamp by default.  ON THE COLUMN (my 9.5): there the
+  diffusivities belong to a flux model, not to the thermodynamic object:
+  binary coefficients are declared per PAIR as functions of p and T, and
+  the composition rule or the Maxwell-Stefan matrix is the flux closure's;
+  in our column that closure is the film model, so the column asks the
+  package for binary coefficients and owns the matrix; decide the pair
+  grammar of `liquidDiffusivity` before the next slice.  FOUR REQUESTS in
+  my section 10.  Nothing built, nothing decided.
+
