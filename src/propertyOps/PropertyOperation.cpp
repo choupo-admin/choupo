@@ -27,6 +27,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PropertyOperation.H"
+#include "thermo/ResolvedView.H"
+#include "thermo/ThermoAnnounce.H"
 #include "DataReconciliation.H"
 #include "ElementCompositionOp.H"
 #include "EnthalpyConcentration.H"
@@ -178,8 +180,23 @@ PropertyOperation::thermoForOp(const DictPtr& opDict) const
 
     // build() owns the v2 dispatch (native formulations assemble via buildV2;
     // the rest translate) -- one entry point, no pre-translation here.
-    return std::make_unique<ThermoPackage>(
-        ThermoPackageBuilder::build(v2, *database_));
+    auto pkg = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(v2, *database_));
+    //  THE VIEW OF AN INLINE `thermo {}` (review row SA-04): a named variant's
+    //  view is printed once before the operations run (choupoProps main); an
+    //  operation's inline fragment printed none, so its package's choices were
+    //  told nowhere.  Once per operation, at verbosity >= 2, stdout only.
+    const std::string opName = opDict->lookupWordOrDefault("name", "?");
+    if (variantName.empty() && thermoAnnounce(2)
+        && announceOnce("resolvedView:inlineOp:" + opName))
+    {
+        resolvedView::Choice c;
+        c.system   = "system (constant/thermoPhysPropDict)";
+        c.variant  = "inline thermo{} of operation '" + opName + "'";
+        c.fragment = over;
+        resolvedView::print(std::cout, "inline thermo{} of operation '" + opName + "'",
+                            *pkg, v2, c, { "operation '" + opName + "'" });
+    }
+    return pkg;
 }
 
 void PropertyOperation::registerBuiltins()

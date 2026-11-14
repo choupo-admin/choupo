@@ -664,7 +664,11 @@ unnamed variant.  Grammar, refusals and a worked example:
   constituent, the mixing rule — marked "default" when the case wrote none —
   the interaction pairs it reads or misses, the density routes, the energy
   basis and enthalpy routes).  Every line starts `[properties]`; a
-  fingerprint heads each view.  Read it before asking "which viscosity did
+  fingerprint heads each view, and a `selected by` line names the units or
+  operations that use it (a sector's units, a variant's selectors, an
+  operation's inline block, an empty variant's units).  An equilibrium
+  fragment with the base's formulation is attributed per slot, never as the
+  whole block; the K-value world is printed for gammaPhi and phiPhi only.  Read it before asking "which viscosity did
   this unit use?".
 - The factory defaults the view names when no `mixingRule` is written:
   Grunberg–Nissan (liquid viscosity), Li (liquid conductivity), Butler

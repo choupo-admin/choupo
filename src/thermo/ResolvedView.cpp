@@ -255,7 +255,12 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         }
         if (pkg.hasEos())
             d.push_back("vapour (and, under phiPhi, liquid) model: " + pkg.eos().modelName());
-        d.push_back("K-value world: " + pkg.vleWorld());
+        //  The K-value world is a vapour-liquid notion of the gammaPhi and phiPhi
+        //  formulations; the package's word defaults to "gammaPhi" for every
+        //  other one, so it is printed only where it is the formulation's own
+        //  (review row SA-04: a gammaGamma sector was labelled gammaPhi).
+        if (form == "gammaPhi" || form == "phiPhi")
+            d.push_back("K-value world: " + pkg.vleWorld());
         if (pkg.hasElectrolyte()) d.push_back("electrolyte model: active (aqueous ion surface)");
         //  The pairs the activity model consumes, as it recorded them while it
         //  was built (core/ThermoResolution.H) -- the source file of each.
@@ -275,6 +280,27 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             }
         }
         std::string c = chosen({ "equilibrium" }, choice.system);
+        //  A FRAGMENT THAT REPLACES ONLY SOME SLOTS (review row SA-04): an inline
+        //  `thermo {}` or a variant with the same formulation replaces the slots
+        //  it names (ThermoOverride.H), so the row names those slots and the base
+        //  the others came from, instead of attributing the whole block.
+        if (F && sub(F, "equilibrium"))
+        {
+            const DictPtr fe = sub(F, "equilibrium");
+            const std::string ff = word(fe, "formulation");
+            if (ff.empty() || ff == form)
+            {
+                std::string slots;
+                for (const auto& k : fe->keys())
+                    if (k != "formulation") slots += (slots.empty() ? "" : ", ") + k;
+                const std::string base = (L && !at(L, { "equilibrium" })) ? choice.inherited
+                                                                         : choice.system;
+                c = choice.variant + " for the slot(s) " + (slots.empty() ? std::string("(none)") : slots)
+                  + "; every other slot from " + base;
+            }
+            else
+                c = choice.variant + " (the whole block: its formulation " + ff + " replaces the base's)";
+        }
         if (F && sub(F, "equilibrium"))
             c += "  -- a MODEL BOUNDARY: this world's equilibrium differs from the system's;"
                  " the energy report accounts the step at the unit's boundary";

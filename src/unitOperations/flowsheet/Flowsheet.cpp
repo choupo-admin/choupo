@@ -5381,6 +5381,22 @@ void Flowsheet::selectNamedVariants(std::vector<DictPtr>& units,
         if (propertyVariants::selectsByName(u))
             flowsheetVariants::resolve(u, authoredV2_, u->lookupWordOrDefault("name", "?"));
 
+    //  Which units use each sector dictionary (no world of their own): the
+    //  sector's view names them (SA-04).
+    contextSelectors_.clear();
+    for (const auto& u : units)
+    {
+        if (!u->found("propertyContextBase")) continue;
+        bool ownWorld = false;
+        if (u->found("thermo") && std::holds_alternative<DictPtr>(u->entryValue("thermo")))
+            for (const auto& k : u->subDict("thermo")->keys())
+                if (k == "equilibrium" || k == "caloric" || k == "volumetric"
+                    || k == "transport" || k == "pureFluids") { ownWorld = true; break; }
+        if (!ownWorld)
+            contextSelectors_[u->lookupWord("propertyContextBase")]
+                .push_back(u->lookupWordOrDefault("name", "?"));
+    }
+
     //  Who selects which variant -- the view names them all.
     variantSelectors_.clear();
     std::vector<DictPtr> selecting;
@@ -5401,7 +5417,28 @@ void Flowsheet::selectNamedVariants(std::vector<DictPtr>& units,
     //  (ruling point 1): each selecting unit's package is built now, by the
     //  one builder, and cached for the solve.
     for (const auto& u : selecting)
-        thermoFor(u->lookupWordOrDefault("name", "?"), u, global);
+    {
+        const std::string uname = u->lookupWordOrDefault("name", "?");
+        const ThermoPackage& pkg = thermoFor(uname, u, global);
+        //  AN EMPTY VARIANT (review row SA-06): a variant that changes nothing
+        //  declares no world, so thermoFor hands the unit its base package (the
+        //  system's, or its sector's) and printed no view of the variant.  The
+        //  view is printed here, on that base, as the property binary does.
+        const DictPtr th = u->subDict("thermo");
+        bool ownWorld = false;
+        for (const auto& k : th->keys())
+            if (k != propertyVariants::selectedKey() && k != "binaryPairsBase"
+                && k != "activeComponents") { ownWorld = true; break; }
+        if (ownWorld || !db_) continue;
+        if (u->found("propertyContextBase"))
+        {
+            std::set<std::string> vis;
+            const std::string pcb = u->lookupWord("propertyContextBase");
+            printFragmentView(uname, th, resolvePropertyContext(pcb, vis), pkg, pcb);
+        }
+        else
+            printFragmentView(uname, th, authoredV2_, pkg, "constant");
+    }
 }
 
 void Flowsheet::printFragmentView(const std::string& uname, const DictPtr& fragment,
@@ -5462,8 +5499,13 @@ void Flowsheet::printContextView(const std::string& constantDir, const DictPtr& 
         c.inherited = rel.empty() ? c.system
                                   : "the parent system, through `inherits \"" + rel + "\"`";
     }
-    resolvedView::print(std::cout, "sector dictionary " + file, pkg, resolved, c,
-                        { "the units of this sector that name no thermo of their own" });
+    //  THE UNITS THAT USE THIS DICTIONARY, by name (review row SA-04): every
+    //  unit whose property context is this sector's and that names no world
+    //  of its own (selectNamedVariants counts them before the solve).
+    std::vector<std::string> by;
+    for (const auto& u : contextSelectors_[constantDir]) by.push_back("unit '" + u + "'");
+    if (by.empty()) by.push_back("the units of this sector that name no thermo of their own");
+    resolvedView::print(std::cout, "sector dictionary " + file, pkg, resolved, c, by);
 }
 
 } // namespace Choupo
