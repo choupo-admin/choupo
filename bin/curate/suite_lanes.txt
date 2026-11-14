@@ -140,6 +140,7 @@ PRE  | SERIAL | bin/curate/check_costing_refusals.py               | writes repo
 PRE  | PAR    | bin/curate/check_species_citation.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_layering.py                       | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
 PRE  | PAR    | bin/curate/check_debt_registry.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool
+PRE  | PAR    | bin/curate/check_scan_roots.py                     | read: parses the gates' syntax trees and debt_registry; writes nothing, no make, no node, no pool (C394)
 PRE  | SERIAL | bin/curate/check_caveat_surface.py                 | writes designspec_history.csv (+45 more)
 PRE  | SERIAL | bin/curate/check_advisory_attribution.py           | writes build/advisoryPromotionProbe (+38 more)
 PRE  | PAR    | bin/curate/check_bjerrum_prose.py                  | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool

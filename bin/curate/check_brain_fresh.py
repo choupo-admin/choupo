@@ -14,6 +14,22 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 MAXLINES = 250
 
+#  WHAT THE FACTS BLOCK IS RENDERED FROM (DEV.md 4c C394, review SE-08),
+#  declared for bin/curate/gate_scan_roots.py, because this gate reads it
+#  through a SUBPROCESS (gen_brain_facts.py --check) and through two generated
+#  files whose inputs are the corpus itself: generated/releaseInventory.json
+#  (cases, components, pairs, membranes, adsorbents, utilities, the engine's
+#  registries and binaries, gates, lessons) and generated/caseManifest.json.
+#  A branch that adds one case moves the FACTS block once bin/integrate
+#  regenerates the inventory, so the plan must list this gate for it.
+SCAN_ROOTS = ("BRAIN.md", "generated/releaseInventory.json",
+              "generated/caseManifest.json", "CHANGELOG.md",
+              "tutorials/**/system/controlDict", "tutorials/**/expected",
+              "tutorials/**/layoutDict", "data/curation/**/system/controlDict",
+              "data/standards", "src", "bin/curate/check_*.py",
+              "gui/src/ui/methods",
+              "docs/architecture/verification-and-validation.md")
+
 
 def main():
     bad = []
