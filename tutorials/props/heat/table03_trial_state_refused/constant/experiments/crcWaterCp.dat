@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  crcWaterCp -- the heat capacity of liquid water at eleven temperatures,
+    0 to 100 degC, per mass, as a case's own table (DEV.md 4c C398 slice (c)).
+
+    READ AT: Lide, D.R. (ed.), CRC Handbook of Chemistry and Physics, 82nd ed.
+    (2001), printed page 6-3, table "Properties of water in the range
+    0 - 100 C", column "Cp / J/g K" (100 kPa; IPTS-68).  The column's
+    reference is the table's ref. 2, the PRIMARY cited below; the handbook is
+    the route (`via`).  A heat capacity declared per mass is converted with
+    the record's molar mass when the table is built, and the view says so.  */
+
+provenance
+{
+    origin      literature;
+    citation    "Marsh, K.N. (ed.) (1987). Recommended Reference Materials for the Realization of Physicochemical Properties. Blackwell, Oxford (the table's reference 2)";
+    via         "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), p. 6-3, Properties of water in the range 0-100 C (100 kPa; IPTS-68)";
+}
+
+system      ( water );
+property    liquidHeatCapacity;
+columns     ( { name T;  unit degC; }  { name Cp;  unit J/g/K; } );
+data
+(
+      0   4.2176
+     10   4.1921
+     20   4.1818
+     30   4.1784
+     40   4.1785
+     50   4.1806
+     60   4.1843
+     70   4.1895
+     80   4.1963
+     90   4.2050
+    100   4.2159
+);

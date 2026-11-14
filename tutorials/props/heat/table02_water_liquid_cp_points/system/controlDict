@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "A heat capacity given as points: liquid water's Cp from the record's constant and from eleven evaluated points (CRC 82nd ed. p. 6-3, primary Marsh 1987, per mass, converted with the molar mass) in one run, with the sensible enthalpy the table integrates in closed form";
+
+verbosity     2;

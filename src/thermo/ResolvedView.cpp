@@ -34,6 +34,7 @@ License
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/equationOfState/EquationOfState.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
+#include "thermo/PropertyTable.H"
 #include "thermo/liquidProperty/Measured.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "thermo/SurfaceTensionModel.H"
@@ -140,12 +141,15 @@ struct Silence
     ~Silence() { std::cout.rdbuf(o); std::cerr.rdbuf(e); }
 };
 
-double freshValue(const recordLaws::Law& L, const std::string& property, double T)
+double freshValue(const recordLaws::Law& L, const std::string& property, double T, double MW = 0.0)
 {
     Silence quiet;
     try
     {
         if (property == "vaporPressure") return VaporPressureModel::New(L.body)->Psat_Pa(T);
+        //  A heat-capacity table (C398 slice (c)) is built from its law with
+        //  the record's molar mass, as its component builds it.
+        if (L.isTable) return PropertyTable::fromLaw(L.body, property, "view", MW)->value(T);
         return HeatCapacityModel::New(L.body)->Cp(T);
     }
     catch (const std::exception&) { return std::numeric_limits<double>::quiet_NaN(); }
@@ -162,7 +166,8 @@ std::string lawText(const Component& c, const std::string& property)
     return lawLine(c.name(), property, L.name.empty() ? std::string("its one law") : "`" + L.name + "`",
                    L.type, ch.by.empty() ? std::string("the record's law") : ch.by,
                    L.windowText(recordLaws::familyOf(property)), c.lawSource(property, L.name),
-                   recordLaws::valueText(freshValue(L, property, Tp), Tp), c.recordHome());
+                   recordLaws::valueText(freshValue(L, property, Tp, c.MW()), Tp),
+                   L.home.empty() ? c.recordHome() : L.home);
 }
 
 //  The ideal-gas law a RowlinsonBondi liquid law holds (SL-05), from the
@@ -736,7 +741,7 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                                                law->windowText(recordLaws::familyOf(rkey)),
                                                comp.lawSource(rkey, L.law),
                                                recordLaws::valueText(freshLiquidValue(rkey, L.type, L.law, comp, Tp), Tp),
-                                               comp.recordHome()));
+                                               law->home.empty() ? comp.recordHome() : law->home));
                     if (blk->laws.size() > 1)
                         d.push_back("    (" + comp.name() + "'s record holds: " + blk->names() + ")");
                 }

@@ -43,6 +43,7 @@ Description
 #include "Component.H"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -62,9 +63,24 @@ struct RecordLawPin
 {
     std::string component;   // as the pin names it
     std::string property;    // vaporPressure | idealGasHeatCapacity | liquidHeatCapacity | solidHeatCapacity
-    std::string law;
+    std::string law;         // the law chosen (a case table: the table's name)
     std::string reason;
+    //  A CASE'S TABLE (C398 slice (c)): when the pin names `table <name>`,
+    //  the law read from constant/experiments/<name>.dat, added to the
+    //  constituent's block before the pin chooses it; null otherwise.
+    std::shared_ptr<const recordLaws::Law> caseLaw;
+    OriginInfo                             caseSource;
 };
+
+//  Read a pin entry's `table <name>` form (C398 slice (c)), shared by the
+//  caloric pins (readRecordLawPins) and the liquid transport pins
+//  (ThermoPackage::resolveLiquidLaws): the case's experiments file, checked
+//  against the pin (its `property`, a `system` of exactly the pinned
+//  component), with the pin's `interpolation` and optional `extend`.  Fills
+//  `law` (the table's name), `caseLaw` and `caseSource`.  `where` names the
+//  pin in every refusal.
+void readCaseTablePin(const DictPtr& entry, const std::string& property,
+                      RecordLawPin& pin, const std::string& where);
 
 class RecordLawPinScope
 {

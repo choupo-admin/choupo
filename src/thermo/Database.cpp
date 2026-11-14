@@ -33,6 +33,7 @@ License
 #include "ReviewRecord.H"
 #include "RecordResolver.H"
 #include "ThermoAnnounce.H"
+#include "liquidProperty/ExperimentsFile.H"
 
 #include <iostream>
 #include <cstdlib>
@@ -223,7 +224,7 @@ Component Database::loadComponent(const std::string& name) const
     if (const auto* pins = RecordLawPinScope::active())
         for (const auto& p : *pins)
             if (p.component == name || p.component == c.name())
-                c.pinLaw(p.property, p.law, p.reason);
+                c.applyPin(p);
     return c;
 }
 
@@ -828,6 +829,74 @@ std::string Database::canonicalName(const std::string& token) const
     }
     auto it = aliasIndex_.find(token);
     return (it != aliasIndex_.end()) ? it->second : token;
+}
+
+void readCaseTablePin(const DictPtr& entry, const std::string& property, RecordLawPin& pin,
+                      const std::string& where)
+{
+    const bool hasTable = entry->found("table");
+    if (!hasTable)
+    {
+        //  A pin of a RECORD's law: the interpolation and the extension belong
+        //  to a case's table only (a record law carries its own interpolation;
+        //  a record holds what its source measured).
+        for (const char* k : { "interpolation", "extend" })
+            if (entry->found(k))
+                throw std::runtime_error(where + ": `" + std::string(k) + "` belongs to a pin that names a"
+                    " case's `table <name>`; a pin of a record law (`law <name>`) takes the law as the"
+                    " record states it.");
+        return;
+    }
+    if (entry->found("law"))
+        throw std::runtime_error(where + ": a pin names `law <name>` (a law the record holds) OR"
+            " `table <name>` (the case's points), never both.");
+    for (const auto& k : entry->keys())
+        if (k != "component" && k != "table" && k != "interpolation" && k != "reason" && k != "extend")
+            throw std::runtime_error(where + ": `" + k + "` is read by nothing -- a table pin reads"
+                " component, table, interpolation, reason and, optionally, extend.");
+    if (property != "liquidViscosity" && property != "liquidHeatCapacity"
+        && property != "solidHeatCapacity" && property != "idealGasHeatCapacity")
+        throw std::runtime_error(where + ": a case table of " + property + " is not accepted in this"
+            " slice (C398 (c): liquid viscosity, liquid and solid heat capacity).");
+    const std::string name = entry->lookupWord("table");
+    const experiments::File f = experiments::readFile(name, property, where);
+    for (const auto& k : f.dict->keys())
+        if (k != "provenance" && k != "system" && k != "property" && k != "columns" && k != "data"
+            && k != "uncertainty")
+            throw std::runtime_error(f.where + ": `" + k + "` is read by nothing -- a pure-component"
+                " table reads provenance, system, property, columns, data and, optionally, uncertainty.");
+    if (f.system.size() != 1 || f.system[0] != pin.component)
+    {
+        std::string s;
+        for (const auto& c : f.system) s += (s.empty() ? "" : " ") + c;
+        throw std::runtime_error(f.where + ": `system ( " + s + " );` -- a table pinned to '"
+            + pin.component + "' names exactly that one component (a mixture's measurement is"
+            " another grammar: `measured {}`).");
+    }
+    if (!entry->found("interpolation"))
+        throw std::runtime_error(where + ": the pin of table `" + name + "` needs `interpolation"
+            " <word>;` -- linear, logLinear, logReciprocal or monotoneCubic (always declared).");
+
+    auto body = std::make_shared<Dictionary>("table");
+    body->insert("model", EntryValue(std::string("table")));
+    body->insert("interpolation", entry->entryValue("interpolation"));
+    body->insert("columns", f.dict->entryValue("columns"));
+    body->insert("data", f.dict->entryValue("data"));
+    if (entry->found("extend")) body->insert("extend", entry->entryValue("extend"));
+
+    auto law = std::make_shared<recordLaws::Law>();
+    law->name = name;
+    law->type = "table";
+    law->body = body;
+    law->home = "case " + f.where;
+    recordLaws::readTableLaw(*law, property, where + " (" + f.where + ")", true);
+
+    pin.law     = name;
+    pin.caseLaw = law;
+    pin.caseSource = OriginInfo{};
+    pin.caseSource.origin = originFromWord(f.origin.empty() ? std::string("literature") : f.origin);
+    pin.caseSource.method = f.citation + (f.via.empty() ? std::string() : ", via " + f.via);
+    pin.caseSource.uncertainty = f.uncertainty;
 }
 
 } // namespace Choupo

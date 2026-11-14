@@ -107,6 +107,23 @@ void HeatCapacityModel::registerBuiltins()
     registerModel("NASA9",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<NASA9Cp>(d); });
+    //  A liquid or solid Cp given as points (C398 slice (c), addendum A2):
+    //  thermo/heatCapacity/TableCp.H.  Its object is built by the Component
+    //  that holds the law (Component::buildCp_), which knows the record's
+    //  molar mass and the law's name; this entry makes the type known to the
+    //  record reader, and refuses a build that has neither.
+    recordLaws::declareForm("heatCapacity", "table",
+        "Cp at the table's points (T, Cp), interpolated as declared (linear: Cp in T;"
+        " monotoneCubic: Fritsch-Carlson on Cp); H and S its closed-form integrals; the points"
+        " must contain 298.15 K; no value outside them; columns in declared units, converted to K"
+        " and J/(mol K) (a per-mass column with the record's molar mass)");
+    registerModel("table",
+        [](const DictPtr&) -> std::unique_ptr<HeatCapacityModel>
+        {
+            throw std::runtime_error("heat-capacity model `table`: a table law is built by the"
+                " component whose record or case pin holds it (it needs the record's molar mass and"
+                " the law's name); it cannot be built from a bare dictionary.");
+        });
 }
 
 bool HeatCapacityModel::hasModel(const std::string& name)

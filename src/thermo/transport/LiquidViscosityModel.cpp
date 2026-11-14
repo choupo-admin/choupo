@@ -30,6 +30,7 @@ License
 #include "Andrade.H"
 #include "ChemSepVisc101.H"
 #include "Vogel.H"
+#include "TableViscosity.H"
 #include "LiquidViscosityMixingRule.H"
 
 #include "thermo/RecordLaws.H"
@@ -93,6 +94,12 @@ void LiquidViscosityModel::registerBuiltins()
     registerModel("andrade", [](const DictPtr& d) { return std::make_unique<Andrade>(d); });
     registerModel("Vogel",   [](const DictPtr& d) { return std::make_unique<Vogel>(d); });
     registerModel("vogel",   [](const DictPtr& d) { return std::make_unique<Vogel>(d); });
+    //  A property given as points (C398 slice (c)): thermo/PropertyTable.H.
+    recordLaws::declareForm("liquidViscosity", "table",
+        "mu at the table's points (T, mu), interpolated as declared (linear: mu in T; logLinear: ln mu"
+        " in T; logReciprocal: ln mu in 1/T; monotoneCubic: Fritsch-Carlson on mu); no value outside"
+        " the points; columns in declared units, converted to K and Pa s");
+    registerModel("table",   [](const DictPtr& d) { return std::make_unique<TableViscosity>(d); });
     //  The mixing rules of the same property (C331), registered with it:
     //  a package that reads this model also reads its `mixingRule`.
     LiquidViscosityMixingRule::registerBuiltins();

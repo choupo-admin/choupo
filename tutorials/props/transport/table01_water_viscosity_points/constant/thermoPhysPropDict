@@ -1,0 +1,80 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table01 -- pure water's liquid viscosity, two ways in one run (DEV.md 4c
+    C398, slice (c): a table is a law type).
+
+    THE SYSTEM prices water on its record's preferred law (`vogel`, a fit).
+    THE VARIANT `crcPoints` pins water to the case's own TABLE of measured
+    points, constant/experiments/crcWaterMu.dat (eleven points, 0-100 degC,
+    read at the handbook page the file names), interpolated as ln mu linear
+    in 1/T (`logReciprocal`, the Arrhenius form) between them.
+    THE VARIANT `crcExtended` is the same table with a bounded extension to
+    110 degC, the only way past a table's last point: inside it the value is
+    the end segment's chord, the first excursion is announced and the largest
+    is restated at the end of the run.  Without it, the table REFUSES any
+    temperature outside its points -- an answer or a solver's trial state
+    alike -- because a table has no value there (the operation at 110 degC on
+    `crcPoints` shows that refusal, by name).
+
+    The resolved view of each package prints the law water took, who chose
+    it (with the pin's reason), the table's points, span, interpolation and
+    columns as declared, and its source.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { }      // no word: water's record law marked preferred (vogel)
+    }
+}
+
+variants
+{
+    crcPoints                           // only what differs from the system above
+    {
+        transport
+        {
+            liquid
+            {
+                viscosity
+                {
+                    pin ( { component water;  table crcWaterMu;  interpolation logReciprocal;
+                            reason "the evaluated values the record's fit was meant to reproduce, to see the fit's error point by point"; } );
+                }
+            }
+        }
+    }
+    crcExtended
+    {
+        transport
+        {
+            liquid
+            {
+                viscosity
+                {
+                    pin ( { component water;  table crcWaterMu;  interpolation logReciprocal;
+                            extend { upTo 110 degC;  reason "a superheated-liquid point 10 K past the table, to show the bounded extension and its announcement"; }
+                            reason "the evaluated values, extended by the end segment's chord"; } );
+                }
+            }
+        }
+    }
+}

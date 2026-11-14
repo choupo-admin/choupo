@@ -35,6 +35,7 @@ Description
 
 #include "RecordLaws.H"
 #include "PropertyDomainError.H"
+#include "PropertyTable.H"
 
 #include <cmath>
 #include <cstdio>
@@ -190,6 +191,7 @@ std::string modelLine(const std::string& who, const std::string& key, const std:
 
 double probeT(const Law& L, double Tc)
 {
+    if (L.isTable)   return 0.5 * (L.tableLo + L.tableHi);
     if (L.hasDomain) return 0.5 * (L.domainLo + L.domainHi);
     if (L.hasSoft)   return 0.5 * (L.softLo + L.softHi);
     if (Tc > 0.0 && L.type == "RowlinsonBondi") return 0.55 * Tc;
@@ -219,8 +221,44 @@ std::string familyOf(const std::string& property)
     return property;
 }
 
+void readTableLaw(Law& L, const std::string& property, const std::string& where, bool fromCase)
+{
+    //  A table's points are its domain: a written window would give one fact
+    //  a second home (and a soft window would announce what the table refuses).
+    for (const char* k : { "Trange", "Tmin", "Tmax", "Tlow", "Thigh", "domain" })
+        if (L.body->found(k))
+            throw std::runtime_error(where + ": `" + std::string(k) + "` in a table law -- its first and"
+                " last points ARE its domain, hard, and are never written (C398 slice (c)).");
+    if (!fromCase && L.body->found("extend"))
+        throw std::runtime_error(where + ": `extend` in a record -- a record holds what its source"
+            " measured; going past a table's points is a hypothesis of a CASE, written on the pin"
+            " that names a case's table (C398 end rule).");
+    //  The keys a table law reads, and the facts a component injects into the
+    //  bodies of its laws (owner, Tc, Pc, omega, Tb, MW, a liquid law's
+    //  ideal-gas block): anything else is read by nothing.
+    static const char* known[] = { "model", "interpolation", "columns", "data", "extend",
+                                   "owner", "Tc", "Pc", "omega", "Tb", "MW", "idealGasHeatCapacity" };
+    for (const auto& k : L.body->keys())
+    {
+        bool ok = false;
+        for (const char* s : known) if (k == s) { ok = true; break; }
+        if (!ok)
+            throw std::runtime_error(where + ": `" + k + "` is read by nothing -- a table law reads"
+                " `model table; interpolation <word>; columns ( ... ); data ( ... );`"
+                + std::string(fromCase ? " and the pin's `extend`" : "") + "; its source goes in"
+                " the record's provenance block.");
+    }
+    std::string cols;
+    const auto t = PropertyTable::fromLaw(L.body, property, where, 0.0, &cols);
+    L.isTable   = true;
+    L.tableLo   = t->lo();
+    L.tableHi   = t->hi();
+    L.tableText = "table: " + t->describe() + "; columns " + cols;
+}
+
 std::string Law::windowText() const
 {
+    if (isTable) return tableText;
     std::string s;
     if (hasSoft) s = "soft " + num(softLo) + "-" + num(softHi) + " K (announced outside)";
     if (hasDomain) s += std::string(s.empty() ? "" : "; ") + "hard " + num(domainLo) + "-"
@@ -278,6 +316,7 @@ Block parse(const DictPtr& block, const std::string& property,
         L.body = block;
         readSoft(L);
         readDomain(L, where);
+        if (L.type == "table") readTableLaw(L, property, where, false);
         b.shape = Block::Shape::oneLaw;
         b.laws.push_back(L);
         b.preferred = 0;
@@ -321,6 +360,7 @@ Block parse(const DictPtr& block, const std::string& property,
                     + "`, which is not a registered type of this property");
             readSoft(L);
             readDomain(L, where + "." + k);
+            if (L.type == "table") readTableLaw(L, property, where + "." + k, false);
             b.laws.push_back(L);
             continue;
         }

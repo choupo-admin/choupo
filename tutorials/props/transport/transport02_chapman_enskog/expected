@@ -43,7 +43,7 @@ diag    bench                  mu_Chung_N2      1.78433840676e-05  1e-4
 diag    bench                  mu_Chung_O2      2.04807435713e-05  1e-4
 diag    bench                  mu_Chung_water   8.07913816633e-06  1e-4
 diag    bench                  mu_mix_Wilke     1.65375100671e-05  1e-4
-diag    bench                  n_arithmetic_anchors 8                  1e-4
+diag    bench                  n_arithmetic_anchors 9                  1e-4
 diag    bench                  n_evaluated_k    2                  1e-4
 diag    bench                  n_evaluated_mu   2                  1e-4
 diag    bench                  n_models_k       2                  1e-4

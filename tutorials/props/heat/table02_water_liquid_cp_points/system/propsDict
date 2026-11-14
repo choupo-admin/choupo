@@ -1,0 +1,90 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table02 -- liquid water's Cp at 5, 25, 35 and 80 degC, and its enthalpy at
+    80 degC, two ways.
+
+    cpConstant_*   the record's preferred law (75.5 J/(mol K), constant).
+    cpTable_*      the variant `crcPoints`: the table, monotoneCubic.  25 and
+                   35 degC lie between points; 80 degC is a point, so the
+                   table returns the printed 4.1963 J/(g K) x M exactly.
+    h80_*          a flash specified by (P, H), whose H is that of the liquid
+                   at 80 degC and 1 bar: `ref_H` is the liquid enthalpy, the
+                   formation datum plus the sensible leg from 298.15 K -- for
+                   the table, the closed-form integral of its interpolant.
+
+    The golden master locks every computed value at reltol 1e-4.  */
+
+operations
+(
+    {
+        name        cpConstant_278K;
+        type        propertyPoint;
+        state       { T 278.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        cpConstant_298K;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        cpConstant_308K;
+        type        propertyPoint;
+        state       { T 308.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        cpConstant_353K;
+        type        propertyPoint;
+        state       { T 353.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        cpTable_278K;
+        type        propertyPoint;
+        thermo      crcPoints;            // the variant that pins the table
+        state       { T 278.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        cpTable_298K;
+        type        propertyPoint;
+        thermo      crcPoints;
+        state       { T 298.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        cpTable_308K;
+        type        propertyPoint;
+        thermo      crcPoints;
+        state       { T 308.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        cpTable_353K;
+        type        propertyPoint;
+        thermo      crcPoints;
+        state       { T 353.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        h80_constant;
+        type        flashSpec;
+        composition { water 1; }
+        spec        { pair PH;  P 1 bar;  targetFrom { T 353.15 K;  P 1 bar; } }
+    }
+    {
+        name        h80_table;
+        type        flashSpec;
+        thermo      crcPoints;
+        composition { water 1; }
+        spec        { pair PH;  P 1 bar;  targetFrom { T 353.15 K;  P 1 bar; } }
+    }
+);

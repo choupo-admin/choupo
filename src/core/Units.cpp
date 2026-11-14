@@ -226,6 +226,12 @@ const std::map<std::string, UnitSpec>& table()
         // ----- viscosity → Pa·s -----------------------------------------
         { "Pa.s",    UnitSpec{ 1.0,         Dims::viscosity } },
         { "cP",      UnitSpec{ 1.0e-3,      Dims::viscosity } },   // centipoise
+        //   The spellings measured liquid viscosities are printed in, for a
+        //   table column (C398 slice (c)): mPa s (= cP) and uPa s, the unit of
+        //   the evaluated water tables ("u" for the micro sign, which is not a
+        //   word character of the dictionary tokenizer).
+        { "mPa.s",   UnitSpec{ 1.0e-3,      Dims::viscosity } },
+        { "uPa.s",   UnitSpec{ 1.0e-6,      Dims::viscosity } },
 
         // ----- overall heat-transfer coefficient → W/(m²·K) -------------
         //   Used by Evaporator (and any future two-stream heat
@@ -269,6 +275,14 @@ const std::map<std::string, UnitSpec>& table()
         { "shortTon/kWh", UnitSpec{ 907.18474 / 3.6e6,    Dimensions{ 0, -2, 2, 0, 0 } } },
         { "shortTon/h",   UnitSpec{ 907.18474 / 3600.0,   Dims::massFlow } },
         { "J/kg/K",     UnitSpec{ 1.0,      Dims::heatCapacity } },
+        //   A SPECIFIC heat capacity as laboratories and handbooks print it
+        //   (C398 slice (c)); a molar Cp table in it is converted with the
+        //   record's molar mass, and the conversion is printed.
+        { "J/g/K",      UnitSpec{ 1.0e3,    Dims::heatCapacity } },
+        //   The molar heat capacity in a spelling the dictionary tokenizer
+        //   reads (`(` is not a word character, so `J/(mol.K)` cannot be
+        //   written as a table column's unit).
+        { "J/mol/K",    UnitSpec{ 1.0,      Dims::molarHeatCap } },
         { "N/m",        UnitSpec{ 1.0,      Dims::surfaceTension } },
         { "W/m2",       UnitSpec{ 1.0,      Dims::heatFlux } },
         //   A pressure gradient: the drop per metre a header is sized to (C199).

@@ -51,6 +51,10 @@ Description
                    today's liquidViscosity / liquidThermalConductivity shape:
                    `andrade { A; B; }`, `chemsepEq101 { ... }`).
 
+    A law of TYPE `table` (slice (c)) is a property given as points:
+    `model table; interpolation <word>; columns ( {name T; unit;} {name mu;
+    unit;} ); data ( ... );` with its source in the provenance block; its
+    points are its hard domain (thermo/PropertyTable.H).
     Every law keeps its type's own SOFT window keys (`Trange`, `Tmin`/`Tmax`,
     `Tlow`/`Thigh`: announced extrapolation, never refused) and may declare a
     HARD window, `domain (lo hi);` in K: outside it the law throws a typed
@@ -158,6 +162,14 @@ struct Law
     scalar softLo    = 0.0, softHi = 0.0;
     bool   hasDomain = false;    // the hard window `domain (lo hi);`
     scalar domainLo  = 0.0, domainHi = 0.0;
+    //  A law of type `table` (C398 slice (c)): its points ARE its domain,
+    //  hard, never written as a window; `tableText` is what the view and the
+    //  law's self-description print for it (points, span, interpolation,
+    //  columns as declared, the case's extension).
+    bool   isTable  = false;
+    scalar tableLo  = 0.0, tableHi = 0.0;
+    std::string tableText;
+    std::string home;            // "" = the record; a case table: its file
 
     //  How the law is named in a message: `vogel`, or "its one law".
     std::string label() const { return name.empty() ? std::string("its one law") : "`" + name + "`"; }
@@ -193,6 +205,13 @@ struct Block
 Block parse(const DictPtr& block, const std::string& property,
             const std::string& owner,
             const std::function<bool(const std::string&)>& isType);
+
+//  A LAW OF TYPE `table` (C398 slice (c)): checks its keys (a record's table
+//  carries `model table; interpolation; columns; data;` and no window and no
+//  `extend`; a case's table may carry `extend`), reads it once to validate
+//  it, and fills isTable / tableLo / tableHi / tableText.  `fromCase` admits
+//  `extend`.  Throws, naming `where`, on every rule of PropertyTable.
+void readTableLaw(Law& L, const std::string& property, const std::string& where, bool fromCase);
 
 
 } // namespace recordLaws

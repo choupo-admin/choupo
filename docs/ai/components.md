@@ -1449,6 +1449,21 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
   caught).  Each type's form and coefficient units: Theory Guide
   §"Several named laws in a record".  The five records holding two viscosity
   laws (benzene, ethanol, methanol, toluene, water) mark `preferred vogel;`.
+- **A LAW OF TYPE `table` (C398 slice (c)).**  `liquidViscosity`,
+  `liquidHeatCapacity` and `solidHeatCapacity` may hold measured points as a
+  named law: `crcMu { model table; interpolation logReciprocal; columns ( {
+  name T; unit degC; } { name mu; unit mPa.s; } ); data ( 0 1.793  20 1.002
+  ... ); }`, its source in the provenance block (`provenance {
+  liquidViscosity { crcMu { origin literature; method "<primary>, via
+  <route, page>"; } } }`; refused without).  Columns `T` and the property's
+  symbol (`mu`, `Cp`), each with a unit (`J/g/K` converted with `MW`);
+  interpolation always declared (`linear`, `logLinear`, `logReciprocal`,
+  `monotoneCubic`; a Cp table `linear` or `monotoneCubic` and its points
+  containing 298.15 K).  Its first and last points ARE its hard domain:
+  `Trange`/`Tmin`/`Tmax`/`domain` and `extend` are refused in a record (a
+  case extends its own table on its pin).  An `idealGasHeatCapacity` table is
+  refused (addendum A2(v)).  Theory Guide `sec:record-law-table`;
+  thermo.md "A table is a law type".
 - **WHAT A RECORD STORES (A3).**  Primitives once (formation datum in the
   natural phase, the Cp laws, `HvapTb`, the vapour-pressure laws, `Vliq`);
   never a derived quantity (h/s/g of another phase, a latent heat at T ≠ Tb,

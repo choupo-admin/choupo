@@ -47,6 +47,8 @@ License
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/heatCapacity/RowlinsonBondi.H"
+#include "thermo/heatCapacity/TableCp.H"
+#include "thermo/PropertyTable.H"
 #include "thermo/transport/LiquidViscosityModel.H"
 #include "thermo/transport/LiquidConductivityModel.H"
 #include "thermo/SurfaceTensionModel.H"
@@ -1059,6 +1061,13 @@ void Component::readFromDict(const DictPtr& d)
         }
     }
     self_->prov = provenanceMap_;
+    //  A RECORD'S TABLE CARRIES ITS SOURCE (C398 slice (c)): the heat-capacity
+    //  blocks are read above; the liquid transport blocks are checked when
+    //  their law object is built (ThermoPackage::pureLiquidViscosity).
+    for (const char* key : { "liquidHeatCapacity", "solidHeatCapacity", "idealGasHeatCapacity" })
+        if (laws_.count(key))
+            for (const auto& L : laws_.at(key).laws)
+                requireTableSource(key, L);
 
     // ---- Per-method molecular group decomposition (the curation recipe) -------
     // `groups { joback ( {group; count;} ... ); unifac ( ... ); }` -- method-keyed
@@ -1783,6 +1792,24 @@ void Component::buildCp_(const std::string& key, std::size_t idx)
     const recordLaws::Block& blk = laws_.at(key);
     const recordLaws::Law& L = blk.laws.at(idx);
     DictPtr body = L.body;
+    if (L.type == "table")
+    {
+        //  A HEAT CAPACITY GIVEN AS POINTS (C398 slice (c), addendum A2): built
+        //  here, where the record's molar mass (a per-mass column) and the
+        //  law's name and home (every message) are known.  The ideal-gas table
+        //  is refused by PropertyTable::fromLaw (A2(v)); a table that does not
+        //  contain 298.15 K by TableCp; a record's table without a source by
+        //  requireTableSources_ once the provenance block is read.
+        const std::string label = name_ + "'s " + key + " law " + L.label() + " ("
+            + (L.home.empty() ? std::string("its record") : L.home) + ")";
+        std::unique_ptr<HeatCapacityModel> m =
+            std::make_unique<TableCp>(PropertyTable::fromLaw(body, key, label, MW_));
+        m = std::make_unique<DomainBoundCp>(std::move(m), blk, idx, key, firstUse_<HeatCapacityModel>(key, idx));
+        if      (key == "liquidHeatCapacity")   cpLiq_   = std::move(m);
+        else if (key == "idealGasHeatCapacity") cpGas_   = std::move(m);
+        else                                    cpSolid_ = std::move(m);
+        return;
+    }
     if (!body->found("owner")) body->insert("owner", name_);
     if (key == "liquidHeatCapacity")
     {
@@ -1966,6 +1993,7 @@ std::function<void(const Model&)> Component::firstUse_(const std::string& proper
     const std::string by = lawChoice(property).by;
     const std::shared_ptr<RecordSelf> self = self_;
     const std::string lawName = L.name;
+    const std::string lawHome = L.home;      // a case's table: its file (C398 slice (c))
     const auto& blk = laws_.at(property);
     const std::string preferredName = blk.preferred >= 0 ? blk.laws[std::size_t(blk.preferred)].name : std::string();
     const double Tp = recordLaws::probeT(L, Tc_);
@@ -1981,7 +2009,7 @@ std::function<void(const Model&)> Component::firstUse_(const std::string& proper
         igLabel = ig.laws.at(std::size_t(gi)).token();
         TpIg = recordLaws::probeT(ig.laws.at(std::size_t(gi)), Tc_);
     }
-    return [self, property, window, token, type, name, by, lawName, preferredName, Tp, igLabel, TpIg](const Model& m)
+    return [self, property, window, token, type, name, by, lawName, lawHome, preferredName, Tp, igLabel, TpIg](const Model& m)
     {
         if (recordLaws::traceOn())
         {
@@ -1989,7 +2017,7 @@ std::function<void(const Model&)> Component::firstUse_(const std::string& proper
             try { v = valueOf(m, Tp); } catch (const std::exception&) {}
             recordLaws::traceCall(*self->pkg, recordLaws::selfLine(name, property, token, type, by, window,
                 sourceRule(self->prov, property, lawName, preferredName),
-                recordLaws::valueText(v, Tp), self->home));
+                recordLaws::valueText(v, Tp), lawHome.empty() ? self->home : lawHome));
             //  THE IDEAL-GAS LAW A RowlinsonBondi OBJECT HOLDS (review CV-20):
             //  described from the held copy, so a stale injection fails the gate.
             if constexpr (std::is_same<Model, HeatCapacityModel>::value)
@@ -2039,7 +2067,65 @@ void Component::readLiquidCpBlock_(const DictPtr& d)
     if (const auto* pins = RecordLawPinScope::active())
         for (const auto& p : *pins)
             if (p.component == name_ && p.property == "liquidHeatCapacity")
-                pinLaw(p.property, p.law, p.reason);
+                applyPin(p);
+}
+
+//  ---- a case's table, added to a constituent's block (C398 slice (c)) ------
+
+void Component::addCaseLaw(const std::string& property, const recordLaws::Law& law,
+                           const OriginInfo& source)
+{
+    const recordLaws::Block* existing = recordLaws(property);
+    if (!existing)
+    {
+        const std::string err = lawsError(property);
+        if (!err.empty())
+            throw std::runtime_error("the case's table `" + law.name + "` for " + name_ + "'s "
+                + property + ": the record's block cannot be read -- " + err);
+        recordLaws::Block b;
+        b.property = property;
+        b.owner    = name_;
+        b.shape    = recordLaws::Block::Shape::namedLaws;
+        laws_[property] = b;
+    }
+    recordLaws::Block& blk = laws_.at(property);
+    const int at = blk.indexOf(law.name);
+    if (at >= 0)
+    {
+        //  The same case law applied again (a second copy, a rebuilt
+        //  package): the identical file is accepted; a record law of the
+        //  same name is not displaced.
+        if (blk.laws[std::size_t(at)].home == law.home && !law.home.empty())
+        {
+            blk.laws[std::size_t(at)] = law;
+        }
+        else
+            throw std::runtime_error("the case's table `" + law.name + "` for " + name_ + "'s " + property
+                + ": the record already holds a law of that name -- rename the case's file"
+                  " (constant/experiments/<name>.dat) so the two are told apart.");
+    }
+    else
+        blk.laws.push_back(law);
+    provenanceMap_[property + "/" + law.name] = source;
+    self_->prov = provenanceMap_;
+}
+
+void Component::applyPin(const RecordLawPin& pin)
+{
+    if (pin.caseLaw) addCaseLaw(pin.property, *pin.caseLaw, pin.caseSource);
+    pinLaw(pin.property, pin.law, pin.reason);
+}
+
+void Component::requireTableSource(const std::string& property, const recordLaws::Law& law) const
+{
+    if (!law.isTable || !law.home.empty()) return;
+    if (lawSource(property, law.name) != "no provenance entry for this law") return;
+    throw std::runtime_error("component '" + name_ + "': " + property + " law " + law.label()
+        + " is a table with no source -- write it in the record's provenance block, `provenance { "
+        + property + " { " + (law.name.empty() ? std::string() : law.name + " { ")
+        + "origin literature; method \"<primary source>, via <route, page>\"; }"
+        + (law.name.empty() ? std::string() : " }") + " }` (C398 slice (c): a table without a source"
+          " is refused).");
 }
 
 } // namespace Choupo

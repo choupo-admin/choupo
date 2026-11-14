@@ -2874,7 +2874,7 @@ void ThermoPackage::resolveLiquidLaws(const std::string& key, const DictPtr& blo
         for (const auto& e : block->lookupDictList("pin"))
         {
             const std::string c = e->lookupWordOrDefault("component", "");
-            const std::string l = e->lookupWordOrDefault("law", "");
+            std::string l = e->lookupWordOrDefault("law", "");
             const std::string r = e->lookupWordOrDefault("reason", "");
             std::size_t i = N;
             for (std::size_t k = 0; k < N; ++k) if (components_[k].name() == c) { i = k; break; }
@@ -2884,6 +2884,19 @@ void ThermoPackage::resolveLiquidLaws(const std::string& key, const DictPtr& blo
                 for (const auto& comp : components_) have += (have.empty() ? "" : ", ") + comp.name();
                 throw std::runtime_error("transport " + words + ": pin names component '" + c
                     + "', which is not in the system (" + have + ").");
+            }
+            //  `table <name>` instead of `law <name>` (C398 slice (c)): the case's
+            //  points become a law of this constituent's block, then the pin
+            //  chooses it like any law.
+            {
+                RecordLawPin tp;
+                tp.component = c;
+                readCaseTablePin(e, rkey, tp, "transport " + words + ": pin of '" + c + "'");
+                if (tp.caseLaw)
+                {
+                    components_[i].addCaseLaw(rkey, *tp.caseLaw, tp.caseSource);
+                    l = tp.law;
+                }
             }
             if (l.empty() || r.empty())
                 throw std::runtime_error("transport " + words + ": the pin of '" + c + "' needs"
@@ -3056,7 +3069,8 @@ void firstUse(const std::string& tag, const Component& c, const std::string& rke
     recordLaws::traceCall(tag, recordLaws::selfLine(c.name(), rkey,
         law ? law->token() : std::string("its one law"), L.type, L.by,
         law ? law->windowText(recordLaws::familyOf(rkey)) : std::string("no window declared"),
-        c.lawSource(rkey, L.law), recordLaws::valueText(v, Tp), c.recordHome()));
+        c.lawSource(rkey, L.law), recordLaws::valueText(v, Tp),
+        law && !law->home.empty() ? law->home : c.recordHome()));
 }
 
 //  A predictive model a constituent runs on (review CV-20), once per package.
@@ -3090,6 +3104,10 @@ scalar ThermoPackage::pureLiquidViscosity(std::size_t i, scalar T) const
     auto& obj = liquidViscosityObj_.at(i);
     if (!obj)
     {
+        //  A record's table carries its source (C398 slice (c)).
+        if (const auto* blk = components_[i].recordLaws("liquidViscosity"))
+            if (const auto* law = blk->find(L.law))
+                components_[i].requireTableSource("liquidViscosity", *law);
         obj = LiquidViscosityModel::New(modelDict(L.type)); obj->bindLaw(L.law);
         const auto* o = obj.get(); const Component& ci = components_[i];
         firstUse(identity_, ci, "liquidViscosity", L, [o, &ci](double t) { return o->viscosityLiquidPure(ci, t); });
@@ -3180,9 +3198,13 @@ std::vector<RecordLawPin> ThermoPackage::readRecordLawPins(const DictPtr& system
             p.property  = h.property;
             p.law       = e->lookupWordOrDefault("law", "");
             p.reason    = e->lookupWordOrDefault("reason", "");
+            //  `table <name>` instead of `law <name>`: the case's points
+            //  (C398 slice (c)), read from constant/experiments/<name>.dat.
+            if (!p.component.empty())
+                readCaseTablePin(e, h.property, p, where + ": pin of '" + p.component + "'");
             if (p.component.empty() || p.law.empty() || p.reason.empty())
                 throw std::runtime_error(where + ": a pin needs `component <name>;`,"
-                    " `law <name>;` and `reason \"...\";`.");
+                    " `law <name>;` (or `table <name>;`) and `reason \"...\";`.");
             if (!seen.insert(p.component).second)
                 throw std::runtime_error(where + ": '" + p.component + "' is pinned twice;"
                     " one constituent holds one law.");
