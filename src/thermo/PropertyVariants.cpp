@@ -159,12 +159,26 @@ DictPtr body(const DictPtr& system, const std::string& name,
     {
         std::string list;
         for (const auto& n : declared) list += (list.empty() ? "" : ", ") + n;
+        //  NAME THE FILE (review row SA-05): a sector unit resolves against
+        //  its SECTOR's dictionary, which may hold no variants while the
+        //  case's root file does -- "its constant/thermoPhysPropDict
+        //  declares no variants" was false for the root.  The sentence names
+        //  the file read and says variants are not inherited.
+        const std::string file = system->sourceName().empty()
+            ? std::string("constant/thermoPhysPropDict") : system->sourceName();
+        const bool sector = file != "constant/thermoPhysPropDict"
+                         && file.find("sectors/") != std::string::npos;
         throw std::runtime_error(who + ": `thermo " + name + ";` names no"
-            " variant of this case's property dictionary -- "
+            " variant of the property dictionary it resolves against ("
+            + file + ") -- "
             + (declared.empty()
-                ? std::string("its constant/thermoPhysPropDict declares no"
-                              " `variants {}` block.")
+                ? std::string("that file declares no `variants {}` block.")
                 : "the variants it declares are: " + list + ".")
+            + (sector
+                ? "  Variants are NOT inherited through `inherits`: a variant a"
+                  " sector's units select is declared in the sector's own"
+                  " dictionary."
+                : "")
             + "  A unit or an operation selects a variant by the name it has"
               " under `variants {}` (or writes an inline `thermo { ... }`).");
     }

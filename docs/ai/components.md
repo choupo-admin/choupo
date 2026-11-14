@@ -1433,7 +1433,11 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
   record's one provenance block, by property and law: `provenance {
   vaporPressure { SR1 { origin literature; method "..."; } } }`.  A law may
   carry `check { T 298.15 K; value <v> <unit>; tolerance <fraction>; }` — a
-  value from its own source, read back through the law by the gate
+  number its SOURCE PRINTS, with a TRANSCRIPTION tolerance (half a unit of the
+  last printed digit), never a fit's residual — or, for a law fitted to a
+  reference formulation the tree evaluates, `check { formulation <name>; }`
+  (the formulation is evaluated over the law's window, within its own
+  published uncertainty); read back through the law by the gate
   `check_record_law_values` (the only way a coefficient in another unit is
   caught).  Each type's form and coefficient units: Theory Guide
   §"Several named laws in a record".  The five records holding two viscosity

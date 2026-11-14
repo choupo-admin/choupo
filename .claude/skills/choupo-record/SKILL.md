@@ -148,7 +148,10 @@ siblings:
   Never a provenance entry inside another block (gate
   `check_provenance_home`).
 - `check { T <v> <unit>; value <v> <unit>; tolerance <fraction>; }` inside a
-  law is a value from the law's own source, read back through the law (gate
+  law is a number its SOURCE PRINTS, with a TRANSCRIPTION tolerance (half a
+  unit of the last printed digit), never a fit's residual; a law fitted to a
+  reference formulation the tree evaluates writes `check { formulation
+  <name>; }` and stores no number.  Read back through the law (gate
   `check_record_law_values`): a CHECK, never a second source.
 - A record stores each quantity's PRIMITIVE once and never types a DERIVED
   one (h/s/g of another phase, a latent heat at T other than Tb, a slope of

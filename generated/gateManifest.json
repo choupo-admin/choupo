@@ -578,8 +578,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 2848 component record(s) scanned (data/standards/components + every tutorial constant/components) the 92 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
-      "seconds": 0.3
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 3030 component record(s) scanned (data/standards/components + every tutorial constant/components) the 103 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.4
     },
     "check_layering": {
       "exit": 0,
@@ -1778,18 +1778,23 @@
     },
     "check_record_law_values": {
       "exit": 0,
-      "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 rel -0.001803); laws without a check (the pinned debt): 2539; records not loadable alone: 64",
+      "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 (evaluated) rel +0.00644 within 0.007); laws without a check (the pinned debt): 2539; records not loadable alone: 64",
       "seconds": 0.9
     },
     "check_record_primitives": {
       "exit": 0,
-      "claim": "check_record_primitives: OK -- no record types a derived quantity beyond the pinned 2 (NaOH's solid formation datum, a second home under the salt contract); dGf_298 CHECKs: 45, comparison not yet computed (pinned); phase rungs: 0",
-      "seconds": 0.7
+      "claim": "check_record_primitives: OK -- no record types a derived quantity beyond the pinned 1 (NaOH's solid formation enthalpy, a second home under the salt contract); dGf_298 CHECKs: 45, comparison not yet computed (pinned); labelled: 1 (NaOH.S_298: PRIMITIVE (a salt's solid entropy))",
+      "seconds": 0.8
     },
     "check_provenance_home": {
       "exit": 0,
       "claim": "check_provenance_home: OK -- 4726 records read; every property provenance entry is in its record's provenance block (4 pinned law blocks carry their own `origin`, the debt)",
       "seconds": 3.4
+    },
+    "check_record_law_pins": {
+      "exit": 0,
+      "claim": "check_record_law_pins: OK -- a pinned record law gives every number the same law gives when preferred, in 8 arms over the five formulations (gammaPhi benzene.vaporPressure: pinned = preferred over 177 numbers, 110 moved by the law; gammaPhi benzene.liquidHeatCapacity: pinned = preferred over 177 numbers, 9 moved by the law; diluteSolution water.vaporPressure: pinned = preferred over 60 numbers, 25 moved by the law; electrolyteGammaPhi water.vaporPressure: pinned = preferred over 105 numbers, 3 moved by the law; electrolyteGammaPhi reactive ethanol.vaporPressure: pinned = preferred over 84 numbers, 2 moved by the law; electrolyteGammaPhi reactive water.liquidHeatCapacity: pinned = preferred over 84 numbers, 6 moved by the law; gammaGamma compA.vaporPressure: pinned = preferred over 65 numbers, 27 moved by the law; phiPhi propane.vaporPressure: pinned = preferred over 63 numbers, 0 moved by the law (the property does not enter this result)).  NOT CHECKED: whether either law is right; the time-integrated binaries.",
+      "seconds": 0.5
     }
   }
 }

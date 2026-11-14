@@ -261,4 +261,25 @@ inline ChemistrySystem resolveChemistryContext(const std::string& constantDir)
     return resolveChemistryContext(constantDir, visited);
 }
 
+//  A UNIT'S `thermo` IN A TIME-INTEGRATED BINARY (DEV.md 4c C398, review
+//  row SA-01).  choupoBatch, choupoCtrl and choupoSemiContinuous build ONE
+//  package for the run and hand it to every unit; nothing in their drivers
+//  reads a unit's `thermo` -- a named variant (`thermo <name>;`) or an inline
+//  block -- so it was ignored in silence and the run printed numbers the
+//  author had not asked for.  Honouring it would need per-unit packages in
+//  the time loop, which is not the steady flowsheet's code path; so it is
+//  refused by name until it is built.  Measured 2026-11-14: no shipped
+//  time-integrated case carries one.
+inline void refuseUnitThermoInTimeIntegrated(const DictPtr& unitDict,
+                                             const std::string& binary)
+{
+    if (!unitDict->found("thermo")) return;
+    throw std::runtime_error(binary + ": unit '"
+        + unitDict->lookupWordOrDefault("name", "?") + "' declares `thermo` -- "
+        "per-unit thermodynamics is not supported by the time-integrated "
+        "driver (one package serves every unit of the run); declare the "
+        "change in the case's system (constant/thermoPhysPropDict), or run "
+        "the unit in choupoSolve, which honours a unit's `thermo`.");
+}
+
 } // namespace Choupo

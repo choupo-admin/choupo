@@ -76,6 +76,8 @@ private:
     scalar low_[5]  = {0, 0, 0, 0, 0};   // a1..a5, Tlow..Tcommon
     scalar high_[5] = {0, 0, 0, 0, 0};   // a1..a5, Tcommon..Thigh
     scalar Tlow_ = 200.0, Tcommon_ = 1000.0, Thigh_ = 3500.0;
+    std::string owner_;                       // the component, for the announcement
+    void noteRange(scalar T) const;           // outside Tlow..Thigh: announced once
     inline static const std::string name_ = "NASA7";
 };
 

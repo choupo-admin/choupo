@@ -13,7 +13,12 @@ logarithm base where it is registered; the resolved view prints it), and the
 only way a coefficient written in another unit is caught is to evaluate the
 law at a state its own source tabulates and compare.  A law may therefore
 carry `check { T <value> <unit>; value <value> <unit>; tolerance <fraction>; }`
--- a value from the law's source, compared, never a second source.
+-- a number its SOURCE PRINTS, with a TRANSCRIPTION tolerance (half a unit of
+the last printed digit, as a fraction), never a fit's residual; compared,
+never a second source.  A law fitted to a reference formulation the tree
+itself evaluates carries `check { formulation <name>; }` instead: the
+formulation is EVALUATED over the law's window and the law must lie within
+the formulation's own published uncertainty (ruling of 2026-11-14).
 
 WHAT IT CHECKS, over data/standards/components:
   1. every property block holding two or more laws marks one `preferred`,
@@ -22,8 +27,10 @@ WHAT IT CHECKS, over data/standards/components:
      and a case that asks them for their preferred law is refused there);
   2. `choupoProps --record-law-checks` (src/applications/choupoProps/
      RecordLawChecks.cpp) evaluates every law that carries `check` through
-     the engine's own law object: each must lie within its tolerance; a law
-     that cannot be evaluated, or a block the engine cannot read, fails;
+     the engine's own law object -- against the printed value, or against
+     the reference formulation evaluated over the law's window: each must lie
+     within its tolerance; a law that cannot be evaluated, or a block the
+     engine cannot read, fails;
   3. THE DEBT: the laws that carry no check value, counted per property, are
      pinned in debt_registry.LAWS_WITHOUT_CHECK; a count may only shrink (a new law without a
      check fails, a check added lowers the pin, said in the commit).  The
@@ -97,13 +104,15 @@ def main():
             not_loaded += 1
         elif status == "nocheck":
             nocheck[c[1]] = nocheck.get(c[1], 0) + 1
-        elif status == "checked":
+        elif status in ("checked", "evaluated"):
             rel, tol = float(c[8]), float(c[9])
-            checked.append(f"{c[0]}.{c[1]}.{c[2]} rel {rel:+.4g}")
+            what = "its check value" if status == "checked" else "the reference formulation"
+            checked.append(f"{c[0]}.{c[1]}.{c[2]} ({status}) rel {rel:+.4g} within {tol:g}")
             if not abs(rel) <= tol:
                 fails.append(f"{c[0]}: {c[1]} law `{c[2]}` ({c[3]}) at T = {c[5]} K answers {c[7]},"
-                             f" its check value is {c[6]}: relative {rel:+.4g} beyond the tolerance {tol}"
-                             " -- a coefficient in another unit, or a transcription error")
+                             f" {what} gives {c[6]}: relative {rel:+.4g} beyond the tolerance {tol}"
+                             " -- a coefficient in another unit, a logarithm in another base, or a"
+                             " transcription error")
         elif status in ("notEvaluable", "unreadable"):
             fails.append(f"{c[0]}: {c[1]} law `{c[2]}`: {status} -- {c[-1]}")
     for p, n in sorted(nocheck.items()):

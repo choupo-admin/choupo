@@ -709,10 +709,14 @@ public:
     const std::vector<LiquidLaw>& liquidLaws(const std::string& key) const;
 
     //  A case pin of a vapour-pressure or heat-capacity law (held by the
-    //  component), read from equilibrium.vaporPressure and
-    //  caloric.<record block>; applied once by the builder after assembly,
-    //  before any evaluation (C398 slice (b)).
-    void applyRecordLawPins(const DictPtr& system);
+    //  component), read from equilibrium.vaporPressure and caloric.<record
+    //  block> and checked (C398 slice (b)); the builder holds them in a
+    //  RecordLawPinScope for the whole assembly, so every copy of the
+    //  component is built pinned (Database::loadComponent), then verifies
+    //  that the package's own components carry each pin (SB-01).
+    static std::vector<struct RecordLawPin> readRecordLawPins(const DictPtr& system);
+    void verifyRecordLawPins(const std::vector<struct RecordLawPin>& pins,
+                             const std::string& formulation) const;
 
     // Mass density rho [kg/m³] of a phase at (T, P, z).  Three branches that
     // mirror the pure-fluid routing idiom:

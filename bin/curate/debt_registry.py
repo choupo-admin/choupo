@@ -826,21 +826,29 @@ LAWS_WITHOUT_CHECK_DEBT = {
 #  record types: NaOH(s) dissolves by its own `dissolutionEnthalpy`
 #  (NaOH.dat, solidPhases.sodiumHydroxide.calorimetric), so under the
 #  salt-formation contract (docs/architecture/settled-contracts.md, "Salt
-#  formation -- ION-DERIVED") its solid formation enthalpy is derived from its
-#  ions; the typed top-level Hf_298 / S_298 (NaOH.dat:29-30) are a second
-#  home, read by no engine code.
+#  formation -- ION-DERIVED") its solid formation ENTHALPY is derived from its
+#  ions: the typed top-level Hf_298 (NaOH.dat:29) is
+#  sum hfAq (Na -240120, OH -229990) - dissolutionEnthalpy (-44510) = -425600
+#  exactly, a derivative stored as data and read by no engine code.  Its
+#  ENTROPY S_298 (NaOH.dat:30) is NOT derivable from stored facts (no
+#  dissolution entropy is stored; the contract names the enthalpy only): it is
+#  a PRIMITIVE, and the gate labels it so (the architect's ruling on the
+#  reviewer's answer, 2026-11-14).
 RECORD_DERIVED_TYPED = {
     "NaOH.dat:Hf_298",
-    "NaOH.dat:S_298",
 }
 
 RECORD_DERIVED_TYPED_DEBT = {
     "why": "A record stores each quantity's primitive once and never types a "
-           "derived one; these are derived by a settled contract and typed "
-           "anyway.",
-    "remedy": "Delete them once the ion-derived route prints the same datum, "
-              "or turn them into a CHECK of that route (compared and "
-              "announced, never a source).",
+           "derived one; NaOH's solid formation enthalpy is derived by a "
+           "settled contract and typed anyway.",
+    "remedy": "Delete it once the ion-derived route prints the same datum, or "
+              "turn it into a CHECK of that route (compared and announced, "
+              "never a source).  A THIRD HOME of the same enthalpy exists: "
+              "bin/curate/check_ion_pins.py carries its own NaOH anchor, "
+              "-425610 J/mol, 10 J/mol from the record's -425600 -- resolve it "
+              "in the same change (the gate should read the one datum, not "
+              "carry its own); no value is changed by this registry.",
     "blocked": None,
 }
 

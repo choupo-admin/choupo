@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "NASA7Cp.H"
+#include "core/Advisory.H"
 #include "core/Constants.H"
 
 #include <algorithm>
@@ -54,6 +55,7 @@ NASA7Cp::NASA7Cp(const DictPtr& dict)
             throw std::runtime_error(std::string("NASA7Cp: `") + k + "` is required -- the"
                 " two coefficient ranges (Tlow-Tcommon, Tcommon-Thigh) are part of the law"
                 " and come from the same source as its coefficients");
+    owner_   = dict->lookupWordOrDefault("owner", "?");
     Tlow_    = dict->lookupScalar("Tlow");
     Tcommon_ = dict->lookupScalar("Tcommon");
     Thigh_   = dict->lookupScalar("Thigh");
@@ -66,8 +68,22 @@ const scalar* NASA7Cp::coeffsFor(scalar T) const
     return (T <= Tcommon_) ? low_ : high_;
 }
 
+//  THE WINDOW IS ANNOUNCED (C398 slice (b), review row SB-04): the two ranges
+//  Tlow..Thigh are the law's window; outside them the polynomial is still
+//  evaluated (extrapolated) and that is said once per component.
+void NASA7Cp::noteRange(scalar T) const
+{
+    if (T >= Tlow_ && T <= Thigh_) return;
+    AdvisoryLog::instance().addAnnouncedOnce(
+        "softWindow:NASA7@" + owner_, "validity", "warning", "component '" + owner_ + "'",
+        "NASA7 heat capacity evaluated at T = " + std::to_string(T) + " K, OUTSIDE its"
+        " declared range (" + std::to_string(Tlow_) + " " + std::to_string(Thigh_)
+        + ") -- extrapolated, still returned");
+}
+
 scalar NASA7Cp::Cp(scalar T) const
 {
+    noteRange(T);
     const scalar* a = coeffsFor(T);
     const scalar cpR = a[0] + T * (a[1] + T * (a[2] + T * (a[3] + T * a[4])));
     return constant::R * cpR;            // J/(mol·K)
@@ -103,6 +119,7 @@ scalar NASA7Cp::entropySeg_(scalar Ta, scalar Tb, const scalar* a) const
 
 scalar NASA7Cp::H(scalar T, scalar Tref) const
 {
+    noteRange(T);
     // Split at Tcommon when [Tref,T] straddles the two ranges, so each segment
     // uses its own coefficients.
     const scalar a = std::min(T, Tref);
@@ -116,6 +133,7 @@ scalar NASA7Cp::H(scalar T, scalar Tref) const
 
 scalar NASA7Cp::S(scalar T, scalar Tref) const
 {
+    noteRange(T);
     const scalar a = std::min(T, Tref);
     const scalar b = std::max(T, Tref);
     scalar val;

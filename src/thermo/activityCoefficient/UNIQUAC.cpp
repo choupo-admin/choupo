@@ -161,8 +161,8 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
         for (const auto& p : dict->lookupDictList("pairs"))
         {
             applyPair(p, "inline");
-            PairResolution r{ "UNIQUAC", p->lookupWord("i"), p->lookupWord("j"),
-                              "inline", "inline", "" };
+            PairResolution r{ "UNIQUAC", p->lookupWord("i"), p->lookupWord("j"), pairSourceOf(p).first,
+                              pairSourceOf(p).second, pairSourceOf(p).first == "inline" ? "" : pairSourceOf(p).second };
             ThermoResolutionLog::instance().add(std::move(r));
         }
 

@@ -184,8 +184,8 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
         for (const auto& p : dict->lookupDictList("pairs"))
         {
             applyPair(p, "inline");
-            recordResolution(p->lookupWord("i"), p->lookupWord("j"),
-                             "inline", "inline", "inline");
+            const auto ps = pairSourceOf(p);   // a record file, else inline (SA-03)
+            recordResolution(p->lookupWord("i"), p->lookupWord("j"), ps.first, ps.second, ps.second);
         }
 
     // ---- Phase 2: file lookup (case-local then standards) for any pair

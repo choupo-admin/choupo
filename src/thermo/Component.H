@@ -921,6 +921,7 @@ private:
     mutable std::map<std::string, std::string>       lawsError_;
     std::map<std::string, LawChoice>                 lawChoice_;
     void buildVP_(std::size_t lawIndex);
+    void readLiquidCpBlock_(const DictPtr& d);   // setLiquidCp's body (C398 SB-02)
     void buildCp_(const std::string& property, std::size_t lawIndex);
 
     // Per-value provenance, parsed-if-present (side-channel; never the hot path).

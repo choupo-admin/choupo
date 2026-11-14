@@ -140,10 +140,37 @@ Database::applyCaseOverlay(const std::string& name, DictPtr baseDict,
     return out;
 }
 
+namespace {
+thread_local const std::vector<RecordLawPin>* activePins = nullptr;
+}
+
+RecordLawPinScope::RecordLawPinScope(std::vector<RecordLawPin> pins)
+:   pins_(std::move(pins)), previous_(activePins)
+{
+    activePins = &pins_;
+}
+
+RecordLawPinScope::~RecordLawPinScope()
+{
+    activePins = previous_;
+}
+
+const std::vector<RecordLawPin>* RecordLawPinScope::active()
+{
+    return activePins;
+}
+
 Component Database::loadComponent(const std::string& name) const
 {
     Component c;
     c.readFromDict(componentDict(name));
+    //  THE CASE'S PINS (SB-01): applied here, where every copy is born, so
+    //  no assembly path can hold the record's preferred law while the view
+    //  prints the pin.
+    if (const auto* pins = RecordLawPinScope::active())
+        for (const auto& p : *pins)
+            if (p.component == name || p.component == c.name())
+                c.pinLaw(p.property, p.law, p.reason);
     return c;
 }
 

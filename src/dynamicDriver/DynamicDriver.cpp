@@ -646,11 +646,9 @@ try
     if (unitList.empty())
         throw std::runtime_error(cfg.binaryName + ": flowsheetDict has no units");
 
-    //  Seed initial holdup + inlet from 0/ INSIDE the functor: an outer
-    //  driver's dict clones do not carry runtime-inserted blocks, so each
-    //  pass seeds its own copy.  The authored-inline refusal still fires
-    //  (a clone mirrors the authored file); a dict this process already
-    //  seeded is skipped, never re-refused.
+    //  Seed initial holdup + inlet from 0/ INSIDE the functor (an outer driver's dict
+    //  clones carry no runtime-inserted blocks, so each pass seeds its own copy); the
+    //  authored-inline refusal still fires, a dict already seeded is never re-refused.
     {
         bool needSeed = false;
         for (const auto& uDict : unitList)
@@ -665,6 +663,8 @@ try
     units.reserve(unitList.size());
     unitNames.reserve(unitList.size());
 
+    for (const auto& uDict : unitList)
+        refuseUnitThermoInTimeIntegrated(uDict, cfg.binaryName);   // SA-01
     for (const auto& uDict : unitList)
     {
         const std::string uname = uDict->lookupWord("name");
