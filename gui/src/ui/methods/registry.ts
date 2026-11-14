@@ -81,7 +81,8 @@ export type MethodToolId =
   | "economics-errors" | "demand-forecast" | "plant-cost" | "plant-running-cost"
   | "site-process-price" | "campaign-plan" | "stack-dispersion" | "residue-curves"
   | "adsorption-isotherms" | "electrolyte-models" | "batch-adsorption" | "chromatography"
-  | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based";
+  | "operator-panels" | "fluidised-beds" | "fast-and-slow" | "equilibrium-or-rate-based"
+  | "one-flux-many-units";
 
 /** WHAT KIND OF TOOL THIS IS, and the field exists to keep a boundary legible
  *  rather than to switch behaviour.
@@ -989,6 +990,28 @@ export const METHOD_TOOLS: MethodTool[] = [
     origins: ["engine", "page", "assumption"],
     teaches: "The absorption factor A = L/(mV): how solute recovery scales with stage count when both lines are straight in the same basis — judged against the engine's stagewise absorber, which is itself a model (Henry's law, constant total flows), not a general rigorous absorber.",
     theory: "ch:absorber",
+  },
+  //  COMMISSIONED 2026-11-14 by Vitor (DEV.md 4c C401: "eu tenho imensas
+  //  dificuldades com lidar com a enormidade de formas de unidades com que os
+  //  coeficientes de transferencia de massa e globais sao definidos").  A notes
+  //  page: one interfacial flux, the forms of its film coefficients, Henry's
+  //  constants and overall coefficients, the overall coefficient's failure on a
+  //  curved line, a reaction in the liquid film, and six exercises.  ALL OF IT
+  //  IS THE PAGE'S ARITHMETIC (gui/src/case/oneFluxManyUnits.ts), every formula
+  //  read in a filed source at the equation it names; the engine is cited where
+  //  its rate-based segment and Henry records use one of the forms.
+  {
+    id: "one-flux-many-units", blurb: "Convert film coefficients and Henry constants; see a film reaction speed absorption.",
+    label: "One flux, many units: mass-transfer coefficients, Henry's law and reaction in the film",
+    discipline: "Separations & phase equilibria", kind: "notes", status: "live",
+    origins: ["page", "reference", "assumption"],
+    teaches: "One interfacial flux written five ways (k_y, k_c, k_p in the gas; k_x, k_L in the liquid; per area "
+      + "and per volume) and the drift factor of a film only one component crosses; Henry's law as a solubility or "
+      + "a volatility in seven variants and the slope m of y = m x; overall coefficients as resistances in series, "
+      + "the controlling film, and their failure on a curved equilibrium line; the Hatta number, the regimes and the "
+      + "enhancement factor of a reaction in the liquid film; and six worked exercises -- each formula read in a "
+      + "filed textbook or compilation at its equation number, all of it the page's own arithmetic.",
+    theory: "sec:rateBasedSegment",
   },
   {
     id: "pinch-composite", blurb: "Find the pinch and the minimum hot and cold utility.", label: "Pinch composite curves",

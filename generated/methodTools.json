@@ -282,8 +282,8 @@
       ]
     }
   ],
-  "liveTools": 89,
-  "registryTools": 89,
+  "liveTools": 90,
+  "registryTools": 90,
   "tools": [
     {
       "id": "what-is-temperature",
@@ -621,6 +621,19 @@
         "assumption"
       ],
       "href": "/app/?workspace=methods&tool=kremser"
+    },
+    {
+      "id": "one-flux-many-units",
+      "label": "One flux, many units: mass-transfer coefficients, Henry's law and reaction in the film",
+      "blurb": "Convert film coefficients and Henry constants; see a film reaction speed absorption.",
+      "discipline": "Separations & phase equilibria",
+      "teaches": "One interfacial flux written five ways (k_y, k_c, k_p in the gas; k_x, k_L in the liquid; per area and per volume) and the drift factor of a film only one component crosses; Henry's law as a solubility or a volatility in seven variants and the slope m of y = m x; overall coefficients as resistances in series, the controlling film, and their failure on a curved equilibrium line; the Hatta number, the regimes and the enhancement factor of a reaction in the liquid film; and six worked exercises -- each formula read in a filed textbook or compilation at its equation number, all of it the page's own arithmetic.",
+      "origins": [
+        "page",
+        "reference",
+        "assumption"
+      ],
+      "href": "/app/?workspace=methods&tool=one-flux-many-units"
     },
     {
       "id": "pinch-composite",

@@ -3120,6 +3120,57 @@
           }
         }
       ]
+    },
+    "one-flux-many-units": {
+      "references": [
+        {
+          "text": "Treybal, R. E. (1980). Mass-Transfer Operations, 3rd ed. McGraw-Hill. ISBN 0-07-065176-0.",
+          "note": "Film coefficients for diffusion through a stagnant component and for equimolar counter-diffusion (Eqs. 3.3-3.6, p. 48) and their conversions (Table 3.1, p. 49); overall coefficients as resistances in series, the shares of resistance and the general chords m' and m'' (Eqs. 5.1-5.19, pp. 108-111); the condition that an average overall coefficient needs a straight equilibrium line (p. 114).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/treybal-mass-transfer-operations-3ed.pdf (international edition 1981, copyright 1980; printed page = PDF page - 15): title page and ISBN 0-07-065176-0 read in the text layer; PDF pp. 61-65 and 123-131 read as page images (one-flux-many-units, C401)",
+            "date": "2026-11-14"
+          }
+        },
+        {
+          "text": "Seader, J. D.; Henley, E. J.; Roper, D. K. (2016). Separation Process Principles with Applications Using Process Simulators, 4th ed. Wiley.",
+          "note": "Two-film theory and overall coefficients, Eqs. 3-179 to 3-216, Table 3.12 (relationships among mass-transfer coefficients) and Example 3.18 (SO2 into water, a curved equilibrium line), pp. 76-80; reactive absorption, Eqs. 6-128 to 6-132 and Figure 6.45 (E against Ha), pp. 180-182.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/seader-separation-process-principles-4ed.pdf: authors, title, edition, publisher and year read from the title and copyright pages; PDF pp. 100-104 and 204-206 read as page images (printed page = PDF page - 24) (one-flux-many-units, C401)",
+            "date": "2026-11-14"
+          }
+        },
+        {
+          "text": "Sander, R. (2015). Compilation of Henry's law constants (version 4.0) for water as solvent. Atmos. Chem. Phys. 15, 4399–4981.",
+          "doi": "10.5194/acp-15-4399-2015",
+          "note": "The two fundamental types (solubility and volatility) and their variants, Eqs. 1-16 and the conversion Tables 1-4, pp. 4399-4403; the oxygen and ammonia rows of Table 6, pp. 4408 and 4410. Open access, CC BY 3.0.",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Handbooks-DataCompilations/sander2015-henrys-law-constants-compilation-v4.pdf: journal, volume, pages, year and the DOI read on the first page; PDF pp. 1-5, 10 and 12 read (pages 4399-4403, 4408, 4410) (one-flux-many-units, C401)",
+            "date": "2026-11-14"
+          }
+        },
+        {
+          "text": "Taylor, R.; Kooijman, H. A. (2014). Mass Transfer in Distillation. In: Distillation: Fundamentals and Principles, pp. 97–143.",
+          "doi": "10.1016/B978-0-12-386547-2.00003-X",
+          "note": "The low-flux coefficient as a velocity (Eq. 3.44, p. 111), the overall coefficient of a binary in velocity units (Eq. 3.68, p. 115), and the film model's flux through a stagnant component (Eqs. 3.77-3.82, p. 117).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Articles/Distillation/taylor2014-mass-transfer-in-distillation-chapter.pdf: chapter title, authors and the DOI read on the first page; Sects. 3.5-3.6 (PDF pp. 14-21) read in the text layer (one-flux-many-units, C401)",
+            "date": "2026-11-14"
+          }
+        },
+        {
+          "text": "Missen, R. W.; Mims, C. A.; Saville, B. A. (1999). Introduction to Chemical Reaction Engineering and Kinetics. Wiley. ISBN 0-471-16339-2.",
+          "note": "Gas-liquid reaction on the two-film model, Sect. 9.2, pp. 240-255: the Hatta number (Eqs. 9.2-40, 9.2-54), the enhancement factor E = Ha/tanh Ha (Eq. 9.2-49), van Krevelen and Hoftijzer's approximation (Eqs. 9.2-51, 9.2-52), the instantaneous limit (Eq. 9.2-53), the regime criterion (p. 253) and Example 9-6 (CO2 into NaOH).",
+          "verified": {
+            "method": "pdf",
+            "evidence": "Library copy Books/missen-introduction-chemical-reaction-engineering-kinetics-1ed.pdf: publisher, copyright 1999 and ISBN 0-471-16339-2 read in the text layer of the front matter; PDF pp. 258-276 read, pp. 269-272 as page images (printed page = PDF page - 18) (one-flux-many-units, C401)",
+            "date": "2026-11-14"
+          }
+        }
+      ]
     }
   }
 }
