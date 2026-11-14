@@ -36,6 +36,7 @@ Description
 #include "RecordLaws.H"
 #include "PropertyDomainError.H"
 
+#include <functional>
 #include <iomanip>
 #include <map>
 #include <sstream>

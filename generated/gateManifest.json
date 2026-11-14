@@ -218,8 +218,8 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 322 gate script(s) scanned; 7 waiver table(s) all resolve to debt_registry.py, and all 15 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
-      "seconds": 0.5
+      "claim": "check_debt_registry: OK -- 355 gate script(s) scanned; 11 waiver table(s) all resolve to debt_registry.py, and all 23 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
+      "seconds": 0.6
     },
     "check_decision_index": {
       "exit": 0,
@@ -559,7 +559,7 @@
     "check_inlet_resolution": {
       "exit": 0,
       "claim": "check_inlet_resolution: OK -- a flash at its feed's own (T, P) costs nothing on 3 case(s) (|Q| < 0.5 kW, R-E1), flash19's unit duty and balance report agree at 100 +- 0.5 % (R-E5), a feed pinned `phase liquid;` is priced as declared AND announced (R-E2), and the vacuum-flash control keeps its genuine pressure-drop duty.  THE PHASE PASS IS NOT GATED ON THE CONSUMER (source) and DOES NOT ACCUSE a supercritical vapour: ammonia02's converter outlet at 839.6 K -- 434 K above the highest pure Tc present -- draws no accusation, and neither do the two saturated separator outlets.  THE FLASH DUTY DISCARDS THE SAME SUPERCRITICAL ROOT THE REPORT DISCARDS, through ONE home (`flashState::supercriticalSplitDiscarded`, source-checked): ammoniaReactor04's separator, fed at 844.86 K, announces the discard at its site and ONCE on AdvisoryLog and closes at 100 +- 0.5 % beside the report's own discard line.  AN AUTHORED INLET IS READ AS WHAT IT MEANS DURING THE SOLVE: 17 units read it through `resolvedInletVaporFraction` (source), and the witness's undeclared superheated vapours leave the valve at their own T, the mixer and the splitter as vapours, with the plant's first law closed.  EVERY OUTLET SEARCH DISCARDS THE SAME ROOT: 4 searchers through `flashDiscardingSupercriticalSplit` (source), and a drum operated at 844.86 K publishes no liquid.  A PINNED PURE TWO-PHASE INLET IS READ AT ITS PIN BY EVERY UNIT: the one home asks `pinnedPureQuality` (source, no second home in the three units that used to), and an authored wet-steam inlet split in two leaves on both branches at its declared quality.  A DECLARED PURE-FLUID METHOD OWNS ITS COMPONENT'S SATURATION CURVE: `saturationPressure` is the one home (source; the package and both phases call it, and 7 named files alone read a record's curve), and under condenser01's IF97 package pure water at 1 bar is a liquid at 372.4 K and a vapour at 372.95 K, first law closed.  A CONVERSION REACTOR'S OUTLET IS ITS OWN EQUILIBRIUM: resolved through ONE home (`reactor/ReactorOutlet.cpp`, one `equilibriumAt`; no reactor resolves its own) and published on both paths of the conversion reactor, the cstr and the pfr (source); liquid water split to H2 + O2 leaves as a gas from all three and from both kinetic paths, H2 + O2 burnt to water leaves as a liquid, a `phase gas;` inlet is not carried to its liquid product and the departure is said once, first law closed on both fixtures.  THE CSTR'S AND THE PFR'S ENERGY SOLVES ARE ON THE PUBLISHED SURFACE (C77): an adiabatic cstr and pfr whose product boils at 1 atm publish a two-phase outlet and |Q_kW| <= 1e-6 kW, a jacketed cstr exactly its jacket's UA (T_c - T_out), the 1 atm multiplicity case keeps its three steady states, with no inlet-rung enthalpy left in either source.  A LIQUID BELOW ITS BUBBLE PRESSURE IS FOUND TWO-PHASE: the flash's phase test iterates the incipient phase through ONE home that BubblePoint::pressure also reads (source), and ammonia02's let-down liquid flashed 1 % either side of its own bubble pressure splits below and not above (P_bubble 20.000000 bar; V/F 7.926e-06 at -1 %, 0 at +1 %).  A LIQUID DENSITY THAT CANNOT BE PRICED REFUSES BY NAME: no NaN-blind guard in ThermoPackage::density (source), and a pipe carrying liquid ammonia with dissolved H2/N2/Ar names the supercritical component instead of printing -nan (the pipe exits 2 naming 'N2').  A COMPRESSOR REFUSES LIQUID IN ITS SUCTION: it reads the suction through `resolvedInletVaporFraction` (source), and compressor01 fed air two-phase and all liquid refuses quoting V/F and both remedies while the shipped vapour runs (80 K V/F = 0.549924, exit 2; 70 K V/F = 0, exit 2; as shipped exit 0).  NOT CHECKED: whether a NON-zero duty is right (only the identity has a closed form); the multi-condition cases' duties, which ride their goldens; whether the 1e-3 incipient band is the right number (it is a stated choice); the valve's, the adiabatic flash's and the pipe's discard by OUTPUT (no corpus state reaches them -- source only); any vapourless package, which the test skips by hasEos(); and the IF97 saturation curve OUTSIDE its window (273.15 .. 647.096 K), where the record answers announced -- no output arm reaches it; a pfr's heatExchange march by output (source only); and a PURE product on its own saturation jump, which the reactors announce and no fixture reaches.",
-      "seconds": 29.0
+      "seconds": 35.7
     },
     "check_internal_states": {
       "exit": 0,
@@ -678,7 +678,7 @@
     },
     "check_origin_census": {
       "exit": 0,
-      "claim": "check_origin_census: OK -- recounted at BOTH depths over 2999 file(s) carrying a `provenance {}`: 2344 origin declaration(s) as direct children and 3673 nested one level deeper in per-value blocks (6017 total; the largest are literature 2060, estimated 390, predictive 340, definition 339), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
+      "claim": "check_origin_census: OK -- recounted at BOTH depths over 3053 file(s) carrying a `provenance {}`: 2374 origin declaration(s) as direct children and 3775 nested one level deeper in per-value blocks (6149 total; the largest are literature 2060, estimated 414, fitted 395, predictive 340), and the five-axes record states exactly those numbers.  The record had this size wrong twice, each time by counting at one depth, and its own lesson is that praising a form and never reading its values is how a census misses the population it was written to find.  NOT DONE HERE: the migration itself -- whether `predictive` and `estimated` may collapse into one word is a scientific classification the contract and `core/Origin.H` disagree about, and is reserved; nor is any individual mark judged RIGHT for its value; nor is data/local/ or the groupEstimative lake read.",
       "seconds": 1.4
     },
     "check_origin_vocabulary": {
@@ -1779,17 +1779,17 @@
     "check_record_law_values": {
       "exit": 0,
       "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 rel -0.001803); laws without a check (the pinned debt): 2539; records not loadable alone: 64",
-      "seconds": 1.1
+      "seconds": 0.9
     },
     "check_record_primitives": {
       "exit": 0,
       "claim": "check_record_primitives: OK -- no record types a derived quantity beyond the pinned 2 (NaOH's solid formation datum, a second home under the salt contract); dGf_298 CHECKs: 45, comparison not yet computed (pinned); phase rungs: 0",
-      "seconds": 0.9
+      "seconds": 0.7
     },
     "check_provenance_home": {
       "exit": 0,
-      "claim": "check_provenance_home: OK -- 4723 records read; every property provenance entry is in its record's provenance block (4 pinned law blocks carry their own `origin`, the debt)",
-      "seconds": 6.5
+      "claim": "check_provenance_home: OK -- 4726 records read; every property provenance entry is in its record's provenance block (4 pinned law blocks carry their own `origin`, the debt)",
+      "seconds": 3.4
     }
   }
 }

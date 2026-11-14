@@ -36,9 +36,9 @@ License
 #include "thermo/VapourAssociation.H"
 #include "core/Constants.H"
 #include "core/Dimensions.H"
-
 #include <cmath>
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <variant>

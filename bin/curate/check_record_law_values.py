@@ -25,7 +25,7 @@ WHAT IT CHECKS, over data/standards/components:
      the engine's own law object: each must lie within its tolerance; a law
      that cannot be evaluated, or a block the engine cannot read, fails;
   3. THE DEBT: the laws that carry no check value, counted per property, are
-     pinned in PINNED below; a count may only shrink (a new law without a
+     pinned in debt_registry.LAWS_WITHOUT_CHECK; a count may only shrink (a new law without a
      check fails, a check added lowers the pin, said in the commit).  The
      records the engine cannot load as a component on their own (minerals,
      species-like records) are listed by count and are outside its reach.
@@ -41,23 +41,16 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from record_reader import PROPERTY_BLOCKS, laws_of, parse_file   # noqa: E402
+from debt_registry import LAWS_WITHOUT_CHECK, LAWS_WITHOUT_CHECK_DEBT   # noqa: E402  ONE home
 
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_record_law_values"
 OUT = ROOT / "build" / "recordLawChecks" / "checks.tsv"
 
-#  Laws WITHOUT a check value, per property block, pinned 2026-11-14 (C398
-#  slice (b)).  May only shrink.  The one check in the catalogue then: water's
-#  liquidThermalConductivity (its fit target, IAPWS R15-11, is in the tree).
-PINNED = {
-    "idealGasHeatCapacity":      592,
-    "vaporPressure":             543,
-    "liquidHeatCapacity":        514,
-    "liquidViscosity":           407,
-    "liquidThermalConductivity": 380,
-    "surfaceTension":            88,
-    "solidHeatCapacity":         15,
-}
+#  THE DEBT lives in the ONE registry (debt_registry.LAWS_WITHOUT_CHECK, with
+#  its why and remedy): the laws without a check value, per property block;
+#  a count may only shrink.
+PINNED = LAWS_WITHOUT_CHECK
 
 
 def main():
@@ -117,10 +110,11 @@ def main():
         pin = PINNED.get(p, 0)
         if n > pin:
             fails.append(f"{p}: {n} laws carry no check value, the pin is {pin} -- a new law comes"
-                         " with its check (`check {{ T; value; tolerance; }}` from its source)")
+                         " with its check -- " + LAWS_WITHOUT_CHECK_DEBT["remedy"])
         elif n < pin:
-            fails.append(f"{p}: {n} laws carry no check value, below the pin {pin} -- lower PINNED"
-                         " in this gate (the debt only shrinks, and says so)")
+            fails.append(f"{p}: {n} laws carry no check value, below the pin {pin} -- lower the count"
+                         " in debt_registry.LAWS_WITHOUT_CHECK (the debt only shrinks, and says"
+                         " so)")
     if fails:
         print(f"{NAME}: FAIL ({len(fails)})")
         for x in fails:

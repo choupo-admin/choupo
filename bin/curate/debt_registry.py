@@ -770,3 +770,100 @@ AQUEOUS_SOLVENT_NAME_DEBT = {
     "blocked": "A non-water Debye-Hueckel surface (A(T), molality basis on "
                "another solvent) is new physics, not a mechanical edit.",
 }
+
+
+#  C398 SLICE (b) (2026-11-14): THE RECORD-LAW GATES' WAIVERS.
+#
+#  check_provenance_home: a law block that carries its own provenance key
+#  (`origin`) beside its coefficients instead of an entry in the record's one
+#  provenance block.
+PROVENANCE_OUTSIDE_BLOCK = {
+    "data/standards/components/LiCl.dat:liquidHeatCapacity",
+    "tutorials/props/electrolyte/farelo_licl_range/constant/components/LiCl.dat:liquidHeatCapacity",
+    "tutorials/plant/lithiumBrinePlant/constant/components/LiCl.dat:liquidHeatCapacity",
+    "tutorials/plant/lithiumBrinePlant/constant/components/Li2CO3.dat:solidHeatCapacity",
+}
+
+PROVENANCE_OUTSIDE_BLOCK_DEBT = {
+    "why": "A property's provenance has ONE home, the record's top-level "
+           "`provenance {}` block (filed by property, and by law for a block "
+           "of several named laws).  These law blocks carry `origin` (and a "
+           "`why`) beside their coefficients, where the provenance reader "
+           "never looks.",
+    "remedy": "Move `origin` and its `why` into `provenance { <property> { "
+              "origin ...; } }` of the record (and of each sealed copy, "
+              "re-claimed with bin/curate/reclaim_sealed_record.py); then "
+              "delete the row -- the gate fails on a row that no longer fires.",
+    "blocked": None,
+}
+
+#  check_record_law_values: laws WITHOUT a check value, per property block,
+#  counted 2026-11-14; a count may only shrink.
+LAWS_WITHOUT_CHECK = {
+    "idealGasHeatCapacity":      592,
+    "vaporPressure":             543,
+    "liquidHeatCapacity":        514,
+    "liquidViscosity":           407,
+    "liquidThermalConductivity": 380,
+    "surfaceTension":            88,
+    "solidHeatCapacity":         15,
+}
+
+LAWS_WITHOUT_CHECK_DEBT = {
+    "why": "The units of a law's coefficients belong to its type (C398 U3); "
+           "the only way a coefficient written in another unit is caught is "
+           "to evaluate the law at a state its own source tabulates.  These "
+           "laws carry no such check value.",
+    "remedy": "For each law, read one value at a stated temperature from the "
+              "law's own source and write `check { T; value; tolerance; }` in "
+              "the law; lower the count in this table in the same commit.",
+    "blocked": "Most sources are not in the tree (fits to an archive, "
+               "databank imports): a check value must be read in the source, "
+               "not computed from the law it checks.",
+}
+
+#  check_record_primitives (A3, amended by ruling (c)).  A DERIVED quantity a
+#  record types: NaOH(s) dissolves by its own `dissolutionEnthalpy`
+#  (NaOH.dat, solidPhases.sodiumHydroxide.calorimetric), so under the
+#  salt-formation contract (docs/architecture/settled-contracts.md, "Salt
+#  formation -- ION-DERIVED") its solid formation enthalpy is derived from its
+#  ions; the typed top-level Hf_298 / S_298 (NaOH.dat:29-30) are a second
+#  home, read by no engine code.
+RECORD_DERIVED_TYPED = {
+    "NaOH.dat:Hf_298",
+    "NaOH.dat:S_298",
+}
+
+RECORD_DERIVED_TYPED_DEBT = {
+    "why": "A record stores each quantity's primitive once and never types a "
+           "derived one; these are derived by a settled contract and typed "
+           "anyway.",
+    "remedy": "Delete them once the ion-derived route prints the same datum, "
+              "or turn them into a CHECK of that route (compared and "
+              "announced, never a source).",
+    "blocked": None,
+}
+
+#  dGf_298 beside dHf_298 and s_298 is a CHECK (ruling (a)): a tabulated datum
+#  to be compared with dHf - T dSf from the record and its elements.  The
+#  comparison is not computed yet; these records carry one.
+DGF_CHECK_UNCOMPUTED = {
+    "R11", "R113", "R12", "R1234yf", "R1234zeE", "R1234zeZ", "R134a", "R13I1",
+    "R143a", "R21", "R218", "R22", "R236EA", "R245fa", "R32", "R365MFC",
+    "RC318", "cis2Butene", "cyclopentane", "cyclopropane", "diethylEther",
+    "dimethylEther", "ethylBenzene", "ethyleneOxide", "fluorine", "hfe143m",
+    "isoButane", "isoButene", "isohexane", "mXylene", "methylLinoleate",
+    "methylLinolenate", "methylOleate", "methylPalmitate", "methylStearate",
+    "nDecane", "nDodecane", "nNonane", "nUndecane", "neopentane", "novec649",
+    "oXylene", "pXylene", "propyne", "trans2Butene",
+}
+
+DGF_CHECK_UNCOMPUTED_DEBT = {
+    "why": "A redundant datum is accepted only as a CHECK, compared and "
+           "announced (A3).  These `dGf_298` are compared with nothing.",
+    "remedy": "Compute dHf_298 - 298.15 (s_298 - sum nu s_elements) per record "
+              "and compare (a curation gate or an engine announcement); then "
+              "the list empties.",
+    "blocked": "The elements' standard entropies must be read from one home "
+               "the comparison can share with the engine.",
+}
