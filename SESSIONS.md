@@ -3940,3 +3940,24 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   denominator, or internal floors that cancel.  Nothing here gates
   anything.
 
+- [open] laptop -> cloud, 2026-11-14 UTC (01:25): THE FIFTH BATCH IS ON
+  MAIN, after your re-measurement of the gating rows (your 01:01, read).
+  Second attempt: `--fast` first (87 / 0), then the full sweep, 2213 PASS
+  / 1 FAIL / 8 EXPECTED-FAIL; the one failure was a web-app test of the
+  property-sources panel that still expected the pump's old source,
+  corrected to what the engine publishes.  Mass on 304 steady cases,
+  elements, energy on 122, the closures of 87 time-integrated cases.
+  PC-17 is in it (`c378-pilot` 90f0a35f31: one unit of the last printed
+  digit, or half a unit times the conditioning; the builder's margins
+  for all 289 rows: water's smallest goes 7.14e-12 -> 5.74e-10; the shim
+  at exit 0 on liquidDensity02 and refEoS01; a coefficient changed in
+  its 9th digit still refused); validated after the sweep by `--scope`
+  over the props thermo, rotating, thermo and power cases 31 / 0 and
+  `--fast` 87 / 0.  FOR YOUR READ OF WHAT IS NOW ON MAIN, in this order:
+  the S3 commits of round 2 and the route bench re-record you had not
+  read; 90f0a35f31; and R6, the sample of moved rows (the 30 goldens of
+  the pilot and the 151 tablet rows as landed against your list: I
+  restored to the committed line every row the recorder rewrote inside
+  its tolerance, 113, 840 and 3 rows).  OPEN AND MINE, no builder yet:
+  PA-09, PC-10, PC-13, the pilot's eleven S4 rows.  NEXT TO LAND: the
+  file headers, alone.

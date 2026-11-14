@@ -3476,6 +3476,83 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **THE FIFTH INTEGRATION LANDED (2026-11-14, 01:20): THE LIQUID-DENSITY
+> PILOT AND FOUR CORRECTIONS, held by ONE FULL SWEEP on its second
+> attempt.**
+> WHAT ENTERED.  (1) C378, THE PILOT: a liquid density is resolved by a
+> KERNEL for two units, the pump and the CSTR (`src/thermo/liquidProperty/`:
+> methods as objects, resolved per constituent set and per world, frozen
+> for the run; record leaves, the reference equation of a fluid a record
+> names, with pressure; ideal mixing of leaves; a solution law with one
+> form and the NaOH-water record; a marked measurement with its box; the
+> declared hypothesis `massWithoutVolume` with its bound; a typed domain
+> error that a solver may reject as a trial).  30 goldens re-recorded by
+> its builder, each row listed with its reason class in the branch's
+> commit (density at the feed temperature through anchored leaves
+> instead of flat 25 C volumes: reactors at 350 K move by -7.1 %; the
+> water leaf on the reference equation; a solute declared without
+> volume); six demonstrations `liquidDensity01`..`06`; gates
+> `check_density_pilot` (42 arms) and `check_liquid_density_entry_callers`;
+> the Theory Guide's sections; the ratchet's pinned count fell.  REVIEWED
+> BY THREE REVIEWERS BY MEASUREMENT (docs/reviews/2026-11-13-c378-pilot/,
+> 44 rows): no wrong number among some thirty recomputed quantities; SIX
+> rows gated the landing and are closed, each re-measured by the
+> reviewer: two demonstrations did not run from what git holds (an
+> ignore rule hid their sealed record); a marked measurement over a
+> mass-without-volume leaf deadlocked; a reference record's load-time
+> check passed or failed on the last bit (now ONE unit of the last
+> printed digit, or half a unit times the row's conditioning); a sealed
+> case without the reference record priced water by another method than
+> its unsealed twin, in silence; a measurement that matched nothing was
+> dropped in silence; the mass-without-volume declaration had two
+> readers.  NOT DONE, by its builder's statement: eleven S4 rows.  (2)
+> TD-04, TD-16, TD-17 (the reviewing session's last build): a declared
+> or computed pure-fluid phase beyond the saturation band is refused by
+> name; the pump, the compressor and the turbine refuse a computed inlet
+> their own world places on the other side, naming both worlds; the pump
+> no longer publishes the inlet temperature when its discharge search
+> fails.  ITS FIRST FORM CRASHED: every outlet was stamped with its
+> world's saturation pressure through an unchecked pointer, and five
+> cases with a pure stream of an involatile component died with a
+> segmentation fault; found by the first sweep, fixed by its author.
+> WHERE IT MET THE PILOT: with the kernel's density at 550 K the pump's
+> shaft work is a third larger and the discharge search stepped across
+> the saturation line; the bracket is now the liquid interval and the
+> root is found.  (3) CI-00: a species a bed neither holds nor is fed
+> publishes no closure ratio (its residual in moles instead); a ratchet
+> counts the divisions by a floored scale (32 pinned).  (4) PH-03, PH-06:
+> a product clean is the campaign clean plus the product's own part; a
+> batch machine is priced and published on its installed size; 151 rows
+> moved in three tablet cases, exactly the reviewer's list, value for
+> value.
+> VALIDATION.  FIRST ATTEMPT, full sweep: 2189 PASS / 25 FAIL (the crash
+> and everything behind it; the pilot's two un-runnable demonstrations;
+> two missing `<map>` includes of the tablet branch; small generated
+> files).  SECOND ATTEMPT, after the fixes: `--fast` first, 87 / 0; then
+> THE FULL SWEEP: 2213 PASS / 1 FAIL / 8 EXPECTED-FAIL, the one failure a
+> web-app test of the property-sources panel that still expected the
+> pump's old source (corrected to what the engine publishes; its file
+> re-run, 15 tests; typecheck 0).  HELD in that sweep: mass on 304
+> steady cases, elements per atom, energy on 122, the own closures of 87
+> time-integrated cases; the web app's 8156 other tests.  AFTER THE
+> SWEEP two things entered (the one-digit tolerance of the reference
+> records' checks; that test): validated by what they reach: `--scope`
+> over the props thermo cases, the rotating, thermo and power
+> directories 31 / 0, `--fast` 87 / 0, the reference-equation, pilot,
+> seal and phase gates at exit 0.  The reason a full sweep was run at
+> all: the hand-over seam of the flowsheet, the thermophysical package
+> and the campaign writer are paths every case goes through.
+> LESSONS, each already a rule: the fast tier runs FIRST on a merged
+> tree (C394); a scope run that skips the sectored plants and the
+> utility cases proves nothing about a seam every unit crosses; a
+> builder's own tree can hide a file git ignores.  OPEN FROM IT, with no
+> builder yet: PA-09 (temperature and vapour fraction declared, P = 0
+> reaches the units; on main before this batch), PC-10 (a sealed case
+> reads the installation catalogue for solution records and utilities),
+> PC-13 (the time-integrated tank still prices water by the record's
+> correlation), the quasi-steady adapter without the hand-over check,
+> the pilot's S4 rows.
+
 > **C396 (Vitor, 2026-11-14: "tambem vais criar a forma de fazer o
 > design da coluna?  E de representar num esquema (semelhante ao do
 > permutador de calor) a forma detalhada interna da coluna?  Com parte de
