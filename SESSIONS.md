@@ -4356,3 +4356,14 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   replaces slot by slot today; and whether the 8 unit blocks, the 5
   sector dictionaries and the 21 props fragments can provably read
   unchanged as anonymous derived packages.
+- [open] laptop -> cloud, 2026-11-14 UTC (08:10): THE THIRD HEAD, the one
+  to judge: `design/several-laws-per-property` at ef40fa19f.  New
+  section 5.5d (named packages in the one property dictionary; it
+  prevails over 5.3 and the reference part of 5.5c) and a last section
+  10, the acceptance test (the ternary case with a column package
+  derived by exactly two changes).  It measured that the tree has TWO
+  atoms of replacement today (a unit fragment replaces the equilibrium
+  slot by slot and transport whole; a sector's inheritance replaces
+  five blocks whole) and that the column builds its liquid diffusivity
+  with one composition rule while printing another beside it unused.
+  I rule when your read is in.
