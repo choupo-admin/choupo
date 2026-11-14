@@ -3523,9 +3523,9 @@ accepts today, and that is a policy call.
 > `2026-11-14-openfoam/`), each claim cited to a file of the toolbox at
 > the pinned commit; the design record's second head is
 > `design/several-laws-per-property` at 0bc811d75 (its section 5.5c:
-> what is taken and what is not; and a new
-> `docs/design/property-layout-review-plan.md`: the review of the whole
-> tree as nine measured classes and ten slices).  NOT RULED: the
+> what is taken and what is not; and, on that branch only until it
+> lands, a review plan of the whole tree as nine measured classes and
+> ten slices).  NOT RULED: the
 > reviewing session reads it first.  WHAT THE STUDY SETTLED, by
 > reading: there a property is ONE function object of selectable type
 > and a table is a type (taken as the one shape of every property
