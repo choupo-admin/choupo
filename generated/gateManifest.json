@@ -694,7 +694,7 @@
     "check_overspecified_stream": {
       "exit": 0,
       "claim": "check_overspecified_stream: OK -- a MIXTURE stream file declaring T, P and vaporFraction is REFUSED naming the two-variable rule (Duhem), the three values and both remedies; vaporFraction 0/1 on a mixture refuses naming `phase liquid|gas;`; a PURE two-phase stream keeps its pin and the writer writes it back; flash01 (T and P only) shows ONE feed state on the stream surface, the flash KPI and the first law, with no impossible-phase accusation and no vaporFraction written back for the mixture; no tracked 0/ file under tutorials/ declares all three on a mixture; and a PURE stream declared by T and P alone ON its saturation curve (found by bisecting the engine's own reading to the flash's tolerance) is REFUSED as UNDETERMINED naming `phase liquid;` and `phase gas;`, runs once declared, while a mixture at its bubble point is untouched.  SCANNED: a fixture case written by this gate (five variants plus the two bisections), flash01, condenser01, every tracked 0/ file under tutorials/.  The SAME refusal reaches a unit's OWN thermo world (a splitter under an SRK vapour, bisected on its own branch reading, refuses naming that world; without the override the same T runs) and the time-integrated class (choupoSemiContinuous fed unsteady02's pure compA at its curve refuses by its own name; 1 K above, it runs).  NOT CHECKED: units that read their inlet's vf bare during the solve (valve, adiabaticFlash, heatExchanger, storageTank); a property-context world (same call, not exercised); choupoBatch (no authored inlet); the degenerate pure-component flash at saturation.",
-      "seconds": 4.4
+      "seconds": 13.4
     },
     "check_ownership_index": {
       "exit": 0,
