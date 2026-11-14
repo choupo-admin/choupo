@@ -28749,10 +28749,26 @@ the inline keys.  Three sources, and the run prints which one gave each value:
   reason "..."; \} \}}, printed as borrowed with its reason.  It never enters
   a record.
 \end{itemize}
-A geometry key typed beside \code{record} is refused (it would override the
-record in silence), and so is a field the chosen correlation reads that none
-of the three supplies; the refusal names the field and the correlation.  The
-two correlations do not read the same geometry:
+Not every value can come from every source.  A geometry value may be
+installed or borrowed; the \code{surface} is a property of the product, so it
+is the record's alone (a bed of another surface is another packing); $F_{SE}$
+is a constant of a packing under one correlation, so it is the record's or
+borrowed, never installed.  A key typed beside \code{record} is refused (it
+would override the record in silence), and the refusal names only the remedy
+the reader accepts; so is a field the chosen correlation reads that none of
+the three supplies (the refusal names the field and the correlation), an
+unknown correlation word (refused first, with the inline form's message), a
+record whose \code{name} is not its file's name (the seal copies it by that
+name), and a value outside its range wherever it is written --- in a record,
+under \code{installed}, borrowed, or inline in an old-form block ($0 <
+\varepsilon < 1$, $0 \le \Omega < 1$, $0 < \theta < 90^\circ$, lengths and
+areas positive).  A borrowed value keeps its lender's estimate mark, and one
+borrowed from a random packing is announced as such.  A record-backed bed
+publishes the geometry it was solved with as the KPIs
+\code{packing\_specificArea\_m2\_m3}, \code{packing\_voidFraction} and
+\code{packing\_corrugationAngle\_deg}, which the GUI's column sheet draws (an
+inline bed publishes none: its block is the resolved geometry).  The two
+correlations do not read the same geometry:
 \begin{center}
 \begin{tabular}{lll}
 \hline

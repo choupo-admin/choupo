@@ -7,56 +7,66 @@ where each value came from, and refuses by name what a correlation lacks.
     bin/curate/check_packing_record.py
 
 WHAT IT HOLDS (DEV.md 4c C329 "where a packing's data live", C398 slice (e);
-Theory Guide sec:packing-record; src/unitOperations/distillation/PackingRecord.{H,cpp}).
+Theory Guide sec:packing-record; src/unitOperations/distillation/PackingRecord.{H,cpp};
+the review rows PK-01..PK-10, docs/reviews/2026-11-14-packing-record/).
 
-  (1) THE WITNESS REPRODUCES ITS TWIN.  packing05_schulz_record_0p10bar (the
-      geometry from a case-local record, the installed area and void fraction
-      from the case, the corrugation side borrowed from the catalogue record
-      SulzerBX) and packing01_schulz_0p10bar (the same four numbers typed
-      inline), both at the declared F-factor (outerDict removed): every
-      column KPI EQUAL, exactly (the resolved values are the same doubles).
-      The witness's log must say that the installed 478 replaces the
-      record's nominal 500, and that the side is borrowed from SulzerBX as a
-      hypothesis of the case; the unread-key audit must not name `record`,
-      `installed` or `borrowed`.
-  (2) THE RATE-BASED SOLVER READS IT TOO.  ratebased01_schulz_0p10bar and a
-      copy whose `packing {}` is the witness's (record + installed +
-      borrowed): every column KPI equal, exactly.  (RateBasedSegment.cpp is
-      not touched: it reads the resolved copy through its own lookups.)
-  (3) A CATALOGUE RECORD SERVES DELFT.  packing03_schulz_delft_0p10bar's bed
-      with `record MontzB1-250; model Delft;` and no geometry typed: exit 0,
-      every Delft field printed `nominal (record)`.
-  (4) THE INLINE FORM IS UNTOUCHED in the one way a gate can see: the
-      packing01 log carries no packing-record line.  (Byte-identity of every
-      shipped packed case's log against the parent build was measured by
-      hand for the slice; this arm is the re-runnable part.)
-  (5) REFUSALS, each by name: the witness without `borrowed` (names
-      `corrugationSide`, `RochaBravoFair` and the record); SulzerBX under
-      Delft (names the four fields Delft reads and the source does not
-      print); MontzB1-250 under Rocha-Bravo-Fair (names `surfaceEnhancement`,
-      F_SE of a sheet-metal surface); a geometry key typed beside `record`
-      (names `installed`); an unknown record; `installed {}` without a
-      source; `installed { diameter }`; a borrowed value with no reason; a
-      borrowed value from the column's own record; a RANDOM packing record.
+  (1) THE WITNESS REPRODUCES ITS TWIN.  packing05_schulz_record_0p10bar (a
+      case-local record, the installed area and void fraction, the side
+      borrowed from SulzerBX) against packing01_schulz_0p10bar (the same four
+      numbers inline), both at the declared F-factor: every KPI the twin
+      publishes EQUAL, exactly; the three `packing_*` KPIs the record-backed
+      bed adds equal the resolved 478, 0.92 and 60; the printed source of
+      every value compared ROW BY ROW (value and label); and the unread-key
+      audit names NO key at all on the witness (PK-05).
+  (2) THE RATE-BASED SOLVER READS IT TOO.  ratebased01 against a copy whose
+      `packing {}` is the witness's: every shared KPI equal, exactly; no
+      unread key.
+  (3) THE CATALOGUE NUMBERS ARE PINNED (PK-07).  (a) packing03's bed from
+      `record MontzB1-250; model Delft;`: every Delft field printed `nominal
+      (record)` and four KPIs held to the values stated below (relative
+      1e-6).  (b) The witness's sealed mirror of SulzerBX is the catalogue
+      record: the manifest's originSha256 equals the catalogue file's sha256,
+      or this gate reports the drift.
+  (4) A SHEET-METAL RECORD RUNS (PK-06, E3).  A probe record (MontzB1-250's
+      geometry with an F_SE, written in the temporary case only, never
+      shipped) under Rocha-Bravo-Fair: exit 0, `surface sheetMetal` and F_SE
+      printed from the record, every KPI equal to the same bed typed inline.
+      And the PK-02 remedy followed: MontzB1-250 with F_SE BORROWED from the
+      probe runs to the same numbers.
+  (5) MARKS (PK-04, PK-09, E8).  An estimate in the column's record is printed
+      on its nominal line; an estimate in the LENDING record is printed on
+      the borrowed line; a value borrowed from a RANDOM packing runs, is
+      announced as such, and moves nothing.
+  (6) THE INLINE FORM: packing01 prints no packing-record line and publishes
+      no `packing_*` KPI.
+  (7) REFUSALS, each by name: no `borrowed` (names `corrugationSide`,
+      `RochaBravoFair` and the record); SulzerBX under Delft (the four
+      fields); MontzB1-250 under Rocha-Bravo-Fair (`surfaceEnhancement`); an
+      unknown model word FIRST, with the inline message (PK-01); a geometry
+      key, `surface` and `surfaceEnhancement` each typed beside `record`, each
+      with the remedy the reader accepts (PK-02, E5); an unknown record;
+      `installed {}` without a source; `installed { diameter }`; a borrow
+      without a reason; a borrow from the column's own record; a RANDOM
+      record; a void fraction of 1.5 in a record, under `installed`, and
+      inline in a shipped-shape case, and an angle of 95 deg (PK-03, E4); a
+      record whose `name` is not its file name (PK-08).
 
 WHAT IT DOES NOT CHECK: that the catalogue records transcribe their papers
-(read by the author, cited by table and page in each record; no second
-transcription exists); that a packing correlation is right for a packing it
-was not fitted to (Theory Guide sec:packing-schulz).
+(read by the author and by the reviewer, page by page; no gate can); that a
+packing correlation suits a packing it was not fitted to.
 
-SABOTAGE-VERIFIED BY HAND (2026-11-14), each in PackingRecord.cpp, rebuilt,
-run, restored and rebuilt; observed output:
-  S1 (resolution) the installed value ignored in the resolution, the record's
-                  taken (`if (installed.count(f))` -> `if (false)`) -> arms
-                  (1) and (2) FAIL: "witness exit 2, twin exit 0: ERROR:
-                  map::at" (the record states no void fraction, so the
-                  sabotaged resolution has nothing to take).
-  S2 (refusal)    the missing-field check disabled (`if (false && ...)`) ->
-                  arm (5) FAILS on three probes: "no_borrowed: exit 2, missing
-                  ['corrugationSide', 'RochaBravoFair', 'MontzA3-500M']:
-                  ERROR: map::at" (and sulzerbx_delft, b1_rbf) -- the run
-                  dies without naming the field, the correlation or the record.
+THE SABOTAGES (the review's table E1-E8, each against this gate; E2, E4 and
+E8 also run by check_gate_selftest):
+  E1 the installed-without-nominal label -> "nominal (record)": arm (1) rows.
+  E2 transferReads disabled: arm (1), the audit names 8 keys.
+  E3 the surface inserted as "gauze" always: arm (4), KPIs differ.
+  E4 the range check off: arm (7), four probes run to exit 0.
+  E5 `surface` dropped from the typed-beside list: arm (7).
+  E6 the BORROWED label replaced: arm (1) rows.
+  E7 `installed` without a source accepted: arm (7).
+  E8 the estimate mark on a nominal value dropped: arm (5).
 """
+import hashlib
 import json
 import os
 import re
@@ -74,7 +84,19 @@ RATE = DIST / "ratebased01_schulz_0p10bar"
 DELFT = DIST / "packing03_schulz_delft_0p10bar"
 NAME = "check_packing_record"
 
+#  (3a) The Delft bed of packing03 (1.22 m, 2.2 m, xylenes, 0.10 bar, F 1.5)
+#  filled with the catalogue's MontzB1-250, as this gate first ran it
+#  (2026-11-14, branch c398/slice-e-packing-record, linux64Gcc).  A change to
+#  the record, the reader or the Delft model moves them; that is the point.
+B1_STATED = {
+    "HETP": 0.378252247189,
+    "theoreticalStages_bed": 5.81622453363,
+    "P_bottom_bar": 0.101551985079,
+    "dP_bed_mbar_per_m": 0.705447155001,
+}
+
 PACKING_RE = re.compile(r"            packing\n            \{.*?\n            \}\n", re.S)
+DICT_RE = re.compile(r"^\[dict\].*$", re.M)
 
 
 def run(case: Path, timeout=900):
@@ -107,6 +129,19 @@ def last(out):
     return (lines[-1] if lines else "")[:300]
 
 
+def rows(out):
+    """The printed resolution: {field: (value, label)}."""
+    m = re.search(r"\n  Packing of 'column' from .*?:\n((?:    \S.*\n)+)", out)
+    got = {}
+    if not m:
+        return got
+    for ln in m.group(1).splitlines():
+        mm = re.match(r"    (\w+)\s+(\S+(?: (?:m2/m3|deg|m))?)  (.*)$", ln)
+        if mm:
+            got[mm.group(1)] = (mm.group(2), mm.group(3))
+    return got
+
+
 def copy_case(src: Path, tmp: Path, tag: str) -> Path:
     dst = tmp / tag
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns(
@@ -132,22 +167,78 @@ def set_packing(case: Path, block: str):
     f.write_text(t[:m.start()] + block + t[m.end():])
 
 
-def edit(case: Path, old: str, new: str):
-    f = case / "system" / "flowsheetDict"
+def edit(case: Path, old: str, new: str, rel="system/flowsheetDict"):
+    f = case / rel
     t = f.read_text()
     if old not in t:
-        raise SystemExit(f"{NAME}: fixture edit target missing: {old[:70]!r}")
+        raise SystemExit(f"{NAME}: fixture edit target missing in {rel}: {old[:70]!r}")
     f.write_text(t.replace(old, new, 1))
 
 
-def same_kpis(a, b):
-    if a is None or b is None:
+def put_record(case: Path, name: str, text: str):
+    d = case / "constant" / "assets"
+    d.mkdir(parents=True, exist_ok=True)
+    (d / f"{name}.dat").write_text(text)
+
+
+def same_kpis(inline, record, extra=()):
+    """Every KPI `inline` publishes equal in `record`; `record` may carry only
+    the named extra keys besides."""
+    if inline is None or record is None:
         return False, "no result block"
-    if set(a) != set(b):
-        return False, f"KPI sets differ: {sorted(set(a) ^ set(b))}"
-    diff = [k for k in a if a[k] != b[k]]
-    return (not diff), (f"{len(a)} KPIs equal" if not diff
-                        else "; ".join(f"{k} {a[k]!r} vs {b[k]!r}" for k in diff[:4]))
+    surplus = set(record) - set(inline) - set(extra)
+    lack = set(inline) - set(record)
+    if surplus or lack:
+        return False, f"KPI sets differ: surplus {sorted(surplus)}, missing {sorted(lack)}"
+    diff = [k for k in inline if inline[k] != record[k]]
+    return (not diff), (f"{len(inline)} KPIs equal" if not diff
+                        else "; ".join(f"{k} {inline[k]!r} vs {record[k]!r}" for k in diff[:4]))
+
+
+PACKING_KPIS = ("packing_specificArea_m2_m3", "packing_voidFraction",
+                "packing_corrugationAngle_deg")
+
+INLINE_TAIL = """                lightKey          pXylene;
+                liquidViscosity   3.91e-4;
+                segments          100;
+            }
+"""
+
+
+def block(*lines):
+    body = "".join(f"                {ln}\n" for ln in lines)
+    return "            packing\n            {\n" + body + INLINE_TAIL
+
+
+PROBE_SHEET = """name              ProbeSheet;
+kind              packing;
+arrangement       structured;
+specificArea      244;
+voidFraction      0.980;
+corrugationAngle  45;
+corrugationSide   0.01645 m;
+surface           sheetMetal;
+correlations { RochaBravoFair { surfaceEnhancement 0.35; } }
+provenance { source "a GATE PROBE written in a temporary case by check_packing_record.py; not a packing"; }
+"""
+
+PROBE_RANDOM = """name              ProbeRandom;
+kind              packing;
+arrangement       random;
+corrugationSide   0.009 m;
+provenance { source "a GATE PROBE written in a temporary case by check_packing_record.py; not a packing"; }
+"""
+
+PROBE_EST_LENDER = """name              ProbeEstLender;
+kind              packing;
+arrangement       structured;
+corrugationSide   0.009 m;
+provenance
+{
+    source "a GATE PROBE written in a temporary case by check_packing_record.py; not a packing";
+    corrugationSide { origin estimated; reviewStatus unverified; notes "PROBE-LENDER-NOTE"; }
+}
+"""
 
 
 def main():
@@ -167,75 +258,175 @@ def main():
         t = copy_case(TWIN, tmp, "twin")
         rcw, ow = run(w)
         rct, ot = run(t)
+        kw = None
         if rcw != 0 or rct != 0:
             fail.append(f"(1) witness exit {rcw}, twin exit {rct}: {last(ow if rcw else ot)}")
         else:
-            ok, msg = same_kpis(kpis(ow), kpis(ot))
+            kw = kpis(ow)
+            ok, msg = same_kpis(kpis(ot), kw, PACKING_KPIS)
             print(f"  (1) witness vs packing01: {msg}")
             if not ok:
                 fail.append(f"(1) {msg}")
-            for needle in ("installed (case) replaces nominal 500 m2/m3 (record)",
-                           "BORROWED from record 'SulzerBX'",
-                           "corrugationAngle   60 deg  nominal (record)"):
-                if needle not in ow:
-                    fail.append(f"(1) the witness's log does not say: {needle!r}")
-            for k in ("record", "installed", "borrowed"):
-                if re.search(r"\[dict\]\s+.*`" + k + "`", ow):
-                    fail.append(f"(1) the unread-key audit names `{k}`")
-        # (4) the inline form carries no packing-record line
+            for k, v in zip(PACKING_KPIS, (478.0, 0.92, 60.0)):
+                if (kw or {}).get(k) != v:
+                    fail.append(f"(1) KPI {k} = {(kw or {}).get(k)!r}, expected the resolved {v}")
+            want = {
+                "specificArea": ("478 m2/m3", "installed (case) replaces nominal 500 m2/m3 (record)"),
+                "voidFraction": ("0.92", "installed (case); the record states none"),
+                "corrugationAngle": ("60 deg", "nominal (record)"),
+                "corrugationSide": ("0.009 m", "BORROWED from record 'SulzerBX' (case constant/assets/"
+                                    "SulzerBX.dat) -- a hypothesis of this case: not printed by "
+                                    "Schulz et al.; Sulzer BX is the gauze packing of the same "
+                                    "area class (492 m2/m3, 60 deg) in Rocha-Bravo-Fair 1993 "
+                                    "Table IV, and HETP is roughly proportional to S"),
+                "surface": ("gauze", "record"),
+            }
+            got = rows(ow)
+            for f, wv in want.items():
+                if got.get(f) != wv:
+                    fail.append(f"(1) printed row `{f}`: {got.get(f)!r}, expected {wv!r}")
+            if set(got) != set(want):
+                fail.append(f"(1) printed rows {sorted(got)}, expected {sorted(want)}")
+            audit = DICT_RE.findall(ow)
+            if audit:
+                fail.append(f"(1) the unread-key audit speaks on the witness: {audit[:3]}")
+
+        # (6) the inline form
         if "Packing of 'column' from record" in ot:
-            fail.append("(4) packing01 (inline) printed a packing-record line")
+            fail.append("(6) packing01 (inline) printed a packing-record line")
+        if any(k in (kpis(ot) or {}) for k in PACKING_KPIS):
+            fail.append("(6) packing01 (inline) publishes a packing_* KPI")
 
         # (2) the rate-based solver -----------------------------------------
         r0 = copy_case(RATE, tmp, "rate_inline")
         r1 = copy_case(RATE, tmp, "rate_record")
-        (r1 / "constant" / "assets").mkdir(parents=True, exist_ok=True)
-        shutil.copy(WITNESS / "constant" / "assets" / "MontzA3-500M.dat",
-                    r1 / "constant" / "assets" / "MontzA3-500M.dat")
+        put_record(r1, "MontzA3-500M",
+                   (WITNESS / "constant" / "assets" / "MontzA3-500M.dat").read_text())
         set_packing(r1, packing_block(WITNESS))
         rc0, o0 = run(r0)
         rc1, o1 = run(r1)
         if rc0 != 0 or rc1 != 0:
             fail.append(f"(2) rate inline exit {rc0}, record exit {rc1}: {last(o1 if rc1 else o0)}")
         else:
-            ok, msg = same_kpis(kpis(o0), kpis(o1))
+            ok, msg = same_kpis(kpis(o0), kpis(o1), PACKING_KPIS)
             print(f"  (2) ratebased01 inline vs record: {msg}")
             if not ok:
                 fail.append(f"(2) {msg}")
+            if DICT_RE.search(o1):
+                fail.append(f"(2) the unread-key audit speaks: {DICT_RE.findall(o1)[:3]}")
 
-        # (3) a catalogue record under Delft --------------------------------
+        # (3a) MontzB1-250 under Delft, pinned ------------------------------
         d = copy_case(DELFT, tmp, "delft_b1")
-        set_packing(d, """            packing
-            {
-                record            MontzB1-250;
-                model             Delft;
-                diameter          1.22 m;
-                height            2.2 m;
-                lightKey          pXylene;
-                liquidViscosity   3.91e-4;
-                segments          100;
-            }
-""")
+        set_packing(d, block("record            MontzB1-250;", "model             Delft;",
+                             "diameter          1.22 m;", "height            2.2 m;"))
         rcd, od = run(d)
         if rcd != 0:
-            fail.append(f"(3) MontzB1-250 under Delft exit {rcd}: {last(od)}")
+            fail.append(f"(3a) MontzB1-250 under Delft exit {rcd}: {last(od)}")
         else:
-            for f in ("corrugationBase", "corrugationHeight", "elementHeight", "holeFraction"):
-                if not re.search(rf"^\s+{f}\s+\S+( m)?\s+nominal \(record\)", od, re.M):
-                    fail.append(f"(3) `{f}` is not printed as nominal (record)")
+            got = rows(od)
+            for f in ("specificArea", "voidFraction", "corrugationAngle", "corrugationBase",
+                      "corrugationHeight", "elementHeight", "holeFraction"):
+                if (got.get(f) or ("", ""))[1] != "nominal (record)":
+                    fail.append(f"(3a) `{f}` is printed {got.get(f)!r}, not nominal (record)")
             k = kpis(od) or {}
-            print(f"  (3) MontzB1-250 under Delft: exit 0, HETP {k.get('HETP')}")
+            for key, val in B1_STATED.items():
+                if key not in k or abs(k[key] - val) > 1e-6 * abs(val):
+                    fail.append(f"(3a) MontzB1-250 Delft {key} = {k.get(key)!r}, stated {val!r}")
+            print(f"  (3a) MontzB1-250 under Delft: HETP {k.get('HETP')}, "
+                  f"stages {k.get('theoreticalStages_bed')}, P_bottom {k.get('P_bottom_bar')}, "
+                  f"dP {k.get('dP_bed_mbar_per_m')}")
 
-        # (5) refusals ------------------------------------------------------
+        # (3b) the sealed mirror is the catalogue record ---------------------
+        man = (WITNESS / "constant" / "propertyManifest").read_text()
+        m = re.search(r'"assets/SulzerBX\.dat"\s*\{[^}]*originSha256\s+"([0-9a-f]+)"', man)
+        cat = hashlib.sha256((ROOT / "data/standards/assets/SulzerBX.dat").read_bytes()).hexdigest()
+        if not m:
+            fail.append("(3b) the witness's manifest claims no assets/SulzerBX.dat")
+        elif m.group(1) != cat:
+            fail.append("(3b) DRIFT: data/standards/assets/SulzerBX.dat changed since the witness"
+                        " was sealed (originSha256 " + m.group(1)[:12] + " vs " + cat[:12]
+                        + "); re-seal the witness with bin/choupo-import and re-read its numbers")
+
+        # (4) a sheet-metal record, and the F_SE borrow ----------------------
+        s_in = copy_case(TWIN, tmp, "sheet_inline")
+        set_packing(s_in, block("model             RochaBravoFair;", "diameter          1.22 m;",
+                                "height            2.2 m;", "specificArea      244;",
+                                "voidFraction      0.980;", "corrugationAngle  45;",
+                                "corrugationSide   0.01645 m;", "surface           sheetMetal;",
+                                "surfaceEnhancement 0.35;"))
+        s_rec = copy_case(TWIN, tmp, "sheet_record")
+        put_record(s_rec, "ProbeSheet", PROBE_SHEET)
+        set_packing(s_rec, block("record            ProbeSheet;", "model             RochaBravoFair;",
+                                 "diameter          1.22 m;", "height            2.2 m;"))
+        s_bor = copy_case(TWIN, tmp, "sheet_borrow")
+        put_record(s_bor, "ProbeSheet", PROBE_SHEET)
+        set_packing(s_bor, block("record            MontzB1-250;", "model             RochaBravoFair;",
+                                 "diameter          1.22 m;", "height            2.2 m;",
+                                 "borrowed { surfaceEnhancement { from ProbeSheet; reason \"gate probe\"; } }"))
+        rci, oi = run(s_in)
+        rcr, orr = run(s_rec)
+        rcb, ob = run(s_bor)
+        if rci != 0 or rcr != 0 or rcb != 0:
+            fail.append(f"(4) sheet metal: inline exit {rci}, record exit {rcr}, borrow exit {rcb}: "
+                        f"{last(orr if rcr else (ob if rcb else oi))}")
+        else:
+            ok, msg = same_kpis(kpis(oi), kpis(orr), PACKING_KPIS)
+            print(f"  (4) sheet-metal record vs inline: {msg}")
+            if not ok:
+                fail.append(f"(4) record: {msg}")
+            ok, msg = same_kpis(kpis(oi), kpis(ob), PACKING_KPIS)
+            if not ok:
+                fail.append(f"(4) F_SE borrowed: {msg}")
+            g = rows(orr)
+            if g.get("surface") != ("sheetMetal", "record"):
+                fail.append(f"(4) surface printed {g.get('surface')!r}")
+            if g.get("surfaceEnhancement") != ("0.35", "record, a constant of this packing under RochaBravoFair"):
+                fail.append(f"(4) F_SE printed {g.get('surfaceEnhancement')!r}")
+            gb = rows(ob).get("surfaceEnhancement") or ("", "")
+            if not gb[1].startswith("BORROWED from record 'ProbeSheet'"):
+                fail.append(f"(4) the borrowed F_SE is printed {gb!r}")
+
+        # (5) marks ---------------------------------------------------------
+        e = copy_case(WITNESS, tmp, "estimates")
+        edit(e, '    corrugationAngle { origin literature; method "section 2, p. 764: 60 deg with respect to horizontal"; }',
+             '    corrugationAngle { origin estimated; reviewStatus unverified; notes "PROBE-NOMINAL-NOTE"; }',
+             rel="constant/assets/MontzA3-500M.dat")
+        put_record(e, "ProbeEstLender", PROBE_EST_LENDER)
+        edit(e, "from      SulzerBX;", "from      ProbeEstLender;")
+        rce, oe = run(e)
+        if rce != 0:
+            fail.append(f"(5) estimates exit {rce}: {last(oe)}")
+        else:
+            g = rows(oe)
+            if "ESTIMATE (unverified): PROBE-NOMINAL-NOTE" not in (g.get("corrugationAngle") or ("", ""))[1]:
+                fail.append(f"(5) the nominal estimate is printed {g.get('corrugationAngle')!r}")
+            if "ESTIMATE (unverified): PROBE-LENDER-NOTE" not in (g.get("corrugationSide") or ("", ""))[1]:
+                fail.append(f"(5) the borrowed estimate is printed {g.get('corrugationSide')!r}")
+        rnd = copy_case(WITNESS, tmp, "random_lender")
+        put_record(rnd, "ProbeRandom", PROBE_RANDOM)
+        edit(rnd, "from      SulzerBX;", "from      ProbeRandom;")
+        rcn, on = run(rnd)
+        if rcn != 0:
+            fail.append(f"(5) borrow from a random record exit {rcn}: {last(on)}")
+        else:
+            if "is a RANDOM packing" not in (rows(on).get("corrugationSide") or ("", ""))[1]:
+                fail.append("(5) a value borrowed from a RANDOM record is not announced")
+            if kw is not None:
+                ok, msg = same_kpis(kw, kpis(on))
+                if not ok:
+                    fail.append(f"(5) random lender moved the numbers: {msg}")
+
+        # (7) refusals ------------------------------------------------------
         probes = []
 
-        def probe(tag, base, mutate, needles):
+        def probe(tag, base, mutate, needles, absent=()):
             c = copy_case(base, tmp, tag)
             mutate(c)
             rc, out = run(c)
             missing = [n for n in needles if n not in out]
-            if rc == 0 or missing:
-                fail.append(f"(5) {tag}: exit {rc}, missing {missing}: {last(out)}")
+            present = [n for n in absent if n in out]
+            if rc == 0 or missing or present:
+                fail.append(f"(7) {tag}: exit {rc}, missing {missing}, unwanted {present}: {last(out)}")
             probes.append(tag)
 
         wblock = packing_block(WITNESS)
@@ -243,31 +434,34 @@ def main():
                            "", wblock, flags=re.S)
         probe("no_borrowed", WITNESS, lambda c: set_packing(c, no_borrow),
               ["corrugationSide", "RochaBravoFair", "MontzA3-500M"])
-        probe("sulzerbx_delft", WITNESS, lambda c: set_packing(c, """            packing
-            {
-                record            SulzerBX;
-                model             Delft;
-                diameter          1.22 m;
-                height            2.2 m;
-                lightKey          pXylene;
-                liquidViscosity   3.91e-4;
-            }
-"""), ["`model Delft;`", "corrugationBase", "corrugationHeight", "elementHeight", "holeFraction"])
-        probe("b1_rbf", WITNESS, lambda c: set_packing(c, """            packing
-            {
-                record            MontzB1-250;
-                model             RochaBravoFair;
-                diameter          1.22 m;
-                height            2.2 m;
-                lightKey          pXylene;
-                liquidViscosity   3.91e-4;
-            }
-"""), ["surfaceEnhancement", "RochaBravoFair", "MontzB1-250"])
+        probe("sulzerbx_delft", WITNESS, lambda c: set_packing(c, block(
+            "record            SulzerBX;", "model             Delft;",
+            "diameter          1.22 m;", "height            2.2 m;")),
+            ["`model Delft;`", "corrugationBase", "corrugationHeight", "elementHeight", "holeFraction"])
+        probe("b1_rbf", WITNESS, lambda c: set_packing(c, block(
+            "record            MontzB1-250;", "model             RochaBravoFair;",
+            "diameter          1.22 m;", "height            2.2 m;")),
+            ["surfaceEnhancement", "RochaBravoFair", "MontzB1-250"])
+        probe("unknown_model", WITNESS,
+              lambda c: edit(c, "model             RochaBravoFair;", "model             Billet;"),
+              ["packing model", "Billet", "RochaBravoFair", "Delft"], absent=["is not read by"])
         probe("typed_beside", WITNESS,
               lambda c: edit(c, "                model             RochaBravoFair;",
                              "                model             RochaBravoFair;\n"
                              "                specificArea      478;"),
-              ["`specificArea` is typed beside `record", "installed {"])
+              ["`specificArea` is typed beside `record", "installed {", "borrowed {"])
+        probe("surface_beside", WITNESS,
+              lambda c: edit(c, "                model             RochaBravoFair;",
+                             "                model             RochaBravoFair;\n"
+                             "                surface           gauze;"),
+              ["`surface` is typed beside `record", "neither installed nor borrowed"],
+              absent=["installed { surface", "borrowed { surface"])
+        probe("fse_beside", WITNESS,
+              lambda c: edit(c, "                model             RochaBravoFair;",
+                             "                model             RochaBravoFair;\n"
+                             "                surfaceEnhancement 0.35;"),
+              ["`surfaceEnhancement` is typed beside `record", "borrowed { surfaceEnhancement",
+               "never `installed`"], absent=["installed { surfaceEnhancement"])
         probe("unknown_record", WITNESS,
               lambda c: edit(c, "record            MontzA3-500M;", "record            MontzA3-5000M;"),
               ["unknown packing record 'MontzA3-5000M'"])
@@ -284,12 +478,28 @@ def main():
         probe("borrow_from_self", WITNESS,
               lambda c: edit(c, "from      SulzerBX;", "from      MontzA3-500M;"),
               ["names the column's own record"])
-
-        def random_record(c):
-            f = c / "constant" / "assets" / "MontzA3-500M.dat"
-            f.write_text(f.read_text().replace("arrangement       structured;",
-                                               "arrangement       random;"))
-        probe("random_packing", WITNESS, random_record, ["RANDOM packing", "MontzA3-500M"])
+        probe("random_packing", WITNESS,
+              lambda c: edit(c, "arrangement       structured;", "arrangement       random;",
+                             rel="constant/assets/MontzA3-500M.dat"),
+              ["RANDOM packing", "MontzA3-500M"])
+        probe("range_installed", WITNESS,
+              lambda c: edit(c, "                    voidFraction  0.92;", "                    voidFraction  1.5;"),
+              ["`voidFraction` = 1.5 is outside its range", "installed"])
+        probe("range_record", WITNESS,
+              lambda c: edit(c, "corrugationAngle  60;", "corrugationAngle  95;",
+                             rel="constant/assets/MontzA3-500M.dat"),
+              ["`corrugationAngle` = 95 is outside its range"])
+        probe("range_record_void", WITNESS,
+              lambda c: edit(c, "specificArea      500;", "specificArea      500;\nvoidFraction      1.5;",
+                             rel="constant/assets/MontzA3-500M.dat"),
+              ["`voidFraction` = 1.5 is outside its range"])
+        probe("range_inline", TWIN,
+              lambda c: edit(c, "voidFraction      0.92;", "voidFraction      1.5;"),
+              ["`voidFraction` = 1.5 is outside its range"])
+        probe("name_not_file", WITNESS,
+              lambda c: edit(c, "name              MontzA3-500M;", "name              MontzA3-500X;",
+                             rel="constant/assets/MontzA3-500M.dat"),
+              ["differs from the file name 'MontzA3-500M'"])
 
     if fail:
         print(f"{NAME}: FAILED")
@@ -297,11 +507,13 @@ def main():
             print("  " + f)
         return 1
     print(f"{NAME}: OK -- a packing read from a record gives the inline bed's numbers"
-          f" exactly (packing05 = packing01, and ratebased01 through the record), prints"
-          f" each value as nominal, installed or borrowed, serves Delft from the catalogue"
-          f" record MontzB1-250, and refuses {len(probes)} inputs by name (the field a"
-          f" correlation reads and the record lacks, among them); it does NOT check that"
-          f" the records transcribe their papers or that a correlation suits a packing")
+          f" exactly (packing05 = packing01, ratebased01 through the record, a sheet-metal"
+          f" record and its F_SE borrowed), prints every value's source row by row with"
+          f" estimate and random-lender marks, leaves no unread key, holds MontzB1-250 under"
+          f" Delft to stated KPIs and the witness's SulzerBX mirror to the catalogue, and"
+          f" refuses {len(probes)} inputs by name (unknown model first; out-of-range values"
+          f" in a record, installed or inline); it does NOT check that the records"
+          f" transcribe their papers or that a correlation suits a packing")
     return 0
 
 

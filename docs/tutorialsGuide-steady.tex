@@ -2205,7 +2205,7 @@ THE PACKING AS A RECORD: the bed of packing01\_schulz\_0p10bar, with its geometr
 
 WHAT THIS CASE SHOWS. Three sources for the four numbers Rocha, Bravo \& Fair read, each printed in the run with where it came from: NOMINAL, from the record constant/assets/MontzA3-500M.dat: the corrugation angle (60 deg) and the surface (gauze), and the nominal area 500 m2/m3 -- all three as Schulz et al. print them (Chem. Eng. Trans. 69 (2018) 763, section 2, p. 764). The record is CASE-LOCAL: no source in hand gives this packing's full geometry, so it is not in the catalogue. INSTALLED, measured on THIS bed and declared by the case under `installed \{\}`: the area 478 m2/m3 "based on measured corrugation dimensions of delivered packing" and the void fraction of the dry packed bed, about 0.92 (same section). The run prints that 478 replaces the record's nominal 500. BORROWED, a hypothesis of this case: the corrugation side, which Schulz do not print. It is taken from the catalogue record SulzerBX (S = 9 mm, Rocha, Bravo \& Fair 1993 Table IV), the gauze packing of the same area class -- the same estimate packing01 types inline, now named as another packing's value. The seal (bin/choupo-import) mirrors that record into constant/assets/ with its hash, so the case runs with the catalogue hidden. Everything else (column, boil-up sweep, reboiler liquid, the liquid viscosity of Schulz Table 1, the property system) is packing01's, unchanged.
 
-THE CHECK. The resolved geometry is the same four doubles packing01 types, so every number is packing01's: `expected` is packing01's golden, row for row, and the gate bin/curate/check\_packing\_record.py holds the two runs' KPIs equal exactly. The same gate removes the `borrowed` block and requires the refusal that names `corrugationSide` and `RochaBravoFair` -- the field the correlation reads and the record lacks.
+THE CHECK. The resolved geometry is the same four doubles packing01 types, so every number is packing01's: `expected` is packing01's golden, row for row, plus three rows packing01 cannot have -- the geometry the record-backed bed was solved with, published as packing\_specificArea\_m2\_m3, packing\_voidFraction and packing\_corrugationAngle\_deg (478, 0.92, 60) so that a reader of the result, and the GUI's column sheet, see it. The gate bin/curate/check\_packing\_record.py holds the two runs' KPIs equal exactly. The same gate removes the `borrowed` block and requires the refusal that names `corrugationSide` and `RochaBravoFair` -- the field the correlation reads and the record lacks.
 
 MEASURED, ESTIMATED, FITTED: as packing01\_schulz\_0p10bar's header (the corrugation side is the one estimated geometric number; nothing fitted; every point of Schulz Fig. 2b at 0.10 bar held out).
 
@@ -2225,7 +2225,7 @@ MEASURED, ESTIMATED, FITTED: as packing01\_schulz\_0p10bar's header (the corruga
 \goldrow{kpi}{column}{dP\_over\_dPflood\_max}{0.135028347192}
 \goldrow{kpi}{column}{fFactor\_bedBottom}{1.59953159292}
 \goldrow{kpi}{column}{fFactor\_bedTop}{1.61415293622}
-\goldmore{18}
+\goldmore{21}
 \end{tutgolden}
 
 \clearpage

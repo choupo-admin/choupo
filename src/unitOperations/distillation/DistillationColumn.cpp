@@ -5836,10 +5836,23 @@ int DistillationColumn::solvePackedReadingRecord(const DictPtr& dict,
                                                  bool rateBased)
 {
     const DictPtr resolved = packingRecord::resolveUnit(dict, verbosity);
+    if (!resolved) packingRecord::checkInlineRanges(dict);
     const DictPtr& use = resolved ? resolved : dict;
     const int rc = rateBased ? solveRateBased(use, thermo, verbosity)
                              : solveTotalReflux(use, thermo, verbosity);
-    if (resolved) packingRecord::transferReads(*resolved, *dict);
+    if (resolved)
+    {
+        //  The geometry a record-backed bed was solved with is not in the
+        //  case's block, so the run publishes it: the GUI's stage sheet draws
+        //  the corrugation angle and labels the area and void fraction from
+        //  these, never from a block that does not hold them.  (An inline bed
+        //  publishes nothing new: its block IS the resolved geometry.)
+        auto pk = resolved->subDict("operation")->subDict("packing");
+        kpis_["packing_specificArea_m2_m3"]  = pk->lookupScalar("specificArea");
+        kpis_["packing_voidFraction"]        = pk->lookupScalar("voidFraction");
+        kpis_["packing_corrugationAngle_deg"] = pk->lookupScalar("corrugationAngle");
+        packingRecord::transferReads(*resolved, *dict);
+    }
     return rc;
 }
 

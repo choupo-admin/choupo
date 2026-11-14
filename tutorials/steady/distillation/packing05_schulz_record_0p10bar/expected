@@ -33,3 +33,6 @@ source  column                 liquidDensity    liquidVolume.idealMix[anchoredRa
 source  column                 liquidDiffusivity own.WilkeChang.mixtureViscosity exact
 source  column                 liquidViscosity  declared.case    exact
 source  column                 surfaceTension   BrockBird/Butler exact
+kpi     column                 packing_corrugationAngle_deg 60               1e-4
+kpi     column                 packing_specificArea_m2_m3 478              1e-4
+kpi     column                 packing_voidFraction 0.92             1e-4

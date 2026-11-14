@@ -38,8 +38,12 @@
 
   THE CHECK.  The resolved geometry is the same four doubles packing01
   types, so every number is packing01's: `expected` is packing01's golden,
-  row for row, and the gate bin/curate/check_packing_record.py holds the
-  two runs' KPIs equal exactly.  The same gate removes the `borrowed` block
+  row for row, plus three rows packing01 cannot have -- the geometry the
+  record-backed bed was solved with, published as packing_specificArea_m2_m3,
+  packing_voidFraction and packing_corrugationAngle_deg (478, 0.92, 60) so
+  that a reader of the result, and the GUI's column sheet, see it.  The
+  gate bin/curate/check_packing_record.py holds the two runs' KPIs equal
+  exactly.  The same gate removes the `borrowed` block
   and requires the refusal that names `corrugationSide` and
   `RochaBravoFair` -- the field the correlation reads and the record lacks.
 

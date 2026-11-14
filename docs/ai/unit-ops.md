@@ -1367,13 +1367,19 @@ comes from an asset record `kind packing;` (`data/standards/assets/` or the case
 `correlations { RochaBravoFair { surfaceEnhancement; } }` for F_SE of a sheet-metal
 packing.  A value measured on this bed goes under `installed {}` (with its source) and
 REPLACES the nominal one; another packing's value goes under `borrowed {}` (a stated
-hypothesis).  The run prints every value as nominal / installed / borrowed.  REFUSED by
-name: a geometry key typed beside `record`; a field the chosen correlation reads that
-nothing supplies (RochaBravoFair reads `corrugationSide` and `surface`, plus
-`surfaceEnhancement` on `sheetMetal`; Delft reads `corrugationBase`,
-`corrugationHeight`, `elementHeight`, `holeFraction`); `installed` without `source`;
-`borrowed` without `reason`; a record with `arrangement random;` (no random-packing
-correlation).  Catalogue: `SulzerBX` (serves RochaBravoFair), `MontzB1-250` (serves
+hypothesis).  `surface` is the record's alone (neither installed nor borrowed);
+`surfaceEnhancement` may be borrowed, never installed.  The run prints every value as
+nominal / installed / borrowed (with the lender's estimate mark, and a note when the
+lender is a random packing) and publishes the resolved geometry as KPIs
+`packing_specificArea_m2_m3`, `packing_voidFraction`, `packing_corrugationAngle_deg`.
+REFUSED by name: an unknown `model` word (first); a key typed beside `record`; a field
+the chosen correlation reads that nothing supplies (RochaBravoFair reads
+`corrugationSide` and `surface`, plus `surfaceEnhancement` on `sheetMetal`; Delft reads
+`corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction`); `installed`
+without `source`; `borrowed` without `reason`; a record with `arrangement random;` (no
+random-packing correlation); a record whose `name` is not its file name; a value out of
+range in a record, `installed`, `borrowed` or an inline block (void fraction and hole
+fraction below 1, angle between 0 and 90 deg).  Catalogue: `SulzerBX` (serves RochaBravoFair), `MontzB1-250` (serves
 Delft).  Example: `packing05_schulz_record_0p10bar` (same numbers as packing01).
 Theory Guide: "The packing as a record".
 

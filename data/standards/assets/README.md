@@ -114,7 +114,10 @@ value of ANOTHER packing is a hypothesis of the case (`borrowed {}`), never
 written into this record.  A record states only what its source printed, so
 a correlation that reads a field the record lacks is refused naming the field
 (SulzerBX serves Rocha-Bravo-Fair and not Delft; MontzB1-250 serves Delft and
-not Rocha-Bravo-Fair).  No random-packing correlation is implemented yet; the
+not Rocha-Bravo-Fair).  The `surface` is the product's and belongs to the
+record alone; F_SE may be borrowed but never installed.  A record's `name` is
+its file name (the seal copies it by that name), and every value is
+range-checked wherever it is written.  No random-packing correlation is implemented yet; the
 kind admits one.  Theory Guide: sec:packing-record.
 
 ## `kind catalyst` — why this folder holds none yet

@@ -166,6 +166,11 @@ const std::vector<std::string>& geometryFields();
 //  description), the resolution printed to stdout; nullptr otherwise.
 DictPtr resolveUnit(const DictPtr& unitDict, int verbosity);
 
+//  The INLINE form (no `record`): the same range checks a record's values
+//  get -- a void fraction above 1 is refused wherever it is written (PK-03).
+//  Read on a copy, so it marks nothing read in the case's dictionary.
+void checkInlineRanges(const DictPtr& unitDict);
+
 //  After a solve on the copy: mark as read, in `to`, every key the solve
 //  read in `from` that `to` also carries, recursively through the
 //  sub-dictionaries, so the unread-key audit of the case's own `operation

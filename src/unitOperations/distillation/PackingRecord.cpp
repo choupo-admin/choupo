@@ -96,6 +96,30 @@ std::string meaning(const std::string& f)
     return f;
 }
 
+//  The range a geometry value must lie in, wherever it is written: in a
+//  record, under `installed {}`, borrowed, or inline in `packing {}` (PK-03).
+bool inRange(const std::string& f, scalar v)
+{
+    if (f == "voidFraction")     return v > 0.0 && v < 1.0;
+    if (f == "holeFraction")     return v >= 0.0 && v < 1.0;
+    if (f == "corrugationAngle") return v > 0.0 && v < 90.0;
+    return v > 0.0;
+}
+
+void requireInRange(const std::string& locus, const std::string& f, scalar v)
+{
+    if (!inRange(f, v))
+    {
+        std::ostringstream o;
+        o << locus << ": `" << f << "` = " << v << " is outside its range ("
+          << meaning(f) << (f == "voidFraction" ? ", between 0 and 1" : "")
+          << (f == "holeFraction" ? ", from 0 to below 1" : "")
+          << (f == "corrugationAngle" ? ", between 0 and 90 deg" : "")
+          << ").";
+        throw std::runtime_error(o.str());
+    }
+}
+
 //  The fields each correlation reads (Rocha-Bravo-Fair 1993 Eqs 23-25 and
 //  1996 Eqs 5-14; Fair et al. 2000 Tables 2 and 4, as in PackingRBF.H and
 //  PackingDelft.H).  The surface and F_SE of Rocha-Bravo-Fair are handled
@@ -164,14 +188,7 @@ void PackingRecord::read(const DictPtr& d, const std::string& sourcePath)
     {
         if (!d->found(f)) continue;
         const scalar v = isLength(f) ? d->lookupScalar(f, Dims::length) : d->lookupScalar(f);
-        const bool ok =
-              (f == "voidFraction")     ? (v > 0.0 && v < 1.0)
-            : (f == "holeFraction")     ? (v >= 0.0 && v < 1.0)
-            : (f == "corrugationAngle") ? (v > 0.0 && v < 90.0)
-            :                             (v > 0.0);
-        if (!ok)
-            throw std::runtime_error(locus + ": `" + f + "` = " + std::to_string(v)
-                + " is outside its range (" + meaning(f) + ").");
+        requireInRange(locus, f, v);
         geometry_[f] = v;
     }
     if (d->found("surface"))
@@ -286,6 +303,14 @@ void PackingRegistry::loadFrom(const std::string& dataRoot)
             if (rec->lookupWordOrDefault("kind", "") != "packing") continue;
             PackingRecord p;
             p.read(rec, e.path().string());
+            //  The seal mirrors a record by its FILE name and the registry
+            //  finds it by its `name` (PK-08): the two must be one word, or a
+            //  case runs unsealed and cannot be sealed.
+            if (p.name() != e.path().stem().string())
+                throw std::runtime_error("packing record '" + e.path().string()
+                    + "': `name " + p.name() + ";` differs from the file name '"
+                    + e.path().stem().string() + "'.  A record's name is its file's"
+                    " name (the seal copies it by that name); rename one of them.");
             guard.claim(p.name(), e.path().string());
             registry()[p.name()] = std::move(p);
         }
@@ -370,18 +395,47 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
     std::vector<std::string> recordOwned = geometryFields();
     recordOwned.push_back("surface");
     recordOwned.push_back("surfaceEnhancement");
+    //  What each kind of value may become (PK-02), and the refusal says only
+    //  what the reader accepts:
+    //    * a geometry value: installed (measured on this bed) or borrowed;
+    //    * the surface: a property of the PRODUCT -- gauze is not measured on
+    //      a bed nor lent by another packing -- so neither; the remedy is a
+    //      record whose surface it is;
+    //    * F_SE: a constant of a packing under one correlation, so a record's
+    //      value; borrowable from another record, never "installed".
     for (const auto& f : recordOwned)
         if (pk->found(f))
+        {
+            std::string remedy;
+            if (f == "surface")
+                remedy = "  The surface is a property of the packing itself: it is"
+                         " the record's, and is neither installed nor borrowed.  A"
+                         " bed of another surface is another packing -- name the"
+                         " record whose surface it is.";
+            else if (f == "surfaceEnhancement")
+                remedy = "  F_SE is a constant of a packing under Rocha-Bravo-Fair:"
+                         " the record's value, or another packing's under `borrowed"
+                         " { surfaceEnhancement { from <record>; reason \"...\"; } }`"
+                         " (a hypothesis of the case, printed as such).  It is not"
+                         " measured on a bed, so it is never `installed`.";
+            else
+                remedy = "  With a record the nominal value is the record's; a value"
+                         " MEASURED on this installation goes under `installed { "
+                         + f + " ...; source \"where it was measured\"; }`, a value"
+                         " taken from another packing under `borrowed { " + f
+                         + " { from <record>; reason \"...\"; } }` -- both printed as"
+                         " replacing the record.";
             throw std::runtime_error(locus + ": `" + f + "` is typed beside `record "
-                + recName + ";`.  With a record the nominal value is the record's;"
-                  " a value MEASURED on this installation goes under `installed { "
-                + f + " ...; source \"where it was measured\"; }`, a value taken from"
-                  " another packing under `borrowed { " + f + " { from <record>;"
-                  " reason \"...\"; } }` -- both printed as replacing the record."
-                + (f == "surface" ? "  (The surface is the packing's identity and"
-                                    " cannot be installed.)" : ""));
+                + recName + ";`." + remedy);
+        }
 
+    //  An unknown correlation word is refused FIRST, with the inline form's
+    //  message (PK-01): every check below is about what a KNOWN correlation
+    //  reads, and would otherwise blame `installed` or `borrowed`.
     const std::string model = pk->lookupWordOrDefault("model", "RochaBravoFair");
+    if (model != "RochaBravoFair" && model != "Delft")
+        throw std::runtime_error("DistillationColumn '" + unit + "': "
+            + registryRefusal::message("packing model", model, {"RochaBravoFair", "Delft"}, "Accepted"));
 
     //  ---- installed: measured on THIS bed, the case's ------------------------
     std::map<std::string, scalar> installed;
@@ -400,6 +454,7 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
                       " overrides of a record: they are declared in `packing {}`"
                       " itself.)");
             installed[k] = isLength(k) ? in->lookupScalar(k, Dims::length) : in->lookupScalar(k);
+            requireInRange(locus + " installed", k, installed[k]);
         }
         if (!installed.empty() && installedSource.empty())
             throw std::runtime_error(locus + ": `installed {}` carries no `source`."
@@ -408,7 +463,7 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
     }
 
     //  ---- borrowed: another packing's value, a HYPOTHESIS of the case --------
-    struct Borrow { scalar v; std::string from, reason, at; };
+    struct Borrow { scalar v; std::string from, reason, at, mark; };
     std::map<std::string, Borrow> borrowed;
     if (pk->found("borrowed"))
     {
@@ -437,6 +492,19 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
             const std::string borrowLocus = locus + " borrowed " + k;
             const PackingRecord& src = PackingRegistry::byName(br.from, borrowLocus);
             br.at = src.where();
+            //  A borrowed value keeps its source record's estimate mark (PK-04):
+            //  lending a number does not make it measured.
+            if (const auto* p = src.provenanceOf(k == "surfaceEnhancement" ? "RochaBravoFair" : k))
+                if (p->origin == "estimated")
+                    br.mark += "; in record '" + br.from + "' an ESTIMATE ("
+                             + p->reviewStatus + "): " + p->notes;
+            //  Borrowing from a RANDOM packing is ANNOUNCED, not refused (PK-09):
+            //  a geometric value (an area, a void fraction) can be shared across
+            //  arrangements, and whether it transfers is exactly the hypothesis
+            //  the case states; but the reader must see that the lender is not a
+            //  structured packing.
+            if (src.arrangement() != "structured")
+                br.mark += "; NOTE: record '" + br.from + "' is a RANDOM packing";
             if (k == "surfaceEnhancement")
             {
                 if (!src.hasConstant("RochaBravoFair", k))
@@ -452,13 +520,13 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
                         + br.from + "; } }`: record '" + br.from + "' states no `" + k + "`.");
                 br.v = src.value(k);
             }
+            requireInRange(locus + " borrowed", k, br.v);
             borrowed[k] = br;
         }
     }
 
     //  ---- the fields the chosen correlation reads -----------------------------
-    //  An unknown model word resolves nothing here: the solver refuses it by
-    //  name, with the same message as the inline form.
+    //  (The model word is a known one here: an unknown word was refused above.)
     const std::vector<std::string> need = fieldsRead(model);
     const bool rbf = (model == "RochaBravoFair");
     std::vector<std::string> missing;
@@ -531,7 +599,8 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
             v = br.v;
             how = "BORROWED from record '" + br.from + "' (" + br.at + ") -- a hypothesis"
                   " of this case: " + br.reason
-                + (rec.has(f) ? "; replaces nominal " + fmt(rec.value(f)) + unitLabel(f) : "");
+                + (rec.has(f) ? "; replaces nominal " + fmt(rec.value(f)) + unitLabel(f) : "")
+                + br.mark;
         }
         else
         {
@@ -557,12 +626,15 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
                 const Borrow& br = borrowed.at("surfaceEnhancement");
                 v = br.v;
                 how = "BORROWED from record '" + br.from + "' (" + br.at + ") -- a"
-                      " hypothesis of this case: " + br.reason;
+                      " hypothesis of this case: " + br.reason + br.mark;
             }
             else
             {
                 v = rec.constant("RochaBravoFair", "surfaceEnhancement");
                 how = "record, a constant of this packing under RochaBravoFair";
+                if (const auto* p = rec.provenanceOf("RochaBravoFair"))
+                    if (p->origin == "estimated")
+                        how += ", an ESTIMATE (" + p->reviewStatus + "): " + p->notes;
             }
             wpk->insert("surfaceEnhancement", EntryValue(v));
             line("surfaceEnhancement", fmt(v), how);
@@ -572,6 +644,23 @@ DictPtr resolveUnit(const DictPtr& unitDict, int /*verbosity*/)
         rep << "    installed values measured at: " << installedSource << "\n";
     std::cout << rep.str();
     return work;
+}
+
+void checkInlineRanges(const DictPtr& unitDict)
+{
+    //  Read on a COPY, so the check marks nothing read in the case's own
+    //  dictionary: a geometry key the chosen correlation ignores must still be
+    //  reported unread by the audit.
+    if (!unitDict->found("operation")) return;
+    auto oper = unitDict->subDict("operation");
+    if (!oper->found("packing")) return;
+    const DictPtr pk = oper->subDict("packing")->deepCopy();
+    for (const auto& f : geometryFields())
+    {
+        if (!pk->found(f)) continue;
+        const scalar v = isLength(f) ? pk->lookupScalar(f, Dims::length) : pk->lookupScalar(f);
+        requireInRange("DistillationColumn '" + unitDict->name() + "': packing", f, v);
+    }
 }
 
 void transferReads(const Dictionary& from, const Dictionary& to)

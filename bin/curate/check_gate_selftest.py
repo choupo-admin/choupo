@@ -472,6 +472,40 @@ SOURCE_SABOTAGES = [
                "-Q_condenser: arm (2) must see the closure published "
                "notVerified (measured by hand: a 3.85 kW gap on ratebased01).",
     },
+    {
+        "gate": "check_packing_record.py",
+        "kind": "source/reads-not-carried-back",
+        "file": "src/unitOperations/distillation/PackingRecord.cpp",
+        "find": "        if (!present.count(k)) continue;",
+        "replace": "        continue;   /* SELFTEST */",
+        "why": "C398 slice (e), review PK-05 (E2): a record-backed column solves "
+               "on a COPY of its dictionary; without the reads carried back the "
+               "case's own operation{} is audited as unread and the run tells "
+               "the user that P, the condenser and the bed's diameter 'had NO "
+               "effect'.  Arm (1) must see the audit speak on the witness.",
+    },
+    {
+        "gate": "check_packing_record.py",
+        "kind": "source/range-check-off",
+        "file": "src/unitOperations/distillation/PackingRecord.cpp",
+        "find": "    if (!inRange(f, v))",
+        "replace": "    if (false && !inRange(f, v))   /* SELFTEST */",
+        "why": "review PK-03 (E4): a void fraction of 1.5 must be refused in a "
+               "record, under `installed` and inline alike; with the check off "
+               "the bed runs to exit 0 on an impossible geometry.  Arm (7) must "
+               "see its four range probes run.",
+    },
+    {
+        "gate": "check_packing_record.py",
+        "kind": "source/estimate-mark-dropped",
+        "file": "src/unitOperations/distillation/PackingRecord.cpp",
+        "find": "            how = \"nominal (record)\";\n            if (const auto* p = rec.provenanceOf(f))",
+        "replace": "            how = \"nominal (record)\";\n            if (const auto* p = static_cast<const PackingRecord::Provenance*>(nullptr))   /* SELFTEST */",
+        "why": "review E8: an estimated value in a packing record must say so on "
+               "every run that uses it (the module-record contract); dropping "
+               "the mark prints a guess as a nominal datum.  Arm (5) must see "
+               "the nominal line lose its ESTIMATE note.",
+    },
 ]
 
 

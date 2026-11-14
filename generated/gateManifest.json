@@ -1773,8 +1773,8 @@
     },
     "check_packing_record": {
       "exit": 0,
-      "claim": "check_packing_record: OK -- a packing read from a record gives the inline bed's numbers exactly (packing05 = packing01, and ratebased01 through the record), prints each value as nominal, installed or borrowed, serves Delft from the catalogue record MontzB1-250, and refuses 10 inputs by name (the field a correlation reads and the record lacks, among them); it does NOT check that the records transcribe their papers or that a correlation suits a packing",
-      "seconds": 4.2
+      "claim": "check_packing_record: OK -- a packing read from a record gives the inline bed's numbers exactly (packing05 = packing01, ratebased01 through the record, a sheet-metal record and its F_SE borrowed), prints every value's source row by row with estimate and random-lender marks, leaves no unread key, holds MontzB1-250 under Delft to stated KPIs and the witness's SulzerBX mirror to the catalogue, and refuses 18 inputs by name (unknown model first; out-of-range values in a record, installed or inline); it does NOT check that the records transcribe their papers or that a correlation suits a packing",
+      "seconds": 3.6
     }
   }
 }
