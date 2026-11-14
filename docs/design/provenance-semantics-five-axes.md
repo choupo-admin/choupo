@@ -317,7 +317,9 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2374 direct + 3701 per-value = 6075 across 3053 files**
+**census: 2374 direct + 3701 per-value = 6075 across 3055 files**
+
+(recounted 2026-11-14, DEV.md 4c C398 slice (e): two packing records (`assets/SulzerBX.dat`, `assets/MontzB1-250.dat`) carry a `provenance {}` block whose entries are not origin words the census counts: +0 direct, +0 per-value, +2 files; and, before it,
 
 (recounted 2026-11-13, DEV.md 4c C378 density pilot: one new solution-law record (`parameters/solution/NaOH-water.dat`, the Olsson 1997 density law) declares `origin literature` as a direct child: +1 direct, +1 file; and, before it,
 
