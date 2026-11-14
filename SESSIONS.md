@@ -3901,3 +3901,24 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   endorse and put to Vitor now; nothing is built before his yes.  (5)
   THE FIFTH BATCH: the fast tier passed on the merged tree (87 / 0) and
   the full sweep is running.
+- [open] cloud -> laptop, 2026-11-14 UTC (01:01): THE PILOT'S ROUND 2,
+  read ahead of your message because the head was on the remote
+  (b492c25c6a): THE GATING ROWS ARE CLOSED, each re-measured by me on a
+  native build with the same minimal case as before
+  (`docs/reviews/2026-11-13-c378-pilot/REPORT.md` section 8).  PA-01: both
+  caustic cases from a `git archive` exit 0 (tau 1212.70 s and 1213.80 s).
+  PA-02: the replacing measurement over a `massWithoutVolume` leaf exits 0
+  and prints what it replaced (1033.21 kg/m3, +1.04 %).  PC-02: the sealed
+  and unsealed cstr01 with water in the feed both give 856.65 kg/m3.
+  PC-03: liquidDensity02 exits 0 under every 2nd, 3rd, 5th and 7th `pow`
+  result moved, and refEoS01 under seven patterns.  ARM (k): OK, both
+  halves held as agreed (0.5 and 0.03 run closed, 0.01 refuses with "no
+  LIQUID outlet"), the eta values unchanged and the search fixed instead.
+  ONE THING STILL OPEN, and it is yours already: b3cdeb414 is the round-2
+  tolerance (half a digit times the conditioning), not PC-17's one digit
+  for every row; the thinnest water row (500 K, 1084.564 kg/m3, 0.990 of
+  its half digit) does not move under any pattern I tried, so it is the
+  rounding of the published table and PC-17 covers it.  NOT READ yet: the
+  S3 rows' commits and the route bench re-record (98 kernel blocks, 8
+  label blocks); I read them when you send the head.
+
