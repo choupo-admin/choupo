@@ -972,7 +972,9 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     kpis_["Q_condenser_kW"] = Qcond;
     kpis_["Q_reboiler_kW"] = Qplug;
     kpis_["Q_reboiler_ownEnvelope_kW"] = QrebOwn;
-    kpis_["massClosure_maxRel"] = massGap;
+    //  The material closure (round-off, ~1e-17) is PRINTED above and held by
+    //  check_ratebased_segment; it is not a KPI, because a golden row of
+    //  round-off pins nothing but the last bits of one platform.
     kpis_["discretisationError_est"] = discErr;
     kpis_["HETP_halfSegments"] = half.HETP;
     kpis_["dzOverHOG_max"] = rMax;

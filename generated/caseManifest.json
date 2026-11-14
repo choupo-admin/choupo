@@ -25453,7 +25453,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/distillation/ratebased02_schulz_0p02bar": {
    "application": "choupoSolve",
@@ -25471,7 +25471,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar": {
    "application": "choupoSolve",
@@ -25489,7 +25489,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar": {
    "application": "choupoSolve",
@@ -25507,7 +25507,7 @@
     ]
    },
    "roles": [],
-   "hasGolden": false
+   "hasGolden": true
   },
   "tutorials/steady/distillation/shortcut01_benzene_toluene": {
    "application": "choupoSolve",

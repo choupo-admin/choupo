@@ -209,7 +209,8 @@ def main():
             if len(res) < 3:
                 continue
             k100, out100 = res[100]
-            mg = k100["massClosure_maxRel"]
+            mm = re.search(r"the reboiler's balance \(written by no row\) closes to ([0-9.e+-]+) of the boil-up", out100)
+            mg = float(mm.group(1)) if mm else float("inf")
             cl = closure(out100)
             print(f"    {rb:34s} reboiler material balance {mg:.2e} of the boil-up; energy closure "
                   f"{cl and cl.get('status')} (gap {cl and cl.get('gap'):.3e} kW, tolerance "

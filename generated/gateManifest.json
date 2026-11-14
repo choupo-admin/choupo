@@ -1745,6 +1745,11 @@
       "exit": 0,
       "claim": "check_solids_announcements: OK -- centrifuge phi_s recomputed on 2 cases + 30 vol % probe; thickener slope names t = 3600, 6300, 10800 s; thickener test-concentration advisory at verbosity 0; screen AUF 1.0820 announced; cakeFilter s<0 refused, s>1 announced, K_p ratio 2^0.5; mixer emulsion line: powders 0, liquids 2; pneumatic u_t non-convergence announced at Re ~ 1000; default mu_w = 0.4 announced at verbosity 0; voidage 0.99198 outside 0.994-0.9995 announced at verbosity 0; bend key RoverD refused by name (10 arms, scratch copies; no hypothesis judged)",
       "seconds": 0.4
+    },
+    "check_ratebased_segment": {
+      "exit": 0,
+      "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside r_max^2/2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 8 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
+      "seconds": 34.9
     }
   }
 }
