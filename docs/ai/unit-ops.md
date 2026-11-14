@@ -1367,7 +1367,10 @@ interface equilibrium, and the interface energy balance that fixes the two
 fluxes of a binary.  Needs the thermal conductivity of both phases in the package
 (`transport { vapour { thermalConductivity {...} } liquid { thermalConductivity
 {...} } }`).  Binary, packed, total reflux only; refused by name: a third
-component, a feed or reflux spec, trays, a non-ideal vapour.  A non-ideal liquid
+component, a feed or reflux spec, trays, a non-ideal vapour, a reboiler composition
+with a component at zero (both components must be present; the transfer-unit
+`totalReflux` bed refuses it too), a non-positive height, diameter, pressure or
+F-factor, and a non-integer `segments`.  A non-ideal liquid
 RUNS with the thermodynamic factor taken as 1, announced with the liquid film's
 share of the resistance.  `limit transferUnits;` is a check mode that reduces it to
 the transfer-unit bed.  Publishes the interface temperatures, the flux ratio and

@@ -166,6 +166,9 @@ inline const NamedSource benchmarkConstantDensity
       "a constant of the published benchmark the unit reproduces: 50 lb/ft3 (800.9 kg/m3), equal for every species" };
 inline const NamedSource declaredByCase
     { "declared.case", "the value the case declares for this unit" };
+inline const NamedSource packageLiquidConductivity
+    { "package.liquidThermalConductivity",
+      "property model: the package's liquid thermal-conductivity model (the case's `transport { liquid { thermalConductivity {} } }`), taken for the liquid film's heat-transfer coefficient" };
 inline const NamedSource ownWilkeChang
     { "own.WilkeChang.mixtureViscosity",
       "computed by the unit itself, not by the property kernel: its own Wilke-Chang, both ways at infinite dilution in the mixture viscosity, combined linearly in mole fraction" };

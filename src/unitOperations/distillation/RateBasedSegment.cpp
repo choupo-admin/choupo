@@ -105,6 +105,12 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     const std::string who = "DistillationColumn '" + unit + "' (model rateBased): ";
 
     //  ---- WHAT SLICE B1 IS NOT, refused by name with the slice that is ----
+    //  NOTE (RB-10, 2026-11-14): `feed` and `inputStreams` are wire keys that
+    //  buildAugmentedDict (flowsheet/UnitInputs.cpp) strips before ANY unit sees
+    //  its dict, so for those two this refusal cannot fire: a unit-level
+    //  `feed F1;` is accepted at exit 0 and ignored.  Only `reaction` is read
+    //  here.  Closing it needs the flowsheet layer (a unit that takes no feed
+    //  must refuse a wired input), which is shared parsing; reported, not done.
     for (const char* k : {"feed", "inputStreams", "reaction"})
         if (dict->found(k))
             throw std::runtime_error(who + "`" + k + "` -- this slice is a packed"
@@ -172,6 +178,9 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
 
     //  ---- Specification: identical to the transfer-unit bed's ------------
     const scalar Ptop = operDict->lookupScalar("P", Dims::pressure);
+    if (!(Ptop > 0.0) || !std::isfinite(Ptop))
+        throw std::runtime_error(who + "the top pressure `P` must be positive; read "
+            + std::to_string(Ptop) + " Pa.");
     auto tr = operDict->subDict("totalReflux");
     if (tr->lookupWordOrDefault("specifiedAt", "reboiler") != "reboiler")
         throw std::runtime_error(who + registryRefusal::message(
@@ -186,11 +195,25 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         if (!(s > 0.0))
             throw std::runtime_error(who + "totalReflux.composition is empty");
         for (auto& v : xN) v /= s;
+        //  RB-01: a binary bed needs BOTH components at the reboiler.  With one
+        //  at zero the bed is a pure fluid: its relative volatility, its
+        //  reflux composition (1e-27) and its HETP mean nothing, and the HETP
+        //  is NaN when the heavy key is the absent one.
+        for (std::size_t i = 0; i < n; ++i)
+            if (!(xN[i] > 0.0))
+                throw std::runtime_error(who + "totalReflux.composition has "
+                    + thermo.comp(i).name() + " at " + std::to_string(xN[i]) + ": a binary packed bed"
+                    " needs BOTH components present at the reboiler (a pure"
+                    " fluid has no relative volatility and no HETP).  Give each a"
+                    " positive mole fraction.");
     }
     if (!tr->found("fFactor") || tr->found("boilupRate"))
         throw std::runtime_error(who + "the boil-up is declared as `fFactor` (the"
             " reboiler vapour on the tower area), and only that.");
     const scalar Fspec = tr->lookupScalar("fFactor");
+    if (!(Fspec > 0.0) || !std::isfinite(Fspec))
+        throw std::runtime_error(who + "`totalReflux { fFactor }` must be positive; read "
+            + std::to_string(Fspec) + " (m/s)(kg/m3)^0.5.");
 
     auto pk = operDict->subDict("packing");
     const bool modelDeclared = pk->found("model");
@@ -204,6 +227,12 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     const bool delft = (pmodel == "Delft");
     const scalar Dcol = pk->lookupScalar("diameter", Dims::length);
     const scalar Hbed = pk->lookupScalar("height", Dims::length);
+    if (!(Dcol > 0.0) || !std::isfinite(Dcol))
+        throw std::runtime_error(who + "`packing { diameter }` must be positive; read "
+            + std::to_string(Dcol) + " m.");
+    if (!(Hbed > 0.0) || !std::isfinite(Hbed))
+        throw std::runtime_error(who + "`packing { height }` must be positive; read "
+            + std::to_string(Hbed) + " m (the bed's packed height).");
     PackingRBF::Geometry pg;
     PackingDelft::Geometry dg;
     pg.ap    = pk->lookupScalar("specificArea");
@@ -245,7 +274,11 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
             " the thermal conductivity of BOTH phases: add `transport { vapour {"
             " thermalConductivity { model Eucken; } } liquid { thermalConductivity"
             " { model SatoRiedel; } } }` (or the models the components support).");
-    const int Mdecl = static_cast<int>(pk->lookupScalarOrDefault("segments", 100.0));
+    const scalar segmentsRead = pk->lookupScalarOrDefault("segments", 100.0);
+    if (!std::isfinite(segmentsRead) || segmentsRead != std::floor(segmentsRead))
+        throw std::runtime_error(who + "`segments` must be a whole number; read "
+            + std::to_string(segmentsRead) + " (a bed is cut into a whole number of segments).");
+    const int Mdecl = static_cast<int>(segmentsRead);
     if (Mdecl < rateBased::minSegments)
         throw std::runtime_error(who + "`segments " + std::to_string(Mdecl) + "` is below"
             " the minimum of " + std::to_string(rateBased::minSegments)
@@ -305,8 +338,9 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         return s * thermo.H_stream_formation(T, P, 0.0, normalised(z));
     };
     //  The partial molar enthalpies at the interface: the pure components'
-    //  (exact for an ideal-gas vapour and an ideal-solution liquid, the only
-    //  phases this slice accepts).
+    //  (exact for an ideal-gas vapour, the only vapour this slice accepts, and
+    //  for an ideal-solution liquid; a NON-ideal liquid is accepted too, and
+    //  its partial molar enthalpies are read off the mixture below).
     std::vector<sVector> unitVec(n, sVector(n, 0.0));
     for (std::size_t i = 0; i < n; ++i) unitVec[i][i] = 1.0;
     //  The liquid's partial molar enthalpies at the interface.  For an ideal
@@ -336,17 +370,25 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         Hb[1] = hm - xn[0] * dh;
         return Hb;
     };
-    try
+    //  The formation-enthalpy probe: asked at the REBOILER's own state (below,
+    //  once its bubble point is known), not at a temperature of its own -- a
+    //  probe at a fixed 350 K raised extrapolation caveats for a state the bed
+    //  never visits (RB-09).  Its job is only to turn a record without
+    //  `standardThermochemistry` into a refusal with a remedy.
+    auto probeFormationEnthalpy = [&](scalar T, scalar P)
     {
-        (void)hV(xN, 350.0, Ptop);
-        (void)hL(xN, 350.0, Ptop);
-    }
-    catch (const std::exception& e)
-    {
-        throw std::runtime_error(who + "the components carry no formation"
-            " enthalpy the energy balances can be written on (" + std::string(e.what())
-            + "); add the `standardThermochemistry` block to their records.");
-    }
+        try
+        {
+            (void)hV(xN, T, P);
+            (void)hL(xN, T, P);
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error(who + "the components carry no formation"
+                " enthalpy the energy balances can be written on (" + std::string(e.what())
+                + "); add the `standardThermochemistry` block to their records.");
+        }
+    };
     //  The slope of the equilibrium line at a liquid of light-key fraction
     //  xlk, by the central difference the transfer-unit bed uses.
     auto ystarAndSlope = [&](scalar xlk, scalar P, scalar Tg, scalar& ys, scalar& m)
@@ -377,6 +419,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     std::vector<scalar> Pface(M + 1, Ptop);
     Reboiler reb = reboilerAt(Ptop, 350.0);
     const scalar Vref = reb.V;
+    probeFormationEnthalpy(reb.T, Ptop);
     const scalar lamRef = hV(reb.y, reb.T, Ptop) - hL(reb.y, reb.T, Ptop);
 
     //  ---- The coefficients of one segment at its mid-state ----------------
@@ -446,6 +489,8 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
                               - thermo.H_stream_formation(TLm - dT, Pm, 0.0, xl)) / (2.0 * dT);
             const scalar lamG = thermo.thermalConductivityGas(TVm, yv);
             const scalar lamL = thermo.thermalConductivityLiquid(TLm, xl);
+            PropertySourceLog::instance().useHere("liquidThermalConductivity",
+                liquidSource::packageLiquidConductivity, "package", took(lamL, TLm, Pm));
             const scalar rcpG = cG * 1000.0 * cpV, rcpL = cL * 1000.0 * cpL;   // J/(m3 K)
             const scalar hGc = r.kG * rcpG * std::pow(lamG / rcpG / st.DG, 2.0 / 3.0);
             const scalar hLc = r.kL * rcpL * std::sqrt(lamL / rcpL / st.DL);
@@ -846,6 +891,10 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         profile_.columns["m"].push_back(c.m);
         profile_.columns["liquidFilmShare"].push_back(share);
     }
+    if (!std::isfinite(HETP) || !std::isfinite(discErr))
+        throw std::runtime_error(who + "the bed's HETP or its discretisation estimate is not a"
+            " finite number (HETP " + std::to_string(HETP) + " m): the end compositions or the"
+            " relative volatility are degenerate; no HETP is reported.");
     if (discErr > rateBased::maxDiscretisationError)
     {
         const int need = static_cast<int>(std::ceil(M * std::sqrt(discErr / rateBased::maxDiscretisationError))) + 1;
@@ -1000,7 +1049,12 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     cv.variable = "Q_reboiler_kW";
     cv.rule     = "Q_reboiler = -Q_condenser: nothing crosses the boundary of a"
                   " column at total reflux, so its whole first law closes on the reboiler";
-    cv.blindTo  = "the split between the two duties -- the column's closure holds for any Q_condenser";
+    cv.blindTo  = "the split between the two duties -- the column's closure holds for any Q_condenser;"
+                  " and the CONTENT of the two film energy terms (gamma_V, gamma_L, the film"
+                  " heat-transfer coefficients): summed over the bed the check reduces to the"
+                  " sum of the interface energy row, so any film terms that satisfy that row"
+                  " close it (RB-02).  It fails on an unsolved energy row or an inconsistent"
+                  " enthalpy pricing, never on wrong interface physics";
     closures_.clear();
     if (limitMode)
         cv.note = "no second route: the limit `transferUnits` replaces the bed's"
@@ -1010,7 +1064,10 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
     {
         cv.check = "the reboiler's own envelope on the solved segments: V_b h_V(y_b, T_b)"
                    " - L_bed h_L(x_bed, T_L,bed); it agrees with -Q_condenser only if"
-                   " every segment's vapour, liquid AND interface energy rows are solved";
+                   " every segment's vapour, liquid AND interface energy rows are solved."
+                   "  It is an IDENTITY of those three rows summed over the bed (the"
+                   " reference latent heat times the sum of the interface row), a test of"
+                   " the solve and of the enthalpy pricing, not of the film energy terms";
         cv.hasCheck   = true;
         cv.checkValue = QrebOwn;
         cv.gap        = Qplug - QrebOwn;

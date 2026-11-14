@@ -290,6 +290,19 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
             // conversion node (the electricLoad generator) -- its KPI is energy
             // that already crossed at the upstream unit, so it is NOT added to
             // the plant-boundary sum (it would double-count).
+            //  EXCEPT a distillation column with no process stream at all (the
+            //  total-reflux beds and tray cases: no feed, no product).  It is not a
+            //  sink: its reboiler heat enters and its condenser heat leaves
+            //  across the plant boundary, and with no stream to carry them they
+            //  are boundary items, exchanged energy included -- the report used
+            //  to say "this plant declares no duty" for a column exchanging
+            //  410 kW each way (RB-15, 2026-11-14).
+            if (u.type == "distillationColumn" && nItems > 0)
+            {
+                globalQext      += sumExternal;
+                globalWshaft    += workExternal;
+                globalExchanged += magExternal;
+            }
             UnitRow r;
             r.name = u.name;
             r.kind = 2;

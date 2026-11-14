@@ -9,6 +9,7 @@ tag	diluteCarrierDensity	constant.diluteCarrier	a constant of the unit, 1000 kg/
 tag	dropletDensityFallback	fallback.1000	a constant of the unit, 1000 kg/m3, used because a solvent has no 25 C molar volume
 tag	kernelLiquidDiffusivity	kernel.liquidDiffusivity	property kernel: the case's liquid-diffusivity model (solute at infinite dilution in the medium)
 tag	ownWilkeChang	own.WilkeChang.mixtureViscosity	computed by the unit itself, not by the property kernel: its own Wilke-Chang, both ways at infinite dilution in the mixture viscosity, combined linearly in mole fraction
+tag	packageLiquidConductivity	package.liquidThermalConductivity	property model: the package's liquid thermal-conductivity model (the case's `transport { liquid { thermalConductivity {} } }`), taken for the liquid film's heat-transfer coefficient
 tag	pumpHeadDensityFallback	fallback.1000	a constant of the unit, 1000 kg/m3, used for the head because no component has a liquid volume
 tag	recordVliqFlat	bypass.recordVliq25C	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect
 tag	recordVliqIonsMassKept	bypass.recordVliq25C.ionsNoVolume	computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect; a dissolved ion keeps its mass and adds no volume

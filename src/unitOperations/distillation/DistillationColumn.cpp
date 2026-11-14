@@ -5528,6 +5528,15 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         if (!(s > 0.0))
             throw std::runtime_error("DistillationColumn '" + unit + "': totalReflux.composition is empty");
         for (auto& v : xN) v /= s;
+        //  RB-01: a binary bed needs BOTH components at the reboiler; with
+        //  one at zero the relative volatility and the HETP are undefined
+        //  (NaN when the heavy key is absent, a meaningless number otherwise).
+        for (std::size_t i = 0; i < n; ++i)
+            if (!(xN[i] > 0.0))
+                throw std::runtime_error("DistillationColumn '" + unit + "': totalReflux.composition has "
+                    + thermo.comp(i).name() + " at " + std::to_string(xN[i]) + ": a binary packed bed"
+                    " needs BOTH components present at the reboiler (a pure fluid has no relative"
+                    " volatility and no HETP).  Give each a positive mole fraction.");
     }
     if (!tr->found("fFactor") || tr->found("boilupRate"))
         throw std::runtime_error("DistillationColumn '" + unit + "': a packed bed"
