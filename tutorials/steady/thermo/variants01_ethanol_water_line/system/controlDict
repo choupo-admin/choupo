@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  variants01_ethanol_water_line -- A UNIT AND A PROPERTY CHECK SELECT THE
+  SAME NAMED VARIANT OF THE CASE'S ONE PROPERTY DICTIONARY (DEV.md 4c C398,
+  slice (a)).
+
+  ONE CASE, TWO MODES (DEV.md 4c C152): system/flowsheetDict (Process mode,
+  choupoSolve, the default) and system/propsDict (Properties & data mode,
+  choupoProps) over ONE constant/:
+      runCase <case>            Process mode: the pipe, on variant `vogelLaw`
+      runCase <case> props      Properties & data mode: the same liquid on
+                                the system and on variant `vogelLaw`
+
+  TARGET.  What a reader must be able to answer after running it: which
+  liquid viscosity did the pipe use, which law gave it, and where in the
+  case was that choice made -- from the printed resolved view, without
+  opening a source file.
+  SOURCES.  The component records (constant/components/, sealed copies).
+  WHAT IT DOES NOT CLAIM.  That either viscosity law is the better one.
+\*---------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "Named variants: a pipe and a property check select the same variant of the case's one property dictionary (ethanol-water, liquid viscosity Vogel vs the system's Andrade)";
+verbosity     3;
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

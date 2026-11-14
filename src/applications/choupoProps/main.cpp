@@ -72,6 +72,9 @@ Description
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/PropertyContext.H"
+#include "thermo/PropertyVariants.H"   // named variants (C398)
+#include "thermo/ResolvedView.H"       // the resolved view (C398)
+#include "thermo/ThermoOverride.H"
 #include "thermo/ThermoPackageBuilder.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/electrolyte/AqueousActivity.H"
@@ -115,6 +118,43 @@ namespace fs = std::filesystem;
 void registerUserTypes();
 
 namespace {
+
+// NAMED VARIANTS (DEV.md 4c C398): every variant an operation selects with
+// `thermo <name>;` is resolved -- an unknown name refused, listing the
+// declared ones -- and built by the one builder BEFORE any operation runs,
+// and its resolved view printed once, naming every operation that selects
+// it.  Each operation then builds its own package from the same merge
+// (PropertyOperation::thermoForOp), exactly as an inline fragment does.
+void selectNamedVariants(const std::vector<DictPtr>& ops, const DictPtr& system,
+                         const Database& db)
+{
+    std::map<std::string, std::vector<std::string>> by;
+    std::vector<std::string> order;
+    for (std::size_t k = 0; k < ops.size(); ++k)
+    {
+        if (!propertyVariants::selectsByName(ops[k])) continue;
+        const std::string name = ops[k]->lookupWord("thermo");
+        const std::string who  = "operation '" + ops[k]->lookupWordOrDefault("name", "?") + "'";
+        if (!by.count(name)) order.push_back(name);
+        by[name].push_back(who);
+        (void)propertyVariants::body(system, name, who);   // refuses an unknown name now
+    }
+    for (const auto& name : order)
+    {
+        const DictPtr body   = propertyVariants::body(system, name, by[name].front());
+        const DictPtr merged = mergeThermoOverride(system, body,
+            "variant '" + name + "' of constant/thermoPhysPropDict");
+        const ThermoPackage pkg = ThermoPackageBuilder::build(merged, db);
+        if (thermoAnnounce(2) && announceOnce("resolvedView:variant:" + name))
+        {
+            resolvedView::Choice c;
+            c.system   = "system (constant/thermoPhysPropDict)";
+            c.variant  = "variants." + name + " (constant/thermoPhysPropDict)";
+            c.fragment = body;
+            resolvedView::print(std::cout, "variant '" + name + "'", pkg, merged, c, by[name]);
+        }
+    }
+}
 
 // Emit the pre-solve GAP REPORT: the machine-readable JSON an author-time LLM
 // reads to advise the student (which compounds are missing/estimating which
@@ -667,6 +707,9 @@ try
                 std::cout << "Property package:  INLINE in the case"
                              "   (v2 grammar, NATIVE assembly)\n";
             thermo = ThermoPackageBuilder::build(sel, db, chemPtr);
+            if (thermoAnnounce(2) && announceOnce("resolvedView:system"))   // C398
+                resolvedView::print(std::cout, "system", thermo, sel,
+                    resolvedView::systemChoice(sel), {});
         }
     }
 
@@ -738,7 +781,8 @@ try
     {
         std::map<std::string, std::string> p;
         // Which model did this op use? (per-op thermo override, else its own model word)
-        if (opDict->found("thermo") && opDict->subDict("thermo")->found("activityModel"))
+        if (opDict->found("thermo") && !propertyVariants::selectsByName(opDict)
+            && opDict->subDict("thermo")->found("activityModel"))
             p["model"] = opDict->subDict("thermo")->subDict("activityModel")
                             ->lookupWordOrDefault("model", "");
         else if (opDict->found("model"))
@@ -789,6 +833,7 @@ try
                 opsList[k]->lookupWord("type") + "_" + std::to_string(k)));
         viewReader = std::make_unique<views::Reader>(propsDict, declared);
     }
+    selectNamedVariants(opsList, v2Authored, db);   // C398: before any operation runs
     for (std::size_t k = 0; k < opsList.size(); ++k)
     {
         const auto& opDict = opsList[k];
@@ -874,6 +919,12 @@ try
         if (const auto blk = op->resultBlock(); !blk.first.empty())
             opBlocks[blk.first].push_back(blk.second);
     }
+    //  The property dictionary's VARIANTS, audited after every operation ran
+    //  (C398): a variant no operation selected is announced as never read.
+    if (v2Authored)
+        if (const DictPtr vb = propertyVariants::variantsBlock(v2Authored))
+            dictAudit::report(dictAudit::auditTree(*vb,
+                "constant/thermoPhysPropDict variants"), verbosity);
 
     // --- Experimental datasets: echo each to a CSV in the case dir -------
     // "See, then decide": raw LAB data must be overlaid on the model curves so

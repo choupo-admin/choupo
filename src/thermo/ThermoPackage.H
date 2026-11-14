@@ -835,6 +835,16 @@ public:
     const PureFluidModel* pureFluidModel(std::size_t i) const;   // nullptr when none
     std::string liquidViscosityMethod() const;             // "model/rule" or ""
     std::string surfaceTensionMethod() const;              // "model/rule" or ""
+    //  What the package answers one transport property with (the resolved
+    //  view, C398 slice (a)): `key` is the canonical flat name (viscosity,
+    //  thermalConductivity, diffusivity, liquidViscosity, liquidConductivity,
+    //  liquidDiffusivity, surfaceTension).  Empty fields: no model held.
+    struct TransportMethodInfo
+    {
+        std::string model, modelCitation, modelWindow;
+        std::string rule,  ruleCitation,  ruleWindow;    // a selectable mixing rule
+    };
+    TransportMethodInfo transportMethodInfo(const std::string& key) const;
 
 private:
     // Load-time helper: expand any predefined-mixture tokens in `names`

@@ -359,7 +359,7 @@ ordering:
 | 5 | `outputs`   | yes | list of output stream names |
 | 6 | `operation` | yes | sub-dict of operating parameters (the numeric knobs) |
 | 7+ | `reaction` / `crystallisation` / `dryingCurve` | opt | reference to a constant/<lib>/<name> block |
-| 7+ | `thermo`    | opt | per-unit thermo override (replaces global models for this unit only) |
+| 7+ | `thermo`    | opt | `thermo <name>;` selects a named variant of `constant/thermoPhysPropDict`; `thermo { ... }` is an inline (unnamed) variant |
 
 `name` and `type` are mandatory; the rest depend on the unit.  See
 `unit-ops.md` for per-op required fields.
@@ -632,15 +632,52 @@ equilibrium
 Semantics, worked examples and the four-formulations table:
 [`thermo.md`](thermo.md) → "The formulations".
 
-## Per-unit `thermo {}` override
+## Named variants and the per-unit `thermo` selection (C398)
 
-A unit may carry an optional `thermo {... }` block that REPLACES the
-global system's models for that unit only (components stay global):
+A case declares its properties in ONE file, `constant/thermoPhysPropDict`.
+Its blocks are the case's system; it may add `variants {}`, named variants
+that state ONLY what differs and derive DIRECTLY from the file's own system
+(never from another variant):
 
 ```
-{ name turbine; type turbine;  in feed;  outputs (expanded );
+// constant/thermoPhysPropDict
+transport
+{
+    liquid    { viscosity      { model Andrade;   } }
+    interface { surfaceTension { model BrockBird; } }
+}
+variants
+{
+    vogelLaw { transport { liquid { viscosity { model Vogel; } } } }
+}
+
+// system/flowsheetDict -- a unit selects it by name
+{ name line; type pipe; thermo vogelLaw; in feed; outputs ( delivered ); operation { ... } }
+
+// system/propsDict -- a property check selects the same one
+{ name muVariant; type propertyPoint; thermo vogelLaw;
+  state { T 300 K; P 3 bar; composition { ethanol 0.2; water 0.8; } }
+  properties ( viscosity_liquid surface_tension ); }
+```
+
+Rules (refused by name otherwise): a variant names no other (`thermo`,
+`inherits`, `derivedFrom`, `base`, `from` inside a variant), carries no
+`components`, `chemistry` or `volumetric` (the last until slice (c)); an
+unknown name lists the declared variants.  A variant nobody selects is
+ANNOUNCED by the unread-key audit, not refused.  THE ATOM inside
+`transport` is the property block: the variant above replaces
+`transport.liquid.viscosity` and keeps the surface tension.  A sector's own
+dictionary may hold its own variants; a unit in a sector resolves the name
+against its sector's file.  Witness:
+`tutorials/steady/thermo/variants01_ethanol_water_line`.
+
+An inline block keeps reading, as an UNNAMED variant -- e.g. a real gas for
+one unit only (components stay global):
+
+```
+{ name turbine; type turbine;  in feed;  outputs ( expanded );
   operation { W_shaft -3 kW; eta 0.8; }
-  thermo    { equationOfState { model SRK; } } }     // real gas here only
+  thermo    { equilibrium { vapour { fugacityModel SRK; } } } }   // real gas here only
 ```
 
 A stream crossing from a unit with model X into one with model Y is

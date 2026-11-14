@@ -551,7 +551,12 @@ them.  Don't write empty stubs — and, more generally, **no juice-less
 files**: every file must carry its own explanatory content.  The
 `thermoPhysPropDict` declares the whole thermophysical system inline (there
 is no selector into a shared catalogue); a content-free placeholder or an
-empty role overlay is forbidden the same way.
+empty role overlay is forbidden the same way.  It is the ONE place a case
+declares its properties: a unit or an operation that needs one property
+priced differently selects a named VARIANT of this file (`thermo <name>;`),
+declared under its `variants {}` block, rather than repeating a fragment in
+its own block (`dict-syntax.md` → "Named variants"; C398).  A sector keeps its
+own `constant/thermoPhysPropDict`, which may hold variants of its own.
 
 ## `system/postDict` — the post-processing chain
 

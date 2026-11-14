@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-14";
+    importerVersion    "3";
+    records
+    {
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "1eda76a51260e625d2b0333916b8404a846d0d42658d0e5ebab2a6f66b7b8282";
+            computationalSha256 "31f4c8fb850b2e34dc718acce40ecd9457bcc9fdcf7d705fafbefbf94b197a05";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "63fc74fa14b7464744e1bfc995cdbe87d72d0d7d56aa188605a5802f3e99de0d";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "b32cd13a8a4783d0ce02bf84800b74462e3fd46d8983942f70e958da3c731aae";
+            computationalSha256 "f9080a8aa18a3730b43c799b58ec335cab2bf5258c4cc955a781cda5ed311d9b";
+            origin        "data/standards/components/water.dat";
+            originSha256  "374ccb2ee48a45af9782204286a7e4de134729f99653a95af0a2d3d24b23e0c1";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
+            release       Choupo-2608;
+        }
+    }
+}

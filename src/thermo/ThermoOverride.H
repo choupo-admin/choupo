@@ -56,17 +56,33 @@ Description
         the builder).  Same/undeclared formulation -> per-SLOT replacement
         (liquid / vapour / aqueous / equationOfState / liquidPhases), each
         announced.
-      - caloric / volumetric / transport / pureFluids: replace-whole per
-        block, announced.
+      - transport: THE PROPERTY BLOCK is the atom (DEV.md 4c C398, RULED,
+        point 2): `transport { liquid { viscosity {...} } }` replaces
+        transport.liquid.viscosity and keeps every other property block of
+        the base.  When the base declares no `transport` at all the
+        fragment's block arrives whole, exactly as before, and is announced
+        as before.  The names a block may be spelt with are one table
+        (TransportGrammar.H).
+      - volumetric: the atom is the PHASE block (volumetric.<phase>); a
+        fragment may not carry one yet -- the measurements it declares are
+        read into ONE process-wide table (liquidProperty::
+        MeasurementDeclarations, Measured.cpp), so a second package would
+        replace the system's for every unit.  Refused by name.
+      - caloric / pureFluids: replace-whole per block, announced.
+      - the merged system carries no `variants` block (a resolved variant
+        is a complete system, not a table to choose from).
       - an unknown fragment key REFUSES loudly.
 \*---------------------------------------------------------------------------*/
 
 #pragma once
 
 #include "core/Dictionary.H"
+#include "thermo/PropertyVariants.H"
 #include "thermo/ThermoAnnounce.H"
+#include "thermo/TransportGrammar.H"
 
 #include <iostream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
@@ -94,10 +110,12 @@ inline DictPtr mergeThermoOverride(const DictPtr& effectiveAuthored,
             throw std::runtime_error(who + ": `" + k + "` is FORBIDDEN in a"
                 " thermo{} override fragment -- components stay GLOBAL and"
                 " the active chemistry lives in constant/chemistryDict.");
-        if (k == "binaryPairsBase" || k == "activeComponents")
+        if (k == "binaryPairsBase" || k == "activeComponents"
+            || k == propertyVariants::selectedKey())
             continue;   // ENGINE-injected per-node plumbing (the flattener's
-                        // nearest-owner pair home / pair-domain projection)
-                        // -- passed through below, never authored refusals.
+                        // nearest-owner pair home / pair-domain projection,
+                        // and the name of a selected variant) -- passed
+                        // through below, never authored refusals.
         if (k != "equilibrium" && k != "caloric" && k != "volumetric"
             && k != "transport" && k != "pureFluids")
             throw std::runtime_error(who + ": unknown thermo{} fragment key '"
@@ -106,14 +124,19 @@ inline DictPtr mergeThermoOverride(const DictPtr& effectiveAuthored,
                 " pureFluids.");
     }
     if (fragment->found("transport"))
-        for (const auto& tk : fragment->subDict("transport")->keys())
-            if (tk != "vapour" && tk != "liquid" && tk != "interface")
-                throw std::runtime_error(who + ": thermo{} transport override"
-                    " key '" + tk + "' -- the fragment uses the"
-                    " phase-structured form: transport { vapour{...}"
-                    " liquid{...} interface{...} }.");
+        transportGrammar::validate(fragment->subDict("transport"),
+                                   who + ": thermo{} transport");
+    if (fragment->found("volumetric"))
+        throw std::runtime_error(who + ": a `volumetric` block in a thermo{}"
+            " fragment or a variant cannot be honoured yet -- the liquid-density"
+            " measurements are one table per run until slice (c) of C398"
+            " (thermo/liquidProperty/Measured.cpp, MeasurementDeclarations), so"
+            " a second package would replace the system's measurements for"
+            " every unit of the run.  Declare the measurement in the system's"
+            " own `volumetric` block.");
 
     auto merged = effectiveAuthored->deepCopy();
+    merged->erase("variants");
     auto note = [&](const std::string& slot, const std::string& what)
     {
         if (thermoAnnounce())
@@ -123,9 +146,45 @@ inline DictPtr mergeThermoOverride(const DictPtr& effectiveAuthored,
 
     for (const auto& k : fragment->keys())
     {
+        if (k == propertyVariants::selectedKey())
+            continue;   // the selection's name: read by the view, not a block
         if (k == "binaryPairsBase" || k == "activeComponents")
         {
             merged->insert(k, fragment->entryValue(k));   // plumbing rides
+            continue;
+        }
+        if (k == "transport" && merged->found("transport")
+            && std::holds_alternative<DictPtr>(merged->entryValue("transport")))
+        {
+            //  THE ATOM IS THE PROPERTY BLOCK (C398 point 2): each block the
+            //  fragment declares replaces the base's block of that name; the
+            //  base's other blocks stay.  The fragment's blocks are inserted
+            //  as they are (shared, not copied), so the reads the builder
+            //  makes through them reach the authored dict and the unread-key
+            //  audit; nothing here writes into them.  A base WITHOUT a
+            //  transport block takes the fragment's whole (below), which is
+            //  the same result and the same announcement as before.
+            auto mT = merged->subDict("transport");
+            auto fT = fragment->subDict("transport");
+            for (const auto& ph : fT->keys())
+            {
+                auto fPh = fT->subDict(ph);
+                DictPtr mPh;
+                if (mT->found(ph)
+                    && std::holds_alternative<DictPtr>(mT->entryValue(ph)))
+                    mPh = mT->subDict(ph);
+                else
+                {
+                    mPh = std::make_shared<Dictionary>(ph);
+                    mT->insert(ph, EntryValue(mPh));
+                }
+                for (const auto& pr : fPh->keys())
+                {
+                    mPh->insert(pr, fPh->entryValue(pr));
+                    note("transport." + ph + "." + pr,
+                         "LOCAL override property block");
+                }
+            }
             continue;
         }
         if (k != "equilibrium")

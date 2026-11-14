@@ -63,10 +63,57 @@ namespace Choupo {
 // block REPLACES the parent's, announced as a shadow.  v1 chains keep the
 // recursive semantics byte-identically (their propertyMethods leaves are
 // scalars -- the shadow announce already covered them).
+//
+// THE ATOM INSIDE `transport` AND `volumetric` IS THE PROPERTY BLOCK (DEV.md
+// 4c C398, RULED, point 2): a child's `transport { liquid { viscosity {...} }
+// }` replaces transport.liquid.viscosity and keeps the parent's other
+// property blocks; a child's `volumetric { liquid {...} }` replaces
+// volumetric.liquid.  The same atom a variant and an inline `thermo {}`
+// fragment use (ThermoOverride.H), so the three levels that replace agree.
+// `equilibrium` and `caloric` stay whole, as before.  Measured 2026-11-14:
+// no shipped `inherits` dictionary declares `transport` or `volumetric`, so
+// no case moves.
+//
+// `variants` is the FILE's own: a child's variants derive from the child's
+// resolved system, and the parent's are not inherited (PropertyVariants.H).
 inline bool v2AtomicBlock(const std::string& k)
 {
     return k == "equilibrium" || k == "aqueousProperties" || k == "caloric"
-        || k == "transport" || k == "pureFluids";
+        || k == "pureFluids";
+}
+
+//  The depth of the atom inside a v2 block: 2 for transport (phase,
+//  property), 1 for volumetric (phase), 0 otherwise.
+inline int v2AtomDepth(const std::string& k)
+{
+    if (k == "transport")  return 2;
+    if (k == "volumetric") return 1;
+    return 0;
+}
+
+//  Replace, inside `out[k]`, each atom `over` declares, `depth` levels down.
+inline void mergeAtoms(const DictPtr& out, const DictPtr& over,
+                       const std::string& ctx, int depth)
+{
+    for (const auto& k : over->keys())
+    {
+        const bool bothDict = depth > 1 && out->found(k)
+            && std::holds_alternative<DictPtr>(out->entryValue(k))
+            && std::holds_alternative<DictPtr>(over->entryValue(k));
+        if (bothDict)
+        {
+            auto copy = std::get<DictPtr>(out->entryValue(k))->deepCopy();
+            mergeAtoms(copy, std::get<DictPtr>(over->entryValue(k)),
+                       ctx + "." + k, depth - 1);
+            out->insert(k, EntryValue(copy));
+            continue;
+        }
+        if (out->found(k))
+            std::cerr << "[inherits] " << ctx << "." << k
+                      << " shadowed by local property context"
+                         " (property block, replaced whole)\n";
+        out->insert(k, over->entryValue(k));
+    }
 }
 
 inline DictPtr mergePropertyDicts(const DictPtr& base, const DictPtr& over,
@@ -74,9 +121,21 @@ inline DictPtr mergePropertyDicts(const DictPtr& base, const DictPtr& over,
                                   bool v2Chain = false)
 {
     auto out = std::make_shared<Dictionary>(base->name());
-    for (const auto& k : base->keys()) out->insert(k, base->entryValue(k));
+    for (const auto& k : base->keys())
+        if (!(v2Chain && k == "variants"))     // the parent file's own
+            out->insert(k, base->entryValue(k));
     for (const auto& k : over->keys())
     {
+        if (v2Chain && v2AtomDepth(k) > 0 && out->found(k)
+            && std::holds_alternative<DictPtr>(out->entryValue(k))
+            && std::holds_alternative<DictPtr>(over->entryValue(k)))
+        {
+            auto copy = std::get<DictPtr>(out->entryValue(k))->deepCopy();
+            mergeAtoms(copy, std::get<DictPtr>(over->entryValue(k)),
+                       ctx + "." + k, v2AtomDepth(k));
+            out->insert(k, EntryValue(copy));
+            continue;
+        }
         if (v2Chain && v2AtomicBlock(k))
         {
             if (out->found(k))
@@ -156,8 +215,10 @@ inline DictPtr resolvePropertyContext(const std::string&      constantDir,
     auto localClean = std::make_shared<Dictionary>(local->name());
     for (const auto& k : local->keys())
         if (k != "inherits") localClean->insert(k, local->entryValue(k));
-    return mergePropertyDicts(parent, localClean, "thermoPhysPropDict",
-                              isV2System(parent));
+    auto merged = mergePropertyDicts(parent, localClean, "thermoPhysPropDict",
+                                     isV2System(parent));
+    merged->setSource(path);   // the file it was resolved from (the resolved view, C398)
+    return merged;
 }
 
 // Resolve the case's ACTIVE-CHEMISTRY SELECTION (`constant/chemistryDict`,

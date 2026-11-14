@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1857,
+  "cases": 1858,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -29634,6 +29634,31 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/thermo/variants01_ethanol_water_line": {
+   "application": "choupoSolve",
+   "modes": [
+    "process",
+    "props"
+   ],
+   "defaultMode": "process",
+   "unitTypes": [
+    "pipe"
+   ],
+   "unitModels": [
+    "Churchill"
+   ],
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/thermoTest/model1_lumped_evaporator": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -31762,6 +31787,7 @@
     "tutorials/steady/thermo/liquidDensity05_CO2water",
     "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
+    "tutorials/steady/thermo/variants01_ethanol_water_line",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/thermoTest/model2_pitzer_evaporator",
     "tutorials/steady/thermoTest/model3_enrtl_antisolvent_crystalliser",
@@ -32372,7 +32398,8 @@
    "pipe": [
     "tutorials/steady/hydraulics/pipe01_water_line",
     "tutorials/steady/hydraulics/pipe02_airwater_twophase",
-    "tutorials/steady/hydraulics/pumpSystem01_operating_point"
+    "tutorials/steady/hydraulics/pumpSystem01_operating_point",
+    "tutorials/steady/thermo/variants01_ethanol_water_line"
    ],
    "pneumaticConveyor": [
     "tutorials/steady/solids/pneumaticConveyor01_sand",
@@ -35162,6 +35189,7 @@
     "tutorials/steady/thermo/liquidDensity02_waterEthanol",
     "tutorials/steady/thermo/liquidDensity06_NaClwaterEthanol",
     "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
+    "tutorials/steady/thermo/variants01_ethanol_water_line",
     "tutorials/steady/thermoTest/model1_lumped_evaporator",
     "tutorials/steady/userops/userOp01_yield_reactor",
     "tutorials/steady/userops/userOp02_component_splitter",
@@ -36290,7 +36318,8 @@
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/transport/mixing01_water_acetone",
-    "tutorials/props/transport/surfacetension01_stored_vs_brockbird"
+    "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
+    "tutorials/steady/thermo/variants01_ethanol_water_line"
    ],
    "propertyScan1D": [
     "data/curation/batches/new_components",

@@ -31,6 +31,7 @@ License
 #include "core/DictAudit.H"
 #include "core/Advisory.H"
 #include "thermo/ThermoAnnounce.H"
+#include "thermo/ResolvedView.H"
 #include "core/DisplayUnits.H"
 #include "core/ExprEval.H"
 #include "thermo/EnthalpyDatum.H"            // missingEnthalpyData: name no-datum species
@@ -60,6 +61,7 @@ License
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/PropertyContext.H"
 #include "thermo/ThermoOverride.H"
+#include "unitOperations/flowsheet/VariantSelection.H"   // `thermo <name>;` (C398)
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/StreamEquilibrium.H"  // equilibriumAt / twoPhaseSplit / hOfState: the ONE home
 #include "unitOperations/flowsheet/UnitInputs.H"     // streamToDict, buildAugmentedDict
@@ -266,7 +268,8 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     std::vector<DictPtr>&                           units,
     std::vector<CompositeTear>&                     outTears,
     const ThermoPackage&                            thermo,
-    const std::map<std::string, ProcessStream>&     streamReg)
+    const std::map<std::string, ProcessStream>&     streamReg,
+    const DictPtr&                                  rootSystem = nullptr)   // C398: variants
 {
     // Stream state never lives in a flowsheetDict -- at ANY level of the
     // plant/sector tree.  The root reader refuses its own block in solve(); a
@@ -645,6 +648,9 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             u->insert("type", cd->entryValue("type"));
             for (const char* k : { "operation", "model", "thermo", "utility" })   // utility: C52, read by the allocation
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
+            if (propertyVariants::selectsByName(u))   // `thermo <name>;` (C398): VariantSelection.H
+                flowsheetVariants::resolve(u, flowsheetVariants::nodeSystem(
+                    memberBase.substr(0, memberBase.size() - 1), rootSystem), qname);
             // reaction: PER-NODE resolution (Item 0 of the props foundation).
             // A sector/unit's kinetics live WITH it (its own constant/reactions),
             // not only the plant root.  Resolve the named reference HERE from
@@ -846,7 +852,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             // AND/OR `units` (unit ops) -- a sector with a SINGLE unit (BRINE ->
             // unitOperations/crystNaCl) is `units ( crystNaCl )`, still composite.
             memberOutletMaps[member] = flattenNode(cd, nsPrefix + member + ".", memberBase,
-                memberInletMap, units, outTears, thermo, streamReg);
+                memberInletMap, units, outTears, thermo, streamReg, rootSystem);
         }
         else
             throw std::runtime_error("Flowsheet: member '" + member
@@ -1117,6 +1123,7 @@ void runUnit(const DictPtr&                                          udict,
             auto th = udict->subDict("thermo");
             for (const auto& k : th->keys())
             {
+                if (k == propertyVariants::selectedKey()) { std::cout << " variant '" << th->lookupWord(k) << "' of the property dictionary:"; continue; }
                 std::string m = "?";
                 try { m = th->subDict(k)->lookupWordOrDefault("model", "?"); }
                 catch (const std::exception&) {}
@@ -2156,6 +2163,7 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                 ThermoPackageBuilder::build(mergedV2, *db_,
                     nodeChem.present ? &nodeChem : nullptr));
             applyReactiveConvergence(*tpn);
+            printFragmentView(uname, udict->subDict("thermo"), mergedV2, *tpn, base);
             const ThermoPackage& refn = *tpn;
             unitThermo_[uname] = std::move(tpn);
             return refn;
@@ -2187,6 +2195,7 @@ const ThermoPackage& Flowsheet::thermoFor(const std::string&   uname,
                 ThermoPackageBuilder::build(pkg, *db_,
                     nodeChem.present ? &nodeChem : nullptr));
             applyReactiveConvergence(*tpn);
+            printContextView(pcb, ctx, *tpn);   // once per sector dictionary (C398)
             const ThermoPackage& refn = *tpn;
             unitThermo_[uname] = std::move(tpn);
             if (thermoAnnounce())
@@ -2391,7 +2400,7 @@ int Flowsheet::solve(const DictPtr& dict,
         // utility-port cabling ADVISORY -- never for stream identity.
         auto outMap = flattenNode(dict, "", "", rootInletMap, units,
                                   compositeTears, thermo,
-                                  seededFrom0 ? rawState : streams_);
+                                  seededFrom0 ? rawState : streams_, authoredV2_);
         for (const auto& [outlet, src] : outMap)
             outletAliases.emplace_back(src, outlet);
     }
@@ -2400,6 +2409,7 @@ int Flowsheet::solve(const DictPtr& dict,
         throw std::runtime_error("Flowsheet: node has neither a `units (...)`"
             " list, a `members (...)` list, nor a `type` (leaf node)");
     }
+    selectNamedVariants(units, thermo);   // `thermo <name>;` resolved and built before the solve (C398)
 
     //  CHEMISTRY IS DECLARED BY THE CASE, READ BY THE UNITS (settled
     //  2026-07-25/26).  A unit that names an activity model or a mineral set
@@ -5358,5 +5368,92 @@ int Flowsheet::runLint(const std::vector<DictPtr>&     units,
     return 0;
 }
 
+// ===========================================================================
+//   Named variants of the property dictionary (DEV.md 4c C398, slice (a))
+// ===========================================================================
+//  Placed at the end of the file so no line a lesson cites above it moved.
+void Flowsheet::selectNamedVariants(std::vector<DictPtr>& units,
+                                    const ThermoPackage& global)
+{
+    //  An inline unit of the root writes `thermo <name>;` against the case
+    //  system (a folder unit was resolved by flattenNode against its node's).
+    for (const auto& u : units)
+        if (propertyVariants::selectsByName(u))
+            flowsheetVariants::resolve(u, authoredV2_, u->lookupWordOrDefault("name", "?"));
+
+    //  Who selects which variant -- the view names them all.
+    variantSelectors_.clear();
+    std::vector<DictPtr> selecting;
+    for (const auto& u : units)
+    {
+        bool has = false;
+        for (const auto& k : u->keys()) if (k == "thermo") { has = true; break; }
+        if (!has || !std::holds_alternative<DictPtr>(u->entryValue("thermo"))) continue;
+        const DictPtr th = u->subDict("thermo");
+        bool named = false;
+        for (const auto& k : th->keys()) if (k == propertyVariants::selectedKey()) { named = true; break; }
+        if (!named) continue;
+        variantSelectors_[th->lookupWord(propertyVariants::selectedKey())]
+            .push_back("unit '" + u->lookupWordOrDefault("name", "?") + "'");
+        selecting.push_back(u);
+    }
+    //  EVERY VARIANT THE RUN USES IS RESOLVED COMPLETE BEFORE ANY CALCULATION
+    //  (ruling point 1): each selecting unit's package is built now, by the
+    //  one builder, and cached for the solve.
+    for (const auto& u : selecting)
+        thermoFor(u->lookupWordOrDefault("name", "?"), u, global);
+}
+
+void Flowsheet::printFragmentView(const std::string& uname, const DictPtr& fragment,
+                                  const DictPtr& merged, const ThermoPackage& pkg,
+                                  const std::string& base)
+{
+    if (base != "constant" && !flowsheetVariants::isRootContext(base, authoredV2_))
+        flowsheetVariants::contexts().used.insert(flowsheetVariants::canonicalDir(base));
+    if (!thermoAnnounce(2)) return;
+    std::string vname;
+    for (const auto& k : fragment->keys())
+        if (k == propertyVariants::selectedKey()) vname = fragment->lookupWord(k);
+    const std::string file = (base == "constant" ? std::string("constant")
+                                                 : base) + "/thermoPhysPropDict";
+    if (!announceOnce("resolvedView:" + (vname.empty() ? "inline:" + uname
+                                                       : "variant:" + vname + "@" + file)))
+        return;
+    resolvedView::Choice c;
+    c.system   = base == "constant" ? std::string("system (constant/thermoPhysPropDict)")
+                                    : "system of " + file;
+    c.variant  = vname.empty() ? "inline thermo{} of unit '" + uname + "'"
+                               : "variants." + vname + " (" + file + ")";
+    c.fragment = fragment;
+    const std::vector<std::string> by = vname.empty()
+        ? std::vector<std::string>{ "unit '" + uname + "'" }
+        : variantSelectors_[vname];
+    resolvedView::print(std::cout, vname.empty() ? "inline thermo{} of unit '" + uname + "'"
+                                                 : "variant '" + vname + "'",
+                        pkg, merged, c, by);
+}
+
+void Flowsheet::printContextView(const std::string& constantDir, const DictPtr& resolved,
+                                 const ThermoPackage& pkg)
+{
+    //  The root system's own dictionary, reached as a context by a folder
+    //  unit of a sectored case, is the system the binary already printed.
+    if (flowsheetVariants::isRootContext(constantDir, authoredV2_)) return;
+    const std::string dir = flowsheetVariants::canonicalDir(constantDir);
+    flowsheetVariants::contexts().used.insert(dir);
+    if (!thermoAnnounce(2) || !announceOnce("resolvedView:context:" + dir)) return;
+    const std::string file = constantDir + "/thermoPhysPropDict";
+    resolvedView::Choice c;
+    c.system = "sector dictionary " + file;
+    if (std::filesystem::exists(file))
+    {
+        c.localFile = Dictionary::fromFile(file);
+        const std::string rel = c.localFile->lookupWordOrDefault("inherits", "");
+        c.inherited = rel.empty() ? c.system
+                                  : "the parent system, through `inherits \"" + rel + "\"`";
+    }
+    resolvedView::print(std::cout, "sector dictionary " + file, pkg, resolved, c,
+                        { "the units of this sector that name no thermo of their own" });
+}
 
 } // namespace Choupo

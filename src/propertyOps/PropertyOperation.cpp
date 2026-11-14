@@ -135,7 +135,11 @@ DictPtr PropertyOperation::authoredV2For(const DictPtr& opDict) const
 {
     if (!authoredV2_ || !opDict || !opDict->found("thermo"))
         return authoredV2_;
-    auto frag = opDict->subDict("thermo");
+    //  `thermo <name>;` selects a named variant of the case's property
+    //  dictionary, `thermo { ... }` is an inline (unnamed) one (C398).
+    std::string variantName;
+    auto frag = propertyVariants::fragmentOf(authoredV2_, opDict,
+        "operation '" + opDict->lookupWordOrDefault("name", "?") + "'", variantName);
     auto merged = mergeThermoOverride(authoredV2_, frag, "op thermo{} override");
     //  The fragment's inline pair (`binaryParameters`) is read by the fit on
     //  its PRIVATE working copy (FitParameters deep-copies this system and
@@ -157,7 +161,9 @@ PropertyOperation::thermoForOp(const DictPtr& opDict) const
 {
     if (!opDict->found("thermo") || !database_)
         return nullptr;
-    auto over = opDict->subDict("thermo");
+    std::string variantName;   // `thermo <name>;` (C398) or the inline block
+    auto over = propertyVariants::fragmentOf(authoredV2_, opDict,
+        "operation '" + opDict->lookupWordOrDefault("name", "?") + "'", variantName);
 
     // The override is a typed v2 FRAGMENT applied onto the case's authored
     // system -- the ONE merge (ThermoOverride.H).
