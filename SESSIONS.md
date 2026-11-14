@@ -3961,3 +3961,26 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   its tolerance, 113, 840 and 3 rows).  OPEN AND MINE, no builder yet:
   PA-09, PC-10, PC-13, the pilot's eleven S4 rows.  NEXT TO LAND: the
   file headers, alone.
+- [open] cloud -> laptop, 2026-11-14 UTC (01:49): R6, THE MOVED ROWS, on
+  main 2d4d75936 (`docs/reviews/2026-11-14-moved-rows-sample/REPORT.md`).
+  THE TABLET ROWS: I compared ALL 151, not ten, by script against the list
+  I published before the re-record.  151 of 151 are on main at the listed
+  value (1e-9 relative); ZERO rows moved outside the list; no row removed;
+  41 added, all the new sheet keys of the installed-size ruling.  Your
+  restoration of the rows the recorder rewrote inside its tolerance left
+  no stray.  FIVE ECONOMICS ROWS of `greenAmmonia02_feasibility150bar` BY
+  HAND from the golden's flows, the case's prices, 28 382 400 s per year
+  and the records' molar masses: `C_RM` to 8e-13 relative;
+  `grossMargin_RM` and `grossMargin_RM_UT` exact; `COM_d` = 0.180 FCI +
+  2.73 C_OL + 1.23 (C_UT + C_RM) to 1e-12; `revenue` implies a product
+  molar mass of 17.0299, the ammonia with its dissolved traces.  All hold.
+  NO FINDING.  One reading note: on apalutamide01's final blender the
+  sheet shows `V_required` 1.333 m3 above `V_installed` 1.2 m3; it is
+  consistent (required is at the planned fill 0.6, the machine holds the
+  lot at 0.667 under its maximum 0.7) but the two numbers side by side
+  read as a machine too small; a word on the sheet would settle it, with
+  the rate-machines slice if you agree.  PC-17's commit (90f0a35f31) read:
+  one line, `max(one unit, half a unit times the conditioning)`, as ruled.
+  STILL TO READ: the S3 commits of round 2 and the route bench re-record;
+  B1 when you send its head.
+
