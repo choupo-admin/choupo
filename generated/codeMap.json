@@ -370,7 +370,11 @@
    "src/solver/ODE/Jacobian.H"
   ],
   "Column": [
-   "src/core/PublishedTable.H"
+   "src/core/PublishedTable.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H"
+  ],
+  "ColumnRole": [
+   "src/thermo/liquidProperty/ExperimentsFile.H"
   ],
   "ColumnSize": [
    "src/postProcessing/sizing/ColumnSize.H"
@@ -829,6 +833,9 @@
   "ExpressionRate": [
    "src/thermo/reaction/ExpressionRate.H"
   ],
+  "Extension": [
+   "src/thermo/PropertyTable.H"
+  ],
   "ExtractionShortcutOp": [
    "src/propertyOps/ExtractionShortcutOp.H"
   ],
@@ -849,6 +856,9 @@
   ],
   "FeedSpacerRegistry": [
    "src/thermo/membrane/FeedSpacer.H"
+  ],
+  "File": [
+   "src/thermo/liquidProperty/ExperimentsFile.H"
   ],
   "Finding": [
    "src/core/DictAudit.H"
@@ -1773,6 +1783,9 @@
   "PropertySourceLog": [
    "src/core/PropertySourceLog.H"
   ],
+  "PropertyTable": [
+   "src/thermo/PropertyTable.H"
+  ],
   "Props": [
    "src/thermo/iapws/IF97.H"
   ],
@@ -2320,7 +2333,14 @@
   ],
   "Table": [
    "src/core/Formula.H",
-   "src/propertyOps/EvidencePartition.H"
+   "src/propertyOps/EvidencePartition.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H"
+  ],
+  "TableCp": [
+   "src/thermo/heatCapacity/TableCp.H"
+  ],
+  "TableViscosity": [
+   "src/thermo/transport/TableViscosity.H"
   ],
   "TabularSizeDistribution": [
    "src/core/distribution/TabularSizeDistribution.H"
@@ -4272,6 +4292,7 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Formula.H",
+   "src/core/Table1D.H",
    "src/core/Types.H"
   ],
   "src/core/OdsWriter.cpp": [
@@ -8703,7 +8724,6 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Identifiers.H",
-   "src/core/InfeasibleTrial.H",
    "src/core/Origin.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
@@ -8713,7 +8733,7 @@
    "src/thermo/ElementComposition.H",
    "src/thermo/FitGrade.H",
    "src/thermo/PairAudit.H",
-   "src/thermo/PropertyDomainError.H",
+   "src/thermo/PropertyTable.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ReviewRecord.H",
@@ -8728,6 +8748,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/heatCapacity/RowlinsonBondi.H",
+   "src/thermo/heatCapacity/TableCp.H",
    "src/thermo/transport/CorrelationVerify.H",
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidViscosityModel.H",
@@ -8740,13 +8761,15 @@
    "src/core/Identifiers.H",
    "src/core/Origin.H",
    "src/core/Types.H",
+   "src/core/Units.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/FitGrade.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ReviewRecord.H",
-   "src/thermo/ThermoAnnounce.H"
+   "src/thermo/ThermoAnnounce.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H"
   ],
   "src/thermo/ElementComposition.cpp": [
    "src/core/Dictionary.H",
@@ -8811,6 +8834,18 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H"
   ],
+  "src/thermo/PropertyTable.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/InfeasibleTrial.H",
+   "src/core/Table1D.H",
+   "src/core/Types.H",
+   "src/core/Units.H",
+   "src/thermo/PropertyDomainError.H",
+   "src/thermo/PropertyTable.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H"
+  ],
   "src/thermo/PropertyVariants.cpp": [
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -8824,6 +8859,7 @@
    "src/core/InfeasibleTrial.H",
    "src/core/Types.H",
    "src/thermo/PropertyDomainError.H",
+   "src/thermo/PropertyTable.H",
    "src/thermo/RecordLaws.H"
   ],
   "src/thermo/ResolvedView.cpp": [
@@ -8839,6 +8875,7 @@
    "src/thermo/Database.H",
    "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PropertyTable.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/RecordResolver.H",
    "src/thermo/ResolvedView.H",
@@ -9632,6 +9669,14 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/heatCapacity/RowlinsonBondi.H"
   ],
+  "src/thermo/heatCapacity/TableCp.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Types.H",
+   "src/thermo/PropertyTable.H",
+   "src/thermo/heatCapacity/HeatCapacityModel.H",
+   "src/thermo/heatCapacity/TableCp.H"
+  ],
   "src/thermo/henrysLaw/HenrysLaw.cpp": [
    "src/core/Advisory.H",
    "src/core/Constants.H",
@@ -9734,6 +9779,19 @@
    "src/thermo/liquidProperty/Measured.H",
    "src/thermo/liquidProperty/SolutionLaw.H"
   ],
+  "src/thermo/liquidProperty/ExperimentsFile.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/core/Units.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordLaws.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H"
+  ],
   "src/thermo/liquidProperty/IdealMixing.cpp": [
    "src/core/Constants.H",
    "src/core/Dictionary.H",
@@ -9790,6 +9848,7 @@
    "src/core/Origin.H",
    "src/core/PropertySourceLog.H",
    "src/core/Types.H",
+   "src/core/Units.H",
    "src/solver/Convergence.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
@@ -9802,6 +9861,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/DensityResolver.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H",
    "src/thermo/liquidProperty/Measured.H",
    "src/thermo/liquidProperty/SolutionLaw.H"
   ],
@@ -10319,6 +10379,7 @@
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/Types.H",
+   "src/thermo/PropertyTable.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/transport/Andrade.H",
    "src/thermo/transport/ChemSepVisc101.H",
@@ -10326,6 +10387,7 @@
    "src/thermo/transport/LiquidMixingContext.H",
    "src/thermo/transport/LiquidViscosityMixingRule.H",
    "src/thermo/transport/LiquidViscosityModel.H",
+   "src/thermo/transport/TableViscosity.H",
    "src/thermo/transport/Vogel.H"
   ],
   "src/thermo/transport/ModifiedEucken.cpp": [
@@ -10402,6 +10464,20 @@
    "src/thermo/ThermoAnnounce.H",
    "src/thermo/transport/LiquidMixingContext.H",
    "src/thermo/transport/SurfaceTensionMixingRule.H"
+  ],
+  "src/thermo/transport/TableViscosity.cpp": [
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/PropertyTable.H",
+   "src/thermo/RecordLaws.H",
+   "src/thermo/transport/Andrade.H",
+   "src/thermo/transport/CorrelationVerify.H",
+   "src/thermo/transport/LiquidViscosityModel.H",
+   "src/thermo/transport/TableViscosity.H"
   ],
   "src/thermo/transport/ThermalConductivityModel.cpp": [
    "src/core/Dictionary.H",
@@ -14019,6 +14095,7 @@
    "src/thermo/ApproximationAuthorisation.cpp",
    "src/thermo/Component.cpp",
    "src/thermo/Database.cpp",
+   "src/thermo/PropertyTable.cpp",
    "src/thermo/ReviewRecord.cpp",
    "src/thermo/SolidMixture.cpp",
    "src/thermo/ThermoPackage.cpp",
@@ -14819,6 +14896,7 @@
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
+   "src/thermo/PropertyTable.cpp",
    "src/thermo/PropertyVariants.cpp",
    "src/thermo/RecordLaws.cpp",
    "src/thermo/ResolvedView.cpp",
@@ -14866,11 +14944,13 @@
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
+   "src/thermo/heatCapacity/TableCp.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -14915,6 +14995,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -15238,6 +15319,7 @@
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
+   "src/thermo/PropertyTable.cpp",
    "src/thermo/PropertyVariants.cpp",
    "src/thermo/RecordLaws.cpp",
    "src/thermo/ResolvedView.cpp",
@@ -15285,11 +15367,13 @@
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
+   "src/thermo/heatCapacity/TableCp.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -15334,6 +15418,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -15776,6 +15861,7 @@
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -15809,6 +15895,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -15921,7 +16008,7 @@
    "src/outerDriver/DesignSpec.cpp",
    "src/solver/NewtonND.cpp",
    "src/solver/NewtonRaphson.cpp",
-   "src/thermo/Component.cpp",
+   "src/thermo/PropertyTable.cpp",
    "src/thermo/RecordLaws.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
@@ -16136,6 +16223,7 @@
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -16170,6 +16258,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -16757,6 +16846,10 @@
    "src/thermo/SealCheck.cpp",
    "src/thermo/membrane/FittedRecord.cpp"
   ],
+  "src/core/Table1D.H": [
+   "src/core/Formula.cpp",
+   "src/thermo/PropertyTable.cpp"
+  ],
   "src/core/ThermoResolution.H": [
    "src/applications/choupoBatch/main.cpp",
    "src/applications/choupoProps/main.cpp",
@@ -17100,6 +17193,7 @@
    "src/thermo/LiquidPropertyDoor.cpp",
    "src/thermo/PackageAudit.cpp",
    "src/thermo/PricedDensity.cpp",
+   "src/thermo/PropertyTable.cpp",
    "src/thermo/PropertyVariants.cpp",
    "src/thermo/RecordLaws.cpp",
    "src/thermo/ResolvedView.cpp",
@@ -17147,11 +17241,13 @@
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
+   "src/thermo/heatCapacity/TableCp.cpp",
    "src/thermo/henrysLaw/HenrysLaw.cpp",
    "src/thermo/henrysLaw/HenrysLawRegistry.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -17199,6 +17295,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp",
@@ -17361,7 +17458,11 @@
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/ComputedReport.cpp",
+   "src/thermo/Database.cpp",
+   "src/thermo/PropertyTable.cpp",
    "src/thermo/electrochem/EDStack.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/membrane/FeedSpacer.cpp",
    "src/thermo/membrane/MembraneModule.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
@@ -19580,6 +19681,7 @@
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -19612,6 +19714,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -19896,6 +19999,7 @@
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -20430,7 +20534,7 @@
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/thermo/PropertyDomainError.H": [
-   "src/thermo/Component.cpp",
+   "src/thermo/PropertyTable.cpp",
    "src/thermo/RecordLaws.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/liquidProperty/DensityLeaf.cpp",
@@ -20440,6 +20544,15 @@
    "src/thermo/liquidProperty/PureFluidLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
+  ],
+  "src/thermo/PropertyTable.H": [
+   "src/thermo/Component.cpp",
+   "src/thermo/PropertyTable.cpp",
+   "src/thermo/RecordLaws.cpp",
+   "src/thermo/ResolvedView.cpp",
+   "src/thermo/heatCapacity/TableCp.cpp",
+   "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/TableViscosity.cpp"
   ],
   "src/thermo/PropertyVariants.H": [
    "src/applications/choupoProps/main.cpp",
@@ -20640,6 +20753,7 @@
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -20674,6 +20788,7 @@
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/Vogel.cpp",
    "src/thermo/transport/WilkeChang.cpp",
    "src/thermo/utility/UtilityCatalogue.cpp",
@@ -20955,6 +21070,7 @@
    "src/thermo/liquidProperty/DensityLeaf.cpp",
    "src/thermo/liquidProperty/DensityMethod.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/MassWithoutVolume.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
@@ -22371,6 +22487,7 @@
    "src/thermo/heatCapacity/NASA9Cp.cpp",
    "src/thermo/heatCapacity/PolynomialCp.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp",
+   "src/thermo/heatCapacity/TableCp.cpp",
    "src/thermo/transport/Eucken.cpp",
    "src/unitOperations/batch/BatchDryer.cpp",
    "src/unitOperations/batch/BatchReactor.cpp",
@@ -22405,6 +22522,10 @@
    "src/thermo/Component.cpp",
    "src/thermo/heatCapacity/HeatCapacityModel.cpp",
    "src/thermo/heatCapacity/RowlinsonBondi.cpp"
+  ],
+  "src/thermo/heatCapacity/TableCp.H": [
+   "src/thermo/Component.cpp",
+   "src/thermo/heatCapacity/TableCp.cpp"
   ],
   "src/thermo/henrysLaw/HenrysLaw.H": [
    "src/applications/choupoBatch/main.cpp",
@@ -22471,6 +22592,12 @@
    "src/thermo/liquidProperty/IdealMixing.cpp",
    "src/thermo/liquidProperty/Measured.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp"
+  ],
+  "src/thermo/liquidProperty/ExperimentsFile.H": [
+   "src/thermo/Database.cpp",
+   "src/thermo/PropertyTable.cpp",
+   "src/thermo/liquidProperty/ExperimentsFile.cpp",
+   "src/thermo/liquidProperty/Measured.cpp"
   ],
   "src/thermo/liquidProperty/IdealMixing.H": [
    "src/thermo/liquidProperty/DensityMethod.cpp",
@@ -22736,6 +22863,7 @@
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/Vogel.cpp"
   ],
   "src/thermo/transport/BrockBird.H": [
@@ -22783,6 +22911,7 @@
    "src/thermo/transport/LiquidViscosityModel.cpp",
    "src/thermo/transport/ModifiedEucken.cpp",
    "src/thermo/transport/SatoRiedel.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/ThermalConductivityModel.cpp",
    "src/thermo/transport/TransportModel.cpp",
    "src/thermo/transport/Vogel.cpp"
@@ -22872,6 +23001,7 @@
    "src/thermo/transport/Andrade.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/TableViscosity.cpp",
    "src/thermo/transport/Vogel.cpp"
   ],
   "src/thermo/transport/ModifiedEucken.H": [
@@ -22916,6 +23046,10 @@
    "src/thermo/SurfaceTensionModel.cpp",
    "src/thermo/ThermoPackage.cpp",
    "src/thermo/transport/SurfaceTensionMixingRule.cpp"
+  ],
+  "src/thermo/transport/TableViscosity.H": [
+   "src/thermo/transport/LiquidViscosityModel.cpp",
+   "src/thermo/transport/TableViscosity.cpp"
   ],
   "src/thermo/transport/ThermalConductivityModel.H": [
    "src/applications/choupoBatch/main.cpp",

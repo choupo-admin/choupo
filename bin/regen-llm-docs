@@ -470,9 +470,8 @@ def _glossary() -> str:
   `model` word is one law; a bare `surfaceTension { A; B; Tc; n; Tmin;
   Tmax; }` is one law of type `tauPower` (σ = A τ^n + B τ^(n+1), τ = 1 −
   T/Tc).  Each law keeps its type's SOFT window (`Trange` / `Tmin` `Tmax` /
-  `Tlow` `Thigh`: announced outside) and may add a HARD window `domain (lo
-  hi);` in K (outside it the law is refused, naming the record's other laws
-  that cover the state; it never switches).  A law's source goes in the
+  `Tlow` `Thigh`: announced outside).  A HARD window (`domain (lo hi);`) is
+  not supported yet: the record grammar refuses it by name.  A law's source goes in the
   record's one provenance block, by property and law: `provenance {
   vaporPressure { SR1 { origin literature; method "..."; } } }`.  A law may
   carry `check { T 298.15 K; value <v> <unit>; tolerance <fraction>; }` — a
@@ -485,6 +484,21 @@ def _glossary() -> str:
   caught).  Each type's form and coefficient units: Theory Guide
   §"Several named laws in a record".  The five records holding two viscosity
   laws (benzene, ethanol, methanol, toluene, water) mark `preferred vogel;`.
+- **A LAW OF TYPE `table` (C398 slice (c)).**  `liquidViscosity`,
+  `liquidHeatCapacity` and `solidHeatCapacity` may hold measured points as a
+  named law: `crcMu { model table; interpolation logReciprocal; columns ( {
+  name T; unit degC; } { name mu; unit mPa.s; } ); data ( 0 1.793  20 1.002
+  ... ); }`, its source in the provenance block (`provenance {
+  liquidViscosity { crcMu { origin literature; method "<primary>, via
+  <route, page>"; } } }`; refused without).  Columns `T` and the property's
+  symbol (`mu`, `Cp`), each with a unit (`J/g/K` converted with `MW`);
+  interpolation always declared (`linear`, `logLinear`, `logReciprocal`,
+  `monotoneCubic`; a Cp table `linear` or `monotoneCubic` and its points
+  containing 298.15 K).  Its first and last points ARE its hard domain:
+  `Trange`/`Tmin`/`Tmax`/`domain` and `extend` are refused in a record (a
+  case extends its own table on its pin).  An `idealGasHeatCapacity` table is
+  refused (addendum A2(v)).  Theory Guide `sec:record-law-table`;
+  thermo.md "A table is a law type".
 - **WHAT A RECORD STORES (A3).**  Primitives once (formation datum in the
   natural phase, the Cp laws, `HvapTb`, the vapour-pressure laws, `Vliq`);
   never a derived quantity (h/s/g of another phase, a latent heat at T ≠ Tb,
