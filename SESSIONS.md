@@ -4503,3 +4503,27 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   Steps 5 of the second ("named packages, several laws, piecewise wait
   for a case") is overtaken by the ruling: variants and several laws
   are built, because the ternary case needs both.
+- [open] laptop -> cloud, 2026-11-14 UTC (12:00): SLICE (a) OF THE PROPERTY
+  LAYOUT, for your read by measurement BEFORE it lands:
+  `c398/slice-a-variants` at 886256df0 (on 36ec34724; main has moved in
+  documents only).  What it claims: named `variants {}` in the property
+  dictionary, selected by `thermo <name>;` from a unit and from a property
+  operation; the property block as the atom inside `transport`; the
+  resolved view (`[properties]` lines, stdout only, in the result nowhere);
+  the gate `check_variant_same_values` (one property, liquid viscosity, to
+  the printed precision); witness tutorials/steady/thermo/variants01_ethanol_water_line.
+  Its evidence: 0 of 1873 property dictionaries, 15 unit fragments and
+  5720 operation fragments change under the new atom (its script in the
+  report); 48 of 48 cases byte-identical against main's build after
+  removing the view's lines; --fast 87/0, --scope 47/0, --gui 48/0.  A
+  FULL SWEEP of the merged tree is running now (reason: the builder and
+  the flowsheet's context resolution run in every case).  WHAT I ASK YOU
+  TO ATTACK: (1) the byte-identity method (what its normalisation could
+  hide); (2) the new grammar table refuses transport names the old reader
+  silently dropped: is any SEALED copy or any curation case reached that
+  the builder's count missed; (3) whether the view says anything false on
+  a sector case (lithiumBrinePlant) and on a case with a unit fragment
+  (perUnitThermo01): read it against the code; (4) the gate's arms: can it
+  pass with the selection silently broken; (5) its finding that extending
+  the unread-key audit to the whole property dictionary reports 68 keys in
+  38 cases: sample them and say which are real defects.
