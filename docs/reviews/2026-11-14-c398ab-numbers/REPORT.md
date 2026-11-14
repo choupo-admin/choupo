@@ -6,7 +6,7 @@ branches: `c398/slice-a-variants`, `c398/slice-b-named-laws`,
 afa154705 (the merge base).  The reviewer did not build what it reviews.  No
 tracked file was changed; every probe on a copy of a case ran outside the
 tree.  No `bin/runTests` was run (the coordinator's full regression covers
-the goldens).  Rows `CN-01..CN-06` are in `docs/reviews/LEDGER.tsv`.
+the goldens).  Rows `CN-01..CN-08` are in `docs/reviews/LEDGER.tsv` (CN-07 and CN-08 from the addendum, section 6).
 
 **The claim attacked.**  Apart from four appended `source` rows (ratebased01-04)
 and the goldens of the new witness cases, no number that any shipped case
@@ -218,3 +218,82 @@ surface tension.  The builders listed the announcement as text; the wording
   `kijFits/curation/*.dossier`) whose committed `rms_rel` differs from what
   BOTH engines compute today (e.g. 0.17540132 committed, 0.19673578 by main
   and branch alike); the files were restored after the run.
+
+## 6. Addendum: the fixes on `c398/slice-b-named-laws` at b0a5ffd1c
+
+Asked by the coordinator after the builder reported CN-01..06 fixed (commit
+6258b5453, merged into integ/c398ab at 7d112a493).  The head was built with
+`make -j2` from a copy whose `src/`, `data/`, `bin/`, `tutorials/` and
+`benchmarks/` were checked equal to `git archive b0a5ffd1c` (the banner of
+that copy reads a stale commit stamp, a5d286d69, from the copied stamp file;
+the sources are b0a5ffd1c's).  Main's build is the same as in section 1 (the
+merge base is still afa154705).
+
+### 6.1 The rows, re-measured as they were reproduced
+
+| row | verdict | evidence on b0a5ffd1c |
+|---|---|---|
+| CN-01 | fixed | `expected` gains `noBoundary false exact` and `residual_denom_kW 1282.99297228`; the run gives exactly those.  Q_boundary_kW kept at 0: ACCEPTED.  An expected value of 0 is compared absolutely (bin/runTests:108-113, abs 1e-4 kW); the true value is 0 by construction (Q_reb = -Q_cond at total reflux) and -2.27e-13 kW is the cancellation of two 641.5 kW terms (about 2e-16 of the exchanged scale).  Pinning it would pin round-off; the price is that a defect below 0.1 W in the boundary sum is not seen, against 1283 kW exchanged.  The result JSON still carries -2.27e-13 (only the CSV and the line are printed as 0). |
+| CN-02 | fixed | steam02's view now names, for vapour and liquid viscosity, vapour and liquid conductivity and surface tension, "when the phase is pure in it: water ... IAPWS R12-08 / R15-11 / R1-76 ... at the vapour state / at the saturated liquid / the saturation line", and "no model" only for any other phase. |
+| CN-03 | fixed | The builder's gate arm (`check_record_law_pins speciate`, edwards02 with a second water law = Antoine A + log10 2) run on BOTH builds: on a5d286d69 FAIL, 28 of 99 numbers differ between pinned and preferred (P_atm 2.51337115048 vs 3.48386130432); on b0a5ffd1c OK, 0 differ, 28 moved by the law (the arm is not vacuous). |
+| CN-04 | fixed (with CN-07) | Copy of steam02 with pin_25C at 473.15 K, 1 bar: viscosity 1.62039883352e-05 Pa s, thermal_conductivity 0.0334354404927 W/(m K) (before: 1.3459e-4, 0.6586); the same copy's `viscosity_liquid` is 1.34587280696e-4, the saturated liquid's.  The four anchors are what the release prints: IAPWS R15-11 (September 2011) Table 8, p. 14, read here from the release itself: mu 0.234877453e2 and 0.393727534e2 uPa s; lambda - lambda2 = 52.2311024 - 0.000129246457 = 52.2309732 and 177.709914 - 6.64341394 = 171.066500 mW/(m K).  The engine: 2.34877453472e-05, 3.93727534431e-05 Pa s, 0.052230973189, 0.171066499597 W/(m K) (largest relative gap 2.4e-9).  Note what they certify: the background conductivity only; at (50 MPa, 800 K) the release's full lambda is 3.7 % higher (the engine runs lambda2 = 0, as its label says).  The rename: the eight renamed rows carry identical values on both builds (pin_25C..100C viscosity and conductivity), and the scan's CSV body is byte-identical (header renamed only) -- but see CN-07. |
+| CN-05 | fixed | No `-0.000000`/`-0.0000` left in any report of the 698 runs; 159 report lines in 70 cases moved from a negative zero to 0 (donepezil01/02, crystalliser01, absorption01, column13, ChemicalPlantTutorial, ...), no other digit. |
+| CN-06 | fixed | aminoBuffers01 is back to "ASSUMPTIONS AND CAVEATS: none raised"; mixing01, which evaluates both surface tensions, still voices water's and acetone's.  The voicing is called from the package's per-constituent first evaluation (ThermoPackage.cpp:3046-3048); no consumer reads those record blocks outside it (grep of the three `*Dict()` readers outside src/thermo/transport). |
+
+### 6.2 The main measurement again: 698 cases, main vs b0a5ffd1c
+
+Same harness, same 698 cases, both builds.  Exit codes identical in all 698
+(634 exit 0 on both, 8 + 56 identical failures).  Every difference, classified:
+
+| family | lines | cases | source |
+|---|---|---|---|
+| banner commit stamp | 698 | 698 | my copy's stale stamp file (not the branch) |
+| provenance voicing (UNVERIFIED DATA lines, [unreviewed] lines, their advisories) | 1091 | 34 | text, CN-06 |
+| declared source `liquidThermalConductivity` (declaredNotUsed and the table) | 715 | 107 | text, c329 |
+| negative zero printed as 0 | 159 | 70 | CN-05 |
+| result provenance rows | 89 | 43 | text |
+| caveat-block frame (the block appearing or not) | 52 | 9 | text, CN-06 |
+| override announcement wording | 50 | 2 | text |
+| the rate-based enthalpy probe advisory | 34 | 3 | text, c329 |
+| pair source `inline` -> `standard` (SA-03) | 2 | 2 | text |
+| Andrade/Vogel window wording (CV-15) | 4 | 2 | text |
+| the Chung "Vc ESTIMATED" advisory at another position | 4 | 2 | text (mixing01, surfacetension01) |
+| `totalReflux01` boundary block | 5 | 1 | CN-01, numbers, now pinned |
+| `steam02_water_transport` | -- | 1 | CN-04 rename and two operations added; CN-07 |
+| `methanol01_co2_hydrogenation` (benchmark) | many numbers | 1 | NOT the engine: CN-08 |
+
+No other number differs in any stdout, result JSON or any of the files
+written (the same set of state directories, trajectories, reports and CSVs as
+in section 1).  The four changes on paths every case takes (the heat-capacity
+wrapper, the vapour-pressure first-use hook, the stream-enthalpy rethrow of a
+hard-window refusal, zero printed as 0) move no number and refuse no case in
+this sample; the wrapper forwards all four virtuals of HeatCapacityModel
+(Cp, H, S, modelName) and no code casts a heat-capacity object to a concrete
+type.
+
+`methanol01_co2_hydrogenation` differed in about 60 numbers (kij(CO,methanol)
+-0.152688 vs -0.174458, feed T 377.248 vs 377.125 K, duties) because its
+sub-cases `kijFits`/`kijTables` rewrite the tracked parameter files it reads,
+and the two trees held different regenerations when it ran.  Re-run after both
+trees held the same files: no number differs (both exit 2).  Pre-existing and
+order-dependent: CN-08.
+
+### 6.3 New rows
+
+* **CN-07 (S2)**: the CN-04 rename hides two moved numbers.  steam02's
+  `pin_100C` (373.15 K, 1 bar; IF97 places it in the vapour, p_sat 1.0142
+  bar) still publishes `viscosity` and `thermal_conductivity`, now
+  1.22336380006e-05 Pa s and 0.0245633017624 W/(m K) against 2.81585019366e-04
+  and 0.677216843797 on main.  The golden rows of those names became the
+  `*_liquid` rows; nothing pins the moved values, and the commit says "values
+  identical".  The new values are right for steam at 100 C, 1 bar.  Remedy: list
+  them as moved and pin them, or move pin_100C below p_sat.
+* **CN-08 (S3, pre-existing)**: the benchmark above; a sweep's verdict on it
+  depends on run order.
+
+### 6.4 Verdict on the claim at b0a5ffd1c
+
+Apart from the four appended `source` rows, the witnesses, totalReflux01's
+boundary block (now pinned) and steam02's operations, no number of the 698
+cases moves and no case is newly refused; the one unlisted move is steam02's
+`pin_100C` vapour keys (CN-07).
