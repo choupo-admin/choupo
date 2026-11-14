@@ -3518,6 +3518,31 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398 SLICE (e) LANDED (2026-11-14): a packing is an asset record a
+> column names** (`kind packing`; SulzerBX and MontzB1-250 in the
+> catalogue, each value read at its page; nominal / `installed` /
+> `borrowed` values, each printed with its origin; refusals by name).
+> Reviewed by measurement (docs/reviews/2026-11-14-packing-record/: no
+> number moved, both records match their pages; ten rows PK-01..10 fixed,
+> the gate now catches 8 of 8 sabotages).  Held by 45 distillation cases
+> byte-identical to main, --scope over the 120 cases it reaches 124/0
+> with mass, energy and element closures, and, on the merged tree,
+> --fast 87/0 and --gui 48/0.  No full sweep: a column without `record`
+> takes the old path unchanged, and the byte-identity of every column
+> case is that evidence.  RECORDED FROM THE REVIEWS, not fixed: (1)
+> re-sealing the xylene packing cases from today's catalogue fails (they
+> carry a case-added diffusion volume the catalogue records lack; the
+> remedy is to curate the volume into the records); (2) the importer
+> stamps mirrored records "Choupo-2608 release" even when they did not
+> exist in 2608; (3) CN-08, a benchmark whose sub-cases rewrite tracked
+> files it reads, so its verdict depends on run order.
+> **ORDER AFTER THE PROPERTY SLICES (a)+(b) LAND, decided the same day:**
+> slice (d) (directed diffusion entries) together with the rate-based
+> column asking the package for its liquid properties (ADDENDUM A4) in
+> one lane, slice (c) (tables) in another; the three-component rate-based
+> slice starts as soon as (d) and A4 are on main, with estimated
+> diffusivities announced as such; measured tables improve it later.
+
 > **C401 (Vitor, 2026-11-14: "eu tenho imensas dificuldades com lidar
 > com a enormidade de formas de unidades com que os coeficientes de
 > transferencia de massa e globais sao definidos! E quando ha reacoes ...
