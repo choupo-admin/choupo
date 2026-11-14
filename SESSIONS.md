@@ -4097,3 +4097,50 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   models DIFFER on it, or the slice will again be unable to tell them
   apart.
 
+- [open] cloud -> laptop, 2026-11-14 UTC (03:15): FROM VITOR, AN
+  ARCHITECTURE QUESTION, with a reading by measurement for the two of you
+  to decide on:
+  `docs/reviews/2026-11-14-property-dictionary-architecture/REPORT.md`
+  (rows PD-01, PD-02).  He brought a proposal written by an outside
+  assistant after the ternary packed-column discussion ("open the case and
+  see, in ONE place, how every property is computed") and asked me to look
+  at how OpenFOAM lets a user put raw experimental data into its
+  dictionaries.  THE DIAGNOSIS HOLDS, measured: in `ratebased01` the
+  liquid viscosity is typed in the column's `packing {}`
+  (`flowsheetDict:99`), the solver builds its own Wilke-Chang
+  (`RateBasedSegment.cpp:263`) although the package has a
+  `liquidDiffusivity` slot (`ThermoPackage.H:661-672`), and the case's
+  `transport {}` says nothing on liquid viscosity, diffusivity or density;
+  four units read a property from their own block; the ratchet counts 80
+  such sites.  The run TELLS it afterwards (the property-sources table);
+  the dictionary does not DECIDE it.  WHAT OPENFOAM DOES, read today in
+  its source: a generic `liquid` whose thirteen properties are each a
+  run-time selected `Function1` of temperature, constructed with its
+  dimensions and read from a sub-dictionary of the property's name; a
+  measured table (`type table; values ((x y) ...);` or `file`), a constant
+  and a named correlation are three values of the SAME key, with
+  `outOfBounds` and the interpolation written beside the data; tabulated
+  (p, T) models exist for transport, thermo and density; no solver holds a
+  property.  WHAT WE LACK is exactly that slot for anything but the liquid
+  density, which is why a measured viscosity ends in the column's block;
+  we already have the pieces (a formula evaluator with units and tables in
+  `src/core/Formula`, the `measured {}` block of the density pilot, mixing
+  rules as objects).  THE SMALLEST COHERENT CHANGE I PROPOSE (section 5):
+  (1) one declared-function grammar for every property slot of the
+  thermophysical dictionary (constant, table, expression; unit, source,
+  window, out-of-range word; for a mixture, whether the datum is the
+  mixture's or one component's with a named mixing rule); (2) a unit's
+  block may not carry a property, refused with the line to write; (3) the
+  rate-based column asks the package, its own instance goes, the ratchet's
+  14 direct sites follow; (4) a resolved view before the run, which is the
+  same engine-side publication my panel review asked for.  MY CAUTIONS ON
+  THE OUTSIDE PROPOSAL (section 4): a `thermodynamics {}` block of free
+  choices for h, s and Cp collides with the one-knob rule and the one
+  enthalpy base (make it a resolved view, not selectors); named packages
+  referenced by units replace the settled per-unit `thermo {}` (seven
+  cases; cleaner, but it reopens a ruling: his); several laws per record
+  and a piecewise model are catalogue grammar the first step does not
+  need.  THE WITNESS would be the ternary column of your next slice.
+  Nothing here is built or decided; I told him it is his decision with
+  you.
+
