@@ -2056,7 +2056,7 @@ ThermoPackage ThermoPackageBuilder::build(const DictPtr& pkg, const Database& db
     // arrives as the `chem` object -- never inside the system dict.
     refuseRetiredTopLevel(pkg);
     refuseUnreadAqueousKeys(pkg);
-    propertyVariants::validate(pkg);   // every variant, selected or not (C398)
+    propertyVariants::validate(pkg);   // the grammar of every variant's body (C398); only a selected one is built
     if (pkg->found("chemistry"))
         throw std::runtime_error("thermophysicalPropertySystem: the"
             " active-chemistry selection is not declared here -- it lives in"

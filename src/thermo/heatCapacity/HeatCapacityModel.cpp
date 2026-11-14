@@ -82,6 +82,8 @@ void HeatCapacityModel::registerBuiltins()
         "Cp,L = Cp,ig + R [1.586 + 0.49/(1 - Tr) + omega (4.2775 + 6.3 (1 - Tr)^(1/3)/Tr"
         " + 0.4355/(1 - Tr))], Tr = T/Tc; no coefficients: Tc, omega and the record's"
         " ideal-gas law (the preferred one, or the case's pin)");
+    recordLaws::declareBuiltInWindow("heatCapacity", "RowlinsonBondi",
+        "Tr 0.25-0.85 (announced outside); refused at Tr >= 1");
     registerModel("polynomial",
         [](const DictPtr& d) -> std::unique_ptr<HeatCapacityModel>
         { return std::make_unique<PolynomialCp>(d); });

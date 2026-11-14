@@ -130,6 +130,7 @@ public:
         //  (b)): outside it the law refuses -- a typed domain error naming
         //  the record's other laws that cover T -- and never switches.
         if (hasDomain_ && (T_K < domainLo_ || T_K > domainHi_)) onOutsideDomain_(T_K);
+        if (onFirstUse_) { const auto f = std::move(onFirstUse_); onFirstUse_ = nullptr; f(); }
         noteRange(T_K);
         if (!cont_.ready) buildContinuation();
         if (T_K >= cont_.lo && T_K <= cont_.hi)
@@ -169,6 +170,11 @@ public:
     //  it from the record's laws, so the remedy can name them).
     void setHardDomain(scalar lo, scalar hi, std::function<void(scalar)> onOutside)
     { hasDomain_ = true; domainLo_ = lo; domainHi_ = hi; onOutsideDomain_ = std::move(onOutside); }
+
+    //  Run once, at the law's first evaluation inside its window: the law
+    //  describes itself and its datum's provenance is voiced (C398 review
+    //  rows CV-07, CN-06).  One pointer test per call after the first.
+    void setOnFirstUse(std::function<void()> f) { onFirstUse_ = std::move(f); }
 
     // ---- Factory -----------------------------------------------------------
     using Factory = std::function<std::unique_ptr<VaporPressureModel>(const DictPtr&)>;
@@ -216,6 +222,7 @@ protected:
     bool         hasDomain_ = false;
     scalar       domainLo_ = 0.0, domainHi_ = 0.0;
     std::function<void(scalar)> onOutsideDomain_;
+    mutable std::function<void()> onFirstUse_;
     mutable bool announcedOutside_ = false;   // an excursion at an ANSWER was announced
     mutable bool announcedTrial_   = false;   // ... or at a trial state of a search (PO-02)
 

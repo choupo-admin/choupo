@@ -26,6 +26,10 @@ data/curation/**/constant/components:
     anywhere else -- inside `cosmo`, `pcsaft`, another block, or as the
     property block itself carrying `origin` beside its coefficients -- it is
     refused by name, with the line.
+  * ANY provenance-shaped entry -- a sub-block carrying `origin`, whatever
+    its name (`Tc { origin literature; }` filed inside `cosmo {}` passed
+    while only the seven property names were looked for: review row CV-10)
+    -- found outside the top-level `provenance {}` is refused the same way.
   * the debt that existed when the gate was written (a law block that carries
     its own `origin` beside its coefficients) is pinned in debt_registry.py; it
     may only shrink, and a pinned entry that is gone must leave the list.
@@ -55,14 +59,29 @@ def files():
         yield from sorted((ROOT / base).glob("**/constant/components/*.dat"))
 
 
+#  The keys a provenance entry carries, and nothing else (CV-10).
+PROVENANCE_KEYS = {"origin", "method", "methodVersion", "notes", "note", "source", "sources",
+                   "reviewStatus", "review", "humanReviewed", "uncertainty", "fittedInCase",
+                   "archiveExtract", "evidence", "reference", "references", "citation", "doi",
+                   "licence", "license", "status", "reason", "validity", "fitGrade", "grade",
+                   "date", "by", "curator", "tool", "datasets", "points", "aad", "maxDev"}
+
+
 def walk(b, path, found, prov_ok):
     """Collect (path, key, line) of every property-named block with `origin`."""
     for k, v, l in b.entries:
         if not isinstance(v, Block):
             continue
         here = path + [k]
-        if k in PROPERTY_BLOCKS and v.get("origin") is not None and not prov_ok(here):
-            found.append(("/".join(here), l))
+        if v.get("origin") is not None and not prov_ok(here):
+            #  A property block carrying `origin` beside its coefficients (the
+            #  pinned debt), or an entry that carries NOTHING but provenance
+            #  keys -- the misfiled shape, whatever its name (CV-10).  A datum
+            #  with its own origin beside its value (`solubility { value ...;
+            #  origin ...; }`) is a reader's grammar, not a misfiled entry.
+            only_prov = all(kk in PROVENANCE_KEYS for kk in v.keys())
+            if k in PROPERTY_BLOCKS or only_prov:
+                found.append(("/".join(here), l))
         walk(v, here, found, prov_ok)
 
 
@@ -70,8 +89,11 @@ def main():
     failures, pinned_seen, n = [], set(), 0
 
     def prov_ok(here):
-        #  provenance/<property>   or   provenance/<property>/<law>
-        return len(here) >= 2 and here[0] == "provenance" and here[1] in PROPERTY_BLOCKS
+        #  the record's top-level provenance block itself (its record-level
+        #  origin) and anything under it; or under a sub-model's OWN
+        #  provenance block (`lennardJones { provenance { sigma {...} } }`,
+        #  `polymer { provenance { ... } }`), which that sub-model's reader reads
+        return here[0] == "provenance" or "provenance" in here[:-1]
 
     for f in files():
         n += 1
@@ -96,9 +118,9 @@ def main():
         for x in failures:
             print("  " + x)
         return 1
-    print(f"{NAME}: OK -- {n} records read; every property provenance entry is in its"
-          f" record's provenance block ({len(PINNED)} pinned law blocks carry their own"
-          " `origin`, the debt)")
+    print(f"{NAME}: OK -- {n} records read; every provenance-shaped entry (a block carrying"
+          f" `origin`, any name, any depth) is in its record's provenance block ({len(PINNED)}"
+          " pinned blocks carry their own `origin`, the debt)")
     return 0
 
 

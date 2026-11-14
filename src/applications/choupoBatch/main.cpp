@@ -68,6 +68,7 @@ Description
 #include "thermo/utility/UtilityCatalogue.H"
 #include "thermo/Database.H"
 #include "thermo/SealCheck.H"
+#include "thermo/ResolvedView.H"
 #include "thermo/ThermoAnnounce.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/PropertyContext.H"
@@ -400,6 +401,7 @@ try
             " `recordType thermophysicalPropertySystem;` (the ONE case"
             " grammar).");
     ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
+    resolvedView::printSystemOnce(thermo, thermoDict);   // C398 review row CV-12
 
     // ---- Build batch units from flowsheetDict ------------------------
     auto unitList = flowsheetDict->lookupDictList("units");

@@ -43,8 +43,11 @@ Description
 #pragma once
 
 #include <cmath>
+#include <cstdlib>
+#include <iostream>
 
 #include "core/Dictionary.H"
+#include "core/ThermoResolution.H"
 #include "core/Types.H"
 
 #include <functional>
@@ -114,6 +117,35 @@ public:
     // molecular models return nullptr.  ThermoPackage reaches the engine through
     // THIS -- never an RTTI dynamic_cast.
     virtual const ElectrolyteModel* asElectrolyte() const { return nullptr; }
+
+    //  THE PAIRS THIS MODEL HOLDS (C398 review row CV-01): each binary pair the
+    //  model resolved while it was built, with where it came from -- kept BY
+    //  THE MODEL, so the resolved view of a package lists its own pairs and
+    //  never the process-wide resolution log filtered by names (which printed
+    //  another package's pair as this one's).  A model with no binary pairs
+    //  (ideal, UNIFAC, the electrolyte engines) holds none.
+    const std::vector<PairResolution>& resolvedPairs() const { return pairs_; }
+
+protected:
+    //  Record a pair: kept by the model AND written to the run's log (the
+    //  result's thermoResolution block reads the log).
+    void recordPair(PairResolution r)
+    {
+        //  The pair describes itself as it is taken (CV-07): with
+        //  CHOUPO_LAW_TRACE set, `[pair-call] ...` on stderr, in the fields the
+        //  view prints, so check_view_matches_calls compares the two.
+        if (std::getenv("CHOUPO_LAW_TRACE"))
+            std::cerr << "[pair-call] pair " << r.i << "-" << r.j << ": " << r.status
+                      << (r.source.empty() ? std::string() : " (" + r.source + ")")
+                      << (r.provSource.empty() ? std::string() : ", provenance " + r.provSource) << "\n";
+        pairs_.push_back(r);
+        ThermoResolutionLog::instance().add(std::move(r));
+    }
+
+private:
+    std::vector<PairResolution> pairs_;
+
+public:
 
     using Factory = std::function<std::unique_ptr<ActivityModel>(const DictPtr&, const std::vector<Component>&)>;
 

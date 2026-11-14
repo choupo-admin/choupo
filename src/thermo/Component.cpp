@@ -31,7 +31,7 @@ License
 #include "thermo/AtomicWeights.H"
 #include "thermo/ElementComposition.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
-
+#include <map>
 #include "thermo/Database.H"
 #include "thermo/VapourAssociation.H"
 #include "core/Constants.H"
@@ -543,10 +543,10 @@ void Component::readFromDict(const DictPtr& d)
                 " record's one value of the property is a curation decision, never the"
                 " order of the laws.");
         laws_["vaporPressure"] = blk;
-        buildVP_(std::size_t(blk.preferred));
         lawChoice_["vaporPressure"] = { blk.laws[std::size_t(blk.preferred)].name,
             blk.laws[std::size_t(blk.preferred)].type,
             blk.laws.size() == 1 ? "the record's one law" : "the record's preferred law" };
+        buildVP_(std::size_t(blk.preferred));
     }
 
     // Ebulioscopic / cryoscopic constants --------------------------
@@ -1056,6 +1056,7 @@ void Component::readFromDict(const DictPtr& d)
             provenanceMap_[k] = oi;
         }
     }
+    self_->prov = provenanceMap_;
 
     // ---- Per-method molecular group decomposition (the curation recipe) -------
     // `groups { joback ( {group; count;} ... ); unifac ( ... ); }` -- method-keyed
@@ -1721,26 +1722,45 @@ namespace {
 //  the typed domain error whose remedy names the record's other laws.  Only a
 //  law that declares `domain` is wrapped, so every existing law is the object
 //  it always was.
+//
+//  EVERY record heat-capacity law is held through this object (C398 review):
+//  it runs the law's first-use hook (the law describes itself, CV-07, and its
+//  datum's provenance is voiced, CN-06), and, for a law with a hard window,
+//  refuses a T outside it -- and an INTEGRAL H(T,Tref) or S(T,Tref) whose
+//  path from Tref to T leaves the window (review row CV-13: the reference
+//  temperature was not checked, so a `domain (300 400)` law was integrated
+//  from 298.15 K through its own excluded range).
 class DomainBoundCp : public HeatCapacityModel
 {
 public:
     DomainBoundCp(std::unique_ptr<HeatCapacityModel> inner, recordLaws::Block blk,
-                  std::size_t idx, std::string what)
+                  std::size_t idx, std::string what, std::function<void()> firstUse)
     :   inner_(std::move(inner)), blk_(std::move(blk)), idx_(idx), what_(std::move(what)),
-        lo_(blk_.laws[idx].domainLo), hi_(blk_.laws[idx].domainHi)
+        hasDomain_(blk_.laws[idx].hasDomain),
+        lo_(blk_.laws[idx].domainLo), hi_(blk_.laws[idx].domainHi), firstUse_(std::move(firstUse))
     {}
-    scalar Cp(scalar T) const override { check(T); return inner_->Cp(T); }
-    scalar H(scalar T, scalar Tref) const override { check(T); return inner_->H(T, Tref); }
-    scalar S(scalar T, scalar Tref) const override { check(T); return inner_->S(T, Tref); }
+    scalar Cp(scalar T) const override { check(T); used(); return inner_->Cp(T); }
+    scalar H(scalar T, scalar Tref) const override { check(T); checkRef(Tref, T); used(); return inner_->H(T, Tref); }
+    scalar S(scalar T, scalar Tref) const override { check(T); checkRef(Tref, T); used(); return inner_->S(T, Tref); }
     const std::string& modelName() const override { return inner_->modelName(); }
 private:
     void check(scalar T) const
-    { if (T < lo_ || T > hi_) recordLaws::throwOutsideDomain(blk_, idx_, T, what_); }
+    { if (hasDomain_ && (T < lo_ || T > hi_)) recordLaws::throwOutsideDomain(blk_, idx_, T, what_); }
+    void checkRef(scalar Tref, scalar T) const
+    {
+        if (!hasDomain_ || (Tref >= lo_ && Tref <= hi_)) return;
+        recordLaws::throwOutsideDomain(blk_, idx_, Tref, what_ + " integrated from the reference"
+            " temperature " + std::to_string(Tref) + " K to T = " + std::to_string(T)
+            + " K (the integral crosses the law's excluded range)");
+    }
+    void used() const { if (firstUse_) { const auto f = std::move(firstUse_); firstUse_ = nullptr; f(); } }
     std::unique_ptr<HeatCapacityModel> inner_;
     recordLaws::Block blk_;
     std::size_t idx_;
     std::string what_;
+    bool hasDomain_;
     scalar lo_, hi_;
+    mutable std::function<void()> firstUse_;
 };
 
 } // namespace
@@ -1766,6 +1786,7 @@ void Component::buildVP_(std::size_t idx)
     if (!vpd->found("Tb") && Tb_ > 0.0) vpd->insert("Tb", Tb_);
     if (!vpd->found("owner")) vpd->insert("owner", name_);
     vp_ = VaporPressureModel::New(vpd);
+    vp_->setOnFirstUse(firstUse_("vaporPressure", idx));
     if (L.hasDomain)
     {
         recordLaws::Block copy = blk;
@@ -1814,8 +1835,7 @@ void Component::buildCp_(const std::string& key, std::size_t idx)
         }
     }
     auto m = HeatCapacityModel::New(body);
-    if (L.hasDomain)
-        m = std::make_unique<DomainBoundCp>(std::move(m), blk, idx, key);
+    m = std::make_unique<DomainBoundCp>(std::move(m), blk, idx, key, firstUse_(key, idx));
     if      (key == "liquidHeatCapacity")   cpLiq_   = std::move(m);
     else if (key == "idealGasHeatCapacity") cpGas_   = std::move(m);
     else                                    cpSolid_ = std::move(m);
@@ -1902,6 +1922,75 @@ void Component::pinLaw(const std::string& property, const std::string& law,
     //  one per law.
     auto pv = provenanceMap_.find(property + "/" + law);
     if (pv != provenanceMap_.end()) provenanceMap_[property] = pv->second;
+    self_->prov = provenanceMap_;
+}
+
+//  ---- what a law says about itself, and what its datum's record says --------
+
+namespace {
+//  ONE rule for the source of a law, read by the view (lawSource) and by the
+//  law's own first-use description: the per-law entry; else the property's
+//  entry when the law is the block's one or preferred law (the property's
+//  entry is that law's: Component::readFromDict); else none.
+std::string sourceRule(const std::map<std::string, OriginInfo>& prov, const std::string& property,
+                       const std::string& law, const std::string& preferredName)
+{
+    auto describe = [](const OriginInfo& oi)
+    {
+        std::string s = std::string("origin ") + originToWord(oi.origin);
+        if (!oi.method.empty()) s += ", method " + oi.method;
+        return s;
+    };
+    if (!law.empty())
+    {
+        const auto it = prov.find(property + "/" + law);
+        if (it != prov.end()) return describe(it->second);
+    }
+    const auto it = prov.find(property);
+    if (it != prov.end() && (law.empty() || law == preferredName)) return describe(it->second);
+    return "no provenance entry for this law";
+}
+} // namespace
+
+std::string Component::lawSource(const std::string& property, const std::string& law) const
+{
+    const recordLaws::Block* b = recordLaws(property);
+    const std::string pref = (b && b->preferred >= 0) ? b->laws[std::size_t(b->preferred)].name : std::string();
+    return sourceRule(self_->prov.empty() ? provenanceMap_ : self_->prov, property, law, pref);
+}
+
+void Component::consumeProperty(const std::string& property) const
+{
+    const auto it = self_->deferred.find(property);
+    if (it == self_->deferred.end()) return;
+    const DictPtr entry = it->second;
+    self_->deferred.erase(it);
+    announceValueProvenance(name_, property, entry);
+}
+
+std::function<void()> Component::firstUse_(const std::string& property, std::size_t idx) const
+{
+    const recordLaws::Law& L = laws_.at(property).laws.at(idx);
+    const std::string window = L.windowText(recordLaws::familyOf(property));
+    const std::string token = L.token(), type = L.type, name = name_;
+    const std::string by = lawChoice(property).by;
+    const std::shared_ptr<RecordSelf> self = self_;
+    const std::string lawName = L.name;
+    const auto& blk = laws_.at(property);
+    const std::string preferredName = blk.preferred >= 0 ? blk.laws[std::size_t(blk.preferred)].name : std::string();
+    return [self, property, window, token, type, name, by, lawName, preferredName]()
+    {
+        if (recordLaws::traceOn())
+            recordLaws::traceCall(recordLaws::selfLine(name, property, token, type, by, window,
+                sourceRule(self->prov, property, lawName, preferredName), self->home));
+        const auto it = self->deferred.find(property);
+        if (it != self->deferred.end())
+        {
+            const DictPtr entry = it->second;
+            self->deferred.erase(it);
+            announceValueProvenance(name, property, entry);
+        }
+    };
 }
 
 

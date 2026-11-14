@@ -262,7 +262,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
     note: "The latent heat on this page is the engine's: the acetone "
       + "witness's propertyPoint asks for Hvap_acetone at the boiling "
       + "temperature it finds at the relieving pressure.  That key is "
-      + "Component::Hvap_latent (src/thermo/Component.cpp:1425-1433), the "
+      + "Component::Hvap_latent (src/thermo/Component.cpp:1426-1434), the "
       + "record's HvapTb carried to T by the Watson correlation -- the same "
       + "term the engine subtracts from the ideal-gas enthalpy to price a "
       + "liquid (src/thermo/ThermoPackage.H:375) -- exposed to the props "

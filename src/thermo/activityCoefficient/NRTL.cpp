@@ -176,7 +176,7 @@ NRTL::NRTL(const DictPtr& dict, const std::vector<std::string>& names)
         if (provDict)   // a record's declared span is guarded (C35 item 5)
             spanGuard_.add("NRTL", findIndex(names, ni), findIndex(names, nj),
                            ni + "-" + nj, r);
-        ThermoResolutionLog::instance().add(std::move(r));
+        recordPair(std::move(r));
     };
 
     // ---- Phase 1: inline `pairs (... )` in the thermoPackage dict ----

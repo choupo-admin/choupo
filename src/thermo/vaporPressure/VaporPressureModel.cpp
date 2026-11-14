@@ -198,6 +198,10 @@ void VaporPressureModel::registerBuiltins()
     recordLaws::declareForm("vaporPressure", "AmbroseWalton",
         "ln(P/Pc) = [f0(tau) + omega f1(tau) + omega^2 f2(tau)]/Tr, Tr = T/Tc, tau = 1 - Tr"
         " (Ambrose-Walton 1989); no coefficients: Tc, Pc, omega from the record");
+    recordLaws::declareBuiltInWindow("vaporPressure", "AmbroseWalton",
+        "0 K to the record's Tc (the saturation line ends there; announced outside, capped at Pc)");
+    recordLaws::declareBuiltInWindow("vaporPressure", "Wagner",
+        "up to the reducing temperature Tr (above it the model returns Pr; announced)");
     recordLaws::declareForm("vaporPressure", "Wagner",
         "ln(P/Pr) = (Tr/T) sum_i a_i tau^e_i, tau = 1 - T/Tr; a_i and e_i dimensionless,"
         " reducing T and P in the units declared in `reducing`");

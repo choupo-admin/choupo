@@ -4312,6 +4312,7 @@ int Flowsheet::solve(const DictPtr& dict,
                      : thermo.H_stream_formation(s.T, s.P, s.vf, s.z);
             s.H_valid = std::isfinite(s.H);
         }
+        catch (const InfeasibleTrial&) { throw; }   // a law's hard window REFUSES: never a degraded datum (C398 review CV-13)
         catch (const std::exception& e)
         {
             // LOUD fallback (forum 2026-06-28; no silent crutch): a species could

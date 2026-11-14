@@ -39,6 +39,7 @@ License
 #include <filesystem>
 #include <cctype>
 #include <algorithm>
+#include <set>
 #include <vector>
 #include <variant>
 #include <fstream>
@@ -160,10 +161,61 @@ const std::vector<RecordLawPin>* RecordLawPinScope::active()
     return activePins;
 }
 
+//  THE PER-VALUE ANNOUNCEMENT of one provenance entry of a record (moved here
+//  from the loader so a property held by a record law is voiced at its first
+//  evaluation: C398 review row CN-06).
+void announceValueProvenance(const std::string& component, const std::string& key,
+                             const DictPtr& entry)
+{
+    //  The grade a curation fit earned (DEV.md 4c C285): ONE home,
+    //  shared with the pair loaders (FitGrade.H).
+    announceFitGrade("component '" + component + "'", key, entry);
+    if (entry->lookupWordOrDefault("reviewStatus", "") != "autoPromoted"
+        || announceReviewBlock("component '" + component + "'", "component:" + component + ":" + key, key, entry)) return;
+    const std::string where =
+        entry->lookupWordOrDefault("fittedInCase", "");
+    if (AdvisoryLog::instance().addAnnouncedOnce(
+            "autoPromoted:" + component + ":" + key,
+            "provenance", "warning", "component '" + component + "'",
+            "`" + key + "` reviewStatus autoPromoted -- promoted"
+            " AUTOMATICALLY by its fitting pipeline; NO human has"
+            " reviewed it"))
+        std::cerr << "[unreviewed] component '" << component << "': `"
+                  << key << "` reviewStatus autoPromoted -- this value"
+                     " was promoted into the catalogue AUTOMATICALLY by"
+                     " its fitting pipeline (accepted by the acceptance"
+                     " its case declared before the fit) and NO"
+                     " human has reviewed it (humanReviewed false)"
+                  << (where.empty() ? std::string()
+                                    : "; its fit is reproduced by "
+                                      + where)
+                  << ".  Read its provenance entry before the result is"
+                     " cited; a curator who has read it back marks"
+                     " `reviewStatus reviewed; humanReviewed true;`.\n";
+}
+
+namespace {
+//  What componentDict learned about the record it read, handed to
+//  loadComponent: where it came from, and the entries voiced at first use.
+struct LastLoad
+{
+    std::string home;
+    std::vector<std::pair<std::string, DictPtr>> deferred;
+};
+LastLoad& lastLoad()
+{
+    static thread_local LastLoad l;
+    return l;
+}
+} // namespace
+
 Component Database::loadComponent(const std::string& name) const
 {
     Component c;
+    lastLoad() = LastLoad{};
     c.readFromDict(componentDict(name));
+    c.setRecordHome(lastLoad().home);
+    for (const auto& [property, entry] : lastLoad().deferred) c.deferProvenance(property, entry);
     //  THE CASE'S PINS (SB-01): applied here, where every copy is born, so
     //  no assembly path can hold the record's preferred law while the view
     //  prints the pin.
@@ -255,6 +307,18 @@ DictPtr Database::componentDict(const std::string& name) const
     const bool usingProposed = !hasStd && hasProposed;     // proposal provides the base
     const fs::path base      = hasStd ? standard : proposed;
     const bool hasBase       = hasStd || hasProposed;
+    //  WHERE THE RECORD COMES FROM, for the resolved view (review row CV-05).
+    auto rel = [](const fs::path& p)
+    {
+        std::error_code ec;
+        const fs::path r = fs::relative(p, fs::current_path(), ec);
+        return (!ec && !r.empty() && r.string().rfind("..", 0) != 0) ? r.string() : p.string();
+    };
+    lastLoad().home = records::sealedStrict() ? "sealed case copy " + rel(standard)
+        : hasCase ? "case copy " + rel(caseLocal)
+                    + (hasBase ? " (on the catalogue record)" : std::string())
+        : usingProposed ? "data/local (UNVERIFIED) " + proposed.string()
+        : "catalogue data/standards/components/" + name + ".dat";
     if (!hasCase && !hasBase)
     {
         // Remedy-bearing, not a dead end (no silent crutch): a missing component
@@ -677,31 +741,19 @@ DictPtr Database::componentDict(const std::string& name) const
         {
             if (!std::holds_alternative<DictPtr>(prov->entryValue(key))) continue;
             const DictPtr entry = prov->subDict(key);
-            //  The grade a curation fit earned (DEV.md 4c C285): ONE home,
-            //  shared with the pair loaders (FitGrade.H).
-            announceFitGrade("component '" + name + "'", key, entry);
-            if (entry->lookupWordOrDefault("reviewStatus", "") != "autoPromoted"
-                || announceReviewBlock("component '" + name + "'", "component:" + name + ":" + key, key, entry)) continue;
-            const std::string where =
-                entry->lookupWordOrDefault("fittedInCase", "");
-            if (AdvisoryLog::instance().addAnnouncedOnce(
-                    "autoPromoted:" + name + ":" + key,
-                    "provenance", "warning", "component '" + name + "'",
-                    "`" + key + "` reviewStatus autoPromoted -- promoted"
-                    " AUTOMATICALLY by its fitting pipeline; NO human has"
-                    " reviewed it"))
-                std::cerr << "[unreviewed] component '" << name << "': `"
-                          << key << "` reviewStatus autoPromoted -- this value"
-                             " was promoted into the catalogue AUTOMATICALLY by"
-                             " its fitting pipeline (accepted by the acceptance"
-                             " its case declared before the fit) and NO"
-                             " human has reviewed it (humanReviewed false)"
-                          << (where.empty() ? std::string()
-                                            : "; its fit is reproduced by "
-                                              + where)
-                          << ".  Read its provenance entry before the result is"
-                             " cited; a curator who has read it back marks"
-                             " `reviewStatus reviewed; humanReviewed true;`.\n";
+            //  A PROPERTY HELD BY A RECORD LAW IS VOICED WHEN A RUN CONSUMES
+            //  IT (review row CN-06): every run that loads water used to list
+            //  its surface tension's autoPromoted status, evaluated or not.
+            //  Its entry waits on the component (loadComponent hands it over)
+            //  and is voiced at the law's first evaluation; a scalar fact is
+            //  voiced here, at loading, as before.
+            //  Vapour pressure and the heat capacities keep C281's voicing at
+            //  loading (check_regressed_pairs arm (i) holds it: their fit case
+            //  reads the record outside the law object), so only these wait:
+            static const std::set<std::string> lawProperties = {
+                "liquidViscosity", "liquidThermalConductivity", "surfaceTension" };
+            if (lawProperties.count(key)) { lastLoad().deferred.push_back({ key, entry }); continue; }
+            announceValueProvenance(name, key, entry);
         }
     }
 

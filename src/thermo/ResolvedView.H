@@ -100,6 +100,10 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
            const DictPtr& resolved, const Choice& choice,
            const std::vector<std::string>& selectedBy);
 
+//  The system's view, once per process at verbosity >= 2, as choupoSolve
+//  prints it -- for the time-integrated binaries (C398 review row CV-12).
+void printSystemOnce(const ThermoPackage& pkg, const DictPtr& system);
+
 //  The Choice of a case's own system: the file it was read from, and, when
 //  that file `inherits` a parent, the file as written (so a block the
 //  parent declared is attributed to the parent).

@@ -2072,26 +2072,23 @@ scalar ThermoPackage::S_real(scalar T, scalar P_Pa, const sVector& y) const
          + associationResidualTotal(T, P_Pa, y, /*enthalpy*/ false);
 }
 
+namespace {
+void tracePureFluid(const std::string& comp, const std::string& key, const std::string& form,
+                    const std::string& method, const std::string& window);   // below
+} // namespace
+
 scalar ThermoPackage::viscosityGas(scalar T, const sVector& y) const
 {
     // Pure-fluid override (e.g. water + IF97): a phase effectively pure in a
     // flagged component is served by its own fundamental-equation transport
-    // release.  The (rho,T) kernel needs a pressure; with no P on this legacy
-    // accessor the SATURATION pressure at T is the physical convention (the
-    // saturated-vapour state).  Mixed-but-flagged -> pureFluidRoute throws.
+    // release, at the SATURATED VAPOUR (this accessor carries no pressure).
+    // Until the C398 review (row CN-04) it evaluated the kernel AT p_sat,
+    // where the router takes the liquid branch: the "vapour" viscosity of
+    // steam was the saturated liquid's, 8 times too large.
+    // Mixed-but-flagged -> pureFluidRoute throws.
     if (!pureFluid_.empty())
         if (auto i = pureFluidRoute(pureFluid_, components_, y))
-        {
-            const PureFluidModel& m = *pureFluid_.at(*i);
-            static bool announced = false;
-            if (!announced)
-            {
-                std::cout << components_[*i].name() << " viscosity: "
-                          << m.viscosityFormulation() << "\n";
-                announced = true;
-            }
-            return m.mu(T, m.p_sat(T));
-        }
+            return pureFluidVapourTransport(*i, T, -1.0, true);
     if (!transport_)
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
             "ThermoPackage::viscosityGas: the vapour viscosity has no model ---"
@@ -2122,27 +2119,17 @@ scalar ThermoPackage::thermalConductivityGas(scalar T, const sVector& y) const
 {
     if (!pureFluid_.empty())
         if (auto i = pureFluidRoute(pureFluid_, components_, y))
-        {
-            const PureFluidModel& m = *pureFluid_.at(*i);
-            static bool announced = false;
-            if (!announced)
-            {
-                std::cout << components_[*i].name() << " thermal conductivity: "
-                          << m.conductivityFormulation() << "\n";
-                announced = true;
-            }
-            return m.lambda(T, m.p_sat(T));
-        }
+            return pureFluidVapourTransport(*i, T, -1.0, false);   // the saturated vapour (CN-04)
     if (!thermalConductivity_)
         throw std::runtime_error("ThermoPackage::thermalConductivityGas: no"
-            " model --- add `transport { thermalConductivity { model Eucken;"
-            " } }` to the thermoPackage (a propertyPackage's propertyMethods"
-            " `transport` slot covers gas viscosity only).");
+            " model --- add `transport { vapour { thermalConductivity { model Eucken;"
+            " } viscosity { model Chung; } } }` to the property dictionary"
+            " (Eucken reads the vapour viscosity).");
     if (!transport_)
         throw std::runtime_error("ThermoPackage::thermalConductivityGas: Eucken"
-            " needs the gas viscosity --- add `transport { viscosity { model Chung; } }`"
-            " alongside the thermalConductivity sub-block (or `transport Chung;`"
-            " under propertyMethods in a propertyPackage).");
+            " needs the gas viscosity --- add `viscosity { model Chung; }` beside"
+            " `thermalConductivity` in `transport { vapour { ... } }` of the"
+            " property dictionary.");
     const std::size_t N = n();
     sVector lam(N, 0.0), eta(N, 0.0), M(N, 0.0);
     for (std::size_t i = 0; i < N; ++i)
@@ -2164,14 +2151,71 @@ scalar ThermoPackage::thermalConductivityGas(scalar T, const sVector& y) const
     return gasMixing::wilkeSum(y, lam, eta, M);
 }
 
+//  THE VAPOUR AT (T, P) (C398 review row CN-04): a phase pure in a pure-fluid
+//  component is evaluated by its formulation at the vapour density the
+//  thermodynamic kernel gives at (T, P); a state the kernel places in the
+//  liquid (below the critical temperature, above the saturation pressure) has
+//  no vapour viscosity or conductivity, and the call is refused by name.  Any
+//  other phase: the low-pressure models, which carry no pressure.
+scalar ThermoPackage::viscosityGas(scalar T, scalar P_Pa, const sVector& y) const
+{
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, y))
+            return pureFluidVapourTransport(*i, T, P_Pa, true);
+    return viscosityGas(T, y);
+}
+
+scalar ThermoPackage::thermalConductivityGas(scalar T, scalar P_Pa, const sVector& y) const
+{
+    if (!pureFluid_.empty())
+        if (auto i = pureFluidRoute(pureFluid_, components_, y))
+            return pureFluidVapourTransport(*i, T, P_Pa, false);
+    return thermalConductivityGas(T, y);
+}
+
+scalar ThermoPackage::pureFluidVapourTransport(std::size_t i, scalar T, scalar P_Pa, bool mu) const
+{
+    const PureFluidModel& m = *pureFluid_.at(i);
+    const std::string what = mu ? "vapour viscosity" : "vapour thermal conductivity";
+    const std::string form = mu ? m.viscosityFormulation() : m.conductivityFormulation();
+    const std::string nm = components_[i].name();
+    const scalar Tc = m.saturationWindow().second;
+    scalar p = P_Pa;
+    if (T < Tc)
+    {
+        const scalar ps = m.p_sat(T);
+        if (P_Pa < 0.0) p = ps * (1.0 - 1.0e-9);           // the saturated vapour at T
+        else if (P_Pa > ps)
+            throw PropertyDomainError(PropertyDomainError::Kind::invalidState,
+                "the " + what + " of " + nm + " at T = " + std::to_string(T) + " K and P = "
+                + std::to_string(P_Pa) + " Pa is not defined: " + m.type() + " places that state"
+                " in the LIQUID (saturation pressure " + std::to_string(ps) + " Pa at that T).  Ask"
+                " the liquid property (`viscosity_liquid`, `thermal_conductivity_liquid`), or a"
+                " state at or below the saturation pressure.");
+        else p = std::min(P_Pa, ps * (1.0 - 1.0e-9));       // on the vapour branch
+    }
+    else if (P_Pa < 0.0)
+        throw PropertyDomainError(PropertyDomainError::Kind::invalidState,
+            "the " + what + " of " + nm + " at T = " + std::to_string(T) + " K, above the"
+            " critical temperature: there is no saturated vapour, and this accessor carries"
+            " no pressure -- ask it with the state's pressure.");
+    static std::set<std::string> announced;
+    if (announced.insert(nm + (mu ? ":mu" : ":lambda")).second)
+        std::cout << nm << (mu ? " viscosity: " : " thermal conductivity: ") << form << "\n";
+    if (recordLaws::traceOn() && announced.insert("trace:" + nm + (mu ? ":mu" : ":lambda")).second)
+        recordLaws::traceCall(recordLaws::selfLine(nm, mu ? "vapourViscosity" : "vapourConductivity",
+            "none (pure fluid)", form, "pureFluids method " + m.type(),
+            "the formulation's own (T, density); at the vapour state", form, "pure-fluid kernel"));
+    return mu ? m.mu(T, p) : m.lambda(T, p);
+}
+
 scalar ThermoPackage::diffusivityGas(scalar T, scalar P_Pa,
                                      std::size_t i, std::size_t j) const
 {
     if (!diffusivity_)
         throw std::runtime_error("ThermoPackage::diffusivityGas: no model ---"
-            " add `transport { diffusivity { model Fuller; } }` to the"
-            " thermoPackage (a propertyPackage's propertyMethods `transport`"
-            " slot covers gas viscosity only).");
+            " add `transport { vapour { diffusivity { model Fuller; } } }` to the"
+            " property dictionary.");
     return diffusivity_->diffusivityGasBinary(components_.at(i), components_.at(j), T, P_Pa);
 }
 
@@ -2188,6 +2232,8 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
                           << m.viscosityFormulation() << "\n";
                 announced = true;
             }
+            tracePureFluid(components_[*i].name(), "liquidViscosity", m.viscosityFormulation(), m.type(),
+                           "the formulation's own (T, density); at the saturated liquid");
             return m.mu(T, m.p_sat(T));   // saturated-liquid state
         }
     if (liquidViscosityLaws_.empty())
@@ -2218,6 +2264,8 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
                           << m.conductivityFormulation() << "\n";
                 announced = true;
             }
+            tracePureFluid(components_[*i].name(), "liquidThermalConductivity", m.conductivityFormulation(), m.type(),
+                           "the formulation's own (T, density); at the saturated liquid");
             return m.lambda(T, m.p_sat(T));   // saturated-liquid state
         }
     if (liquidConductivityLaws_.empty())
@@ -2239,9 +2287,8 @@ scalar ThermoPackage::diffusivityLiquid(scalar T, std::size_t i, std::size_t j) 
 {
     if (!liquidDiffusivity_)
         throw std::runtime_error("ThermoPackage::diffusivityLiquid: no model ---"
-            " add `transport { liquidDiffusivity { model WilkeChang; } }` to the"
-            " thermoPackage (a propertyPackage's propertyMethods `transport`"
-            " slot covers gas viscosity only).");
+            " add `transport { liquid { diffusivity { model WilkeChang; } } }` to the"
+            " property dictionary.");
     if (liquidViscosityLaws_.empty())
         throw std::runtime_error("ThermoPackage::diffusivityLiquid: needs the"
             " solvent viscosity --- add a `liquid { viscosity { } }` block"
@@ -2266,6 +2313,8 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
                           << m.surfaceTensionFormulation() << "\n";
                 announced = true;
             }
+            tracePureFluid(components_[*i].name(), "surfaceTension", m.surfaceTensionFormulation(), m.type(),
+                           "the formulation's own (the saturation line)");
             return m.sigma(T);
         }
     if (surfaceTensionLaws_.empty())
@@ -2979,6 +3028,33 @@ void checkLiquidDomain(const Component& c, const std::string& rkey,
             + std::to_string(law.softHi) + ") -- extrapolated, still returned");
 }
 
+//  The self-description of a pure fluid's transport formulation (C398 review
+//  row CV-07), once per component and property, with CHOUPO_LAW_TRACE set.
+void tracePureFluid(const std::string& comp, const std::string& key, const std::string& form,
+                    const std::string& method, const std::string& window)
+{
+    if (!recordLaws::traceOn()) return;
+    static std::set<std::string> seen;
+    if (!seen.insert(comp + ":" + key).second) return;
+    recordLaws::traceCall(recordLaws::selfLine(comp, key, "none (pure fluid)", form,
+        "pureFluids method " + method, window, form, "pure-fluid kernel"));
+}
+
+//  pure*(): the first evaluation of a constituent's record law (C398 review):
+//  the law describes itself (CV-07) and its datum's provenance is voiced
+//  (CN-06).
+void firstUse(const Component& c, const std::string& rkey, const ThermoPackage::LiquidLaw& L)
+{
+    c.consumeProperty(rkey);
+    if (!recordLaws::traceOn()) return;
+    const recordLaws::Block* blk = c.recordLaws(rkey);
+    const recordLaws::Law* law = blk ? blk->find(L.law) : nullptr;
+    recordLaws::traceCall(recordLaws::selfLine(c.name(), rkey,
+        law ? law->token() : std::string("its one law"), L.type, L.by,
+        law ? law->windowText(recordLaws::familyOf(rkey)) : std::string("no window declared"),
+        c.lawSource(rkey, L.law), c.recordHome()));
+}
+
 DictPtr modelDict(const std::string& type)
 {
     auto d = std::make_shared<Dictionary>("law");
@@ -2996,7 +3072,7 @@ scalar ThermoPackage::pureLiquidViscosity(std::size_t i, scalar T) const
     if (L.predictive) return liquidViscosity_->viscosityLiquidPure(components_[i], T);
     checkLiquidDomain(components_[i], "liquidViscosity", L, T, "liquid viscosity");
     auto& obj = liquidViscosityObj_.at(i);
-    if (!obj) { obj = LiquidViscosityModel::New(modelDict(L.type)); obj->bindLaw(L.law); }
+    if (!obj) { obj = LiquidViscosityModel::New(modelDict(L.type)); obj->bindLaw(L.law); firstUse(components_[i], "liquidViscosity", L); }
     return obj->viscosityLiquidPure(components_[i], T);
 }
 
@@ -3008,7 +3084,7 @@ scalar ThermoPackage::pureLiquidConductivity(std::size_t i, scalar T) const
     if (L.predictive) return liquidConductivity_->conductivityLiquidPure(components_[i], T);
     checkLiquidDomain(components_[i], "liquidThermalConductivity", L, T, "liquid thermal conductivity");
     auto& obj = liquidConductivityObj_.at(i);
-    if (!obj) { obj = LiquidConductivityModel::New(modelDict(L.type)); obj->bindLaw(L.law); }
+    if (!obj) { obj = LiquidConductivityModel::New(modelDict(L.type)); obj->bindLaw(L.law); firstUse(components_[i], "liquidThermalConductivity", L); }
     return obj->conductivityLiquidPure(components_[i], T);
 }
 
@@ -3020,7 +3096,7 @@ scalar ThermoPackage::pureSurfaceTension(std::size_t i, scalar T) const
     if (L.predictive) return surfaceTension_->sigmaPure(components_[i], T);
     checkLiquidDomain(components_[i], "surfaceTension", L, T, "surface tension");
     auto& obj = surfaceTensionObj_.at(i);
-    if (!obj) { obj = SurfaceTensionModel::New(modelDict(L.type)); obj->bindLaw(L.law); }
+    if (!obj) { obj = SurfaceTensionModel::New(modelDict(L.type)); obj->bindLaw(L.law); firstUse(components_[i], "surfaceTension", L); }
     return obj->sigmaPure(components_[i], T);
 }
 

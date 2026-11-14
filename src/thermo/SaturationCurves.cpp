@@ -189,4 +189,21 @@ BinaryTxy binaryTxy(const ThermoPackage& thermo, scalar P, int nPoints)
     return out;
 }
 
+void narrowToVapourPressureWindows(const ThermoPackage& thermo, const sVector& z,
+                                   scalar& lower, scalar& upper)
+{
+    for (std::size_t i = 0; i < thermo.n() && i < z.size(); ++i)
+    {
+        if (!(z[i] > 0.0)) continue;
+        const Component& c = thermo.comp(i);
+        const recordLaws::Block* b = c.recordLaws("vaporPressure");
+        if (!b) continue;
+        const int k = b->indexOf(c.lawChoice("vaporPressure").law);
+        const recordLaws::Law& L = b->laws.at(std::size_t(k >= 0 ? k : (b->preferred >= 0 ? b->preferred : 0)));
+        if (!L.hasDomain) continue;
+        lower = std::max(lower, L.domainLo);
+        upper = std::min(upper, L.domainHi);
+    }
+}
+
 } // namespace Choupo

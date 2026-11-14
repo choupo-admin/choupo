@@ -289,10 +289,10 @@ scalar evaluateProperty(const std::string& propKey,
     if (propKey == "H_real")   return thermo.H_real(T, P_Pa, xLiquid);
     if (propKey == "S_real")   return thermo.S_real(T, P_Pa, xLiquid);
     if (propKey == "viscosity" || propKey == "viscosity_gas" || propKey == "mu")
-        return thermo.viscosityGas(T, xLiquid);   // Pa·s (low-pressure gas)
+        return thermo.viscosityGas(T, P_Pa, xLiquid);   // Pa·s (vapour at T, P: CN-04)
     if (propKey == "thermal_conductivity" || propKey == "thermalConductivity"
         || propKey == "k_gas" || propKey == "k")
-        return thermo.thermalConductivityGas(T, xLiquid);   // W/(m·K)
+        return thermo.thermalConductivityGas(T, P_Pa, xLiquid);   // W/(m·K), vapour at T, P
     if (propKey == "diffusivity" || propKey == "D_gas" || propKey == "D")
         return thermo.diffusivityGas(T, P_Pa, 0, 1);        // m²/s (comps 0,1)
     if (propKey == "viscosity_liquid" || propKey == "mu_L")

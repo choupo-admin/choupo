@@ -44,6 +44,7 @@ Description
 #include "core/Types.H"
 #include "thermo/RecordLaws.H"
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -57,6 +58,13 @@ namespace Choupo {
 // ~30 evaluate a correlation -- those include the model header themselves.
 class VaporPressureModel;
 class HeatCapacityModel;
+
+//  The per-value announcement of a record's provenance entry (an autoPromoted
+//  status, a fit grade, a review block): one home, in Database.cpp, called at
+//  loading for a record's scalar facts and at first use for a property held
+//  by a record law (C398 review row CN-06).
+void announceValueProvenance(const std::string& component, const std::string& key,
+                             const DictPtr& entry);
 
 class Component
 {
@@ -313,6 +321,26 @@ public:
     //  law of that name, listing the laws it has.
     void pinLaw(const std::string& property, const std::string& law,
                 const std::string& reason);
+
+    //  WHERE THIS RECORD WAS READ FROM (review row CV-05): "catalogue
+    //  data/standards", "sealed case copy <path>", "case copy <path> over the
+    //  catalogue", "data/local (UNVERIFIED)".  Set by Database::loadComponent.
+    const std::string& recordHome() const { return self_->home; }
+    void setRecordHome(const std::string& h) { self_->home = h; }
+
+    //  THE PROVENANCE OF ONE LAW of a property block (CV-05): the per-law
+    //  entry `provenance { <property> { <law> { origin ...; } } }`, else the
+    //  property's own entry when the law is the block's one or preferred law,
+    //  else "no provenance entry for this law".
+    std::string lawSource(const std::string& property, const std::string& law) const;
+
+    //  A DATUM'S PROVENANCE IS VOICED WHEN A RUN CONSUMES IT (review row
+    //  CN-06): the per-value announcement of a property held by a record law
+    //  (an autoPromoted or graded entry) is kept here at loading and voiced at
+    //  the law's first evaluation, never at loading.
+    void deferProvenance(const std::string& property, const DictPtr& entry)
+    { self_->deferred[property] = entry; }
+    void consumeProperty(const std::string& property) const;
 
     // ---- Non-volatile / dissolved-solute extensions ---------------
     // Solutes like NaCl, glucose, MgSO4 are loaded as Components but with
@@ -920,6 +948,17 @@ private:
     mutable std::map<std::string, recordLaws::Block> laws_;
     mutable std::map<std::string, std::string>       lawsError_;
     std::map<std::string, LawChoice>                 lawChoice_;
+    //  The state a law object's first-use hook reads (CV-05/07, CN-06): the
+    //  record's home, its provenance and the deferred announcements.  Shared
+    //  by pointer, because a Component moves and a hook outlives the move.
+    struct RecordSelf
+    {
+        std::string home;
+        std::map<std::string, OriginInfo> prov;
+        std::map<std::string, DictPtr>    deferred;
+    };
+    std::shared_ptr<RecordSelf> self_ = std::make_shared<RecordSelf>();
+    std::function<void()> firstUse_(const std::string& property, std::size_t lawIndex) const;
     void buildVP_(std::size_t lawIndex);
     void readLiquidCpBlock_(const DictPtr& d);   // setLiquidCp's body (C398 SB-02)
     void buildCp_(const std::string& property, std::size_t lawIndex);

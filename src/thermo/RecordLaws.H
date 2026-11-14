@@ -86,6 +86,31 @@ void declareForm(const std::string& family, const std::string& type,
                  const std::string& form);
 std::string formOf(const std::string& family, const std::string& type);
 
+//  THE TYPE'S BUILT-IN WINDOW (review row CV-03), declared beside its form: a
+//  type whose formula has a window of its own (RowlinsonBondi's Tr 0.25-0.85,
+//  the saturation line's end at Tc) states it here, once, and the view and
+//  the law's self-description print it with the record's own windows.
+void declareBuiltInWindow(const std::string& family, const std::string& type,
+                          const std::string& window);
+std::string builtInWindowOf(const std::string& family, const std::string& type);
+
+//  WHERE A CASE PIN OF `property` IS WRITTEN, in the nested spelling the
+//  property dictionary accepts (review rows CV-06, CV-15).
+std::string pinPlace(const std::string& property);
+
+//  THE SELF-DESCRIPTION OF A LAW THAT IS CALLED (review row CV-07).  A law
+//  object, at its first evaluation, describes itself in the same fields the
+//  resolved view prints for it; with the environment variable
+//  CHOUPO_LAW_TRACE set, the line goes to stderr as `[law-call] ...`, and the
+//  gate check_view_matches_calls compares it with the view.  Off, nothing is
+//  printed and nothing is computed.
+bool traceOn();
+std::string selfLine(const std::string& component, const std::string& property,
+                     const std::string& lawToken, const std::string& type,
+                     const std::string& by, const std::string& window,
+                     const std::string& source, const std::string& home);
+void traceCall(const std::string& line);
+
 //  The family a record block's laws belong to (the three heat-capacity
 //  blocks share one family of types).
 std::string familyOf(const std::string& property);
@@ -105,6 +130,10 @@ struct Law
     //  "soft 273-373 K (announced outside); hard 250-473 K (refused outside)",
     //  or "no window declared".
     std::string windowText() const;
+    //  The same, with the type's built-in window of `family` (CV-03).
+    std::string windowText(const std::string& family) const;
+    //  `name`, or "its one law" (the token the view and the trace both print).
+    std::string token() const { return label(); }
 };
 
 struct Block

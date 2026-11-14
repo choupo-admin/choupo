@@ -809,6 +809,21 @@ LAWS_WITHOUT_CHECK = {
     "solidHeatCapacity":         15,
 }
 
+#  RECORDS THE ENGINE CANNOT LOAD ALONE (C398 review row CV-08), counted by
+#  check_record_law_values from `choupoProps --record-law-checks`: a record
+#  that does not load leaves every law it holds outside that gate, so the
+#  count may only shrink, and a record carrying a `check` may never be one.
+RECORDS_NOT_LOADABLE = 64
+
+RECORDS_NOT_LOADABLE_DEBT = {
+    "why": "These catalogue records cannot be loaded as a component on their "
+           "own (a salt or an identity record read through its ions, a record "
+           "that needs a case's context); their laws, if any, are read by no "
+           "check.",
+    "remedy": "Make the record load alone, or say in it why it cannot; lower "
+              "the count in the same commit.",
+}
+
 LAWS_WITHOUT_CHECK_DEBT = {
     "why": "The units of a law's coefficients belong to its type (C398 U3); "
            "the only way a coefficient written in another unit is caught is "

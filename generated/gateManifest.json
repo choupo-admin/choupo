@@ -1778,23 +1778,28 @@
     },
     "check_record_law_values": {
       "exit": 0,
-      "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 (evaluated) rel +0.00644 within 0.007); laws without a check (the pinned debt): 2539; records not loadable alone: 64",
-      "seconds": 0.9
+      "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 (evaluated) rel +0.00644 within 0.007); laws without a check (the pinned debt): 2539; records not loadable alone: 64 (pinned 64, none of them carrying a check)",
+      "seconds": 3.4
     },
     "check_record_primitives": {
       "exit": 0,
       "claim": "check_record_primitives: OK -- no record types a derived quantity beyond the pinned 1 (NaOH's solid formation enthalpy, a second home under the salt contract); dGf_298 CHECKs: 45, comparison not yet computed (pinned); labelled: 1 (NaOH.S_298: PRIMITIVE (a salt's solid entropy))",
-      "seconds": 0.8
+      "seconds": 1.2
     },
     "check_provenance_home": {
       "exit": 0,
-      "claim": "check_provenance_home: OK -- 4726 records read; every property provenance entry is in its record's provenance block (4 pinned law blocks carry their own `origin`, the debt)",
-      "seconds": 3.4
+      "claim": "check_provenance_home: OK -- 4728 records read; every provenance-shaped entry (a block carrying `origin`, any name, any depth) is in its record's provenance block (4 pinned blocks carry their own `origin`, the debt)",
+      "seconds": 14.2
     },
     "check_record_law_pins": {
       "exit": 0,
-      "claim": "check_record_law_pins: OK -- a pinned record law gives every number the same law gives when preferred, in 8 arms over the five formulations (gammaPhi benzene.vaporPressure: pinned = preferred over 177 numbers, 110 moved by the law; gammaPhi benzene.liquidHeatCapacity: pinned = preferred over 177 numbers, 9 moved by the law; diluteSolution water.vaporPressure: pinned = preferred over 60 numbers, 25 moved by the law; electrolyteGammaPhi water.vaporPressure: pinned = preferred over 105 numbers, 3 moved by the law; electrolyteGammaPhi reactive ethanol.vaporPressure: pinned = preferred over 84 numbers, 2 moved by the law; electrolyteGammaPhi reactive water.liquidHeatCapacity: pinned = preferred over 84 numbers, 6 moved by the law; gammaGamma compA.vaporPressure: pinned = preferred over 65 numbers, 27 moved by the law; phiPhi propane.vaporPressure: pinned = preferred over 63 numbers, 0 moved by the law (the property does not enter this result)).  NOT CHECKED: whether either law is right; the time-integrated binaries.",
-      "seconds": 0.5
+      "claim": "check_record_law_pins: OK -- a pinned record law gives every number the same law gives when preferred, in 15 arms: the five formulations and the paths a pin takes (gammaPhi benzene.vaporPressure: pinned = preferred over 177 numbers, 110 moved by the law; gammaPhi benzene.liquidHeatCapacity: pinned = preferred over 177 numbers, 9 moved by the law; diluteSolution water.vaporPressure: pinned = preferred over 60 numbers, 25 moved by the law; electrolyteGammaPhi water.vaporPressure: pinned = preferred over 105 numbers, 3 moved by the law; electrolyteGammaPhi reactive ethanol.vaporPressure: pinned = preferred over 84 numbers, 2 moved by the law; electrolyteGammaPhi reactive water.liquidHeatCapacity: pinned = preferred over 84 numbers, 6 moved by the law; gammaGamma compA.vaporPressure: pinned = preferred over 65 numbers, 27 moved by the law; phiPhi propane.vaporPressure: pinned = preferred over 63 numbers, 0 moved by the law (the property does not enter this result); SL-05 ideal-gas law isopropanol.idealGasHeatCapacity: pinned = preferred over 628 numbers, 525 moved by the law; solid sucrose.solidHeatCapacity: pinned = preferred over 192 numbers, 32 moved by the law; transport water.liquidViscosity: pinned = preferred over 80 numbers, 3 moved by the law; variant benzene.vaporPressure: pinned = preferred over 11 numbers, 5 moved by the law; inline unit thermo benzene.vaporPressure: pinned = preferred over 11 numbers, 5 moved by the law; sector dictionary CH4.idealGasHeatCapacity: pinned = preferred over 20 numbers, 15 moved by the law; speciate solvent leg water.vaporPressure: pinned = preferred over 99 numbers, 28 moved by the law).  NOT CHECKED: whether either law is right; the time-integrated binaries.",
+      "seconds": 4.2
+    },
+    "check_view_matches_calls": {
+      "exit": 0,
+      "claim": "check_view_matches_calls: OK -- in 14 witnesses every law the package called is printed by a resolved view of the same run, law, type, choice, window, source and record field for field, and every pair a view lists was taken by a model of the run (purelaws01_methanol_isopropanol_water 7 calls/0 pairs; sabotage arm on purelaws01_methanol_isopropanol_water: 5 mismatch(es), FAILS as it must; purelaws02_water_two_vapour_pressure_laws 3 calls/0 pairs; variants01_ethanol_water_line 6 calls/0 pairs; flash01_benzene_toluene 6 calls/0 pairs; steam02_water_transport 6 calls/0 pairs; esterification2sector 12 calls/6 pairs; flash12_nh3_acetic_ethanol_reactive 9 calls/0 pairs; flash10_ch4propane_pcsaft 4 calls/0 pairs; vlle03_audit_artificial 6 calls/3 pairs; flash08_co2_water_package 6 calls/0 pairs; compare_psat_ambrose_walton 4 calls/0 pairs; acetone06_luyben_column_C1 9 calls/0 pairs; batch01_first_order 9 calls/0 pairs; ctrl01_cstr_temp_control 4 calls/0 pairs).  NOT CHECKED: laws never evaluated, the numbers, prose rows beyond the witnesses' own claims.",
+      "seconds": 0.8
     }
   }
 }

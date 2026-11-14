@@ -70,12 +70,14 @@ const scalar* NASA7Cp::coeffsFor(scalar T) const
 
 //  THE WINDOW IS ANNOUNCED (C398 slice (b), review row SB-04): the two ranges
 //  Tlow..Thigh are the law's window; outside them the polynomial is still
-//  evaluated (extrapolated) and that is said once per component.
+//  evaluated (extrapolated) and that is said once per LAW (a record may hold
+//  two NASA7 laws: the key carries the law's own range, review row CV-15).
 void NASA7Cp::noteRange(scalar T) const
 {
     if (T >= Tlow_ && T <= Thigh_) return;
     AdvisoryLog::instance().addAnnouncedOnce(
-        "softWindow:NASA7@" + owner_, "validity", "warning", "component '" + owner_ + "'",
+        "softWindow:NASA7@" + owner_ + ":" + std::to_string(Tlow_) + "-" + std::to_string(Tcommon_)
+        + "-" + std::to_string(Thigh_), "validity", "warning", "component '" + owner_ + "'",
         "NASA7 heat capacity evaluated at T = " + std::to_string(T) + " K, OUTSIDE its"
         " declared range (" + std::to_string(Tlow_) + " " + std::to_string(Thigh_)
         + ") -- extrapolated, still returned");
