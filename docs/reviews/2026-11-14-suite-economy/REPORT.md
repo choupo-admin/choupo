@@ -135,3 +135,63 @@ where its inputs change); `bin/integrate` beyond `--plan`.
 
 (Written into the tree by the coordinator from the reviewer's hand-back: the
 harness refuses report files written by a subagent.)
+
+## Round 2 (2026-11-14): `origin/c394/suite-economy` at c62bee2de and 677f2efb7
+
+Verdict: all twelve rows fixed (SE-01..10 and SE-12 reproduced on the merged
+tree; SE-11 verified by reading only, `kill -9` being refused by the
+permission system).  SE-01 no longer reproduces: every probe that was REUSED
+over a FAIL now re-runs and fails.  New: SE-13 (S3), SE-14 (S4), SE-15 (S4),
+none of which hides a verdict today.
+
+SE-01: a PASS stored for Na-F, then curate04's `propertyManifest` added in
+`data/curation/electrolytes/constant/` (re-run, FAIL) and in `./constant/`
+(re-run, FAIL); a `water.dat` overlay instead re-runs and PASSES (that field
+does not move Na-F); REUSED in none.  The key covers the case directory plus
+7 parents, up to the primary checkout's root `constant`, each missing
+directory recorded as `ABSENT`; `resolver_depth()` returns 8 and cites the 8
+places it read it (`RecordResolver.H:99`, `:125`, `:409`, `SealCheck.cpp:81`,
+`ThermoPackageBuilder.cpp:62`, `BatchAdsorber.cpp:72`, `FixedBedAdsorber.cpp:78`,
+`Flowsheet.cpp:826`); all five binaries change into the case directory before
+resolving, so the walk is the same from any working directory; a symlinked
+`constant/` is followed (empty: re-run PASS; a manifest through the target:
+re-run FAIL); every `constant/` level is hashed in full for every case; the
+two other upward walks (`resolveUp`, `MemberFolder.H:143`) run only when a case
+lacks its own file, and every keyed case has `system/controlDict`.  The gate
+key also covers the cascade of its two scratch homes.
+
+SE-02 fixed (the `touch -r` probe re-runs and FAILS; ctime, inode, device
+keyed).  SE-03 fixed (golden_bands' fingerprint; residual SE-15).  SE-04 fixed
+(an untracked record naming `fittedInCase "docs/design/zzprobe"` makes the gate
+NOT KEYED).  SE-05 fixed (symlinked directories followed; a loop ends at the
+OS limit).  SE-06/07 fixed (`code_map.py`, `check_models_catalogue.py`,
+`bin/buildCode` at 100644 in git: refused; `chmod -x` on disk only: refused;
+the 37 scripts set executable all parse as Python; the five scripts outside
+bin/curate covered).  SE-08 fixed (`check_brain_fresh` and `release_inventory.py
+--check` planned on a branch adding a case).  SE-09 fixed (an edit to curate04's
+experiments file plans `check_regressed_pairs`).  SE-10 fixed (`data/local`
+moves the tree key; `build/` does not, by design).  SE-11 fixed by reading
+(children lead their own process groups; live groups recorded beside a fixed
+per-user lock in `~/.cache/choupo/gate-selftest/`; the next self-test ends a
+dead run's groups inside the pool before syncing; workers reset with
+`clean -fdxq`; `data/local` and the build copied with `--delete`).  SE-12 fixed.
+
+**SE-13 (S3):** `check_scan_roots` pins the 69 gates with a walk the plan
+cannot see by NAME only, so a new unresolved walk added to one of them passes
+(a `Path(base).rglob` appended to the pinned `check_asset_homes.py`:
+`gate_scan_roots.py` lists it, `check_scan_roots` prints OK); a brand-new gate
+with such a walk does FAIL.
+
+**SE-14 (S4):** an untracked symlink to a directory in the keyed trees makes
+`suite_reuse.py` crash with IsADirectoryError; the sweep then says "curation
+fits: NOT keyed this run" and the gate runs.  Fails safe (no false REUSED),
+but one stray link silently disables reuse for the whole sweep.
+
+**SE-15 (S4):** (a) the depth parser recognises only `for (int up = 0; up < N`
+loops and `constexpr int` names; (b) the exec-bit check judges only files
+starting with a shebang (none of the four bin/curate modules without one is
+run directly today); (c) the fast stamp excludes `build/` and any `constant/`
+above the repository root; (d) `libc_ver()` does not change on a glibc patch
+release, and `LD_PRELOAD` / `LD_LIBRARY_PATH` are not keyed.
+
+Not done: `kill -9` of the self-test parent; a second platform.
