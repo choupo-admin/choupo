@@ -1332,12 +1332,18 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  IDEAL stages at exit 0 and the only notice was one "[dict] key written
     //  and never read" line mid-log, absent from the caveat block -- a student
     //  who declared a computed efficiency received E_MV = 1.
-    if (method != "totalReflux")
+    //  `model rateBased;` reads `packing {}` and refuses `efficiency {}` by
+    //  its own name (RateBasedSegment.cpp), so it is not checked here.
+    if (method != "totalReflux" && method != "rateBased")
         for (const char* blk : {"efficiency", "packing"})
             if (operDict->found(blk))
                 throw std::runtime_error("DistillationColumn '" + dict->name()
                     + "': `" + blk + " { ... }` is read ONLY by `model totalReflux;`"
-                      " (a binary column at total reflux, C329) and this column"
+                      " (a binary column at total reflux, C329)"
+                    + (std::string(blk) == "packing"
+                           ? std::string(" and `model rateBased;` (the same bed as"
+                                         " non-equilibrium segments)") : std::string())
+                    + " and this column"
                       " runs `model " + method + ";`, which would ignore it and"
                       " solve on ideal stages.  Select `model totalReflux;` to"
                       " compute the "
@@ -1353,6 +1359,7 @@ int DistillationColumn::solve(const DictPtr& dict,
     //  A recovery specification wraps whichever method is selected: it drives
     //  the RATE those methods already take.  See DistillationColumn.H.
     if (method == "totalReflux") return solveTotalReflux(dict, thermo, verbosity);
+    if (method == "rateBased")   return solveRateBased(dict, thermo, verbosity);
     if (operDict->found("distillateRecovery"))
         return solveForRecovery(dict, thermo, verbosity);
 
@@ -1370,7 +1377,7 @@ int DistillationColumn::solve(const DictPtr& dict,
         throw std::runtime_error("DistillationColumn: "
             + registryRefusal::message("distillation column model", method,
                 {"WangHenke", "simultaneous", "MESH", "NaphtaliSandholm",
-                 "fullMESH", "totalReflux"}, "Accepted"));
+                 "fullMESH", "totalReflux", "rateBased"}, "Accepted"));
 
     // Capability boundary, made LOUD (no silent crutch): multiple feeds and
     // side draws live only in the simultaneous MESH.  The Wang-Henke

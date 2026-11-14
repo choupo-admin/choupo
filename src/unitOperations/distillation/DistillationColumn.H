@@ -29,9 +29,15 @@ Class
     Choupo::DistillationColumn
 
 Description
-    Multicomponent distillation column, rigorous bubble-point method
-    (Wang-Henke), Constant Molar Overflow (CMO) assumption — no energy
-    balance per stage, no Murphree efficiency.
+    Multicomponent distillation column.  The default model is the rigorous
+    bubble-point method (Wang-Henke) under Constant Molar Overflow (CMO): no
+    energy balance per stage, a Murphree efficiency only where declared.  The
+    other models, selected by the `model` word: `simultaneous` (the CMO MESH
+    by Newton), `fullMESH` (every stage's energy balance solved),
+    `totalReflux` (a binary column at total reflux, the efficiency or HETP
+    computed from the internals) and `rateBased` (a binary packed bed at
+    total reflux as NON-EQUILIBRIUM segments, RateBasedSegment.H).  The
+    description below is the Wang-Henke method's.
 
     Stage numbering (1-based from top).  `nStages` counts the EQUILIBRIUM
     stages, and the condenser TYPE (`operation { condenser { type
@@ -210,6 +216,15 @@ private:
     int solveTotalRefluxPacked(const DictPtr& dict,
                                const ThermoPackage& thermo,
                                int verbosity);
+
+    //  THE RATE-BASED PACKED BED (`model rateBased;`, DEV.md 4c C329 part 2,
+    //  slice B1): a binary packed bed at total reflux as non-equilibrium
+    //  segments -- two films, interface equilibrium, fluxes, the interface
+    //  energy balance -- solved block-tridiagonal.  Defined in
+    //  RateBasedSegment.cpp; the model is RateBasedSegment.H.
+    int solveRateBased(const DictPtr& dict,
+                       const ThermoPackage& thermo,
+                       int verbosity);
 
     // Sieve-tray hydraulics: an optional RATING pass over the converged
     // profile.  A column that floods separates nothing, and the MESH
