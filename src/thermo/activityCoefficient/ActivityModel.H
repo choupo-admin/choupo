@@ -132,15 +132,8 @@ protected:
     //  result's thermoResolution block reads the log).
     void recordPair(PairResolution r)
     {
-        //  The pair describes itself as it is taken (CV-07): with
-        //  CHOUPO_LAW_TRACE set, `[pair-call] ...` on stderr, in the fields the
-        //  view prints, so check_view_matches_calls compares the two.
-        if (std::getenv("CHOUPO_LAW_TRACE"))
-            std::cerr << "[pair-call] #" << (recordLaws::currentPackageTag().empty() ? std::string("?")
-                                             : recordLaws::currentPackageTag())
-                      << " pair " << r.i << "-" << r.j << ": " << r.status
-                      << (r.source.empty() ? std::string() : " (" + r.source + ")")
-                      << (r.provSource.empty() ? std::string() : ", provenance " + r.provSource) << "\n";
+        //  The pair describes itself at its package's assembly
+        //  (ThermoPackage::traceSelf, review CV-26), with the final identity.
         pairs_.push_back(r);
         ThermoResolutionLog::instance().add(std::move(r));
     }

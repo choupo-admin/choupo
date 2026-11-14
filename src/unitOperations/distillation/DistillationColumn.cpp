@@ -27,7 +27,6 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "core/InfeasibleTrial.H"
-#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "core/Formula.H"
@@ -398,7 +397,6 @@ ColumnEnthalpy columnEnthalpySurface(const ThermoPackage& thermo, scalar P,
             (void)thermo.H_stream_formation(f.first, P, 1.0, f.second);
         }
     }
-    catch (const InfeasibleTrial&) { throw; } catch (const HardWindowRefusal&) { throw; }   // a law's hard window REFUSES (CV-13)
     catch (const std::exception& e)
     {
         h.formation = false;

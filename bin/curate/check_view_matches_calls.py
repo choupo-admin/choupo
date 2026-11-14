@@ -96,7 +96,21 @@ WITNESSES = [
     ("tutorials/props/transport/mixing01_water_acetone", 1, ["[vapourViscosity]: law none (model) (Chung)"], []),
     ("tutorials/batch/reactor/batch01_first_order", 0, ["RESOLVED PROPERTIES: system"], []),
     ("tutorials/ctrl/ctrl01_cstr_temp_control", 0, ["RESOLVED PROPERTIES: system"], []),
+    #  CV-26: the system on NRTL in the slot the flash's fragment writes, so
+    #  the two definitions are equal and only the pairs they took differ.
+    ("tutorials/steady/flowsheets/esterification2sector@nrtlSystem", 4,
+     ["pair ethylAcetate-water: perNode", "pair ethylAcetate-water: caseRoot"], []),
 ]
+
+
+def prepare(witness, d):
+    """A witness spelled `<case>@<variant>`: the edit that makes the variant."""
+    if witness.endswith("@nrtlSystem"):
+        tp = d / "constant" / "thermoPhysPropDict"
+        s = tp.read_text()
+        assert "activityModel ideal;" in s
+        tp.write_text(s.replace("activityModel ideal;", "activityModel { model NRTL; }", 1))
+
 
 #  THE SABOTAGE ARMS (d): (label, witness, edit of one view line -> edited line or None).
 SABOTAGE = [
@@ -113,6 +127,8 @@ SABOTAGE = [
     ("RowlinsonBondi's ideal-gas law, its type changed", "acetone06_luyben_column_C1",
      lambda v: re.sub(r"(\[liquidHeatCapacity\.idealGas\]: law .*? )\((\w+)\), held", r"\1(NASA9), held", v)),
     ("a variant's view stripped of its vapour-pressure lines", "variants01_ethanol_water_line", "STRIP_VARIANT_VP"),
+    ("the flash's own pair replaced by the system's (CV-01, CV-26)", "esterification2sector@nrtlSystem",
+     "SWAP_FLASH_PAIR"),
 ]
 
 LAW = re.compile(r"^\S+ \[\w+\]: law ")
@@ -124,11 +140,13 @@ def binary_of(case):
 
 
 def run(witness, tmp):
-    d = Path(tmp) / Path(witness).name
-    shutil.copytree(ROOT / witness, d, ignore=shutil.ignore_patterns(
+    base = witness.split("@")[0]
+    d = Path(tmp) / Path(base).name
+    shutil.copytree(ROOT / base, d, ignore=shutil.ignore_patterns(
         "converged", "postProcessing", "reports", "log.*", "[0-9]*", "*.csv"), symlinks=True)
-    if not (d / "0").exists() and (ROOT / witness / "0").exists():
-        shutil.copytree(ROOT / witness / "0", d / "0")
+    if not (d / "0").exists() and (ROOT / base / "0").exists():
+        shutil.copytree(ROOT / base / "0", d / "0")
+    prepare(witness, d)
     env = dict(os.environ, CHOUPO_HOME=str(ROOT), CHOUPO_LAW_TRACE="1")
     r = subprocess.run([str(binary_of(d)), str(d)], capture_output=True, text=True, env=env,
                        timeout=1800, cwd=str(d))
@@ -146,7 +164,7 @@ def views_by_package(stdout):
             cur = None
             pending = s
             continue
-        m = re.match(r"^fingerprint (\S+) ", s)
+        m = re.match(r"^package (\S+) ", s)
         if m and cur is None:
             cur = m.group(1)
             out.setdefault(cur, [])
@@ -192,6 +210,11 @@ def compare(calls, pairs, views):
 
 
 def sabotaged(views, titles, edit):
+    if edit == "SWAP_FLASH_PAIR":
+        sysline = next((l for t, v in views.items() if "SEPARATION.flash" not in titles.get(t, "")
+                        for l in v if l.startswith("pair ethylAcetate-water:")), None)
+        return {t: ([sysline if (l.startswith("pair ethylAcetate-water:") and sysline) else l for l in v]
+                    if "SEPARATION.flash" in titles.get(t, "") else v) for t, v in views.items()}
     if edit == "STRIP_VARIANT_VP":
         return {t: ([l for l in v if "[vaporPressure]" not in l] if "variant '" in titles.get(t, "") else v)
                 for t, v in views.items()}
@@ -201,7 +224,7 @@ def sabotaged(views, titles, edit):
 def main():
     fails, lines, captured = [], [], {}
     for witness, minimum, must, mustnot in WITNESSES:
-        if not (ROOT / witness).exists():
+        if not (ROOT / witness.split("@")[0]).exists():
             fails.append(f"{witness}: the witness is gone")
             continue
         with tempfile.TemporaryDirectory(prefix="view_") as tmp:
@@ -212,6 +235,9 @@ def main():
         calls = tagged(r.stderr, "[law-call] ")
         pairs = tagged(r.stderr, "[pair-call] ")
         views, titles = views_by_package(r.stdout)
+        if "@nrtlSystem" in witness and len(views) < 2:
+            fails.append(f"{witness}: the system and the flash printed ONE package identity -- two packages that"
+                         " hold different pairs must not share one (review CV-26)")
         text = "\n".join(l[len("[properties] "):].strip() for l in r.stdout.splitlines()
                          if l.startswith("[properties] ")) + "\n"
         text = re.sub(r"(?m)^(CHOICE|DATA)\s+", "", text)
@@ -226,8 +252,9 @@ def main():
             for tg in re.findall(r"\[[\w ]+\]", m.group(1)):
                 if tg not in (r.stdout + r.stderr).replace("[properties]", ""):
                     fails.append(f"{witness}: the view names {tg} lines as the record, and the run printed none")
-        captured[Path(witness).name] = (calls, pairs, views, titles)
-        lines.append(f"{Path(witness).name} {len(calls)} objects/{len(pairs)} pairs in {len(views)} view(s)")
+        key = Path(witness.split("@")[0]).name + ("@" + witness.split("@")[1] if "@" in witness else "")
+        captured[key] = (calls, pairs, views, titles)
+        lines.append(f"{key} {len(calls)} objects/{len(pairs)} pairs in {len(views)} view(s)")
     #  (d) the sabotage arms
     for label, name, edit in SABOTAGE:
         if name not in captured:

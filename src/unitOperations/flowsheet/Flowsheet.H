@@ -344,6 +344,8 @@ private:
     //  variant now -- complete before any calculation -- printing its
     //  resolved view once (thermo/ResolvedView.H).
     void selectNamedVariants(std::vector<DictPtr>& units, const ThermoPackage& global);
+    //  The record laws' hard windows on every reported and declared state (C398).
+    void auditHardWindows(const std::vector<DictPtr>& units, const ThermoPackage& global);
     //  The resolved view of a package thermoFor just built from a fragment
     //  (a named variant, once per variant; an inline fragment, once per unit).
     void printFragmentView(const std::string& uname, const DictPtr& fragment,

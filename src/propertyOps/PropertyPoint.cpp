@@ -235,6 +235,8 @@ int PropertyPoint::run(const DictPtr& dict,
     //  change to make an operation obey a list nobody could rely on.  What
     //  the author gains is that a name they declare is either computed or
     //  REFUSED BY NAME -- never dropped.
+    thermo.auditState(T, z, "the state of operation '" + dict->lookupWordOrDefault("name", "?")
+                      + "' (T = " + std::to_string(T) + " K)", true);   // C398: a declared state
     headline_.clear();
     if (dict->found("properties"))
     {

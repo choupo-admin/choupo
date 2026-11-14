@@ -131,8 +131,18 @@ std::string lawLine(const std::string& comp, const std::string& property,
 //  The law object the package holds prints its own value at its first use; if
 //  the two were ever built from different laws, the values differ and the
 //  gate fails.
+//  CN-09: a fresh object's construction-time announcements were already made
+//  by the package's own object; building it again must not repeat them.
+struct Silence
+{
+    std::streambuf* o = std::cout.rdbuf(nullptr);
+    std::streambuf* e = std::cerr.rdbuf(nullptr);
+    ~Silence() { std::cout.rdbuf(o); std::cerr.rdbuf(e); }
+};
+
 double freshValue(const recordLaws::Law& L, const std::string& property, double T)
 {
+    Silence quiet;
     try
     {
         if (property == "vaporPressure") return VaporPressureModel::New(L.body)->Psat_Pa(T);
@@ -166,7 +176,10 @@ std::string rbIdealGasLine(const Component& c)
     const recordLaws::Law& L = ig->laws.at(std::size_t(gi));
     const double Tp = recordLaws::probeT(L, c.Tc());
     std::string type = L.type;
-    try { type = HeatCapacityModel::New(L.body)->modelName(); } catch (const std::exception&) {}
+    {
+        Silence quiet;
+        try { type = HeatCapacityModel::New(L.body)->modelName(); } catch (const std::exception&) {}
+    }
     return lawLine(c.name(), "liquidHeatCapacity.idealGas", L.token(), type,
                    "held by its RowlinsonBondi law (SL-05)", "the ideal-gas law's own",
                    "the record's chosen ideal-gas law",
@@ -184,6 +197,7 @@ DictPtr modelDict(const std::string& type)
 double freshLiquidValue(const std::string& rkey, const std::string& type, const std::string& law,
                         const Component& c, double T)
 {
+    Silence quiet;
     try
     {
         if (rkey == "liquidViscosity")
@@ -364,6 +378,7 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
     out.line("  Values in SI.  A record value is converted to SI when it is read (src/core/Units);");
     out.line("  the unit it was declared in is not kept by the component reader yet, so it is not shown.");
     out.line("  fingerprint " + fingerprint(resolvedIn) + " (the resolved definition; components excluded)");
+    out.line("  package " + pkg.identity() + " (the definition with every input the assembly resolved: pairs, laws, records)");
     if (!selectedBy.empty())
     {
         std::string s;
@@ -556,7 +571,7 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         }
         if (!phiPhi && !viewBuiltFor(form) && !pkg.hasElectrolyte())
             d.push_back("view not built for " + (form.empty() ? std::string("aqueousProperties") : form)
-                        + ": the resolver lines are the record");   // CV-04: never content not checked
+                        + ": the record is " + recordLinesOf(form, pkg));   // CV-04, CV-27
         else if (!phiPhi)
         {
             d.push_back("pureCpPlusExcess: h_i = Hf298_i in the record's natural phase, bridged to the liquid");
@@ -618,7 +633,7 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         }
         for (std::size_t i = 0; i < n; ++i)
             if (pkg.hasPureFluid(i)) d.push_back(pureFluidAspectLine(pkg, i, "vaporPressure"));
-        if (!(form == "gammaPhi" || form == "phiPhi"))
+        if (!viewBuiltFor(form))   // CV-27: gammaGamma is a formulation the view describes
             d.push_back("whether " + (form.empty() ? std::string("aqueousProperties") : form) + " reads these laws:"
                         " view not built for " + (form.empty() ? std::string("aqueousProperties") : form)
                         + ": the record is " + recordLinesOf(form, pkg));

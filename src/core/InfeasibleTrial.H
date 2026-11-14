@@ -48,7 +48,6 @@ Description
 
 #pragma once
 
-#include <limits>
 #include <stdexcept>
 #include <string>
 
@@ -58,14 +57,6 @@ namespace Choupo
 struct InfeasibleTrial : public std::runtime_error
 {
     explicit InfeasibleTrial(const std::string& why) : std::runtime_error(why) {}
-
-    //  THE WINDOW THE REFUSING OBJECT ANSWERS IN, when it has one (a record
-    //  law's hard `domain`, C398 review): a search seeded outside it re-seeds
-    //  at a point inside it (solver::newton1D).  NaN = no window stated.
-    InfeasibleTrial(const std::string& why, double lo, double hi)
-        : std::runtime_error(why), windowLo(lo), windowHi(hi) {}
-    double windowLo = std::numeric_limits<double>::quiet_NaN();
-    double windowHi = std::numeric_limits<double>::quiet_NaN();
 };
 
 } // namespace Choupo

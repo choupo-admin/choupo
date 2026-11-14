@@ -2761,9 +2761,13 @@ gate \code{check\_view\_matches\_calls} requires every law a witness run
 called to appear, field for field, in a view of the same run, and every pair a
 view lists to have been taken by a model of the run; its sabotage arm (the
 view printing who chose a law as a constant) must fail.  Each self-description
-carries the IDENTITY of the package that holds the object --- the fingerprint
-of its resolved definition, which heads its view --- and is compared with
-that package's view alone; a record law also prints the value it computes at a
+carries the IDENTITY of the package that holds the object --- a hash of its
+resolved definition AND of every input its assembly resolved (the pair records
+it took, the law each constituent holds, where each record came from, the
+per-node pairs base), printed as ``package'' at the head of its view, so two
+packages with equal definitions and different pairs are told apart --- and is
+compared with that package's view alone (the fresh object the view builds for
+a value is built silently, so no construction-time announcement repeats); a record law also prints the value it computes at a
 probe temperature, from the object itself, while the view prints the value of
 a fresh object built from the law its label names, so an object that drifted
 from its label differs.  The self-description covers every object that
@@ -2912,23 +2916,25 @@ both.
 Every law keeps its type's own SOFT window --- \code{Trange (lo hi)},
 \code{Tmin}/\code{Tmax}, or \code{Tlow}/\code{Thigh} --- outside which the
 value is still returned and the extrapolation is announced once.  A law may
-add a HARD window, \code{domain (lo hi);} in K: outside it the law throws a
-typed domain error, outside a hard domain, whose remedy names the record's
-other laws whose window holds the state --- ``pin it in
-\code{equilibrium \{ vaporPressure \{ pin (...); \} \}}'' (or the property's
-own block), ``or extend the law''.  It never switches to them.  The error is a
-REJECTABLE trial only where a search INVENTED the state: inside a solver's
-trial frame it is a \code{PropertyDomainTrial} carrying the window, and the
-one-dimensional Newton (\code{solver::newton1D}) halves a refused step back
-toward its last answered point, and moves a seed the law refuses inside the
-window the refusal states.  Nothing is clamped in advance, so a law the
-route never calls never constrains it (a pure fluid on its own formulation
-does not consult the record's vapour-pressure laws).  If such a search ends
-without an answer, the law's refusal is what the run reports: the answer lies
-outside the window, named with the record's covering law --- never ``failed to
-converge'', never a bound printed as the answer.  A DECLARED state (an inlet,
-a \code{0/} stream, an operation's fixed temperature) or a converged one is
-refused at once, by the law, and no fallback prices it on another state.
+add a HARD window, \code{domain (lo hi);} in K.  It is checked on the states
+the run REPORTS and DECLARES, never during an iteration: a law evaluates
+wherever a search takes it --- a seed, a Newton step, the slope probe a
+millikelvin past a bound, a column's initial profile --- and one audit after
+the solve holds every law the run evaluated to its window at every published
+stream state, every internal state a unit publishes (its profile's
+temperature), every saturation temperature a unit reports (a bubble or dew
+point), every declared state (an inlet, a \code{0/} stream, an operation's
+fixed temperature) and, for a heat-capacity law, the reference temperature its
+enthalpy integral starts from.  A state outside a window is refused by the law,
+with a remedy naming the record's other laws whose window holds it --- ``pin it
+in \code{equilibrium \{ vaporPressure \{ pin (...); \} \}}'' (or the
+property's own block), ``or extend the law''.  It never switches to them.  A
+law the route never calls is never audited (a pure fluid on its own
+formulation does not consult the record's vapour-pressure laws).  The first
+form of this rule refused inside the searches, and each review round found a
+search it had missed (a slope probe within a millikelvin of a bound, a dew
+point and two column solvers that opened no trial frame); checking only what
+the run reports needs no knowledge of any search.
 
 \paragraph{The datum temperature must lie in a vapour-pressure law's window.}
 The elements datum carries a component between its natural phase and the
@@ -2936,8 +2942,10 @@ other at 298.15\,K through its vapour-pressure law: the latent heat and the
 saturation pressure there (\code{Component::datumBridge298}) enter every
 liquid or vapour enthalpy and entropy of the component.  A chosen
 vapour-pressure law whose \code{domain} excludes 298.15\,K would refuse all of
-them, so the package refuses it at ASSEMBLY, naming the law: widen the
-\code{domain} to include 298.15\,K, or pin a law of the record that covers it.  A heat-capacity law
+them, so when a run prices an enthalpy or an entropy through that bridge, the
+bridge refuses, naming the law: widen the \code{domain} to include 298.15\,K,
+or pin a law of the record that covers it.  A run that only asks the
+saturation pressure never crosses the bridge and is not refused for it.  A heat-capacity law
 with a hard window also refuses an integral $H(T,T_{\mathrm{ref}})$ or
 $S(T,T_{\mathrm{ref}})$ whose path from $T_{\mathrm{ref}}$ leaves the window
 (a \code{domain (300 400)} liquid law was integrated from 298.15\,K through

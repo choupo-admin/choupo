@@ -77,6 +77,7 @@ License
 #include <map>
 #include <set>
 #include <memory>
+#include <cstdint>
 #include <optional>
 #include <stdexcept>
 #include "thermo/vaporPressure/VaporPressureModel.H"
@@ -3009,8 +3010,8 @@ void checkLiquidDomain(const Component& c, const std::string& rkey,
     const int idx = blk->indexOf(L.law);
     if (idx < 0) return;
     const auto& law = blk->laws[std::size_t(idx)];
-    if (law.hasDomain && (T < law.domainLo || T > law.domainHi))
-        recordLaws::throwOutsideDomain(*blk, std::size_t(idx), T, words);
+    //  The HARD window is audited on the reported states (auditState), never
+    //  here, during an evaluation (C398, the fourth review round's ruling).
     //  THE SOFT WINDOW OF A TYPE THAT DOES NOT READ ONE (review row SB-04).
     //  Andrade's and Vogel's forms check nothing themselves, so a `Tmin`/`Tmax`
     //  written in their law was printed by the view as "announced outside"
@@ -3191,11 +3192,43 @@ std::vector<RecordLawPin> ThermoPackage::readRecordLawPins(const DictPtr& system
     return out;
 }
 
+std::string ThermoPackage::resolvedIdentity(const std::string& definition, const std::string& pairsBase) const
+{
+    std::string in = definition + "|" + pairsBase;
+    if (hasActivity())
+        for (const auto& e : activity().resolvedPairs())
+            in += "|pair " + e.i + "-" + e.j + ":" + e.status + ":" + e.source + ":" + e.provSource;
+    for (std::size_t i = 0; i < n(); ++i)
+    {
+        const Component& c = components_[i];
+        in += "|" + c.name() + "@" + c.recordHome();
+        for (const char* p : { "vaporPressure", "idealGasHeatCapacity", "liquidHeatCapacity", "solidHeatCapacity" })
+        {
+            const auto ch = c.lawChoice(p);
+            in += std::string(";") + p + "=" + ch.law + "/" + ch.type + "/" + ch.by;
+        }
+        for (const auto* t : { &liquidViscosityLaws_, &liquidConductivityLaws_, &surfaceTensionLaws_ })
+            if (i < t->size()) in += ";" + (*t)[i].law + "/" + (*t)[i].type + "/" + (*t)[i].by;
+        if (const auto it = pureFluid_.find(i); it != pureFluid_.end()) in += ";pure " + it->second->type();
+    }
+    std::uint64_t h = 1469598103934665603ULL;     // FNV-1a, as the definition's fingerprint
+    for (unsigned char ch : in) { h ^= ch; h *= 1099511628211ULL; }
+    char b[24];
+    std::snprintf(b, sizeof b, "%016llx", static_cast<unsigned long long>(h));
+    return b;
+}
+
 void ThermoPackage::traceSelf() const
 {
     if (!recordLaws::traceOn()) return;
     const std::string tag = identity_;
     auto emit = [&](const std::string& line) { recordLaws::traceCall(tag, line); };
+    //  The binary pairs the activity model holds (review CV-26).
+    if (hasActivity())
+        for (const auto& e : activity().resolvedPairs())
+            std::cerr << "[pair-call] #" << (tag.empty() ? std::string("?") : tag) << " pair " << e.i << "-"
+                      << e.j << ": " << e.status << (e.source.empty() ? std::string() : " (" + e.source + ")")
+                      << (e.provSource.empty() ? std::string() : ", provenance " + e.provSource) << "\n";
     auto orNone = [](const std::string& x, const char* none) { return x.empty() ? std::string(none) : x; };
     //  The activity model, where the formulation is one the view describes.
     if (hasActivity() && (formulation_ == "gammaPhi" || formulation_ == "gammaGamma"))
@@ -3253,26 +3286,38 @@ std::string ThermoPackage::henryLine(const std::string& solute, const std::strin
          + solvent + ".dat)";
 }
 
-void ThermoPackage::requireDatumTemperatureInVapourPressureWindows() const
+void ThermoPackage::auditState(scalar T, const sVector& z, const std::string& where, bool enthalpy) const
 {
+    if (!(T > 0.0)) return;
+    std::optional<std::size_t> pure;
+    if (!pureFluid_.empty() && !z.empty())
+        try { pure = pureFluidRoute(pureFluid_, components_, z); } catch (const std::exception&) {}
     for (std::size_t i = 0; i < n(); ++i)
     {
+        if (!z.empty() && !(i < z.size() && z[i] > 0.0)) continue;
+        if (pure && *pure == i) continue;
         const Component& c = components_[i];
-        const recordLaws::Block* b = c.recordLaws("vaporPressure");
-        if (!b || !c.hasVaporPressure()) continue;
-        const int k = b->indexOf(c.lawChoice("vaporPressure").law);
-        const recordLaws::Law& L = b->laws.at(std::size_t(k >= 0 ? k : (b->preferred >= 0 ? b->preferred : 0)));
-        if (!L.hasDomain || (298.15 >= L.domainLo && 298.15 <= L.domainHi)) continue;
-        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
-            "component '" + c.name() + "': its vapour-pressure law " + L.label() + " (" + L.type
-            + ") has the hard window " + std::to_string(L.domainLo) + "-" + std::to_string(L.domainHi)
-            + " K, which excludes 298.15 K -- the temperature at which the elements datum carries "
-            + c.name() + " between its natural phase and the other (its latent heat and the"
-              " saturation pressure there, Component::datumBridge298), so every liquid or"
-              " vapour enthalpy of it would be refused.  Widen the law's `domain` to include"
-              " 298.15 K, or pin a law of the record that covers it (" + recordLaws::pinPlace("vaporPressure")
-            + ").",
-            "widen the domain to 298.15 K, or pin a covering law");
+        c.auditLaws(T, where, enthalpy);
+        const std::pair<const std::vector<LiquidLaw>*, const char*> tables[] = {
+            { &liquidViscosityLaws_, "liquidViscosity" }, { &liquidConductivityLaws_, "liquidThermalConductivity" },
+            { &surfaceTensionLaws_, "surfaceTension" } };
+        const bool used[] = { i < liquidViscosityObj_.size() && liquidViscosityObj_[i] != nullptr,
+                              i < liquidConductivityObj_.size() && liquidConductivityObj_[i] != nullptr,
+                              i < surfaceTensionObj_.size() && surfaceTensionObj_[i] != nullptr };
+        for (int t = 0; t < 3; ++t)
+        {
+            if (!used[t] || i >= tables[t].first->size()) continue;
+            const LiquidLaw& L = (*tables[t].first)[i];
+            if (L.predictive || !L.absent.empty()) continue;
+            const recordLaws::Block* blk = c.recordLaws(tables[t].second);
+            if (!blk) continue;
+            const int idx = blk->indexOf(L.law);
+            if (idx < 0) continue;
+            const auto& law = blk->laws[std::size_t(idx)];
+            if (law.hasDomain && (T < law.domainLo || T > law.domainHi))
+                recordLaws::throwOutsideDomain(*blk, std::size_t(idx), T,
+                    std::string(tables[t].second) + " at " + where);
+        }
     }
 }
 
