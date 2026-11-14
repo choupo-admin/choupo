@@ -421,10 +421,12 @@ describe("one-flux-many-units: the lesson", () => {
     expect(EQ_RB_STEPS.some((s) => s.title.startsWith(lt.stepTitle))).toBe(true);
   });
 
-  it("names no commercial simulator, and says what it does not carry", () => {
+  //  No product is named on the page: that is check_doctrine's to hold, over
+  //  every tracked file, and this file does not carry a second copy of its list.
+  it("says what it does not carry", () => {
     const prose = [OFMU_TASK, OFMU_ENGINE_SCOPE, ...OFMU_STEPS.flatMap((s) => [s.body, s.note ?? ""]),
       ...OFMU_LIMITS.map((l) => l.body)].join("\n");
-    expect(prose).not.toMatch(/\b(aspen|hysys|dwsim|gproms|chemcad|prosim|unisim|promax|chemsep)\b/i);
+    expect(prose).toContain("computes none of the numbers on this page");
     expect(OFMU_LIMITS.map((l) => l.id)).toContain("not-engine");
     expect(OFMU_STEPS.find((s) => s.n === 6)!.note).toContain("do not print");
   });
