@@ -28752,6 +28752,329 @@ data: AIChE did not see the FRI trays, Chan--Fair and Syeda--Afacan--Chuang
 did, Rocha--Bravo--Fair and Delft saw neither this packing nor these runs.
 \end{keyidea}
 
+\subsection{The rate-based packed segment (\code{model rateBased;})}\label{sec:rateBasedSegment}
+
+Everything above in this section computes an \emph{efficiency} or an
+\emph{HETP} and applies it to equilibrium stages, or integrates one
+transfer-unit equation in which the vapour and the liquid are assumed to
+exchange the two components in equal and opposite molar amounts at one
+temperature.  \code{model rateBased;} drops those assumptions.  The bed is cut
+into $M$ segments, and in each the vapour and the liquid are two control
+volumes that meet at an interface: the compositions at the interface, the
+fluxes through it and the three temperatures are unknowns, and nothing says
+that the vapour leaving a segment is in equilibrium with the liquid leaving
+it.  The derivation below is written for this guide; where it rests on a
+published equation the equation is named.  The first slice (B1 of
+\code{docs/design/c329-ratebased-at-general-reflux.md}) is a \emph{binary}
+packed bed at \emph{total reflux}: the same column as
+Section~\ref{sec:packed-bed}, so that bed is its oracle.
+
+\paragraph{Symbols.}
+$k=0\ldots M-1$ numbers the segments from the top; each has height
+$\Delta z = H/M$ and the tower area $A_T$.  $y_k$, $x_k$ are the vapour
+leaving segment $k$ upward and the liquid leaving it downward; $y^I$, $x^I$
+the interface compositions; $T_V$, $T_L$, $T_I$ the bulk vapour, bulk liquid
+and interface temperatures; $V$, $L$ the molar flows; $W_i$ the rate at which
+component $i$ crosses the interface from the liquid to the vapour over the
+whole segment (kmol/s), $W_t=\sum_i W_i$.  An overbar is the mean of a
+segment's inlet and outlet ($\bar y = (y_k + y_{k+1})/2$, $\bar x =
+(x_{k-1}+x_k)/2$, likewise $\bar T_V$, $\bar T_L$).  $c_G=\rho_G/M_G$, $c_L=\rho_L/M_L$ are
+the molar densities, $k_G$, $k_L$ the film mass-transfer coefficients and $a_e$
+the effective area of the packing model (Rocha--Bravo--Fair, Section~\ref{sec:packing-rbf},
+or Delft, Section~\ref{sec:packing-delft}), $h_G$, $h_L$ the film
+heat-transfer coefficients, $H_i^V$, $H_i^L$ the partial molar enthalpies.
+The code divides every flow by a reference boil-up $V_{\mathrm{ref}}$; the
+equations are written here in flows.
+
+\paragraph{The equations of one segment, as implemented.}
+With $\beta_V = c_G k_G a_e A_T\Delta z$, $\beta_L = c_L k_L a_e A_T\Delta z$,
+$\gamma_V = h_G a_e A_T\Delta z$, $\gamma_L = h_L a_e A_T\Delta z$:
+\begin{align}
+&V_k y_{k,i} - V_{k+1} y_{k+1,i} - W_i = 0, \qquad
+ L_k x_{k,i} - L_{k-1} x_{k-1,i} + W_i = 0 && (2n)\label{eq:rb-bulk}\\
+&\textstyle\sum_i y_{k,i} = 1,\qquad \sum_i x_{k,i} = 1 && (2)\nonumber\\
+&y^I_i = K_i(T_I, P, x^I, y^I)\,x^I_i && (n)\label{eq:rb-eq}\\
+&\textstyle\sum_i y^I_i = 1,\qquad \sum_i x^I_i = 1 && (2)\nonumber\\
+&W_1 = \beta_V\,(y^I_1 - \bar y_1) + \tfrac12(y^I_1+\bar y_1)\,W_t && (n-1)\label{eq:rb-film-v}\\
+&W_1 = \beta_L\,(\bar x_1 - x^I_1) + \tfrac12(x^I_1+\bar x_1)\,W_t && (n-1)\label{eq:rb-film-l}\\
+&V_k h_V(y_k,T_{V,k}) - V_{k+1} h_V(y_{k+1},T_{V,k+1}) - E_V = 0 && (1)\label{eq:rb-ev}\\
+&L_k h_L(x_k,T_{L,k}) - L_{k-1} h_L(x_{k-1},T_{L,k-1}) + E_L = 0 && (1)\label{eq:rb-el}\\
+&E_V - E_L = 0 && (1)\label{eq:rb-ei}
+\end{align}
+with the energy carried across the interface
+\begin{equation}
+E_V = \gamma_V\,(T_I - \bar T_V) + \textstyle\sum_i W_i H_i^V(T_I),\qquad
+E_L = \gamma_L\,(\bar T_L - T_I) + \textstyle\sum_i W_i H_i^L(T_I).
+\label{eq:rb-energyflux}
+\end{equation}
+\textbf{Count.}  Unknowns per segment: $y,x,y^I,x^I,W$ ($5n$), $T_V,T_L,T_I$
+(3), $V,L$ (2): $5n+5$, fifteen for a binary.  Equations:
+$2n+2+n+2+2(n-1)+3 = 5n+5$.  The design record's table (its section~4.1)
+writes the same count.
+
+\paragraph{The film equations.}
+In a binary the Maxwell--Stefan relation reduces to Fick's law with one
+diffusivity, and the molar flux of component~1 through a film is its
+diffusive flux plus its share of the total: $N_1 = J_1 + y_1 N_t$.  The
+diffusive part is written with the low-flux coefficient the packing model
+gives, $J_1 = c\,k\,\Delta y_1$, and the convective part with the film-average
+composition; multiplied by $a_e A_T\Delta z$ these are
+Eqs.~\eqref{eq:rb-film-v}--\eqref{eq:rb-film-l}.  No high-flux correction is
+applied; the run prints the largest rate factor $|W_t|/\beta_V$ so a reader
+sees how far from the low-flux regime the bed is (on the xylene beds below:
+$7\times10^{-4}$).  Only $n-1$ film equations per phase are independent,
+because the $n$ diffusive fluxes sum to zero.
+
+\paragraph{The bootstrap.}
+For a binary the two film equations fix the light-key flux \emph{given}
+$W_t$; they do not fix $W_t$.  Subtracting Eq.~\eqref{eq:rb-el} from
+Eq.~\eqref{eq:rb-ev} is not what does it either; the \emph{interface} balance
+\eqref{eq:rb-ei} is.  For an ideal-gas vapour and an ideal-solution liquid,
+whose partial molar enthalpies are the pure components', it reads
+\begin{equation}
+\textstyle\sum_i W_i\,\Delta h_{\mathrm{vap},i}(T_I)
+ = \gamma_L(\bar T_L - T_I) - \gamma_V(T_I - \bar T_V),
+\label{eq:rb-bootstrap}
+\end{equation}
+the latent heat carried across the interface equals the net heat conducted
+to it.  With equal latent heats and no heat flow it gives $W_1=-W_2$,
+equimolar counter-diffusion; with unequal latent heats it gives
+$W_2/W_1 = -\Delta h_{\mathrm{vap},1}/\Delta h_{\mathrm{vap},2}$ corrected by the
+conducted heat.  Without Eq.~\eqref{eq:rb-ei} a binary segment has one
+unknown more than it has equations: the interface energy balance is part of
+the model, not a refinement of it.  (The design record states this as a
+textbook statement, \emph{unchecked}; the count above is the check.)
+
+\paragraph{The film heat-transfer coefficients, by analogy on the same films.}
+The vapour coefficient of both packing models is a Sherwood correlation
+$Sh \propto Re^{a}Sc^{1/3}$ (Rocha--Bravo--Fair 1996 \cite{RochaBravoFair1996},
+Eq.~(5); Delft, Fair et al.\ \cite{Fair2000Delft}, Table~4).  The same
+correlation for heat, $Nu\propto Re^aPr^{1/3}$, divided by it gives
+$h_G = k_G(\rho c_p)_G(\alpha_G/D_G)^{2/3}$, the Chilton--Colburn form.  The
+liquid coefficient is penetration theory, $k_L = 2\sqrt{D_L/(\pi t)}$
+(Rocha--Bravo--Fair 1996, Eq.~(9), with $t$ the contact time); the same
+contact time for heat gives $h_L/(\rho c_p)_L = 2\sqrt{\alpha_L/(\pi t)}$, so
+$h_L = k_L(\rho c_p)_L(\alpha_L/D_L)^{1/2}$.  $c_p$ is the slope of each
+phase's enthalpy, $\alpha = \lambda/(\rho c_p)$ with the package's
+conductivities.  These are derivations from the correlations' own forms, not
+new correlations; no heat-transfer measurement in a packed bed was read for
+them.
+
+\paragraph{The liquid diffusivity.}
+The package gives liquid diffusivities at infinite dilution only; the film
+needs the Fick diffusivity at the liquid's composition, $D = D_{MS}\,\Gamma$
+with $\Gamma$ the thermodynamic factor.  The model takes $D_{MS}$ as the two
+infinite-dilution Wilke--Chang values combined linearly in mole fraction (the
+transfer-unit bed's rule, so the limit below compares like with like; the run
+prints how far Vignes's logarithmic rule would differ: at most
+$2.2\times10^{-5}$ relative on the xylene beds) and $\Gamma$ as $1$: exact for
+an ideal solution, an \emph{effective-diffusivity} film otherwise.  That is the
+house's film model for the liquid (DEV.md~4c C329, decision~(2) amended): the
+thermodynamic factor is a second derivative of the excess Gibbs energy that an
+activity model fitted to phase equilibria does not pin, under film coefficients
+known to tens of per cent.  A non-ideal liquid therefore RUNS, and the run says
+what it assumed and how much it can matter.  Both packing models give
+$k_L\propto D_L^{1/2}$, so a liquid diffusivity wrong by a factor $\Gamma$
+multiplies $H_L$ by $\Gamma^{-1/2}$ and moves $H_{OG}$ by
+$s_L(\Gamma^{-1/2}-1)$, where
+\begin{equation}
+s_L = \frac{\lambda H_L}{H_G + \lambda H_L}
+\label{eq:rb-liquidshare}
+\end{equation}
+is the liquid film's share of the overall resistance.  The run prints and
+publishes $s_L$ along the bed (minimum, mean, maximum, and a profile column)
+and the move $\Gamma=0.5$ would make: where $s_L$ is small the assumption
+cannot matter much; where it is large the result leans on it.
+
+\paragraph{The ends.}
+The reboiler is an equilibrium stage: its liquid composition is declared (the
+two numbers that close a column at total reflux,
+Section~\ref{sec:total-reflux}), its vapour is $y^*(x_N)$ at the bubble point
+at the bed's bottom pressure, its molar rate the declared F-factor on the
+tower area.  The condenser is total; the reflux is the top vapour returned at
+its bubble point at the declared top pressure, $L_{-1}=V_0$,
+$x_{-1}=y_0$.  The reboiler's own material balance is written by \emph{no}
+row: the segment rows imply it (sum Eq.~\eqref{eq:rb-bulk} over the bed), so
+the run measures it as a conservation check (round-off on the cases below).
+
+\paragraph{Plug flow, discretised.}
+Driving each film by the mean of a segment's inlet and outlet is the box
+(implicit-midpoint) scheme for plug flow of both phases: second order in
+$\Delta z$, and as $M\to\infty$ the segments become the differential bed.
+Each run solves the bed twice, on $M/2$ and on $M$ segments, prints both
+HETPs and estimates the error of the finer one as
+$|\mathrm{HETP}_M-\mathrm{HETP}_{M/2}|/3$ (Richardson, second order); above
+$1\,\%$ the run is refused with the segment count that would pass.  Fewer than
+10 segments are refused outright.
+
+\paragraph{What is held fixed inside the Newton.}
+$\beta$, $\gamma$ and the pressure profile depend on the loads and the
+compositions.  They are evaluated on a converged profile and held fixed in the
+next Newton; the loop stops when none moves by more than $10^{-10}$ relative,
+and the count is printed.  The pressure falls up the bed by the packing
+model's own drop, built down from the declared top pressure (the transfer-unit
+bed finds the same profile by bisection).
+
+\paragraph{Structure.}
+Every row of segment $k$ reads segments $k-1$, $k$ and $k+1$ only, so the
+Jacobian is block-tridiagonal with blocks of $5n+5$.  The structure is
+declared to the Newton, which then builds a coloured finite-difference
+Jacobian (about $3(5n+5)$ residual evaluations per iteration, whatever $M$)
+and solves by block-Thomas; the declaration is \emph{audited} on the first
+iteration against the dense Jacobian (when that has at most 3000 unknowns)
+and the largest off-band entry is printed: $0$ exactly on every case below.
+
+\paragraph{The limit, and its proof.}
+\code{limit transferUnits;} replaces three groups of rows and keeps every
+other: the interface equilibrium is linearised over the segment about the
+bulk liquid, $y^I_1 = y^*_1(\bar x) + m\,(x^I_1-\bar x_1)$ with $m$ the slope of
+the equilibrium line at $\bar x$ (and $T_I$ the bubble point of $x^I$);
+Eq.~\eqref{eq:rb-ei} is replaced by $W_t=0$; Eqs.~\eqref{eq:rb-ev}--\eqref{eq:rb-el}
+by $T_V$, $T_L$ at the bubble points of $y_k$ and $x_k$.  Then with $W_t=0$
+the two film equations give $\bar y_1 - y^I_1 = -W_1/\beta_V$ and $\bar x_1 -
+x^I_1 = W_1/\beta_L$; substituting into the linearised equilibrium,
+\begin{equation}
+W_1 = \frac{y_1^*(\bar x) - \bar y_1}{1/\beta_V + m/\beta_L}.
+\end{equation}
+$W_t=0$ makes $V$ constant, and at total reflux the cut balance makes $V=L$ and
+$y = x$ on every face (Eq.~\eqref{eq:total-reflux-cut}).  With
+$\beta_V = (V/H_G)\Delta z$ and $\beta_L = (L/H_L)\Delta z$ (because
+$H_G = u_{Gs}/(k_Ga_e) = V/(A_Tc_Gk_Ga_e)$, and likewise $H_L$), the vapour
+balance becomes
+\begin{equation}
+\frac{y_{k,1}-y_{k+1,1}}{\Delta z}
+ = \frac{y_1^*(\bar x)-\bar y_1}{H_G + \lambda H_L},\qquad \lambda = m\,V/L,
+\end{equation}
+the box-scheme discretisation of Eq.~\eqref{eq:packed-bed}: in the limit the
+rate model \emph{is} the transfer-unit bed, and the two codes differ only by
+their discretisations (the oracle's explicit midpoint rule, this model's box
+scheme).  \emph{Stated before the first run}: for the linear problem
+$\mathrm{d}y/\mathrm{d}z=-y/H$ the two schemes' transfer units per segment
+are $r - r^3/6$ and $r + r^3/12$ with $r=\Delta z/H_{OG}$, so their HETPs may
+differ by $r^2/4$; the tolerance taken was twice that, $r_{\max}^2/2$
+($1.1\,\%$ on \code{packing01} at 100 segments).  Measured (HETP at the
+cases' F-factor 1.5, both models on the same segment count):
+\begin{center}
+\begin{tabular}{lrrr}
+\hline
+case & 100 segments & 200 & 400 \\
+\hline
+\code{packing01} (RBF, 0.10 bar) & $-0.0040\,\%$ & $-0.0010\,\%$ & $-0.00025\,\%$\\
+\code{packing02} (RBF, 0.02 bar) & $-0.0161\,\%$ & $-0.0040\,\%$ & $-0.00099\,\%$\\
+\code{packing03} (Delft, 0.10 bar) & $-0.0025\,\%$ & $-0.0006\,\%$ & $-0.00017\,\%$\\
+\code{packing04} (Delft, 0.02 bar) & $-0.0075\,\%$ & $-0.0019\,\%$ & $-0.00048\,\%$\\
+\hline
+\end{tabular}
+\end{center}
+The difference falls by four for every doubling, as two second-order schemes
+of one equation must, and it is far inside the stated tolerance.  Why so far
+inside, found \emph{after} the run: at total reflux $y^*$ moves with $y$, so the
+rate that matters is not $1/H_{OG}$ but $(\lambda-1)/H_{OG}$, a fifth of it on
+these beds ($\lambda\approx1.2$), and the error scales with its square.  The
+tolerance was not changed after the run.
+
+\paragraph{The partial molar enthalpies.}
+Each flux carries the pure vapour's enthalpy across the interface, which is
+exact for an ideal-gas vapour, the only vapour this slice accepts (a vapour on
+an equation of state is refused: its partial molar enthalpies are not the pure
+components').  The liquid side uses the liquid's partial molar enthalpies: the
+pure liquids' for an ideal solution, otherwise read off the mixture's own
+enthalpy, which carries the activity model's excess enthalpy, $\bar H_1 = h +
+x_2\,\mathrm{d}h/\mathrm{d}x_1$, $\bar H_2 = h - x_1\,\mathrm{d}h/\mathrm{d}x_1$.
+
+\paragraph{The risks the run names.}
+Every approximation is announced with what it can move.  \emph{Plug flow}:
+axial mixing and liquid maldistribution are not modelled; where a real bed has
+them its HETP is larger, and nothing here measures by how much.
+\emph{The thermodynamic factor}: $\Gamma=1$, with its effect bounded through
+$s_L$ (Eq.~\eqref{eq:rb-liquidshare}).  \emph{The ideal-gas vapour}: at higher
+pressure the vapour's own departure enters the interface energy balance and
+with it the split of the two fluxes.  \emph{The heat/mass analogy}: no
+heat-transfer measurement in a packed bed checks it; the interface temperature
+and the departure from equimolar transfer rest on it, the composition profile
+much less.
+
+\paragraph{What the rate model says that the transfer-unit bed cannot.}
+The four Schulz beds of Section~\ref{sec:packing-schulz} as
+\code{ratebased01}--\code{04}, at the declared F-factor 1.5 and 100 segments
+(the numbers of this paragraph; the cases' golden rows are the middle point of
+their F-factor sweeps, 1.6 for \code{01}/\code{02} and 1.8 for
+\code{03}/\code{04}, as for \code{packing01}--\code{04}):
+\begin{center}
+\begin{tabular}{lrrrrrr}
+\hline
+case & HETP vs TU & $-N_{oX}/N_{pX}$ & $\max|T_I-T_V|$ & $\max|T_L-T_I|$ & $V_{top}/V_{bot}$ & $s_L$ mean \\
+\hline
+\code{ratebased01} (RBF, 0.10 bar) & $+0.19\,\%$ & 0.974--1.009 & 0.40 K & 0.013 K & 1.0095 & 0.17 \\
+\code{ratebased02} (RBF, 0.02 bar) & $+0.17\,\%$ & 0.987--1.007 & 0.57 K & 0.012 K & 1.0074 & 0.14 \\
+\code{ratebased03} (Delft, 0.10 bar) & $+0.07\,\%$ & 0.971--0.996 & 0.41 K & 0.005 K & 1.0092 & 0.07 \\
+\code{ratebased04} (Delft, 0.02 bar) & $+0.03\,\%$ & 0.978--0.999 & 0.53 K & 0.005 K & 1.0090 & 0.07 \\
+\hline
+\end{tabular}
+\end{center}
+The rising vapour is superheated over the interface by a few tenths of a
+kelvin (it comes from hotter sections and the vapour film resists heat); the
+liquid sits within hundredths of a kelvin of it.  The two fluxes are not
+equimolar: $p$-xylene's latent heat is the smaller, so slightly more of it
+evaporates than $o$-xylene condenses, and the vapour flow grows by about
+$0.9\,\%$ up the bed.  The HETP moves by under $0.2\,\%$: two isomers with
+nearly equal latent heats are the system where the two models \emph{should}
+agree, and they do.  This is a measurement of the model, not a claim that it is
+closer to the experiment.  The reboiler's material balance, written by no row,
+closes to $10^{-16}$ of the boil-up, and the column's first law is published
+\emph{verified}: the reboiler's own envelope meets $-Q_{\mathrm{condenser}}$ to
+$2\times10^{-13}$~kW, because every segment's three energy rows are solved
+(dropping the interface row leaves a $3.8$~kW gap on \code{ratebased01}; the
+gate's self-test sabotages exactly that).  In the limit mode the closure is
+published \emph{not verified}, because no energy row is solved there.
+
+\paragraph{Against the measurement.}
+Schulz et al.'s HETP read off their Fig.~2b (the first delivery's digitisation,
+nothing re-read), against the bed-mean F-factor, both models swept over the
+reboiler F-factor in steps of 0.05 and interpolated; nothing fitted, the same
+inputs as Section~\ref{sec:packing-schulz}:
+\begin{center}
+\begin{tabular}{llrrrr}
+\hline
+correlation & $P$ & points & TU bed, mean (max) & rate-based, mean (max) & rate vs TU \\
+\hline
+RBF & 0.10 bar & 9 & $-14.4\,\%$ ($21.0$) & $-14.4\,\%$ ($21.0$) & $-0.01$ to $+0.01\,\%$ \\
+RBF & 0.02 bar & 7 & $-23.4\,\%$ ($36.3$) & $-23.3\,\%$ ($36.3$) & $-0.01$ to $+0.10\,\%$ \\
+Delft & 0.10 bar & 10 & $-4.1\,\%$ ($27.6$) & $-4.2\,\%$ ($27.7$) & $-0.06$ to $-0.05\,\%$ \\
+Delft & 0.02 bar & 8 & $-8.0\,\%$ ($59.9$) & $-8.0\,\%$ ($59.9$) & $-0.07$ to $+0.05\,\%$ \\
+\hline
+\end{tabular}
+\end{center}
+The rate-based bed carries the transfer-unit bed's errors against the
+measurement, a hundredth to a tenth of a per cent apart, and its mean signed
+error differs from the transfer-unit bed's by at most 0.1 point: it is no closer
+to the measurement and no further.  What decides the comparison is the
+correlation, not the stage model.  Both stop at the same hydraulic limit (a
+bed-mean drop of 1025~Pa/m; for Delft the rate model applies the transfer-unit
+bed's limit, since the Delft model has none of its own).
+
+\paragraph{Independence of the segment count.}
+HETP at 100 / 200 / 400 segments (F-factor 1.5): \code{ratebased01} 0.1555825 /
+0.1555858 / 0.1555867 m, \code{02} 0.1258600 / 0.1258674 / 0.1258693,
+\code{03} 0.1747507 / 0.1747535 / 0.1747541, \code{04} 0.1543626 / 0.1543677 /
+0.1543690: at most $0.0074\,\%$ between 100 and 400, and the engine's own
+estimate at 100 ($|\mathrm{HETP}_{100}-\mathrm{HETP}_{50}|/3$, 0.0021 to
+$0.0079\,\%$) agrees with it.  The reflux composition moves by at most
+$1.4\times10^{-5}$.  100 segments, the transfer-unit bed's own count, is the
+default.
+
+\paragraph{Validity window.}
+A binary; an ideal-gas vapour; a liquid on an activity model, with the
+thermodynamic factor taken as one (announced, with $s_L$); a corrugated
+structured packing with one of the two correlations; total reflux; the
+low-flux film coefficients (rate factor printed, below $10^{-3}$ on these
+beds).  The flow model is plug flow in both phases, the only one in this slice,
+and the films are algebraic.  Everything outside is refused by name with the
+slice that will lift it: three or more components (B4a, the
+effective-diffusivity film), trays (B2), a feed or a reflux ratio (B3), and a
+vapour on an equation of state (this slice).  Gate:
+\code{check\_ratebased\_segment}.
+
 \section{Multi-stream heat exchanger (MHeatX): a checker, not a
 solver}\label{ch:mheatx}
 

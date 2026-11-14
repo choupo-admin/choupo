@@ -1,0 +1,104 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  ratebased02_schulz_0p02bar  --  the SAME packed bed as packing02_schulz_0p02bar, solved
+  as RATE-BASED (non-equilibrium) segments: `model rateBased;` (DEV.md 4c
+  C329 part 2, slice B1).
+
+  WHAT THIS CASE IS.  Schulz et al.'s FRI bed (Montz-Pak A3-500M, 1.22 m,
+  2.2 m of packing, p-/o-xylene at total reflux, 0.02 bar at the top; Chem.
+  Eng. Trans. 69 (2018) 763) with every input of packing02_schulz_0p02bar
+  unchanged: geometry, top pressure, reboiler liquid, F-factor sweep, liquid
+  viscosity.  What changes is the column model.  The transfer-unit bed
+  integrates dy/dz = (y* - y)/H_OG with the vapour and the liquid
+  exchanging equal and opposite moles at one temperature; here each of 100
+  segments carries the bulk vapour and liquid, the interface compositions,
+  the two fluxes and three temperatures (vapour, liquid, interface), and
+  the two fluxes are set by the two films AND the interface energy balance.
+  Equations, count, derivation: Theory Guide, section "The rate-based packed
+  segment" (sec:rateBasedSegment); code RateBasedSegment.{H,cpp}.
+
+  THE CORRELATION: Rocha, Bravo & Fair (IECR 32 (1993) 641, hydraulics;
+  35 (1996) 1660, mass transfer, gauze area Eq 14) -- the film coefficients
+  k_G, k_L and the effective area a_e, as in packing02_schulz_0p02bar.
+
+  WHAT IT SHOWS THAT THE TRANSFER-UNIT BED CANNOT: the interface temperature
+  between the two bulk temperatures along the bed (the rising vapour is
+  superheated over the interface by a few tenths of a kelvin), the ratio of
+  the two fluxes (not -1: the two xylenes' latent heats differ), the vapour
+  flow changing up the bed, and the liquid film's share of the resistance.
+  On the HETP the difference from packing02_schulz_0p02bar is a few tenths
+  of a per cent at most: two isomers with nearly equal latent heats are the
+  system where the two models SHOULD agree.  That is a measurement of the
+  model, not a claim that it is closer to the experiment.
+
+  AGAINST THE MEASUREMENT: the comparison with Schulz Fig. 2b (digitised in
+  docs/design/c329-ratebased-first-delivery.md, sections 11-12) is tabulated
+  in the Theory Guide beside the transfer-unit bed's; the rate model is
+  within a fraction of a per cent of the transfer-unit bed at every point,
+  so it carries the same errors against the measurement.
+
+  INPUTS: as packing02_schulz_0p02bar (its header lists which are measured,
+    estimated and assumed; the corrugation geometry is ESTIMATED there).
+  ADDED for the film heat-transfer coefficients: the thermal conductivity of
+    both phases (constant/thermoPhysPropDict), estimated by Eucken (vapour)
+    and Sato-Riedel (liquid); the coefficients follow from the packing
+    model's own k_G and k_L by the heat/mass-transfer analogy.
+  FITTED: nothing.
+  WHAT IT DOES NOT CLAIM: that the rate model predicts the measured HETP
+    better (it does not: see the table); that the heat-transfer analogy was
+    checked against a measurement (none in the tree); anything about axial
+    mixing or maldistribution (plug flow in both phases, stated in the run).
+
+  THE SWEEP moves the boil-up F-factor exactly as packing02_schulz_0p02bar does.
+  The KPI rows of `expected` are those of the sweep point the driver
+  publishes, the converged point nearest the middle of the range: fFactor
+  1.6 (the declared 1.5 is what the case runs without its outerDict).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       rateBased;
+
+        operation
+        {
+            P              0.02 bar;      // TOP pressure
+            condenser      { type total; }
+
+            totalReflux
+            {
+                fFactor        1.5;      // swept; (m/s)(kg/m3)^0.5, reboiler vapour on the tower area
+                specifiedAt    reboiler;
+                composition
+                {
+                    pXylene    0.17;
+                    oXylene    0.83;
+                }
+            }
+
+            packing
+            {
+                model             RochaBravoFair;
+                diameter          1.22 m;      // Schulz section 2
+                height            2.2 m;       // Schulz section 2
+                specificArea      478;         // m2/m3, installed (Schulz section 2)
+                voidFraction      0.92;        // Schulz section 2 ("around 0.92")
+                corrugationAngle  60;          // deg from the horizontal (Schulz section 2)
+                corrugationSide   0.009 m;     // ESTIMATED: Sulzer BX (RBF 1993 Table IV)
+                surface           gauze;       // RBF 1996 Eq 14
+                lightKey          pXylene;
+                liquidViscosity   5.39e-4;       // Pa s, Schulz Table 1
+                segments          100;
+            }
+        }
+    }
+);

@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Sweep the F-factor -- the abscissa of Schulz Fig. 2 -- and read the HETP and
+  the pressure drop per metre.
+\*---------------------------------------------------------------------------*/
+
+type        sweep;
+
+parameter
+{
+    target    units[0].operation.totalReflux.fFactor;
+    range     ( 0.4  3.2 );
+    nPoints   15;
+}
+
+responses
+(
+    column.HETP
+    column.dP_bed_mbar_per_m
+    column.fFactor_bedTop
+    column.fFactor_bedBottom
+    column.uL_mean_m3_m2h
+    column.dP_over_dPflood_max
+    column.aeOverAp_mean
+);
+
+report
+{
+    format    csv;
+    file      sweep_fFactor.csv;
+}

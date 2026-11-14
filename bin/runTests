@@ -4093,6 +4093,22 @@ PYEOF
     fi
     rm -f /tmp/kinmesh.$$
 
+    # rate-based segment gate (2026-11-14, DEV.md 4c C329 part 2, slice B1).
+    # `model rateBased;` reduces to the transfer-unit bed in its declared
+    # limit (packing01-04, to r_max^2/2), audits its block-tridiagonal
+    # structure, closes the reboiler's material balance and its first law
+    # (verified, not an identity), is independent of its segment count, and
+    # refuses by name what slice B1 is not.
+    if gate_exec "$ROOT/bin/curate/check_ratebased_segment.py" > /tmp/ratebased.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "ratebased-segment-gate" "$(gate_claim check_ratebased_segment /tmp/ratebased.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_ratebased_segment.py)\n" "ratebased-segment-gate"
+        cat /tmp/ratebased.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/ratebased.$$
+
     # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
     # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
     # engine solves the pellet BVP by central differences on NewtonND and

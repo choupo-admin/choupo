@@ -458,7 +458,21 @@ SOURCE_SABOTAGES = [
         "why": "silences the announcement of a species datum that is not a "
                "measurement.  The witness consumes an estimated hfAq, so arm "
                "(a) must see the missing line and the missing advisory.",
-    },]
+    },    {
+        "gate": "check_ratebased_segment.py",
+        "kind": "source/interface-energy-dropped",
+        "file": "src/unitOperations/distillation/RateBasedSegment.cpp",
+        "find": "                R[r++] = (eV - eL) / lamRef;",
+        "replace": "                R[r++] = wt;   /* SELFTEST */",
+        "why": "C329 B1: the interface energy balance is what fixes the two "
+               "fluxes of a binary (the bootstrap) and what makes the bed's "
+               "first law a CHECK and not an identity.  Replaced by equimolar "
+               "counter-diffusion the rate model still converges, but e_V and "
+               "e_L part, and the reboiler's own envelope no longer meets "
+               "-Q_condenser: arm (2) must see the closure published "
+               "notVerified (measured by hand: a 3.85 kW gap on ratebased01).",
+    },
+]
 
 
 def platform_dir():

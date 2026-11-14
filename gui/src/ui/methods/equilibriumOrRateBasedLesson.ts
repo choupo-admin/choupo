@@ -65,9 +65,11 @@ export const EQ_RB_ENGINE_SCOPE = "Choupo has the first way and not the second. 
   + "(DistillationColumn.cpp:1729); the simultaneous MESH method refuses one rather "
   + "than solve ideal stages in its place (DistillationColumn.cpp:2397).  A binary "
   + "column at total reflux can compute its tray efficiency from the tray's geometry "
-  + "(DistillationColumn.cpp:5059, binary only).  There is no rate-based column: a "
-  + "rate-based mode is planned and not built, so everything this page says about "
-  + "rate-based models comes from the papers it cites.";
+  + "(DistillationColumn.cpp:5059, binary only).  The one rate-based column is a "
+  + "binary packed bed at total reflux (`model rateBased;`, RateBasedSegment.cpp): no "
+  + "trays, no feed, no third component.  So everything this page says about "
+  + "rate-based models of tray columns, of columns with a feed and of mixtures of "
+  + "three or more components comes from the papers it cites.";
 
 export const EQ_RB_STEPS: readonly LessonStep[] = [
   {
@@ -151,7 +153,8 @@ export const EQ_RB_STEPS: readonly LessonStep[] = [
     n: 4,
     title: "What the engine cannot show, and what a rate-based model found on real columns",
     body: "The engine cannot give two components of one mixture different efficiencies, "
-      + "and it has no rate-based column, so the cases where one efficiency is not "
+      + "and its one rate-based column is a binary packed bed at total reflux, so the "
+      + "cases where one efficiency is not "
       + "enough are taken from published work: four papers read for this page, and four "
       + "read by the project's coordinating session and not opened for this page (the "
       + "Pelkonen card below, and three papers behind rows of the decision table and of "
@@ -372,10 +375,12 @@ export const EQ_RB_COSTS: readonly { text: string; origin: string }[] = [
 export const EQ_RB_LIMITS: readonly LessonLimit[] = [
   {
     id: "no-rate-based",
-    title: "No rate-based model in the engine.",
-    body: "Everything this page says a rate-based model does is taken from the papers "
-      + "it cites.  The engine cannot show two components of one mixture with "
-      + "different efficiencies, nor a reaction in the liquid film.",
+    title: "One narrow rate-based model in the engine.",
+    body: "The engine's rate-based column is a binary packed bed at total reflux.  "
+      + "Everything this page says a rate-based model does on trays, with a feed or with "
+      + "three or more components is taken from the papers it cites.  The engine cannot "
+      + "show two components of one mixture with different efficiencies, nor a reaction "
+      + "in the liquid film.",
   },
   {
     id: "easy-column",

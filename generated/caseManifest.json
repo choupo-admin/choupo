@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1853,
+  "cases": 1857,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -25437,6 +25437,78 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/steady/distillation/ratebased01_schulz_0p10bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "RochaBravoFair",
+    "rateBased"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/ratebased02_schulz_0p02bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "RochaBravoFair",
+    "rateBased"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "Delft",
+    "rateBased"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "Delft",
+    "rateBased"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/steady/distillation/shortcut01_benzene_toluene": {
    "application": "choupoSolve",
    "unitTypes": [
@@ -31420,6 +31492,10 @@
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/ratebased01_schulz_0p10bar",
+    "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
+    "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
+    "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
@@ -31955,6 +32031,10 @@
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/ratebased01_schulz_0p10bar",
+    "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
+    "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
+    "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar",
     "tutorials/steady/distillation/stripper01_sour_water",
     "tutorials/steady/distillation/stripper02_sour_water_h2s",
     "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
@@ -34875,6 +34955,10 @@
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/ratebased01_schulz_0p10bar",
+    "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
+    "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
+    "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar",
     "tutorials/steady/distillation/shortcut01_benzene_toluene",
     "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
     "tutorials/steady/distillation/trayEfficiency01_yanagi14",

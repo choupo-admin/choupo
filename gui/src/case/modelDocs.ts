@@ -433,6 +433,7 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   // "<unit type>.<dict path>:<token>", the path as the case writes it
   // (`model` is the unit-level slot; the rest sit under `operation`).
   "distillationColumn.model:totalReflux":                          { guide: "theory", dest: "sec:total-reflux" },
+  "distillationColumn.model:rateBased":                            { guide: "theory", dest: "sec:rateBasedSegment" },
   "distillationColumn.operation.efficiency.model:AIChE":           { guide: "theory", dest: "sec:eff-aiche" },
   "distillationColumn.operation.efficiency.model:ChanFair":        { guide: "theory", dest: "sec:eff-chanfair" },
   "distillationColumn.operation.efficiency.model:SyedaChuang":     { guide: "theory", dest: "sec:eff-syeda" },
@@ -441,6 +442,7 @@ const SLOT_MODEL_DEST: Record<string, ModelDest> = {
   "distillationColumn.operation.packing.model:RochaBravoFair":     { guide: "theory", dest: "sec:packing-rbf" },
   "distillationColumn.operation.packing.model:Delft":              { guide: "theory", dest: "sec:packing-delft" },
   "column.model:totalReflux":                                      { guide: "theory", dest: "sec:total-reflux" },
+  "column.model:rateBased":                                        { guide: "theory", dest: "sec:rateBasedSegment" },
   "column.operation.efficiency.model:AIChE":                       { guide: "theory", dest: "sec:eff-aiche" },
   "column.operation.efficiency.model:ChanFair":                    { guide: "theory", dest: "sec:eff-chanfair" },
   "column.operation.efficiency.model:SyedaChuang":                 { guide: "theory", dest: "sec:eff-syeda" },
