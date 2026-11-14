@@ -124,7 +124,7 @@ void ReferenceFluid::read(const std::string& equation)
                 + c.table + ", " + c.label + ": published " + g9(c.published, 12)
                 + ", computed " + g9(c.computed, 12) + " (" + std::to_string(c.digits)
                 + " significant digits printed; tolerance " + g9(c.tolerance, 3)
-                + (c.conditioning > 1.0 ? ", the half digit times the row's conditioning "
+                + (c.conditioning > 2.0 ? ", half the digit times the row's conditioning "
                                           + g9(c.conditioning, 4) : std::string())
                 + ").  A coefficient is mistranscribed "
                   "or a term is wrong; fix it, do not loosen the comparison.");
@@ -514,22 +514,24 @@ namespace {
 //  number's last digit -- the record states the factor as `printedScale`,
 //  so pub/scale is the number on the page.
 //
-//  EACH ROW CARRIES ITS OWN TOLERANCE (C378 pilot review, PC-03).  A check
-//  states agreement with the publication's digits in a variable where that
-//  agreement is meaningful.  Half a unit in the last printed digit is the
-//  right tolerance for a WELL-CONDITIONED row (kappa = 1: a value computed
-//  directly from the Helmholtz derivatives).  A row whose computation
-//  AMPLIFIES a last-bit change is judged on that half digit times its
-//  conditioning `kappa`, with a floor of two units of the last printed
-//  digit: the pressure of a LIQUID at a given density is the small
+//  EACH ROW CARRIES ITS OWN TOLERANCE (C378 pilot review, PC-03 and PC-17).
+//  A check states agreement with the publication's digits in a variable
+//  where that agreement is meaningful.  The published value is itself
+//  ROUNDED to its last printed digit, so agreement with it is ONE UNIT of
+//  that digit, not half: judged on the half unit, two water rows (p at 500 K
+//  and 1084.564 kg/m3, and the saturated vapour density at 275 K) passed
+//  with margins of 7e-12 relative, a few machine epsilons.  So every row's
+//  tolerance is max(one unit of its last printed digit, half a unit times
+//  its conditioning `kappa`).  A row whose computation AMPLIFIES a last-bit
+//  change has kappa > 1: the pressure of a LIQUID at a given density is the small
 //  difference of two large terms, p = rho R T (1 + delta ar_d), so a
 //  relative change eps in the residual term moves p by about
 //  eps rho R T / p -- kappa = rho R T / |p|, about 1400 for water at 300 K
 //  and 996.556 kg/m3.  Judged on the half digit alone that row passed with a
 //  margin of 3.8e-10 relative and flipped when a math library moved some
-//  `pow` results by one unit in the last place.  A wrong coefficient still
-//  moves the well-conditioned rows (the reduced Helmholtz derivatives, cv,
-//  w, the saturation states) far beyond their half digit.
+//  `pow` results by one unit in the last place.  A wrong coefficient in its
+//  9th digit still moves the reduced Helmholtz derivatives far beyond one
+//  unit of their last printed digit (Table 6, ar at 500 K).
 CheckResult judge(const std::string& table, const std::string& label,
                   scalar pub, scalar calc, int digits, scalar scale = 1.0,
                   scalar kappa = 1.0)
@@ -548,9 +550,7 @@ CheckResult judge(const std::string& table, const std::string& label,
     c.relDev = std::fabs(calc - pub) / std::fabs(pub);
     const scalar e   = std::floor(std::log10(std::fabs(pub / scale)));
     const scalar ulp = std::pow(10.0, e - digits + 1) * std::fabs(scale);
-    c.tolerance = c.conditioning > 1.0
-        ? std::max(2.0 * ulp, 0.5 * ulp * c.conditioning)
-        : 0.5 * ulp;
+    c.tolerance = std::max(ulp, 0.5 * ulp * c.conditioning);
     c.ok = std::fabs(calc - pub) <= c.tolerance * (1.0 + 1.0e-9);
     return c;
 }
