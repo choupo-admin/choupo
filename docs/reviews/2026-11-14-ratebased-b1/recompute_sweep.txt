@@ -1,0 +1,65 @@
+ratebased01 T_I-T_V at z top/mid/bottom: [-0.2507, -0.398, -0.1714]  T_L-T_I: [-0.01306, -0.01296, -0.01089]  sign(T_I-T_V)<0 count 100
+ratebased02 T_I-T_V at z top/mid/bottom: [-0.3424, -0.5621, -0.1868]  T_L-T_I: [-0.00703, -0.01123, -0.0103]  sign(T_I-T_V)<0 count 100
+ratebased03 T_I-T_V at z top/mid/bottom: [-0.3053, -0.423, -0.194]  T_L-T_I: [-0.00477, -0.00483, -0.004]  sign(T_I-T_V)<0 count 100
+ratebased04 T_I-T_V at z top/mid/bottom: [-0.3474, -0.5665, -0.2002]  T_L-T_I: [-0.00323, -0.00471, -0.00408]  sign(T_I-T_V)<0 count 100
+case         quantity                                                     engine               mine    rel diff
+ratebased01  alpha_mean                                             1.2411796973       1.2411796974    2.98e-12
+ratebased01  x_reflux_LK (profile faces)                           0.85842472053      0.85842472053    1.92e-12
+ratebased01  x_belowBed_LK (profile faces)                         0.23641610113      0.23641610113   -1.47e-12
+ratebased01  T_top                                                  342.76012358       342.76012358    5.43e-13
+ratebased01  HETP (my alpha, profile faces)                         0.1597934341       0.1597934341   -2.86e-12
+ratebased01  HETP (KPI alpha, KPI x)                                0.1597934341      0.15979343409   -1.14e-11
+ratebased01  sum W_pX vs V_top x_T - V_b x_B [kmol/s]             0.006833272426    0.0068332724261    4.97e-12
+ratebased01  sum W_oX vs V_top(1-x_T) - V_b(1-x_B)               -0.006734575773    -0.006734575773    3.61e-12
+ratebased01  seg50 H_OG (published column vs H_G + mV/L H_L)       0.15678257482      0.15678257482    1.64e-13
+ratebased01  seg50 liquid share                                    0.17825056182      0.17825056182   -1.85e-12
+ratebased01  seg50 m (Antoine central difference)                  0.95582435791      0.95582435789   -1.85e-11
+ratebased01  max|T_I-T_V| from profile                             0.40037178767        0.400371788    8.27e-10
+ratebased01  max|T_L-T_I| from profile                            0.013508324241        0.013508325    5.62e-08
+ratebased01  max|T_I - Tbub(x_I)| (Antoine)                                    0   5.3631765695e-10         nan
+ratebased01  max|yI - xI Psat/P|                                               0   1.9378942895e-11         nan
+ratebased02  alpha_mean                                             1.2909226337       1.2909226337   -1.14e-12
+ratebased02  x_reflux_LK (profile faces)                           0.95320760393      0.95320760392   -2.24e-14
+ratebased02  x_belowBed_LK (profile faces)                         0.20831250585      0.20831250585   -1.02e-13
+ratebased02  T_top                                                  307.86691693       307.86691693   -9.82e-13
+ratebased02  HETP (my alpha, profile faces)                        0.12916874771      0.12916874771   -3.02e-12
+ratebased02  HETP (KPI alpha, KPI x)                               0.12916874771      0.12916874771    1.35e-12
+ratebased02  sum W_pX vs V_top x_T - V_b x_B [kmol/s]            0.0040947128034    0.0040947128034   -4.17e-12
+ratebased02  sum W_oX vs V_top(1-x_T) - V_b(1-x_B)              -0.0040576863321   -0.0040576863321   -2.16e-13
+ratebased02  seg50 H_OG (published column vs H_G + mV/L H_L)        0.1233613547       0.1233613547   -3.97e-12
+ratebased02  seg50 liquid share                                    0.14460628334      0.14460628334    3.91e-12
+ratebased02  seg50 m (Antoine central difference)                  0.88926905575      0.88926905574   -9.82e-12
+ratebased02  max|T_I-T_V| from profile                             0.59498856104        0.594988561   -7.56e-11
+ratebased02  max|T_L-T_I| from profile                            0.012842103082        0.012842103   -6.40e-09
+ratebased02  max|T_I - Tbub(x_I)| (Antoine)                                    0    5.150582183e-10         nan
+ratebased02  max|yI - xI Psat/P|                                               0   2.3420820838e-11         nan
+ratebased03  alpha_mean                                             1.2412451036       1.2412451036   -1.92e-12
+ratebased03  x_reflux_LK (profile faces)                           0.80536610358      0.80536610358    3.09e-12
+ratebased03  x_belowBed_LK (profile faces)                         0.23648306331      0.23648306331    2.06e-12
+ratebased03  T_top                                                  343.02115678       343.02115678    1.39e-12
+ratebased03  HETP (my alpha, profile faces)                        0.18341428141      0.18341428141   -5.33e-12
+ratebased03  HETP (KPI alpha, KPI x)                               0.18341428141      0.18341428141    8.61e-12
+ratebased03  sum W_pX vs V_top x_T - V_b x_B [kmol/s]            0.0069784160848    0.0069784160847   -4.73e-12
+ratebased03  sum W_oX vs V_top(1-x_T) - V_b(1-x_B)              -0.0068742520989   -0.0068742520989    1.31e-12
+ratebased03  seg50 H_OG (published column vs H_G + mV/L H_L)       0.18165217587      0.18165217587   -1.05e-13
+ratebased03  seg50 liquid share                                    0.07061483611     0.070614836111    1.44e-12
+ratebased03  seg50 m (Antoine central difference)                  0.97471313317      0.97471313277   -4.10e-10
+ratebased03  max|T_I-T_V| from profile                             0.42300169118        0.423001691   -4.35e-10
+ratebased03  max|T_L-T_I| from profile                           0.0049426750055        0.004942675   -1.10e-09
+ratebased03  max|T_I - Tbub(x_I)| (Antoine)                                    0   6.0884985942e-10         nan
+ratebased03  max|yI - xI Psat/P|                                               0   2.0138446466e-11         nan
+ratebased04  alpha_mean                                             1.2920820691       1.2920820691   -3.88e-13
+ratebased04  x_reflux_LK (profile faces)                           0.89889675316      0.89889675316    7.47e-12
+ratebased04  x_belowBed_LK (profile faces)                          0.2086632571       0.2086632571   -1.38e-12
+ratebased04  T_top                                                  308.10547292       308.10547291   -4.38e-13
+ratebased04  HETP (my alpha, profile faces)                        0.16024911302      0.16024911302   -1.98e-11
+ratebased04  HETP (KPI alpha, KPI x)                               0.16024911302      0.16024911302    3.26e-12
+ratebased04  sum W_pX vs V_top x_T - V_b x_B [kmol/s]             0.004113355096     0.004113355096    1.56e-12
+ratebased04  sum W_oX vs V_top(1-x_T) - V_b(1-x_B)              -0.0040661653383   -0.0040661653383   -3.24e-13
+ratebased04  seg50 H_OG (published column vs H_G + mV/L H_L)       0.15593678118      0.15593678118    2.98e-13
+ratebased04  seg50 liquid share                                   0.067073170684     0.067073170684    7.42e-13
+ratebased04  seg50 m (Antoine central difference)                  0.92974893011      0.92974893014    3.50e-11
+ratebased04  max|T_I-T_V| from profile                             0.57327316881        0.573273169    3.24e-10
+ratebased04  max|T_L-T_I| from profile                           0.0050850890964        0.005085089   -1.90e-08
+ratebased04  max|T_I - Tbub(x_I)| (Antoine)                                    0   5.0721382649e-10         nan
+ratebased04  max|yI - xI Psat/P|                                               0   2.3885560196e-11         nan

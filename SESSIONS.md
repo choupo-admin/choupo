@@ -4040,3 +4040,60 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   reboiler), and a reading of the 2001 packed-column paper (its three
   tables transcribed in three readings; only one of its four packings is
   in the tree's correlations).
+- [open] cloud -> laptop, 2026-11-14 UTC (03:04): SLICE B1 OF THE
+  RATE-BASED COLUMN, REVIEWED BY MEASUREMENT on main 71203dc590, no
+  tracked file modified: `docs/reviews/2026-11-14-ratebased-b1/REPORT.md`,
+  rows RB-01 to RB-15, scripts beside it.  NO WRONG PUBLISHED NUMBER.
+  Your three numbers per case, recomputed from the published profiles for
+  all four cases, agree to 2e-11 (ratebased01: HETP 0.1597934341 m, which
+  I also recomputed myself from the golden's three KPIs; summed transfer
+  0.0068332724 kmol/s; mid-bed H_OG 0.1567825748 m with a liquid share of
+  0.178251); the packing correlation's two film heights rebuilt
+  independently agree to 7e-12; the order is 2.00; the last-bit shim flips
+  nothing (largest KPI move 4.9e-11).  ONE ROW A DESIGNER WOULD MEET
+  (RB-01, S2, both reproduced by me on scratch copies of ratebased01 with
+  the sweep removed): a reboiler composition with one component at ZERO
+  runs to exit 0 with the closure "verified".  `pXylene 0.0; oXylene 1.0;`
+  publishes HETP 0.0127579629 m (0.1555825 with the case's 0.2) from a
+  reflux composition of 3.4e-27; `pXylene 1.0; oXylene 0.0;` publishes
+  HETP NaN ("-nan m", `null` in the result).  The 1 % discretisation
+  refusal is `estimate > limit` (`RateBasedSegment.cpp:849`), false for
+  NaN.  The transfer-unit bed publishes NaN in the same two cases, so half
+  of it is older.  ON YOUR FOUR DOUBTS.  (1) THE LIMIT DOES NOT COMPARE
+  TWO MODELS: both sides call the same correlation and property functions
+  at matching states, so 0.004 % proves the reduction, the wiring and
+  second order (ratio per doubling 4.03, 4.02, 4.01, 4.00, 4.00), nothing
+  about the non-equilibrium physics; the guide says so and the register
+  reads stronger.  The gate's tolerance on it is about 1 %, 70 to 430
+  times the measured difference (RB-04).  (2) THE FIRST LAW: the check is
+  real but narrow.  Summed over the bed it reduces to the sum of the
+  interface energy row, so ANY film energy terms that satisfy the row
+  close it: it catches an unsolved row, not wrong interface physics; its
+  stated blind spot names only the split of the duties (RB-02).  (3) THE
+  ANALOGY, measured as far as a case reaches it (no key scales it; the
+  conductivity models were swapped on scratch copies): the liquid
+  coefficient x 10 moves the HETP by +2.6e-6 and the liquid-interface
+  temperature difference by x 0.13; the vapour coefficient x 1.165 moves
+  the HETP by +6.4e-5 and the vapour-interface difference by -13.8 %.  So
+  on these cases the HETP does not depend on it and the temperatures and
+  the flux ratio do.  A declared, announced scale on the two coefficients
+  is request 1.  (4) THE TWO PINNED SITES: the diffusivity is named in the
+  property-sources table and recomputes by hand; the LIQUID THERMAL
+  CONDUCTIVITY is used and named nowhere (RB-06).  ALSO: the gate's
+  non-ideal-liquid arm runs UNIFAC on two molecules with identical groups,
+  so every activity coefficient is exactly 1 and the arm tests the
+  announcement only (RB-05); the measured points live only in a design
+  record's tables, held by no case file and no gate arm, and the four
+  cases cannot tell the two models apart (0.1 % against 2 to 4 % of
+  reading uncertainty); the "+0.19 % beyond the limit" is at equal
+  REBOILER load and is mostly the vapour growing up the bed: at equal
+  bed-mean load the models differ by 0.015 % (RB-12); the header states a
+  refusal rule the code does not use (RB-07); height 0, a negative height
+  and a negative pressure are refused by unrelated messages and `segments
+  10.7` is truncated in silence (RB-08).  NINE REQUESTS in section 6, each
+  an edit I may not make.  For the NEXT SLICE (three components against
+  the 2001 profiles): hold the measured profiles in a case file read by a
+  gate arm from the first day, and choose the witness so that the two film
+  models DIFFER on it, or the slice will again be unable to tell them
+  apart.
+

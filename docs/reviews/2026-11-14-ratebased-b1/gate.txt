@@ -1,0 +1,31 @@
+(1) the limit `transferUnits` against the transfer-unit bed, 100 segments, F 1.5:
+    packing01_schulz_0p10bar           HETP 0.1552815  limit 0.1552752  difference -0.00402 %  tolerance r_max^2/2 = 1.086 %
+    packing02_schulz_0p02bar           HETP 0.1256494  limit 0.1256292  difference -0.01605 %  tolerance r_max^2/2 = 1.740 %
+    packing03_schulz_delft_0p10bar     HETP 0.1746317  limit 0.1746274  difference -0.00251 %  tolerance r_max^2/2 = 0.826 %
+    packing04_schulz_delft_0p02bar     HETP 0.1543230  limit 0.1543113  difference -0.00754 %  tolerance r_max^2/2 = 1.098 %
+(2) conservation, rate mode, F 1.5 (steady mass band read from check_mass_closure: 0.5 %):
+(3) independence, rate mode, HETP at 100 / 200 / 400 segments:
+    ratebased01_schulz_0p10bar         reboiler material balance 8.54e-17 of the boil-up; energy closure verified (gap 1.705e-13 kW, tolerance 1.122e-05)
+    ratebased01_schulz_0p10bar         HETP 0.1555825 / 0.1555858 / 0.1555867  (100 vs 400: 0.0027 %; engine's estimate at 100: 0.0029 %); reflux x 0.8680479 / 0.8680385
+    ratebased02_schulz_0p02bar         reboiler material balance 1.71e-16 of the boil-up; energy closure verified (gap -1.421e-13 kW, tolerance 1.061e-05)
+    ratebased02_schulz_0p02bar         HETP 0.1258600 / 0.1258674 / 0.1258693  (100 vs 400: 0.0074 %; engine's estimate at 100: 0.0079 %); reflux x 0.9582355 / 0.9582223
+    ratebased03_schulz_delft_0p10bar   reboiler material balance 8.60e-17 of the boil-up; energy closure verified (gap 5.684e-14 kW, tolerance 1.122e-05)
+    ratebased03_schulz_delft_0p10bar   HETP 0.1747507 / 0.1747535 / 0.1747541  (100 vs 400: 0.0019 %; engine's estimate at 100: 0.0021 %); reflux x 0.8249219 / 0.8249142
+    ratebased04_schulz_delft_0p02bar   reboiler material balance 1.78e-16 of the boil-up; energy closure verified (gap 2.842e-14 kW, tolerance 1.060e-05)
+    ratebased04_schulz_delft_0p02bar   HETP 0.1543626 / 0.1543677 / 0.1543690  (100 vs 400: 0.0042 %; engine's estimate at 100: 0.0044 %); reflux x 0.9108780 / 0.9108656
+(4) refusals, each by name:
+    three components                 -> exit 2, names 'slice B4a'
+    a reflux ratio                   -> exit 2, names 'slice B3'
+    trays                            -> exit 2, names 'slice B2'
+    a packing with no correlation    -> exit 2, names 'no mass-transfer correlation'
+    5 segments                       -> exit 2, names 'below the minimum'
+    a non-ideal vapour               -> exit 2, names 'not an ideal gas'
+    an unknown limit word            -> exit 2, names 'rate-based limit'
+    no liquid conductivity           -> exit 2, names 'thermal conductivity of BOTH phases'
+    a non-ideal liquid (UNIFAC)      -> exit 0, runs and says Gamma = 1 with its risk and the liquid film's share
+check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside r_max^2/2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 8 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy
+
+real	0m46.184s
+user	0m44.511s
+sys	0m1.316s
+exit 0
