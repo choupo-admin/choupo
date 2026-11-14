@@ -120,11 +120,6 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
         T0 = weightedBoilingGuess(thermo, x, P);
     }
 
-    //  The vapour-pressure laws' hard windows bound every INVENTED temperature
-    //  of this search (C398 review, the trial-state item).
-    scalar wLo = 200.0, wHi = 700.0;
-    narrowToVapourPressureWindows(thermo, x, wLo, wHi);
-    const bool narrowed = (wLo > 200.0 || wHi < 700.0) && wLo <= wHi;
     auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
     auto f = [&](scalar T)
     {
@@ -136,10 +131,7 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     auto df = [&](scalar T)
     {
         const scalar dT = 1.0e-3;
-        if (!narrowed) return (f(T + dT) - f(T - dT)) / (2.0 * dT);
-        //  inside the laws' hard windows (C398 review, the trial-state item)
-        const scalar a = std::max(T - dT, wLo), b = std::min(T + dT, wHi);
-        return (f(b) - f(a)) / (b - a);
+        return (f(T + dT) - f(T - dT)) / (2.0 * dT);
     };
 
     solver::NROptions nro;
@@ -147,16 +139,11 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     nro.maxIter            = 60;
     nro.lower              = 200.0;
     nro.upper              = 700.0;
-    if (narrowed) { nro.lower = wLo; nro.upper = wHi; T0 = std::clamp(T0, wLo, wHi); }
     nro.bracket            = true;
     nro.monotoneIncreasing = true;
     nro.maxStep            = 25.0;
 
     auto r = solver::newton1D(f, df, T0, nro);
-    //  An answer the windows exclude is refused AT the answer's side, by the
-    //  law, never reported as a search that did not converge.
-    if (narrowed && !r.converged && (r.x <= wLo + 1.0e-6 || r.x >= wHi - 1.0e-6))
-        (void)f(r.x <= wLo + 1.0e-6 ? wLo - 1.0e-3 : wHi + 1.0e-3);
     walk.close();                       // the search is over; what follows is the answer
 
     const scalar Tbub = r.x;
@@ -321,11 +308,6 @@ int BubblePoint::solve(const DictPtr& dict,
         scalar T0 = (Tinit > 0.0) ? Tinit : 0.0;
         if (T0 <= 0.0) T0 = weightedBoilingGuess(thermo, x, P);
 
-        //  The vapour-pressure laws' hard windows bound every INVENTED temperature
-        //  of this search (C398 review, the trial-state item).
-        scalar wLo = 200.0, wHi = 700.0;
-        narrowToVapourPressureWindows(thermo, x, wLo, wHi);
-        const bool narrowed = (wLo > 200.0 || wHi < 700.0) && wLo <= wHi;
         auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
         auto f = [&](scalar T)
         {
@@ -337,10 +319,7 @@ int BubblePoint::solve(const DictPtr& dict,
         auto df = [&](scalar T)
         {
             const scalar dT = 1.0e-3;
-            if (!narrowed) return (f(T + dT) - f(T - dT)) / (2.0 * dT);
-            //  inside the laws' hard windows (C398 review, the trial-state item)
-            const scalar a = std::max(T - dT, wLo), b = std::min(T + dT, wHi);
-            return (f(b) - f(a)) / (b - a);
+            return (f(T + dT) - f(T - dT)) / (2.0 * dT);
         };
 
         solver::NROptions nro;
@@ -348,7 +327,6 @@ int BubblePoint::solve(const DictPtr& dict,
         nro.maxIter            = 60;
         nro.lower              = 200.0;
         nro.upper              = 700.0;
-        if (narrowed) { nro.lower = wLo; nro.upper = wHi; T0 = std::clamp(T0, wLo, wHi); }
         nro.bracket            = true;
         nro.monotoneIncreasing = true;
         nro.maxStep            = 25.0;

@@ -2317,7 +2317,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
             {
                 feedSol = solveCore(fin, thermo, fopts);
             }
-            catch (const std::exception& fe)
+            catch (const HardWindowRefusal&) { throw; } catch (const std::exception& fe)   // CV-19
             {
                 //  ONE CONVENTION IN THE REFUSAL CASE TOO (R-E5).  The balance
                 //  report prices a stream whose own equilibrium will not

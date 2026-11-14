@@ -36,6 +36,11 @@ License
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/liquidProperty/Measured.H"
 #include "thermo/pureFluid/PureFluidModel.H"
+#include "thermo/SurfaceTensionModel.H"
+#include "thermo/henrysLaw/HenrysLawRegistry.H"
+#include "thermo/transport/LiquidConductivityModel.H"
+#include "thermo/transport/LiquidViscosityModel.H"
+#include <limits>
 #include "thermo/ThermoAnnounce.H"
 
 #include <iostream>
@@ -114,10 +119,26 @@ struct Out
 //  its own, never by calling the law's description.
 std::string lawLine(const std::string& comp, const std::string& property,
                     const std::string& token, const std::string& type, const std::string& by,
-                    const std::string& window, const std::string& source, const std::string& home)
+                    const std::string& window, const std::string& source, const std::string& value,
+                    const std::string& home)
 {
     return comp + " [" + property + "]: law " + token + " (" + type + "), " + by
-         + "; window: " + window + "; source: " + source + "; record: " + home;
+         + "; window: " + window + "; source: " + source + "; value: " + value + "; record: " + home;
+}
+
+//  THE VALUE OF THE LABELLED LAW (review CV-07): a FRESH object built from the
+//  record's law the label names, evaluated at the law's probe temperature.
+//  The law object the package holds prints its own value at its first use; if
+//  the two were ever built from different laws, the values differ and the
+//  gate fails.
+double freshValue(const recordLaws::Law& L, const std::string& property, double T)
+{
+    try
+    {
+        if (property == "vaporPressure") return VaporPressureModel::New(L.body)->Psat_Pa(T);
+        return HeatCapacityModel::New(L.body)->Cp(T);
+    }
+    catch (const std::exception&) { return std::numeric_limits<double>::quiet_NaN(); }
 }
 
 std::string lawText(const Component& c, const std::string& property)
@@ -127,10 +148,51 @@ std::string lawText(const Component& c, const std::string& property)
     if (!blk) return c.name() + " [" + property + "]: no record law -- the record has no " + property + " block";
     const int idx = blk->indexOf(ch.law);
     const recordLaws::Law& L = blk->laws.at(std::size_t(idx >= 0 ? idx : (blk->preferred >= 0 ? blk->preferred : 0)));
+    const double Tp = recordLaws::probeT(L, c.Tc());
     return lawLine(c.name(), property, L.name.empty() ? std::string("its one law") : "`" + L.name + "`",
                    L.type, ch.by.empty() ? std::string("the record's law") : ch.by,
                    L.windowText(recordLaws::familyOf(property)), c.lawSource(property, L.name),
-                   c.recordHome());
+                   recordLaws::valueText(freshValue(L, property, Tp), Tp), c.recordHome());
+}
+
+//  The ideal-gas law a RowlinsonBondi liquid law holds (SL-05), from the
+//  record's chosen ideal-gas law (review CV-20).
+std::string rbIdealGasLine(const Component& c)
+{
+    const recordLaws::Block* ig = c.recordLaws("idealGasHeatCapacity");
+    if (!ig) return "";
+    const int gi = ig->indexOf(c.lawChoice("idealGasHeatCapacity").law) >= 0
+                 ? ig->indexOf(c.lawChoice("idealGasHeatCapacity").law) : ig->preferred;
+    const recordLaws::Law& L = ig->laws.at(std::size_t(gi));
+    const double Tp = recordLaws::probeT(L, c.Tc());
+    std::string type = L.type;
+    try { type = HeatCapacityModel::New(L.body)->modelName(); } catch (const std::exception&) {}
+    return lawLine(c.name(), "liquidHeatCapacity.idealGas", L.token(), type,
+                   "held by its RowlinsonBondi law (SL-05)", "the ideal-gas law's own",
+                   "the record's chosen ideal-gas law",
+                   recordLaws::valueText(freshValue(L, "idealGasHeatCapacity", Tp), Tp), c.recordHome());
+}
+
+DictPtr modelDict(const std::string& type)
+{
+    auto d = std::make_shared<Dictionary>("law");
+    d->insert("model", EntryValue(type));
+    return d;
+}
+
+//  A liquid transport law's value, from a fresh object bound to the labelled law.
+double freshLiquidValue(const std::string& rkey, const std::string& type, const std::string& law,
+                        const Component& c, double T)
+{
+    try
+    {
+        if (rkey == "liquidViscosity")
+        { auto o = LiquidViscosityModel::New(modelDict(type)); o->bindLaw(law); return o->viscosityLiquidPure(c, T); }
+        if (rkey == "liquidThermalConductivity")
+        { auto o = LiquidConductivityModel::New(modelDict(type)); o->bindLaw(law); return o->conductivityLiquidPure(c, T); }
+        auto o = SurfaceTensionModel::New(modelDict(type)); o->bindLaw(law); return o->sigmaPure(c, T);
+    }
+    catch (const std::exception&) { return std::numeric_limits<double>::quiet_NaN(); }
 }
 
 //  The record's other laws, on a line of their own (never in the law line).
@@ -154,7 +216,31 @@ std::string pureFluidLine(const ThermoPackage& pkg, std::size_t i, const std::st
            : vap ? "the formulation's own (T, density); at the vapour state"
                  : "the formulation's own (T, density); at the saturated liquid";
     return lawLine(pkg.comp(i).name(), key, "none (pure fluid)", form, "pureFluids method " + m->type(),
-                   window, form, "pure-fluid kernel");
+                   window, form, "state-dependent", "pure-fluid kernel");
+}
+
+//  A pure fluid's thermodynamic formulation, per aspect (review CV-20).
+std::string pureFluidAspectLine(const ThermoPackage& pkg, std::size_t i, const std::string& aspect)
+{
+    const PureFluidModel* m = pkg.pureFluidModel(i);
+    if (!m) return "";
+    const auto w = m->saturationWindow();
+    return lawLine(pkg.comp(i).name(), "pureFluid." + aspect, "none (pure fluid)", m->densityFormulation(),
+                   "pureFluids method " + m->type(),
+                   "saturation line " + std::to_string(w.first) + "-" + std::to_string(w.second) + " K",
+                   m->densityFormulation(), "state-dependent", "pure-fluid kernel");
+}
+
+//  WHAT IS THE RECORD of a formulation the view does not describe (review
+//  CV-21): the lines the run prints for it, by their tags.
+std::string recordLinesOf(const std::string& form, const ThermoPackage& pkg)
+{
+    if (form == "diluteSolution")
+        return "the [henry] and [builder] lines of this run, and the Henry pairs below";
+    if (form == "electrolyteGammaPhi")
+        return pkg.hasElectrolyte() ? "the [v2 native] and [builder] lines of this run"
+                                    : "the [resolver] lines of this run (the reactive engine)";
+    return "the [builder] lines of this run";
 }
 
 //  Formulations whose equilibrium this view describes; any other gets the
@@ -316,10 +402,13 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 d.push_back("volatiles declared: " + v);
             }
             d.push_back("view not built for " + (form.empty() ? std::string("aqueousProperties") : form)
-                        + ": the resolver lines are the record");
+                        + ": the record is " + recordLinesOf(form, pkg));
         }
         else if (pkg.hasActivity() && form != "phiPhi")
         {
+            d.push_back(recordLaws::modelLine("mixture", "liquidActivity", pkg.activity().modelName(),
+                        "the formulation's liquid activity model", "none declared",
+                        "its pairs, listed under equilibrium"));
             std::string ss = word(sub(eq, "liquid"), "standardState");
             d.push_back("liquid activity model: " + pkg.activity().modelName()
                         + (ss.empty() ? "" : "; liquid standard state " + ss));
@@ -342,6 +431,14 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 d.push_back("pair " + e.i + "-" + e.j + ": " + e.status
                             + (e.source.empty() ? "" : " (" + e.source + ")")
                             + (e.provSource.empty() ? "" : ", provenance " + e.provSource));
+        //  THE HENRY PAIRS the package uses (review CV-21), whatever the formulation.
+        for (std::size_t i = 0; i < n; ++i)
+            if (pkg.isHenrySolute(i) && HenrysLawRegistry::has(pkg.comp(i).name(), pkg.solventName()))
+            {
+                const auto& hl = HenrysLawRegistry::byPair(pkg.comp(i).name(), pkg.solventName());
+                d.push_back(ThermoPackage::henryLine(pkg.comp(i).name(), pkg.solventName(),
+                                                     hl.H_ref(), hl.T_ref(), hl.dHdiss()));
+            }
         std::string c = chosen({ "equilibrium" }, choice.system);
         //  A FRAGMENT THAT REPLACES ONLY SOME SLOTS (review row SA-04): an inline
         //  `thermo {}` or a variant with the same formulation replaces the slots
@@ -396,6 +493,8 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             if (pkg.isHenrySolute(i)) r += "; a declared Henry solute";
             d.push_back(r);
         }
+        for (std::size_t i = 0; i < n; ++i)
+            if (pkg.hasPureFluid(i)) d.push_back(pureFluidAspectLine(pkg, i, "density"));
         d.push_back("pump, CSTR and the props key rho_liquid_kernel (the property kernel): resolved per");
         d.push_back("  constituent set at the set's first request -- a marked measurement, then a record law");
         d.push_back("  for exactly the set (pure fluid, reference equation, solution record), then ideal");
@@ -469,6 +568,8 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                               " (the heat of mixing is an announced omission)");
             d.push_back("  s = sum x_i s_i - R sum x_i ln x_i + H^E/T - R sum x_i ln gamma_i (G^E from the activity model)");
         }
+        for (std::size_t i = 0; i < n; ++i)
+            if (pkg.hasPureFluid(i)) d.push_back(pureFluidAspectLine(pkg, i, "enthalpy"));
         out.row("liquid enthalpy and entropy (caloric.liquid)",
                 chosen({ "caloric", "liquid" }, choice.system + ": the formulation's route"), d);
     }
@@ -485,6 +586,8 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             {
                 if (!c.recordLaws(key)) continue;
                 d.push_back("  " + lawText(c, key));
+                if (std::string(key) == "liquidHeatCapacity" && c.lawChoice(key).type == "RowlinsonBondi")
+                    d.push_back("  " + rbIdealGasLine(c));
                 if (std::string(key) == "liquidHeatCapacity" && c.lawChoice(key).type == "RowlinsonBondi")
                     d.push_back("    (" + c.name() + "'s RowlinsonBondi law consumes Tc, omega and the ideal-gas law `"
                           + (c.lawChoice("idealGasHeatCapacity").law.empty()
@@ -513,10 +616,12 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             if (pkg.isHenrySolute(i)) r += "; K by its Henry pair (a declared solute)";
             d.push_back(r);
         }
+        for (std::size_t i = 0; i < n; ++i)
+            if (pkg.hasPureFluid(i)) d.push_back(pureFluidAspectLine(pkg, i, "vaporPressure"));
         if (!(form == "gammaPhi" || form == "phiPhi"))
             d.push_back("whether " + (form.empty() ? std::string("aqueousProperties") : form) + " reads these laws:"
                         " view not built for " + (form.empty() ? std::string("aqueousProperties") : form)
-                        + ": the resolver lines are the record");
+                        + ": the record is " + recordLinesOf(form, pkg));
         formLines(d, "vaporPressure", vpTypes);
         out.row("vapour-pressure laws per constituent",
                 chosen({ "pureFluids" }, chosen({ "equilibrium", "vaporPressure" },
@@ -608,12 +713,15 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                                                "predictive: none per record",
                                                info.modelCitation.empty() ? std::string("not stated by the model")
                                                                           : info.modelCitation,
-                                               "no record law"));
+                                               "predictive", "no record law"));
                 else if (law)
                 {
+                    const double Tp = recordLaws::probeT(*law, comp.Tc());
                     d.push_back("  " + lawLine(comp.name(), rkey, law->token(), L.type, L.by,
                                                law->windowText(recordLaws::familyOf(rkey)),
-                                               comp.lawSource(rkey, L.law), comp.recordHome()));
+                                               comp.lawSource(rkey, L.law),
+                                               recordLaws::valueText(freshLiquidValue(rkey, L.type, L.law, comp, Tp), Tp),
+                                               comp.recordHome()));
                     if (blk->laws.size() > 1)
                         d.push_back("    (" + comp.name() + "'s record holds: " + blk->names() + ")");
                 }
@@ -635,6 +743,31 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 pure += " (each record's liquidViscosity block)";
             d.push_back(pure);
             pureFluidLines();
+        }
+        //  THE MODEL AND THE RULE THE PACKAGE HOLDS (review CV-20), in the
+        //  fields their self-description prints.
+        {
+            auto orNone = [](const std::string& x, const char* none) { return x.empty() ? std::string(none) : x; };
+            if (!perConstituent && !info.model.empty())
+                d.push_back("  " + recordLaws::modelLine("mixture", pfKey.empty() ? std::string(tr.key) == "diffusivity"
+                                    ? std::string("vapourDiffusivity") : std::string("liquidDiffusivity") : pfKey,
+                            info.model, "the block's word", orNone(info.modelWindow, "none declared"),
+                            orNone(info.modelCitation, "not stated by the model")));
+            const std::string rk = std::string(tr.key) == "liquidViscosity" ? "liquidViscosity"
+                : std::string(tr.key) == "liquidConductivity" ? "liquidThermalConductivity"
+                : std::string(tr.key) == "surfaceTension" ? "surfaceTension"
+                : std::string(tr.key) == "viscosity" ? "vapourViscosity"
+                : std::string(tr.key) == "thermalConductivity" ? "vapourConductivity"
+                : std::string(tr.key) == "diffusivity" ? "vapourDiffusivity" : "liquidDiffusivity";
+            if (!info.rule.empty())
+                d.push_back("  " + recordLaws::modelLine("mixture", rk + ".mixingRule", info.rule, "the package's rule",
+                            orNone(info.ruleWindow, "none declared"), orNone(info.ruleCitation, "not stated by the rule")));
+            if (std::string(tr.key) == "viscosity" && !info.model.empty())
+                d.push_back("  " + recordLaws::modelLine("mixture", "vapourViscosity.mixingRule", "Wilke",
+                            "fixed in code", "none declared", "transport/GasMixingRules.H"));
+            if (std::string(tr.key) == "thermalConductivity" && !info.model.empty())
+                d.push_back("  " + recordLaws::modelLine("mixture", "vapourConductivity.mixingRule",
+                            "Wassiljewa (Mason-Saxena)", "fixed in code", "none declared", "transport/GasMixingRules.H"));
         }
         //  THE BLOCK'S WORD'S OWN SOURCE, labelled as such (review row CV-05):
         //  a row whose constituents run on record laws prints each law's own

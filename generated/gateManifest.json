@@ -1779,12 +1779,12 @@
     "check_record_law_values": {
       "exit": 0,
       "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 (evaluated) rel +0.00644 within 0.007); laws without a check (the pinned debt): 2539; records not loadable alone: 64 (pinned 64, none of them carrying a check)",
-      "seconds": 3.4
+      "seconds": 0.9
     },
     "check_record_primitives": {
       "exit": 0,
       "claim": "check_record_primitives: OK -- no record types a derived quantity beyond the pinned 1 (NaOH's solid formation enthalpy, a second home under the salt contract); dGf_298 CHECKs: 45, comparison not yet computed (pinned); labelled: 1 (NaOH.S_298: PRIMITIVE (a salt's solid entropy))",
-      "seconds": 1.2
+      "seconds": 0.8
     },
     "check_provenance_home": {
       "exit": 0,
@@ -1798,8 +1798,8 @@
     },
     "check_view_matches_calls": {
       "exit": 0,
-      "claim": "check_view_matches_calls: OK -- in 14 witnesses every law the package called is printed by a resolved view of the same run, law, type, choice, window, source and record field for field, and every pair a view lists was taken by a model of the run (purelaws01_methanol_isopropanol_water 7 calls/0 pairs; sabotage arm on purelaws01_methanol_isopropanol_water: 5 mismatch(es), FAILS as it must; purelaws02_water_two_vapour_pressure_laws 3 calls/0 pairs; variants01_ethanol_water_line 6 calls/0 pairs; flash01_benzene_toluene 6 calls/0 pairs; steam02_water_transport 6 calls/0 pairs; esterification2sector 12 calls/6 pairs; flash12_nh3_acetic_ethanol_reactive 9 calls/0 pairs; flash10_ch4propane_pcsaft 4 calls/0 pairs; vlle03_audit_artificial 6 calls/3 pairs; flash08_co2_water_package 6 calls/0 pairs; compare_psat_ambrose_walton 4 calls/0 pairs; acetone06_luyben_column_C1 9 calls/0 pairs; batch01_first_order 9 calls/0 pairs; ctrl01_cstr_temp_control 4 calls/0 pairs).  NOT CHECKED: laws never evaluated, the numbers, prose rows beyond the witnesses' own claims.",
-      "seconds": 0.8
+      "claim": "check_view_matches_calls: OK -- in 17 witnesses every object a package holds or calls (record laws with the value they compute, predictive and vapour transport models, mixing rules, activity models, pure-fluid formulations, binary and Henry pairs) is printed field for field by THAT package's own resolved view, and 7 sabotage arms fail (purelaws01_methanol_isopropanol_water 16 objects/0 pairs in 2 view(s); purelaws02_water_two_vapour_pressure_laws 6 objects/0 pairs in 2 view(s); variants01_ethanol_water_line 20 objects/0 pairs in 2 view(s); flash01_benzene_toluene 7 objects/0 pairs in 1 view(s); steam02_water_transport 10 objects/0 pairs in 1 view(s); esterification2sector 26 objects/6 pairs in 2 view(s); flash12_nh3_acetic_ethanol_reactive 9 objects/0 pairs in 1 view(s); evaporator06_nacl_pitzer 3 objects/0 pairs in 1 view(s); flash10_ch4propane_pcsaft 4 objects/0 pairs in 1 view(s); vlle03_audit_artificial 7 objects/3 pairs in 1 view(s); flash08_co2_water_package 6 objects/1 pairs in 1 view(s); compare_psat_ambrose_walton 5 objects/0 pairs in 1 view(s); acetone06_luyben_column_C1 11 objects/0 pairs in 1 view(s); sprayDryer01_sugar 18 objects/0 pairs in 1 view(s); mixing01_water_acetone 59 objects/0 pairs in 8 view(s); batch01_first_order 10 objects/0 pairs in 1 view(s); ctrl01_cstr_temp_control 5 objects/0 pairs in 1 view(s); sabotage 'who chose a law, printed as a constant': 11 mismatch(es), FAILS as it must; sabotage 'mixing rule GrunbergNissan -> Li': 2 mismatch(es), FAILS as it must; sabotage 'predictive surface tension BrockBird -> SatoRiedel': 1 mismatch(es), FAILS as it must; sabotage 'vapour viscosity Chung -> ChapmanEnskog': 8 mismatch(es), FAILS as it must; sabotage 'activity model NRTL -> UNIQUAC': 1 mismatch(es), FAILS as it must; sabotage 'RowlinsonBondi's ideal-gas law, its type changed': 1 mismatch(es), FAILS as it must; sabotage 'a variant's view stripped of its vapour-pressure lines': 2 mismatch(es), FAILS as it must).  NOT CHECKED: objects never built in the witnesses, the numbers, prose rows beyond the witnesses' own claims.",
+      "seconds": 0.5
     }
   }
 }

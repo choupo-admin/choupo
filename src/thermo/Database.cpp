@@ -215,6 +215,7 @@ Component Database::loadComponent(const std::string& name) const
     lastLoad() = LastLoad{};
     c.readFromDict(componentDict(name));
     c.setRecordHome(lastLoad().home);
+    c.setPackageTag(recordLaws::currentPackageTag());
     for (const auto& [property, entry] : lastLoad().deferred) c.deferProvenance(property, entry);
     //  THE CASE'S PINS (SB-01): applied here, where every copy is born, so
     //  no assembly path can hold the record's preferred law while the view

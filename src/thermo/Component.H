@@ -327,6 +327,8 @@ public:
     //  catalogue", "data/local (UNVERIFIED)".  Set by Database::loadComponent.
     const std::string& recordHome() const { return self_->home; }
     void setRecordHome(const std::string& h) { self_->home = h; }
+    void setPackageTag(const std::string& t) { self_->pkg = t; }
+    const std::string& packageTag() const { return self_->pkg; }
 
     //  THE PROVENANCE OF ONE LAW of a property block (CV-05): the per-law
     //  entry `provenance { <property> { <law> { origin ...; } } }`, else the
@@ -956,9 +958,12 @@ private:
         std::string home;
         std::map<std::string, OriginInfo> prov;
         std::map<std::string, DictPtr>    deferred;
+        std::string pkg;    // the package being assembled when the record was loaded (CV-20)
     };
     std::shared_ptr<RecordSelf> self_ = std::make_shared<RecordSelf>();
-    std::function<void()> firstUse_(const std::string& property, std::size_t lawIndex) const;
+    //  The first-use hook of a law object: it receives the object itself.
+    template <class Model>
+    std::function<void(const Model&)> firstUse_(const std::string& property, std::size_t lawIndex) const;
     void buildVP_(std::size_t lawIndex);
     void readLiquidCpBlock_(const DictPtr& d);   // setLiquidCp's body (C398 SB-02)
     void buildCp_(const std::string& property, std::size_t lawIndex);

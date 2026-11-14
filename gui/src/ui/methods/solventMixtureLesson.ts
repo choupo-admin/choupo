@@ -53,9 +53,9 @@ export const SOLVENT_STEPS: readonly LessonStep[] = [
       + "plus a fourth: the centre of the cloud of solvents observed to "
       + "dissolve it, and the radius of that cloud.  Choupo reads the triple "
       + "from a hansen block on each record, and requires the temperature the "
-      + "placement was made at beside it (Component.cpp:272): a triple with "
+      + "placement was made at beside it (Component.cpp:275): a triple with "
       + "no temperature is a number from an unstated state.  The radius is "
-      + "optional, because a solvent has none (Component.cpp:288).",
+      + "optional, because a solvent has none (Component.cpp:291).",
     formula: String.raw`\delta^2 = \delta_d^2 + \delta_p^2 + \delta_h^2`,
     where: [
       { sym: "\\delta", means: "the Hildebrand solubility parameter, the square root of the cohesive energy density", unit: "MPa½" },

@@ -68,6 +68,7 @@ Description
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
@@ -285,7 +286,7 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     {
         fs = IsothermalFlash::solveCore(fin, thermo, fopts);
     }
-    catch (const std::exception& ex)
+    catch (const HardWindowRefusal&) { throw; } catch (const std::exception& ex)   // CV-19: a law's window refuses
     {
         //  A STREAM WHOSE OWN EQUILIBRIUM THE PACKAGE WILL NOT RESOLVE still
         //  has a defined enthalpy under the state it carries -- and refusing

@@ -80,9 +80,25 @@ struct PropertyDomainTrial : public InfeasibleTrial
     PropertyDomainTrial(PropertyDomainError::Kind k, const std::string& message,
                         std::string remedyText = "")
       : InfeasibleTrial(message), kind(k), remedy(std::move(remedyText)) {}
+    //  With the window the refusing law answers in (C398 review).
+    PropertyDomainTrial(PropertyDomainError::Kind k, const std::string& message,
+                        std::string remedyText, double lo, double hi)
+      : InfeasibleTrial(message, lo, hi), kind(k), remedy(std::move(remedyText)) {}
 
     PropertyDomainError::Kind kind;
     std::string               remedy;
+};
+
+//  A RECORD LAW'S HARD WINDOW REFUSING A STATE NO SEARCH INVENTED (C398
+//  review row CV-19): an inlet, a 0/ stream, an operation's fixed T, a
+//  converged answer read back.  Outside every trial frame (core/Advisory.H)
+//  the refusal is this type, which no solver rejects and no enthalpy fallback
+//  turns into a degraded datum; inside a trial frame it is a
+//  PropertyDomainTrial, which a solver may reject.
+struct HardWindowRefusal : public PropertyDomainError
+{
+    HardWindowRefusal(const std::string& message, std::string remedyText)
+      : PropertyDomainError(Kind::outsideHardDomain, message, std::move(remedyText)) {}
 };
 
 } // namespace Choupo

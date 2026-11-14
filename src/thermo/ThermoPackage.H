@@ -722,6 +722,28 @@ public:
     //  component is built pinned (Database::loadComponent), then verifies
     //  that the package's own components carry each pin (SB-01).
     static std::vector<struct RecordLawPin> readRecordLawPins(const DictPtr& system);
+    //  THE DATUM TEMPERATURE IS INSIDE EVERY VAPOUR-PRESSURE LAW'S HARD WINDOW
+    //  (C398 review row CV-18): the elements datum carries a component between
+    //  its natural phase and the other at 298.15 K through its vapour-pressure
+    //  law (Component::datumBridge298), so a chosen law whose `domain`
+    //  excludes 298.15 K would refuse every liquid or vapour enthalpy the
+    //  package prices.  Refused at assembly, naming the law and the remedy.
+    void requireDatumTemperatureInVapourPressureWindows() const;
+
+    //  THE PACKAGE'S IDENTITY (C398 review CV-20): the fingerprint of the
+    //  resolved definition it was built from -- the one its resolved view
+    //  prints -- carried by every self-description of an object it holds.
+    void setIdentity(const std::string& tag, const std::string& formulation)
+    { identity_ = tag; formulation_ = formulation; }
+    const std::string& identity() const { return identity_; }
+    const std::string& formulationWord() const { return formulation_; }
+    //  Every model this package holds describes itself (with CHOUPO_LAW_TRACE
+    //  set, at assembly): the activity model, the vapour and liquid transport
+    //  models, the mixing rules, each pure-fluid formulation, each Henry pair.
+    void traceSelf() const;
+    //  One Henry pair, as the trace and the view both print it.
+    static std::string henryLine(const std::string& solute, const std::string& solvent,
+                                 double Href, double Tref, double dH);
     void verifyRecordLawPins(const std::vector<struct RecordLawPin>& pins,
                              const std::string& formulation) const;
 
@@ -943,6 +965,7 @@ private:
     mutable std::vector<std::unique_ptr<LiquidConductivityModel>> liquidConductivityObj_;
     mutable std::vector<std::unique_ptr<SurfaceTensionModel>>     surfaceTensionObj_;
     void   resolveLiquidLaws(const std::string& key, const DictPtr& block);
+    std::string identity_, formulation_;
     scalar pureLiquidViscosity(std::size_t i, scalar T) const;
     scalar pureLiquidConductivity(std::size_t i, scalar T) const;
     scalar pureSurfaceTension(std::size_t i, scalar T) const;

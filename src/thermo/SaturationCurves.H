@@ -92,15 +92,6 @@ namespace Choupo {
 scalar pureSaturationTemperature(const ThermoPackage& thermo, std::size_t i,
                                  scalar P);
 
-//  THE HARD WINDOWS OF THE VAPOUR-PRESSURE LAWS a saturation search will call
-//  (C398 review, the trial-state item): the intersection of the `domain` of
-//  each present constituent's chosen law, narrowing [lower, upper].  A
-//  bubble- or dew-point search keeps its INVENTED temperatures (the seed, each
-//  Newton step) inside it, so a trial never meets a law's refusal while the
-//  answer lies inside; an answer outside is still refused, at the answer.
-void narrowToVapourPressureWindows(const ThermoPackage& thermo, const sVector& z,
-                                   scalar& lower, scalar& upper);
-
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,

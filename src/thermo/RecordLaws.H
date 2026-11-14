@@ -105,11 +105,41 @@ std::string pinPlace(const std::string& property);
 //  gate check_view_matches_calls compares it with the view.  Off, nothing is
 //  printed and nothing is computed.
 bool traceOn();
+//  `value` is what the object evaluates at the law's probe temperature
+//  (probeT): computed FROM THE OBJECT by the law's self-description and from
+//  a fresh object built from the record's labelled law by the view, so an
+//  object that drifted from its label fails the gate (review CV-07).
 std::string selfLine(const std::string& component, const std::string& property,
                      const std::string& lawToken, const std::string& type,
                      const std::string& by, const std::string& window,
-                     const std::string& source, const std::string& home);
-void traceCall(const std::string& line);
+                     const std::string& source, const std::string& value,
+                     const std::string& home);
+//  `tag` is the identity of the package that made the call: the fingerprint
+//  of its resolved definition, the one its resolved view prints (review
+//  CV-20: each call is compared with its own package's view).
+void traceCall(const std::string& tag, const std::string& line);
+//  The package being assembled on this thread (ThermoPackageBuilder), read
+//  by every component loaded and every model built during the assembly.
+const std::string& currentPackageTag();
+struct PackageTagScope
+{
+    explicit PackageTagScope(std::string tag);
+    ~PackageTagScope();
+    PackageTagScope(const PackageTagScope&) = delete;
+    PackageTagScope& operator=(const PackageTagScope&) = delete;
+    std::string saved;
+};
+//  The temperature a law is probed at for its value: the middle of its hard
+//  window, else of its soft window, else a fraction of Tc for a type defined
+//  in reduced temperature, else 300 K.
+struct Law;
+double probeT(const Law& law, double Tc);
+//  A MODEL a package holds (an activity model, a vapour transport model, a
+//  mixing rule, a pure-fluid formulation), in the law line's fields.
+std::string modelLine(const std::string& who, const std::string& key, const std::string& model,
+                      const std::string& by, const std::string& window, const std::string& source);
+//  "<value> at <T> K", or "n/a" when the object refused.
+std::string valueText(double value, double T);
 
 //  The family a record block's laws belong to (the three heat-capacity
 //  blocks share one family of types).

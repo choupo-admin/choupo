@@ -47,7 +47,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from record_reader import PROPERTY_BLOCKS, laws_of, parse_file   # noqa: E402
+from record_reader import Block, PROPERTY_BLOCKS, laws_of, parse_file   # noqa: E402
 from debt_registry import LAWS_WITHOUT_CHECK, LAWS_WITHOUT_CHECK_DEBT   # noqa: E402  ONE home
 from debt_registry import RECORDS_NOT_LOADABLE, RECORDS_NOT_LOADABLE_DEBT   # noqa: E402
 
@@ -59,6 +59,14 @@ OUT = ROOT / "build" / "recordLawChecks" / "checks.tsv"
 #  its why and remedy): the laws without a check value, per property block;
 #  a count may only shrink.
 PINNED = LAWS_WITHOUT_CHECK
+
+
+def carries_check(block):
+    """Does any block of the record, at any depth, hold a `check { ... }`?"""
+    for k, v, _ in block.entries:
+        if isinstance(v, Block) and (k == "check" or carries_check(v)):
+            return True
+    return False
 
 
 def main():
@@ -108,8 +116,9 @@ def main():
             #  the whole record unloadable and its six laws left the gate.  A
             #  record that carries a `check` and cannot be loaded FAILS, by name.
             f = ROOT / "data/standards/components" / f"{c[0]}.dat"
-            text = f.read_text(errors="replace") if f.exists() else ""
-            if any(line.strip().startswith("check") and "{" in line for line in text.splitlines()):
+            #  Read with the shared reader, at any depth (review row CV-22: a
+            #  line-start text match missed `andrade { A 0; B 0; check {...} }`).
+            if f.exists() and carries_check(parse_file(f)):
                 fails.append(f"{c[0]}: the record carries a `check` and the engine cannot load it"
                              f" ({c[-1]}) -- its laws are checked by nobody until it loads")
         elif status == "nocheck":

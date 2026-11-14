@@ -111,6 +111,10 @@ public:
     //  defect in the correlation, and then it is testing two things at once.
     scalar departure(scalar T_K) const;
 
+    //  The ideal-gas law this object HOLDS (the SL-05 injection), for its
+    //  self-description (C398 review CV-20).
+    const HeatCapacityModel* idealGasLaw() const { return cpIg_.get(); }
+
     //  The declared window of the correlation, as reduced temperature.
     static constexpr scalar TrLow  = 0.25;
     static constexpr scalar TrHigh = 0.85;

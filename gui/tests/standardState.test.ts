@@ -136,7 +136,7 @@ describe("the lesson", () => {
 
   it("cites the engine where it prices the three terms", () => {
     const s = all(7);
-    expect(s).toContain("src/thermo/Component.cpp:1674");
+    expect(s).toContain("src/thermo/Component.cpp:1677");
     expect(s).toContain("src/thermo/ThermoPackage.cpp:1504");
     expect(s).toContain("src/propertyOps/PropertyPoint.cpp:101");
     //  C259: the two line numbers had drifted (1554, 1393) after the
@@ -144,7 +144,7 @@ describe("the lesson", () => {
     //  back, so the next drift fails here instead of on a reader.
     const line = (rel: string, n: number) =>
       readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8").split("\n")[n - 1] ?? "";
-    expect(line("src/thermo/Component.cpp", 1674))
+    expect(line("src/thermo/Component.cpp", 1677))
       .toContain("ONE implementation of the standard-state enthalpy, not two");
     expect(line("src/thermo/ThermoPackage.cpp", 1504))
       .toContain("scalar ThermoPackage::H_real(");
