@@ -1,0 +1,31 @@
+src/applications/choupoBatch/main.cpp:1254	/ std::max(std::sqrt(den), 1.0e-30);
+src/propertyOps/FitParameters.cpp:1031	/ std::max(chi2, 1.0e-30);
+src/propertyOps/FitParameters.cpp:2133	/ std::max(out.chi2, 1.0e-30);
+src/propertyOps/FitParametersMembrane.cpp:866	const scalar rel = (chi2 - c2) / std::max(chi2, scalar(1e-300));
+src/thermo/VapourAssociation.H:156	return (vd - tm)/2.0 - Kd * Patm * tm*tm / std::max(tau, 1e-300);
+src/thermo/electrolyte/PitzerHMW.cpp:903	/ std::max(1.0e-12, std::fabs(lnPM_ref));
+src/thermo/electrolyte/PitzerHMW.cpp:914	/ std::max(1.0e-12, std::fabs(phiRef));
+src/thermo/electrolyte/ReactiveVLE.cpp:1333	<< (sO / std::max(sA + sO, 1.0e-300) * 100.0)
+src/thermo/electrolyte/ReactiveVLE.cpp:1638	/ std::max(K, 1.0e-300);
+src/thermo/electrolyte/ReactiveVLE.cpp:1731	vapS[idx] = std::min(V * K[idx] * xi / std::max(psi, 1e-300)
+src/thermo/electrolyte/ReactiveVLE.cpp:1883	<< vd[act[i2]]/std::max(n[act[i2]], 1e-300);
+src/thermo/electrolyte/ReactiveVLE.cpp:2026	res.vapDimerMolPerMolFeed = tvF.tDim / std::max(nTot, 1e-300);
+src/thermo/electrolyte/ReactiveVLE.cpp:2154	<< (sO / std::max(sA + sO, 1.0e-300) * 100.0)
+src/unitOperations/batch/BatchAdsorber.cpp:327	const scalar rel   = std::abs(Pdecl - P0) / std::max(P0, 1.0e-30);
+src/unitOperations/batch/FixedBedAdsorber.cpp:3284	carrierFabricated_() / std::max(fedTot, scalar(1.0e-30));
+src/unitOperations/crystallisation/Crystalliser.cpp:625	const scalar nval = n0 * std::exp(-Lmid / std::max(Gtau, 1.0e-30));
+src/unitOperations/distillation/DistillationColumn.cpp:3170	if (adsorption) r /= std::max(sumA * sumA, 1.0e-300);
+src/unitOperations/distillation/DistillationColumn.cpp:4479	<< std::setprecision(1) << (100.0 * consumed / std::max(fedLim,1e-30))
+src/unitOperations/dynamic/DynamicCSTR.cpp:656	maxRel = std::max(maxRel, d / std::max<scalar>(std::abs(prev[i]), 1.0e-12));
+src/unitOperations/flash/IsothermalFlash.cpp:1058	/ std::max<scalar>(thermo.liquidReferenceFugacity(i, in.T, in.P), 1.0e-30));
+src/unitOperations/flash/LiquidLiquidSplit.H:283	const scalar Kn = std::max<scalar>(gA[i], 1.0e-300) / std::max<scalar>(gB[i], 1.0e-300);
+src/unitOperations/flash/LiquidLiquidSplit.H:318	K[i] = std::max<scalar>(gZ[i], 1.0e-300) / std::max<scalar>(gW[i], 1.0e-300);
+src/unitOperations/heatTransfer/SprayDryer.cpp:1364	const scalar f = (p - cum[k - 1]) / std::max(1.0e-12, cum[k] - cum[k - 1]);
+src/unitOperations/heatTransfer/htc/Kern.H:98	/ std::max(v.Nu_published, 1.0e-30);
+src/unitOperations/reactor/EquilibriumReactor.cpp:562	: 1.0 / std::max(s.nLv[a] + n0[Lx[a]], 1.0e-300);
+src/unitOperations/reactor/PFR.cpp:916	: T_from_h(y[n] / std::max(Ftot, 1.0e-30), zz, T_lastGuess, Pk);
+src/unitOperations/reactor/PFR.cpp:1015	return T_from_h(yy[n] / std::max(Ftot, 1.0e-30), zz, T_lastGuess,
+src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp:592	const scalar Wn = r[a] / std::max<scalar>(g[p.compIdx[cand[a]]], 1.0e-300);
+src/unitOperations/separation/Extractor.cpp:623	return std::abs(throughput - fOut) / std::max<scalar>(throughput, 1.0e-30);
+src/unitOperations/separation/Extractor.cpp:723	/ std::max<scalar>(F_in_total, 1.0e-30);
+src/unitOperations/separation/Extractor.cpp:797	/ std::max<scalar>(xR[j][iSolute] / xR[j][iCarrier], 1.0e-300);

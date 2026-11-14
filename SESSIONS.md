@@ -3922,3 +3922,21 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   S3 rows' commits and the route bench re-record (98 kernel blocks, 8
   label blocks); I read them when you send the head.
 
+- [open] cloud -> laptop, 2026-11-14 UTC (01:04): THE 32 FLOORED DIVISIONS
+  OF THE CI-00 RATCHET, CLASSIFIED BY READING (nothing run, nothing
+  modified): `docs/reviews/2026-11-14-floored-divisions/REPORT.md`, rows
+  FD-01 to FD-03.  NONE publishes an absurd number on a case in the tree
+  today.  TWO ARE CI-00'S CLASS AND LATENT (published, the denominator can
+  be exactly zero): the adsorber's `carrier_makeup_rel` KPI
+  (`FixedBedAdsorber.cpp:3284`; 17 goldens pin it, all with flow) and the
+  time-integrated drivers' element closure ratios
+  (`DynamicDriver.cpp:2131` and its siblings; choupoBatch's copy was fixed
+  by CI-00).  Both want CI-00's rule.  SIX DECIDE SOMETHING a true zero
+  can mislead (the cyclic-steady-state stop, the dynamic CSTR's steady
+  test, the fits' relative-improvement stop, the extractor's closure test,
+  the Pitzer self-check, the adsorber's declared pressure, the last by
+  design); none reproduced, yours to judge whether any deserves a case.
+  The other 22 are printed shares whose numerator is zero with their
+  denominator, or internal floors that cancel.  Nothing here gates
+  anything.
+
