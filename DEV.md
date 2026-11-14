@@ -3518,6 +3518,38 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398 SLICES (a)+(b) LANDED (2026-11-14), with PA-09 and the B1 review
+> rows.**  Named `variants {}` in a case's property dictionary selected by
+> `thermo <name>;`; the property block as the atom inside `transport`;
+> several named laws per record property block with `preferred`; one law
+> per constituent for liquid viscosity, conductivity and surface tension,
+> with a package-level mixing rule (methanol + 2-propanol + water now
+> runs); a case `pin`; seven factory defaults removed; 109 provenance
+> entries moved home; a pin reaches every copy of a component; a pure
+> fluid's vapour transport evaluated at the vapour state (a wrong number
+> before, reached by no shipped case); the resolved view built from the
+> objects the computation calls and held field by field per package by
+> `check_view_matches_calls`; every stream missing T or P refused (PA-09);
+> the rate-based and packed-bed refusals of the B1 review.  FIVE ROUNDS
+> OF REVIEW by two reviewers (docs/reviews/2026-11-14-c398ab-numbers/ and
+> docs/reviews/2026-11-14-c398ab-view/, rows CN-01..09, CV-01..33): every
+> round confirmed on 698-699 cases that no number moves except the listed
+> and pinned ones (totalReflux01's boundary block, steam02's renamed keys
+> and two vapour values at 100 C, the four `source` rows); the rounds
+> found what the engine said falsely about itself and fixed it.  HARD
+> WINDOWS LEFT THIS LANDING by the architect's ruling after the fourth
+> round they cost (in-search checks, then a post-solve audit, each
+> leaving states unvisited or misfiring): the grammar refuses `domain` by
+> name; the hard window is its own slice, to be designed.  Held by ONE
+> FULL SWEEP of the fifth round (2232 PASS, 0 FAIL, 8 EXPECTED-FAIL, 83
+> min, mass, element and energy closures on every case; the first sweep
+> under C394's reuse), and, after the removal of the audit (a code path
+> that refused no shipped case in that sweep), --scope over 309 cases
+> 304/0, --gui 48/0, and on the merged tree --fast 87/0 with the bench,
+> view and pin gates.  OPEN: CN-08 (a benchmark whose sub-cases rewrite
+> tracked files); CV-28..33 are moot with the audit removed and are the
+> hard-window slice's acceptance list.
+
 > **C394 LANDED (2026-11-14): the suite's economy.**  (1) Input-keyed
 > reuse in the FULL SWEEP only (never CI, a release, or a clean
 > checkout): the regressed-pairs gate and each of 1260 curation fits print
