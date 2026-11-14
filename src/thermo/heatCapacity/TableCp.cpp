@@ -15,6 +15,7 @@
 #include "TableCp.H"
 
 #include <cstdio>
+#include <memory>
 #include <stdexcept>
 
 namespace Choupo {

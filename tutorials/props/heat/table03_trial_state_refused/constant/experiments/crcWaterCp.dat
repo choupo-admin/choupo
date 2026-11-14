@@ -21,6 +21,7 @@ provenance
     origin      literature;
     citation    "Marsh, K.N. (ed.) (1987). Recommended Reference Materials for the Realization of Physicochemical Properties. Blackwell, Oxford (the table's reference 2)";
     via         "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), p. 6-3, Properties of water in the range 0-100 C (100 kPa; IPTS-68)";
+    sha256      "b22f885358c743540a85aecb05a2545238bef5fddb58445537659c0df4b48384";   // of the handbook file read (the literature archive's lide-crc-handbook-chemistry-physics-82ed.pdf)
 }
 
 system      ( water );

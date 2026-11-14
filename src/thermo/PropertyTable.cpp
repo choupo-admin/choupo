@@ -20,9 +20,11 @@
 #include "thermo/PropertyDomainError.H"
 #include "thermo/liquidProperty/ExperimentsFile.H"
 
+#include <array>
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <memory>
 #include <mutex>
 #include <stdexcept>
 #include <utility>

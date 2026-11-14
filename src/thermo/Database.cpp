@@ -36,6 +36,7 @@ License
 #include "liquidProperty/ExperimentsFile.H"
 
 #include <iostream>
+#include <memory>
 #include <cstdlib>
 #include <filesystem>
 #include <cctype>

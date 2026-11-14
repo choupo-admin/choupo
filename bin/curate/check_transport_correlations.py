@@ -244,6 +244,18 @@ SOLVE = ROOT / "choupoSolve"
 MODELS = ["Chung", "ChapmanEnskog", "Eucken", "modifiedEucken", "Fuller", "Andrade",
           "Vogel", "chemsepEq101", "SatoRiedel", "chemsepEq16", "wilkePhi"]
 DECLARED_TOL_CAP = {"ChapmanEnskog": 1.0e-2}   # the only anchor allowed its own tolerance
+#  A DISTRIBUTED DATABANK CITED BY NAME AND LICENCE, WITH NO YEAR IN THE TREE
+#  (found 2026-11-14, C398 slice (c)).  The dated-citation arm read 1800
+#  characters after a model's name, which ran into the NEXT model's entry; the
+#  two ChemSep forms passed on the year of the entry printed after them, and a
+#  new entry (the `table` law type) between them made the arm fail.  The arm
+#  now reads each model's OWN entry (up to the blank line that ends it); these
+#  two print no year (the ChemSep database is cited by its authors and its
+#  licence, src/thermo/transport/ChemSepVisc101.H, ChemSepCond16.H, and the
+#  Theory Guide's bibitem ChemSep carries no year either).  Pinned here so the
+#  list can only shrink: a pinned name that prints a dated citation FAILS
+#  until its row is deleted.
+UNDATED_DATABANK = {"chemsepEq101", "chemsepEq16"}
 GASES = ["N2", "O2", "CO2", "water"]
 GASES2 = ["N2", "O2", "CO2", "water", "CH4", "Ar", "H2"]
 T_CMP = 373.15
@@ -421,10 +433,18 @@ def main():
         if diag[f"dev_{name}"] > tol:
             fails.append(f"{name} deviates {100*diag[f'dev_{name}']:.4f} % from its anchor "
                          f"(tolerance {100*tol:.4f} %)")
-        blk = out.split(f"  {name} ", 1)[-1][:1800] if f"  {name} " in out else ""
+        #  The model's OWN entry: from its name to the blank line that ends it.
+        blk = out.split(f"  {name} ", 1)[-1].split("\n\n", 1)[0] if f"  {name} " in out else ""
         if "window:" not in blk:
             fails.append(f"no validity window printed for {name}")
-        if "source:" not in blk or not re.search(r"\((1[89]\d\d|20\d\d)\)", blk):
+        dated = "source:" in blk and re.search(r"\((1[89]\d\d|20\d\d)\)", blk)
+        if name in UNDATED_DATABANK:
+            if "source:" not in blk:
+                fails.append(f"no citation printed for {name}")
+            elif dated:
+                fails.append(f"{name} now prints a dated citation -- delete its row from "
+                             "UNDATED_DATABANK (the list only shrinks)")
+        elif not dated:
             fails.append(f"no dated citation printed for {name}")
         if not re.search(r"kind: (theory|arithmetic)", blk):
             fails.append(f"{name} does not state the KIND of its anchor")
@@ -820,7 +840,7 @@ def main():
     print(f"check_transport_correlations: OK -- all {len(MODELS)} transport correlations "
           "(five families + the shared Wilke phi_ij) verify against their own anchors within "
           "their tolerance (1e-4, or the 1 % the Chapman-Enskog reproduction anchor DECLARES "
-          "and prints) and print a window, a dated PRIMARY citation and the KIND of anchor "
+          "and prints) and print a window, a dated PRIMARY citation (the two ChemSep forms: an undated databank citation, pinned) and the KIND of anchor "
           f"({n_theory} theory, {n_arith} arithmetic, recounted from the output); Chung mu, "
           "Eucken k, Wilke mu_mix and Wassiljewa k_mix for N2/O2/CO2/water at 373.15 K and "
           "Chapman-Enskog mu and modified-Eucken k for seven gases at 300 K are RECOMPUTED "
