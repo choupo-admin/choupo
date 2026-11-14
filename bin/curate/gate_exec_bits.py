@@ -89,7 +89,7 @@ def main(argv):
                 bad.append((rel, f"mode {mode} in git"))
         elif not rev and (ROOT / rel).is_file() and not os.access(ROOT / rel, os.X_OK):
             bad.append((rel, "untracked and not executable on disk"))
-    where = f"at {rev[:10]}" if rev else "in this tree"
+    where = (f"at {rev[:10]}" if re.fullmatch(r"[0-9a-f]{11,40}", rev) else f"at {rev}") if rev else "in this tree"
     if bad:
         print(f"gate_exec_bits: REFUSED -- {len(bad)} script(s) bin/runTests runs "
               f"DIRECTLY lack the executable bit {where}; each would fail with "
