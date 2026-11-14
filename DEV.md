@@ -3518,6 +3518,36 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C394 LANDED (2026-11-14): the suite's economy.**  (1) Input-keyed
+> reuse in the FULL SWEEP only (never CI, a release, or a clean
+> checkout): the regressed-pairs gate and each of 1260 curation fits print
+> `REUSED` (key, date: "its keyed inputs are unchanged") when the content
+> hash of everything they read is unchanged: the engine's compiled objects
+> and flag stamps, the data trees by git listing plus data/local
+> (following symlinks), every ancestor `constant/` the engine's record
+> resolver walks (the depth read from src/ on every key, absence keyed),
+> the harness functions they call, the platform (golden_bands'
+> fingerprint).  Only a complete PASS is stored, per tree, under build/.
+> (2) The gate self-test in a pool of worker clones outside the tree, one
+> per user (a fixed lock), every child in its own process group, workers
+> reset completely before each run.  (3) `bin/integrate --plan` matches a
+> touched file against each gate's scan roots (read from its syntax tree,
+> or a declared SCAN_ROOTS), follows the scripts a gate runs, lists the
+> generator checks; 69 gates whose walks it cannot see are pinned by name
+> (`check_scan_roots`), a list that may only shrink.  (4) A full sweep
+> REFUSES unless `--fast` passed on the same tree.  (5) Every tracked
+> script under bin/ with a shebang is executable (37 were not), checked in
+> every mode.  REVIEWED in two rounds (the report:
+> `docs/reviews/2026-11-14-suite-economy/REPORT.md`): round 1 found an S1, a REUSED printed over a
+> real FAIL (a record in an ancestor `constant/` the key did not cover),
+> fixed and re-attacked in round 2 (above the root, another working
+> directory, a symlinked constant/): no reuse hides a verdict.  OPEN:
+> SE-13 (the scan-roots ratchet pins by gate name, so a new hidden walk in
+> one of the 69 passes), SE-14 (a stray symlink disables reuse, failing
+> safe), SE-15 (residuals).  Held by the reviewer's probes, --fast 87/0
+> on the branch, and the gates that read bin/; its first real test is
+> the next full sweep, whose second run must show REUSED lines.
+
 > **C398 SLICE (e) LANDED (2026-11-14): a packing is an asset record a
 > column names** (`kind packing`; SulzerBX and MontzB1-250 in the
 > catalogue, each value read at its page; nominal / `installed` /
