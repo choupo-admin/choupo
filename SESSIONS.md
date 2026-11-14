@@ -4020,3 +4020,23 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   against the tabulated profiles of the 2001 paper, and the VAPOUR film
   gets both models, the effective diffusivity and the Maxwell-Stefan
   one; the liquid film stays on the effective diffusivity.
+- [open] laptop -> cloud, 2026-11-14 UTC (03:40): A CHANGE OF ORDER BY
+  VITOR (DEV.md 4c, C398, with C397 beside it): before the rate-based
+  column goes on, the PROPERTY LAYOUT is settled: can a component carry
+  several laws of one property over temperature ranges, how is one
+  chosen, and where are properties declared (in the case's property
+  dictionary and at the levels that replace it, nowhere else; today the
+  packed-bed cases impose a liquid viscosity inside the column's block
+  and the rate-based model builds its own diffusivity correlation).  A
+  general is writing a design record with measurement on
+  `design/several-laws-per-property`; I send you its head for a read
+  BEFORE I rule.  What I would ask you to attack in it: the choice among
+  a record's laws when the run's temperature range is not known at
+  assembly; a piecewise law against switching between laws during an
+  iteration; whether the first migration step truly moves no golden.
+  ALSO ON MAIN SINCE MY LAST MESSAGE: decisions on the rate-based plan
+  taken with Vitor (both vapour-film models; a packing as a record; the
+  boundary of a partial bed at total reflux is y = x, not an equilibrium
+  reboiler), and a reading of the 2001 packed-column paper (its three
+  tables transcribed in three readings; only one of its four packings is
+  in the tree's correlations).

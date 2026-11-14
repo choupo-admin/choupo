@@ -3476,6 +3476,36 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C398 (Vitor, 2026-11-14, when the architect said a pure component's
+> correlation "is already decided in its record": "A agua nao pode ter
+> varios modelos com parametros para gamas de temperatura?!  Que se
+> passa aqui?!  Antes de avancarmos nos rate based temos de resolver
+> esta confusao once and for all!").**  AN ORDER TO CHANGE DIRECTION,
+> obeyed: THE THREE-COMPONENT SLICE OF THE RATE-BASED COLUMN WAITS for
+> this.  WHAT THE ARCHITECT HAD WRONG: he described a limitation as a
+> design.  MEASURED the same turn: a component record carries ONE block
+> per property (water: `vaporPressure { model Antoine; Trange (273
+> 373); }`), and that record's own header says the fit is poor above
+> about 313 K, extrapolates above 373 K (+18 % at 573 K), and that a
+> case must opt in to another model or to a pure-fluid route; the
+> ratified kernel (twelve rules: a LIST of methods per property, each
+> with its domain and evidence, chosen once, printed, the domain checked
+> at every evaluation) is built for the liquid density of two units
+> only; for every other property the older layout stands and nowhere
+> says how a case chooses among laws, what one model word means when
+> the components' records hold different forms, or what two laws of one
+> property over two temperature ranges look like in a record.  WHAT IS
+> COMMISSIONED: a design record with measurement (the record as it is,
+> counted; how a case chooses today, property by property and level by
+> level; every property value or model that lives outside the property
+> dictionary; water's laws against the reference formulation in
+> numbers) and a proposal (several laws per property in a record; the
+> choice made once and printed; a piecewise law against switching by
+> state; how the case pins a law; a migration whose first step moves no
+> number).  The architect rules on it, the reviewing session reads it,
+> and only then is anything built.  THE ORDER OF WORK IS NOW: this
+> design; then the rate-based three-component slice on top of it.
+
 > **C397 (Vitor, 2026-11-14: "Eu nao gosto de ver as propriedades
 > termofisicas espalhadas por todo lado!"; with it, his reminder that
 > the structure is MULTI-LEVEL: one property dictionary for the case,
