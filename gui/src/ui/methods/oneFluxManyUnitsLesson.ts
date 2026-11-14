@@ -56,7 +56,9 @@ export const OFMU_ENGINE_SCOPE = "The engine computes none of the numbers on thi
   + "velocity units: the gas coefficient k_G in m/s (PackingRBF.cpp:127), the liquid one k_L in m/s "
   + "(PackingRBF.cpp:129), and the effective area a_e in m²/m³ (PackingRBF.cpp:133).  It multiplies each by its "
   + "phase's molar density (RateBasedSegment.cpp:424), which is the conversion to the mole-fraction form k_y = "
-  + "c_G k_c of step 1, and by a_e times the segment's volume (RateBasedSegment.cpp:425).  The Henry records store "
+  + "c_G k_c of step 1, then by a_e and the segment's volume A_T Δz, and divides by a reference boil-up V_ref: "
+  + "its β_V = c_G k_G a_e A_T Δz/V_ref is k_y a times the segment's volume, made dimensionless by V_ref "
+  + "(RateBasedSegment.cpp:425; β_L the same for the liquid, RateBasedSegment.cpp:426).  The Henry records store "
   + "a pressure (HenrysLaw.cpp:50) that is p/x, and a Henry solute's K-value is that pressure over the total "
   + "pressure (ThermoPackage.cpp:1277): the slope m of step 3.";
 
@@ -236,7 +238,8 @@ export const OFMU_STEPS: readonly LessonStep[] = [
       + "9.2-14, p. 241), and with velocity coefficients and the ratio of the two molar densities (Taylor and "
       + "Kooijman Eq. 3.68, p. 115).  Choupo's rate-based segment does NOT use an overall coefficient: it solves "
       + "both films with the interface compositions as unknowns, and the interface in equilibrium "
-      + "(RateBasedSegment.cpp:541).  The one place the sum appears is the first guess of the profile, "
+      + "(RateBasedSegment.cpp:541), except in the limit mode that checks it against the transfer-unit bed, where the "
+      + "interface equation is linearised about the bulk liquid with one slope m (RateBasedSegment.cpp:553).  The one place the sum appears is the first guess of the profile, "
       + "1/(1/β_V + m/β_L) on the segment's own coefficients (RateBasedSegment.cpp:635).",
     derivation: [
       { step: "Steady state: the flux through the gas film equals the flux through the liquid film (Treybal Eq. 5.1):",
@@ -375,9 +378,13 @@ export const OFMU_STEPS: readonly LessonStep[] = [
     title: "What Choupo does with these forms, and where to go next",
     body: "The engine's one mass-transfer column model that uses film coefficients, the rate-based packed "
       + "segment, takes k_G and k_L from the packing correlation as velocities, turns them into the mole-fraction "
-      + "form with each phase's molar density, and multiplies by the effective area and the segment's volume (step "
-      + "1's chain, at the lines cited in the box at the top).  It solves the two films with the interface as an "
-      + "unknown, so it needs no overall coefficient and is not hurt by a curved equilibrium line (step 5).  It "
+      + "form with each phase's molar density, multiplies by the effective area and the segment's volume, and divides "
+      + "by a reference boil-up V_ref, so its β_V and β_L are k_y a and k_x a times the segment's volume made "
+      + "dimensionless (RateBasedSegment.cpp:425, RateBasedSegment.cpp:426).  It solves the two films with the "
+      + "interface as an unknown, in equilibrium at the interface's own K-values (RateBasedSegment.cpp:541), so it "
+      + "needs no overall coefficient and is not hurt by a curved equilibrium line (step 5); only its limit mode, "
+      + "kept to compare with the transfer-unit bed, linearises the interface about the bulk liquid with one slope "
+      + "(RateBasedSegment.cpp:553), which is step 4's straight line.  It "
       + "carries the bulk flow explicitly with low-flux coefficients (step 2).  It has no reaction in the film: the "
       + "rate-based segment is a binary at total reflux, and the engine's absorbers are equilibrium stages with "
       + "Henry's law.  The Theory Guide section on the rate-based segment writes its film equations in full.",

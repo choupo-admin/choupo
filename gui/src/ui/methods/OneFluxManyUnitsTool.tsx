@@ -485,8 +485,20 @@ function ReactionPanel(): JSX.Element {
             c_Ai = p_A/H_A = {sig(res.cAi)} mol/m³ and <b>E_i = {sig(res.Ei, 3)}</b>.  Pseudo-first-order:{" "}
             <b>E = Ha/tanh Ha = {sig(res.Epfo, 3)}</b>; van Krevelen-Hoftijzer: <b>E = {sig(res.Evkh, 3)}</b>, which is{" "}
             {sig(100 * res.ratio, 3)} % of it.  Flux without reaction k_L c_Ai = {sig(res.Nphys, 3)} mol/(m² s); with
-            reaction {sig(res.Nvkh, 3)} (van Krevelen-Hoftijzer) or {sig(res.Npfo, 3)} (pseudo-first-order).
+            reaction {sig(res.Nvkh, 3)} (van Krevelen-Hoftijzer) or {sig(res.Npfo, 3)} (pseudo-first-order
+            {res.pfoAboveInstantaneous ? ": above the instantaneous limit, not valid here" : ""}).
           </Text>
+          {res.pfoAboveInstantaneous && (
+            <Alert color="yellow" variant="light" title="Pseudo-first-order is above the instantaneous limit"
+              data-pfo-above-instantaneous="">
+              <Text size="sm">
+                E = Ha/tanh Ha = {sig(res.Epfo, 3)} exceeds E_i = {sig(res.Ei, 3)}: no reaction can raise the flux above
+                the instantaneous limit, so the pseudo-first-order value and its flux are not valid here.  B is too
+                dilute to stay uniform across the film; the van Krevelen-Hoftijzer value, bounded by E_i, is the one
+                to read.
+              </Text>
+            </Alert>
+          )}
           <Text size="xs" c="dimmed">
             Read the ratio: near 100 %, B is plentiful at the interface and the pseudo-first-order formula is enough;
             well below it, E bends towards E_i, the limit set by how fast B diffuses to meet A.

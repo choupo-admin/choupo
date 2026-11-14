@@ -311,6 +311,10 @@ describe("one-flux-many-units: the exercises", () => {
   //  the page's functions, then compared at the digits the answer prints.
   const o2Hxp = 1.3e-5 * 0.0180153 / 997;
   const o2Kpx = 1 / o2Hxp;
+  //  water's vapour pressure at 298.15 K from the record's Antoine line, read here from the record itself
+  const ant = /coefficients\s+\(([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\)/.exec(
+    tree("data/standards/components/water.dat").split("vaporPressure")[1]!)!;
+  const pwIndep = 1e5 * Math.pow(10, Number(ant[1]) - Number(ant[2]) / (298.15 + Number(ant[3])));
   const ammKG = 1 / (1e5 + 1 / (0.59 * 1e-4));
   const ammN = ammKG * 1013.25;
   const ha = (cB: number): number => Math.sqrt(10 * 1.8e-9 * cB) / 4e-4;
@@ -318,8 +322,10 @@ describe("one-flux-many-units: the exercises", () => {
   const EXPECT: Record<string, readonly [string, number, number][]> = {
     "convert-film": [["kx", 0.18 * 55, 3], ["ky", 0.040 * 202.65, 4], ["kcGas", 0.040 * 8.314462618 * 323.15 / 3600, 4],
       ["kys", 0.040 * 202.65 / 0.915, 4]],
-    "convert-henry": [["KHpx", o2Kpx, 3], ["KHpxAtm", o2Kpx / 101325, 3], ["Hcc", 1.3e-5 * 8.314462618 * 298.15, 3],
-      ["m", o2Kpx / 101325, 3], ["x", 0.21 / (o2Kpx / 101325), 3], ["mg", 1.3e-5 * 0.21 * 101325 * 31.998, 3]],
+    //  MT-01: two significant figures, as many as the datum 1.3e-5 carries.
+    "convert-henry": [["KHpx", o2Kpx, 2], ["KHpxAtm", o2Kpx / 101325, 2], ["Hcc", 1.3e-5 * 8.314462618 * 298.15, 2],
+      ["m", o2Kpx / 101325, 2], ["x", 0.21 / (o2Kpx / 101325), 2], ["mg", 1.3e-5 * 0.21 * 101325 * 31.998, 2],
+      ["mgHumid", 1.3e-5 * 0.21 * (101325 - pwIndep) * 31.998, 2]],
     "overall": [["Kx", 1 / (1 / 9.9 + 1 / (49.7 * 8.1)), 3], ["N", (0.001975 - 0.001) / (1 / 9.9 + 1 / (49.7 * 8.1)), 3]],
     "absorption-flux": [["KG", ammKG, 3], ["KL", ammKG / 0.59, 3], ["N", ammN, 3], ["pi", 1013.25 - ammN / 1e-5, 3],
       ["ci", 0.59 * (1013.25 - ammN / 1e-5), 3]],
@@ -350,6 +356,19 @@ describe("one-flux-many-units: the exercises", () => {
         near(parseSig(sig(got, d)), Number(want.toPrecision(d)), 1e-12);
       }
     }
+  });
+
+  it("exercise 2 states its precision: the spread of Sander's rows and the water vapour", () => {
+    const e = list.find((x) => x.id === "convert-henry")!;
+    const all = e.solution.join(" ");
+    expect(all).toContain("1.2×10⁻⁵ to 1.3×10⁻⁵");
+    printed(e.values.mgLow!, 1.2e-5 * 0.21 * 101325 * 31.998, 2);
+    expect(all).toContain(`from ${sig(e.values.mgLow!, 2)} to ${sig(e.values.mg!, 2)} mg/L`);
+    printed(e.values.pw!, 3167, 3);                       // Pa, the record's Antoine at 298.15 K
+    near(e.values.pw!, pwIndep, 1e-12);
+    expect(all).toContain(`${sig(100 * e.values.pw! / 101325, 2)} % less`);
+    expect(sig(100 * e.values.pw! / 101325, 2)).toBe("3.1");
+    expect(e.answer).toContain(`${sig(e.values.mgHumid!, 2)} mg/L over saturated air`);
   });
 
   it("the shares and conclusions the answers state", () => {
@@ -392,6 +411,7 @@ describe("one-flux-many-units: the lesson", () => {
       "RateBasedSegment.cpp:541": "R[r++] = yI[i] - K[i] * xI[i];",
       "RateBasedSegment.cpp:559": "R[r++] = w[lk] - (c.betaV * (yI[lk] - s.ym[lk]) + 0.5 * (yI[lk] + s.ym[lk]) * wt);",
       "RateBasedSegment.cpp:560": "R[r++] = w[lk] - (c.betaL * (s.xm[lk] - xI[lk]) + 0.5 * (xI[lk] + s.xm[lk]) * wt);",
+      "RateBasedSegment.cpp:553": "R[r++] = (i == lk) ? yI[lk] - (ys + m * (xI[lk] - s.xm[lk])) : sKx - 1.0;",
       "RateBasedSegment.cpp:635": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
       "HenrysLaw.cpp:50": "H_ref_   = d->lookupScalar(\"H_ref\",   Dims::pressure);",
       "HenrysLaw.cpp:163": "return H_ref_ * std::exp(dHdiss_ / constant::R * (1.0/T - 1.0/T_ref_));",
@@ -429,6 +449,71 @@ describe("one-flux-many-units: the lesson", () => {
     expect(prose).toContain("computes none of the numbers on this page");
     expect(OFMU_LIMITS.map((l) => l.id)).toContain("not-engine");
     expect(OFMU_STEPS.find((s) => s.n === 6)!.note).toContain("do not print");
+  });
+});
+
+describe("one-flux-many-units: the numbers the prose states (MT-03, MT-04, MT-06)", () => {
+  const body = (n: number): string => OFMU_STEPS.find((s) => s.n === n)!.body + " " + (OFMU_STEPS.find((s) => s.n === n)!.note ?? "");
+
+  it("step 5: Seader's two slope choices land within a percent; the straight line is off by more than 80 %", () => {
+    expect(body(5)).toContain("within a percent of the exact flux");
+    expect(body(5)).toContain("wrong by more than 80 %");
+    const d = curvedDemo(1);
+    expect(Math.abs(d.NAverage / d.N - 1)).toBeLessThan(0.01);
+    expect(Math.abs(d.NAtXstar / d.N - 1)).toBeLessThan(0.01);
+    expect(d.NDilute / d.N - 1).toBeGreaterThan(0.8);
+  });
+
+  it("step 5's note: the bulk-flow correction moves K_x from 9.69 to 9.71 (Seader 3.18 (b) and (c))", () => {
+    expect(body(5)).toContain("from 9.69 to 9.71");
+    printed(1 / (1 / 9.9 + 1 / (56.3 * 8.1)), 9.69, 3);                       // (b)
+    //  (c), with the corrected coefficients as the book prints them: k'_x = 9.9/0.9986 = 9.9 and
+    //  k'_y = 8.1/0.915 = 8.85
+    printed(9.9 / 0.9986, 9.9, 2);
+    printed(8.1 / 0.915, 8.85, 3);
+    printed(1 / (1 / 9.9 + 1 / (56.3 * 8.85)), 9.71, 3);
+  });
+
+  it("step 2: the stagnant-film factor at 8.5 % SO2 is 1/0.915 = 1.09", () => {
+    expect(body(2)).toContain("1/0.915 = 1.09");
+    printed(1 / 0.915, 1.09, 3);
+    printed(1 / driftLogMean(0.085, 0.085), 1.09, 3);
+  });
+
+  it("step 3: oxygen's slope at 1 atm is about 4x10^4; the guide's 4.7 orders of magnitude to ammonia", () => {
+    expect(body(3)).toContain("about 4×10⁴");
+    const mO2 = henrySlope(fromHcp(SANDER_EXAMPLES[0].Hcp, T_STD).KHpx, ATM);
+    const mNH3 = henrySlope(fromHcp(SANDER_EXAMPLES[1].Hcp, T_STD).KHpx, ATM);
+    expect(Number(mO2.toPrecision(1))).toBe(4e4);
+    expect((Math.log10(mO2 / mNH3)).toFixed(1)).toBe("4.7");
+    printed(mNH3, 0.93, 2);
+    const guide = tree("docs/eduToolsGuide.tex");
+    expect(guide).toContain("about 4.7 orders of magnitude (from 0.93 to $4.2\\times10^4$ at 1\\,atm)");
+    expect(guide).not.toContain("five orders of magnitude");
+  });
+
+  it("the engine's beta is k a times the segment's volume over V_ref, and the limit mode is linearised (MT-04)", () => {
+    expect(OFMU_ENGINE_SCOPE).toContain("made dimensionless by V_ref");
+    expect(body(4)).toContain("linearised about the bulk liquid");
+    expect(body(7)).toContain("RateBasedSegment.cpp:553");
+    const src = tree("src/unitOperations/distillation/RateBasedSegment.cpp").split("\n");
+    //  line 541 sits inside the `if (!limitMode)` branch; 553 is the other branch
+    expect(src.slice(537, 541).join("\n")).toContain("if (!limitMode)");
+    expect(src.slice(541, 553).join("\n")).toContain("else");
+  });
+
+  it("flags the pseudo-first-order value above the instantaneous limit (Missen's data, c_B = 0.01 mol/L)", () => {
+    const r = reactive({ ...MISSEN_9_6, cB: 10 });
+    printed(r.Ha, 1.06, 3);
+    printed(r.Ei, 1.31, 3);
+    printed(r.Epfo, 1.35, 3);
+    expect(r.Epfo).toBeGreaterThan(r.Ei);
+    expect(r.pfoAboveInstantaneous).toBe(true);
+    expect(r.Evkh).toBeLessThanOrEqual(r.Ei);
+    for (const cB of [100, 6000]) expect(reactive({ ...MISSEN_9_6, cB }).pfoAboveInstantaneous).toBe(false);
+    const page = tree("gui/src/ui/methods/OneFluxManyUnitsTool.tsx");
+    expect(page).toContain("above the instantaneous limit, not valid here");
+    expect(page).toContain("res.pfoAboveInstantaneous &&");
   });
 });
 

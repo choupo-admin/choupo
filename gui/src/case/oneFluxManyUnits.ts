@@ -376,6 +376,14 @@ export const SANDER_EXAMPLES = [
   { id: "NH3", name: "ammonia", Hcp: 5.9e-1, dlnHdinvT: 4200, row: "Sander et al. (2011), type L", page: 4410, M: 17.031 },
 ] as const;
 
+/** Choupo's water record, data/standards/components/water.dat,
+ *  `vaporPressure { model Antoine; coefficients (5.40221 1838.675 -31.737); }`,
+ *  in the engine's form log10(Psat/bar) = A - B/(T + C) (Antoine.cpp), valid
+ *  273-373 K.  Used once: the water vapour of saturated air in exercise 2. */
+export const WATER_ANTOINE = { A: 5.40221, B: 1838.675, C: -31.737 } as const;
+export const waterVapourPressure = (T: number): number =>
+  1e5 * Math.pow(10, WATER_ANTOINE.A - WATER_ANTOINE.B / (T + WATER_ANTOINE.C));
+
 /** Choupo's own O2 record, data/standards/parameters/Henry/O2-water.dat:
  *  `H_ref 4.40e9 Pa;`, read as a pressure (HenrysLaw.cpp) and used as p/x. */
 export const CHOUPO_O2_HREF_PA = 4.40e9;
@@ -521,6 +529,9 @@ export interface ReactiveResult {
   Ha: number; cAi: number; Ei: number; Epfo: number; Evkh: number;
   ratio: number; regime: Regime;
   Nphys: number; Npfo: number; Nvkh: number;
+  /** E = Ha/tanh Ha above the instantaneous limit E_i: the pseudo-first-order
+   *  form is not valid there (Missen p. 252: E is bounded by E_i). */
+  pfoAboveInstantaneous: boolean;
 }
 
 /** Missen Example 9-6's arithmetic for any input: Ha (9.2-54), E_i (9.2-53)
@@ -534,7 +545,7 @@ export function reactive(r: ReactiveInput): ReactiveResult {
   const Nphys = r.kL * cAi;
   return {
     Ha, cAi, Ei, Epfo, Evkh, ratio: Evkh / Epfo, regime: regimeOf(Ha),
-    Nphys, Npfo: Epfo * Nphys, Nvkh: Evkh * Nphys,
+    Nphys, Npfo: Epfo * Nphys, Nvkh: Evkh * Nphys, pfoAboveInstantaneous: Epfo > Ei,
   };
 }
 
@@ -594,6 +605,9 @@ export function exercises(): Exercise[] {
   const h2 = fromHcp(o2.Hcp, T_STD);
   const m2 = henrySlope(h2.KHpx, ATM);
   const y2 = 0.21, x2 = y2 / m2, c2 = o2.Hcp * y2 * ATM, mg2 = c2 * o2.M;
+  const mgLow2 = 1.2e-5 * y2 * ATM * o2.M;
+  const pw2 = waterVapourPressure(T_STD);
+  const pHumid2 = y2 * (ATM - pw2), mgHumid2 = o2.Hcp * pHumid2 * o2.M;
   // 3. Seader Example 3.18 (a), with his printed inputs
   const kx3 = 9.9, ky3 = 8.1, m3 = 49.7, xs3 = 0.001975, xb3 = 0.001;
   const o3 = overallMoleFraction(ky3, kx3, m3);
@@ -640,17 +654,22 @@ export function exercises(): Exercise[] {
         "H^cp = 1.3×10⁻⁵ mol/(m³ Pa), T = 298.15 K (Sander 2015, Table 6, p. 4408)",
         "ρ_w = 997 kg/m³ and M_w = 18.0153 g/mol (the values behind Sander's Table 1)",
         "y_O2 = 0.21 and P = 101325 Pa: illustrative values of this exercise; M_O2 = 31.998 g/mol",
+        "for the precision notes: the vapour pressure of water at 298.15 K from Choupo's water record "
+          + "(data/standards/components/water.dat, Antoine coefficients 5.40221, 1838.675, −31.737, P in bar)",
       ],
       source: "Sander (2015), Eqs. 3, 6, 15 and Table 6 (pp. 4401-4403, 4408); the air is the exercise's own",
       solution: [
-        `H^xp = H^cp M_w/ρ_w = 1.3×10⁻⁵ × 0.0180153/997 = ${sig(h2.Hxp, 4)} 1/Pa   (Sander Eq. 6).`,
+        `H^xp = H^cp M_w/ρ_w = 1.3×10⁻⁵ × 0.0180153/997 = ${sig(h2.Hxp, 4)} 1/Pa   (Sander Eq. 6; working digits kept to the end).`,
         `K_H^px = 1/H^xp = ${sig(h2.KHpx, 4)} Pa = ${sig(h2.KHpx / ATM, 4)} atm   (Eq. 15).`,
         `H^cc = H^cp R T = 1.3×10⁻⁵ × 8.314 × 298.15 = ${sig(h2.Hcc, 4)}   (Eq. 3); K_H^cc = 1/H^cc = ${sig(h2.KHcc, 4)}.`,
         `m = K_H^px/P = ${sig(h2.KHpx, 4)}/101325 = ${sig(m2, 4)}.`,
-        `x = y/m = 0.21/${sig(m2, 4)} = ${sig(x2, 3)}; c = H^cp p = 1.3×10⁻⁵ × 0.21 × 101325 = ${sig(c2, 3)} mol/m³ = ${sig(mg2, 3)} mg/L.`,
+        `x = y/m = 0.21/${sig(m2, 4)} = ${sig(x2, 4)}; c = H^cp p = 1.3×10⁻⁵ × 0.21 × 101325 = ${sig(c2, 4)} mol/m³ = ${sig(mg2, 4)} mg/L.`,
+        `Precision: the datum has two significant figures, so the answers do too.  Sander's oxygen rows spread from 1.2×10⁻⁵ to 1.3×10⁻⁵ mol/(m³ Pa) (Table 6, p. 4408), which alone moves the dissolved oxygen from ${sig(mgLow2, 2)} to ${sig(mg2, 2)} mg/L.`,
+        `Water vapour is neglected: over water at 25 °C the air is saturated, and the vapour pressure of water, ${sig(pw2, 3)} Pa (Choupo's water record, Antoine form), lowers p_O2 to 0.21 × (101325 − ${sig(pw2, 3)}) = ${sig(pHumid2, 4)} Pa, ${sig(100 * pw2 / ATM, 2)} % less: ${sig(mgHumid2, 2)} mg/L instead of ${sig(mg2, 2)}.`,
       ],
-      answer: `K_H^px = ${sig(h2.KHpx, 3)} Pa (${sig(h2.KHpx / ATM, 3)} atm); H^cc = ${sig(h2.Hcc, 3)}; m = ${sig(m2, 3)}; x = ${sig(x2, 3)}; ${sig(mg2, 3)} mg/L.`,
-      values: { Hxp: h2.Hxp, KHpx: h2.KHpx, KHpxAtm: h2.KHpx / ATM, Hcc: h2.Hcc, KHcc: h2.KHcc, m: m2, x: x2, c: c2, mg: mg2 },
+      answer: `K_H^px = ${sig(h2.KHpx, 2)} Pa (${sig(h2.KHpx / ATM, 2)} atm); H^cc = ${sig(h2.Hcc, 2)}; m = ${sig(m2, 2)}; x = ${sig(x2, 2)}; ${sig(mg2, 2)} mg/L in dry air (${sig(mgHumid2, 2)} mg/L over saturated air).`,
+      values: { Hxp: h2.Hxp, KHpx: h2.KHpx, KHpxAtm: h2.KHpx / ATM, Hcc: h2.Hcc, KHcc: h2.KHcc, m: m2, x: x2, c: c2, mg: mg2,
+        mgLow: mgLow2, pw: pw2, mgHumid: mgHumid2 },
     },
     {
       id: "overall",
