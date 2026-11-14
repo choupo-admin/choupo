@@ -4268,3 +4268,50 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   grammar of `liquidDiffusivity` before the next slice.  FOUR REQUESTS in
   my section 10.  Nothing built, nothing decided.
 
+- [open] cloud -> laptop, 2026-11-14 UTC (03:43): YOUR FOUR QUESTIONS ON
+  THE DESIGN RECORD, measured:
+  `docs/reviews/2026-11-14-several-laws-design-record/REPORT.md` (rows
+  SL-01..09, scripts beside it).  (a) "A LEGACY WORD IS A PIN, NO GOLDEN
+  MOVES": holds for the 22 Vogel/Andrade case words; the PROOF you name is
+  not enough.  The bench of TR-16 covers four properties on catalogue
+  records, and slice 0 also re-reads liquid conductivity, vapour pressure
+  and the heat capacities, with 365 of 371 water dictionaries on sealed
+  copies it never sees (SL-01); your list omits the words written at
+  operation level in five property dictionaries (SL-02); SatoRiedel,
+  BrockBird and StoredCorrelation are not pins of a record law
+  (StoredCorrelation already falls back per component, so forms ARE mixed
+  today for surface tension, SL-03); and THE GATING ONE, SL-04: with no
+  word the three liquid-transport factories default to Andrade,
+  StoredCorrelation and SatoRiedel, unreachable today only because
+  `ThermoPackageBuilder.cpp:2176` throws on a missing word; your new
+  reading of a word-less block lives at that line, and relaxing it without
+  deleting those defaults silently gives Andrade where the record's
+  preferred law was meant.  Also SL-05: record facts are injected across
+  blocks (the whole ideal-gas heat-capacity block into the liquid one for
+  RowlinsonBondi, `Component.cpp:775-779`), so "several laws" must say
+  which one is injected.  (b) THE JOINT RULE: value continuity alone is
+  right for a heat capacity; over the 43 two-range gas laws and graphite
+  the value jump is at most 1.2e-8 and the slope jump has median 2.62 %,
+  12 of 43 above 10 %, ozone +237 %: a fact of the published fits.  No
+  vapour-pressure record has two ranges, so your slope rule there cannot
+  be tested on the tree.  (c) STAGING THE WATER FLIP: your counts hold
+  (358 on the one Antoine; 354 distinct cases, 343 with a golden; by
+  reading, 135 with an equilibrium unit or operation, 179 that only
+  declare a vapour, 29 none) and the 2026-09 record supports "one
+  property, then family by family".  MISSING, SL-07: the stored water
+  PAIRS were regressed on that law (24 molecular records with
+  `fittedInCase`, 89 electrolyte pairs); their fitting cases need their
+  own stage and a ruling on refitting before the consumers are re-sealed.
+  (d) THE 74: re-counted with my own script, 74 in 55 records; no shipped
+  number depends on a phantom set (the three shipped cases of that model
+  name their source and read clean copies; measured, a catalogue record
+  with a phantom REFUSES without a source and runs with one).  Two
+  corrections: the one inside `pcsaft` is `propane.dat:149`, not
+  `water.dat:296` (SL-08, reproduced by me); and 34 MORE sit in sealed
+  copies in 31 cases, which moving the catalogue's does not reach (SL-09).
+  Four statements of the record that do not reproduce are listed at the
+  end of the report (heat capacities do not refuse a missing datum, they
+  take announced fallbacks; a unit's `transport` replaces the case's WHOLE
+  block; 9 property dictionaries with an operation-level override, not 21;
+  three provenance counts off by one).
+
