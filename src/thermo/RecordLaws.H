@@ -184,9 +184,6 @@ struct Block
     int         indexOf(const std::string& name) const;
     std::string names() const;         // "andrade, vogel"
 
-    //  The remedy for a state outside law `except`'s hard window: the other
-    //  laws of the record whose window (hard, else soft) holds T.
-    std::string coveringRemedy(scalar T, std::size_t except) const;
 };
 
 //  Read one property block.  `isType(word)` answers whether `word` is a
@@ -197,14 +194,6 @@ Block parse(const DictPtr& block, const std::string& property,
             const std::string& owner,
             const std::function<bool(const std::string&)>& isType);
 
-//  A PropertyDomainError for T outside a law's hard window, with the remedy.
-//  THE HARD WINDOW IS CHECKED ON THE STATES A RUN REPORTS OR DECLARES, never
-//  during an iteration (C398, the fourth review round's ruling): a law
-//  evaluates wherever a search takes it, and one audit after the solve
-//  (Component::auditHardWindows, called by the flowsheet and the property
-//  operations on every published and declared state) refuses through this.
-[[noreturn]] void throwOutsideDomain(const Block& b, std::size_t lawIndex,
-                                     scalar T, const std::string& what);
 
 } // namespace recordLaws
 } // namespace Choupo

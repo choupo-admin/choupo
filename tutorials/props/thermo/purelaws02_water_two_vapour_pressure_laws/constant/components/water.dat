@@ -3,8 +3,8 @@
 
   The catalogue's data/standards/components/water.dat, complete, with ONE
   change: its vaporPressure block holds two named laws, `antoine` (the
-  catalogue's, preferred) and `SR1` (the IAPWS saturation equation, with a
-  hard window), each with its source in the provenance block.  The case
+  catalogue's, preferred) and `SR1` (the IAPWS saturation equation, with its
+  soft window), each with its source in the provenance block.  The case
   adopts this record (constant/propertyManifest, `adopted`).  It is a witness
   of the record grammar, not a curation of water: the catalogue keeps its one
   Antoine law; the reference law enters the catalogue in a later campaign,
@@ -101,8 +101,8 @@ standardThermochemistry
 //  PREFERRED one, so a case that pins nothing prices water exactly as the
 //  catalogue does.  `SR1` is the IAPWS saturation equation in Wagner's form,
 //  the same coefficients and reducing constants as the sealed water of
-//  evaporator10_naoh_triple_effect; its HARD window is the equation's own
-//  range, triple point to critical point.  Each law's source is filed under
+//  evaporator10_naoh_triple_effect; its soft window is the equation's own
+//  range, triple point to critical point (announced when left).  Each law's source is filed under
 //  its name in the provenance block below.
 vaporPressure
 {
@@ -121,7 +121,6 @@ vaporPressure
         exponents     (1 1.5 3 3.5 4 7.5);
         coefficients  (-7.85951783 1.84408259 -11.7866497 22.6807411 -15.9618719 1.80122502);
         Trange        (273.16 647.096);
-        domain        (273.16 647.096);
     }
 }
 

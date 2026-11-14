@@ -12,7 +12,7 @@
                    window (273-373 K) it is the catalogue's number; above it
                    the law is extrapolated, and the run says so once.
     psatSR1_*        the variant `iapws`: the IAPWS law `SR1` pinned beside
-                   the property (the reason is printed with the choice).  Its hard window is
+                   the property (the reason is printed with the choice).  Its soft window is
                    273.16-647.096 K: every point here is inside it.
 
     What a student reads: the two laws agree to about 2.5 % at 373 K and part

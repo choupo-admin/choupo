@@ -85,13 +85,4 @@ struct PropertyDomainTrial : public InfeasibleTrial
     std::string               remedy;
 };
 
-//  A RECORD LAW'S HARD WINDOW REFUSING A STATE THE RUN REPORTS OR DECLARES
-//  (C398, the ruling of the fourth review round): thrown only by the audit
-//  after the solve (recordLaws::auditState), never during an iteration.
-struct HardWindowRefusal : public PropertyDomainError
-{
-    HardWindowRefusal(const std::string& message, std::string remedyText)
-      : PropertyDomainError(Kind::outsideHardDomain, message, std::move(remedyText)) {}
-};
-
 } // namespace Choupo

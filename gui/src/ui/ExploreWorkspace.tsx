@@ -129,7 +129,7 @@ import {
 // the `skipped` note were two homes for one fact, and they disagreed.
 const MIXTURE_PROPS = ["Z", "v_molar", "Cp_ig", "H_real", "S_real"];
 // Transport properties are their OWN family: the engine computes them from
-// (T, x) only — they NEVER call the EOS (PropertyEvaluator.cpp:116-150).  The
+// (T, x) only — they NEVER call the EOS (PropertyEvaluator.cpp:116-130).  The
 // model is chosen WITHIN a family (Andrade vs Vogel), never across to the EOS.
 const TRANSPORT_PROPS = ["viscosity_liquid", "viscosity_gas", "thermal_conductivity_liquid", "thermal_conductivity"];
 // The ONLY scan properties that actually call eos() (PropertyEvaluator.cpp:110-113);

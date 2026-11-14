@@ -141,8 +141,8 @@ siblings:
   of the laws.
 - The SOFT window keeps each type's existing keys (`Trange`, `Tmin`/`Tmax`,
   `Tlow`/`Thigh`) -- a `window {}` key would give one quantity a second name.
-  The HARD window is `domain (lo hi);` in K, optional; outside it the law is
-  refused, never switched.
+  A HARD window is NOT supported yet: `domain (lo hi);` is refused by the
+  grammar ("declare the law's soft window"); it gets its own slice.
 - A law's SOURCE lives in the record's ONE `provenance {}` block, by
   property and law: `provenance { vaporPressure { SR1 { origin ...; } } }`.
   Never a provenance entry inside another block (gate

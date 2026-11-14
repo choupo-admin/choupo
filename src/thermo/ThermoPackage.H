@@ -723,17 +723,6 @@ public:
     //  that the package's own components carry each pin (SB-01).
     static std::vector<struct RecordLawPin> readRecordLawPins(const DictPtr& system);
 
-    //  THE AUDIT OF A REPORTED OR DECLARED STATE (C398, the fourth review
-    //  round's ruling): each constituent present (z_i > 0; every one when z is
-    //  empty) has every record law this package has evaluated -- vapour
-    //  pressure, heat capacities, liquid transport laws -- held to its hard
-    //  window at T.  A state a pure-fluid formulation prices (the phase pure in
-    //  that component) consults no record law and is not audited for it.
-    void auditState(scalar T, const sVector& z, const std::string& where, bool enthalpy) const;
-    //  THE TIME-INTEGRATED BINARIES AUDIT NO HARD WINDOW YET (C398): until
-    //  they audit their reported instants, a package with a chosen law that
-    //  declares `domain` is refused there, at assembly, by name.
-    void refuseUnauditedHardWindows() const;
 
     //  THE PACKAGE'S IDENTITY (C398 review CV-20): the fingerprint of the
     //  resolved definition it was built from -- the one its resolved view

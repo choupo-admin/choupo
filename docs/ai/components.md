@@ -1435,9 +1435,8 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
   `model` word is one law; a bare `surfaceTension { A; B; Tc; n; Tmin;
   Tmax; }` is one law of type `tauPower` (σ = A τ^n + B τ^(n+1), τ = 1 −
   T/Tc).  Each law keeps its type's SOFT window (`Trange` / `Tmin` `Tmax` /
-  `Tlow` `Thigh`: announced outside) and may add a HARD window `domain (lo
-  hi);` in K (outside it the law is refused, naming the record's other laws
-  that cover the state; it never switches).  A law's source goes in the
+  `Tlow` `Thigh`: announced outside).  A HARD window (`domain (lo hi);`) is
+  not supported yet: the record grammar refuses it by name.  A law's source goes in the
   record's one provenance block, by property and law: `provenance {
   vaporPressure { SR1 { origin literature; method "..."; } } }`.  A law may
   carry `check { T 298.15 K; value <v> <unit>; tolerance <fraction>; }` — a

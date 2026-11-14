@@ -5554,11 +5554,11 @@ NOT MODELLED, said plainly (the run says it too): nucleation and supercooling --
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{psatSR1\_550K}\\[-1pt]{\tiny propertyPoint}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{Several named laws in one record: a case-local water record holding two vapour-pressure laws (the catalogue's Antoine, preferred, and the IAPWS saturation equation as Wagner's form, with a hard window), priced once on the preferred law and once with the IAPWS law pinned beside the property, at 350, 450 and 550 K}
+\tutwhat{Several named laws in one record: a case-local water record holding two vapour-pressure laws (the catalogue's Antoine, preferred, and the IAPWS saturation equation as Wagner's form, with its soft window), priced once on the preferred law and once with the IAPWS law pinned beside the property, at 350, 450 and 550 K}
 \begin{tutnarrative}
 purelaws02 -- the saturation pressure of water at 350, 450 and 550 K, two ways.
 
-psatPreferred\_$\ast$ the record's preferred law, `antoine`: inside its soft window (273-373 K) it is the catalogue's number; above it the law is extrapolated, and the run says so once. psatSR1\_$\ast$ the variant `iapws`: the IAPWS law `SR1` pinned beside the property (the reason is printed with the choice). Its hard window is 273.16-647.096 K: every point here is inside it.
+psatPreferred\_$\ast$ the record's preferred law, `antoine`: inside its soft window (273-373 K) it is the catalogue's number; above it the law is extrapolated, and the run says so once. psatSR1\_$\ast$ the variant `iapws`: the IAPWS law `SR1` pinned beside the property (the reason is printed with the choice). Its soft window is 273.16-647.096 K: every point here is inside it.
 
 What a student reads: the two laws agree to about 2.5 \% at 373 K and part by more than 10 \% at 473 K and above, where the Antoine law is no longer inside the window it was fitted on (docs/design/several-laws-per-property.md section 4 measures the same against IAPWS-IF97). Neither law is switched for the other by the state: each operation uses the one law it chose.
 

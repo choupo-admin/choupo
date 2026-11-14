@@ -126,10 +126,10 @@ public:
     //  from it once for every combination of models.)
     scalar Psat_Pa(scalar T_K) const
     {
-        //  THE HARD WINDOW of a record law (`domain (lo hi);`) is not checked
-        //  here: a search may take the law anywhere; the states the run
-        //  reports and declares are audited after the solve (C398, the
-        //  fourth review round's ruling; Component::auditHardWindows).
+        //  A record law has no hard window yet (C398: `domain` is refused by
+        //  the record grammar until its own slice); its soft window is noted
+        //  below.  The law's first evaluation describes it (review CV-07).
+        //  Callers never see computePsat without this note having run.
         if (onFirstUse_) { const auto f = std::move(onFirstUse_); onFirstUse_ = nullptr; f(*this); }
         noteRange(T_K);
         if (!cont_.ready) buildContinuation();

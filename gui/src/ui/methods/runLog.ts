@@ -134,7 +134,7 @@ export const CITES = {
     contains: 'std::cerr << "[sealed] " << noun_' },
   stateSeeded: { file: FLOWSHEET, line: 2601,
     contains: 'std::cout << "[state] seeded "' },
-  plan: { file: FLOWSHEET, line: 5222,
+  plan: { file: FLOWSHEET, line: 5221,
     contains: "\"[plan] material recycle: tear '\"" },
   // -- stream tables -------------------------------------------------------------
   topology: { file: FLOWSHEET, line: 3206,

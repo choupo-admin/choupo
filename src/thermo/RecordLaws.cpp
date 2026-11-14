@@ -98,12 +98,14 @@ void readSoft(Law& L)
 
 void readDomain(Law& L, const std::string& where)
 {
-    if (!L.body->found("domain")) return;
-    const auto t = L.body->lookupList("domain");
-    if (t.size() != 2 || !(t[0] > 0.0) || !(t[0] < t[1]))
-        throw std::runtime_error(where + ": `domain` is the law's HARD window, written"
-            " `domain (lo hi);` in K with 0 < lo < hi -- outside it the law refuses.");
-    L.hasDomain = true; L.domainLo = t[0]; L.domainHi = t[1];
+    (void)L;
+    //  A HARD WINDOW IS NOT SUPPORTED YET (C398, ruled after the fifth review
+    //  round): every form of it -- refused inside the searches, then audited on
+    //  the reported states -- left a state unvisited or misfired, so it leaves
+    //  this landing and is designed in its own slice.
+    if (L.body->found("domain"))
+        throw std::runtime_error(where + ": `domain` -- a hard window is not supported yet (DEV.md 4c,"
+            " C398 hard-window slice); declare the law's soft window, which is announced when left.");
 }
 
 } // namespace
@@ -254,27 +256,6 @@ std::string Block::names() const
     return s;
 }
 
-std::string Block::coveringRemedy(scalar T, std::size_t except) const
-{
-    std::string s;
-    for (std::size_t i = 0; i < laws.size(); ++i)
-    {
-        if (i == except) continue;
-        const Law& L = laws[i];
-        const bool covers = L.hasDomain ? (T >= L.domainLo && T <= L.domainHi)
-                          : L.hasSoft   ? (T >= L.softLo && T <= L.softHi) : false;
-        if (covers) s += (s.empty() ? "" : ", ") + L.label() + " (" + L.windowText() + ")";
-    }
-    if (s.empty())
-        return "no other law of this record covers it: extend the law, or add one with"
-               " its source";
-    std::string place = pinPlace(property);
-    for (std::size_t at = place.find("<c>"); at != std::string::npos; at = place.find("<c>"))
-        place.replace(at, 3, owner);
-    return "law " + s + " of the same record covers it -- pin it in the case's property"
-           " dictionary (`" + place + "`), or extend the law";
-}
-
 Block parse(const DictPtr& block, const std::string& property,
             const std::string& owner,
             const std::function<bool(const std::string&)>& isType)
@@ -363,19 +344,6 @@ Block parse(const DictPtr& block, const std::string& property,
     else if (b.laws.size() == 1)
         b.preferred = 0;
     return b;
-}
-
-void throwOutsideDomain(const Block& b, std::size_t lawIndex, scalar T, const std::string& what)
-{
-    const Law& L = b.laws.at(lawIndex);
-    //  The remedy is IN the message (review row SB-03): every printer of an
-    //  exception prints what(), and none reads the separate remedy field, so a
-    //  remedy kept only there named the covering law to nobody.
-    const std::string remedy = b.coveringRemedy(T, lawIndex);
-    const std::string msg = what + " of " + b.owner + ": law " + L.label() + " (" + L.type
-        + ") refuses T = " + [&]{ std::ostringstream o; o << std::setprecision(10) << T; return o.str(); }() + " K, outside its hard window " + num(L.domainLo) + "-"
-        + num(L.domainHi) + " K; " + remedy;
-    throw HardWindowRefusal(msg, remedy);
 }
 
 } // namespace recordLaws
