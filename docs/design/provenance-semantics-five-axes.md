@@ -317,7 +317,9 @@ blocks nested one level deeper —
 value it derives, and the form the Explorer's component inspector was taught to
 read on 2026-09-03.  Recounted at both depths:
 
-**census: 2374 direct + 3775 per-value = 6149 across 3053 files**
+**census: 2374 direct + 3775 per-value = 6149 across 3055 files**
+
+(recounted 2026-11-14, DEV.md 4c C398 slice (e): two packing records (`assets/SulzerBX.dat`, `assets/MontzB1-250.dat`) carry a `provenance {}` block whose entries are not origin words the census counts: +0 direct, +0 per-value, +2 files; and, before it,
 
 (recounted 2026-11-14, DEV.md 4c C398 slice (b), review row SL-09: the 74 per-property provenance entries a curation tool had filed inside a record's `cosmo {}` (73) or `pcsaft {}` (1) block -- where neither the provenance reader nor this census looked -- are moved into those 55 records' own `provenance {}` blocks: +74 per-value, no new file, no direct entry.  The per-law provenance the slice introduces lives only in a tutorial's case-local record, outside this census's domain; and, before it,
 

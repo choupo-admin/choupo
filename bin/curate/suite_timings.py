@@ -38,7 +38,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-RESULT = re.compile(r"^(PASS|FAIL|KNOWN-BROKEN|EXPECTED-FAIL)\s+(\S+)")
+RESULT = re.compile(r"^(PASS|FAIL|KNOWN-BROKEN|EXPECTED-FAIL|REUSED)\s+(\S+)")
 TALLY = re.compile(r"^PASS \d+ / FAIL \d+")     # the closing summary line is not an item
 
 
