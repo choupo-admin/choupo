@@ -370,6 +370,9 @@ const EquilibriumOrRateBasedTool = lazy(() =>
 const FluidisedBedsTool = lazy(() =>
   import("./methods/FluidisedBedsTool.js")
     .then((m) => ({ default: m.FluidisedBedsTool })));
+const OneFluxManyUnitsTool = lazy(() =>
+  import("./methods/OneFluxManyUnitsTool.js")
+    .then((m) => ({ default: m.OneFluxManyUnitsTool })));
 const PoolFireTool = lazy(() =>
   import("./methods/PoolFireTool.js")
     .then((m) => ({ default: m.PoolFireTool })));
@@ -687,6 +690,7 @@ export function MethodsWorkspace() {
             : tool === "fluidised-beds" ? <FluidisedBedsTool />
             : tool === "fast-and-slow" ? <FastSlowTool />
             : tool === "equilibrium-or-rate-based" ? <EquilibriumOrRateBasedTool />
+            : tool === "one-flux-many-units" ? <OneFluxManyUnitsTool />
             : tool === "bund" ? <BundTool />
             : tool === "letdown" ? <LetdownTool />
             : tool === "plant-layout" ? <PlantLayoutTool />

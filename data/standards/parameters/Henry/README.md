@@ -1,10 +1,13 @@
 # `data/standards/parameters/Henry/` — Henry's-law constants (gas in water)
 
 Each `*-water.dat` file gives the Henry's-law constant for one solute in
-liquid water, in the **pressure / mole-fraction form**
+liquid water, in the **pressure / mole-fraction form**: the volatility
+`p_i / x_i` in Pa, which Sander (2015) writes `K_H^px`.  The records and the
+convention profile `Sander-Hxp-v1` call it `H_xp`, but Sander's own `H^xp` is
+the inverse, the solubility `x_i / p_i`.
 
 ```
-H_xp = p_i / x_i        [Pa]
+K_H^px = p_i / x_i        [Pa]    (stored as H_ref; named H_xp in the records)
 ```
 
 with a van't Hoff temperature dependence (the form the solver reads):
@@ -26,7 +29,8 @@ becomes less soluble).
   "Compilation of Henry's law constants (version 4.0) for water as solvent,"
   Atmos. Chem. Phys. 15, 4399-4981, doi:10.5194/acp-15-4399-2015** — licensed
   **CC-BY 3.0** — as redistributed in the MIT-licensed `thermo` library.
-  Sander tabulates a two-parameter van't Hoff fit `ln H_xp[Pa] = A + B/T`;
+  Sander's Table 6 tabulates, per row, the solubility `H^cp` in mol/(m3 Pa)
+  at 298.15 K and `d ln H^cp / d(1/T)` in K, not a fit `ln(p/x) = A + B/T`;
   Choupo stores the equivalent `H_ref = exp(A + B/T_ref)` and
   `enthalpy = R * B`.  Each file's header records `A`, `B`, the CAS, and this
   conversion (the "change" indicated per CC-BY).  Validation: the ingested CO2

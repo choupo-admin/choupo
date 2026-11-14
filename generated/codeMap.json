@@ -994,6 +994,9 @@
   "HansenMixture": [
    "src/propertyOps/HansenMixture.H"
   ],
+  "HardWindowRefusal": [
+   "src/thermo/PropertyDomainError.H"
+  ],
   "HeatCapacityFit": [
    "src/propertyOps/HeatCapacityFit.H"
   ],
@@ -1533,11 +1536,20 @@
   "PSA": [
    "src/unitOperations/separation/PSA.H"
   ],
+  "PackageTagScope": [
+   "src/thermo/RecordLaws.H"
+  ],
   "PackingDelft": [
    "src/unitOperations/distillation/PackingDelft.H"
   ],
   "PackingRBF": [
    "src/unitOperations/distillation/PackingRBF.H"
+  ],
+  "PackingRecord": [
+   "src/unitOperations/distillation/PackingRecord.H"
+  ],
+  "PackingRegistry": [
+   "src/unitOperations/distillation/PackingRecord.H"
   ],
   "PairLookup": [
    "src/propertyOps/CatalogueLookup.H"
@@ -1767,6 +1779,9 @@
   "Props": [
    "src/thermo/iapws/IF97.H"
   ],
+  "Provenance": [
+   "src/unitOperations/distillation/PackingRecord.H"
+  ],
   "PsdMoments": [
    "src/core/distribution/SizeGrid.H"
   ],
@@ -1896,6 +1911,9 @@
   ],
   "RecordLawPinScope": [
    "src/thermo/Database.H"
+  ],
+  "RecordSelf": [
+   "src/thermo/Component.H"
   ],
   "RecordVolumeLeaf": [
    "src/thermo/liquidProperty/RecordVolumeLeaf.H"

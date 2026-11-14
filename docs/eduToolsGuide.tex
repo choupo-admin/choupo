@@ -569,6 +569,101 @@ isothermal shortcut optimistic, are in \emph{Why the energy balance
 matters}.}
 
 % ---------------------------------------------------------------------
+\subsection{One flux, many units: film coefficients, Henry's law and reaction in the film}\label{sec:edu-one-flux-many-units}
+
+\declaredanchor{sec:rateBasedSegment}
+
+\noindent\textit{\small Tool:} \code{tool=one-flux-many-units}.  \textit{\small
+Case it starts from:} none --- every number on the page is the page's own
+arithmetic, from the formula printed beside it; the engine is cited where it
+uses one of the forms, never run.
+
+\subsubsection*{The question}
+
+\emph{I have a film coefficient from a correlation, a Henry's-law constant from
+a table and a flux to compute: which form is each one in, how do I get the form
+my equation needs, and what changes when the gas reacts in the liquid?}
+
+One interfacial flux is written with five film coefficients --- $k_y$, $k_c$,
+$k_p$ in the gas, $k_x$, $k_L$ in the liquid, per unit area or, times $a$, per
+unit volume --- that differ only in the driving force the flux is divided by;
+a converter takes any one in any unit, with the temperature, the pressure and
+the liquid's molar concentration, and prints every other with the step that
+gives it.  A table sets the books' names side by side: the same letter means
+different things in two books (Treybal's prime marks the equimolar
+coefficient, Seader's the one for a stagnant component), and in two chapters of
+one book (Seader's Henry constant is a solubility in chapter~3 and a volatility
+in chapter~6).  The drift factor of a film that only the solute crosses is
+derived from Taylor and Kooijman's film-model logarithm.  Henry's law is shown
+in Sander's seven variants, solubilities and volatilities, with a converter and
+the slope $m$ of $y = mx$; oxygen's tabulated value is set beside Choupo's own
+oxygen record.  Overall coefficients are built as resistances in series, with
+the share of each film; then Seader's SO$_2$ example, on a measured curved
+equilibrium line, shows three slope choices against the exact interface, and a
+straight Henry line through the origin missing the flux by more than 80\,\%.
+The last step is a reaction in the liquid film: the Hatta number, Missen's
+regimes, $E = \mathrm{Ha}/\tanh\mathrm{Ha}$, the instantaneous limit and van
+Krevelen and Hoftijzer's approximation, drawn as $E$ against Ha on log axes.
+Six short exercises close the page, each with its data, its source, a worked
+solution and the answer, hidden until asked.
+
+\subsubsection*{What the engine says, and what the page computes}
+
+The engine computes none of the page's numbers.  The page cites where it uses
+the forms: the rate-based packed segment takes $k_G$ and $k_L$ from the packing
+correlation in m/s, multiplies each by its phase's molar density (the $k_y =
+c_G k_c$ conversion of the first step) and by the effective area and the
+segment's volume, carries the bulk flow explicitly with low-flux coefficients,
+and solves the interface rather than using an overall coefficient.  A Henry
+record stores $p/x$ in Pa (Sander's $K_\mathrm{H}^{px}$, although the record's
+convention names it \code{H\_xp}), carried in temperature by van~'t~Hoff's form,
+and a Henry solute's K-value is that pressure over the total pressure.  Every
+formula on the page was read in a filed source at the equation it names:
+Treybal (1980) Eqs.~3.3--3.6, Table~3.1 and Eqs.~5.1--5.19; Seader et
+al.\ (2016) Eqs.~3-179 to 3-216, Table~3.12, Example~3.18 and Eqs.~6-128 to
+6-132; Sander (2015) Eqs.~1--16 and Tables~1--4 and~6; Taylor and Kooijman
+(2014) Eqs.~3.44, 3.68 and 3.77--3.82; Missen et al.\ (1999) Sect.~9.2 and
+Example~9-6.  The page's tests hold the conversions in both directions, Sander's
+conversion factors, Seader's and Missen's printed results and every exercise
+answer to the digits it prints.
+
+\subsubsection*{What to vary, what to watch}
+
+\begin{tryit}
+In the first converter, enter Seader's gas coefficient (0.040\,kmol/(h\,m$^2$\,kPa)
+at 50\,\textdegree C and 2\,atm) and read $k_y = 8.1$\,kmol/(h\,m$^2$); then
+raise the bulk mole fraction of A towards 0.5 and watch the stagnant-film
+coefficient pull away from the low-flux one.  In the Henry converter pick
+ammonia, then oxygen: the slope $m$ moves by about 4.7 orders of magnitude (from 0.93 to $4.2\times10^4$ at 1\,atm), and with
+it, in the overall coefficient, the film that controls.  In the curved-line
+panel slide the gas coefficient down: the interface walks along the curve, and
+the slope choices that agreed to a percent drift apart.  In the reaction panel
+press Missen's two cases and watch the point move from the region where $E$
+bends towards $E_i$ to the diagonal where $\mathrm{Ha}/\tanh\mathrm{Ha}$ is enough.
+\end{tryit}
+
+\begin{pitfall}
+\textbf{That a Henry's-law constant is ``large'' or ``small''.}  Without its
+type (solubility or volatility) and its composition variables, the number says
+nothing; Sander's compilation opens on this warning.
+\end{pitfall}
+
+\subsubsection*{What this tool does not carry}
+
+One solute through one film (no multicomponent matrices); low-flux coefficients
+corrected only for the stagnant film (no general finite-flux factor); Henry's
+law in the dilute, physical form (no dissociation in water); the film model of a
+reacting liquid, irreversible and isothermal (no penetration or surface-renewal
+$E$, which the filed sources do not print for a reacting film, no reversible
+reaction, no heat of reaction at the interface).
+
+\subsubsection*{Where the derivation lives}
+
+\derivation{Theory Guide, \emph{The rate-based packed segment}
+(\theorydest{sec:rateBasedSegment}): the engine's own film equations, the
+bootstrap and the interface energy balance.}
+
+% ---------------------------------------------------------------------
 \subsection{Heat exchange: effectiveness against NTU}\label{sec:edu-entu}
 
 \declaredanchor{ch:hx-entu}

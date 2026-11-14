@@ -4120,6 +4120,22 @@ PYEOF
     fi
     rm -f /tmp/ratebased.$$
 
+    # packing-record gate (2026-11-14, DEV.md 4c C329 / C398 slice (e)).
+    # A packing read from a `kind packing` asset record gives the inline
+    # bed's numbers exactly (packing05 = packing01; ratebased01 through the
+    # record), prints each value as nominal / installed / borrowed, serves
+    # Delft from the catalogue record MontzB1-250, and refuses by name the
+    # field a correlation reads and nothing supplies.
+    if gate_exec "$ROOT/bin/curate/check_packing_record.py" > /tmp/packrec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "packing-record-gate" "$(gate_claim check_packing_record /tmp/packrec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_packing_record.py)\n" "packing-record-gate"
+        cat /tmp/packrec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/packrec.$$
+
     # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
     # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
     # engine solves the pellet BVP by central differences on NewtonND and

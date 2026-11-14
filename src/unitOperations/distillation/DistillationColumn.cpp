@@ -1353,8 +1353,8 @@ int DistillationColumn::solve(const DictPtr& dict,
                       " model reads it.");
 
     //  A recovery specification wraps whichever method is selected (DistillationColumn.H).
-    if (method == "totalReflux") return solveTotalReflux(dict, thermo, verbosity);
-    if (method == "rateBased")   return solveRateBased(dict, thermo, verbosity);
+    if (method == "totalReflux") return solvePackedReadingRecord(dict, thermo, verbosity, false);
+    if (method == "rateBased")   return solvePackedReadingRecord(dict, thermo, verbosity, true);
     if (operDict->found("distillateRecovery"))
         return solveForRecovery(dict, thermo, verbosity);
 
@@ -5824,6 +5824,47 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
         " not computed"));
     (void)verbosity;
     return 0;
+}
+
+
+// ===========================================================================
+//   A PACKING RECORD (C398 slice (e), PackingRecord.H).
+//
+//   When `packing {}` names a `record`, both packed solvers (the
+//   transfer-unit bed above, the rate-based segments in RateBasedSegment.cpp)
+//   read a COPY of this unit's dictionary whose packing block is the resolved
+//   inline form, so a record-backed bed and an inline one go through the same
+//   lookups and give the same doubles.  The case's own dictionary then
+//   carries the copy's reads back, so the unread-key audit of its
+//   `operation {}` judges what the solver consulted.  No `record`: the
+//   resolver returns nullptr and the column reads the case's dictionary
+//   exactly as before.  (Defined here, at the end of the file, so that no
+//   line a lesson cites by file:line moves.)
+// ===========================================================================
+int DistillationColumn::solvePackedReadingRecord(const DictPtr& dict,
+                                                 const ThermoPackage& thermo,
+                                                 int verbosity,
+                                                 bool rateBased)
+{
+    const DictPtr resolved = packingRecord::resolveUnit(dict, verbosity);
+    if (!resolved) packingRecord::checkInlineRanges(dict);
+    const DictPtr& use = resolved ? resolved : dict;
+    const int rc = rateBased ? solveRateBased(use, thermo, verbosity)
+                             : solveTotalReflux(use, thermo, verbosity);
+    if (resolved)
+    {
+        //  The geometry a record-backed bed was solved with is not in the
+        //  case's block, so the run publishes it: the GUI's stage sheet draws
+        //  the corrugation angle and labels the area and void fraction from
+        //  these, never from a block that does not hold them.  (An inline bed
+        //  publishes nothing new: its block IS the resolved geometry.)
+        auto pk = resolved->subDict("operation")->subDict("packing");
+        kpis_["packing_specificArea_m2_m3"]  = pk->lookupScalar("specificArea");
+        kpis_["packing_voidFraction"]        = pk->lookupScalar("voidFraction");
+        kpis_["packing_corrugationAngle_deg"] = pk->lookupScalar("corrugationAngle");
+        packingRecord::transferReads(*resolved, *dict);
+    }
+    return rc;
 }
 
 } // namespace Choupo

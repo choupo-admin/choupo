@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1860,
+  "cases": 1861,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 24
+  "anchored": 25
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -24477,7 +24477,9 @@
      "ideal"
     ]
    },
-   "roles": [],
+   "roles": [
+    "anchored"
+   ],
    "hasGolden": true
   },
   "tutorials/props/steam/steam03_if97_region3": {
@@ -25454,6 +25456,24 @@
    ],
    "unitModels": [
     "Delft",
+    "totalReflux"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/distillation/packing05_schulz_record_0p10bar": {
+   "application": "choupoSolve",
+   "unitTypes": [
+    "distillationColumn"
+   ],
+   "unitModels": [
+    "RochaBravoFair",
     "totalReflux"
    ],
    "thermo": {
@@ -31547,6 +31567,7 @@
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/packing05_schulz_record_0p10bar",
     "tutorials/steady/distillation/ratebased01_schulz_0p10bar",
     "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
     "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
@@ -32087,6 +32108,7 @@
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/packing05_schulz_record_0p10bar",
     "tutorials/steady/distillation/ratebased01_schulz_0p10bar",
     "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
     "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",
@@ -35014,6 +35036,7 @@
     "tutorials/steady/distillation/packing02_schulz_0p02bar",
     "tutorials/steady/distillation/packing03_schulz_delft_0p10bar",
     "tutorials/steady/distillation/packing04_schulz_delft_0p02bar",
+    "tutorials/steady/distillation/packing05_schulz_record_0p10bar",
     "tutorials/steady/distillation/ratebased01_schulz_0p10bar",
     "tutorials/steady/distillation/ratebased02_schulz_0p02bar",
     "tutorials/steady/distillation/ratebased03_schulz_delft_0p10bar",

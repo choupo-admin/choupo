@@ -29195,6 +29195,80 @@ $\alpha$, corrugation base $b$ and height $h$, element height.  One reading:
 the sign inside $\psi$ (Table~4) is not legible and is taken as minus (the
 chord).
 
+\subsubsection{The packing as a record (\code{record}, \code{installed}, \code{borrowed})}\label{sec:packing-record}
+A packing is a piece of equipment with its own data, so the geometry the two
+correlations read can live in an asset record of the flat catalogue,
+\code{kind packing;}, which \code{packing \{ record <name>; \}} names in place of
+the inline keys.  Three sources, and the run prints which one gave each value:
+\begin{itemize}
+\item \textbf{nominal}, the record's: what the maker or a paper prints about
+  the packing itself --- \code{specificArea} $a_p$, \code{voidFraction}
+  $\varepsilon$, \code{corrugationAngle} $\theta$ (degrees from the
+  horizontal), \code{corrugationSide} $S$, \code{corrugationBase} $b$,
+  \code{corrugationHeight} $h$, \code{elementHeight} $h_{pe}$,
+  \code{holeFraction} $\Omega$, \code{surface} (\code{gauze} or
+  \code{sheetMetal}), and, under \code{correlations \{ RochaBravoFair \{ \} \}},
+  the surface-enhancement factor $F_{SE}$ of a sheet-metal packing, which is
+  a constant of that packing under that one correlation (Rocha, Bravo and
+  Fair 1996 \cite{RochaBravoFair1996}, Eq.~10 and Table~1).  Every value
+  carries its source; an estimate is marked, explained and reviewed.
+\item \textbf{installed}, the case's: a value measured on the bed the case
+  describes, declared under \code{installed \{ ...; source "..."; \}}; it
+  replaces the nominal value and the run says so (``specificArea 478 m2/m3,
+  installed (case) replaces nominal 500 m2/m3 (record)'').  The column's
+  diameter and bed height are the case's too, written in \code{packing \{\}}
+  itself.
+\item \textbf{borrowed}, a hypothesis of the case: a value of
+  \emph{another} packing, \code{borrowed \{ <field> \{ from <record>;
+  reason "..."; \} \}}, printed as borrowed with its reason.  It never enters
+  a record.
+\end{itemize}
+Not every value can come from every source.  A geometry value may be
+installed or borrowed; the \code{surface} is a property of the product, so it
+is the record's alone (a bed of another surface is another packing); $F_{SE}$
+is a constant of a packing under one correlation, so it is the record's or
+borrowed, never installed.  A key typed beside \code{record} is refused (it
+would override the record in silence), and the refusal names only the remedy
+the reader accepts; so is a field the chosen correlation reads that none of
+the three supplies (the refusal names the field and the correlation), an
+unknown correlation word (refused first, with the inline form's message), a
+record whose \code{name} is not its file's name (the seal copies it by that
+name), and a value outside its range wherever it is written --- in a record,
+under \code{installed}, borrowed, or inline in an old-form block ($0 <
+\varepsilon < 1$, $0 \le \Omega < 1$, $0 < \theta < 90^\circ$, lengths and
+areas positive).  A borrowed value keeps its lender's estimate mark, and one
+borrowed from a random packing is announced as such.  A record-backed bed
+publishes the geometry it was solved with as the KPIs
+\code{packing\_specificArea\_m2\_m3}, \code{packing\_voidFraction} and
+\code{packing\_corrugationAngle\_deg}, which the GUI's column sheet draws (an
+inline bed publishes none: its block is the resolved geometry).  The two
+correlations do not read the same geometry:
+\begin{center}
+\begin{tabular}{lll}
+\hline
+field & Rocha--Bravo--Fair (Sec.~\ref{sec:packing-rbf}) & Delft (Sec.~\ref{sec:packing-delft}) \\
+\hline
+$a_p$, $\varepsilon$, $\theta$ & read & read \\
+corrugation side $S$ & read (1993 Eqs.~23--25) & --- \\
+\code{surface} & read (area by Eq.~14 or Eq.~10) & --- \\
+$F_{SE}$ & read on \code{sheetMetal} (1996 Eq.~10) & --- \\
+$b$, $h$, $h_{pe}$, $\Omega$ & --- & read (Fair et al.\ 2000 Tables~2, 4) \\
+\hline
+\end{tabular}
+\end{center}
+The catalogue holds two records, each written only from the table it cites:
+\code{SulzerBX} (gauze, $a_p = 492$~m$^2$/m$^3$, $\varepsilon = 0.90$,
+$S = 9$~mm: Rocha, Bravo and Fair 1993 \cite{RochaBravoFair1993}, Table~IV;
+$60^\circ$: 1996 Table~1), complete for Rocha--Bravo--Fair and refused by
+Delft for want of $b$, $h$, $h_{pe}$ and $\Omega$; and \code{MontzB1-250}
+(sheet metal, Fair et al.\ \cite{Fair2000Delft}, Table~1), complete for Delft
+and refused by Rocha--Bravo--Fair for want of $F_{SE}$.  The resolved values
+are handed to the bed solvers through the same keys as the inline form, so a
+record changes no number: the witness \code{packing05\_schulz\_record\_0p10bar}
+reproduces \code{packing01} exactly (gate \code{check\_packing\_record}).  The
+record kind also admits \code{arrangement random;}; no random-packing
+correlation is implemented, so a column refuses one by name.
+
 \subsubsection{What was measured: Montz-Pak A3-500M}\label{sec:packing-schulz}
 Schulz et al.\ \cite{Schulz2018} measured HETP and pressure drop of a
 wire-gauze packing (478~m$^2$/m$^3$ installed, $60^\circ$, 2.2~m bed) at

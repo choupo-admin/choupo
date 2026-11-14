@@ -1,0 +1,51 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- p-xylene / o-xylene, the FRI test system of
+  Schulz et al. (2018).  Two isomers: Raoult (gamma = 1), ideal-gas vapour at
+  0.02-0.1 bar.  Vapour pressures: the records' Antoine fits to CoolProp.
+  Transport for the packing model: Chung (vapour viscosity), Fuller (vapour
+  diffusivity; diffusion volumes added to the case's component records),
+  Brock-Bird (surface tension).  Nothing fitted to the paper.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( pXylene oXylene );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel ideal;
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+transport
+{
+    vapour
+    {
+        viscosity   { model Chung; }
+        diffusivity { model Fuller; }
+    }
+
+    interface
+    {
+        surfaceTension { model BrockBird; }
+    }
+}

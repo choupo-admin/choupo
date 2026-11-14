@@ -1366,6 +1366,14 @@ Named by an element record (`feedSpacer <name>;`) or, with the explicit `area` +
 | `SchockMiquel-Naltex1228` |
 | `SchockMiquel-TorayPEC1000` |
 | `Spacer-28mil` |
+## Column packings (the bed a packed column is filled with)
+
+Named by a column's `packing { record <name>; model RochaBravoFair|Delft; diameter; height; ... }` instead of typing the geometry inline -- and typing a geometry key beside the name REFUSES.  The record carries the NOMINAL geometry its source prints (area, void fraction, corrugation angle, side, base, height, element height, hole fraction, surface) and a per-correlation constant (F_SE of a sheet-metal packing under RochaBravoFair).  A value measured on the installed bed goes in the case under `installed { ...; source; }`, another packing's value under `borrowed { <field> { from <record>; reason; } }`; the run prints each value as nominal, installed or borrowed, and a field the correlation reads and nothing supplies is refused by name.  SulzerBX serves RochaBravoFair, MontzB1-250 serves Delft.
+
+| Name |
+|---|
+| `MontzB1-250` |
+| `SulzerBX` |
 ## Adsorbents and resins
 
 Isotherm and bed properties for the fixed-bed, TSA and softener units.
