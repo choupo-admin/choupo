@@ -3476,6 +3476,40 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C329, WHERE A PACKING'S DATA LIVE, AND THE BOUNDARY OF A PARTIAL BED
+> (2026-11-14; Vitor brought an outside reading of the plan, judged on
+> its content and accepted on four points).**  (1) A PACKING IS A
+> RECORD, as a membrane spacer already is: its nominal geometry (area,
+> void fraction, kind of structure, inclination and its reference axis,
+> characteristic dimensions), each value with its source, under the
+> flat assets home with its `kind`; a constant that belongs to ONE
+> packing under ONE correlation is stored against that pair with its
+> validity; a constant borrowed from another packing is a declared
+> hypothesis of the case.  (2) WHAT WAS MEASURED ON AN INSTALLED BED
+> (the 478 m2/m3 of the delivered gauze packing) belongs to the column
+> the case describes, not to the catalogue record; the column's
+> diameter, sections and sampling heights are the case's; a liquid's
+> viscosity is the property package's and leaves the packing block.
+> (3) THE ENGINE NAMES THE FIELD A CHOSEN CORRELATION LACKS: the two
+> structured-packing models do not need the same geometry (one needs
+> the corrugation side and whether the surface is gauze or sheet, the
+> other the corrugation base and height, the element height and the
+> perforated fraction); "area, void fraction and angle are enough", as
+> the architect told Vitor, was wrong.  A lamella grid is not a
+> corrugated channel: before a channel correlation is applied to one,
+> the case says that it is being stretched.  (4) A PARTIAL BED NEEDS
+> ITS OWN LOWER BOUNDARY: slice B1 closes the bed on an equilibrium
+> reboiler; the base of one packing section above another is not one.
+> At total reflux the balance around everything above a cross-section
+> gives the rising vapour the composition of the descending liquid
+> there (y = x at every height), so a measured liquid composition at a
+> section's base fixes the entering vapour's composition WITHOUT any
+> equilibrium assumption; the next slice builds that boundary and says
+> what it takes for the vapour's temperature.  UNVERIFIED AS YET, being
+> read from their sources by a general: the two geometries quoted in
+> that reading (a lamella packing at 230 m2/m3 and 0.95; a gauze
+> packing at 500 m2/m3 and 60 degrees as standard).
+
 > **C329 SLICE B1 LANDED (2026-11-14): `model rateBased;`, THE FIRST
 > NON-EQUILIBRIUM COLUMN MODEL OF THE ENGINE.**  A binary packed bed at
 > total reflux solved as segments: 5n + 5 unknowns each (bulk and
