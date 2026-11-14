@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the economic extensions of the PIF reports -- a building cost from the
 GMP rooms, the two break-evens, a royalty inside a patent window, and the
 working capital by three methods -- are READ BACK against the case's own

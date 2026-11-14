@@ -34,6 +34,7 @@ Description
     (Treybal's form beside the hand ratio), `N_or`, and with `pseudoSolute`
     also `XfB`, `YsB` and `N_caseB`.
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #pragma once
 

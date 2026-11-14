@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Reconcile ChemSep name collisions against existing proposal identities.
 
 Only a missing CAS is filled, and only when the generated ChemSep key, stored

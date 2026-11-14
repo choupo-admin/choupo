@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """THE ELECTROLYTE CAMPAIGN (DEV.md 4c C311): Pitzer and eNRTL, salt by salt,
 fitted to the NBS/NIST-evaluated mean activity and osmotic coefficients.
 

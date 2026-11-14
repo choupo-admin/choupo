@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * A reactor's duty is a duty (DEV.md 4c C52).
  *

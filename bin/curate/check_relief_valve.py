@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the pressure-relief valve the sizing pass sizes (DEV.md 4c C62) is
 the arithmetic the EduTool teaches, on numbers the case's own items supply.
 

@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  FOLD A PATCH TAG INTO ITS RELEASE TAG — vYYMM comes to name vYYMM.N's
 #  commit; the patch tag and the release-YYMM branch go.
 #

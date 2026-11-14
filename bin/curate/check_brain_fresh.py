@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_brain_fresh: BRAIN.md's FACTS block is a fresh render, and BRAIN.md stays a page.
 
 Fails when (1) bin/curate/gen_brain_facts.py --check differs from the block on

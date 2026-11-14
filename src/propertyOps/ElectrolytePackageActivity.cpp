@@ -1,5 +1,6 @@
 /*---------------------------------------------------------------------------*\
   ElectrolytePackageActivity -- see ElectrolytePackageActivity.H.
+  Copyright (C) 2026 Vítor Geraldes
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 

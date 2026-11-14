@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Digitise the measured points and the fitted lines of Figures 1-4 of
 Fernandez de Labastida & Yaroshchuk, "Nanofiltration of Multi-Ion Solutions:
 Quantitative Control of Concentration Polarization and Interpretation by

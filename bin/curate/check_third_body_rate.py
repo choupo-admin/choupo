@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The batch reactor's `thirdBody` rate is k(T) [M] PROD c, forward AND
 reversible (DEV.md 4c C185 item 9).
 

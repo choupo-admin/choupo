@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the transport families state their windows, cite their primaries, and prove themselves -- the four silences of 2026-09-05 stay closed, and the Chapman-Enskog slice of 2026-09-06 says what its constants are.
 
     bin/curate/check_transport_correlations.py

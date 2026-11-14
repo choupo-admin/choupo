@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Empty-directory gate (Vitor, 2026-07-18): a case folder must carry no
 empty directory -- reachable-closure removals / methods retirement left
 hollow species/ parameters/electrolyte/ shells.  The importer now prunes,

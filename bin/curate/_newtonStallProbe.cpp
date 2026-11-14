@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Probe for bin/curate/check_distillation_seed.py (DEV.md 4c C184 defect B).
 //
 // Compiled by the gate against the solver sources alone.  Prints one

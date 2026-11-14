@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*---------------------------------------------------------------------------*\
   claudeBridge -- a tiny LOCAL web-terminal bridge so the Choupo GUI's Assistant
   console can run a real `claude -c` session IN THE OPEN CASE's directory.

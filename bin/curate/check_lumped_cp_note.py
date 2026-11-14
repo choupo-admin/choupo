@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_lumped_cp_note -- an approximate energy model must announce itself.
 
 WHY.  `Absorber` and `Stripper` carry the same textbook stage energy balance:

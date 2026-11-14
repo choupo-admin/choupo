@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: an ELECTRODIALYSIS STACK is a record, and its limiting current is a
 PREDICTION -- not a declared velocity and not a declared transport number.
     bin/curate/check_ed_stack.py

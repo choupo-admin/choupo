@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Single-asset-home gate (Codex assets-audit, 2026-07-18): a physical asset
 (membrane / IEM / resin / material) lives in ONE home -- constant/assets/.
 The legacy constant/membranes/ (and the like) overlay let a SEALED case open

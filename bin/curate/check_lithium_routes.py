@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Lithium route/composition gate (Codex checklist, M6 2026-07-16).
 
 The lithiumBrinePlant golden pins RESULTS; this gate pins the ROUTE: the five

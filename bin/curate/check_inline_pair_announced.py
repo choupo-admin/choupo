@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_inline_pair_announced -- a binary pair typed in the case is ANNOUNCED.
 
     bin/curate/check_inline_pair_announced.py

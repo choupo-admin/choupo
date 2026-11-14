@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Resolver-coherence gate: the aqueousSpeciation facts must not lie.
 
 The ThermoResolver (ratified 2026-07-26) classifies components from

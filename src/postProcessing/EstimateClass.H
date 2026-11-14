@@ -7,6 +7,7 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /*
   EstimateClass -- THE ONE HOME for the cost-estimate classification.
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Extract Sander's (2015) Henry's-law Table 6 and derive Choupo Henry-water records.
 
     bin/curate/henry_sander.py extract <sander.txt> <rows.tsv>

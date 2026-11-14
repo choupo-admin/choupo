@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """check_txy_bubble_verdict -- an unconverged bubble point is not a point of
 the T-x-y diagram (DEV.md 4c C186 item 6).

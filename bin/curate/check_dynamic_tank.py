@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Dynamic-tank gate (DEV.md 4c C205, slice 1): the `dynamicTank` unit with a
 LEVEL -- its ledger closes, its valve law reaches its closed form, its level
 loop behaves as the textbook says, and a vessel that cannot exist is REFUSED.

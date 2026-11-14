@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: SRK's density error on the ammonia loop's gas is RECOMPUTED, never quoted.
 
     bin/curate/check_srk_h2n2_aad.py

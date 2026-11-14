@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # choupo-import -- SEAL a case: materialise its property-data dependency
 # closure INTO the case's own constant/ tree, which MIRRORS data/standards/
 # (the OpenFOAM form, ratified 2026-07-17: ONE home, ONE grammar -- a record

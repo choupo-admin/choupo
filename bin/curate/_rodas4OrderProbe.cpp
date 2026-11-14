@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Probe for check_rodas4_order.py: Rodas4's convergence order and L-stability.
 // Compiled by the gate against the ODE sources alone; prints one line per
 // measurement.  Fixed steps (every step accepted, step growth pinned) so the

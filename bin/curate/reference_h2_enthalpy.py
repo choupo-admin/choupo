@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Re-compute the REFERENCE molar enthalpy of normal hydrogen that the
 `standard-state` EduTool draws beside the engine's SRK points.
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: no NEW unit or sizing pass prices a liquid property itself.
 
     bin/curate/check_liquid_property_ratchet.py            # check

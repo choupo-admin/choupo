@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a bubble-point fit prices every point at the pressure its measurement declares.
 
     bin/curate/check_held_out_pressure.py

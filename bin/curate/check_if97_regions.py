@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the IAPWS-IF97 kernel is held to the verification tables PRINTED in
 its source paper, region by region, and its region boundaries to the paper's
 own permitted inconsistencies.

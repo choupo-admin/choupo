@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # promote_wave1.py -- execute the forum-ratified WAVE 1 promotion: the
 # teaching-staple CoolProp ADD files data/local/components/ -> data/standards/
 # components/.  Enforces the chair's deterministic gate IN SCRIPT (never trusts

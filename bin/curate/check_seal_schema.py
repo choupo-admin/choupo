@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """computationalSeal gate (sealing-schema migration, ratified 2026-08-03).
 
 The claim under test: under `sealSchema computational;` the seal is about

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: one pressure shell around a sector -- `type converterShell` -- sizes what it claims.
 
     bin/curate/check_converter_shell.py

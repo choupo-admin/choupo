@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # =============================================================================
 #  publish-site  --  build Choupo-dev, verify it, and push it to the site.
 #

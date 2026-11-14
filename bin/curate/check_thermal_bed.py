@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Thermal-bed gate (A5-T1 + T1.5 + T2): the one-temperature bed announces
 its anchors, and every scope decision of the design refuses out loud
 (docs/design/fixed-bed-thermal-a5.md sections 1-6).

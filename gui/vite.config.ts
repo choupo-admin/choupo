@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { localCataloguePlugin } from "./scripts/localCataloguePlugin.js";

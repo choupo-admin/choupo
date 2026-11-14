@@ -74,23 +74,23 @@ export const COSMO_WITNESS = "props/molecular/cosmoSAC01_water_ethanol";
  *  showing a shape, not a model. */
 export const COSMO_CONSTANTS = [
   { sym: "a_eff", val: "7.5", unit: "Å²", what: "effective segment area",
-    line: "CosmoSac.cpp:18" },
+    line: "CosmoSac.cpp:19" },
   { sym: "α'", val: "16466.72", unit: "kcal·Å⁴/(mol·e²)",
-    what: "misfit constant", line: "CosmoSac.cpp:19" },
+    what: "misfit constant", line: "CosmoSac.cpp:20" },
   { sym: "c_HB", val: "85580", unit: "kcal·Å⁴/(mol·e²)",
-    what: "hydrogen-bond constant", line: "CosmoSac.cpp:20" },
+    what: "hydrogen-bond constant", line: "CosmoSac.cpp:21" },
   { sym: "σ_HB", val: "0.0084", unit: "e/Å²",
     what: "hydrogen-bond cutoff — below it, no H-bond term at all",
-    line: "CosmoSac.cpp:21" },
-  { sym: "z", val: "10", unit: "—", what: "coordination number",
     line: "CosmoSac.cpp:22" },
-  { sym: "r₀", val: "66.69", unit: "Å³", what: "volume normalisation",
+  { sym: "z", val: "10", unit: "—", what: "coordination number",
     line: "CosmoSac.cpp:23" },
-  { sym: "q₀", val: "79.53", unit: "Å²", what: "area normalisation",
+  { sym: "r₀", val: "66.69", unit: "Å³", what: "volume normalisation",
     line: "CosmoSac.cpp:24" },
+  { sym: "q₀", val: "79.53", unit: "Å²", what: "area normalisation",
+    line: "CosmoSac.cpp:25" },
   { sym: "R", val: "0.001987", unit: "kcal/(mol·K)",
     what: "gas constant, in the units the constants above are fitted in",
-    line: "CosmoSac.cpp:25" },
+    line: "CosmoSac.cpp:26" },
 ] as const;
 
 /** The derivation, in the order the engine performs it.  Each step names the
@@ -132,7 +132,7 @@ export const COSMO_STEPS = [
     assumes: "Where a segment sits on the molecule does not matter, only "
       + "how much charge density it carries.  This is why COSMO-SAC cannot "
       + "distinguish isomers whose profiles coincide.",
-    cites: "CosmoSac.cpp:26-27 (grid), CosmoSac.cpp:130-134 (area, volume, "
+    cites: "CosmoSac.cpp:27-28 (grid), CosmoSac.cpp:131-135 (area, volume, "
       + "profile read per component)",
   },
   {
@@ -156,7 +156,7 @@ export const COSMO_STEPS = [
       + "hydrogen bond exists.",
     assumes: "Interactions are pairwise between surface segments and "
       + "independent of what the rest of either molecule is doing.",
-    cites: "CosmoSac.cpp:170-174",
+    cites: "CosmoSac.cpp:171-175",
   },
   {
     n: 4,
@@ -178,7 +178,7 @@ export const COSMO_STEPS = [
       + "Boltzmann-weights every contact, so a segment does prefer "
       + "partners it pairs well with — but nothing beyond the pair is "
       + "tracked: no geometry, no neighbour of a neighbour.",
-    cites: "CosmoSac.cpp:185-200",
+    cites: "CosmoSac.cpp:186-201",
   },
   {
     n: 5,
@@ -196,7 +196,7 @@ export const COSMO_STEPS = [
       + "— it is why a pure component returns γ = 1 to machine precision, "
       + "which the witness checks.",
     assumes: "Nothing new; this step is bookkeeping over steps 3 and 4.",
-    cites: "CosmoSac.cpp:205-216 (mixture profile), CosmoSac.cpp:234-240",
+    cites: "CosmoSac.cpp:206-217 (mixture profile), CosmoSac.cpp:235-241",
   },
   {
     n: 6,
@@ -219,7 +219,7 @@ export const COSMO_STEPS = [
     assumes: "The entropy of mixing depends on volume and surface area "
       + "only, through the lattice picture Staverman and Guggenheim "
       + "derived it in.",
-    cites: "CosmoSac.cpp:218-229, CosmoSac.cpp:242-250",
+    cites: "CosmoSac.cpp:219-230, CosmoSac.cpp:243-251",
   },
   {
     n: 7,
@@ -243,7 +243,7 @@ export const COSMO_STEPS = [
       + "energy of pairing their surfaces can be computed independently "
       + "and summed.  This is the assumption easiest to forget, because it "
       + "is made by the plus sign rather than by any term.",
-    cites: "CosmoSac.cpp:252",
+    cites: "CosmoSac.cpp:253",
   },
 ] as const;
 

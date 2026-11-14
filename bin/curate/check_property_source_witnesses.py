@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the liquid-property sources a unit records carry their own id AND their own words.
 
     bin/curate/check_property_source_witnesses.py            # check

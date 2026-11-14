@@ -376,7 +376,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     read: "yes", cite: "yes, as scholarly practice",
     copyValues: "yes, declaring `licence publicDomain;`",
     redistribute: "yes",
-    rule: "bin/curate/check_source_licence.py:491",
+    rule: "bin/curate/check_source_licence.py:493",
   },
   {
     cls: "open",
@@ -414,7 +414,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     read: "yes, if you have access", cite: "yes",
     copyValues: "no: local only, in your private data/local/",
     redistribute: "no",
-    rule: "bin/curate/check_source_licence.py:343",
+    rule: "bin/curate/check_source_licence.py:345",
   },
 ];
 
@@ -560,7 +560,7 @@ export const DS_STEPS: readonly LessonStep[] = [
       + "its line.  The record keeps the DOIs and the fingerprints, never "
       + "the points.",
     note: "The engine voices the review status of every pair it reads "
-      + "(src/thermo/PairAudit.H:112).  Some newer records also carry a fit "
+      + "(src/thermo/PairAudit.H:113).  Some newer records also carry a fit "
       + "grade, for example data/standards/parameters/NRTL/"
       + "124Trimethylbenzene-2Pentanol.dat:63.",
   },
@@ -682,7 +682,7 @@ export const DS_LIMITS: readonly LessonLimit[] = [
 export const CITATIONS: readonly { file: string; line: number; contains: string }[] = [
   { file: "src/core/Origin.H", line: 51, contains: "enum class Origin" },
   { file: "src/propertyOps/FitParameters.cpp", line: 1538, contains: "aadHeldOut   +=" },
-  { file: "src/thermo/PairAudit.H", line: 112, contains: "autoPromoted" },
+  { file: "src/thermo/PairAudit.H", line: 113, contains: "autoPromoted" },
   { file: "data/standards/parameters/NRTL/124Trimethylbenzene-2Pentanol.dat", line: 63, contains: "fitGrade" },
   { file: "data/standards/parameters/Henry/benzonitrile-water.dat", line: 10, contains: "CHANGES (indicated per CC-BY)" },
   { file: "docs/design/what-water-dat-does-not-say.md", line: 58, contains: "CODATA" },
@@ -691,7 +691,7 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "docs/design/where-to-find-property-data.md", line: 126, contains: "NonCommercial" },
   { file: "docs/design/where-to-find-property-data.md", line: 127, contains: "PRIMARY" },
   { file: "docs/design/where-to-find-property-data.md", line: 125, contains: "aggregator" },
-  { file: "bin/curate/check_source_licence.py", line: 343, contains: "EXCLUDED_TABLES" },
-  { file: "bin/curate/check_source_licence.py", line: 491, contains: "ACCEPTED_PUBLIC_DOMAIN" },
+  { file: "bin/curate/check_source_licence.py", line: 345, contains: "EXCLUDED_TABLES" },
+  { file: "bin/curate/check_source_licence.py", line: 493, contains: "ACCEPTED_PUBLIC_DOMAIN" },
   { file: EXAMPLE_RECORD, line: 120, contains: "rounded UP to two significant figures" },
 ];

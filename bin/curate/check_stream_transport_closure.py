@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: ONE STREAM, ONE SEMANTICS -- the transport closure (ruled 2026-08-08).
 
     bin/curate/check_stream_transport_closure.py

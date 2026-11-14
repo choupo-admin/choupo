@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Family-outlier curation gate (born 2026-07-27 from a real defect).
 
 A curated equilibrium constant is hard to eyeball: -4.059 looks as

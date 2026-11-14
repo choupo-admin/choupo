@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the one-fluid mixing ledger re-adds, from the records up.
 
     bin/curate/check_mixing_ledger.py

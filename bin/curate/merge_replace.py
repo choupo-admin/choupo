@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # merge_replace.py -- WAVE 2 of the ratified promotion plan.  The 21 REPLACE
 # files (a CoolProp proposal whose name already exists as a frozen standard)
 # must NEVER be promoted by overwrite: 21/21 standards carry standardThermochemistry the

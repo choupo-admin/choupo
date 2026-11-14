@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """VT-2005 scrub gate: the public tree ships NO externally-restricted values.
 
 A COSMO set in the public repository is either an EXTERNAL REFERENCE

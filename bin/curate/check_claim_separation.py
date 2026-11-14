@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the two claims stay apart, in the RUN and in the dossier.
 
     bin/curate/check_claim_separation.py

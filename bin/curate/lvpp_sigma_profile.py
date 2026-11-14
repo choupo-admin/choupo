@@ -2,6 +2,7 @@
 # lvpp_sigma_profile.py -- build the `cosmo { LVPP-HFTZVP-2018 { ... } }` set of a
 # catalogue component from the LVPP sigma-profile database, release 18.07.
 #
+#     Copyright (C) 2026 Vítor Geraldes
 #     SPDX-License-Identifier: GPL-3.0-or-later
 #
 # WHAT THIS IS FOR (DEV.md 4c C310; record docs/design/cosmo-sac-lvpp-hftzvp-2018.md)

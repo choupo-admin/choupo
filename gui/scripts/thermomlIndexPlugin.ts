@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Plugin } from "vite";

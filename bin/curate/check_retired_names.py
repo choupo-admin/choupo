@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Retired-name gate: no SOURCE a student reads may teach a retired
 architecture spelling.  A green case with a false comment teaches the wrong
 layout.  Three contextual scans -- a record's HOME decides what is retired

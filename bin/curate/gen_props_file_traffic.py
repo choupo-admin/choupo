@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generate gui/schemas/propsFileTraffic.json from the engine's table.
     bin/curate/gen_props_file_traffic.py            (writes the file)
     bin/curate/gen_props_file_traffic.py --check    (exit 1 when it is stale)

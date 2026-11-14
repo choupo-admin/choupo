@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a key nobody read in postDict is announced, and the auditor does not consult its subject.
 
     bin/curate/check_postdict_audit.py

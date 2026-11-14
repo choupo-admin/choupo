@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The three balances are DEFAULT diagnostics of every converged steady run.
 
 Design record: DEV.md roadmap #7 (default-on wave, 2026-08-02); the

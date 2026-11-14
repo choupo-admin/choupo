@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #------------------------------------------------------------------------------
 #  bin/estimate -- estimate a component's constants from its OWN groups{}.
 #

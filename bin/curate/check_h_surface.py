@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # check_h_surface.py -- the ONE-ENTHALPY-SURFACE gate (design forum
 # #103/#105: the unification's guard).  Style precedent: the check_*.py
 # family (check_doctrine, check_ion_pins, check_estimates).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_gates_judge_tracked -- a gate's verdict is a property of the COMMIT.
 
 WHAT THIS HOLDS (DEV.md 4c C170 item 4; record

@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 // Copy the built guides into public/ so the GUI can serve them (and link into
 // their exact sections via #nameddest=).  Runs on predev + prebuild.  The PDFs
 // are LaTeX build artifacts (docs/Makefile); we don't commit the copies.

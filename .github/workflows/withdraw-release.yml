@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  WITHDRAW A RELEASE — the tag, its GitHub Release, and its frozen app.
 #
 #  THIS IS THE DANGEROUS ONE, and it is built to be unable to do what it looks

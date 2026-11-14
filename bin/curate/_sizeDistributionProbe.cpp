@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 //  Driver for check_size_distribution.py -- exercises the SizeDistribution
 //  family through its PUBLIC surface and prints JSON.  Kept beside the gate
 //  rather than in src/ because it is curation tooling, not engine code.

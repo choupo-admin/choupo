@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a failed run REACHES THE TERMINAL, not only the log.
 
     bin/curate/check_runcase_reports_failure.py

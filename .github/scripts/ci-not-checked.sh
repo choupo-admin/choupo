@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 #  ci-not-checked.sh <fast|full>
 #
 #  Says, BY NAME, what a run on GitHub's runner does not (or cannot) check, so

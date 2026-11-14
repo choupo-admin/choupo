@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The ONE Python home for a `utility` golden row: which key an allocation
 entry publishes, and what value a row reads back from a result.
 

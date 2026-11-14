@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*  ulp_shim.c -- the fixed-bed gate's own tool (check_feed_switch.py, CI-00).
     An LD_PRELOAD library that counts calls to some libm functions and, for
     the one named in ULP_FN, moves every ULP_EVERY-th result by one unit in

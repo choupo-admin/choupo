@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 import re, os
 src = open("data/standards/electrolyte/exchange.dat").read()
 body = re.search(r'exchange\s*\((.*)\)', src, re.S).group(1)

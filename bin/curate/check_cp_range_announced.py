@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a declared Cp validity window is USED, and its two failures differ.
 
     bin/curate/check_cp_range_announced.py

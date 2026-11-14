@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """PC-SAFT association gate (approved 2026-08-02, built with the three
 ratified amendments): the engine's site fractions equal an INDEPENDENT
 Python solution of the same Wertheim closure, the predicted liquid

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """choupo-thermoml -- the local ThermoML archive: sync, index, search.
 
 WHY THIS IS A CURATION TOOL AND NOT PART OF choupoProps.  `choupoProps`

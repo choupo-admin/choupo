@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a recycle's PRESSURE is a tear variable, and every outer driver
 reads a point's result through the ONE verdict `simulationFailure`.
 

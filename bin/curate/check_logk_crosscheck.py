@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: every aqueous equilibrium is either CHECKED against the tree's own
 species data, or its reason for being uncheckable is NAMED.
 

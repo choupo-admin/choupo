@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a plant layout is DECLARED by the case, CHECKED by the engine, DRAFTED by a tool.
 
     bin/curate/check_plant_layout.py

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Pinch P1 gate: the pass's targets equal an INDEPENDENT problem-table
 implementation, the composite-curve artefact is coherent, and the pass
 neither runs uninvited nor accepts a meaningless approach.

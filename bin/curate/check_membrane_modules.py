@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a membrane MODULE is a record -- the data sheet's facts transcribed
 once, the values the sheet does not state marked as estimates and announced,
 the limits checked against the run, the rated test measured.

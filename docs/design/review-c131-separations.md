@@ -535,7 +535,7 @@ Verdicts: **CONFIRMED**, **CONFIRMED WITH CORRECTION**, **REFUTED**,
   form, (L84 - L16)/(2 L50) on the cumulative mass distribution, about 52 %
   for MSMPR, not the moment form's 50 %. Whichever is published, name its
   definition as well as its basis.
-* **M4. CONFIRMED.** `check_energy_closure.py:584-586` pins absorber01
+* **M4. CONFIRMED.** `check_energy_closure.py:586-588` pins absorber01
   -27.9838, acetone05 3.1179 and stripper01 19.8710 kW.
 * **M5. CONFIRMED.** `DistillationColumn.cpp:1823-1824`: an inline feed's
   `quality` defaults to 1.0 and its `T` to the primary feed's T, both
@@ -620,7 +620,7 @@ Verdicts: **CONFIRMED**, **CONFIRMED WITH CORRECTION**, **REFUTED**,
   * Run against the main engine, arm (k) FAILS on both models (gap
     2.1536 kW). On the branch it passes.
 * **The `check_doctrine` exemption: as narrow as claimed.**
-  * It is a path PREFIX matched by `startswith` (`check_doctrine.py:396-398`),
+  * It is a path PREFIX matched by `startswith` (`check_doctrine.py:398-400`),
     so it covers only files named `docs/design/review-c131-*`.
   * It lifts the one word `dwsim`; every other banned word still fails there.
   * Arm (t) still holds. No manual, `docs/ai/` file, GUI source,

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_first_path_agrees -- two surfaces claim to be the way in; they agree.
 
 WHY THIS GATE EXISTS

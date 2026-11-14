@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A6 gate: a declared cycle is STRUCTURE that changes no physics, and the
 cyclic-steady-state verdict is tri-state with the tolerance the CASE
 declares.

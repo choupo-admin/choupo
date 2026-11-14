@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a GMP interior is DECLARED by the case and CHECKED by the engine.
 
     bin/curate/check_gmp_layout.py

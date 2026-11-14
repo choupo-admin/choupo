@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the pure crystal is a PHASE, and freezing-point depression falls out.
 
     bin/curate/check_ice_freezing.py

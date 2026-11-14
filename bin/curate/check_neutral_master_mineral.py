@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """A neutral species is not an ion: the molar mass of a mineral whose
 dissolution master is NEUTRAL (DEV.md 4c C179).
 

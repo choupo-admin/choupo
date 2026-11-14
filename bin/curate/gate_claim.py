@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """ONE HOME for a single fact: WHICH LINE OF A GATE'S OUTPUT IS ITS CLAIM.
 
     bin/curate/gate_claim.py <gate-script-stem> [file]      # file, or stdin

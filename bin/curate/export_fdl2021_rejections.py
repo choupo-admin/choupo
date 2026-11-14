@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Write the dominant-salt rejections of Fernandez de Labastida & Yaroshchuk
 (2021) as the four datasets membrane24_fit_then_simulate fits and holds out.
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the time-integrated binaries do not hide an ill-posed case behind
 exit 0.   bin/curate/check_time_integrated.py
 

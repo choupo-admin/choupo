@@ -1760,6 +1760,11 @@
       "exit": 0,
       "claim": "check_floor_scale_ratchet: OK -- 999 files of src/ hold 32 division(s) by a quantity floored with a literal <= 1e-12 (std::max, two-argument either order or braced list, the literal bare or cast) in 20 file(s), each within its pin; none new; 8 must-catch and 9 must-not fixtures right.  NOT CLASSIFIED: whether a pinned site is harmless or a floor acting as a scale.  NOT CHECKED: a floor held by a named variable and divided by later, a floor above 1e-12 or spelled as a named constant, std::fmax, anything outside src/.",
       "seconds": 0.3
+    },
+    "check_source_headers": {
+      "exit": 0,
+      "claim": "source-headers: OK -- every tracked code file (9 kinds) carries the holder line and the licence identifier in its leading comment, no excluded third-party or held file carries one, the exclusion table is two-sided; the manifest is two-sided; author arm: OK",
+      "seconds": 1.1
     }
   }
 }

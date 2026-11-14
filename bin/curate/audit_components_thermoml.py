@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """audit_components_thermoml.py -- the catalogue's pure-component records,
 read back against the measurements the NIST ThermoML archive locates
 (DEV.md 4c C279).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """
 migrate_speciate_case.py <caseDir> -- migrate a SINGLE-MODEL speciate case off the
 degenerate propertyDict + per-op activityModel onto the inline propertyPackage

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """transport_fit.py -- DEV.md 4c C327: liquid viscosity, liquid thermal
 conductivity and surface tension of catalogue components, fitted from the
 ThermoML archive under the C283/C285/C300 protocol.

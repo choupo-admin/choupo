@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: every liquid-property route answers today what it answered when recorded, bit for bit.
 
     bin/curate/check_property_route_bench.py            # check

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the analytical qualifier (slice C) -- no default, no inference.
 
     bin/curate/check_aqueous_qualifier.py

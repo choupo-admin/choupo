@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the origin census is RECOUNTED, at every depth, and the record says so.
 
     bin/curate/check_origin_census.py

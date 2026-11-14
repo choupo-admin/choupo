@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: every activity model obeys Gibbs-Duhem, which no golden can check.
 
     bin/curate/check_gibbs_duhem.py

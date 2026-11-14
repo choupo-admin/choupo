@@ -10,6 +10,7 @@
 License
     This file is part of Choupo (GPL-3.0-or-later).  See LleTieLines.H.
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #include "LleTieLines.H"
 #include "core/Constants.H"

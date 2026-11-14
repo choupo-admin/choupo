@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """pairs_px -- NRTL pairs from isothermal bubble-PRESSURE (P-x) data (DEV.md 4c C291).
 
     bin/curate/pairs_px.py census                     every bubbleP block, accepted / refused by reason

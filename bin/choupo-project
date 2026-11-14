@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # choupo-project -- materialise a VISIBLE, runnable local run of ONE unit operation
 # by PROJECTING the plant's converged solution onto that unit (ChatGPT/ClaudeChat
 # F3, s24-s26).  The unit becomes a local run domain: its inlet streams are FIXED

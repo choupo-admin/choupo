@@ -87,11 +87,11 @@ the default is 3) and printed once per run per decision.
 
 | Site (parent build) | What it was | Now |
 |---|---|---|
-| `ThermoPackageBuilder.cpp:176` | the disambiguator | LIVE DEFECT outside the flagship; replaced by rules 1-4, the snapshot kept only as rule 3 |
-| `ThermoPackageBuilder.cpp:260` | comment naming `chemistry.salts` | rewritten |
-| `ThermoPackageBuilder.cpp:322` | ownership probe of the legacy homes | KEPT: the consumers below still read them, and a check narrower than its consumers refuses valid input |
-| `ThermoPackageBuilder.cpp:338` | refusal text naming the legacy homes | KEPT: it is true of what was searched |
-| `ThermoPackageBuilder.cpp:486/501` | the saturation anchor fallback | KEPT as a legacy read, now ANNOUNCED when it is what served (it never is in the corpus: every owner carries its `calorimetric` block) |
+| `ThermoPackageBuilder.cpp:177` | the disambiguator | LIVE DEFECT outside the flagship; replaced by rules 1-4, the snapshot kept only as rule 3 |
+| `ThermoPackageBuilder.cpp:261` | comment naming `chemistry.salts` | rewritten |
+| `ThermoPackageBuilder.cpp:323` | ownership probe of the legacy homes | KEPT: the consumers below still read them, and a check narrower than its consumers refuses valid input |
+| `ThermoPackageBuilder.cpp:339` | refusal text naming the legacy homes | KEPT: it is true of what was searched |
+| `ThermoPackageBuilder.cpp:487/501` | the saturation anchor fallback | KEPT as a legacy read, now ANNOUNCED when it is what served (it never is in the corpus: every owner carries its `calorimetric` block) |
 | (same file) `phases/solid/<phase>.dat` | the crystal-property fallback | KEPT as a legacy read, now ANNOUNCED when it serves |
 | `Crystalliser.cpp:206` | advice: "add dissolutionEnthalpy to chemistry/salts/<mineral>.dat" | rewritten: advice that sends a student to a retired home is advice that creates the bug |
 | `Component.cpp:1038`, `RecordResolver.H:342` | comments | rewritten |

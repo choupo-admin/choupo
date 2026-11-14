@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_regressed_electrolytes -- a salt record Choupo REGRESSED cannot drift
 from the case that regressed it (DEV.md 4c C311).
 

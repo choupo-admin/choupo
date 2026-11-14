@@ -1,3 +1,5 @@
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 import re, os
 _R=os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','data','standards','electrolyte')
 def safe(n):

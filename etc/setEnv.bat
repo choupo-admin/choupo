@@ -1,4 +1,6 @@
 @echo off
+REM Copyright (C) 2026 Vítor Geraldes
+REM SPDX-License-Identifier: GPL-3.0-or-later
 rem ===========================================================================
 rem  setEnv.bat  --  Windows equivalent of etc\bashrc
 rem

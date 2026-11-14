@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # Convert a component .dat from the reference-state BLOCK layout to the
 # catalogue's flat layout (the ONE component grammar).  Mechanical:
 #   identity{k v;}        -> k v;                (top level)

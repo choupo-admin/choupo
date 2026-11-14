@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """TOOL (not a gate, wired nowhere): every NUMBERED display-math environment
 of the Theory Guide, one row each, with the chapter it sits in.
 

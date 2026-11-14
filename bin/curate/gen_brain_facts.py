@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Regenerate the FACTS block of BRAIN.md from TRACKED sources only.
 
     bin/curate/gen_brain_facts.py            rewrite the block in place

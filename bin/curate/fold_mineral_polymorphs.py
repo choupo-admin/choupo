@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """
 fold_mineral_polymorphs.py -- roadmap Phase D, batch 2 (FOLD-CASES).
 

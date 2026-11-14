@@ -23,7 +23,7 @@ apparent component 'CaCO3' carries TWO candidate marker elements (C, Ca)
   -- the spike's collapse contract needs exactly one; generalised salt
   reconstruction is a later, deliberate slice.
 ```
-`ThermoPackageBuilder.cpp:690`
+`ThermoPackageBuilder.cpp:691`
 
 Declaring the typed bridge on each does not rescue them either. `markersSeen`
 (line 709) refuses two components sharing a marker element, and CO₂, CaCO₃ and
@@ -45,7 +45,7 @@ struct Family
 };
 ```
 
-and the totals are built one-for-one (`ReactiveVLE.cpp:141`):
+and the totals are built one-for-one (`ReactiveVLE.cpp:143`):
 
 ```cpp
 const scalar liq = n[fam.apparentIdx] - vap[fam.apparentIdx];

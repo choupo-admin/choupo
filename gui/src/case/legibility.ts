@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * legibility -- THE ONE MINIMUM TEXT SIZE, and what a zoomed drawing does
  * with a label that would fall below it (DEV.md 4c C168 slice 2, ruling (c):

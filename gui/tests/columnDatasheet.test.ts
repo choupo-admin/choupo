@@ -1,4 +1,32 @@
 /*---------------------------------------------------------------------------*\
+       \|/       C hemicals     | Open-source, glass-box chemical process simulator
+      \\|//      H eat-transfer | https://choupo.org
+     \\\|///     O perations    |
+      \\|//      U nits         | Copyright (C) 2026 Vítor Geraldes
+       \|/       P roperties    | Licence: GPL-3.0-or-later
+        |        O ptimization  |
+       /|\                      |
+-------------------------------------------------------------------------------
+License
+    This file is part of Choupo.
+
+    Choupo is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Choupo is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+    License for more details (https://www.gnu.org/licenses/gpl-3.0.html).
+
+    SPDX-License-Identifier: GPL-3.0-or-later
+
+    Credit and attribution: see AUTHORS
+    Required legal notices:  see NOTICE
+\*---------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
   THE COLUMN DRAWS ITSELF (2026-09-07).
 
   Task #79 gave the distillation column five specification sheets -- shell,
@@ -58,7 +86,7 @@
   geometry in this corpus where a real designer would actually price a swaged
   tower -- and Choupo STILL builds straight and prices no cone, because it has
   no correlation for one (`ColumnSize` says so at the site, and
-  `equipmentSchematic.ts:180-196` says why the drawing never shows one).  What
+  `equipmentSchematic.ts:208-224` says why the drawing never shows one).  What
   was an academic limitation on this witness is now a visible one.  That is a
   finding about the corpus, not a defect in the drawing.
 \*---------------------------------------------------------------------------*/
@@ -523,7 +551,7 @@ describe("the tower is drawn from the sheets and nothing else", () => {
     expect(d.nTrays).toBe(14);
     expect(d.traysDrawn).toBe(14);
     //  H 9.2 m over D 1.22206 m is 7.53 -- inside the 1.5-12 band where a
-    //  true-scale tower is still legible (equipmentSchematic.ts:217), so the
+    //  true-scale tower is still legible (equipmentSchematic.ts:245), so the
     //  drawing IS to scale and says so.  The narrower tower is a taller-looking
     //  one: this ratio was 6.99 before the feed fix.
     expect(d.toScale).toBe(true);
@@ -533,13 +561,13 @@ describe("the tower is drawn from the sheets and nothing else", () => {
     const d = drawing();
     const notes = d.notes.map((n) => n.text).join(" | ");
     //  RECTIFYING is now the WIDER section -- see the header.  The labels are
-    //  `fmt` at 4 significant figures (equipmentSchematic.ts:86), so 1.22206
+    //  `fmt` at 4 significant figures (equipmentSchematic.ts:114), so 1.22206
     //  renders 1.222 and 0.96944338 renders 0.9694.
     expect(notes).toContain("the rectifying trays need ⌀1.222 m");
     expect(notes).toContain("the stripping trays need ⌀0.9694 m");
     //  The gap is the ENGINE's: `swageGap = (big - sml) / big` at
     //  ColumnSize.cpp:302, published on the sheet, and the caption only
-    //  multiplies it by 100 (equipmentSchematic.ts:470).  0.20662918 -> 20.66.
+    //  multiplies it by 100 (equipmentSchematic.ts:498).  0.20662918 -> 20.66.
     expect(notes).toMatch(/20\.66 % apart/);
     expect(notes).toMatch(/sizes the shell STRAIGHT/);
     //  20.66 % is ABOVE the 15-20 % rule of thumb, where a real designer would

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Seal-drift gate: sealed copies vs the live standards catalogue.
 
 A sealed case's constant/propertyManifest records, for every IMPORTED record,

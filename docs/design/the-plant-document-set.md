@@ -33,7 +33,7 @@ source was not read it says "located, not read".
 | orthogonal wire with waypoints | `gui/src/ui/WaypointEdge.tsx` (235 lines) | the stream |
 | feed/product terminal with a state line | `gui/src/ui/StreamTerminal.tsx` (366 lines); `TERMINAL_W 230`, `TERMINAL_H 64` at `gui/src/case/toGraph.ts:136-137` | the boundary |
 | docked utility / power stub | `gui/src/case/toGraph.ts:139-140` (`STUB_H`, `STUB_GAP`), explicit per-port utility read at `toGraph.ts:556-562`, auto-picked utility in the `utilityAllocation` report | the utility legend is NOT drawn as a legend; each stub is a box on its unit |
-| 57 own unit symbols (SVG paths in a 48x48 box), 66 type-to-class entries | `gui/src/case/unitFamily.ts:122` (`SYMBOLS`), `:412` (`UNIT_CLASS`) | own drawings; `tag` is the CALCULATION MODEL (`CONV`, `EQ`, `MESH`, `SS`), not an equipment tag (`unitFamily.ts:100`, header comment 40-70) |
+| 57 own unit symbols (SVG paths in a 48x48 box), 66 type-to-class entries | `gui/src/case/unitFamily.ts:123` (`SYMBOLS`), `:412` (`UNIT_CLASS`) | own drawings; `tag` is the CALCULATION MODEL (`CONV`, `EQ`, `MESH`, `SS`), not an equipment tag (`unitFamily.ts:101`, header comment 40-70) |
 | datasheet schematics per EQUIPMENT KIND (tower with trays, pressure exchanger, membrane bank, labelled box otherwise) | `gui/src/case/equipmentSchematic.ts` (887 lines; `SCHEMATIC_KINDS` at `:867`, `fallbackBoxSvg` at `:119`) | a datasheet drawing, not a PFD symbol |
 | absolute stream numbering across sectors | `gui/src/case/streamNumbering.ts` (200 lines; union-find over qualified endpoints, header lines 28-48) | one number per physical stream, same in the plant and in a sector |
 | stream table | `gui/src/ui/StreamsTable.tsx` (411 lines): F, T, P and composition columns, honours the Units menu, ODS export through `downloadOds` (`:42`) | on screen; the numbers come from the result |
@@ -50,8 +50,8 @@ Export.  An export path EXISTS and nobody has to build it from nothing:
   `gui/src/ui/FlowCanvas.tsx:1463-1496`.
 * `window.print()` ("Print / Save as PDF" button inside a generated HTML page
   opened from a Blob) is the PDF path used by the heat-exchanger and column
-  datasheets: `gui/src/ui/HeatExchangerDatasheet.tsx:313,343`,
-  `gui/src/ui/ColumnDatasheet.tsx:341,394`, `gui/src/case/hxDatasheet.ts:752`.
+  datasheets: `gui/src/ui/HeatExchangerDatasheet.tsx:341,343`,
+  `gui/src/ui/ColumnDatasheet.tsx:369,394`, `gui/src/case/hxDatasheet.ts:752`.
 * "Download SVG" on the batch Gantt and the GMP plan
   (`BatchPlanSection.tsx:592`, `GmpPlanSheet.tsx:672`), and "Export as page"
   (a self-contained HTML of the 3D layout, `ExportLayoutButton.tsx`).
@@ -136,7 +136,7 @@ tablet plant routes only a few solids/air lines; solids are never piped
 
 | item | status |
 |---|---|
-| Our own drawings | 57 unit symbols (`unitFamily.ts:122`), datasheet schematics (`equipmentSchematic.ts`), own icons in the 3D layout (`gui/src/case/equipmentModel.ts`, located). Nothing copied from a standard: the symbol header comments record the design reasoning (the `unitFamily.ts` 40-70 comment about "drawing differences that are not hardware") |
+| Our own drawings | 57 unit symbols (`unitFamily.ts:123`), datasheet schematics (`equipmentSchematic.ts`), own icons in the 3D layout (`gui/src/case/equipmentModel.ts`, located). Nothing copied from a standard: the symbol header comments record the design reasoning (the `unitFamily.ts` 40-70 comment about "drawing differences that are not hardware") |
 | ISA 5.1 (instrument symbols and identification) | a published standard, sold, no open grant. Not in the tree (`grep` for `ISA 5`, `ISA-5`, `ISO 10628` over `docs/` finds no standard citation; `docs/design-heuristics.md:808` uses "P&ID" only as a word). Located, not read |
 | ISO 10628 (flow diagrams for process plants), ISO 14617 (graphical symbols) | published standards, no open grant; located, not read |
 | tag LETTERS as a convention (first letter = measured variable T/P/F/L/A..., following letters = function I/C/T/V/...) | a widely documented naming convention in textbooks; the letters are a FACT, not a drawing. The proposal: Choupo declares its OWN small vocabulary (the measured variable letters and the five function letters it needs), documented in `docs/ai/` as "an ISA-style convention, simplified, not the standard", cites the standard by title only, never reproduces its tables, and never claims conformity. Which exact letters to adopt is to be written from a textbook the curator has, not from memory |

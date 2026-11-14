@@ -379,7 +379,7 @@ commit that regenerated it is named in the source.
 % ColumnSize.H:62), "THE DATASHEET FOLLOWS THE EQUIPMENT KIND"
 % (gui/src/case/equipmentSchematic.ts).  The Explorer lenses: DEV.md 4c
 % C116 (T-x-y, gamma, Psat, LLE, ternary, Gibbs maps, Bjerrum, steam,
-% transport, pure phase diagrams), gui/src/ui/ExploreWorkspace.tsx:53-79,
+% transport, pure phase diagrams), gui/src/ui/ExploreWorkspace.tsx:81-107,
 % :555, :1146 (Hildebrand); the Evidence view: DEV.md 4c C117 (G18,
 % branch claude/c117-evidence-explorer, in integration -- not on main at
 % feb112a00).  The 3D layout: CLAUDE.md sec 6 "A PLANT LAYOUT IS DECLARED,
@@ -537,7 +537,7 @@ energy, every integral an exact state difference), \code{choupoSemiContinuous}
 a quasi-steady adapter that re-solves any steady unit inside a transient,
 and \code{choupoCtrl} PID, schedule and signal controllers with a balance
 ledger on the integrator's accepted steps.
-% make/compiler.mk:35-40 (CXX g++, -std=c++17); `find src -name '*.cpp' |
+% make/compiler.mk:37-42 (CXX g++, -std=c++17); `find src -name '*.cpp' |
 % wc -l` = 369 at feb112a00; CLAUDE.md sec 2 ("Zero external dependencies")
 % and sec 10 "No external libs"; src/solver/ (NewtonRaphson, NewtonND,
 % Wegstein, NelderMead, StabilityTest, ODE/RK4, ODE/Rosenbrock23);
@@ -669,10 +669,10 @@ section that derives it.
 % by "ParaView's separation of authoring (offline) from viewing (in the
 % GUI)"; "The Choupo GUI is a viewer for a Choupo case directory"; not a
 % block editor, not a literal ParaView clone, not an IDE; "The GUI shows
-% what is on disk; it does not write back silently"); make/wasm.mk:25-39
+% what is on disk; it does not write back silently"); make/wasm.mk:27-41
 % (all five binaries to gui/public/wasm/); gui/src/ui/AppShell.tsx:234-245
 % (F1).  ParaView is Kitware's open-source visualiser; its name is not on
-% check_doctrine's ban list (bin/curate/check_doctrine.py:67-68).
+% check_doctrine's ban list (bin/curate/check_doctrine.py:69-70).
 
 What it shows, in the version cited here: the flowsheet, with each stream
 coloured by the phase the engine resolved for it or, as a display mode the
@@ -788,7 +788,7 @@ browser.}
 % flowsheetDict header: "the second tear in system/solverDict"); a sector
 % opened as a case of its own: gui/src/ui/FlowCanvas.tsx:1293 (onNodeDoubleClick) and the
 % canvas hint "double-click: drill in" (FlowCanvas.tsx:1424).  Run outputs
-% badged: gui/src/ui/caseTree.ts:117-139 (isRunOutput).  The run took
+% badged: gui/src/ui/caseTree.ts:145-167 (isRunOutput).  The run took
 % 255 s in the page (the case's outerDict solves the three bed volumes and
 % the converter diameter in one Newton).
 
@@ -1300,7 +1300,7 @@ law has not been measured the same way and is claimed neither way.
 % and never recomputed here"); gate check_energy_closure (claim: "105 steady
 % case(s) close ... within 1.0 % of the energy the plant exchanges and 9 more
 % are PINNED in KNOWN_OPEN; 70 close within 1.0 kW ABSOLUTE ... and 8 more
-% are PINNED in KNOWN_OPEN_KW"; bin/curate/check_energy_closure.py:321 "THE
+% are PINNED in KNOWN_OPEN_KW"; bin/curate/check_energy_closure.py:323 "THE
 % RATCHET IS TWO-SIDED", :381 RATCHET = 0.2); CLAUDE.md sec 6 (2026-09-25:
 % "normalise by THE TERMS THE EQUATION BALANCES"; C77: batchReactor and
 % dynamicCSTR "not claimed either way").
@@ -1339,7 +1339,7 @@ witnesses; it does not say whether a sizing rule is the right rule.
 % docs/design/a-basis-nobody-stated-and-a-volume-in-kilomoles.md; gate
 % check_design_sheet (claim at 31f6a56ab: the five column items RECOMPUTED,
 % the pfr shell's V_R and the charge's mass and price RECOMPUTED);
-% bin/curate/check_design_sheet.py:600-668 (arm (j): V_magma against the
+% bin/curate/check_design_sheet.py:602-670 (arm (j): V_magma against the
 % declared operation.volume); CLAUDE.md sec 6 "EVERY SIZER STATES ITS BASIS"
 % ("NOT gated, said plainly: whether a basis string is TRUE of its sizer").
 
@@ -1359,10 +1359,10 @@ paper.  None of this makes the engine error-free; it makes each class of
 error, once seen, unable to return without a check failing, and the open
 debts a list with names and numbers.
 % src/core/RegistryRefusal.H:41-56; bin/curate/
-% check_model_default_registered.py:56-59 (crystalliser02 `MSMRP` exit 0;
+% check_model_default_registered.py:58-61 (crystalliser02 `MSMRP` exit 0;
 % sprayDryer04 `langrishKocke` exit 0, every KPI identical);
 % docs/design/three-silences-at-exit-zero.md; bin/curate/
-% runtests_verdict.py:36 (could-not-run); CLAUDE.md sec 6 "THE HONESTY
+% runtests_verdict.py:38 (could-not-run); CLAUDE.md sec 6 "THE HONESTY
 % SLICE" (check_true_ions reported PASS on every run while both its inputs
 % had been deleted -- retired); generated/gateManifest.json at 31f6a56ab:
 % 239 entries; bin/curate/ holds 239 check_*.py at feb112a00.
@@ -1557,7 +1557,7 @@ ledger being updated.
 % energyBalance_byUnit.csv of the run (M2 and M3 `remaining_kW` sum to the
 % plant residual); the log line "[phase] stream 'mixed3' is priced as LIQUID
 % (vf = 0) at T = 336.419 K, P = 0.8963 bar, but ... it is ABOVE its bubble
-% point"; bin/curate/check_energy_closure.py:494 (KNOWN_OPEN:
+% point"; bin/curate/check_energy_closure.py:496 (KNOWN_OPEN:
 % cavett01_recycle_train 88.0220).
 
 \subsection{A research application: ions through a nanofiltration membrane}

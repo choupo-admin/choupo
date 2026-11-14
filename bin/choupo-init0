@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # choupo-init0 -- materialise a case's COMPLETE 0/ state by explicit
 # propagation from the authored inlets (+ any tear seeds): the STREAMS that
 # bound each unit, and the INTERIOR of every unit that starts from one.

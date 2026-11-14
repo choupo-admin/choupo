@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """The `constant/electrolyte/` sidecars: ALL legs retired (the last one,
 `speciationMode replace`, converted 2026-08-02 to D-R1's declared
 `networkScope restricted` -- see check_restricted_network for that side).

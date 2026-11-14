@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_departure_convention -- every equation of state's residual entropy
 is the (T, P) DEPARTURE that S_real = S_ig(T, P) + S_residual adds it to
 (2026-10-25, DEV.md 4c C150 R08).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a failed computation is not a result -- the time integration, the
 active-set QP and the SQP's finite differences each REFUSE (or relax, said
 aloud) where they used to hand back a number.

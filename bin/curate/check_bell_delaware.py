@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the Bell-Delaware shell-side rating reproduces its textbook worked example.
 
     bin/curate/check_bell_delaware.py

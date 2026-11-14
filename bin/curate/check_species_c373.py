@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the aqueous-species and ionisation records of C373 reproduce from their evidence tables.
 
     bin/curate/check_species_c373.py

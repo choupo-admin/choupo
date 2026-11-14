@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """thermomlParity -- what bin/choupo-thermoml READS from a ThermoML file, as
 JSON, for gui/tests/thermomlReader.test.ts to hold the TypeScript reader to.

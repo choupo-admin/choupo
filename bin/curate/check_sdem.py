@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the SDEM transport law couples the ions and adds no parameter.
     bin/curate/check_sdem.py
 

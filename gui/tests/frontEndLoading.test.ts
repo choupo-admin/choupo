@@ -82,12 +82,12 @@ describe("the AACE transcription is the engine's one home, field by field", () =
 
   it("the line ranges the module cites are where the table is", () => {
     const lines = HEADER.split("\n");
-    //  frontEndLoading.ts cites EstimateClass.H:98-114 for the rows.
-    expect(lines[97]).toMatch(/static const std::vector<Row> t = \{/);
-    expect(lines[98]).toMatch(/^\s*\{5,/);
-    expect(lines[113]).toMatch(/^\s*\};/);
-    //  The lesson cites :45-52 for the announced pessimistic-corner default.
-    const cited = lines.slice(44, 52).join(" ");
+    //  frontEndLoading.ts cites EstimateClass.H:99-115 for the rows.
+    expect(lines[98]).toMatch(/static const std::vector<Row> t = \{/);
+    expect(lines[99]).toMatch(/^\s*\{5,/);
+    expect(lines[114]).toMatch(/^\s*\};/);
+    //  The lesson cites :46-53 for the announced pessimistic-corner default.
+    const cited = lines.slice(45, 53).join(" ");
     expect(cited).toContain("PESSIMISTIC CORNER");
     expect(cited).toContain("ANNOUNCES");
   });

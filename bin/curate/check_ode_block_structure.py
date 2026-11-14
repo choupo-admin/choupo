@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the stiff integrator's DECLARED block structure is verified, honest
 and cheap -- and the fixed bed's warm start no longer throws steps away.
 

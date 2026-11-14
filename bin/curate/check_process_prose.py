@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Every number a PROCESS page quotes is recomputed from its witness's golden.
 
 WHY THIS GATE EXISTS, and it is the bjerrum-prose argument with one more home.

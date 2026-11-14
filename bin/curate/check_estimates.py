@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # check_estimates.py -- the DRIFT CHECKER of group-contribution estimates
 # (design forum #58/#67/#77: the arity guard of the groups-as-curated-source
 # doctrine).  Style precedent: the check_*.py family (check_ion_pins etc.).

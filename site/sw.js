@@ -1,3 +1,5 @@
+// Copyright (C) 2026 Vítor Geraldes
+// SPDX-License-Identifier: GPL-3.0-or-later
 /*---------------------------------------------------------------------------*\
   Offline support was ROLLED BACK (it caused a Chrome rendering glitch we could
   not verify headless).  This worker SELF-DESTRUCTS: it has no fetch handler (so

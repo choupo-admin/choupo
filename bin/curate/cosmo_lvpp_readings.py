@@ -2,6 +2,7 @@
 # cosmo_lvpp_readings.py -- the OUTSIDE computation that selected the reading of
 # Ferrarini et al. 2018 the engine's COSMO-SAC LVPP-HFTZVP-2018 runs.
 #
+#     Copyright (C) 2026 Vítor Geraldes
 #     SPDX-License-Identifier: GPL-3.0-or-later
 #
 # DEV.md 4c C310; record docs/design/cosmo-sac-lvpp-hftzvp-2018.md section 3.

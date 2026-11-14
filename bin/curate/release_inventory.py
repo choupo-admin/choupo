@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generate generated/releaseInventory.json -- the SINGLE SOURCE OF TRUTH for the
 release's quantitative claims (homepage hero, "What is included", README, /models).
 

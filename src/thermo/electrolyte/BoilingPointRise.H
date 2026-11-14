@@ -13,6 +13,7 @@
   on the caller's Psat).  The linearised Clausius-Clapeyron form
   BPE ~ -(R T_b^2 / dHvap) ln a_w is the first term of (1) and is used only
   as the starting guess.  No vapour of the solute, ideal vapour.
+  Copyright (C) 2026 Vítor Geraldes
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 

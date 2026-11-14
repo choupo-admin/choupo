@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_guide_paths -- every path a MANUAL cites must exist in the tree.
 
 WHY.  The guides are the one artefact with no compiler behind them.  A dict

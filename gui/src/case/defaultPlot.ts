@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * defaultPlot -- the plot the Plots workspace lands on after a run, chosen in
  * ONE place (rehearsal 2026-11-13: a column opened on a two-bar element

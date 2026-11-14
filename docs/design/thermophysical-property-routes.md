@@ -139,7 +139,7 @@ surface tension, thermal conductivity.
 | aqueous solution density from a laboratory analysis | `AqueousVolumetricModel` (electrolyte/AqueousVolumetric.H), from StreamStateIO.cpp:1516, :2728 | `diluteVolume`; `standardStateVolumes` (ion V0 of 11 species records) | additive | printed | sample outside 0-100 C | a SECOND home of a solution density, reachable only from an inlet analysis |
 
 The v2 `transport {}` block reaches the package through one mapper
-(ThermoPackageBuilder.cpp:2120-2209), wired for `gammaPhi` and
+(ThermoPackageBuilder.cpp:2121-2210), wired for `gammaPhi` and
 `diluteSolution`; an `electrolyteGammaPhi` system with `transport {}` is
 refused (:2057-2062).  The per-unit override accepts `transport` and
 `volumetric` (ThermoOverride.H:101) but no reader of a system `volumetric`
@@ -150,7 +150,7 @@ block exists.
 | run | result |
 |---|---|
 | `propertyPoint`, water + NaOH, the electrolyte package | dies before any density: the operation computes the ideal-gas enthalpy first (PropertyPoint.cpp:70) and NaOH has none |
-| same, with `transport {}` | refused at assembly (ThermoPackageBuilder.cpp:2057) |
+| same, with `transport {}` | refused at assembly (ThermoPackageBuilder.cpp:2058) |
 | `propertyScan1D`, `rho_liquid_NaOH` / `_NaCl`, molecular package | every point `nan`: "needs either a `Vliq` ... or the critical constants" (:2482) |
 | viscosity of water + NaOH | `nan`: NaOH has no `liquidViscosity` block |
 | surface tension of water + NaCl | `nan`: Brock-Bird needs Tc, Pc, Tb |
@@ -200,7 +200,7 @@ prints `.rho` only inside a sized item's inventory).
   overrides) and A6 (a resolved-models table, "every cell that is an
   estimate SAYS estimate"); neither was built.
 - `approximations {}` is parsed in two places
-  (ApproximationAuthorisation.H readFrom; ThermoPackageBuilder.cpp:1095),
+  (ApproximationAuthorisation.H readFrom; ThermoPackageBuilder.cpp:1096),
   `reason` is optional in both, unknown words are not refused, and the block
   is not accepted in a per-unit fragment.
 
@@ -568,7 +568,7 @@ constituent SET, named by its constituents in case-insensitive alphabetical
 order (`NaOH-water.dat`, `ethanol-NaCl-water.dat`, `KCl-NaCl-water.dat`).
 The name is a function of the set alone: no roles at lookup, no per-arity
 rule; the eleven existing files already satisfy it (the builder's key today
-is `solute + "-" + solvent`, ThermoPackageBuilder.cpp:2594, identical on all
+is `solute + "-" + solvent`, ThermoPackageBuilder.cpp:2595, identical on all
 eleven).  A case overrides it in `constant/parameters/solution/`.  One file
 carries every property block of its system (`dHsoln`, `liquidDensity`,
 `liquidViscosity`, ...).  ROLES are the record's statement about the
@@ -696,9 +696,9 @@ cannot lift the warning.
 
 HARDENING the block (§1.5: parsed twice, `reason` optional): one parser,
 `ApproximationAuthorisation::readFrom` (ApproximationAuthorisation.H:114),
-absorbs `idealMolecularVLE` (ThermoPackageBuilder.cpp:1095-1104); `reason`
+absorbs `idealMolecularVLE` (ThermoPackageBuilder.cpp:1096-1105); `reason`
 mandatory (defaulted to "" today at ApproximationAuthorisation.H:128, :148
-and ThermoPackageBuilder.cpp:1103; every block in the shipped tutorials
+and ThermoPackageBuilder.cpp:1104; every block in the shipped tutorials
 already carries one, read 2026-11-12); an unknown word refused, naming the
 allowed ones; a gate arm per word.
 

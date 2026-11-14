@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Every name the capability index gives an assistant must exist in the tree.
 
     bin/curate/check_capability_index.py [--index <file>]

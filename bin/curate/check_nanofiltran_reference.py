@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: Choupo's DSPM-DE pore and NanoFiltran agree on the SAME model --
 code-to-code, to the two programs' discretisation error.
 

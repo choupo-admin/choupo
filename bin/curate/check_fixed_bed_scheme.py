@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the fixed bed's convection scheme, held to the closed form, to the
 mesh, to its bounds and to conservation (DEV.md 4c C375).
 

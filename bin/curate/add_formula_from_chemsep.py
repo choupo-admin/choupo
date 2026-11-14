@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Give a ChemSep-imported component record the `formula` its source carries.
 
     bin/curate/add_formula_from_chemsep.py            # report only (default)

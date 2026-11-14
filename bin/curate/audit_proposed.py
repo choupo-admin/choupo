@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 # audit_proposed.py -- deterministic licence/provenance audit of the
 # data/local/components/ proposal tier.  Style precedent: parse_speciation.py
 # (deterministic, spot-checked, emits a markdown report; never guesses).

@@ -6,6 +6,7 @@
 |       \|/    P roperties    |  Copyright (C) 2026 Vítor Geraldes            |
 |        |     O ptimization  |                                               |
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 /**
  * panelEmptyState -- what the Panel workspace says when it has nothing to draw
  * (rehearsal 2026-11-13: a browser run on an engine older than the panel slice

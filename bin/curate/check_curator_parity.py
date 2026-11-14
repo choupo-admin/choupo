@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_curator_parity -- a curator is not an author, and the two records agree.
 
 WHY THIS GATE EXISTS

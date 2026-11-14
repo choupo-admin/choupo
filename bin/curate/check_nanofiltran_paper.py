@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the NanoFiltran paper's two comparisons -- its Table 2 (the stiff
 case) and its Fig. 3 (Bowen & Mohammad's CA30 measurements) -- held where
 Choupo meets them.

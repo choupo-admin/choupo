@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """electrolyte_span_arms -- the ELECTROLYTE arms of the pair-span gate
 (EL-01 / EL-02 of docs/reviews/2026-11-12-electrolyte-models, 2026-11-12).
 

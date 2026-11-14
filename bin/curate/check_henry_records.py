@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the Henry-water records made from Sander (2015) Table 6 reproduce from their rows
 (DEV.md 4c C321), and the organic-solvent records regressed from ThermoML reproduce
 from their cases (C321 part 2).

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: route P -- a PPR78 / E-PPR78 kij is EVALUATED ONCE at a declared
 temperature, WRITTEN into the case, READ by the phi-phi builder and said on
 the run; a cubic's kij can be REGRESSED to bubble pressures; a compressor

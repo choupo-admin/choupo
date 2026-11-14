@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generate the comparison tables of the Tutorials Guide's SDEM validation
 section -- Choupo against Fernandez de Labastida & Yaroshchuk, Membranes 11
 (2021) 272 (CC BY 4.0) -- from the ENGINE and the DIGITISED FIGURES, never

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Meta-gate: a gate that cannot FAIL is not a gate.
 
     bin/curate/check_gate_selftest.py
@@ -57,6 +59,7 @@ did not make.  After each revert the bytes are compared to the original, and a
 failed restore is a hard error naming the file, because leaving a corrupted
 record behind would be far worse than any missed check.
 """
+import hashlib
 import os
 import subprocess
 import sys
@@ -340,6 +343,16 @@ SABOTAGES += [
                "name CO2, not pass.",
     },
     {
+        "gate": "check_source_headers.py",
+        "kind": "detection",
+        "file": "bin/curate/gate_claim.py",
+        "find": "# Copyright (C) 2026 V\u00edtor Geraldes\n",
+        "replace": "",
+        "why": "a code file that loses its copyright line (DEV.md 4c C393) "
+               "must make arm (a) name it: the gate is the only thing that "
+               "keeps a file copied out of the tree carrying its holder.",
+    },
+    {
         "gate": "check_liquid_density_entry_callers.py",
         "kind": "detection",
         "file": "src/unitOperations/valve/Valve.cpp",
@@ -445,8 +458,7 @@ SOURCE_SABOTAGES = [
         "why": "silences the announcement of a species datum that is not a "
                "measurement.  The witness consumes an estimated hfAq, so arm "
                "(a) must see the missing line and the missing advisory.",
-    },
-]
+    },]
 
 
 def platform_dir():
@@ -535,6 +547,7 @@ def main() -> int:
             continue
         path = ROOT / s["file"]
         original = path.read_bytes()
+        sha_before = hashlib.sha256(original).hexdigest()
         text = original.decode("utf-8")
 
         if s["find"] not in text:
@@ -556,6 +569,13 @@ def main() -> int:
             rc, out = run_gate(s["gate"])
         finally:
             path.write_bytes(original)
+
+        #  BYTE FOR BYTE, by hash (DEV.md 4c C393): the sha256 of the file
+        #  after the restore must equal the one taken before the sabotage.
+        if hashlib.sha256(path.read_bytes()).hexdigest() != sha_before:
+            print(f"check_gate_selftest: FAILED\n  {s['file']}: sha256 after "
+                  "the restore differs from sha256 before the sabotage.")
+            return 1
 
         if path.read_bytes() != original:
             print(f"check_gate_selftest: FAILED\n  {s['file']} was NOT "

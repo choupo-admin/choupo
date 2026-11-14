@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Tree gate (Migration 6, 2026-07-16): the retired data/standards homes must
 never come back -- neither as src path-builders nor as resurrected dirs.
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """
 import_solid_thermochemistry.py -- add solid-phase thermochemistry (Hf298, S298,
 Cp298) to minerals from the CHNOSZ OBIGT compilation (open, GPL-as-data), which

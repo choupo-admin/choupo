@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Check the standard component catalogue against Appendix A of Poling,
 Prausnitz & O'Connell, *The Properties of Gases and Liquids*, 5th ed.
 

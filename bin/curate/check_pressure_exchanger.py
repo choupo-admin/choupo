@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the rotary pressure exchanger (DEV.md 4c C192) is three balances on
 three declared numbers, its sheet is an array of rotors from a declared rated

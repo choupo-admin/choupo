@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the tree of chemistry (data/standards/routes/) is ONE graph that balances,
 cites, reaches and does not loop in silence.
 

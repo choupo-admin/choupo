@@ -53,7 +53,7 @@ Built on, not re-derived: the prior analysis
 | The named-unit registry has NO electrical unit (no `A`, `V`, `S/m`, `A/m2`); a scalar's dimensions are `[M L T Theta N]`; the stack record writes `i_max 200;` as raw SI for that reason | `src/core/Units.cpp` (registry); `docs/ai/dict-syntax.md:150-216` |
 | Unread keys of a dict are reported with a typo suggestion | `src/core/DictAudit.H:103-109` |
 | Flowsheet arrangement: browser working copy in localStorage > the case's `.cho` snapshot > automatic layout; ONE explicit "Save layout to case" writes the `.cho` through the local bridge | `gui/src/state/layout.ts:30-42`, `:232-244`, `:296-316`; `gui/src/ui/FlowCanvas.tsx:508`, `:722-728`, `:1737` |
-| The bridge's `POST /api/case/file` writes ANY relative path inside the case folder | `gui/bridge/claudeBridge.mjs:789-818`; client `gui/src/cases/workspace.ts:183-200` |
+| The bridge's `POST /api/case/file` writes ANY relative path inside the case folder | `gui/bridge/claudeBridge.mjs:791-820`; client `gui/src/cases/workspace.ts:183-200` |
 | The Control Room is a PID tuning bench, shown only for a choupoCtrl case with a PID; it re-runs the case in WASM with mutated dicts and writes nothing back | `gui/src/ui/ControlWorkspace.tsx:2-15`; `gui/src/ui/MenuBar.tsx:194-198` |
 | The GUI receives the trajectory as `{ t; vars: { name: number[] } }` | `gui/src/adapters/SolverAdapter.ts:429-432`, `:630` |
 
@@ -430,7 +430,7 @@ is one explicit act, never on a drag.  **The rule that keeps it from becoming
 an editor:** *the GUI writes a file only if the engine provably reads that
 file after the solve and never into it.*  Today that admits two files, the
 `.cho` marker and `system/panelDict`; S4 makes it structural by narrowing the
-bridge, which today writes ANY path in the case (`claudeBridge.mjs:789-818`),
+bridge, which today writes ANY path in the case (`claudeBridge.mjs:791-820`),
 to exactly those two, held by a gate.  The panel serializer writes the
 panel's grammar only.  The credo gains this rule in §4 when S4 lands.
 Rejected: a GUI that only downloads (the student must then move a file into

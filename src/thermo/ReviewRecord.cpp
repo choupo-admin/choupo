@@ -1,3 +1,4 @@
+/* Copyright (C) 2026 Vítor Geraldes */
 /*  SPDX-License-Identifier: GPL-3.0-or-later
     Part of Choupo (GPL-3.0-or-later); see NOTICE and AUTHORS.
     See ReviewRecord.H (DEV.md 4c C297).  */

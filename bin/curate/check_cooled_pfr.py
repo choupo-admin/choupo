@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the cooled multitubular pfr computes what it claims, and refuses by name.
 
     bin/curate/check_cooled_pfr.py

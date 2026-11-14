@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """c287_new_components.py -- NEW catalogue components from the ThermoML archive
 (DEV.md 4c C287, slice 1; Vitor 2026-11-10: "o que eu quero e criar
 componentes novos e binarios").

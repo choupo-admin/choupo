@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: A STATE DIRECTORY IS A RESTARTABLE SNAPSHOT -- a state view carries
 the streams that bound each unit AND, under its own root, ONE file per unit
 holding what that unit keeps inside it; the two halves travel in the same

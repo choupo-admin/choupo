@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: no tracked symlink lives under data/ (DEV.md 4c C296).
 
     bin/curate/check_no_symlinks.py

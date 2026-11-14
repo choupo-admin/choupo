@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Stream-basis gate: a stream written in the AQUEOUS-SPECIES basis is a change
 of COORDINATES, not a change of model -- and its three refusals still fire.
 

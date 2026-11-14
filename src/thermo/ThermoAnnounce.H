@@ -16,6 +16,7 @@
   Each application main sets the level right after reading controlDict; the
   default (3, the pedagogical default) keeps every other entry path loud.
 
+  Copyright (C) 2026 Vítor Geraldes
   SPDX-License-Identifier: GPL-3.0-or-later
 \*---------------------------------------------------------------------------*/
 

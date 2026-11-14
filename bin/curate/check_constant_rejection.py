@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the CONSTANT INTRINSIC REJECTION transport law -- c_p,i = (1 - R_i) c_m,i
 at the wall, R_i declared -- is what it says, everywhere a law is selectable,
 and refuses the one thing it cannot represent.

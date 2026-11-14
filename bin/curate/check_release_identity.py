@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a public fact about an immutable release has ONE home -- its tag.
 
     bin/curate/check_release_identity.py

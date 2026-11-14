@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """AN EQUILIBRIUM STAGE IS A FLASH -- the identity gate (2026-08-04).
 
 Witness: tutorials/steady/distillation/column12_stage_is_a_flash.

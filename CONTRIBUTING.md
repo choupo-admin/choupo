@@ -25,3 +25,11 @@ implement, adapt, postpone, or decline an idea.
 The GPL-3.0-or-later licence still permits anyone to fork, modify, and
 redistribute the covered code under its terms. Such forks are separate projects
 and maintain their own authorship, support, and trademark identity.
+
+A source file in the repository carries two lines: the copyright line
+`Copyright (C) 2026 Vítor Geraldes` and `SPDX-License-Identifier:
+GPL-3.0-or-later`, in the file's own comment syntax (engine C++ and the web
+app carry the longer project banner).  `bin/header <file>` adds them, reading
+the holder from the project's one table (`bin/curate/source_headers_kinds.py`)
+and never from git configuration; `bin/header --check <file...>` verifies a
+file; the suite's `source-headers-gate` refuses a code file without them.

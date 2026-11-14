@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Copy a reference equation's record into a SEALED case, claimed in its manifest.
 
     bin/curate/seal_reference_records.py <caseDir> <equation> [<equation> ...]

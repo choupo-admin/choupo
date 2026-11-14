@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: an evaporator's chest must ARRIVE as vapour, and a chest that does not REFUSES.
 
     bin/curate/check_evaporator_chest_phase.py

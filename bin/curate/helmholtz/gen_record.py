@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Generate a reference-equation record from its committed page-image transcription.
 
     bin/curate/helmholtz/gen_record.py <fluid>/<Equation>.txt          # write the record

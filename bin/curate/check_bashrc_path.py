@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """`source etc/bashrc` must not break the build.
 
 WHAT THIS EXISTS FOR, because a gate whose reason is forgotten gets deleted:

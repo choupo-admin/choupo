@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
 # SPDX-License-Identifier: GPL-3.0-or-later
 """migrate_overspecified_vf -- the ONE-SHOT migration of stream state files
 that declared T, P AND `vaporFraction` for a MIXTURE (2026-10-03, Vitor's

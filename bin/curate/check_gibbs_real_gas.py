@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """check_gibbs_real_gas -- every route that MINIMISES a Gibbs energy carries
 the vapour the package DECLARES (2026-10-26, DEV.md 4c C173, the external
 audit's claims 2 and 3).

@@ -150,7 +150,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "names repeat, and two substances can share a formula.  The pipeline "
       + "joins each compound to a catalogue component through an InChIKey "
       + "bridge, and refuses a pair it cannot join.",
-    note: "bin/choupo-thermoml:1044 (no CAS in the archive); bin/curate/pairs_c283.py:432 "
+    note: "bin/choupo-thermoml:1046 (no CAS in the archive); bin/curate/pairs_c283.py:434 "
       + "(the refusal).  On this page you make the join yourself.",
   },
   {
@@ -161,8 +161,8 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "uncertainty on every point and at least five interior points.  The "
       + "pure endpoints are set aside.  A vapour composition with no liquid "
       + "one, a varying temperature or a repeated row is refused.",
-    note: "The refusals: bin/choupo-thermoml:1801, :1868, :640.  The rules: "
-      + "bin/curate/pairs_c283.py:465.",
+    note: "The refusals: bin/choupo-thermoml:1803, :1870, :642.  The rules: "
+      + "bin/curate/pairs_c283.py:467.",
   },
   {
     n: 4,
@@ -201,7 +201,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "pressure).  The grade is in-sample.  A clean on one temperature or "
       + "one laboratory is capped at warning, and severe fits are no longer "
       + "promoted.",
-    note: "bin/curate/pairs_c283.py:90, :151, :166.  The 17 severe records "
+    note: "bin/curate/pairs_c283.py:92, :153, :168.  The 17 severe records "
       + "promoted before that rule are still in the catalogue: "
       + "docs/design/binary-pairs-from-open-measurements.md:1335.",
   },
@@ -212,7 +212,7 @@ export const DP_STEPS: readonly LessonStep[] = [
       + "cannot see a pair that predicts two.  A separate check computes the "
       + "fitted equation's Gibbs energy of mixing across the validity span; "
       + "a pair that splits one liquid is not promoted, whatever its grade.",
-    note: "bin/curate/check_regressed_pairs.py:36.  This page does not run "
+    note: "bin/curate/check_regressed_pairs.py:38.  This page does not run "
       + "that check.",
   },
   {
@@ -254,19 +254,19 @@ export const DP_LIMITS: readonly LessonLimit[] = [
 
 export const CITATIONS: readonly { file: string; line: number; contains: string }[] = [
   { file: "src/thermo/activityCoefficient/NRTL.cpp", line: 113, contains: "tau_ij = a_ij + b_ij / T" },
-  { file: "bin/choupo-thermoml", line: 1044, contains: "NO CAS number" },
-  { file: "bin/curate/pairs_c283.py", line: 432, contains: "does not join the archive by InChIKey" },
-  { file: "bin/choupo-thermoml", line: 1801, contains: "REPORTS y BUT NO x" },
-  { file: "bin/choupo-thermoml", line: 1868, contains: "THE TEMPERATURE VARIES ACROSS" },
-  { file: "bin/choupo-thermoml", line: 640, contains: "A REPEATED OBSERVATION IS REFUSED" },
-  { file: "bin/curate/pairs_c283.py", line: 465, contains: "uncertaintyDeclared" },
+  { file: "bin/choupo-thermoml", line: 1046, contains: "NO CAS number" },
+  { file: "bin/curate/pairs_c283.py", line: 434, contains: "does not join the archive by InChIKey" },
+  { file: "bin/choupo-thermoml", line: 1803, contains: "REPORTS y BUT NO x" },
+  { file: "bin/choupo-thermoml", line: 1870, contains: "THE TEMPERATURE VARIES ACROSS" },
+  { file: "bin/choupo-thermoml", line: 642, contains: "A REPEATED OBSERVATION IS REFUSED" },
+  { file: "bin/curate/pairs_c283.py", line: 467, contains: "uncertaintyDeclared" },
   { file: "docs/design/binary-pairs-from-open-measurements.md", line: 733, contains: "than they claim" },
   { file: "src/propertyOps/FitObjective.H", line: 50, contains: "`twoStage`" },
-  { file: "bin/curate/pairs_c283.py", line: 90, contains: "GRADE_K" },
-  { file: "bin/curate/pairs_c283.py", line: 151, contains: "def cap_grade" },
-  { file: "bin/curate/pairs_c283.py", line: 166, contains: "NOT_PROMOTED_GRADES" },
+  { file: "bin/curate/pairs_c283.py", line: 92, contains: "GRADE_K" },
+  { file: "bin/curate/pairs_c283.py", line: 153, contains: "def cap_grade" },
+  { file: "bin/curate/pairs_c283.py", line: 168, contains: "NOT_PROMOTED_GRADES" },
   { file: "docs/design/binary-pairs-from-open-measurements.md", line: 1335, contains: "Rule 3 (severe records out" },
-  { file: "bin/curate/check_regressed_pairs.py", line: 36, contains: "ONE LIQUID WHERE THE EVIDENCE SAYS ONE" },
+  { file: "bin/curate/check_regressed_pairs.py", line: 38, contains: "ONE LIQUID WHERE THE EVIDENCE SAYS ONE" },
   { file: "docs/design/from-a-database-to-binary-parameters.md", line: 189, contains: "Review is not validation" },
   { file: "src/propertyOps/FitParameters.cpp", line: 406, contains: "\"P_bubble\"" },
   { file: "src/propertyOps/LleResidual.H", line: 101, contains: "T_bubble+LLE" },

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Model-boundary ledger gate (ruling 2026-08-09; record
 docs/design/model-boundary-energy-ledger.md).
 

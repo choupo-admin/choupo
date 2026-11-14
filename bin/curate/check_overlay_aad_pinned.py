@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: a comparison against measured data is PINNED, not merely printed.
 
     bin/curate/check_overlay_aad_pinned.py

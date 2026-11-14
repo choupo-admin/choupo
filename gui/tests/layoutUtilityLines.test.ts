@@ -12,6 +12,7 @@
     * a layout with no utility line draws and lists none (no earlier result
       moves).
 \*---------------------------------------------------------------------------*/
+/* SPDX-License-Identifier: GPL-3.0-or-later */
 
 import { describe, expect, it } from "vitest";
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the manufacturer-catalogue import tool writes data/local only, never
 merges, never assumes, counts from what it wrote, and every record it writes
 loads in the engine.

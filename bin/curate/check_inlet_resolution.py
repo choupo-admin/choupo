@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: an UNPINNED TP inlet is its own equilibrium; a PIN is priced and said.
 
     bin/curate/check_inlet_resolution.py

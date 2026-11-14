@@ -44,7 +44,7 @@ The policy table quotes the project's rules and names the line each is
 written at: `docs/architecture/settled-contracts.md:3471` (open data,
 share-alike honoured), `:3477` (NonCommercial and no-grant excluded),
 `:3482` (cite the primary), `CLAUDE.md:726` (an aggregator is a route, a
-NonCommercial compilation is not), `bin/curate/check_source_licence.py:337`
+NonCommercial compilation is not), `bin/curate/check_source_licence.py:339`
 (`EXCLUDED_TABLES`) and `:485` (`ACCEPTED_PUBLIC_DOMAIN`).  No commercial
 databank is named; they are described as a class.
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: waivers live in the registry, and every waiver still fires.
 
     bin/curate/check_debt_registry.py

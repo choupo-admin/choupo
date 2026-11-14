@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Every path and case name the AI-facing docs point at must exist.
 
 Design record: DEV.md section 5 debt 5.

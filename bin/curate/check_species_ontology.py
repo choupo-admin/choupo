@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Model-species ontology gate (Codex P0-semantico, 2026-07-18).
 
 The aqueous monolith dismantled into flat recordType modelSpecies files.
