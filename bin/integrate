@@ -93,7 +93,10 @@ a human, leaving the worktree where it stopped:
               conservation gates SCOPED to that pass;
       gates   every bin/curate/check_*.py whose source names a touched file
               (path, file name, or -- for src/ and bin/curate modules -- the
-              stem), the way `bin/runTests --gui` derives its list;
+              stem), the way `bin/runTests --gui` derives its list, AND
+              every gate whose SCAN ROOTS hold a touched file (a gate that
+              walks src/ or globs data/standards/**/*.dat names no file;
+              bin/curate/gate_scan_roots.py reads the roots from its source);
       --gui   when gui/ moved, or when lines moved in a src/ file an EduTool
               lesson cites by file:line;
       --fast  when a factory REGISTRATION or the build system moved;
@@ -821,6 +824,24 @@ def reach(root: Path, base: str, files):
             scoped[g.stem] = hit
         else:
             gates[g.stem] = hit
+    #  ...AND every gate whose SCAN ROOTS hold a touched file (C394, from the
+    #  C398 (a)+(b) sweep: three of its four failed gates walk a tree by
+    #  pattern and name no file -- check_std_includes walks src/,
+    #  check_debt_registry globs bin/curate/check_*.py, check_origin_census
+    #  data/standards/**/*.dat).  The roots are read from each gate's source
+    #  by bin/curate/gate_scan_roots.py, the one home of that fact; a tutorial
+    #  file reaches a root-walker only through its case's files, as above.
+    by_root = curate_module(root, "gate_scan_roots").reached(files, root)
+    for stem, hits in sorted(by_root.items()):
+        if stem in gates or stem in scoped:
+            continue
+        hit = [f"{f} (under {r})" for f, r in hits]
+        if stem in in_scope_run and \
+                "bin/curate/suite_cache.py" not in files:
+            scoped[stem] = hit
+        else:
+            gates[stem] = hit
+    gates = dict(sorted(gates.items()))
     return dict(cases=cases, gates=gates, scoped_gates=scoped, gui=gui,
                 fast=fast, full=full, why=why)
 
