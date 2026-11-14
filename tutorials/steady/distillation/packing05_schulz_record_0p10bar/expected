@@ -1,0 +1,35 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+kpi     column                 HETP             0.159486916391   1e-4
+kpi     column                 HETP_local_mean  0.159840926368   1e-4
+kpi     column                 P_bottom_bar     0.103016944535   1e-4
+kpi     column                 Q_condenser_kW   -437.950732549   1e-4
+kpi     column                 Q_reboiler_kW    437.950732549    1e-4
+kpi     column                 T_bottom         346.932670055    1e-4
+kpi     column                 T_top            342.756681583    1e-4
+kpi     column                 V_boilup         0.0108480951015  1e-4
+kpi     column                 aeOverAp_mean    0.646428455606   1e-4
+kpi     column                 alpha_mean       1.24118640309    1e-4
+kpi     column                 dP_bed_mbar_per_m 1.37133842121    1e-4
+kpi     column                 dP_over_dPflood_max 0.135028347192   1e-4
+kpi     column                 fFactor_bedBottom 1.59953159292    1e-4
+kpi     column                 fFactor_bedTop   1.61415293622    1e-4
+kpi     column                 holdup_mean      0.0406102671944  1e-4
+kpi     column                 theoreticalStages_bed 13.7942349741    1e-4
+kpi     column                 uL_mean_m3_m2h   4.30272015916    1e-4
+kpi     column                 x_belowBed_LK    0.23641741393    1e-4
+kpi     column                 x_reboiler_LK    0.2              1e-4
+kpi     column                 x_reflux_LK      0.859128002817   1e-4
+utility column                 heating.steamLP.duty_kW 437.950732549    1e-4
+utility column                 heating.steamLP.T 346.932670055    1e-4
+utility column                 heating.steamLP.kg_s 0.200343427515   1e-4
+utility column                 heating.steamLP.eur_h 18.9194716461    1e-4
+utility column                 cooling.coolingWater.duty_kW -437.950732549   1e-4
+utility column                 cooling.coolingWater.T 342.756681583    1e-4
+utility column                 cooling.coolingWater.kg_s 10.4772902524    1e-4
+utility column                 cooling.coolingWater.eur_h 0.63064905487    1e-4
+source  column                 liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
+source  column                 liquidDiffusivity own.WilkeChang.mixtureViscosity exact
+source  column                 liquidViscosity  declared.case    exact
+source  column                 surfaceTension   BrockBird/Butler exact

@@ -16,6 +16,7 @@ record — one namespace, one consumer each:
 | `adsorbent` | `AdsorbentRegistry` (identity only; the per-species isotherms are PAIR data under `parameters/adsorption/equilibria/<name>/`) | activatedCarbon, zeolite13X, zeolite5A |
 | `ionExchangeResin` | the `exchange` props op / `IonExchanger` unit | SAC_Na |
 | `catalyst` | `CatalystRegistry` (pellet geometry, densities, `epsilon_p`, `tau`; consumed by the `thielePellet` props op) | *(none yet — see below)* |
+| `packing` | `PackingRegistry` (a column's packing: NOMINAL geometry and per-correlation constants; `packing { record <name>; }` in `distillationColumn`, see below) | SulzerBX, MontzB1-250 |
 
 Each registry scans this ONE folder and filters by its own kind(s); a record
 with no `kind` is refused loudly.  Case-local tiers keep their author-facing
@@ -95,6 +96,26 @@ other validity window here — and the engine ANNOUNCES a run that leaves it
 rather than refusing.  `bin/curate/check_ed_stack.py` holds both records to a
 second transcription of their sources.  Record:
 `docs/design/a-stack-is-a-record-and-its-limiting-current-is-predicted.md`.
+
+## `kind packing` — the bed, apart from the column
+
+A packing record carries what its source prints about the PACKING ITSELF:
+the nominal specific area, void fraction, corrugation angle (degrees from the
+horizontal), corrugation side, base and height, element height, hole
+fraction and surface (`gauze` | `sheetMetal`), `arrangement structured |
+random`, and under `correlations { <model> { ... } }` a constant that belongs
+to THIS packing under ONE correlation (F_SE of a sheet-metal packing under
+`RochaBravoFair`).  Every value carries its source; an estimate follows the
+`kind membraneModule` contract.  What was measured on an INSTALLED bed (the
+area from the corrugation dimensions of the delivered packing, the void
+fraction of the dry bed) is the case's, declared under `installed {}` in the
+column's `packing {}` block and printed as replacing the nominal value; a
+value of ANOTHER packing is a hypothesis of the case (`borrowed {}`), never
+written into this record.  A record states only what its source printed, so
+a correlation that reads a field the record lacks is refused naming the field
+(SulzerBX serves Rocha-Bravo-Fair and not Delft; MontzB1-250 serves Delft and
+not Rocha-Bravo-Fair).  No random-packing correlation is implemented yet; the
+kind admits one.  Theory Guide: sec:packing-record.
 
 ## `kind catalyst` — why this folder holds none yet
 

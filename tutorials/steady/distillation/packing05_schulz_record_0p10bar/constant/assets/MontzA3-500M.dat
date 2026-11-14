@@ -1,0 +1,41 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  PACKING: Montz-Pak A3-500M, a corrugated wire-gauze structured packing
+  (CASE-LOCAL record of packing05_schulz_record_0p10bar)
+
+  WHAT THIS RECORD IS.  What the one source in hand prints about the
+  packing ITSELF: Schulz, Rietfort, Jansen & Olujic, Chem. Eng. Trans. 69
+  (2018) 763, section 2, p. 764 (primary read 2026-11-14):
+    "Nominal specific geometric area of this perforated wire gauze packing
+    is 500 m2/m3"; "the corrugation inclination angle is 60 [deg] with
+    respect to horizontal"; "an advanced version of common type corrugated
+    sheet wire gauze packing" (the surface: gauze).
+  The same section's installed area (478 m2/m3, from the corrugation
+  dimensions measured on the DELIVERED packing) and the void fraction of
+  the dry packed BED (about 0.92) describe the installation, so they are
+  the case's (`installed {}` in system/flowsheetDict), not this record's.
+
+  WHY IT IS NOT IN THE CATALOGUE.  The source prints no corrugation side,
+  base, crimp height or element height, and no maker's sheet in hand gives
+  them (the literature folder's study of this packing,
+  Studies/2026-11-14-three-packings-geometry.md, found none).  A record of
+  three values serves no correlation in full, so it lives with the one case
+  that needs it; the case supplies the side as a stated hypothesis.  (The
+  section also calls the surface "unperforated" and, one sentence later,
+  "perforated"; no hole fraction is stated, so none is written.)
+\*---------------------------------------------------------------------------*/
+
+name              MontzA3-500M;
+kind              packing;
+arrangement       structured;
+
+specificArea      500;          // m2/m3, NOMINAL (Schulz et al. 2018, section 2)
+corrugationAngle  60;           // deg from the horizontal (same section)
+surface           gauze;        // corrugated wire gauze (same section)
+
+provenance
+{
+    source  "R. Schulz, T. Rietfort, H. Jansen, Z. Olujic, Experimental evidence on performance of an advanced gauze structured packing under deep vacuum distillation conditions, Chem. Eng. Trans. 69 (2018) 763-768, section 2, p. 764";
+    specificArea     { origin literature; method "section 2, p. 764: the nominal specific geometric area, 500 m2/m3"; }
+    corrugationAngle { origin literature; method "section 2, p. 764: 60 deg with respect to horizontal"; }
+    surface          { origin literature; method "section 2, p. 764: corrugated sheet wire gauze packing"; }
+}

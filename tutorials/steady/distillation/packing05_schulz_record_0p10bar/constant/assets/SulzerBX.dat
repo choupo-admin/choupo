@@ -1,0 +1,49 @@
+// [imported] origin "data/standards/assets/SulzerBX.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  PACKING: Sulzer BX, a corrugated wire-gauze structured packing
+
+  WHAT THIS RECORD IS.  The NOMINAL geometry of one structured packing, as
+  its source printed it, for a column's `packing { record SulzerBX; ... }`
+  (kind packing, read by src/unitOperations/distillation/PackingRecord.cpp;
+  Theory Guide sec:packing-record).  What a column measures on its own
+  installed bed is the CASE's (`installed {}`), never this record's.
+
+  EVERY VALUE, AND WHERE IT WAS READ (primary reads 2026-11-14):
+    specificArea 492 m2/m3, voidFraction 0.90, corrugationSide 0.009 m:
+        Rocha, Bravo & Fair, Ind. Eng. Chem. Res. 32 (1993) 641, Table IV
+        (p. 649, "Test Equipment and Packings for Distillation Tests");
+        the same area and void fraction in Rocha, Bravo & Fair, Ind. Eng.
+        Chem. Res. 35 (1996) 1660, Table 1 (p. 1661).
+    corrugationAngle 60 deg from the horizontal: 1996 Table 1, note a
+        ("All packings listed have a corrugation angle with the horizontal
+        of 45 deg except Sulzer BX, which has a 60 deg angle").
+    surface gauze: 1996 p. 1665 ("except for Sulzer BX where eq 14 was used
+        for a_e"; "For the gauze surfaces (Sulzer BX)").  1993 Table IV's
+        footnote gives the material of the test packings as 316 SS.
+
+  WHAT IT SERVES.  Rocha-Bravo-Fair in full: the area of a gauze surface is
+  their Eq 14, which carries no per-packing constant, so the record needs no
+  `correlations {}` block.  It does NOT serve the Delft model: the source
+  prints no corrugation base, crimp height or element height, and the column
+  refuses Delft on this record naming them.
+\*---------------------------------------------------------------------------*/
+
+name              SulzerBX;
+kind              packing;
+arrangement       structured;
+
+specificArea      492;          // m2/m3, nominal (1993 Table IV; 1996 Table 1)
+voidFraction      0.90;         // (1993 Table IV; 1996 Table 1)
+corrugationAngle  60;           // deg from the horizontal (1996 Table 1, note a)
+corrugationSide   0.009 m;      // S (1993 Table IV)
+surface           gauze;        // (1996 p. 1665)
+
+provenance
+{
+    source  "J. A. Rocha, J. L. Bravo, J. R. Fair, Distillation columns containing structured packings: a comprehensive model for their performance. 1. Hydraulic models, Ind. Eng. Chem. Res. 32 (1993) 641-651, Table IV, p. 649; 2. Mass-transfer model, Ind. Eng. Chem. Res. 35 (1996) 1660-1667, Table 1, p. 1661, and p. 1665";
+    specificArea     { origin literature; method "1993 Table IV (p. 649) and 1996 Table 1 (p. 1661), both 492 m2/m3"; }
+    voidFraction     { origin literature; method "1993 Table IV (p. 649) and 1996 Table 1 (p. 1661), both 0.90"; }
+    corrugationAngle { origin literature; method "1996 Table 1, note a (p. 1661): 60 deg from the horizontal"; }
+    corrugationSide  { origin literature; method "1993 Table IV (p. 649): S = 0.009 m"; }
+    surface          { origin literature; method "1996 p. 1665: the gauze surface of Sulzer BX, area by Eq 14"; }
+}

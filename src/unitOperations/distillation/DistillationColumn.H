@@ -93,6 +93,7 @@ Description
 #include "core/Dictionary.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/UnitOperation.H"
+#include "PackingRecord.H"
 
 #include <map>
 #include <string>
@@ -219,6 +220,14 @@ private:
     int solveRateBased(const DictPtr& dict,
                        const ThermoPackage& thermo,
                        int verbosity);
+
+    // The two packed routes, through a packing RECORD when `packing {}` names
+    // one (C398 slice (e), PackingRecord.H); otherwise exactly
+    // solveTotalReflux / solveRateBased on the case's own dictionary.
+    int solvePackedReadingRecord(const DictPtr& dict,
+                                 const ThermoPackage& thermo,
+                                 int verbosity,
+                                 bool rateBased);
 
     // Sieve-tray hydraulics: an optional RATING pass over the converged
     // profile.  A column that floods separates nothing, and the MESH

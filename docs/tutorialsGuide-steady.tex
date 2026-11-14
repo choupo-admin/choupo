@@ -2193,6 +2193,42 @@ THE SWEEP moves the boil-up F-factor (reboiler vapour on the tower area) and sto
 \end{tutgolden}
 
 \clearpage
+\tutentry{packing05\_schulz\_record\_0p10bar}{tutorials/steady/distillation/packing05\_schulz\_record\_0p10bar}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=1.9cm, minimum height=0.85cm, fill=black!4] (column) at (0.0,-0.0) {\textbf{column}\\[-1pt]{\tiny distillationColumn}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The packing as a RECORD: packing01's bed with its geometry read from a packing record (nominal), the installed area and void fraction declared by the case (measured on the bed), and the corrugation side borrowed from another packing's record (a stated hypothesis); same numbers as packing01}
+\begin{tutnarrative}
+THE PACKING AS A RECORD: the bed of packing01\_schulz\_0p10bar, with its geometry read from a packing record instead of typed inline (DEV.md 4c C329 "where a packing's data live"; C398 slice (e); Theory Guide sec:packing-record).
+
+WHAT THIS CASE SHOWS. Three sources for the four numbers Rocha, Bravo \& Fair read, each printed in the run with where it came from: NOMINAL, from the record constant/assets/MontzA3-500M.dat: the corrugation angle (60 deg) and the surface (gauze), and the nominal area 500 m2/m3 -- all three as Schulz et al. print them (Chem. Eng. Trans. 69 (2018) 763, section 2, p. 764). The record is CASE-LOCAL: no source in hand gives this packing's full geometry, so it is not in the catalogue. INSTALLED, measured on THIS bed and declared by the case under `installed \{\}`: the area 478 m2/m3 "based on measured corrugation dimensions of delivered packing" and the void fraction of the dry packed bed, about 0.92 (same section). The run prints that 478 replaces the record's nominal 500. BORROWED, a hypothesis of this case: the corrugation side, which Schulz do not print. It is taken from the catalogue record SulzerBX (S = 9 mm, Rocha, Bravo \& Fair 1993 Table IV), the gauze packing of the same area class -- the same estimate packing01 types inline, now named as another packing's value. The seal (bin/choupo-import) mirrors that record into constant/assets/ with its hash, so the case runs with the catalogue hidden. Everything else (column, boil-up sweep, reboiler liquid, the liquid viscosity of Schulz Table 1, the property system) is packing01's, unchanged.
+
+THE CHECK. The resolved geometry is the same four doubles packing01 types, so every number is packing01's: `expected` is packing01's golden, row for row, and the gate bin/curate/check\_packing\_record.py holds the two runs' KPIs equal exactly. The same gate removes the `borrowed` block and requires the refusal that names `corrugationSide` and `RochaBravoFair` -- the field the correlation reads and the record lacks.
+
+MEASURED, ESTIMATED, FITTED: as packing01\_schulz\_0p10bar's header (the corrugation side is the one estimated geometric number; nothing fitted; every point of Schulz Fig. 2b at 0.10 bar held out).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{kpi}{column}{HETP}{0.159486916391}
+\goldrow{kpi}{column}{HETP\_local\_mean}{0.159840926368}
+\goldrow{kpi}{column}{P\_bottom\_bar}{0.103016944535}
+\goldrow{kpi}{column}{Q\_condenser\_kW}{-437.950732549}
+\goldrow{kpi}{column}{Q\_reboiler\_kW}{437.950732549}
+\goldrow{kpi}{column}{T\_bottom}{346.932670055}
+\goldrow{kpi}{column}{T\_top}{342.756681583}
+\goldrow{kpi}{column}{V\_boilup}{0.0108480951015}
+\goldrow{kpi}{column}{aeOverAp\_mean}{0.646428455606}
+\goldrow{kpi}{column}{alpha\_mean}{1.24118640309}
+\goldrow{kpi}{column}{dP\_bed\_mbar\_per\_m}{1.37133842121}
+\goldrow{kpi}{column}{dP\_over\_dPflood\_max}{0.135028347192}
+\goldrow{kpi}{column}{fFactor\_bedBottom}{1.59953159292}
+\goldrow{kpi}{column}{fFactor\_bedTop}{1.61415293622}
+\goldmore{18}
+\end{tutgolden}
+
+\clearpage
 \tutentry{ratebased01\_schulz\_0p10bar}{tutorials/steady/distillation/ratebased01\_schulz\_0p10bar}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

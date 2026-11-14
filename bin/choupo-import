@@ -1736,9 +1736,15 @@ def main():
         dtext = read(sd_dict) or ""
         dtext = re.sub(r'/\*.*?\*/', '', dtext, flags=re.S)
         dtext = re.sub(r'(^|\s)//.*$', '', dtext, flags=re.M)
+        #  `record` and `from` (C398 slice (e)): a column's packing names its
+        #  `kind packing` record (`packing { record SulzerBX; }`) and a value
+        #  borrowed from another packing's record (`borrowed { <field> {
+        #  from SulzerBX; ... } }`).  Both words occur elsewhere in system
+        #  dicts (`from dayTank;`); a name that is no catalogue asset is
+        #  dropped by want_plant's existence guard, as for every key here.
         for m in re.finditer(
                 r'\b(?:membrane|module|stack|adsorbent|material|wallMaterial'
-                r'|wall|resin|feedSpacer)'
+                r'|wall|resin|feedSpacer|record|from)'
                 r'\s+([A-Za-z0-9_-]+)\s*;', dtext):
             asset_names.add(m.group(1))
 

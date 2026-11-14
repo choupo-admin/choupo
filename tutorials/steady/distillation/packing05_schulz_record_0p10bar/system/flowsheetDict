@@ -1,0 +1,100 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  packing05_schulz_record_0p10bar  --  THE PACKING AS A RECORD: the bed of
+  packing01_schulz_0p10bar, with its geometry read from a packing record
+  instead of typed inline (DEV.md 4c C329 "where a packing's data live";
+  C398 slice (e); Theory Guide sec:packing-record).
+
+  WHAT THIS CASE SHOWS.  Three sources for the four numbers Rocha, Bravo &
+  Fair read, each printed in the run with where it came from:
+    * NOMINAL, from the record constant/assets/MontzA3-500M.dat: the
+      corrugation angle (60 deg) and the surface (gauze), and the nominal
+      area 500 m2/m3 -- all three as Schulz et al. print them (Chem. Eng.
+      Trans. 69 (2018) 763, section 2, p. 764).  The record is CASE-LOCAL:
+      no source in hand gives this packing's full geometry, so it is not in
+      the catalogue.
+    * INSTALLED, measured on THIS bed and declared by the case under
+      `installed {}`: the area 478 m2/m3 "based on measured corrugation
+      dimensions of delivered packing" and the void fraction of the dry
+      packed bed, about 0.92 (same section).  The run prints that 478
+      replaces the record's nominal 500.
+    * BORROWED, a hypothesis of this case: the corrugation side, which
+      Schulz do not print.  It is taken from the catalogue record SulzerBX
+      (S = 9 mm, Rocha, Bravo & Fair 1993 Table IV), the gauze packing of
+      the same area class -- the same estimate packing01 types inline, now
+      named as another packing's value.  The seal (bin/choupo-import)
+      mirrors that record into constant/assets/ with its hash, so the case
+      runs with the catalogue hidden.
+  Everything else (column, boil-up sweep, reboiler liquid, the liquid
+  viscosity of Schulz Table 1, the property system) is packing01's,
+  unchanged.
+
+  THE CHECK.  The resolved geometry is the same four doubles packing01
+  types, so every number is packing01's: `expected` is packing01's golden,
+  row for row, and the gate bin/curate/check_packing_record.py holds the
+  two runs' KPIs equal exactly.  The same gate removes the `borrowed` block
+  and requires the refusal that names `corrugationSide` and
+  `RochaBravoFair` -- the field the correlation reads and the record lacks.
+
+  MEASURED, ESTIMATED, FITTED: as packing01_schulz_0p10bar's header (the
+  corrugation side is the one estimated geometric number; nothing fitted;
+  every point of Schulz Fig. 2b at 0.10 bar held out).
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        column;
+        type        distillationColumn;
+        model       totalReflux;
+
+        operation
+        {
+            P              0.10 bar;      // TOP pressure
+            condenser      { type total; }
+
+            totalReflux
+            {
+                fFactor        1.5;      // swept; (m/s)(kg/m3)^0.5, reboiler vapour on the tower area
+                specifiedAt    reboiler;
+                composition
+                {
+                    pXylene    0.2;
+                    oXylene    0.80;
+                }
+            }
+
+            packing
+            {
+                record            MontzA3-500M;   // constant/assets/MontzA3-500M.dat (nominal)
+                model             RochaBravoFair;
+                diameter          1.22 m;      // Schulz section 2
+                height            2.2 m;       // Schulz section 2
+                installed
+                {
+                    specificArea  478;         // m2/m3
+                    voidFraction  0.92;
+                    source        "Schulz, Rietfort, Jansen & Olujic, Chem. Eng. Trans. 69 (2018) 763, section 2, p. 764: installed area from the measured corrugation dimensions of the delivered packing; void fraction of the dry packed bed, around 0.92";
+                }
+                borrowed
+                {
+                    corrugationSide
+                    {
+                        from      SulzerBX;
+                        reason    "not printed by Schulz et al.; Sulzer BX is the gauze packing of the same area class (492 m2/m3, 60 deg) in Rocha-Bravo-Fair 1993 Table IV, and HETP is roughly proportional to S";
+                    }
+                }
+                lightKey          pXylene;
+                liquidViscosity   3.91e-4;       // Pa s, Schulz Table 1
+                segments          100;
+            }
+        }
+    }
+);

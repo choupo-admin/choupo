@@ -1770,6 +1770,11 @@
       "exit": 0,
       "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside r_max^2/2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 8 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
       "seconds": 31.7
+    },
+    "check_packing_record": {
+      "exit": 0,
+      "claim": "check_packing_record: OK -- a packing read from a record gives the inline bed's numbers exactly (packing05 = packing01, and ratebased01 through the record), prints each value as nominal, installed or borrowed, serves Delft from the catalogue record MontzB1-250, and refuses 10 inputs by name (the field a correlation reads and the record lacks, among them); it does NOT check that the records transcribe their papers or that a correlation suits a packing",
+      "seconds": 4.2
     }
   }
 }
