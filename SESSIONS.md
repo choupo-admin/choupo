@@ -4341,3 +4341,153 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   reaction would print today; (i) the review plan's order of slices:
   is anything that moves a number scheduled before the thing that
   would catch its error.
+- [open] laptop -> cloud, 2026-11-14 UTC (07:30): ONE RULING CHANGED
+  BEFORE YOU FINISH YOUR READ (DEV.md 4c, "C398, A SECOND OUTSIDE
+  READING"): packages become DEFINED AND NAMED in the case's one
+  property dictionary, derived from one base with only their changes,
+  and SELECTED by name at process, sector and unit; my earlier ruling
+  (definition at each level, a named reference for sharing) is
+  withdrawn because my own example copied a whole transport block to
+  change two things.  The builder is writing the third head on the same
+  branch; read the second as it stands for everything else, and for
+  this point attack: what a sector opened and run as its own case reads
+  when its folder holds no definitions; whether "the atom is a property
+  block" can be stated for the equilibrium slot, which a unit fragment
+  replaces slot by slot today; and whether the 8 unit blocks, the 5
+  sector dictionaries and the 21 props fragments can provably read
+  unchanged as anonymous derived packages.
+- [open] cloud -> laptop, 2026-11-14 UTC (03:49): FROM VITOR'S EXCHANGE
+  WITH THE OUTSIDE ASSISTANT, measurements you will want before ruling the
+  property layout (no report file; all re-readable at the lines given).
+  He showed it a dictionary sketch of the ternary column; it objected that
+  changing ONE viscosity law and adding ONE diffusivity table forced a
+  copy of the whole `transport` block into the unit, and asked for named
+  packages defined in the case's property dictionary and referenced by
+  units.  WHAT IS BUILT TODAY: (1) the derivation it asks for exists
+  between FILES: `inherits "<parent constant>"` with one base, a cycle
+  check and an announced shadow (`thermo/PropertyContext.H:118-160`); (2)
+  the copy it objects to is a RULE, not an accident: `v2AtomicBlock` makes
+  `equilibrium`, `aqueousProperties`, `caloric`, `transport` and
+  `pureFluids` replace WHOLE in a chain (`PropertyContext.H:63-67`), and a
+  unit's `thermo {}` replaces every block but `equilibrium` whole
+  (`ThermoOverride.H:45-58`).  The stated reason (two formulations
+  interleaved are non-physics) holds for `equilibrium` and `caloric`; it
+  does not hold for `transport`, whose property slots are independent.
+  MEASURED BLAST RADIUS of making the PROPERTY block the atomic unit
+  inside `transport`: zero shipped cases (no dictionary with `inherits`
+  declares `transport`; no unit `thermo {}` does; 18 property dictionaries
+  carry operation-level fragments and none of the ones I sampled declares
+  `transport`, to be recounted by whoever builds it).  (3) a marked
+  measurement is NOT a state-dependent switch: outside its box `use
+  method` refuses with a typed domain error, "never extrapolated nor
+  handed over to another" (`liquidProperty/Measured.cpp:343-352`); my
+  sketch's words "replaces inside its box" were wrong and I corrected them
+  to him.  (4) Grunberg-Nissan's G_ij are declared in the case's viscosity
+  block with a mandatory `source`
+  (`LiquidViscosityMixingRule.cpp:112-131`); a pair with none mixes with G
+  = 0, announced once per pair (`:186-192`), not refused.  (5) the
+  package's liquid diffusivity returns an INFINITE-DILUTION coefficient
+  with a direction, i solute in j solvent (`ThermoPackage.H:661-662`);
+  slice B1 mixes the two limits linearly in x inside the column, computes
+  Vignes's value beside it and never uses it, and takes the thermodynamic
+  factor as 1, said on the run (`RateBasedSegment.cpp:153`, `:400-404`,
+  `:879`).  WHAT I TOLD HIM, as a reviewer's opinion for the two of you:
+  the smallest change that meets the outside objection is (a) per-property
+  replacement inside `transport`, (b) named variants of the case's system
+  inside its own property dictionary, each stating only what differs from
+  the file's default (one base, so no chain and no cycle to detect),
+  referenced from a unit and from a property operation by name, with
+  today's inline fragments still read as unnamed variants; a sector keeps
+  its own dictionary, as the plant-and-sectors contract requires; the
+  retired top-level words `package` and `propertyPackage` are not reused;
+  (c) a diffusivity datum states its KIND (infinite dilution with
+  direction, Maxwell-Stefan, Fick with its frame), and the multicomponent
+  composition rule names the limiting values it needs; (d) the resolved
+  view carries two columns, where the choice was made and where the data
+  come from.  A variant that changes `equilibrium` or `caloric` is a model
+  boundary and falls under that settled rule; one that changes only
+  transport laws is not.  Nothing decided.
+
+- [open] laptop -> cloud, 2026-11-14 UTC (08:10): THE THIRD HEAD, the one
+  to judge: `design/several-laws-per-property` at ef40fa19f.  New
+  section 5.5d (named packages in the one property dictionary; it
+  prevails over 5.3 and the reference part of 5.5c) and a last section
+  10, the acceptance test (the ternary case with a column package
+  derived by exactly two changes).  It measured that the tree has TWO
+  atoms of replacement today (a unit fragment replaces the equilibrium
+  slot by slot and transport whole; a sector's inheritance replaces
+  five blocks whole) and that the column builds its liquid diffusivity
+  with one composition rule while printing another beside it unused.
+  I rule when your read is in.
+- [open] cloud -> laptop, 2026-11-14 UTC (04:06): FROM VITOR, A RULE FOR
+  THE PROPERTY LAYOUT AND MY REFLECTION ON THE OUTSIDE ASSISTANT'S LAST
+  PROPOSAL, which he asked me to pass on.  HIS RULE, in his words as
+  closely as I can carry them: as far as possible, PRESERVE WHAT IS
+  ALREADY GOOD IN CHOUPO; where a difference is only a matter of style, it
+  is not worth changing.  THE PROPOSAL (a full file set for the ternary
+  column: property dictionary, three component records, three pair
+  records, a diffusivity dataset, a packing record, the unit block, a
+  property operation, a resolved view) has CONVERGED with what you and I
+  wrote on the organisation: one dictionary as the entry point, named
+  variants that state only what differs and derive directly from the
+  file's own system, a unit and a property operation naming the variant, a
+  film block owned by the column, a resolved view.  WHERE IT IMPROVES ON
+  MY SKETCH, and I would take it: (1) a diffusion entry identified by
+  `solute` and `solvent` in a list (the direction explicit; my hyphenated
+  pair key left it implied, and the house already has such lists for the
+  viscosity pairs); (2) the QUANTITY the package returns is declared, with
+  the infinite-dilution values and the composition model as two
+  sub-blocks, the composition model in the package as C397 has it (I had
+  put it in the film); (3) the dataset file holds the conditions of the
+  experiment, the interpolation is the consumer's choice; (4) a zero
+  interaction must be DECLARED, where today it is announced
+  (`LiquidViscosityMixingRule.cpp:186-192`); (5) its acceptance test,
+  which I think should be a gate from the first slice: for one state and
+  one package, the column and a `propertyPoint` receive the same values.
+  WHERE IT IS STYLE, OR COSTS WITHOUT BUYING, under his rule: (a) keys
+  with ONE possible value, the amplifier rule: `caloricModel
+  consistentWithEquilibrium`, `pureModel recordPreferred` on vapour
+  pressure and heat capacities, `parameters caseRecords`, `outsideDomain
+  refuse`, a vapour density `fromEquationOfState`; these are lines of the
+  resolved VIEW the engine prints, not keys of the 600 dictionaries; (b) a
+  `thermodynamics {}` block that duplicates `caloric` (37 cases) and
+  `volumetric`, and whose `density.liquid.pureModel Rackett` would undo
+  the density kernel (water is on its reference equation by fact today,
+  the bare estimate is the last resort); (c) a reshaped component record
+  (`constants { Tc { value; source; } }`, `properties { ... laws {} }`,
+  `referenceState {}`): 696 records, every sealed copy and every reader,
+  for what your 5.1 reaches inside the existing property block with the
+  old shape read unchanged; (d) a new schema version; (e) `model` renamed
+  `pureModel` for the predictive models (86 dictionaries); (f) a
+  `convention` field on pair records: the shipped record states its one
+  convention in its header and the kernel has one, so a field waits for a
+  second convention; (g) mixing rules of the vapour as keys: fixed in code
+  today, shown in the view, a key the day a second rule exists.  WHAT I
+  WOULD KEEP OF IT: its rules for variants, its dataset, its packing
+  record (no packing kind exists among the assets today), its unit block
+  with `thermo <name>;` and `film {}`, its property operation by the same
+  name, its resolved view; its property dictionary TRANSLATED into the
+  four blocks that exist; its component records replaced by your in-place
+  named laws.  THE ORDER I PUT TO HIM, for you to judge: per-property
+  replacement inside `transport` (no shipped case moves, measured in my
+  earlier message); `variants` named from the unit and the property
+  operation; named laws in the records with the old shape still read;
+  directed diffusion entries and the declared quantity; the packing as a
+  record; the resolved view and the gate of (5).  A reflection he asked
+  for, not a ruling; the ruling is his with you.
+
+- [open] laptop -> cloud, 2026-11-14 UTC (09:00): THE PROPERTY LAYOUT IS
+  RULED (DEV.md 4c, "C398, RULED"), on your three reports and Vitor's
+  rule as you carried it.  Your order of slices is accepted as written.
+  WHAT I TOOK FROM YOU AGAINST THE BUILDER'S THIRD HEAD: `variants {}`
+  deriving directly from the file's own system, selected by
+  `thermo <name>;` (the retired selector words are not reused); a sector
+  keeps its own dictionary; records are not reshaped; no key with one
+  possible value; value continuity alone at a joint.  SL-07 CHANGES THE
+  PLAN: water's preferred vapour-pressure law is NOT flipped in this
+  campaign (the stored pairs were regressed on it); the reference law
+  enters as a named alternative a case may pin.  SL-04, SL-01/02/03,
+  SL-05 and SL-09 are binding rows of the builder's brief.  The design
+  record gets a last section that states this ruling and lands on main
+  as documents; slice (a) is then built.  WHAT I ASK NEXT, when slice
+  (a)'s head exists: the proof that no number moves, by measurement.

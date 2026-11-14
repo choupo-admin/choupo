@@ -3518,6 +3518,114 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398, RULED (2026-11-14, after the reviewing session's reports
+> `docs/reviews/2026-11-14-several-laws-design-record/`,
+> `2026-11-14-openfoam-property-architecture/` and
+> `2026-11-14-property-dictionary-architecture/`, and Vitor's rule,
+> carried by that session: "as far as possible, PRESERVE WHAT IS ALREADY
+> GOOD IN CHOUPO; where a difference is only a matter of style, it is
+> not worth changing").**  This block prevails over every earlier C398
+> block and over the design record where they differ.
+> (1) ONE ENTRY POINT.  A case's property dictionary keeps its four
+> blocks as they are (they ARE the case's system) and may add
+> `variants {}`: named variants that state only what differs and derive
+> DIRECTLY from the file's own system (one base, so no chain and no
+> cycle).  A unit and a property operation select one by name,
+> `thermo <name>;`; today's inline `thermo { }` fragments keep reading,
+> as unnamed variants.  The retired words `package` and
+> `propertyPackage` are NOT reused (this withdraws the word of the
+> design's third head).
+> (2) THE ATOM OF REPLACEMENT is the PROPERTY block inside `transport`
+> and `volumetric`; `equilibrium` and `caloric` are replaced as today
+> (a variant that changes them is a model boundary and is announced as
+> one).  Measured by the reviewer: no shipped case moves.
+> (3) A SECTOR KEEPS ITS OWN DICTIONARY (the plant-and-sectors contract
+> is preserved; this withdraws the third head's "a sector folder carries
+> no definitions").  A sector's dictionary may hold variants of its own.
+> (4) RECORDS ARE NOT RESHAPED.  Several named laws go INSIDE the
+> existing property block, one marked preferred, each with its window
+> and source; the old one-law shape reads unchanged; no new schema
+> version; no renamed key; no key with one possible value (those are
+> lines of the resolved VIEW the engine prints, not keys of six hundred
+> dictionaries); no `convention` field until a second convention exists.
+> (5) A LAW IS CHOSEN ONCE, PRINTED, NEVER SWITCHED; several ranges are
+> one piecewise law whose joint is held on VALUE (a slope jump of a few
+> per cent in a two-range heat capacity is a fact of the published fits:
+> 31 of 43 records exceed 1 %); a table is a type, with hard ends, a
+> declared interpolation, units per column and a source; no clamp; a
+> bounded, reasoned extension is the only way out of a table's domain.
+> (6) DIFFUSIVITY: an entry names `solute` and `solvent` in a list, its
+> kind and its conditions; the package declares the quantity it returns
+> and the composition model (in the package, not in the film); a zero
+> interaction of a mixing rule must be DECLARED with its reason.
+> (7) THE RESOLVED VIEW has two columns, where the choice was made and
+> where the data came from; and A GATE FROM THE FIRST SLICE: for one
+> state and one variant, the column and a property operation receive
+> the same values.
+> (8) FROM THE REVIEW, binding on the builder: SL-04 (whoever lets a
+> property block omit its model word deletes the three factory defaults
+> in the same change); SL-01/02/03 (the proof that slice 0 moves no
+> number is extended to conductivity, vapour pressure and heat
+> capacities, over every sealed copy, and four legacy words are NOT pins
+> of a record law); SL-05 (which ideal-gas law is injected into a liquid
+> one is decided explicitly); SL-09 (34 misfiled provenance entries live
+> in sealed copies too).  SL-07 CHANGES THE PLAN FOR WATER: 24 molecular
+> pair records and 89 electrolyte pairs were regressed with the present
+> vapour-pressure law; a pair fitted with one law and used with another
+> is another model, so water's preferred law is NOT flipped in this
+> campaign; the reference law enters the record as a named alternative
+> a case may pin, and the flip waits for a refitting campaign of its
+> own, decided separately.
+> ORDER OF SLICES (the reviewer's, accepted): (a) per-property
+> replacement in `transport`, named variants, the resolved view, the
+> gate of (7): no number moves; (b) named laws in records, old shape
+> read, windows announced for every law that has none; (c) the table
+> type, liquid viscosity first; (d) directed diffusion entries and the
+> declared quantity; (e) the packing as a record; then the unit blocks
+> that hold property values (the design's section C) one family at a
+> time, the literal defaults becoming refusals LAST since they move
+> goldens; then, outside this layout, the reaction checks of C399 (an
+> element balance at load, the rate constant's dimension).  The
+> rate-based column resumes after (e).
+
+> **C398, A SECOND OUTSIDE READING AND THE ARCHITECT'S RULING ON IT
+> (2026-11-14, Vitor passed it on; the reviewing session reads it
+> too).**  Seven points, judged on content.  (1) REVERSED BY THE
+> ARCHITECT, for a reason he had not seen: in his own worked example,
+> changing one viscosity law and adding one diffusivity table for the
+> column copied almost the whole transport block into the unit, so
+> whole-block replacement per level fails the small-change test and
+> scatters the choices.  RULED: every package is DEFINED AND NAMED in
+> the case's one property dictionary, which is the single entry point; a
+> package may be derived from exactly one base and declares only its
+> changes (the atom is a property block, never a leaf); every package is
+> resolved complete before any calculation, and a circular or unknown
+> base or an incompatible choice is refused by name; process, sector and
+> unit SELECT a package by name.  The multi-level contract becomes a
+> hierarchy of selection, not of definition; what a sector opened as its
+> own case reads, and the wording of the settled contracts, are put to
+> the design; the existing unit and sector blocks keep reading
+> unchanged, announced, until a slice migrates them.  (2) the
+> responsibilities per file: accepted.  (3) a stable identifier per law,
+> exceptions beside the property, a mixing rule naming the parameters it
+> consumes and what a missing one does: accepted.  (4) "a measurement
+> replaces inside its box" is struck: a fall-back to a correlation
+> outside the box would be a switch by state; a table is either THE
+> method (refusal or a bounded extension outside) or one interval of a
+> declared composite with checked junctions.  (5) a diffusivity datum
+> declares its kind (Fick, Maxwell-Stefan, self, infinite dilution),
+> phase, direction, composition, conditions; a binary datum in a
+> multicomponent medium needs a named rule; the contract between package
+> and film says what is returned and where a thermodynamic factor
+> applies: accepted (the paper the reading names is not in hand and is
+> cited nowhere).  (6) the resolved view shows the derived thermodynamic
+> route and both phases' density: accepted.  (7) the report separates
+> where a choice was made from where the data came from: accepted; the
+> example's provenance column was wrong.  ACCEPTANCE TEST written into
+> the design: the ternary case with one central dictionary, a column
+> package derived with exactly two changes, one reference line in the
+> flowsheet, the props check on the same package, the resolved view.
+
 > **C399, THE STUDY IS DONE AND FOLDED INTO THE DESIGN (2026-11-14,
 > morning).**  Five private notes and a synthesis (the Studies folder,
 > `2026-11-14-openfoam/`), each claim cited to a file of the toolbox at
