@@ -15,6 +15,152 @@ nowhere else (DEV.md 4c C397), and his requirement of the same day: *"tem de
 haver a possibilidade de descartar os métodos sistemáticos e inserir dados à
 bruta sob a forma de tabela"*.
 
+## THE RULING (2026-11-14; it PREVAILS over every section below)
+
+C398 is ruled (DEV.md 4c, block "C398, RULED", after the reviewing session's
+three reports `docs/reviews/2026-11-14-several-laws-design-record/`,
+`docs/reviews/2026-11-14-openfoam-property-architecture/` and
+`docs/reviews/2026-11-14-property-dictionary-architecture/`, and Vítor's rule
+"as far as possible, PRESERVE WHAT IS ALREADY GOOD IN CHOUPO; where a
+difference is only a matter of style, it is not worth changing").  Where the
+body disagrees, the body is marked SUPERSEDED and this section holds.
+
+1. **ONE ENTRY POINT.**  A case's property dictionary keeps its blocks as
+   they are (they ARE the case's system) and may add `variants {}`: named
+   variants that state only what differs and derive DIRECTLY from the file's
+   own system (one base: no chain, no cycle).  A unit and a property
+   operation select one by name, `thermo <name>;`.  Today's inline `thermo {
+   }` fragments keep reading, as unnamed variants.  The retired words
+   `package`, `packages`, `derivedFrom` and `propertyPackage` of the third
+   head are NOT used.
+2. **THE ATOM OF REPLACEMENT** is the PROPERTY block inside `transport` and
+   `volumetric`; `equilibrium` and `caloric` are replaced as today (a variant
+   that changes them is a model boundary, announced as one).  The reviewer
+   measured that no shipped case moves.
+3. **A SECTOR KEEPS ITS OWN DICTIONARY** (the plant-and-sectors contract is
+   preserved); a sector's dictionary may hold variants of its own.  The third
+   head's "a sector folder carries no definitions" and its proposed changes to
+   the settled contracts' sentences are WITHDRAWN.
+4. **RECORDS ARE NOT RESHAPED.**  Several named laws go INSIDE the existing
+   property block, one marked preferred, each with its window and source;
+   the old one-law shape reads unchanged; no new schema version, no renamed
+   key, no key with one possible value (those are lines of the resolved VIEW,
+   not keys of six hundred dictionaries); no `convention` field until a
+   second convention exists.
+5. **A LAW IS CHOSEN ONCE, PRINTED, NEVER SWITCHED.**  Several ranges are one
+   piecewise law whose joint is held on VALUE only (a slope jump of a few per
+   cent at a two-range heat capacity's joint is a fact of the published fits:
+   the reviewer counted 31 of the 43 NASA9 records above 1 %); a table is a
+   type, with hard ends, a declared interpolation, units per column and a
+   source; no clamp; a bounded, reasoned extension is the only way out of a
+   table's domain.
+6. **DIFFUSIVITY.**  An entry names `solute` and `solvent` in a list, its
+   kind and its conditions; the variant declares the quantity it returns and
+   the composition model (in the property dictionary, not in the film); a
+   zero interaction of a mixing rule must be DECLARED with its reason.
+7. **THE RESOLVED VIEW** has two columns, where the choice was made and where
+   the data came from; and A GATE FROM THE FIRST SLICE: for one state and one
+   variant, the column and a property operation receive the same values.
+8. **BINDING ON THE BUILDER, from the review**: SL-04 (whoever lets a
+   property block omit its model word deletes the three factory defaults in
+   the same change); SL-01/02/03 (the proof that slice (a) moves no number
+   covers conductivity, vapour pressure and heat capacities over every sealed
+   copy, and four legacy words are NOT pins of a record law); SL-05 (which
+   ideal-gas law is injected into a liquid one is decided explicitly); SL-09
+   (34 misfiled provenance entries live in sealed copies too).  SL-07: 24
+   molecular pair records and 89 electrolyte pairs were regressed with the
+   present vapour-pressure law, so WATER'S PREFERRED LAW IS NOT FLIPPED IN
+   THIS CAMPAIGN; the reference law enters the record as a named alternative
+   a case may pin, and the flip waits for a refitting campaign of its own,
+   decided separately.
+
+**ADDENDUM TO THE RULING (DEV.md 4c "C398, RULED, ADDENDUM"; from the
+reviewer's report `docs/reviews/2026-11-14-openfoam-property-architecture/REPORT.md`
+sections 9-10 and `docs/reviews/2026-11-14-property-dictionary-architecture/REPORT.md`
+section 5).**
+
+* **A1. The target shape of the liquid transport laws** is the shape vapour
+  pressure and the heat capacities already have: a per-COMPONENT law object
+  built from the record (Component.cpp:543, :780-790), not a per-package
+  model that reaches into every record for a sub-block of its own name
+  (LiquidViscosityModel.H:88).  The package-level word becomes the MIXING RULE
+  only, consuming the pure values.  A legacy case word reads as "this mixing
+  rule plus a pin of that law for every constituent", with the four
+  exceptions of review row SL-03 stated: `SatoRiedel` and `BrockBird` are
+  predictive (no record law to pin), `StoredCorrelation` falls back per
+  component to Brock-Bird (StoredCorrelation.cpp:46-56), and the words are
+  case-insensitive aliases.  THE REASON: with one law object per component,
+  methanol (Andrade/Vogel), 2-propanol (five-constant form only) and water
+  (Andrade/Vogel) can be priced in one mixture; today no single word prices
+  them (section 2: `Vogel` refuses 2-propanol, `chemsepEq101` refuses water).
+* **A2. The heat-capacity table moves into slice (c)**, after the
+  liquid-viscosity table: integrated ONCE at construction, so h and s follow
+  from it exactly as from a polynomial; it must cover 298.15 K (or the
+  reference temperature of the datum it is anchored to), else it is refused.
+  Besides the interface `Cp`, `H(T, Tref)`, `S(T, Tref)` of
+  HeatCapacityModel.H:58-66 it needs: (i) a HARD domain, which that interface
+  does not carry (the existing laws only announce their windows, e.g.
+  PolynomialCp.cpp:163), so the table throws the typed `PropertyDomainError`
+  of the kernel; (ii) the units-and-columns reader shared with the other
+  tables (src/core/Formula, PD-02); (iii) its registration word in
+  `HeatCapacityModel::registerBuiltins` (HeatCapacityModel.cpp:65-91); (iv) the
+  cumulative integrals of Cp and Cp/T at the nodes, exact for the declared
+  interpolant; (v) the first use limited to the LIQUID and SOLID heat
+  capacities -- an ideal-gas table enters formation, Gibbs and equilibrium
+  constants and waits for its own check.
+* **A3. What a record may hold, per phase**: the table below goes into the
+  record as its rule, and the gate `check_record_primitives` (built in slice
+  (b)) holds it: a derived quantity typed in a record is refused; a
+  redundant one is accepted only as a CHECK, compared and announced, never a
+  second source.  (From the reviewer's 9.4.)
+
+  | primitive (stored once) | derived (never typed) | a CHECK if also typed (announced, never a source) |
+  |---|---|---|
+  | formation enthalpy and entropy in the natural phase | h, s, g of every phase; a reaction's heat and K | a typed `dH_rxn` (already a cross-checked override) |
+  | ideal-gas Cp(T) and liquid Cp(T), each one law (or one named law preferred) | the sensible legs; the slope of the latent heat | -- |
+  | the latent heat at ONE temperature (`HvapTb`) | the latent heat at T | Watson's curve where a liquid Cp exists |
+  | vapour pressure p_sat(T) | d ln p / dT for the Newtons | Clausius-Clapeyron's latent heat against the derived one; the curve's boiling point against `Tb` |
+  | the liquid volume law (`Vliq`, `VliqT`) | the pressure term of the liquid enthalpy | -- |
+
+* **A4. A unit's block may not carry a property once the slot exists**:
+  `liquidViscosity` inside `packing {}` (DistillationColumn.cpp:5574-5575,
+  RateBasedSegment.cpp:233-234) and its siblings (section 3) are refused
+  with the line to write in the property dictionary; scheduled with the
+  unit-block families.  The rate-based column asks the property dictionary for
+  liquid diffusivity, viscosity, conductivity and density, and its own
+  Wilke-Chang instance (RateBasedSegment.cpp:263, :400-407) goes: a
+  PREREQUISITE of the three-component slice, after (d).
+
+**ORDER OF SLICES (ruled).**  (a) per-property replacement in `transport`,
+named variants, the resolved view, the gate of point 7 -- no number moves;
+(b) named laws in records, the old shape read, windows announced for every law
+that has none; (c) the table type, liquid viscosity first; (d) directed
+diffusion entries and the declared quantity; (e) the packing as a record; then
+the unit blocks that hold property values (section 3) one family at a time,
+the literal defaults becoming refusals LAST since they move goldens; then,
+outside this layout, the reaction checks of C399 (an element balance at load,
+the rate constant's dimension).  The rate-based column resumes after (e).
+The plan: [`property-layout-review-plan.md`](property-layout-review-plan.md).
+
+## The review rows, answered
+
+| row | what the record now says, or why not |
+|---|---|
+| SL-01 | Accepted (ruling 8): the bench that proves slice (a) moves no number is extended to liquid conductivity, vapour pressure and the heat capacities, and runs over every sealed copy, not the catalogue only (365 of 371 water dictionaries read sealed copies). |
+| SL-02 | Accepted: the byte-identity list of 5.4 also covers the model words written at operation level in five property dictionaries (Vogel 7, Andrade 3, StoredCorrelation 23, BrockBird 15, chemsepEq16 6, SatoRiedel 1). |
+| SL-03 | Accepted: SatoRiedel and BrockBird are predictive and StoredCorrelation falls back per component to Brock-Bird (StoredCorrelation.cpp:46-56), so these legacy words are NOT pins of a record law of that name; 5.4's "a word = a pin of all" holds only for Andrade, Vogel and the two five-constant forms, case-insensitively. |
+| SL-04 | Accepted (ruling 8): relaxing the missing-word refusal (ThermoPackageBuilder.cpp:2176) and deleting the three factory defaults (Andrade, StoredCorrelation, SatoRiedel) happen in ONE change. |
+| SL-05 | Accepted (ruling 8): injected facts (Tc, Pc, omega, Tb into the vapour-pressure block, Component.cpp:531-542; the ideal-gas block into a liquid one for RowlinsonBondi, :775-779; a salt's liquidHeatCapacity read by the builder, ThermoPackageBuilder.cpp:765-766; `pureFluids` above a transport word) are decided per case of several laws: the PREFERRED ideal-gas law is the one injected unless the case pins another, printed. |
+| SL-06 | Accepted for the printout: a joint's slope jump is reported as the jump in d ln Cp / d ln T (well conditioned where the slope is near zero); the joint is HELD on value only (ruling 5). |
+| SL-07 | Accepted, and it changes the plan (ruling 8): no flip of water's preferred law in this campaign; 5.7 and the review plan are amended. |
+| SL-08 | Corrected in 1.2: water.dat:296 is inside `cosmo{}`; the one entry inside `pcsaft{}` is propane.dat:149. |
+| SL-09 | Added in 1.2: 34 more misfiled entries sit in sealed copies in 31 cases (30 in water's copy); the slice that moves the 74 moves these too, and its gate reads sealed copies. |
+| OF-01 | Accepted as the target (addendum A1): every pure-component law becomes a per-component object built from the record (the vapour-pressure and heat-capacity shape, Component.cpp:543, :780-790); the package-level word for viscosity, conductivity and surface tension becomes the MIXING RULE only (with the legacy reading of 5.4 for old cases). |
+| OF-02 | Accepted: a heat-capacity table is a `HeatCapacityModel` (Cp, H, S pure virtual, HeatCapacityModel.H:58-66) with its two integrals built at construction; it moves into slice (c) after the liquid-viscosity table (addendum A2), with the condition that 298.15 K is inside its domain and the needs listed there. |
+| OF-03 | Accepted (addendum A3): the table is in THE RULING and the gate `check_record_primitives` is built in slice (b). |
+| PD-01 | Accepted: the column's liquid viscosity, liquid diffusivity and liquid density are decided in the property dictionary (slices (a), (d) and the unit-block family of the column); today the run says so only afterwards. |
+| PD-02 | Accepted: the one-dimensional table reader with units in src/core/Formula (used by rate laws) is the starting point of the table type of slice (c), not a second reader. |
+
 Bound by [`thermophysical-property-routes.md`](thermophysical-property-routes.md)
 (the twelve rules of its first section, its three amendment blocks and the
 answers TR-01..21; "the kernel" and "rule N" below mean that page),
@@ -32,6 +178,9 @@ systems are described by what they are; the comparative study that names them
 is the private study of 2026-11 and stays outside the tree.
 
 ## 0. For a phone
+
+* **RULED 2026-11-14: read THE RULING at the top first; it prevails over
+  every bullet below.**
 
 * **What the record holds today.**  ONE law per property for vapour pressure
   and the heat capacities (a `model` word in the block); for liquid viscosity
@@ -135,7 +284,9 @@ ranges are the NASA7/NASA9 heat capacities, which are one law with a joint.
    `provenance {}` is the last block.  Where `cosmo {}` or `pcsaft {}` follows
    it, the entry lands there: surface tension inside `cosmo{}` in 45 records,
    liquid viscosity in 18, liquid conductivity in 10, surface tension inside
-   `pcsaft{}` in 1 (water.dat:296 is one).  The provenance reader never sees
+   `pcsaft{}` in 1 (propane.dat:149; water.dat:296 is one of the `cosmo{}`
+   ones -- corrected after review row SL-08).  And 34 more sit in SEALED copies
+   in 31 cases, 30 of them in water's copy (review row SL-09).  The provenance reader never sees
    them (Component.cpp:984 reads the top-level block only), and the COSMO
    reader takes each as a parameter SET named `surfaceTension` etc. with
    default model and no profile (Component.cpp:1100-1135).  Nothing numeric
@@ -291,6 +442,10 @@ was re-recorded here.
 
 ### 5.1 A record may carry several laws for one property
 
+(Ruling points 4 and 8: the laws go inside the existing block and the old
+shape reads unchanged, as below; but in the water example `preferred` stays
+on the present law in this campaign and `SR1` is a named alternative.)
+
 Grammar (load-checked against the corpus form of water.dat, the `cosmo {}`
 named-set precedent and the existing viscosity sub-blocks; rule 1 of the
 record skill is kept because the laws are METHODS of one quantity, of which
@@ -386,7 +541,7 @@ the right contract and the gate proposed for every piecewise law:
 | property | continuity required at a joint, checked by a curation gate | why |
 |---|---|---|
 | heat capacities | value (C0), relative 1e-6 | the energy balance differentiates H; Cp C0 makes H C1, which is what a Newton on T sees |
-| vapour pressure | value AND slope of ln P against 1/T (C1) | bubble/dew Newtons use d ln P / dT directly; the engine already demands C1 of its own continuation (VaporPressureModel.cpp:221-266) |
+| vapour pressure (SUPERSEDED by the ruling, point 5: every joint is held on VALUE only; the slope jump is printed as d ln y / d ln T) | value AND slope of ln P against 1/T (C1) | bubble/dew Newtons use d ln P / dT directly; the engine already demands C1 of its own continuation (VaporPressureModel.cpp:221-266) |
 | transport properties, surface tension | value (C0) | read at converged states or in outer loops; a slope jump is announced in the law's printout |
 
 **Two laws switched by state: rejected.**  It breaks rule 4, the switch point
@@ -652,13 +807,14 @@ AMENDED or CONTRADICTED with the measurement.
 | R4 | nothing thermodynamic derived silently from a table; a two-range law is one object with a common temperature, plus the continuity gate the toolbox lacks | tabulated density derives nothing and must be paired with tabulated energy and cp (`TM/specie/equationOfState/rhoTabulated/rhoTabulated.H`); `janaf` one object, ordering checks only, no continuity check (`TM/specie/thermo/janaf/janafThermo.C`); `hIcoTabulated` integrates a cp table exactly to h and s | NASA7/NASA9 one object; NASA9 C0 at its joint in all 43 records, slope free (5.2) | FOLLOWED (5.2, 5.5's dependent-properties table) |
 | R5 | mixing rules named per property in the property dictionary; each pure-law type declares which mixing it supports, refused by name otherwise; no averaging of non-linear coefficients | one mixture word fixes every rule; coefficient mixing averages non-linear parameters (`sutherland` As, Ts; `hPower` n0, Tref: `TM/specie/thermo/hPower`); `noCoefficientMixing(Type)` refuses a model at compile time (`TM/specie/specie/specie.H`) | per liquid property `mixingRule` (C331; LiquidViscosityMixingRule.cpp:256-257, LiquidConductivityMixingRule.cpp:227-229, SurfaceTensionMixingRule.cpp:333-334); pure VALUES are mixed, never coefficients (ThermoPackage.cpp:2187-2189); no pure-law type declares its supported rules | FOLLOWED; new: each law type carries `mixes ( logMoleAverage GrunbergNissan )`-style support in its C++ registration (not in data: the rule is a property of the type, the amplifier rule), checked at assembly |
 | R6 | packages are declared in the scope that uses them; sharing is an explicit, named, visible reference resolved at read time and printed with its origin; no silent inheritance; atomic block replacement (no key-by-key merge); the reference's grammar and what `seal` does with it; a per-scope effective dictionary including every default used | each region / phase / cloud reads its own file; no central registry; six text idioms for sharing (symlinks, `#include`, a case parameter file, `${file!key}` splice, a setup tool copying a material library, a relative include between scopes); default duplicate policy `merge` (`src/OpenFOAM/db/dictionary/entry/entryIO.C`) | unit `thermo {}` fragments replace whole blocks, `equilibrium` per slot (ThermoOverride.H:30-58); a sector dictionary `inherits "<path>"` (5 shipped, one plant); a key twice in a file is refused (Dictionary.cpp:558-575); BUT a case-local component record with `overlayOf` deep-merges its leaves (Database.cpp:450-461), and 18 shipped records use it | FOLLOWED, with one measured exception the ruling must reach: the record overlay IS a key-by-key merge.  Proposed: an overlay replaces whole top-level blocks of the record (a property's laws block, never a coefficient inside it); the 18 records are converted in the review (class B), each checked byte-identical in its run.  The reference, below |
-| R7 | pair-keyed quantities: unordered key, both spellings accepted, duplicate refused, missing pair refused with no default, no self pairs; values typed (a constant, a named estimation method with its inputs, a table); the remainder of a Maxwell-Stefan film DECLARED, the film refuses without it; per-side film models, an absent side announced as "resistance neglected" | `D { A-B ...; }`, both orders, a WARNING when both are given, FATAL when neither, self pairs required for the code's numerics, values Function2(p, T) (`src/ThermophysicalTransportModels/fluid/laminar/Fickian/Fickian.C`, `.../MaxwellStefan/MaxwellStefan.C`); MS refuses without `defaultSpecie`; sided interface models skip an absent side silently | Wilke-Chang constructed inside the column (DistillationColumn.cpp:5175-5189, 5586-5627; RateBasedSegment.cpp:263, 400-401); gas diffusivity one model for all; MS film decided, not built | FOLLOWED; "both spellings accepted" means EITHER is accepted and BOTH together is a duplicate, refused (stricter than the toolbox's warning).  Grammar: `transport { vapour { diffusivity { pairs { water-ethanol { model Fuller; } N2-O2 { value 2.0e-5 m2/s; source "..."; } } remainder N2; } } }` |
+| R7 | pair-keyed quantities: unordered key, both spellings accepted, duplicate refused, missing pair refused with no default, no self pairs; values typed (a constant, a named estimation method with its inputs, a table); the remainder of a Maxwell-Stefan film DECLARED, the film refuses without it; per-side film models, an absent side announced as "resistance neglected" | `D { A-B ...; }`, both orders, a WARNING when both are given, FATAL when neither, self pairs required for the code's numerics, values Function2(p, T) (`src/ThermophysicalTransportModels/fluid/laminar/Fickian/Fickian.C`, `.../MaxwellStefan/MaxwellStefan.C`); MS refuses without `defaultSpecie`; sided interface models skip an absent side silently | Wilke-Chang constructed inside the column (DistillationColumn.cpp:5175-5189, 5586-5627; RateBasedSegment.cpp:263, 400-401); gas diffusivity one model for all; MS film decided, not built | FOLLOWED; "both spellings accepted" means EITHER is accepted and BOTH together is a duplicate, refused (stricter than the toolbox's warning).  Grammar (SUPERSEDED by the ruling, point 6: entries are a list naming `solute` and `solvent`): `transport { vapour { diffusivity { pairs { water-ethanol { model Fuller; } N2-O2 { value 2.0e-5 m2/s; source "..."; } } remainder N2; } } }` |
 | R8 | for the whole-tree review: rate-constant dimension from the declared orders checked at load; an element balance of every declared reaction at load; the reaction echoed as read; a reversible law with orders other than stoichiometry announced unless consistent | `kDimensions` from the orders (`TM/specie/reaction/reaction/reactionI.H`); element balance only in the CHEMKIN converter; runtime mass check for reversible reactions only, 0.1 kg/kmol (`.../Reversible/Reversible_reaction.C`); fractional reverse orders accepted silently | NO per-reaction element balance at load (grep of src/thermo/reaction and the reactors: only the Gibbs reactor reads `elements`, GibbsReactor.cpp:225-234, and that is its model); the boundary element closure after a steady run (ElementBalanceReport.cpp, gate check_element_balance) catches it later; a reversible law with non-mass-action orders is already REFUSED (Reaction.cpp:186-237) | FOLLOWED; the last point is already stricter than asked (refused, not announced); review plan class H |
 | R9 | units on table axes; a defaults printout driven by the lookups; a renamed key read under its old name WITH an announcement; duplicate key refused; a tool that lists valid models in context | `units ([x] [y])`; `#print` lists `/* defaults */` from a shadow dictionary the lookups fill (`.../dictionary/printDictionary/printDictionary.C`); `lookupBackwardsCompatible` silent unless both present; no unread-key detection | duplicate key refused (Dictionary.cpp:558-575); the unread-key audit exists (DictAudit.cpp:129-156) and runs on unit operation blocks (Flowsheet.cpp:1202-1204), props ops (choupoProps main.cpp:847-848), layoutDict and postDict (choupoSolve main.cpp:875, 1506, 1567) -- NOT on the property dictionary or the component records; no record of defaults in `lookup*OrDefault` (Dictionary.H:111-135); old key names accepted case by case (ScalingScan.cpp:170-173) | FOLLOWED; two gaps measured: the property dictionary and the records escape the unread-key audit, and defaults are not recorded |
 | R10 | NOT taken: silent clamp or extrapolation, debug-only checks, compiled code in dictionaries, template-nested type words, key-by-key merge, placeholder data, a restricted-licence databank, documentation that drifts from the reader | all present in the toolbox (clamp default; `...::debug &&` checks in `TM/specie/thermo/janaf/janafThermoI.H`; `#calc`, `coded`; `Reversible<FallOff<Arrhenius,Troe>>`; `merge`; urea's 1.0 N/m surface tension; `etc/thermoData/thermoData`'s commercial ban) | -- | FOLLOWED |
 | R11 | a gate that passes every dictionary example printed in the guides and docs/ai through the real reader | headers' examples drift from their readers in about twenty places across the reading | NO such gate exists (bin/curate searched); docs/ai holds 227 fenced blocks shaped like a dictionary (`count_review.py`) | FOLLOWED: `check_dict_examples` (review plan, class I): each fenced block tagged by its grammar (a property dictionary, a fragment, a component record, a unit block) is parsed by the engine's own Dictionary reader and validated by the reader of that grammar in a no-solve mode (the `choupo-lint` seam); a block that is deliberately partial carries a tag; the blocks that fail today are pinned and may only shrink |
 
-**The named reference (R6), through the record rules.**  SUPERSEDED by
+**The named reference (R6), through the record rules.**  (Also: the ruling's
+variants replace it.)  SUPERSEDED by
 5.5d (P1 d): `sameAs` is DROPPED, absorbed by derivation from a named base;
 kept below as the record of what was weighed.  Today `inherits
 "<path>";` takes a whole system by position.  Added: a BLOCK whose only
@@ -710,6 +866,16 @@ defaults shadow.
 
 ### 5.5d Named packages in the one property dictionary (third head; the architect's rulings P1-P7)
 
+**SUPERSEDED IN PART by the ruling at the top.**  The words `packages {}`,
+`derivedFrom` and `propertyPackage` are replaced by `variants {}` (deriving
+directly from the file's own system) and `thermo <name>;`; the atom is the
+property block inside `transport` and `volumetric` only (`equilibrium` and
+`caloric` as today); P1(a) -- a sector without definitions, and the changed
+sentences of the settled contracts -- is WITHDRAWN: a sector keeps its own
+dictionary.  P2, P3, P4, P6 and P7 stand; P5 stands with entries naming
+`solute` and `solvent` in a list.  The text below is kept as the record of
+what was proposed.
+
 A second outside reading showed a defect the proposal above did not survive:
 in its worked example, changing ONE law of water's viscosity and adding ONE
 diffusivity table for the column made the unit copy almost the whole
@@ -746,7 +912,7 @@ packages ... not proposed") for that reason.  This section prevails over 5.3,
   names none takes its sector's selection, a sector that names none takes
   `default`.  The multi-level contract survives as a hierarchy of SELECTION,
   not of definition.
-* (a) DRILL-IN.  A sector's folder carries no property definitions; opened
+* (a) WITHDRAWN by the ruling (point 3).  DRILL-IN.  A sector's folder carries no property definitions; opened
   and run alone it resolves its `propertyPackage` names against the nearest
   ancestor `constant/thermoPhysPropDict` (the walk-up the flowsheet already
   does for pair homes, Flowsheet.cpp:775-830).  `seal` or an export of a
@@ -874,7 +1040,8 @@ diffusion coefficients that the outside reading named is NOT in hand and is
 not cited.
 
 * A datum declares: `kind` (`fick`, `maxwellStefan`, `self`,
-  `infiniteDilution`), `phase`, the ORDERED pair where direction matters
+  `infiniteDilution`), `phase`, the ORDERED pair where direction matters (ruled form: `solute` and
+  `solvent` named in a list entry)
   (`solute`, `solvent` for an infinite-dilution value), composition, T, P or
   a pressure hypothesis, and the reference frame where it matters.
 * A binary datum used in a multicomponent medium needs a NAMED rule with the
@@ -938,6 +1105,12 @@ of section 6.
 
 ### 5.7 Water
 
+* SUPERSEDED by the ruling (point 8, review row SL-07): water's preferred
+  vapour-pressure law is NOT changed in this campaign (24 molecular and 89
+  electrolyte pair records were regressed on the present law); `SR1` enters
+  the record as a NAMED ALTERNATIVE a case may pin, and the flip is a separate
+  refitting campaign with its own decision.  The bullet below is the record of
+  what was proposed.
 * **Vapour pressure: `SR1` (the Wagner form of IAPWS SR1-86) becomes the
   preferred law of water.dat**; Antoine stays as the named law `antoine` with
   its soft window narrowed to 273-313 K (where the header measured it within
@@ -959,6 +1132,9 @@ of section 6.
   surface tension's window (its fit stops at 353 K).
 
 ## 6. Build order (each slice with its check; the first moves no number)
+
+SUPERSEDED by the ORDER OF SLICES in the ruling at the top and by the review
+plan; the table below is the record of the earlier proposal.
 
 | slice | content | check |
 |---|---|---|
@@ -1035,100 +1211,105 @@ of section 6.
   goldens a water vapour-pressure flip moves on today's tree (needs a staged
   sweep, which this slice may not run).
 
-## 10. Acceptance test (the third head's, short and complete)
+## 10. Acceptance test (in the ruled grammar)
 
 The case: the Pelkonen ternary (methanol, 2-propanol, water; total reflux,
 atmospheric pressure, Sulzer BX packing: Pelkonen et al. 2001, Chem. Eng.
-Process. 40, 235-243, Tables 3-5) as the C329 ternary slice will build it.
-The CASE does not exist yet [PROPOSED]; the numbers below illustrate the
-grammar and carry no claim.  It passes when ONE dictionary holds a default
-package and `columnThermo` derived from it with exactly two changes, the
-flowsheet selects it in one line, a props operation checks with the same
-package, and both runs print the resolved view below.
+Process. 40, 235-243, Tables 3-5), as the C329 ternary slice will build it.
+The CASE does not exist yet [PROPOSED]; the numbers illustrate the grammar and
+carry no claim.  It passes when ONE property dictionary holds its system and
+one variant `column` with exactly two changes, the column selects the variant
+in one line, a property operation checks with the same variant, the gate of
+ruling 7 holds (the column and the operation receive the same values at one
+state), and both runs print the resolved view below.
 
 ```
 // constant/thermoPhysPropDict -- the one entry point
-recordType    thermophysicalPropertySystem;                 [EXISTS]
-schemaVersion 2;                                            [EXISTS]
-components    ( methanol isopropanol water );               [EXISTS]
-equilibrium                                                 [EXISTS]
+recordType    thermophysicalPropertySystem;                          [EXISTS]
+schemaVersion 2;                                                     [EXISTS]
+components    ( methanol isopropanol water );                        [EXISTS]
+equilibrium                                                          [EXISTS]
 {
-    formulation gammaPhi;                                   [EXISTS]
+    formulation gammaPhi;                                            [EXISTS]
     liquid { activityModel { model NRTL; } standardState pureLiquid; }   [EXISTS]
-    vapour { fugacityModel idealGas; }                      [EXISTS]
+    vapour { fugacityModel idealGas; }                               [EXISTS]
 }
-transport                                                   [EXISTS]
+transport                                                            [EXISTS]
 {
     vapour { viscosity { model Chung; } diffusivity { model Fuller; } }  [EXISTS]
     liquid
     {
-        viscosity   { mixingRule GrunbergNissan; pairs GrunbergNissan; }       [EXISTS] / pairs [PROPOSED]
-        diffusivity { model WilkeChang; multicomponentRule VignesKooijmanTaylor; }  [EXISTS] / rule [PROPOSED]
+        viscosity   { mixingRule GrunbergNissan; }                   [EXISTS key; a word-less block, reading each record's
+                                                                       preferred law, is PROPOSED and needs SL-04's deletion]
+        diffusivity { model WilkeChang; }                            [EXISTS]
     }
-    interface { surfaceTension { model BrockBird; } }       [EXISTS]
+    interface { surfaceTension { model BrockBird; } }                [EXISTS]
 }
-packages                                                    [PROPOSED]
+variants                                                             [PROPOSED]
 {
-    columnThermo                                            [PROPOSED]
+    column                                                           [PROPOSED]
     {
-        derivedFrom  default;                               [PROPOSED]
         transport
         {
             liquid
             {
-                viscosity                                   // atom: transport.liquid.viscosity, replaced whole
+                viscosity                    // atom: transport.liquid.viscosity, replaced whole
                 {
-                    mixingRule   GrunbergNissan;            [EXISTS]
-                    pairs        GrunbergNissan;            [PROPOSED]
-                    constituents { water { law vogel; reason "within 2 % of IAPWS R12-08 to 473 K"; } }   [PROPOSED]
+                    mixingRule  GrunbergNissan;                      [EXISTS]
+                    interaction ( { i isopropanol; j water; A ...; B ...; C ...; D ...;
+                                    Tmin 283.15 K; Tmax 353.15 K; source "..."; } )   [EXISTS]
+                    zero        ( { i methanol; j isopropanol; reason "no measured mixture viscosity"; }
+                                  { i methanol; j water; reason "..."; } )             [PROPOSED]
+                    law         ( { component water; law vogel; reason "within 2 % of IAPWS R12-08 to 473 K"; } )   [PROPOSED]
                 }
-                diffusivity                                 // atom: transport.liquid.diffusivity, replaced whole
+                diffusivity                  // atom: transport.liquid.diffusivity, replaced whole
                 {
-                    model              WilkeChang;          [EXISTS]
-                    multicomponentRule VignesKooijmanTaylor;   [PROPOSED]
-                    measured { methanolInWater { use method; replaces { method WilkeChang; pair methanol-water; } reason "measured infinite-dilution values"; } }   [PROPOSED]
+                    model       WilkeChang;                          [EXISTS]
+                    returns     effective;                           [PROPOSED]
+                    composition VignesKooijmanTaylor;                [PROPOSED]
+                    entries     ( { solute methanol; solvent water; kind infiniteDilution;
+                                    table methanolInWater; interpolation linearLog;
+                                    reason "measured infinite-dilution values"; } )   [PROPOSED]
                 }
             }
         }
     }
 }
 
-// constant/experiments/methanolInWater.dat                 [EXISTS format; table PROPOSED]
-provenance  { source measured; citation "..."; }
-system      ( methanol water );
-property    liquidDiffusivity;                              [PROPOSED]
-kind        infiniteDilution;  solute methanol;  solvent water;   [PROPOSED]
-columns     ( { name T; unit K; } { name D; unit m2/s; } );
-data        ( 298.15 1.56e-9  313.15 2.10e-9  333.15 2.95e-9  353.15 3.90e-9 );
-pressure    notCarried;                                     [EXISTS word, density solution records]
+// constant/experiments/methanolInWater.dat              [EXISTS format, the pilot's]
+provenance  { source measured; citation "..."; }                    [EXISTS]
+system      ( methanol water );                                     [EXISTS]
+property    liquidDiffusivity;                                      [PROPOSED value of an EXISTS key]
+columns     ( { name T; unit K; } { name D; unit m2/s; } );         [EXISTS]
+data        ( 298.15 1.56e-9  313.15 2.10e-9  333.15 2.95e-9  353.15 3.90e-9 );   [EXISTS]
+uncertainty 5 %;                                                    [EXISTS]
 
-// system/flowsheetDict, the one reference line
-units ( { name column; type distillationColumn; model rateBased;   [EXISTS]
-          propertyPackage columnThermo;                     [PROPOSED]
-          operation { ... } } );                            [EXISTS]
+// system/flowsheetDict, the one selection line
+units ( { name column; type distillationColumn; model rateBased;    [EXISTS]
+          thermo column;                                            [PROPOSED form of the EXISTS key `thermo`]
+          operation { ... } } );                                    [EXISTS]
 
-// system/propsDict, the check with the same package
-operations ( { name muCheck; type propertyScan1D;           [EXISTS]
-               propertyPackage columnThermo;                [PROPOSED]
-               vary { variable T; from 330 K; to 370 K; n 9; }
-               state { P 1 atm; composition { methanol 0.3; isopropanol 0.3; water 0.4; } }
-               properties ( viscosity_liquid diffusivity_liquid ); } );    [EXISTS]
+// system/propsDict, the check with the same variant
+operations ( { name muCheck; type propertyScan1D;                   [EXISTS]
+               thermo column;                                       [PROPOSED form of the EXISTS key `thermo`]
+               vary { variable T; from 330 K; to 370 K; n 9; }      [EXISTS]
+               state { P 1 atm; composition { methanol 0.3; isopropanol 0.3; water 0.4; } }   [EXISTS]
+               properties ( viscosity_liquid diffusivity_liquid ); } );   [EXISTS]
 ```
 
-The resolved view both runs print [PROPOSED], CHOICE apart from DATA (P7):
+(`zero` and `law` are the proposed keys for a declared zero interaction
+(ruling 6) and a pinned record law; their final spelling goes through the
+record rules when slice (a) is built.  The Grunberg-Nissan rows stay where the
+tree has them today, inline in the property block; moving them to pair
+records is not part of the ruling.)
 
-```
-[package] columnThermo <- default   (constant/thermoPhysPropDict: packages.columnThermo)
-  route: gammaPhi; liquid NRTL (pairs: parameters/NRTL/...), pureLiquid; vapour idealGas;
-         energy elementsDatum; liquid h = Hf298(gas) - Hvap(298.15) + int Cp_liq (laws below)
-  density: liquid by idealMixing of record volumes; vapour ideal gas
-  transport.liquid.viscosity    CHOICE columnThermo (line N)    DATA water: water.dat law vogel [273-473 soft];
-                                                                     methanol, isopropanol: record's preferred law;
-                                                                     mixing GrunbergNissan: pairs/GrunbergNissan/isopropanol-water.dat,
-                                                                     methanol-water.dat; methanol-isopropanol REFUSED unless declared neutral
-  transport.liquid.diffusivity  CHOICE columnThermo (line M)    DATA methanol-water: experiments/methanolInWater.dat (table, linearLog,
-                                                                     298.15-353.15 K hard); other pairs WilkeChang; rule VignesKooijmanTaylor
-                                                                     (Taylor & Kooijman 2014 Eqs. 3.38-3.41); liquid film Gamma = 1, announced
-  every other atom              CHOICE default                   DATA the records' preferred laws
-[unit] column selects columnThermo (flowsheetDict line K); [props] muCheck selects columnThermo (propsDict line J)
-```
+The resolved view both runs print [PROPOSED], two columns (ruling 7):
+
+| what | CHOICE: where it was made | DATA: where it came from |
+|---|---|---|
+| route | system (constant/thermoPhysPropDict: equilibrium) | gammaPhi, NRTL pairs from parameters/NRTL/...; energy `elementsDatum`; liquid h = Hf298(gas) - Hvap(298.15) + integral of the records' liquid Cp laws |
+| density, both phases | system (no volumetric block) | liquid by ideal mixing of the records' volumes; vapour ideal gas |
+| transport.liquid.viscosity | variant `column` (thermoPhysPropDict line N), selected by unit `column` (flowsheetDict line K) and operation `muCheck` (propsDict line J) | water: water.dat law `vogel` [soft 273-473 K]; methanol, isopropanol: their records' laws; Grunberg-Nissan: isopropanol-water row (source ...); methanol-isopropanol and methanol-water declared zero, with reasons |
+| transport.liquid.diffusivity | variant `column` (line M) | methanol in water: experiments/methanolInWater.dat (table, linearLog, hard 298.15-353.15 K); other pairs Wilke-Chang; composition rule Vignes-Kooijman-Taylor (Taylor & Kooijman 2014, Eqs. 3.38-3.41); returned: effective liquid D; liquid film Gamma = 1, announced |
+| every other property | system | the records' preferred laws |
+| gate (ruling 7) | -- | the column's and `muCheck`'s liquid viscosity and diffusivity at (350 K, 1 atm, the stated composition): identical |
