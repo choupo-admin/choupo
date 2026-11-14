@@ -3476,6 +3476,36 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C329, WHO THE RATE-BASED COLUMN IS FOR, AND WHAT THAT CHANGES (Vitor,
+> 2026-11-14, when the architect called Choupo "educational, not
+> industrial": "Um aluno de Mestrado pode querer usar num projeto de uma
+> coluna real!").**  THE USE CASE IS A MASTER'S DESIGN PROJECT ON A REAL
+> COLUMN: the answer must be defensible, and where the simple model can
+> give a wrong product the student needs more than a warning: he needs
+> the model that does not.  DECISIONS, with their reasons.  (1) ORDER:
+> the slice after B1 is THREE COMPONENTS AT TOTAL REFLUX held to the
+> tabulated packed-column profiles already in the folder (the same
+> configuration as B1; no trays, no feed needed); then the feed and a
+> general reflux with the ternary general-reflux column; trays after.
+> (2) THE VAPOUR FILM GETS BOTH MODELS in that slice: the effective
+> diffusivity of each component (the stagnant-mixture solution of the
+> Maxwell-Stefan relation, exact there and an approximation in
+> distillation, said so with its derivation) AND the Maxwell-Stefan film
+> itself.  Reason: in the vapour it costs no fitted parameter (binary
+> gas diffusivities are predicted, there is no thermodynamic factor),
+> and the measured boundary case is in hand to show whether it changes
+> the product; this supersedes "only if a measured case shows it",
+> because the case that can show it is the slice's own witness.  (3)
+> THE LIQUID FILM STAYS ON THE EFFECTIVE DIFFUSIVITY, for the reason
+> recorded yesterday (a thermodynamic factor no phase-equilibrium fit
+> pins, diffusivities by an interpolation rule); the run publishes the
+> liquid film's share of the resistance so that a student sees how much
+> of his answer leans on it.  (4) The component that takes the
+> remainder of the fluxes in an effective-diffusivity film is named in
+> the run.  (5) Every film coefficient is written out in the guide with
+> its diffusivity in sight (he could not see where D_ij entered, so a
+> student cannot either).
+
 > **C393 LANDED (2026-11-14): EVERY TRACKED CODE FILE CARRIES THE HOLDER
 > LINE AND THE LICENCE IDENTIFIER.**  2511 code files in nine kinds
 > (engine C++, web-app sources, tests and scripts, scripts with a hash
