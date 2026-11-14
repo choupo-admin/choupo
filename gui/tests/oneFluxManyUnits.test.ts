@@ -497,9 +497,10 @@ describe("one-flux-many-units: the numbers the prose states (MT-03, MT-04, MT-06
     expect(body(4)).toContain("linearised about the bulk liquid");
     expect(body(7)).toContain("RateBasedSegment.cpp:590");
     const src = tree("src/unitOperations/distillation/RateBasedSegment.cpp").split("\n");
-    //  line 586 sits inside the `if (!limitMode)` branch; 598 is the other branch
-    expect(src.slice(582, 586).join("\n")).toContain("if (!limitMode)");
-    expect(src.slice(586, 598).join("\n")).toContain("else");
+    //  line 578 sits inside the `if (!limitMode)` branch; 590 is the other branch
+    //  (re-pointed with the C398 slice (d) edits above them, -8 lines)
+    expect(src.slice(574, 578).join("\n")).toContain("if (!limitMode)");
+    expect(src.slice(578, 590).join("\n")).toContain("else");
   });
 
   it("flags the pseudo-first-order value above the instantaneous limit (Missen's data, c_B = 0.01 mol/L)", () => {
