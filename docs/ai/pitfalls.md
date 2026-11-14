@@ -148,7 +148,8 @@ use the resolved one in the first law).
 | `T` + `P` + `phase gas;` / `phase liquid;` | prices the DECLARED phase (R-E2) | the single-phase pin |
 | `T` + `P` + `vaporFraction q` | **REFUSED** (over-specified) | the message names the three values and the two remedies |
 | `T` + `P` + `vaporFraction 0` or `1` | **REFUSED**, naming `phase liquid;` / `phase gas;` | a phase spelled as a number |
-| `P` + `vaporFraction` or `T` + `vaporFraction` | — | recognised; resolution DEFERRED (the engine does not solve `T` from a declared `β`) |
+| `P` + `vaporFraction` or `T` + `vaporFraction` (no `T` / no `P`) | **REFUSED**, naming the missing variable (was: the absent one read as 0 and reached the units as `P = 0 Pa`, review PA-09) | the engine does not solve `T` or `P` from a declared `β` at stream read; take it from choupoProps `flashSpec` (pair `PVF` / `TVF`) and write both |
+| a stream with `T` but no `P`, or `P` but no `T` (any pin: `phase`, none) | **REFUSED**, naming the missing variable (was: the absent one read as 0, `P = 0 Pa` or `T = 0 K`, exit 0; PA-09 sibling) | declare both; `T` and `P` are the stream's state |
 
 - **The ONE exception is a PURE component in two phases.**  On its saturation
   curve `T` and `P` are not independent (`P = Psat(T)`), so `(T,P)` genuinely

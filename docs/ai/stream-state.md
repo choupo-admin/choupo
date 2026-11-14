@@ -84,8 +84,9 @@ honoured, never re-solved; `vaporFraction 0` / `1` on a mixture is refused
 naming it).  The ONE place `vaporFraction q` is a pin is a PURE component in
 two phases, whose `(T, P)` sit on its saturation curve and do not fix the
 split.  `(P, vaporFraction)` and `(T, vaporFraction)` — solving `T` or `P`
-from a declared quality — are recognised and their resolution is DEFERRED;
-see `pitfalls.md`.
+from a declared quality — are REFUSED by name (the missing variable is never
+defaulted to 0); get it from choupoProps `flashSpec` (pair `PVF` / `TVF`) and
+declare both; see `pitfalls.md`.
 
 ---
 

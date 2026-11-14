@@ -3216,6 +3216,44 @@ ProcessStream readStreamState(const fs::path&       file,
                     present += (present.empty() ? "" : ", ") + thermo.comp(i).name();
             }
         if (nPresent > 4) present += ", ...";
+        //  A `vaporFraction` is a state variable only BESIDE the one it
+        //  does not replace.  T and vaporFraction (or P and vaporFraction)
+        //  is a complete specification on paper -- the missing variable is
+        //  the saturation temperature or pressure at that split -- but the
+        //  (T, q) and (P, q) closures are not resolved at stream read (the
+        //  flash that solves them is a unit, `specifiedFlash` pair TVF /
+        //  PVF, and the stream layer sits below the units), and until
+        //  2026-11-14 the absent one silently read as 0 and reached the
+        //  units as P = 0 Pa (review PA-09, C378 pilot).  So the missing
+        //  one is refused by name with the remedy, never defaulted.
+        if (!(d->found("T") && d->found("P")))
+        {
+            const bool noT = !d->found("T");
+            const bool noP = !d->found("P");
+            std::ostringstream os;
+            os << "stream state '" << name << "': declares vaporFraction = "
+               << s.vf << " but "
+               << (noT && noP ? "neither T nor P"
+                              : (noP ? "no P" : "no T"))
+               << ".  A stream's state is T AND P (the vapour fraction is a"
+                  " pin beside them for a pure component on its saturation"
+                  " curve, or the result of the flash for a mixture); a"
+                  " vaporFraction with only one of them is a complete"
+                  " specification in principle, but this engine does not"
+                  " solve the missing "
+               << (noT && noP ? "pair" : (noP ? "pressure" : "temperature"))
+               << " from it when it reads a stream, and a default of 0"
+                  " would reach the units as a state that does not exist."
+                  "  Remedies: (1) declare "
+               << (noT && noP ? "T and P" : (noP ? "P" : "T"))
+               << " beside it (for a mixture delete the `vaporFraction` line"
+                  " as well and let (T, P) resolve the split); (2) if the"
+                  " quality IS the specification, get the missing value from"
+                  " the props bench -- a `flashSpec` operation of choupoProps"
+                  " with pair TVF (T and q given, P solved) or PVF (P and q"
+                  " given, T solved) -- and write it into the stream.";
+            throw std::runtime_error(os.str());
+        }
         if (nPresent > 1 && d->found("T") && d->found("P"))
         {
             const scalar q = s.vf;
@@ -3262,6 +3300,34 @@ ProcessStream readStreamState(const fs::path&       file,
         else if (ph == "liquid")                                 s.vf = 0.0;
         // `solid` is carried by the solids block, not by vf.
         s.phasePinned = true;
+    }
+    //  T AND P ARE BOTH DECLARED (PA-09 sibling, 2026-11-14).  An absent T
+    //  or P used to keep its 0 default and reach the units as T = 0 K or
+    //  P = 0 Pa (a `phase gas;` feed with T and no P, or P and no T, ran to
+    //  exit 0 printing P = 0.000 bar / T = 0.00 K; the same for a stream
+    //  with no pin at all).  A stream is fixed by two variables and this
+    //  engine's closure is T and P (the others are not solved at read), so
+    //  the missing one is refused by name, never defaulted.  Every stream
+    //  file under tutorials/ declares both (counted: 1712 flow-carrying 0/
+    //  files, 0 without T or P), so no shipped case is refused.
+    if (!(d->found("T") && d->found("P")))
+    {
+        const bool noT = !d->found("T");
+        const bool noP = !d->found("P");
+        throw std::runtime_error("stream state '" + name + "': declares "
+            + std::string(noT && noP ? "neither T nor P"
+                                     : (noP ? "T but no P" : "P but no T"))
+            + ".  A stream's state is T AND P; an absent value is never"
+              " defaulted (it would reach the units as "
+            + std::string(noT && noP ? "T = 0 K and P = 0 Pa"
+                                     : (noP ? "P = 0 Pa" : "T = 0 K"))
+            + ").  Remedy: declare "
+            + std::string(noT && noP ? "T and P" : (noP ? "P" : "T"))
+            + " in the file (for example `"
+            + std::string(noP ? "P 1 bar;" : "T 25 degC;")
+            + "`); if the other specification is a vapour fraction, a"
+              " `flashSpec` operation of choupoProps (pair TVF or PVF) gives"
+              " the missing value.");
     }
     if (d->found("derived"))
     {
