@@ -1,0 +1,20 @@
+water: 68 checks paired; the four closest to failing (margin relative to the value; share of the half-unit used):
+   margin 7.14e-12  used 0.990  Table 7  T = 500 K, rho = 1084.564 kg/m3: p published 700000405 computed 700000405.495
+   margin 7.26e-12  used 0.992  Table 8  saturation at T = 275 K: rhoV published 0.00550664919 computed 0.00550664918504
+   margin 2.53e-11  used 0.954  Table 8  saturation at T = 275 K: sV published 9106.60121 computed 9106.60120523
+   margin 4.01e-11  used 0.942  Table 7  T = 900 K, rho = 0.241 kg/m3: w published 724.027147 computed 724.027146529
+carbon dioxide: 67 checks paired; the four closest to failing (margin relative to the value; share of the half-unit used):
+   margin 1.22e-07  used 0.977  Table 34 (page=1560-1561)  saturation at T = 220 K: cpV published 930.32 computed 930.3248868
+   margin 5.25e-07  used 0.900  Table 34 (page=1560-1561)  saturation at T = 220 K: wL published 951.21 computed 951.214500213
+   margin 8.70e-07  used 0.836  Table 35 (page=1578)  T = 250 K, p = 8000000 Pa: cv published 941.2 computed 941.204180885
+   margin 9.25e-07  used 0.827  Table 34 (page=1560-1561)  saturation at T = 280 K: sV published -934.01 computed -934.014135897
+nitrogen: 67 checks paired; the four closest to failing (margin relative to the value; share of the half-unit used):
+   margin 1.54e-07  used 0.976  Table Appendix (page=1402-1405)  saturation at T = 100 K: psat published 778270 computed 778274.88024
+   margin 1.62e-07  used 0.999  Table Appendix (page=1402-1405)  saturation at T = 100 K: wV published 183.3 computed 183.250029632
+   margin 5.12e-07  used 0.743  Table Appendix (page=1402-1405)  saturation at T = 120 K: psat published 2510580 computed 2510583.71388
+   margin 1.06e-06  used 0.821  Table Appendix  T = 300 K, p = 100000000 Pa: h published 301504.847 computed 301503.381965
+methane: 74 checks paired; the four closest to failing (margin relative to the value; share of the half-unit used):
+   margin 2.03e-07  used 0.993  Table 39 (page=1118)  saturation at T = 150 K: rhoV published 16.328 computed 16.3275033174
+   margin 4.20e-07  used 0.945  Table 40 (page=1125)  T = 300 K, p = 101325 Pa: rho published 0.65281 computed 0.652805273872
+   margin 4.46e-07  used 0.957  Table 39 (page=1119)  saturation at T = 180 K: sL published -4777.8 computed -4777.75212903
+   margin 5.26e-07  used 0.954  Table 39 (page=1117)  saturation at T = 100 K: rhoL published 438.89 computed 438.885230971

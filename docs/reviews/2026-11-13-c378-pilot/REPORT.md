@@ -156,3 +156,37 @@ cases that carry a copy of the water record.
 
 **Not reviewed by this reviewer:** `check_gate_selftest` (read, not run);
 a full sweep; `--gui` as a suite; accuracy against measurements.
+
+## 7. Addendum (2026-11-14): how close every load-time check is to its edge
+
+PC-03 found one check of the water record (the pressure at 300 K and
+996.556 kg/m3) that a single last bit can fail.  Measured afterwards for
+all four reference records, with no file modified: the verification case
+`tutorials/props/thermo/refEoS01_iapws95_verification` run as it is on a
+build of main, and every printed check paired with its record's own
+`digits` and `printedScale` (`blast/reference_check_margins.py`, output
+`blast/reference_check_margins.txt`).  The share is |computed -
+published| over the half unit of the last printed digit the check
+allows; 1.000 fails.
+
+| record | checks | closest to failing | share used | margin, relative to the value |
+|---|---|---|---|---|
+| water (IAPWS-95) | 68 paired | p at 500 K, 1084.564 kg/m3: published 700000405, computed 700000405.495 | 0.990 | 7.1e-12 |
+| water | | rhoV on saturation at 275 K | 0.992 | 7.3e-12 |
+| carbon dioxide | 67 | cpV on saturation at 220 K | 0.977 | 1.2e-7 |
+| nitrogen | 67 | wV on saturation at 100 K | 0.999 | 1.6e-7 |
+| methane | 74 | rhoV on saturation at 150 K | 0.993 | 2.0e-7 |
+
+What it says:
+
+- **Water has two checks closer to the edge than the one PC-03
+  reproduced**: a margin of 7e-12 relative is about thirty times
+  machine precision, and a pressure at a liquid density amplifies
+  round-off by roughly the ratio of rho R T to p.  Another compiler or
+  math library can fail them on a correct record.
+- The other three records print fewer digits (four to six), so their
+  margins are in the 1e-7 range: far from round-off.  Their shares near
+  1.000 (nitrogen 0.999) are a statement about the transcription and the
+  rounding of the printed tables, not about the platform.
+- PC-03's remedy should therefore be judged on the water record's
+  nine-digit checks as a family, not on the one row.
