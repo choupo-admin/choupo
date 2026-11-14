@@ -1894,7 +1894,10 @@ bin/runTests                 # every tutorial (5 binaries + buildCode cases)
 bin/runTests <case>          # one case
 bin/runTests <directory>     # every case under it -- the chunk
 bin/runTests --witnesses     # one witness per execution class
+bin/runTests --fast          # one case per tutorial family + conservation
 bin/runTests --record <case> # refresh that case's golden-master `expected`
+bin/runTests --no-reuse      # the sweep, with no stored verdict reused
+bin/runTests --no-fast-stamp # the sweep, without a --fast pass (said aloud)
 \end{lstlisting}
 
 \paragraph{The testing ladder --- run what the change can reach.}
@@ -2039,6 +2042,65 @@ sealed case that cannot change physics on sealing, and so on).  Each is
 independently runnable, states in its own output what it does \emph{not}
 cover, and has been sabotage-verified --- a gate nobody has ever seen fail
 is not evidence.
+
+\subsection{The sweep's economy}\label{sec:suite-economy}
+
+Four rules keep the full sweep from paying for work whose answer is already
+known (DEV.md 4c C394).  Each has one home, named here.
+
+\paragraph{\code{--fast} first.}  The full sweep (\code{bin/runTests} with no
+argument) \emph{refuses to start} unless \code{bin/runTests --fast} passed on
+the same tree.  A clean \code{--fast} pass writes \file{build/fastStamp.json}:
+a key over HEAD, the working tree's diff against it and the untracked files,
+taken when the pass started and found unchanged when it ended.  The sweep
+compares it with the tree it is asked to test.  It refuses rather than warns,
+because the rule is the order: on 2026-11-13 a sweep started on a merged tree
+that nobody had run \code{--fast} on, and cases the fast set holds crashed an
+hour into it.  \code{--no-fast-stamp} (or \code{CHOUPO\_SWEEP\_WITHOUT\_FAST=1})
+overrides it, and the verdict then says the sweep ran without one.  The hosted
+nightly runs \code{--fast} as its own first step.  A chunk or a named case is
+never refused.
+
+\paragraph{Input-keyed reuse.}  A verdict that depends only on named inputs is
+taken again only when one of them changed.  On the sweep, the regressed-pairs
+gate and each of the curation fits (the cases under \file{data/curation/})
+carry a key: a sha256 over the engine's compiled objects (so an edit that
+changes no machine code, a comment or a moved line, leaves it alone; the two
+objects that print the commit hash are keyed on their sources instead), the
+data trees the verdict reads (git's listing, so ignored run outputs never
+enter, plus the private \file{data/local/}), and the harness that executes it
+(the gate, the \file{bin/curate} modules it imports and the scripts it names;
+for a case, the \file{bin/runTests} functions \code{check\_case} reaches and
+the golden-band mode of the run).  On an unchanged key the earlier PASS is
+printed \code{REUSED}, with the key and the date it was taken, and counted
+apart (\code{... / REUSED n} at the end of the tally line); a FAIL or a SKIP is
+never stored, so it always runs again.  Verdicts live under
+\file{build/reuse/}, never tracked: a clean checkout runs everything, and so do
+the hosted tiers and a release, which pass \code{--no-reuse}.  A gate is keyed
+only if every repository path its source names lies inside its declared
+inputs --- the key refuses itself otherwise.  The one home, with the list of
+gates looked at and \emph{not} keyed and why:
+\file{bin/curate/suite\_reuse.py} (\code{--list}).
+
+\paragraph{The gate self-test runs in a pool.}  \code{check\_gate\_selftest}
+runs its arms in worker copies of the tree, outside it (a shared clone at
+HEAD, with the tree's edits and its build copied over), at most as many at
+once as the jobs it is given (\code{CHOUPO\_GATE\_JOBS}, else the suite's
+\code{-j}) and one \code{make} at a time.  The tree under test is never edited
+and its build is never rebuilt; every covered gate must first pass
+unsabotaged in the pool, or its arm is reported not observed.  A second
+self-test on the same machine refuses while one is alive, and an interrupted
+run restores every sabotage it made in its workers before it exits.
+
+\paragraph{\code{bin/integrate --plan} sees the gates that scan by
+directory.}  Besides the gates whose source names a touched file, the plan
+lists every gate whose \emph{scan roots} hold one: the directories and
+patterns it walks (\code{os.walk}, \code{glob}, \code{rglob},
+\code{git ls-files}), read from its source by
+\file{bin/curate/gate\_scan\_roots.py}, which a gate may supplement with a
+module-level \code{SCAN\_ROOTS}.  Three of the four gates the sweep of
+\code{integ/c398ab} failed scan by directory and name no file; the plan now
+lists all four.
 
 
 % Source: bin/runTests:507-518 (the flag and its contract), :833-842 (the

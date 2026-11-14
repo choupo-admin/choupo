@@ -101,8 +101,10 @@ served correctly cannot be folded later.
    the `/releases/vYYMM.json` fetch.  Move the previous release into the
    history list.  Do NOT hand-fill the `data-inv` literals yet; step 6 does it
    from the artefact.
-4. Run everything: `bin/runTests` (0 FAIL), `cd gui && npx tsc --noEmit &&
-   npx vitest run`, `make wasm-gui`.
+4. Run everything: `bin/runTests --fast`, then `bin/runTests --no-reuse`
+   (0 FAIL; a release RUNS every keyed item rather than reusing a stored
+   verdict, DEV.md 4c C394), `cd gui && npx tsc --noEmit && npx vitest run`,
+   `make wasm-gui`.
 5. Commit and tag (do NOT push yet — steps 6-8 still change the tree):
 
    ```bash
@@ -220,6 +222,7 @@ storefront.
 ```bash
 git checkout main
 # ... work, commit (identity: Vítor Geraldes <talentgroundlda@gmail.com>) ...
+bin/runTests --fast     # first: the sweep refuses to start without it (C394)
 bin/runTests            # 0 FAIL before any push
 git push origin main    # this also publishes the site
 ```
@@ -244,7 +247,7 @@ taken away from under itself. The workflow now **builds and verifies only**.
 
 ```bash
 git checkout main
-bin/runTests                                  # 0 FAIL or no deploy
+bin/runTests --fast && bin/runTests --no-reuse   # 0 FAIL or no deploy
 make wasm-gui                                 # WASM + version.json (the badge)
 bin/curate/guide_version.py && make -C docs all   # the PDFs, carrying the label
 bin/buildSite                                 # assembles site/_dist
