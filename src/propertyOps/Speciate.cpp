@@ -35,6 +35,7 @@ License
 #include "thermo/electrolyte/EdwardsCatalogue.H"    // loadEdwardsHenry (Eq 13)
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // aqueousSpeciesMW
 #include "thermo/ThermoPackageBuilder.H"
+#include "thermo/Database.H"
 #include "thermo/electrolyte/SpeciationSolver.H"
 #include "thermo/electrolyte/PitzerHMW.H"
 #include "thermo/solidEquilibrium/SolidEquilibriumService.H"
@@ -592,8 +593,17 @@ int Speciate::run(const DictPtr& dict, const ThermoPackage& /*thermo*/, int verb
         //  The solvent leg: a_w * Psat(T) on the solvent's OWN curated vapour-
         //  pressure model (the same record every flash reads, so the two
         //  surfaces cannot drift apart).
-        const scalar PsatPa =
-            database()->loadComponent("water").vp().Psat_Pa(in.T);
+        //  INSIDE THE CASE'S PIN SCOPE (C398 review row CN-03): this copy of
+        //  water is loaded here, after any package's scope has closed, so a pin
+        //  of water's vapour-pressure law written in the case's property
+        //  dictionary must be held open around it -- or this leg prices the
+        //  record's preferred law while the rest of the run prices the pin.
+        const scalar PsatPa = [&]
+        {
+            RecordLawPinScope scope(authoredV2() ? ThermoPackage::readRecordLawPins(authoredV2())
+                                                 : std::vector<RecordLawPin>{});
+            return database()->loadComponent("water").vp().Psat_Pa(in.T);
+        }();
         const double PsAtm  = PsatPa / units::atm_to_Pa;
         const double pWater = res.aw * PsAtm;
 

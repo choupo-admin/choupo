@@ -452,7 +452,7 @@ students' approved files are the ground truth: **do not regenerate the case.**
   SRK / PengRobinson ... src/thermo/equationOfState/EquationOfState.cpp:72-81
   unit operation keys .. each unit's own .cpp under src/unitOperations/ (unit-ops.md is NOT authoritative)
   phaseChanger mixture . src/unitOperations/heatTransfer/PhaseChanger.cpp (C202 item 1)
-  feedStage ranges ..... src/unitOperations/distillation/DistillationColumn.cpp:1382,1351,2373
+  feedStage ranges ..... src/unitOperations/distillation/DistillationColumn.cpp:1383,1351,2373
   §10 apply a reply .... gui/src/agent/clipboardContext.ts:57 (FILE_RE needs END FILE), :138-166 (applyEdits:
                          replace or add into rawFiles/extraFiles, parse-validated dicts, no delete);
                          gui/src/ui/ClipboardBridge.tsx:80-93 (changed files applied, then Complete 0/ hint)

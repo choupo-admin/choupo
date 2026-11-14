@@ -36,7 +36,9 @@ Description
 #include "RecordLaws.H"
 #include "PropertyDomainError.H"
 
+#include <cstdlib>
 #include <functional>
+#include <iostream>
 #include <iomanip>
 #include <map>
 #include <sstream>
@@ -108,6 +110,60 @@ void declareForm(const std::string& family, const std::string& type, const std::
     forms()[family + "/" + type] = form;
 }
 
+std::map<std::string, std::string>& builtIns()
+{
+    static std::map<std::string, std::string> m;
+    return m;
+}
+
+void declareBuiltInWindow(const std::string& family, const std::string& type,
+                          const std::string& window)
+{
+    builtIns()[family + "/" + type] = window;
+}
+
+std::string builtInWindowOf(const std::string& family, const std::string& type)
+{
+    const auto it = builtIns().find(family + "/" + type);
+    return it == builtIns().end() ? std::string() : it->second;
+}
+
+std::string pinPlace(const std::string& property)
+{
+    if (property == "vaporPressure")
+        return "equilibrium { vaporPressure { pin ( { component <c>; law <name>; reason \"...\"; } ); } }";
+    if (property == "idealGasHeatCapacity" || property == "liquidHeatCapacity"
+        || property == "solidHeatCapacity")
+        return "caloric { " + property + " { pin ( { component <c>; law <name>; reason \"...\"; } ); } }";
+    if (property == "liquidViscosity")
+        return "transport { liquid { viscosity { pin ( { component <c>; law <name>; reason \"...\"; } ); } } }";
+    if (property == "liquidThermalConductivity" || property == "liquidConductivity")
+        return "transport { liquid { thermalConductivity { pin ( { component <c>; law <name>; reason \"...\"; } ); } } }";
+    if (property == "surfaceTension")
+        return "transport { interface { surfaceTension { pin ( { component <c>; law <name>; reason \"...\"; } ); } } }";
+    return "the property's block of the property dictionary";
+}
+
+bool traceOn()
+{
+    static const bool on = std::getenv("CHOUPO_LAW_TRACE") != nullptr;
+    return on;
+}
+
+std::string selfLine(const std::string& component, const std::string& property,
+                     const std::string& lawToken, const std::string& type,
+                     const std::string& by, const std::string& window,
+                     const std::string& source, const std::string& home)
+{
+    return component + " [" + property + "]: law " + lawToken + " (" + type + "), " + by
+         + "; window: " + window + "; source: " + source + "; record: " + home;
+}
+
+void traceCall(const std::string& line)
+{
+    if (traceOn()) std::cerr << "[law-call] " << line << "\n";
+}
+
 std::string formOf(const std::string& family, const std::string& type)
 {
     const auto it = forms().find(family + "/" + type);
@@ -129,6 +185,14 @@ std::string Law::windowText() const
     if (hasDomain) s += std::string(s.empty() ? "" : "; ") + "hard " + num(domainLo) + "-"
                       + num(domainHi) + " K (refused outside)";
     return s.empty() ? std::string("no window declared") : s;
+}
+
+std::string Law::windowText(const std::string& family) const
+{
+    const std::string b = builtInWindowOf(family, type);
+    if (b.empty()) return windowText();
+    const std::string own = (hasSoft || hasDomain) ? windowText() + "; " : std::string();
+    return own + "built-in (type " + type + "): " + b;
 }
 
 const Law* Block::find(const std::string& name) const
@@ -165,9 +229,11 @@ std::string Block::coveringRemedy(scalar T, std::size_t except) const
     if (s.empty())
         return "no other law of this record covers it: extend the law, or add one with"
                " its source";
+    std::string place = pinPlace(property);
+    for (std::size_t at = place.find("<c>"); at != std::string::npos; at = place.find("<c>"))
+        place.replace(at, 3, owner);
     return "law " + s + " of the same record covers it -- pin it in the case's property"
-           " dictionary (`pin ( { component " + owner + "; law <name>; reason \"...\"; } );`"
-           " beside the property), or extend the law";
+           " dictionary (`" + place + "`), or extend the law";
 }
 
 Block parse(const DictPtr& block, const std::string& property,
@@ -267,7 +333,13 @@ void throwOutsideDomain(const Block& b, std::size_t lawIndex, scalar T, const st
     //  exception prints what(), and none reads the separate remedy field, so a
     //  remedy kept only there named the covering law to nobody.
     const std::string remedy = b.coveringRemedy(T, lawIndex);
-    throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+    //  A REJECTABLE TRIAL (C398 review, the trial-state item): the house's
+    //  PropertyDomainTrial derives from InfeasibleTrial, so a solver that can
+    //  reject a step (the safeguarded 1-D Newton, the tears, the column)
+    //  rejects a trial temperature outside the window and tries another; at a
+    //  seed, a converged or a final state it reaches main's handler and fails
+    //  the run with this message, as before.
+    throw PropertyDomainTrial(PropertyDomainError::Kind::outsideHardDomain,
         what + " of " + b.owner + ": law " + L.label() + " (" + L.type + ") refuses T = "
         + num(T) + " K, outside its hard window " + num(L.domainLo) + "-" + num(L.domainHi)
         + " K; " + remedy,

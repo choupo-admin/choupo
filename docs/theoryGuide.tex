@@ -2727,6 +2727,46 @@ package a gas viscosity, Chung's, by the factory's default; slice~(b) deleted
 that default (\S\ref{sec:record-laws-choice}), and the three cases that read
 it declare it.
 
+Each view names who uses it on a \code{selected by} line: the units of a
+sector that name no world of their own, the units or operations that select a
+variant, the operation whose inline \code{thermo \{\}} it is (an operation's
+inline fragment has its own view since the review of slices (a)+(b)), and a
+variant that declares nothing, whose units run on their base package.  An
+equilibrium fragment that keeps the base's formulation replaces only the slots
+it names (\S\ref{sec:property-variants}), and the CHOICE column says so ---
+those slots from the fragment, every other one from the base --- instead of
+attributing the whole block; a fragment that changes the formulation is the
+whole block.  The K-value world is printed only for the \code{gammaPhi} and
+\code{phiPhi} formulations, the two it describes.
+
+\paragraph{The view is generated from the objects the computation uses.}
+The review of slices (a)+(b) found the view saying five false things on
+shipped cases, and no gate able to fail on any of them.  Each line is now read
+from the object the package calls: the binary pairs from the package's own
+activity model, which keeps every pair it resolved while it was built (the
+run's process-wide log had shown another package's pair as this one's); a
+pure fluid's formulation per transport property (``no model'' had been
+printed for water on IF97, whose IAPWS releases then answered); each law's
+window with its TYPE's built-in window, declared beside its form
+(RowlinsonBondi's $0.25\le T_r\le 0.85$, refused at $T_r\ge 1$;
+Ambrose--Walton's curve, which ends at $T_c$); the law's own provenance entry
+and where its record was read (the catalogue, a sealed case copy, a case copy
+over the catalogue); and, for a formulation the view does not describe ---
+the reactive electrolyte engine, a dilute solution --- the line ``view not
+built for \emph{formulation}: the resolver lines are the record'', never a
+description of another formulation.  Every law object, at its first
+evaluation, describes itself in the same fields (with
+\code{CHOUPO\_LAW\_TRACE} set, on standard error as \code{[law-call]}), and the
+gate \code{check\_view\_matches\_calls} requires every law a witness run
+called to appear, field for field, in a view of the same run, and every pair a
+view lists to have been taken by a model of the run; its sabotage arm (the
+view printing who chose a law as a constant) must fail.  The time-integrated
+binaries print the system's view as the steady one does, and the provenance
+of a liquid transport or surface-tension datum (an automatically promoted
+value, a fit grade) is voiced when a run first evaluates its law, never because
+a record was loaded; a vapour-pressure or heat-capacity datum is still voiced
+at loading, where its fit case reads it.
+
 The witness is \file{tutorials/steady/thermo/variants01\_ethanol\_water\_line}:
 a pipe and a property operation select the variant \code{vogelLaw}, a second
 operation prices the same liquid on the system.
@@ -2859,11 +2899,23 @@ Every law keeps its type's own SOFT window --- \code{Trange (lo hi)},
 \code{Tmin}/\code{Tmax}, or \code{Tlow}/\code{Thigh} --- outside which the
 value is still returned and the extrapolation is announced once.  A law may
 add a HARD window, \code{domain (lo hi);} in K: outside it the law throws a
-typed domain error (\code{PropertyDomainError}, outside a hard domain) whose
-remedy names the record's other laws whose window holds the state ---
-``pin it, or extend the law''.  It never switches to them.  A law that
-declares no window (Andrade's and Vogel's forms carry none) prints ``no window
-declared'' in the view and is not refused.  NASA7's two ranges and their joint
+typed domain error, outside a hard domain, whose remedy names the record's
+other laws whose window holds the state --- ``pin it in
+\code{equilibrium \{ vaporPressure \{ pin (...); \} \}}'' (or the property's
+own block), ``or extend the law''.  It never switches to them.  The error is a
+REJECTABLE trial (\code{PropertyDomainTrial}): a solver that can reject a step
+rejects a trial temperature outside the window and tries another, and a
+bubble- or dew-point search keeps its invented temperatures (its seed, each
+Newton step and its finite-difference slope) inside the windows of the laws it
+calls, so only an answer outside a window is refused --- a seed, a converged
+or a final state still fails the run with the message.  A heat-capacity law
+with a hard window also refuses an integral $H(T,T_{\mathrm{ref}})$ or
+$S(T,T_{\mathrm{ref}})$ whose path from $T_{\mathrm{ref}}$ leaves the window
+(a \code{domain (300 400)} liquid law was integrated from 298.15\,K through
+its own excluded range until the review), and no enthalpy fallback turns that
+refusal into a degraded datum.  A law that declares no window (Andrade's and
+Vogel's forms carry none) prints ``no window declared'' in the view and is not
+refused; one that declares \code{Tmin}/\code{Tmax} is announced outside them.  NASA7's two ranges and their joint
 (\code{Tlow}, \code{Tcommon}, \code{Thigh}) are part of the law and are
 required; they defaulted to 200/1000/3500\,K before (every record declares
 them).
@@ -3011,7 +3063,20 @@ prices pure water by that formulation instead, at the temperature
 IF97 gives the density only: the viscosity is IAPWS R12-08 evaluated on the
 IF97 density, the surface tension IAPWS R1-76, and each line of the run names
 the formulation behind its own property (every pure-fluid model states one
-per property, read by both the kernel's announcement and the door).
+per property, read by both the kernel's announcement and the door).  The
+liquid viscosity and conductivity are evaluated at the saturated liquid; the
+VAPOUR ones at the vapour density IF97 gives at the state's $(T,P)$ --- or, for
+a consumer that carries no pressure, at the saturated vapour --- and a state
+IF97 places in the liquid has no vapour viscosity: the call is refused by name.
+Until the review of slices (a)+(b) the vapour accessors evaluated the kernel
+AT $p_{\mathrm{sat}}$, where it takes the liquid branch, so steam at
+473.15\,K and 1\,bar was given $1.35\times10^{-4}$\,Pa\,s and
+0.659\,W/(m\,K), the saturated liquid's values; it is now
+$1.620\times10^{-5}$\,Pa\,s and 0.0334\,W/(m\,K).  The case
+\file{steam02\_water\_transport} holds the vapour route to the releases' own
+verification values: IAPWS R15-11, Table~8 (Region~2), p.~14, at (0.3\,MPa,
+650\,K) and (50\,MPa, 800\,K), the viscosity (R12-08 on the IF97 density) and
+the background conductivity $\lambda-\lambda_2$ to $10^{-6}$.
 
 \paragraph{The phase a pure fluid is asked for.}\label{sec:pure-fluid-density-phase}
 A pure-fluid formulation (IF97~\cite{IAPWS_R797}, or a reference Helmholtz

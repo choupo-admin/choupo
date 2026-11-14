@@ -354,6 +354,7 @@ private:
     void printContextView(const std::string& constantDir, const DictPtr& resolved,
                           const ThermoPackage& pkg);
     std::map<std::string, std::vector<std::string>> variantSelectors_;
+    std::map<std::string, std::vector<std::string>> contextSelectors_;   // sector dir -> its units (SA-04)
 
     // Installs the case's declared convergence contract (system/solverDict
     // `reactiveEquilibrium { ... }`) on a package this class just BUILT --

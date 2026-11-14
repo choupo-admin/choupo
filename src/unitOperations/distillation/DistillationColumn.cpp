@@ -397,6 +397,7 @@ ColumnEnthalpy columnEnthalpySurface(const ThermoPackage& thermo, scalar P,
             (void)thermo.H_stream_formation(f.first, P, 1.0, f.second);
         }
     }
+    catch (const InfeasibleTrial&) { throw; }   // a law's hard window REFUSES (C398 review CV-13)
     catch (const std::exception& e)
     {
         h.formation = false;

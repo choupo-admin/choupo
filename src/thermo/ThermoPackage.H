@@ -639,6 +639,10 @@ public:
     // CASE declared, not one the bench chose.
     const TransportModel* transportModel() const { return transport_.get(); }
     scalar viscosityGas(scalar T_K, const sVector& y) const;
+    //  The same at a stated pressure: a phase pure in a pure-fluid component
+    //  is evaluated at the vapour state at (T, P), refused where the state is
+    //  liquid (C398 review row CN-04); otherwise the low-pressure model.
+    scalar viscosityGas(scalar T_K, scalar P_Pa, const sVector& y) const;
 
     // Gas thermal conductivity: optional sub-block
     // `transport { thermalConductivity { model Eucken; } }`.  Eucken needs
@@ -647,6 +651,9 @@ public:
     // thermalConductivity sub-block was set.
     bool   hasThermalConductivity() const { return thermalConductivity_ != nullptr; }
     scalar thermalConductivityGas(scalar T_K, const sVector& y) const;
+    scalar thermalConductivityGas(scalar T_K, scalar P_Pa, const sVector& y) const;   // CN-04
+    //  A pure fluid's vapour transport at (T, P); P < 0: the saturated vapour.
+    scalar pureFluidVapourTransport(std::size_t i, scalar T_K, scalar P_Pa, bool viscosity) const;
 
     // Binary gas diffusivity: optional sub-block
     // `transport { diffusivity { model Fuller; } }`.  D_AB between

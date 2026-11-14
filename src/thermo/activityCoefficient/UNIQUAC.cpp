@@ -163,7 +163,7 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
             applyPair(p, "inline");
             PairResolution r{ "UNIQUAC", p->lookupWord("i"), p->lookupWord("j"), pairSourceOf(p).first,
                               pairSourceOf(p).second, pairSourceOf(p).first == "inline" ? "" : pairSourceOf(p).second };
-            ThermoResolutionLog::instance().add(std::move(r));
+            recordPair(std::move(r));
         }
 
     // Phase 2: file lookup for any pair not yet covered.
@@ -180,7 +180,7 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
             {
                 idealDefaulted.push_back(names[i] + "-" + names[j]);
                 covered[i*n_ + j] = covered[j*n_ + i] = true;
-                ThermoResolutionLog::instance().add(PairResolution{
+                recordPair(PairResolution{
                     "UNIQUAC", names[i], names[j],
                     "idealDefault", "ideal-default", "" });
                 continue;   // a_ij = a_ji = 0 -> tau = 1 (ideal contribution)
@@ -229,7 +229,7 @@ UNIQUAC::UNIQUAC(const DictPtr& dict, const std::vector<std::string>& names)
                               tier == "standard");
                 if (provDict)   // a record's declared span is guarded (C35 item 5)
                     spanGuard_.add("UNIQUAC", i, j, names[i] + "-" + names[j], r);
-                ThermoResolutionLog::instance().add(std::move(r));
+                recordPair(std::move(r));
             }
         }
 

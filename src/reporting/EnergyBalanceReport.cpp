@@ -1118,29 +1118,34 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
 
         const std::filesystem::path gpath = dir / "globalEnergyBoundary.csv";
         std::ofstream g(gpath);
+        //  A ZERO IS PRINTED AS 0 (C398 review row CN-05): a sum of duties that
+        //  cancels to round-off (-2.27e-13 kW on a total-reflux column) printed
+        //  as "-0.000000", and a student reads a sign.  A value that rounds to
+        //  zero at the printed precision is printed as zero; nothing else moves.
+        auto z = [](double v, int prec) { return std::abs(v) < 0.5 * std::pow(10.0, -prec) ? 0.0 : v; };
         if (g.is_open())
         {
             g << "quantity,value_kW\n" << std::fixed << std::setprecision(6)
-              << "H_feeds,"        << Hfeeds   << "\n"
-              << "Q_boundary,"     << Qext     << "\n"
+              << "H_feeds,"        << z(Hfeeds, 6) << "\n"
+              << "Q_boundary,"     << z(Qext, 6)   << "\n"
               //  Q_boundary, told apart.  Both rows are NEW and every row
               //  above and below keeps its name and its value -- the two
               //  readers of this file (bin/runTests' energy-T2 and
               //  check_default_reports) select rows BY NAME, so a row added
               //  in the middle reaches them unchanged.  Q_heat is
               //  Q_boundary - W_shaft exactly, by construction.
-              << "Q_heat,"         << Qheat    << "\n"
-              << "W_shaft,"        << Wshaft   << "\n"
-              << "H_products,"     << Hprods   << "\n"
-              << "inputs,"         << (Hfeeds + Qext) << "\n"
-              << "outputs,"        << Hprods   << "\n"
-              << "residual,"       << residual << "\n"
+              << "Q_heat,"         << z(Qheat, 6)  << "\n"
+              << "W_shaft,"        << z(Wshaft, 6) << "\n"
+              << "H_products,"     << z(Hprods, 6) << "\n"
+              << "inputs,"         << z(Hfeeds + Qext, 6) << "\n"
+              << "outputs,"        << z(Hprods, 6) << "\n"
+              << "residual,"       << z(residual, 6) << "\n"
               << "residual_pct,";
             //  EMPTY, never a number, when there is no scale.  A reader that
             //  parses this column as a float must tolerate an empty cell --
             //  which is the point: a reader that cannot was being handed
             //  -6.16e14.
-            if (hasScale && !noBoundary) g << std::setprecision(4) << relPct;
+            if (hasScale && !noBoundary) g << std::setprecision(4) << z(relPct, 4);
             g << "\n"
               << "residual_denom_kW,";
             if (hasScale) g << std::setprecision(4) << denom;
@@ -1171,7 +1176,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                 //  sees no change there; the with-scale form gains the kW
                 //  BEFORE the ratio it already carried.
                 std::cout << "  [report] globalEnergyBoundary -> " << gpath.string()
-                          << "  (residual " << std::setprecision(4) << residual
+                          << "  (residual " << std::setprecision(4) << z(residual, 4)
                           << " kW";
                 if (hasScale && !noBoundary)
                     std::cout << "; |in-out|/in = " << std::setprecision(3)

@@ -35,6 +35,10 @@ License
 #include "thermo/equationOfState/EquationOfState.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
 #include "thermo/liquidProperty/Measured.H"
+#include "thermo/pureFluid/PureFluidModel.H"
+#include "thermo/ThermoAnnounce.H"
+
+#include <iostream>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 
 #include <cstdio>
@@ -100,20 +104,65 @@ struct Out
     }
 };
 
-//  ONE CONSTITUENT'S RECORD LAW, as the view prints it (C398 slice (b)):
-//  which law, of which type, who chose it, and its window.
+//  ONE CONSTITUENT'S LAW, as the view prints it (C398 slice (b), and the
+//  review rows CV-03, CV-05, CV-07): read from the objects the package calls
+//  -- the component's law choice and its record block, the law's own window
+//  with its type's built-in one, the law's own provenance and where the record
+//  was read from.  The fields and their order are the ones a law prints about
+//  itself at its first evaluation (recordLaws::selfLine), so the gate
+//  check_view_matches_calls compares the two; this function formats them on
+//  its own, never by calling the law's description.
+std::string lawLine(const std::string& comp, const std::string& property,
+                    const std::string& token, const std::string& type, const std::string& by,
+                    const std::string& window, const std::string& source, const std::string& home)
+{
+    return comp + " [" + property + "]: law " + token + " (" + type + "), " + by
+         + "; window: " + window + "; source: " + source + "; record: " + home;
+}
+
 std::string lawText(const Component& c, const std::string& property)
 {
     const Component::LawChoice ch = c.lawChoice(property);
     const recordLaws::Block* blk = c.recordLaws(property);
-    if (!blk) return "none";
+    if (!blk) return c.name() + " [" + property + "]: no record law -- the record has no " + property + " block";
     const int idx = blk->indexOf(ch.law);
     const recordLaws::Law& L = blk->laws.at(std::size_t(idx >= 0 ? idx : (blk->preferred >= 0 ? blk->preferred : 0)));
-    std::string r = (L.name.empty() ? std::string("its one law") : "law `" + L.name + "`")
-                  + " (" + L.type + "), " + (ch.by.empty() ? std::string("the record's law") : ch.by)
-                  + "; window: " + L.windowText();
-    if (blk->laws.size() > 1) r += "; the record's laws: " + blk->names();
-    return r;
+    return lawLine(c.name(), property, L.name.empty() ? std::string("its one law") : "`" + L.name + "`",
+                   L.type, ch.by.empty() ? std::string("the record's law") : ch.by,
+                   L.windowText(recordLaws::familyOf(property)), c.lawSource(property, L.name),
+                   c.recordHome());
+}
+
+//  The record's other laws, on a line of their own (never in the law line).
+std::string otherLaws(const Component& c, const std::string& property)
+{
+    const recordLaws::Block* blk = c.recordLaws(property);
+    return (blk && blk->laws.size() > 1) ? "    (" + c.name() + "'s record holds: " + blk->names() + ")" : "";
+}
+
+//  A pure fluid's transport formulation, in the same fields (CV-02).
+std::string pureFluidLine(const ThermoPackage& pkg, std::size_t i, const std::string& key)
+{
+    const PureFluidModel* m = pkg.pureFluidModel(i);
+    if (!m) return "";
+    const bool vap = key == "vapourViscosity" || key == "vapourConductivity";
+    std::string form, window;
+    if (key == "vapourViscosity" || key == "liquidViscosity") form = m->viscosityFormulation();
+    else if (key == "vapourConductivity" || key == "liquidThermalConductivity") form = m->conductivityFormulation();
+    else form = m->surfaceTensionFormulation();
+    window = key == "surfaceTension" ? "the formulation's own (the saturation line)"
+           : vap ? "the formulation's own (T, density); at the vapour state"
+                 : "the formulation's own (T, density); at the saturated liquid";
+    return lawLine(pkg.comp(i).name(), key, "none (pure fluid)", form, "pureFluids method " + m->type(),
+                   window, form, "pure-fluid kernel");
+}
+
+//  Formulations whose equilibrium this view describes; any other gets the
+//  line "view not built for <formulation>" (review row CV-04), never content
+//  that is not what prices the run.
+bool viewBuiltFor(const std::string& form)
+{
+    return form == "gammaPhi" || form == "phiPhi" || form == "gammaGamma";
 }
 
 //  U3: the form of every law type the row uses, declared by the type
@@ -247,34 +296,74 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
     {
         std::vector<std::string> d;
         d.push_back("formulation " + (form.empty() ? std::string("(none: aqueousProperties surface)") : form));
-        if (pkg.hasActivity())
+        if (!viewBuiltFor(form))
+        {
+            //  THE FORMULATION THAT PRICES THE RUN, or nothing (review row
+            //  CV-04): flash12 (electrolyteGammaPhi) was described as an ideal
+            //  gamma-phi system while the reactive engine priced it.  Only
+            //  what the case declares is printed, verbatim.
+            if (const DictPtr aq = sub(eq, "aqueous"))
+                if (const DictPtr am = sub(aq, "activityModel"))
+                    d.push_back("aqueous activity model declared: " + word(am, "model"));
+            if (const DictPtr vp = sub(eq, "vapour"))
+                if (!word(vp, "fugacityModel").empty())
+                    d.push_back("vapour fugacity model declared: " + word(vp, "fugacityModel"));
+            if (eq && eq->found("volatiles")
+                && std::holds_alternative<std::vector<std::string>>(eq->entryValue("volatiles")))
+            {
+                std::string v;
+                for (const auto& w : eq->lookupWordList("volatiles")) v += (v.empty() ? "" : " ") + w;
+                d.push_back("volatiles declared: " + v);
+            }
+            d.push_back("view not built for " + (form.empty() ? std::string("aqueousProperties") : form)
+                        + ": the resolver lines are the record");
+        }
+        else if (pkg.hasActivity() && form != "phiPhi")
         {
             std::string ss = word(sub(eq, "liquid"), "standardState");
             d.push_back("liquid activity model: " + pkg.activity().modelName()
                         + (ss.empty() ? "" : "; liquid standard state " + ss));
         }
-        if (pkg.hasEos())
+        if (pkg.hasEos() && viewBuiltFor(form))
             d.push_back("vapour (and, under phiPhi, liquid) model: " + pkg.eos().modelName());
-        d.push_back("K-value world: " + pkg.vleWorld());
-        if (pkg.hasElectrolyte()) d.push_back("electrolyte model: active (aqueous ion surface)");
-        //  The pairs the activity model consumes, as it recorded them while it
-        //  was built (core/ThermoResolution.H) -- the source file of each.
-        if (pkg.hasActivity())
-        {
-            std::set<std::string> names;
-            for (std::size_t i = 0; i < n; ++i) names.insert(pkg.comp(i).name());
-            int shown = 0;
-            for (const auto& e : ThermoResolutionLog::instance().entries())
-            {
-                if (e.model != pkg.activity().modelName()) continue;
-                if (!names.count(e.i) || !names.count(e.j)) continue;
+        //  The K-value world is a vapour-liquid notion of the gammaPhi and phiPhi
+        //  formulations; the package's word defaults to "gammaPhi" for every
+        //  other one, so it is printed only where it is the formulation's own
+        //  (review row SA-04: a gammaGamma sector was labelled gammaPhi).
+        if (form == "gammaPhi" || form == "phiPhi")
+            d.push_back("K-value world: " + pkg.vleWorld());
+        if (pkg.hasElectrolyte() && viewBuiltFor(form)) d.push_back("electrolyte model: active (aqueous ion surface)");
+        //  THE PAIRS THIS PACKAGE'S ACTIVITY MODEL HOLDS (review row CV-01):
+        //  read from the model itself, never from the process-wide log (which
+        //  listed another package's pair as this one's).  Every pair is
+        //  printed: a cap would push the package's own pairs out.
+        if (pkg.hasActivity() && viewBuiltFor(form) && form != "phiPhi")
+            for (const auto& e : pkg.activity().resolvedPairs())
                 d.push_back("pair " + e.i + "-" + e.j + ": " + e.status
                             + (e.source.empty() ? "" : " (" + e.source + ")")
                             + (e.provSource.empty() ? "" : ", provenance " + e.provSource));
-                if (++shown >= 12) { d.push_back("(further pairs: the thermoResolution block of the result)"); break; }
-            }
-        }
         std::string c = chosen({ "equilibrium" }, choice.system);
+        //  A FRAGMENT THAT REPLACES ONLY SOME SLOTS (review row SA-04): an inline
+        //  `thermo {}` or a variant with the same formulation replaces the slots
+        //  it names (ThermoOverride.H), so the row names those slots and the base
+        //  the others came from, instead of attributing the whole block.
+        if (F && sub(F, "equilibrium"))
+        {
+            const DictPtr fe = sub(F, "equilibrium");
+            const std::string ff = word(fe, "formulation");
+            if (ff.empty() || ff == form)
+            {
+                std::string slots;
+                for (const auto& k : fe->keys())
+                    if (k != "formulation") slots += (slots.empty() ? "" : ", ") + k;
+                const std::string base = (L && !at(L, { "equilibrium" })) ? choice.inherited
+                                                                         : choice.system;
+                c = choice.variant + " for the slot(s) " + (slots.empty() ? std::string("(none)") : slots)
+                  + "; every other slot from " + base;
+            }
+            else
+                c = choice.variant + " (the whole block: its formulation " + ff + " replaces the base's)";
+        }
         if (F && sub(F, "equilibrium"))
             c += "  -- a MODEL BOUNDARY: this world's equilibrium differs from the system's;"
                  " the energy report accounts the step at the unit's boundary";
@@ -366,7 +455,10 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             d.push_back("  (sum nu hfAq + the ions' Cp), plus the heat of dilution L_phi where the salt is");
             d.push_back("  calorimetrically fitted; the solvent and the molecular species on the liquid leg below");
         }
-        if (!phiPhi)
+        if (!phiPhi && !viewBuiltFor(form) && !pkg.hasElectrolyte())
+            d.push_back("view not built for " + (form.empty() ? std::string("aqueousProperties") : form)
+                        + ": the resolver lines are the record");   // CV-04: never content not checked
+        else if (!phiPhi)
         {
             d.push_back("pureCpPlusExcess: h_i = Hf298_i in the record's natural phase, bridged to the liquid");
             d.push_back("  at 298.15 K by the latent heat where the natural phase is not liquid, + integral of");
@@ -392,13 +484,13 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             for (const char* key : { "idealGasHeatCapacity", "liquidHeatCapacity", "solidHeatCapacity" })
             {
                 if (!c.recordLaws(key)) continue;
-                std::string line = std::string("  ") + key + ": " + lawText(c, key);
+                d.push_back("  " + lawText(c, key));
                 if (std::string(key) == "liquidHeatCapacity" && c.lawChoice(key).type == "RowlinsonBondi")
-                    line += "; consumes Tc, omega and the ideal-gas law `"
+                    d.push_back("    (" + c.name() + "'s RowlinsonBondi law consumes Tc, omega and the ideal-gas law `"
                           + (c.lawChoice("idealGasHeatCapacity").law.empty()
                                ? std::string("its one law") : c.lawChoice("idealGasHeatCapacity").law)
-                          + "` of the record (SL-05: the chosen one)";
-                d.push_back(line);
+                          + "` of the record: SL-05, the chosen one)");
+                if (!otherLaws(c, key).empty()) d.push_back(otherLaws(c, key));
                 cpTypes.insert(c.lawChoice(key).type);
             }
         }
@@ -412,17 +504,19 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         for (std::size_t i = 0; i < n; ++i)
         {
             const Component& c = pkg.comp(i);
-            std::string r = c.name() + ": ";
-            if (pkg.hasPureFluid(i)) r += "pure-fluid method " + pkg.pureFluidMethod(i) + " inside its window, else ";
-            r += c.hasVaporPressure() ? lawText(c, "vaporPressure") : std::string("none (nonvolatile)");
-            if (c.hasVaporPressure())
-            {
-                vpTypes.insert(c.lawChoice("vaporPressure").type);
-                r += "; record facts injected: Tc, Pc, omega" + std::string(c.Tb() > 0.0 ? ", Tb" : "");
-            }
+            if (!c.hasVaporPressure()) { d.push_back(c.name() + " [vaporPressure]: none (nonvolatile)"); continue; }
+            d.push_back(lawText(c, "vaporPressure"));
+            if (!otherLaws(c, "vaporPressure").empty()) d.push_back(otherLaws(c, "vaporPressure"));
+            vpTypes.insert(c.lawChoice("vaporPressure").type);
+            std::string r = "    " + c.name() + ": record facts injected: Tc, Pc, omega" + std::string(c.Tb() > 0.0 ? ", Tb" : "");
+            if (pkg.hasPureFluid(i)) r += "; inside its window the pure-fluid method " + pkg.pureFluidMethod(i) + " answers instead";
             if (pkg.isHenrySolute(i)) r += "; K by its Henry pair (a declared solute)";
             d.push_back(r);
         }
+        if (!(form == "gammaPhi" || form == "phiPhi"))
+            d.push_back("whether " + (form.empty() ? std::string("aqueousProperties") : form) + " reads these laws:"
+                        " view not built for " + (form.empty() ? std::string("aqueousProperties") : form)
+                        + ": the resolver lines are the record");
         formLines(d, "vaporPressure", vpTypes);
         out.row("vapour-pressure laws per constituent",
                 chosen({ "pureFluids" }, chosen({ "equilibrium", "vaporPressure" },
@@ -450,10 +544,29 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         const bool perConstituent = std::string(tr.key) == "liquidViscosity"
             || std::string(tr.key) == "liquidConductivity" || std::string(tr.key) == "surfaceTension";
         const bool hasLaws = perConstituent && !pkg.liquidLaws(tr.key).empty();
+        //  The key a pure fluid's formulation answers this row under (CV-02).
+        const std::string pfKey = std::string(tr.key) == "viscosity" ? "vapourViscosity"
+            : std::string(tr.key) == "thermalConductivity" ? "vapourConductivity"
+            : std::string(tr.key) == "liquidViscosity" ? "liquidViscosity"
+            : std::string(tr.key) == "liquidConductivity" ? "liquidThermalConductivity"
+            : std::string(tr.key) == "surfaceTension" ? "surfaceTension" : std::string();
+        auto pureFluidLines = [&]()
+        {
+            if (pfKey.empty()) return;
+            for (std::size_t i = 0; i < n; ++i)
+                if (pkg.hasPureFluid(i))
+                    d.push_back("  when the phase is pure in it: " + pureFluidLine(pkg, i, pfKey));
+        };
         if (info.model.empty() && !hasLaws)
         {
-            d.push_back("no model: a consumer that asks is refused, or takes its own source"
-                        " (the [liquid properties] table names it)");
+            //  A PURE FLUID'S FORMULATION ANSWERS (review row CV-02): the row
+            //  said "no model" for water on IF97, whose IAPWS releases the run
+            //  then used.  Each pure-fluid constituent's formulation is named;
+            //  "no model" is said of every other phase.
+            pureFluidLines();
+            d.push_back(std::string(d.empty() ? "" : "any other phase: ")
+                        + "no model: a consumer that asks is refused, or takes its own source"
+                          " (the [liquid properties] table names it)");
             out.row(std::string(tr.label) + " (" + where + ")", c, d);
             continue;
         }
@@ -487,28 +600,33 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 const auto& L = laws[i];
                 const Component& comp = pkg.comp(i);
                 if (!L.absent.empty())
-                { d.push_back("  " + comp.name() + ": ABSENT -- refused at its first evaluation: " + L.absent); continue; }
-                std::string r = "  " + comp.name() + ": ";
-                if (L.predictive) r += L.law + " (" + L.by + ")";
-                else
+                { d.push_back("  " + comp.name() + " [" + rkey + "]: ABSENT -- refused at its first evaluation: " + L.absent); continue; }
+                const recordLaws::Block* blk = comp.recordLaws(rkey);
+                const recordLaws::Law* law = blk ? blk->find(L.law) : nullptr;
+                if (L.predictive)
+                    d.push_back("  " + lawLine(comp.name(), rkey, "none (predictive)", L.type, L.by,
+                                               "predictive: none per record",
+                                               info.modelCitation.empty() ? std::string("not stated by the model")
+                                                                          : info.modelCitation,
+                                               "no record law"));
+                else if (law)
                 {
-                    const recordLaws::Block* blk = comp.recordLaws(rkey);
-                    const recordLaws::Law* law = blk ? blk->find(L.law) : nullptr;
-                    r += (L.law.empty() ? std::string("its one law") : "law `" + L.law + "`")
-                       + " (" + L.type + "), " + L.by;
-                    if (law) r += "; window: " + law->windowText();
-                    else if (blk) r += "; NOT in the record (its laws: " + blk->names()
-                                     + ") -- refused at first evaluation";
-                    else r += "; the record has no " + rkey + " block";
+                    d.push_back("  " + lawLine(comp.name(), rkey, law->token(), L.type, L.by,
+                                               law->windowText(recordLaws::familyOf(rkey)),
+                                               comp.lawSource(rkey, L.law), comp.recordHome()));
+                    if (blk->laws.size() > 1)
+                        d.push_back("    (" + comp.name() + "'s record holds: " + blk->names() + ")");
                 }
+                else if (blk)
+                    d.push_back("  " + comp.name() + " [" + rkey + "]: law `" + L.law + "` is NOT in the record"
+                                " (its laws: " + blk->names() + ") -- refused at first evaluation");
+                else
+                    d.push_back("  " + comp.name() + " [" + rkey + "]: no record law -- the record has no "
+                                + rkey + " block (" + L.by + ")");
                 types.insert(L.type);
-                d.push_back(r);
             }
             formLines(d, family, types);
-            for (std::size_t i = 0; i < n; ++i)
-                if (pkg.hasPureFluid(i) && p != "vapour")
-                    d.push_back("  " + pkg.comp(i).name() + ": when the phase is pure in it, the pure-fluid method "
-                                + pkg.pureFluidMethod(i));
+            pureFluidLines();
         }
         else
         {
@@ -516,13 +634,16 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
             if (std::string(tr.key) == "liquidViscosity")
                 pure += " (each record's liquidViscosity block)";
             d.push_back(pure);
-            for (std::size_t i = 0; i < n; ++i)
-                if (pkg.hasPureFluid(i) && p != "vapour")
-                    d.push_back("  " + pkg.comp(i).name() + ": when the phase is pure in it, the pure-fluid method "
-                                + pkg.pureFluidMethod(i));
+            pureFluidLines();
         }
-        if (!info.modelCitation.empty()) d.push_back("  source: " + info.modelCitation);
-        if (!info.modelWindow.empty())   d.push_back("  window: " + info.modelWindow);
+        //  THE BLOCK'S WORD'S OWN SOURCE, labelled as such (review row CV-05):
+        //  a row whose constituents run on record laws prints each law's own
+        //  source on its line above; this line is the word's model only.
+        if (!info.modelCitation.empty() && !info.model.empty())
+            d.push_back("  source of the block's word " + info.model + ": " + info.modelCitation
+                        + (hasLaws ? " (each constituent's own law and source: its line above)" : ""));
+        if (!info.modelWindow.empty() && !info.model.empty())
+            d.push_back("  window of the block's word " + info.model + ": " + info.modelWindow);
         if (std::string(tr.key) == "viscosity")
             d.push_back("mixing rule: Wilke, fixed in code (transport/GasMixingRules.H) -- not selectable");
         else if (std::string(tr.key) == "thermalConductivity")
@@ -564,6 +685,12 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         out.row(std::string(tr.label) + " (" + where + ")", c, d);
     }
     out.line("================  end of resolved properties: " + title + "  ================");
+}
+
+void printSystemOnce(const ThermoPackage& pkg, const DictPtr& system)
+{
+    if (thermoAnnounce(2) && announceOnce("resolvedView:system"))
+        print(std::cout, "system", pkg, system, systemChoice(system), {});
 }
 
 } // namespace resolvedView

@@ -74,8 +74,9 @@ private:
     inline static const std::string window_ =
         "saturated liquid, T > C (the Vogel temperature, where the form "
         "diverges), inside the range the component's A, B, C were fitted "
-        "over -- a property of the RECORD; the Vogel blocks in this "
-        "catalogue declare no Trange, so leaving it is not announced";
+        "over -- a property of the RECORD; a law that declares Tmin/Tmax "
+        "is announced once per law and component when evaluated outside "
+        "them (C398 SB-04); a law that declares none has no window to leave";
     inline static const std::string cite_ =
         "Vogel, H. (1921), Physik. Z. 22, 645-646 [primary]; also Fulcher, "
         "G. S. (1925), J. Am. Ceram. Soc. 8, 339-355 and Tammann, G. and "

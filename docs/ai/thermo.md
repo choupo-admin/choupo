@@ -649,9 +649,11 @@ unnamed variant.  Grammar, refusals and a worked example:
 [`dict-syntax.md`](dict-syntax.md) → "Named variants".
 
 - **The atom inside `transport` is the PROPERTY BLOCK**
-  (`transport.<phase>.<property>`), inside `volumetric` the phase block; a
-  variant, an inline fragment and a sector's `inherits` all replace that
-  much and keep the rest.  `equilibrium` and `caloric` are replaced as
+  (`transport.<phase>.<property>`); a variant, an inline fragment and a
+  sector's `inherits` all replace that much and keep the rest.  Inside
+  `volumetric` a sector's `inherits` replaces the phase block; a variant or
+  an inline fragment that names `volumetric` is REFUSED by name (until
+  slice (c)).  `equilibrium` and `caloric` are replaced as
   before (a variant that changes them is a model boundary).  A transport
   name outside `vapour/liquid/interface` × {`viscosity`,
   `thermalConductivity`, `diffusivity`, `surfaceTension`} — e.g. the flat
@@ -664,16 +666,42 @@ unnamed variant.  Grammar, refusals and a worked example:
   constituent, the mixing rule — marked "default" when the case wrote none —
   the interaction pairs it reads or misses, the density routes, the energy
   basis and enthalpy routes).  Every line starts `[properties]`; a
-  fingerprint heads each view.  Read it before asking "which viscosity did
-  this unit use?".
+  fingerprint heads each view, and a `selected by` line names the units or
+  operations that use it (a sector's units, a variant's selectors, an
+  operation's inline block, an empty variant's units).  An equilibrium
+  fragment with the base's formulation is attributed per slot, never as the
+  whole block; the K-value world is printed for gammaPhi and phiPhi only.
+  Since the review of slices (a)+(b) every line comes from the objects the
+  package calls: its own activity model's pairs (never the run's log); a
+  pure fluid's formulation per property; each law's window WITH its type's
+  built-in one (RowlinsonBondi Tr 0.25-0.85, AmbroseWalton to Tc), the
+  law's own provenance and where its record was read (catalogue, sealed
+  case copy); and, for a formulation the view does not describe
+  (electrolyteGammaPhi, diluteSolution), "view not built for X: the
+  resolver lines are the record" instead of content.  The gate
+  check_view_matches_calls compares each law's own description at its first
+  evaluation (`CHOUPO_LAW_TRACE=1` prints them as `[law-call]`) with the
+  view.  choupoBatch, choupoCtrl and choupoSemiContinuous print the
+  system's view too.  Read it before asking "which viscosity did this unit
+  use?".
 - The factory defaults the view names when no `mixingRule` is written:
   Grunberg–Nissan (liquid viscosity), Li (liquid conductivity), Butler
   (surface tension).  A `transport {}` block with no vapour viscosity has no
   gas viscosity since slice (b) (the Chung default was deleted, SL-04).
 - Since slice (b) the view prints, per constituent, each record law the run
   uses (vapour pressure, the heat capacities, the liquid transport laws) —
-  name, type, who chose it, window — and every law type's form with its
-  coefficient units.
+  name, type, who chose it, window, source, record — and every law type's
+  form with its coefficient units.
+- A law's hard window (`domain (lo hi);`) refuses a state outside it as a
+  REJECTABLE trial: a bubble- or dew-point search keeps its invented
+  temperatures inside the windows, a solver that rejects steps rejects one
+  outside, and only an answer outside is refused; a heat-capacity law also
+  refuses H(T, Tref) or S(T, Tref) whose path from Tref leaves the window.
+- A pure fluid's VAPOUR viscosity and conductivity (`viscosity`,
+  `thermal_conductivity` of propertyPoint/scans) are evaluated at the vapour
+  state at (T, P), refused where the formulation places the state in the
+  liquid; ask `viscosity_liquid` / `thermal_conductivity_liquid` there.
+  Until the review they returned the saturated LIQUID's values.
 
 ## The three-tier model-parameter rule
 

@@ -1067,8 +1067,10 @@ get_boundary() {
         mass)   obj="globalMassBoundary" ;;
         *)      return 0 ;;
     esac
+    #  A number, or a flag the block publishes as true/false (`noBoundary`,
+    #  C398 review row CN-01: a word, compared `exact`).
     grep -m1 "\"$obj\": {" <<< "$out" \
-        | grep -oE "\"$key\": *-?[0-9][0-9.eE+-]*" | sed -E 's/^"[^"]*": *//'
+        | grep -oE "\"$key\": *(-?[0-9][0-9.eE+-]*|true|false)" | sed -E 's/^"[^"]*": *//'
 }
 
 #  ledger <subject> <ledger>.<kind>.<field> -- one quantity of a CAMPAIGN
@@ -2272,6 +2274,15 @@ auto_generate_raw() {
             if [ -n "$gv" ] && awk -v v="$gv" 'BEGIN{ if (v<0) v=-v; exit (v >= 1e-3) ? 0 : 1 }'; then
                 printf 'boundary %-20s %-16s %-18s %s\n' global residual_kW "$gv" "$reltol"
             fi
+            #  WHETHER THE PLANT HAS A BOUNDARY, AND ITS SCALE (C398 review row
+            #  CN-01): a report that went from "this plant declares no duty" to a
+            #  1283 kW scale moved no pinned row, because only the three terms
+            #  were generated.  The flag is a word (`exact`); the denominator a
+            #  number, generated when the block publishes one.
+            gv=$(printf '%s\n' "$gbl" | grep -oE '"noBoundary": *(true|false)' | sed -E 's/^"[^"]*": *//')
+            [ -n "$gv" ] && printf 'boundary %-20s %-16s %-18s %s\n' global noBoundary "$gv" exact
+            gv=$(printf '%s\n' "$gbl" | grep -oE '"residual_denom_kW": *-?[0-9][0-9.eE+-]*' | sed -E 's/^"[^"]*": *//')
+            [ -n "$gv" ] && printf 'boundary %-20s %-16s %-18s %s\n' global residual_denom_kW "$gv" "$reltol"
             #  Q AND W, TOLD APART (2026-09-12).  `Q_boundary_kW` above is
             #  their SUM and keeps its value to the last digit; the ledger
             #  now also publishes the shaft-work half, and the heat half is
@@ -4923,6 +4934,21 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/check_record_law_pins.$$
+    # The view against the computation (2026-11-14, DEV.md 4c C398, review
+    # rows CV-01..CV-07, ruling CV-07): every law a witness run CALLED -- its
+    # own description at its first evaluation, with CHOUPO_LAW_TRACE set -- is
+    # printed field for field by a resolved view of the same run, every pair a
+    # view lists was taken by a model of the run, and the sabotage arm (the
+    # view printing who chose a law as a constant) fails.
+    if gate_exec "$ROOT/bin/curate/check_view_matches_calls.py" > /tmp/check_view_matches_calls.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "view-matches-calls-gate" "$(grep -m1 '^check_view_matches_calls: OK' /tmp/check_view_matches_calls.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_view_matches_calls.py)\n" "view-matches-calls-gate"
+        cat /tmp/check_view_matches_calls.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/check_view_matches_calls.$$
 
     # Props-order gate (2026-10-26, DEV.md 4c C172 slice 2): the ORDER of a
     # properties workflow is an engine fact.  choupoProps runs its operations

@@ -127,7 +127,7 @@ Wilson::Wilson(const DictPtr& dict, const std::vector<Component>& comps)
         if (provDict)   // a record's declared span is guarded (C35 item 5)
             spanGuard_.add("Wilson", findIndex(names, ni), findIndex(names, nj),
                            ni + "-" + nj, r);
-        ThermoResolutionLog::instance().add(std::move(r));
+        recordPair(std::move(r));
     };
 
     auto applyPair = [&](const DictPtr& p, const std::string& sourceLabel)

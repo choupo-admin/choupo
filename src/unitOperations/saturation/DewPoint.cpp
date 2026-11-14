@@ -30,6 +30,7 @@ License
 #include "solver/NewtonRaphson.H"
 #include "thermo/SaturationCurves.H"
 
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -72,6 +73,11 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
 
     scalar Tdew = T0;
     int    outerIt = 0;
+    //  The vapour-pressure laws' hard windows bound every INVENTED temperature
+    //  of this search (C398 review, the trial-state item).
+    scalar wLo = 200.0, wHi = 700.0;
+    narrowToVapourPressureWindows(thermo, y, wLo, wHi);
+    const bool narrowed = (wLo > 200.0 || wHi < 700.0) && wLo <= wHi;
 
     for (outerIt = 0; outerIt < maxOuter; ++outerIt)
     {
@@ -87,7 +93,10 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
         auto df = [&](scalar T)
         {
             const scalar dT = 1.0e-3;
-            return (f(T + dT) - f(T - dT)) / (2.0 * dT);
+            if (!narrowed) return (f(T + dT) - f(T - dT)) / (2.0 * dT);
+            //  inside the laws' hard windows (C398 review, the trial-state item)
+            const scalar a = std::max(T - dT, wLo), b = std::min(T + dT, wHi);
+            return (f(b) - f(a)) / (b - a);
         };
 
         solver::NROptions nro;
@@ -99,6 +108,7 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
         nro.monotoneIncreasing = false;   // sum y_i / K_i decreases with T
         nro.maxStep            = 25.0;
         if (nroOverride) nro = *nroOverride;
+        if (narrowed) { nro.lower = wLo; nro.upper = wHi; Tdew = std::clamp(Tdew, wLo, wHi); }
 
         auto r = solver::newton1D(f, df, Tdew, nro);
         Tdew = r.x;

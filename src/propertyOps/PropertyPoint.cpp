@@ -208,10 +208,10 @@ int PropertyPoint::run(const DictPtr& dict,
     };
     attempt("viscosity", "vapour viscosity",
             "declare `transport { vapour { viscosity { model Chung; } } }` in the property dictionary",
-            [&] { return thermo.viscosityGas(T, z); });
+            [&] { return thermo.viscosityGas(T, P_Pa, z); });
     attempt("thermal_conductivity", "vapour thermal conductivity",
             "declare `transport { vapour { thermalConductivity { model Eucken; } viscosity { model Chung; } } }`",
-            [&] { return thermo.thermalConductivityGas(T, z); });
+            [&] { return thermo.thermalConductivityGas(T, P_Pa, z); });
     attempt("surface_tension", "surface tension",
             "declare `transport { interface { surfaceTension { } } }` (the records' laws) or name a model",
             [&] { return thermo.surfaceTension(T, z); });

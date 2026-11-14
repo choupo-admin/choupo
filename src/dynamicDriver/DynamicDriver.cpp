@@ -72,7 +72,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "dynamicDriver/DynamicDriver.H"
-
+#include "thermo/ResolvedView.H"   // the system's view (C398 review row CV-12)
 #include "control/Controller.H"
 #include "control/SignalController.H"
 #include "control/signal/Signal.H"
@@ -639,7 +639,7 @@ try
     {
     const int verbosity = vb;
     thermoAnnounceLevel() = vb;
-    ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
+    ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr); resolvedView::printSystemOnce(thermo, thermoDict);   // CV-12
 
     // ---- Build dynamic units -----------------------------------------
     auto unitList = fsDict->lookupDictList("units");

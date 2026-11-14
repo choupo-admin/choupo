@@ -49,6 +49,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from record_reader import PROPERTY_BLOCKS, laws_of, parse_file   # noqa: E402
 from debt_registry import LAWS_WITHOUT_CHECK, LAWS_WITHOUT_CHECK_DEBT   # noqa: E402  ONE home
+from debt_registry import RECORDS_NOT_LOADABLE, RECORDS_NOT_LOADABLE_DEBT   # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_record_law_values"
@@ -102,6 +103,15 @@ def main():
         status = c[4] if len(c) > 4 else ""
         if status == "notLoaded":
             not_loaded += 1
+            #  A RECORD THE ENGINE CANNOT LOAD TAKES ITS CHECKS OUT OF THE GATE
+            #  IN SILENCE (review row CV-08): a unit typo in methanol.dat made
+            #  the whole record unloadable and its six laws left the gate.  A
+            #  record that carries a `check` and cannot be loaded FAILS, by name.
+            f = ROOT / "data/standards/components" / f"{c[0]}.dat"
+            text = f.read_text(errors="replace") if f.exists() else ""
+            if any(line.strip().startswith("check") and "{" in line for line in text.splitlines()):
+                fails.append(f"{c[0]}: the record carries a `check` and the engine cannot load it"
+                             f" ({c[-1]}) -- its laws are checked by nobody until it loads")
         elif status == "nocheck":
             nocheck[c[1]] = nocheck.get(c[1], 0) + 1
         elif status in ("checked", "evaluated"):
@@ -115,6 +125,14 @@ def main():
                              " transcription error")
         elif status in ("notEvaluable", "unreadable"):
             fails.append(f"{c[0]}: {c[1]} law `{c[2]}`: {status} -- {c[-1]}")
+    #  The records not loadable alone are a pinned count that only shrinks (CV-08).
+    if not_loaded > RECORDS_NOT_LOADABLE:
+        fails.append(f"{not_loaded} records cannot be loaded alone, the pin is {RECORDS_NOT_LOADABLE}"
+                     " -- a record that stops loading leaves every law it holds outside this gate.  "
+                     + RECORDS_NOT_LOADABLE_DEBT["remedy"])
+    elif not_loaded < RECORDS_NOT_LOADABLE:
+        fails.append(f"{not_loaded} records cannot be loaded alone, below the pin {RECORDS_NOT_LOADABLE}"
+                     " -- lower debt_registry.RECORDS_NOT_LOADABLE (the debt only shrinks)")
     for p, n in sorted(nocheck.items()):
         pin = PINNED.get(p, 0)
         if n > pin:
@@ -131,7 +149,8 @@ def main():
         return 1
     print(f"{NAME}: OK -- every block of several laws marks one preferred; {len(checked)} check"
           f" value(s) read back within tolerance ({'; '.join(checked)}); laws without a check"
-          f" (the pinned debt): {sum(nocheck.values())}; records not loadable alone: {not_loaded}")
+          f" (the pinned debt): {sum(nocheck.values())}; records not loadable alone: {not_loaded}"
+          f" (pinned {RECORDS_NOT_LOADABLE}, none of them carrying a check)")
     return 0
 
 

@@ -5305,7 +5305,9 @@ Plus the working artefacts: the saturated-steam table 0.01-350 degC (saturation.
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{pin\_50C}\\[-1pt]{\tiny propertyPoint}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{pin\_75C}\\[-1pt]{\tiny propertyPoint}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{pin\_100C}\\[-1pt]{\tiny propertyPoint}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{transport\_scan}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{steam\_650K\_3bar}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{steam\_800K\_500bar}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{transport\_scan}\\[-1pt]{\tiny propertyScan1D}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{IAPWS water transport properties -- viscosity (R12-08), thermal conductivity (R15-11) and surface tension (R1-76). Water flagged as a pure fluid (method IF97) routes the transport accessors to the matching IAPWS releases: the density comes from the IF97 thermodynamic kernel at the saturation state, fed to the (rho,T) transport kernels; surface tension is the R1-76 saturation-line form. A coarse 4-point scan (25/50/75/100 degC) pinned against the published IAPWS values, plus a fine sweep for the plot.}
@@ -5316,27 +5318,27 @@ Water flagged `pureFluids \{ water \{ method IF97; \} \}` routes the transport a
 
 viscosity $\to$ R12-08 (industrial, critical enhancement off) thermal\_conductivity $\to$ R15-11 (background, critical enhancement off) surface\_tension $\to$ R1-76 (saturation line)
 
-The (rho,T) viscosity / conductivity kernels get their density from the IF97 thermodynamic kernel at the SATURATION state (the legacy transport accessors carry no pressure, so p = p\_sat(T) is the physical convention -- saturated liquid / saturated vapour). Surface tension is a saturation-line property and takes only T.
+The (rho,T) viscosity / conductivity kernels get their density from the IF97 thermodynamic kernel: the LIQUID keys (`viscosity\_liquid`, `thermal\_conductivity\_liquid`) at the saturated liquid, the vapour keys (`viscosity`, `thermal\_conductivity`) at the vapour state at (T, P) -- refused, by name, at a state IF97 places in the liquid (C398 review row CN-04: until then the vapour keys returned the saturated LIQUID's values, which is what this case's pins at 1 bar were reading). Surface tension is a saturation-line property and takes only T.
 
 `pins` evaluates the three properties at 25/50/75/100 degC; the golden master locks them at reltol 1e-5 (the formulation is verified to 1e-8 by IAPWSTransport::verify(), which fires on every run). `scan` writes a fine sweep for the plot.
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{pin\_25C}{surface\_tension}{0.0719722052302}
-\goldrow{diag}{pin\_25C}{thermal\_conductivity}{0.606460966251}
-\goldrow{diag}{pin\_25C}{viscosity}{0.000890036037708}
+\goldrow{diag}{pin\_25C}{thermal\_conductivity\_liquid}{0.606460966251}
+\goldrow{diag}{pin\_25C}{viscosity\_liquid}{0.000890036037708}
 \goldrow{diag}{pin\_50C}{surface\_tension}{0.0679439059449}
-\goldrow{diag}{pin\_50C}{thermal\_conductivity}{0.640589598777}
+\goldrow{diag}{pin\_50C}{thermal\_conductivity\_liquid}{0.640589598777}
 \goldrow{diag}{pin\_75C}{surface\_tension}{0.0635830195097}
-\goldrow{diag}{pin\_75C}{thermal\_conductivity}{0.66354437705}
+\goldrow{diag}{pin\_75C}{thermal\_conductivity\_liquid}{0.66354437705}
 \goldrow{diag}{pin\_100C}{surface\_tension}{0.0589118685877}
-\goldrow{diag}{pin\_100C}{thermal\_conductivity}{0.677216843797}
+\goldrow{diag}{pin\_100C}{thermal\_conductivity\_liquid}{0.677216843797}
 \goldrow{diag}{transport\_scan}{n\_points}{46}
 \goldrow{diag}{transport\_scan}{n\_failures}{0}
 \goldrow{diag}{pin\_25C}{Cp\_ig}{33.6596038227}
 \goldrow{diag}{pin\_25C}{H\_R}{0}
 \goldrow{diag}{pin\_25C}{H\_ig}{-241826}
-\goldmore{49}
+\goldmore{53}
 \end{tutgolden}
 
 \clearpage

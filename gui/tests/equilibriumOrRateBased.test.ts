@@ -192,10 +192,10 @@ describe("equilibrium-or-rate-based: the lesson", () => {
     const all = [EQ_RB_ENGINE_SCOPE, ...EQ_RB_STEPS.flatMap((s) => [s.body, s.note ?? ""])].join("\n");
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string> = {
-      "DistillationColumn.cpp:1597": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
-      "DistillationColumn.cpp:1729": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
-      "DistillationColumn.cpp:2397": "`murphreeEfficiency` is not ",
-      "DistillationColumn.cpp:5059": "tray efficiency is implemented for a BINARY",
+      "DistillationColumn.cpp:1598": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
+      "DistillationColumn.cpp:1730": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
+      "DistillationColumn.cpp:2398": "`murphreeEfficiency` is not ",
+      "DistillationColumn.cpp:5060": "tray efficiency is implemented for a BINARY",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     const src = tree("src/unitOperations/distillation/DistillationColumn.cpp").split("\n");

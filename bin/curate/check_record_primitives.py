@@ -55,9 +55,18 @@ ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_record_primitives"
 
 #  Keys that state a DERIVED quantity when typed at a record's top level.
-FORMATION_OUTSIDE = {"Hf_298", "dHf_298", "S_298", "s_298", "Gf_298", "dGf_298", "Hf", "S"}
-LATENT = re.compile(r"^(d?Hvap)(?!Tb$)\w*$")
+#  THE DECLARED LIST OF DERIVED NAMES (C398 review row CV-09), matched at ANY
+#  depth of the record (a `phaseChange { Hvap_298 ...; }` was not seen while
+#  only top-level exact names were), outside the blocks that are the home of
+#  formation data or describe a value rather than store one.
+FORMATION_OUTSIDE = {"Hf_298", "dHf_298", "S_298", "s_298", "Gf_298", "dGf_298", "Hf", "S",
+                     "dHf", "dGf", "Gf", "dSf", "Sf", "hf", "dHform", "Hform"}
+LATENT = re.compile(r"^(d?Hvap)(?!Tb$)\w*$|^latentHeat\w*$|^dHvap\w*$")
 SLOPE = {"dlnPsatdT", "dPsatdT", "dlnPdT"}
+#  Subtrees not scanned: the formation datum's own home, the provenance
+#  records, a law's check value, and a salt's calorimetric data (the
+#  salt-formation contract's INPUTS: a dissolution enthalpy is a primitive).
+NOT_SCANNED = {"standardThermochemistry", "provenance", "check", "calorimetric"}
 RUNGS = ("idealGas", "pureLiquid", "pureSolid")
 
 #  THE DEBT lives in the ONE registry (debt_registry.py), with its why and
@@ -91,10 +100,16 @@ def main():
         #  A salt: a record carrying a dissolution enthalpy (the salt-formation
         #  contract's input), at any depth.
         salt = "dissolutionEnthalpy" in f.read_text()
-        for k, v, line in rec.entries:
-            if isinstance(v, Block):
-                continue
-            if k in ("S_298", "s_298") and salt:
+        def scalars(b, path):
+            for kk, vv, ll in b.entries:
+                if isinstance(vv, Block):
+                    if kk not in NOT_SCANNED:
+                        yield from scalars(vv, path + [kk])
+                    continue
+                yield "/".join(path + [kk]), kk, vv, ll
+
+        for where, k, v, line in scalars(rec, []):
+            if k in ("S_298", "s_298") and salt and where == k:
                 #  A SALT's solid entropy is a PRIMITIVE: the salt-formation
                 #  contract derives the enthalpy from the ions and the
                 #  dissolution enthalpy, and no dissolution entropy is stored
@@ -102,11 +117,11 @@ def main():
                 labels.append(f"{f.stem}.{k}: PRIMITIVE (a salt's solid entropy)")
                 continue
             if k in FORMATION_OUTSIDE or LATENT.match(k) or k in SLOPE:
-                key = f"{f.name}:{k}"
+                key = f"{f.name}:{where}"
                 if key in PINNED_DERIVED:
                     derived_seen.add(key)
                     continue
-                fails.append(f"{f.name}:{line}: `{k}` types a DERIVED quantity -- the record stores"
+                fails.append(f"{f.name}:{line}: `{where}` types a DERIVED quantity -- the record stores"
                              " the primitive once (A3: a formation datum lives in"
                              " standardThermochemistry, in the natural phase; the latent heat at Tb"
                              " only; never a slope of the vapour pressure).  "

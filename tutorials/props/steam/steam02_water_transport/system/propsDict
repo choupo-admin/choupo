@@ -17,10 +17,13 @@
     * surface_tension      -> R1-76  (saturation line)
 
   The (rho,T) viscosity / conductivity kernels get their density from the
-  IF97 thermodynamic kernel at the SATURATION state (the legacy transport
-  accessors carry no pressure, so p = p_sat(T) is the physical convention --
-  saturated liquid / saturated vapour).  Surface tension is a saturation-line
-  property and takes only T.
+  IF97 thermodynamic kernel: the LIQUID keys (`viscosity_liquid`,
+  `thermal_conductivity_liquid`) at the saturated liquid, the vapour keys
+  (`viscosity`, `thermal_conductivity`) at the vapour state at (T, P) --
+  refused, by name, at a state IF97 places in the liquid (C398 review row
+  CN-04: until then the vapour keys returned the saturated LIQUID's values,
+  which is what this case's pins at 1 bar were reading).  Surface tension is
+  a saturation-line property and takes only T.
 
   `pins` evaluates the three properties at 25/50/75/100 degC; the golden
   master locks them at reltol 1e-5 (the formulation is verified to 1e-8 by
@@ -34,34 +37,54 @@ operations
         name        pin_25C;
         type        propertyPoint;
         state       { T 298.15 K;  P 1 bar;  composition { water 1.0; } }
-        properties  ( viscosity  thermal_conductivity  surface_tension );
+        properties  ( viscosity_liquid  thermal_conductivity_liquid  surface_tension );
     }
     {
         name        pin_50C;
         type        propertyPoint;
         state       { T 323.15 K;  P 1 bar;  composition { water 1.0; } }
-        properties  ( viscosity  thermal_conductivity  surface_tension );
+        properties  ( viscosity_liquid  thermal_conductivity_liquid  surface_tension );
     }
     {
         name        pin_75C;
         type        propertyPoint;
         state       { T 348.15 K;  P 1 bar;  composition { water 1.0; } }
-        properties  ( viscosity  thermal_conductivity  surface_tension );
+        properties  ( viscosity_liquid  thermal_conductivity_liquid  surface_tension );
     }
     {
         name        pin_100C;
         type        propertyPoint;
         state       { T 373.15 K;  P 1 bar;  composition { water 1.0; } }
-        properties  ( viscosity  thermal_conductivity  surface_tension );
+        properties  ( viscosity_liquid  thermal_conductivity_liquid  surface_tension );
     }
 
     // --- fine sweep for the plot ------------------------------------------
+    //  THE VAPOUR STATE (C398 review row CN-04), against the formulations'
+    //  own published values: IAPWS R15-11 (2011), Table 8 "Program-
+    //  verification table for lambda(p,T) in Region 2", page 14 -- at
+    //  (0.3 MPa, 650 K) and (50 MPa, 800 K) it tabulates mu (by R12-08 on the
+    //  IF97 density) and lambda = lambda0 lambda1 + lambda2; the engine runs
+    //  the background (lambda2 = 0), so the anchor is lambda - lambda2:
+    //  52.2311024 - 0.000129246 = 52.2309732 mW/(m K) and
+    //  177.709914 - 6.64341394 = 171.066500 mW/(m K).
+    {
+        name        steam_650K_3bar;
+        type        propertyPoint;
+        state       { T 650 K;  P 3 bar;  composition { water 1.0; } }
+        properties  ( viscosity  thermal_conductivity );
+    }
+    {
+        name        steam_800K_500bar;
+        type        propertyPoint;
+        state       { T 800 K;  P 500 bar;  composition { water 1.0; } }
+        properties  ( viscosity  thermal_conductivity );
+    }
     {
         name        transport_scan;
         type        propertyScan1D;
         vary        { variable T;  from 280 K;  to 370 K;  n 46; }
         state       { P 1 bar;  composition { water 1.0; } }
-        properties  ( viscosity  thermal_conductivity  surface_tension );
+        properties  ( viscosity_liquid  thermal_conductivity_liquid  surface_tension );
         output      { file water_transport.csv; }
     }
 );

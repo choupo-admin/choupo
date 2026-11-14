@@ -78,8 +78,9 @@ private:
     inline static const std::string window_ =
         "saturated liquid, inside the temperature range the component's A "
         "and B were fitted over -- a property of the RECORD, not the model; "
-        "the Andrade blocks in this catalogue declare no Trange, so leaving "
-        "it is not announced (a known gap)";
+        "a law that declares Tmin/Tmax is announced once per law and "
+        "component when evaluated outside them (C398 SB-04); a law that "
+        "declares none has no window to leave";
     inline static const std::string cite_ =
         "Andrade, E. N. da C. (1930), Nature 125, 309-310 [primary]; the "
         "two-constant form as given in Reid, Prausnitz & Poling, 4th ed. "

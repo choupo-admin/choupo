@@ -15,14 +15,14 @@
 #   sigma in N/m, thermal_conductivity in W/(m.K), viscosity in Pa.s.
 # kind   name      key                    expected      reltol
 diag    pin_25C                surface_tension  0.0719722052302  1e-3
-diag    pin_25C                thermal_conductivity 0.606460966251   1e-3
-diag    pin_25C                viscosity        0.000890036037708 6e-2
+diag    pin_25C                thermal_conductivity_liquid 0.606460966251   1e-3
+diag    pin_25C                viscosity_liquid        0.000890036037708 6e-2
 diag    pin_50C                surface_tension  0.0679439059449  1e-3
-diag    pin_50C                thermal_conductivity 0.640589598777   1e-3
+diag    pin_50C                thermal_conductivity_liquid 0.640589598777   1e-3
 diag    pin_75C                surface_tension  0.0635830195097  1e-3
-diag    pin_75C                thermal_conductivity 0.66354437705    1e-3
+diag    pin_75C                thermal_conductivity_liquid 0.66354437705    1e-3
 diag    pin_100C               surface_tension  0.0589118685877  1e-3
-diag    pin_100C               thermal_conductivity 0.677216843797   1e-3
+diag    pin_100C               thermal_conductivity_liquid 0.677216843797   1e-3
 diag    transport_scan         n_points         46               1e-9
 diag    transport_scan         n_failures       0                1e-9
 diag    pin_25C                Cp_ig            33.6596038227    1e-4
@@ -49,7 +49,7 @@ diag    pin_50C                T                323.15           1e-4
 diag    pin_50C                Z                1                1e-4
 diag    pin_50C                gamma            1.32565959665    1e-4
 diag    pin_50C                v_molar          0.0268681859501  1e-4
-diag    pin_50C                viscosity        0.000546504154082 1e-4
+diag    pin_50C                viscosity_liquid        0.000546504154082 1e-4
 diag    pin_75C                Cp_ig            34.0404489301    1e-4
 diag    pin_75C                H_R              0                1e-4
 diag    pin_75C                H_ig             -240133.645949   1e-4
@@ -62,7 +62,7 @@ diag    pin_75C                T                348.15           1e-4
 diag    pin_75C                Z                1                1e-4
 diag    pin_75C                gamma            1.32319315252    1e-4
 diag    pin_75C                v_molar          0.0289468016046  1e-4
-diag    pin_75C                viscosity        0.000377407434633 1e-4
+diag    pin_75C                viscosity_liquid        0.000377407434633 1e-4
 diag    pin_100C               Cp_ig            34.2437884672    1e-4
 diag    pin_100C               H_R              0                1e-4
 diag    pin_100C               H_ig             -239280.110337   1e-4
@@ -75,5 +75,16 @@ diag    pin_100C               T                373.15           1e-4
 diag    pin_100C               Z                1                1e-4
 diag    pin_100C               gamma            1.32065864984    1e-4
 diag    pin_100C               v_molar          0.0310254172591  1e-4
-diag    pin_100C               viscosity        0.000281585019366 1e-4
+diag    pin_100C               viscosity_liquid        0.000281585019366 1e-4
 diag    transport_scan         n_emptyCurves    0                1e-4
+# THE VAPOUR STATE (C398 review row CN-04), AUTHORED anchors, never re-recorded:
+# IAPWS R15-11 (2011) Table 8, page 14, Region 2 -- mu (R12-08 on the IF97
+# density) and the background conductivity lambda - lambda2 (the engine runs
+# lambda2 = 0): 52.2311024 - 0.000129246 = 52.2309732 mW/(m K) at
+# (0.3 MPa, 650 K); 177.709914 - 6.64341394 = 171.066500 mW/(m K) at
+# (50 MPa, 800 K).  Before CN-04 the vapour keys returned the saturated
+# LIQUID's values below Tc (473.15 K, 1 bar: 1.346e-4 Pa s, 0.659 W/(m K)).
+diag    steam_650K_3bar        viscosity        2.34877453e-05   1e-6     anchor
+diag    steam_650K_3bar        thermal_conductivity 0.0522309732     1e-6     anchor
+diag    steam_800K_500bar      viscosity        3.93727534e-05   1e-6     anchor
+diag    steam_800K_500bar      thermal_conductivity 0.171066500      1e-6     anchor
