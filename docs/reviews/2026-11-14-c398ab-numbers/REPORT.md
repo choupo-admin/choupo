@@ -370,3 +370,60 @@ newly refused, except the moves the claim now lists and pins (totalReflux01's
 boundary block, steam02's renamed keys and pin_100C vapour values) and the
 four appended `source` rows.  Open rows: CN-08 (pre-existing benchmark order
 dependence) and CN-09 (a doubled stderr line).
+
+## 8. Fifth round: `origin/integ/c398ab` at 8ffee1a73 against the current `origin/main` (a58d52c7e)
+
+What changed since section 7, as the integration describes it:
+- the in-search hard-window machinery is removed (`NewtonRaphson.cpp`, `IsothermalFlash.cpp` and `StreamEquilibrium.H` now equal main's, checked by diff);
+- a post-solve audit of the reported states is added in Flowsheet and the props operations;
+- the package identity changed;
+- the time-integrated binaries gain a refusal (`refuseUnauditedHardWindows`);
+- main's C394 harness is merged (`bin/` only; between bbef82e38 and a58d52c7e main changed nothing under `src/`, `data/` or `tutorials/`).
+
+Both sides were built from `git archive` of a58d52c7e and 8ffee1a73 (`make -j3`). Each of the ten binaries was checked with `ldd` against its own `libchoupo.so`, and each run used its own `CHOUPO_HOME`.
+
+### 8.1 The measurement: 699 cases, main vs branch
+
+The same 699 cases as in section 7 were run: the 698 plus `packing05_schulz_record_0p10bar`, which is on both sides. The three branch-only witnesses were not compared. Exit codes are identical in all 699: 635 exit 0 on both builds, and 64 fail identically on both (8 refusal witnesses, 56 curation cases without archive extracts). So the new refusal in the time-integrated binaries refuses none of the 90 shipped time-integrated cases, and the post-solve audit refuses none of the steady or props cases.
+
+Every difference, by family (the same families as in section 7, with CN-09's row gone):
+
+| family | lines | cases | source |
+|---|---|---|---|
+| provenance announcements | 1091 | 34 | text (CN-06) |
+| declared source `liquidThermalConductivity` | 717 | 108 | text (c329) |
+| a negative zero printed as 0 | 159 | 70 | CN-05 |
+| result provenance rows | 89 | 43 | text |
+| caveat-block frame | 52 | 9 | text |
+| override announcement wording | 50 | 2 | text |
+| the rate-based enthalpy probe advisory | 32 | 2 | text (c329) |
+| pair source `inline` -> `standard`; Andrade/Vogel window wording; the Chung advisory's position | 10 | 6 | text |
+| `totalReflux01` boundary block | 5 | 1 | CN-01, pinned |
+| `steam02_water_transport` | -- | 1 | the two added operations, the renamed keys, `pin_100C`'s two vapour values (CN-07, pinned) |
+
+No other number differs in any stdout, result JSON or written file (state directories, trajectories, reports, CSVs). The numbers that do move are the ones section 7 lists:
+- totalReflux01: `residual_denom_kW` 1282.99297228 (was null), `residual_pct` -1.77e-14 (was null), and Q_boundary/Q_heat/residual -2.27e-13 in the JSON;
+- steam02 `pin_100C`: viscosity 1.22336380006e-05 Pa s and conductivity 0.0245633017624 W/(m K).
+
+The benchmark file sets `recycle01_cavett_as_shipped` (four PR files) and `reforming01` (one file) differ in modification time only: their contents are byte-identical on both sides. That is the rewrite-in-place of CN-08. `methanol01` exits 2 on both sides, with no number differing.
+
+### 8.2 CN-09: fixed (32f55c907)
+
+The view now builds its probe objects silently (`ResolvedView.cpp`, `struct Silence`). The `[cp] ... declares Trange unknown` count on the combined output is now equal on both sides:
+
+| case | main | branch | section 7 (branch) |
+|---|---|---|---|
+| 2Chlorobutane-toluene | 1 | 1 | 2 |
+| temperature02_engineers_ladder | 3 | 3 | 4 |
+| new_components_c309 | 6 | 6 | 8 |
+| transport_c327 | 190 | 190 | 376 |
+
+The advisory log is unchanged.
+
+### 8.3 Rows
+
+No new row. CN-01..07 and CN-09 are fixed; CN-08 stays open (pre-existing: benchmark sub-cases rewrite tracked inputs of their parent case).
+
+### 8.4 Verdict at 8ffee1a73
+
+Against the current main, over 699 cases, no number moves and no case is newly refused, except the moves the claim lists and pins: totalReflux01's boundary block, steam02's renamed keys and `pin_100C` vapour values, and the four appended `source` rows.
