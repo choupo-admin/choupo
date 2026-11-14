@@ -3476,6 +3476,245 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **THE FIFTH INTEGRATION LANDED (2026-11-14, 01:20): THE LIQUID-DENSITY
+> PILOT AND FOUR CORRECTIONS, held by ONE FULL SWEEP on its second
+> attempt.**
+> WHAT ENTERED.  (1) C378, THE PILOT: a liquid density is resolved by a
+> KERNEL for two units, the pump and the CSTR (`src/thermo/liquidProperty/`:
+> methods as objects, resolved per constituent set and per world, frozen
+> for the run; record leaves, the reference equation of a fluid a record
+> names, with pressure; ideal mixing of leaves; a solution law with one
+> form and the NaOH-water record; a marked measurement with its box; the
+> declared hypothesis `massWithoutVolume` with its bound; a typed domain
+> error that a solver may reject as a trial).  30 goldens re-recorded by
+> its builder, each row listed with its reason class in the branch's
+> commit (density at the feed temperature through anchored leaves
+> instead of flat 25 C volumes: reactors at 350 K move by -7.1 %; the
+> water leaf on the reference equation; a solute declared without
+> volume); six demonstrations `liquidDensity01`..`06`; gates
+> `check_density_pilot` (42 arms) and `check_liquid_density_entry_callers`;
+> the Theory Guide's sections; the ratchet's pinned count fell.  REVIEWED
+> BY THREE REVIEWERS BY MEASUREMENT (docs/reviews/2026-11-13-c378-pilot/,
+> 44 rows): no wrong number among some thirty recomputed quantities; SIX
+> rows gated the landing and are closed, each re-measured by the
+> reviewer: two demonstrations did not run from what git holds (an
+> ignore rule hid their sealed record); a marked measurement over a
+> mass-without-volume leaf deadlocked; a reference record's load-time
+> check passed or failed on the last bit (now ONE unit of the last
+> printed digit, or half a unit times the row's conditioning); a sealed
+> case without the reference record priced water by another method than
+> its unsealed twin, in silence; a measurement that matched nothing was
+> dropped in silence; the mass-without-volume declaration had two
+> readers.  NOT DONE, by its builder's statement: eleven S4 rows.  (2)
+> TD-04, TD-16, TD-17 (the reviewing session's last build): a declared
+> or computed pure-fluid phase beyond the saturation band is refused by
+> name; the pump, the compressor and the turbine refuse a computed inlet
+> their own world places on the other side, naming both worlds; the pump
+> no longer publishes the inlet temperature when its discharge search
+> fails.  ITS FIRST FORM CRASHED: every outlet was stamped with its
+> world's saturation pressure through an unchecked pointer, and five
+> cases with a pure stream of an involatile component died with a
+> segmentation fault; found by the first sweep, fixed by its author.
+> WHERE IT MET THE PILOT: with the kernel's density at 550 K the pump's
+> shaft work is a third larger and the discharge search stepped across
+> the saturation line; the bracket is now the liquid interval and the
+> root is found.  (3) CI-00: a species a bed neither holds nor is fed
+> publishes no closure ratio (its residual in moles instead); a ratchet
+> counts the divisions by a floored scale (32 pinned).  (4) PH-03, PH-06:
+> a product clean is the campaign clean plus the product's own part; a
+> batch machine is priced and published on its installed size; 151 rows
+> moved in three tablet cases, exactly the reviewer's list, value for
+> value.
+> VALIDATION.  FIRST ATTEMPT, full sweep: 2189 PASS / 25 FAIL (the crash
+> and everything behind it; the pilot's two un-runnable demonstrations;
+> two missing `<map>` includes of the tablet branch; small generated
+> files).  SECOND ATTEMPT, after the fixes: `--fast` first, 87 / 0; then
+> THE FULL SWEEP: 2213 PASS / 1 FAIL / 8 EXPECTED-FAIL, the one failure a
+> web-app test of the property-sources panel that still expected the
+> pump's old source (corrected to what the engine publishes; its file
+> re-run, 15 tests; typecheck 0).  HELD in that sweep: mass on 304
+> steady cases, elements per atom, energy on 122, the own closures of 87
+> time-integrated cases; the web app's 8156 other tests.  AFTER THE
+> SWEEP two things entered (the one-digit tolerance of the reference
+> records' checks; that test): validated by what they reach: `--scope`
+> over the props thermo cases, the rotating, thermo and power
+> directories 31 / 0, `--fast` 87 / 0, the reference-equation, pilot,
+> seal and phase gates at exit 0.  The reason a full sweep was run at
+> all: the hand-over seam of the flowsheet, the thermophysical package
+> and the campaign writer are paths every case goes through.
+> LESSONS, each already a rule: the fast tier runs FIRST on a merged
+> tree (C394); a scope run that skips the sectored plants and the
+> utility cases proves nothing about a seam every unit crosses; a
+> builder's own tree can hide a file git ignores.  OPEN FROM IT, with no
+> builder yet: PA-09 (temperature and vapour fraction declared, P = 0
+> reaches the units; on main before this batch), PC-10 (a sealed case
+> reads the installation catalogue for solution records and utilities),
+> PC-13 (the time-integrated tank still prices water by the record's
+> correlation), the quasi-steady adapter without the hand-over check,
+> the pilot's S4 rows.
+
+> **C396 (Vitor, 2026-11-14: "tambem vais criar a forma de fazer o
+> design da coluna?  E de representar num esquema (semelhante ao do
+> permutador de calor) a forma detalhada interna da coluna?  Com parte de
+> cima, de baixo etc?").**  WHAT EXISTS, read the same turn: the column
+> sizer publishes five items (the shell on one diameter with both
+> section requirements, the tray stack, the condenser, the reboiler, the
+> reflux drum), with cost and a sheet; tray hydraulics rate or design a
+> tray; the app draws the tower from those sheets (tray lines, a
+> schematic weir and downcomer, the feed stage, the auxiliaries the run
+> sized, to scale where legible).  WHAT IS MISSING, and is this
+> commission: (1) THE DESIGN OF A PACKED COLUMN: the diameter from the
+> packing's own hydraulics at a declared approach to flooding, the bed
+> height from the segments the rate-based model solves, the number of
+> beds, and a sheet for it; (2) the design mode of the rate-based model
+> itself (a purity asked, the height found), after its rating mode is
+> validated; (3) THE INTERNALS DRAWN FROM TOP TO BOTTOM: the vapour
+> outlet and the reflux inlet with its distributor, each bed with its
+> support, a collector and a redistributor between beds, the feed
+> inlet, the sump and the reboiler return.  THE RULE THE DRAWING ALREADY
+> FOLLOWS STAYS: it draws what the engine sized and marks as schematic
+> what it did not; so an internal the engine has no rule for (a
+> distributor, a redistribution height) is first given a sourced rule in
+> the engine or is drawn labelled "not sized".  A study of practice for
+> those rules is written before any of it is built.  ORDER: after the
+> rate-based slices B1 to B3, because the design mode needs them.
+> ALSO REGISTERED, as a CANDIDATE and not a commission (his question the
+> same hour: can the rate-based model carry reactions?): slice B5, a
+> reaction in the liquid HOLDUP of each segment or tray (the kinetics
+> library and the holdup correlations exist); a reaction inside the
+> film (enhancement factors) is not planned, for the reason the liquid
+> Maxwell-Stefan film is not.  A survey of measured reactive columns is
+> being read (three papers already in the folder).
+
+> **C395 (Vitor, 2026-11-14, to the reviewing session, which relayed it:
+> he wants THE LIMITATION OF THE HETP explained in the EduTools; the
+> scope is his to approve before it is built).**  WHAT IS THERE TODAY,
+> as that session read it on main: the page on equilibrium stages or
+> rate-based never says HETP; the Kremser page says a packed count needs
+> an HTU or an HETP and does not convert; the column's stage sheet
+> already DRAWS the local HETP along a packed bed with no word on what
+> it means.  PROPOSED TO HIM, by that session and endorsed here: a
+> section on the equilibrium-or-rate-based page saying that the HETP is
+> not a property of the packing (it moves with the flows, with the
+> system and along the bed), so turning a stage count into a height
+> hides the mass transfer; its picture is the engine's own local HETP
+> along the bed of a packed case of the tree, and, once slice B1 lands,
+> the same bed solved by the rate-based segments beside it.  Not built
+> until he has said yes to the emphasis.
+> **THE SITE'S PUBLICATION AND THE BOARD (2026-11-14).**  Each push to
+> main cancels a publication in flight; three of five were cancelled on
+> the night of the 13th by board messages of both sessions.  From now on
+> this session batches its pushes to main (one push carries the record,
+> the board and the plan together) and does not push a board message
+> alone while a publication is running unless the other session is
+> blocked on it.
+
+> **C329, DECISION (2) AMENDED ON VITOR'S QUESTION (2026-11-14: "Achas
+> que multicomponente com Maxwell-Stefan faz realmente falta?  Isso e
+> realmente usado na pratica?").**  The decision of 2026-11-13 offered NO
+> effective-diffusivity film for three components or more.  AMENDED,
+> with the reason: MULTICOMPONENT is needed (real columns are, and the
+> one general-reflux measurement in hand, the 1996 packed column, is a
+> ternary); MAXWELL-STEFAN specifically is needed only where it changes
+> the answer.  What was read says both things: a review of reactive
+> columns reports a study that found the extra effort of a
+> nonequilibrium model justified and LITTLE difference between the full
+> Maxwell-Stefan film and an effective diffusivity (the reading note of
+> 2026-11-13, row R14); the packed-column paper shows the equal-
+> diffusivity film ending on the WRONG PRODUCT near a distillation
+> boundary.  So, in the house's own manner (simple, data-anchored
+> sub-models, selectable, nothing silent): for three components or more
+> the FIRST film model built is the EFFECTIVE DIFFUSIVITY one, announced
+> by name in every run that uses it; the Maxwell-Stefan film (which
+> needs the thermodynamic factor of the activity models and liquid
+> diffusivities at finite concentration, both absent today) comes after
+> it as a second selectable model, with the boundary case as the witness
+> that shows a student WHEN the simple film fails.  ORDER OF THE
+> RATE-BASED SLICES, revised: B1 binary packed bed at total reflux
+> (being built); B2 trays; B3 a feed and a general reflux; B4a three or
+> more components on the effective-diffusivity film, held to the
+> ternary general-reflux measurement; B4b the boundary case as a LIMIT
+> WITNESS.  "Rate-based distillation is in Choupo" is said after B4a.
+> B4b NARROWED THE SAME DAY, after Vitor argued that the Maxwell-Stefan
+> film is rigour beyond its data ("uma caminhada de complexidade em
+> direcao ao abismo").  THE ARCHITECT AGREES IN PART, for a reason of
+> uncertainty and not of taste.  In the VAPOUR film the formulation
+> costs no fitted parameter (binary gas diffusivities are predicted
+> well and there is no thermodynamic factor), so it stays possible.  In
+> the LIQUID film it needs diffusivities at finite concentration (an
+> interpolation rule between two infinite-dilution values) and the
+> thermodynamic factor, a second derivative of the excess Gibbs energy
+> that an activity model fitted to phase equilibria does not pin; and
+> both sit under film coefficients known to tens of per cent (the
+> chapter read on 2026-11-13 puts the tray flow model ALONE at up to 20
+> % of the overall transfer rate).  A refinement smaller than the
+> uncertainty of what it multiplies is not built ahead of a case that
+> needs it.  THEREFORE: the liquid Maxwell-Stefan film is NOT PLANNED;
+> B4b is the boundary case run on the effective-diffusivity film and
+> shown beside its measurement, saying in the run and on the page that
+> this is where the simple film gives the wrong product: the limit is
+> TAUGHT, not hidden and not papered over with a model nobody can
+> parameterise.  A vapour-film Maxwell-Stefan option is built only if a
+> measured case in the tree shows it changes an answer.
+
+> **C329, SECOND PART: TO BE BUILT AS SOON AS POSSIBLE (Vitor,
+> 2026-11-13, to the reviewing session, which relayed it: asked how
+> rate-based distillation stood and told that the build of the
+> `rateBased` model word was what remained, "E diz lhe para fazer isso
+> ASAP").**  It goes AHEAD of what can wait (C394's suite economy, the
+> inherited tablet slices), and BEHIND only what is already in flight
+> (the fifth batch, the file headers).  First slice, per the four
+> decisions of this date: the new model word on a BINARY PACKED SEGMENT,
+> film coefficients and effective area from declared internals,
+> condenser and reboiler as equilibrium stages, held against the two
+> binary total-reflux sets already in the tree and against the design
+> record's own acceptance lines; documented in the guides in the same
+> slice (rule 4d).  A brief with every engine fact measured is written
+> before a builder starts.
+
+> **A SMALL INTEGRATION LANDED, LATE ON 2026-11-13: three branches.**
+> (a) THE PRICES AFTER THEIR REVIEW (C389, rows PR-03 to PR-14): each
+> sensitivity range on one basis (ammonia 0.380 to 0.692 EUR/kg, the
+> lowest and highest monthly unit values of the base dataset in 2025,
+> re-fetched; hydrogen 7.0 to 10.0, the source's own range); the market
+> index the same report gives near 8.2 EUR/kg cited as support for
+> reading the cost as a price; a sibling case's README no longer teaches
+> the old prices; the net present value without the tax credit rests on
+> a run (-4 075.8 M EUR); the licence gate gains an arm (a value whose
+> origin is known to reserve reuse says so in its provenance).  MOVED:
+> six `kpi economics` sensitivity rows in each of the two feasibility
+> cases, listed in the branch's commit; no balance.  (b) C392, THE
+> FLUIDISATION LABORATORY: a tab opened from the fluidised-beds page, one
+> to three columns side by side, schematic dots, three instruments, a
+> notebook that asks for the minimum fluidisation velocity before
+> showing it; every number from the page's own arithmetic; the screen
+> says no particle is simulated.  Opened in a browser by the reviewing
+> session at three velocities; not by the architect.  (c) C384, THE
+> RUNNER'S PINS: twelve named pins with their cause in
+> bin/curate/platform_divergence_debt.tsv (one of them a DEFECT, CI-01:
+> a fit's `identifiable` verdict changes with the platform); the
+> self-test reports "arm NOT observed" where a gate answers NO SUBJECT;
+> a lesson test holds an order of magnitude, not solver digits; the
+> reference-equation case's check band.  On the hosted runner the full
+> tier went from 20 failures to 14, of which 12 are these pins and 2 are
+> the absent-species closure that waits in the held batch.
+> VALIDATION: build; every guide re-rendered; `--scope` over the plants,
+> the economics cases, the screening case and the thermo directory 27
+> PASS / 0 FAIL (mass closure on 20 steady cases, energy, elements, the
+> pinned ledgers); `--gui` 47 PASS / 0 FAIL; the self-test alone at exit
+> 0; `--fast` 86 PASS / 0 FAIL / 5 EXPECTED-FAIL.  No full sweep: case
+> files, web-app files and gates only.
+> **THE REVIEWING SESSION MODIFIES NO TRACKED FILE (Vitor, 2026-11-13, to
+> that session: "Nao mexas aqui em codigo!").**  Strict reading, taken by
+> it: no edit of code, scripts or records even in a private worktree;
+> a review that needs a sabotage writes it as a REQUEST (file, exact
+> edit, what the gate must print) and this session runs it.  Open
+> requests: six on the pooled regressed-pairs gate (its review found no
+> false OK and no race; RP-01 a shared case's failure can be reported
+> under the wrong exception; RP-09 a record that loses its
+> `fittedInCase` line leaves the scan in silence), and the sabotage
+> table of the headers' gate on its final head.
+
 > **C394 (Vitor, 2026-11-13, on the sweep's wall clock: "O set de casos
 > tem mesmo de ser aqueles 500?  Nao ha forma de usar um subset que seja
 > representativo?" and, of the regressed-pairs gate: "Esses pares tem de
@@ -3494,12 +3733,14 @@ accepts today, and that is a policy call.
 > checkout has no earlier verdict and runs everything, so the hosted
 > full tier and a release always do.  This is rule 4's "evidence is
 > reused while it still describes what enters main", made mechanical.
-> (2) THE FAST SET GAINS WHAT IT MISSED TODAY: the crash of the fifth
-> batch passed `--fast` (86 / 0) because no case of the set carries a
-> pure stream of a component with no vapour-pressure model; one utility
-> case on a thermal fluid and one solids case enter `tutorials/FASTSET`
-> with the fifth batch.  A subset is completed by what it fails to
-> catch.  (3) The self-test of the gates (383 s) runs its arms in a
+> (2) CORRECTION, the same night: THE FAST SET DID NOT MISS THE CRASH.
+> It holds `utility02_hitec_csp_heater`, one of the four cases that
+> crashed.  What happened is that the fast tier was never RUN on the
+> phase branch nor on the merged tree before the sweep (its builder ran
+> a scope of 48 cases; the architect went straight to the full sweep).
+> So no case is added, and the rule is the order: `--fast` runs FIRST on
+> every merged tree, and a sweep starts only when it passes; a builder
+> that touches a path every case goes through runs it too.  (3) The self-test of the gates (383 s) runs its arms in a
 > pool, as the pairs gate now does.  NOT DONE: cutting cases from the
 > full sweep; they are not where the time is.
 
@@ -3669,6 +3910,13 @@ accepts today, and that is a policy call.
 > stamp (generated, third-party, unclassified) BEFORE any file is
 > changed: a notice on a file that is someone else's would be the one
 > way this slice could harm the record it protects.
+> THE LICENCE MAP AGAINST THE AUTHORSHIP RECORD (review row FH-04),
+> CONFIRMED BY VITOR ("esta ok", after the two versions were read back to
+> him): AUTHORS and NOTICE are right (the Properties Guide and the Theory
+> Guide by three named authors, every other guide by him alone); the
+> licence map, which named two authors for all guides, no longer names
+> anyone and points to those two files.  No authorship changed; a stale
+> copy was removed.
 
 > **THE FOURTH INTEGRATION OF 2026-11-13 LANDED.**  Three branches.
 > (a) C388, THE EDUTOOL "EQUILIBRIUM STAGES OR RATE-BASED?" (the

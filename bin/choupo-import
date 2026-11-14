@@ -695,6 +695,30 @@ def closure_of(pp_path, caseDir, std, AQ):
         for sol in sorted(henry_solutes):
             want("parameters/Henry/" + sol + "-" + solvent + ".dat")
 
+    # ---- reference equations BY THE FACT (DEV.md 4c C378 pilot, ruling 1) ----
+    # The liquid-density kernel prices a component by a Helmholtz record in
+    # parameters/Helmholtz/ whose `fluid` is its name or an alias, because
+    # the record EXISTS (src/thermo/liquidProperty/DensityResolver.cpp).  A
+    # sealed case reads only its own copy, so the seal copies every record
+    # that names one of the case's components: the fact travels with the
+    # case.  (A sealed run cannot report this miss at the resolver seam: with
+    # the catalogue hidden it cannot see which record would have named the
+    # fluid, so the closure says it here.)
+    hdir = std / "parameters" / "Helmholtz"
+    if hdir.is_dir():
+        fluid_names = set()
+        for c in comps:
+            fluid_names.add(c)
+            ctext = read(std / "components" / (c + ".dat")) or ""
+            ma = re.search(r'^\s*aliases\s*\(([^)]*)\)', ctext, re.M)
+            if ma:
+                fluid_names.update(ma.group(1).split())
+        for f in sorted(hdir.glob("*.dat")):
+            mf = re.search(r'^\s*fluid\s+([A-Za-z0-9_+\-]+)\s*;',
+                           f.read_text(errors="replace"), re.M)
+            if mf and mf.group(1) in fluid_names:
+                want("parameters/Helmholtz/" + f.name)
+
     # ---- molecular NRTL pairs under an ELECTROLYTE world ---------------------
     # The eNRTL mixed-solvent (and any electrolyte world with 2+ molecular
     # solvents) resolves the molecular solvent-solvent NRTL pair IMPLICITLY

@@ -66,7 +66,9 @@ Description
 #include "core/Advisory.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
+#include "streams/ProcessStream.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/pureFluid/PureFluidModel.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
 
@@ -508,6 +510,160 @@ inline std::string undeterminedStreamsMessage(
         + " authored stream(s) sit on a pure component's saturation "
           "curve with no phase declared:";
     for (const auto& u : undetermined) msg += "\n  * " + u;
+    return msg;
+}
+
+//  ---- A DECLARED PHASE THAT ITS OWN (T, P) CONTRADICT (review TD-04) -----
+//
+//  The mirror of the rule above.  A PURE stream priced by a pure-fluid
+//  formulation (`pureFluids { <c> { method ...; } }`) that DECLARES one
+//  phase -- `phase liquid;` / `vaporFraction 0;`, or `phase gas;` /
+//  `vaporFraction 1;` -- while its (T, P) lie on the OTHER side of its
+//  saturation line by more than the band (`pureFluidSaturationBand`, 1e-6 of
+//  p_sat(T)) is over-specified AND inconsistent: the stream functions price
+//  it at (T, P), on the other branch, while a unit that holds the declared
+//  phase priced the saturated state (TD-04: +40.65 kW left on the boundary of
+//  a pump at 373.15 K, at exit 0).  The decision is `pureFluidPhaseState`'s
+//  `farAcross`, the same one the phase-taking property calls read -- ONE
+//  rule, not a second band.  Inside the band the pin decides (the saturated
+//  state, C378); a T with no saturation line (at or above Tc, below the
+//  triple point) is not judged.  Only the pure-fluid route has the band; any
+//  other package is left as it was (its declared phase is honoured as before).
+inline std::optional<std::string>
+declaredPhaseBeyondBandRefusal(const std::string&   name,
+                               const std::string&   file,
+                               const ProcessStream& s,
+                               const ThermoPackage& thermo)
+{
+    if (!s.phasePinned || !(s.vf <= 0.0 || s.vf >= 1.0)) return std::nullopt;
+    const auto i = soleComponent(s.z);
+    if (!i || *i >= thermo.n()) return std::nullopt;
+    const PureFluidModel* m = thermo.pureFluidModel(*i);
+    if (!m) return std::nullopt;
+    const bool liquid = s.vf <= 0.0;
+    const PureFluidPhaseState st = pureFluidPhaseState(*m, s.T, s.P, liquid);
+    if (!st.farAcross) return std::nullopt;
+    const scalar ps = m->p_sat(s.T);
+    char buf[1400];
+    std::snprintf(buf, sizeof buf,
+        "stream '%s' (%s) is PURE %s on the pure-fluid formulation %s and "
+        "DECLARES the %s phase (`%s` / `vaporFraction %d;`), but its T and P "
+        "lie on the OTHER side of the saturation line, beyond the band: "
+        "T = %.10g K, P = %.10g Pa, p_sat(T) = %.10g Pa, P/p_sat - 1 = "
+        "%+.3e (the band is %.0e).  The stream is over-specified and "
+        "inconsistent: the stream functions price it at (T, P), a %s, while a "
+        "unit holding the declared phase would price the saturated %s.  Say "
+        "one state: delete the phase word and let T and P decide (the stream "
+        "is then a %s at T = %.10g K, P = %.10g Pa); or, if the saturated %s "
+        "is meant, write `P %.10g Pa;` (p_sat(T), to the digits printed).",
+        name.c_str(), file.c_str(), thermo.comp(*i).name().c_str(),
+        m->type().c_str(), liquid ? "LIQUID" : "VAPOUR",
+        liquid ? "phase liquid;" : "phase gas;", liquid ? 0 : 1,
+        s.T, s.P, ps, s.P / ps - 1.0, pureFluidSaturationBand,
+        liquid ? "vapour" : "compressed liquid", liquid ? "liquid" : "vapour",
+        liquid ? "VAPOUR" : "LIQUID", s.T, s.P, liquid ? "liquid" : "vapour",
+        ps);
+    return std::string(buf);
+}
+
+//  ---- A COMPUTED INLET ITS CONSUMER'S OWN WORLD PLACES ACROSS THE LINE ----
+//
+//  Review TD-17 (the coordinator's ruling): a unit that holds ONE phase of
+//  its inlet -- the pump a liquid, the compressor and the turbine a vapour,
+//  their declared acceptance -- REFUSES a computed pure inlet that its OWN
+//  world places beyond the band on the other side of the saturation line,
+//  because priced at (T, P), as every stream function of that world prices
+//  it, it is the other phase.  It arises where a saturated state crosses a
+//  model boundary: the producer put it on ITS line, the consumer's line is
+//  elsewhere.  So the message names both worlds and the distance.  The
+//  producer's world is stamped on the stream by the flowsheet
+//  (`ProcessStream::producedInWorld`, from this function), the consumer's
+//  is the package the unit is handed.
+
+//  One line naming the world a pure stream is computed in at T: its
+//  pure-fluid formulation and p_sat(T) there, or that it has none.
+//
+//  THE STAMP ASKS NOTHING THAT ANNOUNCES, AND NOTHING THAT MAY BE ABSENT.
+//  It runs on EVERY outlet of EVERY unit, and its sentence is read only by
+//  the refusal below, which fires only when the CONSUMER's world has a
+//  pure-fluid formulation (and prints p_sat from THAT model).  So in a world
+//  with no pure-fluid formulation the stamp says exactly that and evaluates
+//  no saturation curve: the record's vapour-pressure correlation announces
+//  an excursion outside its Trange (`VaporPressureModel::noteRange`), and
+//  calling it here raised advisories about a p_sat the run never used
+//  (measured: evaporator01_brine, water at 374.546 K); and a component with
+//  no vapour-pressure model at all (a heat-transfer fluid, a salt) has
+//  nothing to evaluate -- asking crashed the run (lithiumBrinePlant,
+//  utility01-03).  A pure-fluid formulation's own p_sat announces nothing
+//  and is asked only inside its saturation window.
+inline std::string pureWorldName(const ThermoPackage& thermo,
+                                 const sVector& z, scalar T)
+{
+    const auto i = soleComponent(z);
+    if (!i || *i >= thermo.n()) return std::string();
+    char buf[300];
+    if (const PureFluidModel* m = thermo.pureFluidModel(*i))
+    {
+        const auto w = m->saturationWindow();
+        if (T >= w.first && T < w.second)
+            std::snprintf(buf, sizeof buf, "the pure-fluid formulation %s "
+                "(p_sat(T) = %.10g Pa there)", m->densityFormulation().c_str(),
+                m->p_sat(T));
+        else
+            std::snprintf(buf, sizeof buf, "the pure-fluid formulation %s "
+                "(no saturation line at T)", m->densityFormulation().c_str());
+        return buf;
+    }
+    std::snprintf(buf, sizeof buf, "no pure-fluid formulation for %s",
+                  thermo.comp(*i).name().c_str());
+    return buf;
+}
+
+inline std::optional<std::string>
+heldPhaseBeyondBandRefusal(const std::string&   unitLocus,
+                           const ProcessStream& s,
+                           bool                 heldLiquid,
+                           const ThermoPackage& thermo)
+{
+    const auto i = soleComponent(s.z);
+    if (!i || *i >= thermo.n() || !(s.F > 0.0)) return std::nullopt;
+    const PureFluidModel* m = thermo.pureFluidModel(*i);
+    if (!m) return std::nullopt;
+    if (!pureFluidPhaseState(*m, s.T, s.P, heldLiquid).farAcross)
+        return std::nullopt;
+    const scalar ps = m->p_sat(s.T);
+    const std::string from = s.producedBy.empty()
+        ? std::string("no unit has produced it in this pass (a tear seed read "
+                      "from its 0/ file)")
+        : "it was produced by unit '" + s.producedBy + "', computing in "
+          + (s.producedInWorld.empty() ? std::string("a world not recorded")
+                                       : s.producedInWorld);
+    char buf[1000];
+    std::snprintf(buf, sizeof buf,
+        "%s cannot take inlet '%s': it holds a %s, but in its own world (the "
+        "pure-fluid formulation %s) T = %.10g K and P = %.10g Pa lie on the "
+        "%s side of the saturation line -- p_sat(T) = %.10g Pa there, "
+        "P/p_sat - 1 = %+.3e against the %.0e band -- so priced at (T, P), "
+        "as every stream function of that world prices it, it is a %s.  ",
+        unitLocus.c_str(), s.name.c_str(), heldLiquid ? "LIQUID" : "VAPOUR",
+        m->densityFormulation().c_str(), s.T, s.P,
+        heldLiquid ? "vapour" : "liquid", ps, s.P / ps - 1.0,
+        pureFluidSaturationBand, heldLiquid ? "VAPOUR" : "LIQUID");
+    return std::string(buf) + "As carried, " + from + ".  Put producer and "
+        "consumer in one thermophysical world, or do not ask a saturated state "
+        "to cross a model boundary.";
+}
+
+inline std::string contradictedStreamsMessage(
+    const std::vector<std::string>& contradicted,
+    const std::string&              who = "")
+{
+    std::string msg = (who.empty() ? std::string() : who + ": ")
+        + "DECLARED PHASE CONTRADICTED BY T AND P -- "
+        + std::to_string(contradicted.size())
+        + " authored pure stream(s) declare a phase their own (T, P) place on "
+          "the other side of the saturation line:";
+    for (const auto& c : contradicted) msg += "\n  * " + c;
     return msg;
 }
 

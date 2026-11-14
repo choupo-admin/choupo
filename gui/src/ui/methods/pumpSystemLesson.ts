@@ -123,20 +123,24 @@ export const PUMP_STEPS: readonly LessonStep[] = [
 \text{with}\quad v &= \frac{Q}{A}
 \end{aligned}`,
     where: [
-      { sym: "\\rho", means: "Liquid density — and both curves on this diagram "
-        + "now use the same one.  The pump builds ρ from the component "
-        + "record's constant liquid volume; the pipe asks the thermo "
-        + "package, which since 2026-08-29 anchors the Rackett correlation "
-        + "on that same declared value, V(T) = Vliq·Rackett(T)/Rackett(298 "
-        + "K).  On this case they agree to 2e-5 (996.95 kg/m³ on both "
-        + "sides), so pressures and heads may be compared across the "
-        + "crossing.  Until then the pipe ran bare Rackett, about 12 % low "
+      { sym: "\\rho", means: "Liquid density — and the two curves on this "
+        + "diagram use two numbers that agree to 2e-4.  The pump asks the "
+        + "property kernel's liquid-density methods (C378 pilot): pure water "
+        + "by its IAPWS-95 reference equation, with pressure, 997.14 kg/m³ at "
+        + "its 3 bar suction; the pipe still asks the package's older route, "
+        + "the component record's declared volume carried in temperature by "
+        + "Rackett, V(T) = Vliq·Rackett(T)/Rackett(298 K), 996.93–996.95 "
+        + "kg/m³ — the run's property table prints both, and the pipe "
+        + "moves to the methods in a later slice.  Pressures and heads may be "
+        + "compared across the crossing to that 2e-4.  Earlier the pipe ran "
+        + "bare Rackett, about 12 % low "
         + "for water, and the two sides read 997 against 877 — worth "
         + "knowing, because that is the shape of the mistake: a head is a "
         + "pressure divided by a density, so two densities silently make "
-        + "two different metres.  What still differs is the temperature "
-        + "dependence — the pump's molar volume is constant in T and the "
-        + "pipe's is not, so they drift apart away from 25 °C.",
+        + "two different metres.  What still differs is the shape: the "
+        + "pump's water carries pressure and the measured thermal expansion, "
+        + "the pipe's carries Rackett's and no pressure, so they drift apart "
+        + "away from 25 °C and 1 bar.",
         unit: "kg/m³" },
       { sym: "g", means: "Standard gravitational acceleration.",
         unit: "m/s²" },

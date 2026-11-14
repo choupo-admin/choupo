@@ -47,13 +47,16 @@ const PUMP: GlobalEnergyBoundary = {
   H_products_kW: -2863.31591733, residual_kW: 1.3,
 };
 
-/** rankine02_water: the case the single net number hides -- +8.84 kW of heat
- *  and -8.84 kW of shaft work netting 2e-10 kW. */
+/** rankine02_water: the case the single net number hides -- +8.82 kW of heat
+ *  and -8.82 kW of shaft work netting 2e-10 kW.  Transcribed from its golden
+ *  (re-recorded by the C378 liquid-density pilot: the feed pump's density is
+ *  the reference equation's, so W_shaft moved from -8.8387 to -8.8201 kW;
+ *  Q_heat = Q_boundary - W_shaft). */
 const RANKINE: GlobalEnergyBoundary = {
   ...base,
-  H_feeds_kW: 0, Q_boundary_kW: 2.09752215596e-10,
-  Q_heat_kW: 8.83869341081, W_shaft_kW: -8.8386934106,
-  H_products_kW: 0, residual_kW: 2.09752215596e-10,
+  H_feeds_kW: 0, Q_boundary_kW: 2.06448191875e-10,
+  Q_heat_kW: 8.8201145380964, W_shaft_kW: -8.82011453789,
+  H_products_kW: 0, residual_kW: 2.06448191875e-10,
   n_feeds: 0, n_products: 0, noBoundary: true,
 };
 
@@ -91,7 +94,7 @@ describe("the two columns ARE the two sides of dH = Q - W", () => {
     const bnd = f.columns[1];
     expect(bnd.terms.map((t) => t.kw)).toEqual(
       [RANKINE.Q_heat_kW, RANKINE.W_shaft_kW]);
-    //  the whole point: the net is 2e-10 kW while the terms are ~8.84 kW
+    //  the whole point: the net is 2e-10 kW while the terms are ~8.82 kW
     expect(Math.abs(bnd.level)).toBeLessThan(1e-6);
     for (const t of bnd.terms) expect(Math.abs(t.kw)).toBeGreaterThan(8);
   });

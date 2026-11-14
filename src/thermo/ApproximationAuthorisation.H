@@ -81,7 +81,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
-
+#include <algorithm>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -107,6 +107,9 @@ public:
         reason_.clear();
         outsideActivity_.clear();
         reasonOutside_.clear();
+        massWithoutVolume_.clear();
+        maxMassFractionWithoutVolume_ = 0.0;
+        reasonMassWithoutVolume_.clear();
     }
 
     //  THE ONE PARSE.  Called by the builder with the top-level thermophysical
@@ -121,6 +124,9 @@ public:
         reasonOutside_.clear();
         idealMolecular_.clear();
         reasonMolecular_.clear();
+        massWithoutVolume_.clear();
+        maxMassFractionWithoutVolume_ = 0.0;
+        reasonMassWithoutVolume_.clear();
         if (!topLevel || !topLevel->found("approximations")) return;
         auto ap = topLevel->subDict("approximations");
         //  HARDENED (C378 slice 0): a word this engine does not know is
@@ -128,7 +134,8 @@ public:
         //  execute is an authorisation the case believes it took; and each
         //  word carries a non-empty `reason`, the statement a reader audits.
         static const char* const words[] =
-            { "idealBinaryPair", "componentOutsideActivityModel", "idealMolecularVLE" };
+            { "idealBinaryPair", "componentOutsideActivityModel", "idealMolecularVLE",
+              "massWithoutVolume" };
         for (const auto& k : ap->keys())
         {
             bool known = false;
@@ -136,7 +143,8 @@ public:
             if (!known)
                 throw std::runtime_error("approximations: unknown word '" + k
                     + "'.  The words this engine executes are idealBinaryPair,"
-                      " componentOutsideActivityModel and idealMolecularVLE;"
+                      " componentOutsideActivityModel, idealMolecularVLE and"
+                      " massWithoutVolume;"
                       " a word it does not know would authorise nothing.");
             if (!std::holds_alternative<DictPtr>(ap->entryValue(k)))
                 throw std::runtime_error("approximations." + k + " must be a"
@@ -154,6 +162,49 @@ public:
             for (const auto& w : ib->lookupWordList("pairs"))
                 idealPairs_.insert(w);
             reason_ = ib->lookupWordOrDefault("reason", "");
+        }
+        //  MASS WITHOUT VOLUME (C378 pilot; docs/design/density-pilot-plan.md
+        //  section 6): the listed components keep their mass and add no
+        //  volume to a liquid density priced by additive volumes, up to a
+        //  bound on the SUM of their mass fractions the case declares.  A
+        //  hypothesis, so both keys are mandatory: the components, and the
+        //  bound beyond which the case itself said it does not stand.
+        if (ap->found("massWithoutVolume"))
+        {
+            auto mw = ap->subDict("massWithoutVolume");
+            //  An unknown key, or a listed name that is not one of the case's
+            //  components, would be a hypothesis read by nothing (C378 pilot
+            //  review, PA-05): refused, naming what the block reads.
+            for (const auto& k : mw->keys())
+                if (k != "components" && k != "maxMassFraction" && k != "reason")
+                    throw std::runtime_error("approximations.massWithoutVolume: unknown"
+                        " word '" + k + "'.  The block reads components, maxMassFraction"
+                        " and reason.");
+            if (topLevel->found("components") && mw->found("components"))
+            {
+                const auto caseComps = topLevel->lookupWordList("components");
+                for (const auto& w : mw->lookupWordList("components"))
+                    if (std::find(caseComps.begin(), caseComps.end(), w) == caseComps.end())
+                        throw std::runtime_error("approximations.massWithoutVolume:"
+                            " component '" + w + "' is not one of the case's"
+                            " components, so the hypothesis would cover nothing.  Remedy:"
+                            " list only components of `components ( ... );`.");
+            }
+            if (!mw->found("components") || !mw->found("maxMassFraction"))
+                throw std::runtime_error("approximations.massWithoutVolume needs"
+                    " `components ( ... );` and `maxMassFraction <w>;` -- the"
+                    " components that keep their mass and add no volume, and the"
+                    " largest sum of their mass fractions the case lets it stand at.");
+            for (const auto& w : mw->lookupWordList("components"))
+                massWithoutVolume_.insert(w);
+            if (massWithoutVolume_.empty())
+                throw std::runtime_error("approximations.massWithoutVolume:"
+                    " `components` is empty.");
+            maxMassFractionWithoutVolume_ = mw->lookupScalar("maxMassFraction");
+            if (!(maxMassFractionWithoutVolume_ > 0.0 && maxMassFractionWithoutVolume_ < 1.0))
+                throw std::runtime_error("approximations.massWithoutVolume:"
+                    " `maxMassFraction` must lie in (0, 1).");
+            reasonMassWithoutVolume_ = mw->lookupWordOrDefault("reason", "");
         }
         if (ap->found("idealMolecularVLE"))
         {
@@ -207,6 +258,13 @@ public:
     const std::set<std::string>& idealMolecularVLE() const { return idealMolecular_; }
     const std::string& reasonIdealMolecularVLE() const { return reasonMolecular_; }
 
+    //  The liquid density's hypothesis (C378 pilot): components that keep
+    //  their mass and add no volume, the bound on the sum of their mass
+    //  fractions, and the case's reason.
+    const std::set<std::string>& massWithoutVolume() const { return massWithoutVolume_; }
+    double maxMassFractionWithoutVolume() const { return maxMassFractionWithoutVolume_; }
+    const std::string& reasonMassWithoutVolume() const { return reasonMassWithoutVolume_; }
+
 private:
     ApproximationAuthorisation() = default;
     bool read_ = false;
@@ -216,6 +274,9 @@ private:
     std::set<std::string> idealMolecular_;
     std::string reasonMolecular_;
     std::string reasonOutside_;
+    std::set<std::string> massWithoutVolume_;
+    double maxMassFractionWithoutVolume_ = 0.0;
+    std::string reasonMassWithoutVolume_;
 };
 
 

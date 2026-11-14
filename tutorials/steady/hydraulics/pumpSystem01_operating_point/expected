@@ -5,8 +5,8 @@ stream  delivered              F                1                1e-4
 stream  feed                   F                1                1e-4
 stream  mid                    F                1                1e-4
 kpi     P1                     F                1                1e-4
-kpi     P1                     P_in             371942.446043    1e-4
-kpi     P1                     P_out            297097.627131    1e-4
+kpi     P1                     P_in             371955.504798    1e-4
+kpi     P1                     P_out            297110.685886    1e-4
 kpi     P1                     dP_elevation     19553.4351728    1e-4
 kpi     P1                     dP_fittings      31136.3992358    1e-4
 kpi     P1                     dP_friction      24154.9845033    1e-4
@@ -20,17 +20,17 @@ kpi     P1                     velocity         2.30076356093    1e-4
 kpi     P1                     viscosity        0.000889680851703 1e-4
 kpi     pump01                 F                1                1e-4
 kpi     pump01                 P_in             300000           1e-4
-kpi     pump01                 P_out            371942.446043    1e-4
+kpi     pump01                 P_out            371955.504798    1e-4
 kpi     pump01                 T_in             298.15           1e-4
 kpi     pump01                 T_out            298.159271523    1e-4
 kpi     pump01                 W_hydraulic      1300             1e-4
 kpi     pump01                 W_shaft          2000             1e-4
 kpi     pump01                 W_shaft_kW       2                1e-4
-kpi     pump01                 dP               71942.4460432    1e-4
+kpi     pump01                 dP               71955.5047982    1e-4
 kpi     pump01                 dT               0.00927152317882 1e-4
 kpi     pump01                 eta              0.65             1e-4
 kpi     pump01                 head_m           7.35848502288    1e-4
-kpi     pump01                 v_molar_liq      1.807e-05        1e-4
+kpi     pump01                 v_molar_liq      1.80667205886e-05 1e-4
 utility pump01                 power.electricity.duty_kW 2.10526315789    1e-4
 utility pump01                 power.electricity.T -1               1e-4
 utility pump01                 power.electricity.kg_s 0                1e-4
@@ -40,4 +40,4 @@ stream  feed                   T                298.15           1e-4
 stream  mid                    T                298.159271523    1e-4
 source  P1                     liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
 source  P1                     liquidViscosity  Vogel/GrunbergNissan exact
-source  pump01                 liquidDensity    bypass.recordVliq25C exact
+source  pump01                 liquidDensity    referenceEquation.IAPWS95 exact

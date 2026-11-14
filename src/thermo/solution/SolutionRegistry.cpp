@@ -64,6 +64,17 @@ void SolutionRegistry::loadFrom(const std::string& dataRoot)
         if (!e.is_regular_file()) continue;
         if (e.path().extension() != ".dat") continue;
         auto d = Dictionary::fromFile(e.path().string());
+        //  A record of the solution tier may carry the set's DENSITY law and
+        //  no heat of solution (C378 pilot: NaOH-water); the liquid-density
+        //  kernel reads it (liquidProperty/SolutionLaw), this enthalpy
+        //  registry does not -- registering it would read a heat of
+        //  solution that does not exist.  A file with neither is refused.
+        if (!d->found("dHsoln"))
+        {
+            if (d->found("liquidDensity")) continue;
+            throw std::runtime_error("SolutionRegistry: file '" + e.path().string()
+                + "' carries neither `dHsoln` nor a `liquidDensity` block");
+        }
         SolutionPair s;
         s.readFromDict(d);
         if (s.solute().empty() || s.solvent().empty())

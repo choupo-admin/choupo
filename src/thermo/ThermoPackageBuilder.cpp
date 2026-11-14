@@ -18,7 +18,7 @@
 #include "thermo/ElementComposition.H"
 #include "thermo/SystemClassifier.H"
 #include "thermo/electrolyte/ReactiveVLE.H"
-
+#include "thermo/liquidProperty/Measured.H"   // the case's marked measurements (C378 pilot)
 #include <cmath>
 #include <filesystem>
 #include <iomanip>
@@ -2239,7 +2239,7 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     //  Activity models see only their own sub-dict and can never reach the
     //  top level; they consult ApproximationAuthorisation instead of
     //  re-parsing -- one parse, several callers, never a second copy.
-    ApproximationAuthorisation::instance().readFrom(v2);
+    ApproximationAuthorisation::instance().readFrom(v2);   liquidProperty::MeasurementDeclarations::instance().readFrom(v2);   // and the measurements (C378)
 
     if (!ThermoPackageBuilder::v2NativeFormulation(v2))
         throw std::runtime_error("ThermoPackageBuilder::buildV2: this system's"

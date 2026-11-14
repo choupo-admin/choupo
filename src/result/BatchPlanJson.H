@@ -44,13 +44,18 @@ Description
 #pragma once
 
 #include "core/BatchPlanRecords.H"
+#include "core/ResultRecords.H"
 
+#include <map>
 #include <ostream>
 
 namespace Choupo {
 
 //- Write `,\n  "batchPlan": { ... }` (a leading comma: the block follows the
 //  one before it).  Writes nothing when `p.present` is false.
-void emitBatchPlanJson(std::ostream& os, const BatchPlanRecord& p);
+//  `sizings` (the run's sized items) is read ONLY for the installed size of
+//  a batch stage's rated machine (`installedBatchMachine`, C389 (4)).
+void emitBatchPlanJson(std::ostream& os, const BatchPlanRecord& p,
+                       const std::map<std::string, EquipmentSizing>& sizings);
 
 } // namespace Choupo

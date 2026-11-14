@@ -139,6 +139,16 @@ struct ProcessStream
     //  heater's or a mixer's outlet means the vapour-liquid state its
     //  producer priced (`flashState::consumerSearchApplies`, the one rule).
     bool        fromThreePhaseSearch = false;
+    //  WHO PRODUCED IT, AND IN WHICH WORLD (review TD-17).  Stamped by the
+    //  flowsheet on every unit outlet: the unit's name, and a one-line name
+    //  of the thermophysical world it computed in for this stream (its
+    //  pure-fluid formulation, or that it had none).  Read only by the
+    //  refusal of an inlet its consumer's own world places across the
+    //  saturation line (`flashState::heldPhaseBeyondBandRefusal`), the one
+    //  message that must name both worlds.  Empty on an authored stream and
+    //  on a tear seed no unit has produced yet.
+    std::string producedBy;
+    std::string producedInWorld;
     // Specific molar enthalpy at the ELEMENTS reference (formation
     // datum, 298.15 K).  Populated by Flowsheet::solve once the case
     // has converged, via thermo.H_stream_formation(T, P, vf, z) when

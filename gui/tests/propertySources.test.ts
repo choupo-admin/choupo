@@ -83,10 +83,14 @@ describe("propertySources: a real pump run (pump01_water)", () => {
     const r = rows[0]!;
     expect(r.consumerType).toBe("pump");
     expect(r.property).toBe("liquidDensity");
-    expect(r.sourceId).toBe("bypass.recordVliq25C");
-    expect(r.sourceClass).toBe("bypass");
-    expect(r.label).toContain("computed by the unit itself, not by the property kernel");
-    expect(r.valueMin).toBeCloseTo(996.956281129, 6);
+    //  Since the density pilot (C378) the pump takes its liquid density from
+    //  the property kernel: for water, the reference equation the record names,
+    //  with pressure.  Before it, this row read `bypass.recordVliq25C` (the
+    //  record's 25 C volume, computed by the unit itself) and 996.956 kg/m3.
+    expect(r.sourceId).toBe("referenceEquation.IAPWS95");
+    expect(r.sourceClass).toBe("kernel");
+    expect(r.label).toContain("property kernel: the Helmholtz reference equation IAPWS95 of water");
+    expect(r.valueMin).toBeCloseTo(997.047039018, 6);
     expect(r.TMin).toBeCloseTo(298.15, 6);
     expect(r.PMin).toBe(100000);
     expect(r.extra).toEqual({});     // nothing the page does not know today

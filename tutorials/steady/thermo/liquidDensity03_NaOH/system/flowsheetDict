@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  liquidDensity03_NaOH -- D3 of the liquid-density pilot (C378).
+  NaOH 20 wt % in water, 303.15 K, 1 bar.
+  The kernel prices {NaOH, water} by the solution record
+  parameters/solution/NaOH-water.dat: the law of Olsson, Jernqvist and Aly
+  (1997), Eqs. (6)-(9), form polynomialTSqrtX.  At 303.15 K and
+  w[NaOH] 0.20 it gives 1212.70 kg/m3 (Galindo-Luna et al. 2019 measured
+  1213.8 +- 2.0).  The law carries no pressure term.
+  Before the pilot the CSTR refused (NaOH has no `Vliq`) and the pump left
+  NaOH's volume out: 1246.2 kg/m3, +2.7 %.  Here the caustic goes to the CSTR
+  alone (feed -> R1, V_R 1 m3): a pump's discharge temperature needs the
+  liquid's heat capacity, which NaOH's record does not carry -- outside this
+  pilot.  tau = V_R rho / m_dot = 1212.70 s.
+
+  The flowsheet of every liquid-density demonstration: feed (1 kg/s) ->
+  pump P1 (dP 2 bar, eta 0.7) -> CSTR R1 (V_R 1 m3, the reaction's reactant
+  absent, see constant/reactions) -> product.  By hand, with rho the
+  property kernel's liquid density printed in the run's table:
+      Q   = m_dot / rho                 (the pump's volumetric flow)
+      W   = Q dP / eta                  (its shaft power)
+      h   = dP / (rho g)                (its head)
+      tau = V_R rho / m_dot             (the CSTR's residence time, at its
+                                         feed, the pump's outlet state)
+  The pump prices its INLET state, the CSTR its FEED (the pump's outlet).
+  Theory Guide: sec:liquid-density-methods.  Gate: check_density_pilot.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        R1;
+        type        cstr;
+        in          feed;
+        outputs     ( product );
+        operation   { V_R 1; }
+        reactions   ( absentSucrose );
+    }
+);

@@ -93,6 +93,11 @@ tutorials/**/postProcessing/
 # instant-solver wrapper -- keep it.
 !data/standards/parameters/solution/
 !data/standards/parameters/solution/**
+# ...and a SEALED case's own copy of that tier, constant/parameters/solution/,
+# is the case's data, not a run output (C378 pilot, review PA-01: the two
+# caustic demonstrations named a mirror this rule kept out of git).
+!**/constant/parameters/solution/
+!**/constant/parameters/solution/**
 # ...and neither is src/thermo/solution/ -- that is the SolutionPair/
 # SolutionRegistry SOURCE.  Its four files are tracked (they predate the rule),
 # so `git status` shows them and nothing looked wrong -- but a NEW file added

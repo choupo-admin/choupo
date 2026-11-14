@@ -186,16 +186,18 @@ economics
     //  reports/economics/sensitivity.csv.  A sensitivity, NOT an uncertainty
     //  analysis: no probability is attached to any end.
     //
-    //  THE ENDS OF THE THREE PRICES ARE CITED: the lowest and the highest
-    //  figure the sources read span (the provenance `method` of each price in
-    //  constant/economics carries the document, page and arithmetic), given as
-    //  `absolute` values of EUR/kg.  Ammonia 0.439 (USGS, US Gulf Coast FOB
-    //  2025) to 0.726 (Eurostat, EU import unit value, January-September 2026,
-    //  provisional); hydrogen 4.95 (the average price ammonia producers said
-    //  they would pay, European Hydrogen Bank auction 2, ACER 2025 p. 26) to
-    //  10.0 (the top of ACER's 7-10 EUR/kg range for the cost of renewable
-    //  hydrogen); nitrogen 0.01594 to 0.01754 (the OIES paper's Table 2,
-    //  'Present' values, 17.25 and 18.98 USD/t at 1.08238 USD per EUR).  The
+    //  THE ENDS OF THE THREE PRICES ARE CITED, each on the basis of its base
+    //  price (the provenance `method` of each price in constant/economics
+    //  carries the document, page and arithmetic), given as `absolute` values
+    //  of EUR/kg.  Ammonia 0.380 to 0.692: the lowest and highest MONTHLY EU
+    //  import unit value of 2025 in the same Eurostat dataset as the 0.530
+    //  base (June and November 2025); hydrogen 7.0 to 10.0: ACER's own 7-10
+    //  EUR/kg range of the cost of renewable hydrogen by country of origin;
+    //  nitrogen 0.01594 to 0.01754 (the OIES paper's Table 2, 'Present'
+    //  values, 17.25 and 18.98 USD/t at 1.08238 USD per EUR).  Figures of
+    //  another kind (a US FOB estimate, a nine-month value of 2026, an
+    //  auction's average offtake price) are context in the provenance, not
+    //  ends.  The
     //  FCI's ends are this block's own declared `accuracyBand` (-30 / +50 %),
     //  read from it rather than typed again, so the capital band finally
     //  reaches the NPV.  The three utility bills stay +/- 20 %, a customary
@@ -209,8 +211,8 @@ economics
     sensitivity
     {
         FCI                       { relative accuracyBand; }
-        price.ProductNH3          { absolute ( 0.439 0.726 ); }
-        price.H2Feed              { absolute ( 4.95 10.0 ); }
+        price.ProductNH3          { absolute ( 0.380 0.692 ); }
+        price.H2Feed              { absolute ( 7.0 10.0 ); }
         price.N2Feed              { absolute ( 0.01594 0.01754 ); }
         utility.electricity       { relative ( -0.20 0.20 ); }
         utility.hitecSalt         { relative ( -0.20 0.20 ); }

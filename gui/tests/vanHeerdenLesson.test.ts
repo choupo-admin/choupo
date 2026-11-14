@@ -142,6 +142,15 @@ describe("the ignition / extinction lesson", () => {
     expect(kpi("steadyStates")).toBe(3);
     const note = prose(step(5).note!);
     expect(note).toContain(`${kpi("T_out").toFixed(1)} K`);   // the reported, ignited root
+    //  ALL THREE crossings (C378 pilot review, PC-04: only the reported one
+    //  was held, and the other two went stale when the case was re-recorded).
+    //  The golden pins the reported root; the case header's table lists the
+    //  three the engine prints, and must agree with the golden on the third.
+    const roots = [...read("system/flowsheetDict").matchAll(
+      /^\s+(\d+\.\d+) K\s+(extinguished|middle|ignited)/gm)].map((m) => Number(m[1]));
+    expect(roots).toHaveLength(3);
+    expect(roots[2]!.toFixed(2)).toBe(kpi("T_out").toFixed(2));
+    for (const r of roots) expect(note).toContain(`${r.toFixed(1)} K`);
     expect(note).toContain("tutorials/steady/reactors/cstr08_furusawa_bistable");
     //  B = Ea dT_ad / (R T_in^2) and its bound 4 gamma / (gamma - 4), from
     //  the Ea in constant/reactions, the T in 0/feed and the 57.8 K rise the

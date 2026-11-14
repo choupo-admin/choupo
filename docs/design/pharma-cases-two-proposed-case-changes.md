@@ -1,6 +1,11 @@
 # Two proposed changes to the pharmaceutical plant cases — proposal, nothing applied
 
-**Status: PROPOSAL ONLY.  Nothing in the tree is changed by this document.**
+**Status: section 1 RULED AND APPLIED (2026-11-13, DEV.md 4c C389 (4)):
+candidate B was chosen and applied to `donepezil02_two_strengths`, and the
+engine now announces a declared product clean shorter than its train's
+campaign changeover (`productCleanShort`, `check_batch_plan` arm (o)); the
+62 rows below are the rows that moved, value for value.  Section 2 is still
+a proposal.  This note stays as the record of the measurement.**
 Each change below was applied to a scratch copy of its case OUTSIDE the
 tree, run, and compared with that case's own `expected` golden by
 `bin/runTests <scratch copy>` (the copy carries the golden unchanged, so the

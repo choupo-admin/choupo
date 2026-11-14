@@ -140,6 +140,21 @@ scalar saturationPressure(const Component& c, const PureFluidModel* pf,
         announceJoin(c, *pf, T_K, edge, scale, above);
         return scale * c.vp().Psat_Pa(T_K);
     }
+    //  NO MODEL AT ALL: refuse by name, never dereference an absent
+    //  correlation (`Component::vp()` does not check, and a null model is a
+    //  segmentation fault no caller's `catch` can see).
+    if (!c.hasVaporPressure())
+    {
+        std::ostringstream m;
+        m << "saturationPressure: '" << c.name() << "' was asked for its"
+             " saturation pressure at T = " << T_K << " K, but its record"
+             " declares no vapour-pressure correlation and the package"
+             " selects no pure-fluid method for it, so nothing can answer."
+             "  Curate a `vaporPressure {}` block on the record, select a"
+             " pure-fluid method for it in the thermophysical system, or do"
+             " not ask a saturation question of a component that has none.";
+        throw std::runtime_error(m.str());
+    }
     return c.vp().Psat_Pa(T_K);
 }
 

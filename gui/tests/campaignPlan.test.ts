@@ -429,10 +429,10 @@ describe("THE TOY IS HELD TO THE ENGINE: donepezil02's published plan (two produ
       near(a, b, 1e-9, "same hours either way");
     });
   }
-  it("the two published years are 880.2 h and 2079 h", () => {
+  it("the two published years are 928.2 h and 2127 h", () => {
     const hrs = pubTrains.map((r) => num(r, "requiredTime_h")).sort((x, y) => x - y);
-    near(hrs[0]!, 880.2, 5e-4, "granulation");
-    near(hrs[1]!, 2079, 5e-4, "tableting");
+    near(hrs[0]!, 928.2, 5e-4, "granulation");
+    near(hrs[1]!, 2127, 5e-4, "tableting");
   });
 });
 
@@ -540,8 +540,8 @@ describe("the page", () => {
     expect(html(createElement(HalfBanner, { half: "toy", children: "x" }))).toContain("The toy");
     expect(html(createElement(HalfBanner, { half: "engine", children: "x" }))).toContain("The engine");
   });
-  it("the page names the 880.2 h and 2079 h of the engine half", () => {
-    expect(tool).toContain("880.2 h and 2079 h");
+  it("the page names the 928.2 h and 2127 h of the engine half", () => {
+    expect(tool).toContain("928.2 h and 2127 h");
   });
 });
 

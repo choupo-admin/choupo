@@ -46,9 +46,9 @@ Description
     with the molar extent  ξ [mol/s] = r · V_R.  We close this system
     by computing  C_j = F_j,out / Q  where Q is the volumetric flow
     evaluated at the INLET composition and held constant through the
-    reactor.  Assuming additive liquid volumes,
+    reactor, from the liquid density of the property kernel AT THE FEED
 
-         V_mol(z_in) = Σ z_j,in · Vliq_j          [m³/mol]
+         V_mol(z_in) = M_in / rho_L(T_in, P_in, z_in)   [m³/mol]  (C378)
          Q           = F_total,in · V_mol(z_in)    [m³/s]
 
     This paragraph used to say Q was the OUTLET volumetric flow, from

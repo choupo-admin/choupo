@@ -606,11 +606,19 @@ int CostingPass::run(SimulationResult& result)
                 if (!q.quoteScaleStage.empty())
                 {
                     const auto g = [&](const char* k) { return q.factors.at(k); };
-                    std::cout << "      scaled with batch-plan stage '"
-                              << q.quoteScaleStage << "': "
-                              << std::defaultfloat << std::setprecision(6)
-                              << g("scaleUnits") << " unit(s) x ("
-                              << g("scaleSize") << " / " << g("scaleReference")
+                    if (!q.quoteScaleInstalledBy.empty())
+                        std::cout << "      scaled on the INSTALLED size of ratedMachine '"
+                                  << q.quoteScaleInstalledBy << "' (batch-plan stage '"
+                                  << q.quoteScaleStage << "' requires "
+                                  << std::defaultfloat << std::setprecision(6)
+                                  << g("scaleRequiredSize") << " m3 per unit): "
+                                  << g("scaleUnits") << " installed x (";
+                    else
+                        std::cout << "      scaled with batch-plan stage '"
+                                  << q.quoteScaleStage << "': "
+                                  << std::defaultfloat << std::setprecision(6)
+                                  << g("scaleUnits") << " unit(s) x (";
+                    std::cout << g("scaleSize") << " / " << g("scaleReference")
                               << ")^" << g("scaleExponent") << " = "
                               << g("quoteScale") << "  (exponent source: "
                               << q.quoteExponentSource << ")\n";

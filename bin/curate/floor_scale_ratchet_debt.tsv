@@ -1,0 +1,23 @@
+# file	count -- the debt of check_floor_scale_ratchet (CI-00d, 2026-11-13);
+# divisions by std::max(<quantity>, <literal <= 1e-12>).  It may only
+# shrink: lower a count in the commit that removes a site.
+src/applications/choupoBatch/main.cpp	1
+src/dynamicDriver/DynamicDriver.cpp	1
+src/propertyOps/FitParameters.cpp	2
+src/propertyOps/FitParametersMembrane.cpp	1
+src/thermo/VapourAssociation.H	1
+src/thermo/electrolyte/PitzerHMW.cpp	2
+src/thermo/electrolyte/ReactiveVLE.cpp	6
+src/unitOperations/batch/BatchAdsorber.cpp	1
+src/unitOperations/batch/FixedBedAdsorber.cpp	1
+src/unitOperations/crystallisation/Crystalliser.cpp	1
+src/unitOperations/distillation/DistillationColumn.cpp	2
+src/unitOperations/dynamic/DynamicCSTR.cpp	1
+src/unitOperations/flash/IsothermalFlash.cpp	1
+src/unitOperations/flash/LiquidLiquidSplit.H	2
+src/unitOperations/heatTransfer/SprayDryer.cpp	1
+src/unitOperations/heatTransfer/htc/Kern.H	1
+src/unitOperations/reactor/EquilibriumReactor.cpp	1
+src/unitOperations/reactor/PFR.cpp	2
+src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp	1
+src/unitOperations/separation/Extractor.cpp	3

@@ -132,7 +132,7 @@ Description
 #include "solver/ODE/AdaptiveTimeStep.H"
 #include "result/ComponentIdentity.H"
 #include "result/ResultEmitter.H"
-
+#include "thermo/liquidProperty/DensityMethod.H"   // the liquid-density methods (C378 pilot)
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
@@ -281,22 +281,37 @@ static void seedDynamicUnitsFrom0(const std::vector<DictPtr>& unitList,
     //  which returns before evaluating K anywhere but at the stream's own T
     //  unless the stream is within the band.  Every offender is collected
     //  before refusing.
+    //  Its mirror, a declared phase its own (T, P) contradict beyond the
+    //  pure-fluid band, rides the same walk (TD-04).
     {
-        std::vector<std::string> undetermined;
+        std::vector<std::string> undetermined, contradicted;
         for (const auto& w : consumed)
         {
             if (produced.count(w)) continue;
             const ProcessStream& s = state.at(w);
-            if (s.phasePinned || s.F <= 0.0) continue;
+            if (s.F <= 0.0) continue;
             std::string rel = w;
             std::replace(rel.begin(), rel.end(), '.', '/');
+            if (s.phasePinned)
+            {
+                if (auto why = flashState::declaredPhaseBeyondBandRefusal(
+                        w, "0/" + rel, s, thermo))
+                    contradicted.push_back(*why);
+                continue;
+            }
             if (auto why = flashState::undeterminedSaturationRefusal(
                     w, "0/" + rel, s.T, s.P, s.z, thermo))
                 undetermined.push_back(*why);
         }
+        std::string refusal;
         if (!undetermined.empty())
-            throw std::runtime_error(flashState::undeterminedStreamsMessage(
-                undetermined, binaryName));
+            refusal = flashState::undeterminedStreamsMessage(undetermined,
+                                                             binaryName);
+        if (!contradicted.empty())
+            refusal += (refusal.empty() ? "" : "\n")
+                + flashState::contradictedStreamsMessage(contradicted,
+                                                         binaryName);
+        if (!refusal.empty()) throw std::runtime_error(refusal);
     }
 
     //  An inlet{} / inlets{} entry from a stream state, printed at the
@@ -369,7 +384,7 @@ try
     ActivityModel     ::registerBuiltins();
     electrolyte::AqueousActivity::registerBuiltins();   // aqueous per-ion gamma (Davies)
     electrolyte::AqueousVolumetricModel::registerBuiltins();   // the volumetric-model slot (rung 0/1)
-    PureFluidModel    ::registerBuiltins();   // pure-component absolute props (IF97)
+    PureFluidModel    ::registerBuiltins();   liquidProperty::DensityMethod::registerBuiltins();   // pure-fluid models (IF97); the liquid-density methods (C378 pilot)
     EquationOfState   ::registerBuiltins();
     TransportModel    ::registerBuiltins();
     SurfaceTensionModel::registerBuiltins();

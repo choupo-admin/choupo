@@ -486,6 +486,22 @@ struct EquipmentSizing
     }
 };
 
+//  THE INSTALLED SIZE OF A BATCH MACHINE (2026-11-13, DEV.md 4c C389 (4),
+//  PH-06): ONE reader for every consumer.  A `ratedMachine` of kind
+//  `batchVolume` publishes the size bought (`V_installed`, the declared
+//  `nominalVolume`) beside the batch plan's requirement; a scaled quote and
+//  the plan's JSON stage record read it here, never from the rating block
+//  and never from a copy.  Null where the unit has no such machine.
+inline const EquipmentSizing* installedBatchMachine(
+    const std::map<std::string, EquipmentSizing>& sizings, const std::string& unit)
+{
+    const auto it = sizings.find(unit);
+    if (it == sizings.end()) return nullptr;
+    const EquipmentSizing& s = it->second;
+    return (s.equipmentType == "ratedMachine" && s.machineKind == "batchVolume"
+            && s.values.count("V_installed")) ? &s : nullptr;
+}
+
 // Energy wire.  A direct scalar coupling from one unit's
 // `energyOutputs` declaration to another's `energyInputs`: shaft power
 // from a turbine to a compressor, heat from a furnace to a heater, etc.
@@ -555,6 +571,9 @@ struct CostBreakdown
     //  quote that does not scale.
     std::string                                  quoteScaleStage;
     std::string                                  quoteExponentSource;
+    //  Non-empty when the size scaled on is the INSTALLED one of this unit's
+    //  `ratedMachine` (C389 (4), PH-06), not the stage's planned size.
+    std::string                                  quoteScaleInstalledBy;
 };
 
 // One row of the utility-allocation summary: a unit's heat duty (or a

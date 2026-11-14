@@ -324,14 +324,20 @@ describe("the claims are true of the run the page draws", () => {
 
   it("the pump column IS the constant-power hyperbola the step prints", () => {
     //  Δp = η·W_shaft/Q with Q = F·v_molar, so Δp·F is a constant — recomputed
-    //  from the case's OWN declared eta, W_shaft and liquid molar volume, not
-    //  from a number remembered off the plot.
-    const vliq = Number(
-      /^\s*Vliq\s+([0-9.eE+-]+)\s*;/m.exec(
+    //  from the case's OWN declared eta and W_shaft and the liquid molar volume
+    //  the pump itself used, not from a number remembered off the plot.  Since
+    //  the C378 pilot the pump's density is the property kernel's (pure water
+    //  by IAPWS-95, with pressure), no longer the record's Vliq: the pump
+    //  publishes it through its head, rho = dp / (head·g), and v = M/rho.
+    const mw = Number(
+      /^\s*MW\s+([0-9.eE+-]+)\s*;/m.exec(
         readFileSync(join(WITNESS, "constant/components/water.dat"), "utf-8"),
       )![1]);
-    expect(vliq).toBeGreaterThan(0);
-    // W_shaft is declared in kW and F in kmol/s; Q = F·1000·vliq  [m3/s].
+    const rho = col("pump01.dP")[0]! / (col("pump01.head_m")[0]! * 9.80665);
+    expect(rho).toBeGreaterThan(997.0);
+    expect(rho).toBeLessThan(997.3);
+    const vliq = (mw / 1000) / rho;
+    // W_shaft is declared in kW and F in kmol/s; Q = F·1000·v  [m3/s].
     const predicted = (DEFAULT_PUMP_KNOBS.eta * DEFAULT_PUMP_KNOBS.W_shaft * 1000)
       / (1000 * vliq);
     const sweep = sweepOf();

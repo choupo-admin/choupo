@@ -60,6 +60,13 @@ WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it:
     The honest home is the dissolved-gas Henry rung, named in
     ThermoPackage.cpp and NOT built.  What is checked is that the engine makes
     ONE approximation loudly instead of two silently disagreeing.
+  * WHICH BRANCH RUNS (C378 pilot review, PC-11): since 2026-11-13 the probe
+    is SUBCRITICAL (Tc 400 K at 330 K), so it exercises h_ig - Hvap(T) with a
+    finite Watson term (8052 J/mol here).  The supercritical branch above
+    (Hvap = 0) is no longer reached by a pump: the property kernel refuses a
+    pure-liquid volume above Tc, and the remedy, a declared
+    `massWithoutVolume`, takes the component out of the pump's heat
+    capacity.  That branch is therefore NOT exercised by this gate.
   * It does not measure the error that approximation carries in any case.
   * It does not check the value the FORMATION leg (speciesPhaseEnthalpy)
     returns for its own fallback -- only that it REFUSES a nonvolatile (A6).
@@ -210,7 +217,7 @@ def probe(tmp, record_text, comps, unit="pump"):
 BASE = """name        {name};
 formula     XH2;
 MW          20.0;
-Tc          300.0;
+Tc          400.0;   // above the probe's 330 K: the SUBCRITICAL branch (A2's note, C378 pilot)
 Pc          40.0;
 omega       0.1;
 Tb          200.0;
@@ -275,13 +282,22 @@ try:
         Tref, T = 298.15, 330.0
         a0, a1 = 30.0, 0.01
         h_ig = a0 * (T - Tref) + 0.5 * a1 * (T * T - Tref * Tref)
-        Tc, Tb, HvTb = 300.0, 200.0, 12000.0
+        #  THE PROBE IS NOW SUBCRITICAL (C378 liquid-density pilot,
+        #  2026-11-13).  It was built with Tc = 300 K < 330 K so the Watson
+        #  term vanished.  The pump now takes its liquid density from the
+        #  property kernel, which REFUSES a pure-liquid volume above Tc (a
+        #  dissolved gas has no Rackett liquid; its remedy is a declared
+        #  `massWithoutVolume`, which also takes it out of the pump's Cp
+        #  share) -- so a supercritical probe never reached this leg.  With
+        #  Tc = 400 K the record's own volume prices the density and the
+        #  Watson term is finite; the form recomputed below is the same.
+        Tc, Tb, HvTb = 400.0, 200.0, 12000.0
         hvap = 0.0 if T >= Tc else HvTb * ((Tc - T) / (Tc - Tb)) ** 0.38
         notes["expected"] = h_ig - hvap
-        if not math.isclose(hvap, 0.0):
-            fails.append("A2: the probe was built so that T > Tc and the"
-                         " Watson term is zero; it is not, so the check below"
-                         " is measuring something else")
+        if not hvap > 0.0:
+            fails.append("A2: the probe was built so that T < Tc and the"
+                         " Watson term is finite; it is not, so the check"
+                         " below is measuring something else")
 
     # ---- A3: a NONVOLATILE must still refuse -----------------------------
     d = os.path.join(tmp, "nonvol")
@@ -349,8 +365,8 @@ if fails:
 print("check_liquid_cp_fallback: OK -- a missing liquid heat capacity now has"
       " ONE answer instead of two.  The sensible leg takes the same"
       " Watson-slope fallback the formation-datum leg already used"
-      " (Cp_ig integrated minus dHvap; above Tc that is the ideal-gas"
-      " enthalpy, expected %.4f J/mol on the probe), announced %d time(s) --"
+      " (Cp_ig integrated minus dHvap; the probe is SUBCRITICAL, so the"
+      " Watson term is finite: expected %.4f J/mol), announced %d time(s) --"
       " once per component, not once per call.  BOTH refusals survive: a"
       " `role nonvolatile;` component still refuses NAMING the role (the"
       " ideal-gas reference is forbidden for it), and a component with"

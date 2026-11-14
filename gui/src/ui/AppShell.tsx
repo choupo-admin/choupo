@@ -144,6 +144,11 @@ const ExploreMccabeTab = lazy(() =>
 // The 3D plant layout popped out full-window (?layout=<key>, DEV.md 4c C78):
 // lazy like the other pop-out tabs, and PlantLayout3D inside it imports
 // three.js only when it first draws.
+// The fluidisation laboratory (?fluidlab=1&..., 2026-11-13): the
+// fluidised-beds page's pop-out, addressable from its URL like ?component=.
+const FluidisationLabTab = lazy(() =>
+  import("./methods/FluidisationLabTab.js").then((m) => ({ default: m.FluidisationLabTab })),
+);
 const LayoutPopOutTab = lazy(() =>
   import("./LayoutPopOutTab.js").then((m) => ({ default: m.LayoutPopOutTab })),
 );
@@ -396,6 +401,18 @@ export function AppShell() {
     return (
       <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
         <ComponentTab />
+      </Suspense>
+    );
+  }
+
+  // The fluidisation laboratory (?fluidlab=1&...): every input rides in the
+  // URL, so it has no stash to expire and sits BEFORE the bootExpired branch,
+  // like the Component Inspector; a URL that does not read refuses in place.
+  if (typeof window !== "undefined"
+      && new URLSearchParams(window.location.search).has("fluidlab")) {
+    return (
+      <Suspense fallback={<Box style={{ padding: 16 }}>Loading...</Box>}>
+        <FluidisationLabTab />
       </Suspense>
     );
   }

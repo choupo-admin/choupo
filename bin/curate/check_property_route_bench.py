@@ -170,7 +170,11 @@ def main() -> int:
             print(f"NO SUBJECT: the route bench is pinned bit for bit on ANOTHER platform, so it asserts nothing here "
                   f"(not run, not a pass).  recorded on: {there} || running on: {here}")
             print(f"{NAME}: NO SUBJECT -- recorded on [{there}]; this system is [{here}].  The bench's hexfloats "
-                  "are true on the recording platform only; on that platform nothing changes.")
+                  "are true on the recording platform only; on that platform nothing changes.  NOT HELD "
+                  "HERE (C378 pilot review, PC-07): the kernel against the package bit for bit, the label "
+                  "words, the resolution by package and not by address, and the domain error as an "
+                  "InfeasibleTrial -- the bench is not run.  check_density_pilot holds the leaf's volume at "
+                  "the printed IAPWS-95 anchors and ideal mixing of three constituents on every platform.")
             return 0
     secs, summary = run_bench()
     got, order = blocks(OUT)

@@ -57,13 +57,16 @@
   24 % more heat moves it to SHORTER residence times.  So the engine finds
   three crossings at condition 1, where the experiment saw one cold state:
 
-      292.22 K   extinguished, X = 0.14   stable
-      303.03 K   middle                   unstable (the slope test fails)
-      336.48 K   ignited,      X = 0.90   stable -- reported (T_guess 340)
+      292.43 K   extinguished, X = 0.14   stable
+      302.61 K   middle                   unstable (the slope test fails)
+      336.55 K   ignited,      X = 0.90   stable -- reported (T_guess 340)
 
-  and at condition 2 (tau 1330 s, 284.6 K) it finds only the ignited state,
+  (the liquid density of the property kernel since the C378 pilot: the three
+  were 292.22, 303.03 and 336.48 K on the record volumes at 25 C), and at
+  condition 2 (tau 1330 s, 284.6 K) it finds only the ignited state,
   338.8 K, where the experiment saw two; at condition 3 (tau 1550 s, 297.1 K)
-  one ignited state, 353.9 K, as measured.  The paper's own model, with its
+  one ignited state, 353.9 K, as measured (these two on the record volumes
+  at 25 C, before the pilot; not recomputed).  The paper's own model, with its
   measured 46.8 K, puts three crossings at condition 2 (295.8, 302.4 and
   320.9 K, by hand from Eq. (11)).  Read the case as the van Heerden
   construction on a real, measured rate law -- not as a reproduction of the

@@ -36,8 +36,11 @@ Description
 
 #pragma once
 
+#include "core/InfeasibleTrial.H"
+
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 namespace Choupo {
 
@@ -61,6 +64,25 @@ struct PropertyDomainError : public std::runtime_error
         }
         return "?";
     }
+};
+
+//  THE SAME REFUSAL, AS A REJECTABLE TRIAL (DEV.md 4c C378 pilot; the
+//  density pilot plan, section 7).  The pilot's entry,
+//  liquidProperty::density, throws this for a state outside a hard domain or
+//  not a state: it derives from InfeasibleTrial, so a solver that can reject
+//  a step (Wegstein's extrapolation, a Newton line search on tears, the 1-D
+//  safeguarded Newton) rejects it and tries another; a seed, a converged or a
+//  final state reaches main's handler and fails the run with this message and
+//  its remedy.  The slice-0 wrapper keeps throwing PropertyDomainError, so no
+//  existing consumer changes behaviour.
+struct PropertyDomainTrial : public InfeasibleTrial
+{
+    PropertyDomainTrial(PropertyDomainError::Kind k, const std::string& message,
+                        std::string remedyText = "")
+      : InfeasibleTrial(message), kind(k), remedy(std::move(remedyText)) {}
+
+    PropertyDomainError::Kind kind;
+    std::string               remedy;
 };
 
 } // namespace Choupo

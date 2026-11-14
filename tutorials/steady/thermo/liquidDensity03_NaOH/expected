@@ -1,0 +1,22 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+stream  feed                   F                0.049407813274     1e-4
+stream  feed                   T                303.15             1e-4
+stream  product                F                0.049407813274     1e-4
+stream  product                T                303.15             1e-4
+kpi     R1                     F_in_kmol_h      177.868127787      1e-4
+kpi     R1                     F_out_kmol_h     177.868127787      1e-4
+kpi     R1                     Q_kW             0                  1e-4
+kpi     R1                     T                303.15             1e-4
+kpi     R1                     T_out            303.15             1e-4
+kpi     R1                     V_R              1                  1e-4
+kpi     R1                     k_absentSucrose  2.42580374373e-06  1e-4
+kpi     R1                     nReactions       1                  1e-4
+kpi     R1                     newtonResidual   0                  1e-4
+kpi     R1                     tau_s            1212.69913516      1e-4
+kpi     R1                     xi_absentSucrose_mol_per_s 0                  1e-4
+boundary global               H_feeds_kW       -15046.6741048     1e-4
+boundary global               Q_boundary_kW    0                  1e-4
+boundary global               H_products_kW    -15046.6741048     1e-4
+source  R1                     liquidDensity    solutionLaw.NaOH-water exact

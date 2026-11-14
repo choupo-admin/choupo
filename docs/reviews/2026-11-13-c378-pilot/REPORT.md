@@ -156,3 +156,60 @@ cases that carry a copy of the water record.
 
 **Not reviewed by this reviewer:** `check_gate_selftest` (read, not run);
 a full sweep; `--gui` as a suite; accuracy against measurements.
+
+## 7. Addendum (2026-11-14): how close every load-time check is to its edge
+
+PC-03 found one check of the water record (the pressure at 300 K and
+996.556 kg/m3) that a single last bit can fail.  Measured afterwards for
+all four reference records, with no file modified: the verification case
+`tutorials/props/thermo/refEoS01_iapws95_verification` run as it is on a
+build of main, and every printed check paired with its record's own
+`digits` and `printedScale` (`blast/reference_check_margins.py`, output
+`blast/reference_check_margins.txt`).  The share is |computed -
+published| over the half unit of the last printed digit the check
+allows; 1.000 fails.
+
+| record | checks | closest to failing | share used | margin, relative to the value |
+|---|---|---|---|---|
+| water (IAPWS-95) | 68 paired | p at 500 K, 1084.564 kg/m3: published 700000405, computed 700000405.495 | 0.990 | 7.1e-12 |
+| water | | rhoV on saturation at 275 K | 0.992 | 7.3e-12 |
+| carbon dioxide | 67 | cpV on saturation at 220 K | 0.977 | 1.2e-7 |
+| nitrogen | 67 | wV on saturation at 100 K | 0.999 | 1.6e-7 |
+| methane | 74 | rhoV on saturation at 150 K | 0.993 | 2.0e-7 |
+
+What it says:
+
+- **Water has two checks closer to the edge than the one PC-03
+  reproduced**: a margin of 7e-12 relative is about thirty times
+  machine precision, and a pressure at a liquid density amplifies
+  round-off by roughly the ratio of rho R T to p.  Another compiler or
+  math library can fail them on a correct record.
+- The other three records print fewer digits (four to six), so their
+  margins are in the 1e-7 range: far from round-off.  Their shares near
+  1.000 (nitrogen 0.999) are a statement about the transcription and the
+  rounding of the printed tables, not about the platform.
+- PC-03's remedy should therefore be judged on the water record's
+  nine-digit checks as a family, not on the one row.
+
+## 8. Round 2 (c378-pilot b492c25c6a): the gating rows re-measured
+
+Read by the reviewing session on a native build of b492c25c6a, no file
+modified; every case run on a scratch copy.
+
+| row | the same minimal case as before | round 1 | round 2 |
+|---|---|---|---|
+| PA-01 | `git archive` of `liquidDensity03_NaOH` and `liquidDensity04_NaOHpoint`, run | exit 2 both | exit 0 both; tau 1212.70 s and 1213.80 s |
+| PA-02 | the measurement that replaces an ideal mixing with a `massWithoutVolume` leaf | never returned (killed at 40 s) | exit 0; the run prints the measurement, the method it replaced and its value there (1033.21 kg/m3, +1.04 %) |
+| PC-02 | cstr01 with water in its feed, sealed and with the manifest removed | 855.33 against 856.65 kg/m3 | 856.65 both |
+| PC-03 | liquidDensity02 with every 2nd, 3rd, 5th, 7th `pow` result moved by one unit in the last place | exit 2 at 3rd and 7th | exit 0 at all four |
+| arm (k) | `check_pure_fluid_phase_asked.py` on the merged tree | failed (the 0.03 pump "did not converge") | OK; eta 0.5 and 0.03 must run with the plant closed to 1e-6 kW and dT > 0, eta 0.01 must refuse with the "no LIQUID outlet" sentence (`:611-637`): both halves held, the eta values unchanged, the search fixed |
+
+The reference-equation case itself (`refEoS01`) also exits 0 clean and
+under every 2nd, 3rd, 5th, 7th and 11th `pow` result and every 3rd `exp`
+result moved.  The tolerance applied is the round-2 one (half a digit
+times the row's conditioning for a pressure at a given density, with a
+floor of two digits): it does NOT yet apply PC-17's ruling.  The
+thinnest water row (the pressure at 500 K and 1084.564 kg/m3, 0.990 of
+its half digit, conditioning 1) is unchanged at 700000405.495 under
+every pattern tried: its closeness is the rounding of the published
+table, not this machine; PC-17's one digit for every row covers it.

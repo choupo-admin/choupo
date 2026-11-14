@@ -1,0 +1,53 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  liquidDensity06_NaClwaterEthanol -- D5 of the liquid-density pilot
+  (C378): 30 water + 5 ethanol + 1 NaCl (kmol ratio), 298.15 K, 1 bar.  No
+  solution record covers {ethanol, NaCl, water} and NaCl has no liquid
+  volume, so the pump, the CSTR and the props bench (`rho_liquid_kernel`)
+  REFUSE, naming the three constituents, the kind of record missing
+  (parameters/solution/ethanol-NaCl-water.dat, a `liquidDensity` law for
+  exactly these constituents) and the remedies.  The data that would fill
+  it exist: Galleguillos, Taboada and Graber, J. Chem. Eng. Data 48 (2003)
+  405-410 (21 saturated and 53 unsaturated points at 298.15 and 313.15 K).
+  Before the pilot the pump ANSWERED here, leaving NaCl's volume out, 1.8 to
+  4.1 % off the data.  `.expect-nonconvergence`: the refusal is the lesson,
+  asserted by check_density_pilot.
+
+  The flowsheet of every liquid-density demonstration: feed (1 kg/s) ->
+  pump P1 (dP 2 bar, eta 0.7) -> CSTR R1 (V_R 1 m3, the reaction's reactant
+  absent, see constant/reactions) -> product.  By hand, with rho the
+  property kernel's liquid density printed in the run's table:
+      Q   = m_dot / rho                 (the pump's volumetric flow)
+      W   = Q dP / eta                  (its shaft power)
+      h   = dP / (rho g)                (its head)
+      tau = V_R rho / m_dot             (the CSTR's residence time, at its
+                                         feed, the pump's outlet state)
+  The pump prices its INLET state, the CSTR its FEED (the pump's outlet).
+  Theory Guide: sec:liquid-density-methods.  Gate: check_density_pilot.
+\*---------------------------------------------------------------------------*/
+
+units
+(
+    {
+        name        P1;
+        type        pump;
+        in          feed;
+        outputs     ( pumped );
+        operation   { dP 2 bar; eta 0.7; }
+    }
+    {
+        name        R1;
+        type        cstr;
+        in          pumped;
+        outputs     ( product );
+        operation   { V_R 1; }
+        reactions   ( absentAcid );
+    }
+);

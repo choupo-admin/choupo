@@ -1,0 +1,276 @@
+// [imported] origin "data/standards/parameters/Helmholtz/IAPWS95.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*--------------------------------*\
+  IAPWS-95 -- the reference equation of state of ordinary water substance.
+
+  Read from the release itself, fetched and read on 2026-11-12:
+      IAPWS R6-95(2018), "Revised Release on the IAPWS Formulation 1995 for
+      the Thermodynamic Properties of Ordinary Water Substance for General
+      and Scientific Use", Prague, September 2018,
+      https://iapws.org/technical-guidance/release/IAPWS-95.download
+  The underlying article is W. Wagner and A. Pruss, J. Phys. Chem. Ref.
+  Data 31 (2002) 387-535; the release is the authority IAPWS asks users to
+  cite and the source of every number below.
+
+  Transcription: the coefficient tables (Table 1, ideal part; Table 2,
+  residual part) were extracted from the release PDF's text layer by a
+  parser, not typed; the check values (Tables 6, 7, 8, the virial footnote
+  of Table 3, the triple-point footnote and Eq. (8)) were read off the same
+  text.  Every one of them is reproduced by the engine at the printed
+  precision every time this record is loaded (ReferenceFluid::read refuses
+  a record that does not), and independently by
+  bin/curate/check_reference_eos.py.
+
+  Licence of the numbers: the release states "Publication in whole or in
+  part is allowed in all countries provided that attribution is given to
+  the International Association for the Properties of Water and Steam".
+  Attribution: International Association for the Properties of Water and
+  Steam, IAPWS R6-95(2018).
+
+  The form (R6-95 Eqs. 4-6):
+      f/(RT) = alpha0 + alphar,  delta = rho/rho_c,  tau = T_c/T
+      alpha0 = ln delta + n1 + n2 tau + n3 ln tau + sum_{4..8} n_i ln(1 - exp(-gamma_i tau))
+      alphar = sum_{1..7}   n delta^d tau^t
+             + sum_{8..51}  n delta^d tau^t exp(-delta^c)
+             + sum_{52..54} n delta^d tau^t exp(-alpha (delta-eps)^2 - beta (tau-gamma)^2)
+             + sum_{55..56} n Delta^b delta psi        (the non-analytic terms)
+  Mass basis: R is the release's SPECIFIC gas constant, Eq. (3); the
+  release requires THIS value (not a more recent one) because the residual
+  coefficients were fitted with it.
+\*-----------------------------------------------------------------------------*/
+recordType    helmholtzEquationOfState;
+schemaVersion 1;
+
+equation      IAPWS95;
+fluid         water;
+citation      "IAPWS R6-95(2018), Revised Release on the IAPWS Formulation 1995 for the Thermodynamic Properties of Ordinary Water Substance for General and Scientific Use (2018); W. Wagner and A. Pruss, J. Phys. Chem. Ref. Data 31 (2002) 387-535";
+url           "https://iapws.org/technical-guidance/release/IAPWS-95.download";
+read          "2026-11-12";
+licence       "IAPWS: publication in whole or in part allowed with attribution to the International Association for the Properties of Water and Steam";
+
+reducing
+{
+    Tc      647.096 K;          // Eq. (1)
+    rhoc    322 kg/m3;          // Eq. (2)
+}
+R           461.51805 J/kg/K;   // Eq. (3), 0.461 518 05 kJ/(kg K)
+
+triplePoint { T 273.16 K; }     // Eq. (7)
+
+validity                        // Section 5
+{
+    Tmin    251.165 K;          // lowest point of the melting-pressure curve (item 1)
+    Tmax    1273 K;
+    pMax    1000 MPa;
+    extrapolation "R6-95 Section 5 item (2): in the stable fluid region the formulation behaves reasonably when extrapolated to about 100 GPa and 5000 K (density and enthalpy of undissociated H2O), and in the gas below the triple-point pressure down to 130 K; item (1): the region of validity is bounded below by the melting-pressure curve, which this kernel does not evaluate";
+}
+
+uncertainty "R6-95 Section 6 and Figs. 1-4: tolerances depend on the region -- density from 0.0001 % (liquid near ambient pressure) to 0.5 % (high pressures, high temperatures), speed of sound and isobaric heat capacity growing drastically towards the critical point; the release also states unsatisfactory second-derivative behaviour within Tc..Tc+5 K at densities within 0.5 % of rho_c (Section 5 item 1)";
+
+ideal                           // Table 1
+{
+        lead      ( -8.3204464837497  6.6832105275932 );     // n1o + n2o tau
+        logTau    3.00632;                          // n3o ln(tau)
+        planckEinstein                                 // i = 4..8
+        {
+            n     ( 0.012436 0.97315 1.27950 0.96956 0.24873 );
+            gamma ( 1.28728967 3.53734222 7.74073708 9.24437796 27.5075105 );
+        }
+}
+
+residual                        // Table 2
+{
+        // terms 1-7
+        power
+        {
+            n       (
+                0.12533547935523e-1  0.78957634722828e1  -0.87803203303561e1  0.31802509345418
+                -0.26145533859358  -0.78199751687981e-2  0.88089493102134e-2
+            );
+            d       (
+                1  1  1  2
+                2  3  4
+            );
+            t       (
+                -0.5  0.875  1  0.5
+                0.75  0.375  1
+            );
+        }
+        // terms 8-51
+        exponential
+        {
+            n       (
+                -0.66856572307965  0.20433810950965  -0.66212605039687e-4  -0.19232721156002
+                -0.25709043003438  0.16074868486251  -0.40092828925807e-1  0.39343422603254e-6
+                -0.75941377088144e-5  0.56250979351888e-3  -0.15608652257135e-4  0.11537996422951e-8
+                0.36582165144204e-6  -0.13251180074668e-11  -0.62639586912454e-9  -0.10793600908932
+                0.17611491008752e-1  0.22132295167546  -0.40247669763528  0.58083399985759
+                0.49969146990806e-2  -0.31358700712549e-1  -0.74315929710341  0.47807329915480
+                0.20527940895948e-1  -0.13636435110343  0.14180634400617e-1  0.83326504880713e-2
+                -0.29052336009585e-1  0.38615085574206e-1  -0.20393486513704e-1  -0.16554050063734e-2
+                0.19955571979541e-2  0.15870308324157e-3  -0.16388568342530e-4  0.43613615723811e-1
+                0.34994005463765e-1  -0.76788197844621e-1  0.22446277332006e-1  -0.62689710414685e-4
+                -0.55711118565645e-9  -0.19905718354408  0.31777497330738  -0.11841182425981
+            );
+            d       (
+                1  1  1  2
+                2  3  4  4
+                5  7  9  10
+                11  13  15  1
+                2  2  2  3
+                4  4  4  5
+                6  6  7  9
+                9  9  9  9
+                10  10  12  3
+                4  4  5  14
+                3  6  6  6
+            );
+            t       (
+                4  6  12  1
+                5  4  2  13
+                9  3  4  11
+                4  13  1  7
+                1  9  10  10
+                3  7  10  10
+                6  10  10  1
+                2  3  4  8
+                6  9  8  16
+                22  23  23  10
+                50  44  46  50
+            );
+            c       (
+                1  1  1  1
+                1  1  1  1
+                1  1  1  1
+                1  1  1  2
+                2  2  2  2
+                2  2  2  2
+                2  2  2  2
+                2  2  2  2
+                2  2  2  3
+                3  3  3  4
+                6  6  6  6
+            );
+        }
+        // terms 52-54
+        gaussian
+        {
+            n       (
+                -0.31306260323435e2  0.31546140237781e2  -0.25213154341695e4
+            );
+            d       (
+                3  3  3
+            );
+            t       (
+                0  1  4
+            );
+            alpha   (
+                20  20  20
+            );
+            beta    (
+                150  150  250
+            );
+            gamma   (
+                1.21  1.21  1.25
+            );
+            epsilon (
+                1  1  1
+            );
+        }
+        // terms 55-56
+        nonAnalytic
+        {
+            n       (
+                -0.14874640856724  0.31806110878444
+            );
+            a       (
+                3.5  3.5
+            );
+            b       (
+                0.85  0.95
+            );
+            B       (
+                0.2  0.2
+            );
+            C       (
+                28  32
+            );
+            D       (
+                700  800
+            );
+            A       (
+                0.32  0.32
+            );
+            beta    (
+                0.3  0.3
+            );
+        }
+}
+
+// The release's computer-program verification values (Section 7), in SI
+// with the release's mantissas: kJ is written as J by moving the exponent,
+// so the printed digits are the ones on the page.  `digits` is the number
+// of significant digits printed; a value is reproduced when it agrees to
+// half a unit in that last digit.
+checkValues
+{
+    reducedHelmholtz
+    (
+        {   table "Table 6"; T 500 K; rho 838.025 kg/m3; digits 9;
+            a0   0.204797733e1;  a0_d  0.384236747;  a0_dd -0.147637878;
+            a0_t 0.904611106e1;  a0_tt -0.193249185e1; a0_dt 0;
+            ar  -0.342693206e1;  ar_d -0.364366650;  ar_dd  0.856063701;
+            ar_t -0.581403435e1; ar_tt -0.223440737e1; ar_dt -0.112176915e1; }
+    );
+
+    singlePhase                 // Table 7: p, cv, w, s at (T, rho)
+    (
+        { table "Table 7"; T 300 K; rho 0.9965560e3 kg/m3; digits 9;
+          p 0.992418352e-1 MPa; cv 0.413018112e4 J/kg/K; w 0.150151914e4 m/s; s 0.393062643e3 J/kg/K; }
+        { table "Table 7"; T 300 K; rho 0.1005308e4 kg/m3; digits 9;
+          p 0.200022515e2 MPa;  cv 0.406798347e4 J/kg/K; w 0.153492501e4 m/s; s 0.387405401e3 J/kg/K; }
+        { table "Table 7"; T 300 K; rho 0.1188202e4 kg/m3; digits 9;
+          p 0.700004704e3 MPa;  cv 0.346135580e4 J/kg/K; w 0.244357992e4 m/s; s 0.132609616e3 J/kg/K; }
+        { table "Table 7"; T 500 K; rho 0.4350000 kg/m3; digits 9;
+          p 0.999679423e-1 MPa; cv 0.150817541e4 J/kg/K; w 0.548314253e3 m/s; s 0.794488271e4 J/kg/K; }
+        { table "Table 7"; T 500 K; rho 0.4532000e1 kg/m3; digits 9;
+          p 0.999938125 MPa;    cv 0.166991025e4 J/kg/K; w 0.535739001e3 m/s; s 0.682502725e4 J/kg/K; }
+        { table "Table 7"; T 500 K; rho 0.8380250e3 kg/m3; digits 9;
+          p 0.100003858e2 MPa;  cv 0.322106219e4 J/kg/K; w 0.127128441e4 m/s; s 0.256690919e4 J/kg/K; }
+        { table "Table 7"; T 500 K; rho 0.1084564e4 kg/m3; digits 9;
+          p 0.700000405e3 MPa;  cv 0.307437693e4 J/kg/K; w 0.241200877e4 m/s; s 0.203237509e4 J/kg/K; }
+        { table "Table 7"; T 647 K; rho 0.3580000e3 kg/m3; digits 9;
+          p 0.220384756e2 MPa;  cv 0.618315728e4 J/kg/K; w 0.252145078e3 m/s; s 0.432092307e4 J/kg/K; }
+        { table "Table 7"; T 900 K; rho 0.2410000 kg/m3; digits 9;
+          p 0.100062559 MPa;    cv 0.175890657e4 J/kg/K; w 0.724027147e3 m/s; s 0.916653194e4 J/kg/K; }
+        { table "Table 7"; T 900 K; rho 0.5261500e2 kg/m3; digits 9;
+          p 0.200000690e2 MPa;  cv 0.193510526e4 J/kg/K; w 0.698445674e3 m/s; s 0.659070225e4 J/kg/K; }
+        { table "Table 7"; T 900 K; rho 0.8707690e3 kg/m3; digits 9;
+          p 0.700000006e3 MPa;  cv 0.266422350e4 J/kg/K; w 0.201933608e4 m/s; s 0.417223802e4 J/kg/K; }
+    );
+
+    saturation                  // Table 8 (Maxwell criterion), and the triple point
+    (
+        { table "Table 8"; T 275 K; digits 9;
+          psat 0.698451167e-3 MPa; rhoL 0.999887406e3 kg/m3; rhoV 0.550664919e-2 kg/m3;
+          hL 0.775972202e4 J/kg; hV 0.250428995e7 J/kg;
+          sL 0.283094670e2 J/kg/K; sV 0.910660121e4 J/kg/K; }
+        { table "Table 8"; T 450 K; digits 9;
+          psat 0.932203564 MPa; rhoL 0.890341250e3 kg/m3; rhoV 0.481200360e1 kg/m3;
+          hL 0.749161585e6 J/kg; hV 0.277441078e7 J/kg;
+          sL 0.210865845e4 J/kg/K; sV 0.660921221e4 J/kg/K; }
+        { table "Table 8"; T 625 K; digits 9;
+          psat 0.169082693e2 MPa; rhoL 0.567090385e3 kg/m3; rhoV 0.118290280e3 kg/m3;
+          hL 0.168626976e7 J/kg; hV 0.255071625e7 J/kg;
+          sL 0.380194683e4 J/kg/K; sV 0.518506121e4 J/kg/K; }
+        { table "footnote 1 (triple-point pressure)"; T 273.16 K; digits 9;
+          psat 611.654771 Pa; }
+        { table "Eq. (8) (h' at the triple point)"; T 273.16 K; digits 6;
+          hL 0.611782 J/kg; }
+    );
+
+    virial                      // Table 3, footnote b
+    (
+        { table "Table 3 footnote b"; T 600 K; digits 9;
+          B -0.555366808e-2 m3/kg; C [-2 6 0 0 0] -0.669015050e-5; }
+    );
+}

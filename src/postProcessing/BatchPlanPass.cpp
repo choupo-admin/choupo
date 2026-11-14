@@ -1965,6 +1965,52 @@ int BatchPlanPass::run(SimulationResult& result)
                     " fromBatchPlan;`) prices every product's raw materials and"
                     " utilities on it.");
 
+        //  A PRODUCT CLEAN SHORTER THAN THE CAMPAIGN CHANGEOVER (2026-11-13,
+        //  DEV.md 4c C389 (4), PH-03).  A change of product is the train's
+        //  full clean and line clearance AND the product's own part, so a
+        //  declared product clean below the train's `changeover` makes
+        //  changing product cost less time than continuing one.  Compared
+        //  PER DECLARATION, never on the train's C_i = max_j c_ij: each c_ij
+        //  is that stage's own busy time after the product's last campaign,
+        //  and a max would hide a short stage behind a long one.  Every
+        //  declaration is read, a `changeoverTo` the order does not use
+        //  included (the student may reorder).  Equal is silent; nothing
+        //  is refused and no number moves.
+        auto cleanShort = [&](const BatchStage& s, scalar c, const std::string& subject,
+                              const std::string& what)
+        {
+            const scalar co = plan.trains[trainIndex.at(s.train)].changeover;
+            if (!(c < co - 1e-9)) return;
+            announce(plan, "productCleanShort", subject, c, co,
+                "stage '" + s.name + "' (train '" + s.train + "'): " + what
+                + " is shorter than the train's campaign `changeover "
+                + fmt(co) + " h`: changing product would cost less time than"
+                " continuing the same product.  A change of product is the"
+                " campaign clean and line clearance PLUS the product's own part"
+                " -- declare it as " + fmt(co) + " h plus that increment.");
+        };
+        for (std::size_t k = 0; NP >= 2 && k < NS; ++k)    // one product: no
+        {                                                  //  product clean exists
+            const BatchStage& s = plan.stages[k];
+            cleanShort(s, s.productChangeover, s.name,
+                       "the clean between products `productChangeover "
+                       + fmt(s.productChangeover) + " h`");
+        }
+        for (const auto& P : prods)
+            for (const auto& kv : P.over)
+            {
+                if (!kv.second->found("changeoverTo")) continue;
+                const BatchStage& s = plan.stages[stageIndex.at(kv.first)];
+                const DictPtr to = kv.second->subDict("changeoverTo");
+                for (const auto& nx : to->keys())
+                {
+                    const scalar c = hoursOf(to, nx.c_str(), kv.first);
+                    cleanShort(s, c, P.rec.name + ":" + s.name + ":" + nx,
+                               "the clean after product '" + P.rec.name + "' before '"
+                               + nx + "' `changeoverTo { " + nx + " " + fmt(c) + " h; }`");
+                }
+            }
+
         for (const auto& fu : result.topology)
             if (!unitOwner.count(fu.name)) plan.unplannedUnits.push_back(fu.name);
 
@@ -1975,7 +2021,10 @@ int BatchPlanPass::run(SimulationResult& result)
                   << fmt(plan.productRate, 6) << " kg/h (the balance per kg of"
                      " product every product shares unless it declares its own).\n"
                   << "  Campaign order (declared): " << wordList(plan.campaignOrder)
-                  << ", then the year repeats.\n";
+                  << ", then the year repeats.\n"
+                  << "  req./unit is the size the plan REQUIRES per unit (a batch"
+                     " stage at its declared fill); a rated machine's INSTALLED size"
+                     " is held against it in the sizing pass.\n";
         for (const auto& pr : plan.products)
         {
             std::cout << "  " << std::left << std::setw(18) << pr.name
@@ -2043,7 +2092,7 @@ int BatchPlanPass::run(SimulationResult& result)
                       << fmt(t.requiredTime) << " h/yr = "
                       << fmt(100.0 * t.occupancy, 3) << " % of the available time.\n"
                       << "      " << std::left << std::setw(22) << "stage"
-                      << std::setw(16) << "size/unit" << std::setw(14) << "sized by"
+                      << std::setw(16) << "req./unit" << std::setw(14) << "sized by"
                       << std::setw(7) << "Nip/op" << std::setw(11) << "clean h"
                       << std::setw(11) << "busy h" << std::setw(8) << "occ %" << "\n";
             for (const auto& n : t.stages)
@@ -2309,7 +2358,10 @@ int BatchPlanPass::run(SimulationResult& result)
               << fmt(plan.productRate, 6) << " kg/h (a BASIS -- the plant runs"
                  " in lots).\n"
               << "  Production Q = " << fmt(plan.productPerYear, 8) << " kg/yr"
-              << "  (source: " << plan.productionSource << ")\n";
+              << "  (source: " << plan.productionSource << ")\n"
+              << "  req./unit is the size the plan REQUIRES per unit (a batch"
+                 " stage at its declared fill); a rated machine's INSTALLED size"
+                 " is held against it in the sizing pass.\n";
     if (plan.lotRule == "declared")
         std::cout << "  Lot B = " << fmt(plan.lotStreamMass, 8) << " kg of "
                   << plan.lotStream << " x r_P / r_" << plan.lotStream << " ("
@@ -2335,7 +2387,7 @@ int BatchPlanPass::run(SimulationResult& result)
                   << t.source << ")\n"
                   << "    " << std::left << std::setw(22) << "stage"
                   << std::setw(8) << "type" << std::setw(12) << "m/lot kg"
-                  << std::setw(14) << "S m3/kg" << std::setw(13) << "size/unit"
+                  << std::setw(14) << "S m3/kg" << std::setw(13) << "req./unit"
                   << std::setw(7) << "Nip/op" << std::setw(9) << "t_j h"
                   << std::setw(9) << "t/Nop h" << std::setw(8) << "u %"
                   << std::setw(9) << "occ %" << "\n";

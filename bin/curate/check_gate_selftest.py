@@ -324,11 +324,11 @@ SABOTAGES += [
         "gate": "check_liquid_property_ratchet.py",
         "kind": "detection",
         "file": "bin/curate/liquid_property_ratchet_debt.tsv",
-        "find": "src/unitOperations/rotating/Pump.cpp\tvliq\t2",
-        "replace": "src/unitOperations/rotating/Pump.cpp\tvliq\t1",
+        "find": "src/unitOperations/heatTransfer/SprayDryer.cpp\tvliq\t6",
+        "replace": "src/unitOperations/heatTransfer/SprayDryer.cpp\tvliq\t5",
         "why": "the ratchet must see a unit pricing a liquid property itself "
-               "beyond its pin (C378 slice 0).  Lowering the pump's pin below "
-               "the two `.Vliq()` reads its source holds is the same as one "
+               "beyond its pin (C378 slice 0).  Lowering the spray dryer's pin "
+               "below the six `.Vliq()` reads its source holds is the same as one "
                "new raw read: the gate must NAME the file, not pass.",
     },
     {
@@ -352,9 +352,30 @@ SABOTAGES += [
                "must make arm (a) name it: the gate is the only thing that "
                "keeps a file copied out of the tree carrying its holder.",
     },
+    {
+        "gate": "check_liquid_density_entry_callers.py",
+        "kind": "detection",
+        "file": "src/unitOperations/valve/Valve.cpp",
+        "find": "#include \"thermo/LiquidPropertyDoor.H\"",
+        "replace": "#include \"thermo/LiquidPropertyDoor.H\"\nstatic double c378Probe(const Choupo::liquidProperty::Request& q) { return Choupo::liquidProperty::density(q).value; }",
+        "why": "the pilot's entry is scaffolding (C378): a unit beyond the "
+               "pump and the CSTR that starts calling it is a fourth caller "
+               "nobody decided.  The gate must NAME Valve.cpp.",
+    },
 ]
 
 SOURCE_SABOTAGES = [
+    {
+        "gate": "check_density_pilot.py",
+        "kind": "source/unit-keeps-its-own-number",
+        "file": "src/unitOperations/rotating/Pump.cpp",
+        "find": "const scalar rho   = liquidProperty::density(densityAsk).value;   // kg/m^3",
+        "replace": "const scalar rho   = liquidProperty::density(densityAsk).value * (1.0 + 1.0e-7);   // kg/m^3",
+        "why": "the review's PP-04 (C378): a pump that takes the kernel's value and then "
+               "prices with a number of its own -- here one part in 1e7 -- moves no "
+               "golden the 1e-4 reltol can see.  The wiring arm compares the unit's "
+               "density with the kernel's own double to 1e-9 and must NAME the pump.",
+    },
     {
         "gate": "check_pure_fluid_phase_asked.py",
         "kind": "source/phase-dropped",
@@ -370,7 +391,7 @@ SOURCE_SABOTAGES = [
     {
         "gate": "check_property_route_bench.py",
         "kind": "source/route-relabelled",
-        "file": "src/thermo/LiquidPropertyDoor.cpp",
+        "file": "src/thermo/liquidProperty/DensityLeaf.cpp",
         "find": "        case Route::anchoredRackett: return \"each component's \" + where + \" scaled to temperature by Rackett\";",
         "replace": "        case Route::anchoredRackett: return \"each component's \" + where + \", with no temperature effect (its record has no critical constants)\";",
         "why": "the door review's SB-3 (C378 slice 0, DR-11): the scaled route "
@@ -382,13 +403,14 @@ SOURCE_SABOTAGES = [
     {
         "gate": "check_property_source_witnesses.py",
         "kind": "source/site-retagged",
-        "file": "src/unitOperations/rotating/Pump.cpp",
-        "find": "? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqFlat,",
-        "replace": "? liquidSource::recordVliqIonsMassKept : liquidSource::recordVliqSilentZero,",
-        "why": "the door review's SB-2 (DR-11): the pump records a tag of the "
-               "same class whose words are false for pure water.  No value moves "
-               "and the ratchet counts nothing; the witness of pump01_water "
-               "must see the wrong sourceId.",
+        "file": "src/thermo/liquidProperty/PureFluidLeaf.cpp",
+        "find": ": \"referenceEquation.\" + equation_;",
+        "replace": ": \"pureFluid.\" + equation_;",
+        "why": "the door review's SB-2 (DR-11), carried to the pilot's kernel: "
+               "the reference leaf a pump on pure water resolves to records "
+               "the id of the case-selection route.  No value moves and the "
+               "ratchet counts nothing; the witness of pump01_water must see "
+               "the wrong sourceId.",
     },
     {
         "gate": "check_lumped_cp_note.py",
@@ -475,6 +497,11 @@ def artefact_stamp(bdir):
                default=0.0)
 
 
+def has_no_subject(out):
+    """True when the gate's own output says NO SUBJECT (exit 0, nothing observed)."""
+    return any(l.startswith("NO SUBJECT") or ": NO SUBJECT --" in l for l in out.splitlines())
+
+
 def run_gate(name):
     p = subprocess.run([sys.executable, str(ROOT / "bin" / "curate" / name)],
                        capture_output=True, text=True, timeout=900, cwd=ROOT)
@@ -557,7 +584,14 @@ def main() -> int:
                   "than every check this gate performs.")
             return 1
 
-        if rc == 0:
+        if rc == 0 and has_no_subject(out):
+            #  A gate that answers NO SUBJECT (the route bench on a platform other
+            #  than the one its pins were recorded on, C384) observed NOTHING, so
+            #  the sabotage was neither detected nor missed here.  Said by name,
+            #  never silently skipped, never counted as a detection.
+            results.append(f"{s['gate']} [{s['kind']}] -> NO SUBJECT on this "
+                           "platform (the arm was NOT observed)")
+        elif rc == 0:
             fail.append(
                 f"{s['gate']} [{s['kind']}] PASSED under sabotage.  "
                 f"{s['why']}\n      The gate exited 0 over a tree where the "
@@ -607,8 +641,12 @@ def main() -> int:
                             f"no newer artefact, so the sabotage never reached "
                             f"the binary the gate runs")
             else:
-                rc, _ = run_gate(src["gate"])
-                if rc == 0:
+                rc, gate_out = run_gate(src["gate"])
+                if rc == 0 and has_no_subject(gate_out):
+                    src_results.append(f"{src['gate']} [{src['kind']}] -> NO "
+                                       "SUBJECT on this platform (the arm was "
+                                       "NOT observed)")
+                elif rc == 0:
                     fail.append(f"{src['gate']} [{src['kind']}]: PASSED with "
                                 f"the sabotage in the ENGINE and built into "
                                 f"the binary.  {src['why']}")

@@ -15,6 +15,7 @@
 #include "PropertyRouteBench.H"
 
 #include "core/Dictionary.H"
+#include "core/InfeasibleTrial.H"
 #include "thermo/Database.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "thermo/SurfaceTensionModel.H"
@@ -289,6 +290,51 @@ void sweep(const Grid& g, Writer& w, const std::string& xTag,
         }
 }
 
+//  THE KERNEL'S ENTRY (C378 pilot): the liquid density through the methods
+//  of thermo/liquidProperty/, resolved per constituent set.  Its values are
+//  NEW blocks (`density.kernel...`), hashed like every other; its method id
+//  and label go to the labels file.  Each state is also compared with the
+//  package's own `density` (liquid) and counted: equal to the bit, both
+//  refused, or different -- the kernel's departures from the package are
+//  deliberate (the reference leaf, the liquid branch) and printed by kind.
+long kernelCompared = 0, kernelEqual = 0, kernelBothRefused = 0, kernelDiffer = 0,
+     kernelOnlyKernelRefused = 0, kernelOnlyPackageRefused = 0;
+std::map<std::string, long> kernelDifferByMethod;
+
+void kernelSweep(const Grid& g, Writer& w, const std::string& xTag,
+                 const ThermoPackage& pk, const sVector& x)
+{
+    for (double T : g.T)
+        for (double P : g.P)
+        {
+            const std::string s = stateKey(T, P, xTag);
+            bool ok = false;
+            double v = 0.0;
+            std::string method;
+            try
+            {
+                liquidProperty::Request q;
+                q.thermo = &pk; q.T = T; q.P = P; q.x = x;
+                const liquidProperty::Result r = liquidProperty::density(q);
+                v = r.value; ok = true; method = r.methodId;
+                w.value(s, v);
+                if (labelsOut) *labelsOut << s << "\t" << r.methodId << "\t" << r.label << "\n";
+            }
+            catch (const std::exception& e) { w.refused(s, e.what()); }
+            catch (...) { w.refused(s, "(an exception that is not a std::exception)"); }
+            bool pOk = false;
+            double pv = 0.0;
+            try { pv = pk.density(T, P, x, DensityPhase::Liquid); pOk = true; }
+            catch (...) {}
+            ++kernelCompared;
+            if (ok && pOk && std::memcmp(&v, &pv, sizeof v) == 0) ++kernelEqual;
+            else if (!ok && !pOk) ++kernelBothRefused;
+            else if (!ok) ++kernelOnlyKernelRefused;
+            else if (!pOk) ++kernelOnlyPackageRefused;
+            else { ++kernelDiffer; ++kernelDifferByMethod[method]; }
+        }
+}
+
 } // namespace
 
 int run(const std::string& manifestPath, const std::string& outPath)
@@ -398,6 +444,11 @@ int run(const std::string& manifestPath, const std::string& outPath)
                       { return pk->density(T, P, pure, DensityPhase::Liquid); },
                       DoorCheck{ pk.get(), 0, &pure });
 
+            //  The same, through the kernel's entry (C378 pilot).
+            w.block(rec, "density.kernel");
+            if (auto pk = assemble(db, systemText(one, ""), w))
+                kernelSweep(g, w, "", *pk, pure);
+
             //  The pure-fluid routes that describe this record.
             std::vector<std::pair<std::string, std::string>> pureRoutes;
             if (rec == solvent) pureRoutes.emplace_back("IF97", "method IF97;");
@@ -423,6 +474,9 @@ int run(const std::string& manifestPath, const std::string& outPath)
                     sweep(g, w, "", [&](double T, double P)
                           { return pk->density(T, P, pure, DensityPhase::Liquid); },
                       DoorCheck{ pk.get(), 0, &pure });
+                w.block(rec, "density.kernel.pureFluid." + pr.first);
+                if (auto pk = assemble(db, systemText(one, extra), w))
+                    kernelSweep(g, w, "", *pk, pure);
                 w.block(rec, "viscosity.pureFluid." + pr.first);
                 if (auto pk = assemble(db, systemText(one, extra), w))
                     sweep(g, w, "", [&](double T, double)
@@ -483,6 +537,15 @@ int run(const std::string& manifestPath, const std::string& outPath)
             if (auto pk = assemble(db, systemText(two, ""), w))
                 overX(*pk, 0, [](ThermoPackage& p, double T, double P, const sVector& z)
                       { return p.density(T, P, z, DensityPhase::Liquid); });
+            w.block(rec, "density.kernel");
+            if (auto pk = assemble(db, systemText(two, ""), w))
+                for (double x : g.x)
+                {
+                    const sVector z { x, 1.0 - x };
+                    char tag[48];
+                    std::snprintf(tag, sizeof(tag), "x=%.17g", x);
+                    kernelSweep(g, w, tag, *pk, z);
+                }
             for (const auto& m : viscModels)
                 for (const auto& r : viscRules)
                 {
@@ -500,6 +563,68 @@ int run(const std::string& manifestPath, const std::string& outPath)
                               { return p.surfaceTension(T, z); });
                 }
         }
+    }
+    //  THE RESOLUTION IS KEYED ON THE PACKAGE, NEVER ON ITS ADDRESS (C378
+    //  pilot, ruling 6): packages with different pure-fluid selections for
+    //  the same set {water}, built one after the other in this process (the
+    //  allocator tends to give the next one the dead one's address), each
+    //  resolve their own method.  A failure exits the bench non-zero.
+    std::string reuseLine;
+    bool reuseOk = true;
+    {
+        Silence quiet;
+        const sVector pure { 1.0 };
+        const std::string if97 = "pureFluids { " + solvent + " { method IF97; } }\n";
+        const std::vector<std::pair<std::string, std::string>> runs = {
+            { if97, "pureFluid.IF97" },
+            { "", "referenceEquation.IAPWS95" },
+            { if97, "pureFluid.IF97" } };
+        const void* prev = nullptr;
+        int sameAddress = 0;
+        for (const auto& rn : runs)
+        {
+            const DictPtr d = Dictionary::fromString(systemText({ solvent }, rn.first),
+                                                     "<address-reuse check>");
+            auto pk = std::make_unique<ThermoPackage>(ThermoPackageBuilder::build(d, db));
+            if (prev == pk.get()) ++sameAddress;
+            prev = pk.get();
+            liquidProperty::Request q;
+            q.thermo = pk.get(); q.T = 298.15; q.P = 1.0e5; q.x = pure;
+            const std::string id = liquidProperty::density(q).methodId;
+            reuseLine += " " + id;
+            if (id != rn.second) reuseOk = false;
+        }
+        reuseLine += " (packages at a reused address: " + std::to_string(sameAddress) + ")";
+
+        //  THE DOMAIN ERROR IS A REJECTABLE TRIAL (C378 pilot, step 6): a
+        //  state outside a method's hard domain reaches the caller as an
+        //  InfeasibleTrial -- the type every recycle solver catches to reject
+        //  a step -- and a missing datum does not (it fails the run).  NaOH
+        //  at 40 wt % and 285 K lies outside the law's Table III; NaCl in
+        //  water has no method at all.
+        const DictPtr dn = Dictionary::fromString(systemText({ "NaOH", solvent }, ""),
+                                                  "<domain-trial check>");
+        ThermoPackage pn = ThermoPackageBuilder::build(dn, db);
+        liquidProperty::Request q;
+        q.thermo = &pn; q.T = 285.0; q.P = 1.0e5;
+        const double a = 0.40 / 39.997, bw = 0.60 / 18.015;
+        q.x = { a / (a + bw), bw / (a + bw) };
+        bool trial = false, missingIsTrial = true;
+        try { (void)liquidProperty::density(q); }
+        catch (const InfeasibleTrial&) { trial = true; }
+        catch (...) {}
+        const DictPtr dc = Dictionary::fromString(systemText({ "NaCl", solvent }, ""),
+                                                  "<domain-trial check>");
+        ThermoPackage pc = ThermoPackageBuilder::build(dc, db);
+        liquidProperty::Request qc;
+        qc.thermo = &pc; qc.T = 298.15; qc.P = 1.0e5; qc.x = { 0.01, 0.99 };
+        try { (void)liquidProperty::density(qc); missingIsTrial = false; }
+        catch (const InfeasibleTrial&) { missingIsTrial = true; }
+        catch (...) { missingIsTrial = false; }
+        if (!trial || missingIsTrial) reuseOk = false;
+        reuseLine += std::string("; a state outside the law's domain is ")
+                   + (trial ? "an InfeasibleTrial" : "NOT an InfeasibleTrial")
+                   + ", a missing method is " + (missingIsTrial ? "WRONGLY a trial" : "not a trial");
     }
     fs::current_path(here);
     os.close();
@@ -519,10 +644,20 @@ int run(const std::string& manifestPath, const std::string& outPath)
               << doorDisagreed << " disagreements";
     for (const auto& s : doorFirst) std::cout << "  [" << s << "]";
     std::cout << "\n";
+    std::cout << "  kernel entry against the package's density: " << kernelCompared
+              << " compared, " << kernelEqual << " equal to the bit, " << kernelBothRefused
+              << " both refused, " << kernelOnlyKernelRefused << " refused by the kernel only, "
+              << kernelOnlyPackageRefused << " refused by the package only, "
+              << kernelDiffer << " different";
+    for (const auto& kv : kernelDifferByMethod) std::cout << "  [" << kv.first << " " << kv.second << "]";
+    std::cout << "\n";
+    std::cout << "  resolution by package, not address, and the domain error as a trial: "
+              << (reuseOk ? "ok" : "FAIL")
+              << " --" << reuseLine << "\n";
     char b[64];
     std::snprintf(b, sizeof(b), "%.1f", secs);
     std::cout << "  wall time " << b << " s\n";
-    return 0;
+    return reuseOk ? 0 : 1;
 }
 
 } // namespace propertyRouteBench
