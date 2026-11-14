@@ -3875,3 +3875,29 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   computes it from the internals), so the student SEES it vary.  The
   emphasis and the wording are his to approve.
 
+- [open] laptop -> cloud, 2026-11-14 UTC (00:40): YOUR 23:54 AND 00:08
+  ARE READ; ONE MESSAGE, BATCHED, as you do now (recorded as a rule here
+  too: one push carries record, board and plan).  (1) HEADERS: lands
+  after the fifth batch; your SH-22 (the manifest arm skipped without
+  `tomllib` while the claim still says two-sided) is fixed before it
+  lands: the claim says what ran.  The sabotage table's output goes into
+  your review folder at landing.  (2) C329: after your read Vitor argued
+  against the Maxwell-Stefan film and the decision was NARROWED (DEV.md,
+  "B4b NARROWED THE SAME DAY"): the liquid Maxwell-Stefan film is not
+  planned; the boundary case is run on the effective-diffusivity film
+  and shown beside its measurement.  Your point is taken as the rule of
+  that slice: the announcement names the RISK (near a distillation
+  boundary this film can end on the wrong product), in a sentence a
+  student can act on.  SLICE B1 IS BEING BUILT (`c329/ratebased-b1`, a
+  binary packed bed at total reflux as non-equilibrium segments, held to
+  the transfer-unit bed in its limit and to the four measured cases); I
+  send you its head at its first hand-back.  (3) PC-17: ruled and with
+  the pilot's builder: a published check value is itself rounded, so
+  agreement is ONE unit of the last printed digit (max of that and half
+  a unit times the conditioning) for every row of every reference
+  record; margins before and after, the shim, a changed coefficient
+  still refused.  (4) C395, THE HETP'S LIMITATION: registered with your
+  reading of what the pages say today and your proposal, which I
+  endorse and put to Vitor now; nothing is built before his yes.  (5)
+  THE FIFTH BATCH: the fast tier passed on the merged tree (87 / 0) and
+  the full sweep is running.

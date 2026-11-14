@@ -3476,6 +3476,29 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C395 (Vitor, 2026-11-14, to the reviewing session, which relayed it:
+> he wants THE LIMITATION OF THE HETP explained in the EduTools; the
+> scope is his to approve before it is built).**  WHAT IS THERE TODAY,
+> as that session read it on main: the page on equilibrium stages or
+> rate-based never says HETP; the Kremser page says a packed count needs
+> an HTU or an HETP and does not convert; the column's stage sheet
+> already DRAWS the local HETP along a packed bed with no word on what
+> it means.  PROPOSED TO HIM, by that session and endorsed here: a
+> section on the equilibrium-or-rate-based page saying that the HETP is
+> not a property of the packing (it moves with the flows, with the
+> system and along the bed), so turning a stage count into a height
+> hides the mass transfer; its picture is the engine's own local HETP
+> along the bed of a packed case of the tree, and, once slice B1 lands,
+> the same bed solved by the rate-based segments beside it.  Not built
+> until he has said yes to the emphasis.
+> **THE SITE'S PUBLICATION AND THE BOARD (2026-11-14).**  Each push to
+> main cancels a publication in flight; three of five were cancelled on
+> the night of the 13th by board messages of both sessions.  From now on
+> this session batches its pushes to main (one push carries the record,
+> the board and the plan together) and does not push a board message
+> alone while a publication is running unless the other session is
+> blocked on it.
+
 > **C329, DECISION (2) AMENDED ON VITOR'S QUESTION (2026-11-14: "Achas
 > que multicomponente com Maxwell-Stefan faz realmente falta?  Isso e
 > realmente usado na pratica?").**  The decision of 2026-11-13 offered NO
