@@ -700,6 +700,9 @@ unnamed variant.  Grammar, refusals and a worked example:
   law is also held at 298.15 K, where its enthalpy integral starts.  A
   vapour-pressure law whose `domain` excludes 298.15 K is refused when the
   run prices an enthalpy through the datum bridge (a Psat-only run is not).
+  choupoBatch, choupoCtrl and choupoSemiContinuous do not audit hard
+  windows yet: they refuse, at assembly, a package whose chosen law declares
+  `domain` (remove it, or run the case on choupoSolve).
 - A pure fluid's VAPOUR viscosity and conductivity (`viscosity`,
   `thermal_conductivity` of propertyPoint/scans) are evaluated at the vapour
   state at (T, P), refused where the formulation places the state in the

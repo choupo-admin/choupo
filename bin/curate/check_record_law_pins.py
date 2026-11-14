@@ -223,6 +223,29 @@ def numbers(case, keys=None):
     return out, ""
 
 
+def batch_refusal_arm():
+    """The time-integrated binaries audit no hard window yet: a batch01 copy
+    whose ethanol vapour-pressure law declares `domain` must be REFUSED at
+    assembly, by name (C398, the coordinator's ruling).  -> problem or None."""
+    with tempfile.TemporaryDirectory(prefix="pins_batch_") as tmp:
+        d = Path(tmp) / "batch01"
+        shutil.copytree(ROOT / "tutorials/batch/reactor/batch01_first_order", d,
+                        ignore=shutil.ignore_patterns("converged", "reports", "log.*", "[1-9]*"))
+        rec = d / "constant" / "components" / "ethanol.dat"
+        t = rec.read_text()
+        a, b, c = block_span(t, "vaporPressure")
+        rec.write_text(t[:c] + "    domain (250 600);\n" + t[c:])
+        env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+        r = subprocess.run([str(ROOT / "choupoBatch"), str(d)], capture_output=True, text=True,
+                           env=env, timeout=900, cwd=str(d))
+        text = r.stdout + r.stderr
+        if r.returncode == 0:
+            return "batch01 with a `domain` ran to exit 0 -- the time-integrated driver must refuse it"
+        if "the time-integrated driver does not audit them yet" not in text:
+            return "batch01 with a `domain` failed, but not with the named refusal: " + text.strip()[-200:]
+    return None
+
+
 def main():
     if not SOLVE.exists():
         print(f"{NAME}: FAIL -- {SOLVE} is missing (build first)")
@@ -256,6 +279,13 @@ def main():
             lines.append(f"{form} {comp}.{prop}: pinned = preferred over {len(res['preferred'])}"
                          f" numbers, {len(moved)} moved by the law"
                          + ("" if moved else " (the property does not enter this result)"))
+    sel_batch = not [x for x in sys.argv[1:] if not x.startswith("-")] or "batch" in sys.argv[1:]
+    if sel_batch:
+        problem = batch_refusal_arm()
+        if problem:
+            fails.append(problem)
+        else:
+            lines.append("choupoBatch refuses a `domain` at assembly, by name")
     if fails:
         print(f"{NAME}: FAIL ({len(fails)})")
         for x in fails:
@@ -264,7 +294,8 @@ def main():
     print(f"{NAME}: OK -- a pinned record law gives every number the same law gives when"
           f" preferred, in {len(arms)} arms: the five formulations and the paths a pin takes"
           f" ({'; '.join(lines)})."
-          "  NOT CHECKED: whether either law is right; the time-integrated binaries.")
+          "  NOT CHECKED: whether either law is right; the time-integrated binaries beyond their"
+          " refusal of a `domain`.")
     return 0
 
 

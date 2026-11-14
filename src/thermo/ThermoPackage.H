@@ -730,6 +730,10 @@ public:
     //  window at T.  A state a pure-fluid formulation prices (the phase pure in
     //  that component) consults no record law and is not audited for it.
     void auditState(scalar T, const sVector& z, const std::string& where, bool enthalpy) const;
+    //  THE TIME-INTEGRATED BINARIES AUDIT NO HARD WINDOW YET (C398): until
+    //  they audit their reported instants, a package with a chosen law that
+    //  declares `domain` is refused there, at assembly, by name.
+    void refuseUnauditedHardWindows() const;
 
     //  THE PACKAGE'S IDENTITY (C398 review CV-20): the fingerprint of the
     //  resolved definition it was built from -- the one its resolved view

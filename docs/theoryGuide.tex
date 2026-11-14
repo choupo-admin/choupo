@@ -2934,7 +2934,13 @@ formulation does not consult the record's vapour-pressure laws).  The first
 form of this rule refused inside the searches, and each review round found a
 search it had missed (a slope probe within a millikelvin of a bound, a dew
 point and two column solvers that opened no trial frame); checking only what
-the run reports needs no knowledge of any search.
+the run reports needs no knowledge of any search.  The audit runs on the
+steady binary (\code{choupoSolve}) and on the property operations; the
+time-integrated binaries (\code{choupoBatch}, \code{choupoCtrl},
+\code{choupoSemiContinuous}) do not audit their reported instants yet, so
+until they do, a run of any of them REFUSES at assembly, by name, a package
+whose chosen law declares a \code{domain}: remove \code{domain}, or run the case
+on \code{choupoSolve}.
 
 \paragraph{The datum temperature must lie in a vapour-pressure law's window.}
 The elements datum carries a component between its natural phase and the

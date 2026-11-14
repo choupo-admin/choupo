@@ -3286,6 +3286,42 @@ std::string ThermoPackage::henryLine(const std::string& solute, const std::strin
          + solvent + ".dat)";
 }
 
+void ThermoPackage::refuseUnauditedHardWindows() const
+{
+    auto refuse = [](const std::string& comp, const std::string& property, const recordLaws::Law& L)
+    {
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+            "component '" + comp + "': its " + property + " law " + L.label() + " (" + L.type
+            + ") declares a hard window, `domain (" + std::to_string(L.domainLo) + " "
+            + std::to_string(L.domainHi) + ")` -- hard windows are audited on the steady and"
+              " props binaries only; the time-integrated driver does not audit them yet: remove"
+              " `domain` or run the case on choupoSolve.",
+            "remove `domain`, or run the case on choupoSolve");
+    };
+    for (std::size_t i = 0; i < n(); ++i)
+    {
+        const Component& c = components_[i];
+        for (const char* p : { "vaporPressure", "idealGasHeatCapacity", "liquidHeatCapacity", "solidHeatCapacity" })
+        {
+            const recordLaws::Block* b = c.recordLaws(p);
+            if (!b) continue;
+            const int k = b->indexOf(c.lawChoice(p).law);
+            const recordLaws::Law& L = b->laws.at(std::size_t(k >= 0 ? k : (b->preferred >= 0 ? b->preferred : 0)));
+            if (L.hasDomain) refuse(c.name(), p, L);
+        }
+        const std::pair<const std::vector<LiquidLaw>*, const char*> tables[] = {
+            { &liquidViscosityLaws_, "liquidViscosity" }, { &liquidConductivityLaws_, "liquidThermalConductivity" },
+            { &surfaceTensionLaws_, "surfaceTension" } };
+        for (const auto& [t, key] : tables)
+        {
+            if (i >= t->size() || (*t)[i].predictive || !(*t)[i].absent.empty()) continue;
+            const recordLaws::Block* b = c.recordLaws(key);
+            const recordLaws::Law* L = b ? b->find((*t)[i].law) : nullptr;
+            if (L && L->hasDomain) refuse(c.name(), key, *L);
+        }
+    }
+}
+
 void ThermoPackage::auditState(scalar T, const sVector& z, const std::string& where, bool enthalpy) const
 {
     if (!(T > 0.0)) return;
