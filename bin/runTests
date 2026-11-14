@@ -620,6 +620,23 @@ CURATION_ROOT="$(python3 "$ROOT/bin/curate/curation_roots.py")" \
 #  chunk/single-case forms' callers that pipe stdout elsewhere would see
 #  stderr merged in: the sweep's output is a log read by people and by
 #  runtests_verdict.py, both of which read the merged stream already.
+#  --fast FIRST, the refusal (DEV.md 4c C394 decision 2; the rule is told in
+#  full at THE SWEEP'S ECONOMY, in check mode).  Taken here, before the timing
+#  wrapper, so a refused sweep leaves the last sweep's timings alone.  Only the
+#  full sweep (no argument left) is ever refused.
+if [ -z "${CHOUPO_SUITE_TIMED:-}" ] && [ "$#" -eq 0 ] \
+   && { [ -z "${CHOUPO_SWEEP_WITHOUT_FAST:-}" ] || [ "${CHOUPO_SWEEP_WITHOUT_FAST}" = 0 ]; }; then
+    if _ff=$(python3 -I "$ROOT/bin/curate/suite_reuse.py" fast-stamp check); then
+        export CHOUPO_FAST_FIRST_LINE="$_ff"
+    else
+        echo "$_ff"
+        echo ""
+        echo "ABORTED before running anything: the sweep starts only after \`bin/runTests --fast\`"
+        echo "passed on this same tree (DEV.md 4c C394, decision 2).  Run it first; or, to"
+        echo "sweep anyway and say so in the verdict, \`bin/runTests --no-fast-stamp\`."
+        exit 1
+    fi
+fi
 if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
     case "${1:-}" in
         --record|--record-append|--gui|-h|--help) ;;
@@ -2714,20 +2731,17 @@ esac
 #  against it and the untracked files, taken when it STARTED and found
 #  unchanged when it ended.  `--no-fast-stamp` or CHOUPO_SWEEP_WITHOUT_FAST=1
 #  overrides it, and the verdict then says the sweep ran without one.
+#  The REFUSAL itself happens before the timing wrapper (search "--fast
+#  FIRST, the refusal"): a refused sweep must not overwrite
+#  build/suiteTimings.csv, the last sweep's measurement.  Here the run only
+#  says which way it started.
 SWEEP_WITHOUT_FAST=""
 if [ "$#" -eq 0 ]; then
     if [ -n "${CHOUPO_SWEEP_WITHOUT_FAST:-}" ] && [ "${CHOUPO_SWEEP_WITHOUT_FAST}" != 0 ]; then
         SWEEP_WITHOUT_FAST=1
         echo "[fast first] OVERRIDDEN (CHOUPO_SWEEP_WITHOUT_FAST / --no-fast-stamp): this sweep starts WITHOUT a --fast pass on its tree"
-    elif _fs=$(python3 -I "$ROOT/bin/curate/suite_reuse.py" fast-stamp check); then
-        echo "[fast first] $_fs"
     else
-        echo "$_fs"
-        echo ""
-        echo "ABORTED before running anything: the sweep starts only after \`bin/runTests --fast\`"
-        echo "passed on this same tree (DEV.md 4c C394, decision 2).  Run it first; or, to"
-        echo "sweep anyway and say so in the verdict, \`bin/runTests --no-fast-stamp\`."
-        exit 1
+        echo "[fast first] ${CHOUPO_FAST_FIRST_LINE:-$(python3 -I "$ROOT/bin/curate/suite_reuse.py" fast-stamp check)}"
     fi
 fi
 
