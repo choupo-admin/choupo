@@ -68,6 +68,9 @@ env:
   #  The runner has no terminal and a 4-core box: the suite's own default
   #  (`nproc`) is right, and CHOUPO_JOBS stays unset.
   LC_ALL: C.UTF-8
+  #  The hosted tiers RUN everything (DEV.md 4c C394): no stored verdict is
+  #  reused, even if a cache ever carried build/reuse/ onto the runner.
+  CHOUPO_NO_REUSE: '1'
 
 jobs:
   fast:
@@ -165,6 +168,15 @@ jobs:
       #  failure and on a pinned entry that healed.  No `pipefail` here on
       #  purpose: the sweep's exit status is judged by that script from the
       #  log, which it also requires to end in the sweep's own tally.
+      #  --fast FIRST (DEV.md 4c C394): the sweep refuses to start unless
+      #  `--fast` passed on this same tree, so the nightly runs it here, and a
+      #  failure stops the job before the sweep, as it would on the laptop.
+      - name: bin/runTests --fast (first)
+        run: |
+          set -o pipefail
+          mkdir -p "$RUNNER_TEMP/ci-out"
+          bin/runTests --fast 2>&1 | tee "$RUNNER_TEMP/ci-out/runTests-fast.log"
+
       - name: bin/runTests (full sweep)
         run: |
           mkdir -p "$RUNNER_TEMP/ci-out"

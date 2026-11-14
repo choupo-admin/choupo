@@ -770,3 +770,97 @@ AQUEOUS_SOLVENT_NAME_DEBT = {
     "blocked": "A non-water Debye-Hueckel surface (A(T), molality basis on "
                "another solvent) is new physics, not a mechanical edit.",
 }
+
+
+#  THE GATES WHOSE WALK THE PLAN CANNOT SEE (2026-11-14, DEV.md 4c C394,
+#  review SE-09).  bin/integrate --plan lists a gate whose scan roots hold a
+#  touched file; bin/curate/gate_scan_roots.py reads the roots from the gate's
+#  syntax tree.  These gates have a walk in their own source whose base the
+#  reader cannot evaluate (a function parameter, a value read at run time, a
+#  case copied to scratch) and declare no SCAN_ROOTS.  Many walk only their
+#  own scratch copies and reach nothing in the tree; each was not audited one
+#  by one in this slice.  check_scan_roots recomputes the set: a gate that
+#  joins it fails (declare its SCAN_ROOTS), and one that leaves it must be
+#  removed here -- the number may only shrink.
+SCAN_ROOTS_UNRESOLVED = {
+    'check_activity_domain': "bin/curate/check_activity_domain.py:261 (d / 'constant/experiments').glob('*.dat')",
+    'check_aqueous_solvent_home': 'bin/curate/check_aqueous_solvent_home.py:254 os.walk(d)',
+    'check_asset_homes': "bin/curate/check_asset_homes.py:30 (man / 'assets').glob('*.dat')",
+    'check_basis_spike': "bin/curate/check_basis_spike.py:359 (mol / 'converged').iterdir()",
+    'check_both_bases': 'bin/curate/check_both_bases.py:309 os.listdir(zero)',
+    'check_build_fresh': "bin/curate/check_build_fresh.py:119 bdir.glob('.stamp-cxx-*')",
+    'check_capability_index': "bin/curate/check_capability_index.py:79 (ROOT / base).rglob('*')",
+    'check_case_tiers': "bin/curate/check_case_tiers.py:109 case.rglob('*')",
+    'check_chemsep_transport': "bin/curate/check_chemsep_transport.py:257 case.rglob(f'{name}.csv')",
+    'check_citation_repointer': 'bin/curate/check_citation_repointer.py:110 os.walk(root)',
+    'check_column_datum_downgrade': "bin/curate/check_column_datum_downgrade.py:106 (dst / 'constant' / 'components').glob('*.dat')",
+    'check_column_thermo_consistency': "bin/curate/check_column_thermo_consistency.py:540 case.rglob('flowsheetDict')",
+    'check_constant_rejection': 'bin/curate/check_constant_rejection.py:125 Path(dst).iterdir()',
+    'check_degenerate_limits': "bin/curate/check_degenerate_limits.py:849 (dst / '0').iterdir()",
+    'check_density_pilot': "bin/curate/check_density_pilot.py:273 dp.rglob('psat.csv')",
+    'check_duty_inversion': "bin/curate/check_duty_inversion.py:195 case.glob('log.*')",
+    'check_economics_honesty': "bin/curate/check_economics_honesty.py:118 dst.rglob('parameters/adsorption/equilibria/*/*.dat')",
+    'check_electrolyte_records': "bin/curate/check_electrolyte_records.py:68 base.glob('*.dat')",
+    'check_element_balance': "bin/curate/check_element_balance.py:275 (plant / 'postProcessing').rglob('elementBalance.csv')",
+    'check_empty_dirs': 'bin/curate/check_empty_dirs.py:29 d.iterdir()',
+    'check_equipment_list': "bin/curate/check_equipment_list.py:117 d.rglob('*')",
+    'check_estimate_visible': "bin/curate/check_estimate_visible.py:181 (work / 'constant' / 'components').glob('*.estimated.dat')",
+    'check_estimates': "bin/curate/check_estimates.py:149 comp_dir.glob('*.dat')",
+    'check_exergy': "bin/curate/check_exergy.py:164 probe.glob('log.*')",
+    'check_extractor_validation': "bin/curate/check_extractor_validation.py:175 tmp.glob('*.csv')",
+    'check_fastset': "bin/curate/check_fastset.py:126 c.glob('**/system/controlDict')",
+    'check_fit_verdict_channel': "bin/curate/check_fit_verdict_channel.py:193 (case_dir / 'curation').glob('*.dossier')",
+    'check_fixed_bed_scheme': 'bin/curate/check_fixed_bed_scheme.py:355 off.iterdir()',
+    'check_gate_selftest': 'bin/curate/check_gate_selftest.py:623 bdir.iterdir()',
+    'check_gibbs_condensables': "bin/curate/check_gibbs_condensables.py:198 (case / '0').iterdir()",
+    'check_gibbs_real_gas': "bin/curate/check_gibbs_real_gas.py:162 (case / '0').iterdir()",
+    'check_groups': "bin/curate/check_groups.py:93 comp_dir.glob('*.dat')",
+    'check_hansen_teas': "bin/curate/check_hansen_teas.py:129 case.rglob('solubility.csv')",
+    'check_henry_records': "bin/curate/check_henry_records.py:136 ho.CASES.glob('*/system/controlDict')",
+    'check_inlet_resolution': "bin/curate/check_inlet_resolution.py:642 case.glob('log.*')",
+    'check_membrane_import': "bin/curate/check_membrane_import.py:214 out.glob('*.dat')",
+    'check_mixing_ledger': "bin/curate/check_mixing_ledger.py:302 pr.glob('log.*')",
+    'check_model_default_registered': "bin/curate/check_model_default_registered.py:172 root.rglob('*')",
+    'check_overspecified_stream': 'bin/curate/check_overspecified_stream.py:378 case.iterdir()',
+    'check_pair_names': 'bin/curate/check_pair_names.py:77 mdir.iterdir()',
+    'check_panel': "bin/curate/check_panel.py:151 d.rglob('*')",
+    'check_petroleum_cuts': "bin/curate/check_petroleum_cuts.py:275 (dst / 'constant/components').glob('*.estimated.dat')",
+    'check_phase_envelope': "bin/curate/check_phase_envelope.py:194 case.rglob('envelope.csv')",
+    'check_phase_speciation': 'bin/curate/check_phase_speciation.py:524 os.listdir(conv)',
+    'check_postprocessing': "bin/curate/check_postprocessing.py:535 pp.rglob('*')",
+    'check_pressure_exchanger': "bin/curate/check_pressure_exchanger.py:284 (dst / '0').iterdir()",
+    'check_promoted_pair_record': "bin/curate/check_promoted_pair_record.py:134 work.glob('*.proposal.dat')",
+    'check_reaction_curve': "bin/curate/check_reaction_curve.py:341 dst.glob('*.csv')",
+    'check_reactor_limits': 'bin/curate/check_reactor_limits.py:114 dst.iterdir()',
+    'check_registry_scan': 'bin/curate/check_registry_scan.py:260 os.listdir(dst)',
+    'check_regressed_electrolytes': "bin/curate/check_regressed_electrolytes.py:116 (STD / sub).glob('*.dat')",
+    'check_sdem': "bin/curate/check_sdem.py:190 (Path(case_dir) / 'constant' / 'assets').glob('NF270_sdem_*.dat')",
+    'check_seal_drift': "bin/curate/check_seal_drift.py:196 r.rglob('constant/propertyManifest')",
+    'check_sealed_corpus': "bin/curate/check_sealed_corpus.py:51 c.glob('*.cho')",
+    'check_solid_property_refusals': "bin/curate/check_solid_property_refusals.py:84 os.listdir(os.path.join(d, '0'))",
+    'check_solid_service': "bin/curate/check_solid_service.py:188 base.glob('log.*')",
+    'check_solver_failures': 'bin/curate/check_solver_failures.py:258 dst.iterdir()',
+    'check_species_records': "bin/curate/check_species_records.py:145 sc.SPECIES.glob('*.dat')",
+    'check_spiral_array': "bin/curate/check_spiral_array.py:179 ASSETS.glob('*.dat')",
+    'check_stream_faces': "bin/curate/check_stream_faces.py:46 (case / 'iterations').iterdir()",
+    'check_stream_transport_closure': "bin/curate/check_stream_transport_closure.py:88 dst.glob('log.*')",
+    'check_thermoml_index': "bin/curate/check_thermoml_index.py:173 dest.glob('water-vapourPressure-*.dat')",
+    'check_time_state_layout': 'bin/curate/check_time_state_layout.py:132 case.iterdir()',
+    'check_transport_correlations': "bin/curate/check_transport_correlations.py:761 t.glob('*.dat')",
+    'check_typed_identifiers': "bin/curate/check_typed_identifiers.py:78 comp.glob('*.dat')",
+    'check_uf_gel': 'bin/curate/check_uf_gel.py:186 d.iterdir()',
+    'check_unifac_key': "bin/curate/check_unifac_key.py:315 tmp.rglob('g.csv')",
+    'check_vlle_fallback': "bin/curate/check_vlle_fallback.py:228 case.glob('log.*')",
+    'check_volumetric_rung1': 'bin/curate/check_volumetric_rung1.py:246 os.listdir(species_dir)',
+}
+
+SCAN_ROOTS_UNRESOLVED_DEBT = {
+    "why": "A gate that walks a tree the plan cannot see is a gate the plan "
+           "does not list: the C398 (a)+(b) sweep failed three such gates an "
+           "hour in.",
+    "remedy": "Read the walk: if it reaches the tree, declare the roots in a "
+              "module-level SCAN_ROOTS (a glob is allowed); if it walks only "
+              "the gate's own scratch copy, declare SCAN_ROOTS = () with that "
+              "reason.  Either removes the entry here.",
+    "blocked": "Nothing; the audit is gate by gate, one slice at a time.",
+}

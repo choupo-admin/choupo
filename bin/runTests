@@ -198,6 +198,16 @@
 #  process may use, and the report is the same lines in the same order.
 #  `-j 1` is the serial walk, byte for byte.  See THE CORES below.
 #
+#  THE SWEEP'S ECONOMY (DEV.md 4c C394), each said where it lives below:
+#    * INPUT-KEYED REUSE: on the sweep, the regressed-pairs gate and the
+#      curation fits are taken again only when one of their inputs changed;
+#      otherwise the earlier PASS is printed as `REUSED`, with its key and
+#      date, and counted apart.  `--no-reuse` (or CHOUPO_NO_REUSE=1) runs
+#      everything; the hosted tiers and a release set it.
+#    * `--fast` FIRST: the sweep refuses to start unless `--fast` passed on
+#      this same tree; `--no-fast-stamp` (or CHOUPO_SWEEP_WITHOUT_FAST=1)
+#      overrides it, and says so in the verdict.
+#
 #  Exit code: 0 if all pass, 1 if any fail.
 # =============================================================================
 
@@ -270,6 +280,8 @@ while [ $# -gt 0 ]; do
         -j|--jobs) _JOBS="${2:-}"; shift 2 || { echo "usage: runTests -j N ..."; exit 2; } ;;
         -j[0-9]*)  _JOBS="${1#-j}"; shift ;;
         --jobs=*)  _JOBS="${1#--jobs=}"; shift ;;
+        --no-reuse) export CHOUPO_NO_REUSE=1; shift ;;   # INPUT-KEYED REUSE, below
+        --no-fast-stamp) export CHOUPO_SWEEP_WITHOUT_FAST=1; shift ;;   # --fast FIRST, below
         *)         _rest+=("$1"); shift ;;
     esac
 done
@@ -467,9 +479,9 @@ case_pool_group() {
         [ -n "$d" ] || continue
         k=$(prepass_key "$d")
         t0=$EPOCHREALTIME
-        ( pass=0; fail=0; known_broken=0; expected_fail=0; KB_NAMES=(); EF_NAMES=()
+        ( pass=0; fail=0; known_broken=0; expected_fail=0; reused=0; KB_NAMES=(); EF_NAMES=()
           check_case "$d"
-          { echo "$pass $fail $known_broken $expected_fail"
+          { echo "$pass $fail $known_broken $expected_fail $reused"
             for n in ${KB_NAMES[@]+"${KB_NAMES[@]}"}; do printf 'KB\t%s\n' "$n"; done
             for n in ${EF_NAMES[@]+"${EF_NAMES[@]}"}; do printf 'EF\t%s\n' "$n"; done
           } > "$PREPASS_DIR/$k.cnt" ) > "$PREPASS_DIR/$k.out" 2>&1
@@ -518,17 +530,18 @@ case_prepass() {
 #  pool's check of it printed and add its tally, or check it here and now.
 walk_case() {
     if [ -n "$PREPASS_DIR" ]; then
-        local k p f kb ef tag n
+        local k p f kb ef ru tag n
         k=$(prepass_key "$1")
         if [ -f "$PREPASS_DIR/$k.cnt" ]; then
             timing_replay "$PREPASS_DIR/$k.sec"
             cat "$PREPASS_DIR/$k.out"
-            { read -r p f kb ef
+            { read -r p f kb ef ru
               while IFS=$'\t' read -r tag n; do
                   case "$tag" in KB) KB_NAMES+=("$n") ;; EF) EF_NAMES+=("$n") ;; esac
               done; } < "$PREPASS_DIR/$k.cnt"
             pass=$((pass+p)); fail=$((fail+f))
             known_broken=$((known_broken+kb)); expected_fail=$((expected_fail+ef))
+            reused=$((reused+${ru:-0}))
             return 0
         fi
     fi
@@ -607,6 +620,23 @@ CURATION_ROOT="$(python3 "$ROOT/bin/curate/curation_roots.py")" \
 #  chunk/single-case forms' callers that pipe stdout elsewhere would see
 #  stderr merged in: the sweep's output is a log read by people and by
 #  runtests_verdict.py, both of which read the merged stream already.
+#  --fast FIRST, the refusal (DEV.md 4c C394 decision 2; the rule is told in
+#  full at THE SWEEP'S ECONOMY, in check mode).  Taken here, before the timing
+#  wrapper, so a refused sweep leaves the last sweep's timings alone.  Only the
+#  full sweep (no argument left) is ever refused.
+if [ -z "${CHOUPO_SUITE_TIMED:-}" ] && [ "$#" -eq 0 ] \
+   && { [ -z "${CHOUPO_SWEEP_WITHOUT_FAST:-}" ] || [ "${CHOUPO_SWEEP_WITHOUT_FAST}" = 0 ]; }; then
+    if _ff=$(python3 -I "$ROOT/bin/curate/suite_reuse.py" fast-stamp check); then
+        export CHOUPO_FAST_FIRST_LINE="$_ff"
+    else
+        echo "$_ff"
+        echo ""
+        echo "ABORTED before running anything: the sweep starts only after \`bin/runTests --fast\`"
+        echo "passed on this same tree (DEV.md 4c C394, decision 2).  Run it first; or, to"
+        echo "sweep anyway and say so in the verdict, \`bin/runTests --no-fast-stamp\`."
+        exit 1
+    fi
+fi
 if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
     case "${1:-}" in
         --record|--record-append|--gui|-h|--help) ;;
@@ -654,7 +684,7 @@ if [ -z "${CHOUPO_SUITE_TIMED:-}" ]; then
                         fi ;;
                     "PASS "[0-9]*" / FAIL "*)
                         printf '\r[runTests] %d items, 100%% -- %s\n' "$_done" "$_line" >> "$_prog" 2>/dev/null ;;
-                    "PASS "*|"FAIL "*|"EXPECTED-FAIL "*|"KNOWN-BROKEN "*)
+                    "PASS "*|"FAIL "*|"EXPECTED-FAIL "*|"KNOWN-BROKEN "*|"REUSED "*)
                         _done=$((_done+1))
                         if [ "$_total" -gt 0 ]; then
                             _pct=$(( 100 * _done / _total )); [ "$_pct" -gt 99 ] && _pct=99
@@ -1430,6 +1460,25 @@ if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
 #  is SKIPPED: creating one is a recording decision, not a sweep side-effect.
 if [ "${1:-}" = "--record-append" ]; then RECORD=1; RECORD_APPEND=1; shift; fi
 
+#  EVERY SCRIPT UNDER bin/ IS EXECUTABLE -- CHECKED IN EVERY MODE (DEV.md 4c
+#  C394, 2026-11-14).  A gate committed as mode 100644 fails with "Permission
+#  denied" at its site, and only the full sweep reaches most sites:
+#  check_ratebased_segment.py and check_packing_record.py were both committed
+#  that way within two days and surfaced an hour into a sweep.  The rule is
+#  complete by construction (review SE-06): every tracked file under bin/ that
+#  begins with a shebang is mode 100755 in git and executable on disk -- it
+#  does not try to know who runs what.  A fraction of a second, so it runs
+#  here, before any mode branches, record and --gui included; a refusal
+#  ABORTS with the files and the remedy named.
+if ! "$ROOT/bin/curate/gate_exec_bits.py" > /tmp/execbits.$$ 2>&1; then
+    printf "FAIL  %-40s  (run bin/curate/gate_exec_bits.py)\n" "gate-exec-bits"
+    cat /tmp/execbits.$$
+    rm -f /tmp/execbits.$$
+    echo "ABORTED: a script under bin/ that begins with a shebang is not executable (DEV.md 4c C394).  No mode may skip this."
+    exit 1
+fi
+rm -f /tmp/execbits.$$
+
 #  THE STATIC CLOSURE GATE RUNS IN EVERY MODE (2026-11-09, DEV.md 4c C258).
 #  A golden file that PINS a violated mass, element or energy balance is a
 #  defect no run can reveal ("unchanged" is all a sweep says of it), and
@@ -1537,6 +1586,10 @@ if [ "${1:-}" = "--fast" ]; then
     done < "$ROOT/tutorials/FASTSET"
     [ "${#FLIST[@]}" -gt 0 ] || { echo "ERROR: tutorials/FASTSET declares no cases"; exit 1; }
     FAST=1
+    #  The tree this pass tests, taken NOW (C394 decision 2): written as the
+    #  sweep's stamp at the end only if the pass is clean and the tree is
+    #  still this one.
+    FAST_TREE_KEY=$(python3 -I "$ROOT/bin/curate/suite_reuse.py" tree-key 2>/dev/null || echo -)
     echo "[fast set] ${#FLIST[@]} family representative(s) from tutorials/FASTSET, then 4 conservation gates over this same pass"
     set -- "${FLIST[@]}"
 fi
@@ -2684,6 +2737,82 @@ case "$GB_TOP" in
     *)      echo "[golden bands] strict: $(printf '%s' "$GB_TOP" | cut -f2) -- every golden is compared as written";;
 esac
 [ "$#" -eq 0 ] && gate_segments          # the gates' segments (THE GATES, above)
+
+# --- THE SWEEP'S ECONOMY (DEV.md 4c C394) ----------------------------------
+#  (a) `--fast` FIRST.  The fast set holds one case per family and runs in
+#  minutes; on 2026-11-13 a sweep started on a merged tree on which nobody had
+#  run it, and four of the cases that crashed an hour into that sweep were
+#  ones the fast set holds (utility02_hitec_csp_heater among them).  The rule
+#  is the ORDER, so the sweep REFUSES -- it does not warn: a warning is what a
+#  hurried reader scrolls past, and the cost of honouring the rule is one
+#  `bin/runTests --fast` on the same tree.  "The same tree" is a stamp the fast
+#  tier writes on a pass (build/fastStamp.json): HEAD, the working tree's diff
+#  against it and the untracked files, taken when it STARTED and found
+#  unchanged when it ended.  `--no-fast-stamp` or CHOUPO_SWEEP_WITHOUT_FAST=1
+#  overrides it, and the verdict then says the sweep ran without one.
+#  The REFUSAL itself happens before the timing wrapper (search "--fast
+#  FIRST, the refusal"): a refused sweep must not overwrite
+#  build/suiteTimings.csv, the last sweep's measurement.  Here the run only
+#  says which way it started.
+SWEEP_WITHOUT_FAST=""
+if [ "$#" -eq 0 ]; then
+    if [ -n "${CHOUPO_SWEEP_WITHOUT_FAST:-}" ] && [ "${CHOUPO_SWEEP_WITHOUT_FAST}" != 0 ]; then
+        SWEEP_WITHOUT_FAST=1
+        echo "[fast first] OVERRIDDEN (CHOUPO_SWEEP_WITHOUT_FAST / --no-fast-stamp): this sweep starts WITHOUT a --fast pass on its tree"
+    else
+        echo "[fast first] ${CHOUPO_FAST_FIRST_LINE:-$(python3 -I "$ROOT/bin/curate/suite_reuse.py" fast-stamp check)}"
+    fi
+fi
+
+#  (b) INPUT-KEYED REUSE.  A verdict that depends only on named inputs is
+#  taken again only when one of them changed; otherwise the earlier PASS is
+#  printed as REUSED, with its key and date, and counted apart -- never as a
+#  fresh PASS.  The keys, what they cover and what is NOT keyed (and why) live
+#  in ONE home, bin/curate/suite_reuse.py (`--list`).  Offered only to the
+#  sweep: --fast, --scope, --witnesses and a named case run what they are
+#  given.  Off under --no-reuse / CHOUPO_NO_REUSE=1 (the hosted tiers and a
+#  release), and a clean checkout has no stored verdict, so it runs everything.
+#  CHOUPO_REUSE_NAMED=1 offers the curation fits' reuse to a named chunk too
+#  (`CHOUPO_REUSE_NAMED=1 bin/runTests data/curation/electrolytes`): an
+#  explicit opt-in, used to demonstrate the mechanism without a sweep.
+REUSE_ON=""
+reused=0
+if { [ "$#" -eq 0 ] || [ "${CHOUPO_REUSE_NAMED:-0}" = 1 ]; } && [ -z "$RECORD" ] \
+   && [ -z "${FAST:-}" ] && [ -z "${SCOPE:-}" ]; then
+    case "${CHOUPO_NO_REUSE:-}" in
+        ''|0) REUSE_ON=1
+              echo "[reuse] ON: the regressed-pairs gate and the curation fits are reused where their inputs are unchanged (bin/curate/suite_reuse.py --list; --no-reuse runs everything)" ;;
+        *)    echo "[reuse] OFF (CHOUPO_NO_REUSE): every keyed item runs" ;;
+    esac
+fi
+export CHOUPO_REUSE_GOLDEN_MODE="$GB_TOP"
+
+#  reuse_gate <stem> <label> -- 0 and the REUSED line printed when the gate's
+#  stored PASS still describes its inputs; otherwise 1 and REUSE_KEY set to
+#  the key the run will be stored under ("-" when the gate cannot be keyed).
+REUSE_KEY="-"
+reuse_gate() {
+    REUSE_KEY="-"
+    [ -n "$REUSE_ON" ] || return 1
+    local _out _rc
+    _out=$(python3 -I "$ROOT/bin/curate/suite_reuse.py" lookup "$1" 2>/tmp/reusewhy.$$); _rc=$?
+    if [ "$_rc" -eq 0 ]; then
+        printf "REUSED %-40s  (%s)\n" "$2" "$_out"
+        reused=$((reused+1))
+        rm -f /tmp/reusewhy.$$
+        return 0
+    fi
+    [ "$_rc" -eq 1 ] && REUSE_KEY="$_out"
+    [ -s /tmp/reusewhy.$$ ] && echo "[reuse] $2: $(head -1 /tmp/reusewhy.$$)"
+    rm -f /tmp/reusewhy.$$
+    return 1
+}
+#  reuse_store <stem> <captured output> -- keep a PASS under the key taken
+#  BEFORE the run (an input edited during the run must not be stamped as seen).
+reuse_store() {
+    [ -n "$REUSE_ON" ] && [ "$REUSE_KEY" != "-" ] || return 0
+    python3 -I "$ROOT/bin/curate/suite_reuse.py" store "$1" "$REUSE_KEY" "$2" || true
+}
 
 # Catalogue identity + CAS audit runs once on the FULL sweep (it is a property
 # of the whole standard catalogue, not of any one case).
@@ -4527,6 +4656,20 @@ PYEOF
     fi
     rm -f /tmp/debtreg.$$
 
+    # scan-roots ratchet (2026-11-14, DEV.md 4c C394, review SE-09).  The gates
+    # bin/integrate --plan cannot see by their scan roots are pinned by name in
+    # debt_registry.SCAN_ROOTS_UNRESOLVED; a new one fails, a healed pin fails
+    # until removed, so the number may only shrink.
+    if gate_exec "$ROOT/bin/curate/check_scan_roots.py" > /tmp/scanroots.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "scan-roots-gate" "$(head -1 /tmp/scanroots.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_scan_roots.py)\n" "scan-roots-gate"
+        cat /tmp/scanroots.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/scanroots.$$
+
     # caveat-surface gate (2026-08-06).  The end-of-run ASSUMPTIONS AND
     # CAVEATS block shipped WITHOUT a gate, which by this project's own
     # three-part criterion left it unconsolidated.  Modelled on
@@ -5476,11 +5619,19 @@ PYEOF
     #  ThermoML cache; with neither reachable its records cannot be
     #  reproduced, which is reported SKIP and counted as NEITHER pass nor fail
     #  -- the method-tools-gate convention below, never a green line.
-    gate_exec "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1
-    rp_rc=$?
-    if [ "$rp_rc" = 0 ]; then
+    #  KEYED (C394): run only when its inputs changed; see reuse_gate above.
+    if reuse_gate check_regressed_pairs "regressed-pairs-gate"; then
+        rp_rc=reused; : > /tmp/regpairs.$$
+    else
+        gate_exec "$ROOT/bin/curate/check_regressed_pairs.py" > /tmp/regpairs.$$ 2>&1
+        rp_rc=$?
+    fi
+    if [ "$rp_rc" = reused ]; then
+        :
+    elif [ "$rp_rc" = 0 ]; then
         printf "PASS  %-40s  (%s)\n" "regressed-pairs-gate" "$(head -1 /tmp/regpairs.$$)"
         pass=$((pass+1))
+        reuse_store check_regressed_pairs /tmp/regpairs.$$
     elif [ "$rp_rc" = 2 ]; then
         printf "SKIP  %-40s  (%s; NOT counted as a pass)\n" "regressed-pairs-gate" "$(head -1 /tmp/regpairs.$$)"
         sed -n '2,$p' /tmp/regpairs.$$
@@ -8132,7 +8283,7 @@ fi
 #  ONE CASE'S CHECK -- run, guards, golden rows, its result lines and its
 #  tally.  The walk below calls it in order, or prints what the pool's call
 #  of it printed (THE CORES, at the top of this file).
-check_case() {
+check_case_body() {
     local case_dir
 for case_dir in "$1"; do
     name_short=$(basename "$case_dir")
@@ -8354,13 +8505,64 @@ for case_dir in "$1"; do
         else
             printf "PASS  %-40s  (checked vs reference)\n" "$label"
         fi
-        pass=$((pass+1))
+        pass=$((pass+1)); PASSED_LABELS+=("$label")
     else
-        printf "pass  %-40s  (smoke + NaN guard)\n" "$label"; pass=$((pass+1))
+        printf "pass  %-40s  (smoke + NaN guard)\n" "$label"; pass=$((pass+1)); PASSED_LABELS+=("$label")
     fi
     done
 done
 }
+
+#  check_case <case_dir> -- the one way a case is checked: a curation fit whose
+#  stored PASS still describes its inputs is printed REUSED and not run (C394;
+#  the key and what it covers: bin/curate/suite_reuse.py case-plan); any other
+#  case is checked by check_case_body, and a curation fit whose every run
+#  PASSED is stored under the key taken before the walk.
+declare -A CASE_KEY=() CASE_REUSE=() CASE_REUSE_DATE=()
+check_case() {
+    local _d="$1" _k="${CASE_KEY[$1]:-}" _l
+    if [ -n "${CASE_REUSE[$_d]:-}" ]; then
+        while IFS= read -r _l; do
+            [ -n "$_l" ] || continue
+            printf "REUSED %-40s  (PASS taken %s; its keyed inputs are unchanged (key %s))\n" \
+                "$_l" "${CASE_REUSE_DATE[$_d]}" "${_k:0:12}"
+            reused=$((reused+1))
+        done <<< "$(printf '%s' "${CASE_REUSE[$_d]}" | tr '\037' '\n')"
+        return 0
+    fi
+    local _p0=$pass _f0=$fail _kb0=$known_broken _ef0=$expected_fail
+    PASSED_LABELS=()
+    check_case_body "$_d"
+    if [ -n "$_k" ] && [ "$fail" -eq "$_f0" ] && [ "$known_broken" -eq "$_kb0" ] \
+       && [ "$expected_fail" -eq "$_ef0" ] && [ "$pass" -gt "$_p0" ] \
+       && [ "${#PASSED_LABELS[@]}" -eq $((pass - _p0)) ]; then
+        local _s
+        _s="$ROOT/build/reuse/cases/$(printf '%s' "${_d#"$ROOT"/}" | sed 's#/#__#g').tsv"
+        mkdir -p "$ROOT/build/reuse/cases"
+        { printf '%s\n' "$_k" "$(date -u '+%Y-%m-%d %H:%M UTC')"
+          printf '%s\n' "${PASSED_LABELS[@]}"; } > "$_s.$$" && mv -f "$_s.$$" "$_s"
+    fi
+}
+
+#  The curation fits' plan (C394): one python call keys every case before the
+#  walk, so neither the walk nor the pool computes a hash.
+if [ -n "${REUSE_ON:-}" ] && [ -d "$CURATION_ROOT" ]; then
+    _rp=$(mktemp)
+    if python3 -I "$ROOT/bin/curate/suite_reuse.py" case-plan "$CURATION_ROOT" > "$_rp"; then
+        _nr=0; _nk=0
+        while IFS=$'\t' read -r _d _k _labels _date; do
+            [ -n "$_d" ] || continue
+            CASE_KEY["$_d"]="$_k"; _nk=$((_nk+1))
+            if [ "$_labels" != - ]; then
+                CASE_REUSE["$_d"]="$_labels"; CASE_REUSE_DATE["$_d"]="$_date"; _nr=$((_nr+1))
+            fi
+        done < "$_rp"
+        echo "[reuse] curation fits: $_nk keyed, $_nr with an unchanged key (REUSED below), $((_nk-_nr)) to run"
+    else
+        echo "[reuse] curation fits: NOT keyed this run (suite_reuse.py case-plan failed) -- every one runs"
+    fi
+    rm -f "$_rp"
+fi
 
 case_prepass
 for case_dir in "${CASES[@]}"; do
@@ -9266,7 +9468,27 @@ else
     echo "[golden bands] strict: every golden was compared as written; $(printf '%s' "$GB_TOP" | cut -f2)"
 fi
 rm -f "$GB_LOG"
-echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
+#  REUSED is counted APART and appended after the four words every reader of
+#  this line parses (`^PASS n / FAIL n`), so no reader mistakes it for a PASS.
+if [ "${reused:-0}" -gt 0 ]; then
+    echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail / REUSED $reused"
+else
+    echo "PASS $pass / FAIL $fail / KNOWN-BROKEN $known_broken / EXPECTED-FAIL $expected_fail"
+fi
+if [ "${reused:-0}" -gt 0 ]; then
+    echo "  ^ $reused item(s) were NOT RUN by this sweep: REUSED, each with the key of"
+    echo "    its inputs and the date its PASS was taken (bin/curate/suite_reuse.py)."
+    echo "    \`bin/runTests --no-reuse\` runs them."
+fi
+if [ -n "${SWEEP_WITHOUT_FAST:-}" ]; then
+    echo "  ^ AND THIS SWEEP STARTED WITHOUT A --fast PASS ON ITS TREE (overridden)."
+fi
+#  THE FAST STAMP (C394 decision 2): a clean --fast pass on an unchanged tree
+#  is what lets the sweep start on it.
+if [ -n "${FAST:-}" ] && [ "$fail" -eq 0 ] && [ -n "${FAST_TREE_KEY:-}" ] && [ "$FAST_TREE_KEY" != - ]; then
+    python3 -I "$ROOT/bin/curate/suite_reuse.py" fast-stamp write "$FAST_TREE_KEY" \
+        "PASS $pass / FAIL $fail" || true
+fi
 #  WHAT THAT NUMBER MEANS (G2, 2026-08-05).  Almost every case above compares
 #  against a golden Choupo recorded itself, so a PASS proves the answer has NOT
 #  MOVED -- not that it was ever right.  This corpus used to be called "the

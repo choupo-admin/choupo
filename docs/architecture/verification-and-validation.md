@@ -182,6 +182,20 @@ its own verdict line.
    rather than at the advance — is recorded in `DEV.md` §6a with the evidence
    for both sides.
 
+**The sweep's economy (DEV.md 4c C394, 2026-11-14).**  Rung 3 comes before
+rung 4 by construction: the full sweep (no argument) refuses to start unless
+`bin/runTests --fast` passed on the same tree (a stamp over HEAD, the diff and
+the untracked files, `build/fastStamp.json`; `--no-fast-stamp` overrides it
+and the verdict says so).  On the sweep, a verdict that depends only on named
+inputs -- the regressed-pairs gate, each curation fit -- is printed `REUSED`
+with its key and date when none of them changed, and counted apart from PASS;
+`--no-reuse`, the hosted tiers and a release run everything.  What a REUSED
+line proves is what the PASS it repeats proved, on inputs shown byte-identical
+(the engine's compiled objects, the data trees, the harness): it is evidence
+reused while it still describes what enters `main`, the rule of CLAUDE.md
+§10, not a new observation.  The developer guide's "The sweep's economy" and
+`bin/curate/suite_reuse.py` hold the detail.
+
 **Two deviations from the ruling's text, stated rather than silent.**
 (a) There is no `validation/` directory and none was created: a witness is a
 ROLE, not an address — the same decision the tree made when `components/`

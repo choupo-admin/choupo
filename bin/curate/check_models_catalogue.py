@@ -43,6 +43,15 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CATALOGUE = ROOT / "generated" / "modelsCatalogue.json"
 
+#  WHERE THIS GATE COUNTS BY PATTERN (DEV.md 4c C394).  The directories it
+#  counts `*.dat` under are read at run time from the catalogue's `source`
+#  fields, so no reader of this file can see them; they are declared here for
+#  bin/curate/gate_scan_roots.py (and so bin/integrate --plan lists this gate
+#  when a record is added under one of them -- the slice (e) packings were
+#  not), and the count arm below REFUSES a counted source outside them, so the
+#  declaration cannot go stale.
+SCAN_ROOTS = ("data/standards", "data/groupEstimative")
+
 #  Directories the 2026-07-16 migrations retired.  A catalogue entry naming one
 #  is stale by construction, whatever the filesystem happens to hold.
 RETIRED = (
@@ -98,6 +107,12 @@ def main():
 
             if "count" in item and src:
                 n_count += 1
+                if not any(src.rstrip("/") == r or src.startswith(r + "/")
+                           for r in SCAN_ROOTS):
+                    fails.append(
+                        f"{key}: counted source '{src}' lies outside SCAN_ROOTS "
+                        f"{SCAN_ROOTS} -- add its root there, or bin/integrate "
+                        "--plan cannot see this gate when that directory moves")
                 d = ROOT / src
                 if d.is_dir():
                     have = len(list(d.rglob("*.dat")))

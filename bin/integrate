@@ -93,7 +93,13 @@ a human, leaving the worktree where it stopped:
               conservation gates SCOPED to that pass;
       gates   every bin/curate/check_*.py whose source names a touched file
               (path, file name, or -- for src/ and bin/curate modules -- the
-              stem), the way `bin/runTests --gui` derives its list;
+              stem), the way `bin/runTests --gui` derives its list, AND
+              every gate whose SCAN ROOTS hold a touched file (a gate that
+              walks src/ or globs data/standards/**/*.dat names no file;
+              bin/curate/gate_scan_roots.py reads the roots from its source);
+      exec    every tracked file under bin/ that begins with a shebang is
+              mode 100755 at the branch's head (bin/curate/gate_exec_bits.py
+              --rev); a refusal names the files and the plan exits 1;
       --gui   when gui/ moved, or when lines moved in a src/ file an EduTool
               lesson cites by file:line;
       --fast  when a factory REGISTRATION or the build system moved;
@@ -821,7 +827,33 @@ def reach(root: Path, base: str, files):
             scoped[g.stem] = hit
         else:
             gates[g.stem] = hit
+    #  ...AND every gate whose SCAN ROOTS hold a touched file (C394, from the
+    #  C398 (a)+(b) sweep: three of its four failed gates walk a tree by
+    #  pattern and name no file -- check_std_includes walks src/,
+    #  check_debt_registry globs bin/curate/check_*.py, check_origin_census
+    #  data/standards/**/*.dat).  The roots are read from each gate's source
+    #  by bin/curate/gate_scan_roots.py, the one home of that fact; a tutorial
+    #  file reaches a root-walker only through its case's files, as above.
+    gsr = curate_module(root, "gate_scan_roots")
+    by_root = gsr.reached(files, root)
+    for stem, hits in sorted(by_root.items()):
+        if stem in gates or stem in scoped:
+            continue
+        hit = [f"{f} (under {r})" for f, r in hits]
+        if stem in in_scope_run and \
+                "bin/curate/suite_cache.py" not in files:
+            scoped[stem] = hit
+        else:
+            gates[stem] = hit
+    gates = dict(sorted(gates.items()))
+    #  ...AND the non-check gates (review SE-09): the `--check` arm of every
+    #  generator generated_artefacts registers, reached through the scan
+    #  roots of the script it runs and the files it owns.  bin/integrate's
+    #  own regeneration step and `generated_artefacts --check` run them; the
+    #  plan names them so a reader sees what the diff can move.
+    generators = gsr.generators_reached(files, root)
     return dict(cases=cases, gates=gates, scoped_gates=scoped, gui=gui,
+                generators=generators,
                 fast=fast, full=full, why=why)
 
 
@@ -837,6 +869,11 @@ def print_plan(plan):
     for g, hit in plan["gates"].items():
         say(f"    {g:<44} <- {hit[0]}" + (f" (+{len(hit) - 1})"
                                           if len(hit) > 1 else ""))
+    gens = plan.get("generators") or {}
+    say(f"  generator checks ({len(gens)}), run by the regeneration step:")
+    for name, (cmd, hits) in sorted(gens.items()):
+        say(f"    {cmd:<56} <- {hits[0][0]} (under {hits[0][1]})"
+            + (f" (+{len(hits) - 1})" if len(hits) > 1 else ""))
     if plan["scoped_gates"]:
         say("  conservation gates reached by name, "
             + ("judged inside --scope: " if plan["cases"] else
@@ -1137,7 +1174,16 @@ def main(argv):
             f"({base_sha[:10]}): {len(files)} file(s) the branch changes.")
         say(f"  (maps read from {TOOL_ROOT}; the merged tree may differ)")
         print_plan(reach(TOOL_ROOT, mb, files))
-        return 0
+        #  EXECUTABLE BITS (C394): a script under bin/ with a shebang committed
+        #  as 100644 fails only where it is run directly, which for most gates
+        #  is the full sweep; the plan reads the branch's own modes and says so
+        #  before anything is merged.
+        p = subprocess.run([sys.executable, str(TOOL_ROOT / "bin" / "curate" /
+                                                "gate_exec_bits.py"),
+                            "--rev", br_sha], capture_output=True, text=True)
+        say("  exec bits: " + (p.stdout.strip() or p.stderr.strip())
+            .replace("\n", "\n    "))
+        return 1 if p.returncode else 0
 
     if git(repo, "merge-base", "--is-ancestor", br_sha, base_sha,
            check=False) is not None:

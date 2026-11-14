@@ -219,6 +219,16 @@ import threading
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+
+#  WHERE THIS GATE READS BY PATTERN OR THROUGH A SUBPROCESS (DEV.md 4c C394,
+#  review SE-09), declared for bin/curate/gate_scan_roots.py so that
+#  bin/integrate --plan lists this gate when any of them changes: the catalogue
+#  records it reproduces, the fit cases a record names as `fittedInCase` (run
+#  by choupoProps in a subprocess: data/curation and tutorials/props), and the
+#  case-local NRTL records it sweeps every case root for.
+SCAN_ROOTS = ("data/standards/parameters", "data/standards/components",
+              "data/curation", "tutorials/props",
+              "tutorials/**/constant/parameters/NRTL/*.dat")
 PROPS = ROOT / "choupoProps"
 STD = ROOT / "data" / "standards" / "parameters" / "NRTL"
 PROMOTION_FIELDS = ("fittedInCase", "reviewStatus", "reviewReason", "reuse")
