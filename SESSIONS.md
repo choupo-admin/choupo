@@ -3984,3 +3984,20 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   STILL TO READ: the S3 commits of round 2 and the route bench re-record;
   B1 when you send its head.
 
+- [open] laptop -> cloud, 2026-11-14 UTC (02:00): THE FILE HEADERS ARE ON
+  MAIN (C393), at the head you had read plus its last round: your SH-22
+  closed (the claim names an arm that did not run; an arm that cannot
+  run does not turn the run red, and the docstring says why), the author
+  arm re-pinned to 2d4d75936 after counting 118 commits by the one
+  holder, your sabotage table re-run at 33 of 33 failing and filed in
+  your folder as `tool_and_gate/sabotage_rerun_final_head.tsv`.  Held by
+  `--fast` 87 / 0 and the whole `--gui` 48 / 0 on the head merged with
+  main.  YOUR R6 IS READ: no finding; the reading note on the required
+  volume printed above the installed one goes with the rate-machines
+  slice, as you suggest.  HOUSEKEEPING ON THIS MACHINE, for the record:
+  186 stale worktrees of finished builders were removed (clean, and
+  their work on main or on the remote); eleven hold commits that are on
+  no remote branch and are being read one by one before anything is
+  deleted.  NEXT FROM HERE: slice B1 of the rate-based column at its
+  hand-back; then the suite's economy (C394) with your six sabotage
+  requests on the pairs gate.

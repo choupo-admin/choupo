@@ -3476,6 +3476,54 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C393 LANDED (2026-11-14): EVERY TRACKED CODE FILE CARRIES THE HOLDER
+> LINE AND THE LICENCE IDENTIFIER.**  2511 code files in nine kinds
+> (engine C++, web-app sources, tests and scripts, scripts with a hash
+> comment, tool C++, batch files, the site's script, root scripts); the
+> engine's files and the web app's take the banner their neighbours
+> carry, every other file two comment lines after any shebang.  THE
+> HOLDER LINE, confirmed by Vitor after a read-back, is exactly
+> "Copyright (C) 2026 Vitor Geraldes" with his accent, his name alone;
+> five places that spelled it without the accent were corrected.  NEVER
+> STAMPED, each by a named rule with its reason: generated files; files
+> with another holder's notice (two under the eNRTL reference folder);
+> the vendored membrane solver, never opened in text mode (its notice is
+> not valid UTF-8); third-party material of the web app's public folder;
+> HELD for the owner's word on their origin: four scripts that say they
+> follow another project's file.  ONE MANIFEST at the root (`REUSE.toml`)
+> for the files that cannot hold a comment and for the guides, which are
+> NOT stamped with the code's licence and whose authors it does not
+> name; the tree does not claim compliance with that specification.
+> THE GATE `check_source_headers` (and two tests beside it): the exact
+> holder line in the file's LEADING COMMENT, one project line and one
+> identifier per file, another holder in any common spelling a conflict
+> the tool never stamps, no project notice in any spelling on an
+> excluded file, the exclusion table two-sided, the manifest read, and
+> an AUTHOR arm: every commit after a pinned one has an author listed in
+> AUTHORS (45 commits before the pin carry the tool as author: 42
+> merges, 3 small text edits; history is not rewritten).  `bin/header`
+> is now a wrapper of the one tool and never reads the holder from the
+> local git configuration.  REVIEWED TWICE by the reviewing session
+> (docs/reviews/2026-11-13-file-headers/): its first table of 33
+> sabotages, of which several passed the first gate (a replaced holder,
+> a co-holder, a header inside a string), all fail on the final head;
+> the re-run is in its folder.  VALIDATION, as text that executes
+> nothing new: every changed script parsed (Python, shell, JavaScript);
+> the build clean with no warning; `--fast` 87 PASS / 0 FAIL / 5
+> EXPECTED-FAIL with the balance gates; `--gui` WHOLE 48 PASS / 0 FAIL on
+> the head merged with main; the citations moved by the added lines
+> re-pointed (the tool's and 68 hand-kept ones).  No full sweep.  OPEN
+> FOR VITOR: the origin of the four held scripts.  NOT COVERED BY
+> ANYTHING, by decision of this slice: code-extension files outside the
+> code roots (under docs, tutorials, data, paper, benchmarks), the HTML
+> and Markdown under the code roots, the data records.
+> ALSO, FROM THE REVIEW OF THE MOVED ROWS (R6, no finding): all 151
+> tablet rows are on main at their listed value and none moved outside
+> the list; five economics rows recomputed by hand hold.  One reading
+> note taken for the rate-machines slice: a sheet that prints the
+> required volume above the installed one needs a word saying the
+> required one is at the planned fill.
+
 > **THE FIFTH INTEGRATION LANDED (2026-11-14, 01:20): THE LIQUID-DENSITY
 > PILOT AND FOUR CORRECTIONS, held by ONE FULL SWEEP on its second
 > attempt.**
