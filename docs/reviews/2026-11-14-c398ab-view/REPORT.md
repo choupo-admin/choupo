@@ -365,3 +365,63 @@ with SR1's window (300 647.096) and only Psat operations exits 1).
 Not reached: a full sweep; the pins gate on this tree; a column with a window
 excluding only the answer; mixtures where re-seeding into one law's window
 lands outside another's; the props-binary dew point.
+
+## Fifth round (2026-11-14): `origin/integ/c398ab` at 8ffee1a73 (the fix is 1b68aba64), the post-solve hard-window audit
+
+Built with `make -j3 all` (exit 0); scratch copies on this tree's binaries; no
+sweep.  Statuses: CV-20, 21, 24, 26, 27 fixed; CV-25 partly; new CV-28..33.
+
+Verdict: the post-solve audit holds where it looks, but does not look at every
+reported state and misfires twice.  Holds: the CV-24, CV-25, CV-26
+reproductions behave as the builder's table says (CV-24 (290 354.425) and
+(290 354.4253) exit 0, (290 354.42) refused at the reported T_bubble; column02
+simultaneous converges with (290 390) and is refused at `bottoms` 382.894 K
+with (290 382.5); column01 Wang-Henke converges with (290 382) and (290 384);
+the ident case gives two identities, `b950e3561ce02eee` and
+`24ba85c237b84d61`, and the CV-01 sabotage through the gate's `compare()` gives
+1 mismatch); CV-27 fixed in flash08, vlle03 and the Psat-only purelaws02 copy;
+sector streams are audited (lithiumBrinePlant refused at `HOTAIR.hotAir`,
+950.58 K, with water's law at `domain (273 900)`); the time-integrated
+binaries refuse a `domain` at assembly (batch01, ctrl01).
+
+**CV-28 (S2):** the dew point's answer is not audited: the audit reads
+`T_bubble`/`T_dew` from KPIs and `DewPoint` sets none; dewT01 (feed 330 K,
+ethanol and water `domain (290 363.9)`) prints `T_dew: 363.9438 K` and exits 0.
+
+**CV-29 (S2):** a CSTR's Van Heerden scan is audited as unit states (the CSTR
+stores its energy-balance scan as its profile, `CSTR.cpp:1157-1228`, x-axis
+`T_K`): cstr05_multiplicity with `domain (290 320)` exits 2 at "the internal
+state of unit 'reactor' (T_K 0, T = 275 K)", a scan point.
+
+**CV-30 (S2):** most property operations are outside the audit:
+purePhaseDiagram on a purelaws02 copy with Antoine `domain (273 373)` writes
+the saturation curve from 273.16 to 647.14 K on that law (808039.6 Pa at 440.8
+K) and exits 0; by grep, phaseEnvelope, propertyScanBinary,
+propertyScanTernary, enthalpyConcentration, flashSpec, lleTieLines,
+phaseSplitScan and hConsistency call no `auditState`.
+
+**CV-31 (S3, by reading):** published states the audit does not visit:
+rate-based profile columns `T_V`, `T_I`, `T_L` (`DistillationColumn.cpp:877-879`),
+exchanger `T_hot`/`T_cold`, dryer `T_gas_K`/`T_solid_K`, spray dryer
+`T_gas`/`T_particle`, KPIs such as `T_top`, `T_bottom`, `Tsat`, `T_wetbulb`,
+`T_reflux`; and when the plan does not converge nothing is audited
+(`Flowsheet.cpp:4556`) while the result is still published.
+
+**CV-32 (S3):** a law is held at every stream where its component appears, not
+where the law is used: lithiumBrinePlant with water's vapour-pressure law at
+SR1's own range `domain (273.16 647.096)` exits 2 at `HOTAIR.hotAir` (950.58
+K), a combustion gas above water's Tc; a vapour-pressure law's natural hard
+window ends at Tc, so every case with that component in a hot gas is refused.
+
+**CV-33 (S4):** propertyScan1D on the domain-bounded Antoine law, 300-450 K,
+exits 0, writes `nan` at 400 and 450 K with a `[note]` quoting the refusal,
+while the end-of-run advisory says of the same point "OUTSIDE its declared
+Trange -- extrapolated, still returned".
+
+Not reached: a full sweep; a recycle tear converged outside a window; a
+unit-package-only law in a sector context; CN-09; running the props dew point,
+phaseEnvelope and enthalpyConcentration (grep only).
+
+**Coordinator's ruling on this round (2026-11-14):** hard windows leave this
+landing; the grammar refuses `domain` by name and the audit is removed; the
+hard window is designed separately (DEV.md 4c).
