@@ -376,7 +376,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     read: "yes", cite: "yes, as scholarly practice",
     copyValues: "yes, declaring `licence publicDomain;`",
     redistribute: "yes",
-    rule: "bin/curate/check_source_licence.py:491",
+    rule: "bin/curate/check_source_licence.py:493",
   },
   {
     cls: "open",
@@ -414,7 +414,7 @@ export const LICENCE_CLASSES: readonly LicenceClassRow[] = [
     read: "yes, if you have access", cite: "yes",
     copyValues: "no: local only, in your private data/local/",
     redistribute: "no",
-    rule: "bin/curate/check_source_licence.py:343",
+    rule: "bin/curate/check_source_licence.py:345",
   },
 ];
 
@@ -691,7 +691,7 @@ export const CITATIONS: readonly { file: string; line: number; contains: string 
   { file: "docs/design/where-to-find-property-data.md", line: 126, contains: "NonCommercial" },
   { file: "docs/design/where-to-find-property-data.md", line: 127, contains: "PRIMARY" },
   { file: "docs/design/where-to-find-property-data.md", line: 125, contains: "aggregator" },
-  { file: "bin/curate/check_source_licence.py", line: 343, contains: "EXCLUDED_TABLES" },
-  { file: "bin/curate/check_source_licence.py", line: 491, contains: "ACCEPTED_PUBLIC_DOMAIN" },
+  { file: "bin/curate/check_source_licence.py", line: 345, contains: "EXCLUDED_TABLES" },
+  { file: "bin/curate/check_source_licence.py", line: 493, contains: "ACCEPTED_PUBLIC_DOMAIN" },
   { file: EXAMPLE_RECORD, line: 120, contains: "rounded UP to two significant figures" },
 ];
