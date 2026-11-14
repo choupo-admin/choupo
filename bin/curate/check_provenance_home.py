@@ -27,7 +27,7 @@ data/curation/**/constant/components:
     property block itself carrying `origin` beside its coefficients -- it is
     refused by name, with the line.
   * the debt that existed when the gate was written (a law block that carries
-    its own `origin` beside its coefficients) is pinned in PINNED below; it
+    its own `origin` beside its coefficients) is pinned in debt_registry.py; it
     may only shrink, and a pinned entry that is gone must leave the list.
 
     reads: data/standards/components/ tutorials/ data/curation/
@@ -38,20 +38,15 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from record_reader import Block, PROPERTY_BLOCKS, parse_file   # noqa: E402
+from debt_registry import (PROVENANCE_OUTSIDE_BLOCK,         # noqa: E402
+                           PROVENANCE_OUTSIDE_BLOCK_DEBT)    # waivers have ONE home
 
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_provenance_home"
 
-#  THE DEBT, pinned 2026-11-14: a law block that carries its own provenance
-#  key (`origin`) beside its coefficients instead of an entry in the record's
-#  provenance block.  Remedy: move `origin` (and its `why`) into
-#  `provenance { <property> { origin ...; } }`.
-PINNED = {
-    "data/standards/components/LiCl.dat:liquidHeatCapacity",
-    "tutorials/props/electrolyte/farelo_licl_range/constant/components/LiCl.dat:liquidHeatCapacity",
-    "tutorials/plant/lithiumBrinePlant/constant/components/LiCl.dat:liquidHeatCapacity",
-    "tutorials/plant/lithiumBrinePlant/constant/components/Li2CO3.dat:solidHeatCapacity",
-}
+#  THE DEBT lives in the ONE registry (debt_registry.PROVENANCE_OUTSIDE_BLOCK,
+#  with its why and remedy): law blocks that carry their own `origin`.
+PINNED = PROVENANCE_OUTSIDE_BLOCK
 
 
 def files():
@@ -91,10 +86,11 @@ def main():
             failures.append(f"{rel}:{line}: a provenance entry `{where.split('/')[-1]}` filed in"
                             f" `{where}` -- its home is the record's top-level `provenance {{}}`"
                             " block (move it there; a tool that writes one uses"
-                            " transport_fit.insert_into_provenance)")
+                            " transport_fit.insert_into_provenance).  "
+                            + PROVENANCE_OUTSIDE_BLOCK_DEBT["remedy"])
     stale = sorted(PINNED - pinned_seen)
     for s in stale:
-        failures.append(f"pinned debt `{s}` is gone -- remove it from PINNED (the list may only shrink)")
+        failures.append(f"pinned debt `{s}` is gone -- remove it from debt_registry.PROVENANCE_OUTSIDE_BLOCK (the list may only shrink)")
     if failures:
         print(f"{NAME}: FAIL ({len(failures)})")
         for x in failures:

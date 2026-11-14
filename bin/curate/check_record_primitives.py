@@ -32,13 +32,13 @@ copy is the case's frozen data):
      slope of the vapour pressure;
   2. dGf_298 is a CHECK (ruling (a)): accepted, and since the comparison it
      owes is not computed yet in this slice, each is listed as "check not
-     yet computed" and PINNED (the list may only shrink: a new one fails
+     yet computed" and pinned in debt_registry.py (the list may only shrink: a new one fails
      until its comparison exists);
   3. a phase rung is ALLOWED and labelled (ruling (c)): PRIMITIVE where the
      record's own laws cannot derive it, CHECK where they can (its deviation
      is the engine's to print; no rung exists in the catalogue today);
   4. the debt of derived quantities that existed when the gate was written is
-     PINNED with its remedy; it may only shrink.
+     pinned in debt_registry.py with its remedy; it may only shrink.
 
     reads: data/standards/components/ bin/curate/record_reader.py
 """
@@ -48,6 +48,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from record_reader import Block, parse_file   # noqa: E402
+from debt_registry import (RECORD_DERIVED_TYPED, RECORD_DERIVED_TYPED_DEBT,   # noqa: E402
+                           DGF_CHECK_UNCOMPUTED, DGF_CHECK_UNCOMPUTED_DEBT)  # ONE home
 
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_record_primitives"
@@ -58,32 +60,12 @@ LATENT = re.compile(r"^(d?Hvap)(?!Tb$)\w*$")
 SLOPE = {"dlnPsatdT", "dPsatdT", "dlnPdT"}
 RUNGS = ("idealGas", "pureLiquid", "pureSolid")
 
-#  THE DEBT, pinned 2026-11-14 (DEV.md 4c C398 slice (b)).
-#  (a) Derived quantities typed.  NaOH(s) dissolves by its own
-#  `dissolutionEnthalpy` (NaOH.dat, solidPhases.sodiumHydroxide.calorimetric),
-#  so under the salt-formation contract (docs/architecture/settled-contracts.md,
-#  "Salt formation -- ION-DERIVED", lines 211-230) its solid formation
-#  enthalpy is Sum nu hfAq - dH_soln: the typed top-level Hf_298 / S_298
-#  (NaOH.dat:29-30) is a second home, read by no engine code.  Remedy: delete
-#  them once the ion-derived route prints the same datum (or move them to a
-#  CHECK of that route).
-PINNED_DERIVED = {
-    "NaOH.dat:Hf_298",
-    "NaOH.dat:S_298",
-}
-#  (b) CHECKs whose comparison is not computed yet: dGf_298 beside dHf_298
-#  and s_298 (ruling (a): a tabulated datum to be compared with dHf - T dSf
-#  from the record and its elements; the comparison is the next slice's).
-PINNED_DGF = {
-    "R11", "R113", "R12", "R1234yf", "R1234zeE", "R1234zeZ", "R134a", "R13I1",
-    "R143a", "R21", "R218", "R22", "R236EA", "R245fa", "R32", "R365MFC",
-    "RC318", "cis2Butene", "cyclopentane", "cyclopropane", "diethylEther",
-    "dimethylEther", "ethylBenzene", "ethyleneOxide", "fluorine", "hfe143m",
-    "isoButane", "isoButene", "isohexane", "mXylene", "methylLinoleate",
-    "methylLinolenate", "methylOleate", "methylPalmitate", "methylStearate",
-    "nDecane", "nDodecane", "nNonane", "nUndecane", "neopentane", "novec649",
-    "oXylene", "pXylene", "propyne", "trans2Butene",
-}
+#  THE DEBT lives in the ONE registry (debt_registry.py), with its why and
+#  remedy: RECORD_DERIVED_TYPED (NaOH's solid formation datum, a second home
+#  under the salt-formation contract) and DGF_CHECK_UNCOMPUTED (the dGf_298
+#  CHECKs whose comparison is not computed yet, ruling (a)).
+PINNED_DERIVED = RECORD_DERIVED_TYPED
+PINNED_DGF = DGF_CHECK_UNCOMPUTED
 
 
 def derivable(rec, rung, natural):
@@ -117,7 +99,8 @@ def main():
                 fails.append(f"{f.name}:{line}: `{k}` types a DERIVED quantity -- the record stores"
                              " the primitive once (A3: a formation datum lives in"
                              " standardThermochemistry, in the natural phase; the latent heat at Tb"
-                             " only; never a slope of the vapour pressure)")
+                             " only; never a slope of the vapour pressure).  "
+                             + RECORD_DERIVED_TYPED_DEBT["remedy"])
         st = rec.get("standardThermochemistry")
         if isinstance(st, Block):
             natural = {"pureLiquid": "liquid", "pureSolid": "solid"}.get(st.word("referenceState"), "gas")
@@ -127,7 +110,8 @@ def main():
                 else:
                     fails.append(f"{f.name}: standardThermochemistry.dGf_298 is a CHECK (dHf - T dSf from"
                                  " this record and its elements) whose comparison is not computed yet;"
-                                 " a new one waits for that comparison (the pinned list only shrinks)")
+                                 " a new one waits for that comparison (the pinned list only shrinks).  "
+                                 + DGF_CHECK_UNCOMPUTED_DEBT["remedy"])
             for rung in RUNGS:
                 r = st.get(rung)
                 if isinstance(r, Block):
@@ -139,9 +123,9 @@ def main():
                             if derivable(rec, rung, natural) else "PRIMITIVE")
                     labels.append(f"{f.stem}.{rung}: {kind}")
     for k in sorted(PINNED_DERIVED - derived_seen):
-        fails.append(f"pinned derived `{k}` is gone -- remove it from PINNED_DERIVED (only shrinks)")
+        fails.append(f"pinned derived `{k}` is gone -- remove it from debt_registry.RECORD_DERIVED_TYPED (only shrinks)")
     for k in sorted(PINNED_DGF - dgf_seen):
-        fails.append(f"pinned dGf_298 check of `{k}` is gone -- remove it from PINNED_DGF (only shrinks)")
+        fails.append(f"pinned dGf_298 check of `{k}` is gone -- remove it from debt_registry.DGF_CHECK_UNCOMPUTED (only shrinks)")
     if fails:
         print(f"{NAME}: FAIL ({len(fails)})")
         for x in fails:

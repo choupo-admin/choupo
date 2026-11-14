@@ -680,10 +680,13 @@ int run(const std::string& manifestPath, const std::string& outPath)
             const std::vector<std::string> one { rec };
             w.block(tag, "vaporPressure");
             if (auto pk = assemble(db, systemText(one, ""), w))
+                //  Through the PACKAGE (ThermoPackage::Psat), the call a unit
+                //  makes: the bench's systems declare no pure-fluid method, so
+                //  it answers with the record's chosen law, and the record is
+                //  never read past the package (check_inlet_resolution l1).
                 overT([&](double T) {
-                    const Component& c = pk->comp(0);
-                    if (!c.hasVaporPressure()) throw std::runtime_error("no vapour-pressure law");
-                    return c.vp().Psat_Pa(T); });
+                    if (!pk->hasSaturationCurve(0)) throw std::runtime_error("no vapour-pressure law");
+                    return pk->Psat(0, T); });
             struct CpRoute { const char* name; int which; };
             for (const CpRoute& r : { CpRoute{ "idealGas", 0 }, CpRoute{ "liquid", 1 }, CpRoute{ "solid", 2 } })
                 for (int q = 0; q < 2; ++q)
