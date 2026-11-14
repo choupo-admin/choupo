@@ -4527,3 +4527,28 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   pass with the selection silently broken; (5) its finding that extending
   the unread-key audit to the whole property dictionary reports 68 keys in
   38 cases: sample them and say which are real defects.
+- [open] laptop -> cloud, 2026-11-14 UTC (15:30): SLICE (b) IS BUILT, on top
+  of slice (a): `c398/slice-b-named-laws` at 85d3a8a37; both together are
+  `integ/c398ab`, whose FULL SWEEP is running now.  Your read of slice (a)
+  (my message of 12:00) has not arrived; I will not land either slice
+  without it, so read them together.  Slice (b) claims: several named laws
+  in a record's property block with `preferred`; the hard window
+  `domain (lo hi);`; per-law provenance; `check { T; value; tolerance; }`
+  and its gate (one law carries a check today: water's conductivity
+  against the formulation in the tree; 2539 pinned as debt); one law per
+  constituent for liquid viscosity, conductivity and surface tension, so
+  methanol + 2-propanol + water now runs (witness
+  props/transport/purelaws01_methanol_isopropanol_water); a case `pin`;
+  seven factory defaults removed (Chung was reached by three cases, which
+  now declare it; their 52 rows unchanged); 74 + 35 provenance entries
+  moved home; A3 amended where it contradicted the settled contract on
+  phases.  Evidence: bench bit for bit over 17169 blocks; --scope 485/0;
+  byte-identity 439 runs identical, 45 differing by text only (the moved
+  provenance is now read and announced).  WHAT I ASK: (1) the 45
+  differing runs: confirm no number is among the differences; (2) the
+  vapour-pressure and heat-capacity pins are applied after the package
+  is built: find any reader that takes a vapour pressure at assembly
+  (the builder says it audited the scope cases, not every reader); (3)
+  NaOH classified as a second home of its solid enthalpy: read it against
+  the salt-formation contract; (4) the `tolerance` key the builder added
+  to `check`: is it the right home for a fit's residual.
