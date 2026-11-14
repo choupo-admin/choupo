@@ -3476,6 +3476,47 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C329 SLICE B1 LANDED (2026-11-14): `model rateBased;`, THE FIRST
+> NON-EQUILIBRIUM COLUMN MODEL OF THE ENGINE.**  A binary packed bed at
+> total reflux solved as segments: 5n + 5 unknowns each (bulk and
+> interface compositions, the transfer rates, three temperatures, two
+> flows), fifteen for a binary; the interface energy balance is the row
+> that fixes the two fluxes; block-tridiagonal, the structure declared
+> and audited.  New files `RateBasedSegment.{H,cpp}`.  HELD TO: (1) ITS
+> LIMIT, tolerance fixed before the run (about 1 %): against the
+> transfer-unit bed the HETP differs by -0.0040, -0.0161, -0.0025 and
+> -0.0075 % on the four cases at 100 segments, falling fourfold per
+> doubling.  (2) BEYOND THE LIMIT: HETP +0.03 to +0.19 %; the vapour up
+> to 0.57 K above the interface; the flux ratio 0.97 to 1.01.  (3) THE
+> MEASURED POINTS of the four cases: the rate model is NO CLOSER AND NO
+> FURTHER than the transfer-unit bed (mean signed error -14.4, -23.3,
+> -4.2, -8.0 %; the two models differ by at most 0.10 % per point): on a
+> near-ideal system under vacuum the error is the packing correlation's,
+> not the model's form.  (4) Independence of the segment count (0.0074 %
+> from 100 to 400).  (5) Conservation: material to 1e-16 of the boil-up;
+> the first law `verified` and NOT an identity (3.85 kW open with the
+> interface row dropped; the gate's self-test arm is that sabotage).
+> (6) Refusals by name: three components, a reflux ratio, trays, an
+> equation-of-state vapour.  A non-ideal liquid RUNS with the
+> thermodynamic factor taken as 1, announced with its risk and with the
+> liquid film's share of the resistance published.  Cases
+> `ratebased01`..`04`; gate `check_ratebased_segment`; Theory Guide
+> `sec:rateBasedSegment`; the page on equilibrium stages or rate-based
+> corrected where this made it false.  PINNED FROM BIRTH in the
+> liquid-property ratchet (the door has no request for them yet, TR-13):
+> its liquid diffusivity instance and the liquid thermal conductivity.
+> VALIDATION: by its builder, `--scope` over the distillation directory
+> 45 / 0 with mass (25 cases) and energy closures, `--fast` 87 / 0, the
+> whole `--gui` 47 / 0, the self-test at exit 0, four by-hand
+> sabotages; again on main's tree after the headers landed: a two-core
+> build, `--fast` 87 / 0 FIRST, `--scope` distillation 45 / 0, its
+> page's tests and the typecheck, the gates.  No full sweep: a new model
+> word behind a dispatch no existing case selects, and every existing
+> distillation case byte-identical.  NOT VALIDATED: `make wasm`, a
+> browser; the heat/mass analogy of the film heat-transfer coefficients
+> has no measurement behind it.  OWED TO THE GUIDE with the next slice:
+> each film coefficient written out with its diffusivity in sight.
+
 > **C329, WHO THE RATE-BASED COLUMN IS FOR, AND WHAT THAT CHANGES (Vitor,
 > 2026-11-14, when the architect called Choupo "educational, not
 > industrial": "Um aluno de Mestrado pode querer usar num projeto de uma

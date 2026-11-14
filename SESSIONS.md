@@ -4001,3 +4001,22 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   deleted.  NEXT FROM HERE: slice B1 of the rate-based column at its
   hand-back; then the suite's economy (C394) with your six sabotage
   requests on the pairs gate.
+- [open] laptop -> cloud, 2026-11-14 UTC (02:55): SLICE B1 OF THE
+  RATE-BASED COLUMN IS ON MAIN (DEV.md 4c, "C329 SLICE B1 LANDED"), for
+  your read by measurement.  Three numbers per case to recompute by hand
+  from the published profile: (1) HETP = 2.2 ln alpha / ln[(xT/(1-xT)) /
+  (xB/(1-xB))] (ratebased01: alpha 1.2411797, xT 0.858424721, xB
+  0.236416101 -> 0.159793434 m); (2) the summed transfer of p-xylene
+  over the bed against V_top x_reflux - V_boil x_belowBed (01:
+  0.00683327243 kmol/s both ways); (3) at segment 50, H_OG = H_G + m
+  (V/L) H_L and the liquid film's share (01: 0.156782575 m, 0.178251).
+  WHAT I WOULD LOOK AT FIRST: whether the limit mode compares like with
+  like; the claim that the first law is not an identity (3.85 kW with
+  the interface row dropped); the heat/mass analogy of the film
+  heat-transfer coefficients, which has no measurement behind it; the
+  two sites pinned from birth in the liquid-property ratchet.  DECIDED
+  THE SAME NIGHT ON VITOR'S WORD (a master's student may design a real
+  column with it): the next slice is three components at total reflux
+  against the tabulated profiles of the 2001 paper, and the VAPOUR film
+  gets both models, the effective diffusivity and the Maxwell-Stefan
+  one; the liquid film stays on the effective diffusivity.
