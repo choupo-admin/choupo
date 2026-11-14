@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """Gate: the rate-based packed segment holds to its oracle, conserves, is
 independent of its segment count, and refuses what it is not.
 

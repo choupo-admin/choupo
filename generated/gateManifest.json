@@ -1708,8 +1708,8 @@
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
-      "claim": "check_liquid_property_ratchet: OK -- 377 files of src/unitOperations and src/postProcessing hold 82 raw liquid-property site(s) (vliq 21, direct 12, phaseVariable 0, literal 19, conversion 30), each within its pin; none new; the two door reviews' 27 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; counted and pinned although false: a kg/kmol or kmol/mol conversion on a volume line and PackingRBF.H's dPflood 1025 Pa/m; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
-      "seconds": 1.4
+      "claim": "check_liquid_property_ratchet: OK -- 379 files of src/unitOperations and src/postProcessing hold 80 raw liquid-property site(s) (vliq 17, direct 14, phaseVariable 0, literal 19, conversion 30), each within its pin; none new; the two door reviews' 27 probe lines all caught (direct and phaseVariable per statement).  NOT CHECKED: a value built from a non-literal term under a name that says no property (a variable read under an unrelated key, a constant spelled otherwise in another header), a brine density outside 997-1030 under a name that says no sea/brine, a conversion line that names no volume or flow, thermo/ and propertyOps/; counted and pinned although false: a kg/kmol or kmol/mol conversion on a volume line and PackingRBF.H's dPflood 1025 Pa/m; a phase-variable density call guarded by if/else rather than a ternary would be counted too (none today).",
+      "seconds": 1.3
     },
     "check_property_source_witnesses": {
       "exit": 0,
@@ -1761,10 +1761,15 @@
       "claim": "check_floor_scale_ratchet: OK -- 999 files of src/ hold 32 division(s) by a quantity floored with a literal <= 1e-12 (std::max, two-argument either order or braced list, the literal bare or cast) in 20 file(s), each within its pin; none new; 8 must-catch and 9 must-not fixtures right.  NOT CLASSIFIED: whether a pinned site is harmless or a floor acting as a scale.  NOT CHECKED: a floor held by a named variable and divided by later, a floor above 1e-12 or spelled as a named constant, std::fmax, anything outside src/.",
       "seconds": 0.3
     },
+    "check_source_headers": {
+      "exit": 0,
+      "claim": "source-headers: OK -- every tracked code file (9 kinds) carries the holder line and the licence identifier in its leading comment, no excluded third-party or held file carries one, the exclusion table is two-sided; the manifest is two-sided; author arm: OK",
+      "seconds": 1.1
+    },
     "check_ratebased_segment": {
       "exit": 0,
       "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside r_max^2/2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 8 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
-      "seconds": 47.5
+      "seconds": 31.7
     }
   }
 }
