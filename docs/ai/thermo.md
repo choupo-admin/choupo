@@ -692,15 +692,17 @@ unnamed variant.  Grammar, refusals and a worked example:
   uses (vapour pressure, the heat capacities, the liquid transport laws) —
   name, type, who chose it, window, source, record — and every law type's
   form with its coefficient units.
-- A law's hard window (`domain (lo hi);`) refuses a state outside it as a
-  REJECTABLE trial only where a search invented the state (the 1-D Newton
-  halves the step back, a refused seed moves inside the window); a declared
-  or converged state is refused by the law at once, and a search that ends
-  outside the window reports the law's refusal, never "did not converge".
-  A chosen vapour-pressure law's `domain` must include 298.15 K (the datum
-  bridge reads it there): refused at assembly otherwise.  A heat-capacity
-  law also refuses H(T, Tref) or S(T, Tref) whose path from Tref leaves the
-  window.
+- A law's hard window (`domain (lo hi);`) is checked on the states the run
+  REPORTS and DECLARES, by one audit after the solve -- every published
+  stream, every unit profile's temperature, a reported bubble or dew point,
+  every inlet and fixed temperature -- never during an iteration.  A state
+  outside is refused by the law, naming the covering law.  A heat-capacity
+  law is also held at 298.15 K, where its enthalpy integral starts.  A
+  vapour-pressure law whose `domain` excludes 298.15 K is refused when the
+  run prices an enthalpy through the datum bridge (a Psat-only run is not).
+  choupoBatch, choupoCtrl and choupoSemiContinuous do not audit hard
+  windows yet: they refuse, at assembly, a package whose chosen law declares
+  `domain` (remove it, or run the case on choupoSolve).
 - A pure fluid's VAPOUR viscosity and conductivity (`viscosity`,
   `thermal_conductivity` of propertyPoint/scans) are evaluated at the vapour
   state at (T, P), refused where the formulation places the state in the

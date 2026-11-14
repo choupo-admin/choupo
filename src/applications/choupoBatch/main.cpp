@@ -401,7 +401,7 @@ try
             " `recordType thermophysicalPropertySystem;` (the ONE case"
             " grammar).");
     ThermoPackage thermo = ThermoPackageBuilder::build(thermoDict, db, chemPtr);
-    resolvedView::printSystemOnce(thermo, thermoDict);   // C398 review row CV-12
+    resolvedView::printSystemOnce(thermo, thermoDict); thermo.refuseUnauditedHardWindows();   // C398 review rows CV-12; hard windows
 
     // ---- Build batch units from flowsheetDict ------------------------
     auto unitList = flowsheetDict->lookupDictList("units");

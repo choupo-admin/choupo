@@ -71,6 +71,7 @@ Description
 #include "core/Types.H"
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -120,14 +121,17 @@ std::string selfLine(const std::string& component, const std::string& property,
 void traceCall(const std::string& tag, const std::string& line);
 //  The package being assembled on this thread (ThermoPackageBuilder), read
 //  by every component loaded and every model built during the assembly.
-const std::string& currentPackageTag();
+//  A HOLDER, shared by every component loaded during the assembly: the builder
+//  writes the package's final identity into it once the package is built
+//  (review CV-26: the identity covers every input the package resolved).
+std::shared_ptr<std::string> currentPackageTag();
 struct PackageTagScope
 {
-    explicit PackageTagScope(std::string tag);
+    explicit PackageTagScope(std::shared_ptr<std::string> tag);
     ~PackageTagScope();
     PackageTagScope(const PackageTagScope&) = delete;
     PackageTagScope& operator=(const PackageTagScope&) = delete;
-    std::string saved;
+    std::shared_ptr<std::string> saved;
 };
 //  The temperature a law is probed at for its value: the middle of its hard
 //  window, else of its soft window, else a fraction of Tc for a type defined
@@ -194,6 +198,11 @@ Block parse(const DictPtr& block, const std::string& property,
             const std::function<bool(const std::string&)>& isType);
 
 //  A PropertyDomainError for T outside a law's hard window, with the remedy.
+//  THE HARD WINDOW IS CHECKED ON THE STATES A RUN REPORTS OR DECLARES, never
+//  during an iteration (C398, the fourth review round's ruling): a law
+//  evaluates wherever a search takes it, and one audit after the solve
+//  (Component::auditHardWindows, called by the flowsheet and the property
+//  operations on every published and declared state) refuses through this.
 [[noreturn]] void throwOutsideDomain(const Block& b, std::size_t lawIndex,
                                      scalar T, const std::string& what);
 

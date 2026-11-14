@@ -223,7 +223,7 @@ u &= \frac{4\,Q}{\pi D^2}
     note: "src/unitOperations/valve/Valve.cpp:264 is where the valve "
       + "builds Q at each end: the liquid density from the record's Vliq "
       + "carried in temperature by Rackett, the vapour density from the "
-      + "equation of state (src/thermo/ThermoPackage.cpp:2362).  The "
+      + "equation of state (src/thermo/ThermoPackage.cpp:2363).  The "
       + "dissolved hydrogen, nitrogen and argon have no liquid density at "
       + "-20 °C and are priced at the density of the rest; the run says so.",
   },
@@ -332,7 +332,7 @@ Y &= 1 - \frac{x_\mathrm{eff}}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x_\m
       { sym: "\\rho_2", means: "the density leaving", unit: "kg/m³" },
     ],
     note: "Both ends of the valve are priced by flashState::priceState "
-      + "(src/unitOperations/flash/StreamEquilibrium.H:1019), the same call "
+      + "(src/unitOperations/flash/StreamEquilibrium.H:1018), the same call "
       + "the energy report's rule is; on an SRK package its vapour "
       + "enthalpy includes the departure from the ideal gas, which is the "
       + "Joule-Thomson effect.",
@@ -367,7 +367,7 @@ F_L^2 &= \frac{P_1 - P_2}{P_1 - P_\mathrm{vc}}\\
       + "F_L = 0.9 is that library's own keyword default.  The vapour "
       + "pressure the bench compares it with is the engine's: Psat_NH3 at "
       + "the second throttle's inlet temperature "
-      + "(src/propertyOps/PropertyEvaluator.cpp:167, the record's Antoine "
+      + "(src/propertyOps/PropertyEvaluator.cpp:187, the record's Antoine "
       + "curve), from the letdown02 witness.",
   },
   {

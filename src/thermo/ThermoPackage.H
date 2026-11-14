@@ -722,13 +722,18 @@ public:
     //  component is built pinned (Database::loadComponent), then verifies
     //  that the package's own components carry each pin (SB-01).
     static std::vector<struct RecordLawPin> readRecordLawPins(const DictPtr& system);
-    //  THE DATUM TEMPERATURE IS INSIDE EVERY VAPOUR-PRESSURE LAW'S HARD WINDOW
-    //  (C398 review row CV-18): the elements datum carries a component between
-    //  its natural phase and the other at 298.15 K through its vapour-pressure
-    //  law (Component::datumBridge298), so a chosen law whose `domain`
-    //  excludes 298.15 K would refuse every liquid or vapour enthalpy the
-    //  package prices.  Refused at assembly, naming the law and the remedy.
-    void requireDatumTemperatureInVapourPressureWindows() const;
+
+    //  THE AUDIT OF A REPORTED OR DECLARED STATE (C398, the fourth review
+    //  round's ruling): each constituent present (z_i > 0; every one when z is
+    //  empty) has every record law this package has evaluated -- vapour
+    //  pressure, heat capacities, liquid transport laws -- held to its hard
+    //  window at T.  A state a pure-fluid formulation prices (the phase pure in
+    //  that component) consults no record law and is not audited for it.
+    void auditState(scalar T, const sVector& z, const std::string& where, bool enthalpy) const;
+    //  THE TIME-INTEGRATED BINARIES AUDIT NO HARD WINDOW YET (C398): until
+    //  they audit their reported instants, a package with a chosen law that
+    //  declares `domain` is refused there, at assembly, by name.
+    void refuseUnauditedHardWindows() const;
 
     //  THE PACKAGE'S IDENTITY (C398 review CV-20): the fingerprint of the
     //  resolved definition it was built from -- the one its resolved view
@@ -741,6 +746,9 @@ public:
     //  set, at assembly): the activity model, the vapour and liquid transport
     //  models, the mixing rules, each pure-fluid formulation, each Henry pair.
     void traceSelf() const;
+    //  The identity: `definition` (the resolved dictionary's fingerprint)
+    //  hashed with every input the assembly resolved (review CV-26).
+    std::string resolvedIdentity(const std::string& definition, const std::string& pairsBase) const;
     //  One Henry pair, as the trace and the view both print it.
     static std::string henryLine(const std::string& solute, const std::string& solvent,
                                  double Href, double Tref, double dH);

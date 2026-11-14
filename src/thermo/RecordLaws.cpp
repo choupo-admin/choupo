@@ -35,7 +35,6 @@ Description
 
 #include "RecordLaws.H"
 #include "PropertyDomainError.H"
-#include "core/Advisory.H"
 
 #include <cmath>
 #include <cstdio>
@@ -44,6 +43,7 @@ Description
 #include <iostream>
 #include <iomanip>
 #include <map>
+#include <memory>
 #include <sstream>
 #include <stdexcept>
 #include <variant>
@@ -169,11 +169,14 @@ void traceCall(const std::string& tag, const std::string& line)
     if (traceOn()) std::cerr << "[law-call] #" << (tag.empty() ? std::string("?") : tag) << " " << line << "\n";
 }
 
-namespace { thread_local std::string tlPackageTag; }
+namespace { thread_local std::shared_ptr<std::string> tlPackageTag; }
 
-const std::string& currentPackageTag() { return tlPackageTag; }
+std::shared_ptr<std::string> currentPackageTag()
+{
+    return tlPackageTag ? tlPackageTag : std::make_shared<std::string>();
+}
 
-PackageTagScope::PackageTagScope(std::string tag) : saved(tlPackageTag) { tlPackageTag = std::move(tag); }
+PackageTagScope::PackageTagScope(std::shared_ptr<std::string> tag) : saved(tlPackageTag) { tlPackageTag = std::move(tag); }
 PackageTagScope::~PackageTagScope() { tlPackageTag = saved; }
 
 std::string modelLine(const std::string& who, const std::string& key, const std::string& model,
@@ -372,12 +375,6 @@ void throwOutsideDomain(const Block& b, std::size_t lawIndex, scalar T, const st
     const std::string msg = what + " of " + b.owner + ": law " + L.label() + " (" + L.type
         + ") refuses T = " + [&]{ std::ostringstream o; o << std::setprecision(10) << T; return o.str(); }() + " K, outside its hard window " + num(L.domainLo) + "-"
         + num(L.domainHi) + " K; " + remedy;
-    //  A state a search INVENTED (inside a trial frame) is a rejectable trial
-    //  carrying the window, so the search re-seeds inside it or backs off; any
-    //  other state -- declared, or an answer -- is refused (review CV-19).
-    if (AdvisoryLog::instance().anyTrialFrameOpen())
-        throw PropertyDomainTrial(PropertyDomainError::Kind::outsideHardDomain, msg, remedy,
-                                  L.domainLo, L.domainHi);
     throw HardWindowRefusal(msg, remedy);
 }
 

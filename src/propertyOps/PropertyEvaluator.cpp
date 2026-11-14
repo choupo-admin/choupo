@@ -120,12 +120,32 @@ bool inGap(const Hetero& h, scalar x1)
     return h.exists && x1 > h.xa + 1.0e-6 && x1 < h.xb - 1.0e-6;
 }
 
+scalar evaluatePropertyAt(const std::string& propKey, const ThermoPackage& thermo,
+                          scalar T, scalar P_Pa, const sVector& xLiquid);
+
 } // namespace
 
+//  THE STATE AN OPERATION DECLARES IS AUDITED (C398, the fourth review round's
+//  ruling): after the evaluation, every record law it used is held to its
+//  hard window at the declared T (a search's own answer is audited where the
+//  search reports it, e.g. T_bubble).
 scalar evaluateProperty(const std::string& propKey,
                         const ThermoPackage& thermo,
                         scalar T, scalar P_Pa,
                         const sVector& xLiquid)
+{
+    const scalar v = evaluatePropertyAt(propKey, thermo, T, P_Pa, xLiquid);
+    if (propKey != "T_bubble" && propKey != "T_dew" && propKey != "T")
+        thermo.auditState(T, xLiquid, "the state the operation declares (T = " + std::to_string(T) + " K)", true);
+    return v;
+}
+
+namespace {
+
+scalar evaluatePropertyAt(const std::string& propKey,
+                          const ThermoPackage& thermo,
+                          scalar T, scalar P_Pa,
+                          const sVector& xLiquid)
 {
     // Per-component properties of the form <prefix>_<componentName>.
     auto matchPerComp = [&](const std::string& prefix,
@@ -321,6 +341,8 @@ scalar evaluateProperty(const std::string& propKey,
         if (!r.converged)
             throw std::runtime_error(
                 "T_bubble: Newton-1D did not converge at this point");
+        thermo.auditState(r.T, xLiquid, "the bubble temperature the search reports (T = "
+                          + std::to_string(r.T) + " K)", false);   // C398: the reported answer
         return r.T;
     }
 
@@ -360,6 +382,8 @@ scalar evaluateProperty(const std::string& propKey,
         "PropertyEvaluator: unknown property '" + propKey
       + "'.  See PropertyEvaluator.H for the catalogue.");
 }
+
+} // namespace
 
 std::string propertyUnit(const std::string& k)
 {
