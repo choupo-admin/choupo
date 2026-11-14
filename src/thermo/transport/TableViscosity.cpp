@@ -24,30 +24,22 @@
 
 namespace Choupo {
 
-namespace {
-std::mutex& buildMutex()
-{
-    static std::mutex m;
-    return m;
-}
-} // namespace
-
 scalar TableViscosity::viscosityLiquidPure(const Component& c, scalar T) const
 {
+    //  Built once, at the first evaluation (the Jacobian's pool threads may
+    //  race to it), with no lock on the later calls; a build that throws is
+    //  retried by the next call.
+    std::call_once(built_, [&]
     {
-        std::lock_guard<std::mutex> lk(buildMutex());
-        if (!table_)
-        {
-            const recordLaws::Block* blk = c.recordLaws("liquidViscosity");
-            const recordLaws::Law* law = blk ? blk->find(law_) : nullptr;
-            if (!law)
-                throw std::runtime_error("table viscosity: component '" + c.name() + "' holds no"
-                    " liquidViscosity law `" + law_ + "` (a table law is bound by name).");
-            const std::string label = c.name() + "'s liquidViscosity law `" + law_ + "` ("
-                + (law->home.empty() ? "record " + c.recordHome() : law->home) + ")";
-            table_ = PropertyTable::fromLaw(law->body, "liquidViscosity", label, c.MW());
-        }
-    }
+        const recordLaws::Block* blk = c.recordLaws("liquidViscosity");
+        const recordLaws::Law* law = blk ? blk->find(law_) : nullptr;
+        if (!law)
+            throw std::runtime_error("table viscosity: component '" + c.name() + "' holds no"
+                " liquidViscosity law `" + law_ + "` (a table law is bound by name).");
+        const std::string label = c.name() + "'s liquidViscosity law `" + law_ + "` ("
+            + (law->home.empty() ? "record " + c.recordHome() : law->home) + ")";
+        table_ = PropertyTable::fromLaw(law->body, "liquidViscosity", label, c.MW());
+    });
     return table_->value(T);
 }
 

@@ -3224,13 +3224,27 @@ std::string ThermoPackage::resolvedIdentity(const std::string& definition, const
     {
         const Component& c = components_[i];
         in += "|" + c.name() + "@" + c.recordHome();
+        //  A table law (C398 slice (c)) adds its own description -- points,
+        //  span, interpolation, columns, a case's extension -- so two
+        //  packages that pin one table differently are two identities.
+        auto tableOf = [&](const std::string& rkey, const std::string& law)
+        {
+            const recordLaws::Block* b = c.recordLaws(rkey);
+            const recordLaws::Law* L = b ? b->find(law) : nullptr;
+            return (L && L->isTable) ? "|" + L->tableText + "@" + L->home : std::string();
+        };
         for (const char* p : { "vaporPressure", "idealGasHeatCapacity", "liquidHeatCapacity", "solidHeatCapacity" })
         {
             const auto ch = c.lawChoice(p);
             in += std::string(";") + p + "=" + ch.law + "/" + ch.type + "/" + ch.by;
+            if (ch.type == "table") in += tableOf(p, ch.law);
         }
         for (const auto* t : { &liquidViscosityLaws_, &liquidConductivityLaws_, &surfaceTensionLaws_ })
-            if (i < t->size()) in += ";" + (*t)[i].law + "/" + (*t)[i].type + "/" + (*t)[i].by;
+            if (i < t->size())
+            {
+                in += ";" + (*t)[i].law + "/" + (*t)[i].type + "/" + (*t)[i].by;
+                if ((*t)[i].type == "table" && t == &liquidViscosityLaws_) in += tableOf("liquidViscosity", (*t)[i].law);
+            }
         if (const auto it = pureFluid_.find(i); it != pureFluid_.end()) in += ";pure " + it->second->type();
     }
     std::uint64_t h = 1469598103934665603ULL;     // FNV-1a, as the definition's fingerprint

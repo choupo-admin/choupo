@@ -30,6 +30,7 @@ Description
 #include "thermo/PropertyTable.H"
 
 #include <memory>
+#include <mutex>
 
 namespace Choupo {
 
@@ -51,6 +52,7 @@ private:
         "the source of the points, per law, in the record's provenance block "
         "or the case's experiments file";
     mutable std::unique_ptr<PropertyTable> table_;
+    mutable std::once_flag                 built_;
 };
 
 } // namespace Choupo
