@@ -8,6 +8,7 @@ its source (DEV.md 4c C394 and C398 (a)+(b), 2026-11-14).
     bin/curate/gate_scan_roots.py --gate NAME     one gate, with line numbers
     bin/curate/gate_scan_roots.py --match FILE..  the gates a file reaches by root
     bin/curate/gate_scan_roots.py --unresolved    the walks no root was read for
+    bin/curate/gate_scan_roots.py --generators    the roots of each generator check
 
 WHY THIS EXISTS.  `bin/integrate --plan` listed the gates whose source NAMES a
 touched file.  A gate that walks a directory by pattern names no file: the
@@ -33,10 +34,25 @@ under its root.  A wrongly included gate costs seconds in a plan; a wrongly
 excluded one is a failure the sweep finds an hour later.
 
 Helper modules count: a walk inside a `bin/curate` module the gate imports is
-the gate's walk too (the import closure is read the same way).
+the gate's walk too (the import closure is read the same way), and so is a
+walk inside a bin/curate script the gate RUNS -- named by a literal or a path
+expression ending in bin/curate/<x>.py (review SE-08: check_brain_fresh runs
+gen_brain_facts.py in a subprocess and was invisible).
+
+THE NON-CHECK GATES (review SE-09): the `--check` arm of every generator
+bin/curate/generated_artefacts.py registers is a gate too; `--generators`
+lists the roots of each (the scan roots of the script its check runs, and the
+files it owns), and bin/integrate --plan lists the ones a diff reaches.
+
+THE RATCHET (review SE-09): `unresolved_gates()` is the set of gates with a
+walk in their own source this reader cannot evaluate and no SCAN_ROOTS; it is
+pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED and held by
+check_scan_roots: it may only shrink.
 
 A DECLARED LIST WINS NOTHING AND LOSES NOTHING: a gate may state
-`SCAN_ROOTS = ("dir", "dir/sub", ...)` at module level for a walk this reader
+`SCAN_ROOTS = ("dir", "dir/sub", "dir/**/*.dat", ...)` at module level (a
+glob is allowed; `SCAN_ROOTS = ()` says, with a comment, that a walk reaches
+only the gate's own scratch copy) for a walk this reader
 cannot evaluate (a root computed at run time, a list built in a function);
 those roots are ADDED to what is read.  Three gates declared one before this
 module existed (check_doctrine, check_glossary_bans, check_retired_names) and
@@ -52,6 +68,7 @@ SCAN_ROOTS.
 import ast
 import fnmatch
 import posixpath
+import re
 import sys
 import warnings
 from pathlib import Path
@@ -96,7 +113,8 @@ class _Path:
 class _Module:
     """The evaluable bindings of one source file."""
 
-    def __init__(self, path: Path, root: Path = ROOT):
+    def __init__(self, path: Path, root: Path = ROOT, strict=False):
+        self.strict = strict
         self.path = path
         self.root = root
         self.rel = path.relative_to(root).as_posix()
@@ -154,12 +172,21 @@ class _Module:
             vals = self.binds.get(node.id)
             if not vals:
                 return None
-            out = set()
+            out, unknown = set(), False
             for v in vals:
                 r = e(v)
                 if r is None:
-                    return None
+                    unknown = True
+                    continue
                 out |= r
+            #  A name bound once to a path and again to something this reader
+            #  cannot evaluate (`ROOT = wt` in a function that re-points the
+            #  module at another tree): LENIENT readers (the plan) take the
+            #  bindings they can read -- generous, the other binding is
+            #  another copy of the same layout; STRICT readers (a reuse key's
+            #  honesty arm) refuse the expression.
+            if unknown and (self.strict or not out):
+                return None
             return out
         if isinstance(node, ast.Starred):                 # an element of
             inner = node.value
@@ -391,7 +418,8 @@ class _Module:
                 for v in r or ():
                     rel = v.rel if isinstance(v, _Path) else v
                     if not rel.startswith("/"):
-                        res.append((rel.strip("/"), "**", node.lineno))
+                        root, pat = _split_glob(rel)   # a glob is allowed
+                        res.append((root, pat, node.lineno))
         return res, unres
 
     def imports(self):
@@ -405,6 +433,31 @@ class _Module:
                 names.add(node.module.split(".")[0])
         cur = self.root / "bin" / "curate"
         return {n for n in names if (cur / (n + ".py")).is_file()}
+
+    def scripts(self):
+        """bin/curate scripts this file RUNS (review SE-08): a gate that
+        starts a generator in a subprocess (`check_brain_fresh` runs
+        `gen_brain_facts.py --check`) reads what that script reads.  Named by
+        a string literal or a path expression that ends in bin/curate/<x>.py."""
+        cur = self.root / "bin" / "curate"
+        out = set()
+        for node in ast.walk(self.tree):
+            vals = []
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                vals = [node.value]
+            elif isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+                vals = [v.rel for v in (self.ev(node) or ())
+                        if isinstance(v, _Path)]
+            for v in vals:
+                m = re.search(r"(?:^|/)bin/curate/([A-Za-z0-9_]+\.py)$", v.strip())
+                if m and (cur / m.group(1)).is_file():
+                    out.add(cur / m.group(1))
+        return out
+
+    def declares_scan_roots(self):
+        return any(isinstance(n, ast.Assign) and any(
+            isinstance(t, ast.Name) and t.id == "SCAN_ROOTS" for t in n.targets)
+            for n in self.tree.body)
 
 
 def _dotted(f):
@@ -454,10 +507,11 @@ def _split_glob(spec):
 _CACHE = {}
 
 
-def _module(path: Path, root: Path):
-    if path not in _CACHE:
-        _CACHE[path] = _Module(path, root)
-    return _CACHE[path]
+def _module(path: Path, root: Path, strict=False):
+    k = (path, strict)
+    if k not in _CACHE:
+        _CACHE[k] = _Module(path, root, strict)
+    return _CACHE[k]
 
 
 def scan_roots(gate: Path, root: Path = ROOT):
@@ -476,6 +530,7 @@ def scan_roots(gate: Path, root: Path = ROOT):
             roots.setdefault((base, pat), (m.rel, line))
         unres += [(m.rel, ln, t) for ln, t in u]
         todo += [root / "bin" / "curate" / (n + ".py") for n in m.imports()]
+        todo += sorted(m.scripts())          # what it runs, it reads
     return roots, unres
 
 
@@ -518,6 +573,64 @@ def reached(files, root: Path = ROOT):
     return out
 
 
+def generator_table(root: Path = ROOT):
+    """THE NON-CHECK GATES (review SE-09): the `--check` arm of every
+    generator bin/curate/generated_artefacts.py registers is a gate too
+    (bin/runTests runs them), and a generator's inputs are found the same way:
+    the scan roots of the script its check runs, plus the files it owns.
+    -> {entry name: (check argv text, {(root, pattern)})}."""
+    sys.path.insert(0, str(root / "bin" / "curate"))
+    try:
+        import generated_artefacts as ga
+    finally:
+        sys.path.pop(0)
+    out = {}
+    for e in ga.ENTRIES:
+        argv = e.get("check")
+        if not argv:
+            continue
+        scripts = [a for a in argv if a.startswith("bin/curate/")
+                   and a.endswith(".py")]
+        rs = set()
+        for sc in scripts:
+            if (root / sc).is_file():
+                rs |= set(scan_roots(root / sc, root)[0])
+        for g in e["paths"]:
+            rs.add(_split_glob(g))
+        out[e["name"]] = (" ".join(argv), rs)
+    return out
+
+
+def generators_reached(files, root: Path = ROOT):
+    """{generator entry: [(file, 'root/pattern')]} for the touched files."""
+    out = {}
+    for name, (argv, rs) in generator_table(root).items():
+        for f in files:
+            for (r, p) in rs:
+                if matches(f, r, p):
+                    out.setdefault(name, (argv, []))[1].append(
+                        (f, (r + "/" if r else "") + p))
+                    break
+    return out
+
+
+def unresolved_gates(root: Path = ROOT):
+    """THE RATCHET'S SUBJECT (review SE-09): gates with a walk in their OWN
+    source whose root this reader cannot evaluate and no SCAN_ROOTS
+    declaration -- invisible to the plan for that walk.
+    -> {gate stem: 'file:line text' of the first such walk}."""
+    out = {}
+    for g in sorted((root / "bin" / "curate").glob("check_*.py")):
+        m = _module(g, root)
+        if m.declares_scan_roots():
+            continue
+        _, u = m.walks()
+        if u:
+            ln, t = sorted(u)[0]
+            out[g.stem] = f"{m.rel}:{ln} {t}"
+    return out
+
+
 def main(argv):
     if argv[:1] == ["--gate"] and len(argv) == 2:
         g = CURATE / (argv[1] if argv[1].endswith(".py") else argv[1] + ".py")
@@ -530,6 +643,11 @@ def main(argv):
     if argv[:1] == ["--match"]:
         for stem, hits in sorted(reached(argv[1:]).items()):
             print(f"{stem:<44} <- {hits[0][0]} (root {hits[0][1]})")
+        return 0
+    if argv[:1] == ["--generators"]:
+        for name, (cmd, rs) in sorted(generator_table().items()):
+            print(f"{name}: {cmd}\n    " + ", ".join(
+                sorted((r + "/" if r else "") + p for r, p in rs)))
         return 0
     if argv[:1] == ["--unresolved"]:
         n = 0

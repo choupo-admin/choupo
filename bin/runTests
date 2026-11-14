@@ -1460,19 +1460,21 @@ if [ "${1:-}" = "--record" ]; then RECORD=1; shift; fi
 #  is SKIPPED: creating one is a recording decision, not a sweep side-effect.
 if [ "${1:-}" = "--record-append" ]; then RECORD=1; RECORD_APPEND=1; shift; fi
 
-#  EVERY SCRIPT THIS FILE RUNS DIRECTLY IS EXECUTABLE -- IN EVERY MODE
-#  (DEV.md 4c C394, 2026-11-14).  A gate committed as mode 100644 fails with
-#  "Permission denied" at its site, and only the full sweep reaches most
-#  sites: check_ratebased_segment.py and check_packing_record.py were both
-#  committed that way within two days and surfaced an hour into a sweep.  The
-#  check reads this file's own sites and git's modes, in a fraction of a
-#  second, so it runs here, before any mode branches, record and --gui
-#  included; a refusal ABORTS with the files and the remedy named.
+#  EVERY SCRIPT UNDER bin/ IS EXECUTABLE -- CHECKED IN EVERY MODE (DEV.md 4c
+#  C394, 2026-11-14).  A gate committed as mode 100644 fails with "Permission
+#  denied" at its site, and only the full sweep reaches most sites:
+#  check_ratebased_segment.py and check_packing_record.py were both committed
+#  that way within two days and surfaced an hour into a sweep.  The rule is
+#  complete by construction (review SE-06): every tracked file under bin/ that
+#  begins with a shebang is mode 100755 in git and executable on disk -- it
+#  does not try to know who runs what.  A fraction of a second, so it runs
+#  here, before any mode branches, record and --gui included; a refusal
+#  ABORTS with the files and the remedy named.
 if ! "$ROOT/bin/curate/gate_exec_bits.py" > /tmp/execbits.$$ 2>&1; then
     printf "FAIL  %-40s  (run bin/curate/gate_exec_bits.py)\n" "gate-exec-bits"
     cat /tmp/execbits.$$
     rm -f /tmp/execbits.$$
-    echo "ABORTED: a script bin/runTests runs directly is not executable (DEV.md 4c C394).  No mode may skip this."
+    echo "ABORTED: a script under bin/ that begins with a shebang is not executable (DEV.md 4c C394).  No mode may skip this."
     exit 1
 fi
 rm -f /tmp/execbits.$$
@@ -4653,6 +4655,20 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/debtreg.$$
+
+    # scan-roots ratchet (2026-11-14, DEV.md 4c C394, review SE-09).  The gates
+    # bin/integrate --plan cannot see by their scan roots are pinned by name in
+    # debt_registry.SCAN_ROOTS_UNRESOLVED; a new one fails, a healed pin fails
+    # until removed, so the number may only shrink.
+    if gate_exec "$ROOT/bin/curate/check_scan_roots.py" > /tmp/scanroots.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "scan-roots-gate" "$(head -1 /tmp/scanroots.$$ | cut -c1-200)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_scan_roots.py)\n" "scan-roots-gate"
+        cat /tmp/scanroots.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/scanroots.$$
 
     # caveat-surface gate (2026-08-06).  The end-of-run ASSUMPTIONS AND
     # CAVEATS block shipped WITHOUT a gate, which by this project's own
@@ -8508,7 +8524,7 @@ check_case() {
     if [ -n "${CASE_REUSE[$_d]:-}" ]; then
         while IFS= read -r _l; do
             [ -n "$_l" ] || continue
-            printf "REUSED %-40s  (PASS taken %s, key %s; its inputs are unchanged)\n" \
+            printf "REUSED %-40s  (PASS taken %s; its keyed inputs are unchanged (key %s))\n" \
                 "$_l" "${CASE_REUSE_DATE[$_d]}" "${_k:0:12}"
             reused=$((reused+1))
         done <<< "$(printf '%s' "${CASE_REUSE[$_d]}" | tr '\037' '\n')"

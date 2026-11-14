@@ -60,10 +60,20 @@ WHAT A KEY IS.  A sha256 over exactly the inputs the verdict reads:
     text of the bin/runTests functions check_case reaches (not the whole
     file: a new gate elsewhere in it changes no case's verdict), the scripts
     those functions name, and the golden-band mode this run compares in.
-  * THE PLATFORM -- `uname -m`, the Python version.
+  * THE RESOLVER'S CASCADE -- the engine reads `<dir>/constant/` in the
+    directory a case runs in and in every parent up to its deepest walk
+    (read from src/ on every key: resolver_depth()).  Each such directory is
+    hashed in FULL, tracked or ignored, inside the repository or above it,
+    and its ABSENCE is part of the key (review SE-01, an S1: a manifest
+    dropped into data/curation/electrolytes/constant/ made a sealed case FAIL
+    while it was printed REUSED).
+  * THE PLATFORM -- `uname -m`, the Python version and golden_bands' platform
+    fingerprint (CPU, C library, compiler; review SE-03).
 
-A content hash is cached by (size, mtime_ns) in build/reuse/hashcache.tsv --
-the rule make and git use -- so a key costs stat calls after the first run.
+A content hash is cached in build/reuse/hashcache.tsv under the file's full
+stat signature -- size, mtime, ctime, inode, device -- so a key costs stat
+calls after the first run, and a same-size edit whose mtime was put back
+(`touch -r`, `cp -p`) still re-hashes: ctime cannot be set back (review SE-02).
 
 WHAT IS STORED.  Only a PASS (exit 0).  A FAIL, a SKIP (exit 2, cannot run)
 or a NO SUBJECT is never stored, so it always runs again.  The verdict lives
@@ -72,9 +82,9 @@ runs everything.  It is printed `REUSED`, with the key's first twelve
 characters and the date it was taken, and counted apart from PASS.
 
 WHEN NOTHING IS REUSED.  CHOUPO_NO_REUSE=1 (or `bin/runTests --no-reuse`,
-which sets it): the hosted tiers (.github/workflows/ci.yml, sanitize.yml)
-and a release (RELEASING.md) set it, and a clean checkout has no stored
-verdict anyway.  Reuse is offered ONLY to the full sweep: --scope, --fast,
+which sets it): the hosted tiers (.github/workflows/ci.yml; sanitize.yml
+runs only --fast, which never reuses) and a release (RELEASING.md) set it,
+and a clean checkout has no stored verdict anyway.  Reuse is offered ONLY to the full sweep: --scope, --fast,
 --witnesses and a named case run what they are given.
 
 THE HONESTY ARM.  A gate is keyed only if every repository path its source
@@ -92,6 +102,7 @@ import platform
 import re
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -105,9 +116,17 @@ import gate_scan_roots as gsr   # noqa: E402
 #  gate here also gets the engine half and its harness closure.
 KEYED = {
     "check_regressed_pairs": {
+        #  tutorials/ whole: the gate sweeps every case root
+        #  (curation_roots.case_roots) for case-local NRTL records.
         "trees": ["data/standards", "data/curation", "data/groupEstimative",
-                  "tutorials/props"],
+                  "tutorials"],
         "local": True,
+        #  Every `fittedInCase` the records name must lie in the trees above
+        #  (review SE-04): the gate runs ROOT / <value>.
+        "case_refs": ("fittedInCase", [
+            "data/standards/parameters", "data/standards/components",
+            "data/curation",
+            ":(glob)tutorials/**/constant/parameters/NRTL/*.dat"]),
         #  Read, and not an input of the verdict, each for a stated reason:
         "pinned": {
             "thirdParty/thermoml": "the local ThermoML cache `choupo-curate "
@@ -168,33 +187,46 @@ def disabled():
 # --------------------------------------------------------------------------
 
 class Hasher:
-    """sha256 of a file, cached by (size, mtime_ns)."""
+    """sha256 of a file, cached by its full stat signature.
+
+    REVIEW SE-02 (2026-11-14): the first version trusted (size, mtime_ns),
+    and a same-size edit put back under its old mtime (`touch -r`, `cp -p`,
+    `rsync -a`, `tar`) was REUSED over a real FAIL.  The signature now adds
+    the inode and st_ctime_ns: the kernel sets ctime on every write, chmod
+    and utime, and no copy tool can set it back, so any change to the file
+    since it was hashed -- including putting its mtime back -- forces a fresh
+    hash."""
 
     def __init__(self):
         self.path = STORE / "hashcache.tsv"
         self.cache, self.dirty = {}, False
         try:
             for line in self.path.read_text().splitlines():
-                p, s, m, h = line.split("\t")
-                self.cache[p] = (int(s), int(m), h)
-        except (OSError, ValueError):
+                parts = line.split("\t")
+                if len(parts) == 3:                # path, signature, sha256
+                    self.cache[parts[0]] = (parts[1], parts[2])
+        except OSError:
             self.cache = {}
+
+    @staticmethod
+    def signature(st):
+        return f"{st.st_size}:{st.st_mtime_ns}:{st.st_ctime_ns}:{st.st_ino}:{st.st_dev}"
 
     def sha(self, p: Path):
         try:
             st = p.stat()
         except OSError:
             return "MISSING"
-        k = str(p)
+        k, sig = str(p), self.signature(st)
         c = self.cache.get(k)
-        if c and c[0] == st.st_size and c[1] == st.st_mtime_ns:
-            return c[2]
+        if c and c[0] == sig:
+            return c[1]
         h = hashlib.sha256()
         with open(p, "rb") as f:
             for chunk in iter(lambda: f.read(1 << 20), b""):
                 h.update(chunk)
         d = h.hexdigest()
-        self.cache[k] = (st.st_size, st.st_mtime_ns, d)
+        self.cache[k] = (sig, d)
         self.dirty = True
         return d
 
@@ -203,8 +235,8 @@ class Hasher:
             return
         STORE.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(f".{os.getpid()}.tmp")
-        tmp.write_text("".join(f"{p}\t{s}\t{m}\t{h}\n"
-                               for p, (s, m, h) in sorted(self.cache.items())))
+        tmp.write_text("".join(f"{p}\t{sig}\t{h}\n"
+                               for p, (sig, h) in sorted(self.cache.items())))
         os.replace(tmp, self.path)
 
 
@@ -276,12 +308,121 @@ def data_half(trees, local):
         return None, "git ls-files failed"
     pairs = [(f, H.sha(ROOT / f)) for f in files]
     if local:
-        loc = ROOT / "data" / "local"
-        if loc.is_dir():
-            for p in sorted(loc.rglob("*")):
-                if p.is_file():
-                    pairs.append((p.relative_to(ROOT).as_posix(), H.sha(p)))
+        pairs.append(("data/local", local_digest()))
     return digest(pairs), len(pairs)
+
+
+def walk_files(d: Path, skip=()):
+    """Every file under d, symlinked directories FOLLOWED (the engine follows
+    them; review SE-05: Path.rglob does not, on Python 3.12), sorted; a
+    sub-path named in `skip` (relative to d) is not entered."""
+    out = []
+    for dirpath, dirs, files in os.walk(d, followlinks=True):
+        rel = Path(dirpath).relative_to(d).as_posix()
+        dirs[:] = sorted(x for x in dirs
+                         if (x if rel == "." else f"{rel}/{x}") not in skip)
+        out += [Path(dirpath) / f for f in sorted(files)]
+    return out
+
+
+_DIR_DIGESTS = {}
+
+
+def dir_digest(d: Path, skip=()):
+    """The digest of everything under d -- tracked, untracked AND ignored --
+    or ABSENT.  Absence is part of a key: a constant/ that appears is a
+    change."""
+    k = (str(d), tuple(skip))
+    if k not in _DIR_DIGESTS:
+        if not d.exists():
+            _DIR_DIGESTS[k] = "ABSENT"
+        elif not d.is_dir():
+            _DIR_DIGESTS[k] = "FILE:" + H.sha(d)
+        else:
+            _DIR_DIGESTS[k] = digest([(f.relative_to(d).as_posix(), H.sha(f))
+                                      for f in walk_files(d, skip)])
+    return _DIR_DIGESTS[k]
+
+
+def local_digest():
+    """The private tier data/local: ignored, read by the engine when present."""
+    return dir_digest(ROOT / "data" / "local")
+
+
+# --------------------------------------------------------------------------
+#  THE RESOLVER'S CASCADE (review SE-01, S1, 2026-11-14)
+#
+#  The engine resolves a record by walking UP from the case directory and
+#  reading `<dir>/constant/...` at every level: src/thermo/RecordResolver.H
+#  (`walkUpDepth`, localRecord / nearestManifest / localScanDir: the case and
+#  up to walkUpDepth - 1 parents), src/thermo/SealCheck.cpp (the manifest,
+#  8 levels), src/thermo/Database.cpp (component overlays, 6 levels),
+#  src/thermo/ThermoPackageBuilder.cpp, the reaction library in
+#  src/applications/choupoSolve/main.cpp, and others.  The first key covered
+#  none of the ancestors: a propertyManifest or a component overlay placed in
+#  data/curation/electrolytes/constant/ made a sealed curation case FAIL while
+#  the suite printed it REUSED.  So the key now covers, for every directory a
+#  run starts in, the FULL contents of `<dir>/constant` at that level and at
+#  every parent the engine's deepest walk can reach -- inside the repository
+#  or above it, present or absent.  The depth is NOT transcribed: it is read
+#  from the engine's sources on every key (the largest `walkUpDepth` and the
+#  largest literal bound of every `for (int up = 0; up < N` loop under src/),
+#  so an engine that walks deeper changes the rule with it.
+# --------------------------------------------------------------------------
+
+_WALK = re.compile(r"for\s*\(\s*int\s+up\s*=\s*0\s*;\s*up\s*<\s*([A-Za-z0-9_:]+)")
+_DEPTH = []
+
+
+def resolver_depth():
+    """-> (depth, [the file:line each bound was read at])."""
+    if _DEPTH:
+        return _DEPTH[0]
+    named, best, cites = {}, 0, []
+    for f in sorted((ROOT / "src").rglob("*")):
+        if f.suffix not in (".H", ".cpp", ".h", ".hpp"):
+            continue
+        text = f.read_text(errors="ignore")
+        for m in re.finditer(r"constexpr\s+int\s+(\w+)\s*=\s*(\d+)", text):
+            named[m.group(1)] = int(m.group(2))
+    for f in sorted((ROOT / "src").rglob("*")):
+        if f.suffix not in (".H", ".cpp", ".h", ".hpp"):
+            continue
+        for n, line in enumerate(f.read_text(errors="ignore").splitlines(), 1):
+            m = _WALK.search(line)
+            if not m:
+                continue
+            tok = m.group(1).split("::")[-1]
+            v = int(tok) if tok.isdigit() else named.get(tok)
+            if v is None:
+                v = 64                        # an unreadable bound: be generous
+            if v > best:
+                best, cites = v, []
+            if v == best:
+                cites.append(f"{f.relative_to(ROOT).as_posix()}:{n}")
+    _DEPTH.append((max(best, 1), cites))
+    return _DEPTH[0]
+
+
+#  Inside a case's own constant/, the fetched archive extracts are re-made by
+#  `choupo-curate fetch` before every run and checked against the sha256 the
+#  TRACKED declaration names (the review confirmed a tampered extract is
+#  overwritten), so they are an output of the declaration, not an input.
+CASE_SKIP = ("archiveExtracts",)
+
+
+def cascade(start: Path):
+    """[(<dir>/constant, digest)] for the run directory `start` and every
+    parent the engine's walk reaches."""
+    depth, _ = resolver_depth()
+    out, p = [], start.resolve() if start.exists() else start
+    for _ in range(depth):
+        c = p / "constant"
+        out.append((str(c), dir_digest(c, CASE_SKIP)))
+        if p.parent == p:
+            break
+        p = p.parent
+    return out
 
 
 # --------------------------------------------------------------------------
@@ -328,7 +469,7 @@ def harness_closure(seeds):
         seen.add(p)
         if not _is_python(p):
             continue
-        m = gsr._module(p, ROOT)
+        m = gsr._module(p, ROOT, strict=True)
         todo += [ROOT / "bin" / "curate" / (n + ".py") for n in m.imports()]
         for s in _literals(m.tree):
             for w in re.findall(r"(?:^|/|\b)bin/([A-Za-z0-9_.-]+)", s):
@@ -352,18 +493,37 @@ def referenced_paths(files):
     for p in files:
         if not _is_python(p):
             continue
-        m = gsr._module(p, ROOT)
+        m = gsr._module(p, ROOT, strict=True)
+        #  OUTERMOST path expressions only (review SE-04): `ROOT / "data" /
+        #  "standards"` names data/standards, not the bare parent `data`,
+        #  which used to pass the honesty arm as "a parent of a keyed tree".
+        inner = set()
         for node in ast.walk(m.tree):
             if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+                inner.add(id(node.left))
+        for node in ast.walk(m.tree):
+            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div) \
+                    and id(node) not in inner:
                 v = m.ev(node)
                 for x in v or ():
-                    if isinstance(x, gsr._Path) and x.rel:
+                    if isinstance(x, gsr._Path) and x.rel and \
+                            not _case_relative(x.rel):
                         out.add(x.rel)
         for s in _literals(m.tree):
             s2 = s.strip()
-            if "/" in s2 and " " not in s2 and s2.split("/")[0] in tops:
+            if "/" in s2 and " " not in s2 and s2.split("/")[0] in tops \
+                    and not _case_relative(s2):
                 out.add(s2.rstrip("/"))
     return out
+
+
+def _case_relative(rel):
+    """`constant/...`, `system/...`: a name inside a case directory, relative
+    to wherever the case runs -- read through the resolver's cascade, which
+    the key covers (cascade()), never a repository path.  Review SE-01: the
+    first version read `constant/x` as the repository's ./constant whenever
+    that directory existed, and stopped keying the gate by accident."""
+    return rel.split("/")[0] in ("constant", "system")
 
 
 def outside(paths, spec, harness):
@@ -389,14 +549,21 @@ def outside(paths, spec, harness):
         if r in ("choupoProps", "choupoSolve", "choupoBatch", "choupoCtrl",
                  "choupoSemiContinuous", "generated/gitVersion.H"):
             continue                              # the engine half
-        if any(t.startswith(r + "/") for t in trees + exempt):
-            continue                              # a parent of a keyed tree
         bad.append(r)
     return bad
 
 
 def platform_half():
-    return f"{platform.machine()} python{sys.version_info[0]}.{sys.version_info[1]}"
+    """`uname -m`, the Python version and golden_bands' own platform
+    fingerprint -- CPU model, C library, compiler (review SE-03): a system
+    update that moves libm or libstdc++ moves the key."""
+    try:
+        import golden_bands
+        fp = golden_bands.platform_fingerprint()
+    except Exception as e:                     # the key must still be honest
+        fp = f"unreadable({type(e).__name__})"
+    return (f"{platform.machine()} python{sys.version_info[0]}."
+            f"{sys.version_info[1]} {fp}")
 
 
 # --------------------------------------------------------------------------
@@ -420,14 +587,55 @@ def gate_key(stem):
     dat, n_dat = data_half(spec["trees"], spec.get("local"))
     if dat is None:
         return None, f"NOT KEYED: {n_dat}"
+    refs = spec.get("case_refs")
+    if refs:
+        out_of = case_refs_outside(refs[0], refs[1], spec["trees"])
+        if out_of:
+            return None, (f"NOT KEYED: {len(out_of)} `{refs[0]}` value(s) in "
+                          f"the records it reads point outside its keyed "
+                          f"trees, first {out_of[0]}")
+    #  THE CASCADE: every directory a case of this gate runs in -- each case
+    #  directory in the keyed trees (in place) and the two scratch homes it
+    #  copies cases to (a mkdtemp under the system temporary directory and
+    #  under build/, two levels deep) -- with every parent the engine's walk
+    #  reaches.
+    starts = [ROOT / c for c in case_dirs(spec["trees"])]
+    starts += [Path(tempfile.gettempdir()) / "x" / "case", ROOT / "build" / "x" / "case"]
+    casc = sorted({pair for st in starts for pair in cascade(st)})
     har = digest([(h.relative_to(ROOT).as_posix(), H.sha(h)) for h in harness])
     key = digest([("engine", eng), ("data", dat), ("harness", har),
+                  ("cascade", digest(casc)),
                   ("platform", platform_half()), ("gate", stem)])
     H.save()
+    depth, _ = resolver_depth()
     return key, (f"{n_obj} engine objects, {n_dat} data files under "
                  f"{', '.join(spec['trees'])}"
                  + (" + data/local" if spec.get("local") else "")
-                 + f", {len(harness)} harness files")
+                 + f", {len(casc)} constant/ directories of the resolver's "
+                 f"cascade ({depth} levels), {len(harness)} harness files")
+
+
+def case_dirs(trees):
+    files = git_files(trees) or []
+    return sorted({f[:-len("/system/controlDict")] for f in files
+                   if f.endswith("/system/controlDict")})
+
+
+def case_refs_outside(field, where, trees):
+    """Values of `field` (fittedInCase) in the records the gate reads (the
+    pathspecs `where`) that point outside its keyed trees (review SE-04: the
+    gate runs ROOT / <value> unchecked)."""
+    p = subprocess.run(["git", "-C", str(ROOT), "grep", "--untracked", "-h",
+                        "-o", "-E", field + r"[[:space:]]+[^;]+", "--"] + where,
+                       capture_output=True, text=True)
+    bad = set()
+    for line in p.stdout.splitlines():
+        v = line.split(None, 1)[1].strip().strip('"').strip("'") \
+            if len(line.split(None, 1)) == 2 else ""
+        if v and not any(v.rstrip("/") == t or v.startswith(t + "/")
+                         for t in trees):
+            bad.add(v)
+    return sorted(bad)
 
 
 def _store_file(stem):
@@ -448,8 +656,9 @@ def lookup(stem):
     except (OSError, ValueError):
         st = None
     if st and st.get("key") == key:
-        print(f"PASS taken {st['date']}, key {key[:12]}; its inputs are "
-              f"unchanged ({detail}).  Its claim then: {st.get('claim', '')}")
+        print(f"PASS taken {st['date']}; its keyed inputs are unchanged "
+              f"(key {key[:12]}: {detail}).  Its claim then: "
+              f"{st.get('claim', '')}")
         return 0
     print(key)
     return 1
@@ -583,6 +792,10 @@ def case_plan(root_rel):
         while d and d.startswith(root_rel.rstrip("/")):
             pairs += [(f, H.sha(ROOT / f)) for f in loose.get(d, [])]
             d = os.path.dirname(d)
+        #  The resolver's cascade from this case (review SE-01): the case's
+        #  own constant/ in full (ignored files too, the fetched extracts
+        #  aside) and every parent's constant/, present or absent.
+        pairs += cascade(ROOT / c)
         key = digest([("base", base)] + sorted(pairs))
         stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
         labels, date = "-", "-"
@@ -617,7 +830,8 @@ def tree_key():
     unt = subprocess.run(["git", "-C", str(ROOT), "ls-files", "-o",
                           "--exclude-standard", "-z"],
                          capture_output=True, text=True).stdout
-    pairs = [("head", head), ("diff", hashlib.sha256(diff).hexdigest())]
+    pairs = [("head", head), ("diff", hashlib.sha256(diff).hexdigest()),
+             ("data/local", local_digest())]     # review SE-10: ignored, read
     pairs += [(f, H.sha(ROOT / f)) for f in sorted(x for x in unt.split("\0")
                                                    if x)]
     H.save()

@@ -556,24 +556,34 @@ SOURCE_SABOTAGES = [
 #  CHOUPO_GATE_JOBS=1 is one worker, the arms in their old order.
 #
 #  ONE AT A TIME ON THIS MACHINE: a second self-test REFUSES while one is
-#  alive (an flock on a per-user file outside every tree, so two worktrees
-#  are refused too; the kernel drops the lock when its holder dies, so a
-#  killed run leaves no stale lock).
+#  alive (an flock on ~/.cache/choupo/gate-selftest/lock, one fixed path per
+#  user, so two worktrees and two sessions are refused too; the kernel drops
+#  the lock when its holder dies, so a killed run leaves no stale lock).
+#  The lock covers the whole PROCESS TREE (review SE-11): every child leads
+#  a process group of its own, the live groups are recorded beside the lock,
+#  and a self-test that takes the lock first ends any group a killed
+#  predecessor left running inside the pool.
 #
 #  RESTORED EVEN WHEN INTERRUPTED.  Every sabotage is undone in its worker in
 #  try/finally from bytes held in memory and compared by sha256; SIGINT and
-#  SIGTERM are turned into an orderly stop that kills the running children,
-#  waits for every finally, and then restores from the registry whatever is
-#  still sabotaged.  SIGKILL cannot be caught: a worker then keeps its
-#  sabotage until the next self-test, whose sync resets it from this tree
-#  (`checkout -f`, `clean -fd`, and the files and build copied again) before
-#  anything runs -- and the tree itself had nothing to restore.
+#  SIGTERM are turned into an orderly stop that kills the running children's
+#  process groups, waits for every finally, and then restores from the
+#  registry whatever is still sabotaged.  SIGKILL cannot be caught: a worker
+#  then keeps its sabotage until the next self-test, which ends the orphaned
+#  groups and resets every worker COMPLETELY from this tree (`checkout -f`,
+#  `clean -fdx`, the files, the build and data/local copied again with
+#  --delete) before anything runs -- and the tree itself had nothing to
+#  restore.
 #  =====================================================================
 
-LOCK = Path(os.environ.get("XDG_RUNTIME_DIR") or "/tmp") / \
-    f"choupo-gate-selftest-{os.getuid()}.lock"
-POOL_HOME = Path(os.environ.get("CHOUPO_SELFTEST_POOL") or
-                 (Path.home() / ".cache" / "choupo" / "gate-selftest"))
+#  ONE fixed per-user home for the lock and the record of the pool's process
+#  groups (review SE-11): the first version put the lock under
+#  XDG_RUNTIME_DIR or /tmp, so two sessions with different values both ran.
+#  CHOUPO_SELFTEST_POOL may move the WORKERS (a scratch pool); never the lock.
+STATE_HOME = Path.home() / ".cache" / "choupo" / "gate-selftest"
+LOCK = STATE_HOME / "lock"
+GROUPS = STATE_HOME / "groups"          # one pgid per line, of live children
+POOL_HOME = Path(os.environ.get("CHOUPO_SELFTEST_POOL") or STATE_HOME)
 
 
 def platform_dir(root=ROOT):
@@ -631,33 +641,99 @@ _CHILD_LOCK = threading.Lock()
 STOP = threading.Event()
 
 
+def _groups_write():
+    """Record the live children's process groups on disk (under _CHILD_LOCK):
+    if this process is killed, the next self-test finds and ends them."""
+    try:
+        GROUPS.write_text("".join(f"{p.pid}\n" for p in _CHILDREN))
+    except OSError:
+        pass
+
+
 def run_child(argv, cwd, env, timeout):
-    """(rc, output) of a child the stop path can kill."""
+    """(rc, output) of a child the stop path can kill -- with ITS WHOLE
+    PROCESS TREE: each child leads a process group of its own (a `make` and
+    the compilers it starts, a gate and the engine runs it starts), so a stop
+    kills the group, not one process (review SE-11)."""
     if STOP.is_set():
         return 130, "(not started: the self-test is stopping)"
     p = subprocess.Popen(argv, cwd=cwd, env=env, stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT, text=True)
+                         stderr=subprocess.STDOUT, text=True,
+                         start_new_session=True)
     with _CHILD_LOCK:
         _CHILDREN.add(p)
+        _groups_write()
     try:
         out, _ = p.communicate(timeout=timeout)
         return p.returncode, out
     except subprocess.TimeoutExpired:
-        p.kill()
+        _kill_group(p.pid)
         out, _ = p.communicate()
         return 124, (out or "") + "\n(timed out)"
     finally:
         with _CHILD_LOCK:
             _CHILDREN.discard(p)
+            _groups_write()
+
+
+def _kill_group(pgid, grace=3.0):
+    try:
+        os.killpg(pgid, signal.SIGTERM)
+    except OSError:
+        return
+    end = time.monotonic() + grace
+    while time.monotonic() < end:
+        try:
+            os.killpg(pgid, 0)
+        except OSError:
+            return
+        time.sleep(0.1)
+    try:
+        os.killpg(pgid, signal.SIGKILL)
+    except OSError:
+        pass
 
 
 def kill_children():
     with _CHILD_LOCK:
-        for p in list(_CHILDREN):
-            try:
-                p.terminate()
-            except OSError:
-                pass
+        groups = [p.pid for p in _CHILDREN]
+    for g in groups:
+        _kill_group(g)
+
+
+def end_orphans():
+    """A previous self-test killed without its cleanup (SIGKILL) leaves its
+    children running -- a `make` still linking a sabotaged object into a
+    worker the next sync is about to reset.  We hold the lock, so their owner
+    is dead: every process still in a recorded group whose working directory
+    is inside the pool is ended.  A recycled pgid owned by anything else (cwd
+    outside the pool) is never touched.  -> the number of processes ended."""
+    try:
+        pgids = {int(x) for x in GROUPS.read_text().split() if x.isdigit()}
+    except OSError:
+        return 0
+    pool = str(POOL_HOME.resolve())
+    victims = set()
+    for proc in Path("/proc").iterdir():
+        if not proc.name.isdigit():
+            continue
+        try:
+            stat = (proc / "stat").read_text()
+            pgrp = int(stat.rsplit(")", 1)[1].split()[2])
+            cwd = os.readlink(proc / "cwd")
+        except (OSError, ValueError, IndexError):
+            continue
+        if pgrp in pgids and (cwd == pool or cwd.startswith(pool + "/")):
+            victims.add(pgrp)
+    n = 0
+    for g in victims:
+        _kill_group(g)
+        n += 1
+    try:
+        GROUPS.write_text("")
+    except OSError:
+        pass
+    return n
 
 
 #  ---- the workers ------------------------------------------------------
@@ -700,7 +776,12 @@ class Worker:
             _git(w, "checkout", "--quiet", "-f", "-B", branch, head)
         else:
             _git(w, "checkout", "--quiet", "-f", "--detach", head)
-        _git(w, "clean", "-fdq")                 # never -x: the build stays
+        #  RESET COMPLETELY (review SE-11): -x as well, so nothing a killed
+        #  arm left -- an ignored output, a half-linked build -- survives into
+        #  this run; the build, data/local and the links are copied afresh
+        #  below.  `-C w` is the worker: this never runs in the tree.
+        assert w.resolve() != ROOT.resolve()
+        _git(w, "clean", "-fdxq")
         for rel in changed:                       # this tree's own edits
             src, dst = ROOT / rel, w / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
@@ -733,7 +814,7 @@ class Worker:
         #  data/local is copied (small), each ignored entry of thirdParty/<x>/
         #  is linked (gigabytes, and read-only to every covered gate).
         if (ROOT / "data" / "local").is_dir():
-            subprocess.run(["rsync", "-a", str(ROOT / "data" / "local") + "/",
+            subprocess.run(["rsync", "-a", "--delete", str(ROOT / "data" / "local") + "/",
                             str(w / "data" / "local") + "/"], check=True,
                            capture_output=True)
         tp = ROOT / "thirdParty"
@@ -907,7 +988,7 @@ def _judge(s, rc, out, data):
 
 def acquire_lock():
     """-> an open file holding the machine-wide lock, or None (refused)."""
-    LOCK.parent.mkdir(parents=True, exist_ok=True)
+    STATE_HOME.mkdir(parents=True, exist_ok=True)
     f = open(LOCK, "a+")
     try:
         fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -1157,6 +1238,10 @@ def guarded_main() -> int:
     lock = acquire_lock()
     if lock is None:
         return 1
+    n = end_orphans()
+    if n:
+        print(f"[gate-selftest] ended {n} process group(s) a previous, killed "
+              "self-test left running in its pool (review SE-11)", file=sys.stderr)
 
     def on_signal(signum, _frame):
         STOP.set()
