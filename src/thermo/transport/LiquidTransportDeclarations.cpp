@@ -25,6 +25,7 @@ Description
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <map>
 #include <set>
 #include <stdexcept>
 
@@ -109,11 +110,12 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
             [&](const std::string& col) -> Dimensions
             {
                 if (col == "T")  return Dims::temperature;
+                if (col == "P")  return Dims::pressure;   // stated by the source; a liquid viscosity is not corrected for it
                 if (col == "mu") return Dims::viscosity;
                 if (col.size() > 3 && col.compare(0, 2, "w[") == 0 && col.back() == ']')
                     return Dims::dimensionless;
                 throw std::runtime_error("constant/experiments/" + name + ".dat: column `" + col
-                    + "` -- a liquid-viscosity point reads `mu` (required), `T` and"
+                    + "` -- a liquid-viscosity point reads `mu` (required), `T`, `P` and"
                       " mass fractions `w[<component>]`.");
             });
         m.where    = f.where;
@@ -145,6 +147,8 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
             throw std::runtime_error(f.where + ": `mu` must be positive.");
         if (liquidProperty::experimentsAdapter::hasColumn(f, "T"))
         { m.hasT = true; m.T = liquidProperty::experimentsAdapter::valueOf(f, 0, "T"); }
+        if (liquidProperty::experimentsAdapter::hasColumn(f, "P"))
+        { m.hasP = true; m.P = liquidProperty::experimentsAdapter::valueOf(f, 0, "P"); }
         scalar wsum = 0.0;
         for (const auto& col : f.columns)
             if (col.name.compare(0, 2, "w[") == 0)
@@ -533,6 +537,7 @@ std::string describe(const ViscosityMeasurement& m, const std::vector<Component>
     std::string s = "measured mixture value " + m.name + " (use " + m.use + ") of " + set + ": "
                   + fmt("%.6g Pa s", m.mu);
     if (m.hasT) s += fmt(" at %.6g K", m.T);
+    if (m.hasP) s += fmt(" at %.6g Pa (stated; not applied)", m.P);
     for (const auto& [c, w] : m.w) if (c != m.solvent) s += ", w[" + c + "] " + fmt("%.6g", w);
     if (!m.hasT && m.w.empty()) s += " (the source states no temperature and no composition)";
     s += "; box T " + fmt("%.6g", m.boxT.first) + fmt("-%.6g K", m.boxT.second);

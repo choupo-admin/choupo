@@ -21,6 +21,10 @@
 
 provenance
 {
+    //  sha256 is of the `data ( );` block of THIS file as transcribed (the source is
+    //  a printed table, not an archive file): it tells this transcription from a
+    //  corrected one.
+    sha256       "937c1aa7aa74c72004435aef77572a113adfbb01e8346097e3f71b7a9fd9c10d";
     source       literature;
     citation     "Schulz, R.; Rietfort, T.; Jansen, H.; Olujic, Z. (2018). Experimental evidence on performance of an advanced gauze structured packing under deep vacuum distillation conditions. Chem. Eng. Trans. 69, 763-768. doi:10.3303/CET1869128, Table 1";
 }

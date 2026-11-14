@@ -21,6 +21,7 @@ Description
 #include "core/Units.H"
 #include "thermo/RecordResolver.H"
 
+#include <functional>
 #include <iostream>
 #include <set>
 #include <stdexcept>

@@ -17,6 +17,8 @@ src/thermo/transport/LiquidTransportDeclarations.{H,cpp}).
       honoured); the opposite direction is NOT that value; the effective value
       of `binaryEffective` is the Vignes combination of the two
       infinite-dilution values the same operation prints (relative 1e-12);
+      the same entry written inline gives the same value; a `use check`
+      mixture viscosity is printed beside the computed one and never used;
       the view says 2-propanol's association factor is the default, and every
       record of debt_registry.ASSOCIATION_FACTOR_DEFAULTED still writes none.
   (2) REFUSALS OF THE GRAMMAR, each by its words, on a copy of the witness:
@@ -43,6 +45,9 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debt_registry import ASSOCIATION_FACTOR_DEFAULTED  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_liquid_diffusivity_declaration"
@@ -109,8 +114,6 @@ def main():
                 vig = dmw ** x_w * dwm ** x_m
                 if abs(eff / vig - 1.0) > 1e-12:
                     fails.append(f"(1) binaryEffective: D_L_effective {eff} is not the Vignes value {vig}")
-            sys.path.insert(0, str(ROOT / "bin" / "curate"))
-            from debt_registry import ASSOCIATION_FACTOR_DEFAULTED
             for rec in ASSOCIATION_FACTOR_DEFAULTED:
                 text = (ROOT / "data" / "standards" / "components" / f"{rec}.dat").read_text()
                 if re.search(r"^\s*associationFactor\s", text, re.M):
@@ -120,6 +123,36 @@ def main():
                         and rec in ("isopropanol",):
                     fails.append(f"(1) the view does not say {rec}'s association factor is the default")
             notes.append("witness: 3 operations, entry exact, Vignes to 1e-12, the default announced")
+
+        # ---- (1b) an inline entry, and a `use check` viscosity --------------
+        d = copy(WITNESS, tmp, "inline")
+        edit(d / "constant/thermoPhysPropDict", "experiments methanolInWater288; }",
+             'value 1.26e-5 cm2/s;  T 288 K;  box { T (288 288); }  source "Poling 5th ed. Table 11-5"; }')
+        rc, out = run(d, "choupoProps")
+        v = diagnostics(out).get("poling288", {}).get("D_L_inf_methanol_in_water")
+        if rc != 0 or v is None or abs(v / 1.26e-9 - 1.0) > 1e-14:
+            fails.append(f"(1b) an inline constant entry: exit {rc}, value {v} (expected 1.26e-9 m2/s)")
+        else:
+            notes.append("inline entry")
+        d = copy(WITNESS, tmp, "check")
+        edit(d / "constant/thermoPhysPropDict", "viscosity   { }",
+             'viscosity   { measured { muCheck { use check; reason "a probe"; } } }')
+        (d / "constant/experiments/muCheck.dat").write_text(
+            'provenance { citation "a probe of this gate"; }\nproperty liquidViscosity;\n'
+            "system ( methanol isopropanol water );\nsolvent water;\n"
+            "columns ( { name mu; unit mPa.s; } );\ndata ( 0.5 );\n"
+            "box { T ( 280 400 ); w[methanol] ( 0 1 ); w[isopropanol] ( 0 1 ); }\n")
+        edit(d / "system/propsDict", "D_L_inf_isopropanol_in_water     D_L_inf_water_in_isopropanol );",
+             "D_L_inf_isopropanol_in_water     D_L_inf_water_in_isopropanol  viscosity_liquid );")
+        rc, out = run(d, "choupoProps")
+        mu = diagnostics(out).get("topDinf", {}).get("viscosity_liquid")
+        if rc != 0 or "[liquid viscosity] measured muCheck 0.0005 Pa s beside the computed" not in out \
+                or mu is None or abs(mu - 5e-4) < 1e-12:
+            fails.append(f"(1b) a `use check` measurement: exit {rc}, the comparison line "
+                         f"{'printed' if 'measured muCheck' in out else 'NOT printed'}, value {mu}"
+                         " (a check is never used)")
+        else:
+            notes.append("use check")
 
         # ---- (2) refusals of the grammar -----------------------------------
         tp = "constant/thermoPhysPropDict"
@@ -196,8 +229,9 @@ def main():
         for f in fails:
             print("  " + f)
         return 1
-    print(f"{NAME}: OK -- the witness returns its declared entry exactly and the Vignes value to"
-          f" 1e-12; {len(notes) - 1} refusals each by name (9 of the grammar, 3 of the column).  NOT"
+    print(f"{NAME}: OK -- the witness returns its declared entry exactly (from a file and inline) and"
+          f" the Vignes value to 1e-12; a `use check` viscosity is printed and not used;"
+          f" {len(notes) - 3} refusals each by name (9 of the grammar, 3 of the column).  NOT"
           " CHECKED: the migrated cases' numbers (their goldens), Wilke-Chang's fitness for a pair.")
     return 0
 

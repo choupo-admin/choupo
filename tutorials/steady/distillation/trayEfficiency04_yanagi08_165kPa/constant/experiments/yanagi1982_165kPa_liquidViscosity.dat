@@ -10,7 +10,8 @@
   The liquid viscosity of the cyclohexane / n-heptane liquid on Yanagi &
   Sakata's FRI sieve trays at 165 kPa: Table II prints it as an AVERAGE
   physical property "of the test systems under operating conditions", with
-  no temperature and no composition, so this file states neither and the box
+  no temperature and no composition (only the column pressure), so this file
+  states neither and the box
   below is the case's hypothesis (its `reason` is written in
   constant/thermoPhysPropDict).  Read by transport.liquid.viscosity.measured
   (DEV.md 4c C398 slice (d)); until that slice it was typed in the column's
@@ -19,6 +20,10 @@
 
 provenance
 {
+    //  sha256 is of the `data ( );` block of THIS file as transcribed (the source is
+    //  a printed table, not an archive file): it tells this transcription from a
+    //  corrected one.
+    sha256       "9299fd670cfa680939d0e2eeaaa8a3af9a0a56d59f4415257da5992127d5fc13";
     source       literature;
     citation     "Yanagi, T.; Sakata, M. (1982). Performance of a Commercial Scale 14% Hole Area Sieve Tray. Ind. Eng. Chem. Process Des. Dev. 21, 712-717. doi:10.1021/i200019a029, Table II";
 }
@@ -29,9 +34,10 @@ solvent     nHeptane;
 
 columns
 (
+    { name P;  unit kPa;  }      // the column pressure Table II states
     { name mu; unit Pa.s; }      // 0.23 mPa s as printed
 );
-data        ( 2.3e-4 );
+data        ( 165 2.3e-4 );
 
 box
 {

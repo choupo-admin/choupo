@@ -1213,8 +1213,8 @@
     },
     "check_evidence_records": {
       "exit": 0,
-      "claim": "check_evidence_records: OK -- 50 of 71 dataset(s) under constant/experiments parse, name their subject, cite and carry a sha256; the other 21 are the MEASURED legacy set pinned in debt_registry.EVIDENCE_LEGACY_DATASETS, each lacking exactly what its pin says (a pin that grows or shrinks fails); none declares a `role`; data/local/evidence README tracked and .dat ignored; the witness evaluates at its 13 declared points (3 ops, CSV = dataset x to 1e-12, announced, n_points 13); 3 probes refuse by name.  NOT checked: any value against its article; the sha256 against the data block.",
-      "seconds": 8.0
+      "claim": "check_evidence_records: OK -- 69 of 90 dataset(s) under constant/experiments parse, name their subject, cite and carry a sha256; the other 21 are the MEASURED legacy set pinned in debt_registry.EVIDENCE_LEGACY_DATASETS, each lacking exactly what its pin says (a pin that grows or shrinks fails); none declares a `role`; data/local/evidence README tracked and .dat ignored; the witness evaluates at its 13 declared points (3 ops, CSV = dataset x to 1e-12, announced, n_points 13); 3 probes refuse by name.  NOT checked: any value against its article; the sha256 against the data block.",
+      "seconds": 1.1
     },
     "check_ode_block_structure": {
       "exit": 0,
@@ -1813,8 +1813,8 @@
     },
     "check_liquid_diffusivity_declaration": {
       "exit": 0,
-      "claim": "check_liquid_diffusivity_declaration: OK -- the witness returns its declared entry exactly and the Vignes value to 1e-12; 12 refusals each by name (9 of the grammar, 3 of the column).  NOT CHECKED: the migrated cases' numbers (their goldens), Wilke-Chang's fitness for a pair.",
-      "seconds": 0.2
+      "claim": "check_liquid_diffusivity_declaration: OK -- the witness returns its declared entry exactly (from a file and inline) and the Vignes value to 1e-12; a `use check` viscosity is printed and not used; 12 refusals each by name (9 of the grammar, 3 of the column).  NOT CHECKED: the migrated cases' numbers (their goldens), Wilke-Chang's fitness for a pair.",
+      "seconds": 0.7
     }
   }
 }

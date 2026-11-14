@@ -89,6 +89,8 @@ struct ViscosityMeasurement
     scalar mu = 0.0;                         // Pa s
     bool   hasT = false;
     scalar T    = 0.0;                       // K, when the source states it
+    bool   hasP = false;
+    scalar P    = 0.0;                       // Pa, when the source states it (not applied)
     std::map<std::string, scalar> w;         // stated mass fractions (incl. the solvent's rest)
     std::pair<scalar, scalar> boxT{0, 0};
     std::map<std::string, std::pair<scalar, scalar>> boxW;   // every constituent but the solvent
