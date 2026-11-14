@@ -3518,6 +3518,37 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398, RULED, SECOND ADDENDUM (2026-11-14; a third outside reading,
+> which APPROVES the ruled design for implementation and asks four
+> corrections, all accepted).**  (V1) The resolved view names, for every
+> property, the pure-component model per constituent, the MIXING RULE
+> (marked "default of <model>" when the case wrote none), the interaction
+> parameters it consumes with their origin, or the model that computes
+> the mixture directly.  Measured on main: liquid viscosity
+> logMoleAverage (default) and GrunbergNissan; liquid conductivity
+> massFractionAverage (default), Filippov, Li; surface tension
+> moleFractionAverage (default), Butler; vapour viscosity Wilke and
+> vapour conductivity Wassiljewa with Mason-Saxena, fixed in code (shown
+> in the view; a key the day a second rule exists).  (V2) The view
+> covers `volumetric` and `caloric`: the liquid density's method per set
+> with the rule and data that decided it, the vapour route, the energy
+> basis, each phase's enthalpy route, the Cp law per constituent and
+> phase, the reference state, and the excess or departure contributions.
+> Both go into slice (a).  (V3) A table's metadata use the EXISTING
+> experiments-file grammar (`system`, `property`, `columns` with name and
+> unit, `box`, `provenance`), extended by `solute`, `solvent`, `kind` and,
+> where it matters, `frame`; the reader checks the file against the entry
+> that cites it and refuses a mismatch (water in methanol cited as
+> methanol in water).  Interpolation is always declared, by one of:
+> `linear` (y linear in T), `logLinear` (ln y linear in T),
+> `logReciprocal` (ln y linear in 1/T, the Arrhenius form),
+> `monotoneCubic` (Fritsch-Carlson on y).  (V4) No general minimum of
+> points: the minimum is the interpolation's own (2 for the three
+> linear forms, 3 for monotoneCubic); abscissae strictly increasing with
+> no duplicate; values strictly positive for the two log forms; the
+> table's extent and point count are printed in the view.  V3 and V4 go
+> into slices (c) and (d).
+
 > **C398, RULED, ADDENDUM (2026-11-14; the four requests of the
 > reviewer's `docs/reviews/2026-11-14-openfoam-property-architecture/`
 > section 10, and step 2-3 of
