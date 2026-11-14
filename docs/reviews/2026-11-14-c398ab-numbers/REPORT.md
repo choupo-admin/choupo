@@ -6,7 +6,7 @@ branches: `c398/slice-a-variants`, `c398/slice-b-named-laws`,
 afa154705 (the merge base).  The reviewer did not build what it reviews.  No
 tracked file was changed; every probe on a copy of a case ran outside the
 tree.  No `bin/runTests` was run (the coordinator's full regression covers
-the goldens).  Rows `CN-01..CN-08` are in `docs/reviews/LEDGER.tsv` (CN-07 and CN-08 from the addendum, section 6).
+the goldens).  Rows `CN-01..CN-09` are in `docs/reviews/LEDGER.tsv` (CN-07 and CN-08 from section 6, CN-09 from section 7).
 
 **The claim attacked.**  Apart from four appended `source` rows (ratebased01-04)
 and the goldens of the new witness cases, no number that any shipped case
@@ -297,3 +297,76 @@ Apart from the four appended `source` rows, the witnesses, totalReflux01's
 boundary block (now pinned) and steam02's operations, no number of the 698
 cases moves and no case is newly refused; the one unlisted move is steam02's
 `pin_100C` vapour keys (CN-07).
+
+## 7. Fourth round: `origin/integ/c398ab` at f31894354 against the current `origin/main` (bbef82e38)
+
+The head merges `c398/slice-b-named-laws` at 5ff82183b and the current main
+(which now also carries the packing-record slice and the mass-transfer
+EduTool), so the reference is no longer afa154705: both sides were built
+fresh from `git archive` of bbef82e38 and of f31894354 (`make -j3`, each
+binary checked with `ldd` against its own `libchoupo.so`, each run with its
+own `CHOUPO_HOME`).  New in this round on paths every case takes:
+`src/solver/NewtonRaphson.cpp` (a refused iterate is halved back toward the
+last answered point, a refused seed is re-seeded inside the stated window, an
+unconverged search after a refusal rethrows it), and the stream-equilibrium
+and isothermal-flash fallbacks rethrowing a hard-window refusal.
+
+### 7.1 The measurement: 699 cases, main vs branch
+
+The same 698 cases plus `packing05_schulz_record_0p10bar` (new on main, on
+both sides); the three witnesses that exist only on the branch were not
+compared.  Exit codes identical in all 699: 635 exit 0 on both, 8 refusal
+witnesses and 56 curation cases (no archive extracts) fail identically.
+
+| family | lines | cases | source |
+|---|---|---|---|
+| provenance announcements (UNVERIFIED DATA, [unreviewed], advisories) | 1091 | 34 | text (CN-06) |
+| declared source `liquidThermalConductivity` | 717 | 108 | text (c329) |
+| a negative zero printed as 0 | 159 | 70 | CN-05 |
+| result provenance rows | 89 | 43 | text |
+| caveat-block frame | 52 | 9 | text |
+| override announcement wording | 50 | 2 | text |
+| the rate-based enthalpy probe advisory | 32 | 2 | text (c329) |
+| `[cp] ... declares Trange unknown` printed a second time (two lines each) | 386 | 6 | text, CN-09 |
+| pair source `inline` -> `standard`; Andrade/Vogel window wording; the Chung advisory's position | 2 + 4 + 4 | 6 | text |
+| `totalReflux01` boundary block | 5 | 1 | CN-01, pinned |
+| `steam02_water_transport` | -- | 1 | two operations added, the renamed keys, the two pin_100C vapour values (CN-07, pinned) |
+
+No other number differs in any stdout, result JSON or written file (state
+directories, trajectories, reports, CSVs).  The benchmark
+`methanol01_co2_hydrogenation` agreed this time (both exit 2, no number
+differs): both trees started from the committed parameter files, which is
+what CN-08 says it depends on.  `reforming01`'s rewritten
+`eppr78_1000K.dat` has the same content on both sides (only its mtime
+differed).  So the new Newton safeguard and the two rethrows move no number
+and refuse no case in this sample; this sample cannot say how often they
+fire, only that no shipped case's answer moved.
+
+### 7.2 CN-07: fixed
+
+The unmodified steam02 on f31894354 gives `pin_100C` `viscosity`
+1.22336380006e-05 Pa s and `thermal_conductivity` 0.0245633017624 W/(m K)
+(main: 2.81585019366e-04 and 0.677216843797), and `expected:95-96` now pins
+exactly those values (1e-4); commit 5ff82183b corrects the previous commit's
+"values identical" and states the old and new values.  Every other key of
+every steam02 operation is identical to main's.
+
+### 7.3 New row
+
+* **CN-09 (S4)**: `src/thermo/ResolvedView.cpp:134-141`, `:169`.  The view
+  builds a fresh law object from every record law it prints, to show a probe
+  value, so each construction-time announcement runs twice per package at
+  verbosity 2 or more: `[cp] polynomial Cp for X declares Trange unknown;`
+  goes from 1 to 2 (2Chlorobutane-toluene), 3 to 4 (temperature02), 6 to 8
+  (new_components_c309) and 186 to 372 (transport_c327, two records in 93
+  packages) on stderr; at verbosity 1 (no view) the count is back to 1.  The
+  advisory log de-duplicates, so the result JSON is unchanged, and no number
+  moves.
+
+### 7.4 Verdict at f31894354
+
+Against the current main, no number of the 699 cases moves and no case is
+newly refused, except the moves the claim now lists and pins (totalReflux01's
+boundary block, steam02's renamed keys and pin_100C vapour values) and the
+four appended `source` rows.  Open rows: CN-08 (pre-existing benchmark order
+dependence) and CN-09 (a doubled stderr line).
