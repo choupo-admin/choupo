@@ -34,10 +34,26 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <set>
 #include <stdexcept>
 #include "thermo/equationOfState/EquationOfState.H"
 
 namespace Choupo {
+
+namespace {
+
+//  One line per omitted diagnostic key and reason, per run (C398 slice (b)).
+void announceOmitted(const std::string& key, const std::string& property,
+                     const std::string& remedy, const std::string& why)
+{
+    static std::set<std::string> said;
+    std::string first = why.substr(0, why.find('\n'));
+    if (!said.insert(key + "|" + first).second) return;
+    std::cout << "[propertyPoint] key `" << key << "` omitted: the " << property
+              << " is not available here (" << first << ").  Remedy: " << remedy << ".\n";
+}
+
+} // namespace
 
 int PropertyPoint::run(const DictPtr& dict,
                        const ThermoPackage& globalThermo,
@@ -101,7 +117,12 @@ int PropertyPoint::run(const DictPtr& dict,
             // that "liquid" would invent a phase that is not there.
             hasLiq = std::isfinite(vLiq) && vLiq > 0.0 && vLiq < 0.98 * vmol;
         }
-        catch (const std::exception&) { hasLiq = false; }   // no liquid root here
+        catch (const std::exception& e)                        // no liquid root here
+        {
+            hasLiq = false;
+            announceOmitted("Z_liquid, v_molar_liq", "liquid root of the equation of state",
+                            "none needed when the state has no liquid root", e.what());
+        }
     }
 
     if (verbosity >= 2)
@@ -174,9 +195,26 @@ int PropertyPoint::run(const DictPtr& dict,
     // can supply them (a pure-fluid IAPWS route, or a generic transport
     // block).  Each is guarded -- a package without a model simply omits the
     // key, so existing propertyPoint cases are unaffected (additive).
-    try { diag_["viscosity"]            = thermo.viscosityGas(T, z); }            catch (...) {}
-    try { diag_["thermal_conductivity"] = thermo.thermalConductivityGas(T, z); }  catch (...) {}
-    try { diag_["surface_tension"]      = thermo.surfaceTension(T, z); }          catch (...) {}
+    //  A KEY OMITTED IS SAID (C398 slice (b)): a property the package cannot
+    //  supply leaves its key out of the diagnostics -- additive, so no golden
+    //  moves -- and the run says so ONCE per key and reason, naming the key,
+    //  the property and the remedy.  A key dropped in silence was the crutch
+    //  that hid a gas viscosity nobody declared (the Chung default, SL-04).
+    auto attempt = [&](const char* key, const char* property, const char* remedy, auto&& f)
+    {
+        try { diag_[key] = f(); }
+        catch (const std::exception& e) { announceOmitted(key, property, remedy, e.what()); }
+        catch (...) { announceOmitted(key, property, remedy, "not a std::exception"); }
+    };
+    attempt("viscosity", "vapour viscosity",
+            "declare `transport { vapour { viscosity { model Chung; } } }` in the property dictionary",
+            [&] { return thermo.viscosityGas(T, z); });
+    attempt("thermal_conductivity", "vapour thermal conductivity",
+            "declare `transport { vapour { thermalConductivity { model Eucken; } viscosity { model Chung; } } }`",
+            [&] { return thermo.thermalConductivityGas(T, z); });
+    attempt("surface_tension", "surface tension",
+            "declare `transport { interface { surfaceTension { } } }` (the records' laws) or name a model",
+            [&] { return thermo.surfaceTension(T, z); });
 
     //  ---- the DECLARED `properties ( ... )` list, which was parsed by nobody
     //

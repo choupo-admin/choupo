@@ -37,6 +37,8 @@ License
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include "thermo/RecordLaws.H"
+
 #include <map>
 #include <memory>
 #include <sstream>
@@ -188,6 +190,17 @@ void VaporPressureModel::noteRange(scalar T_K) const
 
 void VaporPressureModel::registerBuiltins()
 {
+    //  U3 (C398): each type's form, coefficient units and logarithm base,
+    //  in ONE place -- here, beside its registration; the resolved view
+    //  prints it.
+    recordLaws::declareForm("vaporPressure", "Antoine",
+        "log10(P/bar) = A - B/(T/K + C); A dimensionless, B and C in K");
+    recordLaws::declareForm("vaporPressure", "AmbroseWalton",
+        "ln(P/Pc) = [f0(tau) + omega f1(tau) + omega^2 f2(tau)]/Tr, Tr = T/Tc, tau = 1 - Tr"
+        " (Ambrose-Walton 1989); no coefficients: Tc, Pc, omega from the record");
+    recordLaws::declareForm("vaporPressure", "Wagner",
+        "ln(P/Pr) = (Tr/T) sum_i a_i tau^e_i, tau = 1 - T/Tr; a_i and e_i dimensionless,"
+        " reducing T and P in the units declared in `reducing`");
     registerModel("Antoine",
         [](const DictPtr& d) -> std::unique_ptr<VaporPressureModel>
         { return std::make_unique<Antoine>(d); });
@@ -303,6 +316,11 @@ scalar VaporPressureModel::continuedPsat(scalar T_K) const
     const scalar sE  = above ? cont_.sHi  : cont_.sLo;
     const scalar Te  = above ? cont_.hi   : cont_.lo;
     return std::exp(lnE + sE * (1.0 / T_K - 1.0 / Te));
+}
+
+bool VaporPressureModel::hasModel(const std::string& name)
+{
+    return registry().count(name) > 0;
 }
 
 } // namespace Choupo

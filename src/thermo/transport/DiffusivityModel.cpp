@@ -48,7 +48,18 @@ void DiffusivityModel::registerModel(const std::string& name, Factory f)
 
 std::unique_ptr<DiffusivityModel> DiffusivityModel::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("model", "Fuller");
+    if (!dict->found("model"))
+        throw std::runtime_error("vapour diffusivity: the block names no `model` -- the factory"
+            " default (Fuller) was removed (DEV.md 4c C398, review row SL-04): a"
+            " property block that names no model is either a liquid property"
+            " block read per constituent from the records, or refused.  Write"
+            " `model <word>;` -- registered:" + []
+            {
+                std::string s;
+                for (const auto& kv : registry()) s += " " + kv.first;
+                return s;
+            }());
+    const std::string name = dict->lookupWord("model");
     auto it = registry().find(name);
     if (it == registry().end())
     {

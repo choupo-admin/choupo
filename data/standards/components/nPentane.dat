@@ -105,6 +105,35 @@ provenance
     triplePoint    "CoolProp reference EOS triple-point T,P";
     preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
     standardThermochemistry "NASA TM-4513 (McBride-Gordon-Reno 1993), H0/S0(298.15) from NASA-7 poly";
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 0.406123;
+        Trange        (293.15 323.15);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1016/j.jct.2009.07.018"; articleSha256 "e3f285767094f57d02c6162bc22289f4fb84257f68c722596abf043f6b2fd57f"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2016.11.018"; articleSha256 "f23384deb5efea376c65921536e64b1eb35b962ea5c730620f95ba83cd113637"; pointsKept 1; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     2;
+            pointsKept  6;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     0.184845;
+            max_pct     0.406123;
+        }
+    }
 }
 cosmo
 {
@@ -138,34 +167,5 @@ cosmo
                0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
                0.000000     0.000000     0.000000
         );
-    }
-    surfaceTension
-    {
-        origin        fitted;
-        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
-        fittedBy      "bin/curate/transport_fit.py";
-        reviewStatus  autoPromoted;
-        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
-        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
-        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
-        fitGradeMaxRelativeError_pct 0.406123;
-        Trange        (293.15 323.15);   // K, the kept points -- outside it the engine announces an extrapolation
-        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
-        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
-        evidence
-        (
-                { doi "10.1016/j.jct.2009.07.018"; articleSha256 "e3f285767094f57d02c6162bc22289f4fb84257f68c722596abf043f6b2fd57f"; pointsKept 5; pointsDropped 0; provenance measured; }
-                { doi "10.1016/j.jct.2016.11.018"; articleSha256 "f23384deb5efea376c65921536e64b1eb35b962ea5c730620f95ba83cd113637"; pointsKept 1; pointsDropped 0; provenance measured; }
-        );
-        acceptance
-        {
-            verdict     accepted;
-            studies     2;
-            pointsKept  6;
-            pointsDropped 0;
-            dropped     "none";
-            aad_pct     0.184845;
-            max_pct     0.406123;
-        }
     }
 }

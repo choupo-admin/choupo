@@ -262,7 +262,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
     note: "The latent heat on this page is the engine's: the acetone "
       + "witness's propertyPoint asks for Hvap_acetone at the boiling "
       + "temperature it finds at the relieving pressure.  That key is "
-      + "Component::Hvap_latent (src/thermo/Component.cpp:1400-1408), the "
+      + "Component::Hvap_latent (src/thermo/Component.cpp:1425-1433), the "
       + "record's HvapTb carried to T by the Watson correlation -- the same "
       + "term the engine subtracts from the ideal-gas enthalpy to price a "
       + "liquid (src/thermo/ThermoPackage.H:375) -- exposed to the props "
@@ -438,7 +438,7 @@ export const OVERPRESSURE_STEPS: readonly LessonStep[] = [
       + "test recomputes it.  The fluid properties come from the engine: "
       + "Z from the SRK vapour root and k as Cp_ig/(Cp_ig - R), the "
       + "ideal-gas ratio the equation is derived with "
-      + "(src/propertyOps/PropertyPoint.cpp:72-75).",
+      + "(src/propertyOps/PropertyPoint.cpp:88-91).",
     formula: String.raw`A = \frac{W}{C\, K_\mathrm{d}\, P_1\, K_\mathrm{b}\, K_\mathrm{c}} \sqrt{\frac{T\, Z}{M}}, \qquad C = 0.03948 \sqrt{k \left(\frac{2}{k+1}\right)^{\frac{k+1}{k-1}}}`,
     derivation: [
       { step: "An ideal gas expanding isentropically from rest at P1 and T1 "

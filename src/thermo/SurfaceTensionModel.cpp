@@ -31,6 +31,8 @@ License
 #include "transport/StoredCorrelation.H"
 #include "transport/SurfaceTensionMixingRule.H"
 
+#include "thermo/RecordLaws.H"
+
 #include <map>
 #include <memory>
 #include <stdexcept>
@@ -52,7 +54,18 @@ void SurfaceTensionModel::registerType(const std::string& name, Factory f)
 std::unique_ptr<SurfaceTensionModel>
 SurfaceTensionModel::New(const DictPtr& dict)
 {
-    const std::string name = dict->lookupWordOrDefault("model", "StoredCorrelation");
+    if (!dict->found("model"))
+        throw std::runtime_error("surface tension: the block names no `model` -- the factory"
+            " default (StoredCorrelation) was removed (DEV.md 4c C398, review row SL-04): a"
+            " property block that names no model is either a liquid property"
+            " block read per constituent from the records, or refused.  Write"
+            " `model <word>;` -- registered:" + []
+            {
+                std::string s;
+                for (const auto& kv : registry()) s += " " + kv.first;
+                return s;
+            }());
+    const std::string name = dict->lookupWord("model");
     auto it = registry().find(name);
     if (it == registry().end())
     {
@@ -66,6 +79,22 @@ SurfaceTensionModel::New(const DictPtr& dict)
 
 void SurfaceTensionModel::registerBuiltins()
 {
+    //  U3 (C398): each type's form and coefficient units, in ONE place.
+    recordLaws::declareForm("surfaceTension", "tauPower",
+        "sigma/(N/m) = A tau^n + B tau^(n+1), tau = 1 - T/Tc with the block's own Tc in K;"
+        " A and B in N/m, n dimensionless");
+    for (const char* w : { "StoredCorrelation", "storedCorrelation" })
+        recordLaws::declareForm("surfaceTension", w,
+            "the record's tauPower law, else Brock-Bird for that component, announced");
+    for (const char* w : { "BrockBird", "brockBird", "brockbird" })
+        recordLaws::declareForm("surfaceTension", w,
+            "PREDICTIVE: Brock-Bird corresponding states from Tc, Pc, Tb (Poling et al.,"
+            " eq. 12-3.5); no record law");
+    //  THE RECORD'S STORED FORM AS A LAW TYPE (C398 slice (b)): a bare
+    //  surfaceTension block, or a named law of a block of several, is a law of
+    //  type `tauPower`.  Unlike the legacy word StoredCorrelation it has no
+    //  Brock-Bird fallback: a record without the block is refused by name.
+    registerType("tauPower", [](const DictPtr& d) { return std::make_unique<StoredCorrelation>(d, false); });
     registerType("BrockBird", [](const DictPtr& d) { return std::make_unique<BrockBird>(d); });
     registerType("brockBird", [](const DictPtr& d) { return std::make_unique<BrockBird>(d); });
     registerType("brockbird", [](const DictPtr& d) { return std::make_unique<BrockBird>(d); });
@@ -81,6 +110,11 @@ std::vector<std::string> SurfaceTensionModel::availableModels()
     std::vector<std::string> out;
     for (const auto& [k, _] : registry()) out.push_back(k);
     return out;
+}
+
+bool SurfaceTensionModel::hasModel(const std::string& name)
+{
+    return registry().count(name) > 0;
 }
 
 } // namespace Choupo

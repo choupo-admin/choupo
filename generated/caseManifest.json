@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1858,
+  "cases": 1860,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 24
@@ -24550,6 +24550,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/thermo/refEoS01_iapws95_verification": {
    "application": "choupoProps",
    "ops": [
@@ -24647,6 +24661,20 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/transport/purelaws01_methanol_isopropanol_water": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
     ]
    },
    "roles": [],
@@ -31428,6 +31456,7 @@
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
+    "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/refEoS01_iapws95_verification",
     "tutorials/props/thermo/standardState01_hydrogen_enthalpy_TP",
     "tutorials/props/thermo/temperature01_gas_thermometer",
@@ -31436,6 +31465,7 @@
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
     "tutorials/props/transport/mixing01_water_acetone",
+    "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
@@ -34954,11 +34984,13 @@
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
+    "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/refEoS01_iapws95_verification",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
@@ -36315,9 +36347,11 @@
     "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
+    "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/transport/mixing01_water_acetone",
+    "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/steady/thermo/variants01_ethanol_water_line"
    ],

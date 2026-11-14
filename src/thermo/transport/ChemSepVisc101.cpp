@@ -35,6 +35,7 @@ License
 #include <cmath>
 #include <stdexcept>
 #include <string>
+#include <variant>
 
 namespace Choupo {
 
@@ -47,7 +48,8 @@ scalar ChemSepVisc101::viscosityLiquidPure(const Component& c, scalar T) const
             " block) -- select that instead, and know it is a narrower"
             " fit than the five-parameter form.");
     auto lv = c.liquidViscosityDict();
-    if (!lv->found("chemsepEq101"))
+    const std::string law = law_.empty() ? std::string("chemsepEq101") : law_;
+    if (!lv->found(law))
     {
         //  NAME WHAT THE RECORD ACTUALLY HAS, not a fixed alternative.  This
         //  branch fires precisely when the component DOES carry a viscosity
@@ -57,18 +59,21 @@ scalar ChemSepVisc101::viscosityLiquidPure(const Component& c, scalar T) const
         //  refusal that guesses the remedy can name a model the record does
         //  not carry.
         std::string have;
+        //  The LAWS it holds: its sub-blocks (C398 slice (b): a block of
+        //  several laws also carries `preferred`, which is not one).
         for (const auto& k : lv->keys())
-            have += (have.empty() ? "" : ", ") + k;
+            if (std::holds_alternative<DictPtr>(lv->entryValue(k)))
+                have += (have.empty() ? "" : ", ") + k;
         throw std::runtime_error("chemsepEq101 viscosity: component '"
             + c.name() + "' has a liquidViscosity block but no"
-            " `chemsepEq101 { A; B; C; D; E; }` sub-block."
+            " `" + law + " { A; B; C; D; E; }` sub-block."
             + (have.empty()
                  ? std::string("  The block declares nothing at all.")
                  : "  It declares: " + have + " -- select one of those"
                    " instead (Andrade and Vogel are narrower fits than the"
                    " five-parameter form, which is the trade)."));
     }
-    auto p = lv->subDict("chemsepEq101");
+    auto p = lv->subDict(law);
 
     if (T <= 0)
         throw std::runtime_error("chemsepEq101 viscosity: T <= 0 K");

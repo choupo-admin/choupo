@@ -2670,8 +2670,8 @@ spelt with are one table (\file{src/thermo/TransportGrammar.H}):
 \code{interface} & \code{surfaceTension} \\
 \end{tabular}
 \end{center}
-and inside a block the builder reads \code{model}, \code{mixingRule} and
-\code{interaction}.  A name outside the table --- a misspelt property, or the
+and inside a block the builder reads \code{model}, \code{mixingRule},
+\code{interaction} and, since slice~(b), \code{pin} (\S\ref{sec:record-laws-choice}).  A name outside the table --- a misspelt property, or the
 flat spelling \code{liquidViscosity \{\}} beside \code{liquid \{ viscosity
 \{\} \}}, the same block written twice --- used to be dropped in silence; it
 is refused.  Measured over 3877 shipped dictionaries before the change: no
@@ -2715,19 +2715,235 @@ can be asked it prints two columns:
 \end{description}
 A fingerprint of the resolved definition heads each view: two runs that print
 the same fingerprint for a variant built it from the same text.  Values are
-SI.  What the view does not show yet, and says so: a law's form with its
-coefficient units (the law types do not declare them: slice~(b)); the unit a
-record value was declared in (the component reader does not keep it); the
+SI.  Since slice~(b) it prints, per constituent, each record law the run
+uses --- its name, type, who chose it and its window --- and the form of every
+law type with its coefficient units (\S\ref{sec:record-laws}).  What the view
+does not show yet, and says so: the unit a record value was declared in (the component reader does not keep it); the
 liquid-density method of each constituent \emph{set}, which the kernel decides
 at the set's first request and the \code{[liquid properties]} table prints
 after the run (\S\ref{sec:liquid-property-sources}).  Found while building it:
-a \code{transport \{\}} block that names no vapour viscosity still gives the
-package a gas viscosity, Chung's, by the factory's default --- the view prints
-``NOT DECLARED, yet the package answers with Chung''.
+a \code{transport \{\}} block that named no vapour viscosity still gave the
+package a gas viscosity, Chung's, by the factory's default; slice~(b) deleted
+that default (\S\ref{sec:record-laws-choice}), and the three cases that read
+it declare it.
 
 The witness is \file{tutorials/steady/thermo/variants01\_ethanol\_water\_line}:
 a pipe and a property operation select the variant \code{vogelLaw}, a second
 operation prices the same liquid on the system.
+
+% ---------------------------------------------------------------------
+\section{Several named laws in a record, chosen once per constituent}\label{sec:record-laws}
+
+A component record holds the laws of its pure-component properties: the
+vapour pressure, the ideal-gas, liquid and solid heat capacities, the liquid
+viscosity, the liquid thermal conductivity and the surface tension.  Until
+slice~(b) of the property layout (DEV.md 4c C398, ruled 2026-11-14) the first
+four held ONE law each, and the three liquid transport blocks held named
+sub-blocks of which a case's one model word picked the same sub-block in
+every record --- so methanol, 2-propanol and water could not be priced in one
+mixture by any word.  This section states the record grammar, how a law is
+chosen, what happens at the edge of its window, the form of each law type,
+and what a record may store.  The reader is \file{src/thermo/RecordLaws.H}.
+
+\subsection{The record grammar: one law, or several named laws with one preferred}\label{sec:record-laws-grammar}
+
+A property block takes one of three shapes, all read by one reader:
+\begin{description}
+\item[one law] a block with a \code{model} word (vapour pressure, heat
+  capacities): today's shape, read unchanged.  The law has no name and is the
+  record's value by construction.
+\item[bare] a \code{surfaceTension} block of coefficients (\code{A B Tc n
+  Tmin Tmax}): one law of type \code{tauPower}.
+\item[several named laws] one sub-block per law; the sub-block's NAME is the
+  law's stable identifier, and \code{preferred <name>;} marks the record's one
+  value of the property when there are two or more (with one law there is no
+  other value, so the word is not written).  A law's TYPE is its \code{model}
+  word, or its name when the name is a registered type of the property ---
+  today's \code{liquidViscosity \{ andrade \{ A; B; \} vogel \{ A; B; C; \} \}}
+  reads unchanged as two laws of types \code{andrade} and \code{vogel}.
+\end{description}
+\begin{lstlisting}
+vaporPressure
+{
+    preferred   antoine;
+    antoine { model Antoine; coefficients (5.40221 1838.675 -31.737); Trange (273 373); }
+    SR1
+    {
+        model        Wagner;
+        reducing     { T 647.096 K;  P 22.064 MPa; }
+        exponents    (1 1.5 3 3.5 4 7.5);
+        coefficients (-7.85951783 1.84408259 -11.7866497 22.6807411 -15.9618719 1.80122502);
+        Trange       (273.16 647.096);
+        domain       (273.16 647.096);
+    }
+}
+provenance { vaporPressure { antoine { origin literature; ... } SR1 { origin literature; ... } } }
+\end{lstlisting}
+Each law keeps its own source in the record's ONE provenance block, filed by
+property and law; a block of one law keeps today's per-property entry.  A
+block of several vapour-pressure or heat-capacity laws must mark one
+\code{preferred} (it has no older reading); a liquid transport block of
+several laws without it still reads (the sealed copies of the five records
+that held \code{andrade} and \code{vogel} before the rule), and a case that
+asks it for its preferred law is refused there, naming the laws.  The gate
+\code{check\_record\_law\_values} holds \code{preferred} on the catalogue.
+The five catalogue records that hold two viscosity laws (benzene, ethanol,
+methanol, toluene, water) mark \code{preferred vogel;}: for methanol and
+toluene the \code{vogel} law has $C = 0$ and IS the \code{andrade} law, bit for
+bit; for the other three it is the three-parameter fit to the same data
+window; and it is the word most shipped references to those records already
+write (for water, \code{Vogel} against \code{Andrade} 23 to 3, measured
+2026-11-14).
+
+\subsection{A law is chosen once, printed, never switched}\label{sec:record-laws-choice}
+
+At package assembly, per constituent and property, the law is the CASE'S PIN
+if one names it, else the record's preferred law --- a fact of the data,
+never of the state.  The resolved view (\S\ref{sec:property-variants-view})
+prints, per constituent, the law, its type, who chose it (``the record's one
+law'', ``the record's preferred law'', the block's word, or ``case pin'' with
+its reason), its window and the record's other laws.  The law OBJECT is built
+at the constituent's first evaluation: a constituent never priced (mole
+fraction zero in every liquid) is never refused for a law it lacks; one that
+is priced and has none is refused then, naming the property, the constituent
+and the remedy.  No factory default answers in its place: the defaults that
+used to (Andrade, StoredCorrelation, SatoRiedel for a block with no word;
+Chung for a \code{transport} block with no vapour viscosity; the unreachable
+Eucken, Fuller and Wilke--Chang) were deleted in the same change (review row
+SL-04).  The three shipped cases that read the Chung default declare it now,
+with no number moved.
+
+\paragraph{The case's pin.}  Beside the property, a list modelled on
+\code{interaction}:
+\begin{lstlisting}
+transport { liquid { viscosity
+{
+    pin ( { component water;  law andrade;  reason "to compare the two fits"; } );
+} } }
+equilibrium { vaporPressure { pin ( { component water; law SR1; reason "..."; } ); } }
+caloric     { liquidHeatCapacity { pin ( ... ); } }   // or idealGasHeatCapacity, solidHeatCapacity
+\end{lstlisting}
+Refused: a component not in the system (the refusal lists the system), a law
+the record does not hold (the refusal lists the record's laws), a component
+pinned twice, a pin without its law or its reason.  A variant that changes
+\code{equilibrium} or \code{caloric} replaces the block and is announced as a
+model boundary (\S\ref{sec:property-variants-atom}).
+
+\paragraph{The facts a law consumes (SL-05).}  The component injects its own
+\code{Tc}, \code{Pc}, \code{omega} and \code{Tb} into its vapour-pressure law
+(a corresponding-states law needs them; a data-based law ignores them), and
+its chosen ideal-gas law --- the preferred one, or the case's pin --- into a
+corresponding-states liquid heat capacity (\code{RowlinsonBondi}); a pin of
+the ideal-gas law rebuilds the liquid law that consumes it.  The view lists
+both.
+
+\subsection{The edge of a law's window}\label{sec:record-laws-window}
+
+Every law keeps its type's own SOFT window --- \code{Trange (lo hi)},
+\code{Tmin}/\code{Tmax}, or \code{Tlow}/\code{Thigh} --- outside which the
+value is still returned and the extrapolation is announced once.  A law may
+add a HARD window, \code{domain (lo hi);} in K: outside it the law throws a
+typed domain error (\code{PropertyDomainError}, outside a hard domain) whose
+remedy names the record's other laws whose window holds the state ---
+``pin it, or extend the law''.  It never switches to them.  A law that
+declares no window (Andrade's and Vogel's forms carry none) prints ``no window
+declared'' in the view and is not refused.  NASA7's two ranges and their joint
+(\code{Tlow}, \code{Tcommon}, \code{Thigh}) are part of the law and are
+required; they defaulted to 200/1000/3500\,K before (every record declares
+them).
+
+\subsection{The form of each law type, with its units}\label{sec:record-laws-forms}
+
+The units of a law's coefficients belong to its TYPE (C398, third addendum,
+U3): each type states its form, the units of its coefficients and its
+logarithm base once, where it is registered, and the resolved view prints it
+for every type a run uses.  $T$ in K throughout.
+\begin{center}\small
+\begin{tabular}{p{0.2\textwidth}p{0.74\textwidth}}
+\code{Antoine} & $\log_{10}(P/\mathrm{bar}) = A - B/(T + C)$; $A$ dimensionless, $B$ and $C$ in K \\
+\code{AmbroseWalton} & $\ln(P/P_c) = [f_0 + \omega f_1 + \omega^2 f_2]/T_r$; no coefficients ($T_c$, $P_c$, $\omega$ from the record) \\
+\code{Wagner} & $\ln(P/P_r) = (T_r/T)\sum_i a_i \tau^{e_i}$, $\tau = 1 - T/T_r$; reducing $T$, $P$ in the units declared \\
+\code{polynomial} & $C_p/(\mathrm{J\,mol^{-1}K^{-1}}) = \sum_i c_i T^i$; $c_i$ in J\,mol$^{-1}$K$^{-(i+1)}$ \\
+\code{chemsepCp16} & $C_p/(\mathrm{J\,mol^{-1}K^{-1}}) = A + \exp(B/T + C + DT + ET^2)$ \\
+\code{NASA7}, \code{NASA9} & $C_p/R$ as a polynomial in $T$ on two ranges joined at \code{Tcommon} \\
+\code{RowlinsonBondi} & corresponding states over the record's ideal-gas law; no coefficients \\
+\code{andrade} & $\ln(\mu/\mathrm{Pa\,s}) = A + B/T$; $B$ in K \\
+\code{vogel} & $\ln(\mu/\mathrm{Pa\,s}) = A + B/(T - C)$; $B$, $C$ in K \\
+\code{chemsepEq101} & $\ln(\mu/\mathrm{Pa\,s}) = A + B/T + C\ln T + D T^E$ \\
+\code{chemsepEq16} & $k/(\mathrm{W\,m^{-1}K^{-1}}) = A + \exp(B/T + C + DT + ET^2)$ \\
+\code{tauPower} & $\sigma/(\mathrm{N\,m^{-1}}) = A\tau^n + B\tau^{n+1}$, $\tau = 1 - T/T_c$ with the block's own $T_c$ \\
+\end{tabular}
+\end{center}
+A law may carry a CHECK value from its own source,
+\code{check \{ T 298.15 K; value 0.6064610 W/m/K; tolerance 0.005; \}}: the
+gate \code{check\_record\_law\_values} evaluates every law that carries one
+through the engine's own law object (\code{choupoProps --record-law-checks})
+and fails one outside its tolerance --- the only way a coefficient written in
+another unit is caught.  The first is water's liquid conductivity, whose fit
+target (IAPWS R15-11) is in the tree; the laws without one are a pinned debt
+that only shrinks.
+
+\subsection{Liquid transport: one law per constituent, and the legacy words}\label{sec:record-laws-transport}
+
+For liquid viscosity, liquid thermal conductivity and surface tension the
+package holds ONE law per constituent, built from that constituent's record
+as vapour pressure and the heat capacities are, and the block's mixing rule
+--- the package-level choice --- consumes the pure values (C398 addendum
+A1).  With no \code{model} word in the block each constituent takes its
+record's preferred law (\file{tutorials/props/transport/purelaws01\_methanol\_isopropanol\_water}
+prices methanol on \code{vogel}, 2-propanol on \code{chemsepEq101} and water
+on \code{vogel} in one mixture).  A legacy word reads as follows (review row
+SL-03), so every shipped case reads exactly as before:
+\begin{center}\small
+\begin{tabular}{p{0.32\textwidth}p{0.62\textwidth}}
+\code{Andrade}, \code{andrade} & a pin of the law named \code{andrade} for every constituent \\
+\code{Vogel}, \code{vogel} & a pin of the law named \code{vogel} for every constituent \\
+\code{chemsepEq101}, \code{chemsepEq16} & a pin of the law of that name for every constituent \\
+\code{SatoRiedel}, \code{BrockBird} & PREDICTIVE: no record law; every constituent on the model \\
+\code{StoredCorrelation} & the record's \code{tauPower} law, else Brock--Bird for that component, announced \\
+\end{tabular}
+\end{center}
+The words are case-insensitive aliases, so word to law name is this table,
+not an identity (\file{src/thermo/ThermoPackage.cpp}, \code{wordKind}).  A
+case's pin overrides the word for the constituent it names.
+
+\subsection{What a record stores: primitive, derived, check}\label{sec:record-primitives}
+
+A record stores each quantity's PRIMITIVE once; a DERIVED quantity is never
+typed; a redundant datum is accepted only as a CHECK, compared and announced,
+never a second source (C398 addendum A3, amended by the architect's ruling of
+2026-11-14 on phase rungs).
+\begin{center}\small
+\begin{tabular}{p{0.32\textwidth}p{0.32\textwidth}p{0.28\textwidth}}
+primitive (stored once) & derived (never typed) & a CHECK if also typed \\ \hline
+formation $\Delta H_f$, $s$ in the natural phase (\code{standardThermochemistry}) & $h$, $s$, $g$ of every phase; a reaction's heat and $K$ & \code{dGf\_298} (against $\Delta H_f - T\Delta S_f$) \\
+ideal-gas, liquid, solid $C_p$ laws & the sensible legs & --- \\
+the latent heat at $T_b$ (\code{HvapTb}) & the latent heat at $T$ & --- \\
+the vapour-pressure laws & $d\ln p/dT$ & --- \\
+the liquid volume (\code{Vliq}, \code{VliqT}) & the pressure term of the liquid enthalpy & --- \\
+\end{tabular}
+\end{center}
+A phase rung in \code{standardThermochemistry} (\code{pureLiquid \{ dHf\_298;
+s\_298; \}}, settled 2026-08-07: ice is a phase) is a PRIMITIVE where the
+record's own laws cannot carry the natural phase's datum to that phase, and a
+CHECK where they can.  The gate \code{check\_record\_primitives} holds the
+table on the catalogue: it refuses a derived quantity typed in a record,
+labels each rung, and pins the debt it found --- the 45 \code{dGf\_298}
+checks whose comparison is not computed yet, and \code{NaOH}'s top-level
+solid \code{Hf\_298}/\code{S\_298}, a second home under the salt-formation
+contract (a salt's solid formation enthalpy is derived from its ions and its
+dissolution enthalpy).  The gate \code{check\_provenance\_home} holds that a
+property's provenance entry lives in the record's provenance block: 74
+catalogue entries and 35 in sealed copies had been filed inside a
+sigma-profile set by a curation tool, where the provenance reader never saw
+them; they are moved (their review status and fit grades are now announced
+by the runs that load those records), and the tool is fixed.
+
+The witnesses are \file{tutorials/props/transport/purelaws01\_methanol\_isopropanol\_water}
+(one law per constituent, and a pin) and
+\file{tutorials/props/thermo/purelaws02\_water\_two\_vapour\_pressure\_laws}
+(a case-local record of two vapour-pressure laws, the preferred one and the
+IAPWS saturation equation pinned by a variant).
 
 % ---------------------------------------------------------------------
 \section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}

@@ -93,7 +93,7 @@ inline std::string phaseStructuredSpelling(const std::string& flat)
 
 inline bool readInsideBlock(const std::string& k)
 {
-    return k == "model" || k == "mixingRule" || k == "interaction";
+    return k == "model" || k == "mixingRule" || k == "interaction" || k == "pin";
 }
 
 //  Refuse, by name, every name of a `transport {}` block nothing would read.
@@ -149,8 +149,8 @@ inline void validate(const DictPtr& t, const std::string& where)
                 if (!readInsideBlock(k))
                     throw std::runtime_error(where + "." + ph + "." + pr + ": `" + k
                         + "` is read by nothing -- a property block carries `model`,"
-                          " and for the liquid properties `mixingRule` and"
-                          " `interaction`.");
+                          " and for the liquid properties `mixingRule`,"
+                          " `interaction` and `pin`.");
         }
     }
 }

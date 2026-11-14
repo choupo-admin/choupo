@@ -1992,6 +1992,9 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
                                             const ChemistrySystem* chem)
 {
     ThermoPackage out = buildV2Dispatch(v2, db, chem);
+    //  The case's pins of the records' vapour-pressure and heat-capacity laws
+    //  (C398 slice (b)), once, before any evaluation.
+    out.applyRecordLawPins(v2);
 
     auto eq = v2->subDict("equilibrium");
     const bool hasAq = eq->found("aqueous");
@@ -2171,17 +2174,32 @@ static DictPtr v2TransportDict(const DictPtr& v2)
                 std::string(mrow.v1key) == "liquidViscosity"
              || std::string(mrow.v1key) == "liquidConductivity"
              || std::string(mrow.v1key) == "surfaceTension";
-            if ((pb->found("mixingRule") || pb->found("interaction"))
+            if ((pb->found("mixingRule") || pb->found("interaction") || pb->found("pin"))
                 && !liquidMixing)
                 throw std::runtime_error("thermophysicalPropertySystem:"
                     " transport " + std::string(mrow.v2phase) + "."
                     + mrow.v2prop + " has ONE mixing rule (announced by the"
                     " model), so its mixingRule is not SELECTABLE;"
-                    " `mixingRule` and `interaction` are selectable"
+                    " `mixingRule`, `interaction` and `pin` are selectable"
                     " only for liquid viscosity, liquid thermalConductivity"
                     " and interface surfaceTension.");
+            //  THE MODEL WORD (C398 slice (b)).  The three liquid property
+            //  blocks may omit it: each constituent then takes its record's
+            //  preferred law and the block's mixing rule combines them
+            //  (ThermoPackage::resolveLiquidLaws).  Every other block names
+            //  its model, because no record law exists for it; the factory
+            //  defaults that used to answer in silence are gone (SL-04).
+            if (!pb->found("model") && !liquidMixing)
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " transport " + std::string(mrow.v2phase) + "." + mrow.v2prop
+                    + " names no `model`: this property has no record law to"
+                      " read per constituent, so the block must name its model"
+                      " (`model <word>;`).");
             auto mb = std::make_shared<Dictionary>(mrow.v1key);
-            mb->insert("model", pb->entryValue("model"));
+            if (pb->found("model"))
+                mb->insert("model", pb->entryValue("model"));
+            if (pb->found("pin"))
+                mb->insert("pin", pb->entryValue("pin"));
             if (pb->found("mixingRule"))
                 mb->insert("mixingRule", pb->entryValue("mixingRule"));
             if (pb->found("interaction"))

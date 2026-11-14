@@ -34,6 +34,7 @@ License
 #include <cmath>
 #include <stdexcept>
 #include <string>
+#include <variant>
 
 namespace Choupo {
 
@@ -45,23 +46,27 @@ scalar ChemSepCond16::conductivityLiquidPure(const Component& c, scalar T) const
             " .dat.  SatoRiedel needs none (it is predictive from MW, Tb and"
             " Tc) -- select that instead, and know it is a prediction.");
     auto lc = c.liquidConductivityDict();
-    if (!lc->found("chemsepEq16"))
+    const std::string law = law_.empty() ? std::string("chemsepEq16") : law_;
+    if (!lc->found(law))
     {
         //  Same rule as the viscosity twin: enumerate what the record has
         //  rather than guessing a remedy it may not carry.
         std::string have;
+        //  The LAWS it holds: its sub-blocks (C398 slice (b): a block of
+        //  several laws also carries `preferred`, which is not one).
         for (const auto& k : lc->keys())
-            have += (have.empty() ? "" : ", ") + k;
+            if (std::holds_alternative<DictPtr>(lc->entryValue(k)))
+                have += (have.empty() ? "" : ", ") + k;
         throw std::runtime_error("chemsepEq16 conductivity: component '"
             + c.name() + "' has a liquidThermalConductivity block but no"
-            " `chemsepEq16 { A; B; C; D; E; }` sub-block."
+            " `" + law + " { A; B; C; D; E; }` sub-block."
             + (have.empty()
                  ? std::string("  The block declares nothing at all.")
                  : "  It declares: " + have + " -- select one of those, or"
                    " SatoRiedel, which is predictive from MW, Tb and Tc and"
                    " needs no record at all."));
     }
-    auto p = lc->subDict("chemsepEq16");
+    auto p = lc->subDict(law);
 
     if (T <= 0)
         throw std::runtime_error("chemsepEq16 conductivity: T <= 0 K");

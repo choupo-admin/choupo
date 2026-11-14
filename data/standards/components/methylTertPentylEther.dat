@@ -240,33 +240,6 @@ provenance
             Tnb_fit     360.1006;   // K, the fitted curve at 101.325 kPa
         }
     }
-}
-
-cosmo
-{
-    LVPP-HFTZVP-2018
-    {
-        model       COSMOSAC;
-        variant     "LVPP-HFTZVP-2018";
-        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
-        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file METHYL_TERT-PENTYL_ETHER.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey HVZJRWJGKQPSFL-UHFFFAOYSA-N (full match); formula C6H14O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
-        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
-        licence     MIT;
-        installed   true;
-        area        154.635959;   // sum of the profile below; GAMESS prints 154.64
-        volume      157.95;
-        sigmaProfile  (
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.320439     5.402526    16.062722    24.606173    22.070497
-              18.197025    14.874229    17.725747    15.821085     5.692634     3.365561
-               0.928274     0.567576     1.341409     1.180533     0.345542     0.551768
-               0.358490     0.437967     1.074160     0.283027     1.245984     1.364177
-               0.229887     0.432466     0.156061     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000
-        );
-    }
     surfaceTension
     {
         origin        fitted;
@@ -296,5 +269,32 @@ cosmo
             aad_pct     2.955180;
             max_pct     5.465005;
         }
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file METHYL_TERT-PENTYL_ETHER.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey HVZJRWJGKQPSFL-UHFFFAOYSA-N (full match); formula C6H14O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        154.635959;   // sum of the profile below; GAMESS prints 154.64
+        volume      157.95;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.320439     5.402526    16.062722    24.606173    22.070497
+              18.197025    14.874229    17.725747    15.821085     5.692634     3.365561
+               0.928274     0.567576     1.341409     1.180533     0.345542     0.551768
+               0.358490     0.437967     1.074160     0.283027     1.245984     1.364177
+               0.229887     0.432466     0.156061     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
     }
 }

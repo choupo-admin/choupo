@@ -57,6 +57,13 @@ equilibrium
 
 transport
 {
+    //  The vapour viscosity the props operations report (DEV.md 4c C398 slice
+    //  (b), SL-04): until this slice it came from a factory default (Chung)
+    //  nobody declared; the same model is now declared, so no number moves.
+    vapour
+    {
+        viscosity { model Chung; }
+    }
     liquid
     {
         viscosity { model Andrade; }    // ln mu = A + B/T, each record's `andrade` block
@@ -75,7 +82,7 @@ variants
         {
             liquid
             {
-                viscosity { model Vogel; }   // ln mu = A + B/(T - C), each record's `vogelLaw` block
+                viscosity { model Vogel; }   // ln mu = A + B/(T - C), each record's `vogel` law
             }
         }
     }

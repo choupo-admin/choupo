@@ -1,0 +1,67 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  purelaws02 -- the saturation pressure of water at 350, 450 and 550 K, two ways.
+
+    psatPreferred_*  the record's preferred law, `antoine`: inside its soft
+                   window (273-373 K) it is the catalogue's number; above it
+                   the law is extrapolated, and the run says so once.
+    psatSR1_*        the variant `iapws`: the IAPWS law `SR1` pinned beside
+                   the property (the reason is printed with the choice).  Its hard window is
+                   273.16-647.096 K: every point here is inside it.
+
+    What a student reads: the two laws agree to about 2.5 % at 373 K and part
+    by more than 10 % at 473 K and above, where the Antoine law is no longer
+    inside the window it was fitted on (docs/design/several-laws-per-property.md
+    section 4 measures the same against IAPWS-IF97).  Neither law is switched
+    for the other by the state: each operation uses the one law it chose.
+
+    The golden master locks every computed value at reltol 1e-4.  */
+
+operations
+(
+    {
+        name        psatPreferred_350K;
+        type        propertyPoint;
+        state       { T 350 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Psat_water );
+    }
+    {
+        name        psatPreferred_450K;
+        type        propertyPoint;
+        state       { T 450 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Psat_water );
+    }
+    {
+        name        psatPreferred_550K;
+        type        propertyPoint;
+        state       { T 550 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Psat_water );
+    }
+    {
+        name        psatSR1_350K;
+        type        propertyPoint;
+        thermo      iapws;                // the variant that pins SR1
+        state       { T 350 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Psat_water );
+    }
+    {
+        name        psatSR1_450K;
+        type        propertyPoint;
+        thermo      iapws;                // the variant that pins SR1
+        state       { T 450 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Psat_water );
+    }
+    {
+        name        psatSR1_550K;
+        type        propertyPoint;
+        thermo      iapws;                // the variant that pins SR1
+        state       { T 550 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( Psat_water );
+    }
+);

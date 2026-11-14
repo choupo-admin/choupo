@@ -53,9 +53,16 @@ Description
     and changes nothing: the unread-key audit after the run still sees what
     the builder did not read.  Nothing here goes into the result JSON yet.
 
-    What it does not show yet, and says so: the form of a law with its
-    coefficient units (the law types do not declare them: slice (b), U3);
-    the line in the file where a choice was made (the parser keeps no line
+    Since slice (b): each constituent's LAW of each record property block
+    (vapour pressure, the three heat capacities, liquid viscosity, liquid
+    thermal conductivity, surface tension) -- its name, its type, who chose
+    it (the record's one or preferred law, the block's word, a case pin with
+    its reason) and its window ("no window declared" where the law has
+    none) -- and the FORM of every law type used, with its coefficient units
+    and logarithm base, as the type declares it (recordLaws::declareForm, U3).
+
+    What it does not show yet, and says so: the line in the file where a
+    choice was made (the parser keeps no line
     numbers); the liquid-density method per constituent SET, which the
     kernel decides at the set's first request and the [liquid properties]
     table prints after the run.

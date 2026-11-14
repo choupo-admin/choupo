@@ -136,19 +136,19 @@ describe("the lesson", () => {
 
   it("cites the engine where it prices the three terms", () => {
     const s = all(7);
-    expect(s).toContain("src/thermo/Component.cpp:1648");
-    expect(s).toContain("src/thermo/ThermoPackage.cpp:1489");
-    expect(s).toContain("src/propertyOps/PropertyPoint.cpp:85");
+    expect(s).toContain("src/thermo/Component.cpp:1673");
+    expect(s).toContain("src/thermo/ThermoPackage.cpp:1504");
+    expect(s).toContain("src/propertyOps/PropertyPoint.cpp:101");
     //  C259: the two line numbers had drifted (1554, 1393) after the
     //  2026-11 merges and nothing held them; the cited lines are now read
     //  back, so the next drift fails here instead of on a reader.
     const line = (rel: string, n: number) =>
       readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8").split("\n")[n - 1] ?? "";
-    expect(line("src/thermo/Component.cpp", 1648))
+    expect(line("src/thermo/Component.cpp", 1673))
       .toContain("ONE implementation of the standard-state enthalpy, not two");
-    expect(line("src/thermo/ThermoPackage.cpp", 1489))
+    expect(line("src/thermo/ThermoPackage.cpp", 1504))
       .toContain("scalar ThermoPackage::H_real(");
-    expect(line("src/propertyOps/PropertyPoint.cpp", 85)).toContain("H_real");
+    expect(line("src/propertyOps/PropertyPoint.cpp", 101)).toContain("H_real");
   });
 
   it("states the SRK-against-reference gap in its limits, from the files", () => {

@@ -1,0 +1,246 @@
+// [imported] origin "data/standards/components/isopropanol.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Component: isopropanol  (CAS 67-63-0)
+  PROPOSAL TIER -- UNVERIFIED. Imported from ChemSep v8.3
+  pure-component data under Artistic License 2.0.
+  Critical constants are source data; Psat is an explicitly
+  estimated Ambrose-Walton corresponding-states closure.
+\*---------------------------------------------------------------------------*/
+
+name        isopropanol;
+CAS         67-63-0;
+formula     C3H8O;      // counted from the ChemSep v8.3 structure formula "CH3CH(OH)CH3" (derived 2026-09-03; reproduces MW to 0.002 %)
+reviewStatus interim;
+MW          60.09502;      // kg/kmol [origin=ChemSep v8.3]
+Tc          508.3;      // K [origin=ChemSep v8.3]
+Pc          47.62;      // bar; source Pa / 1e5 [origin=ChemSep v8.3]
+omega       0.665;      // [-] [origin=ChemSep v8.3]
+Tb          355.39;      // K [origin=ChemSep v8.3]
+
+standardThermochemistry
+{
+    dHf_298   -272700;        // J/mol   [ChemSep v8.3, ideal gas]
+    s_298     309.2;        // J/(mol.K)  third-law absolute
+}
+
+vaporPressure
+{
+    model         Antoine;
+    // log10(Psat [bar]) = A - B / (T[K] + C)
+    // converted EXACTLY from ChemSep eqno 10, Psat[Pa] = exp(a - b/(T+c))
+    coefficients  (4.620057069  1231.919727  -88.244);
+    Trange        (305.37  457.3);
+}
+
+Vliq        7.68258e-05;      // m3/mol at 25 C  [ChemSep eqno 105]
+HvapTb      39944.2;      // J/mol at Tb  [ChemSep eqno 106]
+
+idealGasHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    // ChemSep states J/(kmol.K); A and the exp are scaled to per-mole here.
+    coefficients  (52.738  -555.28  5.439244721  9.4247e-05  -4.5945e-08);
+    Trange        (150  1500);
+}
+
+liquidHeatCapacity
+{
+    model         chemsepCp16;
+    // Cp [J/(mol.K)] = A + exp(B/T + C + D T + E T^2)
+    coefficients  (-188.26  277.99  2.538144721  0.010702  -9.1964e-06);
+    Trange        (185.26  480);
+}
+
+liquidViscosity
+{
+    chemsepEq101
+    {
+        A     -7.4407;
+        B     2259.7;
+        C     -1.1149;
+        D     2.963e-07;
+        E     2;
+        Tmin  187.35;
+        Tmax  408;
+    }
+}
+
+liquidThermalConductivity
+{
+    chemsepEq16
+    {
+        A     -0.15761;
+        B     49.41;
+        C     -1.6579;
+        D     0.0019566;
+        E     -3.4939e-06;
+        Tmin  183.65;
+        Tmax  410.15;
+    }
+}
+
+// UNIQUAC van der Waals volume r and surface area q: the sum of the
+// record's own UNIFAC groups (2 CH3 + 1 CH + 1 OH), R_k/Q_k of Hansen et al. 1991
+// (DEV.md 4c C294; bin/curate/uniquac_rq_from_groups.py).
+uniquac
+{
+    r   3.2491;
+    q   3.1240;
+}
+
+groups
+{
+    unifac ( { group CH3; count 2; } { group CH; count 1; } { group OH; count 1; } );
+}
+solubilityParameter 23420;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
+
+source
+{
+    database      "ChemSep pure-component data v8.3";
+    authors       "Harry Kooijman; Ross Taylor";
+    license       "Artistic-2.0";
+    sourceFile    "chemsep1.xml";
+    sourceSha256  "78b3e0c6408ff35f3b75fb71a1fdd70bb8e967d8996b49452a4a9fa2dd567c76";
+    sourceRecord  "Isopropanol";
+    importedBy    "chemsep_to_choupo";
+    review        { state pending; reviewer unassigned; }
+}
+
+surfaceTension
+{
+    A     0.04301489719;
+    B     0;
+    Tc    508.3;
+    n     0.8364730226;
+    Tmin  288.15;
+    Tmax  343.3;
+}
+
+provenance
+{
+    uniquac
+    {
+        origin        definition;
+        method        "sum of UNIFAC group R_k/Q_k: r = sum nu_k R_k = 3.2491, q = sum nu_k Q_k = 3.1240 over the record's unifac groups (2 CH3 + 1 CH + 1 OH)";
+        citation      "R_k and Q_k of Hansen, Rasmussen, Fredenslund, Schiller & Gmehling, Ind. Eng. Chem. Res. 30 (1991) 2352, as tabulated in data/standards/parameters/UNIFAC/groups.dat; the group sum of Fredenslund, Jones & Prausnitz, AIChE J. 21 (1975) 1086";
+    }
+    MW
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Pc
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    omega
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    Tb
+    {
+        origin        literature;
+        method        "ChemSep database import";
+        methodVersion "chemsep-pcd-8.3";
+        uncertainty   "not quantified by source";
+        notes         "ChemSep v8.3 record; Artistic-2.0";
+    }
+    vaporPressure
+    {
+        origin        predictive;
+        method        "Ambrose-Walton corresponding states";
+        methodVersion "choupo-aw-1989";
+        uncertainty   "not quantified; validate against saturation data";
+        notes         "computed from ChemSep Tc/Pc/omega";
+    }
+    surfaceTension
+    {
+        origin        fitted;
+        method        "least squares on ln sigma of sigma/(N/m) = A tau^n, tau = 1 - T/Tc (A, n; B = 0; Tc the record's own), then the largest relative error minimised; every laboratory the archive holds for the pure liquid at <= 200 kPa; points beyond 15 % after the first stage discarded by name";
+        fittedBy      "bin/curate/transport_fit.py";
+        reviewStatus  autoPromoted;
+        review        { by none; }   // DEV.md 4c C300 rule 4: nobody has reviewed it
+        fitGrade      clean;   // DEV.md 4c C285 limits 5 / 10 / 20 % on the max relative error
+        fitGradeBasis inSample;   // DEV.md 4c C300 rule 1
+        fitGradeMaxRelativeError_pct 3.774444;
+        Trange        (288.15 343.3);   // K, the kept points -- outside it the engine announces an extrapolation
+        reviewReason  "regressed by a machine from archive-transcribed measurements; not yet read back against the articles";
+        reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree (DEV.md 4c C328)";
+        evidence
+        (
+                { doi "10.1007/s10765-018-2361-8"; articleSha256 "2df1167b2d5d9c58be73cb3b402464a96cbaabe694ad43fb386df518ad3c3006"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.fluid.2014.12.040"; articleSha256 "f9cfdcab0386a53af6fc50263296cbdc01a02097e145f7128f3c9fa04bd827b1"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2010.08.019"; articleSha256 "97be2d397d718e24b9bbb0f20eecec9d8459cbcb20e13b1d6dce7d409de11652"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2016.06.004"; articleSha256 "e137c1a70aa75fcb0ee488a576a2de8c0d7768b2ca2f5e79815e8f728cf3eced"; pointsKept 4; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2018.08.004"; articleSha256 "f52337d7ad90bfa6df494302240d592fc00765e0c9f9d848dcfacc234b8e37bd"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.jct.2019.03.014"; articleSha256 "96844ae157bc6fe12808189c27bb2bf298d7409fdd2a692bfd14ac99d07d0e75"; pointsKept 5; pointsDropped 0; provenance measured; }
+                { doi "10.1016/j.tca.2019.178383"; articleSha256 "378e853b7ee2f706089038df3dfcab5e0eed4d4ceb108a880feb11de5d1c844f"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1021/acs.jced.5b01023"; articleSha256 "426455e297cb8b437fb95f29882b9c7a779bee0b42a7446939e54201440a98f1"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je0256028"; articleSha256 "96f4efca1a4e5d2900995da5e72c24e01327e3506e50589515914773f9eafe1b"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je0500431"; articleSha256 "6ac718c4e5ee6f79b51a06c978fe46f63c1603cdd2538ee23c27760574372bb7"; pointsKept 7; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je1001329"; articleSha256 "2f3c50c0936e840296bf1eb65b4e3beaf43b0bd482044fb1706c65f532fbb546"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je400576e"; articleSha256 "d8a5561b0daec50a376071c4f41abff5e855d344324c91905babe6b0e21ce190"; pointsKept 6; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je700140j"; articleSha256 "c362dc7107e968e3bd8bced765a7ee83e90a92d13abf5062e547ecf394664983"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je700626v"; articleSha256 "af982c5ea5ff47afcfb7f488073f7018dda0ced3327303717b8f3af76ea455d9"; pointsKept 3; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je7007445"; articleSha256 "7384f72dab755588fc2784fab57a23e5021d368f09a175d419f89d2b72a006db"; pointsKept 1; pointsDropped 0; provenance measured; }
+                { doi "10.1021/je800664z"; articleSha256 "7f8f662014ffdd7ba7c0fe1c3ac10da01c1872378c9c4a8589b049491802d147"; pointsKept 3; pointsDropped 0; provenance measured; }
+        );
+        acceptance
+        {
+            verdict     accepted;
+            studies     16;
+            pointsKept  69;
+            pointsDropped 0;
+            dropped     "none";
+            aad_pct     2.414670;
+            max_pct     3.774444;
+        }
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file 2-PROPANOL.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey KFZMGEQAYNKOFK-UHFFFAOYSA-N (full match); the archive files this molecule twice with identical profiles: 2-PROPANOL.gout, ISOPROPANOL.gout; formula C3H8O; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        106.238395;   // sum of the profile below; GAMESS prints 106.24
+        volume      91.54;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.031736     0.424243     1.149223     1.044537     0.093345
+               0.852484     1.118228     1.063108     0.852780     0.334256     0.424787
+               0.718663     1.410127     4.579947    11.354920    16.493469     9.812401
+               8.906533     6.809466    13.365966     7.587567     1.695885     0.985785
+               1.028506     1.058220     0.700487     0.905785     0.313136     0.358248
+               0.939185     0.848737     1.358624     2.243808     0.770111     0.402889
+               1.728066     1.741332     0.731805     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
+    }
+}

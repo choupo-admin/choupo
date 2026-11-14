@@ -210,8 +210,11 @@ inline DictPtr mergeThermoOverride(const DictPtr& effectiveAuthored,
         for (const auto& sk : fEq->keys())
         {
             if (sk == "formulation") continue;
+            //  `vaporPressure` holds the case's pins of the records'
+            //  vapour-pressure laws (C398 slice (b)); replaced whole.
             if (sk != "liquid" && sk != "vapour" && sk != "aqueous"
-                && sk != "equationOfState" && sk != "liquidPhases")
+                && sk != "equationOfState" && sk != "liquidPhases"
+                && sk != "vaporPressure")
                 throw std::runtime_error(who + ": unknown equilibrium slot '"
                     + sk + "' in the thermo{} fragment.");
             const bool phaseSlot = (sk == "liquid" || sk == "vapour"

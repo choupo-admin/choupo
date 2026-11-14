@@ -44,9 +44,19 @@ NASA7Cp::NASA7Cp(const DictPtr& dict)
             " coefficients (a1..a5 of the 7; a6,a7 optional/ignored for Cp)");
     for (std::size_t i = 0; i < 5; ++i) { low_[i] = lo[i]; high_[i] = hi[i]; }
 
-    Tlow_    = dict->lookupScalarOrDefault("Tlow",    200.0);
-    Tcommon_ = dict->lookupScalarOrDefault("Tcommon", 1000.0);
-    Thigh_   = dict->lookupScalarOrDefault("Thigh",   3500.0);
+    //  The two ranges and their joint are part of the LAW, not a default
+    //  (DEV.md 4c C398 slice (b), review row SL-04): a record without them
+    //  is refused by name rather than read on 200/1000/3500 K nobody wrote.
+    //  Every NASA7 record in the tree declares all three (measured
+    //  2026-11-14: graphite and its four sealed copies), so nothing moves.
+    for (const char* k : { "Tlow", "Tcommon", "Thigh" })
+        if (!dict->found(k))
+            throw std::runtime_error(std::string("NASA7Cp: `") + k + "` is required -- the"
+                " two coefficient ranges (Tlow-Tcommon, Tcommon-Thigh) are part of the law"
+                " and come from the same source as its coefficients");
+    Tlow_    = dict->lookupScalar("Tlow");
+    Tcommon_ = dict->lookupScalar("Tcommon");
+    Thigh_   = dict->lookupScalar("Thigh");
     if (!(Tlow_ < Tcommon_ && Tcommon_ < Thigh_))
         throw std::runtime_error("NASA7Cp: need Tlow < Tcommon < Thigh");
 }

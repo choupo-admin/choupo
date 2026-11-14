@@ -110,33 +110,6 @@ provenance
     liquidCp       "polynomial fitted to CoolProp sat-liquid cp, maxerr 0.03%";
     triplePoint    "CoolProp reference EOS triple-point T,P";
     preserved      "from prior proposal (NOT CoolProp): standardThermochemistry, groups";
-}
-
-cosmo
-{
-    LVPP-HFTZVP-2018
-    {
-        model       COSMOSAC;
-        variant     "LVPP-HFTZVP-2018";
-        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
-        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file METHYL_OCTADECANOATE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey HPEUJPJOZXNMSJ-UHFFFAOYSA-N (full match); formula C19H38O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
-        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
-        licence     MIT;
-        installed   true;
-        area        422.285231;   // sum of the profile below; GAMESS prints 422.29
-        volume      441.76;
-        sigmaProfile  (
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000     0.070903     2.158596     6.823927
-              12.307383    10.402134    11.844824    11.638321    31.740249    62.335911
-              85.667117    61.820198    37.500752    26.493641    31.043674     0.687942
-               1.665529     0.893341     0.997019     1.341594     1.439272     1.227578
-               2.071330     1.530776     1.492066     2.128549     5.131144     4.875067
-               3.216344     1.499860     0.240190     0.000000     0.000000     0.000000
-               0.000000     0.000000     0.000000
-        );
-    }
     liquidViscosity
     {
         origin        fitted;
@@ -165,5 +138,32 @@ cosmo
             aad_pct     0.043089;
             max_pct     0.098682;
         }
+    }
+}
+
+cosmo
+{
+    LVPP-HFTZVP-2018
+    {
+        model       COSMOSAC;
+        variant     "LVPP-HFTZVP-2018";
+        protocol    "LVPP-18.07 GAMESS HF/TZVP; r_av 1.4 A; f_decay 3.57; d in A; sigma = q/a";
+        source      "LVPP sigma-profile database release 18.07 (github.com/lvpp/sigma, asset HF_TZVP.zip, sha256 bd17aaeebb430641...), file METHYL_OCTADECANOATE.gout; MIT License, Copyright (c) 2017 LVPP; cite Ferrarini, Flores, Muniz & Soares, AIChE J. 64 (2018) 3443, doi:10.1002/aic.16194, and doi:10.5281/zenodo.3613786; identity: InChIKey HPEUJPJOZXNMSJ-UHFFFAOYSA-N (full match); formula C19H38O2; resolved by thirdParty/thermoml/identity.json (PubChem and CACTUS agree)";
+        derivation  "segment areas, charges and the cavity volume are LVPP's (GAMESS HF/TZVP COSMO output); `area` is the sum of LVPP's segment areas as binned (GAMESS's printed cavity area agrees within its 2-decimal rounding); the 51-point profile is COMPUTED BY CHOUPO from LVPP's surface segments by bin/curate/lvpp_sigma_profile.py under the protocol above (Bell et al. 2020 Eq. 4 averaging, sigma = q/a, area split linearly between grid nodes)";
+        licence     MIT;
+        installed   true;
+        area        422.285231;   // sum of the profile below; GAMESS prints 422.29
+        volume      441.76;
+        sigmaProfile  (
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000     0.070903     2.158596     6.823927
+              12.307383    10.402134    11.844824    11.638321    31.740249    62.335911
+              85.667117    61.820198    37.500752    26.493641    31.043674     0.687942
+               1.665529     0.893341     0.997019     1.341594     1.439272     1.227578
+               2.071330     1.530776     1.492066     2.128549     5.131144     4.875067
+               3.216344     1.499860     0.240190     0.000000     0.000000     0.000000
+               0.000000     0.000000     0.000000
+        );
     }
 }

@@ -64,6 +64,44 @@ def fam(name, phases):
     return None
 
 
+
+def insert_into_provenance(text, entry):
+    """Insert a property's provenance entry INSIDE the record's top-level
+    `provenance {}` block, before that block's own closing brace.
+
+    DEV.md 4c C398 slice (b), review row SL-09: this tool used to insert
+    before the LAST closing brace of the file, assuming `provenance {}` was
+    the last block.  Where `cosmo {}` or `pcsaft {}` followed it, 74 catalogue
+    entries and 35 sealed copies landed inside a sigma-profile set, where the
+    provenance reader never saw them and the COSMO reader took each as a
+    phantom parameter set.  The brace is now found by matching, outside
+    comments and strings; a record without the block is refused here (the
+    caller appends a new block instead)."""
+    m = re.search(r"^provenance\s*\{", text, re.M)
+    if not m:
+        raise ValueError("insert_into_provenance: the record has no top-level provenance block")
+    i, depth, n = m.end() - 1, 0, len(text)
+    while i < n:
+        if text.startswith("//", i):
+            j = text.find("\n", i); i = n if j < 0 else j; continue
+        if text.startswith("/*", i):
+            j = text.find("*/", i + 2); i = n if j < 0 else j + 2; continue
+        c = text[i]
+        if c == '"':
+            j = i + 1
+            while j < n and text[j] != '"':
+                j += 2 if text[j] == "\\" else 1
+            i = j + 1; continue
+        if c == "{":
+            depth += 1
+        elif c == "}":
+            depth -= 1
+            if depth == 0:
+                line_start = text.rfind("\n", 0, i) + 1
+                return text[:line_start] + entry + text[line_start:]
+        i += 1
+    raise ValueError("insert_into_provenance: the provenance block never closes")
+
 def strip_comments(t):
     t = re.sub(r"/\*.*?\*/", "", t, flags=re.S)
     return re.sub(r"//[^\n]*", "", t)
@@ -561,8 +599,7 @@ def cmd_write(dry=False):
             m = re.search(r"^provenance\s*\{", text, re.M)
             if m:
                 text = text[:m.start()] + bt + "\n" + text[m.start():]
-                k = text.rstrip().rfind("}")
-                text = text[:k] + pt + text[k:]
+                text = insert_into_provenance(text, pt)
             else:
                 text = text.rstrip("\n") + "\n\n" + bt + "\nprovenance\n{\n" + pt + "}\n"
             written.append([name, prop, f["grade"]])
@@ -766,8 +803,7 @@ def cmd_write_sigma(dry=False):
         m = re.search(r"^provenance\s*\{", text, re.M)
         if m:
             text = text[:m.start()] + bt + "\n" + text[m.start():]
-            k = text.rstrip().rfind("}")
-            text = text[:k] + pt + text[k:]
+            text = insert_into_provenance(text, pt)
         else:
             text = text.rstrip("\n") + "\n\n" + bt + "\nprovenance\n{\n" + pt + "}\n"
         written.append([name, "sigma", f["grade"]])

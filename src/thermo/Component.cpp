@@ -44,6 +44,10 @@ License
 #include <variant>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
+#include "thermo/transport/LiquidViscosityModel.H"
+#include "thermo/transport/LiquidConductivityModel.H"
+#include "thermo/SurfaceTensionModel.H"
+#include "thermo/PropertyDomainError.H"
 
 namespace Choupo {
 
@@ -520,34 +524,30 @@ void Component::readFromDict(const DictPtr& d)
             " declared GAP (group contribution gives no Antoine) -- this case needs"
             " VLE/flash, so fit it (choupoProps vaporPressureFit) or supply a"
             " corresponding-states model before using the component.");
-    // Build the vapour-pressure model.  Corresponding-states models
-    // (AmbroseWalton) need Tc/Pc/omega, which live at COMPONENT level, not in
-    // the `vaporPressure {}` block -- inject them so the case author declares
-    // them once (`vaporPressure { model AmbroseWalton; }`).  Antoine ignores
-    // the extra keys, so this is harmless for data-based models.
-    auto buildVP = [&]() -> std::unique_ptr<VaporPressureModel>
+    //  THE VAPOUR-PRESSURE LAW (C398 slice (b)): the block holds one law
+    //  (today's `model` shape) or several named laws with one `preferred`
+    //  (RecordLaws.H).  The preferred law is built here; a case pin may
+    //  replace it ONCE at package assembly (pinLaw).  A block of several laws
+    //  has no legacy reading, so it must say which one is the record's.
+    //  (needsVP without the block was refused above; a block on a
+    //  non-volatile is permitted -- the unit tests use one; the runtime
+    //  ignores it.)
+    if (d->found("vaporPressure"))
     {
-        auto vpd = d->subDict("vaporPressure");
-        if (!vpd->found("Tc"))    vpd->insert("Tc",    Tc_);
-        if (!vpd->found("Pc"))    vpd->insert("Pc",    Pc_);
-        if (!vpd->found("omega")) vpd->insert("omega", omega_);
-        //  Tb travels too, but AmbroseWalton does not USE it in the curve: it
-        //  compares it against the curve's own normal boiling point and says
-        //  so when they differ (C281 step 1).  Antoine/Wagner ignore it.
-        if (!vpd->found("Tb") && Tb_ > 0.0) vpd->insert("Tb", Tb_);
-        //  The NAME travels with the model, for the same reason the Cp blocks
-        //  get one: a validity warning that cannot say WHICH component it is
-        //  about is a warning the reader cannot act on.  The name is known
-        //  here and nowhere below, so here is where it attaches.
-        if (!vpd->found("owner")) vpd->insert("owner", name_);
-        return VaporPressureModel::New(vpd);
-    };
-    if (needsVP)
-        vp_ = buildVP();
-    else if (d->found("vaporPressure"))
-        // Permit a vapour-pressure block on a non-volatile / radical
-        // component (used by the unit-tests; the runtime ignores it).
-        vp_ = buildVP();
+        auto blk = recordLaws::parse(d->subDict("vaporPressure"), "vaporPressure", name_,
+                                     [](const std::string& w) { return VaporPressureModel::hasModel(w); });
+        if (blk.preferred < 0)
+            throw std::runtime_error("Component '" + name_ + "': vaporPressure holds "
+                + std::to_string(blk.laws.size()) + " laws (" + blk.names() + ") and"
+                " marks none `preferred` -- write `preferred <name>;` in the block: the"
+                " record's one value of the property is a curation decision, never the"
+                " order of the laws.");
+        laws_["vaporPressure"] = blk;
+        buildVP_(std::size_t(blk.preferred));
+        lawChoice_["vaporPressure"] = { blk.laws[std::size_t(blk.preferred)].name,
+            blk.laws[std::size_t(blk.preferred)].type,
+            blk.laws.size() == 1 ? "the record's one law" : "the record's preferred law" };
+    }
 
     // Ebulioscopic / cryoscopic constants --------------------------
     // Only sensible on solvents (water, ethanol,...).  Optional.
@@ -752,42 +752,33 @@ void Component::readFromDict(const DictPtr& d)
     //  twenty components that is a warning the reader cannot act on, which is
     //  most of the way to no warning at all.
     //
-    //  The name is known HERE and nowhere below, so here is where it attaches.
-    auto stampOwner = [&](const std::string& key)
+    //  The name is known HERE and nowhere below, so here is where it attaches
+    //  (buildCp_ stamps it into the chosen law's dictionary).
+    //
+    //  THE HEAT-CAPACITY LAWS (C398 slice (b)): each block holds one law
+    //  (today's shape) or several named laws with one `preferred`.  The
+    //  ideal-gas law is read first because a corresponding-states liquid law
+    //  (RowlinsonBondi) consumes it (SL-05: the PREFERRED ideal-gas law, or
+    //  the case's pin, is the one injected, and the view prints which).  The
+    //  objects are still built liquid first, as before, so construction
+    //  order changes nothing that was built.
+    for (const char* key : { "idealGasHeatCapacity", "liquidHeatCapacity", "solidHeatCapacity" })
     {
-        DictPtr sub = d->subDict(key);
-        if (!sub->found("owner")) sub->insert("owner", name_);
-        return sub;
-    };
-    if (d->found("liquidHeatCapacity"))
-    {
-        DictPtr lcp = stampOwner("liquidHeatCapacity");
-        //  A CORRESPONDING-STATES liquid Cp (RowlinsonBondi) needs Tc, omega
-        //  and the IDEAL-GAS Cp -- all three of which live at component level.
-        //  Inject them, exactly as the vapour-pressure block's Tc/Pc/omega are
-        //  injected above, so the case author declares each fact ONCE and the
-        //  model never re-states what the component already says.
-        //
-        //  The ideal-gas block is injected as a DICT, not as a built model:
-        //  cpGas_ is constructed after this line, and handing over a
-        //  half-built object to save one parse is how construction order
-        //  becomes a silent dependency.
-        if (!lcp->found("Tc")    && Tc_    > 0.0) lcp->insert("Tc",    Tc_);
-        if (!lcp->found("omega"))                 lcp->insert("omega", omega_);
-        if (!lcp->found("idealGasHeatCapacity") && d->found("idealGasHeatCapacity"))
-            lcp->insert("idealGasHeatCapacity",
-                        EntryValue(d->subDict("idealGasHeatCapacity")));
-        cpLiq_ = HeatCapacityModel::New(lcp);
+        if (!d->found(key)) continue;
+        auto blk = recordLaws::parse(d->subDict(key), key, name_,
+                                     [](const std::string& w) { return HeatCapacityModel::hasModel(w); });
+        if (blk.preferred < 0)
+            throw std::runtime_error("Component '" + name_ + "': " + key + " holds "
+                + std::to_string(blk.laws.size()) + " laws (" + blk.names() + ") and"
+                " marks none `preferred` -- write `preferred <name>;` in the block.");
+        laws_[key] = blk;
+        lawChoice_[key] = { blk.laws[std::size_t(blk.preferred)].name,
+            blk.laws[std::size_t(blk.preferred)].type,
+            blk.laws.size() == 1 ? "the record's one law" : "the record's preferred law" };
     }
-    if (d->found("idealGasHeatCapacity"))
-        cpGas_ = HeatCapacityModel::New(stampOwner("idealGasHeatCapacity"));
-    // A REAL solid heat capacity (same HeatCapacityModel factory as the liquid
-    // and ideal-gas Cp).  Optional: ABSENT leaves cpSolid_ null and the solid
-    // enthalpy path falls back to Cp_liquid (the historical "Cp_solid ~
-    // Cp_liquid" approximation) -- so every existing .dat stays byte-identical.
-    // Only a .dat that ADDS `solidHeatCapacity {}` gets the true solid Cp.
-    if (d->found("solidHeatCapacity"))
-        cpSolid_ = HeatCapacityModel::New(stampOwner("solidHeatCapacity"));
+    for (const char* key : { "liquidHeatCapacity", "idealGasHeatCapacity", "solidHeatCapacity" })
+        if (laws_.count(key))
+            buildCp_(key, std::size_t(laws_.at(key).preferred));
 
     // ---- Optional Gibbs-formation block (consumed by the Gibbs reactor) ----
     // standardThermochemistry
@@ -984,13 +975,47 @@ void Component::readFromDict(const DictPtr& d)
     if (d->found("provenance"))
     {
         auto p = d->subDict("provenance");
+        //  PER-LAW PROVENANCE (C398 slice (b)): for a property block of
+        //  several named laws, its provenance entry holds one sub-entry per
+        //  law, named as the law: `provenance { liquidViscosity { vogel {
+        //  origin ...; } } }`.  Each is filed as "<property>/<law>", and the
+        //  property's own entry is the CHOSEN law's (the preferred one; a pin
+        //  re-files it, pinLaw).  An entry with its own `origin` is today's
+        //  per-property shape, read unchanged.
+        std::vector<std::pair<std::string, DictPtr>> entries;
         for (const auto& k : p->keys())
         {
-            OriginInfo oi;
             const auto& ev = p->entryValue(k);
-            if (std::holds_alternative<DictPtr>(ev))
+            DictPtr blk = d->found(k) && std::holds_alternative<DictPtr>(d->entryValue(k))
+                        ? d->subDict(k) : nullptr;
+            if (std::holds_alternative<DictPtr>(ev) && blk
+                && !std::get<DictPtr>(ev)->found("origin"))
             {
-                auto sub = std::get<DictPtr>(ev);
+                bool perLaw = false;
+                for (const auto& lk : std::get<DictPtr>(ev)->keys())
+                    if (blk->found(lk) && std::holds_alternative<DictPtr>(blk->entryValue(lk))
+                        && std::holds_alternative<DictPtr>(std::get<DictPtr>(ev)->entryValue(lk)))
+                    {
+                        perLaw = true;
+                        entries.push_back({ k + "/" + lk, std::get<DictPtr>(ev)->subDict(lk) });
+                    }
+                if (perLaw)
+                {
+                    std::string chosen = blk->lookupWordOrDefault("preferred", "");
+                    if (lawChoice_.count(k)) chosen = lawChoice_.at(k).law;
+                    if (!chosen.empty() && std::get<DictPtr>(ev)->found(chosen))
+                        entries.push_back({ k, std::get<DictPtr>(ev)->subDict(chosen) });
+                    continue;
+                }
+            }
+            entries.push_back({ k, std::holds_alternative<DictPtr>(ev) ? std::get<DictPtr>(ev) : nullptr });
+        }
+        for (const auto& [k, entryDict] : entries)
+        {
+            OriginInfo oi;
+            if (entryDict)
+            {
+                auto sub = entryDict;
                 oi.origin        = originFromWord(sub->lookupWordOrDefault("origin", "unattributed"));
                 oi.method        = sub->lookupWordOrDefault("method", "");
                 oi.methodVersion = sub->lookupWordOrDefault("methodVersion", "");
@@ -1023,9 +1048,9 @@ void Component::readFromDict(const DictPtr& d)
                     { oi.hasValidity = true; oi.validityMin = v[0]; oi.validityMax = v[1]; }
                 }
             }
-            else if (std::holds_alternative<std::string>(ev))
+            else if (p->found(k) && std::holds_alternative<std::string>(p->entryValue(k)))
             {
-                oi.raw = std::get<std::string>(ev);
+                oi.raw = std::get<std::string>(p->entryValue(k));
             }
             // else (scalar / list / list-of-dicts / Reference): empty record.
             provenanceMap_[k] = oi;
@@ -1686,6 +1711,194 @@ scalar Component::c_sat(scalar T_K) const
     scalar c = 0.0, p = 1.0;
     for (scalar a : solubilityCoeffs_) { c += a * p; p *= Tc; }
     return std::max(0.0, c);
+}
+
+//  ---- SEVERAL NAMED LAWS PER PROPERTY (DEV.md 4c C398, slice (b)) -----------
+
+namespace {
+
+//  A heat-capacity law with a HARD window: every evaluation outside it throws
+//  the typed domain error whose remedy names the record's other laws.  Only a
+//  law that declares `domain` is wrapped, so every existing law is the object
+//  it always was.
+class DomainBoundCp : public HeatCapacityModel
+{
+public:
+    DomainBoundCp(std::unique_ptr<HeatCapacityModel> inner, recordLaws::Block blk,
+                  std::size_t idx, std::string what)
+    :   inner_(std::move(inner)), blk_(std::move(blk)), idx_(idx), what_(std::move(what)),
+        lo_(blk_.laws[idx].domainLo), hi_(blk_.laws[idx].domainHi)
+    {}
+    scalar Cp(scalar T) const override { check(T); return inner_->Cp(T); }
+    scalar H(scalar T, scalar Tref) const override { check(T); return inner_->H(T, Tref); }
+    scalar S(scalar T, scalar Tref) const override { check(T); return inner_->S(T, Tref); }
+    const std::string& modelName() const override { return inner_->modelName(); }
+private:
+    void check(scalar T) const
+    { if (T < lo_ || T > hi_) recordLaws::throwOutsideDomain(blk_, idx_, T, what_); }
+    std::unique_ptr<HeatCapacityModel> inner_;
+    recordLaws::Block blk_;
+    std::size_t idx_;
+    std::string what_;
+    scalar lo_, hi_;
+};
+
+} // namespace
+
+void Component::buildVP_(std::size_t idx)
+{
+    const recordLaws::Block& blk = laws_.at("vaporPressure");
+    const recordLaws::Law& L = blk.laws.at(idx);
+    DictPtr vpd = L.body;
+    //  Corresponding-states models (AmbroseWalton) need Tc/Pc/omega, which
+    //  live at COMPONENT level, not in the law -- inject them so the record
+    //  declares each fact once (`vaporPressure { model AmbroseWalton; }`).
+    //  Antoine ignores the extra keys, so this is harmless for data-based
+    //  models.  Tb travels too: AmbroseWalton compares it against the curve's
+    //  own normal boiling point and says so when they differ (C281 step 1).
+    //  The NAME travels with the model: a validity warning that cannot say
+    //  WHICH component it is about is a warning the reader cannot act on.
+    //  (SL-05: these are the facts injected into a vapour-pressure law; the
+    //  resolved view lists them.)
+    if (!vpd->found("Tc"))    vpd->insert("Tc",    Tc_);
+    if (!vpd->found("Pc"))    vpd->insert("Pc",    Pc_);
+    if (!vpd->found("omega")) vpd->insert("omega", omega_);
+    if (!vpd->found("Tb") && Tb_ > 0.0) vpd->insert("Tb", Tb_);
+    if (!vpd->found("owner")) vpd->insert("owner", name_);
+    vp_ = VaporPressureModel::New(vpd);
+    if (L.hasDomain)
+    {
+        recordLaws::Block copy = blk;
+        vp_->setHardDomain(L.domainLo, L.domainHi, [copy, idx](scalar T)
+            { recordLaws::throwOutsideDomain(copy, idx, T, "vapour pressure"); });
+    }
+}
+
+void Component::buildCp_(const std::string& key, std::size_t idx)
+{
+    const recordLaws::Block& blk = laws_.at(key);
+    const recordLaws::Law& L = blk.laws.at(idx);
+    DictPtr body = L.body;
+    if (!body->found("owner")) body->insert("owner", name_);
+    if (key == "liquidHeatCapacity")
+    {
+        //  A CORRESPONDING-STATES liquid Cp (RowlinsonBondi) needs Tc, omega
+        //  and the IDEAL-GAS Cp -- all three of which live at component level.
+        //  Inject them, exactly as the vapour-pressure law's Tc/Pc/omega are,
+        //  so the record declares each fact ONCE.  The ideal-gas law injected
+        //  is the CHOSEN one (the record's preferred, or the case's pin:
+        //  SL-05), as a DICT, not a built model: handing over a half-built
+        //  object to save one parse is how construction order becomes a
+        //  silent dependency.  A pin of the ideal-gas law re-injects it.
+        if (!body->found("Tc") && Tc_ > 0.0) body->insert("Tc",    Tc_);
+        if (!body->found("omega"))           body->insert("omega", omega_);
+        if (laws_.count("idealGasHeatCapacity"))
+        {
+            const auto& ig = laws_.at("idealGasHeatCapacity");
+            const auto& chosen = lawChoice_.count("idealGasHeatCapacity")
+                ? lawChoice_.at("idealGasHeatCapacity").law : std::string();
+            const int gi = ig.indexOf(chosen) >= 0 ? ig.indexOf(chosen) : ig.preferred;
+            DictPtr igBody = ig.laws.at(std::size_t(gi)).body;
+            if (body->found("idealGasHeatCapacity")
+                && std::holds_alternative<DictPtr>(body->entryValue("idealGasHeatCapacity")))
+            {
+                //  Re-injection after a pin replaces only what this reader
+                //  injected (one of the record's own ideal-gas laws, by
+                //  identity): a law that DECLARES its own ideal-gas block keeps it.
+                const DictPtr held = std::get<DictPtr>(body->entryValue("idealGasHeatCapacity"));
+                for (const auto& g : ig.laws)
+                    if (g.body == held) { body->erase("idealGasHeatCapacity"); break; }
+            }
+            if (!body->found("idealGasHeatCapacity"))
+                body->insert("idealGasHeatCapacity", EntryValue(igBody));
+        }
+    }
+    auto m = HeatCapacityModel::New(body);
+    if (L.hasDomain)
+        m = std::make_unique<DomainBoundCp>(std::move(m), blk, idx, key);
+    if      (key == "liquidHeatCapacity")   cpLiq_   = std::move(m);
+    else if (key == "idealGasHeatCapacity") cpGas_   = std::move(m);
+    else                                    cpSolid_ = std::move(m);
+}
+
+const recordLaws::Block* Component::recordLaws(const std::string& property) const
+{
+    auto it = laws_.find(property);
+    if (it != laws_.end()) return &it->second;
+    if (lawsError_.count(property)) return nullptr;
+    //  The three liquid transport blocks are parsed HERE, at the first
+    //  request: a record that is never priced for a property is never
+    //  refused for it (a refusal waits for first use, as it always did).
+    DictPtr block = property == "liquidViscosity"           ? liquidViscDict_
+                  : property == "liquidThermalConductivity" ? liquidCondDict_
+                  : property == "surfaceTension"            ? surfaceTensionDict_ : nullptr;
+    if (!block) return nullptr;
+    try
+    {
+        std::function<bool(const std::string&)> isType;
+        if (property == "liquidViscosity")
+            isType = [](const std::string& w) { return LiquidViscosityModel::hasModel(w); };
+        else if (property == "liquidThermalConductivity")
+            isType = [](const std::string& w) { return LiquidConductivityModel::hasModel(w); };
+        else
+            isType = [](const std::string& w) { return SurfaceTensionModel::hasModel(w); };
+        laws_[property] = recordLaws::parse(block, property, name_, isType);
+        return &laws_.at(property);
+    }
+    catch (const std::exception& e)
+    {
+        lawsError_[property] = e.what();
+        return nullptr;
+    }
+}
+
+std::string Component::lawsError(const std::string& property) const
+{
+    (void)recordLaws(property);
+    auto it = lawsError_.find(property);
+    return it == lawsError_.end() ? std::string() : it->second;
+}
+
+Component::LawChoice Component::lawChoice(const std::string& property) const
+{
+    auto it = lawChoice_.find(property);
+    return it == lawChoice_.end() ? LawChoice{} : it->second;
+}
+
+void Component::pinLaw(const std::string& property, const std::string& law,
+                       const std::string& reason)
+{
+    const bool built = property == "vaporPressure" || property == "idealGasHeatCapacity"
+                    || property == "liquidHeatCapacity" || property == "solidHeatCapacity";
+    if (!built)
+        throw std::logic_error("Component::pinLaw: '" + property + "' is chosen by the"
+            " package, not held by the component");
+    const recordLaws::Block* blk = recordLaws(property);
+    if (!blk)
+        throw std::runtime_error("pin of " + name_ + "'s " + property + " law `" + law
+            + "`: the record has no " + property + " block, so it has no law to pin.");
+    const int idx = blk->indexOf(law);
+    if (idx < 0)
+        throw std::runtime_error("pin of " + name_ + "'s " + property + " law `" + law
+            + "`: the record has no law of that name -- its laws are: " + blk->names()
+            + (blk->shape != recordLaws::Block::Shape::namedLaws
+                 ? " (a block of one unnamed law; a pin names a law of a block of several)"
+                 : ""));
+    lawChoice_[property] = { law, blk->laws[std::size_t(idx)].type, "case pin (reason: " + reason + ")" };
+    if (property == "vaporPressure") buildVP_(std::size_t(idx));
+    else                             buildCp_(property, std::size_t(idx));
+    //  SL-05: the liquid law that consumes the ideal-gas one follows the pin.
+    if (property == "idealGasHeatCapacity" && laws_.count("liquidHeatCapacity")
+        && lawChoice_.count("liquidHeatCapacity"))
+    {
+        const auto& lb = laws_.at("liquidHeatCapacity");
+        const int li = lb.indexOf(lawChoice_.at("liquidHeatCapacity").law);
+        buildCp_("liquidHeatCapacity", std::size_t(li >= 0 ? li : lb.preferred));
+    }
+    //  The property's provenance is the chosen law's, where the record files
+    //  one per law.
+    auto pv = provenanceMap_.find(property + "/" + law);
+    if (pv != provenanceMap_.end()) provenanceMap_[property] = pv->second;
 }
 
 } // namespace Choupo

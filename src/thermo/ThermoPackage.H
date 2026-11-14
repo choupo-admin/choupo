@@ -664,9 +664,9 @@ public:
     // Filippov | Li (transport/Liquid*MixingRule.H).
     // diffusivityLiquid needs the solvent viscosity, so a liquidViscosity
     // model must be present alongside.  Each throws if its sub-block is absent.
-    bool   hasLiquidViscosity()    const { return liquidViscosity_ != nullptr; }
+    bool   hasLiquidViscosity()    const { return !liquidViscosityLaws_.empty(); }
     scalar viscosityLiquid(scalar T_K, const sVector& x) const;
-    bool   hasLiquidConductivity() const { return liquidConductivity_ != nullptr; }
+    bool   hasLiquidConductivity() const { return !liquidConductivityLaws_.empty(); }
     scalar thermalConductivityLiquid(scalar T_K, const sVector& x) const;
     bool   hasLiquidDiffusivity()  const { return liquidDiffusivity_ != nullptr; }
     scalar diffusivityLiquid(scalar T_K, std::size_t i, std::size_t j) const;
@@ -678,8 +678,41 @@ public:
     // otherwise the generic correlation; otherwise it throws asking for a
     // surfaceTension sub-block.  Mixture rule: selectable by `mixingRule`
     // (C331) -- moleFractionAverage | Butler (SurfaceTensionMixingRule.H).
-    bool   hasSurfaceTension() const { return surfaceTension_ != nullptr; }
+    bool   hasSurfaceTension() const { return !surfaceTensionLaws_.empty(); }
     scalar surfaceTension(scalar T_K, const sVector& x) const;
+
+    // ---- THE LAW EACH CONSTITUENT USES (DEV.md 4c C398, slice (b), A1) ----
+    //  For liquid viscosity, liquid thermal conductivity and surface tension
+    //  the package holds ONE law per constituent, built from that
+    //  constituent's record (as vapour pressure and the heat capacities are),
+    //  and the block's mixing rule consumes the pure values.  Chosen ONCE, at
+    //  assembly, never by the state:
+    //    - a case pin `pin ( { component; law; reason; } );` beside the property;
+    //    - else the block's legacy word: Andrade, Vogel, chemsepEq101,
+    //      chemsepEq16 = a pin of the law of that NAME for every constituent;
+    //      SatoRiedel, BrockBird = predictive, no record law (SL-03);
+    //      StoredCorrelation = the record's law, else Brock-Bird for that
+    //      component, announced (SL-03);
+    //    - else (no word) the record's preferred law.
+    //  The law OBJECT is built at the constituent's first evaluation, so a
+    //  constituent never priced (x = 0) is never refused; a law that is
+    //  absent is refused THEN, naming property, constituent and remedy.
+    //  key: "liquidViscosity", "liquidConductivity", "surfaceTension".
+    struct LiquidLaw
+    {
+        std::string law;           // the record law's name ("" = a block's one unnamed law)
+        std::string type;          // the type word its object is built from
+        std::string by;            // who chose it, for the resolved view
+        std::string absent;        // non-empty: refused at first use with this text
+        bool        predictive = false;   // the block's predictive model, no record law
+    };
+    const std::vector<LiquidLaw>& liquidLaws(const std::string& key) const;
+
+    //  A case pin of a vapour-pressure or heat-capacity law (held by the
+    //  component), read from equilibrium.vaporPressure and
+    //  caloric.<record block>; applied once by the builder after assembly,
+    //  before any evaluation (C398 slice (b)).
+    void applyRecordLawPins(const DictPtr& system);
 
     // Mass density rho [kg/m³] of a phase at (T, P, z).  Three branches that
     // mirror the pure-fluid routing idiom:
@@ -892,6 +925,16 @@ private:
     std::unique_ptr<LiquidViscosityMixingRule>    liquidViscosityMixing_;
     std::unique_ptr<LiquidConductivityMixingRule> liquidConductivityMixing_;
     std::unique_ptr<SurfaceTensionMixingRule>     surfaceTensionMixing_;
+    //  One law per constituent (C398 slice (b)); the objects are built at
+    //  first evaluation.
+    std::vector<LiquidLaw> liquidViscosityLaws_, liquidConductivityLaws_, surfaceTensionLaws_;
+    mutable std::vector<std::unique_ptr<LiquidViscosityModel>>    liquidViscosityObj_;
+    mutable std::vector<std::unique_ptr<LiquidConductivityModel>> liquidConductivityObj_;
+    mutable std::vector<std::unique_ptr<SurfaceTensionModel>>     surfaceTensionObj_;
+    void   resolveLiquidLaws(const std::string& key, const DictPtr& block);
+    scalar pureLiquidViscosity(std::size_t i, scalar T) const;
+    scalar pureLiquidConductivity(std::size_t i, scalar T) const;
+    scalar pureSurfaceTension(std::size_t i, scalar T) const;
     std::string                               solventName_;
     // The DECLARED aqueous solvent (see aqueousSolventName()); empty until
     // the builder stamps a declaration, and the default stands for it.

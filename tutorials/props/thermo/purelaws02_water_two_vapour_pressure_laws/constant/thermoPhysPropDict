@@ -1,0 +1,47 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  purelaws02 -- pure water, one record holding two vapour-pressure laws
+    (DEV.md 4c C398, slice (b)).  The system prices water on the record's
+    PREFERRED law (`antoine`); the variant `iapws` pins the other law (`SR1`,
+    the IAPWS equation) beside the property, `equilibrium.vaporPressure`,
+    and the operation `psatSR1` selects it (`thermo iapws;`).  A variant that
+    changes `equilibrium` is a model boundary, announced as one (THE RULING,
+    point 2).
+    The resolved view of each prints the law water took, who chose it, its
+    window, the record's other laws and the law type's form with units.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+variants
+{
+    iapws                               // only what differs from the system above
+    {
+        equilibrium
+        {
+            formulation gammaPhi;
+            liquid { activityModel { model ideal; } }
+            vapour { fugacityModel idealGas; }
+            vaporPressure
+            {
+                pin ( { component water;  law SR1;
+                        reason "the IAPWS saturation equation, for the states above the Antoine law's window"; } );
+            }
+        }
+    }
+}

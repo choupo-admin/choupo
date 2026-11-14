@@ -11,7 +11,14 @@
     Butler's surface tension needs an activity model for every pair it
     meets.  Each operation brings its own `transport {}` (system/propsDict),
     so the rules sit side by side.  Not sealed: the records come from
-    data/standards/components.  */
+    data/standards/components.
+
+    THE VAPOUR VISCOSITY IS DECLARED (DEV.md 4c C398 slice (b), SL-04): every
+    propertyPoint reports a gas viscosity at its state, and until this slice
+    that number came from a factory default (Chung) that no line of this case
+    asked for.  The default is gone; the block below declares the same model,
+    so the reported values are unchanged and the run now says where they
+    come from.  */
 
 recordType    thermophysicalPropertySystem;
 schemaVersion 2;
@@ -23,4 +30,11 @@ equilibrium
     formulation gammaPhi;
     liquid { activityModel { model UNIFAC; } }
     vapour { fugacityModel idealGas; }
+}
+
+//  The vapour viscosity every propertyPoint reports (see the header).  Each
+//  operation's own `transport {}` replaces only the property blocks it names.
+transport
+{
+    vapour { viscosity { model Chung; } }
 }

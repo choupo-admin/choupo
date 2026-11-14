@@ -258,50 +258,6 @@ provenance
         uncertainty   "fit residual vs IAPWS R15-11: RMS 0.14 %, max 0.64 % (at 273.16 K); critical enhancement omitted";
         notes         "IAPWS R15-11 cover page: publication in whole or in part is allowed in all countries provided that attribution is given to IAPWS";
     }
-}
-
-groups
-{
-    unifac ( { group H2O; count 1; } );
-}
-
-uniquac
-{
-    r   0.9200;
-    q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
-}
-
-pcsaft
-{
-    // Associating (2B: one donor + one acceptor) -- the water set of
-    // Gross & Sadowski 2002, whose Table 1 lists water with TWO
-    // association sites: this parameter set was FITTED AS 2B and is
-    // meaningless under any other scheme (curated first as 4C, which
-    // over-associated so strongly the ethanol/water flash collapsed --
-    // the scheme is part of the fit, not a free choice).  A 4C water
-    // from later literature is a DIFFERENT parameter set; curate it as
-    // its own trio if ever needed.  Known published trade-off of this
-    // set: Psat accurate (about -0.2% at 358 K, +4% at 298 K) while the
-    // ambient liquid density reads about -7.5% (922 kg/m3 vs 997).
-    m           1.0656;
-    sigma       3.0007;
-    epsilonK    366.51;
-    assocScheme 2B;
-    epsAB_K     2500.7;
-    kappaAB     0.034868;
-    source      "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510, Table 1 (water, 2 sites)";
-}
-
-cosmo
-{
-    VT2005
-    {
-        model       COSMOSAC;
-        variant     "2002";
-        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1076-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7732-18-5";
-        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
-        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
-    }
     surfaceTension
     {
         origin        fitted;
@@ -383,5 +339,49 @@ cosmo
             aad_pct     0.542756;
             max_pct     2.710171;
         }
+    }
+}
+
+groups
+{
+    unifac ( { group H2O; count 1; } );
+}
+
+uniquac
+{
+    r   0.9200;
+    q   1.4000;     // van der Waals (Abrams-Prausnitz), as used by Popken 2000 Table 2
+}
+
+pcsaft
+{
+    // Associating (2B: one donor + one acceptor) -- the water set of
+    // Gross & Sadowski 2002, whose Table 1 lists water with TWO
+    // association sites: this parameter set was FITTED AS 2B and is
+    // meaningless under any other scheme (curated first as 4C, which
+    // over-associated so strongly the ethanol/water flash collapsed --
+    // the scheme is part of the fit, not a free choice).  A 4C water
+    // from later literature is a DIFFERENT parameter set; curate it as
+    // its own trio if ever needed.  Known published trade-off of this
+    // set: Psat accurate (about -0.2% at 358 K, +4% at 298 K) while the
+    // ambient liquid density reads about -7.5% (922 kg/m3 vs 997).
+    m           1.0656;
+    sigma       3.0007;
+    epsilonK    366.51;
+    assocScheme 2B;
+    epsAB_K     2500.7;
+    kappaAB     0.034868;
+    source      "Gross & Sadowski, Ind. Eng. Chem. Res. 41 (2002) 5510, Table 1 (water, 2 sites)";
+}
+
+cosmo
+{
+    VT2005
+    {
+        model       COSMOSAC;
+        variant     "2002";
+        source      "VT-2005 sigma-profile database (Mullins et al., Ind. Eng. Chem. Res. 45 (2006) 4389; DFT-COSMO), file VT2005-1076-PROF.txt bundled in usnistgov/COSMOSAC; CAS 7732-18-5";
+        licence     externalRestricted;   // VT-2005: redistribution NOT confirmed -- values NOT shipped
+        installed   false;                 // install your own copy: bin/choupo-import-cosmo (-> data/local/cosmo/VT2005/)
     }
 }

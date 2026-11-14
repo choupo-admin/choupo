@@ -28,8 +28,8 @@ propertyManifest
         "components/1Propanol.dat"
         {
             type          imported;
-            sha256        "73b9b740c8e6e260732790fe041dcc216b39ee419dd867d5659296e675634fc8";
-            computationalSha256 "f797c967cc6d6c5a1380a86dfd8245dcfc67749dbce3da41078bdab336de3ead";
+            sha256        "4b60eab5e804be2721855d92e88b4cc6c27288c31941c9f12b7c52562ae16fb5";
+            computationalSha256 "ffaec1033412f65b679296ff760de62387876ae01ed1bf7e18e7f02084b71853";
             origin        "data/standards/components/1Propanol.dat";
             originSha256  "8e9667d8f04b768a78f32128d861cbc4c36fcf9b5e1e1754626d6f09cccbe26d";
             release       Choupo-2608;
@@ -64,8 +64,8 @@ propertyManifest
         "components/triethanolamine.dat"
         {
             type          imported;
-            sha256        "3b0796ad45bf89dea2fd48f226929a1b2fdc5cc2c3ff9a69c004740ee883e00c";
-            computationalSha256 "86d2f07bdd712881bdd84c9fd95ddc60b6a1aca2934e463e4c6242ee3e481558";
+            sha256        "fc7b85e1ce4981fffdfdf0eec2d08684cb2a7e7857ac253f4c4b59c9b1df9de8";
+            computationalSha256 "1ca2e4f0b37663b773dc2884f6ec3bc73936f738ae9788fa0aae4d9d73d64384";
             origin        "data/standards/components/triethanolamine.dat";
             originSha256  "ea3c07f2d16b12af5ffcb98be670bd890d74ef3fc013738076b8889fc365295e";
             release       Choupo-2608;

@@ -1668,8 +1668,8 @@
     },
     "check_feature_documented": {
       "exit": 0,
-      "claim": "check_feature_documented: OK -- 253 registered names, 212 documented in a labelled guide section and the catalogue, 41 pinned as debt (ActivityModel 1, AqueousVolumetric 2, Atomizer 1, BatchUnitOperation 2, BedWallHeatTransfer 1, ConstantEstimator 3, DynamicUnitOperation 1, EquipmentSize 2, FrictionFactorCorrelation 1, HeatCapacityModel 5, HeatTransferCorrelation 1, IsothermModel 1, LiquidViscosityModel 2, ODEIntegrator 2, PhaseChangeHTC 3, PureFluidModel 1, Report 2, Signal 1, SizeDistribution 3, SurfaceTensionModel 1, TransportModel 1, UnitOperation 3, VaporPressureModel 1); NOT COVERED: that the section's equations match the implementation",
-      "seconds": 0.3
+      "claim": "check_feature_documented: OK -- 280 registered names, 248 documented in a labelled guide section and the catalogue, 32 pinned as debt (ActivityModel 1, AqueousVolumetric 2, Atomizer 1, BatchUnitOperation 2, BedWallHeatTransfer 1, ConstantEstimator 3, DynamicUnitOperation 1, EquipmentSize 2, FrictionFactorCorrelation 1, HeatCapacityModel 4, HeatTransferCorrelation 1, IsothermModel 1, ODEIntegrator 2, PhaseChangeHTC 3, Report 2, Signal 1, SizeDistribution 1, TransportModel 1, UnitOperation 2); NOT COVERED: that the section's equations match the implementation",
+      "seconds": 0.5
     },
     "check_species_records": {
       "exit": 0,
@@ -1703,8 +1703,8 @@
     },
     "check_property_route_bench": {
       "exit": 0,
-      "claim": "check_property_route_bench: OK -- 5684 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 5683, values 98157, refusals 78822, packages not assembled 512; non-finite values: NaN 0, inf 0; data-root paths replaced in messages: 408; door against the old call: 134343 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 8.1
+      "claim": "check_property_route_bench: OK -- 18255 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 18254, values 161645, refusals 151492, packages not assembled 2097; non-finite values: NaN 1, inf 6; data-root paths replaced in messages: 918; door against the old call: 156783 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 13.7
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
@@ -1775,6 +1775,21 @@
       "exit": 0,
       "claim": "check_variant_same_values: OK -- (a) both modes of variants01 run; (b) both print the resolved view of variant 'vogelLaw' with one fingerprint and the same DATA rows; (c) the pipe and operation muVariant receive the same liquid viscosity (0.00088856 Pa s at 300 K, 3 bar) to the printed precision (%.12g, relative <= 5e-12); (d) the system's is different (0.000906542), so the selection is live; (e) the surface tension, a block the variant does not declare, is the system's; (f-i) a derived variant, an unknown name and both spellings of one block are refused, an unused variant is announced.  ONE property (liquid viscosity) at ONE state on ONE flat case: NOT sector variants, NOT a variant that changes equilibrium, NOT agreement below 5e-12",
       "seconds": 0.1
+    },
+    "check_record_law_values": {
+      "exit": 0,
+      "claim": "check_record_law_values: OK -- every block of several laws marks one preferred; 1 check value(s) read back within tolerance (water.liquidThermalConductivity.chemsepEq16 rel -0.001803); laws without a check (the pinned debt): 2539; records not loadable alone: 64",
+      "seconds": 1.1
+    },
+    "check_record_primitives": {
+      "exit": 0,
+      "claim": "check_record_primitives: OK -- no record types a derived quantity beyond the pinned 2 (NaOH's solid formation datum, a second home under the salt contract); dGf_298 CHECKs: 45, comparison not yet computed (pinned); phase rungs: 0",
+      "seconds": 0.9
+    },
+    "check_provenance_home": {
+      "exit": 0,
+      "claim": "check_provenance_home: OK -- 4723 records read; every property provenance entry is in its record's provenance block (4 pinned law blocks carry their own `origin`, the debt)",
+      "seconds": 6.5
     }
   }
 }

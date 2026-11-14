@@ -223,7 +223,7 @@ u &= \frac{4\,Q}{\pi D^2}
     note: "src/unitOperations/valve/Valve.cpp:264 is where the valve "
       + "builds Q at each end: the liquid density from the record's Vliq "
       + "carried in temperature by Rackett, the vapour density from the "
-      + "equation of state (src/thermo/ThermoPackage.cpp:2300).  The "
+      + "equation of state (src/thermo/ThermoPackage.cpp:2315).  The "
       + "dissolved hydrogen, nitrogen and argon have no liquid density at "
       + "-20 °C and are priced at the density of the rest; the run says so.",
   },
@@ -254,7 +254,7 @@ u &= \frac{4\,Q}{\pi D^2}
         "–" },
     ],
     note: "k is the engine's: propertyPoint's gamma = Cp_ig/(Cp_ig - R) "
-      + "(src/propertyOps/PropertyPoint.cpp:73), evaluated on the purge at "
+      + "(src/propertyOps/PropertyPoint.cpp:89), evaluated on the purge at "
       + "140 bar by the letdown02 witness.  It is the ideal-gas ratio, the "
       + "one the formula is derived with.",
   },

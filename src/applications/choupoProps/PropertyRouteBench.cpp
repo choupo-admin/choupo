@@ -25,6 +25,10 @@
 #include "thermo/transport/LiquidViscosityMixingRule.H"
 #include "thermo/transport/LiquidViscosityModel.H"
 #include "thermo/transport/SurfaceTensionMixingRule.H"
+#include "thermo/transport/LiquidConductivityModel.H"
+#include "thermo/heatCapacity/HeatCapacityModel.H"
+#include "thermo/vaporPressure/VaporPressureModel.H"
+#include "core/Sha256.H"
 
 #include <algorithm>
 #include <cctype>
@@ -196,13 +200,13 @@ public:
     }
     void refused(const std::string& state, const std::string& msg)
     {
-        os_ << state << "\tREFUSED\t" << oneLine(msg, dataRoot_, pathHits_) << "\n";
+        os_ << state << "\tREFUSED\t" << rootLess(oneLine(msg, dataRoot_, pathHits_)) << "\n";
         ++refusals_;
     }
     //  A package that could not be assembled: one line for the whole block.
     void notAssembled(const std::string& msg)
     {
-        os_ << "*\tNOT ASSEMBLED\t" << oneLine(msg, dataRoot_, pathHits_) << "\n";
+        os_ << "*\tNOT ASSEMBLED\t" << rootLess(oneLine(msg, dataRoot_, pathHits_)) << "\n";
         ++notAssembled_;
     }
 
@@ -210,6 +214,18 @@ public:
          nans_ = 0, infs_ = 0, pathHits_ = 0;
 
 private:
+    //  A sealed copy's message names its case by an absolute path under the
+    //  checkout (C398 slice (b)); the checkout is replaced by `<root>` so a
+    //  pinned hash does not depend on where the tree lives.  The catalogue's
+    //  messages carry only the data root, already replaced by `<data>`.
+    std::string rootLess(std::string s) const
+    {
+        const std::string root = fs::path(dataRoot_).parent_path().string();
+        if (root.size() < 2) return s;
+        for (std::size_t p = s.find(root); p != std::string::npos; p = s.find(root, p))
+        { s.replace(p, root.size(), "<root>"); p += 6; }
+        return s;
+    }
     std::ofstream& os_;
     std::string    dataRoot_;
 };
@@ -625,6 +641,141 @@ int run(const std::string& manifestPath, const std::string& outPath)
         reuseLine += std::string("; a state outside the law's domain is ")
                    + (trial ? "an InfeasibleTrial" : "NOT an InfeasibleTrial")
                    + ", a missing method is " + (missingIsTrial ? "WRONGLY a trial" : "not a trial");
+    }
+    //  ---- C398 SLICE (b): THE OTHER PURE-COMPONENT LAWS, AND THE SEALED COPIES ----
+    //  (review rows SL-01/SL-02.)  Slice (b) re-reads every record's laws:
+    //  vapour pressure and the heat capacities through the component's law
+    //  objects, liquid thermal conductivity per constituent.  These blocks
+    //  pin what each of them answers on the grid's temperatures, for every
+    //  catalogue record and for every DISTINCT sealed copy under tutorials/
+    //  (a sealed case reads its own constant/, so the catalogue alone would
+    //  never see 365 of the 371 dictionaries that name water).  Identical
+    //  bytes give identical answers, so a sealed copy is benched once per
+    //  content, named by its record and the first 12 hex digits of its
+    //  sha256 (sealedCopies.tsv lists the paths that share each; the summary
+    //  line counts the distinct contents).  Only records a case's
+    //  propertyManifest claims are sealed copies.
+    //  The liquid viscosity and surface-tension routes run for the sealed
+    //  copies too; density and diffusivity do not (slice (b) changes neither).
+    {
+        Silence quiet;
+        const auto condModels = registeredNames([] { LiquidConductivityModel::New(probeDict("model")); });
+        const auto condBlock = [](const std::string& m) {
+            return "transport { liquid { thermalConductivity { model " + m + "; } } }\n"; };
+        const sVector pure { 1.0 };
+        auto overT = [&](const std::function<double(double)>& f)
+        {
+            for (double T : g.T)
+            {
+                const std::string st = stateKey(T, 0.0);
+                try { w.value(st, f(T)); }
+                catch (const std::exception& e) { w.refused(st, e.what()); }
+                catch (...) { w.refused(st, "(an exception that is not a std::exception)"); }
+            }
+        };
+        //  The pure-component laws a component holds, and the liquid transport
+        //  routes, for one record name read from the current directory's view.
+        auto lawBlocks = [&](const std::string& tag, const std::string& rec, bool transportToo)
+        {
+            const std::vector<std::string> one { rec };
+            w.block(tag, "vaporPressure");
+            if (auto pk = assemble(db, systemText(one, ""), w))
+                overT([&](double T) {
+                    const Component& c = pk->comp(0);
+                    if (!c.hasVaporPressure()) throw std::runtime_error("no vapour-pressure law");
+                    return c.vp().Psat_Pa(T); });
+            struct CpRoute { const char* name; int which; };
+            for (const CpRoute& r : { CpRoute{ "idealGas", 0 }, CpRoute{ "liquid", 1 }, CpRoute{ "solid", 2 } })
+                for (int q = 0; q < 2; ++q)
+                {
+                    w.block(tag, std::string(q == 0 ? "cp." : "h.") + r.name);
+                    if (auto pk = assemble(db, systemText(one, ""), w))
+                        overT([&](double T) {
+                            const Component& c = pk->comp(0);
+                            const bool has = r.which == 0 ? c.hasCpIdealGas()
+                                           : r.which == 1 ? c.hasCpLiquid() : c.hasCpSolid();
+                            if (!has) throw std::runtime_error(std::string("no ") + r.name + " heat-capacity law");
+                            const HeatCapacityModel& m = r.which == 0 ? c.cpIdealGas()
+                                                       : r.which == 1 ? c.cpLiquid() : c.cpSolid();
+                            return q == 0 ? m.Cp(T) : m.H(T, 298.15); });
+                }
+            for (const auto& m : condModels)
+            {
+                w.block(tag, "conductivity." + m);
+                if (auto pk = assemble(db, systemText(one, condBlock(m)), w))
+                    overT([&](double T) { return pk->thermalConductivityLiquid(T, pure); });
+            }
+            if (!transportToo) return;
+            for (const auto& m : viscModels)
+            {
+                w.block(tag, "viscosity." + m);
+                if (auto pk = assemble(db, systemText(one, viscBlock(m, "")), w))
+                    overT([&](double T) { return pk->viscosityLiquid(T, pure); });
+            }
+            for (const auto& m : sigModels)
+            {
+                w.block(tag, "surfaceTension." + m);
+                if (auto pk = assemble(db, systemText(one, sigBlock(m, "")), w))
+                    overT([&](double T) { return pk->surfaceTension(T, pure); });
+            }
+        };
+        for (const auto& rec : records) lawBlocks(rec, rec, false);
+
+        //  The sealed copies: every tutorials/**/constant/components/*.dat,
+        //  grouped by content.
+        std::map<std::string, std::pair<fs::path, int>> distinct;   // "<rec>@<sha12>" -> (first case root, copies)
+        std::map<std::string, std::vector<std::string>> pathsOf;      // the same key -> every path (sealedCopies.tsv)
+        const fs::path tut = fs::path(dataRoot).parent_path() / "tutorials";
+        if (fs::is_directory(tut))
+        {
+            std::vector<fs::path> files;
+            //  A SEALED copy is a record its case's propertyManifest CLAIMS
+            //  (imported, merged or adopted): case data in the tree.  A file
+            //  a run writes beside them (an estimate a props operation
+            //  promotes, gitignored) is not one, and must not make the bench
+            //  depend on which cases have been run.
+            auto claimed = [](const fs::path& f)
+            {
+                const fs::path man = f.parent_path().parent_path() / "propertyManifest";
+                if (!fs::exists(man)) return false;
+                std::ifstream in(man);
+                std::stringstream text;
+                text << in.rdbuf();
+                return text.str().find("\"components/" + f.filename().string() + "\"") != std::string::npos;
+            };
+            for (const auto& e : fs::recursive_directory_iterator(tut))
+                if (e.is_regular_file() && e.path().extension() == ".dat"
+                    && e.path().parent_path().filename() == "components"
+                    && e.path().parent_path().parent_path().filename() == "constant"
+                    && claimed(e.path()))
+                    files.push_back(e.path());
+            std::sort(files.begin(), files.end());
+            for (const auto& f : files)
+            {
+                const std::string key = f.stem().string() + "@" + sha256::hexFile(f.string()).substr(0, 12);
+                pathsOf[key].push_back(fs::relative(f, tut.parent_path()).string());
+                auto it = distinct.find(key);
+                if (it == distinct.end())
+                    distinct[key] = { f.parent_path().parent_path().parent_path(), 1 };
+                else
+                    ++it->second.second;
+            }
+        }
+        //  Which paths share each benched content: a file of its own, so the
+        //  hashed outputs (bench.tsv, labels.tsv) carry only answers.
+        std::ofstream sealedList(out.parent_path() / "sealedCopies.tsv");
+        sealedList << "# sealed copy key (record@sha256-prefix)\tthe paths that share it\n";
+        for (const auto& [key, where] : distinct)
+        {
+            const std::string rec = key.substr(0, key.find('@'));
+            fs::current_path(where.first);
+            sealedList << key;
+            for (const auto& p : pathsOf[key]) sealedList << "\t" << p;
+            sealedList << "\n";
+            lawBlocks("sealed:" + key, rec, true);
+        }
+        fs::current_path(out.parent_path());
+        reuseLine += "; sealed copies benched: " + std::to_string(distinct.size()) + " distinct";
     }
     fs::current_path(here);
     os.close();

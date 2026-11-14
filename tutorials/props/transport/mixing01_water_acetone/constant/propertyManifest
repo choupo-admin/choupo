@@ -28,8 +28,8 @@ propertyManifest
         "components/acetone.dat"
         {
             type          imported;
-            sha256        "18a14af92e1737539bc7b0d05e9b382ca20052a567ccfba30e232ac1fb90c6af";
-            computationalSha256 "c29636e2cdfe28dea60691400cbca7015c0739fa83ca887d1f71e66d0939f365";
+            sha256        "1b8fde539f6ee5ccf4ff3e6c2bcd76e9ee4e28f468d921075096fcef91d5b13c";
+            computationalSha256 "a419e95ede7566b6ec572f82ec21b3094b12659ed126456b030b1cde16f361c9";
             origin        "data/standards/components/acetone.dat";
             originSha256  "d16bd1d06f759dd81521b0d804f034541336a10b17ec4a2ddf97ef391d5d71ab";
             release       Choupo-2608;
@@ -46,8 +46,8 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "b32cd13a8a4783d0ce02bf84800b74462e3fd46d8983942f70e958da3c731aae";
-            computationalSha256 "f9080a8aa18a3730b43c799b58ec335cab2bf5258c4cc955a781cda5ed311d9b";
+            sha256        "0b03bff84fda7c3f99e85d26ea4dea3de2881d44ae73ac968ba84cfb8560271b";
+            computationalSha256 "6dcd9ef6b4d87fe8419d49a6345577fe6d44c3bd34455e8c65652b390d7ba33f";
             origin        "data/standards/components/water.dat";
             originSha256  "374ccb2ee48a45af9782204286a7e4de134729f99653a95af0a2d3d24b23e0c1";
             release       Choupo-2608;

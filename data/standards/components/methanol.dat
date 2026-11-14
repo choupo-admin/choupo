@@ -58,8 +58,14 @@ liquidHeatCapacity
 // liquidViscosity: ln(mu/Pa.s) = A + B/T (Andrade) or A + B/(T-C) (Vogel),
 // fitted to literature mu(T) over ~10-100 degC.
 associationFactor  1.9;
+//  PREFERRED: vogel (DEV.md 4c C398 slice (b)).  Here the vogel law has C = 0,
+//  so it IS the andrade law, bit for bit: the choice moves nothing.  It is
+//  the law most cases name for the five records that hold both, and the
+//  record's one value of the property when a case's block names no model.
+//  A case word (`model Andrade;` / `model Vogel;`) still pins its own law.
 liquidViscosity
 {
+    preferred vogel;
     andrade { A -11.5712; B 1207.4; }
     vogel   { A -11.5712; B 1207.4; C 0.0; }
 }

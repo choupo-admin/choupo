@@ -44,6 +44,11 @@ scalar StoredCorrelation::kernel(scalar A, scalar B, scalar n, scalar Tc, scalar
 
 scalar StoredCorrelation::sigmaPure(const Component& c, scalar T) const
 {
+    if (!c.hasSurfaceTension() && !withFallback_)
+        throw std::runtime_error("surface tension (law type tauPower): component '"
+            + c.name() + "' has no `surfaceTension` block, so it has no record law"
+            " to read -- add the block with its source, or name a predictive model"
+            " (`model BrockBird;`) for the property.");
     if (!c.hasSurfaceTension())
     {
         //  A fallback announced, never silent: this component declares no
@@ -55,7 +60,9 @@ scalar StoredCorrelation::sigmaPure(const Component& c, scalar T) const
             " Tc, Pc and Tb, not a measurement)");
         return fallback_.sigmaPure(c, T);
     }
-    auto p = c.surfaceTensionDict();
+    //  A block of named laws: the law bound by the package (the record's
+    //  preferred, or the case's pin); a bare block is its own one law.
+    auto p = law_.empty() ? c.surfaceTensionDict() : c.surfaceTensionDict()->subDict(law_);
     const scalar A  = p->lookupScalar("A");
     const scalar B  = p->lookupScalarOrDefault("B", 0.0);
     const scalar n  = p->lookupScalar("n");
