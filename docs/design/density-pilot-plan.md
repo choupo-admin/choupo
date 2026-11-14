@@ -34,7 +34,7 @@ with x > 0, the same test as ThermoPackage.cpp:2346-2351).
 | `recordVolume.anchoredRackett` | leaf | v_i(T) | `Vliq`, Tc, Pc, omega | hard T < Tc (ThermoPackage.cpp:2505); P not taken (announced once per method and site) | "not quantified" (the record's `Vliq` provenance) | `RecordVolumeLeaf.{H,cpp}` | KEPT bit for bit: calls `liquidMolarVolumeOf` (:2427-2521), route chosen by `liquidVolumeRouteOf` (:2539-2546); renamed from `liquidVolume.anchoredRackett` (LiquidPropertyDoor.cpp:37) |
 | `recordVolume.flatVliq` | leaf | v_i, constant | `Vliq`, no Tc | none declared; "no temperature effect" announced | as above | same | KEPT bit for bit (:2460-2470) |
 | `recordVolume.bareRackett` | leaf, tier 4 | v_i(T) | Tc, Pc, omega | hard T < Tc | origin `estimated` | same | KEPT bit for bit (:2472-2482); a composite with this leaf takes tier 4 |
-| `pureFluid.<IF97 or Helmholtz>` | direct (set {i}) and leaf | rho or v_i at (T, P) | the case's `pureFluids` selection (ThermoPackageBuilder.cpp:2755-2771) | hard: liquid branch only (below) | the record's / the release's | `PureFluidLeaf.{H,cpp}` | CHANGED: today the package returns the STABLE phase at (T, P) whatever phase was asked (ThermoPackage.cpp:2286-2302, `v_molar` has no phase argument, PureFluidModel.H:118); the pilot evaluates the LIQUID branch (rule below).  Today a selected pure fluid in any mixture throws (:1402-1412); as a leaf it no longer does (density only) |
+| `pureFluid.<IF97 or Helmholtz>` | direct (set {i}) and leaf | rho or v_i at (T, P) | the case's `pureFluids` selection (ThermoPackageBuilder.cpp:2756-2772) | hard: liquid branch only (below) | the record's / the release's | `PureFluidLeaf.{H,cpp}` | CHANGED: today the package returns the STABLE phase at (T, P) whatever phase was asked (ThermoPackage.cpp:2286-2302, `v_molar` has no phase argument, PureFluidModel.H:118); the pilot evaluates the LIQUID branch (rule below).  Today a selected pure fluid in any mixture throws (:1402-1412); as a leaf it no longer does (density only) |
 | `referenceEquation` | direct and leaf, tier 2b | rho or v_i at (T, P) | a Helmholtz record whose `fluid` is the component (IAPWS95.dat:43, SpanWagner1996.dat:20), found as `ReferenceFluid::load` finds one (case-local, then standards, ReferenceFluid.cpp:79-86) | as `pureFluid` | the record's `uncertainty` (IAPWS95.dat:66) | same file | NEW (consequence (a), section 3) |
 | `idealMixing` | composite | rho = sum(x_i M_i) / sum(x_i v_i) | one leaf per constituent, or a hypothesis for it | intersection of the leaves' | "not quantified"; weakest leaf's tier | `IdealMixing.{H,cpp}` | RENAMED from `liquidVolume.idealMix[...]` (LiquidPropertyDoor.cpp:123-150); same arithmetic as ThermoPackage.cpp:2346-2355 |
 | `solutionLaw` | direct, tier 2b | per the record's `returns` (pilot: `solutionDensity`) | a solution record whose constituent set equals `<cs>` | the record's, HARD | the record's `uncertainty` | `SolutionLaw.{H,cpp}` + `forms/` | NEW (section 4) |
@@ -69,11 +69,11 @@ line: the per-consumer convergence the third amendment block asks for.
 | fact | read from |
 |---|---|
 | the constituent set and its basis | the request's x (mole, package components); `analytical` = those components as written; a speciated stream is a different set |
-| the case's pure-fluid selection | `pureFluids` (ThermoPackageBuilder.cpp:2755-2771; gammaPhi only, :2104) |
+| the case's pure-fluid selection | `pureFluids` (ThermoPackageBuilder.cpp:2756-2772; gammaPhi only, :2104) |
 | a reference record for a component | `parameters/Helmholtz/*.dat` with `fluid <name>` |
 | a component's volume data | `Vliq`, Tc, Pc (`liquidVolumeRouteOf`, ThermoPackage.cpp:2539-2546) |
 | a solution record for the set | `parameters/solution/<set>.dat` (section 4) |
-| a declared solute role | the diluteSolution `solutes` group (ThermoPackageBuilder.cpp:2582-2583) |
+| a declared solute role | the diluteSolution `solutes` group (ThermoPackageBuilder.cpp:2583-2584) |
 | a measurement marked for use; a hypothesis | the case's `thermoPhysPropDict` (sections 5, 6) |
 
 **Precedence as it will be implemented** (routes record 3.3 and rule 4):
