@@ -14895,8 +14895,8 @@ $\beta$.
 What you write                     & What the simulator does          & Status \\
 \midrule
 $T$ + $P$ + $\zv$                  & flash $\to$ $\beta$, phase       & implemented \\
-$P$ + \code{vaporFraction}         & solve $T$ so the flash gives $\beta$ & recognised, resolution deferred \\
-$T$ + \code{vaporFraction}         & solve $P$ so the flash gives $\beta$ & recognised, resolution deferred \\
+$P$ + \code{vaporFraction}         & solve $T$ so the flash gives $\beta$ & refused when a stream is read (no $T$); \code{flashSpec} PVF solves it \\
+$T$ + \code{vaporFraction}         & solve $P$ so the flash gives $\beta$ & refused when a stream is read (no $P$); \code{flashSpec} TVF solves it \\
 $P$ + $H$ \quad / \quad $P$ + $S$  & isenthalpic / isentropic closure & recognised, resolution deferred \\
 \bottomrule
 \end{tabular}
@@ -14941,8 +14941,8 @@ What you write (mixture) & What the engine does today & \\
 $T$ + $P$              & Rachford--Rice flash $\to$ $\beta$; the table shows it & the implemented closure \\
 $T$ + $P$ + \code{phase gas|liquid} & prices the DECLARED phase (R-E2) & the single-phase pin \\
 $T$ + $P$ + \code{vaporFraction} & --- & \textbf{REFUSED}: over-specified (three values on a two-variable state) \\
-$P$ + \code{vaporFraction} & --- & recognised; resolution deferred \\
-$T$ + \code{vaporFraction} & --- & recognised; resolution deferred \\
+$P$ + \code{vaporFraction} & --- & \textbf{REFUSED} naming the missing $T$ (the closure is not solved at stream read; take $T$ from the props bench \code{flashSpec}, pair PVF) \\
+$T$ + \code{vaporFraction} & --- & \textbf{REFUSED} naming the missing $P$ (take $P$ from \code{flashSpec}, pair TVF) \\
 \bottomrule
 \end{tabular}
 \end{center}

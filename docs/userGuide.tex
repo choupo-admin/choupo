@@ -642,7 +642,12 @@ is \textbf{refused} as over-specified --- three values on a two-variable
 state --- and the message names the two remedies (since 2026-10-03; the
 landing case \file{flash01} used to ship all three).  Do not write a
 decorative \code{vaporFraction 0;} or \code{1;} either --- on a mixture
-it is refused naming the \code{phase} pin.  Two honest pins exist for the
+it is refused naming the \code{phase} pin.  A \code{vaporFraction} with
+only one of \code{T}, \code{P} is refused too, naming the missing one: the
+engine does not solve it from the quality when a stream is read (before
+2026-11-14 the absent value read as zero and reached the units as
+$P = 0$); the props bench \code{flashSpec} (pair TVF or PVF) gives it.
+Two honest pins exist for the
 cases $(T,P,z)$ cannot close:
 
 \begin{itemize}[leftmargin=*,nosep,topsep=2pt]

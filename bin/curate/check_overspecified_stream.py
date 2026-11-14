@@ -94,6 +94,13 @@ case this gate writes (never on a shipped case that someone may fix):
       must refuse prefixed by its own name, naming UNDETERMINED and the
       file.  (i2) 1 K above the curve the same fixture RUNS.
 
+  (j) A vaporFraction WITHOUT P (or without T) is REFUSED by name (PA-09,
+      2026-11-14), mixture and pure: it used to read the absent one as 0 and
+      reach the units as P = 0 Pa.  The refusal names the missing variable,
+      the declared q and both remedies (declare it; or take it from the props
+      bench `flashSpec` TVF / PVF).  (j2) condenser01, whose pure streams
+      declare T, P and q, still runs.
+
 WHAT THIS GATE DOES NOT CHECK, said plainly:
 
   * a unit that reads its inlet's `vf` BARE during the solve (the valve, the
@@ -489,6 +496,45 @@ def main() -> int:
                 failures.append(
                     f"(c) `vaporFraction {q}` refused, but the message does "
                     "not say WHY the number is the wrong spelling.")
+
+        # ---- (j) vaporFraction WITHOUT P (or without T): refused by name ----
+        #  PA-09 (2026-11-14): T and vaporFraction and no P used to read P as
+        #  0 and reach the units as P = 0 Pa; water plus ethanol exited 0
+        #  with a pump publishing P_in 0.  The (T, q) closure is not
+        #  resolved at stream read (the flash that solves it is a props op,
+        #  the stream layer sits below the units), so the absent variable
+        #  is refused naming it and both remedies.
+        for flows, label in ((MIX, "mixture"), (PURE_FLOWS, "pure")):
+            for drop, word, remedy in (("P", "no P", "declare P"),
+                                       ("T", "no T", "declare T")):
+                case = build_fixture(tmp, flows, "vaporFraction   0.5;\n")
+                f = case / "0" / "feed"
+                lines = [ln for ln in f.read_text().splitlines()
+                         if not re.match(r"^\s*%s\s" % drop, ln)]
+                f.write_text("\n".join(lines) + "\n")
+                rc, out = run(case)
+                if rc == 0:
+                    failures.append(
+                        f"(j) a {label} stream declaring vaporFraction and "
+                        f"{word} RAN TO EXIT 0: the absent variable read as 0 "
+                        "and reached the units (PA-09).")
+                    continue
+                for what, pat in (
+                    ("the missing variable", re.escape(word)),
+                    ("the declared vaporFraction", r"vaporFraction = 0\.5"),
+                    ("remedy 1", re.escape(remedy)),
+                    ("remedy 2 (the props bench pairs)", r"flashSpec.*TVF"),
+                ):
+                    if not re.search(pat, out, re.S):
+                        failures.append(
+                            f"(j) the {label}/{word} refusal never names "
+                            f"{what}.")
+        #  (j2) the same shipped writer-side pins still run: condenser01 has
+        #  T, P and a pure two-phase vaporFraction in every 0/ file it reads.
+        rc, out = run(PURE)
+        if rc != 0 or "declares vaporFraction" in out:
+            failures.append("(j2) condenser01 (T, P and vaporFraction, pure) "
+                            f"no longer runs (exit {rc}).")
 
         # ---- (d) flash01: one number on every surface ---------------------
         feed = strip_banner((FLASH01 / "0" / "feed").read_text())
