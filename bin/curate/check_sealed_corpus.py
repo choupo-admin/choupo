@@ -140,9 +140,15 @@ if missingRecord:
 if missingMarker or bad or missingRecord:
     sys.exit(1)
 
-print(f"sealed-corpus gate: {sealed} top-level cases sealed with a manifest,"
-      f" {live} live-overlay demos exempt by design, 0 unsealed;"
-      f" the {len(named)} records their manifests name are each on disk and"
-      f" not ignored by git;"
-      f" every case carries its .cho marker (so none is invisible here)")
+print(f"check_sealed_corpus: OK -- every top-level case under tutorials/ carries"
+      f" its .cho marker (so none is invisible to this search) and is either"
+      f" SEALED with a constant/propertyManifest ({sealed}) or a live-overlay"
+      f" demo exempt by design ({live}), 0 unsealed; and the {len(named)}"
+      f" records those manifests name are each on disk under the case's"
+      f" constant/ AND not ignored by git, so a case runs from what git holds"
+      f" (C378 pilot review, PA-01).  NOT CHECKED: that a named record's"
+      f" content matches the hash its manifest claims (the runtime's seal"
+      f" check and check_seal_drift hold that), that a case reads no record"
+      f" its manifest does not name (a sealed case reading the installation"
+      f" catalogue, review PC-10), or that any sealed value is right.")
 sys.exit(0)

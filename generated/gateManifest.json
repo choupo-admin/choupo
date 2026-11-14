@@ -888,8 +888,8 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": null,
-      "seconds": 0.9
+      "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (579) or a live-overlay demo exempt by design (4), 0 unsealed; and the 5593 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
+      "seconds": 2.7
     },
     "check_sector_hierarchy": {
       "exit": 0,

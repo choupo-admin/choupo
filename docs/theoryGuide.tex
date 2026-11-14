@@ -9994,18 +9994,21 @@ operation lists every root it found, with its branch.
 
 A record carries its publication's own check values, and
 \file{ReferenceFluid::read} evaluates \emph{every one} at every load: a value
-is reproduced when it agrees within half a unit in the last digit the
-publication \emph{printed}.  One miss refuses the record --- a mistranscribed
-coefficient is worse than no equation.  A row whose evaluation AMPLIFIES a
-last-bit change carries its own tolerance: the half digit times its
-conditioning $\kappa$, never less than two units of the last printed digit.
-The one such row kind is a pressure at a given density,
+is reproduced when it agrees within ONE unit in the last digit the
+publication \emph{printed} --- the printed value is itself rounded, so half
+a unit is not the agreement it can state (judged on half a unit, two water
+rows passed with margins of $7\times10^{-12}$ relative, a few machine
+epsilons).  One miss refuses the record --- a mistranscribed coefficient is
+worse than no equation.  A row whose evaluation AMPLIFIES a last-bit change
+is judged on half a unit times its conditioning $\kappa$ when that is the
+larger: every row's tolerance is $\max(1, \kappa/2)$ units of its last
+printed digit.  The one such row kind is a pressure at a given density,
 $p = \rho R T\,(1 + \delta\,\alpha^r_\delta)$, for which
 $\kappa = \rho R T / |p|$ (about 1400 for liquid water at 300\,K and
 996.556\,kg/m$^3$, the row that passed with a margin of
 $3.8\times10^{-10}$ relative and flipped when a mathematical library moved
 some \code{pow} results by one unit in the last place).  Every other row
-keeps the half digit; the check result states each row's tolerance and
+is judged on one unit; the check result states each row's tolerance and
 conditioning (verbosity 3 of the \code{referenceEoS} operation).  What the
 contract cannot see: a change of a coefficient in its last printed digit
 (about $10^{-13}$ relative) moves no nine-digit check value; a change in its
