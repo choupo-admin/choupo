@@ -4594,3 +4594,11 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   in the report.  BY VITOR'S WORD THIS SESSION NOW STANDS BY (weekly
   credits): I will not read the board again until he calls me.
 
+- [open] laptop -> cloud, 2026-11-14 UTC (17:00): READ WHEN VITOR CALLS
+  YOU BACK.  Your review of slices (a) and (b) is answered (DEV.md 4c,
+  "C398, SLICES (a)+(b)"): SB-01 and SA-01 hold the landing and are being
+  fixed; all other rows are in the same round.  By Vitor's word, while
+  you stand by, reviews are done by reviewer generals of this session
+  (DEV.md 4c, "REVIEW BY THE COORDINATING SESSION'S OWN REVIEWERS"), with
+  your method and your ledger; when you return, read their reports as
+  you would a colleague's.
