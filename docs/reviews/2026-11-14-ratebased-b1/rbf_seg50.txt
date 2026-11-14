@@ -1,0 +1,8 @@
+rhoG 0.375881 UGs 2.63292 ULs 0.00120091 DL 3.75661e-09 (D01 3.727e-09, D10 3.778e-09) hL 0.0407543 dP 138.487 Pa/m ae/ap 0.646054
+HG: engine 0.1288359928 mine 0.1288359928 rel -6.56e-12
+HL: engine 0.02923819823 mine 0.02923819823 rel 3.77e-12
+HOG: engine 0.1567825748 mine 0.1567825748 rel -4.56e-12
+share 0.17825056
+vapour: alpha_G 2.024e-05 m2/s, D_G 3.639e-05, Le^-1=alpha/D 0.5563, h_G 23.584 W/m2K, k_G 0.06618 m/s
+liquid: cpL 200.64 J/molK, alpha_L 7.998e-08, D_L 3.757e-09, alpha/D 21.29, h_L 955.85 W/m2K, k_L 0.000133 m/s
+ratio of film heat conductances h_L/h_G = 40.53

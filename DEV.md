@@ -3476,6 +3476,78 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C399 (Vitor, 2026-11-14, late: "Podes trabalhar a noite toda nisto?
+> Ve exaustivamente o [the open CFD toolbox whose dictionary style this
+> project follows], ve como ele organiza as propriedades termofisicas e
+> cineticas e saca de la tudo o que for util para o Choupo, porque
+> aquilo ja teve mais de 30 anos de desenvolvimento e sistematizacao!
+> Depois vamos ter de rever o Choupo todo antes de voltar a pegar na
+> destilacao rate based!"; and, before it: properties given "a bruta
+> sob a forma de tabela" must be possible).**  AN ORDER, obeyed.  THE
+> RATE-BASED COLUMN STOPS at slice B1 until this is done.  THE NIGHT'S
+> WORK: an exhaustive STUDY of that toolbox at a pinned commit of its
+> development line (fed424ace4, 2026-11-13), by five readers in
+> parallel, each on the source and its header documentation, never from
+> memory: (1) the composition of a thermophysical package (its slots,
+> every model of each, selection, mixtures, the energy variable,
+> two-range laws); (2) properties as function objects of selectable
+> type, liquids and solids, every function and table type with
+> interpolation and out-of-bounds behaviour, the tabulated packages;
+> (3) reactions and kinetics (how a reaction is written, every rate
+> law, where the reverse rate comes from, the stiff solvers, the
+> reactions file, atom balance); (4) multicomponent diffusion (Fickian
+> and Maxwell-Stefan as implemented, the remainder species), the
+> two-resistance interface, interface composition and saturation
+> models, how a quantity of a PAIR is keyed; (5) the dictionary system
+> as it serves all this (where a case declares physics, several
+> packages in one case by region and by phase, inclusion and
+> substitution, units, defaults and unknown keys, the tools that list
+> valid models).  The notes are private (the Studies folder); the
+> tracked outcome is a design record.  WHAT WAS ALREADY READ by the
+> architect the same night, at source: there each property of a liquid
+> is ONE FUNCTION OBJECT OF SELECTABLE TYPE and a table is one type
+> among the correlations; a table takes its points inline or from a
+> file, with a declared interpolation and a declared behaviour outside
+> its bounds; a tabulated density's own header says that nothing
+> thermodynamic is derived from it.  THEN: a synthesis ("what Choupo
+> takes, what it does not, and why"), folded into the design of C398
+> (several laws per property, tables as a first-class method, where
+> properties are declared, the per-property decision table), read by
+> the reviewing session, ruled by the architect; and A REVIEW OF THE
+> WHOLE OF CHOUPO against the ruled design (every record, every case's
+> property dictionary, every unit that prices a property itself, the
+> reaction records) BEFORE the rate-based column is taken up again.
+
+> **C398 (Vitor, 2026-11-14, when the architect said a pure component's
+> correlation "is already decided in its record": "A agua nao pode ter
+> varios modelos com parametros para gamas de temperatura?!  Que se
+> passa aqui?!  Antes de avancarmos nos rate based temos de resolver
+> esta confusao once and for all!").**  AN ORDER TO CHANGE DIRECTION,
+> obeyed: THE THREE-COMPONENT SLICE OF THE RATE-BASED COLUMN WAITS for
+> this.  WHAT THE ARCHITECT HAD WRONG: he described a limitation as a
+> design.  MEASURED the same turn: a component record carries ONE block
+> per property (water: `vaporPressure { model Antoine; Trange (273
+> 373); }`), and that record's own header says the fit is poor above
+> about 313 K, extrapolates above 373 K (+18 % at 573 K), and that a
+> case must opt in to another model or to a pure-fluid route; the
+> ratified kernel (twelve rules: a LIST of methods per property, each
+> with its domain and evidence, chosen once, printed, the domain checked
+> at every evaluation) is built for the liquid density of two units
+> only; for every other property the older layout stands and nowhere
+> says how a case chooses among laws, what one model word means when
+> the components' records hold different forms, or what two laws of one
+> property over two temperature ranges look like in a record.  WHAT IS
+> COMMISSIONED: a design record with measurement (the record as it is,
+> counted; how a case chooses today, property by property and level by
+> level; every property value or model that lives outside the property
+> dictionary; water's laws against the reference formulation in
+> numbers) and a proposal (several laws per property in a record; the
+> choice made once and printed; a piecewise law against switching by
+> state; how the case pins a law; a migration whose first step moves no
+> number).  The architect rules on it, the reviewing session reads it,
+> and only then is anything built.  THE ORDER OF WORK IS NOW: this
+> design; then the rate-based three-component slice on top of it.
+
 > **C397 (Vitor, 2026-11-14: "Eu nao gosto de ver as propriedades
 > termofisicas espalhadas por todo lado!"; with it, his reminder that
 > the structure is MULTI-LEVEL: one property dictionary for the case,

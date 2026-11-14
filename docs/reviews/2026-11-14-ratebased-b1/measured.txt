@@ -1,0 +1,4 @@
+ratebased01: points 9  TU mean -14.4 % (max |21.0|)  rate mean -14.4 % (max |21.0|)  rate/TU-1 -0.015..+0.009 %  model range F 0.30..3.25
+ratebased02: points 7  TU mean -23.4 % (max |36.3|)  rate mean -23.3 % (max |36.3|)  rate/TU-1 -0.009..+0.096 %  model range F 0.30..3.20
+ratebased03: points 10  TU mean -4.1 % (max |27.6|)  rate mean -4.2 % (max |27.7|)  rate/TU-1 -0.063..-0.048 %  model range F 0.30..3.39
+ratebased04: points 8  TU mean -8.0 % (max |59.9|)  rate mean -8.0 % (max |59.9|)  rate/TU-1 -0.071..+0.045 %  model range F 0.30..3.78
