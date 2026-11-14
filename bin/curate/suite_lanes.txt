@@ -39,7 +39,7 @@
 #        every /tmp name in the record was written by one gate only);
 #    (c) runs `make`, a nested bin/runTests, or node/npm/npx;
 #    (d) has its own pool of workers (it gets the machine to itself), or is
-#        check_gate_selftest (it sabotages src/ and rebuilds: destructive);
+#        check_gate_selftest (until C394 it sabotaged the tree; now its pool);
 #    (e) exited non-zero in the traced sweep (its writes are not known in
 #        full) or was not reached by it.
 #  Reads are not classified, and need not be: PAR gates write nothing a
@@ -211,7 +211,7 @@ PRE  | PAR    | bin/curate/check_mixing_ledger.py                  | traced: wri
 PRE  | SERIAL | bin/curate/check_ice_freezing.py                   | writes build/linux64Gcc/freezingProbe
 PRE  | SERIAL | bin/curate/check_phase_split_scan.py               | writes freeze.csv (+1 more)
 PRE  | SERIAL | bin/curate/check_data_reconciliation.py            | writes drifted_balances.csv (+11 more)
-PRE  | SERIAL | bin/curate/check_gate_selftest.py                  | sabotages src/ and rebuilds the engine (destructive; alone)
+PRE  | SERIAL | bin/curate/check_gate_selftest.py                  | has its own pool (C394): arms in worker copies OUTSIDE the tree, one make at a time; alone, it would fight the segment pool for the cores
 PRE  | SERIAL | bin/curate/check_solid_equilibrium_spike.py        | writes build/linux64Gcc/solidEqSpike
 PRE  | SERIAL | bin/curate/check_solid_service.py                  | writes build/linux64Gcc/_solidServiceProbe
 PRE  | PAR    | bin/curate/check_inlet_resolution.py               | traced: writes only unique /tmp names; no make, no node, no nested walk, no pool

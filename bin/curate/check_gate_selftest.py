@@ -52,21 +52,30 @@ than it has is worse than the gates it audits.
     on every run, derived by counting both, never transcribed.  The uncovered
     ones are not implied to be sound; they are unaudited.
 
-SAFETY.  Every sabotage is applied to the working tree and reverted from bytes
-held in memory, inside try/finally.  The gate REFUSES TO START if any file it
-would touch has uncommitted changes -- it cannot promise to restore an edit it
-did not make.  After each revert the bytes are compared to the original, and a
-failed restore is a hard error naming the file, because leaving a corrupted
-record behind would be far worse than any missed check.
+SAFETY (rewritten 2026-11-14, C394).  No sabotage is applied to the tree this
+gate is run in: every arm runs in a WORKER, a copy of the tree outside it, and
+the arms run in a pool (THE POOL, below the arm lists, says how and why).  In
+the worker each sabotage is reverted from bytes held in memory, inside
+try/finally and on SIGINT/SIGTERM, and compared by sha256.  A file with
+uncommitted changes in the tree is still skipped and NAMED -- the worker
+copies the edit, and a sabotage of a file mid-edit would test the edit.  At the
+end, the sha256 of every sabotage subject and of every built artefact of the
+tree must equal what they were before the pool started.
 """
+import concurrent.futures
+import errno
+import fcntl
 import hashlib
 import os
+import queue
+import shutil
+import signal
 import subprocess
 import sys
+import threading
+import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from destructive_session import DestructiveSession
 
 ROOT = Path(__file__).resolve().parents[2]
 WATER = "data/standards/components/water.dat"
@@ -509,31 +518,91 @@ SOURCE_SABOTAGES = [
 ]
 
 
-def platform_dir():
-    base = ROOT / "build"
+#  =====================================================================
+#  THE POOL (DEV.md 4c C394, decision 3, 2026-11-14).
+#
+#  WHY.  The arms ran one after another: 20 data sabotages, 11 source
+#  sabotages each followed by two rebuilds, 11 re-runs -- 383 s on an idle
+#  machine and 688 s on the loaded sweep of 2026-11-14, one core most of the
+#  time.  And two self-tests ran at once on 2026-11-13 and loaded twenty
+#  compilers.
+#
+#  WHY NOT IN THE TREE.  Two arms cannot share one working tree: a sabotage of
+#  water.dat is visible to every other gate running at that moment, which
+#  would then fail for the WRONG reason and read as a detection -- a pool in
+#  place would manufacture exactly the false evidence this gate exists to
+#  refuse.  So each arm runs in a WORKER: a full copy of this tree outside it
+#  (a `git clone --shared` of this repository, checked out at HEAD, with this
+#  tree's uncommitted and untracked files and its build copied over), under
+#  ~/.cache/choupo/gate-selftest/<this tree's hash>/w<i>.  The gate script that
+#  runs is the worker's copy, so its ROOT is the worker; the tree this gate
+#  was asked about is NEVER edited and its build is NEVER rebuilt -- which
+#  also retires the 2026-08-18 failure (a self-test killed mid-sabotage left a
+#  poisoned binary in the tree): there is no longer a sabotage in the tree to
+#  leave behind.
+#
+#  WHAT MAKES A DETECTION HONEST IN A COPY: THE CONTROL.  Before any arm, every
+#  covered gate runs in a clean worker and must PASS there.  An arm counts as
+#  observed only if its gate passed unsabotaged in the pool and failed
+#  sabotaged; a gate that fails in a copy for an environmental reason is
+#  reported NOT OBSERVED, and fails this gate, never read as a detection.
+#  (The old source tier re-ran its gates after the restore for the same
+#  reason; the control now covers the data tier too.)
+#
+#  BOUNDED BY THE JOBS IT IS GIVEN: CHOUPO_GATE_JOBS, else CHOUPO_JOBS (which
+#  bin/runTests exports from its -j), else every CPU less two, at most eight.
+#  At most that many workers, at most that many gates at once, and ONE build
+#  at a time (`make -j<jobs>`), so the compilers never exceed the job count.
+#  CHOUPO_GATE_JOBS=1 is one worker, the arms in their old order.
+#
+#  ONE AT A TIME ON THIS MACHINE: a second self-test REFUSES while one is
+#  alive (an flock on a per-user file outside every tree, so two worktrees
+#  are refused too; the kernel drops the lock when its holder dies, so a
+#  killed run leaves no stale lock).
+#
+#  RESTORED EVEN WHEN INTERRUPTED.  Every sabotage is undone in its worker in
+#  try/finally from bytes held in memory and compared by sha256; SIGINT and
+#  SIGTERM are turned into an orderly stop that kills the running children,
+#  waits for every finally, and then restores from the registry whatever is
+#  still sabotaged.  SIGKILL cannot be caught: a worker then keeps its
+#  sabotage until the next self-test, whose sync resets it from this tree
+#  (`checkout -f`, `clean -fd`, and the files and build copied again) before
+#  anything runs -- and the tree itself had nothing to restore.
+#  =====================================================================
+
+LOCK = Path(os.environ.get("XDG_RUNTIME_DIR") or "/tmp") / \
+    f"choupo-gate-selftest-{os.getuid()}.lock"
+POOL_HOME = Path(os.environ.get("CHOUPO_SELFTEST_POOL") or
+                 (Path.home() / ".cache" / "choupo" / "gate-selftest"))
+
+
+def platform_dir(root=ROOT):
+    base = root / "build"
     if not base.is_dir():
         return None
     c = [d for d in sorted(base.iterdir())
-         if d.is_dir() and not d.name.endswith("Debug") and d.name != "wasm"]
+         if d.is_dir() and not d.name.endswith("Debug") and d.name != "wasm"
+         and (d / "src").is_dir()]
     return c[0] if c else None
 
 
-def _ncpu():
-    """Every CPU this process may use (DEV.md 4c C167): the rebuild between
-    sabotages was `-j4` on any machine, so on ten cores the selftest held the
-    suite for minutes on four.  Only the build's width changes; the journal is
-    open across every rebuild exactly as before, and the gate still runs
-    alone (runTests runs it at its own site, never beside another gate)."""
+def gate_jobs():
+    for var in ("CHOUPO_GATE_JOBS", "CHOUPO_JOBS"):
+        raw = os.environ.get(var, "")
+        if raw.isdigit() and int(raw) >= 1:
+            return int(raw)
     try:
-        return max(1, len(os.sched_getaffinity(0)))
+        n = len(os.sched_getaffinity(0))
     except (AttributeError, OSError):
-        return max(1, os.cpu_count() or 1)
+        n = os.cpu_count() or 1
+    return max(1, min(8, n - 2))
 
 
-def rebuild():
-    p = subprocess.run(["make", "all", f"-j{_ncpu()}"], capture_output=True, text=True,
-                       cwd=ROOT, timeout=1800)
-    return p.returncode == 0, (p.stdout + p.stderr)[-2000:]
+def sha(p: Path):
+    try:
+        return hashlib.sha256(p.read_bytes()).hexdigest()
+    except OSError:
+        return "MISSING"
 
 
 def artefact_stamp(bdir):
@@ -550,26 +619,296 @@ def has_no_subject(out):
     return any(l.startswith("NO SUBJECT") or ": NO SUBJECT --" in l for l in out.splitlines())
 
 
-def run_gate(name):
-    p = subprocess.run([sys.executable, str(ROOT / "bin" / "curate" / name)],
-                       capture_output=True, text=True, timeout=900, cwd=ROOT)
-    return p.returncode, (p.stdout + p.stderr)
-
-
 def dirty(rel):
     p = subprocess.run(["git", "status", "--porcelain", "--", rel],
                        capture_output=True, text=True, cwd=ROOT)
     return bool(p.stdout.strip())
 
 
+#  ---- children: every one is registered, so a stop can kill them --------
+_CHILDREN = set()
+_CHILD_LOCK = threading.Lock()
+STOP = threading.Event()
+
+
+def run_child(argv, cwd, env, timeout):
+    """(rc, output) of a child the stop path can kill."""
+    if STOP.is_set():
+        return 130, "(not started: the self-test is stopping)"
+    p = subprocess.Popen(argv, cwd=cwd, env=env, stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT, text=True)
+    with _CHILD_LOCK:
+        _CHILDREN.add(p)
+    try:
+        out, _ = p.communicate(timeout=timeout)
+        return p.returncode, out
+    except subprocess.TimeoutExpired:
+        p.kill()
+        out, _ = p.communicate()
+        return 124, (out or "") + "\n(timed out)"
+    finally:
+        with _CHILD_LOCK:
+            _CHILDREN.discard(p)
+
+
+def kill_children():
+    with _CHILD_LOCK:
+        for p in list(_CHILDREN):
+            try:
+                p.terminate()
+            except OSError:
+                pass
+
+
+#  ---- the workers ------------------------------------------------------
+def _git(cwd, *args, check=True):
+    p = subprocess.run(["git", "-C", str(cwd)] + list(args),
+                       capture_output=True, text=True)
+    if check and p.returncode != 0:
+        raise RuntimeError(f"git {' '.join(args)} in {cwd}: {p.stderr.strip()[:300]}")
+    return p.stdout
+
+
+class Worker:
+    def __init__(self, path: Path):
+        self.path = path
+        env = dict(os.environ)
+        for k in ("CHOUPO_SUITE_OUTPUTS", "CHOUPO_SUITE_SCOPE",
+                  "CHOUPO_SUITE_SCOPE_KIND"):
+            env.pop(k, None)
+        env["PATH"] = os.pathsep.join(
+            str(path) if e == str(ROOT) else str(path / "bin")
+            if e == str(ROOT / "bin") else e
+            for e in env.get("PATH", "").split(os.pathsep))
+        env["CHOUPO_HOME"] = str(path)
+        self.env = env
+        #  a gate the pool runs must not take a pool of its own on top of it
+        self.env["CHOUPO_GATE_JOBS"] = "1"
+        self.env["CHOUPO_THREADS"] = "1"
+
+    def sync(self, head, branch, changed, deleted, plat):
+        w = self.path
+        if not (w / ".git").exists():
+            w.parent.mkdir(parents=True, exist_ok=True)
+            if w.exists():
+                shutil.rmtree(w)
+            subprocess.run(["git", "clone", "--quiet", "--shared", "--no-checkout",
+                            str(ROOT), str(w)], check=True, capture_output=True)
+        _git(w, "fetch", "--quiet", str(ROOT), head, check=False)
+        if branch:
+            _git(w, "checkout", "--quiet", "-f", "-B", branch, head)
+        else:
+            _git(w, "checkout", "--quiet", "-f", "--detach", head)
+        _git(w, "clean", "-fdq")                 # never -x: the build stays
+        for rel in changed:                       # this tree's own edits
+            src, dst = ROOT / rel, w / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            if dst.is_symlink() or dst.exists():
+                dst.unlink()
+            shutil.copy2(src, dst, follow_symlinks=False)
+        for rel in deleted:
+            if (w / rel).exists():
+                (w / rel).unlink()
+        #  The tracked sources keep THIS tree's mtimes, so the copied build is
+        #  current in the worker and a sabotage rebuilds one file, not all.
+        subprocess.run(["rsync", "-a", "--files-from=-", str(ROOT) + "/", str(w) + "/"],
+                       input=_git(ROOT, "ls-files", "--", "src", "make", "Makefile",
+                                  "generated"), text=True, check=True,
+                       capture_output=True)
+        (w / "build").mkdir(exist_ok=True)
+        subprocess.run(["rsync", "-a", "--delete", str(plat) + "/",
+                        str(w / "build" / plat.name) + "/"], check=True,
+                       capture_output=True)
+        gv = ROOT / "generated" / "gitVersion.H"
+        if gv.is_file():
+            shutil.copy2(gv, w / "generated" / "gitVersion.H")
+        for link in ROOT.iterdir():               # ./choupoSolve and friends
+            if link.is_symlink() and link.name.startswith("choupo"):
+                tgt = w / link.name
+                if tgt.is_symlink() or tgt.exists():
+                    tgt.unlink()
+                os.symlink(os.readlink(link), tgt)
+        #  The private tiers are ignored and hold tracked files beside them:
+        #  data/local is copied (small), each ignored entry of thirdParty/<x>/
+        #  is linked (gigabytes, and read-only to every covered gate).
+        if (ROOT / "data" / "local").is_dir():
+            subprocess.run(["rsync", "-a", str(ROOT / "data" / "local") + "/",
+                            str(w / "data" / "local") + "/"], check=True,
+                           capture_output=True)
+        tp = ROOT / "thirdParty"
+        if tp.is_dir():
+            for d in sorted(x for x in tp.iterdir() if x.is_dir()):
+                (w / "thirdParty" / d.name).mkdir(parents=True, exist_ok=True)
+                for e in d.iterdir():
+                    dst = w / "thirdParty" / d.name / e.name
+                    if not dst.exists() and not dst.is_symlink():
+                        os.symlink(e, dst)
+
+    def run_gate(self, name):
+        return run_child([sys.executable, str(self.path / "bin" / "curate" / name)],
+                         cwd=self.path, env=self.env, timeout=900)
+
+    def rebuild(self, jobs, build_lock):
+        with build_lock:
+            rc, out = run_child(["make", "all", f"-j{jobs}"], cwd=self.path,
+                                env=self.env, timeout=1800)
+        return rc == 0, out[-2000:]
+
+
+#  ---- what is sabotaged right now, for the stop path --------------------
+_ACTIVE = {}             # Path in a worker -> original bytes
+_ACTIVE_LOCK = threading.Lock()
+
+
+def _restore_all():
+    """Restore every sabotage still standing; -> files that would not."""
+    bad = []
+    with _ACTIVE_LOCK:
+        for p, original in list(_ACTIVE.items()):
+            try:
+                p.write_bytes(original)
+                if p.read_bytes() == original:
+                    del _ACTIVE[p]
+                    continue
+            except OSError:
+                pass
+            bad.append(str(p))
+    return bad
+
+
+def _unsabotage(path: Path):
+    with _ACTIVE_LOCK:
+        original = _ACTIVE.pop(path, None)
+    if original is None:
+        return True
+    path.write_bytes(original)
+    return hashlib.sha256(path.read_bytes()).hexdigest() == \
+        hashlib.sha256(original).hexdigest()
+
+
+def arm_data(w: Worker, s):
+    """One data arm in worker w -> (kind, message)."""
+    path = w.path / s["file"]
+    text = path.read_bytes().decode("utf-8")
+    if s["find"] not in text:
+        return "fail", (f"{s['gate']} [{s['kind']}]: the sabotage target '{s['find']}' "
+                        f"is no longer present in {s['file']}.  The record moved and "
+                        "this sabotage now changes NOTHING -- it would run the gate "
+                        "over an unmodified tree and read the resulting PASS as "
+                        "'undetected'.  Re-aim it.")
+    try:
+        with _ACTIVE_LOCK:
+            _ACTIVE[path] = path.read_bytes()
+        path.write_text(text.replace(s["find"], s["replace"]), encoding="utf-8")
+        if path.read_bytes() == _ACTIVE[path]:
+            return "fail", (f"{s['gate']} [{s['kind']}]: the tree did not actually "
+                            "change; the sabotage is inert")
+        rc, out = w.run_gate(s["gate"])
+    finally:
+        if not _unsabotage(path):
+            return "fatal", (f"{s['file']} in the pool worker {w.path} was NOT "
+                             "restored (sha256 differs); the next self-test resets "
+                             "the worker from the tree")
+    return _judge(s, rc, out, data=True)
+
+
+def arm_source(w: Worker, s, jobs, build_lock):
+    rel = s["file"]
+    path = w.path / rel
+    text = path.read_bytes().decode("utf-8")
+    if s["find"] not in text:
+        return "fail", (f"{s['gate']} [{s['kind']}]: the sabotage target is not in "
+                        f"{rel} -- this arm is stale and is testing nothing, which is "
+                        "the condition this file exists to refuse")
+    bdir = platform_dir(w.path)
+    try:
+        before = artefact_stamp(bdir)
+        with _ACTIVE_LOCK:
+            _ACTIVE[path] = path.read_bytes()
+        path.write_text(text.replace(s["find"], s["replace"], 1), encoding="utf-8")
+        ok, log = w.rebuild(jobs, build_lock)
+        if not ok:
+            return "fail", (f"{s['gate']} [{s['kind']}]: the sabotage does NOT "
+                            "COMPILE, so the gate would have run against the previous "
+                            f"binary and its result would mean nothing.  Build tail: "
+                            f"{log[-300:]}")
+        if artefact_stamp(bdir) <= before:
+            return "fail", (f"{s['gate']} [{s['kind']}]: the build produced no newer "
+                            "artefact, so the sabotage never reached the binary the "
+                            "gate runs")
+        rc, out = w.run_gate(s["gate"])
+    finally:
+        #  The worker's source comes back at once; its BINARY is rebuilt by
+        #  the next source arm that worker takes (the restored file is newer
+        #  than its object), a source worker runs no data arm and no control,
+        #  and every run starts by copying the tree's own build back over it --
+        #  so no arm ever sees another's sabotage.
+        if not _unsabotage(path):
+            return "fatal", (f"could not restore {rel} in the pool worker {w.path}; "
+                             "the next self-test resets the worker from the tree")
+    return _judge(s, rc, out, data=False)
+
+
+def _judge(s, rc, out, data):
+    if rc == 0 and has_no_subject(out):
+        return "ok", (f"{s['gate']} [{s['kind']}] -> NO SUBJECT on this platform "
+                      "(the arm was NOT observed)")
+    if rc == 0:
+        if data:
+            return "fail", (f"{s['gate']} [{s['kind']}] PASSED under sabotage.  "
+                            f"{s['why']}\n      The gate exited 0 over a tree where the "
+                            "condition it claims to detect was true.  Its last line was: "
+                            + (out.strip().splitlines() or ["(no output)"])[-1][:200])
+        return "fail", (f"{s['gate']} [{s['kind']}]: PASSED with the sabotage in the "
+                        f"ENGINE and built into the binary.  {s['why']}")
+    if rc in (124, 130) or STOP.is_set():
+        return "fail", (f"{s['gate']} [{s['kind']}]: NOT OBSERVED -- the run was "
+                        f"stopped or timed out (exit {rc})")
+    return "ok", f"{s['gate']} [{s['kind']}] -> exit {rc}"
+
+
+def acquire_lock():
+    """-> an open file holding the machine-wide lock, or None (refused)."""
+    LOCK.parent.mkdir(parents=True, exist_ok=True)
+    f = open(LOCK, "a+")
+    try:
+        fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError as e:
+        if e.errno not in (errno.EAGAIN, errno.EACCES):
+            raise
+        f.seek(0)
+        who = f.read().strip() or "an unknown process"
+        f.close()
+        print("check_gate_selftest: REFUSED -- another self-test is running on "
+              f"this machine ({who}; lock {LOCK}).  Two at once loaded twenty "
+              "compilers on 2026-11-13 (DEV.md 4c C394): wait for it, then run "
+              "this again.  A check that cannot run must not pass.")
+        return None
+    f.seek(0)
+    f.truncate()
+    f.write(f"pid {os.getpid()}, tree {ROOT}, started "
+            f"{time.strftime('%Y-%m-%d %H:%M:%S')}\n")
+    f.flush()
+    return f
+
+
+def tree_snapshot(files):
+    """sha256 of every file the arms touch and of the tree's binaries."""
+    snap = {rel: sha(ROOT / rel) for rel in files}
+    bdir = platform_dir()
+    if bdir is not None:
+        for f in sorted(bdir.iterdir()):
+            if f.is_file():
+                snap["build:" + f.name] = sha(f)
+    return snap
+
+
 def main() -> int:
-    fail, results = [], []
-
+    t_start = time.monotonic()
+    fail, results, src_results = [], [], []
     total_gates = len(list((ROOT / "bin" / "curate").glob("check_*.py")))
-    covered = sorted({s["gate"] for s in SABOTAGES})
 
-    #  PRECONDITION.  Restoring is only a promise this can keep over files it
-    #  alone edited.
+    #  PRECONDITION.  Every subject exists here.
     for rel in sorted({s["file"] for s in SABOTAGES}):
         if not (ROOT / rel).exists():
             print(f"check_gate_selftest: FAILED\n  {rel} does not exist -- the "
@@ -577,157 +916,137 @@ def main() -> int:
                   "is exactly the condition it was built to catch, so it "
                   "refuses rather than reporting success over nothing.")
             return 1
-    #  A DIRTY FILE IS SKIPPED, NOT FATAL -- but never silently.  Failing the
-    #  whole suite because someone is mid-edit on a record is how a gate gets
-    #  commented out, and a disabled gate checks nothing at all.  So the
-    #  sabotage is dropped and NAMED in the verdict, which is the honest
-    #  trade: reduced coverage that says it is reduced.  If every sabotage is
-    #  skipped there is nothing left to report and the gate fails, because a
-    #  green line over zero verified sabotages is precisely the vacuity this
-    #  gate exists to catch.
-    skipped = []
-    for rel in sorted({s["file"] for s in SABOTAGES}):
-        if dirty(rel):
-            skipped.append(rel)
+    #  A DIRTY FILE IS SKIPPED, NOT FATAL -- but never silently.  (Kept from
+    #  the in-place design: the workers copy this tree's edits, so a sabotage
+    #  of a file mid-edit would test the edit, not the record; the arm is
+    #  dropped and NAMED, reduced coverage that says it is reduced.)
+    skipped = sorted(rel for rel in {s["file"] for s in SABOTAGES} if dirty(rel))
+    src_skipped = sorted(rel for rel in {s["file"] for s in SOURCE_SABOTAGES}
+                         if not (ROOT / rel).exists() or dirty(rel))
+    data_arms = [s for s in SABOTAGES if s["file"] not in skipped]
+    source_arms = [s for s in SOURCE_SABOTAGES if s["file"] not in src_skipped]
+    if not data_arms and not source_arms:
+        print("check_gate_selftest: FAILED\n  NOT ONE sabotage ran"
+              + (" -- every target file has uncommitted changes ("
+                 + ", ".join(skipped + src_skipped) + ")" if skipped or src_skipped else "")
+              + ".  A green verdict over zero verified sabotages is the exact "
+              "vacuity this gate exists to catch, so it refuses to give one.")
+        return 1
 
-    for s in SABOTAGES:
-        if s["file"] in skipped:
-            continue
-        path = ROOT / s["file"]
-        original = path.read_bytes()
-        sha_before = hashlib.sha256(original).hexdigest()
-        text = original.decode("utf-8")
+    plat = platform_dir()
+    if plat is None:
+        print("check_gate_selftest: FAILED\n  no platform build under build/ -- the "
+              "source tier has no binary to sabotage.  Run `make all`.")
+        return 1
+    jobs = gate_jobs()
+    snap_files = sorted({s["file"] for s in SABOTAGES} | {s["file"] for s in SOURCE_SABOTAGES})
+    snap_before = tree_snapshot(snap_files)
 
-        if s["find"] not in text:
-            fail.append(
-                f"{s['gate']} [{s['kind']}]: the sabotage target '{s['find']}' "
-                f"is no longer present in {s['file']}.  The record moved and "
-                "this sabotage now changes NOTHING -- it would run the gate "
-                "over an unmodified tree and read the resulting PASS as "
-                "'undetected'.  Re-aim it.")
-            continue
+    #  ---- the pool -----------------------------------------------------
+    gates = sorted({s["gate"] for s in data_arms + source_arms})
+    n_workers = max(1, min(jobs, len(data_arms) + len(source_arms)))
+    home = POOL_HOME / hashlib.sha256(str(ROOT).encode()).hexdigest()[:12]
+    head = _git(ROOT, "rev-parse", "HEAD").strip()
+    branch = _git(ROOT, "rev-parse", "--abbrev-ref", "HEAD").strip()
+    branch = "" if branch == "HEAD" else branch
+    changed = [l for l in _git(ROOT, "ls-files", "-m", "-o", "--exclude-standard",
+                                "-z").split("\0") if l and (ROOT / l).exists()]
+    deleted = [l for l in _git(ROOT, "ls-files", "-d", "-z").split("\0") if l]
+    workers = [Worker(home / f"w{i}") for i in range(n_workers)]
+    t0 = time.monotonic()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=n_workers) as ex:
+        errs = [f.exception() for f in [ex.submit(w.sync, head, branch, changed,
+                                                   deleted, plat) for w in workers]]
+    errs = [e for e in errs if e is not None]
+    if errs:
+        print("check_gate_selftest: FAILED\n  the pool could not be prepared "
+              f"under {home}: {errs[0]}.  No arm ran.")
+        return 1
+    t_sync = time.monotonic() - t0
+    #  WHO DOES WHAT.  A source arm leaves its worker's BINARY sabotaged until
+    #  that worker's next build, so source arms get workers of their own (at
+    #  most two: one builds while the other runs its gate, and the build lock
+    #  lets one `make` run at a time) and never run a control or a data arm.
+    #  With one worker, it does everything in order: controls, data, source.
+    if n_workers >= 2 and source_arms:
+        k = min(2, len(source_arms), n_workers - 1)
+        src_workers, data_workers = workers[:k], workers[k:]
+    else:
+        src_workers = data_workers = workers
+    free_data = queue.Queue()
+    for w in data_workers:
+        free_data.put(w)
+    if src_workers is data_workers:
+        free_src = free_data
+    else:
+        free_src = queue.Queue()
+        for w in src_workers:
+            free_src.put(w)
+    build_lock = threading.Lock()
 
+    def with_worker(q, fn, *a):
+        w = q.get()
         try:
-            path.write_text(text.replace(s["find"], s["replace"]),
-                            encoding="utf-8")
-            if path.read_bytes() == original:
-                fail.append(f"{s['gate']} [{s['kind']}]: the tree did not "
-                            "actually change; the sabotage is inert")
-                continue
-            rc, out = run_gate(s["gate"])
+            if STOP.is_set():
+                return "fail", "NOT RUN: the self-test was stopped"
+            return fn(w, *a)
         finally:
-            path.write_bytes(original)
+            q.put(w)
 
-        #  BYTE FOR BYTE, by hash (DEV.md 4c C393): the sha256 of the file
-        #  after the restore must equal the one taken before the sabotage.
-        if hashlib.sha256(path.read_bytes()).hexdigest() != sha_before:
-            print(f"check_gate_selftest: FAILED\n  {s['file']}: sha256 after "
-                  "the restore differs from sha256 before the sabotage.")
+    #  CONTROLS FIRST, on clean workers: a gate that does not pass unsabotaged
+    #  in the pool cannot have an arm observed there.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(data_workers)) as ex:
+        ctrl = dict(zip(gates, ex.map(
+            lambda g: with_worker(free_data, lambda w, g: w.run_gate(g), g), gates)))
+    bad_ctrl = {g: ro for g, ro in ctrl.items() if ro[0] != 0}
+
+    #  THE ARMS, results kept in the order the lists above declare them.
+    tasks = [("data", s) for s in data_arms] + [("source", s) for s in source_arms]
+
+    def do(task):
+        kind, s = task
+        if s["gate"] in bad_ctrl:
+            rc, out = bad_ctrl[s["gate"]]
+            last = (str(out).strip().splitlines() or ["(no output)"])[-1][:200]
+            return "fail", (f"{s['gate']} [{s['kind']}]: NOT OBSERVED -- the gate "
+                            f"FAILS in the pool's copy of the tree WITHOUT the "
+                            f"sabotage (exit {rc}: {last}), so a failure under "
+                            "sabotage would prove nothing")
+        if kind == "data":
+            return with_worker(free_data, arm_data, s)
+        return with_worker(free_src, arm_source, s, jobs, build_lock)
+
+    t_arms = time.monotonic()
+    if src_workers is data_workers:          # one worker: everything in order
+        outcome = [do(t) for t in tasks]
+    else:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(src_workers)) as exs, \
+                concurrent.futures.ThreadPoolExecutor(max_workers=len(data_workers)) as exd:
+            futs = [(exs if t[0] == "source" else exd).submit(do, t) for t in tasks]
+            outcome = [f.result() for f in futs]
+    t_arms = time.monotonic() - t_arms
+
+    for (kind, s), (verdict, msg) in zip(tasks, outcome):
+        if verdict == "fatal":
+            print("check_gate_selftest: FAILED\n  " + msg)
             return 1
-
-        if path.read_bytes() != original:
-            print(f"check_gate_selftest: FAILED\n  {s['file']} was NOT "
-                  "restored after sabotage.  Restore it by hand from git "
-                  "before anything else -- a corrupted curated record is worse "
-                  "than every check this gate performs.")
-            return 1
-
-        if rc == 0 and has_no_subject(out):
-            #  A gate that answers NO SUBJECT (the route bench on a platform other
-            #  than the one its pins were recorded on, C384) observed NOTHING, so
-            #  the sabotage was neither detected nor missed here.  Said by name,
-            #  never silently skipped, never counted as a detection.
-            results.append(f"{s['gate']} [{s['kind']}] -> NO SUBJECT on this "
-                           "platform (the arm was NOT observed)")
-        elif rc == 0:
-            fail.append(
-                f"{s['gate']} [{s['kind']}] PASSED under sabotage.  "
-                f"{s['why']}\n      The gate exited 0 over a tree where the "
-                "condition it claims to detect was true.  Its last line was: "
-                + (out.strip().splitlines() or ["(no output)"])[-1][:200])
+        if verdict == "fail":
+            fail.append(msg)
         else:
-            results.append(f"{s['gate']} [{s['kind']}] -> exit {rc}")
+            (results if kind == "data" else src_results).append(msg)
 
-    #  THE FAILURE CHECK LIVES BELOW THE SOURCE TIER, and it has to.
-    #  It used to sit HERE, above it -- so every `fail.append` the source tier
-    #  makes landed after the only code that reads the list, and a
-    #  non-compiling source sabotage printed OK while quietly dropping its
-    #  gate from the results.  Found by sabotaging this file's own sabotage
-    #  (replacing the C++ with `this_is_not_valid_cxx(((;`) and watching it
-    #  report success.  A check that cannot fail, inside the gate that exists
-    #  to catch checks that cannot fail, added by the person extending it.
-    #  Do not move this block back up.
-
-    # ---- SOURCE TIER -------------------------------------------------
-    src_results, src_skipped = [], []
-    bdir = platform_dir()
-    for src in SOURCE_SABOTAGES:
-        rel = src["file"]
-        if not (ROOT / rel).exists() or dirty(rel):
-            src_skipped.append(rel)
-            continue
-        path = ROOT / rel
-        original = path.read_bytes()
-        text = original.decode("utf-8")
-        if src["find"] not in text:
-            fail.append(f"{src['gate']} [{src['kind']}]: the sabotage target "
-                        f"is not in {rel} -- this arm is stale and is testing "
-                        f"nothing, which is the condition this file exists to "
-                        f"refuse")
-            continue
-        try:
-            before = artefact_stamp(bdir)
-            path.write_text(text.replace(src["find"], src["replace"], 1))
-            ok, log = rebuild()
-            if not ok:
-                fail.append(f"{src['gate']} [{src['kind']}]: the sabotage does "
-                            f"NOT COMPILE, so the gate would have run against "
-                            f"the previous binary and its result would mean "
-                            f"nothing.  Build tail: {log[-300:]}")
-            elif artefact_stamp(bdir) <= before:
-                fail.append(f"{src['gate']} [{src['kind']}]: the build produced "
-                            f"no newer artefact, so the sabotage never reached "
-                            f"the binary the gate runs")
-            else:
-                rc, gate_out = run_gate(src["gate"])
-                if rc == 0 and has_no_subject(gate_out):
-                    src_results.append(f"{src['gate']} [{src['kind']}] -> NO "
-                                       "SUBJECT on this platform (the arm was "
-                                       "NOT observed)")
-                elif rc == 0:
-                    fail.append(f"{src['gate']} [{src['kind']}]: PASSED with "
-                                f"the sabotage in the ENGINE and built into "
-                                f"the binary.  {src['why']}")
-                else:
-                    src_results.append(f"{src['gate']} [{src['kind']}] -> "
-                                       f"exit {rc}")
-        finally:
-            path.write_bytes(original)
-            if path.read_bytes() != original:
-                print("check_gate_selftest: FAILED\n  could not restore "
-                      + rel + " -- the tree is left SABOTAGED.  Fix by hand "
-                      "before running anything else.")
-                return 1
-            ok, log = rebuild()
-            if not ok:
-                print("check_gate_selftest: FAILED\n  the RESTORE build "
-                      "failed for " + rel + ".  The source is back but the "
-                      "binary is not; every later gate and case would run "
-                      "against a sabotaged engine.  Build tail: " + log[-300:])
-                return 1
-
-    #  THE ONLY PROOF THE TREE CAME BACK.  Bytes restored and a build that
-    #  exits 0 are necessary, not sufficient -- the gates themselves must
-    #  agree, on the rebuilt binary, that nothing is wrong any more.
-    for src in SOURCE_SABOTAGES:
-        if src["file"] in src_skipped:
-            continue
-        rc, out = run_gate(src["gate"])
-        if rc != 0:
-            print("check_gate_selftest: FAILED\n  " + src["gate"] + " does "
-                  "NOT pass after its source sabotage was reverted and the "
-                  "tree rebuilt.  The restore is incomplete.\n  " + out[-400:])
-            return 1
+    #  THE TREE WAS NOT TOUCHED -- the proof the old design took by re-running
+    #  the gates after a restore, taken here by hash: every file an arm
+    #  sabotages and every binary of this tree's build is byte-identical to
+    #  what it was before the pool started.
+    snap_after = tree_snapshot(snap_files)
+    moved = sorted(k for k in snap_before if snap_after.get(k) != snap_before[k])
+    if moved:
+        print("check_gate_selftest: FAILED\n  the tree under test CHANGED while "
+              "the pool ran (" + ", ".join(moved[:5]) + "): the self-test never "
+              "edits it, so something else did, and nothing measured here can "
+              "be trusted.  Re-run when the tree is quiet.")
+        return 1
 
     if fail:
         print("check_gate_selftest: FAILED")
@@ -736,11 +1055,9 @@ def main() -> int:
         return 1
 
     if not results and not src_results:
-        print("check_gate_selftest: FAILED\n  NOT ONE sabotage ran"
-              + (" -- every target file has uncommitted changes ("
-                 + ", ".join(skipped + src_skipped) + ")" if skipped or src_skipped else "")
-              + ".  A green verdict over zero verified sabotages is the exact "
-              "vacuity this gate exists to catch, so it refuses to give one.")
+        print("check_gate_selftest: FAILED\n  NOT ONE sabotage was observed.  A "
+              "green verdict over zero verified sabotages is the exact vacuity "
+              "this gate exists to catch, so it refuses to give one.")
         return 1
 
     #  COVERAGE COUNTS ARMS THAT WERE OBSERVED, never arms that were merely
@@ -752,8 +1069,8 @@ def main() -> int:
         "its gate, not assumed to.  "
         + "; ".join(results + src_results) + ".  "
         + (f"SKIPPED (uncommitted changes, so the original could not be "
-           f"vouched for): {', '.join(skipped)} -- coverage is lower than it "
-           "looks on this run.  " if skipped else "")
+           f"vouched for): {', '.join(skipped + src_skipped)} -- coverage is "
+           "lower than it looks on this run.  " if skipped or src_skipped else "")
         + f"COVERAGE IS {n_cov} of {total_gates} gates, and the other "
         f"{total_gates - n_cov} are UNAUDITED -- not implied sound.  Both "
         "sabotage kinds are exercised at the DATA tier: an input REMOVED (the "
@@ -762,61 +1079,70 @@ def main() -> int:
         "(2026-08-14) edits the ENGINE, rebuilds, and requires the gate to "
         "fail on the rebuilt binary -- with the build's exit status AND a "
         "newer artefact both checked, because a sabotage that does not "
-        "compile silently tests the previous binary.  The source is then "
-        "restored, rebuilt, and the covered gates RE-RUN and required to "
-        "pass, which is the only proof the tree came back.  NOT COVERED: "
+        "compile silently tests the previous binary.  THE POOL (C394): "
+        f"{len(tasks)} arms in {n_workers} worker copies of this tree, "
+        f"{len(src_workers) if src_workers is not data_workers else 0} of them "
+        f"for the source tier, at most {jobs} jobs and one build at a time "
+        f"(sync {t_sync:.0f} s, arms {t_arms:.0f} s, "
+        f"{time.monotonic() - t_start:.0f} s in all), "
+        f"each covered gate first required to PASS unsabotaged in the pool "
+        f"({len(gates)} controls); this tree was never edited and its "
+        f"build never rebuilt, verified by sha256 of the {len(snap_files)} "
+        "sabotage subjects and every built artefact.  NOT COVERED: "
         "the gates not listed, and any defect needing more than a "
         "single-substring edit to express.")
     return 0
 
 
 def guarded_main() -> int:
-    """Run main() inside a DECLARED destructive session.
+    """The lock, then main(), with every stop turned into a restore.
 
-    WHY THIS WRAPPER EXISTS (2026-08-18).  Everything below the sabotage
-    loops is `try/finally` and byte-verified, which makes this gate
-    exception-safe.  It is not DEATH-safe, and on 2026-08-18 that distinction
-    cost a committed manifest: `gate_manifest.py` invokes every gate through
-    `subprocess.run(timeout=...)`, which kills with SIGKILL, and a `finally`
-    block does not run against SIGKILL.  Under machine load this gate went
-    from a measured 250 s to over the harness's 600 s ceiling, was killed
-    mid-sabotage, and left a POISONED BINARY behind -- after which seven
-    engine-running gates further down the alphabetical walk recorded FAILED
-    for reasons that had nothing to do with them.  All seven recovered from
-    one `make all`, with no source change.
-
-    The journal is on DISK, so it outlives this process however it dies, and
-    only a clean return removes it.  While it stands, every evidence-producing
-    harness refuses -- see destructive_session.py.
-
-    The session is opened around the WHOLE of main(), not around each
-    sabotage: the damage that mattered was to the BUILD, which is not restored
-    until the final rebuild near the end of main().  A per-sabotage session
-    would have declared the tree safe while the binary was still wrong.
+    WHY THERE IS NO DESTRUCTIVE JOURNAL ANY MORE (C394, 2026-11-14).  From
+    2026-08-18 to 2026-11-14 this gate sabotaged the tree it was run in and
+    declared that in a disk journal (destructive_session.py), because a
+    SIGKILL mid-sabotage left a poisoned build behind and every harness that
+    produces evidence had to refuse while the journal stood.  The arms now
+    run in worker copies OUTSIDE the tree (THE POOL, above), so the tree and
+    its build are never mutated -- the hazard the journal declared does not
+    occur, and the tree's state is verified by hash at the end instead.
+    destructive_session.py stays for any future gate that must mutate the
+    tree; this one no longer does.
     """
-    #  BOTH TIERS, and the first version of this wrapper listed only the data
-    #  one -- a miss that reproduced the incident within the hour.
-    #
-    #  The journal named `SABOTAGES` (curated records) and NOT
-    #  `SOURCE_SABOTAGES` (engine sources), which is precisely backwards: the
-    #  SOURCE tier is the one that damages the BUILD, and the build is what
-    #  the whole mechanism exists to protect.  Killing this gate to prove the
-    #  journal worked left `Absorber.cpp` sabotaged; the recovery procedure
-    #  the refusal printed named only the five record files, so the guard
-    #  stayed off; `make all` then baked it into the binary; and because the
-    #  file was now DIRTY, the next selftest politely SKIPPED it and passed
-    #  with reduced coverage instead of shouting.  `check_lumped_cp_note`
-    #  caught it -- the gate written for exactly that defect, catching exactly
-    #  that defect -- but only after a manifest run and a regression had been
-    #  started against the wrong binary.
-    #
-    #  A journal that names an incomplete file list is worse than none: it
-    #  prints a recovery procedure that LOOKS complete and leaves damage
-    #  behind, which is the "slightly louder form of silence" one layer up.
-    files = sorted({s["file"] for s in SABOTAGES}
-                   | {s["file"] for s in SOURCE_SABOTAGES})
-    with DestructiveSession("check_gate_selftest", [ROOT / f for f in files]):
+    lock = acquire_lock()
+    if lock is None:
+        return 1
+
+    def on_signal(signum, _frame):
+        STOP.set()
+        kill_children()
+        raise KeyboardInterrupt(f"signal {signum}")
+
+    old_int = signal.signal(signal.SIGINT, on_signal)
+    old_term = signal.signal(signal.SIGTERM, on_signal)
+    try:
         return main()
+    except KeyboardInterrupt as e:
+        STOP.set()
+        kill_children()
+        #  give the threads their finally blocks, then restore what is left
+        deadline = time.monotonic() + 60
+        while _ACTIVE and time.monotonic() < deadline:
+            time.sleep(0.2)
+        bad = _restore_all()
+        print(f"check_gate_selftest: INTERRUPTED ({e}) -- the tree under test "
+              "was never edited; every sabotage in the pool's worker copies was "
+              + ("restored, byte for byte." if not bad else
+                 "restored EXCEPT " + ", ".join(bad) + " (the next self-test "
+                 "resets the workers from the tree before anything runs)."))
+        return 130
+    finally:
+        signal.signal(signal.SIGINT, old_int)
+        signal.signal(signal.SIGTERM, old_term)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_UN)
+            lock.close()
+        except OSError:
+            pass
 
 
 if __name__ == "__main__":
