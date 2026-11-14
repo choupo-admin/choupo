@@ -354,7 +354,13 @@ def main() -> int:
             if rcp == 0:
                 fails.append("(d15) a law reading P on a feed with no P: ran to "
                              "exit 0 -- a pressure was assumed")
-            elif "declares no P" not in outp:
+            elif not ("declares no P" in outp
+                      or ("feedExpr" in outp and "but no P" in outp)):
+                #  Since PA-09 (2026-11-14) the stream reader refuses a state
+                #  with T and no P before any unit sees it, naming the stream
+                #  and the missing P; the reactor's own refusal ("declares no
+                #  P") is then unreachable from a 0/ file.  Either is a
+                #  refusal by name; a non-finite refusal is not.
                 fails.append("(d15) a law reading P on a feed with no P refused, "
                              f"but not by name.  Got: ...{outp[-300:]}")
         notes.append("16 refusals fired by name")
