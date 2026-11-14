@@ -31,6 +31,7 @@ License
 #include "core/InfeasibleTrial.H"
 
 #include <algorithm>
+#include <exception>
 #include <stdexcept>
 #include <cmath>
 #include <functional>
@@ -52,10 +53,42 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
     scalar residual = 0.0;
     int    it       = 0;
 
+    //  A TRIAL THE MODEL REFUSES (C398 review, the trial states): an iterate
+    //  this search invented that a model refuses with an InfeasibleTrial is
+    //  rejected -- the step is halved back toward the last answered point --
+    //  and a SEED it refuses is moved inside the window the refusal states,
+    //  when it states one.  Nothing is clamped in advance: a law the route
+    //  never calls never constrains it.  If the search ends unconverged after
+    //  a refusal, the refusal itself is rethrown: the answer lies outside the
+    //  law's window, and the law says so, never "did not converge".
+    scalar xGood = x;
+    bool   haveGood = false;
+    std::exception_ptr lastRefusal;
+    auto evaluate = [&](scalar& xx, scalar& fx, scalar& dfx)
+    {
+        for (int k = 0; ; ++k)
+        {
+            try { fx = f(xx); dfx = dfdx(xx); return; }
+            catch (const InfeasibleTrial& e)
+            {
+                lastRefusal = std::current_exception();
+                if (k >= 40) throw;
+                if (haveGood) { xx = 0.5 * (xx + xGood); continue; }
+                const double lo = std::max<double>(e.windowLo, x_lo), hi = std::min<double>(e.windowHi, x_hi);
+                if (!(lo <= hi)) throw;                              // no window stated
+                //  Re-seed inside the window; a seed already inside whose slope
+                //  probe crossed the edge moves a tenth of the way to the middle.
+                if (xx < lo || xx > hi) xx = std::clamp<double>(xx, lo + 0.01 * (hi - lo), hi - 0.01 * (hi - lo));
+                else xx += 0.1 * (0.5 * (lo + hi) - xx);
+            }
+        }
+    };
+
     for (; it < opts.maxIter; ++it)
     {
-        scalar fx  = f(x);
-        scalar dfx = dfdx(x);
+        scalar fx = 0.0, dfx = 0.0;
+        evaluate(x, fx, dfx);
+        xGood = x; haveGood = true;
         residual = std::abs(fx);
 
         // Early break: if we're already at the root, don't take a step.
@@ -103,6 +136,7 @@ NRResult newton1D(const std::function<scalar(scalar)>& f,
         x = x_new;
     }
 
+    if (!(residual < opts.tolerance) && lastRefusal) std::rethrow_exception(lastRefusal);
     return NRResult{x, residual, it, residual < opts.tolerance,
                     seedClamped, stepsLimited, bisections};
 }

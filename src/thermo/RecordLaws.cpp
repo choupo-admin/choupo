@@ -35,7 +35,10 @@ Description
 
 #include "RecordLaws.H"
 #include "PropertyDomainError.H"
+#include "core/Advisory.H"
 
+#include <cmath>
+#include <cstdio>
 #include <cstdlib>
 #include <functional>
 #include <iostream>
@@ -153,15 +156,48 @@ bool traceOn()
 std::string selfLine(const std::string& component, const std::string& property,
                      const std::string& lawToken, const std::string& type,
                      const std::string& by, const std::string& window,
-                     const std::string& source, const std::string& home)
+                     const std::string& source, const std::string& value,
+                     const std::string& home)
 {
     return component + " [" + property + "]: law " + lawToken + " (" + type + "), " + by
-         + "; window: " + window + "; source: " + source + "; record: " + home;
+         + "; window: " + window + "; source: " + source + "; value: " + value
+         + "; record: " + home;
 }
 
-void traceCall(const std::string& line)
+void traceCall(const std::string& tag, const std::string& line)
 {
-    if (traceOn()) std::cerr << "[law-call] " << line << "\n";
+    if (traceOn()) std::cerr << "[law-call] #" << (tag.empty() ? std::string("?") : tag) << " " << line << "\n";
+}
+
+namespace { thread_local std::string tlPackageTag; }
+
+const std::string& currentPackageTag() { return tlPackageTag; }
+
+PackageTagScope::PackageTagScope(std::string tag) : saved(tlPackageTag) { tlPackageTag = std::move(tag); }
+PackageTagScope::~PackageTagScope() { tlPackageTag = saved; }
+
+std::string modelLine(const std::string& who, const std::string& key, const std::string& model,
+                      const std::string& by, const std::string& window, const std::string& source)
+{
+    return selfLine(who, key, "none (model)", model, by, window, source, "state-dependent",
+                    "no record law");
+}
+
+double probeT(const Law& L, double Tc)
+{
+    if (L.hasDomain) return 0.5 * (L.domainLo + L.domainHi);
+    if (L.hasSoft)   return 0.5 * (L.softLo + L.softHi);
+    if (Tc > 0.0 && L.type == "RowlinsonBondi") return 0.55 * Tc;
+    if (Tc > 0.0 && (L.type == "AmbroseWalton" || L.type == "Wagner")) return 0.7 * Tc;
+    return 300.0;
+}
+
+std::string valueText(double value, double T)
+{
+    if (!std::isfinite(value)) return "n/a";
+    char b[64];
+    std::snprintf(b, sizeof b, "%.8g at %.6g K", value, T);
+    return b;
 }
 
 std::string formOf(const std::string& family, const std::string& type)
@@ -333,17 +369,16 @@ void throwOutsideDomain(const Block& b, std::size_t lawIndex, scalar T, const st
     //  exception prints what(), and none reads the separate remedy field, so a
     //  remedy kept only there named the covering law to nobody.
     const std::string remedy = b.coveringRemedy(T, lawIndex);
-    //  A REJECTABLE TRIAL (C398 review, the trial-state item): the house's
-    //  PropertyDomainTrial derives from InfeasibleTrial, so a solver that can
-    //  reject a step (the safeguarded 1-D Newton, the tears, the column)
-    //  rejects a trial temperature outside the window and tries another; at a
-    //  seed, a converged or a final state it reaches main's handler and fails
-    //  the run with this message, as before.
-    throw PropertyDomainTrial(PropertyDomainError::Kind::outsideHardDomain,
-        what + " of " + b.owner + ": law " + L.label() + " (" + L.type + ") refuses T = "
-        + num(T) + " K, outside its hard window " + num(L.domainLo) + "-" + num(L.domainHi)
-        + " K; " + remedy,
-        remedy);
+    const std::string msg = what + " of " + b.owner + ": law " + L.label() + " (" + L.type
+        + ") refuses T = " + [&]{ std::ostringstream o; o << std::setprecision(10) << T; return o.str(); }() + " K, outside its hard window " + num(L.domainLo) + "-"
+        + num(L.domainHi) + " K; " + remedy;
+    //  A state a search INVENTED (inside a trial frame) is a rejectable trial
+    //  carrying the window, so the search re-seeds inside it or backs off; any
+    //  other state -- declared, or an answer -- is refused (review CV-19).
+    if (AdvisoryLog::instance().anyTrialFrameOpen())
+        throw PropertyDomainTrial(PropertyDomainError::Kind::outsideHardDomain, msg, remedy,
+                                  L.domainLo, L.domainHi);
+    throw HardWindowRefusal(msg, remedy);
 }
 
 } // namespace recordLaws

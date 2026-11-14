@@ -48,6 +48,7 @@ Description
 
 #include "core/Dictionary.H"
 #include "core/ThermoResolution.H"
+#include "thermo/RecordLaws.H"
 #include "core/Types.H"
 
 #include <functional>
@@ -135,7 +136,9 @@ protected:
         //  CHOUPO_LAW_TRACE set, `[pair-call] ...` on stderr, in the fields the
         //  view prints, so check_view_matches_calls compares the two.
         if (std::getenv("CHOUPO_LAW_TRACE"))
-            std::cerr << "[pair-call] pair " << r.i << "-" << r.j << ": " << r.status
+            std::cerr << "[pair-call] #" << (recordLaws::currentPackageTag().empty() ? std::string("?")
+                                             : recordLaws::currentPackageTag())
+                      << " pair " << r.i << "-" << r.j << ": " << r.status
                       << (r.source.empty() ? std::string() : " (" + r.source + ")")
                       << (r.provSource.empty() ? std::string() : ", provenance " + r.provSource) << "\n";
         pairs_.push_back(r);

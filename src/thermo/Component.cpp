@@ -32,6 +32,8 @@ License
 #include "thermo/ElementComposition.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"   // electrolyte::ionCharge (dissociatesTo -> cation/anion)
 #include <map>
+#include <limits>
+#include <type_traits>
 #include "thermo/Database.H"
 #include "thermo/VapourAssociation.H"
 #include "core/Constants.H"
@@ -44,6 +46,7 @@ License
 #include <variant>
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
+#include "thermo/heatCapacity/RowlinsonBondi.H"
 #include "thermo/transport/LiquidViscosityModel.H"
 #include "thermo/transport/LiquidConductivityModel.H"
 #include "thermo/SurfaceTensionModel.H"
@@ -1734,7 +1737,7 @@ class DomainBoundCp : public HeatCapacityModel
 {
 public:
     DomainBoundCp(std::unique_ptr<HeatCapacityModel> inner, recordLaws::Block blk,
-                  std::size_t idx, std::string what, std::function<void()> firstUse)
+                  std::size_t idx, std::string what, std::function<void(const HeatCapacityModel&)> firstUse)
     :   inner_(std::move(inner)), blk_(std::move(blk)), idx_(idx), what_(std::move(what)),
         hasDomain_(blk_.laws[idx].hasDomain),
         lo_(blk_.laws[idx].domainLo), hi_(blk_.laws[idx].domainHi), firstUse_(std::move(firstUse))
@@ -1753,14 +1756,14 @@ private:
             " temperature " + std::to_string(Tref) + " K to T = " + std::to_string(T)
             + " K (the integral crosses the law's excluded range)");
     }
-    void used() const { if (firstUse_) { const auto f = std::move(firstUse_); firstUse_ = nullptr; f(); } }
+    void used() const { if (firstUse_) { const auto f = std::move(firstUse_); firstUse_ = nullptr; f(*inner_); } }
     std::unique_ptr<HeatCapacityModel> inner_;
     recordLaws::Block blk_;
     std::size_t idx_;
     std::string what_;
     bool hasDomain_;
     scalar lo_, hi_;
-    mutable std::function<void()> firstUse_;
+    mutable std::function<void(const HeatCapacityModel&)> firstUse_;
 };
 
 } // namespace
@@ -1786,7 +1789,7 @@ void Component::buildVP_(std::size_t idx)
     if (!vpd->found("Tb") && Tb_ > 0.0) vpd->insert("Tb", Tb_);
     if (!vpd->found("owner")) vpd->insert("owner", name_);
     vp_ = VaporPressureModel::New(vpd);
-    vp_->setOnFirstUse(firstUse_("vaporPressure", idx));
+    vp_->setOnFirstUse(firstUse_<VaporPressureModel>("vaporPressure", idx));
     if (L.hasDomain)
     {
         recordLaws::Block copy = blk;
@@ -1835,7 +1838,7 @@ void Component::buildCp_(const std::string& key, std::size_t idx)
         }
     }
     auto m = HeatCapacityModel::New(body);
-    m = std::make_unique<DomainBoundCp>(std::move(m), blk, idx, key, firstUse_(key, idx));
+    m = std::make_unique<DomainBoundCp>(std::move(m), blk, idx, key, firstUse_<HeatCapacityModel>(key, idx));
     if      (key == "liquidHeatCapacity")   cpLiq_   = std::move(m);
     else if (key == "idealGasHeatCapacity") cpGas_   = std::move(m);
     else                                    cpSolid_ = std::move(m);
@@ -1968,7 +1971,14 @@ void Component::consumeProperty(const std::string& property) const
     announceValueProvenance(name_, property, entry);
 }
 
-std::function<void()> Component::firstUse_(const std::string& property, std::size_t idx) const
+namespace {
+//  What a law object answers at its probe temperature (review CV-07).
+double valueOf(const VaporPressureModel& m, double T) { return m.Psat_Pa(T); }
+double valueOf(const HeatCapacityModel& m, double T)  { return m.Cp(T); }
+} // namespace
+
+template <class Model>
+std::function<void(const Model&)> Component::firstUse_(const std::string& property, std::size_t idx) const
 {
     const recordLaws::Law& L = laws_.at(property).laws.at(idx);
     const std::string window = L.windowText(recordLaws::familyOf(property));
@@ -1978,11 +1988,43 @@ std::function<void()> Component::firstUse_(const std::string& property, std::siz
     const std::string lawName = L.name;
     const auto& blk = laws_.at(property);
     const std::string preferredName = blk.preferred >= 0 ? blk.laws[std::size_t(blk.preferred)].name : std::string();
-    return [self, property, window, token, type, name, by, lawName, preferredName]()
+    const double Tp = recordLaws::probeT(L, Tc_);
+    //  The ideal-gas law a RowlinsonBondi liquid law consumes, as the record
+    //  labels it (its name), for the line its held copy prints (SL-05).
+    std::string igLabel;
+    double TpIg = 300.0;
+    if (property == "liquidHeatCapacity" && type == "RowlinsonBondi" && laws_.count("idealGasHeatCapacity"))
+    {
+        const auto& ig = laws_.at("idealGasHeatCapacity");
+        const auto ch = lawChoice("idealGasHeatCapacity");
+        const int gi = ig.indexOf(ch.law) >= 0 ? ig.indexOf(ch.law) : ig.preferred;
+        igLabel = ig.laws.at(std::size_t(gi)).token();
+        TpIg = recordLaws::probeT(ig.laws.at(std::size_t(gi)), Tc_);
+    }
+    return [self, property, window, token, type, name, by, lawName, preferredName, Tp, igLabel, TpIg](const Model& m)
     {
         if (recordLaws::traceOn())
-            recordLaws::traceCall(recordLaws::selfLine(name, property, token, type, by, window,
-                sourceRule(self->prov, property, lawName, preferredName), self->home));
+        {
+            double v = std::numeric_limits<double>::quiet_NaN();
+            try { v = valueOf(m, Tp); } catch (const std::exception&) {}
+            recordLaws::traceCall(self->pkg, recordLaws::selfLine(name, property, token, type, by, window,
+                sourceRule(self->prov, property, lawName, preferredName),
+                recordLaws::valueText(v, Tp), self->home));
+            //  THE IDEAL-GAS LAW A RowlinsonBondi OBJECT HOLDS (review CV-20):
+            //  described from the held copy, so a stale injection fails the gate.
+            if constexpr (std::is_same<Model, HeatCapacityModel>::value)
+                if (const auto* rb = dynamic_cast<const RowlinsonBondi*>(&m))
+                    if (const HeatCapacityModel* ig = rb->idealGasLaw())
+                    {
+                        double w = std::numeric_limits<double>::quiet_NaN();
+                        try { w = ig->Cp(TpIg); } catch (const std::exception&) {}
+                        recordLaws::traceCall(self->pkg, recordLaws::selfLine(name,
+                            "liquidHeatCapacity.idealGas", igLabel, ig->modelName(),
+                            "held by its RowlinsonBondi law (SL-05)", "the ideal-gas law's own",
+                            "the record's chosen ideal-gas law", recordLaws::valueText(w, TpIg),
+                            self->home));
+                    }
+        }
         const auto it = self->deferred.find(property);
         if (it != self->deferred.end())
         {

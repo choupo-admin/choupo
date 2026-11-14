@@ -116,7 +116,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         surfaceTensionLaws_       = std::move(o.surfaceTensionLaws_);
         liquidViscosityObj_       = std::move(o.liquidViscosityObj_);
         liquidConductivityObj_    = std::move(o.liquidConductivityObj_);
-        surfaceTensionObj_        = std::move(o.surfaceTensionObj_);
+        surfaceTensionObj_        = std::move(o.surfaceTensionObj_);   identity_ = std::move(o.identity_);   formulation_ = std::move(o.formulation_);   // C398 CV-20
         solventName_        = std::move(o.solventName_);
         declaredAqueousSolvent_ = std::move(o.declaredAqueousSolvent_);
         declaredSolutes_    = std::move(o.declaredSolutes_);
@@ -2073,8 +2073,8 @@ scalar ThermoPackage::S_real(scalar T, scalar P_Pa, const sVector& y) const
 }
 
 namespace {
-void tracePureFluid(const std::string& comp, const std::string& key, const std::string& form,
-                    const std::string& method, const std::string& window);   // below
+void tracePureFluid(const std::string& tag, const std::string& comp, const std::string& key,
+                    const std::string& form, const std::string& method, const std::string& window);   // below
 } // namespace
 
 scalar ThermoPackage::viscosityGas(scalar T, const sVector& y) const
@@ -2202,10 +2202,8 @@ scalar ThermoPackage::pureFluidVapourTransport(std::size_t i, scalar T, scalar P
     static std::set<std::string> announced;
     if (announced.insert(nm + (mu ? ":mu" : ":lambda")).second)
         std::cout << nm << (mu ? " viscosity: " : " thermal conductivity: ") << form << "\n";
-    if (recordLaws::traceOn() && announced.insert("trace:" + nm + (mu ? ":mu" : ":lambda")).second)
-        recordLaws::traceCall(recordLaws::selfLine(nm, mu ? "vapourViscosity" : "vapourConductivity",
-            "none (pure fluid)", form, "pureFluids method " + m.type(),
-            "the formulation's own (T, density); at the vapour state", form, "pure-fluid kernel"));
+    tracePureFluid(identity_, nm, mu ? "vapourViscosity" : "vapourConductivity", form, m.type(),
+                   "the formulation's own (T, density); at the vapour state");
     return mu ? m.mu(T, p) : m.lambda(T, p);
 }
 
@@ -2232,7 +2230,7 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
                           << m.viscosityFormulation() << "\n";
                 announced = true;
             }
-            tracePureFluid(components_[*i].name(), "liquidViscosity", m.viscosityFormulation(), m.type(),
+            tracePureFluid(identity_, components_[*i].name(), "liquidViscosity", m.viscosityFormulation(), m.type(),
                            "the formulation's own (T, density); at the saturated liquid");
             return m.mu(T, m.p_sat(T));   // saturated-liquid state
         }
@@ -2264,7 +2262,7 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
                           << m.conductivityFormulation() << "\n";
                 announced = true;
             }
-            tracePureFluid(components_[*i].name(), "liquidThermalConductivity", m.conductivityFormulation(), m.type(),
+            tracePureFluid(identity_, components_[*i].name(), "liquidThermalConductivity", m.conductivityFormulation(), m.type(),
                            "the formulation's own (T, density); at the saturated liquid");
             return m.lambda(T, m.p_sat(T));   // saturated-liquid state
         }
@@ -2313,7 +2311,7 @@ scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
                           << m.surfaceTensionFormulation() << "\n";
                 announced = true;
             }
-            tracePureFluid(components_[*i].name(), "surfaceTension", m.surfaceTensionFormulation(), m.type(),
+            tracePureFluid(identity_, components_[*i].name(), "surfaceTension", m.surfaceTensionFormulation(), m.type(),
                            "the formulation's own (the saturation line)");
             return m.sigma(T);
         }
@@ -3030,29 +3028,46 @@ void checkLiquidDomain(const Component& c, const std::string& rkey,
 
 //  The self-description of a pure fluid's transport formulation (C398 review
 //  row CV-07), once per component and property, with CHOUPO_LAW_TRACE set.
-void tracePureFluid(const std::string& comp, const std::string& key, const std::string& form,
-                    const std::string& method, const std::string& window)
+void tracePureFluid(const std::string& tag, const std::string& comp, const std::string& key,
+                    const std::string& form, const std::string& method, const std::string& window)
 {
     if (!recordLaws::traceOn()) return;
     static std::set<std::string> seen;
-    if (!seen.insert(comp + ":" + key).second) return;
-    recordLaws::traceCall(recordLaws::selfLine(comp, key, "none (pure fluid)", form,
-        "pureFluids method " + method, window, form, "pure-fluid kernel"));
+    if (!seen.insert(tag + ":" + comp + ":" + key).second) return;
+    recordLaws::traceCall(tag, recordLaws::selfLine(comp, key, "none (pure fluid)", form,
+        "pureFluids method " + method, window, form, "state-dependent", "pure-fluid kernel"));
 }
 
 //  pure*(): the first evaluation of a constituent's record law (C398 review):
 //  the law describes itself (CV-07) and its datum's provenance is voiced
 //  (CN-06).
-void firstUse(const Component& c, const std::string& rkey, const ThermoPackage::LiquidLaw& L)
+template <class Eval>
+void firstUse(const std::string& tag, const Component& c, const std::string& rkey,
+              const ThermoPackage::LiquidLaw& L, Eval&& eval)
 {
     c.consumeProperty(rkey);
     if (!recordLaws::traceOn()) return;
     const recordLaws::Block* blk = c.recordLaws(rkey);
     const recordLaws::Law* law = blk ? blk->find(L.law) : nullptr;
-    recordLaws::traceCall(recordLaws::selfLine(c.name(), rkey,
+    const double Tp = law ? recordLaws::probeT(*law, c.Tc()) : 300.0;
+    double v = std::numeric_limits<double>::quiet_NaN();
+    try { v = eval(Tp); } catch (const std::exception&) {}
+    recordLaws::traceCall(tag, recordLaws::selfLine(c.name(), rkey,
         law ? law->token() : std::string("its one law"), L.type, L.by,
         law ? law->windowText(recordLaws::familyOf(rkey)) : std::string("no window declared"),
-        c.lawSource(rkey, L.law), c.recordHome()));
+        c.lawSource(rkey, L.law), recordLaws::valueText(v, Tp), c.recordHome()));
+}
+
+//  A predictive model a constituent runs on (review CV-20), once per package.
+void firstUsePredictive(const std::string& tag, const Component& c, const std::string& rkey,
+                        const ThermoPackage::LiquidLaw& L, const std::string& citation)
+{
+    if (!recordLaws::traceOn()) return;
+    static std::set<std::string> seen;
+    if (!seen.insert(tag + ":" + c.name() + ":" + rkey).second) return;
+    recordLaws::traceCall(tag, recordLaws::selfLine(c.name(), rkey, "none (predictive)", L.type,
+        L.by, "predictive: none per record", citation.empty() ? std::string("not stated by the model") : citation,
+        "predictive", "no record law"));
 }
 
 DictPtr modelDict(const std::string& type)
@@ -3069,10 +3084,15 @@ scalar ThermoPackage::pureLiquidViscosity(std::size_t i, scalar T) const
     const LiquidLaw& L = liquidViscosityLaws_.at(i);
     if (!L.absent.empty())
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, L.absent);
-    if (L.predictive) return liquidViscosity_->viscosityLiquidPure(components_[i], T);
+    if (L.predictive) { firstUsePredictive(identity_, components_[i], "liquidViscosity", L, transportMethodInfo("liquidViscosity").modelCitation); return liquidViscosity_->viscosityLiquidPure(components_[i], T); }
     checkLiquidDomain(components_[i], "liquidViscosity", L, T, "liquid viscosity");
     auto& obj = liquidViscosityObj_.at(i);
-    if (!obj) { obj = LiquidViscosityModel::New(modelDict(L.type)); obj->bindLaw(L.law); firstUse(components_[i], "liquidViscosity", L); }
+    if (!obj)
+    {
+        obj = LiquidViscosityModel::New(modelDict(L.type)); obj->bindLaw(L.law);
+        const auto* o = obj.get(); const Component& ci = components_[i];
+        firstUse(identity_, ci, "liquidViscosity", L, [o, &ci](double t) { return o->viscosityLiquidPure(ci, t); });
+    }
     return obj->viscosityLiquidPure(components_[i], T);
 }
 
@@ -3081,10 +3101,15 @@ scalar ThermoPackage::pureLiquidConductivity(std::size_t i, scalar T) const
     const LiquidLaw& L = liquidConductivityLaws_.at(i);
     if (!L.absent.empty())
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, L.absent);
-    if (L.predictive) return liquidConductivity_->conductivityLiquidPure(components_[i], T);
+    if (L.predictive) { firstUsePredictive(identity_, components_[i], "liquidThermalConductivity", L, transportMethodInfo("liquidConductivity").modelCitation); return liquidConductivity_->conductivityLiquidPure(components_[i], T); }
     checkLiquidDomain(components_[i], "liquidThermalConductivity", L, T, "liquid thermal conductivity");
     auto& obj = liquidConductivityObj_.at(i);
-    if (!obj) { obj = LiquidConductivityModel::New(modelDict(L.type)); obj->bindLaw(L.law); firstUse(components_[i], "liquidThermalConductivity", L); }
+    if (!obj)
+    {
+        obj = LiquidConductivityModel::New(modelDict(L.type)); obj->bindLaw(L.law);
+        const auto* o = obj.get(); const Component& ci = components_[i];
+        firstUse(identity_, ci, "liquidThermalConductivity", L, [o, &ci](double t) { return o->conductivityLiquidPure(ci, t); });
+    }
     return obj->conductivityLiquidPure(components_[i], T);
 }
 
@@ -3093,10 +3118,15 @@ scalar ThermoPackage::pureSurfaceTension(std::size_t i, scalar T) const
     const LiquidLaw& L = surfaceTensionLaws_.at(i);
     if (!L.absent.empty())
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, L.absent);
-    if (L.predictive) return surfaceTension_->sigmaPure(components_[i], T);
+    if (L.predictive) { firstUsePredictive(identity_, components_[i], "surfaceTension", L, transportMethodInfo("surfaceTension").modelCitation); return surfaceTension_->sigmaPure(components_[i], T); }
     checkLiquidDomain(components_[i], "surfaceTension", L, T, "surface tension");
     auto& obj = surfaceTensionObj_.at(i);
-    if (!obj) { obj = SurfaceTensionModel::New(modelDict(L.type)); obj->bindLaw(L.law); firstUse(components_[i], "surfaceTension", L); }
+    if (!obj)
+    {
+        obj = SurfaceTensionModel::New(modelDict(L.type)); obj->bindLaw(L.law);
+        const auto* o = obj.get(); const Component& ci = components_[i];
+        firstUse(identity_, ci, "surfaceTension", L, [o, &ci](double t) { return o->sigmaPure(ci, t); });
+    }
     return obj->sigmaPure(components_[i], T);
 }
 
@@ -3159,6 +3189,91 @@ std::vector<RecordLawPin> ThermoPackage::readRecordLawPins(const DictPtr& system
         }
     }
     return out;
+}
+
+void ThermoPackage::traceSelf() const
+{
+    if (!recordLaws::traceOn()) return;
+    const std::string tag = identity_;
+    auto emit = [&](const std::string& line) { recordLaws::traceCall(tag, line); };
+    auto orNone = [](const std::string& x, const char* none) { return x.empty() ? std::string(none) : x; };
+    //  The activity model, where the formulation is one the view describes.
+    if (hasActivity() && (formulation_ == "gammaPhi" || formulation_ == "gammaGamma"))
+        emit(recordLaws::modelLine("mixture", "liquidActivity", activity().modelName(),
+             "the formulation's liquid activity model", "none declared", "its pairs, listed under equilibrium"));
+    //  The transport models and the mixing rules.
+    static const char* keys[][2] = { { "viscosity", "vapourViscosity" }, { "thermalConductivity", "vapourConductivity" },
+                                     { "diffusivity", "vapourDiffusivity" }, { "liquidDiffusivity", "liquidDiffusivity" },
+                                     { "liquidViscosity", "liquidViscosity" }, { "liquidConductivity", "liquidThermalConductivity" },
+                                     { "surfaceTension", "surfaceTension" } };
+    for (const auto& k : keys)
+    {
+        const auto info = transportMethodInfo(k[0]);
+        const bool perConstituent = std::string(k[0]) == "liquidViscosity"
+            || std::string(k[0]) == "liquidConductivity" || std::string(k[0]) == "surfaceTension";
+        if (!perConstituent && !info.model.empty())
+            emit(recordLaws::modelLine("mixture", k[1], info.model, "the block's word",
+                 orNone(info.modelWindow, "none declared"), orNone(info.modelCitation, "not stated by the model")));
+        if (!info.rule.empty())
+            emit(recordLaws::modelLine("mixture", std::string(k[1]) + ".mixingRule", info.rule, "the package's rule",
+                 orNone(info.ruleWindow, "none declared"), orNone(info.ruleCitation, "not stated by the rule")));
+    }
+    if (!transportMethodInfo("viscosity").model.empty())
+        emit(recordLaws::modelLine("mixture", "vapourViscosity.mixingRule", "Wilke", "fixed in code",
+             "none declared", "transport/GasMixingRules.H"));
+    if (!transportMethodInfo("thermalConductivity").model.empty())
+        emit(recordLaws::modelLine("mixture", "vapourConductivity.mixingRule", "Wassiljewa (Mason-Saxena)",
+             "fixed in code", "none declared", "transport/GasMixingRules.H"));
+    //  Each pure-fluid formulation: saturation, density, enthalpy.
+    for (const auto& [i, m] : pureFluid_)
+    {
+        const auto w = m->saturationWindow();
+        const std::string win = "saturation line " + std::to_string(w.first) + "-" + std::to_string(w.second) + " K";
+        for (const char* aspect : { "vaporPressure", "density", "enthalpy" })
+            emit(recordLaws::selfLine(components_[i].name(), std::string("pureFluid.") + aspect,
+                 "none (pure fluid)", m->densityFormulation(), "pureFluids method " + m->type(), win,
+                 m->densityFormulation(), "state-dependent", "pure-fluid kernel"));
+    }
+    //  Each Henry pair the package uses.
+    for (std::size_t i = 0; i < n(); ++i)
+        if (isHenrySolute(i) && HenrysLawRegistry::has(components_[i].name(), solventName_))
+        {
+            const auto& hl = HenrysLawRegistry::byPair(components_[i].name(), solventName_);
+            std::cerr << "[pair-call] #" << (tag.empty() ? std::string("?") : tag) << " "
+                      << henryLine(components_[i].name(), solventName_, hl.H_ref(), hl.T_ref(), hl.dHdiss()) << "\n";
+        }
+}
+
+std::string ThermoPackage::henryLine(const std::string& solute, const std::string& solvent,
+                                     double Href, double Tref, double dH)
+{
+    char b[160];
+    std::snprintf(b, sizeof b, ": H_ref %.8g Pa at %.6g K, dH_diss %.8g J/mol", Href, Tref, dH);
+    return "henry pair " + solute + "-" + solvent + b + " (pair file parameters/Henry/" + solute + "-"
+         + solvent + ".dat)";
+}
+
+void ThermoPackage::requireDatumTemperatureInVapourPressureWindows() const
+{
+    for (std::size_t i = 0; i < n(); ++i)
+    {
+        const Component& c = components_[i];
+        const recordLaws::Block* b = c.recordLaws("vaporPressure");
+        if (!b || !c.hasVaporPressure()) continue;
+        const int k = b->indexOf(c.lawChoice("vaporPressure").law);
+        const recordLaws::Law& L = b->laws.at(std::size_t(k >= 0 ? k : (b->preferred >= 0 ? b->preferred : 0)));
+        if (!L.hasDomain || (298.15 >= L.domainLo && 298.15 <= L.domainHi)) continue;
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+            "component '" + c.name() + "': its vapour-pressure law " + L.label() + " (" + L.type
+            + ") has the hard window " + std::to_string(L.domainLo) + "-" + std::to_string(L.domainHi)
+            + " K, which excludes 298.15 K -- the temperature at which the elements datum carries "
+            + c.name() + " between its natural phase and the other (its latent heat and the"
+              " saturation pressure there, Component::datumBridge298), so every liquid or"
+              " vapour enthalpy of it would be refused.  Widen the law's `domain` to include"
+              " 298.15 K, or pin a law of the record that covers it (" + recordLaws::pinPlace("vaporPressure")
+            + ").",
+            "widen the domain to 298.15 K, or pin a covering law");
+    }
 }
 
 void ThermoPackage::verifyRecordLawPins(const std::vector<RecordLawPin>& pins,

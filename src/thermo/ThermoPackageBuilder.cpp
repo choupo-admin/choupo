@@ -5,6 +5,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "thermo/ThermoPackageBuilder.H"
+#include "thermo/ResolvedView.H"
 
 #include "thermo/Database.H"
 #include "thermo/Component.H"
@@ -2000,12 +2001,19 @@ ThermoPackage ThermoPackageBuilder::buildV2(const DictPtr& v2, const Database& d
     //  on the package: a formulation that did not apply a pin is refused by
     //  name rather than let the view print a choice the engine did not make.
     const std::vector<RecordLawPin> pins = ThermoPackage::readRecordLawPins(v2);
+    //  THE PACKAGE'S IDENTITY (C398 review CV-20): every component loaded and
+    //  every model built during this assembly carries it.
+    const std::string identity = resolvedView::fingerprint(v2);
+    recordLaws::PackageTagScope tagScope(identity);
     ThermoPackage out = [&]
     {
         RecordLawPinScope scope(pins);
         return buildV2Dispatch(v2, db, chem);
     }();
+    out.setIdentity(identity, v2->subDict("equilibrium")->lookupWordOrDefault("formulation", ""));
     out.verifyRecordLawPins(pins, v2->subDict("equilibrium")->lookupWordOrDefault("formulation", "?"));
+    out.requireDatumTemperatureInVapourPressureWindows();   // C398 review row CV-18
+    out.traceSelf();                                       // C398 review row CV-20
 
     auto eq = v2->subDict("equilibrium");
     const bool hasAq = eq->found("aqueous");

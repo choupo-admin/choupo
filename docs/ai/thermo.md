@@ -693,10 +693,14 @@ unnamed variant.  Grammar, refusals and a worked example:
   name, type, who chose it, window, source, record — and every law type's
   form with its coefficient units.
 - A law's hard window (`domain (lo hi);`) refuses a state outside it as a
-  REJECTABLE trial: a bubble- or dew-point search keeps its invented
-  temperatures inside the windows, a solver that rejects steps rejects one
-  outside, and only an answer outside is refused; a heat-capacity law also
-  refuses H(T, Tref) or S(T, Tref) whose path from Tref leaves the window.
+  REJECTABLE trial only where a search invented the state (the 1-D Newton
+  halves the step back, a refused seed moves inside the window); a declared
+  or converged state is refused by the law at once, and a search that ends
+  outside the window reports the law's refusal, never "did not converge".
+  A chosen vapour-pressure law's `domain` must include 298.15 K (the datum
+  bridge reads it there): refused at assembly otherwise.  A heat-capacity
+  law also refuses H(T, Tref) or S(T, Tref) whose path from Tref leaves the
+  window.
 - A pure fluid's VAPOUR viscosity and conductivity (`viscosity`,
   `thermal_conductivity` of propertyPoint/scans) are evaluated at the vapour
   state at (T, P), refused where the formulation places the state in the

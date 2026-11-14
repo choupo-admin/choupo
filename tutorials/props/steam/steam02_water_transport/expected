@@ -88,3 +88,9 @@ diag    steam_650K_3bar        viscosity        2.34877453e-05   1e-6     anchor
 diag    steam_650K_3bar        thermal_conductivity 0.0522309732     1e-6     anchor
 diag    steam_800K_500bar      viscosity        3.93727534e-05   1e-6     anchor
 diag    steam_800K_500bar      thermal_conductivity 0.171066500      1e-6     anchor
+# pin_100C (373.15 K, 1 bar) is a VAPOUR state for IF97 (p_sat 1.0142 bar): its
+# `viscosity` and `thermal_conductivity` keys are the vapour's at that state
+# since CN-04 (they were the saturated liquid's, 2.81585019366e-4 Pa s and
+# 0.677216843797 W/(m K), now the `*_liquid` rows above).  C398 review row CN-07.
+diag    pin_100C               viscosity        1.22336380006e-05 1e-4
+diag    pin_100C               thermal_conductivity 0.0245633017624  1e-4

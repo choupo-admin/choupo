@@ -28,11 +28,13 @@ License
 
 #include "AdiabaticFlash.H"
 #include "core/Advisory.H"
+#include "thermo/PropertyDomainError.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "solver/NewtonRaphson.H"
 
 #include <algorithm>
 #include <cmath>
+#include <exception>
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
@@ -195,6 +197,10 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     //  bound and fails THERE, loudly -- misclassification degrades to a
     //  visible non-convergence, never to a wrong answer.
     bool trialUnanswerable = false;             // set by f, read by df
+    //  A trial a record law's hard window refused (C398 review row CV-17):
+    //  if the search ends without an answer, THAT refusal is what the run
+    //  reports -- the answer lies outside the law's window -- never a bound.
+    std::exception_ptr windowRefusal;
     auto f = [&](scalar T)
     {
         try
@@ -203,6 +209,9 @@ int AdiabaticFlash::solve(const DictPtr& dict,
         }
         catch (const std::exception& e)
         {
+            if (const auto* pt = dynamic_cast<const PropertyDomainTrial*>(&e))
+                if (pt->kind == PropertyDomainError::Kind::outsideHardDomain)
+                    windowRefusal = std::current_exception();
             trialUnanswerable = true;
             if (verbosity >= 1)
                 std::cout << "  [adiabaticFlash] trial T = " << std::fixed
@@ -312,6 +321,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
             nro.upper = Tstart;
             Tstart    = 0.5 * (nro.lower + Tstart);
         }
+        if (trialUnanswerable && windowRefusal) std::rethrow_exception(windowRefusal);
         if (trialUnanswerable)
             throw std::runtime_error("adiabaticFlash: no trial temperature in ["
                 + std::to_string(nro.lower) + ", "
@@ -330,6 +340,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
     }
 
     auto r = solver::newton1D(f, df, Tstart, nro);
+    if (!r.converged && windowRefusal) std::rethrow_exception(windowRefusal);   // CV-17
 
     walk.close();                       // the search is over; what follows is the answer
 

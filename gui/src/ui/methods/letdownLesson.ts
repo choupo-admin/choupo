@@ -223,7 +223,7 @@ u &= \frac{4\,Q}{\pi D^2}
     note: "src/unitOperations/valve/Valve.cpp:264 is where the valve "
       + "builds Q at each end: the liquid density from the record's Vliq "
       + "carried in temperature by Rackett, the vapour density from the "
-      + "equation of state (src/thermo/ThermoPackage.cpp:2364).  The "
+      + "equation of state (src/thermo/ThermoPackage.cpp:2362).  The "
       + "dissolved hydrogen, nitrogen and argon have no liquid density at "
       + "-20 °C and are priced at the density of the rest; the run says so.",
   },
@@ -332,7 +332,7 @@ Y &= 1 - \frac{x_\mathrm{eff}}{3\,F_\gamma\, x_T}, \qquad W \propto Y \sqrt{x_\m
       { sym: "\\rho_2", means: "the density leaving", unit: "kg/m³" },
     ],
     note: "Both ends of the valve are priced by flashState::priceState "
-      + "(src/unitOperations/flash/StreamEquilibrium.H:1018), the same call "
+      + "(src/unitOperations/flash/StreamEquilibrium.H:1019), the same call "
       + "the energy report's rule is; on an SRK package its vapour "
       + "enthalpy includes the departure from the ideal gas, which is the "
       + "Joule-Thomson effect.",

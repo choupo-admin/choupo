@@ -63,10 +63,28 @@ FORMATION_OUTSIDE = {"Hf_298", "dHf_298", "S_298", "s_298", "Gf_298", "dGf_298",
                      "dHf", "dGf", "Gf", "dSf", "Sf", "hf", "dHform", "Hform"}
 LATENT = re.compile(r"^(d?Hvap)(?!Tb$)\w*$|^latentHeat\w*$|^dHvap\w*$")
 SLOPE = {"dlnPsatdT", "dPsatdT", "dlnPdT"}
+#  THE NORMALISED FORM (review row CV-23): lower case, underscores and dots
+#  removed, so `Hf298`, `H_f_298`, `deltaHvap`, `delta_Hvap_298` and their
+#  spellings are the names above.  A formation datum: (d|delta)? h|g|s, f
+#  or form, an optional 298 or 298.15; a latent heat: (d|delta)? hvap, any
+#  suffix but tb; latentheat*; a slope.
+_FORM = re.compile(r"^(d|delta)?(hf|gf|sf|hform|gform|sform)(29815|298)?$|^s(29815|298)$|^s$")
+_LAT = re.compile(r"^(d|delta)?hvap(?!tb$)\w*$|^latentheat\w*$")
+_SLOPE = re.compile(r"^d(ln)?p(sat)?dt$")
+
+
+def derived_name(k):
+    n = k.lower().replace("_", "").replace(".", "")
+    return bool(k in FORMATION_OUTSIDE or LATENT.match(k) or k in SLOPE
+                or _FORM.match(n) or _LAT.match(n) or _SLOPE.match(n))
+
+
 #  Subtrees not scanned: the formation datum's own home, the provenance
 #  records, a law's check value, and a salt's calorimetric data (the
-#  salt-formation contract's INPUTS: a dissolution enthalpy is a primitive).
-NOT_SCANNED = {"standardThermochemistry", "provenance", "check", "calorimetric"}
+#  salt-formation contract's INPUTS: a dissolution enthalpy is a primitive), and a
+#  solid phase's own `thermochemistry` (solidPhases/<phase>: the formation datum OF
+#  that phase, its natural one -- the same primitive standardThermochemistry holds).
+NOT_SCANNED = {"standardThermochemistry", "provenance", "check", "calorimetric", "thermochemistry"}
 RUNGS = ("idealGas", "pureLiquid", "pureSolid")
 
 #  THE DEBT lives in the ONE registry (debt_registry.py), with its why and
@@ -116,7 +134,7 @@ def main():
                 #  to derive the entropy (ruling, 2026-11-14).
                 labels.append(f"{f.stem}.{k}: PRIMITIVE (a salt's solid entropy)")
                 continue
-            if k in FORMATION_OUTSIDE or LATENT.match(k) or k in SLOPE:
+            if derived_name(k):
                 key = f"{f.name}:{where}"
                 if key in PINNED_DERIVED:
                     derived_seen.add(key)
