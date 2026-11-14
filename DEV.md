@@ -3476,6 +3476,40 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C397 (Vitor, 2026-11-14: "Eu nao gosto de ver as propriedades
+> termofisicas espalhadas por todo lado!"; with it, his reminder that
+> the structure is MULTI-LEVEL: one property dictionary for the case,
+> superseded where a sector or a unit repeats it).**  MEASURED the same
+> turn on the distillation cases: the packed-bed cases impose the
+> LIQUID VISCOSITY inside the column's own `packing {}` block
+> (`liquidViscosity 3.91e-4;`, a measured value of the source paper);
+> the rate-based model builds its OWN liquid-diffusivity correlation in
+> C++ and prices the liquid thermal conductivity directly; both are
+> pinned debts of the liquid-property ratchet.  So reading the property
+> dictionary does not yet tell which properties the column used.
+> RULING.  (1) THE CASE'S PROPERTY DICTIONARY IS THE ONE PLACE where a
+> thermophysical property's model is declared; the only other places
+> are the levels the structure already has (a sector's or a unit's own
+> block), which REPLACE the case's for that scope and are announced.
+> No unit's operation block carries a property value or a property
+> model.  (2) A MEASURED property value of a case (that viscosity) is a
+> declared MEASUREMENT in the property dictionary, with its box and its
+> source, as the density pilot built it for density; the viscosity,
+> the diffusivity and the conductivity go through the same door as
+> they join the kernel.  (3) The rule that takes infinite-dilution
+> diffusivities to the local composition is declared beside the
+> diffusivity model, not hidden in a unit.  (4) The choice of FILM is
+> the column's, not the mixture's, and stays in the column's block.
+> (5) NOT ADOPTED as proposed from outside: a per-component model
+> selector written in the case.  Which correlation a pure component
+> uses is resolved from its record (the settled property
+> architecture), and the run's table already prints, per unit and per
+> constituent, what was taken; a new selector is new grammar and goes
+> through the record rules first.  WHEN: with the three-component
+> slice for the column's own two sites; the general rule rides the
+> property kernel's next slices and is held by the ratchet, which may
+> only shrink.
+
 > **C329, WHERE A PACKING'S DATA LIVE, AND THE BOUNDARY OF A PARTIAL BED
 > (2026-11-14; Vitor brought an outside reading of the plan, judged on
 > its content and accepted on four points).**  (1) A PACKING IS A
