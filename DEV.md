@@ -3476,6 +3476,48 @@ accepts today, and that is a policy call.
 > ideal mixing, the solution law, the measurement).  The other thresholds
 > of the block below stand.
 
+> **C399 (Vitor, 2026-11-14, late: "Podes trabalhar a noite toda nisto?
+> Ve exaustivamente o [the open CFD toolbox whose dictionary style this
+> project follows], ve como ele organiza as propriedades termofisicas e
+> cineticas e saca de la tudo o que for util para o Choupo, porque
+> aquilo ja teve mais de 30 anos de desenvolvimento e sistematizacao!
+> Depois vamos ter de rever o Choupo todo antes de voltar a pegar na
+> destilacao rate based!"; and, before it: properties given "a bruta
+> sob a forma de tabela" must be possible).**  AN ORDER, obeyed.  THE
+> RATE-BASED COLUMN STOPS at slice B1 until this is done.  THE NIGHT'S
+> WORK: an exhaustive STUDY of that toolbox at a pinned commit of its
+> development line (fed424ace4, 2026-11-13), by five readers in
+> parallel, each on the source and its header documentation, never from
+> memory: (1) the composition of a thermophysical package (its slots,
+> every model of each, selection, mixtures, the energy variable,
+> two-range laws); (2) properties as function objects of selectable
+> type, liquids and solids, every function and table type with
+> interpolation and out-of-bounds behaviour, the tabulated packages;
+> (3) reactions and kinetics (how a reaction is written, every rate
+> law, where the reverse rate comes from, the stiff solvers, the
+> reactions file, atom balance); (4) multicomponent diffusion (Fickian
+> and Maxwell-Stefan as implemented, the remainder species), the
+> two-resistance interface, interface composition and saturation
+> models, how a quantity of a PAIR is keyed; (5) the dictionary system
+> as it serves all this (where a case declares physics, several
+> packages in one case by region and by phase, inclusion and
+> substitution, units, defaults and unknown keys, the tools that list
+> valid models).  The notes are private (the Studies folder); the
+> tracked outcome is a design record.  WHAT WAS ALREADY READ by the
+> architect the same night, at source: there each property of a liquid
+> is ONE FUNCTION OBJECT OF SELECTABLE TYPE and a table is one type
+> among the correlations; a table takes its points inline or from a
+> file, with a declared interpolation and a declared behaviour outside
+> its bounds; a tabulated density's own header says that nothing
+> thermodynamic is derived from it.  THEN: a synthesis ("what Choupo
+> takes, what it does not, and why"), folded into the design of C398
+> (several laws per property, tables as a first-class method, where
+> properties are declared, the per-property decision table), read by
+> the reviewing session, ruled by the architect; and A REVIEW OF THE
+> WHOLE OF CHOUPO against the ruled design (every record, every case's
+> property dictionary, every unit that prices a property itself, the
+> reaction records) BEFORE the rate-based column is taken up again.
+
 > **C398 (Vitor, 2026-11-14, when the architect said a pure component's
 > correlation "is already decided in its record": "A agua nao pode ter
 > varios modelos com parametros para gamas de temperatura?!  Que se
