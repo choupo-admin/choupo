@@ -688,6 +688,7 @@ class Worker:
 
     def sync(self, head, branch, changed, deleted, plat):
         w = self.path
+        self.plat = plat
         if not (w / ".git").exists():
             w.parent.mkdir(parents=True, exist_ok=True)
             if w.exists():
@@ -745,14 +746,41 @@ class Worker:
                         os.symlink(e, dst)
 
     def run_gate(self, name):
-        return run_child([sys.executable, str(self.path / "bin" / "curate" / name)],
-                         cwd=self.path, env=self.env, timeout=900)
+        t0 = time.monotonic()
+        r = run_child([sys.executable, str(self.path / "bin" / "curate" / name)],
+                      cwd=self.path, env=self.env, timeout=900)
+        _time(self, "gate " + name, t0)
+        return r
 
     def rebuild(self, jobs, build_lock):
         with build_lock:
+            t0 = time.monotonic()
             rc, out = run_child(["make", "all", f"-j{jobs}"], cwd=self.path,
                                 env=self.env, timeout=1800)
+            _time(self, "make", t0)
         return rc == 0, out[-2000:]
+
+
+#  WHERE THE TIME GOES: every gate run and every build, with its worker and
+#  its seconds, in build/selftestTimes.tsv (ignored) -- a measurement for
+#  the next tuning of the pool, not a claim.
+_TIMES = []
+_TIMES_LOCK = threading.Lock()
+
+
+def _time(w, what, t0):
+    with _TIMES_LOCK:
+        _TIMES.append((w.path.name, what, time.monotonic() - t0))
+
+
+def _write_times():
+    try:
+        out = ROOT / "build" / "selftestTimes.tsv"
+        with _TIMES_LOCK:
+            out.write_text("worker\twhat\tseconds\n" + "".join(
+                f"{w}\t{x}\t{t:.1f}\n" for w, x, t in _TIMES))
+    except OSError:
+        pass
 
 
 #  ---- what is sabotaged right now, for the stop path --------------------
@@ -821,6 +849,7 @@ def arm_source(w: Worker, s, jobs, build_lock):
                         f"{rel} -- this arm is stale and is testing nothing, which is "
                         "the condition this file exists to refuse")
     bdir = platform_dir(w.path)
+    st0 = path.stat()
     try:
         before = artefact_stamp(bdir)
         with _ACTIVE_LOCK:
@@ -838,14 +867,23 @@ def arm_source(w: Worker, s, jobs, build_lock):
                             "gate runs")
         rc, out = w.run_gate(s["gate"])
     finally:
-        #  The worker's source comes back at once; its BINARY is rebuilt by
-        #  the next source arm that worker takes (the restored file is newer
-        #  than its object), a source worker runs no data arm and no control,
-        #  and every run starts by copying the tree's own build back over it --
-        #  so no arm ever sees another's sabotage.
+        #  RESTORED WITHOUT A REBUILD.  The source gets its bytes AND its
+        #  mtime back, and the tree's own build is copied over the worker's
+        #  (rsync: only the objects and binaries the sabotage rebuilt move).
+        #  The worker is then exactly what the sync made it, so the next arm
+        #  compiles only its own sabotage.  Measured 2026-11-14: rebuilding
+        #  the restore instead cost a second 250-s compile for every header
+        #  sabotage (Convergence.H reaches most of the engine).
         if not _unsabotage(path):
             return "fatal", (f"could not restore {rel} in the pool worker {w.path}; "
                              "the next self-test resets the worker from the tree")
+        os.utime(path, ns=(st0.st_atime_ns, st0.st_mtime_ns))
+        r = subprocess.run(["rsync", "-a", "--delete", str(w.plat) + "/",
+                            str(w.path / "build" / w.plat.name) + "/"],
+                           capture_output=True, text=True)
+        if r.returncode != 0:
+            return "fatal", (f"could not copy the tree's build back into the pool "
+                             f"worker {w.path}: {r.stderr.strip()[:200]}")
     return _judge(s, rc, out, data=False)
 
 
@@ -963,10 +1001,10 @@ def main() -> int:
               f"under {home}: {errs[0]}.  No arm ran.")
         return 1
     t_sync = time.monotonic() - t0
-    #  WHO DOES WHAT.  A source arm leaves its worker's BINARY sabotaged until
-    #  that worker's next build, so source arms get workers of their own (at
-    #  most two: one builds while the other runs its gate, and the build lock
-    #  lets one `make` run at a time) and never run a control or a data arm.
+    #  WHO DOES WHAT.  Source arms get workers of their own (at most two: one
+    #  builds while the other runs its gate, and the build lock lets one
+    #  `make` run at a time), so the data arms never wait behind a compile;
+    #  a source arm leaves its worker exactly as the sync made it.
     #  With one worker, it does everything in order: controls, data, source.
     if n_workers >= 2 and source_arms:
         k = min(2, len(source_arms), n_workers - 1)
@@ -1022,9 +1060,17 @@ def main() -> int:
     else:
         with concurrent.futures.ThreadPoolExecutor(max_workers=len(src_workers)) as exs, \
                 concurrent.futures.ThreadPoolExecutor(max_workers=len(data_workers)) as exd:
-            futs = [(exs if t[0] == "source" else exd).submit(do, t) for t in tasks]
-            outcome = [f.result() for f in futs]
+            #  A HEADER sabotage recompiles much of the engine (Convergence.H:
+            #  267 s at -j6 under load, measured 2026-11-14) and is the pool's
+            #  critical path, so the source arms are SUBMITTED headers first;
+            #  the results stay in declared order.
+            sub = sorted(range(len(tasks)), key=lambda i: (
+                tasks[i][0] != "source", not tasks[i][1]["file"].endswith(".H")))
+            futs = {i: (exs if tasks[i][0] == "source" else exd).submit(do, tasks[i])
+                    for i in sub}
+            outcome = [futs[i].result() for i in range(len(tasks))]
     t_arms = time.monotonic() - t_arms
+    _write_times()
 
     for (kind, s), (verdict, msg) in zip(tasks, outcome):
         if verdict == "fatal":
