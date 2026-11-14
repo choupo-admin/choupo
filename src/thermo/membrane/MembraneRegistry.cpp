@@ -70,7 +70,7 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
     // Migration 4: assets/ is the ONE flat home for physical kit; each record's
     // `kind` names its consumer.  This registry owns the solution-diffusion
     // membranes (kind RO | NF); every other kind (IEM, membraneModule,
-    // feedSpacer, edStack, constructionMaterial, adsorbent, ionExchangeResin) belongs to
+    // feedSpacer, edStack, constructionMaterial, adsorbent, ionExchangeResin, packing) belongs to
     // another reader -- skip, never reject.  A record with NO kind in the
     // shared folder is refused loudly, and the refusal LISTS the consumers;
     // when a kind is added, add it there too.
@@ -95,7 +95,7 @@ void MembraneRegistry::loadFrom(const std::string& dataRoot)
                     + e.path().string() + "' has no `kind` -- every record in the"
                     " shared assets/ home must declare its consumer (RO | NF | UF | IEM"
                     " | membraneModule | membraneClass | feedSpacer | edStack | constructionMaterial"
-                    " | adsorbent | ionExchangeResin | catalyst)");
+                    " | adsorbent | ionExchangeResin | catalyst | packing)");
             //  A functional class (C189 slice 3) is ALSO read here, for its
             //  transport half (A_w); MembraneModuleRegistry reads the rest.
             if (kind != "RO" && kind != "NF" && kind != "UF"

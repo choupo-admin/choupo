@@ -1359,6 +1359,30 @@ height / Fenske stages.  Binary only.  Examples: `packing01_schulz_0p10bar`,
 `corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction` instead of
 `corrugationSide`/`surface`: `packing03_schulz_delft_0p10bar`, `packing04_schulz_delft_0p02bar`.
 
+**The packing as a record** (`packing { record <name>; model ...; diameter; height;
+[installed { <field> <v>; source "..."; }] [borrowed { <field> { from <record>;
+reason "..."; } }] lightKey; ... }`, both `totalReflux` and `rateBased`): the geometry
+comes from an asset record `kind packing;` (`data/standards/assets/` or the case's
+`constant/assets/`) holding the NOMINAL values its source prints, and
+`correlations { RochaBravoFair { surfaceEnhancement; } }` for F_SE of a sheet-metal
+packing.  A value measured on this bed goes under `installed {}` (with its source) and
+REPLACES the nominal one; another packing's value goes under `borrowed {}` (a stated
+hypothesis).  `surface` is the record's alone (neither installed nor borrowed);
+`surfaceEnhancement` may be borrowed, never installed.  The run prints every value as
+nominal / installed / borrowed (with the lender's estimate mark, and a note when the
+lender is a random packing) and publishes the resolved geometry as KPIs
+`packing_specificArea_m2_m3`, `packing_voidFraction`, `packing_corrugationAngle_deg`.
+REFUSED by name: an unknown `model` word (first); a key typed beside `record`; a field
+the chosen correlation reads that nothing supplies (RochaBravoFair reads
+`corrugationSide` and `surface`, plus `surfaceEnhancement` on `sheetMetal`; Delft reads
+`corrugationBase`, `corrugationHeight`, `elementHeight`, `holeFraction`); `installed`
+without `source`; `borrowed` without `reason`; a record with `arrangement random;` (no
+random-packing correlation); a record whose `name` is not its file name; a value out of
+range in a record, `installed`, `borrowed` or an inline block (void fraction and hole
+fraction below 1, angle between 0 and 90 deg).  Catalogue: `SulzerBX` (serves RochaBravoFair), `MontzB1-250` (serves
+Delft).  Example: `packing05_schulz_record_0p10bar` (same numbers as packing01).
+Theory Guide: "The packing as a record".
+
 **Rate-based packed bed** (`model rateBased;`, the SAME `totalReflux {}` and
 `packing {}` blocks): the bed as M non-equilibrium segments (`packing { segments
 100; }`), each with bulk vapour and liquid, interface compositions, the two

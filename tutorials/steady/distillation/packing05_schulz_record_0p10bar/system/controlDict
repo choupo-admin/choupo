@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoSolve;
+description   "The packing as a RECORD: packing01's bed with its geometry read from a packing record (nominal), the installed area and void fraction declared by the case (measured on the bed), and the corrugation side borrowed from another packing's record (a stated hypothesis); same numbers as packing01";
+verbosity     3;

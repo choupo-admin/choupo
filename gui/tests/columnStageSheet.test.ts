@@ -50,7 +50,7 @@ import {
   holePatch, openAreaOfPitch, pitchForOpenArea, segmentAngle, trayPlan,
 } from "../src/case/trayGeometry.js";
 import {
-  columnStageModel, columnStageSection, declaredSI, IN_SAMPLE_STATEMENTS,
+  columnStageModel, columnStageSection, declaredSI, IN_SAMPLE_STATEMENTS, packingGeometry,
   stageFigureSvg, sheetFormat, trayPlanSvg,
 } from "../src/case/columnStageSheet.js";
 import { columnDatasheetHtml, columnProfileOf } from "../src/ui/ColumnDatasheet.js";
@@ -79,6 +79,7 @@ const C09 = fixture("column09_tray_hydraulics");
 const C14 = fixture("column14_klemola_c4_splitter");
 const TE6 = fixture("trayEfficiency06_syedaChuang_yanagi14");
 const PK3 = fixture("packing03_schulz_delft_0p10bar");
+const PK5 = fixture("packing05_schulz_record_0p10bar");
 
 const sheetOf = (fx: Fixture, prefs = DEFAULT_PREFS) =>
   columnDatasheetHtml(unitOf(fx), fx.kpis, fx.designFiles, prefs, fx.profile);
@@ -290,6 +291,31 @@ describe("the rendered sheet (packed column)", () => {
     const hetp = PK3.profile.columns["HETP"]!;
     const iMax = hetp.indexOf(Math.max(...hetp));
     expect(html).toContain(`<div class="cs-stage" data-stage="${iMax + 1}">`);
+  });
+});
+
+describe("a bed whose packing is a RECORD (C398 slice (e))", () => {
+  //  packing05's block names `record MontzA3-500M;` and types no angle, area or
+  //  void fraction: the sheet must draw what the run solved with (the KPIs
+  //  packing_*), never a 45 deg default nor a block value that is not there.
+  it("reads the resolved geometry from the run, and the declared one from an inline block", () => {
+    const pack5 = (unitOf(PK5).operation as { packing: { [k: string]: unknown } }).packing;
+    expect(pack5["record"]).toBe("MontzA3-500M");
+    expect(pack5["corrugationAngle"]).toBeUndefined();
+    expect(packingGeometry(pack5, PK5.kpis)).toEqual({ ap: 478, eps: 0.92, angle: 60, from: "run" });
+    const pack3 = (unitOf(PK3).operation as { packing: { [k: string]: unknown } }).packing;
+    const g3 = packingGeometry(pack3, PK3.kpis);
+    expect(g3.from).toBe("declared");
+    expect(g3.angle).toBe(60);
+    expect(g3.ap).toBe(478);
+  });
+  it("draws the hatch at the record-backed bed's 60 deg and labels its area and void fraction", () => {
+    const html = sheetOf(PK5);
+    expect(html).toContain("rotate(60)");
+    expect(html).not.toContain("rotate(45)");
+    expect(html).toContain("record MontzA3-500M");
+    expect(html).toContain("aₚ 478 m²/m³");
+    expect(html).toContain("ε 0.92");
   });
 });
 

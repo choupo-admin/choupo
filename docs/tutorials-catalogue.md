@@ -46,6 +46,7 @@ of them for completeness' sake would bury the ones worth reading.
 | `packing02_schulz_0p02bar` | The same at 0.02 bar -- a prediction, nothing fitted at 0.10 bar |
 | `packing03_schulz_delft_0p10bar` | The same bed by the **Delft model** (`packing { model Delft; }`, the model Schulz compare against); corrugation base and height estimated |
 | `packing04_schulz_delft_0p02bar` | Delft at 0.02 bar |
+| `packing05_schulz_record_0p10bar` | **The packing as a RECORD** (`packing { record MontzA3-500M; installed { ... } borrowed { ... } }`): packing01's bed with the geometry read from a packing record (nominal), the installed area and void fraction declared by the case, and the corrugation side borrowed from the catalogue record `SulzerBX` as a stated hypothesis; each value printed with where it came from, and every number packing01's.  Gate `check_packing_record` (also the refusal that names the field a correlation lacks) |
 | `ratebased01_schulz_0p10bar` | The packing01 bed as **rate-based (non-equilibrium) segments** (`model rateBased;`): two films, interface equilibrium and the interface energy balance; the interface temperature between the two bulks, the flux ratio and the liquid film's share along the bed; the HETP within a few tenths of a per cent of the transfer-unit bed |
 | `ratebased02_schulz_0p02bar` | The same at 0.02 bar |
 | `ratebased03_schulz_delft_0p10bar` | Rate-based segments with the **Delft** film coefficients |

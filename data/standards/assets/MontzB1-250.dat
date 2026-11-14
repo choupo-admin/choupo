@@ -1,0 +1,59 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  PACKING: Montz B1-250, a corrugated sheet-metal structured packing
+  (shallow embossed, unperforated; 45 deg corrugations)
+
+  WHAT THIS RECORD IS.  The NOMINAL geometry of one structured packing, as
+  its source printed it, for a column's `packing { record MontzB1-250; ... }`
+  (kind packing, read by src/unitOperations/distillation/PackingRecord.cpp;
+  Theory Guide sec:packing-record).  What a column measures on its own
+  installed bed is the CASE's (`installed {}`), never this record's.
+
+  EVERY VALUE, AND WHERE IT WAS READ (primary read 2026-11-14): Fair,
+  Seibert, Behrens, Saraber & Olujic, Ind. Eng. Chem. Res. 39 (2000) 1788,
+  Table 1 ("Characteristics of the Packings Tested", p. 1789), row B1-250:
+  a_p 244 m2/m3, void fraction 0.980, corrugation angle 45 deg, element
+  height h_pe 0.194 m, channel base b 0.0225 m, height h 0.0120 m, side s
+  0.01645 m, "shallow embossed, unperforated" (so the hole fraction is 0).
+  The packings are sheet metal (p. 1788: "new performance data for sheet
+  metal packings"; the set furnished by the maker had "two surfaces (shallow
+  embossed, nonperforated and expanded metal, perforated)").
+  The table prints a_p and s beside b and h; they agree with the paper's own
+  Eqs 2-3 (a_p = 4s/(bh) = 243.7, s = (b^2/4 + h^2)^(1/2) = 0.016449 m) to
+  0.1 %, and are stored as printed.
+
+  WHAT IT SERVES.  The Delft model in full (Fair et al. 2000 Tables 2 and 4:
+  geometry only, no per-packing constant).  NOT Rocha-Bravo-Fair: on a
+  sheet-metal surface that model needs the surface-enhancement factor F_SE
+  (1996 Eq 10), a constant of the packing that no source in hand gives for
+  B1-250, so the column refuses `model RochaBravoFair;` on this record
+  naming it.  A case that wants it declares a borrowed value, with its
+  reason, as its own hypothesis.
+\*---------------------------------------------------------------------------*/
+
+name              MontzB1-250;
+kind              packing;
+arrangement       structured;
+
+specificArea      244;          // m2/m3, nominal (Table 1)
+voidFraction      0.980;        // (Table 1)
+corrugationAngle  45;           // deg from the horizontal (Table 1)
+corrugationSide   0.01645 m;    // s (Table 1)
+corrugationBase   0.0225 m;     // b (Table 1)
+corrugationHeight 0.0120 m;     // h (Table 1)
+elementHeight     0.194 m;      // h_pe (Table 1)
+holeFraction      0;            // "unperforated" (Table 1)
+surface           sheetMetal;   // (p. 1788)
+
+provenance
+{
+    source  "J. R. Fair, A. F. Seibert, M. Behrens, P. P. Saraber, Z. Olujic, Structured packing performance -- experimental evaluation of two predictive models, Ind. Eng. Chem. Res. 39 (2000) 1788-1796, Table 1, p. 1789, row B1-250; p. 1788";
+    specificArea      { origin literature; method "Table 1 (p. 1789), a_p"; }
+    voidFraction      { origin literature; method "Table 1 (p. 1789)"; }
+    corrugationAngle  { origin literature; method "Table 1 (p. 1789)"; }
+    corrugationSide   { origin literature; method "Table 1 (p. 1789), s"; }
+    corrugationBase   { origin literature; method "Table 1 (p. 1789), b"; }
+    corrugationHeight { origin literature; method "Table 1 (p. 1789), h"; }
+    elementHeight     { origin literature; method "Table 1 (p. 1789), h_pe"; }
+    holeFraction      { origin literature; method "Table 1 (p. 1789), description 'shallow embossed, unperforated'"; }
+    surface           { origin literature; method "p. 1788: the tested set are sheet-metal packings"; }
+}
