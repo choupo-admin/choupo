@@ -435,6 +435,24 @@ export interface FigureInput {
 
 /** The figure.  Classes, not colours: the page's stylesheet themes them for
  *  light, dark and print. */
+/** THE GEOMETRY THE BED WAS SOLVED WITH (C398 slice (e), review row PK-GUI).
+ *  An inline `packing {}` block holds it; a block that names a `record` does
+ *  not -- the engine resolves the record (nominal, installed, borrowed) and
+ *  publishes what it used as the KPIs `packing_specificArea_m2_m3`,
+ *  `packing_voidFraction` and `packing_corrugationAngle_deg`
+ *  (DistillationColumn.cpp, solvePackedReadingRecord).  The run's value wins;
+ *  the block is read only when the run published none.  `from` says which. */
+export function packingGeometry(pack: { [k: string]: unknown }, k: Kpis): {
+  ap?: number; eps?: number; angle?: number; from: "run" | "declared";
+} {
+  const run = k["packing_corrugationAngle_deg"] !== undefined;
+  return run
+    ? { ap: k["packing_specificArea_m2_m3"], eps: k["packing_voidFraction"],
+        angle: k["packing_corrugationAngle_deg"], from: "run" }
+    : { ap: declaredSI(pack["specificArea"]), eps: declaredSI(pack["voidFraction"]),
+        angle: declaredSI(pack["corrugationAngle"]), from: "declared" };
+}
+
 export function stageFigureSvg(inp: FigureInput): StageFigure {
   const { model: m, kpis: k, fmt: f } = inp;
   const op = dictOf(inp.unit.operation);
@@ -497,8 +515,9 @@ export function stageFigureSvg(inp: FigureInput): StageFigure {
     const Hb = declaredSI(pack["height"]);
     p.push(t(xR + 10, top + stackH / 2 - 6, `bed ${Hb !== undefined ? f.n(Hb) + " m" : ""}`, "cs-t cs-decl"));
     p.push(t(xR + 10, top + stackH / 2 + 8, "(declared)", "cs-t cs-small"));
-    const ap = declaredSI(pack["specificArea"]), eps = declaredSI(pack["voidFraction"]);
-    p.push(t(xR + 10, top + stackH / 2 + 24, `${String(pack["model"] ?? "structured")} packing`, "cs-t cs-small cs-decl"));
+    const { ap, eps } = packingGeometry(pack, k);
+    const rec = typeof pack["record"] === "string" ? ` · record ${pack["record"] as string}` : "";
+    p.push(t(xR + 10, top + stackH / 2 + 24, `${String(pack["model"] ?? "structured")} packing${rec}`, "cs-t cs-small cs-decl"));
     if (ap) p.push(t(xR + 10, top + stackH / 2 + 36, `aₚ ${f.n(ap)} m²/m³`, "cs-t cs-small cs-decl"));
     if (eps) p.push(t(xR + 10, top + stackH / 2 + 48, `ε ${f.n(eps)}`, "cs-t cs-small cs-decl"));
     //  z axis: bottom of the bed is z = 0, as the engine's march writes it.
@@ -703,7 +722,7 @@ export function stageFigureSvg(inp: FigureInput): StageFigure {
   const defs = `<defs>`
     + `<marker id="cs-arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" class="cs-arrhead"/></marker>`
     + `<marker id="cs-arrF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" class="cs-feedhead"/></marker>`
-    + `<pattern id="cs-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(${packed ? declaredSI(pack["corrugationAngle"]) ?? 45 : 45})"><line x1="0" y1="0" x2="0" y2="8" class="cs-hatchline"/></pattern>`
+    + `<pattern id="cs-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(${packed ? packingGeometry(pack, k).angle ?? 45 : 45})"><line x1="0" y1="0" x2="0" y2="8" class="cs-hatchline"/></pattern>`
     + `</defs>`;
 
   notes.unshift(toScale
