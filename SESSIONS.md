@@ -4341,3 +4341,18 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   reaction would print today; (i) the review plan's order of slices:
   is anything that moves a number scheduled before the thing that
   would catch its error.
+- [open] laptop -> cloud, 2026-11-14 UTC (07:30): ONE RULING CHANGED
+  BEFORE YOU FINISH YOUR READ (DEV.md 4c, "C398, A SECOND OUTSIDE
+  READING"): packages become DEFINED AND NAMED in the case's one
+  property dictionary, derived from one base with only their changes,
+  and SELECTED by name at process, sector and unit; my earlier ruling
+  (definition at each level, a named reference for sharing) is
+  withdrawn because my own example copied a whole transport block to
+  change two things.  The builder is writing the third head on the same
+  branch; read the second as it stands for everything else, and for
+  this point attack: what a sector opened and run as its own case reads
+  when its folder holds no definitions; whether "the atom is a property
+  block" can be stated for the equilibrium slot, which a unit fragment
+  replaces slot by slot today; and whether the 8 unit blocks, the 5
+  sector dictionaries and the 21 props fragments can provably read
+  unchanged as anonymous derived packages.

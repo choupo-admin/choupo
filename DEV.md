@@ -3518,6 +3518,44 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398, A SECOND OUTSIDE READING AND THE ARCHITECT'S RULING ON IT
+> (2026-11-14, Vitor passed it on; the reviewing session reads it
+> too).**  Seven points, judged on content.  (1) REVERSED BY THE
+> ARCHITECT, for a reason he had not seen: in his own worked example,
+> changing one viscosity law and adding one diffusivity table for the
+> column copied almost the whole transport block into the unit, so
+> whole-block replacement per level fails the small-change test and
+> scatters the choices.  RULED: every package is DEFINED AND NAMED in
+> the case's one property dictionary, which is the single entry point; a
+> package may be derived from exactly one base and declares only its
+> changes (the atom is a property block, never a leaf); every package is
+> resolved complete before any calculation, and a circular or unknown
+> base or an incompatible choice is refused by name; process, sector and
+> unit SELECT a package by name.  The multi-level contract becomes a
+> hierarchy of selection, not of definition; what a sector opened as its
+> own case reads, and the wording of the settled contracts, are put to
+> the design; the existing unit and sector blocks keep reading
+> unchanged, announced, until a slice migrates them.  (2) the
+> responsibilities per file: accepted.  (3) a stable identifier per law,
+> exceptions beside the property, a mixing rule naming the parameters it
+> consumes and what a missing one does: accepted.  (4) "a measurement
+> replaces inside its box" is struck: a fall-back to a correlation
+> outside the box would be a switch by state; a table is either THE
+> method (refusal or a bounded extension outside) or one interval of a
+> declared composite with checked junctions.  (5) a diffusivity datum
+> declares its kind (Fick, Maxwell-Stefan, self, infinite dilution),
+> phase, direction, composition, conditions; a binary datum in a
+> multicomponent medium needs a named rule; the contract between package
+> and film says what is returned and where a thermodynamic factor
+> applies: accepted (the paper the reading names is not in hand and is
+> cited nowhere).  (6) the resolved view shows the derived thermodynamic
+> route and both phases' density: accepted.  (7) the report separates
+> where a choice was made from where the data came from: accepted; the
+> example's provenance column was wrong.  ACCEPTANCE TEST written into
+> the design: the ternary case with one central dictionary, a column
+> package derived with exactly two changes, one reference line in the
+> flowsheet, the props check on the same package, the resolved view.
+
 > **C399, THE STUDY IS DONE AND FOLDED INTO THE DESIGN (2026-11-14,
 > morning).**  Five private notes and a synthesis (the Studies folder,
 > `2026-11-14-openfoam/`), each claim cited to a file of the toolbox at
