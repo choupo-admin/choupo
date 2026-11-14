@@ -2,7 +2,8 @@
 
 Kind: PLAN.  Status: OPEN -- written 2026-11-14, to be executed only after the
 architect rules on [`several-laws-per-property.md`](several-laws-per-property.md)
-(its section 5.5c, rulings R1-R11).  No slice is started; nothing in the
+(its section 5.5c, rulings R1-R11, and 5.5d, rulings P1-P7: all packages
+defined and named in the case's one property dictionary, selected by name).  No slice is started; nothing in the
 engine, data, cases, goldens, guides or the app was changed.
 
 Method.  Tree: `origin/main` at 83384f58c merged into the design branch
@@ -14,7 +15,7 @@ retakes its own before it starts.
 
 ## 0. For a phone
 
-* Nine classes, from the component records to the guide pages.  The ones that
+* Ten classes (J added by the third head: definitions below the case that become named packages), from the component records to the guide pages.  The ones that
   move NO number: converting the record shape (slice R1), the provenance
   repair, the unread-key audit, the pair grammar, the effective-dictionary
   view, the docs-example gate.  The ones that MOVE numbers: water's preferred
@@ -22,7 +23,7 @@ retakes its own before it starts.
   the eight literal defaults into refusals where a case relied on them (up to
   32 + 26 + 13 cases carry the default's tag in their goldens), and any
   record whose preferred law changes.
-* Order: what makes the later slices safe first (the reader and the
+* Order: the named-package reader and its migration first (P0, P1, no number), then what makes the later slices safe (the reader and the
   printout), then the classes that move nothing, then one property at a time
   with its re-recorded list written in the commit.
 
@@ -44,12 +45,15 @@ dictionary and the levels that replace it (C397); shared blocks by `sameAs`
 | F | C++ sites pricing a property themselves; literal defaults | liquid-property ratchet debt 80 sites in 36 files (`bin/curate/liquid_property_ratchet_debt.tsv`, summed by `count_review.py`); literal defaults in one home, `liquidSource` (src/core/PropertySourceLog.H:111-195): 1000 kg/m3 x 4, 1e-3 Pa s, 0.072 N/m, 1.6e-9 m2/s, 1e-6 m2/s, and outside it 1.8e-5 Pa s (Atomizer.H:86); the gas and interface properties have no ratchet yet; cases whose goldens carry a default's tag: `default.rhoFeed1000` 32, `default.water1e-3` 26, `constant.diluteCarrier` 13, `default.legacy1.6e-9` 3, `constant.waterKinematic1e-6` 3, `fallback.water0.072` 2 (grep of tutorials) | the ratchet at zero; each literal default a named absence (R3); a ratchet for vapour and interface properties | YES for every case that relied on a default and receives a kernel value; NO for one that declares the same number |
 | G | reaction records | 100 case `constant/reactions` files with 245 `stoichiometry` blocks (`count_review.py`); 233 aqueous chemistry records (equilibria, not rates) | at load: an element balance of every declared reaction; the rate constant's dimension from the declared orders; the reaction echoed as one line (R8); non-mass-action reversible orders are already refused (Reaction.cpp:186-237) | NO for a balanced reaction; a refusal for an unbalanced one (none expected; the boundary element closure holds on every steady case) |
 | H | EduTool pages and guide sections stating the old layout | hits of `liquidViscosity {`, `andrade {`, `vogel {`, `model Vogel/Andrade/chemsepEq101`, `Trange` (`count_review.py`): Theory/Tutorials guide sources 7 files, 27 hits; docs/ai 6 files, 20 hits; app sources (`gui/src`) 4 files, 7 hits | each states the ruled layout, in the same slice as the engine change it describes (rule 4d) | NO (text); the lesson tests that cite `file:line` move with the engine |
+| J | property definitions below the case, to become named packages (design 5.5d P1) | unit `thermo {}` fragments: 8 blocks in 7 flowsheets + 1 nested unit, all `equilibrium` only; sector dictionaries with `inherits`: 5 (lithiumBrinePlant), each a full `equilibrium` (their `components` lists have no effect: Flowsheet.cpp:2147, :2180); props-operation `thermo {}` fragments: 21 propsDicts (`count_cases.py`, grep); Grunberg-Nissan `interaction` rows inline: 1 props case (`mixing01_water_acetone`) | every definition in the case's one dictionary as a named package derived from one base; every level SELECTS by `propertyPackage <name>;`; a sector folder carries no definitions | NO: the anonymous readings keep their own merge semantics until migrated, and each migration is proved byte-identical per case |
 | I | dictionary examples printed in docs/ai and the guides | 227 fenced blocks in docs/ai shaped like a dictionary (`count_review.py`); no gate parses them today | `check_dict_examples` passes each through the engine's reader of its grammar (design 5.5c, R11); failures pinned and shrinking | NO |
 
 ## 2. Slices, in order, with the validation each needs
 
 | slice | content | classes | numbers | validation |
 |---|---|---|---|---|
+| P0 | the named-package reader: `packages {}`, `derivedFrom`, the property-block atom, `propertyPackage` selection in flowsheet, sector and props operation; the anonymous readings of class J kept with their semantics and announced; the resolved view per package (route, densities of both phases, CHOICE and DATA columns) | D, J | none | the characterisation bench (every shipped case's resolved packages, old reader against new, identical); `--fast`; the 7 + 1 + 5 + 21 cases of class J byte-identical |
+| P1 | migration of class J to named packages: the 8 unit blocks, the 5 sector dictionaries (sector folders emptied of definitions; `seal` and sector export materialise the resolved packages), the 21 props fragments; Grunberg-Nissan rows to pair records | J, B | none | each migrated case byte-identical in its results; a sector of lithiumBrinePlant opened and run alone before and after, identical |
 | R0 | the printout and the audits: the effective dictionary per scope with defaults (`choupo-lint --effective`), the defaults shadow in `lookup*OrDefault`, the unread-key audit extended to the property dictionary and the records | D, I (the gate, with its pinned list) | none (advisories may add rows, listed before landing) | build; `--fast`; the gates that read the touched files; one witness per binary for the printout |
 | R1 | the record reader learns the R1 shape and reads the old one as one-law lists; the 74 provenance entries moved and `transport_fit.py` fixed; the windows of Andrade, Vogel, NASA7 announced | A | none | the characterisation bench recorded on main first, then bit for bit; `--fast`; full sweep only if the bench shows a path every case reaches has changed (it should not) |
 | R2 | pair grammar for diffusivities; the column's own Wilke-Chang moved behind it (the same rule, so the same number) | D, E, F | none | the 15 distillation cases and the 8 rate-based/transfer-unit cases byte-identical; the ratchet lowered by the sites removed |
