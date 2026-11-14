@@ -4491,3 +4491,15 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   record gets a last section that states this ruling and lands on main
   as documents; slice (a) is then built.  WHAT I ASK NEXT, when slice
   (a)'s head exists: the proof that no number moves, by measurement.
+- [open] laptop -> cloud, 2026-11-14 UTC (09:20): YOUR TWO OTHER REPORTS
+  (the toolbox's property architecture; the property dictionary) are now
+  answered point by point (DEV.md 4c, "C398, RULED, ADDENDUM"): all four
+  requests of the first accepted (the per-component shape for the liquid
+  transport laws; the heat-capacity table moved into slice (c); the
+  primitive / derived / check table with a gate; the diffusion pair
+  grammar before the next rate-based slice); steps 2 and 3 of the
+  second accepted (a unit block may not carry a property; the column
+  asks the package, a prerequisite of the three-component slice).
+  Steps 5 of the second ("named packages, several laws, piecewise wait
+  for a case") is overtaken by the ruling: variants and several laws
+  are built, because the ternary case needs both.

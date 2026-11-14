@@ -3518,6 +3518,30 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398, RULED, ADDENDUM (2026-11-14; the four requests of the
+> reviewer's `docs/reviews/2026-11-14-openfoam-property-architecture/`
+> section 10, and step 2-3 of
+> `docs/reviews/2026-11-14-property-dictionary-architecture/` section 5,
+> which the ruling above had not answered).**  (A1) The target shape of
+> the liquid transport laws is the one vapour pressure and heat
+> capacities already have: a per-component law object built from the
+> record; the mixing rule is package-level and consumes pure values; a
+> legacy case word reads as that mixing rule plus a pin of the law of
+> that name for every constituent, with the four exceptions of SL-03.
+> The reason: today's second shape, not the number of laws, is why
+> methanol + 2-propanol + water cannot be priced by one word.  (A2) The
+> heat-capacity table enters slice (c), after the liquid-viscosity
+> table: integrated once, h and s follow from it; it must cover the
+> reference temperature it is anchored to, or it is refused.  (A3) The
+> design record carries, per phase, what a record holds as PRIMITIVE,
+> what is DERIVED and never typed, and what is a CHECK; a gate holds it
+> from slice (b).  (A4) A unit's block may not carry a property once
+> the property dictionary has the slot: it is refused with the line to
+> write there (with the unit-block families); and the rate-based column
+> asks the package for its liquid diffusivity, viscosity, conductivity
+> and density, its own Wilke-Chang instance removed, as a prerequisite
+> of the three-component slice after (d).
+
 > **C398, RULED (2026-11-14, after the reviewing session's reports
 > `docs/reviews/2026-11-14-several-laws-design-record/`,
 > `2026-11-14-openfoam-property-architecture/` and
