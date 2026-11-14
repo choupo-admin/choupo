@@ -3518,6 +3518,77 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C401 (Vitor, 2026-11-14: "eu tenho imensas dificuldades com lidar
+> com a enormidade de formas de unidades com que os coeficientes de
+> transferencia de massa e globais sao definidos! E quando ha reacoes ...
+> nos filmes ... uma panoplia de formulas ... E depois aquilo tambem
+> envolve a constante de Henry"; then: "Isso por si so merece um
+> EduTools ... e ate pode levar no final alguns exercicios simples ...
+> que sao os habituais em cursos de engenharia").**  A COMMISSION; scope
+> decided by the architect (rule 00).  An EduTool "One flux, many
+> units": (1) the film coefficients of each phase in their usual forms
+> (k_G, k_y, k_c; k_L, k_x; per area and per volume, k a), with and
+> without the drift factor of a stagnant film, each conversion shown
+> step by step with its units; (2) Henry's law in its common conventions
+> (volatility and solubility forms, per mole fraction, per
+> concentration, dimensionless), the conversion between them and the
+> slope m of the equilibrium line; (3) the overall coefficients from
+> resistances in series, with the condition (a near-linear equilibrium)
+> under which they hold and a demonstration where they fail; (4) a
+> reaction in the liquid film: the Hatta number, the regimes, the
+> enhancement factor for a pseudo-first-order reaction and the
+> instantaneous limit; (5) at the end, a set of SHORT EXERCISES of the
+> kind set in engineering courses, each with its statement, the data,
+> the worked solution and the answer, every number recomputed by the
+> page and checked by a test.  Every formula carries the source it was
+> READ in, from the books and papers filed under ~/Choupo-Literature
+> (Treybal 1980, Seader et al. 2016, Sander 2015 on Henry's-law
+> conventions, Taylor and Kooijman 2014); nothing from memory.  Where
+> Choupo's rate-based column uses one of these forms, the page says
+> which and cites the file:line.  Accepts: the page, its tests, the
+> exercises, a Theory Guide link if a section exists, the lesson gates.
+
+> **REVIEW BY THE COORDINATING SESSION'S OWN REVIEWERS (Vitor,
+> 2026-11-14: "Tu agora assumes a revisao com um ou dois generais").**
+> While the reviewing session stands by, every slice is reviewed before
+> it lands by one or two REVIEWER generals dispatched by the coordinator,
+> never the builder of the slice and never briefed with the builder's
+> conclusions: they receive the head, the claims and the code, and they
+> measure.  Their method is the reviewing session's (a report under
+> docs/reviews/<date>-<subject>/, rows in docs/reviews/LEDGER.tsv with a
+> severity, every claim reproduced before it is written, no tracked file
+> outside docs/reviews/ changed, sabotages as requests the coordinator
+> runs).  Two reviewers where a slice reaches every case or claims that
+> nothing moves: one attacks the claim that no number moves, the other
+> what the engine says about itself (the view, refusals, announcements).
+
+> **C398, SLICES (a)+(b): THE FULL SWEEP AND THE REVIEW (2026-11-14).**
+> The two slices together (`integ/c398ab`) had ONE FULL SWEEP: PASS 2223,
+> FAIL 4, EXPECTED-FAIL 8, 60 min walked; no case failed; the four were
+> gates slice (b) reached and did not run (an include emscripten does
+> not lend, waiver tables outside the debt registry, a bench read past
+> the package, a census count), fixed by its builder and re-run alone.
+> WHY THEY WERE MISSED, measured by the builder: the rule "the gates
+> whose source names a touched file" cannot see a gate that scans by
+> directory or pattern; three of the four were of that kind.  A rule
+> matching a touched file against each gate's SCAN ROOTS would have
+> caught all four: this joins C394 (the suite's economy) as a change to
+> `bin/integrate --plan`.  THE REVIEW (the report
+> `docs/reviews/2026-11-14-c398-slices-ab/REPORT.md`): no number moves on 24 + 49 chosen cases; SL-01..04 and
+> -09 closed; TWO ROWS HOLD THE LANDING: SB-01, a vapour-pressure pin
+> ignored by the reactive electrolyte engine while the view printed it
+> as applied (a false statement by the engine about itself); SA-01, the
+> time-integrated binaries ignore a unit's `thermo` in silence.  Ruled:
+> a pin is applied before any copy of a component is taken, or the
+> formulation refuses it by name, and a gate arm proves each shipped
+> formulation honours a pin; the time-integrated binaries refuse a
+> unit's `thermo` by name unless they can honour it on the steady path.
+> Also owed in the same round: SB-02..04, SA-02/03/05.  NaOH's entropy
+> is a PRIMITIVE, its enthalpy a pinned derivative; a `check` value is a
+> PUBLISHED number with a transcription tolerance, and a formulation the
+> tree evaluates is evaluated by the gate, not stored.  The reviewing
+> session stands by (weekly credits) until Vitor calls it.
+
 > **C398, SLICE (b) RULINGS AT ITS FIRST HAND-BACK (2026-11-14).**  (1)
 > A shipped case DID reach a factory default: 3 cases price a vapour
 > viscosity through the Chung default (52 golden rows, through a
