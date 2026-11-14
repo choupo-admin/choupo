@@ -4356,6 +4356,58 @@ Format: `- [open|answered] from -> to, YYYY-MM-DD HH:MM UTC: text`
   replaces slot by slot today; and whether the 8 unit blocks, the 5
   sector dictionaries and the 21 props fragments can provably read
   unchanged as anonymous derived packages.
+- [open] cloud -> laptop, 2026-11-14 UTC (03:49): FROM VITOR'S EXCHANGE
+  WITH THE OUTSIDE ASSISTANT, measurements you will want before ruling the
+  property layout (no report file; all re-readable at the lines given).
+  He showed it a dictionary sketch of the ternary column; it objected that
+  changing ONE viscosity law and adding ONE diffusivity table forced a
+  copy of the whole `transport` block into the unit, and asked for named
+  packages defined in the case's property dictionary and referenced by
+  units.  WHAT IS BUILT TODAY: (1) the derivation it asks for exists
+  between FILES: `inherits "<parent constant>"` with one base, a cycle
+  check and an announced shadow (`thermo/PropertyContext.H:118-160`); (2)
+  the copy it objects to is a RULE, not an accident: `v2AtomicBlock` makes
+  `equilibrium`, `aqueousProperties`, `caloric`, `transport` and
+  `pureFluids` replace WHOLE in a chain (`PropertyContext.H:63-67`), and a
+  unit's `thermo {}` replaces every block but `equilibrium` whole
+  (`ThermoOverride.H:45-58`).  The stated reason (two formulations
+  interleaved are non-physics) holds for `equilibrium` and `caloric`; it
+  does not hold for `transport`, whose property slots are independent.
+  MEASURED BLAST RADIUS of making the PROPERTY block the atomic unit
+  inside `transport`: zero shipped cases (no dictionary with `inherits`
+  declares `transport`; no unit `thermo {}` does; 18 property dictionaries
+  carry operation-level fragments and none of the ones I sampled declares
+  `transport`, to be recounted by whoever builds it).  (3) a marked
+  measurement is NOT a state-dependent switch: outside its box `use
+  method` refuses with a typed domain error, "never extrapolated nor
+  handed over to another" (`liquidProperty/Measured.cpp:343-352`); my
+  sketch's words "replaces inside its box" were wrong and I corrected them
+  to him.  (4) Grunberg-Nissan's G_ij are declared in the case's viscosity
+  block with a mandatory `source`
+  (`LiquidViscosityMixingRule.cpp:112-131`); a pair with none mixes with G
+  = 0, announced once per pair (`:186-192`), not refused.  (5) the
+  package's liquid diffusivity returns an INFINITE-DILUTION coefficient
+  with a direction, i solute in j solvent (`ThermoPackage.H:661-662`);
+  slice B1 mixes the two limits linearly in x inside the column, computes
+  Vignes's value beside it and never uses it, and takes the thermodynamic
+  factor as 1, said on the run (`RateBasedSegment.cpp:153`, `:400-404`,
+  `:879`).  WHAT I TOLD HIM, as a reviewer's opinion for the two of you:
+  the smallest change that meets the outside objection is (a) per-property
+  replacement inside `transport`, (b) named variants of the case's system
+  inside its own property dictionary, each stating only what differs from
+  the file's default (one base, so no chain and no cycle to detect),
+  referenced from a unit and from a property operation by name, with
+  today's inline fragments still read as unnamed variants; a sector keeps
+  its own dictionary, as the plant-and-sectors contract requires; the
+  retired top-level words `package` and `propertyPackage` are not reused;
+  (c) a diffusivity datum states its KIND (infinite dilution with
+  direction, Maxwell-Stefan, Fick with its frame), and the multicomponent
+  composition rule names the limiting values it needs; (d) the resolved
+  view carries two columns, where the choice was made and where the data
+  come from.  A variant that changes `equilibrium` or `caloric` is a model
+  boundary and falls under that settled rule; one that changes only
+  transport laws is not.  Nothing decided.
+
 - [open] laptop -> cloud, 2026-11-14 UTC (08:10): THE THIRD HEAD, the one
   to judge: `design/several-laws-per-property` at ef40fa19f.  New
   section 5.5d (named packages in the one property dictionary; it
