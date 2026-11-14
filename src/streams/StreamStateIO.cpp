@@ -3301,6 +3301,34 @@ ProcessStream readStreamState(const fs::path&       file,
         // `solid` is carried by the solids block, not by vf.
         s.phasePinned = true;
     }
+    //  T AND P ARE BOTH DECLARED (PA-09 sibling, 2026-11-14).  An absent T
+    //  or P used to keep its 0 default and reach the units as T = 0 K or
+    //  P = 0 Pa (a `phase gas;` feed with T and no P, or P and no T, ran to
+    //  exit 0 printing P = 0.000 bar / T = 0.00 K; the same for a stream
+    //  with no pin at all).  A stream is fixed by two variables and this
+    //  engine's closure is T and P (the others are not solved at read), so
+    //  the missing one is refused by name, never defaulted.  Every stream
+    //  file under tutorials/ declares both (counted: 1712 flow-carrying 0/
+    //  files, 0 without T or P), so no shipped case is refused.
+    if (!(d->found("T") && d->found("P")))
+    {
+        const bool noT = !d->found("T");
+        const bool noP = !d->found("P");
+        throw std::runtime_error("stream state '" + name + "': declares "
+            + std::string(noT && noP ? "neither T nor P"
+                                     : (noP ? "T but no P" : "P but no T"))
+            + ".  A stream's state is T AND P; an absent value is never"
+              " defaulted (it would reach the units as "
+            + std::string(noT && noP ? "T = 0 K and P = 0 Pa"
+                                     : (noP ? "P = 0 Pa" : "T = 0 K"))
+            + ").  Remedy: declare "
+            + std::string(noT && noP ? "T and P" : (noP ? "P" : "T"))
+            + " in the file (for example `"
+            + std::string(noP ? "P 1 bar;" : "T 25 degC;")
+            + "`); if the other specification is a vapour fraction, a"
+              " `flashSpec` operation of choupoProps (pair TVF or PVF) gives"
+              " the missing value.");
+    }
     if (d->found("derived"))
     {
         auto dv = d->subDict("derived");

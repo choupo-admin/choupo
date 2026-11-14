@@ -101,6 +101,10 @@ case this gate writes (never on a shipped case that someone may fix):
       bench `flashSpec` TVF / PVF).  (j2) condenser01, whose pure streams
       declare T, P and q, still runs.
 
+  (k) The sibling: a stream with `phase gas;` or no pin, T but no P (or P
+      but no T), is refused by name too -- the absent value used to read as
+      0 and reach the units.
+
 WHAT THIS GATE DOES NOT CHECK, said plainly:
 
   * a unit that reads its inlet's `vf` BARE during the solve (the valve, the
@@ -528,6 +532,31 @@ def main() -> int:
                     if not re.search(pat, out, re.S):
                         failures.append(
                             f"(j) the {label}/{word} refusal never names "
+                            f"{what}.")
+        #  (k) the sibling (PA-09, 2026-11-14): a `phase gas;` pin, or no pin
+        #  at all, with T but no P (or P but no T) used to run to exit 0 with
+        #  the absent value read as 0 (P = 0.000 bar / T = 0.00 K in the
+        #  table).  Refused by name, with the remedy.
+        for pin, plabel in (("phase           gas;\n", "phase gas"),
+                            ("", "no pin")):
+            for drop, word, remedy in (("P", "T but no P", "declare P"),
+                                       ("T", "P but no T", "declare T")):
+                case = build_fixture(tmp, MIX, pin)
+                f = case / "0" / "feed"
+                lines = [ln for ln in f.read_text().splitlines()
+                         if not re.match(r"^\s*%s\s" % drop, ln)]
+                f.write_text("\n".join(lines) + "\n")
+                rc, out = run(case)
+                if rc == 0:
+                    failures.append(
+                        f"(k) a stream with {plabel} and {word} RAN TO EXIT 0: "
+                        "the absent value was defaulted to 0 (PA-09 sibling).")
+                    continue
+                for what, pat in (("the missing variable", re.escape(word)),
+                                  ("the remedy", re.escape(remedy))):
+                    if not re.search(pat, out):
+                        failures.append(
+                            f"(k) the {plabel}/{word} refusal never names "
                             f"{what}.")
         #  (j2) the same shipped writer-side pins still run: condenser01 has
         #  T, P and a pure two-phase vaporFraction in every 0/ file it reads.
