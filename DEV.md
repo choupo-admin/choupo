@@ -3518,6 +3518,31 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398, SLICE (b) RULINGS AT ITS FIRST HAND-BACK (2026-11-14).**  (1)
+> A shipped case DID reach a factory default: 3 cases price a vapour
+> viscosity through the Chung default (52 golden rows, through a
+> property operation that drops the key silently if it throws); they
+> now declare Chung at system level and the default is deleted; the
+> silent drop of a diagnostic key becomes a printed line.  (2) The five
+> multi-form catalogue records (benzene, ethanol, methanol, toluene,
+> water) mark `preferred vogel;` (for two of them the Vogel law is the
+> Andrade law with C = 0; it is the word 25 of 28 shipped reaches
+> write; `preferred` answers only a block with no word, of which none
+> ships).  (3) The record grammar is settled through the record rules:
+> named laws plus `preferred`; the soft window is each type's existing
+> keys; the hard window is `domain (lo hi);`, never a switch; per-law
+> source inside the record's one provenance block; `check { T; value; }`
+> read back by `check_record_law_values` (zero laws carry one today:
+> the debt is every law); a case pins with `pin ( { component; law;
+> reason; } );` beside the property.  (4) A3 AMENDED by the architect,
+> because it contradicted a settled contract ("ICE IS A PHASE",
+> 2026-08-07): a phase rung in `standardThermochemistry` is a PRIMITIVE
+> where that phase's enthalpy is not derivable from another phase by the
+> record's own laws, and a CHECK printed with its deviation where it is;
+> `dGf_298` is a CHECK (45 records), its comparison with dHf - T dSf
+> pinned as debt in this slice.  Water's reference vapour-pressure law
+> stays out of this slice (about 40 tools parse that block).
+
 > **C398, RULED, THIRD ADDENDUM: UNITS (2026-11-14; Vitor: "nao quis
 > pensar na questao das unidades, mas eu acho que tu sabes melhor disso
 > que eu" -- delegated).**  What exists, read: the dictionary parser
