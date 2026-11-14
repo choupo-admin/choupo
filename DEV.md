@@ -3518,6 +3518,38 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398, RULED, THIRD ADDENDUM: UNITS (2026-11-14; Vitor: "nao quis
+> pensar na questao das unidades, mas eu acho que tu sabes melhor disso
+> que eu" -- delegated).**  What exists, read: the dictionary parser
+> converts a value with a named unit, bracket dimensions or raw SI, and
+> checks the dimension the reader expects (src/core/Units.cpp; affine
+> temperature units degC and degF are handled, Units.cpp:152-154,
+> :372-376).  RULED: (U1) ONE HOME FOR UNITS.  Every physical value in
+> the new grammar (a table column, a window, a box, a pinned constant)
+> goes through src/core/Units and its dimension is checked against the
+> property it serves.  FOUND: the density pilot's measurement reader
+> keeps a private unit table of its own (src/thermo/liquidProperty/Measured.cpp
+> :57-73, about a dozen spellings); it is a second home and is moved
+> onto Units in slice (c).  (U2) A TABLE COLUMN WITHOUT A UNIT IS
+> REFUSED; no implicit SI in a table, because the commonest error in raw
+> data is the scale (mPa s against Pa s; cm2/s against m2/s for a
+> diffusivity, a factor 1e4).  A temperature column may be in degC: the
+> offset is applied at read and printed once; a temperature DIFFERENCE
+> column (none is planned) would need its own dimension and is refused
+> until one exists.  (U3) THE UNITS OF A LAW'S COEFFICIENTS BELONG TO
+> ITS TYPE: today they live in comments (water.dat: "log10(Psat [bar]) =
+> A - B / (T[K] + C)"); each law type states, in its registration and
+> in the Theory Guide, the form with its units and logarithm base, the
+> view prints that form, and a record whose coefficients are in other
+> units must name another type; a check value per law (the record's own
+> value at a stated temperature, where one is published) is read back
+> through the law by the gate of slice (b), which is the only way a
+> coefficient in the wrong unit is caught.  (U4) The resolved view and
+> every report print SI, with the unit the datum was declared in beside
+> it where it differs.  (U5) Interaction parameters follow U3 (the
+> model's form states whether tau is in K or dimensionless).  Slices:
+> U1-U2 in (c), U3 in (b), U4 in (a).
+
 > **C400 (Vitor, 2026-11-14: "e nao te esquecas dos Guias e
 > eventualmente um EduTool para explicar aos alunos como isto tudo fica
 > arquitetado").**  A COMMISSION.  (1) THE GUIDES: every slice of C398
