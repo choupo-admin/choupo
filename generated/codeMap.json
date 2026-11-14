@@ -994,9 +994,6 @@
   "HansenMixture": [
    "src/propertyOps/HansenMixture.H"
   ],
-  "HardWindowRefusal": [
-   "src/thermo/PropertyDomainError.H"
-  ],
   "HeatCapacityFit": [
    "src/propertyOps/HeatCapacityFit.H"
   ],
