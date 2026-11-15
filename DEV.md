@@ -3518,6 +3518,22 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **THE EXPLORER'S P-x-y AND MIXTURE-ENVELOPE LENSES LANDED (2026-11-15;
+> the architect's decision after Vitor asked whether the Explorer draws phase
+> diagrams of pure substances and mixtures).**  `P_bubble` and `y_eqT_<c>`
+> in the property evaluator (the existing bubble-pressure solver; the
+> round trip claimed for an ideal-gas vapour only, EX-04); the P-x-y lens
+> (pxy01: ethanol/water at 70 C, within 0.2 % of Voutsas 2011's azeotrope);
+> the P-T envelope lens over the existing `phaseEnvelope` op, which now
+> marches a branch past failures to its first converged point (EX-01:
+> envelope01's bubble branch starts at 46.4 bar where it was called "never
+> started"; its golden moved, listed in 9e597393e), takes the T-x-y's
+> activity models, flags a two-liquid binary (envelope04, water/benzene) and
+> never joins its branches.  Reviewed in two rounds (EX-01..08; report
+> docs/reviews/2026-11-15-explorer-envelope-pxy).  Held on main after C398
+> (c)+(d) by --fast 87/0, --scope 6/0 over its cases, --gui 49/0.  OPEN: not
+> seen in a browser; the site's WASM not rebuilt by this landing.
+
 > **C398 SLICE (d) + A4 LANDED (2026-11-15), and with it the C398 grammar is
 > complete.**  The liquid diffusivity a package returns is declared
 > (`returns effective|infiniteDilution`, a composition rule among
