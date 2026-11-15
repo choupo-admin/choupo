@@ -244,6 +244,65 @@ recycles that do not converge today), not for speed.  Proposals 1 and 2
 make that step cheaper whenever it comes, because they leave reusable
 analytic derivatives.
 
+## 2e. Further ideas from the OpenFOAM reading that the earlier report missed (proposals, nothing built)
+
+Read from the four readers' notes of 2026-11-14 and checked against this
+tree.  Most of the toolbox's good ideas Choupo already has (one knob that
+settles dependent choices -- the formulation; a refusal that lists the
+valid options; one-shot migrators instead of two readers; `$variable`
+references, `src/core/Dictionary.cpp:483`; a unit description,
+`choupoSolve --describe-units`).  Five it does not, in order of value.
+
+**The audience, stated by the owner when these were written down: the
+tools in items 3 and 4 are for the AI agents that author cases, with the
+STUDENT AS THE MAN IN THE MIDDLE** -- the agent writes, the student reads,
+questions and approves what the agent wrote.  So what those tools print
+must be exact and machine-readable for the agent AND readable by the
+student who audits it: the same text, never a summary for one and a
+different truth for the other.  They belong beside `bin/llmctx` and
+`docs/ai/`, and their output should be what an agent quotes back to the
+student when it explains a choice.
+
+1. **The enthalpy carried by diffusion in the film's energy balance.**
+   OpenFOAM adds to the heat flux the sensible enthalpy each diffusing
+   species carries (q includes sum_i j_i h_s,i;
+   `Fickian.C:404-427`, `MaxwellStefan.C:651-673` in the reader's notes).
+   At a rate-based interface the energy balance must carry
+   sum_i N_i h_i.  NOT checked whether slice B1 does; a question for the
+   review of the ternary rate-based slice, where it starts to matter.
+2. **Models attachable to ANY unit** (OpenFOAM's `fvModels`: a heat loss,
+   a phase change, a source added to any solver without touching it).
+   Choupo has no generic heat loss (`git grep heatLoss` finds none in a
+   unit); each unit that needed one would implement its own.  A declared
+   loss (UA and an ambient temperature) applicable to any unit would let
+   a student see insulation act on a column, a tank or a pipe.  An
+   architecture decision (where it attaches, how the energy report
+   books it).
+3. **A model-information tool for agents** (OpenFOAM's `foamInfo`, which
+   prints any model's description and usage from its own source).  Choupo
+   has it for units (`--describe-units`) and not for property laws.  With
+   several laws per property arriving, `choupo-info <law>` printing, from
+   the law's registration, its form, the units and logarithm base of its
+   coefficients (C398's U3), its window rule and an example block, is what
+   an agent needs to write a record or a pin correctly -- and what it
+   quotes to the student who approves it.
+4. **Read and set one dictionary entry from the command line**
+   (OpenFOAM's `foamDictionary`).  Choupo does it internally
+   (`Dictionary::setScalarAtPath`) and offers no command.  For an agent
+   preparing a sweep or editing a case, a command that edits ONE entry by
+   path, through the engine's own parser and unit check, is safer than a
+   text edit; the student sees the one-line change it made.
+5. **A deferred correction that vanishes at convergence** (OpenFOAM writes
+   the heat flux as an implicit part plus an explicit correction that is
+   zero at convergence, `Fourier.C:174-180` per the notes).  A technique
+   to keep for when the ternary film model's Newton proves hard.
+
+Side note, from DWSIM rather than OpenFOAM, seen in its flash settings
+during the timings: `PVFlash_TryIdealCalcOnFailure = True` and a
+`FailSafeCalculationMode`, i.e. a failed calculation silently retried as
+ideal.  Choupo's no-silent-crutch rule forbids exactly that; a contrast
+worth showing a student.
+
 ## 3. Not done
 
 The WebAssembly timing; the deeper cause inside DWSIM's NRTL; a props
