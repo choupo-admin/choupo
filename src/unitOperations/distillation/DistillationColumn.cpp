@@ -2666,6 +2666,10 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     //  An inline `feeds` entry keeps its declared quality: it is a dict
     //  declaration with no state to resolve.
     feedLiq.assign(N, 0.0);
+    //  The saturation temperatures and q each stream feed was given, kept for
+    //  the KPIs below: a feed's dew point is a published, pinned number, so a
+    //  change in the dew solver moves a golden row instead of a log line.
+    std::vector<std::pair<std::string, CmoFeedQuality>> feedQualityPublished;
     for (std::size_t k = 0; k < feedRecords.size(); ++k)
     {
         auto& r = feedRecords[k];
@@ -2673,6 +2677,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         {
             const CmoFeedQuality fq =
                 cmoFeedQuality(*r.state, r.T, r.P > 0.0 ? r.P : P, P, r.z, thermo, hs);
+            if (fq.enthalpic) feedQualityPublished.emplace_back(r.name, fq);
             announceFeedQuality(dict->name(), r.name, *r.state, fq, r.T, verbosity);
             if (!multiFeed && k == 0)
                 refuseContradictoryFeedQuality(operDict, feedDict, *r.state, fq,
@@ -4423,6 +4428,12 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
     }
 
     kpis_.clear();
+    for (const auto& pf : feedQualityPublished)
+    {
+        kpis_["feed_" + pf.first + "_q"]          = pf.second.q;
+        kpis_["feed_" + pf.first + "_T_dew"]      = pf.second.Tdew;
+        kpis_["feed_" + pf.first + "_T_bubble"]   = pf.second.Tbubble;
+    }
     kpis_["nStages"]    = static_cast<scalar>(N);
     kpis_["feedStage"]  = static_cast<scalar>(NF);
     kpis_["R"]          = R;

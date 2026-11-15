@@ -83,6 +83,7 @@ public:
         int     iterations = 0;
         bool    converged  = false;
         scalar  residual   = 0.0;
+        std::string note;           // why not converged, in physics' words ("" if unknown)
     };
 
     static Result compute(const ThermoPackage& thermo,

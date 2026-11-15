@@ -120,8 +120,10 @@ operation { P <Pa>; }
 ### `dewT`
 Newton-1D in T on `Σᵢ yᵢ / Kᵢ(T) = 1` at fixed P.  On a `phiPhi` package
 (an EoS liquid) the incipient liquid is iterated at every T from Wilson's seed;
-a converged root whose liquid equals the vapour (the trivial root) is refused
-as NOT converged, never reported as a dew point (EX-05).
+a root whose liquid equals the vapour on COINCIDENT cubic roots (the trivial
+root, pure components included) or an incipient liquid that does not settle is
+reported NOT converged with the physics named; a pure fluid below its critical
+point and an azeotrope (two roots) are genuine; the T bracket is 100-700 K (EX-05).
 ```
 operation { P <Pa>; }
 ```

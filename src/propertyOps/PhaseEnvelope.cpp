@@ -317,7 +317,7 @@ int PhaseEnvelope::run(const DictPtr& dict,
               << " not a turning point: the branch never started.  The usual causes are a"
               << " pressure range that does not reach it, or a "
               << what << " temperature outside the saturation solver's own"
-              << " bracket (200-700 K), which a light feed's bubble line sits"
+              << " bracket (200-700 K; 100-700 K on a phi-phi package), which a light feed's bubble line sits"
               << " below.  Nothing is drawn for it and nothing is claimed"
               << " about it.";
             if (AdvisoryLog::instance().add("approximation", "warning",
@@ -340,7 +340,7 @@ int PhaseEnvelope::run(const DictPtr& dict,
               << fmt(b.pts.front().P / 1.0e5, 3) << " bar ("
               << fmt(b.pts.front().T, 3) << " K); it is drawn from there.  The"
               << " usual cause is a " << what << " temperature outside the"
-              << " saturation solver's own bracket (200-700 K) at the lower"
+              << " saturation solver's own bracket (200-700 K; 100-700 K on a phi-phi package) at the lower"
               << " pressures, which a light feed's bubble line sits below.  The"
               << " missing low-pressure part is not drawn and nothing is"
               << " claimed about it.";
@@ -377,7 +377,7 @@ int PhaseEnvelope::run(const DictPtr& dict,
                     ? "a bubble temperature falling as pressure rises, which"
                       " is impossible"
                     : "a step many times the branch's own recent steps")
-              << ").  Both saturation solvers bracket T in 200-700 K and are"
+              << ").  Both saturation solvers bracket T in 200-700 K (100-700 K on a phi-phi package) and are"
               << " warm-started, so a wide bracket lets Newton land elsewhere"
               << " and report success.  The point was DISCARDED rather than"
               << " drawn: a converged point is not necessarily a point on this"

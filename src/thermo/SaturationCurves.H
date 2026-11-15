@@ -176,6 +176,17 @@ bool trivialSaturationRoot(const ThermoPackage& thermo, scalar T, scalar P,
                            const sVector& comp, const sVector& K,
                            scalar tol = 1.0e-9);
 
+/// THE TWO ROOTS OF THE CUBIC COINCIDE at (T, P, comp) on a phi-phi package: the
+/// vapour and liquid roots are one root (or the EoS has no separate liquid
+/// root), so a phase "at comp" priced on either is the SAME phase.  Unlike
+/// trivialSaturationRoot this needs no K test and holds for ONE component:
+/// the saturation point of a pure supercritical fluid (CH4 at 20 bar) is a
+/// one-root plateau, never a dew or bubble point, while a pure fluid below its
+/// critical point (two distinct roots) and an azeotrope (two distinct roots,
+/// x = y) are genuine.  False off a phi-phi package.
+bool coincidentEosRoots(const ThermoPackage& thermo, scalar T, scalar P,
+                        const sVector& comp);
+
 /// WILSON'S K-VALUES, the seed of an EoS saturation search (2026-11-15, EX-05).
 /// K_i = (Pc_i/P) exp(5.373 (1 + omega_i)(1 - Tc_i/T)), a rule of the critical
 /// constants.  A phi-phi saturation point cannot be started at the incipient

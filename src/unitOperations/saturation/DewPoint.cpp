@@ -79,11 +79,13 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
     if (thermo.hasEos() && thermo.vleWorld() == "phiPhi")
     {
         sVector xLast = y;
+        bool    settled = true;
         auto f = [&](scalar T)
         {
             const auto r = incipientPhase::liquid(thermo, T, P, y,
                                                   wilsonK(thermo, T, P));
             if (!r.trial.empty()) xLast = r.trial;
+            settled = r.converged;
             if (!std::isfinite(r.S)) return 1.0e6;
             return r.S - 1.0;
         };
@@ -95,12 +97,17 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
         solver::NROptions nro;
         nro.tolerance          = 1.0e-8;
         nro.maxIter            = 60;
-        nro.lower              = 100.0;
+        nro.lower              = 200.0;
         nro.upper              = 700.0;
         nro.bracket            = true;
         nro.monotoneIncreasing = false;
         nro.maxStep            = 25.0;
         if (nroOverride) nro = *nroOverride;
+        //  ONE LOWER BRACKET FOR EVERY CALLER (DP-03): a phi-phi dew point of a
+        //  light gas lies below 200 K, and the unit's own 200 K floor made
+        //  "no dew point" out of a temperature the envelope op drew.  The
+        //  gamma-phi path keeps its 200 K bracket.
+        nro.lower = std::min(nro.lower, 100.0);
         auto r = solver::newton1D(f, df, T0, nro);
         out.T = r.x;
         out.newtonIterations = r.iterations;
@@ -112,9 +119,33 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
             d2 += (out.x[i] - y[i]) * (out.x[i] - y[i]);
         out.compDelta = std::sqrt(d2);
         const sVector K = thermo.Kvec(out.T, P, out.x, y);
-        //  A dew point whose liquid IS its vapour is not a dew point: refused.
-        out.converged = r.converged && out.compDelta > 1.0e-6
-                     && !trivialSaturationRoot(thermo, out.T, P, y, K);
+        out.converged = r.converged;
+        //  x = y is a dew point only where the cubic has TWO roots at that
+        //  composition (a pure fluid below its critical point, an azeotrope);
+        //  where the roots coincide the liquid IS the vapour and K = 1 is the
+        //  trivial solution, pure components included.
+        if (out.converged && out.compDelta <= 1.0e-6
+            && coincidentEosRoots(thermo, out.T, P, y))
+        {
+            out.converged = false;
+            out.note = "the incipient liquid equals the vapour and the cubic's"
+                       " two roots coincide: the trivial root, not a dew point"
+                       " (a supercritical or one-root state)";
+        }
+        else if (out.converged && trivialSaturationRoot(thermo, out.T, P, y, K))
+        {
+            out.converged = false;
+            out.note = "every K = 1 on one cubic root: the trivial root, not a"
+                       " dew point";
+        }
+        else if (out.converged && !settled)
+        {
+            out.converged = false;
+            out.note = "the incipient liquid did not settle (successive"
+                       " substitution still moving after its pass budget): the"
+                       " feed is near the critical point of the mixture, where"
+                       " the dew temperature is not resolved";
+        }
         if (onOuter) onOuter(0, out.T, out.compDelta);
         return out;
     }
@@ -314,6 +345,8 @@ int DewPoint::solve(const DictPtr& dict,
                   << " K, so the liquid was priced as the vapour itself (one"
                      " root of the cubic for both phases).  It is not a dew"
                      " point and is reported as NOT converged.\n";
+    if (!converged && !res.note.empty())
+        std::cout << "  [dewT] NOT converged: " << res.note << ".\n";
     std::cout << "\n=========================  Dew-T Result  ===========================\n"
               << "  T_dew:         " << std::fixed << std::setprecision(4) << Tdew
               << "  K  ( " << (Tdew - 273.15) << " °C )\n"

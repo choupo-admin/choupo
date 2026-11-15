@@ -49,24 +49,62 @@ namespace {
 //  column and the relief sizer iterate it themselves; changing this kernel
 //  for them is outside this slice and is not done silently.
 sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
-                const sVector& x)
+                const sVector& x, bool* settled = nullptr)
 {
+    if (settled) *settled = true;
     //  A phiPhi package prices the vapour on the same cubic as the liquid, so
     //  the incipient vapour is NOT the liquid: K(T, P, x, x) asks the cubic
     //  for a vapour root at the liquid's own composition and is wrong by
     //  about a kelvin on a natural gas near its bubble line (EX-05's mirror,
-    //  measured 2026-11-15).  Iterate the vapour, seeded by Wilson's K.
+    //  measured 2026-11-15).  Iterate the vapour, seeded by Wilson's K; the
+    //  iteration's own `converged` flag is reported to the caller (DP-02).
     if (thermo.hasEos() && thermo.vleWorld() == "phiPhi")
     {
         const auto r = incipientPhase::vapour(thermo, T, P, x,
                                               wilsonK(thermo, T, P));
-        if (!r.K.empty()) return r.K;
+        if (!r.K.empty())
+        {
+            if (settled) *settled = r.converged;
+            return r.K;
+        }
     }
     const sVector K0 = thermo.Kvec(T, P, x, x);
     if (!thermo.vapourAssociationPriced()) return K0;
     const auto r = incipientPhase::vapour(thermo, T, P, x, K0);
     return r.K.empty() ? K0 : r.K;
 }
+//  THE PHI-PHI REFUSALS, ONE HOME (DP-01, DP-02): `compute` and the unit's
+//  traced path both end here, so the two cannot disagree about a point.
+//  A converged bubble point whose incipient vapour equals the liquid is a
+//  point only where the cubic has TWO roots at that composition (a pure
+//  fluid below its critical point, an azeotrope); and an incipient vapour
+//  that did not settle in its pass budget is a liquid near the mixture's
+//  critical point, where the bubble temperature is not resolved.
+void phiPhiBubbleRefusals(const ThermoPackage& thermo, scalar Tbub, scalar P,
+                          const sVector& x, const sVector& y, bool settled,
+                          bool& converged, std::string& note)
+{
+    if (!converged) return;
+    scalar d2 = 0.0;
+    for (std::size_t i = 0; i < x.size(); ++i)
+        d2 += (y[i] - x[i]) * (y[i] - x[i]);
+    if (std::sqrt(d2) <= 1.0e-6 && coincidentEosRoots(thermo, Tbub, P, x))
+    {
+        converged = false;
+        note = "the incipient vapour equals the liquid and the cubic's two"
+               " roots coincide: the trivial root, not a bubble point (a"
+               " supercritical or one-root state)";
+    }
+    else if (!settled)
+    {
+        converged = false;
+        note = "the incipient vapour did not settle (successive substitution"
+               " still moving after its pass budget): the liquid is near the"
+               " critical point of the mixture, where the bubble temperature"
+               " is not resolved";
+    }
+}
+
 //  THE T SEED IS THE WEIGHTED BOILING POINT AT THE PRESSURE (C235).  The
 //  mole-weighted NORMAL boiling point is a subcooled state at any pressure
 //  above 1 atm.  An ideal vapour prices it smoothly; on a cubic EoS this
@@ -131,7 +169,9 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
         T0 = weightedBoilingGuess(thermo, x, P);
     }
 
-    auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
+    const bool phiPhi = thermo.hasEos() && thermo.vleWorld() == "phiPhi";
+    bool settled = true;
+    auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x, &settled); };
     auto f = [&](scalar T)
     {
         auto K = K_at(T);
@@ -148,7 +188,10 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     solver::NROptions nro;
     nro.tolerance          = 1.0e-8;
     nro.maxIter            = 60;
-    nro.lower              = 200.0;
+    //  A phi-phi bubble point of a light gas lies below 200 K (DP-03): the
+    //  floor is the dew solve's, 100 K, for every caller.  The gamma-phi path
+    //  keeps 200 K.
+    nro.lower              = phiPhi ? 100.0 : 200.0;
     nro.upper              = 700.0;
     nro.bracket            = true;
     nro.monotoneIncreasing = true;
@@ -167,6 +210,9 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     //  A trivial root (every present K = 1) is not a bubble point
     //  (thermo/SaturationCurves.H, trivialSaturationRoot).
     out.converged  = r.converged && !trivialSaturationRoot(thermo, Tbub, P, x, K);
+    if (phiPhi)
+        phiPhiBubbleRefusals(thermo, Tbub, P, x, out.y, settled,
+                             out.converged, out.note);
     out.residual   = r.residual;
     return out;
 }
@@ -319,7 +365,9 @@ int BubblePoint::solve(const DictPtr& dict,
         scalar T0 = (Tinit > 0.0) ? Tinit : 0.0;
         if (T0 <= 0.0) T0 = weightedBoilingGuess(thermo, x, P);
 
-        auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x); };
+        const bool phiPhi = thermo.hasEos() && thermo.vleWorld() == "phiPhi";
+        bool settled = true;
+        auto K_at = [&](scalar T) { return bubbleK(thermo, T, P, x, &settled); };
         auto f = [&](scalar T)
         {
             auto K = K_at(T);
@@ -336,7 +384,7 @@ int BubblePoint::solve(const DictPtr& dict,
         solver::NROptions nro;
         nro.tolerance          = 1.0e-8;
         nro.maxIter            = 60;
-        nro.lower              = 200.0;
+        nro.lower              = phiPhi ? 100.0 : 200.0;   // as compute()
         nro.upper              = 700.0;
         nro.bracket            = true;
         nro.monotoneIncreasing = true;
@@ -366,12 +414,17 @@ int BubblePoint::solve(const DictPtr& dict,
         r.iterations = raw.iterations;
         r.converged  = raw.converged && !trivialSaturationRoot(thermo, Tbub, P, x, K);
         r.residual   = raw.residual;
+        if (phiPhi)
+            phiPhiBubbleRefusals(thermo, Tbub, P, x, r.y, settled,
+                                 r.converged, r.note);
     }
     else
     {
         r = BubblePoint::compute(thermo, x, P, Tinit);
     }
 
+    if (!r.converged && !r.note.empty())
+        std::cout << "  [bubbleT] NOT converged: " << r.note << ".\n";
     if (!r.converged)
     {
         const auto Kt = bubbleK(thermo, r.T, P, x);

@@ -51,6 +51,17 @@ bool trivialSaturationRoot(const ThermoPackage& thermo, scalar T, scalar P,
     return std::abs(vV - vL) <= 1.0e-9 * std::max(std::abs(vV), std::abs(vL));
 }
 
+bool coincidentEosRoots(const ThermoPackage& thermo, scalar T, scalar P,
+                        const sVector& comp)
+{
+    if (thermo.vleWorld() != "phiPhi" || !thermo.hasEos()) return false;
+    const EquationOfState& eos = thermo.eos();
+    if (!eos.hasLiquidRoot()) return true;
+    const scalar vV = eos.molarVolume(T, P, comp);
+    const scalar vL = eos.molarVolumeLiquid(T, P, comp);
+    return std::abs(vV - vL) <= 1.0e-9 * std::max(std::abs(vV), std::abs(vL));
+}
+
 sVector wilsonK(const ThermoPackage& thermo, scalar T, scalar P)
 {
     const std::size_t n = thermo.n();
