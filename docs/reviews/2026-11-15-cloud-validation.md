@@ -58,4 +58,8 @@ not run (the owner's authorisation is needed).
 
 ### 1a. GUI tests on the branch with main's two fixes (local re-check)
 
-Running at the time of the first push; result added below when it ends.
+`cd gui && npm test` on the branch with 151a007140 and 3032e772dc
+cherry-picked locally (the throwaway branch was then deleted): **327 test
+files passed of 327; 8291 tests passed, 1 skipped, 0 failed.**  So the
+branch's GUI is green once main's own two defects are fixed; with them
+unfixed it fails exactly as main does.
