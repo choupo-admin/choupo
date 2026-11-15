@@ -45,6 +45,6 @@ utility column                 cooling.coolingWater.T 321.779636745    1e-4
 utility column                 cooling.coolingWater.kg_s 12.5319445584    1e-4
 utility column                 cooling.coolingWater.eur_h 0.754322806861   1e-4
 source  column                 liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
-source  column                 liquidDiffusivity own.WilkeChang.mixtureViscosity exact
-source  column                 liquidViscosity  declared.case    exact
+source  column                 liquidDiffusivity effective.AndersonBabb[WilkeChang] exact
+source  column                 liquidViscosity  stated.yanagi1982_34kPa_liquidViscosity    exact
 source  column                 surfaceTension   BrockBird/Butler exact

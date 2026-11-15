@@ -1,0 +1,49 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  The liquid viscosity of the p-xylene / o-xylene liquid in Schulz et al.'s
+  FRI bed at 0.1 bar: Table 1 prints ONE representative value per pressure,
+  "as employed in this study", beside its temperature (74 C) and liquid
+  composition (0.54, read here as the p-xylene fraction; the two isomers have
+  one molar mass in the case's records, so mass and mole fractions agree).
+  It is a property value the authors used, not a measured series: the box
+  below is the case's hypothesis, and its `reason` is written in
+  constant/thermoPhysPropDict.  Read by transport.liquid.viscosity.measured
+  (DEV.md 4c C398 slice (d)); until that slice it was typed in the column's
+  `packing {}` block, the same number.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    //  sha256 is of the `data ( );` block of THIS file as transcribed (the source is
+    //  a printed table, not an archive file): it tells this transcription from a
+    //  corrected one.
+    sha256       "937c1aa7aa74c72004435aef77572a113adfbb01e8346097e3f71b7a9fd9c10d";
+    source       literature;
+    basis        "representative values as employed by the authors (Table 1: 'Representative values of physical properties of px/ox system ... as employed in this study'), not a measurement";
+    citation     "Schulz, R.; Rietfort, T.; Jansen, H.; Olujic, Z. (2018). Experimental evidence on performance of an advanced gauze structured packing under deep vacuum distillation conditions. Chem. Eng. Trans. 69, 763-768. doi:10.3303/CET1869128, Table 1";
+}
+
+property    liquidViscosity;
+system      ( pXylene oXylene );
+solvent     oXylene;
+
+columns
+(
+    { name T;          unit K;    }      // 74 C as printed
+    { name mu;         unit Pa.s; }
+    { name w[pXylene]; unit -;    }
+);
+data        ( 347.15 3.91e-4 0.54 );
+
+box
+{
+    T           ( 320 370 );    // K: every liquid temperature the bed visits at this pressure
+    w[pXylene]  ( 0 1 );                  // the whole binary
+}

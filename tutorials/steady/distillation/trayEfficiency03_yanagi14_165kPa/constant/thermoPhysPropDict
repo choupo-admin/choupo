@@ -48,6 +48,31 @@ transport
         diffusivity { model Fuller; }
     }
 
+    liquid
+    {
+        //  The paper's own liquid viscosity, the set's stated value (C398 (d)):
+        //  constant/experiments/yanagi1982_165kPa_liquidViscosity.dat.
+        viscosity
+        {
+            measured
+            {
+                yanagi1982_165kPa_liquidViscosity { use method; reason "Yanagi and Sakata Table II gives one average for the run; the case stands it over every state of the trays, as it did when the value was typed in the efficiency block"; }
+            }
+        }
+
+        //  The effective liquid diffusivity of the binary: Wilke-Chang at infinite
+        //  dilution both ways, combined by the form linear in D*mu (Anderson-Babb,
+        //  as Poling 5th ed. p. 11.34 states it): the rule this column took before
+        //  slice (d), there written as Wilke-Chang in the mixture viscosity.
+        diffusivity
+        {
+            returns             effective;
+            composition         { rule AndersonBabb; }
+            infiniteDilution    { default { model WilkeChang; } }
+            thermodynamicFactor { take 1; }
+        }
+    }
+
     interface
     {
         surfaceTension { model BrockBird; }

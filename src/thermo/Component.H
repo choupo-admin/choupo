@@ -574,6 +574,9 @@ public:
     // unassociated 1.0).  Optional top-level `associationFactor <φ>;`;
     // defaults to 1.0 (unassociated).
     scalar associationFactor() const { return associationFactor_; }
+    //  False when the record writes none and the 1.0 above is the default
+    //  (printed by the resolved view as such, C398 slice (d); record debt).
+    bool   associationFactorStated() const { return associationFactorStated_; }
 
     // ---- Role flag ------------------------------------------------
     // Selects which VLE machinery the thermo package applies to this
@@ -954,6 +957,7 @@ private:
     DictPtr     liquidViscDict_     = nullptr;
     DictPtr     surfaceTensionDict_ = nullptr;   // surfaceTension{} block, raw
     scalar      associationFactor_  = 1.0;     // Wilke-Chang φ (solvent)
+    bool        associationFactorStated_ = false;
 
     std::unique_ptr<VaporPressureModel> vp_;
     std::unique_ptr<HeatCapacityModel>  cpLiq_;

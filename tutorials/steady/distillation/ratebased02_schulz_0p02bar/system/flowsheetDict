@@ -96,7 +96,6 @@ units
                 corrugationSide   0.009 m;     // ESTIMATED: Sulzer BX (RBF 1993 Table IV)
                 surface           gauze;       // RBF 1996 Eq 14
                 lightKey          pXylene;
-                liquidViscosity   5.39e-4;       // Pa s, Schulz Table 1
                 segments          100;
             }
         }

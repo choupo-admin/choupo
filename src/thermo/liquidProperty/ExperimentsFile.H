@@ -143,7 +143,10 @@ void refuseWrittenExperimentsDir(const DictPtr& entry, const std::string& where)
 
 //- STAMP a freshly read property dictionary with the `experiments/` folder of
 //  its own `constant/` (TG-02): every `pin` entry that names a `table`, and
-//  every `volumetric.liquid.measured.<name>` entry, gets the internal key
+//  every `volumetric.liquid.measured.<name>` entry, every stated mixture
+//  viscosity `transport.liquid.viscosity.measured.<name>` and every
+//  liquid-diffusivity `entries` item that cites `experiments` (C398 slice (d))
+//  gets the internal key
 //  (above) set to "<path>" unless it already has one; a hand-written
 //  `experimentsDir` anywhere in the dictionary is refused by name (TG-17).
 //  Called where a dictionary file is read for a sector or an `inherits`

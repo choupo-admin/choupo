@@ -61,11 +61,14 @@ const std::map<std::string, std::vector<Row>>& table()
         { "phaseChanger",      { { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel" } },
                                  { "surfaceTension",    { "kernel" } } } },
+        //  C398 slice (d): the liquid viscosity, diffusivity, thermal
+        //  conductivity and surface tension through the door (a `sigma` typed
+        //  in `hydraulics {}` is refused since review row DG-01).
         { "distillationColumn",{ { "liquidDensity",     { "kernel" } },
-                                 { "liquidViscosity",   { "kernel", "declared" } },
-                                 { "surfaceTension",    { "kernel", "declared" } },
-                                 { "liquidDiffusivity", { "own" } },
-                                 { "liquidThermalConductivity", { "package" } } } },
+                                 { "liquidViscosity",   { "kernel" } },
+                                 { "surfaceTension",    { "kernel" } },
+                                 { "liquidDiffusivity", { "kernel" } },
+                                 { "liquidThermalConductivity", { "kernel" } } } },
         //  The time-integrated vessels (the dynamic driver declares as the
         //  steady path does; review DX-06).  The variable-volume vessels
         //  price their liquid through the kernel; the Williams-Otto plant

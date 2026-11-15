@@ -126,8 +126,9 @@ scalar molecularDiffusivity(const ThermoPackage& thermo,
             throw std::runtime_error(r.locus + ": the derived route needs a"
                 " molecular diffusivity and the case's thermophysical system"
                 " declares no liquid diffusivity model.  Add"
-                " `transport { liquidDiffusivity { model WilkeChang; }"
-                " liquidViscosity { model Andrade; } }` to"
+                " `transport { liquid { diffusivity { returns infiniteDilution;"
+                " infiniteDilution { default { model WilkeChang; } } }"
+                " viscosity { model Andrade; } } }` to"
                 " constant/thermoPhysPropDict, or cite a measured D_eff"
                 " record.");
         how = "liquid D0_" + r.species + " in " + r.counterDiffusing

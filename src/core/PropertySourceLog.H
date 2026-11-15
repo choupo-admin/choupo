@@ -166,12 +166,9 @@ inline const NamedSource benchmarkConstantDensity
       "a constant of the published benchmark the unit reproduces: 50 lb/ft3 (800.9 kg/m3), equal for every species" };
 inline const NamedSource declaredByCase
     { "declared.case", "the value the case declares for this unit" };
-inline const NamedSource packageLiquidConductivity
-    { "package.liquidThermalConductivity",
-      "property model: the package's liquid thermal-conductivity model (the case's `transport { liquid { thermalConductivity {} } }`), taken for the liquid film's heat-transfer coefficient" };
-inline const NamedSource ownWilkeChang
-    { "own.WilkeChang.mixtureViscosity",
-      "computed by the unit itself, not by the property kernel: its own Wilke-Chang, both ways at infinite dilution in the mixture viscosity, combined linearly in mole fraction" };
+//  `ownWilkeChang` and `packageLiquidConductivity` were retired by C398 slice
+//  (d): the columns ask the door for both (LiquidPropertyDoor, Property::
+//  diffusivity and Property::thermalConductivity).
 //  An ion's D0 is curated at 25 C.  WHICH of the three tags a unit records
 //  is decided by the builder that read the D0 (membrane::buildPolarisation),
 //  never by the unit: Stokes-Einstein is applied only when the package

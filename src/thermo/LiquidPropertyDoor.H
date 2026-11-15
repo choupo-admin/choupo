@@ -38,8 +38,12 @@ Description
     (docs/design/provenance-semantics-five-axes.md): where the value comes
     from (`origin`, `provenance`), whether the state is inside a declared
     domain (`domain`), and the quantitative evidence or "not quantified".
-    Diffusivity has no request here yet: which solute in which medium is
-    decided at its own slice (TR-13).
+    THE TWO REQUESTS OF C398 SLICE (d): `thermalConductivity` (the package's
+    model and mixing rule) and `diffusivity` -- the quantity the property
+    dictionary DECLARES it returns (`transport { liquid { diffusivity {
+    returns effective; composition { rule <name>; } ... } } }`), at the
+    liquid's composition: which solute in which medium is the declaration's
+    business, never the consumer's (TR-13, transport/LiquidTransportDeclarations.H).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -55,10 +59,10 @@ class ThermoPackage;
 
 namespace liquidProperty {
 
-enum class Property { density, viscosity, surfaceTension };
+enum class Property { density, viscosity, surfaceTension, thermalConductivity, diffusivity };
 
 //  The word the tables and the result use: liquidDensity, liquidViscosity,
-//  surfaceTension.
+//  surfaceTension, liquidThermalConductivity, liquidDiffusivity.
 const char* name(Property p);
 
 struct Consumer

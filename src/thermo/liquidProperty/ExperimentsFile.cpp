@@ -127,14 +127,20 @@ void stampWalk(const DictPtr& d, const std::string& dir, const std::string& pare
             {
                 if (k == "pin" && e->found("table") && !e->found(experimentsDirKey()))
                     e->insert(experimentsDirKey(), EntryValue(dir));
+                //  a liquid-diffusivity entry citing a file (C398 slice (d))
+                if (k == "entries" && e->found("experiments") && !e->found(experimentsDirKey()))
+                    e->insert(experimentsDirKey(), EntryValue(dir));
                 stampWalk(e, dir, k, parentKey);
             }
         }
         else if (std::holds_alternative<DictPtr>(v))
         {
             const DictPtr sub = std::get<DictPtr>(v);
-            //  volumetric { liquid { measured { <name> { ... } } } }
-            if (parentKey == "measured" && grandKey == "liquid" && !sub->found(experimentsDirKey()))
+            //  volumetric { liquid { measured { <name> { ... } } } }, and the
+            //  stated mixture viscosity transport { liquid { viscosity {
+            //  measured { <name> { ... } } } } } (C398 slice (d))
+            if (parentKey == "measured" && (grandKey == "liquid" || grandKey == "viscosity")
+                && !sub->found(experimentsDirKey()))
                 sub->insert(experimentsDirKey(), EntryValue(dir));
             stampWalk(sub, dir, k, parentKey);
         }

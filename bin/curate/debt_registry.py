@@ -809,6 +809,50 @@ LAWS_WITHOUT_CHECK = {
     "solidHeatCapacity":         15,
 }
 
+#  ASSOCIATION FACTOR TAKEN BY DEFAULT (C398 slice (d), the architect's ruling
+#  on its first hand-back).  Wilke-Chang reads the SOLVENT's association factor
+#  phi; a record that writes none is read as 1.0 (Component.cpp, the line that
+#  reads `associationFactor`), the "unassociated" value.  For an ASSOCIATING
+#  solvent that default is a datum nobody chose; the resolved view now says
+#  "default 1.0, not in the record", and check_liquid_diffusivity_declaration
+#  holds both halves: each record listed here still writes none (if it gains
+#  one, the debt is PAID and the entry leaves), and the witness's view prints
+#  the default for it.  Not changed here: no source for 2-propanol's phi was
+#  read (Poling 5th ed. p. 11.22 gives water, methanol, ethanol and "unassociated" only).
+ASSOCIATION_FACTOR_DEFAULTED = {
+    "isopropanol": "an associating solvent (an alcohol) read with the unassociated "
+                   "phi = 1.0; remedy: a value read in a source, written in the record "
+                   "with its citation",
+}
+
+#  SEALED COPIES ADOPTED TO CARRY A CATALOGUE LAW (C398 slice (d), the
+#  architect's ruling on review row DF-15 a).  aceticAcid02's sealed copies
+#  predate the catalogue's surface-tension laws; the case now prices its trays
+#  on each record's own law (StoredCorrelation) instead of Brock-Bird, which
+#  Poling 5th ed. Table 12-1 measures +53 % on acetic acid at 293 K.  The block
+#  and its provenance entry were taken UNCHANGED from the catalogue file into
+#  each copy and the copy adopted (`choupo-import --adopt-local`), so the seal
+#  no longer hashes it.  Two debts per entry: (1) re-seal the copy from the
+#  catalogue in the C402 migration lane (a re-import moves other plant
+#  numbers, a separate audit); (2) the law is `reviewStatus autoPromoted`, no
+#  human has read it back against its articles.  check_seal_drift holds each
+#  entry: the copy must still be adopted -- once re-sealed (imported again),
+#  the entry is stale and must leave this table.
+SEALED_COPIES_ADOPTED = {
+    "tutorials/plant/aceticAcid02_plant/constant/components/methanol.dat":
+        "surfaceTension law from data/standards/components/methanol.dat; re-seal "
+        "(C402 lane); the law is autoPromoted, needs a human review",
+    "tutorials/plant/aceticAcid02_plant/constant/components/aceticAcid.dat":
+        "surfaceTension law from data/standards/components/aceticAcid.dat; re-seal "
+        "(C402 lane); the law is autoPromoted, needs a human review",
+    "tutorials/plant/aceticAcid02_plant/constant/components/dimethylEther.dat":
+        "surfaceTension law from data/standards/components/dimethylEther.dat; re-seal "
+        "(C402 lane); the law is autoPromoted, needs a human review",
+    "tutorials/plant/aceticAcid02_plant/constant/components/water.dat":
+        "surfaceTension law from data/standards/components/water.dat; re-seal "
+        "(C402 lane); the law is autoPromoted, needs a human review",
+}
+
 #  RECORDS THE ENGINE CANNOT LOAD ALONE (C398 review row CV-08), counted by
 #  check_record_law_values from `choupoProps --record-law-checks`: a record
 #  that does not load leaves every law it holds outside that gate, so the

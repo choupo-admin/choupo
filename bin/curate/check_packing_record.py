@@ -198,8 +198,10 @@ def same_kpis(inline, record, extra=()):
 PACKING_KPIS = ("packing_specificArea_m2_m3", "packing_voidFraction",
                 "packing_corrugationAngle_deg")
 
+#  The probe beds' tail.  Since C398 slice (d) the liquid viscosity is the
+#  case's measured mixture value in its property dictionary, never a key of
+#  `packing {}` (a typed one is refused by the column).
 INLINE_TAIL = """                lightKey          pXylene;
-                liquidViscosity   3.91e-4;
                 segments          100;
             }
 """

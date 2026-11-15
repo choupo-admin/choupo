@@ -30,10 +30,9 @@
   (Fair / Lygeros, with Perry's open-area correction below 10 %).  The tray
   pressure drop is Bolles & Fair's (Perry 9ed Eqs 14-100..14-109).
 
-  MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid
-    viscosity 0.23 mPa s (Table II, 165 kPa -- the package carries no
-    liquid viscosity for these components, so the paper's own average enters
-    Wilke-Chang); the column pressure.
+  STATED INPUTS (the paper): the tray geometry (Table I); the liquid
+    viscosity 0.23 mPa s (Table II, 165 kPa -- the property dictionary carries the paper's
+    average as the set's stated value, constant/experiments/yanagi1982_165kPa_liquidViscosity.dat); the column pressure.
   ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives
     0.284 and 0.294 for the two runs it lists; the other points' compositions
     are not published); every point of the sweep uses it.
@@ -41,7 +40,9 @@
     liquid, vapour viscosity (Chung, Vc from Zc(omega)), vapour diffusivity
     (Fuller; the diffusion volumes, Poling 5ed Table 11-1, are added to the
     case's own component records), liquid diffusivity (Wilke-Chang at
-    infinite dilution, combined linearly, Poling 5ed Eq 11-10.2), liquid
+    infinite dilution, combined by the form linear in D*mu, Poling 5ed p.
+    11.34 -- before C398 (d) this line said Eq 11-10.2, which is the form
+    in each solvent's own viscosity, not the one computed), liquid
     density (Rackett on the record's Vliq), surface tension (Brock-Bird).
   FITTED PARAMETERS: NONE.
   HELD-OUT POINTS: all -- the eight 8 % points at 165 kPa of Figure 12 and the six of Figure 13
@@ -96,7 +97,6 @@ units
             {
                 model            AIChE;
                 lightKey         cyclohexane;
-                liquidViscosity  2.3e-4;   // Pa s, Yanagi & Sakata Table II, 165 kPa
                 entrainment      FairMedian;
             }
 

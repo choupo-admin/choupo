@@ -58,8 +58,12 @@ const JE = "10.1021/je200341c";
 describe("the tutorial tier carries curate04's two methanol-water studies", () => {
   it("finds both, order-free, from the bundled tutorials alone", () => {
     expect(evidenceCorpusSize()).toBeGreaterThan(0);
+    //  The VLE studies of the pair (since C398 slice (d) the tutorial tier also
+    //  carries a measured infinite-dilution diffusivity of methanol in water,
+    //  liquidDiffusivity01_pelkonen_ternary: another property of the same pair).
     const mw = tutorialEvidence().filter((d) => d.subject.kind === "pair"
-      && [...d.subject.components].sort().join("+") === "methanol+water");
+      && [...d.subject.components].sort().join("+") === "methanol+water"
+      && d.property !== "liquidDiffusivity");
     const dois = mw.map((d) => d.provenance.doi);
     expect(dois).toContain(JCT);
     expect(dois).toContain(JE);

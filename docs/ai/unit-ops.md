@@ -1321,10 +1321,12 @@ stages), and `packing {}` with `efficiency {}` on one column is refused too.
 ```
 
 **Computed tray efficiency** (`operation { efficiency { model AIChE; lightKey a;
-liquidViscosity <Pa s>; entrainment FairMedian|none; } }`, exclusive with
+entrainment FairMedian|none; } }`, exclusive with
 `murphreeEfficiency`; implemented under `model totalReflux;`, binary only): each tray's
 E_MV from the `hydraulics` geometry, its own traffic and the package's transport
-(Chung + Fuller in the vapour, Wilke-Chang in the liquid) -- AIChE transfer units
+(Chung + Fuller in the vapour; in the liquid the viscosity and the EFFECTIVE
+diffusivity the property dictionary declares, see "Liquid properties of a column"
+below) -- AIChE transfer units
 (Treybal 3ed 6.38, 6.61-6.64), point efficiency (6.51-6.52), eddy diffusion along the
 flow path (6.57-6.59), then Colburn's entrainment loss with Fair's median psi at the
 tray's approach to flood (Perry 9ed 14-98/14-99).  The correlations carry NO hole
@@ -1340,7 +1342,6 @@ MISS and is counted as one in the design record, not set aside.  Examples: `tray
 ```
 efficiency { model SyedaChuang;      // or AIChE | ChanFair
              lightKey cyclohexane;
-             liquidViscosity 3.7e-4;   // Pa s, when the package has no liquid viscosity
              holePitch 0.0302;         // m, SyedaChuang only
              entrainment FairMedian; } // or none
 hydraulics { pressureDropModel BollesFair; ... }   // default Sinnott
@@ -1348,8 +1349,8 @@ hydraulics { pressureDropModel BollesFair; ... }   // default Sinnott
 
 **Packed bed at total reflux** (`model totalReflux;` + `operation { packing { model
 RochaBravoFair; diameter; height; specificArea; voidFraction; corrugationAngle;
-corrugationSide; surface gauze|sheetMetal; [surfaceEnhancement]; lightKey;
-[liquidViscosity]; } }`, no `nStages`): the composition is integrated up the bed,
+corrugationSide; surface gauze|sheetMetal; [surfaceEnhancement]; lightKey; } }`,
+no `nStages`): the composition is integrated up the bed,
 dy/dz = (y* - y)/H_OG, with Rocha-Bravo-Fair holdup, pressure drop and flooding
 (IECR 32 (1993) 641) and HETP (IECR 35 (1996) 1660); the top pressure is the
 specification and the bed's own pressure drop sets the bottom.  KPI `HETP` = bed
@@ -1409,9 +1410,39 @@ Theory Guide: "The rate-based packed segment".
     packing { model RochaBravoFair; diameter 1.22 m; height 2.2 m;
               specificArea 478; voidFraction 0.92; corrugationAngle 60;
               corrugationSide 0.009 m; surface gauze;  // Delft: corrugationBase, corrugationHeight, elementHeight, holeFraction
-              lightKey pXylene; liquidViscosity 3.91e-4; }
+              lightKey pXylene; }
   } }
 ```
+
+**Liquid properties of a column (C398 slice (d), A4).**  The packed bed, the
+rate-based segment and the computed tray efficiency take the liquid's density,
+viscosity, thermal conductivity and diffusivity from the PACKAGE, never from a
+column block: a property word typed in `operation` or any block of it
+(`liquidViscosity`, `liquidDiffusivity`, `liquidDensity`, `surfaceTension`, ...)
+is REFUSED with the line to write, at any depth of the column's `operation` tree
+and under every spelling (`sigma`, `rhoL`, `muL`, `DL`, ...).  The column needs the
+EFFECTIVE liquid diffusivity, declared in `constant/thermoPhysPropDict` (Theory
+Guide "The liquid diffusivity a package returns"); a paper's one liquid viscosity
+for the run is a stated mixture value (Theory Guide "A stated liquid viscosity of
+a constituent set"), named by its file's `basis`:
+```
+transport { liquid {
+    viscosity { measured { schulz2018_0p10bar_liquidViscosity
+                           { use method; reason "one value for the run, stood over the bed"; } } }
+    diffusivity { returns effective; composition { rule AndersonBabb; }
+                  infiniteDilution { default { model WilkeChang; } }
+                  thermodynamicFactor { take 1; } }
+} }
+// constant/experiments/schulz2018_0p10bar_liquidViscosity.dat:
+//   property liquidViscosity; system ( pXylene oXylene ); solvent oXylene;
+//   columns ( { name T; unit K; } { name mu; unit Pa.s; } { name w[pXylene]; unit -; } );
+//   data ( 347.15 3.91e-4 0.54 ); box { T ( 320 370 ); w[pXylene] ( 0 1 ); }
+//   provenance { citation "..."; basis "representative values as employed by the authors"; }
+```
+`AndersonBabb` (D mu linear in x) on Wilke-Chang IS the infinite-dilution values
+taken in the mixture's viscosity and combined linearly: the rule every shipped
+column uses.  A ternary liquid is refused for `returns effective` (no reduction
+rule read).
 
 **Sieve-tray hydraulics** (optional `operation { hydraulics { ... } }`, works with BOTH
 methods).  The MESH equations contain no diameter — a column of any width converges to
@@ -1435,7 +1466,7 @@ hydraulics
     orificeCoefficient     0.84;     // C_o -- a CHART (Liebson 1957); declared, printed back
     floodFraction          0.80;     // design target
     K2                     30.7;     // optional CHART constant; absent => weep check skipped
-    // sigma                0.021;    // N/m; else the package must supply surfaceTension
+    // no property here: the surface tension is the package's (C398 A4; a typed `sigma` is refused)
 }
 ```
 Flooding: Souders-Brown `u_flood = C_SB (σ/20)^0.2 √((ρL−ρV)/ρV)` on the net area, with
@@ -1444,8 +1475,10 @@ That fit misbehaves for `F_LV < 0.03` and the pass **says so** rather than repor
 number it does not believe.  Pressure drop / weir crest / residual head / downcomer
 backup / weep point follow Sinnott (mm of clear liquid).  Kister & Haas (1990) is
 deliberately NOT implemented — two of its constants are unverified against a primary
-source.  **σ is required**: add `transport { surfaceTension { model BrockBird; } }` to the
-thermoPhysPropDict or declare `sigma`.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
+source.  **σ is required, from the package**: add `transport { interface { surfaceTension {
+model BrockBird; } } }` to the thermoPhysPropDict.  A `sigma` typed in `hydraulics {}` is
+REFUSED (C398 A4): the hydraulics and the computed efficiency take ONE surface tension per
+tray.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
 `dP_column_kPa`, `downcomerBackup_max_mm`, `downcomerFloodStages`, `weepingStages`;
 profile gains `floodApproach`, `dP_Pa`, `h_backup_mm`.
 Examples: `column09_tray_hydraulics` (design → D = 1.316 m) · `column10_flooding`
@@ -3886,7 +3919,9 @@ per compound — fails loudly if a compound has no `liquidHeatCapacity`),
 carried to T by Watson — refuses without Tc/Tb/HvapTb or at T >= Tc),
 `Cp_ig`, `H_ig`, `S_ig`, `Z`, `v_molar`, `H_R`, `S_R`,
 `H_real`, `S_real`, `viscosity` / `mu`, `thermal_conductivity` / `k`,
-`diffusivity` / `D`, `mu_L`, `k_L`, `D_L`.  `Psat_<comp>`, `gamma_<comp>`,
+`diffusivity` / `D`, `mu_L`, `k_L`, `D_L`, `D_L_inf_<solute>_in_<solvent>` (one
+infinite-dilution value, the direction named), `D_L_effective` (the binary liquid's
+value by the declared rule).  `Psat_<comp>`, `gamma_<comp>`,
 `y_eq_<comp>`, `Cp_liquid_<comp>`, `Hvap_<comp>` are PER-COMPONENT (one value per named
 compound); the rest are mixture scalars at `state.composition`.
 

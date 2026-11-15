@@ -119,7 +119,9 @@ std::string sourceText(const PropertySourceLog::Used& u)
     else if (u.pressureNote.compare(0, 11, "applied to ") == 0)
         s += "; pressure " + u.pressureNote;          // per leaf (C378 pilot review, S3)
     if (!u.leftOut.empty())
-        s += "; " + andList(u.leftOut) + " left out (no liquid volume at that state)";
+        s += "; " + andList(u.leftOut) + (u.property == "surfaceTension"
+            ? " left out (no liquid surface above the critical temperature)"     // C398 review row DF-16
+            : " left out (no liquid volume at that state)");
     return s;
 }
 

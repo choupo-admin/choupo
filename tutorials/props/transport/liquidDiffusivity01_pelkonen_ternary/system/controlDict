@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "The liquid diffusivity a package returns (C398 slice (d)): the six infinite-dilution values of methanol, 2-propanol and water at a state from Pelkonen's packed column (the reflux temperature with the liquid sampled at 1.790 m), one of them replaced by a measured value in a variant, and the effective value of the methanol-water binary by a declared rule";
+verbosity     2;

@@ -408,7 +408,7 @@ void Component::readFromDict(const DictPtr& d)
     }
 
     // Liquid transport blocks kept RAW (each model reads its own sub-block).
-    associationFactor_ = d->lookupScalarOrDefault("associationFactor", 1.0);   // Wilke-Chang
+    associationFactor_ = d->lookupScalarOrDefault("associationFactor", 1.0);   associationFactorStated_ = d->found("associationFactor");   // Wilke-Chang; the default 1.0 is announced in the view (C398 (d))
     if (d->found("liquidViscosity"))
         liquidViscDict_ = d->subDict("liquidViscosity");
     if (d->found("liquidThermalConductivity"))

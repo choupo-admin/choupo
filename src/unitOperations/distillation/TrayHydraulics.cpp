@@ -105,6 +105,38 @@ TrayHydraulics::liquidDensity(const ThermoPackage& thermo, scalar T, scalar P,
 }
 
 
+TrayHydraulics::LiquidDensity
+TrayHydraulics::surfaceTension(const ThermoPackage& thermo, scalar T, scalar P,
+                               const sVector& x)
+{
+    sVector kept(x.size(), 0.0);
+    scalar keptSum = 0.0, droppedSum = 0.0;
+    std::string dropped;
+    for (std::size_t i = 0; i < x.size() && i < thermo.n(); ++i)
+    {
+        if (!(x[i] > 0.0)) continue;
+        const scalar Tc = thermo.comp(i).Tc();
+        if (Tc > 0.0 && T >= Tc)
+        {
+            droppedSum += x[i];
+            dropped += (dropped.empty() ? "" : ", ") + thermo.comp(i).name();
+        }
+        else { kept[i] = x[i]; keptSum += x[i]; }
+    }
+    if (!(keptSum > 0.0))
+        throw std::runtime_error("TrayHydraulics: no component of the liquid has a liquid"
+            " surface at T = " + std::to_string(T) + " K (every one is above its critical"
+            " temperature) -- the tray cannot be rated");
+    LiquidDensity d;    // the same three fields: value, what was left out, its share
+    d.dropped = dropped;
+    d.droppedFraction = droppedSum / (keptSum + droppedSum);
+    if (droppedSum > 0.0) for (auto& v : kept) v /= keptSum;
+    d.rho = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T, P,
+                                     droppedSum > 0.0 ? kept : x, nullptr, dropped).value;
+    return d;
+}
+
+
 void TrayHydraulics::noteDropped(const LiquidDensity& d, std::string& names,
                                  scalar& maxFraction)
 {
@@ -162,7 +194,6 @@ TrayHydraulics::Geometry TrayHydraulics::readGeometry(const DictPtr& hyd)
     geo.orificeCoeff   = hyd->lookupScalarOrDefault("orificeCoefficient",    0.84);
     geo.floodFraction  = hyd->lookupScalarOrDefault("floodFraction",   0.80);
     geo.K2             = hyd->lookupScalarOrDefault("K2",              0.0);
-    geo.sigma          = hyd->lookupScalarOrDefault("sigma",           0.0);
     {
         const std::string dpm = hyd->lookupWordOrDefault("pressureDropModel", "Sinnott");
         if (dpm != "Sinnott" && dpm != "BollesFair")
@@ -248,17 +279,21 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
             throw std::runtime_error(o.str());
         }
 
-        if (geo.sigma > 0.0)
+        //  THE PACKAGE'S SURFACE TENSION, the one the computed efficiency takes
+        //  too: one surface tension per tray per run (C398 A4; a `sigma` typed
+        //  in this block is refused, ColumnTypedProperties.H).
+        if (thermo.hasSurfaceTension())
         {
-            s.sigma = geo.sigma;
-            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(geo.sigma, T[j], P));
+            const LiquidDensity st = surfaceTension(thermo, T[j], 0.0, x[j]);
+            s.sigma = st.rho;
+            s.sigmaUnpriced = st.droppedFraction;
+            noteDropped(st, res.surfaceTensionDropped, res.surfaceTensionDroppedMax);
         }
-        else if (thermo.hasSurfaceTension()) s.sigma = liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T[j], 0.0, x[j]).value;
         else
             throw std::runtime_error("TrayHydraulics: the flooding correlation needs the "
-                "surface tension.  Either add `surfaceTension { model BrockBird; }` to the "
-                "thermo package, or declare a constant `sigma <N/m>;` in the hydraulics "
-                "block -- it will not be guessed");
+                "surface tension.  Add `transport { interface { surfaceTension { model"
+                " BrockBird; } } }` to the property dictionary -- it will not be guessed,"
+                " and a column block does not carry a property (C398 A4)");
 
         s.F_LV  = (mL / mV) * std::sqrt(s.rhoV / s.rhoL);
         if (s.F_LV < 0.03) res.lowFlowParam = true;

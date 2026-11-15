@@ -4265,6 +4265,21 @@ PYEOF
     fi
     rm -f /tmp/packrec.$$
 
+    # liquid-diffusivity-declaration gate (2026-11-14, DEV.md 4c C398 slice (d)).
+    # The liquid diffusivity a package returns is the one its property
+    # dictionary declares, in the direction it names (a measured entry exact,
+    # the effective value of a binary by its rule); a column block carries no
+    # property (A4); every refusal of the slice speaks by name.
+    if gate_exec "$ROOT/bin/curate/check_liquid_diffusivity_declaration.py" > /tmp/liqdiff.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "liquid-diffusivity-declaration-gate" "$(gate_claim check_liquid_diffusivity_declaration /tmp/liqdiff.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_liquid_diffusivity_declaration.py)\n" "liquid-diffusivity-declaration-gate"
+        cat /tmp/liqdiff.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/liqdiff.$$
+
     # thiele-pellet gate (2026-08-19).  The owner's own number-one request:
     # the Thiele modulus with the intraparticle CONCENTRATION FIELD.  The
     # engine solves the pellet BVP by central differences on NewtonND and

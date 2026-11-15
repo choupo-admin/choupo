@@ -258,6 +258,23 @@ print("  the catalogue, NOT a defect in the case -- do not re-seal to")
 print("  make this number smaller: that rewrites the provenance the seal")
 print("  exists to preserve.")
 
+#  THE ADOPTED-COPY DEBT (debt_registry.SEALED_COPIES_ADOPTED, C398 slice (d)):
+#  each listed copy must still be ADOPTED in its manifest.  Once it is sealed
+#  again (imported), the debt is paid and its entry must leave the table; an
+#  entry naming a missing file or an imported claim is a stale debt.
+from debt_registry import SEALED_COPIES_ADOPTED  # noqa: E402
+for rel_case, why in sorted(SEALED_COPIES_ADOPTED.items()):
+    path = ROOT / rel_case
+    mf = next((p / "propertyManifest" for p in path.parents if p.name == "constant"), None)
+    claim = None
+    if mf is not None and mf.exists():
+        _, recs = read_manifest(mf)
+        claim = recs.get(str(path.relative_to(mf.parent)), {}).get("type")
+    if not path.exists() or claim != "adopted":
+        damage.append(f"debt_registry.SEALED_COPIES_ADOPTED: {rel_case} is "
+                      f"{'missing' if not path.exists() else 'claimed ' + repr(claim)}, not adopted"
+                      f" -- if it was re-sealed, the debt is paid: remove its entry")
+
 if damage:
     print()
     print("SEAL DAMAGE (these are real -- fix them):")
@@ -297,12 +314,13 @@ if not damage:
     print("check_seal_drift: OK -- %d sealed manifest(s) and %d embedded "
           "record(s) inspected; every sealed case still reproduces its own "
           "records under its declared sealSchema (%d cosmetic difference(s), "
-          "which the parsed-content claim tolerates by design).  NOT CHECKED: "
+          "which the parsed-content claim tolerates by design); the %d copies "
+          "debt_registry.SEALED_COPIES_ADOPTED lists are still adopted.  NOT CHECKED: "
           "whether any sealed value is RIGHT.  And divergence from the LIVE "
           "catalogue (%d record(s), %d case(s) worth a curator's eye) is "
           "HISTORY, not a verdict -- this gate reports it, never fails on it, "
           "and never re-seals to make the number smaller."
-          % (nManifests, nRecords, len(cosmeticSeal), len(drift),
+          % (nManifests, nRecords, len(cosmeticSeal), len(SEALED_COPIES_ADOPTED), len(drift),
              cases_needing_review))
 
 sys.exit(1 if damage else 0)

@@ -96,6 +96,23 @@ inline bool readInsideBlock(const std::string& k)
     return k == "model" || k == "mixingRule" || k == "interaction" || k == "pin";
 }
 
+//  The keys one block reads beyond those four (C398 slice (d)): the liquid
+//  viscosity's `measured {}` (a mixture measurement of a constituent set)
+//  and the liquid diffusivity's declared quantity -- `returns`,
+//  `composition`, `infiniteDilution`, `thermodynamicFactor`
+//  (transport/LiquidTransportDeclarations.H reads them, and refuses what is
+//  not this slice's by name).
+inline bool readInsideBlock(const std::string& phase, const std::string& prop,
+                            const std::string& k)
+{
+    if (readInsideBlock(k)) return true;
+    if (phase == "liquid" && prop == "viscosity") return k == "measured";
+    if (phase == "liquid" && prop == "diffusivity")
+        return k == "returns" || k == "composition" || k == "infiniteDilution"
+            || k == "thermodynamicFactor";
+    return false;
+}
+
 //  Refuse, by name, every name of a `transport {}` block nothing would read.
 //  Consults nothing (keys() and childDictsUnnoted() do not note), so the
 //  unread-key audit still sees what the builder did not read.
@@ -146,11 +163,14 @@ inline void validate(const DictPtr& t, const std::string& where)
                 throw std::runtime_error(where + "." + ph + "." + pr + " is not a"
                     " block -- write `" + pr + " { model <word>; }`.");
             for (const auto& k : pb->keys())
-                if (!readInsideBlock(k))
+                if (!readInsideBlock(ph, pr, k))
                     throw std::runtime_error(where + "." + ph + "." + pr + ": `" + k
                         + "` is read by nothing -- a property block carries `model`,"
                           " and for the liquid properties `mixingRule`,"
-                          " `interaction` and `pin`.");
+                          " `interaction` and `pin`; the liquid viscosity also"
+                          " `measured`, the liquid diffusivity `returns`,"
+                          " `composition`, `infiniteDilution` and"
+                          " `thermodynamicFactor`.");
         }
     }
 }

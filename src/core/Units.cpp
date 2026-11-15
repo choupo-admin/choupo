@@ -233,6 +233,12 @@ const std::map<std::string, UnitSpec>& table()
         { "mPa.s",   UnitSpec{ 1.0e-3,      Dims::viscosity } },
         { "uPa.s",   UnitSpec{ 1.0e-6,      Dims::viscosity } },
 
+        // ----- diffusivity → m²/s (C398 slice (d): a liquid infinite-dilution datum) --
+        //   cm2/s is the unit of the published tables (1e-4: the scale error
+        //   a unit-less column would hide, THIRD ADDENDUM U2).
+        { "m2/s",    UnitSpec{ 1.0,         Dims::diffusivity } },
+        { "cm2/s",   UnitSpec{ 1.0e-4,      Dims::diffusivity } },
+
         // ----- overall heat-transfer coefficient → W/(m²·K) -------------
         //   Used by Evaporator (and any future two-stream heat
         //   exchanger).  Aliases keep the case files readable across

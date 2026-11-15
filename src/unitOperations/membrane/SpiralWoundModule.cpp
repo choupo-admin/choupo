@@ -462,7 +462,8 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 " for the film model -- no `diffusivity` in the massTransfer"
                 " sub-block and no liquidDiffusivity (+ liquidViscosity)"
                 " transport model declared; declare transport { liquid {"
-                " diffusivity { model WilkeChang; } viscosity { model ...; } } }"
+                " diffusivity { returns infiniteDilution; infiniteDilution {"
+                " default { model WilkeChang; } } } viscosity { model ...; } } }"
                 " to price it from the package, or set it in the sub-block";
         }
     }

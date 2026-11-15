@@ -20,8 +20,10 @@
 #include "thermo/pureFluid/PureFluidModel.H"
 
 #include <cstdio>
+#include <iostream>
 #include <limits>
 #include <map>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -58,6 +60,8 @@ const char* name(Property p)
         case Property::density:        return "liquidDensity";
         case Property::viscosity:      return "liquidViscosity";
         case Property::surfaceTension: return "surfaceTension";
+        case Property::thermalConductivity: return "liquidThermalConductivity";
+        case Property::diffusivity:    return "liquidDiffusivity";
     }
     return "?";
 }
@@ -96,13 +100,87 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
             r.value = thermo.viscosityLiquid(T, x);                         break;
         case Property::surfaceTension:
             r.value = thermo.surfaceTension(T, x);                          break;
+        case Property::thermalConductivity:
+            r.value = thermo.thermalConductivityLiquid(T, x);               break;
+        case Property::diffusivity:
+            r.value = thermo.diffusivityLiquidEffective(T, x);              break;
     }
 
     //  THEN THE DESCRIPTION, read from the decision the package took.
     r.quality.domain   = "not declared";
     r.quality.evidence = "not quantified";
     std::string pressure = "not applied";
-    if (const auto i = thermo.pureFluidCarrying(x))
+    const liquidTransport::ViscosityMeasurement* measured =
+        (p == Property::viscosity) ? thermo.liquidViscosityMeasurementFor(x) : nullptr;
+    if (measured)
+    {
+        //  A STATED MIXTURE VISCOSITY the case marks as its set's method
+        //  (C398 slice (d)): the value at every state inside its box, named by
+        //  what its file says it is (review row DF-04: a representative value,
+        //  an average, a measurement); at the stated point (T AND composition,
+        //  review row DG-08) the source's value, elsewhere the case's
+        //  assumption.  The origin is printed per site and origin, as the
+        //  density's is (review row DF-10).
+        r.methodId = "stated." + measured->name;
+        r.label = "property kernel: the case's " + liquidTransport::statedWords(*measured) + " ("
+                + measured->where + "), stood over the box the case declared"
+                  " (reason: " + measured->reason + ")";
+        const bool atPoint = liquidTransport::atStatedPoint(*measured, T,
+            liquidTransport::massFractionsOf(thermo.components(), measured->set, x));
+        r.quality.origin     = atPoint ? "literature" : "assumed";
+        {
+            std::string type, unit;
+            const bool site = who ? (type = who->type, unit = who->unit, true)
+                                  : PropertySourceLog::instance().current(type, unit);
+            static std::mutex mx;
+            static std::set<std::string> printed;
+            const std::string key = measured->name + "|" + (site ? type + " " + unit : "no unit")
+                                  + "|" + r.quality.origin;
+            bool fresh = false;
+            { std::lock_guard<std::mutex> lk(mx); fresh = printed.insert(key).second; }
+            if (fresh && record)
+                std::cout << "  [liquid viscosity] " << (site ? type + " " + unit : std::string("no unit"))
+                          << ": " << r.methodId << " (origin " << r.quality.origin << "; "
+                          << (atPoint ? "the source's stated point"
+                                      : "away from the source's stated point, the case's assumption")
+                          << ")\n";
+        }
+        r.quality.provenance = measured->where;
+        r.quality.domain     = "inside the case's box (hard)";
+        for (const std::size_t k : measured->set)
+            r.leaves.push_back({ thermo.comp(k).name(), r.methodId, 0.0 });
+        pressure = "not applied (saturated liquid)";
+    }
+    else if (p == Property::thermalConductivity || p == Property::diffusivity)
+    {
+        const bool k = (p == Property::thermalConductivity);
+        const std::string m = k ? thermo.liquidConductivityMethod() : thermo.liquidDiffusivityMethod();
+        r.methodId = m;
+        if (k)
+            r.label = "property kernel: the thermal-conductivity model and mixing rule the case"
+                      " selects (" + m + ")";
+        else
+        {
+            const auto& d = thermo.liquidDiffusivityDeclaration();
+            r.label = "property kernel: the effective liquid diffusivity the case declares --"
+                      " rule " + std::string(liquidTransport::ruleName(d.rule)) + " ("
+                    + liquidTransport::ruleEquation(d.rule) + ") on infinite-dilution values"
+                      " from " + (d.defaultModel.empty() ? std::string("the case's entries")
+                                                          : d.defaultModel
+                                  + (d.entries.empty() ? "" : " and the case's entries"))
+                    + ", the thermodynamic factor taken as 1";
+        }
+        r.quality.origin     = "predictive";
+        r.quality.provenance = "the case's transport { liquid { "
+                             + std::string(k ? "thermalConductivity" : "diffusivity") + " } }";
+        pressure = "not applied";
+        scalar zs = 0.0;
+        for (std::size_t q = 0; q < x.size(); ++q) if (x[q] > 0.0) zs += x[q];
+        for (std::size_t q = 0; q < x.size() && q < thermo.n(); ++q)
+            if (x[q] > 0.0)
+                r.leaves.push_back({ thermo.comp(q).name(), m, zs > 0.0 ? x[q] / zs : 0.0 });
+    }
+    else if (const auto i = thermo.pureFluidCarrying(x))
     {
         const std::string m = thermo.pureFluidMethod(*i);
         const PureFluidModel* model = thermo.pureFluidModel(*i);

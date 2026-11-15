@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1865,
+  "cases": 1866,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 25
@@ -24686,6 +24686,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/mixing01_water_acetone": {
    "application": "choupoProps",
    "ops": [
@@ -31544,6 +31558,7 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
@@ -35076,6 +35091,7 @@
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
     "tutorials/props/transport/table01_water_viscosity_points",
@@ -36442,6 +36458,7 @@
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
+    "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",

@@ -28,10 +28,10 @@
   constants for Montz B1-200, B2-300, C1-200, C2-200 and no gauze packing --
   nothing for A3-500M.  Rocha-Bravo-Fair needs only the geometry.
 
-  MEASURED INPUTS (Schulz section 2 and Table 1): diameter, bed height,
+  STATED INPUTS (Schulz section 2 and Table 1): diameter, bed height,
     installed area 478, void fraction 0.92, angle 60 deg, top pressure; the
-    liquid viscosity 0.539 mPa s (Table 1 -- the package has no
-    liquid-viscosity record for the xylenes).
+    liquid viscosity 0.539 mPa s (Table 1; the property dictionary carries it as the
+    set's stated value, constant/experiments/schulz2018_0p02bar_liquidViscosity.dat).
   ESTIMATED: the corrugation side S = 9 mm -- NOT in the paper ("with
     corrugation dimensions known", p. 765, but not printed); taken as Sulzer
     BX's, the gauze packing of the same area class (492 m2/m3, 60 deg) in
@@ -91,7 +91,6 @@ units
                 corrugationSide   0.009 m;     // ESTIMATED: Sulzer BX (RBF 1993 Table IV)
                 surface           gauze;       // RBF 1996 Eq 14
                 lightKey          pXylene;
-                liquidViscosity   5.39e-4;       // Pa s, Schulz Table 1
                 segments          100;
             }
         }

@@ -71,6 +71,7 @@ Description
 #include "core/Types.H"
 #include "solver/Convergence.H"
 #include "thermo/VapourAssociation.H"
+#include "thermo/transport/LiquidTransportDeclarations.H"   // C398 slice (d)
 #include <atomic>       // the package serial (C378 pilot)
 #include <map>
 #include <memory>
@@ -662,10 +663,11 @@ public:
     scalar diffusivityGas(scalar T_K, scalar P_Pa,
                           std::size_t i, std::size_t j) const;
 
-    // Liquid transport: optional sub-blocks of `transport`
-    //   liquidViscosity   { model Andrade;    }   // ln μ = A + B/T  (Pa·s)
-    //   liquidConductivity{ model SatoRiedel; }   // W/(m·K)
-    //   liquidDiffusivity { model WilkeChang; }   // D°_AB [m²/s], i=solute, j=solvent
+    // Liquid transport: optional sub-blocks of `transport { liquid { } }`
+    //   viscosity           { model Andrade;    }   // ln μ = A + B/T  (Pa·s)
+    //   thermalConductivity { model SatoRiedel; }   // W/(m·K)
+    //   diffusivity { returns infiniteDilution;     // D°_AB [m²/s], i=solute, j=solvent
+    //                 infiniteDilution { default { model WilkeChang; } } }
     // Mixture rules: selectable by `mixingRule` (C331) -- viscosity
     // logMoleAverage | GrunbergNissan, conductivity massFractionAverage |
     // Filippov | Li (transport/Liquid*MixingRule.H).
@@ -675,8 +677,23 @@ public:
     scalar viscosityLiquid(scalar T_K, const sVector& x) const;
     bool   hasLiquidConductivity() const { return !liquidConductivityLaws_.empty(); }
     scalar thermalConductivityLiquid(scalar T_K, const sVector& x) const;
-    bool   hasLiquidDiffusivity()  const { return liquidDiffusivity_ != nullptr; }
+    bool   hasLiquidDiffusivity()  const { return liquidDiffusivity_ != nullptr || !liquidDiffusionDecl_.entries.empty(); }
     scalar diffusivityLiquid(scalar T_K, std::size_t i, std::size_t j) const;
+    //  THE DECLARED QUANTITY (C398 slice (d); transport/LiquidTransportDeclarations.H):
+    //  the effective liquid diffusivity of the liquid x by the case's
+    //  `composition { rule; }`, with the thermodynamic factor it declares
+    //  taken.  Refused by name: no `returns effective`, three or more
+    //  components present (no reduction rule read), a pure liquid.
+    scalar diffusivityLiquidEffective(scalar T_K, const sVector& x) const;
+    const liquidTransport::DiffusivityDeclaration& liquidDiffusivityDeclaration() const
+    { return liquidDiffusionDecl_; }
+    std::string liquidDiffusivityMethod() const;        // "AndersonBabb[WilkeChang]" or ""
+    std::string liquidConductivityMethod() const;       // "model/rule" or ""
+    //  The case's measured mixture viscosities (`measured {}`), and the
+    //  `use method` one whose constituent set is x's (nullptr when none).
+    const std::vector<liquidTransport::ViscosityMeasurement>& liquidViscosityMeasurements() const
+    { return liquidViscosityMeasured_; }
+    const liquidTransport::ViscosityMeasurement* liquidViscosityMeasurementFor(const sVector& x) const;
 
     // Surface tension: optional sub-block `transport { surfaceTension {
     // model BrockBird; } }`.  A genuinely new property KIND.  When a phase
@@ -953,6 +970,10 @@ private:
     std::unique_ptr<LiquidViscosityModel>     liquidViscosity_;
     std::unique_ptr<LiquidConductivityModel>  liquidConductivity_;
     std::unique_ptr<LiquidDiffusivityModel>   liquidDiffusivity_;
+    liquidTransport::DiffusivityDeclaration   liquidDiffusionDecl_;        // C398 slice (d)
+    std::vector<liquidTransport::ViscosityMeasurement> liquidViscosityMeasured_;
+    scalar measuredOrCheckedViscosity(scalar T, const sVector& x, const scalar* computed) const;
+    scalar infiniteDilutionInMixture(scalar T, std::size_t i, std::size_t j, scalar muMix) const;
     std::unique_ptr<SurfaceTensionModel>      surfaceTension_;
     //  The LIQUID MIXING RULES (DEV.md 4c C331), one per property, built
     //  from the same sub-block as the pure model (`mixingRule <name>;`).

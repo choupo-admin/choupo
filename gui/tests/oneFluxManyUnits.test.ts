@@ -405,14 +405,14 @@ describe("one-flux-many-units: the lesson", () => {
       "PackingRBF.cpp:127": "r.kG = 0.054 * (s.DG / S)",
       "PackingRBF.cpp:129": "r.kL = 2.0 * std::sqrt(s.DL",
       "PackingRBF.cpp:133": "r.ae = beta * g.ap;",
-      "RateBasedSegment.cpp:469": "const scalar cG = rhoG / MV, cL = rhoL / ML;",
-      "RateBasedSegment.cpp:470": "c.betaV = cG * r.kG * r.ae * A_T * dz / Vref;",
-      "RateBasedSegment.cpp:471": "c.betaL = cL * r.kL * r.ae * A_T * dz / Vref;",
-      "RateBasedSegment.cpp:588": "R[r++] = yI[i] - K[i] * xI[i];",
-      "RateBasedSegment.cpp:606": "R[r++] = w[lk] - (c.betaV * (yI[lk] - s.ym[lk]) + 0.5 * (yI[lk] + s.ym[lk]) * wt);",
-      "RateBasedSegment.cpp:607": "R[r++] = w[lk] - (c.betaL * (s.xm[lk] - xI[lk]) + 0.5 * (xI[lk] + s.xm[lk]) * wt);",
-      "RateBasedSegment.cpp:600": "R[r++] = (i == lk) ? yI[lk] - (ys + m * (xI[lk] - s.xm[lk])) : sKx - 1.0;",
-      "RateBasedSegment.cpp:682": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
+      "RateBasedSegment.cpp:467": "const scalar cG = rhoG / MV, cL = rhoL / ML;",
+      "RateBasedSegment.cpp:468": "c.betaV = cG * r.kG * r.ae * A_T * dz / Vref;",
+      "RateBasedSegment.cpp:469": "c.betaL = cL * r.kL * r.ae * A_T * dz / Vref;",
+      "RateBasedSegment.cpp:585": "R[r++] = yI[i] - K[i] * xI[i];",
+      "RateBasedSegment.cpp:603": "R[r++] = w[lk] - (c.betaV * (yI[lk] - s.ym[lk]) + 0.5 * (yI[lk] + s.ym[lk]) * wt);",
+      "RateBasedSegment.cpp:604": "R[r++] = w[lk] - (c.betaL * (s.xm[lk] - xI[lk]) + 0.5 * (xI[lk] + s.xm[lk]) * wt);",
+      "RateBasedSegment.cpp:597": "R[r++] = (i == lk) ? yI[lk] - (ys + m * (xI[lk] - s.xm[lk])) : sKx - 1.0;",
+      "RateBasedSegment.cpp:679": "const scalar rr = 1.0 / (1.0 / c0.betaV + c0.m / c0.betaL);",
       "HenrysLaw.cpp:50": "H_ref_   = d->lookupScalar(\"H_ref\",   Dims::pressure);",
       "HenrysLaw.cpp:163": "return H_ref_ * std::exp(dHdiss_ / constant::R * (1.0/T - 1.0/T_ref_));",
       "ThermoPackage.cpp:1295": "K[i] = hl.H(T) / P;",
@@ -495,11 +495,11 @@ describe("one-flux-many-units: the numbers the prose states (MT-03, MT-04, MT-06
   it("the engine's beta is k a times the segment's volume over V_ref, and the limit mode is linearised (MT-04)", () => {
     expect(OFMU_ENGINE_SCOPE).toContain("made dimensionless by V_ref");
     expect(body(4)).toContain("linearised about the bulk liquid");
-    expect(body(7)).toContain("RateBasedSegment.cpp:600");
+    expect(body(7)).toContain("RateBasedSegment.cpp:597");
     const src = tree("src/unitOperations/distillation/RateBasedSegment.cpp").split("\n");
-    //  line 586 sits inside the `if (!limitMode)` branch; 598 is the other branch
-    expect(src.slice(584, 588).join("\n")).toContain("if (!limitMode)");
-    expect(src.slice(588, 600).join("\n")).toContain("else");
+    //  line 583 sits inside the `if (!limitMode)` branch; 595 is the other branch
+    expect(src.slice(581, 585).join("\n")).toContain("if (!limitMode)");
+    expect(src.slice(585, 597).join("\n")).toContain("else");
   });
 
   it("flags the pseudo-first-order value above the instantaneous limit (Missen's data, c_B = 0.01 mol/L)", () => {

@@ -304,6 +304,23 @@ scalar evaluateProperty(const std::string& propKey,
     if (propKey == "diffusivity_liquid" || propKey == "D_liquid"
         || propKey == "D_L")
         return thermo.diffusivityLiquid(T, 0, 1);           // m²/s (solute 0, solvent 1)
+    //  C398 slice (d).  `D_L_effective`: the quantity the property dictionary
+    //  DECLARES (`returns effective`), at the state's composition -- the value
+    //  a column's liquid film takes (refused for three components or more).
+    //  `D_L_inf_<solute>_in_<solvent>`: one infinite-dilution value, the
+    //  direction named (a declared entry where one exists, else the default
+    //  correlation in the pure solvent's viscosity).
+    if (propKey == "D_L_effective" || propKey == "diffusivity_liquid_effective")
+        return thermo.diffusivityLiquidEffective(T, xLiquid);   // m²/s
+    if (propKey.compare(0, 8, "D_L_inf_") == 0)
+    {
+        const std::string rest = propKey.substr(8);
+        const auto cut = rest.find("_in_");
+        if (cut == std::string::npos)
+            throw std::runtime_error("property '" + propKey + "': write D_L_inf_<solute>_in_<solvent>.");
+        return thermo.diffusivityLiquid(T, thermo.indexOf(rest.substr(0, cut)),
+                                        thermo.indexOf(rest.substr(cut + 4)));   // m²/s
+    }
     if (propKey == "surface_tension" || propKey == "surfaceTension"
         || propKey == "sigma")
         return thermo.surfaceTension(T, xLiquid);           // N/m
@@ -389,8 +406,9 @@ std::string propertyUnit(const std::string& k)
         || k == "k_gas" || k == "k" || k == "thermal_conductivity_liquid"
         || k == "k_liquid" || k == "k_L")                 return "W/(m*K)";
     if (k == "diffusivity" || k == "D_gas" || k == "D"
-        || k == "diffusivity_liquid" || k == "D_liquid" || k == "D_L")
-                                                          return "m2/s";
+        || k == "diffusivity_liquid" || k == "D_liquid" || k == "D_L"
+        || k == "D_L_effective" || k == "diffusivity_liquid_effective"
+        || k.compare(0, 8, "D_L_inf_") == 0)                  return "m2/s";
     if (k == "surface_tension" || k == "surfaceTension" || k == "sigma")
                                                           return "N/m";
     return {};

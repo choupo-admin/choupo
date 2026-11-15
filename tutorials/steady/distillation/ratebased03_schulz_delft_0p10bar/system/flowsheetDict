@@ -98,7 +98,6 @@ units
                 elementHeight     0.169 m;     // 2.2 m / 13 layers (Schulz section 2)
                 holeFraction      0;           // unperforated (Schulz section 2)
                 lightKey          pXylene;
-                liquidViscosity   3.91e-4;       // Pa s, Schulz Table 1
                 segments          100;
             }
         }

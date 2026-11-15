@@ -44,7 +44,7 @@ scalar WilkeChang::diffusivityLiquidBinary(const Component& solute,
     const scalar phi   = solvent.associationFactor();       // [-]
     const scalar Mb    = solvent.MW();                       // g/mol
     const scalar etaB  = muSolvent_PaS * 1.0e3;              // Pa·s -> cP
-    { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Wilke-Chang liquid diffusivity", "the solute volume V_A, which the correlation defines at the normal boiling point"); }
+    { static std::atomic<unsigned> seen{0}; PropertySourceLog::instance().parameterOnce(seen, "Wilke-Chang liquid diffusivity", "the solute volume V_A: the record's Vliq at its datum temperature (VliqT, 25 C when the record states none), where the correlation defines V_A at the normal boiling point (review row DF-03; the boiling-point volume through the property door is C398 slice d2)"); }
     const scalar Va_m3 = solute.Vliq();  // m³/mol, AS STORED: the correlation defines V_A at Tb, but most records store Vliq at 298 K (only the C378 `VliqT` records state another datum temperature); a known limitation, stated in the Theory Guide (review RB-13: -7.6 % in D on ratebased01 with the Tb volume)
     if (Va_m3 <= 0.0)
         throw std::runtime_error("WilkeChang: solute '" + solute.name()

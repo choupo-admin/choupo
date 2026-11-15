@@ -96,7 +96,6 @@ units
                     }
                 }
                 lightKey          pXylene;
-                liquidViscosity   3.91e-4;       // Pa s, Schulz Table 1
                 segments          100;
             }
         }

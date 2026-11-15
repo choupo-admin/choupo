@@ -107,7 +107,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         diffusivity_        = std::move(o.diffusivity_);
         liquidViscosity_    = std::move(o.liquidViscosity_);
         liquidConductivity_ = std::move(o.liquidConductivity_);
-        liquidDiffusivity_  = std::move(o.liquidDiffusivity_);
+        liquidDiffusivity_  = std::move(o.liquidDiffusivity_);   liquidDiffusionDecl_ = std::move(o.liquidDiffusionDecl_);   liquidViscosityMeasured_ = std::move(o.liquidViscosityMeasured_);   // C398 (d)
         surfaceTension_     = std::move(o.surfaceTension_);
         liquidViscosityMixing_    = std::move(o.liquidViscosityMixing_);
         liquidConductivityMixing_ = std::move(o.liquidConductivityMixing_);
@@ -535,7 +535,7 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
         const DictPtr b = td->subDict("liquidViscosity");
         if (b->found("model")) liquidViscosity_ = LiquidViscosityModel::New(b);
         liquidViscosityMixing_ = LiquidViscosityMixingRule::New(b);
-        resolveLiquidLaws("liquidViscosity", b);
+        resolveLiquidLaws("liquidViscosity", b);   liquidViscosityMeasured_ = liquidTransport::readViscosityMeasurements(b, components_);   // C398 (d)
     }
     if (td->found("liquidConductivity"))
     {
@@ -544,9 +544,9 @@ void ThermoPackage::readTransportBlock(const DictPtr& td)
         liquidConductivityMixing_ = LiquidConductivityMixingRule::New(b);
         resolveLiquidLaws("liquidConductivity", b);
     }
-    if (td->found("liquidDiffusivity"))
-        liquidDiffusivity_ =
-            LiquidDiffusivityModel::New(td->subDict("liquidDiffusivity"));
+    if (td->found("liquidDiffusivity"))   // the declared quantity, C398 (d): LiquidTransportDeclarations.H
+        if (!(liquidDiffusionDecl_ = liquidTransport::readDiffusivity(td->subDict("liquidDiffusivity"), components_)).defaultModel.empty())
+            { auto md = std::make_shared<Dictionary>("liquidDiffusivity"); md->insert("model", EntryValue(liquidDiffusionDecl_.defaultModel)); liquidDiffusivity_ = LiquidDiffusivityModel::New(md); }
     if (td->found("surfaceTension"))
     {
         const DictPtr b = td->subDict("surfaceTension");
@@ -2237,7 +2237,7 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
                            "the formulation's own (T, density); at the saturated liquid");
             return m.mu(T, m.p_sat(T));   // saturated-liquid state
         }
-    if (liquidViscosityLaws_.empty())
+    if (liquidViscosityMeasurementFor(x)) { return measuredOrCheckedViscosity(T, x, nullptr); }   if (liquidViscosityLaws_.empty())   // a measured mixture value first (C398 (d))
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum, "ThermoPackage::viscosityLiquid: no model ---"
             " add `transport { liquid { viscosity { } } }` to the property"
             " dictionary (each constituent then takes its record's preferred"
@@ -2249,7 +2249,7 @@ scalar ThermoPackage::viscosityLiquid(scalar T, const sVector& x) const
     for (std::size_t i = 0; i < N; ++i)
         if (x[i] > 0.0)
             mu[i] = pureLiquidViscosity(i, T);
-    return liquidViscosityMixing_->mix(T, x, mu, liquidMixingContext());   // Pa·s
+    const scalar mixed = liquidViscosityMixing_->mix(T, x, mu, liquidMixingContext());   return liquidViscosityMeasured_.empty() ? mixed : measuredOrCheckedViscosity(T, x, &mixed);   // Pa·s; a `use check` beside it (C398 (d))
 }
 
 scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) const
@@ -2286,17 +2286,17 @@ scalar ThermoPackage::thermalConductivityLiquid(scalar T, const sVector& x) cons
 
 scalar ThermoPackage::diffusivityLiquid(scalar T, std::size_t i, std::size_t j) const
 {
-    if (!liquidDiffusivity_)
-        throw std::runtime_error("ThermoPackage::diffusivityLiquid: no model ---"
-            " add `transport { liquid { diffusivity { model WilkeChang; } } }` to the"
-            " property dictionary.");
-    if (liquidViscosityLaws_.empty())
-        throw std::runtime_error("ThermoPackage::diffusivityLiquid: needs the"
-            " solvent viscosity --- add a `liquid { viscosity { } }` block"
-            " alongside (in the property dictionary's transport{} block).");
-    // i = solute, j = solvent.
-    const scalar muB = pureLiquidViscosity(j, T);
-    return liquidDiffusivity_->diffusivityLiquidBinary(components_.at(i), components_.at(j), T, muB);
+    //  D0 of solute i at infinite dilution in solvent j, in j's PURE viscosity
+    //  (the textbook definition of the correlation).  ONE home since C398 (d):
+    //  infiniteDilutionInMixture, which takes a declared entry first, refuses
+    //  the default Wilke-Chang with water as the solute (Poling 5th ed.
+    //  p. 11.22, review row DF-01), and names the slice's grammar in every
+    //  remedy (review row DG-05).  `muMix` <= 0 asks for the pure solvent's
+    //  viscosity.
+    //
+    //  (kept to the line count it had, so that no line an EduTool lesson
+    //  cites below it moved)
+    return infiniteDilutionInMixture(T, i, j, -1.0);
 }
 
 scalar ThermoPackage::surfaceTension(scalar T, const sVector& x) const
@@ -3306,6 +3306,8 @@ void ThermoPackage::traceSelf() const
             emit(recordLaws::modelLine("mixture", std::string(k[1]) + ".mixingRule", info.rule, "the package's rule",
                  orNone(info.ruleWindow, "none declared"), orNone(info.ruleCitation, "not stated by the rule")));
     }
+    for (const auto& m : liquidViscosityMeasured_) emit(liquidTransport::describe(m, components_));   // C398 (d)
+    for (const auto& line : liquidTransport::describe(liquidDiffusionDecl_, components_)) emit(line);
     if (!transportMethodInfo("viscosity").model.empty())
         emit(recordLaws::modelLine("mixture", "vapourViscosity.mixingRule", "Wilke", "fixed in code",
              "none declared", "transport/GasMixingRules.H"));
@@ -3363,6 +3365,266 @@ void ThermoPackage::verifyRecordLawPins(const std::vector<RecordLawPin>& pins,
                 + (ch.law.empty() ? std::string("its one law") : ch.law) + "`): a pin this"
                 " formulation cannot honour is refused rather than printed as applied.");
     }
+}
+
+// ---- THE LIQUID DIFFUSIVITY A PACKAGE RETURNS, AND A MEASURED MIXTURE VISCOSITY ----
+//  DEV.md 4c C398 slice (d); the grammar and its refusals:
+//  transport/LiquidTransportDeclarations.H.  Placed at the end of the file so
+//  that no line an EduTool lesson cites above it moved.
+namespace {
+std::string fmtG(const char* f, double v)
+{
+    char b[64];
+    std::snprintf(b, sizeof b, f, v);
+    return b;
+}
+std::string setWords(const std::vector<Component>& comps, const std::vector<std::size_t>& set)
+{
+    std::string s;
+    for (const std::size_t i : set) s += (s.empty() ? "" : " + ") + comps[i].name();
+    return s;
+}
+} // namespace
+
+const liquidTransport::ViscosityMeasurement*
+ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
+{
+    if (liquidViscosityMeasured_.empty()) return nullptr;
+    std::vector<std::size_t> set;
+    for (std::size_t i = 0; i < x.size() && i < components_.size(); ++i)
+        if (x[i] > 0.0) set.push_back(i);
+    for (const auto& m : liquidViscosityMeasured_)
+    {
+        if (m.use != "method") continue;
+        if (m.set == set) return &m;
+        //  THE SET IS PART OF THE BOX (review row DG-02).  A liquid that shares
+        //  a constituent with the stated value's set but is not that set -- a
+        //  trace of another component, or one of the set's components gone --
+        //  is OUTSIDE the box: refused, never handed over to a law.  A liquid
+        //  that shares none is another liquid, and this value says nothing of it.
+        bool shares = false;
+        for (const std::size_t i : set)
+            if (std::find(m.set.begin(), m.set.end(), i) != m.set.end()) shares = true;
+        if (!shares) continue;
+        //  A PURE CONSTITUENT of the stated set is not a mixture the statement
+        //  describes (review row DG-11): it is priced by its own record law,
+        //  said once per run -- a stated mixture value never makes its pure
+        //  constituents unpriceable.
+        if (set.size() == 1)
+        {
+            const std::string msg = "the " + liquidTransport::statedWords(m) + " does not describe pure "
+                + components_[set.front()].name() + "; its record law is used";
+            if (AdvisoryLog::instance().addAnnouncedOnce("statedViscosityPure:" + m.name + ":"
+                    + components_[set.front()].name(), "approximation", "info", "liquid viscosity", msg))
+                std::cout << "  [liquid viscosity] " << msg << "\n";
+            continue;
+        }
+        std::vector<std::size_t> extra, missing;
+        for (const std::size_t i : set)
+            if (std::find(m.set.begin(), m.set.end(), i) == m.set.end()) extra.push_back(i);
+        for (const std::size_t i : m.set)
+            if (std::find(set.begin(), set.end(), i) == set.end()) missing.push_back(i);
+        throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+            "liquid viscosity of " + setWords(components_, set) + ": the case's "
+            + liquidTransport::statedWords(m) + " (" + m.where + ") describes "
+            + setWords(components_, m.set) + ", and this liquid "
+            + (extra.empty() ? std::string() : "also holds " + setWords(components_, extra))
+            + (!extra.empty() && !missing.empty() ? " and " : "")
+            + (missing.empty() ? std::string() : "holds no " + setWords(components_, missing))
+            + " -- outside the box of the stated value (its set is part of its box); a stated"
+              " value is never handed over to a law.",
+            "a liquid of exactly the stated set, or a stated value for this set");
+    }
+    return nullptr;
+}
+
+//  `computed` null: the `use method` measurement of x's set IS the value
+//  inside its box, and a state outside the box is refused (never handed over
+//  to a law).  `computed` given: the value stands, and each `use check`
+//  measurement of x's set inside its box is printed beside it, once.
+scalar ThermoPackage::measuredOrCheckedViscosity(scalar T, const sVector& x,
+                                                 const scalar* computed) const
+{
+    if (!computed)
+    {
+        const liquidTransport::ViscosityMeasurement& m = *liquidViscosityMeasurementFor(x);
+        const std::string out = liquidTransport::outsideBox(m, T,
+            liquidTransport::massFractionsOf(components_, m.set, x));
+        if (!out.empty())
+            throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+                "liquid viscosity of " + setWords(components_, m.set) + ": " + out
+                + " is outside the box the case declared for its " + liquidTransport::statedWords(m)
+                + " (" + m.where + ").  A stated value the case marks as the set's method is never"
+                  " extrapolated nor handed over to another.",
+                "a state inside the box, or a wider box with its reason (a hypothesis)");
+        return m.mu;
+    }
+    std::vector<std::size_t> set;
+    for (std::size_t i = 0; i < x.size() && i < components_.size(); ++i)
+        if (x[i] > 0.0) set.push_back(i);
+    for (const auto& m : liquidViscosityMeasured_)
+    {
+        if (m.use != "check" || m.set != set) continue;
+        const std::string out = liquidTransport::outsideBox(m, T,
+            liquidTransport::massFractionsOf(components_, m.set, x));
+        const std::string msg = out.empty()
+            ? liquidTransport::statedWords(m) + " " + fmtG("%.6g Pa s", m.mu) + " beside the computed "
+              + fmtG("%.6g Pa s", *computed) + " (" + fmtG("%+.3g %%", (*computed / m.mu - 1.0) * 100.0)
+              + "), at " + fmtG("%.6g K", T) + "; checked, not used"
+            : liquidTransport::statedWords(m) + ": not at its conditions (" + out + ")";
+        if (AdvisoryLog::instance().addAnnouncedOnce("liquidViscosityChecked:" + m.name,
+                "approximation", "info", "liquid viscosity", msg))
+            std::cout << "  [liquid viscosity] " << msg << "\n";
+    }
+    return *computed;
+}
+
+//  D0 of solute i in solvent j.  `muMix` > 0: as a VISCOSITY-CORRECTED rule
+//  needs it, D0_ij mu_j / mu -- for a correlation in 1/mu_j (Wilke-Chang)
+//  that IS the correlation evaluated in the mixture's viscosity, computed so,
+//  term for term; for a declared datum, the datum times its solvent's pure
+//  viscosity over the mixture's.  `muMix` <= 0: D0_ij as declared.
+scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::size_t j,
+                                                scalar muMix) const
+{
+    //  The pure solvent's viscosity, for a correlation in its textbook form.
+    auto pureSolvent = [&]()
+    {
+        if (liquidViscosityLaws_.empty())
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                "liquid diffusivity of " + components_[i].name() + " at infinite dilution in "
+                + components_[j].name() + ": the correlation reads the solvent's viscosity, and"
+                  " the property dictionary declares no liquid viscosity.",
+                "`transport { liquid { viscosity { } } }` (each record's law) beside the"
+                " diffusivity block");
+        return pureLiquidViscosity(j, T);
+    };
+    if (const auto* e = liquidDiffusionDecl_.entryFor(i, j))
+    {
+        if (!e->model.empty())
+        {
+            //  THE CORRELATION NAMED FOR THIS PAIR (an entry with `model` and its
+            //  reason; e.g. Wilke-Chang with water as the solute, outside the
+            //  method's stated scope, which the view marks).
+            auto md = std::make_shared<Dictionary>("liquidDiffusivity");
+            md->insert("model", EntryValue(e->model));
+            const auto mdl = LiquidDiffusivityModel::New(md);
+            return mdl->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
+                                                muMix > 0.0 ? muMix : pureSolvent());
+        }
+        if (T < e->boxT.first || T > e->boxT.second)
+            throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+                "liquid diffusivity of " + components_[i].name() + " at infinite dilution in "
+                + components_[j].name() + ": T = " + fmtG("%.6g K", T) + " is outside the box ("
+                + fmtG("%.6g", e->boxT.first) + fmtG("-%.6g K", e->boxT.second) + ") the case"
+                " declared for its datum (" + e->where + ").  A declared datum is never"
+                " extrapolated nor handed over to the default correlation.",
+                "a state inside the box, or a wider box with its reason (a hypothesis)");
+        if (!(muMix > 0.0)) return e->D;
+        return e->D * pureLiquidViscosity(j, T) / muMix;
+    }
+    if (!liquidDiffusivity_)
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity of " + components_[i].name() + " at infinite dilution in "
+            + components_[j].name() + ": " + (liquidDiffusionDecl_.declared
+                ? "the property dictionary declares entries but none for this pair and"
+                  " direction, and no default correlation"
+                : "the property dictionary declares no liquid diffusivity")
+            + " -- write `transport { liquid { diffusivity { returns infiniteDilution;"
+              " infiniteDilution { default { model WilkeChang; } entries ( { solute "
+            + components_[i].name() + "; solvent " + components_[j].name()
+            + "; kind infiniteDilution; ... } ); } } } }`.",
+            "`transport { liquid { diffusivity { returns infiniteDilution; infiniteDilution {"
+            " default { model WilkeChang; } entries ( { solute " + components_[i].name()
+            + "; solvent " + components_[j].name() + "; kind infiniteDilution; ... } ); } } } }`");
+    if (liquidTransport::isWater(components_[i]))
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity of " + components_[i].name() + " at infinite dilution in "
+            + components_[j].name() + ": " + liquidTransport::waterSoluteRefusal(
+                liquidDiffusivity_->modelName(), components_[j].name()),
+            "an entry for the pair (a value with its source, or the correlation named with its reason)");
+    return liquidDiffusivity_->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
+                                                        muMix > 0.0 ? muMix : pureSolvent());
+}
+
+scalar ThermoPackage::diffusivityLiquidEffective(scalar T, const sVector& x) const
+{
+    using namespace liquidTransport;
+    const DiffusivityDeclaration& d = liquidDiffusionDecl_;
+    if (!d.declared)
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity: the property dictionary declares no `transport { liquid {"
+            " diffusivity { } } }`.",
+            "`diffusivity { returns effective; composition { rule <name>; } infiniteDilution {"
+            " default { model WilkeChang; } } thermodynamicFactor { take 1; } }`");
+    if (d.returns != Returns::effective)
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity: the property dictionary returns `" + std::string(returnsName(d.returns))
+            + "` values, and this consumer takes the EFFECTIVE diffusivity of the liquid.",
+            "`returns effective;` with its `composition { rule <name>; }` and"
+            " `thermodynamicFactor { take 1; }`");
+    std::vector<std::size_t> present;
+    for (std::size_t k = 0; k < x.size() && k < components_.size(); ++k)
+        if (x[k] > 0.0) present.push_back(k);
+    if (present.size() >= 3)
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity: an effective diffusivity of a constituent in a liquid of "
+            + std::to_string(present.size()) + " components (" + setWords(components_, present)
+            + ") is refused -- no rule that reduces the pair values to it has been read (Taylor"
+              " & Kooijman 2014 define D_i,eff, Eq. 3.26, and give no formula for it; the"
+              " multicomponent Vignes rule is refused until its source is read).  DEV.md 4c"
+              " C398 slice (d), ruling 5.",
+            "a binary liquid, or `returns infiniteDilution` for the pair values");
+    if (present.size() < 2)
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity: the liquid is pure, so its diffusivity is a self-diffusion"
+            " coefficient (kind `self`), which no datum or rule of this slice provides.",
+            "a liquid of two components");
+    const std::size_t a = present[0], b = present[1];
+    scalar Dab = 0.0, Dba = 0.0;     // D0 of a in b, D0 of b in a
+    if (ruleIsViscosityCorrected(d.rule))
+    {
+        const scalar mu = viscosityLiquid(T, x);
+        Dab = infiniteDilutionInMixture(T, a, b, mu);
+        Dba = infiniteDilutionInMixture(T, b, a, mu);
+    }
+    else
+    {
+        Dab = diffusivityLiquid(T, a, b);
+        Dba = diffusivityLiquid(T, b, a);
+    }
+    //  Gamma is taken as 1 (`thermodynamicFactor { take 1; }`, required with
+    //  `returns effective`): nothing multiplies.
+    switch (d.rule)
+    {
+        case Rule::CaldwellBabb:
+        case Rule::AndersonBabb:
+            return x[a] * Dba + x[b] * Dab;
+        case Rule::Vignes:
+        case Rule::LefflerCullinan:
+            return std::pow(Dba, x[a]) * std::pow(Dab, x[b]);
+        case Rule::none: break;
+    }
+    throw std::logic_error("diffusivityLiquidEffective: no rule (the reader refuses this)");
+}
+
+std::string ThermoPackage::liquidDiffusivityMethod() const
+{
+    const auto& d = liquidDiffusionDecl_;
+    if (!d.declared) return "";
+    std::string base = d.defaultModel;
+    if (!d.entries.empty()) base += std::string(base.empty() ? "" : "+") + "entries";
+    if (d.returns == liquidTransport::Returns::infiniteDilution) return "infiniteDilution[" + base + "]";
+    return std::string("effective.") + liquidTransport::ruleName(d.rule) + "[" + base + "]";
+}
+
+std::string ThermoPackage::liquidConductivityMethod() const
+{
+    //  review row DF-05: a block with no model word reads each record's law;
+    //  the source then names that, never an empty string.
+    if (!liquidConductivityMixing_) return "";
+    return (liquidConductivity_ ? liquidConductivity_->modelName() : std::string("recordLaws"))
+         + "/" + liquidConductivityMixing_->ruleName();
 }
 
 //  THE LAWS A NO-WORD VISCOSITY BLOCK TOOK, for the per-unit [liquid
