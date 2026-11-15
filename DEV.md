@@ -3518,6 +3518,42 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398, SLICES (c) AND (d): RULINGS AT THE FIRST REVIEW (2026-11-15).**
+> Four reviewers, two per slice, read the slices by measurement: (c) rows
+> TB-01..05 and TG-01..16, (d) rows DF-01..12 and DG-01..10 (reports under
+> docs/reviews/2026-11-14-c398c-* and -c398d-* at the landing).  Both go
+> back for a second round.  Rulings: (1) V4 AMENDED: a table of a property
+> that must be positive (viscosity, Cp, density, conductivity,
+> diffusivity) refuses a value <= 0 under EVERY interpolation, not only the
+> log forms (TG-08: a negative point under `linear` ran at exit 0).  (2) A
+> PropertyDomainError propagates through every catch on a property path
+> (TG-01: a Cp table refused outside its span became H = 0 at exit 0,
+> swallowed in the flowsheet's enthalpy and the blend fallback).  (3) An
+> experiments file resolves from the `constant/` of the dictionary that
+> DECLARES the pin, never by an upward walk from the working directory
+> (TG-02: a sector took the root's file); the density pilot's reader, which
+> shared the walk, is fixed in the same slice.  (4) The default
+> Wilke-Chang refuses a pair whose solute is water (Poling p. 11.22); the
+> remedy is a pair entry, a value with its source or an explicit choice of
+> the method with a reason, marked outside the method's stated scope
+> (DF-01).  (5) A measured liquid viscosity whose components differ from
+> those present is refused at evaluation, never handed to the law (DG-02);
+> a one-component measured set is refused, the remedy a table pin or a
+> record law, so a pure liquid has one viscosity per run (DG-03).  (6) A4
+> refuses every key the column reads as a property at every depth (DG-01:
+> `hydraulics { sigma }` passed); aceticAcid02_plant's typed surface
+> tension, read from no source, is removed and the package's used, its
+> moved rows listed at the landing.  (7) A stated value (a paper's
+> "representative" or averaged property) is never printed as a measurement
+> (DF-04).  (8) SLICE d2 REGISTERED: Wilke-Chang's solute volume at the
+> normal boiling point, as the method defines it, through the door (DF-03:
+> today the record's 25 C volume, +2 to +6 % on the 16 column cases), after
+> (d), with its own moved rows.  (9) DG-10 (a zero liquid-viscosity
+> interaction must be declared, ruling 6) goes to the migration lane.  (10)
+> ORDER: (c) lands first; (d) is rebased on it with its local reader
+> adapter replaced by a shim over (c)'s reader; ONE full sweep covers both,
+> because both reach the package's shared paths.
+
 > **C398 SLICES (a)+(b) LANDED (2026-11-14), with PA-09 and the B1 review
 > rows.**  Named `variants {}` in a case's property dictionary selected by
 > `thermo <name>;`; the property block as the atom inside `transport`;
