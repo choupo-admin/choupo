@@ -33,10 +33,20 @@ Selection select(const ThermoPackage& thermo, scalar T, scalar P,
         sVector pure(n, 0.0); pure[i] = 1.0;
         scalar rhoPure = 0.0;
         try { rhoPure = thermo.density(T, P, pure, ph); }
-        //  NOT rethrown (C398 TG-01, decided per site): this is the SELECTION
-        //  of the priced set -- a component no route can price a pure liquid
-        //  volume for is DROPPED and the dropped fraction is published and
-        //  announced by the caller, never a number in its place.
+        //  THE SELECTION OF THE PRICED SET (C398 review rows TG-01, TG-18).
+        //  The designed case only -- a component at or above its critical
+        //  temperature, a gas dissolved in the liquid -- is DROPPED, and the
+        //  dropped fraction is published and announced by the caller, never a
+        //  number in its place.  Every OTHER hard refusal of a pure liquid (a
+        //  reference equation below its record's Tmin, a measurement or a
+        //  solution law outside its box) is a real liquid the run cannot price:
+        //  it propagates.
+        catch (const PropertyDomainError& e)
+        {
+            if (e.kind == PropertyDomainError::Kind::outsideHardDomain && !e.aboveCriticalTemperature)
+                throw;
+            rhoPure = 0.0;
+        }
         catch (const std::exception&) { rhoPure = 0.0; }
         if (rhoPure > 0.0 && std::isfinite(rhoPure))
         { s.zPriced[i] = z[i]; s.keptFraction += z[i]; }

@@ -297,7 +297,7 @@ void canon(const DictPtr& d, std::ostringstream& o)
     {
         if (k == "components" || k == "binaryPairsBase" || k == "activeComponents"
             || k == "variants"
-            || k == "experimentsDir")   // where a table pin was declared: a path, not a choice (C398 TG-15: the identity carries it)
+            || k == "@experimentsDir")   // where a table pin was declared (the internal key, ExperimentsFile.H): a path, not a choice (C398 TG-15: the identity carries it)
             continue;
         o << k << "=";
         const auto& v = d->entryValue(k);

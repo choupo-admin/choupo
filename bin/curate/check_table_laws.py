@@ -7,7 +7,7 @@ its declared interpolation say, refuses outside them, and is read from the right
     bin/curate/check_table_laws.py
 
 WHY (DEV.md 4c C398 slice (c), the review rows TG-01..14 and TB-01..05 of its
-second round).  The view gate compares a table with itself (the view's value and
+second round, TG-17..21 and TB-06 of its third).  The view gate compares a table with itself (the view's value and
 the object's come from one code path), so the arithmetic of a table, its hard
 ends and the file a pin reads are held HERE, by running the engine on copies of
 the shipped witnesses and recomputing in this gate, independently, what the
@@ -18,16 +18,19 @@ ARMS
       four variants pin water's liquid viscosity to the case's table under
       linear, logLinear, logReciprocal and monotoneCubic, evaluated at five
       temperatures that are NOT nodes; each value must equal this gate's own
-      evaluation of the same points (Fritsch-Carlson limiter included) to 1e-12.
-  (b) A HEAT-CAPACITY TABLE AND ITS INTEGRALS (TG-11, TB-03).  A copy of table03
-      pinning the case's Cp table (linear, monotoneCubic, and monotoneCubic with
-      `extend { upTo 105 degC; }`): Cp at non-node temperatures (one in the
-      segment where the limiter acts) and inside the extension against this
-      gate's evaluation (1e-12); the liquid enthalpy and entropy differences
+      evaluation of the same points (Fritsch-Carlson limiter included) to the
+      last printed digit (5e-12 relative: the result block prints %.12g).
+  (b) A HEAT-CAPACITY TABLE AND ITS INTEGRALS (TG-11, TB-03, TG-20).  A copy of
+      table03 pinning the case's Cp table (linear, monotoneCubic, monotoneCubic
+      with `extend { upTo 105 degC; }`, and monotoneCubic with `extend { downTo
+      260 K; }`): Cp at non-node temperatures (one in the segment where the
+      limiter acts) and inside BOTH extensions against this gate's evaluation
+      (5e-12); the liquid enthalpy and entropy differences
       between two temperatures, priced by (P, H) flashes, against this gate's
       Gauss-Legendre integrals of the same interpolant -- as the difference
       from the record's constant-Cp law over the same interval, so that every
-      term that is not Cp cancels -- to 1e-8 of the interval's sensible part.
+      term that is not Cp cancels -- to 1e-8 of the interval's sensible part,
+      over one interval into the upper extension and one into the lower.
   (c) A HARD REFUSAL IS NEVER A NUMBER (TG-01).  pipe01 with a caloric table pin
       and the feed at 380 K: the run must exit non-zero and name the table.
   (d) THE TRIAL-STATE LESSON IS ASSERTED (TG-03).  table03 (an EXPECTED-FAIL
@@ -45,11 +48,27 @@ ARMS
       logReciprocal), and neither is the root decoy's.
   (g) RECORD REFUSALS (TG-10, TB-02): a record table without a source; `extend`
       in a record; a per-mass column on a record with MW <= 0.
-  (h) REFUSALS BY NAME (TG-08, TG-12, TG-14): a value <= 0 under a linear
-      interpolation; a density point's mass fraction in `deg`, its density in
+  (h) REFUSALS BY NAME (TG-08, TG-12, TG-14, TB-06): a value <= 0 under a linear
+      interpolation, printed as the file writes it, with its unit; a density point's mass fraction in `deg`, its density in
       `ppm`, its temperature in `degC`; an `extend` bound in bar names the
       table; a caloric table pin of a component the system does not hold says
       "not in the system".
+  (i) `experimentsDir` IS NOT A WORD A DICTIONARY WRITES (TG-17): written in a
+      table pin (pointing at a decoy outside the case) and in a density
+      measurement entry, it is refused by name.
+  (j) A UNIT'S INLINE `thermo {}` READS THE UNIT'S OWN constant/ (TG-19): a copy
+      of table05 whose sector-A pipe pins the table in its own flowsheetDict,
+      with a different file in that unit's constant/experiments/: the pipe takes
+      that file's value (neither its sector's, nor the root decoy's); without
+      the file, the run refuses naming the unit's path (no walk up).
+  (k) THE PRICED-SET SELECTION DROPS ONLY A COMPONENT ABOVE ITS Tc (TG-18): the
+      catch in PricedDensity.cpp rethrows every other hard refusal, and the mark
+      it reads is set only at the two critical-temperature tests; apalutamide01,
+      whose recovered-solvent tank carries dissolved N2, runs and says the N2 is
+      left out.  The rethrow path is reached by NO input today: the density
+      route the selection calls (ThermoPackage::density) refuses outside a hard
+      domain only above Tc; the arm holds the source so that the next such
+      refusal is rethrown, as ruled.
 
 NOT CHECKED: whether the handbook's numbers are right (they are transcribed and
 cited); a table in a unit's search other than the (P, H) flash and the pipe; a
@@ -59,6 +78,8 @@ archive); 2-D tables (none exist).
     reads: src/thermo/PropertyTable.cpp src/thermo/heatCapacity/TableCp.cpp
     reads: src/thermo/transport/TableViscosity.cpp src/thermo/RecordLaws.cpp
     reads: src/thermo/liquidProperty/ExperimentsFile.cpp src/thermo/Database.cpp
+    reads: src/thermo/PricedDensity.cpp src/thermo/ThermoPackage.cpp
+    reads: src/thermo/liquidProperty/PureFluidLeaf.cpp src/unitOperations/flowsheet/Flowsheet.cpp
 """
 import json
 import math
@@ -83,6 +104,7 @@ T03 = ROOT / "tutorials/props/heat/table03_trial_state_refused"
 T05 = ROOT / "tutorials/steady/flowsheets/table05_sector_table_pins"
 PIPE = ROOT / "tutorials/steady/hydraulics/pipe01_water_line"
 DENS = ROOT / "tutorials/steady/thermo/liquidDensity04_NaOHpoint"
+APAL = ROOT / "tutorials/batch/plant/apalutamide01_tablets"
 fails = []
 said = []
 PRINTED = 5.0e-12   # the result block prints %.12g: agreement to its last digit
@@ -165,12 +187,16 @@ def seg(x, t):
     return k
 
 
-def interp(x, y, how, t, up=None):
-    """The value at t (the end segment's chord inside an extension up to `up`)."""
+def interp(x, y, how, t, up=None, down=None):
+    """The value at t (an end segment's chord inside an extension up to `up` or
+    down to `down`)."""
     if t > x[-1]:
         assert up is not None and t <= up
         k = len(x) - 2
         return chord(x, y, how, k, t)
+    if t < x[0]:
+        assert down is not None and t >= down
+        return chord(x, y, how, 0, t)
     k = seg(x, t)
     if t in x:
         return y[x.index(t)]
@@ -277,22 +303,26 @@ def arm_b(tmp):
            "  interpolation monotoneCubic;  reason \"check_table_laws (b)\"; } ); } } }\n"
            "    c_ext { caloric { liquidHeatCapacity { pin ( { component water;  table crcWaterCp;"
            "  interpolation monotoneCubic;  extend { upTo 105 degC;  reason \"check_table_laws (b)\"; }"
+           "  reason \"check_table_laws (b)\"; } ); } } }\n"
+           "    c_down { caloric { liquidHeatCapacity { pin ( { component water;  table crcWaterCp;"
+           "  interpolation monotoneCubic;  extend { downTo 260 K;  reason \"check_table_laws (b)\"; }"
            "  reason \"check_table_laws (b)\"; } ); } } }\n")
     tp.write_text(t.replace("variants\n{\n", "variants\n{\n" + var, 1))
     cps = [("c_linear", "linear", 299.37), ("c_linear", "linear", 341.0),
            ("c_mono", "monotoneCubic", 308.15), ("c_mono", "monotoneCubic", 341.0),
-           ("c_ext", "monotoneCubic", 376.0)]
+           ("c_ext", "monotoneCubic", 376.0), ("c_down", "monotoneCubic", 264.0)]
     ops = "".join(
         f"    {{ name b_cp{i}; type propertyPoint; thermo {v};\n"
         f"      state {{ T {T!r} K; P 5 bar; composition {{ water 1.0; }} }} properties ( Cp_liquid_water ); }}\n"
         for i, (v, h, T) in enumerate(cps))
     pairs = [(310.0, 336.6), (310.0, 376.0)]
-    for v in ("", "c_ext"):
-        for T in sorted({p for q in pairs for p in q}):
+    down = [(264.0, 290.0)]
+    for v, ps, lo in (("", pairs + down, 261.0), ("c_ext", pairs, 300.0), ("c_down", down, 261.0)):
+        for T in sorted({p for q in ps for p in q}):
             th = f" thermo {v};" if v else ""
             ops += (f"    {{ name b_h_{v or 'const'}_{T!r}; type flashSpec;{th} composition {{ water 1; }}\n"
                     f"      spec {{ pair PH; P 5 bar; targetFrom {{ T {T!r} K; P 5 bar; }} seed {T!r} K; }}\n"
-                    f"      window {{ Tmin 300 K; Tmax 378 K; }} }}\n")
+                    f"      window {{ Tmin {lo!r} K; Tmax 378 K; }} }}\n")
     (d / "system/propsDict").write_text("operations\n(\n" + ops + ");\n")
     (d / ".expect-nonconvergence").unlink(missing_ok=True)
     rc, out = run(PROPS, d)
@@ -302,17 +332,17 @@ def arm_b(tmp):
     worst = 0.0
     for i, (v, h, T) in enumerate(cps):
         got = op(res, f"b_cp{i}").get("Cp_liquid_water")
-        want = interp(xs, ys, h, T, up=378.15)
+        want = interp(xs, ys, h, T, up=378.15, down=260.0)
         if got is None or rel(got, want) > PRINTED:
             fail("b", f"Cp {h} at {T} K: engine {got!r}, this gate {want!r}")
         else:
             worst = max(worst, rel(got, want))
-    f = lambda T: interp(xs, ys, "monotoneCubic", T, up=378.15)
-    for a, b in pairs:
+    f = lambda T: interp(xs, ys, "monotoneCubic", T, up=378.15, down=260.0)
+    for v, (a, b) in [("c_ext", p) for p in pairs] + [("c_down", p) for p in down]:
         hc = op(res, f"b_h_const_{b!r}").get("ref_H", math.nan) - op(res, f"b_h_const_{a!r}").get("ref_H", math.nan)
-        ht = op(res, f"b_h_c_ext_{b!r}").get("ref_H", math.nan) - op(res, f"b_h_c_ext_{a!r}").get("ref_H", math.nan)
+        ht = op(res, f"b_h_{v}_{b!r}").get("ref_H", math.nan) - op(res, f"b_h_{v}_{a!r}").get("ref_H", math.nan)
         sc = op(res, f"b_h_const_{b!r}").get("S", math.nan) - op(res, f"b_h_const_{a!r}").get("S", math.nan)
-        st = op(res, f"b_h_c_ext_{b!r}").get("S", math.nan) - op(res, f"b_h_c_ext_{a!r}").get("S", math.nan)
+        st = op(res, f"b_h_{v}_{b!r}").get("S", math.nan) - op(res, f"b_h_{v}_{a!r}").get("S", math.nan)
         wantH = gauss(lambda T: f(T) - 75.5, a, b, xs)
         wantS = gauss(lambda T: (f(T) - 75.5) / T, a, b, xs)
         scaleH = 75.5 * (b - a)
@@ -322,7 +352,8 @@ def arm_b(tmp):
                       f"{wantH!r} (sensible part {scaleH:.1f})")
         if not (abs((st - sc) - wantS) <= 1e-8 * scaleS):
             fail("b", f"S({b} K) - S({a} K): table minus constant {st - sc!r}, this gate {wantS!r}")
-    said.append(f"(b) Cp at 5 temperatures (worst rel {worst:.1e}), H and S over 2 intervals, one into the extension")
+    said.append(f"(b) Cp at 6 temperatures (worst rel {worst:.1e}), H and S over 3 intervals, one into"
+                " each extension (upTo, downTo)")
 
 
 def arm_c(tmp):
@@ -471,7 +502,8 @@ def arm_h(tmp):
                       [(exp, "     30    797.7", "     30   -797.7"),
                        (tpd, "interpolation logReciprocal;\n                            reason \"the evaluated values the record",
                         "interpolation linear;\n                            reason \"the evaluated values the record")],
-                      "is positive by definition", "a value <= 0 under a linear interpolation"))
+                      "gives the liquid viscosity as -797.7 uPa.s -- it is positive by definition",
+                      "a value <= 0 under a linear interpolation, printed as written with its unit"))
     ok += bool(refuse("h", copy(T01, tmp, "h2"), PROPS,
                       [(tpd, "extend { upTo 110 degC;", "extend { upTo 2 bar;")],
                       "pin of 'water' (constant/experiments/crcWaterMu.dat): extend: `upTo` must be a temperature",
@@ -505,17 +537,99 @@ def arm_h(tmp):
                     "in deg / ppm / degC refuse by name")
 
 
+def arm_i(tmp):
+    ok = 0
+    decoy = Path(tmp) / "elsewhere" / "experiments"
+    decoy.mkdir(parents=True)
+    shutil.copy(T01 / "constant/experiments/crcWaterMu.dat", decoy / "crcWaterMu.dat")
+    ok += bool(refuse("i", copy(T01, tmp, "i1"), PROPS,
+                      [("constant/thermoPhysPropDict", "table crcWaterMu;",
+                        f"table crcWaterMu;  experimentsDir \"{decoy}\";")],
+                      "`experimentsDir` is not a word a dictionary writes",
+                      "a hand-written experimentsDir in a table pin"))
+    ok += bool(refuse("i", copy(DENS, tmp, "i2"), SOLVE,
+                      [("constant/thermoPhysPropDict", "NaOH20_303K { use method;",
+                        f"NaOH20_303K {{ experimentsDir \"{decoy}\";  use method;")],
+                      "`experimentsDir` is not a word a dictionary writes",
+                      "a hand-written experimentsDir in a density measurement"))
+    if ok == 2:
+        said.append("(i) a hand-written experimentsDir (a table pin, a density measurement) refuses by name")
+
+
+def arm_j(tmp):
+    d = copy(T05, tmp, "unitpin")
+    unit = d / "sectors/A/unitOperations/P1"
+    (unit / "constant/experiments").mkdir(parents=True)
+    shutil.copy(d / "sectors/B/constant/experiments/crcWaterMu.dat", unit / "constant/experiments/crcWaterMu.dat")
+    fd = unit / "system/flowsheetDict"
+    fd.write_text(fd.read_text() + "\nthermo { transport { liquid { viscosity { pin ( { component water;"
+                  "  table crcWaterMu;  interpolation logReciprocal;  reason \"check_table_laws (j)\"; } );"
+                  " } } } }\n")
+    rc, out = run(SOLVE, d)
+    if rc != 0:
+        return fail("j", f"the unit-pin copy of table05 did not run (exit {rc}): {out[-400:]}")
+    got = None
+    for u in (result(out) or {}).get("propertySources", {}).get("used", []):
+        if u.get("unit") == "A.P1" and u.get("property") == "liquidViscosity":
+            got = u.get("valueMin")
+    xs, ys = read_table(unit / "constant/experiments/crcWaterMu.dat")
+    want = interp(xs, ys, "logReciprocal", 300.0)
+    xa, ya = read_table(d / "sectors/A/constant/experiments/crcWaterMu.dat")
+    xr, yr = read_table(d / "constant/experiments/crcWaterMu.dat")
+    others = {"its sector's": interp(xa, ya, "logReciprocal", 300.0),
+              "the root decoy's": interp(xr, yr, "logReciprocal", 300.0)}
+    if got is None or rel(got, want) > PRINTED:
+        hit = [k for k, v in others.items() if got is not None and rel(got, v) < 1e-9]
+        return fail("j", f"the sector-A pipe's inline pin took mu = {got!r}; the unit's own file gives "
+                         f"{want!r}{' -- that is ' + hit[0] + ' file' if hit else ''}")
+    shutil.rmtree(unit / "constant")
+    rc2, out2 = run(SOLVE, d)
+    if rc2 == 0 or "no file sectors/A/unitOperations/P1/constant/experiments/crcWaterMu.dat" not in out2:
+        return fail("j", f"without the unit's file the inline pin was not refused naming the unit's path "
+                         f"(exit {rc2}): a walk up found another file")
+    said.append("(j) a unit's inline pin reads the unit's own constant/experiments/, and without it refuses")
+
+
+def arm_k(tmp):
+    src = (ROOT / "src/thermo/PricedDensity.cpp").read_text()
+    m = re.search(r"try \{ rhoPure = thermo\.density\(T, P, pure, ph\); \}(.*?)\n\s*if \(rhoPure", src, re.S)
+    body = re.sub(r"//[^\n]*", "", m.group(1)) if m else ""
+    if not re.search(r"catch \(const PropertyDomainError& e\)\s*\{\s*if \(e\.kind == PropertyDomainError::Kind::"
+                     r"outsideHardDomain && !e\.aboveCriticalTemperature\)\s*throw;", body):
+        return fail("k", "PricedDensity.cpp's selection no longer rethrows a hard refusal other than a component"
+                         " above its Tc (TG-18): a real liquid the run cannot price would be dropped")
+    marks = []
+    for p in sorted((ROOT / "src").rglob("*.[cH]*")):
+        t = p.read_text(errors="replace")
+        for mm in re.finditer(r"markedAboveCriticalTemperature\(\)", t):
+            if "PropertyDomainError.H" in str(p):
+                continue
+            before = t[max(0, mm.start() - 1800):mm.start()]
+            marks.append((p.relative_to(ROOT).as_posix(), bool(re.search(r"T >= Tc", before))))
+    want = {"src/thermo/ThermoPackage.cpp", "src/thermo/liquidProperty/PureFluidLeaf.cpp"}
+    if {f for f, _ in marks} != want or not all(ok for _, ok in marks) or len(marks) != 2:
+        return fail("k", f"the above-Tc mark is set at {marks}; it belongs at exactly the two critical-"
+                         "temperature tests (ThermoPackage's Rackett branch, the pure-fluid leaf)")
+    d = copy(APAL, tmp, "apal")
+    rc, out = run(SOLVE, d, timeout=1800)
+    if rc != 0 or "N2 left out" not in out:
+        return fail("k", f"apalutamide01 (dissolved N2 in the recovered-solvent tank) did not run and say "
+                         f"the N2 is left out (exit {rc})")
+    said.append("(k) the priced-set selection rethrows every hard refusal but a component above Tc, the"
+                " mark sits at the two Tc tests, apalutamide01 runs with its N2 left out")
+
+
 def main():
     for b in (PROPS, SOLVE):
         if not b.exists():
             print(f"check_table_laws: CANNOT RUN -- {b} is not built (make all)")
             return 1
-    for c in (T01, T02, T03, T05, PIPE, DENS):
+    for c in (T01, T02, T03, T05, PIPE, DENS, APAL):
         if not c.is_dir():
             print(f"check_table_laws: FAIL -- the witness {c} is gone")
             return 1
     with tempfile.TemporaryDirectory(prefix="tablelaws-") as tmp:
-        for arm in (arm_a, arm_b, arm_c, arm_d, arm_e, arm_f, arm_g, arm_h):
+        for arm in (arm_a, arm_b, arm_c, arm_d, arm_e, arm_f, arm_g, arm_h, arm_i, arm_j, arm_k):
             try:
                 arm(tmp)
             except Exception as e:  # a crashed arm is a failed arm, named

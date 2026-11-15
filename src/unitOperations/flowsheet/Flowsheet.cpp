@@ -88,6 +88,7 @@ License
 #include "thermo/equationOfState/EquationOfState.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
 #include "thermo/heatCapacity/HeatCapacityModel.H"
+#include "thermo/liquidProperty/ExperimentsFile.H"
 
 namespace Choupo {
 
@@ -649,6 +650,13 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             u->insert("type", cd->entryValue("type"));
             for (const char* k : { "operation", "model", "thermo", "utility" })   // utility: C52, read by the allocation
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
+            //  A UNIT'S INLINE `thermo {}` READS ITS OWN constant/ (C398 review
+            //  row TG-19): a table pin or a measurement written in the unit's
+            //  flowsheetDict reads the experiments/ of THIS member's folder,
+            //  never the plant root's.  The same stamp resolvePropertyContext
+            //  puts on a sector's dictionary; no walk up.
+            if (u->found("thermo") && !propertyVariants::selectsByName(u))
+                experiments::stampExperimentsDir(u->subDict("thermo"), memberBase + "constant");
             if (propertyVariants::selectsByName(u))   // `thermo <name>;` (C398): VariantSelection.H
                 flowsheetVariants::resolve(u, flowsheetVariants::nodeSystem(
                     memberBase.substr(0, memberBase.size() - 1), rootSystem), qname);

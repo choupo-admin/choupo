@@ -116,6 +116,8 @@ std::string experimentsPathOf(const std::string& constantDir)
 void stampWalk(const DictPtr& d, const std::string& dir, const std::string& parentKey,
                const std::string& grandKey)
 {
+    refuseWrittenExperimentsDir(d, parentKey.empty() ? std::string("a property dictionary")
+                                                     : "the entry under `" + parentKey + "`");
     for (const auto& k : d->keys())
     {
         const auto& v = d->entryValue(k);
@@ -140,6 +142,16 @@ void stampWalk(const DictPtr& d, const std::string& dir, const std::string& pare
 }
 
 } // namespace
+
+void refuseWrittenExperimentsDir(const DictPtr& entry, const std::string& where)
+{
+    if (entry && entry->found(writtenExperimentsDirWord()))
+        throw std::runtime_error(where + ": `experimentsDir` is not a word a dictionary writes"
+            " (C398 review row TG-17).  The file of a table pin or of a measurement is read from"
+            " the experiments/ folder of the constant/ that declares it -- the case's, a sector's,"
+            " or a unit's own -- and Choupo records that folder itself; delete the line and put"
+            " the file in that experiments/ folder.");
+}
 
 void stampExperimentsDir(const DictPtr& d, const std::string& constantDir)
 {

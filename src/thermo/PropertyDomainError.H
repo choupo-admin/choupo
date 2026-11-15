@@ -53,6 +53,16 @@ struct PropertyDomainError : public std::runtime_error
 
     Kind        kind;
     std::string remedy;   // what would let the route answer; "" for an invalid state
+    //  THE ONE REFUSAL A MIXTURE MAY DO WITHOUT (C398 review row TG-18): a
+    //  component asked for a pure-LIQUID volume at or above its critical
+    //  temperature -- a gas dissolved in the liquid.  pricedDensity::select
+    //  drops it and the caller publishes the dropped fraction; every other
+    //  hard refusal of a pure liquid propagates.  Set only where that is the
+    //  reason (ThermoPackage's Rackett branch, the pure-fluid leaf's Tc test).
+    bool aboveCriticalTemperature = false;
+
+    PropertyDomainError& markedAboveCriticalTemperature()
+    { aboveCriticalTemperature = true; return *this; }
 
     static const char* kindName(Kind k)
     {

@@ -615,7 +615,10 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
   viscosity and a heat capacity are positive).
 - WHICH FILE: the `experiments/` of the `constant/` whose dictionary declares
   the pin -- a sector's pin reads `sectors/<S>/constant/experiments/`, never
-  the root's (no walk up the folders); the view prints the path.  A heat-capacity
+  the root's (no walk up the folders); the view prints the path.  A pin in a
+  unit's inline `thermo {}` reads that UNIT's `constant/experiments/`.  Never
+  write `experimentsDir` (refused by name): the folder is decided by where the
+  pin is declared.  A heat-capacity
   table takes `linear` or `monotoneCubic` only (H and S are its closed-form
   integrals) and its points must contain 298.15 K.
 - Every column has a unit (`degC` allowed for T, +273.15 K at read; `mPa.s`,

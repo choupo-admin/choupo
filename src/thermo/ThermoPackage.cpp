@@ -2640,7 +2640,7 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
             " pair's `v_inf` is that datum, read today only for the"
             " Poynting correction).  Ask for the density over the"
             " components that have a liquid volume, and say which were"
-            " left out.");
+            " left out.").markedAboveCriticalTemperature();
     if (!(Vi > 0.0) || !std::isfinite(Vi))
         throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: the liquid molar"
             " volume of component '" + c.name() + "' at T = "

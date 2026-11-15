@@ -212,6 +212,24 @@ slice, and a witness may only carry values read at their page.  So the
 solid path (the same TableCp object as the liquid's) is built and refused
 by the same rules, but no case exercises it.
 
+**SLICE (c), THIRD ROUND (2026-11-15; rows TG-17..21 and TB-06).**  (1) The
+folder of the declaring constant/ is recorded under an INTERNAL key,
+`@experimentsDir`, which no dictionary can write (the tokenizer never reads
+'@' into a keyword); a hand-written `experimentsDir` is refused by name in a
+table pin, a density measurement and anywhere in a stamped property
+dictionary (TG-17).  (2) The density's priced-set selection drops a
+component only when its refusal is the designed one -- a pure liquid asked
+at or above its critical temperature, marked by the two Tc tests
+(`PropertyDomainError::aboveCriticalTemperature`) -- and rethrows every
+other hard refusal (TG-18).  Measured: the route that selection calls
+(`ThermoPackage::density`) refuses outside a hard domain ONLY above Tc, so
+no input reaches the rethrow today; the gate holds the source, and the next
+such refusal propagates as ruled.  (3) A unit's inline `thermo {}` is
+stamped with that unit's own constant/ (TG-19); the fragment form is
+removed under C402, and obeys the rule while it exists.  (4) The lower
+extension's heat-capacity integral is held by the gate (TG-20).  (5) A value
+<= 0 is refused as the file writes it, with its unit (TB-06).
+
 ## The review rows, answered
 
 | row | what the record now says, or why not |

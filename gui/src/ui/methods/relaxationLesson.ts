@@ -250,11 +250,11 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "fall enough (Armijo's rule), so the damping adapts to each "
       + "iterate. Choupo's Newton uses it "
       + "(src/solver/NewtonND.cpp:619, enabled for the tear loop at "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:3838). What a user "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:3846). What a user "
       + "may legitimately tune is a step cap: no unknown moves more than a "
       + "stated amount in one step, which limits damage without slowing "
       + "the good steps -- `recycleMaxStep` for the tear "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3840-3858).",
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3848-3866).",
     derivation: [
       { step: "Newton's step for the tear residual r(x) = G(x) - x, whose "
           + "slope is a - 1 on the toy.",
@@ -308,13 +308,13 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "takes an optional `recycleMaxStep`. A declared value is "
       + "announced in the run log; a value outside its range, or a "
       + "relaxation factor beside a solver that has none, is refused by "
-      + "name (src/unitOperations/flowsheet/Flowsheet.cpp:3391-3409). The "
+      + "name (src/unitOperations/flowsheet/Flowsheet.cpp:3399-3417). The "
       + "fourth figure runs the real process03_recycle case under "
       + "directSubstitution for three values of w and plots the engine's "
       + "own tear mass imbalance per pass: the same fixed point, three "
       + "different paths to it.",
     note: "The relaxed update the engine applies is "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:3656-3661.",
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:3664-3669.",
   },
 ];
 

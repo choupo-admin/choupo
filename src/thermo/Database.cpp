@@ -851,6 +851,7 @@ void readCaseTablePin(const DictPtr& entry, const std::string& property, RecordL
     if (entry->found("law"))
         throw std::runtime_error(where + ": a pin names `law <name>` (a law the record holds) OR"
             " `table <name>` (the case's points), never both.");
+    experiments::refuseWrittenExperimentsDir(entry, where);
     for (const auto& k : entry->keys())
         if (k != "component" && k != "table" && k != "interpolation" && k != "reason" && k != "extend"
             && k != experiments::experimentsDirKey())

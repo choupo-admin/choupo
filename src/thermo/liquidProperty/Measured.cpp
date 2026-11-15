@@ -124,6 +124,7 @@ void MeasurementDeclarations::readFrom(const DictPtr& top)
             m.replacesMethod = r->lookupWord("method");
             m.replacesRecord = r->lookupWordOrDefault("record", "");
         }
+        experiments::refuseWrittenExperimentsDir(dec, here);
         for (const auto& kk : dec->keys())
             if (kk != "use" && kk != "reason" && kk != "replaces"
                 && kk != experiments::experimentsDirKey())   // stamped by the reader of its dictionary (TG-02)

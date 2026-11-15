@@ -3132,6 +3132,16 @@ missing is refused, not replaced).  The reader of a sector's (or an
 \code{inherits} parent's) dictionary stamps each table pin, and each density
 measurement, with that folder; the view prints the file's path relative to the
 case root (``\code{record: case sectors/A/constant/experiments/crcWaterMu.dat}'').
+A unit's inline \code{thermo \{\}} obeys the same rule (review row TG-19): a
+table pin written in a unit's own \file{system/flowsheetDict} reads that
+unit's \file{constant/experiments/} (for a pipe of sector A,
+\file{sectors/A/unitOperations/P1/constant/experiments/}), never its sector's
+or the plant's, and a file it does not hold is refused naming that path.  The
+folder is recorded by the engine under a key no dictionary can write (it
+begins with \code{@}, which the tokenizer never reads into a keyword); a
+hand-written \code{experimentsDir} in any table pin, density measurement or
+property dictionary is refused by name (TG-17: a path written there would
+read a table from outside the case at exit 0).
 The path is not part of the definition's fingerprint: the package IDENTITY
 carries each table's own text and file, so two sectors whose dictionaries say
 the same words over two different files are two packages
@@ -3181,7 +3191,9 @@ abscissae strictly increasing with no duplicate.  A viscosity and a heat
 capacity are positive by definition, so a value $\le 0$ is refused under
 EVERY interpolation, not only the two log forms (V4 as amended by the
 architect, review row TG-08: one sign typo in a linear table gave a silent
-wrong number).  The view prints the table as ``\code{table: 11
+wrong number); the refusal prints the value as the file writes it, with its
+unit (``\code{point 3 gives the liquid viscosity as -797.7 uPa.s}'', TB-06),
+so the line is found by its own number.  The view prints the table as ``\code{table: 11
 points, 273.15-373.15 K, interpolation logReciprocal; no value outside its
 points (refused); columns T [degC, +273.15 K at read], mu [uPa.s]}'', with
 its source and its home (the record, or the case's file).
@@ -3229,9 +3241,13 @@ its hard domain) before its fallback runs (\code{rethrowHardRefusal},
 \file{src/thermo/PropertyDomainError.H}); the run ends with the refusal.  The
 handlers that publish NO number in its place and name it (a property scan's
 \code{nan} with its note, a sweep point marked failed, an item not sized, a
-report's gap, the liquid density's selection of its priced set, which drops a
-component no route gives a volume and publishes the dropped fraction) keep
-reporting it; the absences of kind \code{missingDatum} keep
+report's gap) keep reporting it.  The liquid density's selection of its
+priced set drops ONE refusal only, the designed one: a component asked for a
+pure-liquid volume at or above its critical temperature (a gas dissolved in
+the liquid), whose dropped fraction it publishes; every other hard refusal of
+a pure liquid propagates (review row TG-18; the route it calls refuses
+outside a hard domain only above $T_c$ today, so the rule binds the next such
+refusal, and \code{check\_table\_laws} holds it); the absences of kind \code{missingDatum} keep
 the handling each site announced, because those fallbacks are the debts the
 property layout turns into refusals in its own, later slices.
 
@@ -3337,7 +3353,13 @@ record- and unit-level refusals.  Each of five source sabotages --- a
 ignored, the Fritsch--Carlson limiter removed, the sign of the extension's
 enthalpy integral flipped, the viscosity object forced to linear --- makes it
 fail, as does restating the last excursion instead of the largest (verified by
-hand on this round's build).  Removing the table's text from the package
+hand on this round's build).  Its third-round arms hold, each failing on its
+own sabotage (verified the same way): the lower extension's $H$ and $S$
+(the integral's sign flipped below the first point), the refusal of a
+hand-written \code{experimentsDir} (TG-17), a unit's inline pin reading that
+unit's own file and refusing without it (TG-19), the priced-set selection
+rethrowing every hard refusal but the above-$T_c$ one (TG-18), and a value
+$\le 0$ printed as written (TB-06).  Removing the table's text from the package
 identity is NOT observable today: two packages can hold two files of one
 name only from two \file{constant/} folders, and their per-node pairs base
 already differs, so the identities differ anyway; the table's text is kept

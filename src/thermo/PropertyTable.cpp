@@ -108,6 +108,18 @@ std::unique_ptr<PropertyTable> PropertyTable::fromLaw(const DictPtr& body, const
     if (t.cols[0].name != "T" || t.cols[1].name != sym)
         throw std::runtime_error(label + ": the columns are named `" + t.cols[0].name + "` and `"
             + t.cols[1].name + "`; a table of " + property + " names them `T` and `" + sym + "`.");
+    //  A value <= 0 is refused AS WRITTEN, with its unit (review row TB-06):
+    //  the author finds the line by the number in the file, not by its SI
+    //  conversion.  (The constructor's check below holds the same rule for a
+    //  table built from SI values; every conversion here is a positive factor.)
+    for (std::size_t k = 0; k < t.raw[1].size(); ++k)
+        if (!(t.raw[1][k] > 0.0))
+            throw std::runtime_error(label + ": point " + std::to_string(k + 1) + " gives the "
+                + std::string(cp ? (property == "solidHeatCapacity" ? "solid heat capacity"
+                                                                    : "liquid heat capacity")
+                                 : "liquid viscosity")
+                + " as " + fmtG(t.raw[1][k]) + " " + t.cols[1].unit + " -- it is positive by definition,"
+                " so a value <= 0 is refused whatever the interpolation (C398 V4, amended).");
     std::vector<scalar> y = t.si[1];
     std::string yText = t.cols[1].declared();
     if (cp && t.cols[1].spec.dims == Dims::heatCapacity)
