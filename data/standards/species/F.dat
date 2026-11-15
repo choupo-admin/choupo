@@ -40,32 +40,32 @@ cpAvg298
 
 transport
 {
-    //  `radius` is the HYDRATED radius r_H of Nightingale, J. Phys. Chem. 63
-    //  (1959) 1381, Table I -- the convention of the eight master ions and
-    //  of every DSPM-DE pore fitted against them -- read from the primary
-    //  page on 2026-10-25 (DEV.md 4c C161; its own provenance below).
-    //  `D0` is from the PHREEQC database (DEV.md 4c C157), whose source line
-    //  is the record-level `source`.
+    //  `radius` is the HYDRATED radius r_H of Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I -- the convention
+    //  of every DSPM-DE pore fitted against it -- with its own provenance below.  `D0` is the 25 C limiting
+    //  diffusivity read at the page of Li & Gregory 1974 (DEV.md 4c C403; its own provenance below); before: a value
+    //  transcribed by machine from a geochemical database.
     radius { value 3.52e-10; unit m; }   // 3.52 A
     D0 { value 1.46e-09; unit m2/s; }
     provenance
     {
-        source  "USGS PHREEQC database phreeqc.dat (usgs-coupled/phreeqc3, branch master, fetched 2026-10-25, sha256 5b80d45c989cd1db7aab485e198321ba550d5902be8097c8be26d85ba03da278), SOLUTION_SPECIES `F- = F-` (line 160), `-dw` line 164: the 25 C tracer diffusion coefficient Dw is its first field; the further fields (temperature and ionic-strength dependence) are not used.  The database names no per-value reference on this line; its file-level references are Appelo, Parkhurst and Post, Geochim. Cosmochim. Acta 125 (2014) 49-67 (its ref. 1) and Appelo, Cem. Concr. Res. 101 (2017) 102-113 (its ref. 3)";
-        licence publicDomain;
         radius
         {
             source        "E. R. Nightingale, Jr., Phenomenological Theory of Ion Solvation. Effective Radii of Hydrated Ions, J. Phys. Chem. 63 (1959) 1381-1387, doi:10.1021/j150579a011, Table I (p. 1383), row F-, column r_H at 25 C: 3.52 A";
             origin        literature;
             method        "read from the primary page (Table I, the effective hydrated radius r_H) and cross-checked against the scan's text layer, 2026-10-25 (DEV.md 4c C157/C161)";
             reviewStatus  interim;
-            notes         "The tier's radius convention: Nightingale's hydrated radius, the one the eight master ions carry and DSPM-DE pores are fitted on -- not a Stokes radius from D0 (his r_s column is a different quantity).  The source line above is the radius's; the record-level `source` is the D0's.";
+            notes         "The tier's radius convention: Nightingale's hydrated radius, the one the eight master ions carry and DSPM-DE pores are fitted on -- not a Stokes radius from D0 (his r_s column is a different quantity).";
         }
+        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table
+        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page
+        //  as a second opinion on this ion at 25 C; it is a compilation and is not this value's origin.
         D0
         {
+            source        "Y.-H. Li and S. Gregory, Diffusion of ions in sea water and in deep-sea sediments, Geochim. Cosmochim. Acta 38 (1974) 703-714, Table 1 (p. 705: tracer and self-diffusion coefficients of ions at infinite dilution, 10^-6 cm2/s at 0, 18 and 25 C), row F-, column 25 C: 14.6 x 10^-6 cm2/s";
             origin        literature;
-            method        "read from the cited database line by a parse that checks the species equation above it (Dw at 25 C, infinite dilution)";
+            method        "read at the page, 2026-11-15 (DEV.md 4c C403): the scan's text layer of this table is garbled, so the row was read from the page image; the 25 C entry converted (1 x 10^-6 cm2/s = 1 x 10^-10 m2/s) to 1.46e-09 m2/s";
             reviewStatus  interim;
-            notes         "Transcribed by machine from the cited public-domain database, not read back against a primary measurement of this ion's limiting conductance; the Stokes-Einstein correction to the run temperature is applied by the consumer (thermo/transport/StokesEinstein.H).";
+            notes         "Li & Gregory give, for the same row, 0 C not given; 18 C 12.1 x 1e-10 m2/s; 25 C 14.6 x 1e-10 m2/s (kept here for the later check of the Stokes-Einstein correction to the run temperature, thermo/transport/StokesEinstein.H, which is applied by the consumer). A second compiled table (named in the comment above) gives 1.475e-09 m2/s for this ion at 25 C (+1.0 %).";
         }
     }
 }
