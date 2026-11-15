@@ -84,6 +84,10 @@ STANDARD = {
     "gather", "gather*", "multline", "multline*", "split", "aligned",
     "gathered", "cases", "array", "pmatrix", "bmatrix", "vmatrix", "matrix",
     "smallmatrix", "subequations", "displaymath", "math", "eqnarray",
+    #  mathtools (loaded by theoryGuide.tex): its parenthesised small matrix.
+    #  Missing it made this gate refuse a guide that builds (2026-11-15:
+    #  theoryGuide.tex compiled with `make -B` while the gate said it dies).
+    "psmallmatrix",
     # packages the guides load
     "tikzpicture", "scope", "axis", "semilogyaxis", "semilogxaxis",
     "loglogaxis", "groupplot", "lstlisting", "longtable", "tabularx",

@@ -508,7 +508,7 @@
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 4201 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 4735 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_menu": {
