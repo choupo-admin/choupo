@@ -67,3 +67,59 @@ exits 0.
 `check_gate_selftest.py:623 bdir.iterdir()`.  On origin/main, line 623 is
 `raw = os.environ.get(var, "")`, so the citation was stale before this edit.
 This edit adds lines only below it.
+
+## Task 3 -- T_bubble on a cubic vapour (EX-04)
+
+In validation; this section is replaced when it lands.
+
+## Task 4 -- the liquid-stability probe refuses on a one-liquid package
+
+Branch `cloud/fix-gammaphi-stability-probe`, off origin/main c8819a5257, commit 2e8ee42653.
+
+**Defect, and why it is a package limitation and not a probe bug.**
+`liquid_stable` (src/propertyOps/PropertyEvaluator.cpp) decides by a
+liquid-liquid flash (`IsothermalFlash::solveCore`, `PhaseSet::LL`), and that
+flash needs two liquid phases in the package.  A gammaPhi package carries one
+liquid by design, so on one the flash throws "LL flash needs >= 2 liquid
+phases".  The probe's `catch (...) { ...; return 1.0; }` turned that throw
+into "one stable liquid".
+
+Reproduced: envelope04's own probe point (equimolar water + benzene, 1 bar,
+UNIFAC + PR) on a gammaPhi package printed `"liquid_stable": 1` with exit 0.
+On envelope04's gammaGamma package the same model answers 0.
+
+**Fix.**  The probe now counts the package's liquid phases
+(`thermo.phasesOfType("liquid")`, the same rule the flash uses) before doing
+anything else.  With fewer than two it refuses by name and names the remedy:
+`formulation gammaGamma;` with the same activity model on both
+`liquidPhases`, which is exactly the package the Explorer builds for this
+probe.  The other exits of the catch are unchanged; see the open item below.
+
+**Who could be affected, measured.**
+- One corpus case asks for `liquid_stable`: envelope04, which is gammaGamma
+  and unchanged (`--scope` PASS).
+- The GUI never sends the probe a one-liquid package:
+  - `methodFeeds.ts` sets `vleTwoLiquid` with `liquid_stable`;
+  - `exploreSynth.ts` builds gammaGamma for `vleTwoLiquid`;
+  - `phaseEnvelopeLens.ts` builds gammaGamma.
+
+**New gate arm** `check_phase_envelope` (m) holds both halves.  The gammaPhi
+package must refuse and name both the probe and gammaGamma; the gammaGamma
+package must answer 0.
+
+**Validation.**  `bin/integrate --plan` reaches 0 cases and no `--gui` or
+`--fast`.  It does report a FULL SWEEP REACHED, because PropertyEvaluator.cpp
+is a shared path of choupoProps.  That sweep was NOT launched: it is Vítor's
+decision, and the edit enters only the `liquid_stable` branch, whose only
+corpus caller is envelope04.  Run instead:
+- `--scope` envelope04: PASS 2 / FAIL 0;
+- `--fast`: PASS 86 / FAIL 0 / EXPECTED-FAIL 5;
+- `code_map --check` and `gate_manifest --check`: exit 0;
+- the 52 gates the plan lists: 51 exit 0.  check_gate_selftest exits 1,
+  because this container has no rsync, which is task 2's refusal working,
+  not this edit.
+
+**Open, not done (outside the task).**  The probe's catch still turns any
+other exception from the LL flash into "stable", and a solve that returns
+`converged = false` is read as "no split".  Whether a non-converged LL search
+should refuse too is a separate decision.
