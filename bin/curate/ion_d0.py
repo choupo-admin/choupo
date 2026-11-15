@@ -42,6 +42,20 @@ RS_SRC = ("R. A. Robinson and R. H. Stokes, Electrolyte Solutions, 2nd ed., Butt
           "translation (R. Robinson, R. Stoks, Rastvory elektrolitov, ed. A. N. Frumkin, Izdatel'stvo Inostrannoi Literatury, "
           "Moskva, 1963), Appendix 6.1 (Predel'naya ekvivalentnaya elektroprovodnost' ionov pri 25 C v vode)")
 
+#  Conductance papers read at the page (C403 r3): src key -> the paper's citation.  The value is lambda0 at 25 C
+#  S cm2/eq as printed, converted by the same Nernst relation as RS; the row's `ref` column says HOW the paper got it
+#  (measured, fitted, assigned) and `temps` carries the other temperatures and the cautions.
+COND_SRC = {
+    "AB91": "A. Apelblat and J. Barthel, Conductance Studies on Aqueous Citric Acid, Z. Naturforsch. 46a (1991) 131-140",
+    "AB92": "A. Apelblat and J. Barthel, Conductance Studies of Aqueous Succinic Acid, Z. Naturforsch. 47a (1992) 493-498",
+    "BR97I": "M. Bester-Rogac, R. Neueder, J. Barthel and A. Apelblat, Conductivity Studies on Aqueous Solutions of Stereoisomers "
+             "of Tartaric Acids and Tartrates. Part I. Alkali Metal and Ammonium Tartrates, J. Solution Chem. 26 (1997) 127-134",
+    "BR97II": "M. Bester-Rogac, R. Neueder, J. Barthel and A. Apelblat, Conductivity Studies of Aqueous Solutions of Stereoisomers "
+              "of Tartaric Acids and Tartrates. Part II: D-, L-, and Meso-Tartaric Acids, J. Solution Chem. 26 (1997) 537-550",
+    "AY07": "S. Ayata, Estimation of Limiting Equivalent Conductivity and Ionic Radius of Tetraborate Anion from Conductivity "
+            "Measurements of Concentrated Tetraborate Solutions, Chem. Eng. Commun. 194 (2007) 893-900, doi:10.1080/00986440701215523",
+}
+
 CROSS = ("        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table\n"
          "        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page\n"
          "        //  as a second opinion on this ion at 25 C; it is a compilation and is not this value's origin.\n")
@@ -91,7 +105,7 @@ def value(r):
     """The stored D0, m2/s: the primary table's 25 C entry."""
     if r["src"] == "LG":
         return _num(r["t25"]) * 1e-10
-    if r["src"] == "RS":
+    if r["src"] == "RS" or r["src"] in COND_SRC:
         return nernst(_num(r["t25"]), int(r["z"]))
     return _num(r["t25"]) * 1e-9          # DUDEK, 10^-5 cm2/s
 
@@ -127,6 +141,18 @@ def d0_block(r):
                           "appears to omit the division by |z|, and the primary table agrees with the implied value.")
             elif abs(c - v) / v > 0.2:
                 notes += " The two tables disagree by far more than for the other ions; this record keeps the primary table's value and flags the pair for the reader."
+    elif r["src"] in COND_SRC:
+        lam = _num(r["t25"])
+        z = int(r["z"])
+        source = (COND_SRC[r["src"]] + ", " + r["page"] + ", row %s: lambda0 = %s S cm2/eq at 25 C (%s)" % (r["label"], r["t25"], r["ref"]))
+        method = ("read at the page image, 2026-11-15 (DEV.md 4c C403): lambda0 = %s S cm2/eq (x 1e-4 = %s S m2/eq), converted by the Nernst "
+                  "relation D = R T lambda0 / (|z| F^2) with R = 8.314462618 J/mol/K, F = 96485.33212 C/mol, T = 298.15 K "
+                  "(RT/F^2 = %.6e), |z| = %d, to %s m2/s" % (r["t25"], fmt(lam * 1e-4), R_GAS * T_REF / F_FARADAY ** 2, abs(z), fmt(v)))
+        notes = r["temps"]
+        if r["crc_d"]:
+            c = _num(r["crc_d"]) * 1e-9
+            notes += (" A second compiled table (named in the comment above) gives %s m2/s for this ion at 25 C (%+.1f %%)."
+                      % (fmt(c), (c - v) / v * 100))
     elif r["src"] == "RS":
         lam = _num(r["t25"])
         z = int(r["z"])

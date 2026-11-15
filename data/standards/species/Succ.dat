@@ -19,3 +19,26 @@ source "hfAq [kJ/mol] -909.37: printed dHf(aq ion 2-) in the succinic column, eq
 hfAq { value -909370; unit J/mol;}
 sAq  { value 81.5; unit J/mol/K;}
 }
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C403).  No `radius` is curated for this ion: the tier's radius is the HYDRATED radius of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I, and it was not read for this record.  A Stokes radius
+    //  computed from D0 would be a different convention under the same key, so none is written: DSPM-DE still
+    //  refuses this ion by name, while the multi-ionic polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 7.483e-10; unit m2/s; }
+    provenance
+    {
+        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table
+        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page
+        //  as a second opinion on this ion at 25 C; it is a compilation and is not this value's origin.
+        D0
+        {
+            source        "A. Apelblat and J. Barthel, Conductance Studies of Aqueous Succinic Acid, Z. Naturforsch. 47a (1992) 493-498, Table 2 (p. 496), row 1/2 Succ2-: lambda0 = 56.20 S cm2/eq at 25 C (MEASURED: from the Kohlrausch law applied to di-sodium succinate with lambda0(Na+) = 50.15, printed as 56.2 in the text)";
+            origin        literature;
+            method        "read at the page image, 2026-11-15 (DEV.md 4c C403): lambda0 = 56.20 S cm2/eq (x 1e-4 = 0.00562 S m2/eq), converted by the Nernst relation D = R T lambda0 / (|z| F^2) with R = 8.314462618 J/mol/K, F = 96485.33212 C/mol, T = 298.15 K (RT/F^2 = 2.662848e-07), |z| = 2, to 7.483e-10 m2/s";
+            reviewStatus  interim;
+            notes         "The same row at 278.15 to 308.15 K (7 temperatures): 33.01, 38.31, 43.98, 49.92, 56.20, 62.89, 69.55 S cm2/eq (Table 2); the Walden product is 0.503 +- 0.001 at every temperature.  The hydrosuccinate ion has no measured value (the paper says lambda0(HSucc-) cannot be determined from conductance and must be assigned): NOT entered. A second compiled table (named in the comment above) gives 7.83e-10 m2/s for this ion at 25 C (+4.6 %).";
+        }
+    }
+}

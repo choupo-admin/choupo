@@ -22,3 +22,23 @@ Appelo, Parkhurst & Post, Geochim. Cosmochim. Acta 125 (2014) 49).
 name    B4O5OH4;
 formula     "B4O5(OH)4-2";
 charge  -2;
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C403).  No `radius` is curated for this ion: the tier's radius is the HYDRATED radius of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I, and it was not read for this record.  A Stokes radius
+    //  computed from D0 would be a different convention under the same key, so none is written: DSPM-DE still
+    //  refuses this ion by name, while the multi-ionic polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 4.604e-10; unit m2/s; }
+    provenance
+    {
+        D0
+        {
+            source        "S. Ayata, Estimation of Limiting Equivalent Conductivity and Ionic Radius of Tetraborate Anion from Conductivity Measurements of Concentrated Tetraborate Solutions, Chem. Eng. Commun. 194 (2007) 893-900, doi:10.1080/00986440701215523, Eq. 12b (p. 897), row B4O7 2- (the paper writes the anhydrous formula; the record is the hydrated ion): lambda0 = 34.58 S cm2/eq at 25 C (ESTIMATED, not measured in dilute solution: lambda0(Na2B4O7) = 84.73 from the conductivity of concentrated sodium tetraborate solutions scaled to those of Na2SO4 (lambda0 = 130.15) and extrapolated, less lambda0(Na+) = 50.15; the paper prints 1/2 lambda0(B4O7 2-) = 34.58 ohm-1 cm2)";
+            origin        literature;
+            method        "read at the page image, 2026-11-15 (DEV.md 4c C403): lambda0 = 34.58 S cm2/eq (x 1e-4 = 0.003458 S m2/eq), converted by the Nernst relation D = R T lambda0 / (|z| F^2) with R = 8.314462618 J/mol/K, F = 96485.33212 C/mol, T = 298.15 K (RT/F^2 = 2.662848e-07), |z| = 2, to 4.604e-10 m2/s";
+            reviewStatus  interim;
+            notes         "25 C only (no other temperature).  Ionic radius 3.507 +- 0.076 Angstrom by the same paper.  The paper treats Na2B4O7 as a 2:1 salt (tetraborate also hydrolyses in water, which that treatment ignores); this value is that estimate and not the mobility of a separately existing B4O5(OH)4 2- ion.  The CRC table has no tetraborate row.";
+        }
+    }
+}
