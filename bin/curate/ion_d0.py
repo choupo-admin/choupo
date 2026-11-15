@@ -168,6 +168,10 @@ def apply_to_text(t, r):
     head, rest = body[:k], body[k:]
     if any(re.match(r"\s*radius \{", ln) for ln in rest):
         head = WITH_RADIUS.rstrip("\n").split("\n")
+    if not any(re.match(r"\s*D0 \{ value", ln) for ln in rest):
+        #  a record with a radius and no D0 yet (I-): the datum goes right after the radius line
+        k = next(i for i, ln in enumerate(rest) if re.match(r"\s*radius \{", ln))
+        rest.insert(k + 1, "    " + d0_datum(r))
     rest = [("    " + d0_datum(r)) if re.match(r"\s*D0 \{ value", ln) else ln for ln in rest]
     txt = "\n".join(rest)
     pm = re.search(r"    provenance\n    \{\n", txt)
@@ -186,6 +190,28 @@ def apply_to_text(t, r):
         new_tb += "\n"
     new_tb += "}"
     return t[:a] + new_tb + t[b:]
+
+
+def verify():
+    """Errors: a D0 provenance block with no D0 value (I- had one), a D0 value with no provenance block, and a
+    table row whose record carries another number."""
+    errs = []
+    rows = load()
+    for p in sorted(SPECIES.glob("*.dat")):
+        t = p.read_text(encoding="utf-8")
+        has_prov = re.search(r"^\s*D0\s*\n\s*\{", t, re.M) is not None
+        m = re.search(r"^\s*D0 \{ value ([0-9.eE+-]+);", t, re.M)
+        if has_prov and not m:
+            errs.append(f"{p.name}: a D0 provenance block but no `D0 {{ value ...; unit m2/s; }}` datum -- the ion has no value")
+        if m and not has_prov:
+            errs.append(f"{p.name}: a D0 value with no D0 provenance block")
+        r = rows.get(p.stem)
+        if r is not None:
+            if not m:
+                errs.append(f"{p.name}: the D0 table names this ion but the record carries no D0 value")
+            elif abs(float(m.group(1)) - float(fmt(value(r)))) > 1e-9 * abs(value(r)):
+                errs.append(f"{p.name}: D0 {m.group(1)} differs from the table's {fmt(value(r))}")
+    return errs
 
 
 def main():

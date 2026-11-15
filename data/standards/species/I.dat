@@ -45,6 +45,7 @@ transport
     //  diffusivity read at the page of Li & Gregory 1974 (DEV.md 4c C403; its own provenance below); before: a value
     //  transcribed by machine from a geochemical database.
     radius { value 3.31e-10; unit m; }   // 3.31 A
+    D0 { value 2e-09; unit m2/s; }
     provenance
     {
         radius

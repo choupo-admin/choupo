@@ -149,6 +149,9 @@ def main() -> int:
         t = p.read_text(encoding="utf-8")
         if "species_c320.py" in t and p.stem not in sp:
             errs.append(f"{p.name}: carries the C320 header but is not in species.tsv")
+    # (6) C403: a D0 provenance block must have its D0 value, and the value must be the D0 table's
+    import ion_d0
+    errs += ion_d0.verify()
     if errs:
         print(f"FAIL: {len(errs)} problem(s)")
         for e in errs:
