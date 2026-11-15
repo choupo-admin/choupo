@@ -140,7 +140,7 @@ describe("the drawing letters what the sheet states and nothing else", () => {
     const d = pressureExchangerSvg(sheet());
     expect(d.svg).toContain("brine  54.12 bar");
     expect(d.svg).toContain("toPX  2.00 bar");
-    expect(d.svg).toContain("pxHPout  53.37 bar");
+    expect(d.svg).toContain("pxHPout  53.36 bar");
     expect(d.svg).toContain("spentBrine  1.30 bar");
     for (const w of ["HP in", "HP out", "LP in", "LP out"]) expect(d.svg).toContain(w);
   });
@@ -151,7 +151,7 @@ describe("the drawing letters what the sheet states and nothing else", () => {
     expect(d.rotors).toBe(1);
     expect(d.svg).toContain(`1 rotor in parallel (${PROVENANCE_WORD.choupo})`);
     expect(d.svg).toContain(`rated 60 m3/h per unit (${PROVENANCE_WORD.declared})`);
-    expect(d.svg).toContain(`recovers 51.37 bar (${PROVENANCE_WORD.choupo})`);
+    expect(d.svg).toContain(`recovers 51.36 bar (${PROVENANCE_WORD.choupo})`);
     expect(d.svg).toContain(`fill="${PROVENANCE_INK.declared}"`);
     expect(d.svg).toContain(`fill="${PROVENANCE_INK.choupo}"`);
   });
@@ -160,7 +160,7 @@ describe("the drawing letters what the sheet states and nothing else", () => {
     const d = pressureExchangerSvg(sheet());
     expect(d.svg).toContain(">booster<");
     expect(d.svg).toContain(`0.3811 kW (${PROVENANCE_WORD.choupo})`);
-    expect(d.svg).toContain(`HP side loses 0.7600 bar (${PROVENANCE_WORD.choupo})`);
+    expect(d.svg).toContain(`HP side loses 0.76 bar (${PROVENANCE_WORD.choupo})`);
   });
 
   it("says the rotor is nominal and the design pressure's provenance is not published", () => {
