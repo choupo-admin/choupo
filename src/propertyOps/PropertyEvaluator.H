@@ -57,6 +57,8 @@ Description
 #pragma once
 
 #include "core/Types.H"
+#include "thermo/transport/WilkeReduction.H"          // C329 B2a (D_G_effective_<c>)
+#include "thermo/transport/LiquidDiffusionMatrix.H"    // C329 B2a (Gamma, Fick matrix)
 #include <string>
 
 namespace Choupo {

@@ -34,8 +34,6 @@ License
 #include "unitOperations/saturation/BubblePoint.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "thermo/LiquidPropertyDoor.H"   // rho_liquid_kernel (C378 pilot)
-#include "thermo/transport/WilkeReduction.H"
-#include "thermo/transport/LiquidDiffusionMatrix.H"   // Gamma, Fick matrix (C329 B2a)
 #include <algorithm>
 #include <cmath>
 #include <map>

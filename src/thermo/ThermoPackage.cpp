@@ -52,7 +52,6 @@ License
 #include "transport/SurfaceTensionMixingRule.H"
 #include "transport/LiquidConductivityModel.H"
 #include "transport/LiquidDiffusivityModel.H"
-#include "transport/WilkeReduction.H"   // the Wilke reduction (C329 B2a)
 
 #include "PackageAudit.H"
 #include "ThermoAnnounce.H"   // load-phase announcement gate (verbosity contract)

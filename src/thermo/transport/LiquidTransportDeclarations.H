@@ -68,6 +68,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "thermo/transport/WilkeReduction.H"   // the Wilke reduction (C329 B2a), used by ThermoPackage
 #include "core/Types.H"
 
 #include <map>
