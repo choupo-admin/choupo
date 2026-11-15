@@ -3518,6 +3518,19 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C403 ROUND 3 LANDED (2026-11-15): six more ions from the papers Vitor
+> filed.**  Citrate 3- (lambda0 72.05, measured, mean of three salts) and
+> H2Cit- (36.70, a fit) from Apelblat & Barthel 1991; succinate 2- (56.20)
+> from Apelblat & Barthel 1992; tartrate 2- (60.49, mean of four salts) and
+> HTart- (31.75, a fit) from Bester-Rogac et al. 1997 Parts I-II; tetraborate
+> (34.58, an estimate from concentrated solutions, so marked) from Ayata
+> 2007; each converted D = RT lambda0/(|z|F^2), the other temperatures in
+> the notes, the CRC a named cross-check (H2Cit- -18 %, succinate +4.6 %,
+> citrate -2.6 %).  The 17 papers filed and indexed.  No sealed case
+> re-sealed; no golden moved.  STILL UNFILLED, no measured source in hand:
+> permanganate, thiocyanate, sulfite, bisulfite, the Good's buffers, the
+> amino acids, lactate.
+
 > **C404 LANDED, AND THE CLOUD SESSION'S THREE FIXES TO MAIN (2026-11-15).**
 > While the laptop was suspended (Vitor's trip), the cloud session took three
 > validation tasks; its report is docs/reviews/2026-11-15-cloud-validation.md
