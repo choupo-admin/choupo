@@ -86,10 +86,10 @@ WHAT THIS CHECKS.
           factor (written out HERE) and Darcy-Weisbach drop per metre
           recomputed from the postDict and the stream masses; the density is
           the package's as published and is only range-checked;
-      (m) four fixtures refuse by name: no velocity window, no bore that fits
+      (m) three fixtures refuse by name (a fourth, no viscosity, is retired since C402: the package declares one): no velocity window, no bore that fits
           (the message must give the largest declared bore, which the second,
           weaker refusal does not -- a sabotage survived without that word), a
-          window above the nearest bore, no viscosity.
+          window above the nearest bore.
 
 WHAT THIS DOES NOT CHECK, said plainly:
   * THAT A PUMP, RACK OR CLEARANCE NUMBER IS A REAL ONE.  Those not read from an
@@ -137,7 +137,8 @@ PDF_IONS = {"Ca": (436.7, 40.078, 2), "Mg": (1358.7, 24.305, 2), "Na": (12009.4,
 PDF_B_MGL = 5.3
 PDF_TDS_MGL = 38697.2
 MW_NACL, MW_B = 58.44, 10.81
-RHO_SEA = 1025.0     # the declared rho_feed of the first pass (read below, held equal)
+RHO_SEA = 1025.0     # the PDF's seawater density (Table 2 is per m3 at it); NOT read from the case since C402
+RHO_PERM = 1000.0    # the PDF's permeate water density -- its recovery is a permeate volume at this over a feed volume at RHO_SEA
 
 
 def rel(a, b):
@@ -180,12 +181,6 @@ def sub_file(p: Path, old: str, new: str, count: int = 1):
     p.write_text(s.replace(old, new, count))
 
 
-def declared_rho_sea() -> float:
-    s = re.sub(r'//[^\n]*', '', (CASE / "system" / "flowsheetDict").read_text())
-    m = re.search(r"name\s+RO1;.*?rho_feed\s+([0-9.]+);", s, re.S)
-    return float(m.group(1)) if m else float("nan")
-
-
 # ---------------------------------------------------------------------------
 def arm_a(res):
     S, K = res["streams"], res["kpis"]
@@ -195,14 +190,18 @@ def arm_a(res):
         return
     if not res.get("converged"):
         fails.append("(a) the run is not converged")
-    rho1 = declared_rho_sea()
-    if rho1 != RHO_SEA:
-        fails.append("(a) the first pass declares rho_feed %s, the gate holds %s" % (rho1, RHO_SEA))
+    #  C402: the modules take their feed density from the PACKAGE (no typed rho_feed, no 1000 kg/m3), and publish
+    #  it (KPI rho_feed).  Inside a module both outlets close on that one density, so a module's volumetric
+    #  recovery is the mass ratio of its streams; the PDF's 47.2 % is a permeate volume at 1000 over a feed
+    #  volume at 1025, which is that ratio times 1025/1000 -- the bookkeeping is written out here, not hidden.
     m = lambda n: S[n]["F_mass"]                       # kg/s
-    prod_m3d = m("perm2") / 1000.0 * 86400.0           # permeate carries the module's 1000 kg/m3
+    rho2 = K["RO2a"]["rho_feed"]                       # kg/m3, the second pass's module density (the package's)
+    if not (990.0 <= rho2 <= 1005.0):
+        fails.append("(a) the second pass's module density %.3f kg/m3 is not that of a dilute permeate" % rho2)
+    prod_m3d = m("perm2") / rho2 * 86400.0             # permeate volume at the module's own density
     if rel(prod_m3d, PDF_PRODUCT_M3D) > 5e-4:
         fails.append("(a) the product is %.1f m3/day, the PDF's %.0f (rel %.2e)" % (prod_m3d, PDF_PRODUCT_M3D, rel(prod_m3d, PDF_PRODUCT_M3D)))
-    r1 = (m("perm1") / 1000.0) / (m("roFeed") / rho1)
+    r1 = (m("perm1") / m("roFeed")) * (RHO_SEA / RHO_PERM)
     if rel(r1, PDF_R1) > 1e-3:
         fails.append("(a) the first-pass recovery is %.5f, the PDF's %.3f" % (r1, PDF_R1))
     r2 = m("perm2") / m("perm1")
@@ -471,7 +470,7 @@ def arm_f(res):
     if tr.get("count") != SKIDS:
         fails.append("(f) the result declares %r trains, the PDF's skids are %d" % (tr.get("count"), SKIDS))
         return None
-    prod_m3d = S["perm2"]["F_mass"] / 1000.0 * 86400.0
+    prod_m3d = S["perm2"]["F_mass"] / K["RO2a"]["rho_feed"] * 86400.0     # the module's own (package) density, C402
     if rel(prod_m3d / SKIDS, PDF_SKID_M3D) > 3e-4:
         fails.append("(f) a train makes %.1f m3/d, the PDF's skid %.0f" % (prod_m3d / SKIDS, PDF_SKID_M3D))
     for u in ("HPpump", "Booster", "Pass2Pump", "PX", "RO1", "RO2a", "RO2b"):
@@ -500,7 +499,7 @@ def arm_f(res):
             if v0["elementsPerVessel"] != 7:
                 fails.append("(f) %s: %d elements per vessel, the PDF's '7M' is 7" % (u, v0["elementsPerVessel"]))
     shaft = sum(K[u]["W_shaft_kW"] for u in ("IntakePump", "HPpump", "Booster", "Pass2Pump"))
-    spec = shaft / (S["perm2"]["F_mass"] / 1000.0 * 3600.0)
+    spec = shaft / (S["perm2"]["F_mass"] / K["RO2a"]["rho_feed"] * 3600.0)
     if abs(spec - 2.81) > 0.01:
         fails.append("(f) the plant's specific shaft energy is %.4f kWh/m3, the case's 2.81" % spec)
     return spec
@@ -814,9 +813,8 @@ def arm_m(tmp):
     refused("header-window-above-the-nearest-bore", lambda d: sub_file(P(d),
             "min     1.0 m/s;\n                    max     2.0 m/s;", "min     1.99 m/s;\n                    max     2.0 m/s;"),
             ["NO declared size fits", "below the window's minimum"])
-    refused("header-without-a-viscosity", lambda d: sub_file(P(d),
-            "viscosity\n                {\n                    value   1.0e-3 Pa.s;", "notviscosity\n                {\n                    value   1.0e-3 Pa.s;"),
-            ["pipeHeader", "viscosity"])
+    #  "header-without-a-viscosity" retired (C402): the package now declares the seawater's stated viscosity, so a
+    #  header with no viscosity of its own asks the package for it and is not refused.  What stays here: three arms.
     return n
 
 

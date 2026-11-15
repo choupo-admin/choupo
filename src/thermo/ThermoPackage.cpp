@@ -3393,6 +3393,12 @@ ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
     std::vector<std::size_t> set;
     for (std::size_t i = 0; i < x.size() && i < components_.size(); ++i)
         if (x[i] > 0.0) set.push_back(i);
+    //  AN EXACT SET WINS (C402: a case with two feeds of different sets -- a
+    //  nanofiltration and a seawater unit, a feed with and without a trace
+    //  constituent -- declares one stated value per set; the refusal below is
+    //  for a liquid that NONE of them describes).
+    for (const auto& m : liquidViscosityMeasured_)
+        if (m.use == "method" && m.set == set) return &m;
     for (const auto& m : liquidViscosityMeasured_)
     {
         if (m.use != "method") continue;

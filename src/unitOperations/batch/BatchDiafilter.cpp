@@ -35,6 +35,8 @@ Description
 
 #include "BatchDiafilter.H"
 #include "core/PropertySourceLog.H"
+#include "thermo/LiquidPropertyDoor.H"
+#include "unitOperations/membrane/MembraneTypedProperties.H"
 
 #include "core/Advisory.H"
 #include "core/Dimensions.H"
@@ -138,32 +140,13 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
             " (say 1e-3 m/s) is the un-polarised limit and says so out loud.");
     kFilm_ = op->lookupScalar("k_film", Dims::massTransferCoeff);
 
-    //  rho: the dilute-aqueous solution density the whole conversion closes
-    //  on (BulkConversion.H).  Announced when it defaults -- the steady
-    //  module takes 1000 silently, which is a crutch this unit does not
-    //  inherit.
-    if (op->found("rho"))
-    {
-        rho_ = op->lookupScalar("rho", Dims::density);
-        PropertySourceLog::instance().use(type(), name(), "liquidDensity",
-            liquidSource::declaredByCase, "declared", took(rho_));
-    }
-    else
-    {
-        rho_ = liquidSource::batchDiafilterRhoDefault.value;
-        PropertySourceLog::instance().use(type(), name(), "liquidDensity",
-            liquidSource::batchDiafilterRhoDefault);
-        const std::string msg =
-            "no `rho` declared -- the solution mass density every"
-            " concentration in this vessel is closed on DEFAULTS to 1000"
-            " kg/m3 (pure water at 4 C).  For a concentrated retentate this"
-            " biases every c_i and therefore every flux; declare `rho`.";
-        if (AdvisoryLog::instance().add("model", "warning",
-                                        "batchDiafilter '" + name() + "'", msg)
-            && verbosity_ >= 1)
-            std::cout << "  [advisory] " << msg << "\n";
-    }
-    rhoDia_ = op->lookupScalarOrDefault("rho_diafiltrate", rho_, Dims::density);
+    //  rho: the solution density the whole conversion closes on
+    //  (BulkConversion.H) comes from the package through the one door, at
+    //  the initial holdup's state (C402): a `rho`, a `rho_diafiltrate` or a
+    //  default of 1000 kg/m3 in this block is gone, and the block is refused
+    //  if it carries one.  It is set below, once the initial holdup is read.
+    unitTypedProperties::refuse(op, "batchDiafilter '" + name() + "': ", "membrane module",
+                                membrane::typedPropertyWords());
 
     // ---- fouling: absent unless declared -----------------------------------
     if (op->found("fouling"))
@@ -275,6 +258,24 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
         throw std::runtime_error(
             "batchDiafilter '" + name() + "': the initial holdup is empty."
             "  A vessel's initial state lives in `0/internalStates/<unit>`.");
+
+    //  THE DENSITY, from the package (C402), at the initial holdup's own composition and the feed side's T and
+    //  P.  One value serves the whole batch, as the conversion has always closed on one (the dilute-aqueous
+    //  convention of BulkConversion.H), and the make-up solvent of a constant-volume run takes the SAME value:
+    //  the unit closes the permeate on `rho_` too, so a make-up of another density would make the "constant"
+    //  volume drift with every instant (the washout law exp(-(1-R)N) then fails at constant R -- measured when
+    //  the pure solvent's own density was tried, 3.7 % on NaCl).
+    {
+        const liquidProperty::Consumer who{ type(), name() };
+        sVector xs(N, 0.0);
+        const scalar nT = state_.totalMoles();
+        for (std::size_t i = 0; i < N; ++i) xs[i] = state_.n[i] / nT;
+        liquidProperty::Request ask;
+        ask.thermo = &thermo; ask.T = state_.T; ask.P = P_feed_; ask.who = &who;
+        ask.x = xs;
+        rho_    = liquidProperty::density(ask).value;
+        rhoDia_ = rho_;
+    }
 
     n0_  = state_.n;
     V0_  = volumeOf(state_.n);

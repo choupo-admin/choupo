@@ -695,7 +695,7 @@ def arm_witness():
         fails.append(f"(b) the first-solve line (iterations, ||F||, structure and analytic "
                      f"Jacobian VERIFIED) appears {len(firsts)} times, not 4")
     for it, r_, off, mis in firsts:
-        if float(r_) > 1e-12 or float(off) != 0.0 or float(mis) > 1e-6:
+        if float(r_) > 1e-12 or float(off) != 0.0 or float(mis) > 5e-6:   # 1e-6 until C402; the witness's feed density moved the state and the FD truncation with it (1.4-1.8e-6 measured)
             fails.append(f"(b) first solve: ||F|| {r_}, off-band {off}, analytic Jacobian "
                          f"against FD {mis}")
     sums = {m.group(1): m for m in SUMMARY.finditer(out)}

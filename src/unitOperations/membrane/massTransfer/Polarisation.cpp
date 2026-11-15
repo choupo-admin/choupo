@@ -43,6 +43,7 @@ License
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <functional>
 #include <limits>
 #include <stdexcept>
 
@@ -639,7 +640,8 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
                                scalar                          T_K,
                                const std::string&              unitLabel,
                                int                             verbosity,
-                               bool                            lawResolvesIons)
+                               bool                            lawResolvesIons,
+                               const std::function<scalar(std::size_t)>* neutralD)
 {
     const PolarisationPolicy policy = readPolarisationPolicy(operation);
     const bool coupled = policy.coupling == IonCoupling::Electroneutral;
@@ -699,8 +701,13 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
         }
         else if (!ion)
         {
-            s.D = D_neutral;
-            s.dOrigin = "unit diffusivity";
+            //  A solute taken as ONE particle: its own D0 in the solvent when
+            //  the caller supplies the property door's per-solute value
+            //  (the spiral-wound module since C402), else the one value the
+            //  other callers hand over.
+            s.D = neutralD && *neutralD ? (*neutralD)(idx) : D_neutral;
+            s.dOrigin = neutralD && *neutralD ? "solute diffusivity in the solvent (property kernel)"
+                                              : "unit diffusivity";
         }
         solutes.push_back(std::move(s));
     }

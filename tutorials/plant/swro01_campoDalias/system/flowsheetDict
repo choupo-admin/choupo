@@ -203,7 +203,7 @@ units
         type        splitter;
         in          feed1;
         outputs     ( toHPpump  toPX );
-        operation   { fractions ( 0.479110  0.520890 ); }
+        operation   { fractions ( 0.479085  0.520915 ); }
     }
     {
         name        HPpump;
@@ -212,7 +212,7 @@ units
         outputs     ( hpFeed );
         operation
         {
-            P_out     58.589 bar;
+            P_out     58.7185 bar;
             eta       0.82;                     // ASSUMED
         }
     }
@@ -227,7 +227,7 @@ units
             mixing          0.02;               // ASSUMED
             leakage         0.01;               // ASSUMED
             P_LPout         1.3 bar;            // ASSUMED: the outfall line
-            targetPressure  58.589 bar;
+            targetPressure  58.7185 bar;
             source          "efficiency 0.95: Toray case study MC-CS-CAMPODEDALIAS-1910 (DWEER, 95 %); mixing and leakage: ASSUMED, low-end values of Stover, Desalination 203 (2007) 168-175, for a device the document does not describe further; the rotary unit of this engine stands in for the document's piston-type work exchanger";
         }
     }
@@ -238,7 +238,7 @@ units
         outputs     ( boosted );
         operation
         {
-            P_out     58.589 bar;
+            P_out     58.7185 bar;
             eta       0.80;                     // ASSUMED
         }
     }
@@ -260,7 +260,6 @@ units
             vessels          1398;              // 6 skids x 233 vessels (the document: "233 (7M)")
             elements         7;                 // "7M": seven elements per vessel
             P_permeate       1.0 bar;
-            rho_feed         1025;              // kg/m3, ASSUMED: seawater near 20 C
             nNodes           10;
             aqueousSplit
             {
@@ -288,8 +287,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;          // Pa.s, ASSUMED seawater near 20 C
-                diffusivity    1.5e-9;          // m2/s, ASSUMED: one value serves both solutes (NaCl at seawater strength)
             }
             pressureDrop
             {
@@ -314,7 +311,7 @@ units
         outputs     ( feed2 );
         operation
         {
-            P_out     10.7447 bar;                 // SOLVED: 87 % second-pass recovery (the document's 1.03 MPa is the test pressure)
+            P_out     10.7543 bar;                 // SOLVED: 86.6 % second-pass recovery, inside the document's 84-90 %, so that the product holds at the module's own densities (the document's 1.03 MPa is the test pressure); 87 % / 10.7447 bar before C402
             eta       0.80;                     // ASSUMED
         }
     }
@@ -356,8 +353,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;
-                diffusivity    1.5e-9;
             }
             pressureDrop     { model SchockMiquel; }
             polarisation
@@ -405,8 +400,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;
-                diffusivity    1.5e-9;
             }
             pressureDrop     { model SchockMiquel; }
             polarisation

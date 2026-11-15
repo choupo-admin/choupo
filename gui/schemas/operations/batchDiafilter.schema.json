@@ -160,20 +160,6 @@
       "title": "Permeate-side pressure",
       "unit": "Pa"
     },
-    "rho": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Solution density",
-      "description": "Declared, never defaulted: the density the concentrations and the permeate mass closure are both built on (BulkConversion.H).",
-      "unit": "kg/m3"
-    },
-    "rho_diafiltrate": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Diafiltrate density",
-      "description": "Density of the make-up solvent in constantVolume mode; defaults to rho when omitted.",
-      "unit": "kg/m3"
-    },
     "k_film": {
       "type": "number",
       "exclusiveMinimum": 0,
@@ -244,7 +230,6 @@
     "area",
     "P_feed",
     "P_permeate",
-    "rho",
     "k_film",
     "osmotic"
   ],

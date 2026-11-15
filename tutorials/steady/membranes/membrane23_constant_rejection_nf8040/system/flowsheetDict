@@ -57,8 +57,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;    // coefficients + window: the spacer record
-                viscosity      0.89e-3;         // Pa.s, water at 25 C
-                diffusivity    1.4e-9;          // m2/s, ONE value for both salts (NaCl 1.6, MgSO4 0.85 x 1e-9): the film of a lumped solute reads one D
             }
             pressureDrop
             {

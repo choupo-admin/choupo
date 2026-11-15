@@ -30,6 +30,7 @@ License
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "BulkConversion.H"
+#include "MembraneTypedProperties.H"
 #include "AqueousSplit.H"
 #include "RatedTestInversion.H"
 
@@ -51,6 +52,7 @@ License
 #include "transport/TransportModel.H"
 #include "thermo/ThermoPackage.H"
 
+#include <functional>
 #include <limits>
 #include <algorithm>
 #include <cmath>
@@ -124,6 +126,11 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // ---- Operating parameters ---------------------------------------------
     auto opDict = dict->subDict("operation");
     const std::string unitLabel = dict->name().empty() ? type() : dict->name();
+    //  A MEMBRANE BLOCK DOES NOT CARRY A PROPERTY (C402): a density, a
+    //  viscosity or a diffusivity typed here, at any depth, is refused BY
+    //  NAME with the line to write in the property dictionary.
+    unitTypedProperties::refuse(opDict, "spiralWoundModule '" + unitLabel + "': ",
+                                "membrane module", membrane::typedPropertyWords());
 
     // ---- Module RECORD (2026-09-15): `module <name>;` names a commercial
     //      element or a laboratory cell in assets/ (kind membraneModule) and
@@ -317,11 +324,15 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     const scalar P_perm     = opDict->lookupScalar("P_permeate", Dims::pressure);
 
     const int    nNodes     = static_cast<int>(opDict->lookupScalarOrDefault("nNodes", 100.0));
-    const scalar rho        = opDict->lookupScalarOrDefault("rho_feed", liquidSource::rhoFeedDefault.value); // kg/m³
-    if (opDict->found("rho_feed"))
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared", took(rho));
-    else
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::rhoFeedDefault);
+    //  THE FEED'S LIQUID DENSITY comes from the package through the one door, at
+    //  the feed's own T, P and composition (C402: a `rho_feed` typed in the
+    //  block, and the 1000 kg/m3 the unit kept when none was, are gone; the
+    //  block is refused if it carries one).  Every concentration in the
+    //  module closes on it (BulkConversion.H).
+    const liquidProperty::Consumer whoRho{ type(), unitLabel };
+    liquidProperty::Request askRho;
+    askRho.thermo = &thermo; askRho.T = T_in; askRho.P = P_in; askRho.x = z_in; askRho.who = &whoRho;
+    const scalar rho = liquidProperty::density(askRho).value;   // kg/m3
 
     // ---- Channel hydraulics: k_film + dP selectable models --------
     //  The feed-channel GEOMETRY (channelHeight, spacerPorosity, viscosity)
@@ -331,22 +342,14 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  velocity u = Q_b(z)/A_channel (so both fall along the channel).  With
     //  NO sub-block the legacy constants are used (k_film / dP_feed_total ---
     //  membrane01/02/03 unchanged).
-    scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = liquidSource::waterViscosityKnob.value,
-           D_solute = liquidSource::soluteDiffusivityLegacy.value;
-    bool muDeclared = false, DDeclared = false;
-    auto readGeom = [&](const DictPtr& b)
+scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 0.0;
+    auto readGeom = [&](const DictPtr& bl)
     {
-        h_ch    = b->lookupScalarOrDefault("channelHeight",  h_ch, Dims::length);
-        eps     = b->lookupScalarOrDefault("spacerPorosity", eps);
-        if (b->found("viscosity")) { mu_feed = b->lookupScalar("viscosity"); muDeclared = true; }
+        h_ch = bl->lookupScalarOrDefault("channelHeight",  h_ch, Dims::length);
+        eps  = bl->lookupScalarOrDefault("spacerPorosity", eps);
     };
     if (opDict->found("pressureDrop")) readGeom(opDict->subDict("pressureDrop"));
-    if (opDict->found("massTransfer"))
-    {
-        auto mt = opDict->subDict("massTransfer");
-        readGeom(mt);
-        if (mt->found("diffusivity")) { D_solute = mt->lookupScalar("diffusivity"); DDeclared = true; }
-    }
+    if (opDict->found("massTransfer")) readGeom(opDict->subDict("massTransfer"));
     //  THE FEED SPACER IS A RECORD (C146, 2026-10-24).  Named by the element
     //  record (`feedSpacer <name>;` in a kind membraneModule) or, with the
     //  explicit `area` + `length` spec, by the case beside them.  Its
@@ -388,85 +391,29 @@ int SpiralWoundModule::solve(const DictPtr& dict,
         h_ch = modRec->channelHeight_m();
         eps  = modRec->spacerPorosity();
     }
-    //  THE TWO LEGACY CONSTANTS ARE ANNOUNCED, NOT ASSUMED (2026-09-05).
-    //  mu_feed = 1e-3 Pa.s and D_solute = 1.6e-9 m²/s were hard-coded here
-    //  since the first membrane case -- water at 20 C and NaCl in water,
-    //  roughly, applied to every feed including a 10 g/L glucose NF and a
-    //  Pitzer brine.  The eleven membrane goldens were recorded on them, so
-    //  the VALUES stay; what changes is that a run says so.  Precedence:
-    //  a value declared in the sub-block wins (the case's own number); else
-    //  a declared package transport model prices it from the feed state
-    //  (announced with the model); else the legacy default, announced as
-    //  such with the remedy.  No case in the corpus declares liquid
-    //  transport, so the model route moves no golden -- checked.
-    if (muDeclared)
-        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::declaredByCase, "declared", took(mu_feed));
-    else if (!thermo.hasLiquidViscosity())
-        PropertySourceLog::instance().useHere("liquidViscosity", liquidSource::waterViscosityKnob);
-    if (!muDeclared)
+//  THE FEED'S LIQUID VISCOSITY comes from the package through the one door
+    //  (C402; the `viscosity` a block used to carry, and the 1e-3 Pa.s the
+    //  unit kept when it carried none, are gone).  It is needed only where a
+    //  film or a friction MODEL prices Re and Sc from it (a fixed `k_film`
+    //  and a fixed `dP_feed_total` read none), so a case with neither block
+    //  asks nothing.  The state is the feed's T and composition.
+    if (opDict->found("massTransfer") || opDict->found("pressureDrop"))
+        mu_feed = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity,
+            T_in, P_in, z_in, liquidProperty::Consumer{ type(), unitLabel }).value;
+    //  A NEUTRAL / LUMPED SOLUTE's film is priced on ITS OWN diffusivity in
+    //  the solvent, one per solute, from the property dictionary through the
+    //  door (C402: the single `diffusivity` a block used to carry for every
+    //  solute is gone, and the 1.6e-9 m2/s default with it).  An ion's k_c,i
+    //  is priced on the ion's own species-record D0 (membrane::Polarisation).
+    //  Asked lazily, by the builder, only for the solutes that polarise as
+    //  one particle and only when a film model reads it.
+    const std::size_t iSolventForD = thermo.aqueousSolventIndex();
+    const liquidProperty::Consumer whoD{ type(), unitLabel };
+    const std::function<scalar(std::size_t)> neutralSoluteD = [&](std::size_t idx) -> scalar
     {
-        if (thermo.hasLiquidViscosity())
-        {
-            mu_feed = liquidProperty::evaluate(thermo, liquidProperty::Property::viscosity, T_in, 0.0, z_in).value;
-            AdvisoryLog::instance().add("model", "info",
-                "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
-                "feed viscosity " + std::to_string(mu_feed) + " Pa.s priced"
-                " from the case's declared liquidViscosity transport model"
-                " at the feed T and composition (no `viscosity` in the"
-                " massTransfer/pressureDrop sub-block)");
-        }
-        else
-            AdvisoryLog::instance().add("model", "warning",
-                "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
-                "[legacy] mu_feed 1e-3 Pa.s ASSUMED (water near 20 C) -- no"
-                " `viscosity` in the massTransfer/pressureDrop sub-block and"
-                " no liquidViscosity transport model declared; declare"
-                " transport { liquid { viscosity { model ...; } } } to price"
-                " it from the package, or set it in the sub-block");
-    }
-    //  D_solute is read by the film model for a NEUTRAL / lumped solute
-    //  only: an ion's k_c,i is priced on the ion's own species-record D0
-    //  (2026-09-15, membrane::Polarisation), and a constant k_film reads no
-    //  D at all.  So the pricing happens here, but the ANNOUNCEMENT is
-    //  deferred until the polarisation object knows whether any solute is
-    //  neutral -- an announced default that nothing reads would be a
-    //  sentence about a model that is not running (the 2026-08-04 banner
-    //  trap).  `announceDsolute` is called once below, when it applies.
-    std::string dSoluteAdvisory, dSoluteSeverity;
-    if (!DDeclared && opDict->found("massTransfer"))
-    {
-        if (thermo.hasLiquidDiffusivity() && thermo.hasLiquidViscosity())
-        {
-            //  One solute diffusivity serves the film model; price it for the
-            //  FIRST nonvolatile solute in the aqueous solvent; say which one.
-            std::size_t iSol = Ncomp, iW = thermo.aqueousSolventIndex();
-            for (std::size_t i = 0; i < Ncomp; ++i)
-                if (thermo.comp(i).isNonvolatile() && z_in[i] > 0.0) { iSol = i; break; }
-            if (iSol < Ncomp)
-            {
-                D_solute = thermo.diffusivityLiquid(T_in, iSol, iW);
-                dSoluteSeverity = "info";
-                dSoluteAdvisory =
-                    "solute diffusivity " + std::to_string(D_solute) + " m2/s"
-                    " priced for '" + thermo.comp(iSol).name() + "' in water"
-                    " from the case's declared liquidDiffusivity transport"
-                    " model at the feed T (no `diffusivity` in the"
-                    " massTransfer sub-block)";
-            }
-        }
-        else
-        {
-            dSoluteSeverity = "warning";
-            dSoluteAdvisory =
-                "[legacy] D_solute 1.6e-9 m2/s ASSUMED (NaCl in water, roughly)"
-                " for the film model -- no `diffusivity` in the massTransfer"
-                " sub-block and no liquidDiffusivity (+ liquidViscosity)"
-                " transport model declared; declare transport { liquid {"
-                " diffusivity { returns infiniteDilution; infiniteDilution {"
-                " default { model WilkeChang; } } } viscosity { model ...; } } }"
-                " to price it from the package, or set it in the sub-block";
-        }
-    }
+        return liquidProperty::soluteDiffusivity(thermo, T_in, idx, iSolventForD, &whoD).value;
+    };
+
     const scalar W_ch      = A_membrane / (facesPerLeaf * L);   // channel width: A/(2L) spiral, A/L flat cell
     const scalar A_channel = W_ch * h_ch * eps;
     //  The hydraulic diameter: the spacer's Eq. (17) value where a spacer
@@ -861,30 +808,18 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // ---- The wall: ONE home ------------------------------------------------
     //  Built once per run from the `polarisation {}` policy, each solute's
     //  charge (through its declared bridge) and diffusivity (an ion's own
-    //  D0 when a correlation or the coupling needs it, else D_solute), and
-    //  the k supplier (the correlation per solute, or the constant).  Every
-    //  transport law asks this object for c_m; none computes a film of its
-    //  own.  Defaults that are used are announced inside the builder.
+    //  D0 when a correlation or the coupling needs it, else the solute's own
+    //  value in the solvent from the property door), and the k supplier (the
+    //  correlation per solute, or the constant).  Every transport law asks
+    //  this object for c_m; none computes a film of its own.  Defaults that
+    //  are used are announced inside the builder.
+    const bool askNeutralD = opDict->found("massTransfer");
     const membrane::Polarisation polar = membrane::buildPolarisation(
-        opDict, thermo, soluteIdx, mtModel.get(), k_film_const, D_solute, T_in,
+        opDict, thermo, soluteIdx, mtModel.get(), k_film_const,
+        std::numeric_limits<scalar>::quiet_NaN(), T_in,
         "membrane '" + membraneName + "'", verbosity,
-        transportModel->decomposesSaltsIntoIons());
+        transportModel->decomposesSaltsIntoIons(), askNeutralD ? &neutralSoluteD : nullptr);
     const bool perSoluteK = polar.perSoluteK();
-    //  Where the film model's solute diffusivity came from (C378 slice 0).
-    if (opDict->found("massTransfer") && polar.nIons() < polar.solutes().size())
-    {
-        if (DDeclared)
-            PropertySourceLog::instance().useHere("liquidDiffusivity",
-                liquidSource::declaredByCase, "declared", took(D_solute));
-        else if (dSoluteSeverity == "info")
-            PropertySourceLog::instance().useHere("liquidDiffusivity",
-                NamedSource{ "kernel.liquidDiffusivity.soluteInWater",
-                             "the property kernel's liquid-diffusivity model, for the first nonvolatile solute in the aqueous solvent" },
-                "kernel", took(D_solute));
-        else
-            PropertySourceLog::instance().useHere("liquidDiffusivity",
-                liquidSource::soluteDiffusivityLegacy);
-    }
     //  The ions' own D0, with the truth about its temperature (review
     //  ledger DX-01): the tag follows what the builder did, so a run that
     //  announces "NOT temperature-corrected" cannot print "scaled by
@@ -895,10 +830,6 @@ int SpiralWoundModule::solve(const DictPtr& dict,
                 stokesEinstein::ionD0Source(*polar.ionD0Basis()),
                 "record", took(std::numeric_limits<double>::quiet_NaN()));
     }
-    if (!dSoluteAdvisory.empty() && polar.nIons() < polar.solutes().size())
-        AdvisoryLog::instance().add("model", dSoluteSeverity,
-            "membrane '" + (dict->name().empty() ? type() : dict->name()) + "'",
-            dSoluteAdvisory);
 
     // ---- An intrinsic rejection DERIVED from the data sheet (C189) --------
     //  `rejection { <solute> fromRatedTest; }`: the module is run at its
@@ -1517,7 +1448,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     auto hydraulicsAt = [&](scalar Qlocal) -> MassTransferContext
     {
         MassTransferContext c;
-        c.d_h = d_h; c.D = D_solute; c.mu = mu_feed; c.rho = rho;
+        c.d_h = d_h; c.mu = mu_feed; c.rho = rho;   // D is per solute (Polarisation)
         c.u   = (A_channel > 0.0) ? Qlocal / A_channel : 0.0;
         return c;
     };
@@ -2056,6 +1987,11 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  Published only under `module`: no pre-existing golden gains an
     //  unpinned KPI.
     if (hasModule && A_channel > 0.0) kpis_["u_crossflow_inlet"] = feed_vol / A_channel;
+    //  The density and the viscosity the package gave this module at its feed (C402): the numbers every
+    //  concentration, velocity and Reynolds number above was closed on, published so a reader (and a gate)
+    //  recomputes from them instead of assuming 1000 kg/m3 and 1 mPa s.
+    kpis_["rho_feed"] = rho;                                       // kg/m3
+    if (mu_feed > 0.0) kpis_["mu_feed"] = mu_feed;                 // Pa.s, asked only under a film or friction model
     //  C146: the stage, the channel and the window.
     if (nVessels > 1)
     {

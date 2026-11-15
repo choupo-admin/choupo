@@ -60,8 +60,9 @@ word on a unit with no module record (the batch diafilter).
 
 **What is not modelled.** A constant R_int stays constant away from the
 test (a real one rises with the flux).  The record's A_w is not corrected
-(see `docs/design/a-module-is-a-record.md` section 5).  The single MgSO4
-diffusivity of the film (0.85e-9 m2/s) is declared, not measured.
+(see `docs/design/a-module-is-a-record.md` section 5).  The MgSO4
+diffusivity of the film (0.849e-9 m2/s) is the CRC Handbook's, from its two ion values;
+it is read, not measured on this element.
 
 Gate: `bin/curate/check_rejection_inversion.py`.  Record:
 `docs/design/an-observed-rejection-is-not-an-intrinsic-one.md`.

@@ -31,3 +31,50 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( NaCl MgSO4 );
+        maxMassFraction 0.05;
+        reason          "the membrane feed's dissolved salts keep their mass and add no volume to the feed's liquid density (their mass fraction is at most 0.005 in the feed; the bound 0.05 covers the class library's rated tests inside the module, the SWRO class's at 32,000 ppm); a membrane unit asks the package for the feed density and a solute with no liquid volume needs this declared reading (C402: the 1000 kg/m3 the unit used to type is gone); the engine's own bound on it is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
+    }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity
+        {
+            //  The Stokes-Einstein correction of an ion's D0 (and of nothing else here) reads WATER's
+            //  viscosity law at the film temperature; the record holds two laws and marks none preferred.
+            pin ( { component water; law vogel; reason "the temperature scaling of an ion's D0 reads water's viscosity; the Vogel fit is the one the membrane cases that declared a viscosity model used"; } );
+            measured
+            {
+                dil25_MgSO4NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; water's viscosity for a dilute feed, the status in the file's basis"; }
+                dil25_NaCl_liquidViscosity { use method; reason "water's viscosity stands for the {NaCl, water} liquid over a box that reaches 5 wt %: the feed is 0.3 wt % (error under 1 %, CRC p. 8-77), and the class library's SWRO rated test inside the module is at 3.2 wt % (about +5 % over water at 20 C, the same table), where the value is a hypothesis the film coefficient feels as mu^-0.125"; }
+                dil25_MgSO4_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; water's viscosity for a dilute feed, the status in the file's basis"; }
+            }
+        }
+        diffusivity
+        {
+            returns infiniteDilution;
+            infiniteDilution
+            {
+                entries
+                (
+                    { solute NaCl; solvent water; kind infiniteDilution;
+                      value 1.611e-09 m2/s;  T 298.15 K;  box { T (297.65 298.65); }
+                      reason "the datum is at 25 C; the module runs within a few tenths of a kelvin of it (pump heating), and D moves about 2 to 3 % per K on that page, so the box stands it over +-0.5 K, about 1 % of D, as a hypothesis";
+                      source "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Ionic conductivity and diffusion at infinite dilution' (Vanysek; PDF page 304 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): Na+ 1.334, Cl- 2.032 x 1e-5 cm2/s, combined by the page's salt relation D = (z+ + z-) D+ D- / (z+ D+ + z- D-)"; }
+                    { solute MgSO4; solvent water; kind infiniteDilution;
+                      value 8.491e-10 m2/s;  T 298.15 K;  box { T (297.65 298.65); }
+                      reason "the datum is at 25 C; the module runs within a few tenths of a kelvin of it (pump heating), and D moves about 2 to 3 % per K on that page, so the box stands it over +-0.5 K, about 1 % of D, as a hypothesis";
+                      source "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Ionic conductivity and diffusion at infinite dilution' (Vanysek; PDF page 304 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): Mg2+ 0.706, SO42- 1.065 x 1e-5 cm2/s, combined by the page's salt relation D = (z+ + z-) D+ D- / (z+ D+ + z- D-)"; }
+                );
+            }
+        }
+    }
+}

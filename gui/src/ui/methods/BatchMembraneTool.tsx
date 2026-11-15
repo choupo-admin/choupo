@@ -1060,7 +1060,7 @@ function VesselNote({ vessel }: { vessel: VesselDeclaration }): JSX.Element {
       {vessel.membrane ?? "—"}, transport = {vessel.transport ?? "—"},
       A = {fmt(vessel.area, 4)} m², TMP = {fmt(
         vessel.tmp === null ? null : vessel.tmp / 1e5, 4)} bar,
-      k_film = {fmt(vessel.kFilm, 4)} m/s, ρ = {fmt(vessel.rho, 5)} kg/m³
+      k_film = {fmt(vessel.kFilm, 4)} m/s, ρ from the property dictionary (the package's)
       {" "}(system/flowsheetDict, operation {"{}"} of the unit).
       {vessel.missing.length > 0 && (
         <>

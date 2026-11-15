@@ -67,6 +67,10 @@ const TABLE: Record<string, UnitSpec> = {
   "mol/s": { factor: 1.0e-3, affine: false },
   "mol/h": { factor: 1.0e-3 / 3600.0, affine: false },
 
+  // diffusivity → m²/s (the engine's own table, src/core/Units.cpp: a liquid infinite-dilution datum, C398 (d), C402)
+  "m2/s": { factor: 1.0, affine: false },
+  "cm2/s": { factor: 1.0e-4, affine: false },
+
   // mass flow → kg/s
   "kg/s": { factor: 1.0, affine: false },
   "kg/h": { factor: 1.0 / 3600.0, affine: false },

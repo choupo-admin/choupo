@@ -58,7 +58,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;    // coefficients + window: the spacer record
-                viscosity      1.0e-3;          // Pa.s, water at 20 C
             }
             pressureDrop
             {
@@ -100,7 +99,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;
             }
             pressureDrop
             {

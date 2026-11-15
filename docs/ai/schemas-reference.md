@@ -102,8 +102,6 @@ A stirred RETENTATE vessel behind a membrane (choupoBatch): the batch half of th
 | `area` | ✓ | number | m2 |  |
 | `P_feed` | ✓ | number | Pa | Retentate-side pressure; the transmembrane pressure is P_feed - P_permeate. |
 | `P_permeate` | ✓ | number | Pa |  |
-| `rho` | ✓ | number | kg/m3 | Declared, never defaulted: the density the concentrations and the permeate mass closure are both built on (BulkConversion.H). |
-| `rho_diafiltrate` |   | number | kg/m3 | Density of the make-up solvent in constantVolume mode; defaults to rho when omitted. |
 | `k_film` | ✓ | number | m/s | Concentration-polarisation coefficient, DECLARED by the case: the unit refuses without it rather than inventing a correlation for a stirr… |
 | `osmotic` | ✓ | object | — | The same block the steady module reads: `model vanHoff;` or `model pitzer;`. |
 | `fouling` |   | object | — | OPTIONAL. Resistance in series on the permeance handed to the transport law, 1/A_eff = 1/A_w + r_f(v), v = V_permeated/A, applied where t… |
@@ -883,7 +881,6 @@ Spiral-wound membrane module — the SAME unit as `spiralWoundModule` under its 
 | `interElementDP` |   | number | Pa | Extra drop between elements of a multi-element vessel (interconnectors). |
 | `k_film` |   | number | m/s | Constant concentration-polarisation film coefficient. The `massTransfer {}` block computes it from a correlation instead. |
 | `nNodes` |   | integer | - | Discretisation along the module; defaults to 100. |
-| `rho_feed` |   | number | kg/m3 | Defaults to 1000 kg/m3. |
 | `transport` |   | string | — | The inner J_w–c_m–c_p problem: `solutionDiffusion` (default), `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies),… |
 | `transportParameters` |   | object | — | Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-for… |
 | `osmotic` |   | object | — | Absent = van't Hoff (dilute). `{ model Pitzer; beta0 ...; beta1 ...; Cphi ...; }` prices phi(I) for a concentrated brine — at seawater st… |
@@ -1398,7 +1395,6 @@ Spiral-wound membrane module (RO/NF), solved node by node along the feed channel
 | `interElementDP` |   | number | Pa | Extra drop between elements of a multi-element vessel (interconnectors). |
 | `k_film` |   | number | m/s | Constant concentration-polarisation film coefficient. The `massTransfer {}` block computes it from a correlation instead. |
 | `nNodes` |   | integer | - | Discretisation along the module; defaults to 100. |
-| `rho_feed` |   | number | kg/m3 | Defaults to 1000 kg/m3. |
 | `transport` |   | string | — | The inner J_w–c_m–c_p problem: `solutionDiffusion` (default), `DSPM-DE` (the pore-flow model for NF, with its announced internal Davies),… |
 | `transportParameters` |   | object | — | Parameters a transport law reads for itself (the block batchDiafilter hands its law too).  `gelPolarisation` reads `gel { solute <gel-for… |
 | `osmotic` |   | object | — | Absent = van't Hoff (dilute). `{ model Pitzer; beta0 ...; beta1 ...; Cphi ...; }` prices phi(I) for a concentrated brine — at seawater st… |

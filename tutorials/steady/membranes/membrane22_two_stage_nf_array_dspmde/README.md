@@ -28,7 +28,11 @@ viscosity (`transport { liquid { viscosity { model Vogel; } } }` in its
 thermoPhysPropDict), so every D is corrected by Stokes-Einstein to the
 stage's temperature -- 0.874 at 20 C, printed on the run as `[D(T)]` (the
 booster's dissipation warms stage 2 by 0.015 K, and its factor is 0.8744).
-membrane21, which declares none, runs on the 25 C values and says so.
+membrane21 since C402 does too (its film correlation needs the feed's viscosity, which a
+membrane unit now takes from the property dictionary, and a declared liquid viscosity
+prices the same correction); a case with a constant film and no liquid-viscosity
+declaration at all would run on the 25 C values and say so (the gate
+check_ion_diffusivity_temperature holds that absence on a twin of membrane14).
 
 **What the student sees -- and the limit it shows.**  In ions, the pore
 rejects SO4 2- almost completely (Donnan and dielectric exclusion of a
@@ -48,7 +52,7 @@ ions -- is a model decision that has not been taken.
 **What is not claimed.** Nothing here is compared with a measured array.
 The NF270_dspmde pore parameters are literature characterisation values for
 one operating point (its record says so); the generic element is estimated
-and announced; the film's `diffusivity` key prices only the salt-level
+and announced; the film's per-salt diffusivity (from the property dictionary) prices only the salt-level
 `k_film` column (each ion's k is priced on its own D).
 
 Gate: `bin/curate/check_spiral_array.py` arm (i).

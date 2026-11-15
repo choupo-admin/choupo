@@ -85,8 +85,6 @@ units
                 model          SchockMiquel;     // Sh = a Re^b Sc^c
                 channelHeight  0.7 mm;            // feed-spacer channel height
                 spacerPorosity 0.9;
-                diffusivity    1.6e-9;            // m²/s  (NaCl in water)
-                viscosity      1.0e-3;            // Pa·s  (seawater ~ water)
                 // a 0.065;  b 0.875;  c 0.25;    // Schock-Miquel defaults
             }
             pressureDrop

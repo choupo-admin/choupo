@@ -15,7 +15,7 @@ unknown -- the electrical potential gradient at the interface, fixed by
 electroneutrality at the wall.  No film thickness, no new parameter.  This
 case declares it:
 
-    massTransfer  { model SchockMiquel; channelHeight 0.7 mm; spacerPorosity 0.9; viscosity 1e-3; }
+    massTransfer  { model SchockMiquel; channelHeight 0.7 mm; spacerPorosity 0.9; }
     pressureDrop  { model SchockMiquel; }
     polarisation  { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
 

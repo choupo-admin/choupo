@@ -52,7 +52,8 @@ which derives the split of the ions from their permeances.
 CHOICE, not physics: a real one rises with the flux (solution-diffusion,
 R = J_v/(J_v + B)) and depends on the ion mixture (DSPM-DE).  The two R's
 here are hypothetical teaching values and say so.  The film reads ONE
-diffusivity for both lumped salts (declared 1.4e-9 m2/s).  The generic
+diffusivity per lumped salt, each from the property dictionary (NaCl 1.611e-9,
+MgSO4 0.849e-9 m2/s, the CRC Handbook's ion values combined by its salt relation).  The generic
 element's geometry is estimated, and announced.
 
 Gate: `bin/curate/check_constant_rejection.py`.

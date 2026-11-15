@@ -2245,8 +2245,9 @@ operation
     elements         1;             // >1 for a train in one vessel
     P_perm           1.01325 bar;
     dP_feed_total    2 bar;
-    massTransfer  { model SchockMiquel;  channelHeight 0.7 mm;
-                    diffusivity 1.6e-9 m2/s;  viscosity 1.0e-3 Pa.s; }
+    massTransfer  { model SchockMiquel;  channelHeight 0.7 mm; }
+    // viscosity, density and the solute's diffusivity come from
+    // constant/thermoPhysPropDict (a membrane block refuses them)
     osmotic       { model Pitzer; }
 }
 \end{lstlisting}

@@ -89,13 +89,6 @@
       "description": "Discretisation along the module; defaults to 100.",
       "unit": "-"
     },
-    "rho_feed": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "title": "Feed density override",
-      "description": "Defaults to 1000 kg/m3.",
-      "unit": "kg/m3"
-    },
     "transport": {
       "type": "string",
       "title": "Transport law",
@@ -258,12 +251,6 @@
           "maximum": 1,
           "title": "Spacer porosity",
           "unit": "-"
-        },
-        "viscosity": {
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "title": "Feed viscosity",
-          "unit": "Pa.s"
         }
       }
     },
@@ -275,12 +262,6 @@
         "model": {
           "type": "string",
           "title": "Correlation name"
-        },
-        "diffusivity": {
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "title": "Solute diffusivity",
-          "unit": "m2/s"
         },
         "channelHeight": {
           "type": "number",
@@ -294,12 +275,6 @@
           "maximum": 1,
           "title": "Spacer porosity",
           "unit": "-"
-        },
-        "viscosity": {
-          "type": "number",
-          "exclusiveMinimum": 0,
-          "title": "Feed viscosity",
-          "unit": "Pa.s"
         }
       }
     },

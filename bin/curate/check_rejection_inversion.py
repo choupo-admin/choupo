@@ -136,6 +136,19 @@ def sub(path, pattern, repl, count=1, flags=0):
     path.write_text(s2)
 
 
+def widen_properties(d, names):
+    """C402: a fixture that widens the component set widens the property declarations the way a case does
+    (the solute keeps its mass; a per-solute diffusivity entry), so the refusal under test is the one the
+    fixture is about and not an earlier refusal of a missing property."""
+    th = d / "constant/thermoPhysPropDict"
+    t = th.read_text()
+    t = re.sub(r"(components\s*\(\s*)MgSO4(\s*\);\s*\n\s*maxMassFraction)", lambda m: m.group(1) + "MgSO4 " + " ".join(names) + m.group(2), t, count=1)
+    ent = "".join("                    { solute %s; solvent water; kind infiniteDilution; value 1.0e-9 m2/s; T 298.15 K;"
+                  " box { T (297.65 298.65); } reason \"fixture\"; source \"fixture\"; }\n" % n for n in names)
+    t = t.replace("entries\n                (\n", "entries\n                (\n" + ent, 1)
+    th.write_text(t)
+
+
 def derived_block(text):
     """The NFderived unit's text (the first unit)."""
     i = text.index("name        NFderived;")
@@ -163,12 +176,14 @@ def rated_pressure_bar():
     return 4.8 + (1.01325 if re.search(r"pressureBasis\s+feedGauge\s*;", rec) else 0.0)
 
 
-def rated_feed(path):
+def rated_feed(path, rho):
     """Write the rated test's feed exactly as the engine's probe builds it:
-    2,000 ppm MgSO4 at rho 1000 and permeateFlow / recovery, the rated
-    pressure as the probe reads it (rated_pressure_bar), 25 C."""
+    2,000 ppm MgSO4 at the solution density the PACKAGE gives it (C402: the
+    module publishes it as KPI rho_feed; no 1000 kg/m3 is typed) and
+    permeateFlow / recovery, the rated pressure as the probe reads it
+    (rated_pressure_bar), 25 C."""
     Q = 9.5 / 0.15 / 24.0                       # m3/h
-    m = Q * 1000.0
+    m = Q * rho
     s = path.read_text()
     s = re.sub(r"water\s+[0-9.eE+-]+ kmol/h;", "water   %.12g kmol/h;" % (m * 0.998 / MW["water"]), s)
     s = re.sub(r"MgSO4\s+[0-9.eE+-]+ kmol/h;", "MgSO4   %.12g kmol/h;" % (m * 0.002 / MW["MgSO4"]), s)
@@ -195,6 +210,7 @@ def refusal(tmp, label, mutate, must):
 def main():
     tmp = Path(tempfile.mkdtemp(prefix="check_rejection_inversion_"))
     R_int = None
+    RHO = None
     try:
         # ---- (a) the witness ----------------------------------------------
         rc, so, se = run_split(WITNESS)
@@ -204,6 +220,7 @@ def main():
         else:
             d, n = kp(js, "NFderived"), kp(js, "NFnaive")
             R_int = d.get("R_int_fromRatedTest_MgSO4")
+            RHO = d.get("rho_feed")      # kg/m3, the package's density of the 2,000 ppm MgSO4 feed (the same state)
             if "[ratedTest] R_int(MgSO4) = " not in so:
                 fail("(a) no [ratedTest] line on stdout")
             if "[ratedTest] spiralWoundModule 'NFderived': R_int(MgSO4) = " not in se:
@@ -232,11 +249,23 @@ def main():
         if R_int is not None:
             rt = tmp / "roundtrip"
             ccr.copy_case(WITNESS, rt)
+            #  the twin keeps the witness's SEALED manifest (same components, same records): the package then
+            #  prices its density on the same rung as the witness's, so the round trip compares like with like (C402)
+            shutil.copy(WITNESS / "constant" / "propertyManifest", rt / "constant" / "propertyManifest")
             edit_derived(rt, r"MgSO4 fromRatedTest;", "MgSO4 %.15g;" % R_int)
-            rated_feed(rt / "0/feedDerived")
-            rated_feed(rt / "0/feedNaive")
+            #  The rated test's feed is a VOLUME flow, so its mass follows the density the run uses (the package's,
+            #  C402): run once, read the density the twin published, rebuild the feed on it and run again (the
+            #  density depends on the composition, not the flow).
+            rated_feed(rt / "0/feedDerived", RHO)
+            rated_feed(rt / "0/feedNaive", RHO)
             rc, so, se = run_split(rt)
             jr = ccr.result_of(so)
+            if rc == 0 and jr is not None:
+                rho_twin = kp(jr, "NFderived").get("rho_feed", RHO)
+                rated_feed(rt / "0/feedDerived", rho_twin)
+                rated_feed(rt / "0/feedNaive", rho_twin)
+                rc, so, se = run_split(rt)
+                jr = ccr.result_of(so)
             if rc != 0 or jr is None:
                 fail("(a) the round-trip probe did not run (exit %d):\n%s" % (rc, (so + se)[-800:]))
             else:
@@ -259,6 +288,7 @@ def main():
         if R_int is not None:
             used = tmp / "used"
             ccr.copy_case(WITNESS, used)
+            shutil.copy(WITNESS / "constant" / "propertyManifest", used / "constant" / "propertyManifest")   # same rung as the witness (C402)
             edit_derived(used, r"MgSO4 fromRatedTest;", "MgSO4 %.15g;" % R_int)
             rc, so, se = run_split(used)
             ju = ccr.result_of(so)
@@ -328,11 +358,13 @@ def main():
 
         def wrong(d):
             sub(d / "constant/thermoPhysPropDict", r"components\s*\(\s*water\s+MgSO4\s*\);", "components ( water MgSO4 NaCl );")
+            widen_properties(d, ["NaCl"])
             edit_derived(d, r"MgSO4 fromRatedTest;", "MgSO4 0.97;  NaCl fromRatedTest;")
         refusal(tmp, "wrong-solute", wrong, ["rated on MgSO4, not on NaCl"])
 
         def ions(d):
             sub(d / "constant/thermoPhysPropDict", r"components\s*\(\s*water\s+MgSO4\s*\);", "components ( water MgSO4 Na Cl );")
+            widen_properties(d, ["Na", "Cl"])
             for sp in ("components", "species"):
                 for nm in ("Na", "Cl"):
                     src = M21 / "constant" / sp / (nm + ".dat")
@@ -353,7 +385,6 @@ def main():
         def nomodule(d):
             edit_derived(d, r"module\s+NF270-4040;[^\n]*",
                          "membrane NF270;  area 7.6 m2;  length 0.95 m;")
-            edit_derived(d, r"viscosity\s+0\.89e-3;", "viscosity 0.89e-3;  channelHeight 0.7112 mm;  spacerPorosity 0.90;")
             edit_derived(d, r"model\s+SchockMiquel;\s*\}", "model SchockMiquel;  channelHeight 0.7112 mm;  spacerPorosity 0.90; }")
         refusal(tmp, "no-module", nomodule, ["names no module"])
 

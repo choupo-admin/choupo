@@ -37,7 +37,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      0.89e-3;           // Pa.s, water at 25 C
             }
             pressureDrop
             {

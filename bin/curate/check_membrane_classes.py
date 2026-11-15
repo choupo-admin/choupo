@@ -190,13 +190,15 @@ def write_feed(path, comps, P_bar, T_K=298.15):
     path.write_text("componentMolarFlows\n{\n%s\n}\nT %.6f K;\nP %.10f bar;\n" % (lines, T_K, P_bar))
 
 
-def rated_feed_flows(test):
+def rated_feed_flows(test, rho=1000.0):
     """The reference test's feed as the engine's probe builds it
-    (RatedTestInversion.cpp): mass fraction w closed on rho 1000, volumetric
-    feed = permeateFlow / recovery."""
+    (RatedTestInversion.cpp): mass fraction w closed on the solution density
+    the PACKAGE gives that composition (C402: `rho`, which the caller reads
+    from a first run of the same twin -- the module publishes it as KPI
+    rho_feed), volumetric feed = permeateFlow / recovery."""
     perm = float(test["permeateFlow"].split()[0])          # m3/d
     Q = perm / float(test["recovery"]) / 24.0              # m3/h
-    m = Q * 1000.0
+    m = Q * rho
     w = float(test["feedMassFraction"])
     s = test["solute"]
     flows = {"water": m * (1.0 - w) / mw("water"), "NaCl": 0.0, "MgSO4": 0.0}
@@ -334,6 +336,12 @@ def main():
                 P = float(t["P"].split()[0]) + (ATM_BAR if t["pressureBasis"] == "feedGauge" else 0.0)
                 write_feed(rt / "0/feed", rated_feed_flows(t), P, float(t["T"].split()[0]))
                 rc2, so2, se2, j2 = run(rt)
+                #  The twin's feed is a VOLUME flow, so its mass follows the density the run uses; the density
+                #  depends on the composition, not the flow: read it from this first run and rebuild the feed.
+                if rc2 == 0 and j2 is not None:
+                    rho_t = j2.get("kpis", {}).get("NF", {}).get("rho_feed", 1000.0)
+                    write_feed(rt / "0/feed", rated_feed_flows(t, rho_t), P, float(t["T"].split()[0]))
+                    rc2, so2, se2, j2 = run(rt)
                 if rc2 != 0 or j2 is None:
                     fail("(c) %s/%s: the round trip did not run (exit %d):\n%s" % (c, s, rc2, (so2 + se2)[-700:]))
                     continue
@@ -411,7 +419,10 @@ def main():
             sd = tmp / ("seal_" + label.replace("+", "_"))
             shutil.copytree(src, sd, ignore=shutil.ignore_patterns(
                 "converged", "log.*", "reports", "design", "propertyManifest"))
-            for sub in ("assets", "components", "species"):
+            #  `parameters` too (C402): a membrane case's density is the package's, and a sealed case's water
+            #  carries its reference equation (parameters/Helmholtz/IAPWS95.dat); the importer brings it back,
+            #  and refuses a copy of it that its (dropped) manifest does not claim
+            for sub in ("assets", "components", "species", "parameters"):
                 shutil.rmtree(sd / "constant" / sub, ignore_errors=True)
             r = subprocess.run([str(importer), str(sd)], capture_output=True, text=True, timeout=900)
             out = r.stdout + r.stderr

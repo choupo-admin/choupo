@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------*\
+  The value the case typed for its seawater feed, kept as it was and now declared where a property belongs, with its status written: ASSUMED.  For scale only (a derivation, not a reading): the CRC 20 C table, p. 8-77, gives NaCl at 3 wt % 1.052 and at 4 wt % 1.068 mPa s against water's 1.002, i.e. +5 to +7 %, which scaled by water's 0.890/1.002 (25 C over 20 C, CRC) is about 0.94 to 0.95 mPa s at 25 C.  A measured seawater viscosity at 25 C replaces it.
+  Read by transport.liquid.viscosity.measured (DEV.md 4c C398 slice (d)); until C402 the number was typed in the
+  membrane unit's massTransfer block, which now refuses it.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    sha256       "c7fd04ebe3637b5304796029b19be5e4a6ae409ff741b5b3aa6b1cd63fe2ba27";
+    source       assumed;
+    basis        "ASSUMED by the case (seawater near 25 C), 0.95 mPa s, unchanged from the value typed in the unit block before C402; it is not a reading of any source and not a measurement";
+    citation     "NONE READ for this slice: the number is the case's own, carried since its first version";
+}
+
+property    liquidViscosity;
+system      ( NaCl water );
+solvent     water;
+
+columns
+(
+    { name T;       unit K;    }
+    { name mu;      unit Pa.s; }
+);
+data        ( 298.15 0.95e-3 );
+
+box
+{
+    T        ( 297.65 298.65 );
+    w[NaCl]  ( 0 0.07 );
+}

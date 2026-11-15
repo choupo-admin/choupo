@@ -122,7 +122,9 @@ def main():
         hi = solved(tmp, "5bar",
                     [("0/feed", "P               3.0 bar;",
                       "P               5.0 bar;")])["kpis"]["UF"]
-        if abs(hi["J_w_avg"] - k["J_w_avg"]) > 1e-12 * k["J_w_avg"]:
+        #  2e-4, not 1e-12 (C402): the feed density is the package's AT THE FEED PRESSURE, and water's compressibility
+        #  moves it 5e-5 between 3 and 5 bar; the gel plateau itself is flat
+        if abs(hi["J_w_avg"] - k["J_w_avg"]) > 2e-4 * k["J_w_avg"]:
             fail(f"(b) at 5 bar the flux is {hi['J_w_avg']:.12g}, at 3 bar"
                  f" {k['J_w_avg']:.12g}: the plateau is not flat")
 

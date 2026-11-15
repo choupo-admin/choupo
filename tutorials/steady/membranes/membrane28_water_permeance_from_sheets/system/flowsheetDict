@@ -56,8 +56,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      0.89e-3;
-                diffusivity    0.85e-9;
             }
             pressureDrop      { model SchockMiquel; }
             polarisation
@@ -87,8 +85,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      0.95e-3;
-                diffusivity    1.6e-9;
             }
             pressureDrop      { model SchockMiquel; }
             polarisation

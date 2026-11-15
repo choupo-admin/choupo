@@ -31,7 +31,7 @@ License
   that read as laws of nature and are properties of THIS tool.
 
   1. "exactly two pure batch operations" -- the unit's diafiltrate rate is
-     only ever zero or the permeate rate (BatchDiafilter.cpp:397): that is a
+     only ever zero or the permeate rate (BatchDiafilter.cpp:398): that is a
      scope, and the page says diafiltration at variable volume exists.
   2. "in real equipment the flux falls" -- it falls when something makes it:
      the osmotic pressure rising with concentration is recomputed here
@@ -73,7 +73,7 @@ describe("the page states its scope, not a law", () => {
     expect(b).not.toContain("There are exactly two pure batch operations");
     expect(b).toContain("This tool treats two batch modes");
     expect(b).toContain("diafiltration at variable volume");
-    expect(src[397 - 1]).toContain("constantVolume_ ? f.Q_p : 0.0");
+    expect(src[398 - 1]).toContain("constantVolume_ ? f.Q_p : 0.0");
   });
   it("step 6: the flux CAN fall, for named reasons", () => {
     const b = step(6);

@@ -12,7 +12,7 @@ THE RULE (DEV.md 4c C378, rule 1; docs/architecture/settled-contracts.md,
 keeps is a `ConstantSource` (core/PropertySourceLog.H) whose value and words
 are one object the run prints.
 
-FIVE CLASSES are counted, per file of src/unitOperations and
+SIX CLASSES are counted, per file of src/unitOperations and
 src/postProcessing (block comments, comment lines and `//` tails excluded):
   vliq           a component's stored 25 C liquid volume read directly
                  (`.Vliq()` or `->Vliq()`);
@@ -41,6 +41,16 @@ src/postProcessing (block comments, comment lines and `//` tails excluded):
                  to ANY name or used as a ternary fall-back, a literal of
                  1000 to 1299 given to a sea/brine/saline name, a kinematic
                  `nu` of 1e-6;
+  keyRead        a property word READ FROM A DICTIONARY by a unit (`found(`,
+                 `lookup...(` of "viscosity", "diffusivity", "rho", "rho_feed",
+                 "rho_diafiltrate", "mu_feed", "D_solute", "liquidViscosity",
+                 "liquidDiffusivity", "liquidDensity", "density", "surfaceTension",
+                 "sigma", "thermalConductivity"): the reader of a value TYPED IN THE
+                 UNIT'S BLOCK (DEV.md 4c C402).  A family leaves this class when it
+                 calls unitTypedProperties::refuse (src/unitOperations/
+                 UnitTypedProperties.H); THE MEMBRANE FAMILY (src/unitOperations/
+                 membrane/, batch/BatchDiafilter.cpp) holds ZERO, enforced below
+                 whatever the pin file says;
   conversion     a bare `/ 1000`, `* 1000` or `1.0e3` on a line that makes a
                  volume or a volumetric flow (`Q... =`, `volume`, `m3`,
                  `/ rho`, judged with string literals blanked) -- where a
@@ -122,7 +132,13 @@ DIRECT_OTHER = re.compile(
     r"|\btypedef\s+(Choupo::)?WilkeChang\b|(\.|->)diffusivityLiquidBinary\s*\("
     r"|\bLiquidDiffusivityModel::New\s*\(")
 DENSITY_CALL = re.compile(r"(\.|->)density\s*\(")
-CLASSES = ("vliq", "direct", "phaseVariable", "literal", "conversion")
+CLASSES = ("vliq", "direct", "phaseVariable", "literal", "keyRead", "conversion")
+#  A property word read from a unit's dictionary (C402).  The membrane family
+#  is migrated: it holds none, and a new one there fails whatever the pins say.
+KEYREAD = re.compile(
+    r"\b(found|lookup\w*)\s*\(\s*\"(viscosity|diffusivity|rho|rho_feed|rho_diafiltrate|mu_feed|D_solute"
+    r"|liquidViscosity|liquidDiffusivity|liquidDensity|density|surfaceTension|sigma|thermalConductivity)\"")
+ZERO_KEYREAD = ("src/unitOperations/membrane/", "src/unitOperations/batch/BatchDiafilter")
 COMMENT = re.compile(r"^\s*(//|\*)")
 STRING = re.compile(r'"(\\.|[^"\\])*"')
 #  The door review's eighteen probe lines and the re-review's nine caught
@@ -167,6 +183,11 @@ FIXTURES = [
     "const scalar nu = 1.0e-3 / 1000.0;",
     "const scalar r = pkg.density(T, P, x,\n                               DensityPhase::Liquid);",
     "const DensityPhase ph = DensityPhase::Liquid;\n    const scalar rho = thermo.density(T, P, x, ph);",
+    #  C402: a property word read from the unit's own block (the membrane family's old readers)
+    "if (b->found(\"viscosity\")) { mu_feed = b->lookupScalar(\"viscosity\"); }",
+    "if (mt->found(\"diffusivity\")) { D = mt->lookupScalar(\"diffusivity\"); }",
+    "const scalar rho = opDict->lookupScalarOrDefault(\"rho_feed\", r0);",
+    "rho_ = op->lookupScalar(\"rho\", Dims::density);",
 ]
 
 
@@ -275,6 +296,9 @@ def classify(text):
     for stmt in " ".join(lines).split(";"):
         n = len(DIRECT_OTHER.findall(stmt))
         d, v = density_calls(stmt)
+        kr = len(KEYREAD.findall(stmt))
+        if kr:
+            hits["keyRead"] = hits.get("keyRead", 0) + kr
         if n + d:
             hits["direct"] = hits.get("direct", 0) + n + d
         if v:
@@ -325,6 +349,15 @@ def main() -> int:
             continue
         f, k, n = line.split("\t")
         pins[(f, k)] = int(n)
+    zero = [(k, v) for k, v in found.items()
+            if k[1] == "keyRead" and k[0].startswith(ZERO_KEYREAD)]
+    if zero:
+        print(f"{NAME}: FAIL -- the membrane family reads a property word from a unit block again:")
+        for (f, k), v in sorted(zero):
+            print(f"  ZERO    {f}: keyRead {v} -- a membrane unit asks the package through the door "
+                  "(liquidProperty::density / evaluate / soluteDiffusivity); a typed value is refused by "
+                  "unitTypedProperties::refuse")
+        return 1
     grew = [(k, pins.get(k, 0), v) for k, v in found.items() if v > pins.get(k, 0)]
     shrank = [(k, n, found.get(k, 0)) for k, n in pins.items() if found.get(k, 0) < n]
     if grew or shrank:

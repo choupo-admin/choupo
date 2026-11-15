@@ -125,6 +125,7 @@ ASSETS = ROOT / "data/standards/assets"
 M15 = ROOT / "tutorials/steady/membranes/membrane15_module_nf270_4040"
 M16 = ROOT / "tutorials/steady/membranes/membrane16_module_sw30hr_8040"
 M17 = ROOT / "tutorials/steady/membranes/membrane17_sepa_cf_flat_cell"
+DIAF = ROOT / "tutorials/batch/membrane/diafilter01_nf_desalting"
 MW = {"water": 18.015, "NaCl": 58.44, "MgSO4": 120.37, "Na": 22.99, "Cl": 35.45,
       "NO3": 62.004, "NH4": 18.04}
 MIL = 25.4e-6
@@ -261,9 +262,9 @@ def close(a, b, rel=1e-9):
 
 
 # ---------------------------------------------------------------- running
-def run(case):
+def run(case, app="choupoSolve"):
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
-    r = subprocess.run([str(BUILD / "choupoSolve"), str(case)], capture_output=True,
+    r = subprocess.run([str(BUILD / app), str(case)], capture_output=True,
                        text=True, timeout=900, env=env)
     return r.returncode, r.stdout + r.stderr
 
@@ -285,6 +286,54 @@ def copy_case(src, dst):
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns("converged", "log.*", "expected",
                                                             "reports", "design",
                                                             "propertyManifest"))
+
+
+def balanced_block(text, key):
+    """The span (start, end) of `key { ... }` at column 0 with balanced braces."""
+    m = re.search(r"^" + re.escape(key) + r"\s*\{", text, re.M)
+    if not m:
+        return None
+    i, depth = m.end(), 1
+    while depth and i < len(text):
+        depth += {"{": 1, "}": -1}.get(text[i], 0)
+        i += 1
+    return m.start(), i
+
+
+def declare_probe_properties(dd, sol, T, w, mu, mu_basis):
+    """C402: a rated-test probe is a twin of its donor with ONE solute and the sheet's own feed, so
+    the property declarations a membrane case carries are rewritten for it, in the form the cases
+    use: the solute keeps its mass (massWithoutVolume), the feed's viscosity is a stated value of
+    its constituent set, and the solute's diffusivity is the donor's own NaCl / MgSO4 entry."""
+    ex = dd / "constant" / "experiments"
+    if ex.exists():
+        shutil.rmtree(ex)
+    ex.mkdir(parents=True)
+    (ex / "probe_liquidViscosity.dat").write_text(
+        "provenance\n{\n    source       literature;\n    basis        \"%s\";\n"
+        "    citation     \"the rated-test probe of check_membrane_modules: the donor case's own stated viscosity\";\n}\n"
+        "property    liquidViscosity;\nsystem      ( %s water );\nsolvent     water;\n"
+        "columns\n(\n    { name mu; unit Pa.s; }\n);\ndata        ( %g );\n"
+        "box\n{\n    T ( %.2f %.2f );\n    w[%s] ( 0 0.07 );\n}\n" % (mu_basis, sol, mu, T - 0.5, T + 0.5, sol))
+    th = dd / "constant" / "thermoPhysPropDict"
+    t = th.read_text()
+    for key in ("approximations", "transport"):
+        span = balanced_block(t, key)
+        if span:
+            t = t[:span[0]] + t[span[1]:]
+    D = {"NaCl": 1.611e-9, "MgSO4": 8.491e-10}[sol]
+    t = t.rstrip("\n") + (
+        "\napproximations\n{\n    massWithoutVolume\n    {\n        components ( %s );\n"
+        "        maxMassFraction 0.07;\n        reason \"the rated-test probe: the solute keeps its mass and adds no volume\";\n    }\n}\n"
+        "transport\n{\n    liquid\n    {\n"
+        "        viscosity\n        {\n            pin ( { component water; law vogel; reason \"probe\"; } );\n"
+        "            measured { probe_liquidViscosity { use method; reason \"the probe stands the donor's value\"; } }\n        }\n"
+        "        diffusivity\n        {\n            returns infiniteDilution;\n            infiniteDilution\n            {\n"
+        "                entries ( { solute %s; solvent water; kind infiniteDilution; value %g m2/s; T 298.15 K;"
+        " box { T (297.65 298.65); } reason \"the probe runs at the sheet's 25 C\";"
+        " source \"the donor case's declared entry (CRC Handbook, 82nd ed., ion table)\"; } );\n            }\n        }\n    }\n}\n"
+        % (sol, sol, D))
+    th.write_text(t)
 
 
 def estimate_lines(out, name):
@@ -436,11 +485,11 @@ def main():
         tmp = Path(tmp)
 
         # ---------------- (c) the refusals ---------------------------------
-        def refusal(label, src, mutate, must):
+        def refusal(label, src, mutate, must, app="choupoSolve"):
             dd = tmp / label
             copy_case(src, dd)
             mutate(dd)
-            rc, out = run(dd)
+            rc, out = run(dd, app)
             missing = [m for m in must if m not in out]
             if rc == 0 or missing:
                 failures.append(f"(c) {label}: exit {rc}, refusal text missing {missing}:\n" + out[-500:])
@@ -452,10 +501,27 @@ def main():
         refusal("inlineArea", M15, lambda dd: add_op(dd, "area 7.6 m2;"), ["`area`", "one home", "NF270-4040"])
         def inline_channel(dd):
             p = dd / "system/flowsheetDict"
-            p.write_text(p.read_text().replace("model          SchockMiquel;\n                viscosity      0.89e-3;",
-                                               "model          SchockMiquel;\n                channelHeight  0.7 mm;\n                viscosity      0.89e-3;", 1))
+            p.write_text(p.read_text().replace("model          SchockMiquel;",
+                                               "model          SchockMiquel;\n                channelHeight  0.7 mm;", 1))
         refusal("inlineChannel", M15, inline_channel, ["`massTransfer.channelHeight`", "one home"])
         refusal("spiralPlusMembrane", M15, lambda dd: add_op(dd, "membrane NF270;"), ["`membrane`", "one home"])
+
+        #  C402: A MEMBRANE BLOCK DOES NOT CARRY A PROPERTY.  A density, a viscosity or a diffusivity typed in a
+        #  membrane unit's block, at any depth, is refused BY NAME, with the line to write in the property dictionary
+        #  (unitOperations/UnitTypedProperties.H, one home for every unit).  One refusal per word the module read before.
+        def in_mass_transfer(line):
+            def f(dd):
+                p = dd / "system/flowsheetDict"
+                p.write_text(p.read_text().replace("model          SchockMiquel;", "model          SchockMiquel;\n                " + line, 1))
+            return f
+        typed = ["does not carry a property", "constant/thermoPhysPropDict"]
+        refusal("typedViscosity", M15, in_mass_transfer("viscosity      0.89e-3;"), ["`viscosity`", "operation.massTransfer"] + typed)
+        refusal("typedDiffusivity", M15, in_mass_transfer("diffusivity    1.6e-9;"), ["`diffusivity`", "operation.massTransfer", "returns infiniteDilution"] + typed)
+        refusal("typedFeedDensity", M15, lambda dd: add_op(dd, "rho_feed 1000;"), ["`rho_feed`", "massWithoutVolume"] + typed)
+        def typed_diafilter_rho(dd):
+            p = dd / "system/flowsheetDict"
+            p.write_text(p.read_text().replace("area         5.0;", "area         5.0;\n            rho          1000;", 1))
+        refusal("typedDiafilterDensity", DIAF, typed_diafilter_rho, ["`rho`", "batchDiafilter"] + typed, "choupoBatch")
 
         def drop_membrane(dd):
             p = dd / "system/flowsheetDict"
@@ -479,7 +545,14 @@ def main():
             if u is None:
                 failures.append(f"(d) {case.name}: no u_crossflow_inlet published")
                 return
-            Q = j["streams"]["feed"]["F_mass"] / 1000.0          # rho_feed default
+            #  the density the module closed the feed's volume on is the PACKAGE's (C402: no typed `rho_feed`, no
+            #  1000 kg/m3 default); read from the run's own property-source table, never assumed
+            rhos = [r["valueMin"] for r in j["propertySources"]["used"]
+                    if r["unit"] == unit and r["property"] == "liquidDensity"]
+            if len(rhos) != 1:
+                failures.append(f"(d) {case.name}: expected one liquidDensity row for {unit}, got {len(rhos)}")
+                return
+            Q = j["streams"]["feed"]["F_mass"] / rhos[0]
             W = A / (faces * L_expected)
             if not close(u * W * h * eps, Q, 1e-9):
                 failures.append(f"(d) {case.name}: u W h eps = {u * W * h * eps:.6e} vs Q_feed {Q:.6e} with W = A/({faces} L)")
@@ -509,7 +582,7 @@ def main():
         else:
             if not re.search(r"\[limit\] module 'NF270-4040': feed P 60\.00 bar EXCEEDS the maximum operating pressure 41\.00 bar", out):
                 failures.append("(e) the 60 bar probe printed no P_max [limit] line")
-            if not re.search(r"\[limit\] module 'NF270-4040': feed flow 5\.\d+ m3/h EXCEEDS the maximum feed flow 3\.600 m3/h", out):
+            if not re.search(r"\[limit\] module 'NF270-4040': feed flow [45]\.\d+ m3/h EXCEEDS the maximum feed flow 3\.600 m3/h", out):
                 failures.append("(e) the 5 m3/h probe printed no feedFlow_max [limit] line")
             j = result_of(out)
             if j is None or sum(1 for a in j["advisories"] if a.get("category") == "rating" and a.get("locus") == "module 'NF270-4040'") < 2:
@@ -564,6 +637,11 @@ def main():
                                    feed.read_text()).replace("T               298.15 K;", "T               %.2f K;" % rt["T"])
                             .replace("P               4.8 bar;", "P               %.3f bar;" % (rt["P"] / 1e5))
                             .replace("P               55 bar;", "P               %.3f bar;" % (rt["P"] / 1e5)))
+            #  the probe's viscosity: water's for a dilute test, the seawater case's own assumed value for a
+            #  seawater-strength one (check_membrane_modules reads no viscosity from the sheet)
+            declare_probe_properties(dd, sol, rt["T"], w, 0.890e-3 if w < 0.01 else 0.95e-3,
+                                     "the donor case's own stated viscosity for this strength (water's for a dilute feed, "
+                                     "the assumed 0.95 mPa s for a seawater one)")
             for s in ("permeate", "retentate"):
                 if (dd / "0" / s).exists():
                     (dd / "0" / s).unlink()
@@ -586,6 +664,25 @@ def main():
                   f"   | data sheet: {rt['permeateFlow'] * 86400:.1f} m3/d at {rt['recovery'] * 100:.0f} %, rejection {sheet_R} %"
                   f"   (ratio permeate {perm_m3d / (rt['permeateFlow'] * 86400):.2f}x -- a MEASUREMENT of the fitted A_w, not a verdict)")
 
+    #  (g) THE COUNT OF THIS FAMILY'S LEGACY FORMS READS ZERO (DEV.md 4c C402).  Every shipped case with a
+    #  membrane unit (spiralWoundModule, membraneSW, batchDiafilter) carries NO property word typed in a unit
+    #  block: density, viscosity and diffusivity live in constant/thermoPhysPropDict.  The engine refuses the
+    #  old form by name (arm (c)); this counts the tree, so a case that came back with one is named even
+    #  before a run.  The words are the ones the units used to read.
+    legacy = re.compile(r"^\s*(rho|rho_feed|rho_diafiltrate|viscosity|diffusivity|mu_feed|D_solute|liquidViscosity"
+                        r"|liquidDiffusivity|liquidDensity)\s+[-+0-9.eE]+", re.M)
+    members = 0
+    for fd in sorted((ROOT / "tutorials").rglob("system/flowsheetDict")):
+        t = strip_comments(fd.read_text())
+        if not re.search(r"type\s+(spiralWoundModule|membraneSW|batchDiafilter)\b", t):
+            continue
+        members += 1
+        for m in legacy.finditer(t):
+            failures.append(f"(g) {fd.parent.parent.name}: `{m.group(1)}` typed in a membrane unit's block "
+                            f"(C402: the property dictionary holds it)")
+    if members < 30:
+        failures.append(f"(g) only {members} membrane cases found under tutorials/ -- a collapsed scan counts nothing")
+
     if failures:
         print("check_membrane_modules: FAILED")
         for f in failures:
@@ -596,10 +693,11 @@ def main():
           "`origin estimated; reviewStatus unverified;` with a note saying how to verify it and mark no data-sheet value so; "
           "membrane15/16/17 announce exactly the estimates of the record each RAN (its sealed mirror where it has one; "
           "the record's own note, a provenance advisory each) "
-          "and no [limit] line; 5 refusals fire by name (inline area / channelHeight / membrane beside a spiral module, a cell "
-          "without a membrane, an unknown module with the registered list); the published inlet crossflow recomputes the feed "
+          "and no [limit] line; 9 refusals fire by name (inline area / channelHeight / membrane beside a spiral module, a cell "
+          "without a membrane, an unknown module with the registered list, and since C402 a typed viscosity, diffusivity, rho_feed "
+          "on a spiral module and a typed rho on a batch diafilter, each naming the line for the property dictionary); the published inlet crossflow recomputes the feed "
           "flow on W = A/L for the cell (one face, L = A/slotWidth) and A/(2L) for the spiral to 1e-9; a 60 bar, 5 m3/h twin "
-          "prints both [limit] lines and exits 0; every rated test of the two spirals (either record form) ran and printed engine vs data sheet.  "
+          "prints both [limit] lines and exits 0; every rated test of the two spirals (either record form) ran and printed engine vs data sheet; and (g) none of the shipped membrane cases (30 or more) types a density, viscosity or diffusivity in a unit block.  "
           "NOT CHECKED: whether any estimate is a good one, the transcription against the PDFs, any band on the rated-test "
           "ratio, the batch vessel, DSPM-DE under a module, the pH limit (no witness declares a pH), the four Generic-* "
           "records and the feed spacers (check_spiral_array's).")

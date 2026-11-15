@@ -9,7 +9,7 @@ and a coupon of NF270.  How many lines of case does that take?
     membrane         NF270_sdem_NaCl;    // the coupon
     transport        SDEM;
     P_permeate       1.0 bar;
-    massTransfer     { model SchockMiquel; viscosity 1.0e-3; }
+    massTransfer     { model SchockMiquel; }
 
 plus the polarisation policy (Geraldes & Afonso 2006 suction correction,
 ions coupled at the interface) and a feed.  The cell record

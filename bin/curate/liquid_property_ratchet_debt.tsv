@@ -1,6 +1,14 @@
 # file	class	count -- the debt of check_liquid_property_ratchet (C378 slice 0);
 # it may only shrink: lower a count in the commit that removes a site
+# PAID 2026-11-14 (C398 slice (d), A4): DistillationColumn.cpp direct 2 and
+# RateBasedSegment.cpp direct 2 -- the columns' three own Wilke-Chang instances and the rate
+# model's liquid thermal conductivity now go through the door (Property::diffusivity, the
+# quantity the property dictionary declares; Property::thermalConductivity).
+# PAID 2026-11-15 (C402, the membrane family): SpiralWoundModule.cpp direct 1 -- the solute's own diffusivity now goes
+# through the door (liquidProperty::soluteDiffusivity).  NEW CLASS keyRead (a property word read from a unit's own
+# dictionary): the pins below are the families not yet migrated; the membrane family holds ZERO (enforced in the gate).
 src/postProcessing/EconomicsPass.cpp	literal	2
+src/postProcessing/sizing/PipeHeaderSize.cpp	keyRead	2
 src/postProcessing/sizing/RatedMachineSize.cpp	conversion	1
 src/postProcessing/sizing/ReliefArithmetic.H	literal	4
 src/postProcessing/sizing/ReliefValveSize.cpp	conversion	1
@@ -13,10 +21,6 @@ src/unitOperations/crystallisation/CrystallisationSaturation.cpp	vliq	1
 src/unitOperations/crystallisation/Crystalliser.cpp	conversion	6
 src/unitOperations/crystallisation/Crystalliser.cpp	vliq	5
 src/unitOperations/distillation/PackingRBF.H	literal	1
-# PAID 2026-11-14 (C398 slice (d), A4): DistillationColumn.cpp direct 2 and
-# RateBasedSegment.cpp direct 2 -- the columns' three own Wilke-Chang instances and the rate
-# model's liquid thermal conductivity now go through the door (Property::diffusivity, the
-# quantity the property dictionary declares; Property::thermalConductivity).
 src/unitOperations/dynamic/DynamicCSTR.cpp	conversion	1
 src/unitOperations/dynamic/DynamicTank.cpp	conversion	1
 src/unitOperations/dynamic/WilliamsOttoPlant.cpp	literal	1
@@ -28,11 +32,13 @@ src/unitOperations/heatTransfer/HeatExchanger.cpp	direct	1
 src/unitOperations/heatTransfer/MultiStreamHX.cpp	conversion	1
 src/unitOperations/heatTransfer/PhaseChanger.cpp	conversion	4
 src/unitOperations/heatTransfer/PhaseChanger.cpp	direct	2
+src/unitOperations/heatTransfer/SprayDryer.cpp	keyRead	5
 src/unitOperations/heatTransfer/SprayDryer.cpp	vliq	6
 src/unitOperations/heatTransfer/atomizer/Atomizer.H	literal	1
+src/unitOperations/heatTransfer/htc/BellDelaware.cpp	keyRead	1
 src/unitOperations/heatTransfer/htc/Rohsenow.H	literal	2
+src/unitOperations/hydraulics/Pipe.cpp	keyRead	10
 src/unitOperations/membrane/SpiralWoundModule.cpp	conversion	2
-src/unitOperations/membrane/SpiralWoundModule.cpp	direct	1
 src/unitOperations/membrane/massTransfer/Polarisation.cpp	direct	1
 src/unitOperations/membrane/osmotic/OsmoticModel.H	literal	1
 src/unitOperations/membrane/transport/DSPM_DE.cpp	direct	1

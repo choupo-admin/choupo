@@ -75,9 +75,9 @@ WHAT IS CHECKED
   (h) THE SPRAY DRYER REFUSES A DECLARED LIQUID MODEL IT CANNOT PRICE, on a
       copy declaring `liquid { viscosity { model Andrade; } }` for a feed
       whose sucrose carries no Andrade block: "will NOT substitute water".
-  (i) THE MEMBRANE ANNOUNCES ITS LEGACY DEFAULT: membrane01 prints
-      "[legacy] mu_feed 1e-3 Pa.s ASSUMED" with the remedy, and its golden
-      is UNMOVED (arm k).
+  (i) THE MEMBRANE HOLDS NO LEGACY DEFAULT (C402; until then it announced
+      "[legacy] mu_feed 1e-3 Pa.s ASSUMED"): membrane01 prints no [legacy]
+      line and names the property kernel as the source of its feed density.
   (j) ONE HOME FOR phi_ij: ThermoPackage.cpp carries no `pow(Mj / Mi, 0.25)`
       of its own and reaches gasMixing::wilkeSum at BOTH call sites.  ONE
       HOME FOR Omega(2,2)*: ChungViscosity.cpp carries none of the six
@@ -645,14 +645,17 @@ def main():
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
-    # ---- (i) the membrane announces its legacy default -----------------
+    # ---- (i) the membrane holds NO legacy default (C402) ---------------
+    #  Until C402 the module kept mu_feed = 1e-3 Pa.s and D_solute = 1.6e-9 m2/s and announced them as "[legacy]".
+    #  Both constants are deleted: the module asks the package, and membrane01 (fixed k_film, so no viscosity is
+    #  needed) prices its feed density through the door and says so; no "[legacy]" line can be printed.
     rc, o = run(SOLVE, MEMBRANE)
     if rc != 0:
         fails.append(f"membrane01 exited {rc}")
-    if "[legacy] mu_feed 1e-3 Pa.s ASSUMED" not in o:
-        fails.append("membrane01 does not announce its legacy mu_feed default")
-    if "declare transport { liquid { viscosity" not in o:
-        fails.append("the legacy mu_feed announcement carries no remedy")
+    if "[legacy]" in o:
+        fails.append("membrane01 still prints a [legacy] default (C402 deleted them)")
+    if not re.search(r"\[liquid density\] spiralWoundModule \w+: ", o):
+        fails.append("membrane01 does not name the property kernel as the source of its feed density")
 
     # ---- (j) one home for phi_ij, one home for Omega(2,2)* -------------
     pkg = PKG.read_text()
@@ -863,8 +866,8 @@ def main():
           "the lennardJones grammar the loader reads and no Sutherland/viscosityGas key; a "
           "record without the block REFUSES by name with the remedy (stripped copy); a spray "
           "dryer with no transport model REFUSES with the remedy and a declared liquid model "
-          "it cannot price REFUSES rather than substituting water; membrane01 announces its "
-          "[legacy] default; phi_ij and Omega(2,2)* each have ONE home (source arms); "
+          "it cannot price REFUSES rather than substituting water; membrane01 holds no "
+          "[legacy] default (C402); phi_ij and Omega(2,2)* each have ONE home (source arms); "
           "propose_lennard_jones.py is deterministic, writes the blocks the witness carries, "
           "and REFUSES data/standards/; the sealed blocks cite NASA TR R-132 with `licence "
           "publicDomain;` and per-value origins; four goldens unmoved.  NOT CHECKED: that any "

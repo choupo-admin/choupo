@@ -116,7 +116,7 @@ units
         type        splitter;
         in          feed;
         outputs     ( toHPpump  toPX );
-        operation   { fractions ( 0.49  0.51 ); }     // tuned so the exchanger runs balanced (see header)
+        operation   { fractions ( 0.475  0.525 ); }   // tuned so the exchanger runs balanced (see header); 0.49 / 0.51 before C402, when the module began to price its feed density from the package (3.3 % over the 1000 kg/m3 it used to take) and the knife edge moved
     }
     {
         name        HPpump;
@@ -178,7 +178,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      0.95e-3;                // Pa.s, seawater near 25 C
             }
             pressureDrop
             {

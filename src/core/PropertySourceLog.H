@@ -113,12 +113,6 @@ namespace liquidSource {
 inline const ConstantSource diluteCarrierDensity
     { 1000.0, "constant.diluteCarrier",
       "a constant of the unit, 1000 kg/m3: the dilute-carrier density the whole unit is built on" };
-inline const ConstantSource rhoFeedDefault
-    { 1000.0, "default.rhoFeed1000",
-      "a constant of the unit, 1000 kg/m3, used because the case declares no feed density (rho_feed)" };
-inline const ConstantSource batchDiafilterRhoDefault
-    { 1000.0, "default.rho1000.announced",
-      "a constant of the unit, 1000 kg/m3, used because the case declares no solution density (rho); announced" };
 inline const ConstantSource dropletDensityFallback
     { 1000.0, "fallback.1000",
       "a constant of the unit, 1000 kg/m3, used because a solvent has no 25 C molar volume" };
@@ -131,9 +125,6 @@ inline const ConstantSource waterViscosityKnob
 inline const ConstantSource waterSurfaceTensionFallback
     { 0.072, "fallback.water0.072",
       "a constant of the unit, 72 mN/m (water), used because the kernel could not give one" };
-inline const ConstantSource soluteDiffusivityLegacy
-    { 1.6e-9, "default.legacy1.6e-9",
-      "a constant of the unit, 1.6e-9 m2/s (an approximate value for NaCl in water), used because the case declares no diffusivity and no model" };
 inline const NamedSource recordVliqFlat
     { "bypass.recordVliq25C",
       "computed by the unit itself, not by the property kernel: each component's 25 C molar volume, with no temperature or pressure effect" };
