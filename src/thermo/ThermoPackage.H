@@ -663,10 +663,11 @@ public:
     scalar diffusivityGas(scalar T_K, scalar P_Pa,
                           std::size_t i, std::size_t j) const;
 
-    // Liquid transport: optional sub-blocks of `transport`
-    //   liquidViscosity   { model Andrade;    }   // ln μ = A + B/T  (Pa·s)
-    //   liquidConductivity{ model SatoRiedel; }   // W/(m·K)
-    //   liquidDiffusivity { model WilkeChang; }   // D°_AB [m²/s], i=solute, j=solvent
+    // Liquid transport: optional sub-blocks of `transport { liquid { } }`
+    //   viscosity           { model Andrade;    }   // ln μ = A + B/T  (Pa·s)
+    //   thermalConductivity { model SatoRiedel; }   // W/(m·K)
+    //   diffusivity { returns infiniteDilution;     // D°_AB [m²/s], i=solute, j=solvent
+    //                 infiniteDilution { default { model WilkeChang; } } }
     // Mixture rules: selectable by `mixingRule` (C331) -- viscosity
     // logMoleAverage | GrunbergNissan, conductivity massFractionAverage |
     // Filippov | Li (transport/Liquid*MixingRule.H).

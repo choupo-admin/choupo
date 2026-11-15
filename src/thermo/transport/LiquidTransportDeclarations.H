@@ -61,8 +61,8 @@ Description
               thermodynamicFactor { take 1; }        // with `returns effective`
           } } }
 
-        The legacy `diffusivity { model WilkeChang; }` reads as `returns
-        infiniteDilution` with that default and no entries, unchanged.
+        The old form `diffusivity { model WilkeChang; }` is refused by name with
+        the line to write (DEV.md 4c C402: no legacy reader once no case uses it).
 \*---------------------------------------------------------------------------*/
 
 #pragma once
@@ -165,7 +165,6 @@ struct DiffusivityEntry
 struct DiffusivityDeclaration
 {
     bool        declared = false;            // a liquid.diffusivity block exists
-    bool        legacy   = true;             // `model <word>;` only
     Returns     returns  = Returns::infiniteDilution;
     Rule        rule     = Rule::none;
     bool        gammaTakenOne = false;       // `thermodynamicFactor { take 1; }`

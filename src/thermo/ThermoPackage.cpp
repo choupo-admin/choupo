@@ -3559,7 +3559,6 @@ std::string ThermoPackage::liquidDiffusivityMethod() const
     if (!d.declared) return "";
     std::string base = d.defaultModel;
     if (!d.entries.empty()) base += std::string(base.empty() ? "" : "+") + "entries";
-    if (d.legacy) return base;
     if (d.returns == liquidTransport::Returns::infiniteDilution) return "infiniteDilution[" + base + "]";
     return std::string("effective.") + liquidTransport::ruleName(d.rule) + "[" + base + "]";
 }

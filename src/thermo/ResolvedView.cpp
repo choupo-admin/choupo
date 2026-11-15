@@ -732,13 +732,6 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         }
         else if (std::string(tr.key) == "liquidDiffusivity")
         {
-            if (pkg.liquidDiffusivityDeclaration().legacy)
-            {
-                d.push_back("binary infinite-dilution D_ij (solute i in solvent j) by " + info.model
-                            + ", reading the pure solvent's viscosity from the liquid viscosity law;");
-                d.push_back("  no composition rule declared (`returns effective; composition { rule <name>; }`"
-                            " makes the package return the effective value of a binary, C398 slice (d))");
-            }
             d.insert(d.end(), declared.begin(), declared.end());
         }
         else if (hasLaws)

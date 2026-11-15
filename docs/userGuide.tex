@@ -1174,7 +1174,8 @@ transport
     {
         viscosity           { model Vogel; }      // or Andrade
         thermalConductivity { model SatoRiedel; }
-        diffusivity         { model WilkeChang; }
+        diffusivity         { returns infiniteDilution;
+                              infiniteDilution { default { model WilkeChang; } } }
     }
     interface
     {

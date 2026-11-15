@@ -35,11 +35,12 @@ Description
 
     Selected in a sub-block of the thermoPackage `transport`:
 
-        transport
+        transport { liquid
         {
-            liquidViscosity   { model Andrade; }
-            liquidDiffusivity { model WilkeChang; }
-        }
+            viscosity   { model Andrade; }
+            diffusivity { returns infiniteDilution;
+                          infiniteDilution { default { model WilkeChang; } } }
+        } }
 
     Every liquid-diffusivity correlation needs the SOLVENT VISCOSITY, so the
     method receives it as an argument (ThermoPackage evaluates it from the

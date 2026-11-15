@@ -517,13 +517,21 @@ DiffusivityDeclaration readDiffusivity(const DictPtr& b, const std::vector<Compo
                   "thermodynamicFactor" }, here);
     const bool hasNew = b->found("returns") || b->found("composition")
                      || b->found("infiniteDilution") || b->found("thermodynamicFactor");
+    //  THE OLD FORM IS REFUSED BY NAME (DEV.md 4c C402, no legacy): no shipped
+    //  case writes `diffusivity { model <word>; }` since C398 slice (d), so its
+    //  reader is deleted and the refusal gives the line to write instead.
     if (!hasNew)
     {
-        d.legacy = true;
-        d.defaultModel = b->lookupWordOrDefault("model", "");
-        return d;
+        const std::string w = b->lookupWordOrDefault("model", "WilkeChang");
+        throw std::runtime_error(here + ": the form `diffusivity { model " + w + "; }` is no"
+            " longer read (it said neither which quantity the package returns nor how a"
+            " mixture combines the binaries; DEV.md 4c C398 slice (d), C402).  Write"
+            " `diffusivity { returns infiniteDilution; infiniteDilution { default { model "
+            + w + "; } } }` for the binary infinite-dilution values, or `diffusivity {"
+            " returns effective; composition { rule AndersonBabb; } infiniteDilution {"
+            " default { model " + w + "; } } thermodynamicFactor { take 1; } }` for the"
+            " effective value of a binary liquid.");
     }
-    d.legacy = false;
     if (b->found("model"))
         throw std::runtime_error(here + ": `model` beside the declared quantity -- the"
             " infinite-dilution correlation is named once, in `infiniteDilution {"
@@ -651,7 +659,7 @@ std::string describe(const ViscosityMeasurement& m, const std::vector<Component>
 std::vector<std::string> describe(const DiffusivityDeclaration& d, const std::vector<Component>& comps)
 {
     std::vector<std::string> out;
-    if (!d.declared || d.legacy) return out;
+    if (!d.declared) return out;
     out.push_back(std::string("liquidDiffusivity returns ") + returnsName(d.returns)
         + (d.returns == Returns::effective
                ? ": the effective diffusivity of a BINARY liquid, by the composition rule below;"

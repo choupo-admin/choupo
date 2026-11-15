@@ -14954,8 +14954,10 @@ transport { liquid { diffusivity
     thermodynamicFactor { take 1; }              // with `returns effective`
 } } }
 \end{lstlisting}
-The legacy block \code{diffusivity \{ model WilkeChang; \}} reads as
-\code{returns infiniteDilution} with that default, unchanged.
+The old block \code{diffusivity \{ model WilkeChang; \}}, which said neither
+the quantity returned nor how a mixture combines the binaries, is refused by
+name with the line to write (DEV.md 4c C402: no shipped case wrote it once
+this slice migrated the column cases, so its reader was deleted).
 
 \paragraph{The direction is part of the datum.}  $D^{\circ}_{12}$ is the
 diffusivity of 1 at infinite dilution in 2, and $D^{\circ}_{21}$ is a

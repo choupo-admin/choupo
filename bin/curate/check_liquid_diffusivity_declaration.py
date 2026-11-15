@@ -362,6 +362,25 @@ def main():
             else:
                 notes.append(label)
 
+        # ---- (3a) the old form is refused by name, with the line to write
+        #      (DEV.md 4c C402: no legacy reader once no shipped case uses it)
+        d = copy(WITNESS, tmp, "oldform")
+        t = (d / tp).read_text()
+        i = t.index("        diffusivity\n        {")
+        j, depth = t.index("{", i) + 1, 1
+        while depth:
+            depth += {"{": 1, "}": -1}.get(t[j], 0)
+            j += 1
+        (d / tp).write_text(t[:i] + "        diffusivity { model WilkeChang; }" + t[j:])
+        rc, out = run(d, "choupoProps")
+        line = "returns infiniteDilution; infiniteDilution { default { model WilkeChang; } } }"
+        if rc == 0 or "is no longer read" not in out or line not in out:
+            fails.append(f"(3a) the old `diffusivity {{ model WilkeChang; }}` form: exit {rc},"
+                         f" {'refused' if rc else 'NOT refused'}"
+                         f"{'' if line in out else ', without the line to write'}")
+        else:
+            notes.append("the old form refused by name")
+
         # ---- (3b) a stated mixture value and its constituents (DG-11) -----
         def stated_probe(name, box_w, ops_edit=None):
             d = copy(WITNESS, tmp, name)
@@ -487,7 +506,7 @@ def main():
           f" 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used;"
           f" a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it"
           f" differs from Vignes; one surface tension per tray, left out only at or above Tc;"
-          f" {len(notes) - 10} refusals each by name.  NOT CHECKED: the migrated cases' numbers (their"
+          f" {len(notes) - 8} refusals each by name, the old `diffusivity {{ model <word>; }}` form among them.  NOT CHECKED: the migrated cases' numbers (their"
           f" goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's"
           f" fitness for a polar liquid (announced, not judged).")
     return 0
