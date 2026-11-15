@@ -262,8 +262,8 @@ print("  exists to preserve.")
 #  each listed copy must still be ADOPTED in its manifest.  Once it is sealed
 #  again (imported), the debt is paid and its entry must leave the table; an
 #  entry naming a missing file or an imported claim is a stale debt.
-import debt_registry  # noqa: E402
-for rel_case, why in sorted(debt_registry.SEALED_COPIES_ADOPTED.items()):
+from debt_registry import SEALED_COPIES_ADOPTED  # noqa: E402
+for rel_case, why in sorted(SEALED_COPIES_ADOPTED.items()):
     path = ROOT / rel_case
     mf = next((p / "propertyManifest" for p in path.parents if p.name == "constant"), None)
     claim = None
@@ -320,7 +320,7 @@ if not damage:
           "catalogue (%d record(s), %d case(s) worth a curator's eye) is "
           "HISTORY, not a verdict -- this gate reports it, never fails on it, "
           "and never re-seals to make the number smaller."
-          % (nManifests, nRecords, len(cosmeticSeal), len(debt_registry.SEALED_COPIES_ADOPTED), len(drift),
+          % (nManifests, nRecords, len(cosmeticSeal), len(SEALED_COPIES_ADOPTED), len(drift),
              cases_needing_review))
 
 sys.exit(1 if damage else 0)
