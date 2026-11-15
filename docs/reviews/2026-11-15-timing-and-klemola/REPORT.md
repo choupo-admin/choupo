@@ -151,6 +151,40 @@ vapour).  These are derived from published duties and records, not from
 a call of Choupo's latent heat; a props operation printing the surface's
 implied latent heat beside `HvapTb` would settle it.
 
+## 2c. A large column in both engines: the Klemola splitter, 74 trays, 9 components
+
+To time a problem of industrial size, the same specification was built in
+both engines: `column14_klemola_c4_splitter`'s feed (nine components,
+452.71 kmol/h at 329.5214 K, 658.6 kPa), 74 trays plus reboiler and a
+total condenser (DWSIM: 76 stages), feed on tray 37, reflux ratio
+11.440296, distillate 142.023556 kmol/h (DWSIM: bottoms 310.687401
+kmol/h), 658.6 kPa throughout, Murphree efficiency 1 and saturated
+reflux (the measured 1.191 and the subcooling dropped, because full
+MESH takes neither), and the SAME thermodynamics on both sides: ideal
+liquid and ideal gas (the case's UNIFAC and SRK replaced, so that no
+activity-model implementation is timed).  Choupo `model fullMESH;` on a
+copy of the case; DWSIM Naphtali-Sandholm.  Machine otherwise idle.
+
+| | Choupo fullMESH (whole process) | DWSIM Naphtali-Sandholm (calculation only) |
+|---|---|---|
+| time | median 3.374 s, p95 3.527, n 10 (first 3.593) | median 42.6 s, p95 43.6, n 5 (first 45.4; an earlier single run 44.5) |
+| reboiler / condenser | 8385.0 / 8906.8 kW | 7947.2 / 8628.6 kW |
+| n-butane in D (mole fraction) | 0.000352 | 0.001366 |
+| i-butane in D | 0.92954 | 0.92571 |
+| i-butane in B | 0.001771 | 0.003524 |
+
+Choupo is about 12.6x faster on this column, the comparison again tilted
+against it (process start and file output counted on its side only).
+
+The two engines do NOT reach the same column here, and that matters
+before anyone quotes the speed: the trace impurities differ by a factor
+2 to 4 and the duties by 3 to 5.5 %.  With an ideal liquid the
+difference can only be the pure-component data (each engine's own
+vapour-pressure correlations for two isomers whose relative volatility
+is about 1.3, where a small change in the ratio moves an impurity by a
+large factor, and their heat capacities and latent heats), plus the
+latent-heat difference of section 2b.  Not decomposed.
+
 ## 3. Not done
 
 The WebAssembly timing; the deeper cause inside DWSIM's NRTL; a props
