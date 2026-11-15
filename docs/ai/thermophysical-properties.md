@@ -38,8 +38,11 @@ Every run prints, just before its result block, one line per unit:
   say they price the same stream -- check the flowsheet.
 * "Parameters of thermodynamic models ...": models that read a component's
   stored 25 C volume as a parameter (Wilson, the Poynting correction,
-  Wilke-Chang, the mixed-solvent activity model, Hildebrand, Hansen).  The
-  volume a record stores is the same datum, with the same caveats (section 4).
+  the mixed-solvent activity model, Hildebrand, Hansen).  The volume a record
+  stores is the same datum, with the same caveats (section 4).  Wilke-Chang is
+  NOT of this list since C398 slice d2: its V_A is the pure liquid's molar volume
+  at its normal boiling point, M / rho(Tb) from the package's density (printed in
+  the resolved view); a solute with no Tb or no density there is refused by name.
 * A pure-fluid line names the formulation behind THAT property: IAPWS-IF97
   gives the density, IAPWS R12-08 the viscosity (on the IF97 density), IAPWS
   R1-76 the surface tension.

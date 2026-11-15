@@ -15423,12 +15423,16 @@ and route.  A solute with no $T_b$ in its record, or no liquid density there,
 is refused by name, and the record's 25~°C volume is never substituted; the
 remedy is a declared entry for the pair.  Until this slice the engine read
 the record's 25~°C \code{Vliq}, which made the six values of the ternary
-witness higher by 2.4 to 6.1~\%.  Against Poling's Table~11-5 (methanol in
+witness higher by 3.9 to 6.1~\% ($(V_{T_b}/V_{25})^{0.6}$: 3.85~\% for methanol as
+the solute, 4.63~\% water, 6.09~\% 2-propanol).  Against Poling's Table~11-5 (methanol in
 water at 288~K, $1.26\times10^{-5}$~cm²/s) the engine's Wilke-Chang value is
 $1.333\times10^{-5}$, $+5.8$~\% (it was $+9.9$~\%; Poling's own Wilke-Chang
 value is $+5.4$~\%, with other inputs).  The engine's density at $T_b$ is the
-package's (the Rackett route scaled from the 25~°C volume for these records),
-so $V_A$ inherits that density's own error.
+package's: on the default route for these records the Rackett equation anchored
+at the record's 25~°C volume (Eq.~\eqref{eq:rackett-anchored}), which the review
+measured against tabulated densities at $T_b$ as $-1.4$~\% in volume on methanol
+and $-3.5$~\% on water.  $V_A$ therefore inherits that density's error, and the
+diffusivity (as $V_A^{-0.6}$) about $0.6$ of it, of the opposite sign.
 
 \begin{intuition}
 Liquid diffusivities are six to seven orders of magnitude lower

@@ -117,6 +117,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         surfaceTensionLaws_       = std::move(o.surfaceTensionLaws_);
         liquidViscosityObj_       = std::move(o.liquidViscosityObj_);
         liquidConductivityObj_    = std::move(o.liquidConductivityObj_);
+        soluteVolumeTb_           = std::move(o.soluteVolumeTb_);   // C398 d2: the moved-in package's own cache, valid for its own components
         surfaceTensionObj_        = std::move(o.surfaceTensionObj_);   identity_ = std::move(o.identity_);   formulation_ = std::move(o.formulation_);   // C398 CV-20
         solventName_        = std::move(o.solventName_);
         declaredAqueousSolvent_ = std::move(o.declaredAqueousSolvent_);

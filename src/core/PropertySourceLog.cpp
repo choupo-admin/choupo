@@ -504,8 +504,9 @@ void PropertySourceLog::printUsed(std::ostream& os) const
     }
     if (!parameters_.empty())
     {
-        os << "  Parameters of thermodynamic models that read a component's 25 C"
-              " liquid volume (not a liquid property of any unit, the same datum):\n";
+        os << "  Parameters of thermodynamic models that read a component's stored liquid"
+              " volume or a volume taken at another temperature (each line says which;"
+              " not a liquid property of any unit):\n";
         for (const auto& p : parameters_)
             os << "    " << p.first << ": " << p.second << "\n";
     }
