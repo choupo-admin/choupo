@@ -28,7 +28,7 @@
         with a 0.2 bar inter-element connector loss.
 
   What this run produces (golden master; re-read 2026-11-15 after C402, when the feed density became the
-  NaCl-water solution law's 1020 kg/m3 and the viscosity the CRC's seawater value 0.966 mPa s):
+  NaCl-water solution law's 1020 kg/m3 and the viscosity the ASSUMED seawater value 0.966 mPa s, which the CRC p. 14-12 only cross-checks):
       train water recovery        35.7 %       (3 elements, cumulative)
       observed NaCl rejection      99.69 %
       train-average water flux     35.34 LMH   (9.82e-6 m/s)

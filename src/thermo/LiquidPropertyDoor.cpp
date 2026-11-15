@@ -167,7 +167,7 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                   " (reason: " + measured->reason + ")";
         const bool atPoint = liquidTransport::atStatedPoint(*measured, T,
             liquidTransport::massFractionsOf(thermo.components(), measured->set, x));
-        r.quality.origin     = atPoint ? "literature" : "assumed";
+        r.quality.origin     = (atPoint && !measured->assumedValue) ? "literature" : "assumed";
         {
             std::string type, unit;
             const bool site = who ? (type = who->type, unit = who->unit, true)

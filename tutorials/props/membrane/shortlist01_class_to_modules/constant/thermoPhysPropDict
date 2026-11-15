@@ -54,7 +54,7 @@ transport
             measured
             {
                 dil25_MgSO4_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; water's viscosity for a dilute feed, the status in the file's basis"; }
-                seawater35_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; seawater of salinity 35 at 25 C (CRC p. 14-12), stood over a brine as a hypothesis, the status in the file's basis"; }
+                seawater35_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; seawater of salinity 35 at 25 C, an ASSUMED value (no primary read; the CRC table p. 14-12 only cross-checks it), stood over a brine as a hypothesis, the status in the file's basis"; }
             }
         }
         diffusivity

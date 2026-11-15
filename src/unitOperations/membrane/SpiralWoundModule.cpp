@@ -126,6 +126,23 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // ---- Operating parameters ---------------------------------------------
     auto opDict = dict->subDict("operation");
     const std::string unitLabel = dict->name().empty() ? type() : dict->name();
+    //  The RETIRED keys are judged FIRST (C402, check_spiral_array arm h): the operation-key allow-list below
+    //  would otherwise refuse them generically and the student would lose the remedy that names the records.
+    for (const char* retired : { "moduleDiameter", "nModules" })
+        if (opDict->found(retired))
+            throw std::runtime_error("spiralWoundModule '" + unitLabel + "': `"
+                + std::string(retired) + "` is RETIRED (2026-10-24) -- the"
+                  " nominal 40-inch sizes are element RECORDS now.  Write"
+                  " `module Generic-2540 | Generic-4040 | Generic-8040 |"
+                  " Generic-16040;` (data/standards/assets/, every value an"
+                  " announced estimate) or a real element (`module"
+                  " SW30HR-380;`), with `elements <n>;` for the elements in"
+                  " series in one vessel (a REAL n is allowed: the fraction is"
+                  " marched as a shorter last element) and `vessels <n>;` for"
+                  " identical vessels in parallel.  The retired hand table's"
+                  " areas were 2.6 / 7.9 / 37.2 / 148.6 m2; the records carry"
+                  " the same.  For anything else give `area` + `length`.");
+
     //  A MEMBRANE BLOCK DOES NOT CARRY A PROPERTY (C402): a density, a
     //  viscosity or a diffusivity typed here, at any depth, is refused BY
     //  NAME with the line to write in the property dictionary.
@@ -204,21 +221,6 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     // Generic-2540 | Generic-4040 | Generic-8040 | Generic-16040, kind
     // membraneModule, every value an announced estimate), so the keys refuse
     // and name them.  No dual reader.
-    for (const char* retired : { "moduleDiameter", "nModules" })
-        if (opDict->found(retired))
-            throw std::runtime_error("spiralWoundModule '" + unitLabel + "': `"
-                + std::string(retired) + "` is RETIRED (2026-10-24) -- the"
-                  " nominal 40-inch sizes are element RECORDS now.  Write"
-                  " `module Generic-2540 | Generic-4040 | Generic-8040 |"
-                  " Generic-16040;` (data/standards/assets/, every value an"
-                  " announced estimate) or a real element (`module"
-                  " SW30HR-380;`), with `elements <n>;` for the elements in"
-                  " series in one vessel (a REAL n is allowed: the fraction is"
-                  " marched as a shorter last element) and `vessels <n>;` for"
-                  " identical vessels in parallel.  The retired hand table's"
-                  " areas were 2.6 / 7.9 / 37.2 / 148.6 m2; the records carry"
-                  " the same.  For anything else give `area` + `length`.");
-
     scalar A_membrane   = 0.0;     // per element [m2]
     scalar L            = 0.0;     // per element: the marched leaf length [m]
     if (hasModule)
