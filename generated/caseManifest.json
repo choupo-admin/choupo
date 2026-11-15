@@ -29787,12 +29787,10 @@
     "isothermalFlash",
     "turbine"
    ],
-   "unitModels": [
-    "NRTL"
-   ],
    "thermo": {
     "formulation": "gammaPhi",
     "activityModels": [
+     "NRTL",
      "ideal"
     ]
    },
@@ -33657,6 +33655,7 @@
     "tutorials/steady/flowsheets/twoSectorDemo",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars",
+    "tutorials/steady/thermo/perUnitThermo01_srk_nrtl",
     "tutorials/steady/thermoTest/model5_nrtl_flash"
    ],
    "OlssonNaOH": [

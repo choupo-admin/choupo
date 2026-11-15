@@ -8192,6 +8192,7 @@
    "src/core/BatchPlanRecords.H",
    "src/core/BuildingRecords.H",
    "src/core/Constants.H",
+   "src/core/DictAudit.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
    "src/core/FlatUnit.H",
@@ -8203,6 +8204,7 @@
    "src/core/ResultRecords.H",
    "src/core/ThermoResolution.H",
    "src/core/Types.H",
+   "src/core/Units.H",
    "src/reporting/BalanceMath.H",
    "src/reporting/ModelBoundaryLedger.H",
    "src/result/ClosureVariable.H",
@@ -8217,6 +8219,7 @@
    "src/thermo/Database.H",
    "src/thermo/ElementComposition.H",
    "src/thermo/PackageAudit.H",
+   "src/thermo/PropertyContext.H",
    "src/thermo/PropertyDomainError.H",
    "src/thermo/PropertyVariants.H",
    "src/thermo/RecordLaws.H",
@@ -8228,6 +8231,7 @@
    "src/thermo/ThermoPackageBuilder.H",
    "src/thermo/TransportGrammar.H",
    "src/thermo/VapourAssociation.H",
+   "src/thermo/liquidProperty/ExperimentsFile.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
@@ -8235,7 +8239,8 @@
    "src/unitOperations/flash/IsothermalFlash.H",
    "src/unitOperations/flash/PureSaturationPlateau.H",
    "src/unitOperations/flash/StreamEquilibrium.H",
-   "src/unitOperations/flowsheet/MemberFolder.H"
+   "src/unitOperations/flowsheet/MemberFolder.H",
+   "src/unitOperations/flowsheet/VariantSelection.H"
   ],
   "src/reporting/ProfilesReport.cpp": [
    "src/core/Advisory.H",
@@ -15121,6 +15126,7 @@
    "src/core/RegistryRefusal.cpp",
    "src/postProcessing/panel/PanelPass.cpp",
    "src/postProcessing/views/Views.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
    "src/thermo/reaction/ExpressionRate.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
@@ -17946,6 +17952,7 @@
    "src/propertyOps/VaporPressureFit.cpp",
    "src/propertyOps/VleConsistency.cpp",
    "src/reporting/ComputedReport.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/PropertyTable.cpp",
    "src/thermo/electrochem/EDStack.cpp",
@@ -21025,6 +21032,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/thermo/PropertyDomainError.H": [
@@ -23163,6 +23171,7 @@
    "src/applications/choupoProps/main.cpp",
    "src/applications/choupoSolve/main.cpp",
    "src/dynamicDriver/DynamicDriver.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
    "src/thermo/Database.cpp",
    "src/thermo/PropertyTable.cpp",
    "src/thermo/liquidProperty/ExperimentsFile.cpp",
@@ -24521,6 +24530,7 @@
   ],
   "src/unitOperations/flowsheet/VariantSelection.H": [
    "src/applications/choupoSolve/main.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
    "src/unitOperations/flowsheet/Flowsheet.cpp"
   ],
   "src/unitOperations/heatTransfer/ConvectiveDryer.H": [
