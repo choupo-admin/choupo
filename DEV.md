@@ -3548,6 +3548,23 @@ accepts today, and that is a policy call.
 > not seen in a browser; check_gate_selftest needs rsync, absent in the cloud
 > container.
 
+> **C407 (Vitor, 2026-11-15: "Isso e tao facil de fazer!  Achas que vale a
+> pena adiar?!", on the EoS/G^E mixing rules and volume translation).**  A
+> COMMISSION, not deferred.  (1) PENELOUX VOLUME TRANSLATION: a small slice
+> next, a per-component shift from the Rackett Z_RA, leaving phase
+> equilibrium untouched; measured against liquid densities the cubic misses
+> by several per cent today.  (2) AN EOS/G^E MIXING RULE: a short design
+> first, choosing among MHV2, PSRK and Wong-Sandler by one criterion, whether
+> the catalogue's NRTL pairs (fitted at low pressure) can be reused as they
+> are (the original Huron-Vidal takes G^E at infinite pressure and cannot);
+> then a slice that fits the C398 grammar (a variant, the choice printed, the
+> view) and the energy balance, with a measured high-pressure polar witness;
+> the C239 audit's columns that need an EoS at 5-16 bar are its targets.
+> After C329 B2b.  Sources to file: Peneloux et al. 1982,
+> doi:10.1016/0378-3812(82)80002-2; Wong & Sandler 1992,
+> doi:10.1002/aic.690380505 (both from the Crossref-checked list of the
+> cloud session).
+
 > **C406 (Vitor, 2026-11-15, filing Izutsu's "Electrochemistry in
 > Nonaqueous Solutions" (Wiley-VCH 2002): "pode dar jeito para a simulacao
 > de vinho surrogate?").**  A CANDIDATE, judged useful: the wine cases
