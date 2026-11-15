@@ -3351,6 +3351,19 @@ ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
         for (const std::size_t i : set)
             if (std::find(m.set.begin(), m.set.end(), i) != m.set.end()) shares = true;
         if (!shares) continue;
+        //  A PURE CONSTITUENT of the stated set is not a mixture the statement
+        //  describes (review row DG-11): it is priced by its own record law,
+        //  said once per run -- a stated mixture value never makes its pure
+        //  constituents unpriceable.
+        if (set.size() == 1)
+        {
+            const std::string msg = "the " + liquidTransport::statedWords(m) + " does not describe pure "
+                + components_[set.front()].name() + "; its record law is used";
+            if (AdvisoryLog::instance().addAnnouncedOnce("statedViscosityPure:" + m.name + ":"
+                    + components_[set.front()].name(), "approximation", "info", "liquid viscosity", msg))
+                std::cout << "  [liquid viscosity] " << msg << "\n";
+            continue;
+        }
         std::vector<std::size_t> extra, missing;
         for (const std::size_t i : set)
             if (std::find(m.set.begin(), m.set.end(), i) == m.set.end()) extra.push_back(i);

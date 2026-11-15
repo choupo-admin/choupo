@@ -284,6 +284,7 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         {
             const LiquidDensity st = surfaceTension(thermo, T[j], 0.0, x[j]);
             s.sigma = st.rho;
+            s.sigmaUnpriced = st.droppedFraction;
             noteDropped(st, res.surfaceTensionDropped, res.surfaceTensionDroppedMax);
         }
         else

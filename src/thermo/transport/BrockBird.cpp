@@ -28,8 +28,13 @@ License
 
 #include "BrockBird.H"
 #include "thermo/Component.H"
+#include "core/Advisory.H"
 
 #include <cmath>
+#include <cstdio>
+#include <mutex>
+#include <set>
+#include <string>
 #include <stdexcept>
 
 namespace Choupo {
@@ -52,6 +57,36 @@ scalar BrockBird::sigmaPure(const Component& c, scalar T) const
             "BrockBird: '" + c.name() + "' is supercritical at this T (Tr >= 1)"
             " -- no liquid surface exists above the critical point.");
     const scalar Tbr = Tb / Tc;
+
+    //  THE METHOD'S STATED SCOPE, said whenever it prices a component (C398
+    //  review row DF-15 b): Poling, Prausnitz & O'Connell 5th ed. p. 12.3,
+    //  "Brock and Bird (1955) developed this idea for nonpolar liquids"; p. 12.8,
+    //  the corresponding-states methods "are not satisfactory for compounds that
+    //  exhibit strong hydrogen-bonding (alcohols, acids)".  A component the
+    //  record itself marks associating -- its Wilke-Chang association factor
+    //  stated above the unassociated 1.0 -- is named so.  No threshold of the
+    //  engine's own: the record's field, or nothing.  An advisory of the run (the
+    //  MODEL ASSUMPTIONS block and the result), never a line of the log.
+    static std::mutex mx;
+    static std::set<std::string> said;
+    bool fresh = false;
+    { std::lock_guard<std::mutex> lk(mx); fresh = said.insert(c.name()).second; }
+    if (fresh)
+    {
+        std::string msg = c.name() + "'s surface tension by Brock-Bird, a"
+            " corresponding-states method Poling 5th ed. p. 12.3 says was developed"
+            " \"for nonpolar liquids\" (p. 12.8: \"not satisfactory for compounds that"
+            " exhibit strong hydrogen-bonding (alcohols, acids)\")";
+        if (c.associationFactorStated() && c.associationFactor() > 1.0)
+        {
+            char b[32];
+            std::snprintf(b, sizeof b, "%g", c.associationFactor());
+            msg += "; the record marks " + c.name() + " associating (associationFactor "
+                 + b + ")";
+        }
+        AdvisoryLog::instance().addAnnouncedOnce("brockBirdScope:" + c.name(), "approximation",
+            "info", "surface tension (Brock-Bird)", msg);
+    }
 
     // Q from the reduced boiling point.  Pc in bar; 1.01325 bar = 1 atm.
     const scalar Q = 0.1196 * (1.0 + Tbr * std::log(Pc / 1.01325) / (1.0 - Tbr))

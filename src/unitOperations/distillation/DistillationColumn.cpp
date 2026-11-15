@@ -4881,12 +4881,19 @@ void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
     auto& fa = profile_.columns["floodApproach"];
     auto& dp = profile_.columns["dP_Pa"];
     auto& hb = profile_.columns["h_backup_mm"];
-    fa.assign(N, 0.0); dp.assign(N, 0.0); hb.assign(N, 0.0);
+    //  The surface tension each tray was rated on and the share of its liquid
+    //  left out of it (C398 A4: one surface tension per tray, published so a
+    //  gate can hold it against the efficiency's and the left-out rule).
+    auto& sg = profile_.columns["sigma"];
+    auto& su = profile_.columns["sigma_unpricedFraction"];
+    fa.assign(N, 0.0); dp.assign(N, 0.0); hb.assign(N, 0.0); sg.assign(N, 0.0); su.assign(N, 0.0);
     for (const auto& st : res.stages)
     {
         fa[st.index - 1] = st.floodApproach;
         dp[st.index - 1] = st.dP;
         hb[st.index - 1] = st.h_b;
+        sg[st.index - 1] = st.sigma;
+        su[st.index - 1] = st.sigmaUnpriced;
     }
 }
 
@@ -5190,6 +5197,7 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
 
     //  ---- The computed efficiency of one tray on the current march -----
     std::vector<TrayEfficiency::Result> eff(N);
+    std::vector<scalar> sigmaEff(N, 0.0);      // the surface tension each tray's efficiency took (C398 A4)
     auto trayEfficiency = [&](std::size_t j, scalar Phi)
     {
         const scalar rhoV = thermo.density(T[j], P, y[j], DensityPhase::Vapour);
@@ -5224,6 +5232,7 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         st.DL     = DL;
         st.muL    = muL;
         st.sigma  = TrayHydraulics::surfaceTension(thermo, T[j], P, x[j]).rho;   // the package's, exactly as the hydraulics take it (C398 A4)
+        sigmaEff[j] = st.sigma;
         //  (no `sigma` typed in `hydraulics {}` since C398 A4: one surface tension per tray)
         st.m      = m;
         st.lambda = m * V[j] / L[j];
@@ -5432,12 +5441,14 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
             profile_.columns["E_OG"].push_back(eff[j].EOG);
             profile_.columns["Pe"].push_back(eff[j].Pe);
             profile_.columns["F_active"].push_back(eff[j].Fa);
+            profile_.columns["sigma_efficiency"].push_back(sigmaEff[j]);
         }
         else if (computedE)
         {
             profile_.columns["E_OG"].push_back(1.0);
             profile_.columns["Pe"].push_back(0.0);
             profile_.columns["F_active"].push_back(0.0);
+            profile_.columns["sigma_efficiency"].push_back(0.0);
         }
     }
 

@@ -3319,7 +3319,16 @@ its numerical review; do not size on them in silence:
   4\,$^\circ$C, and $-$2.1\,\% at 500\,bar (no pressure effect);
 \item water--ethanol liquid viscosity with no interaction parameter:
   $-$59.7\,\% at $x=0.30$, 298.15\,K;
-\item Brock--Bird surface tension of water at 25\,$^\circ$C: +49\,\%.
+\item Brock--Bird surface tension of water at 25\,$^\circ$C: +49\,\%.  Its
+  stated scope is narrower than its use: Poling, Prausnitz \& O'Connell 5th
+  ed.\ p.~12.3, ``Brock and Bird (1955) developed this idea for nonpolar
+  liquids''; p.~12.8, the corresponding-states methods ``are not satisfactory
+  for compounds that exhibit strong hydrogen-bonding (alcohols, acids)''; their
+  Table~12-1 shows Brock--Bird $+53$~\% for acetic acid and $+101$~\% for
+  methanol at 293~K.  Every run that evaluates Brock--Bird says so, once per
+  component, in its advisory block, naming a component its record marks
+  associating (an \code{associationFactor} stated above the unassociated 1.0;
+  no other threshold).
 \end{itemize}
 These are the targets of the slices that follow; this one only makes them
 visible where they are used.
@@ -15005,14 +15014,33 @@ rules multiply the datum by its solvent's pure viscosity, which the package
 must then be able to give.  When the mixture's viscosity is the log-mole
 average of the pure ones ($\ln\mu = x_1\ln\mu_1 + x_2\ln\mu_2$, Grunberg-Nissan
 with no interaction), Eq.~\eqref{eq:leffler-cullinan} IS
-Eq.~\eqref{eq:vignes-declared}; Eq.~\eqref{eq:anderson-babb} is never
-Eq.~\eqref{eq:caldwell-babb} unless $\mu$ is the mole average of the pure
-viscosities.  On the witness's methanol-water binary at 328.62~K the four give
-$8.697$ (Caldwell-Babb), $8.625$ (Anderson-Babb), $8.555$ (Vignes and
-Leffler-Cullinan) $\times10^{-9}$~m²/s.
+Eq.~\eqref{eq:vignes-declared}.  Anderson-Babb and Caldwell-Babb differ even
+when $\mu$ is the MOLE average of the pure viscosities, $\mu = x_1\mu_1 +
+x_2\mu_2$: subtracting Eq.~\eqref{eq:caldwell-babb} from
+Eq.~\eqref{eq:anderson-babb} then gives
+\begin{equation}
+  D_{12}^{\mathrm{AB}} - D_{12}^{\mathrm{CB}}
+  = \frac{x_1 x_2\,(\mu_2 - \mu_1)\,(D^{\circ}_{12} - D^{\circ}_{21})}{\mu},
+  \label{eq:ab-minus-cb}
+\end{equation}
+zero only when $\mu_1 = \mu_2$ or $D^{\circ}_{12} = D^{\circ}_{21}$ (review row
+DF-14; this paragraph said the opposite until 2026-11-15).  Check on the
+witness's methanol-water binary at 328.62~K ($x_1 = 0.9459$ methanol, $\mu_1 =
+0.37184$, $\mu_2 = 0.49841$ mPa·s, mole-average $\mu = 0.37868$ mPa·s,
+$D^{\circ}_{12} = 3.6132$ methanol in water, $D^{\circ}_{21} = 8.9874$ water in
+methanol, $\times10^{-9}$~m²/s): Caldwell-Babb $8.6966$, and
+Eq.~\eqref{eq:ab-minus-cb} gives $-0.0919$, so Anderson-Babb on that $\mu$ is
+$8.6047\times10^{-9}$.  The engine's mixture viscosity there is the package's
+(Grunberg-Nissan with no interaction, the log-mole average, $0.37778$ mPa·s),
+so the witness prints $8.697$ (Caldwell-Babb), $8.625$ (Anderson-Babb) and
+$8.555$ (Vignes and Leffler-Cullinan) $\times10^{-9}$~m²/s.
 
 \paragraph{Water as the solute.}  The DEFAULT correlation refuses a pair
-whose solute is water (Poling 5th ed.\ p.~11.22; review row DF-01).  The
+whose solute is water (Poling 5th ed.\ p.~11.22; review row DF-01).  The gap
+it would hide, measured: at 313.13~K Lee \& Li (1991), as Poling p.~11.38
+(Example 11-8) reports them, give water in methanol $2.67\times10^{-5}$ and
+methanol in water $2.10\times10^{-5}$~cm²/s; Wilke-Chang gives $+167$~\% and
+$+25$~\% (the witness's variant \code{leeLi313}).  The
 remedy is an entry for the pair: a value with its source, or the correlation
 named for the pair with the reason it is accepted outside its stated scope,
 \code{\{ solute water; solvent methanol; kind infiniteDilution; model
@@ -15090,7 +15118,9 @@ the solvent; \code{provenance \{ citation; basis \}}.  \code{use method}: inside
 the box the value IS the viscosity of that set, at every state; outside it a
 typed refusal, never a hand-over to a law.  The SET is part of the box: a
 liquid that shares a constituent with the stated set but holds another
-component, or lacks one, is refused, naming it.  A one-component set is
+component, or a binary of the set outside the box, is refused, naming it;
+a PURE constituent of the set is not a mixture the statement describes, and
+is priced by its own record law, said once per run (review row DG-11).  A one-component set is
 refused at load: a pure liquid's viscosity is a law of its record (or a table
 pinned for it, slice (c)), so the package prices it once.  \code{use check}:
 printed beside the computed value, never used, and refused beside a

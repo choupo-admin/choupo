@@ -118,6 +118,8 @@ DIRECT_OTHER = re.compile(
     r"(\.|->)(viscosityLiquid\(|surfaceTension\(|diffusivityLiquid\(|diffusivityLiquidEffective\("
     r"|thermalConductivityLiquid\()"
     r"|stokesEinstein::factor(For)?\(|\bWilkeChang\s+\w+\s*[({]|=\s*(std::make_unique<)?WilkeChang\s*[(>{]"
+    r"|make_(unique|shared)<\s*(const\s+)?WilkeChang\s*>|\busing\s+\w+\s*=\s*(Choupo::)?WilkeChang\b"
+    r"|\btypedef\s+(Choupo::)?WilkeChang\b|(\.|->)diffusivityLiquidBinary\s*\("
     r"|\bLiquidDiffusivityModel::New\s*\(")
 DENSITY_CALL = re.compile(r"(\.|->)density\s*\(")
 CLASSES = ("vliq", "direct", "phaseVariable", "literal", "conversion")
@@ -144,6 +146,10 @@ FIXTURES = [
     "const WilkeChang wc{nullptr};",
     "auto wc = WilkeChang(nullptr);",
     "auto m = LiquidDiffusivityModel::New(d);",
+    #  review row DG-14
+    "return std::make_unique<WilkeChang>(nullptr);",
+    "using WC = WilkeChang;",
+    "const scalar d = model->diffusivityLiquidBinary(a, b, T, mu);",
     "const scalar r = op->lookupScalarOrDefault(\"rho_feed\", 1000.0);",
     "const scalar r = op->lookupScalarOrDefault(\"liquidDensity\", 1000.0);",
     "const auto f = stokesEinstein::factorFor(thermo, iW, T);",

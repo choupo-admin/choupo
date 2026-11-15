@@ -53,6 +53,7 @@ ROOT = Path(__file__).resolve().parents[2]
 NAME = "check_liquid_diffusivity_declaration"
 WITNESS = ROOT / "tutorials" / "props" / "transport" / "liquidDiffusivity01_pelkonen_ternary"
 RATE = ROOT / "tutorials" / "steady" / "distillation" / "ratebased01_schulz_0p10bar"
+TRAYS = ROOT / "tutorials" / "steady" / "distillation" / "trayEfficiency01_yanagi14"
 
 
 def run(case: Path, binary: str, timeout=600):
@@ -93,6 +94,11 @@ COMPONENT_DIR = WITNESS / "constant" / "components"
 
 def record_number(comp, key):
     m = re.search(r"^\s*" + key + r"\s+([0-9.eE+-]+)\s*;", (COMPONENT_DIR / f"{comp}.dat").read_text(), re.M)
+    return float(m.group(1))
+
+
+def record_number_at(path, key):
+    m = re.search(r"^\s*" + key + r"\s+([0-9.eE+-]+)\s*;", Path(path).read_text(), re.M)
     return float(m.group(1))
 
 
@@ -259,7 +265,7 @@ def main():
              "has no `unit`"),
             ("the default Wilke-Chang with water as the solute (DF-01)",
              [(tp, "                    { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;\n"
-                   "                      reason \"no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so\"; }\n", "")],
+                   "                      reason \"taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)\"; }\n", "")],
              "The method should not be used when water is the solute"),
             ("an unlisted pair names the slice's grammar (DG-05)",
              [(tp, "                default { model WilkeChang; }\n                entries\n                (\n                    { solute water;",
@@ -356,6 +362,89 @@ def main():
             else:
                 notes.append(label)
 
+        # ---- (3b) a stated mixture value and its constituents (DG-11) -----
+        def stated_probe(name, box_w, ops_edit=None):
+            d = copy(WITNESS, tmp, name)
+            edit(d / tp, "viscosity   { }",
+                 'viscosity   { measured { muS { use method; reason "a probe"; } } }')
+            stated_file(d, "muS", "methanol water", "water", "{ name mu; unit mPa.s; }", "0.5",
+                        f"T ( 280 400 ); w[methanol] ( {box_w} );")
+            if ops_edit:
+                ops_edit(d)
+            return d
+        d = stated_probe("dg11pure", "0 1")
+        rc, out = run(d, "choupoProps")
+        mu_pure = diagnostics(out).get("muMethanol", {}).get("viscosity_liquid")
+        mu_law = dg.get("muMethanol", {}).get("viscosity_liquid") if dg else None
+        if rc != 0 or mu_pure is None or mu_pure != mu_law \
+                or "does not describe pure methanol; its record law is used" not in out:
+            fails.append(f"(3b) a pure constituent of a stated binary: exit {rc}, viscosity {mu_pure}"
+                         f" (its record law gives {mu_law}), the announcement "
+                         f"{'printed' if 'does not describe pure methanol' in out else 'NOT printed'}")
+        else:
+            notes.append("pure constituent by its law")
+        d = stated_probe("dg11box", "0.98 1")
+        rc, out = run(d, "choupoProps")
+        if rc == 0 or "is outside the box the case declared for its stated value" not in out:
+            fails.append(f"(3b) a binary of the stated set outside its box: exit {rc}, not refused by its words")
+        else:
+            notes.append("binary outside the box")
+        #  (the superset -- a liquid holding another component -- is arm (2)'s DG-02)
+
+        # ---- (3c) Leffler-Cullinan where it is NOT Vignes (DG-12) ----------
+        d = copy(WITNESS, tmp, "dg12lc")
+        edit(d / tp, "viscosity   { }",
+             'viscosity   { interaction ( { i methanol; j water; A 1.0; Tmin 300; Tmax 350;'
+             ' source "a probe of this gate, not a datum"; } ); }')
+        rc, out = run(d, "choupoProps")
+        g = diagnostics(out)
+        b, v = g.get("lcBinary", {}), g.get("binaryEffective", {})
+        mu_m2 = g.get("muMethanol", {}).get("viscosity_liquid")
+        mu_w2 = g.get("muWater", {}).get("viscosity_liquid")
+        try:
+            dmw, dwm, eff, mu = (b[k] for k in ("D_L_inf_methanol_in_water", "D_L_inf_water_in_methanol",
+                                               "D_L_effective", "viscosity_liquid"))
+            hand = (dwm * mu_m2) ** 0.9459 * (dmw * mu_w2) ** 0.0541 / mu
+            vig = v["D_L_effective"]
+            if rc != 0 or abs(eff / hand - 1.0) > 1e-11 or abs(eff / vig - 1.0) < 1e-3:
+                fails.append(f"(3c) Leffler-Cullinan {eff} against its hand value {hand} (and Vignes {vig},"
+                             " which it must NOT equal here)")
+            else:
+                notes.append(f"Leffler-Cullinan off Vignes by {100 * (eff / vig - 1):+.2f} %")
+        except (KeyError, TypeError):
+            fails.append(f"(3c) the Leffler-Cullinan probe did not run (exit {rc})")
+
+        # ---- (3d) the column's surface tension: one per tray, and the
+        #      supercritical left-out rule (DG-13) -----------------------------
+        d = copy(TRAYS, tmp, "dg13")
+        (d / "system" / "outerDict").unlink(missing_ok=True)
+        #  cyclohexane's Tc moved to 360 K in this temporary copy only, so the
+        #  trays (321.9-330 K) sit between 0.9 Tc and Tc: nothing is above Tc.
+        rec = d / "constant/components/cyclohexane.dat"
+        rec.write_text(re.sub(r"(?m)^Tc\s+[0-9.eE+-]+;", "Tc          360.0;", rec.read_text()))
+        Tc = {"cyclohexane": 360.0,
+              "nHeptane": record_number_at(d / "constant/components/nHeptane.dat", "Tc")}
+        rc, out = run(d, "choupoSolve")
+        prof = profile_of(out) if rc == 0 else None
+        cols = (prof or {}).get("columns", prof or {})
+        if not cols or "sigma" not in cols or "sigma_efficiency" not in cols:
+            fails.append(f"(3d) the tray probe (exit {rc}) publishes no per-tray surface tension")
+        else:
+            bad = []
+            for k, T in enumerate(cols["T"]):
+                s_h, s_e = cols["sigma"][k], cols["sigma_efficiency"][k]
+                if s_h > 0.0 and s_e > 0.0 and abs(s_e / s_h - 1.0) > 1e-9:
+                    bad.append(f"tray {k + 1}: efficiency {s_e} vs hydraulics {s_h}")
+                if s_h > 0.0:
+                    hand = sum(cols[f"x_{c}"][k] for c in Tc if T >= Tc[c])
+                    if abs(cols["sigma_unpricedFraction"][k] - hand) > 1e-12:
+                        bad.append(f"tray {k + 1} at {T:.2f} K: left out {cols['sigma_unpricedFraction'][k]},"
+                                   f" by the rule (T >= Tc) {hand}")
+            if bad:
+                fails.append("(3d) " + "; ".join(bad[:3]))
+            else:
+                notes.append("one surface tension per tray; left out only above Tc")
+
         # ---- (4) RULING 7: the column and a property operation, one state ---
         d = copy(RATE, tmp, "r7col")
         (d / "system" / "outerDict").unlink(missing_ok=True)
@@ -396,9 +485,11 @@ def main():
           f" infinite-dilution values differ 2.5-fold; the default association factor holds by value"
           f" and by its words; the column's liquid film and a property operation at its state agree to"
           f" 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used;"
-          f" {len(notes) - 5} refusals each by name.  NOT CHECKED: the migrated cases' numbers (their"
-          f" goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Leffler-Cullinan"
-          f" against Vignes (equal on this witness: its mixture viscosity is the log-mole average).")
+          f" a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it"
+          f" differs from Vignes; one surface tension per tray, left out only at or above Tc;"
+          f" {len(notes) - 10} refusals each by name.  NOT CHECKED: the migrated cases' numbers (their"
+          f" goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's"
+          f" fitness for a polar liquid (announced, not judged).")
     return 0
 
 

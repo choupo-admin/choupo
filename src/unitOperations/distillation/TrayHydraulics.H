@@ -176,6 +176,7 @@ public:
         std::size_t index = 0;           // 1-based stage number
         scalar F_LV = 0.0, C_SB = 0.0;
         scalar rhoL = 0.0, rhoV = 0.0, sigma = 0.0;
+        scalar sigmaUnpriced = 0.0;      // mole fraction the surface tension left out (C398 A4)
         scalar uFlood = 0.0, uVapour = 0.0, floodApproach = 0.0;
         scalar diameterRequired = 0.0;   // m, design mode
         scalar h_d = 0.0, h_ow = 0.0, h_r = 0.0, h_t = 0.0;   // mm liquid

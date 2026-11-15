@@ -27,6 +27,11 @@
                    water in methanol stays Wilke-Chang, named with its reason.
                    The datum is used at its own temperature only (its box is
                    the point).
+    wc313, leeLi313
+                   methanol-water at 313.13 K: Wilke-Chang beside the two values
+                   Lee & Li measured (Poling 5th ed. p. 11.38, Example 11-8):
+                   water in methanol is where Wilke-Chang is used outside its
+                   stated scope, and the gap is printed, not hidden.
     binaryEffective, cbBinary, lcBinary, abBinary
                    `returns effective` by Vignes, Caldwell-Babb,
                    Leffler-Cullinan and Anderson-Babb on the methanol-water
@@ -53,6 +58,19 @@ operations
         type        propertyPoint;
         thermo      poling288;            // the variant with the stated entry
         state       { T 288 K;  P 1 bar;  composition { methanol 0.5;  water 0.5; } }
+        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol );
+    }
+    {
+        name        wc313;                // Wilke-Chang at Lee & Li's temperature
+        type        propertyPoint;
+        state       { T 313.13 K;  P 1 bar;  composition { methanol 0.5;  water 0.5; } }
+        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol );
+    }
+    {
+        name        leeLi313;             // the two values Lee & Li measured (Poling p. 11.38)
+        type        propertyPoint;
+        thermo      leeLi313;
+        state       { T 313.13 K;  P 1 bar;  composition { methanol 0.5;  water 0.5; } }
         properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol );
     }
     {
