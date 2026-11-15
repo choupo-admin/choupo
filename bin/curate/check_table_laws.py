@@ -71,6 +71,10 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+#  Its one directory walk (arm h, the measurement file of a COPY of
+#  liquidDensity04) reaches only the gate's own scratch copy under a temporary
+#  directory; the cases it copies are named below, not walked.
+SCAN_ROOTS = ()
 PROPS = ROOT / "choupoProps"
 SOLVE = ROOT / "choupoSolve"
 T01 = ROOT / "tutorials/props/transport/table01_water_viscosity_points"
