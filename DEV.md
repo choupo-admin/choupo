@@ -3518,6 +3518,24 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C405 (Vitor, 2026-11-15: "regista", on the surface-tension sources).**
+> A COMMISSION.  MEASURED the same day: 88 of 696 component records carry
+> their own surface-tension law, sigma = A tau^n fitted by
+> bin/curate/transport_fit.py to every laboratory the local ThermoML archive
+> holds for the pure liquid (<= 200 kPa, points beyond 15 % discarded by
+> name), each with its kept T range, its largest error and a fit grade, and
+> every one `reviewStatus autoPromoted`, reviewed by nobody; the other 608
+> fall back to Brock-Bird, which Poling states is for nonpolar liquids (+53 %
+> on acetic acid, +101 % on methanol in his Table 12-1) and which announces
+> its scope since C398 slice (d).  PLAN, after C403: (1) review the 88 fitted
+> laws against their own points (the residuals, the range, the outliers
+> dropped) and mark each reviewed or send it back; (2) list the components
+> the shipped cases actually ask a surface tension of (columns, sprays,
+> pipes, foams) and read a tabulated source at its page for each one that
+> has no law, polar and associating liquids first; (3) a gate that counts
+> Brock-Bird use on a polar or associating component in a shipped case, as
+> a ratchet that only falls.
+
 > **C404 (Vitor, 2026-11-15, on the canvas of ratebased04 in the browser:
 > "Isto nao tem correntes?!").**  A COMMISSION.  A column at TOTAL REFLUX
 > has no feed and no product, so its flowsheet holds one unit, a condenser
