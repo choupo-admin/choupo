@@ -1203,11 +1203,13 @@ sVector ThermoPackage::stageK(scalar T, scalar P, const sVector& zStage,
         }
         catch (const std::exception& ex2)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw withStageState(ex2);
         }
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         throw withStageState(ex);
     }
 
@@ -2044,14 +2046,14 @@ scalar ThermoPackage::H_blendPerNaturalPhase(scalar T, scalar P_Pa,
             try {
                 H += z[i] * (1.0 - vapFrac)
                    * components_[i].h_formation(T, "liquid");
-            } catch (const std::exception&) {}   // species cannot be liquid here
+            } catch (const std::exception&) { rethrowHardRefusal(); }   // species cannot be liquid here
         }
         if (vapFrac > 0.0)
         {
             try {
                 H += z[i] * vapFrac
                    * components_[i].h_formation(T, "gas");
-            } catch (const std::exception&) {}    // species cannot be vapour here
+            } catch (const std::exception&) { rethrowHardRefusal(); }    // species cannot be vapour here
         }
     }
     return H;
@@ -2638,7 +2640,7 @@ scalar ThermoPackage::liquidMolarVolumeOf(std::size_t i, scalar T) const
             " pair's `v_inf` is that datum, read today only for the"
             " Poynting correction).  Ask for the density over the"
             " components that have a liquid volume, and say which were"
-            " left out.");
+            " left out.").markedAboveCriticalTemperature();
     if (!(Vi > 0.0) || !std::isfinite(Vi))
         throw PropertyDomainError(PropertyDomainError::Kind::invalidState, "ThermoPackage::density: the liquid molar"
             " volume of component '" + c.name() + "' at T = "
@@ -2874,7 +2876,7 @@ void ThermoPackage::resolveLiquidLaws(const std::string& key, const DictPtr& blo
         for (const auto& e : block->lookupDictList("pin"))
         {
             const std::string c = e->lookupWordOrDefault("component", "");
-            const std::string l = e->lookupWordOrDefault("law", "");
+            std::string l = e->lookupWordOrDefault("law", "");
             const std::string r = e->lookupWordOrDefault("reason", "");
             std::size_t i = N;
             for (std::size_t k = 0; k < N; ++k) if (components_[k].name() == c) { i = k; break; }
@@ -2884,6 +2886,19 @@ void ThermoPackage::resolveLiquidLaws(const std::string& key, const DictPtr& blo
                 for (const auto& comp : components_) have += (have.empty() ? "" : ", ") + comp.name();
                 throw std::runtime_error("transport " + words + ": pin names component '" + c
                     + "', which is not in the system (" + have + ").");
+            }
+            //  `table <name>` instead of `law <name>` (C398 slice (c)): the case's
+            //  points become a law of this constituent's block, then the pin
+            //  chooses it like any law.
+            {
+                RecordLawPin tp;
+                tp.component = c;
+                readCaseTablePin(e, rkey, tp, "transport " + words + ": pin of '" + c + "'");
+                if (tp.caseLaw)
+                {
+                    components_[i].addCaseLaw(rkey, *tp.caseLaw, tp.caseSource);
+                    l = tp.law;
+                }
             }
             if (l.empty() || r.empty())
                 throw std::runtime_error("transport " + words + ": the pin of '" + c + "' needs"
@@ -3056,7 +3071,8 @@ void firstUse(const std::string& tag, const Component& c, const std::string& rke
     recordLaws::traceCall(tag, recordLaws::selfLine(c.name(), rkey,
         law ? law->token() : std::string("its one law"), L.type, L.by,
         law ? law->windowText(recordLaws::familyOf(rkey)) : std::string("no window declared"),
-        c.lawSource(rkey, L.law), recordLaws::valueText(v, Tp), c.recordHome()));
+        c.lawSource(rkey, L.law), recordLaws::valueText(v, Tp),
+        law && !law->home.empty() ? law->home : c.recordHome()));
 }
 
 //  A predictive model a constituent runs on (review CV-20), once per package.
@@ -3090,6 +3106,10 @@ scalar ThermoPackage::pureLiquidViscosity(std::size_t i, scalar T) const
     auto& obj = liquidViscosityObj_.at(i);
     if (!obj)
     {
+        //  A record's table carries its source (C398 slice (c)).
+        if (const auto* blk = components_[i].recordLaws("liquidViscosity"))
+            if (const auto* law = blk->find(L.law))
+                components_[i].requireTableSource("liquidViscosity", *law);
         obj = LiquidViscosityModel::New(modelDict(L.type)); obj->bindLaw(L.law);
         const auto* o = obj.get(); const Component& ci = components_[i];
         firstUse(identity_, ci, "liquidViscosity", L, [o, &ci](double t) { return o->viscosityLiquidPure(ci, t); });
@@ -3180,9 +3200,26 @@ std::vector<RecordLawPin> ThermoPackage::readRecordLawPins(const DictPtr& system
             p.property  = h.property;
             p.law       = e->lookupWordOrDefault("law", "");
             p.reason    = e->lookupWordOrDefault("reason", "");
+            //  A component the system does not hold is named as such (review
+            //  row TG-14), before its table file is read.
+            if (!p.component.empty() && system->found("components"))
+            {
+                const auto comps = system->lookupWordList("components");
+                if (std::find(comps.begin(), comps.end(), p.component) == comps.end())
+                {
+                    std::string held;
+                    for (const auto& c : comps) held += (held.empty() ? "" : ", ") + c;
+                    throw std::runtime_error(where + ": pin names component '" + p.component
+                        + "', which is not in the system (" + held + ").");
+                }
+            }
+            //  `table <name>` instead of `law <name>`: the case's points
+            //  (C398 slice (c)), read from constant/experiments/<name>.dat.
+            if (!p.component.empty())
+                readCaseTablePin(e, h.property, p, where + ": pin of '" + p.component + "'");
             if (p.component.empty() || p.law.empty() || p.reason.empty())
                 throw std::runtime_error(where + ": a pin needs `component <name>;`,"
-                    " `law <name>;` and `reason \"...\";`.");
+                    " `law <name>;` (or `table <name>;`) and `reason \"...\";`.");
             if (!seen.insert(p.component).second)
                 throw std::runtime_error(where + ": '" + p.component + "' is pinned twice;"
                     " one constituent holds one law.");
@@ -3202,13 +3239,31 @@ std::string ThermoPackage::resolvedIdentity(const std::string& definition, const
     {
         const Component& c = components_[i];
         in += "|" + c.name() + "@" + c.recordHome();
+        //  A table law (C398 slice (c)) adds its own description -- points,
+        //  span, interpolation, columns, a case's extension -- so two
+        //  packages that pin one table differently are two identities.  ACROSS
+        //  SECTORS it is the guard for the TG-02 shape (review row TG-15): two
+        //  sector dictionaries with one pin text over two files.  Today the
+        //  per-node pairs base already differs between two sectors, so this
+        //  line is the guard that does not depend on that base.
+        auto tableOf = [&](const std::string& rkey, const std::string& law)
+        {
+            const recordLaws::Block* b = c.recordLaws(rkey);
+            const recordLaws::Law* L = b ? b->find(law) : nullptr;
+            return (L && L->isTable) ? "|" + L->tableText + "@" + L->home : std::string();
+        };
         for (const char* p : { "vaporPressure", "idealGasHeatCapacity", "liquidHeatCapacity", "solidHeatCapacity" })
         {
             const auto ch = c.lawChoice(p);
             in += std::string(";") + p + "=" + ch.law + "/" + ch.type + "/" + ch.by;
+            if (ch.type == "table") in += tableOf(p, ch.law);
         }
         for (const auto* t : { &liquidViscosityLaws_, &liquidConductivityLaws_, &surfaceTensionLaws_ })
-            if (i < t->size()) in += ";" + (*t)[i].law + "/" + (*t)[i].type + "/" + (*t)[i].by;
+            if (i < t->size())
+            {
+                in += ";" + (*t)[i].law + "/" + (*t)[i].type + "/" + (*t)[i].by;
+                if ((*t)[i].type == "table" && t == &liquidViscosityLaws_) in += tableOf("liquidViscosity", (*t)[i].law);
+            }
         if (const auto it = pureFluid_.find(i); it != pureFluid_.end()) in += ";pure " + it->second->type();
     }
     std::uint64_t h = 1469598103934665603ULL;     // FNV-1a, as the definition's fingerprint
@@ -3308,6 +3363,38 @@ void ThermoPackage::verifyRecordLawPins(const std::vector<RecordLawPin>& pins,
                 + (ch.law.empty() ? std::string("its one law") : ch.law) + "`): a pin this"
                 " formulation cannot honour is refused rather than printed as applied.");
     }
+}
+
+//  THE LAWS A NO-WORD VISCOSITY BLOCK TOOK, for the per-unit [liquid
+//  properties] line (review row TG-07): each present constituent's law, its
+//  type and, for a table, its file; the mixing rule.  `origin` and
+//  `provenance` are the quality the line records: a table's declared source
+//  where one prices a constituent, never "regressed".
+std::string ThermoPackage::liquidViscosityLawsText(const sVector& x, std::string& origin,
+                                                   std::string& provenance) const
+{
+    std::string out, tables;
+    for (std::size_t i = 0; i < n() && i < x.size() && i < liquidViscosityLaws_.size(); ++i)
+    {
+        if (!(x[i] > 0.0)) continue;
+        const LiquidLaw& L = liquidViscosityLaws_[i];
+        std::string one = components_[i].name() + " law `" + (L.law.empty() ? std::string("(one)") : L.law)
+                        + "` (" + L.type;
+        if (L.type == "table")
+            if (const auto* b = components_[i].recordLaws("liquidViscosity"))
+                if (const auto* law = b->find(L.law))
+                {
+                    const std::string home = law->home.empty() ? "record " + components_[i].recordHome() : law->home;
+                    one += ", " + home;
+                    tables += (tables.empty() ? "" : "; ") + components_[i].name() + ": "
+                            + components_[i].lawSource("liquidViscosity", L.law) + " (" + home + ")";
+                }
+        out += (out.empty() ? "" : "; ") + one + ")";
+    }
+    if (liquidViscosityMixing_) out += "; mixing " + liquidViscosityMixing_->ruleName();
+    if (!tables.empty()) { origin = "literature"; provenance = "a table of measured points -- " + tables; }
+    else                 { origin = "regressed";  provenance = "the component records' transport blocks"; }
+    return out;
 }
 
 } // namespace Choupo

@@ -32,7 +32,7 @@ License
 
   WHAT THIS IS, AND WHAT IT IS NOT.  Pure geometry of a circle cut by two
   chords: no hydraulics.  The engine reads the tray as three DECLARED
-  fractions and a diameter -- `TrayHydraulics.cpp:318-322`:
+  fractions and a diameter -- `TrayHydraulics.cpp:320-324`:
 
       A_T = pi D^2 / 4,  A_d = downcomerAreaFraction . A_T,
       A_a = A_T - 2 A_d  (the active, bubbling area),

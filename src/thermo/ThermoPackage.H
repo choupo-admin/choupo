@@ -897,6 +897,10 @@ public:
     std::string pureFluidMethod(std::size_t i) const;      // "" when none
     const PureFluidModel* pureFluidModel(std::size_t i) const;   // nullptr when none
     std::string liquidViscosityMethod() const;             // "model/rule" or ""
+    //  The per-constituent laws of a no-word viscosity block, with a table's
+    //  file and source (C398 review row TG-07).
+    std::string liquidViscosityLawsText(const sVector& x, std::string& origin,
+                                        std::string& provenance) const;
     std::string surfaceTensionMethod() const;              // "model/rule" or ""
     //  What the package answers one transport property with (the resolved
     //  view, C398 slice (a)): `key` is the canonical flat name (viscosity,

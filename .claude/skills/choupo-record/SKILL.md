@@ -160,6 +160,23 @@ siblings:
 - A CASE chooses a law only by naming one the record holds:
   `pin ( { component <name>; law <name>; reason "..."; } );` beside the
   property, in the case's property dictionary or a variant.
+- A TABLE IS A LAW TYPE (C398 slice (c)): `<name> { model table;
+  interpolation <linear|logLinear|logReciprocal|monotoneCubic>; columns ( {
+  name T; unit <u>; } { name <mu|Cp>; unit <u>; } ); data ( ... ); }` for
+  `liquidViscosity`, `liquidHeatCapacity`, `solidHeatCapacity` (never
+  `idealGasHeatCapacity`: addendum A2(v)).  Every column carries a unit; the
+  interpolation is always written; the span is NEVER written (the first and
+  last points are the hard domain: no `Trange`, `Tmin`/`Tmax`, `domain`);
+  the source goes in the provenance block like any law's (refused without);
+  a record never carries `extend`.  The CASE's own points live in
+  `constant/experiments/<name>.dat` (provenance with a `citation`, `system`
+  of exactly one component, `property`, `columns`, flat `data`) and are
+  chosen by `pin ( { component; table <name>; interpolation <word>; reason;
+  } );` -- `table` OR `law`, never both; only such a pin may carry
+  `extend { upTo; downTo; reason; }`.  Every value of a table is > 0 (a
+  viscosity and a heat capacity are positive), whatever the interpolation;
+  a case's file is the one in the `experiments/` of the `constant/` whose
+  dictionary declares the pin (a sector's own), never an ancestor's.
 
 ## Where Choupo goes further, and why it must not be traded away
 

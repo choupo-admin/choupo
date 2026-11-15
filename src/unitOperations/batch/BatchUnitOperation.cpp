@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchUnitOperation.H"
+#include "thermo/PropertyDomainError.H"
 #include "BatchAccumulator.H"
 #include "BatchAdsorber.H"
 #include "BatchCrystalliser.H"
@@ -182,6 +183,7 @@ scalar BatchUnitOperation::packageEnthalpy_(const BatchState& pkg, bool& ok,
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         ok  = false;
         why = std::string("enthalpy evaluation failed: ") + ex.what();
         return 0.0;

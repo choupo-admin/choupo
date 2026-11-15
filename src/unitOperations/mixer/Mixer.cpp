@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Mixer.H"
+#include "thermo/PropertyDomainError.H"
 #include "streams/PsdOnGrid.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "unitOperations/reactor/ReactorOutlet.H"
@@ -563,6 +564,7 @@ int Mixer::solve(const DictPtr& dict,
         }
         catch (const std::exception& ex)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             gap = ex.what();
         }
         if (gap.empty() && !std::isfinite(H_in))
@@ -785,6 +787,7 @@ int Mixer::solve(const DictPtr& dict,
         }
         catch (const std::exception& ex)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             haveDuty = false;
             dutyGap  = ex.what();
         }

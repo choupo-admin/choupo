@@ -376,6 +376,9 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   Scheibel:     { guide: "theory", dest: "ch:diffusivity" },
   // -- heat capacity (HeatCapacityModel.cpp) ------------------------------
   polynomial: { guide: "theory", dest: "ch:heat" },       // ideal-gas/liquid Cp = a + bT + cT^2 + ...
+  // -- a property given as measured points (C398 slice (c)): the law type
+  //    `table` of the liquid-viscosity and heat-capacity families --------
+  table:      { guide: "theory", dest: "sec:record-law-table" },
   // -- membrane transport (NF/RO) -----------------------------------------
   solutionDiffusion: { guide: "theory", dest: "ch:membrane" }, // textbook 2-param S-D
   "DSPM-DE":         { guide: "theory", dest: "ch:dspmde" },   // Donnan-steric pore + dielectric

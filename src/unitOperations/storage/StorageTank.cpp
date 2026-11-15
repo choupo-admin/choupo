@@ -16,6 +16,7 @@ File
 \*---------------------------------------------------------------------------*/
 
 #include "StorageTank.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "core/Advisory.H"
 #include "thermo/PricedDensity.H"
@@ -188,6 +189,7 @@ int StorageTank::solve(const DictPtr& dict,
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         throw std::runtime_error(
             std::string("storageTank: the package cannot give a ")
             + (isVapour ? "VAPOUR" : "LIQUID") + " density at T = "

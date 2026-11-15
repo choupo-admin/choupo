@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "AdiabaticFlash.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/Advisory.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "solver/NewtonRaphson.H"
@@ -203,6 +204,7 @@ int AdiabaticFlash::solve(const DictPtr& dict,
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             trialUnanswerable = true;
             if (verbosity >= 1)
                 std::cout << "  [adiabaticFlash] trial T = " << std::fixed

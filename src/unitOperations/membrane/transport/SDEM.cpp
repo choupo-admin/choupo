@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SDEM.H"
+#include "thermo/PropertyDomainError.H"
 
 #include "core/Advisory.H"
 #include "core/Identifiers.H"
@@ -306,6 +307,7 @@ void SDEM::resolveOnce(const TransportContext& ctx) const
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error(
                 "transport SDEM: solute '" + nm + "' declares no aqueous"
                 " bridge, so the law cannot read its charge.  Add to its"

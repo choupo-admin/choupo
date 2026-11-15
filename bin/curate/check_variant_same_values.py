@@ -42,7 +42,11 @@ read from a stale run output).
       refused (a choupoSolve and a choupoProps run read the same constant/,
       so a variant only the check uses is correctly unused by the solve);
   (i) both spellings of one property block (`liquidViscosity {}` beside
-      `liquid { viscosity {} }`) are refused, in the system and in a variant.
+      `liquid { viscosity {} }`) are refused, in the system and in a variant;
+  (j) A TABLE PIN IN A VARIANT (C398 slice (c), review row TG-09): a copy
+      whose variant pins water's liquid viscosity to the case's own table,
+      selected by the pipe and by muVariant: the same viscosity in both, not
+      the system's.
 
 WHAT THIS GATE DOES NOT COVER, said so its green line cannot imply it.  It
 holds ONE property (liquid viscosity) at ONE state on ONE flat case: not a
@@ -260,6 +264,48 @@ def main():
             if rc == 0 or "flat spelling of a property block" not in out:
                 fail("i", f"both spellings of liquid viscosity in the {where} were not refused (exit {rc})")
 
+        # (j) A TABLE PIN IN A VARIANT (C398 slice (c), review row TG-09): the
+        #     variant `tblLaw` pins water's liquid viscosity to the case's own
+        #     table (table01's crcWaterMu file, copied into constant/
+        #     experiments/); the pipe and operation muVariant both select it
+        #     and must receive the same viscosity, different from the system's.
+        j = copy_case(tmp, "table")
+        t = (j / thermo).read_text()
+        (j / "constant/experiments").mkdir(parents=True, exist_ok=True)
+        shutil.copy(ROOT / "tutorials/props/transport/table01_water_viscosity_points/constant/"
+                    "experiments/crcWaterMu.dat", j / "constant/experiments/crcWaterMu.dat")
+        (j / thermo).write_text(t.replace(
+            "variants\n{\n",
+            "variants\n{\n    tblLaw\n    {\n        transport { liquid { viscosity {\n"
+            "            pin ( { component water;  table crcWaterMu;  interpolation logReciprocal;\n"
+            "                    reason \"the case's table, for check_variant_same_values (j)\"; }\n"
+            "                  { component ethanol;  law andrade;\n"
+            "                    reason \"the system's law for ethanol (its sealed record marks none preferred)\"; } );\n"
+            "        } } }\n    }\n", 1))
+        for fn in ("system/flowsheetDict", "system/propsDict"):
+            txt = (j / fn).read_text()
+            (j / fn).write_text(txt.replace("thermo      vogelLaw;", "thermo      tblLaw;"))
+        rcS2, outS2 = run(SOLVE, j)
+        rcP2, outP2 = run(PROPS, j)
+        if rcS2 != 0 or rcP2 != 0:
+            fail("j", f"the table-variant copy did not run (solve exit {rcS2}, props exit {rcP2}): "
+                      f"{(outS2 if rcS2 else outP2)[-500:]}")
+        else:
+            usedJ = [u for u in (result(outS2) or {}).get("propertySources", {}).get("used", [])
+                     if u.get("unit") == "line" and u.get("property") == "liquidViscosity"]
+            varJ = op(result(outP2), "muVariant").get("viscosity_liquid", float("nan"))
+            sysJ = op(result(outP2), "muSystem").get("viscosity_liquid", float("nan"))
+            if not usedJ or usedJ[0].get("valueMin") is None or not (varJ == varJ):
+                fail("j", "the pipe or muVariant published no liquid viscosity on the table variant")
+            elif rel(usedJ[0]["valueMin"], varJ) > REL:
+                fail("j", f"on the table variant the pipe received {usedJ[0]['valueMin']!r} Pa s and "
+                          f"muVariant {varJ!r}: relative {rel(usedJ[0]['valueMin'], varJ):.3e} > {REL:g}")
+            elif rel(varJ, sysJ) < 1e-4:
+                fail("j", f"the table variant ({varJ!r}) agrees with the system ({sysJ!r}) to 1e-4: "
+                          "the table did not reach the package")
+            elif "law `crcWaterMu` (table)" not in outS2 or "law `crcWaterMu` (table)" not in outP2:
+                fail("j", "a mode's resolved view does not name the table law crcWaterMu")
+
     if fails:
         print("check_variant_same_values: FAIL")
         for x in fails:
@@ -272,7 +318,8 @@ def main():
           f"is different ({mu_sys:.6g}), so the selection is live; (e) the surface tension, a "
           "block the variant does not declare, is the system's; (f-i) a derived variant, an "
           "unknown name and both spellings of one block are refused, an unused variant is "
-          "announced.  ONE property (liquid viscosity) at ONE state on ONE flat case: NOT "
+          "announced; (j) a variant pinning a case TABLE gives the pipe and the operation the "
+          "same viscosity, not the system's.  ONE property (liquid viscosity) at ONE state on ONE flat case: NOT "
           "sector variants, NOT a variant that changes equilibrium, NOT agreement below 5e-12")
     return 0
 

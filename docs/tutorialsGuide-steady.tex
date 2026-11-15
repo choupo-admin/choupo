@@ -6910,6 +6910,37 @@ The CSTR converts \textasciitilde{}25\% per pass (small volume); without recycle
 \end{tutgolden}
 
 \clearpage
+\tutentry{table05\_sector\_table\_pins}{tutorials/steady/flowsheets/table05\_sector\_table\_pins}
+\tutwhat{A sector's table pin reads the sector's own file: two sectors pin water's liquid viscosity to a table of the same name, each held in its own constant/experiments/, and a decoy of that name at the root is never read}
+\begin{tutnarrative}
+table05 -- A TABLE PIN READS THE FILE OF THE DICTIONARY THAT DECLARES IT (DEV.md 4c C398 slice (c), review row TG-02).
+
+feedA $\to$ [ A: pipe P1 ] $\to$ outA feedB $\to$ [ B: pipe P1 ] $\to$ outB
+
+Each sector keeps its own property dictionary (sectors/<S>/constant/ thermoPhysPropDict, inheriting the plant's) and pins water's liquid viscosity to `table crcWaterMu` -- the SAME pin text in both. Each sector holds its own constant/experiments/crcWaterMu.dat: sector A the eleven evaluated points of the handbook table, sector B every second of them (six points, 20 K apart). At 300 K (between the 20 and 30 degC points of A, and the 20 and 40 degC points of B) the two interpolants differ, so each pipe's viscosity, Reynolds number and friction show which file its sector read. The plant's own constant/experiments/ holds a DECOY of the same name with every value doubled: no sector may read it (there is no walk up the folders), and the golden master would show it if one did.
+
+The two sectors' packages are told apart by their identity, which carries each table's own text and file (review row TG-15).
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{stream}{feedA}{F}{0.555555555556}
+\goldrow{stream}{feedA}{T}{300}
+\goldrow{stream}{feedB}{F}{0.555555555556}
+\goldrow{stream}{feedB}{T}{300}
+\goldrow{stream}{outA}{F}{0.555555555556}
+\goldrow{stream}{outA}{T}{300}
+\goldrow{stream}{outB}{F}{0.555555555556}
+\goldrow{stream}{outB}{T}{300}
+\goldrow{kpi}{A.P1}{F}{0.555555555556}
+\goldrow{kpi}{A.P1}{P\_in}{500000}
+\goldrow{kpi}{A.P1}{P\_out}{462984.144507}
+\goldrow{kpi}{A.P1}{dP\_elevation}{19520.1545706}
+\goldrow{kpi}{A.P1}{dP\_fittings}{9626.38419279}
+\goldrow{kpi}{A.P1}{dP\_friction}{7869.3167296}
+\goldmore{30}
+\end{tutgolden}
+
+\clearpage
 \tutentry{twoSectorDemo}{tutorials/steady/flowsheets/twoSectorDemo}
 \tutwhat{Two-sector demo plant -- self-contained: 10 components, 10 NRTL pairs, 5 reactions, and TWO custom compiled unit ops (a reactor in SECTOR\_R, a column in SECTOR\_S). Zip the folder and send it.}
 \begin{tutnarrative}

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PropertyEvaluator.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 #include "thermo/vaporPressure/VaporPressureModel.H"
@@ -70,7 +71,7 @@ Hetero findHetero(const ThermoPackage& thermo, scalar P_Pa)
             || std::abs(s.x[0] - s.y[0]) < 1.0e-3) return h;      // miscible
         h.xa = std::min(s.x[0], s.y[0]);
         h.xb = std::max(s.x[0], s.y[0]);
-    } catch (...) { return h; }
+    } catch (...) { rethrowHardRefusal(); return h; }
 
     FlashOptions vo; vo.phaseSet = PhaseSet::VLLE; vo.verbosity = 0;
     auto hasVapour = [&](scalar Tk) -> bool {
@@ -79,7 +80,7 @@ Hetero findHetero(const ThermoPackage& thermo, scalar P_Pa)
             const FlashSolution s = IsothermalFlash::solveCore(f, thermo, vo);
             return s.betaVapor > 1.0e-6
                 || (s.V_over_F > 1.0e-6 && !s.liquidLiquid);
-        } catch (...) { return false; }
+        } catch (...) { rethrowHardRefusal(); return false; }
     };
     // bisect T on the LL -> vapour boundary = T_het (heteroazeotrope bubble)
     scalar Tlo = 250.0, Thi = 600.0;
@@ -95,7 +96,7 @@ Hetero findHetero(const ThermoPackage& thermo, scalar P_Pa)
         h.yStar = s.threePhase && s.xVapor.size() == 2 ? s.xVapor
                 : (s.y.size() == 2 ? s.y : sVector{0.5, 0.5});
         h.exists = true;
-    } catch (...) { return h; }
+    } catch (...) { rethrowHardRefusal(); return h; }
     return h;
 }
 
@@ -353,7 +354,7 @@ scalar evaluateProperty(const std::string& propKey,
                 && std::abs(sol.x[0] - sol.y[0]) > 1.0e-3;
             return split ? 0.0 : 1.0;
         }
-        catch (const std::exception&) { return 1.0; }   // no split found -> stable
+        catch (const std::exception&) { rethrowHardRefusal(); return 1.0; }   // no split found -> stable
     }
 
     throw std::runtime_error(

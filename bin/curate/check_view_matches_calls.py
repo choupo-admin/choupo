@@ -100,6 +100,22 @@ WITNESSES = [
     #  the two definitions are equal and only the pairs they took differ.
     ("tutorials/steady/flowsheets/esterification2sector@nrtlSystem", 4,
      ["pair ethylAcetate-water: perNode", "pair ethylAcetate-water: caseRoot"], []),
+    #  C398 slice (c): a law of type `table` -- a case's table (pin `table`)
+    #  and a record's table (pin `law`), each viewed with its points, span,
+    #  interpolation, columns as declared, source and home.
+    ("tutorials/props/transport/table01_water_viscosity_points", 2,
+     ["law `crcWaterMu` (table)", "table: 11 points, 273.15-373.15 K, interpolation logReciprocal",
+      "columns T [degC, +273.15 K at read], mu [uPa.s]", "record: case constant/experiments/crcWaterMu.dat",
+      "the case extends it up to 383.15 K"], []),
+    ("tutorials/props/heat/table02_water_liquid_cp_points", 2,
+     ["law `crc82` (table)", "table: 11 points, 273.15-373.15 K, interpolation monotoneCubic",
+      "Cp [J/g/K, x M = 18.015 g/mol -> J/(mol K)]"], []),
+    #  TG-02/TG-15: two sectors, one pin text, each its own file; the two
+    #  packages are told apart by the identity (the table's text and file).
+    ("tutorials/steady/flowsheets/table05_sector_table_pins", 2,
+     ["record: case sectors/A/constant/experiments/crcWaterMu.dat",
+      "record: case sectors/B/constant/experiments/crcWaterMu.dat"],
+     ["record: case constant/experiments/crcWaterMu.dat"]),
 ]
 
 
@@ -129,6 +145,12 @@ SABOTAGE = [
     ("a variant's view stripped of its vapour-pressure lines", "variants01_ethanol_water_line", "STRIP_VARIANT_VP"),
     ("the flash's own pair replaced by the system's (CV-01, CV-26)", "esterification2sector@nrtlSystem",
      "SWAP_FLASH_PAIR"),
+    #  C398 slice (c): a table law's interpolation, and a heat-capacity
+    #  table's span, as the view states them.
+    ("a table's interpolation logReciprocal -> linear", "table01_water_viscosity_points",
+     lambda v: v.replace("interpolation logReciprocal", "interpolation linear")),
+    ("a heat-capacity table's span 273.15-373.15 K -> 273.15-363.15 K", "table02_water_liquid_cp_points",
+     lambda v: v.replace("11 points, 273.15-373.15 K", "11 points, 273.15-363.15 K")),
 ]
 
 LAW = re.compile(r"^\S+ \[\w+\]: law ")

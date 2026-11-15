@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "StreamTableReport.H"
+#include "thermo/PropertyDomainError.H"
 #include "BalanceMath.H"
 #include "Topology.H"
 #include "streams/StreamMass.H"
@@ -326,7 +327,7 @@ void StreamTableReport::run(const DictPtr& /*dict*/, const ReportContext& ctx)
                    << reporting::streamH_elements(s, ctx.thermo);
                 hcell = os.str();
             }
-            catch (const std::exception&) { }
+            catch (const std::exception&) { rethrowHardRefusal(); }
             f << "," << hcell;
         }
         for (std::size_t i = 0; i < comps.size(); ++i)

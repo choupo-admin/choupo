@@ -61,6 +61,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/ResultRecords.H"          // ModelBoundaryFinding -- the neutral
                                        //   record, NOT the result that carries
                                        //   it: the audit needs the type, not
@@ -184,7 +185,7 @@ inline std::vector<ModelBoundaryFinding> computeModelBoundaries(
                 Hup = Pup.H_stream_formation(s.T, s.P, s.vf, s.z);
                 Hdn = Pdn.H_stream_formation(s.T, s.P, s.vf, s.z);
             }
-            catch (const std::exception&) { continue; }      // can't evaluate -> skip
+            catch (const std::exception&) { rethrowHardRefusal(); continue; }      // can't evaluate -> skip
             if (!std::isfinite(Hup) || !std::isfinite(Hdn)) continue;
 
             const scalar dH = Hdn - Hup;                     // J/mol
@@ -198,7 +199,7 @@ inline std::vector<ModelBoundaryFinding> computeModelBoundaries(
                 const scalar cp   = (Hdn2 - Hdn) / 0.1;      // J/mol/K
                 if (std::fabs(cp) > 1.0e-6) dT = dH / cp;
             }
-            catch (const std::exception&) { /* leave dT = 0 */ }
+            catch (const std::exception&) { rethrowHardRefusal(); /* leave dT = 0 */ }
 
             f.dH_kJ_per_mol = dH / 1000.0;
             f.dH_kW         = dH * s.F;       // [J/mol]*[kmol/s] = kW

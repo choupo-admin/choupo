@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Heater.H"
+#include "thermo/PropertyDomainError.H"
 #include "solver/NewtonRaphson.H"
 
 #include <algorithm>
@@ -167,6 +168,7 @@ int Heater::solve(const DictPtr& dict,
         try { (void) thermo.H_stream_formation(T_in, P_in, vf_in, z); }
         catch (const std::exception& ex)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             useFormation = false;
             datumGap = ex.what();
         }

@@ -1,0 +1,69 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table02 -- liquid water's heat capacity, two ways in one run (DEV.md 4c
+    C398, slice (c), ruled addendum A2: a heat capacity given as points).
+
+    THE RECORD is this case's own copy of water.dat (constant/components):
+    its liquidHeatCapacity block holds two laws, the catalogue's constant
+    75.5 J/(mol K) (preferred, as in the catalogue) and `crc82`, a TABLE of
+    eleven evaluated points, 0-100 degC, printed per MASS (J/g K) and
+    converted with the record's molar mass, interpolated by monotoneCubic,
+    with its source in the record's provenance block.
+    THE VARIANT `crcPoints` pins the table beside the property, in
+    `caloric`.  A variant that changes `caloric` is a model boundary,
+    announced as one.
+    THE VARIANT `crcExtended` pins the SAME points as the case's own table
+    (constant/experiments/crcWaterCp.dat) with a bounded extension to 105
+    degC: a record never carries `extend`, a case's table may.  Inside the
+    extension Cp is the last segment's chord and the enthalpy and entropy are
+    its closed-form integral; 0.1 K past 105 degC the table refuses again.
+
+    A table of a heat capacity is INTEGRATED ONCE, at construction, in closed
+    form (the sensible enthalpy and entropy follow from it exactly, as from a
+    polynomial), and its points must contain 298.15 K, where every liquid
+    enthalpy is anchored (the elements datum).  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+variants
+{
+    crcPoints                           // only what differs from the system above
+    {
+        caloric
+        {
+            liquidHeatCapacity
+            {
+                pin ( { component water;  law crc82;
+                        reason "the evaluated heat capacity, which falls to a minimum near 35 degC, in place of the record's constant"; } );
+            }
+        }
+    }
+    crcExtended                         // the same points as the CASE's table, extended
+    {
+        caloric
+        {
+            liquidHeatCapacity
+            {
+                pin ( { component water;  table crcWaterCp;  interpolation monotoneCubic;
+                        extend { upTo 105 degC;  reason "liquid water at 2 bar a few kelvin past the table (it boils near 120 degC there)"; }
+                        reason "the evaluated heat capacity, as the case's own table, extended by its last segment's chord"; } );
+            }
+        }
+    }
+}

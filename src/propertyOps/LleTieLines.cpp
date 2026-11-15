@@ -13,6 +13,7 @@ License
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 
 #include "LleTieLines.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/Constants.H"
 #include "thermo/ThermoPackage.H"
 #include "unitOperations/flash/IsothermalFlash.H"
@@ -106,7 +107,7 @@ int LleTieLines::run(const DictPtr& dict,
 
         FlashSolution sol;
         try { sol = IsothermalFlash::solveCore(in, thermo, opts); }
-        catch (const std::exception&) { ++nRefused; continue; }
+        catch (const std::exception&) { rethrowHardRefusal(); ++nRefused; continue; }
 
         if (!sol.liquidLiquid || sol.x.size() != 3 || sol.y.size() != 3)
         { ++nSingle; continue; }

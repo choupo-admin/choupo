@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PsychrometricChart.H"
+#include "thermo/PropertyDomainError.H"
 
 #include "core/Advisory.H"
 #include "thermo/Component.H"
@@ -122,7 +123,7 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
 
     const std::size_t iCond = thermo.indexOf(condensableN);
     auto psat = [&](double T_K) -> double {
-        try { return thermo.Psat(iCond, T_K); } catch (const std::exception&) { return -1.0; }
+        try { return thermo.Psat(iCond, T_K); } catch (const std::exception&) { rethrowHardRefusal(); return -1.0; }
     };
     auto Ysat = [&](double T_K) -> double {
         const double pv = psat(T_K);
@@ -274,7 +275,7 @@ int PsychrometricChart::run(const DictPtr& dict, const ThermoPackage& thermo, in
                 if (Dab <= 0.0 || alpha <= 0.0) { ++skipTransport; continue; }
                 Le = alpha / Dab;
             }
-            catch (const std::exception&) { ++skipThrew; continue; }
+            catch (const std::exception&) { rethrowHardRefusal(); ++skipThrew; continue; }
             const double cs = cpc + Yas * cpv;
             const double slope = cs * std::pow(Le, 2.0 / 3.0) / lam;   // Le^(2/3) factor
             for (std::size_t k = 0; k < n; ++k)

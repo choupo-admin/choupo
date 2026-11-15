@@ -1,0 +1,33 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table05 -- the PLANT's property dictionary.  Water, an ideal liquid; the
+    liquid viscosity on the record's preferred law.  Each sector inherits this
+    dictionary and pins its own table (sectors/<S>/constant/thermoPhysPropDict).
+    This dictionary pins nothing, so constant/experiments/crcWaterMu.dat here
+    (a decoy) is cited by no entry and read by no package.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity { }      // no word: the record's preferred law (vogel)
+    }
+}

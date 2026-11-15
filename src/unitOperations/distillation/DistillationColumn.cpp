@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "core/InfeasibleTrial.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "core/Formula.H"
@@ -399,6 +400,7 @@ ColumnEnthalpy columnEnthalpySurface(const ThermoPackage& thermo, scalar P,
     }
     catch (const std::exception& e)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         h.formation = false;
         //  LOUD DOWNGRADE (AS3).  This catch used to be EMPTY, and on a
         //  REACTIVE column that is not a lost decimal: the elements datum is
@@ -995,6 +997,7 @@ CmoFeedQuality cmoFeedQuality(const FeedThermalState& st, scalar T,
     }
     catch (const std::exception& e)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         fq.q        = 1.0 - st.vf;
         fq.fellBack = true;
         fq.why      = e.what();
@@ -2253,7 +2256,7 @@ int DistillationColumn::solveForRecovery(const DictPtr& dict,
             const int rc = solve(work, thermo, verbosity >= 4 ? verbosity : 0);
             if (rc != 0 || produced_.empty()) return false;
         }
-        catch (const std::exception&) { return false; }
+        catch (const std::exception&) { rethrowHardRefusal(); return false; }
         const ProcessStream& d = produced_.front();
         recovery = d.F * d.z[ic] / feedOfComp;
         return true;
@@ -3033,6 +3036,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
                       (void)thermo.comp(i).g_pure_ig(298.15); }
             catch (const std::exception& e)
             {
+                rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
                 throw std::runtime_error("DistillationColumn '" + dict->name()
                     + "': the reacting species '" + thermo.comp(i).name()
                     + "' has no formation datum the reactive full MESH can"
@@ -3292,6 +3296,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         catch (const InfeasibleTrial&) { throw; }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             if (!seedPriced.load()) throw;
             if (!trialRefused.exchange(true))
             {
@@ -3314,6 +3319,7 @@ int DistillationColumn::solveSimultaneous(const DictPtr& dict,
         catch (const InfeasibleTrial&) { throw; }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             if (!seedPriced.load()) throw;
             if (!trialRefused.exchange(true))
             {
@@ -4818,6 +4824,7 @@ void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
         }
         catch (const std::exception&)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             //  Silent HERE and named THERE: the drum sizer is the surface
             //  that owes the reader a sentence, because it is the one whose
             //  answer is missing.  Raising an advisory from this pass would
@@ -5696,7 +5703,7 @@ int DistillationColumn::solveTotalRefluxPacked(const DictPtr& dict,
     {
         flooded = false;
         try { return march(Pb) - Ptop; }
-        catch (const std::exception&) { flooded = true; return -1.0; }
+        catch (const std::exception&) { rethrowHardRefusal(); flooded = true; return -1.0; }
     };
     bool fl = false;
     if (topGap(Phi, fl) < 0.0 || fl)

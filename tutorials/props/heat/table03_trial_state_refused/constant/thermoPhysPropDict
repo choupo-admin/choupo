@@ -1,0 +1,63 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table03 -- THE KNOWN COST OF A HARD END, shown on purpose (DEV.md 4c C398,
+    slice (c), the architect's end rule (c)).
+
+    A table has no value outside its points, so it refuses EVERY evaluation
+    there -- a reported state or a solver's trial state alike; no state is
+    classified.  The cost: a search that visits a temperature outside the
+    table on its way to an answer inside it is refused at that trial state.
+    The refusal is TRUE (the computation did ask there) and names its remedy.
+
+    Both variants pin water's liquid heat capacity to the case's own table
+    (constant/experiments/crcWaterCp.dat, 0-100 degC):
+      extended   with a bounded extension down to 260 K, so the search's seed
+                 at 262 K is answered by the end segment's chord, announced;
+      points     without one: the same search is refused at its seed.
+    This case is an EXPECTED-FAIL lesson (.expect-nonconvergence): its second
+    operation ends the run with the refusal a student must be able to read.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid { activityModel { model ideal; } }
+    vapour { fugacityModel idealGas; }
+}
+
+variants
+{
+    extended
+    {
+        caloric
+        {
+            liquidHeatCapacity
+            {
+                pin ( { component water;  table crcWaterCp;  interpolation monotoneCubic;
+                        extend { downTo 260 K;  reason "the (P, H) search starts at 262 K, below the table's first point"; }
+                        reason "the evaluated heat capacity, extended below 0 degC by the first segment's chord"; } );
+            }
+        }
+    }
+    points
+    {
+        caloric
+        {
+            liquidHeatCapacity
+            {
+                pin ( { component water;  table crcWaterCp;  interpolation monotoneCubic;
+                        reason "the evaluated heat capacity, with no extension"; } );
+            }
+        }
+    }
+}

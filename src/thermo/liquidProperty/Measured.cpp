@@ -15,6 +15,8 @@
 #include "Measured.H"
 
 #include "DensityResolver.H"
+#include "ExperimentsFile.H"
+#include "core/Dimensions.H"
 #include "SolutionLaw.H"
 #include "core/Advisory.H"
 #include "core/PropertySourceLog.H"
@@ -54,31 +56,24 @@ std::pair<scalar, scalar> pairOf(const DictPtr& d, const std::string& k, const s
     return { v[0], v[1] };
 }
 
-//  The column unit -> SI factor, for the four columns a density point carries.
-scalar toSI(const std::string& col, const std::string& unit, const std::string& where)
+//  THE ROLE OF EACH COLUMN a density point carries (C398 U1: the unit words
+//  and their factors live in src/core/Units, read by the one column reader,
+//  experiments::readColumn; this reader only says what each column IS).
+experiments::ColumnRole roleOf(const std::string& col, const std::string& where)
 {
-    if (col == "T")
-    {
-        if (unit == "K") return 1.0;
-    }
-    else if (col == "P")
-    {
-        if (unit == "Pa") return 1.0;
-        if (unit == "kPa") return 1.0e3;
-        if (unit == "MPa") return 1.0e6;
-        if (unit == "bar") return 1.0e5;
-    }
-    else if (col == "rho")
-    {
-        if (unit == "kg/m3") return 1.0;
-    }
-    else if (col.compare(0, 2, "w[") == 0)
-    {
-        if (unit == "-") return 1.0;
-    }
-    throw std::runtime_error(where + ": column `" + col + "` in unit `" + unit
-        + "` -- a density point is read in K, Pa (kPa, MPa, bar), kg/m3 and mass"
-          " fractions `w[<component>]` (unit -).");
+    experiments::ColumnRole r;
+    //  The units the density pilot read before C398 U1, EXACTLY (review row
+    //  TG-12): the one unit table gives the factors; this list keeps a mass
+    //  fraction from being an angle and a density from being ppm.
+    if (col == "T")        { r.dims = Dims::temperature; r.what = "a temperature"; r.allowedUnits = { "K" }; }
+    else if (col == "P")   { r.dims = Dims::pressure;    r.what = "a pressure"; r.allowedUnits = { "Pa", "kPa", "MPa", "bar" }; }
+    else if (col == "rho") { r.dims = Dims::density;     r.what = "a mass density"; r.allowedUnits = { "kg/m3" }; }
+    else if (col.compare(0, 2, "w[") == 0 && col.back() == ']')
+                           { r.dims = Dims::dimensionless; r.what = "a mass fraction"; r.allowedUnits = { "-" }; }
+    else
+        throw std::runtime_error(where + ": column `" + col + "` -- a density point carries the"
+            " columns T, P, rho and mass fractions `w[<component>]`.");
+    return r;
 }
 
 } // namespace
@@ -129,19 +124,24 @@ void MeasurementDeclarations::readFrom(const DictPtr& top)
             m.replacesMethod = r->lookupWord("method");
             m.replacesRecord = r->lookupWordOrDefault("record", "");
         }
+        experiments::refuseWrittenExperimentsDir(dec, here);
         for (const auto& kk : dec->keys())
-            if (kk != "use" && kk != "reason" && kk != "replaces")
+            if (kk != "use" && kk != "reason" && kk != "replaces"
+                && kk != experiments::experimentsDirKey())   // stamped by the reader of its dictionary (TG-02)
                 throw std::runtime_error(here + ": unknown word '" + kk + "' (use,"
                     " replaces, reason).");
 
-        const std::string sub = "experiments/" + name + ".dat";
-        const auto p = records::localRecord(sub);
-        if (p.empty())
-            throw std::runtime_error(here + ": no file constant/" + sub + " in this"
+        //  THE FILE OF THE DECLARING constant/, NEVER AN ANCESTOR'S (review row
+        //  TG-02): a sector's measurement reads the sector's experiments/; an
+        //  unstamped (case-root) declaration reads the root's.  No walk up.
+        const std::string dir = dec->lookupWordOrDefault(experiments::experimentsDirKey(),
+                                                         "constant/experiments");
+        const std::string where = dir + "/" + name + ".dat";
+        if (!std::filesystem::exists(where))
+            throw std::runtime_error(here + ": no file " + where + " in this"
                 " case.  A measurement the case marks is the case's own data.");
-        m.path = p.string();
+        m.path = where;
         const DictPtr f = Dictionary::fromFile(m.path);
-        const std::string where = "constant/" + sub;
         m.property = f->lookupWord("property");
         if (m.property != "liquidDensity")
             throw std::runtime_error(where + ": `property " + m.property + "` -- the"
@@ -163,9 +163,8 @@ void MeasurementDeclarations::readFrom(const DictPtr& top)
         scalar wsum = 0.0;
         for (std::size_t c = 0; c < cols.size(); ++c)
         {
-            const std::string col  = cols[c]->lookupWord("name");
-            const std::string unit = cols[c]->lookupWord("unit");
-            const scalar v = data[c] * toSI(col, unit, where);
+            const std::string col  = cols[c]->lookupWordOrDefault("name", "");
+            const scalar v = experiments::readColumn(cols[c], roleOf(col, where), where).toSI(data[c]);
             if (col == "T")        { m.T = v; hasT = true; }
             else if (col == "P")   { m.P = v; hasP = true; }
             else if (col == "rho") { m.rho = v; hasRho = true; }

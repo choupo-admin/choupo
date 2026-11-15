@@ -152,6 +152,84 @@ outside this layout, the reaction checks of C399 (an element balance at load,
 the rate constant's dimension).  The rate-based column resumes after (e).
 The plan: [`property-layout-review-plan.md`](property-layout-review-plan.md).
 
+**SLICE (c) AS BUILT (2026-11-14; it supersedes 5.5's grammar, interpolant
+words and minimum points where they differ).**  The architect's rulings at
+the builder's first hand-back: (1) THE END RULE (c) -- a table refuses EVERY
+evaluation outside its points (answer or trial state; no state classified),
+at its own evaluation, with the typed domain error, the temperature to six
+decimals, "the computation asked for T = ..." and the remedies; the one way
+past an end is a CASE pin's `extend { upTo; downTo; reason; }` (the end
+segment's chord in the interpolation's variables, first excursion announced,
+the largest restated at end of run); `clamp` refused.  Rejected: an
+extrapolated trial value with refused reported states (needs the post-solve
+classification CV-28..32 found incomplete) and a consumer allow-list (a
+hand-kept list, and it would forbid a student's data in a pipe).  Known cost,
+demonstrated by `tutorials/props/heat/table03_trial_state_refused`: a
+consumer evaluating inside a search may be refused at a trial state.  (2)
+Liquid and solid heat capacities only; an ideal-gas table refused (A2(v)).
+(3) The grammar: a record's table is a named law `{ model table;
+interpolation; columns; data; }`, source in the provenance block, no window
+keys and no `extend`; a case's table is `constant/experiments/<name>.dat`
+(V3 grammar, many rows, `system` of exactly one component, `property`
+checked against the pin), cited by `pin ( { component; table <name>;
+interpolation; reason; [extend] } );` -- `table` OR `law`; the interpolation
+words are V3's (`linear`, `logLinear`, `logReciprocal`, `monotoneCubic`; a
+heat capacity `linear` or `monotoneCubic`, closed-form integrals, 298.15 K
+inside the points); a per-mass Cp converted with MW.  (4) Sources: CRC
+Handbook 82nd ed. p. 6-3 as the route, primaries Sengers & Watson (1986) and
+Marsh (1987).  U1: the density pilot's private unit table is gone
+(`src/thermo/liquidProperty/ExperimentsFile`, shared with slice (d)).  NOT IN
+THIS SLICE: a file beside a record, CSV, 2-D and mixture tables, a
+vapour-pressure table.  Theory Guide `sec:record-law-table`.
+
+**SLICE (c), SECOND ROUND (2026-11-15; the reviewers' rows TG-01..16 and
+TB-01..05 and the architect's rulings on them).**  (1) V4 AMENDED BY THE
+ARCHITECT (TG-08): a table of a property that must be positive (viscosity,
+heat capacity, density, conductivity, diffusivity) refuses a value <= 0
+under EVERY interpolation, not only the two log forms.  (2) A HARD REFUSAL
+IS NEVER A NUMBER (TG-01): every catch on a property path rethrows a
+PropertyDomainError of kind outsideHardDomain before its fallback
+(`rethrowHardRefusal`, 105 sites, each listed with its decision in the
+commit); handlers that publish no number in its place and name the refusal
+(a scan's nan, a sweep point, a sizing item, a report gap) keep reporting
+it; missingDatum keeps the handling each site announced (those fallbacks
+become refusals in the layout's later slices).  (3) THE FILE OF THE
+DECLARING constant/ (TG-02): a table pin and a density measurement read the
+`experiments/` of the `constant/` whose dictionary declares them, never an
+ancestor's (the reader of a sector's or parent's dictionary stamps the
+folder; no walk up); the stamp is not in the definition fingerprint, and the
+package identity carries each table's text and file (TG-15), so two sectors
+with one pin text and two files are two packages.  (4) The largest
+excursion of an extension is the maximum over every package that built the
+table (TB-01).  (5) A per-mass column on a record with MW <= 0 is refused
+(TB-02); the density pilot's columns keep exactly their old unit words per
+role (TG-12).  (6) The probe of a table is inside a segment (TG-04); the
+table's arithmetic is held by the gate `check_table_laws`, which recomputes
+it independently.  UNCOVERED: a SOLID heat-capacity table has no witness.
+The literature archive holds one candidate source (Robie & Hemingway 1995,
+USGS Bulletin 2131, `report.pdf`), but no table of it was read for this
+slice, and a witness may only carry values read at their page.  So the
+solid path (the same TableCp object as the liquid's) is built and refused
+by the same rules, but no case exercises it.
+
+**SLICE (c), THIRD ROUND (2026-11-15; rows TG-17..21 and TB-06).**  (1) The
+folder of the declaring constant/ is recorded under an INTERNAL key,
+`@experimentsDir`, which no dictionary can write (the tokenizer never reads
+'@' into a keyword); a hand-written `experimentsDir` is refused by name in a
+table pin, a density measurement and anywhere in a stamped property
+dictionary (TG-17).  (2) The density's priced-set selection drops a
+component only when its refusal is the designed one -- a pure liquid asked
+at or above its critical temperature, marked by the two Tc tests
+(`PropertyDomainError::aboveCriticalTemperature`) -- and rethrows every
+other hard refusal (TG-18).  Measured: the route that selection calls
+(`ThermoPackage::density`) refuses outside a hard domain ONLY above Tc, so
+no input reaches the rethrow today; the gate holds the source, and the next
+such refusal propagates as ruled.  (3) A unit's inline `thermo {}` is
+stamped with that unit's own constant/ (TG-19); the fragment form is
+removed under C402, and obeys the rule while it exists.  (4) The lower
+extension's heat-capacity integral is held by the gate (TG-20).  (5) A value
+<= 0 is refused as the file writes it, with its unit (TB-06).
+
 ## The review rows, answered
 
 | row | what the record now says, or why not |

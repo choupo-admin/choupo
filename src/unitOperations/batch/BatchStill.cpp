@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchStill.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/RegistryRefusal.H"
 #include "streams/Composition.H"
 #include "solver/NewtonND.H"
@@ -740,6 +741,7 @@ scalar BatchStill::phaseH_(const sVector& nv, scalar T, scalar vf)
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         const std::string why =
             std::string("enthalpy evaluation failed: ") + ex.what();
         if (std::find(segMissing_.begin(), segMissing_.end(), why)

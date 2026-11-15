@@ -111,7 +111,7 @@ scalar PureFluidLeaf::volumeAt(scalar T, scalar P, bool asSet) const
             "liquid density: " + c + " at T = " + fmt("%.6g K", T)
             + " is at or above its critical temperature (" + fmt("%.6g K", Tc_)
             + ", " + model_->densityFormulation() + "): there is no liquid to price.",
-            "a temperature below the critical one");
+            "a temperature below the critical one").markedAboveCriticalTemperature();
     //  THE RECORD'S OWN LOWER LIMIT (C378 pilot review, S3): below the Tmin
     //  its `validity` block states, the reference equation is not asked.
     if (Tmin_ > 0.0 && T < Tmin_)
@@ -137,7 +137,7 @@ scalar PureFluidLeaf::volumeAt(scalar T, scalar P, bool asSet) const
         scalar pPkg = std::numeric_limits<scalar>::quiet_NaN();
         if (asSet && kind_ == Kind::referenceEquation)
         {
-            try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) {}
+            try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) { rethrowHardRefusal(); }
             if (pPkg == pPkg && P >= pPkg * (1.0 - pureFluidSaturationBand))
             {
                 std::string type, unit;
@@ -194,7 +194,7 @@ scalar PureFluidLeaf::volumeAt(scalar T, scalar P, bool asSet) const
     else if (asSet && kind_ == Kind::referenceEquation)
     {
         scalar pPkg = std::numeric_limits<scalar>::quiet_NaN();
-        try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) {}
+        try { pPkg = thermo_->Psat(i_, T); } catch (const std::exception&) { rethrowHardRefusal(); }
         if (pPkg == pPkg && P < pPkg * (1.0 - pureFluidSaturationBand))
         {
             std::string type, unit;

@@ -192,10 +192,10 @@ describe("equilibrium-or-rate-based: the lesson", () => {
     const all = [EQ_RB_ENGINE_SCOPE, ...EQ_RB_STEPS.flatMap((s) => [s.body, s.note ?? ""])].join("\n");
     const cited = new Set([...all.matchAll(/([A-Za-z]+\.(?:cpp|H)):(\d+)/g)].map((m) => m[0]));
     const CLAIMS: Record<string, string> = {
-      "DistillationColumn.cpp:1597": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
-      "DistillationColumn.cpp:1729": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
-      "DistillationColumn.cpp:2397": "`murphreeEfficiency` is not ",
-      "DistillationColumn.cpp:5059": "tray efficiency is implemented for a BINARY",
+      "DistillationColumn.cpp:1600": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
+      "DistillationColumn.cpp:1732": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
+      "DistillationColumn.cpp:2400": "`murphreeEfficiency` is not ",
+      "DistillationColumn.cpp:5066": "tray efficiency is implemented for a BINARY",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     const src = tree("src/unitOperations/distillation/DistillationColumn.cpp").split("\n");
@@ -205,7 +205,7 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       expect(src[line - 1], c).toContain(want);
     }
     //  The refusal at 2398 is the MESH one, two lines on.
-    expect(src.slice(2397, 2400).join("\n")).toContain("implemented for `method simultaneous`");
+    expect(src.slice(2400, 2403).join("\n")).toContain("implemented for `method simultaneous`");
   });
   it("names the four witnesses it runs, and each exists in the tree", () => {
     for (const w of [MURPHREE_WITNESS, ...EFFICIENCY_WITNESSES.map((x) => x.witness)])

@@ -53,6 +53,16 @@ struct PropertyDomainError : public std::runtime_error
 
     Kind        kind;
     std::string remedy;   // what would let the route answer; "" for an invalid state
+    //  THE ONE REFUSAL A MIXTURE MAY DO WITHOUT (C398 review row TG-18): a
+    //  component asked for a pure-LIQUID volume at or above its critical
+    //  temperature -- a gas dissolved in the liquid.  pricedDensity::select
+    //  drops it and the caller publishes the dropped fraction; every other
+    //  hard refusal of a pure liquid propagates.  Set only where that is the
+    //  reason (ThermoPackage's Rackett branch, the pure-fluid leaf's Tc test).
+    bool aboveCriticalTemperature = false;
+
+    PropertyDomainError& markedAboveCriticalTemperature()
+    { aboveCriticalTemperature = true; return *this; }
 
     static const char* kindName(Kind k)
     {
@@ -84,5 +94,27 @@ struct PropertyDomainTrial : public InfeasibleTrial
     PropertyDomainError::Kind kind;
     std::string               remedy;
 };
+
+//  A HARD REFUSAL IS NEVER TURNED INTO A NUMBER (DEV.md 4c C398 slice (c),
+//  review row TG-01).  Called FIRST inside a `catch (...)` /
+//  `catch (const std::exception&)` handler on a property path: when the
+//  exception being handled is a PropertyDomainError of kind outsideHardDomain
+//  -- a table asked outside its points, a density route outside its hard
+//  domain -- it is rethrown, unchanged, so no fallback, default, skipped term
+//  or "trial refused" branch can publish a number in its place; any other
+//  exception returns here and the handler goes on as before.  missingDatum and
+//  invalidState keep the behaviour the struct above guarantees (every catch
+//  catches them as it caught the runtime_error they replaced): those
+//  fallbacks are announced debts the property layout turns into refusals in
+//  its own, later slices.  Only call it while an exception is being handled.
+inline void rethrowHardRefusal()
+{
+    try { throw; }
+    catch (const PropertyDomainError& e)
+    {
+        if (e.kind == PropertyDomainError::Kind::outsideHardDomain) throw;
+    }
+    catch (...) {}
+}
 
 } // namespace Choupo

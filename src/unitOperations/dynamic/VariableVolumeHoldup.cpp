@@ -33,6 +33,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "VariableVolumeHoldup.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/LiquidPropertyDoor.H"
 
 #include <algorithm>
@@ -94,6 +95,7 @@ LiquidState liquidState(const ThermoPackage& thermo, const sVector& n,
     }
     catch (const std::exception& e)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         throw std::runtime_error(who + ": the case's package cannot price a"
             " liquid density at T = " + std::to_string(T) + " K (" + e.what()
             + ") -- a vessel with a level needs one; no density is assumed."

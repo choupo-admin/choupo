@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "HeatExchanger.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/LiquidPropertyDoor.H"
 
 #include "unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
@@ -102,7 +103,7 @@ int HeatExchanger::solve(const DictPtr& dict,
                     "heatExchanger inlet '" + s.name + "'"))
                 s.Hdeclared = *h;
         }
-        catch (const std::exception&) { /* no datum: `Hinlet` says so */ }
+        catch (const std::exception&) { rethrowHardRefusal(); /* no datum: `Hinlet` says so */ }
         return s;
     };
     Stream s0 = readStream(ins[0]);
@@ -873,6 +874,7 @@ int HeatExchanger::solve(const DictPtr& dict,
       }
       catch (const std::exception&)
       {
+          rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         if (vfOut) *vfOut = s.vf;
         return std::numeric_limits<scalar>::quiet_NaN();
       }
@@ -1181,6 +1183,7 @@ int HeatExchanger::solve(const DictPtr& dict,
     }
     catch (const std::exception&)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         //  A package that cannot price these states declines, exactly as the
         //  report's own checks do.  Never a crash, never a silent number.
     }

@@ -284,6 +284,30 @@ public:
         return firstInProcess && isNew;
     }
 
+    //  ONE ENTRY PER (category, locus) WHOSE MESSAGE IS RESTATED (C398 slice
+    //  (c)): a quantity that grows while the run proceeds -- the largest
+    //  excursion of a table into its declared extension -- is recorded as one
+    //  entry whose sentence is replaced by the latest statement, so the
+    //  end-of-run block prints the final value once, not every intermediate
+    //  one.  Status moves toward the answer exactly as in `addLocked`.
+    //  Returns true when the entry was new.
+    bool restate(std::string category, std::string severity,
+                 std::string locus, std::string message)
+    {
+        std::lock_guard<std::mutex> lk(mutex_);
+        const bool trial = anyTrialLocked();
+        for (auto& e : entries_)
+            if (e.category == category && e.locus == locus)
+            {
+                e.message  = std::move(message);
+                e.severity = std::move(severity);
+                if (!trial && e.status == "trial") e.status = "accepted";
+                return false;
+            }
+        return addLocked(std::move(category), std::move(severity),
+                         std::move(locus), std::move(message));
+    }
+
     //  Has THIS pass already recorded `key`?  For a site in a hot loop that
     //  wants to stop before building its sentence (a Henry constant is asked
     //  for on every K evaluation).  Purely an early exit: `addAnnouncedOnce`

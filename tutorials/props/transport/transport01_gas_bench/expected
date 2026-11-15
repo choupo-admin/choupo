@@ -11,6 +11,7 @@ diag    bench                  dev_Vogel        0                1e-4
 diag    bench                  dev_chemsepEq101 0                1e-4
 diag    bench                  dev_chemsepEq16  0                1e-4
 diag    bench                  dev_wilkePhi     0                1e-4
+diag    bench                  dev_table        9.02243745198e-16 abs:1e-12
 diag    bench                  k_Eucken_CO2     0.021231358218   1e-4
 diag    bench                  k_Eucken_N2      0.0297082727854  1e-4
 diag    bench                  k_Eucken_O2      0.0306615645526  1e-4
@@ -21,7 +22,7 @@ diag    bench                  mu_Chung_N2      2.10133612799e-05 1e-4
 diag    bench                  mu_Chung_O2      2.42979572932e-05 1e-4
 diag    bench                  mu_Chung_water   1.00986951192e-05 1e-4
 diag    bench                  mu_mix_Wilke     1.82483784665e-05 1e-4
-diag    bench                  n_arithmetic_anchors 8                1e-4
+diag    bench                  n_arithmetic_anchors 9                1e-4
 diag    bench                  n_models_k       2                1e-4
 diag    bench                  n_models_mu      2                1e-4
 diag    bench                  n_theory_anchors 3                1e-4

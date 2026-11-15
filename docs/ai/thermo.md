@@ -584,6 +584,64 @@ gas viscosity, gas conductivity or surface tension omits that key and says
 so in one line.  Witnesses: `props/transport/purelaws01_methanol_isopropanol_water`,
 `props/thermo/purelaws02_water_two_vapour_pressure_laws`.
 
+### A table is a law type: measured points (C398 slice (c))
+
+A pure component's liquid viscosity, liquid heat capacity or solid heat
+capacity may be given as POINTS (law type `table`; an ideal-gas Cp table is
+refused: addendum A2(v)).  The case's own data go in
+`constant/experiments/<name>.dat` and a pin names the table instead of a law:
+
+```
+// constant/experiments/crcWaterMu.dat
+provenance  { origin literature; citation "<primary source>"; via "<route, page>"; }
+system      ( water );                       // exactly the pinned component
+property    liquidViscosity;                 // = the property the pin is written for
+columns     ( { name T; unit degC; } { name mu; unit uPa.s; } );
+data        ( 0 1793  10 1307  20 1002  30 797.7 );   // flat, row after row
+```
+```
+transport { liquid { viscosity {
+    pin ( { component water; table crcWaterMu; interpolation logReciprocal;
+            extend { upTo 110 degC; reason "..."; }       // optional, case only
+            reason "..."; } );
+} } }
+caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interpolation monotoneCubic; reason "..."; } ); } }
+```
+
+- `interpolation` is always declared: `linear` (y in T), `logLinear` (ln y
+  in T), `logReciprocal` (ln y in 1/T, Arrhenius: the choice for a
+  viscosity), `monotoneCubic` (Fritsch-Carlson).  Minimum points 2, 2, 2, 3;
+  T strictly increasing; every value > 0 under every interpolation (a
+  viscosity and a heat capacity are positive).
+- WHICH FILE: the `experiments/` of the `constant/` whose dictionary declares
+  the pin -- a sector's pin reads `sectors/<S>/constant/experiments/`, never
+  the root's (no walk up the folders); the view prints the path.  A pin in a
+  unit's inline `thermo {}` reads that UNIT's `constant/experiments/`.  Never
+  write `experimentsDir` (refused by name): the folder is decided by where the
+  pin is declared.  A heat-capacity
+  table takes `linear` or `monotoneCubic` only (H and S are its closed-form
+  integrals) and its points must contain 298.15 K.
+- Every column has a unit (`degC` allowed for T, +273.15 K at read; `mPa.s`,
+  `uPa.s`, `cP`, `Pa.s`; `J/mol/K`, or `J/g/K` converted with the record's MW).
+- THE ENDS ARE HARD: outside its points the table REFUSES, every time (an
+  answer or a solver's trial state): "the computation asked for T = ...".
+  The only way past an end is the pin's `extend { upTo; downTo; reason; }`:
+  the end segment's chord, the first excursion announced, the largest (over
+  every package of the table) in the end-of-run advisory.  A refusal is never
+  turned into a number by a fallback: the run ends with it.  `clamp` is refused.  A consumer evaluating
+  inside a search (a packed or rate-based column segment; a flash's search
+  for a Cp) may be refused at a trial state: add points, or `extend`.
+- In a RECORD a table is a named law, inline, its source in the record's
+  provenance block: `crcMu { model table; interpolation logReciprocal;
+  columns (...); data (...); }` -- no window keys, no `extend`.
+- A pin names `law` OR `table`; `interpolation` / `extend` on a `law` pin are
+  refused.  The resolved view prints points, span, interpolation, columns as
+  declared (a per-mass Cp with the M it was converted with), source and
+  home.  Witnesses: `props/transport/table01_water_viscosity_points`,
+  `props/heat/table02_water_liquid_cp_points`, `props/heat/table03_trial_state_refused`
+  (EXPECTED-FAIL lesson), `steady/flowsheets/table05_sector_table_pins` (two
+  sectors, one pin text, one file each).  Gate `check_table_laws`.  Theory Guide `sec:record-law-table`.
+
 ### Liquid mixing rules (`mixingRule`, C331)
 
 The three LIQUID properties also select how the pure values are combined,

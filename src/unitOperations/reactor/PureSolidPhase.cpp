@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PureSolidPhase.H"
+#include "thermo/PropertyDomainError.H"
 
 #include "core/Constants.H"
 #include "thermo/Component.H"
@@ -168,6 +169,7 @@ FluidActivity activityFromFluid(const ThermoPackage&            thermo,
         try { g = thermo.comp(i).g_pure_ig(T) / (constant::R * T); }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             out.reason = "'" + thermo.comp(i).name() + "' cannot be priced on"
                          " the ideal-gas rung (" + e.what() + ")";
             return out;

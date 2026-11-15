@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ShellTubeHX.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "MaterialLimits.H"
 
@@ -252,6 +253,7 @@ SideFluid price(const ThermoPackage& tp, const FluidState& s, bool heating,
     }
     catch (const std::exception& e)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         const std::string m = e.what();
         if (m.rfind(who, 0) == 0) throw;
         throw std::runtime_error(who + ": pricing the " + s.label + " failed: "
@@ -1171,6 +1173,7 @@ std::vector<EquipmentSizing> run(const std::string& unitName, scalar Q_kW,
             try { upkg = result.thermoForSystem(ut.thermophysicalSystem); }
             catch (const std::exception& e)
             {
+                rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
                 throw std::runtime_error(who + ": the thermophysical system"
                     " utility '" + uName + "' declares could not be built: "
                     + e.what());

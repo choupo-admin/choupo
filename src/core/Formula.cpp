@@ -29,6 +29,7 @@ License
 #include "Formula.H"
 
 #include "core/DictAudit.H"
+#include "core/Table1D.H"
 
 #include <algorithm>
 #include <cctype>
@@ -497,9 +498,7 @@ scalar Formula::eval(int i, const std::vector<scalar>& s, Trace* tr) const
             }
             for (std::size_t k = 0; k < m; ++k)
                 if (x == t.x[k]) return t.y[k];        // ON a point: its own value, exactly
-            std::size_t k = 0;
-            while (k + 2 < m && x > t.x[k + 1]) ++k;
-            const scalar w = (x - t.x[k]) / (t.x[k + 1] - t.x[k]);
+            const std::size_t k = table1d::segment(t.x, x);   // the one bracket (core/Table1D.H)
             if (tr)
             {
                 std::ostringstream os;
@@ -512,7 +511,7 @@ scalar Formula::eval(int i, const std::vector<scalar>& s, Trace* tr) const
                     == tr->interpolated.end())
                     tr->interpolated.push_back(msg);
             }
-            return t.y[k] + w * (t.y[k + 1] - t.y[k]);
+            return table1d::linear(t.x, t.y, k, x);
         }
     }
     return 0.0;
