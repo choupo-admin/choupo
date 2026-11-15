@@ -138,8 +138,10 @@ SOLVER = ROOT / "choupoSolve"
 CASE = ROOT / "tutorials" / "steady" / "flash" / "flash16_calcite_precipitation"
 
 
-def _run_with(insert: str):
-    """Copy flash16, splice `insert` in front of the unit's `operation`, run."""
+def _run_with(insert: str, variants: str = ""):
+    """Copy flash16, splice `insert` in front of the unit's `operation`, run.
+    `variants` is appended to the copy's constant/thermoPhysPropDict (C402: a
+    unit's own world is a named variant there, selected by `thermo <name>;`)."""
     tmp = tempfile.mkdtemp(prefix="unitchem.")
     try:
         dst = Path(tmp) / "case"
@@ -150,6 +152,9 @@ def _run_with(insert: str):
         body = fd.read_text()
         i = body.index("operation")
         fd.write_text(body[:i] + insert + "\n        " + body[i:])
+        if variants:
+            tp = dst / "constant" / "thermoPhysPropDict"
+            tp.write_text(tp.read_text() + "\n" + variants + "\n")
         r = subprocess.run([str(SOLVER), str(dst)], capture_output=True, text=True)
         return r.returncode, (r.stdout or "") + (r.stderr or "")
     finally:
@@ -175,20 +180,33 @@ else:
         sys.exit(1)
     print("  ok   engine refuses `activityModel` written at unit level")
 
-    #  ...and the LEGAL neighbour still runs, or the refusal ate the feature.
-    rc, out = _run_with("thermo { equilibrium { formulation gammaPhi; "
+    #  ...and the LEGAL neighbour still runs, or the refusal ate the feature:
+    #  a unit's own world is a NAMED variant of the case's dictionary (C402).
+    rc, out = _run_with("thermo gp;",
+                        "variants { gp { equilibrium { formulation gammaPhi; "
                         "liquid { activityModel { model ideal; } } "
-                        "vapour { fugacityModel idealGas; } } }")
+                        "vapour { fugacityModel idealGas; } } } }")
     if rc != 0:
-        print("FAIL  a per-unit `thermo { ... }` override no longer runs "
+        print("FAIL  a per-unit named variant no longer runs "
               "(exit %d) -- the refusal above is too wide:\n%s"
               % (rc, out[-400:]))
         sys.exit(1)
     if "LOCAL override" not in out:
-        print("FAIL  the per-unit override ran but was not ANNOUNCED -- the "
+        print("FAIL  the per-unit variant ran but was not ANNOUNCED -- the "
               "cascade must be loud (CLAUDE.md, sectored units)")
         sys.exit(1)
-    print("  ok   the legal `thermo { ... }` override still runs, and says so")
+    print("  ok   the legal per-unit named variant still runs, and says so")
+
+    #  ...and the OLD form, an inline `thermo { ... }` in the unit, is refused
+    #  BY NAME with the lines to write (C402), not read.
+    rc, out = _run_with("thermo { equilibrium { formulation gammaPhi; "
+                        "liquid { activityModel { model ideal; } } "
+                        "vapour { fugacityModel idealGas; } } }")
+    if rc == 0 or "no longer read (DEV.md 4c C402)" not in out or "variants {" not in out:
+        print("FAIL  an inline per-unit `thermo { ... }` was not refused by name "
+              "with the lines to write (exit %d):\n%s" % (rc, out[-400:]))
+        sys.exit(1)
+    print("  ok   the old inline `thermo { ... }` form is refused by name")
 
 print(f"unit-chemistry gate: no unit op selects thermodynamics; "
       f"{nDeclared} case(s) declare an aqueous activity model, all implemented"

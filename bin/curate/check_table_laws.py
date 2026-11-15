@@ -561,10 +561,17 @@ def arm_j(tmp):
     unit = d / "sectors/A/unitOperations/P1"
     (unit / "constant/experiments").mkdir(parents=True)
     shutil.copy(d / "sectors/B/constant/experiments/crcWaterMu.dat", unit / "constant/experiments/crcWaterMu.dat")
+    #  C402: a unit's own world is a NAMED variant, declared in the unit's own
+    #  constant/thermoPhysPropDict (which inherits its sector's) and selected
+    #  by `thermo unitTable;` -- the unit's folder reads ITS experiments/.
+    (unit / "constant/thermoPhysPropDict").write_text(
+        "recordType    thermophysicalPropertySystem;\nschemaVersion 2;\n"
+        "inherits \"../../../constant\";\n"
+        "variants { unitTable { transport { liquid { viscosity { pin ( { component water;"
+        "  table crcWaterMu;  interpolation logReciprocal;  reason \"check_table_laws (j)\"; } );"
+        " } } } } }\n")
     fd = unit / "system/flowsheetDict"
-    fd.write_text(fd.read_text() + "\nthermo { transport { liquid { viscosity { pin ( { component water;"
-                  "  table crcWaterMu;  interpolation logReciprocal;  reason \"check_table_laws (j)\"; } );"
-                  " } } } }\n")
+    fd.write_text(fd.read_text() + "\nthermo unitTable;\n")
     rc, out = run(SOLVE, d)
     if rc != 0:
         return fail("j", f"the unit-pin copy of table05 did not run (exit {rc}): {out[-400:]}")
@@ -582,12 +589,12 @@ def arm_j(tmp):
         hit = [k for k, v in others.items() if got is not None and rel(got, v) < 1e-9]
         return fail("j", f"the sector-A pipe's inline pin took mu = {got!r}; the unit's own file gives "
                          f"{want!r}{' -- that is ' + hit[0] + ' file' if hit else ''}")
-    shutil.rmtree(unit / "constant")
+    shutil.rmtree(unit / "constant/experiments")
     rc2, out2 = run(SOLVE, d)
     if rc2 == 0 or "no file sectors/A/unitOperations/P1/constant/experiments/crcWaterMu.dat" not in out2:
         return fail("j", f"without the unit's file the inline pin was not refused naming the unit's path "
-                         f"(exit {rc2}): a walk up found another file")
-    said.append("(j) a unit's inline pin reads the unit's own constant/experiments/, and without it refuses")
+                         f"(exit {rc2}): a walk up found another file, or the refusal is for another reason")
+    said.append("(j) a unit's own variant's pin reads the unit's own constant/experiments/, and without it refuses")
 
 
 def arm_k(tmp):
