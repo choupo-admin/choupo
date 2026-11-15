@@ -582,13 +582,13 @@ operations
     { name txy_ideal;  type propertyScan1D;
       vary { variable x[methanol]; from 0; to 1; n 51; }
       state { P 1.01325 bar; composition { methanol 0.5; aceticAcid 0.5; } }
-      thermo { activityModel { model ideal; } }
+      thermo { equilibrium { liquid { activityModel { model ideal; } } } }
       properties ( T_bubble  y_eq_methanol );  output { file txy_ideal.csv; } }
 
     { name txy_nrtl;   type propertyScan1D;
       vary { variable x[methanol]; from 0; to 1; n 51; }
       state { P 1.01325 bar; composition { methanol 0.5; aceticAcid 0.5; } }
-      thermo { activityModel { model NRTL; pairs ( { i methanol; j aceticAcid; a_ij ..; b_ij ..; a_ji ..; b_ji ..; alpha 0.3; } ); } }
+      thermo { equilibrium { liquid { activityModel { model NRTL; binaryParameters { methanol-aceticAcid { i methanol; j aceticAcid; a_ij ..; b_ij ..; a_ji ..; b_ji ..; alpha 0.3; } } } } } }
       properties ( T_bubble  y_eq_methanol );  output { file txy_nrtl.csv; } }
 );
 ```

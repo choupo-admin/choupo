@@ -294,7 +294,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     // the keyword is the author's SEMANTIC label (a plant has sectors; a
     // flowsheet has units), and a member's real kind is read from its own dict
     // (has `sectors`/`units` -> composite; has `type` -> leaf unit).
-    std::vector<std::string> members;
+    std::vector<std::string> members; propertyVariants::refuseNodeThermo(dict, nsPrefix.empty() ? std::string("the plant's flowsheetDict") : "sector '" + nsPrefix.substr(0, nsPrefix.size() - 1) + "'");   // C402
     if (dict->found("sectors"))
         for (const auto& s : dict->lookupWordList("sectors")) members.push_back(s);
     if (dict->found("units"))

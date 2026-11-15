@@ -498,8 +498,12 @@ CubicEoS::readKij(const std::string& model, const DictPtr& eosDict,
                        "kij(" + i_name + "," + j_name + ")",
                        model + " kij(" + i_name + "," + j_name + ") = "
                        + std::to_string(k)))
+            {
+                std::ostringstream kijText;     // default precision, whatever std::cout holds now
+                kijText << k;
                 std::cout << "[eos] kij(" << i_name << "," << j_name
-                          << ") = " << k << "\n";
+                          << ") = " << kijText.str() << "\n";
+            }
         }
 
         //  A PARTIALLY declared block: the absent-block line above cannot

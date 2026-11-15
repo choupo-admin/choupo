@@ -131,7 +131,7 @@ The central claim — *reference lives in the method, not the substance* — is 
 under load where a stream crosses a **model boundary inside a recycle**.
 `tutorials/steady/crystallisation/crystalliser09_KHT_KCl_series` does exactly that: an
 antisolvent crystalliser on the **eNRTL** global package feeds a solvent-recovery
-distillation carrying its **own NRTL** model (per-unit `thermo{}` override), and
+distillation carrying its **own NRTL** model (a per-unit named variant, `thermo <name>;`), and
 the recovered ethanol recycles back through a Newton tear. The run prints the
 **model-boundary audit** ("H conserved; T is the model-dependent readout") and the
 per-unit cascade ("inherited (global package)" vs "LOCAL override

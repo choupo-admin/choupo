@@ -111,24 +111,115 @@ for fs in sorted((ROOT / "tutorials").rglob("system/flowsheetDict")):
 # ---- 2b. THE OLD FORM COUNT (C402): no unit carries an inline `thermo { }` ---
 #  A unit's own property world is a NAMED variant (`thermo <name>;`, the body
 #  under `variants {}` in the dictionary the unit reads).  The inline fragment
-#  is refused by the engine; this arm counts it across the tree -- cases,
-#  benchmarks, curation batches, docs examples, gui fixtures -- and the count
-#  must read zero.  (A property OPERATION's `thermo { }` in a propsDict is the
-#  props bench's own grammar and is not a unit's.)
+#  is refused by the engine; this arm counts it across the tree and the count
+#  must read zero:
+#    (a) EVERY flowsheetDict of every case, wherever it sits -- a sector's or a
+#        leaf's dictionary with no system/ folder included (sugarPlantEconomics-
+#        Sweep's FERMENTATION/Flash/flowsheetDict is one);
+#    (b) the TS-string fixtures of gui/tests and gui/src, and the code examples of
+#        docs/ and docs/ai/ (markdown fences, LaTeX verbatim/lstlisting): a
+#        window around a `thermo {` that also names a UNIT type the engine
+#        registers is a unit's fragment (a property operation's `thermo { }` in a
+#        propsDict example names a props type, and is the props bench's grammar);
+#    (c) the ENGINE: the sites that read a unit's `thermo` sub-dictionary are
+#        counted per file and must equal the pinned list -- the engine's own
+#        copy of a selected variant (stamped under the unwritable key
+#        `@selectedVariant`) and a props operation's fragment; the props main
+#        reads none, and the refusals are all in place.
+UNIT_TYPES = set(re.findall(r'reg\("(\w+)"', (ROOT / "src/unitOperations/UnitOperation.cpp").read_text()))
+FRAG = re.compile(r'\bthermo\s*[{(]')
+
+
+def _strip(txt):
+    txt = re.sub(r'/\*.*?\*/', '', txt, flags=re.S)
+    return re.sub(r'//.*$', '', txt, flags=re.M)
+
+
+def _unit_fragments(text):
+    """Fragments of `text` whose surrounding window names a registered UNIT type."""
+    n = 0
+    for m in re.finditer(r'\bthermo\s*\{', text):
+        lo = max(0, m.start() - 700); hi = min(len(text), m.end() + 700)
+        #  a blank line, a markdown fence or a LaTeX environment edge ends the example
+        brk = re.compile(r'\n[ \t]*\n|```|\\(?:begin|end)\{(?:verbatim|lstlisting)')
+        for bm in brk.finditer(text, lo, m.start()):
+            lo = bm.end()
+        am = brk.search(text, m.end(), hi)
+        if am:
+            hi = am.start()
+        win = text[lo:hi]
+        #  the unit's own block: from the nearest `name` before to the nearest `name` after
+        before = list(re.finditer(r'\bname\s+[\w.]+\s*;', text[lo:m.start()]))
+        after = re.search(r'\bname\s+[\w.]+\s*;', text[m.end():hi])
+        s = before[-1].start() if before else 0
+        e = (m.end() - lo) + (after.start() if after else len(text[m.end():hi]))
+        span = win[s:e]
+        for tm in re.finditer(r'\btype\s+(\w+)\s*;', span):
+            if tm.group(1) in UNIT_TYPES:
+                n += 1
+                break
+    return n
+
+
 nFragments = 0
 for root in ("tutorials", "benchmarks", "data", "docs", "gui/tests", "gui/public"):
-    for fs in sorted((ROOT / root).rglob("flowsheetDict")) if (ROOT / root).is_dir() else []:
-        if fs.parent.name != "system":
-            continue
-        txt = re.sub(r'/\*.*?\*/', '', fs.read_text(errors="replace"), flags=re.S)
-        txt = re.sub(r'//.*$', '', txt, flags=re.M)
-        k = len(re.findall(r'\bthermo\s*\{', txt))
+    base = ROOT / root
+    for fs in sorted(base.rglob("flowsheetDict")) if base.is_dir() else []:
+        k = len(FRAG.findall(_strip(fs.read_text(errors="replace"))))
         if k:
             nFragments += k
-            bad.append(f"{fs.parent.parent.relative_to(ROOT)}: {k} inline unit `thermo {{ }}` "
+            bad.append(f"{fs.parent.relative_to(ROOT)}: {k} inline unit `thermo {{ }}` "
                        f"fragment(s) in flowsheetDict -- a unit's own world is a named variant "
                        f"(`variants {{ <name> {{ ... }} }}` in the dictionary it reads, "
                        f"`thermo <name>;` in the unit; DEV.md 4c C402)")
+for root, pats in (("gui/tests", ("*.ts", "*.tsx")), ("gui/src", ("*.ts", "*.tsx")),
+                   ("docs", ("*.md", "*.tex")), ("docs/ai", ("*.md",))):
+    base = ROOT / root
+    if not base.is_dir():
+        continue
+    seen = set()
+    for pat in pats:
+        for f in sorted(base.rglob(pat)):
+            if f in seen or "node_modules" in f.parts or "/reviews/" in f.as_posix() \
+                    or "/design/" in f.as_posix() or f.name.startswith("tutorialsGuide"):
+                continue
+            seen.add(f)
+            txt = f.read_text(errors="replace")
+            k = _unit_fragments(txt)
+            if k:
+                nFragments += k
+                bad.append(f"{f.relative_to(ROOT)}: {k} inline unit `thermo {{ }}` fragment(s) in a "
+                           f"code example or fixture -- teach `thermo <name>;` and a `variants {{}}` "
+                           f"entry (DEV.md 4c C402)")
+#  (c) the engine's readers of a unit's `thermo` sub-dictionary
+PINNED_READERS = {            # file -> number of `subDict("thermo")` sites it may hold
+    "src/unitOperations/flowsheet/Flowsheet.cpp": None,   # reads ONLY the engine's stamped copy (counted below)
+    "src/thermo/PropertyVariants.cpp": 1,                 # fragmentOf: a props operation's own declaration
+    "src/reporting/ModelBoundaryLedger.cpp": 1,           # the engine's stamped copy only (`@selectedVariant`)
+}
+nReaders = 0
+for f in sorted((ROOT / "src").rglob("*.[cHh]*")):
+    s = f.read_text(errors="replace")
+    k = len(re.findall(r'subDict\("thermo"\)', s))
+    rel = f.relative_to(ROOT).as_posix()
+    if k and rel not in PINNED_READERS and rel != "src/propertyOps/PropertyOperation.cpp":
+        nReaders += k
+        bad.append(f"{rel}: {k} read(s) of a `thermo` sub-dictionary outside the pinned homes -- "
+                   f"an authored unit fragment must have NO reader (C402)")
+for _rel, _n in PINNED_READERS.items():
+    if _n is not None and len(re.findall(r'subDict\("thermo"\)', (ROOT / _rel).read_text())) != _n:
+        nReaders += 1
+        bad.append(f"{_rel}: the number of `subDict(\"thermo\")` reads moved from the pinned {_n}")
+_fl = (ROOT / "src/unitOperations/flowsheet/Flowsheet.cpp").read_text()
+if len(re.findall(r'refuseInlineFragment\(', _fl)) < 3 or "refuseNodeThermo(" not in _fl:
+    nReaders += 1
+    bad.append("Flowsheet.cpp no longer refuses an authored unit `thermo { }` at its three entry points "
+               "and a sector's own `thermo` key (C402)")
+if 'inline const char* selectedKey() { return "@selectedVariant"; }' not in \
+        (ROOT / "src/thermo/PropertyVariants.H").read_text():
+    nReaders += 1
+    bad.append("the engine's variant stamp is no longer the unwritable key `@selectedVariant` -- an author "
+               "could write it and have a fragment read (C402 FR-01)")
 
 # ---- 3. a declared aqueous model must be implemented -----------------------
 nDeclared = 0
@@ -230,8 +321,51 @@ else:
         sys.exit(1)
     print("  ok   the old inline `thermo { ... }` form is refused by name")
 
+    #  FR-01: a hand-written copy of the engine's stamp does not turn the block
+    #  into a variant -- ANY authored block is refused, whatever it contains.
+    for stamp in ("selectedVariant fake;", "@selectedVariant fake;"):
+        rc, out = _run_with("thermo { " + stamp + " equilibrium { formulation gammaPhi; "
+                            "liquid { activityModel { model ideal; } } "
+                            "vapour { fugacityModel idealGas; } } }")
+        #  (`@selectedVariant` cannot even be tokenized: the engine's own key is unwritable)
+        if rc == 0 or ("no longer read (DEV.md 4c C402)" not in out
+                       and "unexpected character '@'" not in out):
+            print("FAIL  a hand-written stamp (%s) made an inline fragment READ (exit %d):\n%s"
+                  % (stamp, rc, out[-300:]))
+            sys.exit(1)
+    print("  ok   a hand-written variant stamp does not make an inline fragment read")
+
+    #  FR-09: a list is not a selector.
+    rc, out = _run_with("thermo ( gp );")
+    if rc == 0 or "is not a selector" not in out or "thermo <name>;" not in out:
+        print("FAIL  `thermo ( ... );` was not refused by name with the line to write (exit %d):\n%s"
+              % (rc, out[-300:]))
+        sys.exit(1)
+    print("  ok   `thermo ( ... );` is refused by name")
+
+    #  FR-06: a `thermo` key at SECTOR level is refused by name (it was ignored).
+    SECT = ROOT / "tutorials" / "steady" / "flowsheets" / "esterification2sector"
+    if SECT.is_dir():
+        tmp2 = tempfile.mkdtemp(prefix="unitchem2.")
+        try:
+            dst = Path(tmp2) / "case"
+            shutil.copytree(SECT, dst)
+            for junk in ("converged", "reports"):
+                shutil.rmtree(dst / junk, ignore_errors=True)
+            sfd = dst / "sectors" / "SEPARATION" / "system" / "flowsheetDict"
+            sfd.write_text(sfd.read_text() + "\nthermo { equilibrium { vapour { fugacityModel SRK; } } }\n")
+            r = subprocess.run([str(SOLVER), str(dst)], capture_output=True, text=True)
+            o2 = (r.stdout or "") + (r.stderr or "")
+            if r.returncode == 0 or "in a sector's (or a plant's) flowsheetDict is not read" not in o2:
+                print("FAIL  a sector-level `thermo { }` was not refused by name (exit %d):\n%s"
+                      % (r.returncode, o2[-300:]))
+                sys.exit(1)
+        finally:
+            shutil.rmtree(tmp2, ignore_errors=True)
+        print("  ok   a sector-level `thermo` key is refused by name")
+
 print(f"unit-chemistry gate: no unit op selects thermodynamics; "
-      f"{nFragments} inline unit thermo fragment(s) in the tree; "
+      f"{nFragments} inline unit thermo fragment(s) in the tree and {nReaders} engine reader(s) of one; "
       f"{nDeclared} case(s) declare an aqueous activity model, all implemented"
       + (f"; {len(pending)} still construct a solver directly" if pending else ""))
 for p in pending:

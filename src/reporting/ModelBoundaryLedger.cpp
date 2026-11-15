@@ -120,10 +120,15 @@ void collectDeclarations(const DictPtr&                  node,
             out[name] = stub;
             return;
         }
+        //  A unit of the case root has ALREADY been resolved in place by the
+        //  flowsheet (`thermo <name>;` replaced by the engine's own copy of the
+        //  variant body, stamped under the unwritable key): that copy is the
+        //  declaration.  An authored `thermo { }` block is refused by the flowsheet
+        //  before the auditor runs (C402) and carries no stamp, so it is never read.
         DictPtr th;
         try { th = u->subDict("thermo"); }
         catch (const std::exception&) { th = nullptr; }
-        if (fragmentDeclaresWorld(th)) out[name] = th;
+        if (th && th->found(propertyVariants::selectedKey()) && fragmentDeclaresWorld(th)) out[name] = th;
     };
     //  Inline members: a dict-list under `units`.
     if (node->hasDictList("units"))

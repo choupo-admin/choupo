@@ -91,7 +91,11 @@ namespace propertyVariants {
 //  The engine-injected key that rides on a unit's rewritten `thermo {}`
 //  when the unit selected a NAMED variant: the variant's name.  Plumbing,
 //  never authored (an authored `variant` key in a fragment is refused).
-inline const char* selectedKey() { return "selectedVariant"; }
+//  The key begins with `@`, which the dictionary tokenizer never reads into a
+//  keyword (as the experiments folder's `@experimentsDir`, review row TG-17):
+//  an author cannot write it, so a fragment carrying it IS the engine's own copy
+//  of a variant body, and any authored `thermo { }` of a unit is refused (FR-01).
+inline const char* selectedKey() { return "@selectedVariant"; }
 
 //  True when `holder` (a unit or an operation dict) selects a variant BY
 //  NAME: `thermo <word>;`.
@@ -126,6 +130,11 @@ DictPtr body(const DictPtr& system, const std::string& name,
 //  OPERATION's inline fragment is the props bench's own grammar and is read
 //  by fragmentOf(), below.)
 void refuseInlineFragment(const DictPtr& unit, const std::string& who);
+
+//  A sector's (or the case root's) own `thermo` key in its flowsheetDict is
+//  refused by name: a sector's property world is its own
+//  constant/thermoPhysPropDict, and the key was never read there (FR-06).
+void refuseNodeThermo(const DictPtr& node, const std::string& who);
 
 //  The fragment `holder` selects against `system`: the named variant's
 //  body, the inline `thermo { ... }` block, or null when the holder
