@@ -3548,6 +3548,20 @@ accepts today, and that is a policy call.
 > not seen in a browser; check_gate_selftest needs rsync, absent in the cloud
 > container.
 
+> **ERRATA OF GERALDES & ALVES 2008 FOUND (2026-11-15, at the author's
+> request).**  Vitor knew two or three printed equations of his NanoFiltran
+> paper were wrong and suspected the membrane-surface equilibrium.  A
+> reviewer read every equation against the NanoFiltran Fortran, Choupo's
+> DSPM-DE and the physics: Eq. 33 (the linearised PERMEATE-side
+> equilibrium, his hint confirmed: Phi_B and gamma_p missing, the right-hand
+> side's sign wrong; the code was right), Eq. 16 (the lambda^6 term's sign
+> in the Dechadilok-Deen K_d; the printed form gives a negative Mg2+
+> diffusivity), Eqs. 12-13 (Davies with the log10 constant in ln gamma,
+> already recorded; the mol/L factor also missing), and four small residual
+> and table typos.  Choupo follows the correct form everywhere and transcribes
+> none of the printed errors.  Report:
+> docs/reviews/2026-11-15-geraldes2008-errata/REPORT.md.
+
 > **C407 (Vitor, 2026-11-15: "Isso e tao facil de fazer!  Achas que vale a
 > pena adiar?!", on the EoS/G^E mixing rules and volume translation).**  A
 > COMMISSION, not deferred.  (1) PENELOUX VOLUME TRANSLATION: a small slice
