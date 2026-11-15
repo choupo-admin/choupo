@@ -34,16 +34,19 @@ src/thermo/transport/LiquidTransportDeclarations.{H,cpp}).
       measured viscosity box that misses the bed's temperatures is refused
       at its first use, never handed to another source.
 
-  (5) C329 SLICE B2a, THE MULTICOMPONENT LIQUID DIFFUSIVITY
+  (5) C329 SLICE B2a (and its round-2 rows B2-01..07), THE MULTICOMPONENT LIQUID DIFFUSIVITY
       (tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary,
       Theory Guide sec:liquid-diffusivity-multicomponent): the pair values are
       Kooijman & Taylor 1991 Eq. 23 by hand and the effective values Wilke's
       reduction (Taylor & Krishna 1993 Eq. 6.1.14) by hand, both to 1e-11; the
       average discrepancy of the Fick matrix against the paper's Table I is
-      within 0.005 of its Table IV "eq 23" row (overall, diagonal and
-      off-diagonal); Gamma at 0.70/0.15/0.15 within 0.005 of Example 4.2.6 (p. 92);
-      the books' limiting value (D0_ik D0_ki)^(1/2) scores 0.1002 on the same table
-      against the paper's 0.078, so the misprint note is a measurement; the binary
+      within 1e-4 of its Table IV "eq 23" row (overall, diagonal and
+      off-diagonal) with the NRTL tau_21 = 0.76432 of Taylor & Krishna's Example 3.3.1
+      (p. 61), 0.0782 with the paper's printed 0.74632; Gamma at 0.70/0.15/0.15 is an
+      independent NRTL's to 1e-5 and the book's Example 4.2.6 (p. 92) to every printed digit;
+      the books' limiting value (D0_ik D0_ki)^(1/2), each pair evaluated for i<j and
+      copied (the form is asymmetric), scores 0.0974 (0.1002 with the paper's printed tau_21)
+      on the same table against the paper's 0.0763, so the misprint note is a measurement; the binary
       edge equals the shipped Vignes rule to 1e-12 for each of the three edges and
       the ternary is its limit (x_k = 1e-9 within 1e-6); the result does not
       depend on the order of the components; Wilke compiled from the engine's own
@@ -151,6 +154,40 @@ KT_D0 = {(0, 1): 2.75, (1, 0): 4.15, (0, 2): 1.70, (2, 0): 3.57, (1, 2): 1.42, (
 KT_TABLE_IV_EQ23 = {"overall": 0.0763, "diagonal": 0.0916, "offDiagonal": 0.0611}
 #  Taylor & Krishna (1993), Example 4.2.6, p. 92: [Gamma] at 0.70 / 0.15 / 0.15.
 TK93_GAMMA = ((0.788, -0.088), (0.075, 1.043))
+#  The NRTL tau_21 of acetone (1) in benzene (2): Taylor & Krishna (1993) Example 3.3.1, p. 61,
+#  prints 0.76432 (the parameters their Example 4.2.6 uses); Kooijman & Taylor Table I, p. 1218,
+#  prints 0.74632.  With 0.76432 the paper's own Table IV "eq 23" row is reproduced to its four
+#  digits and Gamma is the book's matrix to every printed digit (review row B2-05).
+KT_TAU21_BOOK, KT_TAU21_PAPER = 0.76432, 0.74632
+
+
+def kt_gamma_independent(x, tau21):
+    """Gamma at x for the paper's NRTL (own implementation, not the engine's): ln gamma by
+    the textbook NRTL sums, d/dx by a central difference with component 3 taking the change."""
+    import math
+    tau = [[0, -0.46504, -0.42790], [tau21, 0, -0.51821], [1.5931, 0.7338, 0]]
+    G = [[math.exp(-0.2 * tau[j][i]) if i != j else 1.0 for i in range(3)] for j in range(3)]
+
+    def lng(y):
+        out = []
+        for i in range(3):
+            s1 = sum(y[j] * tau[j][i] * G[j][i] for j in range(3)) / sum(y[k] * G[k][i] for k in range(3))
+            s2 = 0.0
+            for j in range(3):
+                den = sum(y[k] * G[k][j] for k in range(3))
+                num = sum(y[m] * tau[m][j] * G[m][j] for m in range(3))
+                s2 += y[j] * G[i][j] / den * (tau[i][j] - num / den)
+            out.append(s1 + s2)
+        return out
+    h = 1e-6
+    M = [[0.0, 0.0], [0.0, 0.0]]
+    for j in range(2):
+        xp, xm = list(x), list(x)
+        xp[j] += h; xp[2] -= h; xm[j] -= h; xm[2] += h
+        a, b = lng(xp), lng(xm)
+        for i in range(2):
+            M[i][j] = (1.0 if i == j else 0.0) + x[i] * (a[i] - b[i]) / (2 * h)
+    return M
 #  Taylor & Krishna (1993), Example 6.1.1, p. 127 (mm2/s).
 TK93_EX611 = (50.99, 16.95)
 
@@ -240,20 +277,46 @@ def kt_section(tmp, fails, notes):
     avg = {"overall": sum(diag + off) / 16, "diagonal": sum(diag) / len(diag),
            "offDiagonal": sum(off) / len(off)}
     for k, want in KT_TABLE_IV_EQ23.items():
-        if abs(avg[k] - want) > 0.005:
-            fails.append(f"(5b) the {k} average discrepancy {avg[k]:.4f} is not within 0.005 of the"
-                         f" paper's Table IV eq 23 value {want}")
+        if abs(avg[k] - want) > 1e-4:
+            fails.append(f"(5b) the {k} average discrepancy {avg[k]:.5f} is not within 1e-4 of the"
+                         f" paper's Table IV eq 23 value {want} (with the book's tau_21 = 0.76432)")
     g = dg.get("tk93", {})
     G = ((g.get("Gamma_acetone_acetone"), g.get("Gamma_acetone_benzene")),
          (g.get("Gamma_benzene_acetone"), g.get("Gamma_benzene_benzene")))
+    ind = kt_gamma_independent((0.70, 0.15, 0.15), KT_TAU21_BOOK)
     for i in range(2):
         for j in range(2):
-            if G[i][j] is None or abs(G[i][j] - TK93_GAMMA[i][j]) > 0.005:
-                fails.append(f"(5b) Gamma[{i}][{j}] {G[i][j]} is not within 0.005 of Taylor & Krishna's"
-                             f" Example 4.2.6 value {TK93_GAMMA[i][j]}")
+            if G[i][j] is None or abs(G[i][j] - ind[i][j]) > 1e-5:
+                fails.append(f"(5b) Gamma[{i}][{j}] {G[i][j]} is not an independent NRTL's {ind[i][j]} to 1e-5")
+            if G[i][j] is None or abs(G[i][j] - TK93_GAMMA[i][j]) > 5.1e-4:
+                fails.append(f"(5b) Gamma[{i}][{j}] {G[i][j]} does not round to Taylor & Krishna's printed"
+                             f" Example 4.2.6 value {TK93_GAMMA[i][j]} (every digit, with their tau_21)")
+    #  the paper's PRINTED tau_21 = 0.74632 gives the 0.002 residual: the discrepancy between the two sources
+    #  is a measurement, not a sentence.
+    _, _, dgp2 = kt_run(KT, tmp, "kt_printedtau",
+                        edits=[("constant/thermoPhysPropDict", "a_ji 0.76432;", "a_ji 0.74632;")])
+    try:
+        dd, oo = [], []
+        for pt, (x, E) in zip(("t1", "t2", "t3", "t4"), KT_TABLE_I):
+            d2 = dgp2[pt]
+            F = (d2["D_L_Fick_acetone_acetone"], d2["D_L_Fick_acetone_benzene"],
+                 d2["D_L_Fick_benzene_acetone"], d2["D_L_Fick_benzene_benzene"])
+            for k, (f, e) in enumerate(zip(F, E)):
+                (dd if k in (0, 3) else oo).append(abs(f * 1e9 - e) / (E[0] if k < 2 else E[3]))
+        pr = sum(dd + oo) / 16
+        g2 = [dgp2["tk93"]["Gamma_" + k] for k in ("acetone_acetone", "acetone_benzene",
+                                                    "benzene_acetone", "benzene_benzene")]
+        gmax = max(abs(g - t) for g, t in zip(g2, (0.788, -0.088, 0.075, 1.043)))
+        if abs(pr - 0.0782) > 1e-4 or not 0.0015 < gmax < 0.003:
+            fails.append(f"(5b) with the paper's printed tau_21 = 0.74632 the average is {pr:.4f} (expected"
+                         f" 0.0782) and the largest miss of Gamma against the book is {gmax:.4f}, not 0.002")
+    except (KeyError, TypeError):
+        fails.append("(5b) the printed-tau_21 variant did not run")
     # (5c) THE MISPRINT, measured: the books' limiting value scores worse than the paper's on
     #      the paper's own table (0.1002 against 0.0782, by hand with the engine's Gamma).
-    def books_score():
+    def books_score(dg):
+        #  each pair evaluated for i < j and copied to j, i (the engine's fill); the books' form is
+        #  asymmetric, so another order scores differently (review row B2-06)
         e = []
         for pt, (x, E) in zip(("t1", "t2", "t3", "t4"), KT_TABLE_I):
             G = dg[pt]
@@ -279,11 +342,13 @@ def kt_section(tmp, fails, notes):
                     e.append(abs(F[i][j] - Em[i][j]) / Em[i][i])
         return sum(e) / 16.0
     try:
-        bs = books_score()
-        if abs(bs - 0.1002) > 0.001 or not bs > avg["overall"] + 0.01:
-            fails.append(f"(5c) the books' limiting value (D0_ik D0_ki)^(1/2) scores {bs:.4f}, expected 0.1002"
-                         f" and worse than the paper's {avg['overall']:.4f}: the misprint note is not what it says")
-    except (KeyError, TypeError):
+        for label, dgx, want in (("tau_21 = 0.76432", dg, 0.0974), ("tau_21 = 0.74632", dgp2, 0.1002)):
+            bs = books_score(dgx)
+            if abs(bs - want) > 0.001 or not bs > avg["overall"] + 0.01:
+                fails.append(f"(5c) the books' limiting value (D0_ik D0_ki)^(1/2), pairs evaluated i<j and"
+                             f" copied, scores {bs:.4f} with {label}, expected {want} and worse than the"
+                             f" paper's form {avg['overall']:.4f}: the misprint note is not what it says")
+    except (KeyError, TypeError, NameError):
         fails.append("(5c) the misprint measurement could not read the Gamma rows")
     # (5d) the binary reduction is exact: each edge equals the shipped Vignes rule to 1e-12 and
     #      is the limit of the ternary (x_k = 1e-9 within 1e-6); the result does not depend
@@ -379,6 +444,53 @@ def kt_section(tmp, fails, notes):
             fails.append(f"(5g) {label}: ran to exit 0")
         elif words not in out2:
             fails.append(f"(5g) {label}: refused, but not by its words ({words!r})")
+    # (5h) B2-01: Gamma and the Fick matrix are refused without an activity model (phi-phi package).
+    pp = ROOT / "tutorials" / "props" / "molecular" / "ppr78Kij01_ch4_co2_h2"
+    for key in ("Gamma_CH4_CH4", "D_L_Fick_CH4_CH4"):
+        rcq, outq, _ = kt_run(pp, tmp, "kt_phiphi_" + key[:5],
+                              ops=kt_ops([("q", {"CH4": 0.3, "CO2": 0.4, "H2": 0.3}, [key])], None))
+        if rcq == 0:
+            fails.append(f"(5h) {key} on a phi-phi package ran to exit 0 (it printed the ideal placeholder)")
+        elif "this package has none" not in outq:
+            fails.append(f"(5h) {key} on a phi-phi package was refused, but not by its words")
+    # (5i) B2-02: the gas reduction, by hand from the pair values; a pure gas is refused by name.
+    GB = ROOT / "tutorials" / "props" / "transport" / "transport01_gas_bench"
+    gops = [("b01", {"N2": 0.5, "O2": 0.5}, ["D_G_effective_N2", "D_G_effective_O2", "diffusivity"]),
+            ("b02", {"N2": 0.5, "CO2": 0.5}, ["D_G_effective_N2"]),
+            ("b12", {"O2": 0.5, "CO2": 0.5}, ["D_G_effective_O2"]),
+            ("t", {"N2": 0.5, "O2": 0.3, "CO2": 0.2}, ["D_G_effective_N2", "D_G_effective_O2", "D_G_effective_CO2"])]
+    rcg, outg, dgg = kt_run(GB, tmp, "kt_gas", ops=kt_ops(gops, None))
+    if rcg != 0 or not dgg:
+        fails.append(f"(5i) the gas bench copy did not run (exit {rcg})")
+    else:
+        D01, D02, D12 = dgg["b01"]["D_G_effective_N2"], dgg["b02"]["D_G_effective_N2"], dgg["b12"]["D_G_effective_O2"]
+        if abs(D01 / dgg["b01"]["diffusivity"] - 1.0) > 1e-12:
+            fails.append("(5i) a binary gas's D_G_effective is not the Fuller pair value the `diffusivity` key prints")
+        xx = (0.5, 0.3, 0.2)
+        pr = {(0, 1): D01, (0, 2): D02, (1, 2): D12}
+        for i, n in enumerate(("N2", "O2", "CO2")):
+            oth = [j for j in range(3) if j != i]
+            hand = sum(xx[j] for j in oth) / sum(xx[j] / pr[tuple(sorted((i, j)))] for j in oth)
+            got = dgg["t"].get("D_G_effective_" + n)
+            if got is None or abs(got / hand - 1.0) > 1e-11:
+                fails.append(f"(5i) D_G_effective_{n} {got} is not Wilke's reduction of the gas pair values {hand}")
+    for key, comp, src, label in (("D_G_effective_N2", {"N2": 1.0}, GB, "a pure gas"),
+                                  ("D_L_effective_acetone", {"acetone": 1.0}, KT, "a pure liquid")):
+        rcz, outz, _ = kt_run(src, tmp, "kt_pure_" + label[-3:], ops=kt_ops([("z", comp, [key])], None))
+        if rcz == 0:
+            fails.append(f"(5i) {key} of {label} ran to exit 0")
+        elif ("no effective mixture diffusivity" not in outz) and ("the liquid is pure" not in outz):
+            fails.append(f"(5i) {key} of {label} was refused, but not by its words")
+    # (5j) B2-04: the run says which component takes the change and the step.
+    if "numbered last, takes every change of mole fraction" not in out or "step 1e-06" not in out \
+            or "uses Gamma = 1" not in out:
+        fails.append("(5j) the run does not say which component takes the change in Gamma, the step, and that"
+                     " the film uses Gamma = 1")
+    # (5k) B2-07: a refusal prints the number it reports.
+    rck, outk, _ = kt_run(KT, tmp, "kt_x", ops=kt_ops(
+        [("x", {"acetone": 0.5, "benzene": 0.4999999, "carbonTetrachloride": 1e-7}, ["Gamma_acetone_acetone"])], None))
+    if rck == 0 or "has x = 1e-07" not in outk:
+        fails.append(f"(5k) the refusal of x = 1e-7 does not print the number (exit {rck})")
     notes.append("kt")
 
 
@@ -821,10 +933,12 @@ def main():
           f" {len(notes) - 10} refusals each by name, the old `diffusivity {{ model <word>; }}` form among them.  NOT CHECKED: the migrated cases' numbers (their"
           f" goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's"
           f" fitness for a polar liquid (announced, not judged).  C329 B2a: Kooijman & Taylor's Eq. 23 and"
-          f" Wilke's reduction by hand to 1e-11, the Fick matrix within 0.005 of the paper's Table IV"
-          f" eq 23 row, Gamma within 0.005 of Taylor & Krishna's Example 4.2.6, the books' misprint"
-          f" measured (0.1002 against 0.078), the binary edge equal to Vignes to 1e-12 and the ternary its"
-          f" limit, order-independence, Example 6.1.1's 50.99 and 16.95 mm2/s, and seven refusals by name.")
+          f" Wilke's reduction by hand to 1e-11, the Fick matrix within 1e-4 of the paper's Table IV"
+          f" eq 23 row and Gamma the book's Example 4.2.6 to every digit (tau_21 of the book's p. 61; the paper's"
+          f" printed value pinned 0.002 away), the books' misprint"
+          f" measured (0.0974, pairs evaluated i<j; 0.1002 with the printed tau_21), the binary edge equal to Vignes to 1e-12 and the ternary its"
+          f" limit, order-independence, Example 6.1.1's 50.99 and 16.95 mm2/s, seven refusals by name, Gamma and the Fick matrix refused on a phi-phi package, the gas reduction by hand"
+          f" and a pure gas or liquid refused, and the run saying which component takes the change.")
     return 0
 
 

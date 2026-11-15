@@ -10713,6 +10713,7 @@
    "src/thermo/transport/SatoRiedel.H"
   ],
   "src/thermo/transport/LiquidDiffusionMatrix.cpp": [
+   "src/core/Advisory.H",
    "src/core/Constants.H",
    "src/core/Dictionary.H",
    "src/core/Dimensions.H",
@@ -14827,6 +14828,7 @@
    "src/thermo/transport/ChemSepCond16.cpp",
    "src/thermo/transport/ChemSepVisc101.cpp",
    "src/thermo/transport/ChungViscosity.cpp",
+   "src/thermo/transport/LiquidDiffusionMatrix.cpp",
    "src/thermo/transport/LiquidViscosityMixingRule.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
    "src/thermo/transport/StoredCorrelation.cpp",

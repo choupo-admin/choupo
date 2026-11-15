@@ -15455,25 +15455,42 @@ three reasons the run can show.  (1)~The books' form does not contain $j$, so
 $\mathcal{D}_{ij}\ne\mathcal{D}_{ji}$, against the symmetry the same page of
 each book requires.  (2)~Taylor \& Kooijman's Eq.~3.42, which they say contains
 Eq.~3.41 as a special case, carries $D_{i,k}D_{j,k}$.  (3)~Measured, on the
-paper's Table~I, with the paper's own six $D^{\circ}$ and NRTL parameters and
+paper's Table~I, with the paper's own six $D^{\circ}$ and NRTL parameters (the
+$\tau_{21}$ question below) and
 its discrepancy $\epsilon_{ij}=|D_{ij,\mathrm{calc}}-D_{ij,\mathrm{expt}}|/D_{ii}$
 averaged over the four points:
 \begin{center}\small
 \begin{tabular}{lccc}
 \hline
-limiting value & overall & diagonal & off-diagonal\\ \hline
+limiting value, $\tau_{21}$ & overall & diagonal & off-diagonal\\ \hline
 paper's Table IV, ``eq 23'' (printed) & 0.0763 & 0.0916 & 0.0611\\
-$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, as implemented & 0.0782 & 0.0924 & 0.0639\\
-$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$, as the books print & 0.1002 & 0.0995 & 0.1009\\
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, as implemented, $\tau_{21}=0.76432$ & 0.0763 & 0.0916 & 0.0611\\
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, as implemented, $\tau_{21}=0.74632$ & 0.0782 & 0.0924 & 0.0639\\
+$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$, as the books print, $\tau_{21}=0.76432$ & 0.0974 & 0.0975 & 0.0974\\
+$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$, as the books print, $\tau_{21}=0.74632$ & 0.1002 & 0.0995 & 0.1009\\
 \hline
 \end{tabular}
 \end{center}
-The engine's form misses the printed average by 0.002 (the paper says the
-complete tabulations are in a supplement that was not read, so its averages
-may cover more points than the four of Table~I); the books' form misses it by
-0.024 and scores worse on the off-diagonal elements, the ones that carry the
+Both books' rows evaluate each pair for $i<j$ and copy it to $j,i$, which is
+how the engine fills the matrix: the books' form is NOT symmetric, so its
+score depends on the order in which each pair is evaluated (with
+$\tau_{21}=0.74632$: 0.1002 as above, 0.0852 evaluated $j$ first, 0.0886 when
+each row of $[B]$ takes its own component as $i$, an independent recomputation
+by the reviewer of this slice).  Every ordering is worse than the paper's form.
+\paragraph{Which $\tau_{21}$.}  Taylor \& Krishna's Example~3.3.1 (p.~61), the
+example whose NRTL parameters their Example~4.2.6 uses, prints
+$\tau_{21}=0.76432$; the paper's Table~I prints $0.74632$.  With the book's
+value the engine's form reproduces the paper's own Table~IV ``eq 23'' row to
+its four printed digits (the residual of 0.002 that an earlier version of this
+section called unexplained is this one digit transposition), and Gamma
+reproduces the book's printed matrix to every digit; the witness therefore
+carries $0.76432$, and the gate runs both values and pins the difference.
+Which source typed it wrongly is not decided by anything read; the numbers
+decide only which one the paper computed with.  The engine's form with either
+value scores better than the books' form, which scores worse on the
+off-diagonal elements, the ones that carry the
 coupling.  Gate \code{check\_liquid\_diffusivity\_declaration} recomputes the
-second and third rows on every run.  A second misprint of the same chapter
+rows on every run.  A second misprint of the same chapter
 was met on the way: its Eq.~3.120 prints the off-diagonal rate factor as
 $-N_i\bigl(1/(c\kappa_{ij})-1/(c\kappa_{ij})\bigr)$, which is identically zero
 (Taylor \& Krishna's Eq.~8.3.29 has $\kappa_{in}$ in the second term).  The
@@ -15540,10 +15557,10 @@ the Maxwell-Stefan film), an error of about the liquid film's share of the
 resistance times $(\Gamma-1)$.  The props operation prints $[\Gamma]$ and
 $[D]$ so the student sees how far from the identity it is: at
 $x=(0.70,0.15,0.15)$ in acetone / benzene / carbon tetrachloride, with the
-paper's NRTL parameters, the engine gives $\Gamma=\begin{psmallmatrix}0.789&-0.090\\0.073&1.045\end{psmallmatrix}$
+paper's NRTL parameters, the engine gives $\Gamma=\begin{psmallmatrix}0.788&-0.088\\0.075&1.043\end{psmallmatrix}$
 against Taylor \& Krishna's printed $\begin{psmallmatrix}0.788&-0.088\\0.075&1.043\end{psmallmatrix}$
-(Example~4.2.6, p.~92).  $[\Gamma]$ is a central difference of the
-activity model's own $\ln\gamma$ in mole fraction, step $10^{-6}$; it exists
+(Example~4.2.6, p.~92).  With the NRTL parameters of that example (its $\tau_{21}=0.76432$, see above) the engine gives $\begin{psmallmatrix}0.78751&-0.08751\\0.07476&1.04330\end{psmallmatrix}$, the book's matrix to every printed digit; with the paper's printed $0.74632$ it is 0.002 away.  $[\Gamma]$ is a central difference of the
+activity model's own $\ln\gamma$ in mole fraction, step $10^{-6}$; the effective-diffusivity film uses $\Gamma=1$ and $\Gamma$ is printed for the student; it exists
 as a props quantity only, and no unit reads it: the statement that no activity
 model hands a unit its liquid thermodynamic factor remains true of the runtime.
 
@@ -15560,15 +15577,15 @@ m\textsuperscript{2}/s:
 \hline
 $x_1,x_2,x_3$ & \multicolumn{4}{c|}{engine $D_{11},D_{12},D_{21},D_{22}$}
               & \multicolumn{4}{c}{measured}\\ \hline
-0.2989, 0.3490, 0.3521 & 1.666 & $-0.375$ & $-0.029$ & 2.352 & 1.869 & $-0.213$ & $-0.004$ & 2.273\\
-0.1496, 0.1499, 0.7005 & 1.394 & $-0.237$ & $-0.151$ & 1.742 & 1.597 & $-0.059$ & $-0.077$ & 1.813\\
-0.1497, 0.6984, 0.1519 & 2.164 & $-0.235$ & $-0.288$ & 2.236 & 1.965 & \phantom{$-$}0.014 & $-0.152$ & 1.925\\
-0.6999, 0.1497, 0.1504 & 2.381 & $-0.545$ & \phantom{$-$}0.194 & 3.397 & 2.304 & $-0.402$ & \phantom{$-$}0.185 & 2.997\\
+0.2989, 0.3490, 0.3521 & 1.659 & $-0.367$ & $-0.020$ & 2.347 & 1.869 & $-0.213$ & $-0.004$ & 2.273\\
+0.1496, 0.1499, 0.7005 & 1.392 & $-0.233$ & $-0.146$ & 1.740 & 1.597 & $-0.059$ & $-0.077$ & 1.813\\
+0.1497, 0.6984, 0.1519 & 2.156 & $-0.230$ & $-0.277$ & 2.231 & 1.965 & \phantom{$-$}0.014 & $-0.152$ & 1.925\\
+0.6999, 0.1497, 0.1504 & 2.377 & $-0.537$ & \phantom{$-$}0.198 & 3.391 & 2.304 & $-0.402$ & \phantom{$-$}0.185 & 2.997\\
 \hline
 \end{tabular}
 \end{center}
-The average discrepancy is $0.0782$ (diagonal $0.0924$, off-diagonal
-$0.0639$), within $0.005$ of the paper's $0.0763$.  What it shows: that the
+The average discrepancy is $0.0763$ (diagonal $0.0916$, off-diagonal
+$0.0611$), the paper's Table~IV row to its four digits.  What it shows: that the
 engine computes the rule the paper proposed, and that on a NON-ASSOCIATING
 system that rule's Fick matrix is within about 8~\% of a measurement,
 off-diagonal elements included.  What it does not show: anything about an
@@ -15577,7 +15594,7 @@ benzene / methanol, with a maximum of 0.7051, and gives the reason (the Vignes
 equation does not perform well for associating binaries); methanol, 2-propanol
 and water is such a system, and nothing read measures the rule on it.  The six
 $D^{\circ}$ are the paper's inputs and the NRTL parameters Renon's, so the
-comparison is not in sample of anything Choupo fitted; the molar volumes in
+comparison is not in sample of anything Choupo fitted (and the one parameter taken from the second source, $\tau_{21}$, was chosen by the book's page and its measured agreement, not fitted); the molar volumes in
 the paper's Table~I header ($74.05$, $89.41$, $97.09$) are printed there as
 ``$10^{-6}$~m\textsuperscript{3}/kmol'', which are cm\textsuperscript{3}/mol, and the Fick
 matrix in the molar-average frame does not use them.

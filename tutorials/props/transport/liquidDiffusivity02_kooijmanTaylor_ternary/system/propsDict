@@ -33,13 +33,14 @@
         x = 0.1496 0.1499 0.7005   1.5968 -0.0592 -0.0771 1.8132
         x = 0.1497 0.6984 0.1519   1.9652  0.0137 -0.1522 1.9248
         x = 0.6999 0.1497 0.1504   2.3041 -0.4019  0.1848 2.9969
-    THE ACCEPTANCE (gate check_liquid_diffusivity_declaration, arm 8): the
+    THE ACCEPTANCE (gate check_liquid_diffusivity_declaration, arm 5b): the
     average of the paper's discrepancy |D_calc - D_expt| / D_ii over the four
-    points within 0.005 of the paper's Table IV, column "eq 23" (overall
+    points within 1e-4 of the paper's Table IV, column "eq 23" (overall
     0.0763, diagonal 0.0916, off-diagonal 0.0611); Gamma at 0.70/0.15/0.15
-    within 0.005 of Taylor & Krishna's printed matrix [0.788 -0.088; 0.075
-    1.043].  Nothing is fitted: the six D0 and the NRTL parameters are the
-    paper's inputs.
+    to Taylor & Krishna's printed matrix, every digit, [0.788 -0.088; 0.075
+    1.043] (tau_21 = 0.76432 as Taylor & Krishna print it; the paper's Table I prints
+    0.74632, and with that the numbers are 0.002 away: the thermophysical dict says so).  Nothing is fitted: the six D0 and the NRTL parameters are the
+    sources' inputs.
 
     WHAT IT DOES NOT SHOW.  Nothing about an associating liquid: the paper's own
     Table IV gives 0.19 on acetone / benzene / methanol, with a maximum of 0.71,
@@ -50,7 +51,8 @@
     component as (D0_ik D0_ki)^(1/2) (Taylor & Kooijman 2014, Eq. 3.41; Taylor
     & Krishna 1993, Eq. 4.2.19); the paper's Eq. 21 is (D0_ik D0_jk)^(1/2),
     and it is the one implemented.  On this table the paper's form scores
-    0.078 and the books' 0.100 (Theory Guide, section "The multicomponent
+    0.078 and the books' 0.100 (each pair evaluated for i < j and copied; the
+    books' form is not symmetric, so the number depends on that order) (Theory Guide, section "The multicomponent
     liquid diffusivity", prints the measurement).
 
     The golden master locks every computed value at reltol 1e-4.  */

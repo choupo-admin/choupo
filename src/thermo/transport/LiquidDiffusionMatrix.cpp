@@ -17,7 +17,11 @@
 #include "thermo/ThermoPackage.H"
 #include "thermo/activityCoefficient/ActivityModel.H"
 
+#include "core/Advisory.H"
+
 #include <cmath>
+#include <cstdio>
+#include <iostream>
 #include <stdexcept>
 #include <string>
 
@@ -28,8 +32,29 @@ namespace {
 
 using Mat = std::vector<std::vector<scalar>>;
 
+std::string fmtG(const char* f, scalar v)
+{
+    char b[64];
+    std::snprintf(b, sizeof b, f, v);
+    return b;
+}
+
 void requireAllPresent(const ThermoPackage& thermo, const sVector& x)
 {
+    //  A phi-phi package (and any package without an activity model) has no
+    //  liquid activity coefficient: its liquid nonideality is in the fugacity
+    //  coefficients, and the ideal placeholder would print Gamma = identity at
+    //  exit 0 (review row B2-01).
+    if (!thermo.hasActivity() || thermo.vleWorld() == "phiPhi")
+        throw std::runtime_error("liquid diffusion matrix: Gamma and the Fick matrix are built from the"
+            " liquid ACTIVITY model's ln gamma, and this package has none"
+            + std::string(thermo.vleWorld() == "phiPhi"
+                              ? " (formulation phiPhi: the liquid's nonideality lives in the fugacity"
+                                " coefficients, which give no activity coefficient)"
+                              : "")
+            + ".  Write `equilibrium { formulation gammaPhi; liquid { activityModel { model <NRTL|"
+              "UNIQUAC|Wilson|UNIFAC|...>; ... } } }`; the pair values `D_L_MS_<i>_<j>` and the"
+              " effective diffusivities `D_L_effective_<c>` do not need it.");
     if (thermo.n() < 2 || x.size() != thermo.n())
         throw std::runtime_error("liquid diffusion matrix: a liquid of two components or more,"
             " one mole fraction per component of the package.");
@@ -37,7 +62,7 @@ void requireAllPresent(const ThermoPackage& thermo, const sVector& x)
         if (!(x[i] > 2.0 * gammaStep))
             throw std::runtime_error("liquid diffusion matrix: every component must be present"
                 " (x > 2e-6; the thermodynamic factor is a central difference of ln gamma in mole"
-                " fraction); " + thermo.comp(i).name() + " has x = " + std::to_string(x[i]) + ".");
+                " fraction); " + thermo.comp(i).name() + " has x = " + fmtG("%.6g", x[i]) + ".");
 }
 
 } // namespace
@@ -46,6 +71,18 @@ Mat thermodynamicFactor(const ThermoPackage& thermo, scalar T, const sVector& x)
 {
     requireAllPresent(thermo, x);
     const std::size_t n = thermo.n(), m = n - 1;
+    //  SAID BY THE RUN, once (header promise; review row B2-04).
+    {
+        const std::string msg = "Gamma_<i>_<j> and the Fick matrix are (n-1) x (n-1); "
+            + thermo.comp(m).name() + ", numbered last, takes every change of mole fraction (reordering"
+              " the package changes the Fick matrix); d ln gamma_i / d x_j is a central difference of the"
+              " activity model's own ln gamma, step " + fmtG("%.0e", gammaStep) + " in mole fraction.  The"
+              " effective-diffusivity film uses Gamma = 1 (`thermodynamicFactor { take 1; }`); Gamma is"
+              " printed here for the student, to see what that choice omits";
+        if (AdvisoryLog::instance().addAnnouncedOnce("liquidDiffusionMatrix", "approximation", "info",
+                                                     "liquid diffusion matrix", msg))
+            std::cout << "  [liquid diffusion matrix] " << msg << "\n";
+    }
     Mat G(m, std::vector<scalar>(m, 0.0));
     for (std::size_t j = 0; j < m; ++j)
     {

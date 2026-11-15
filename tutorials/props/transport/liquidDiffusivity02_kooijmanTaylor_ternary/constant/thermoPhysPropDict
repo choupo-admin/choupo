@@ -21,13 +21,22 @@
         paper takes them from Cullinan & Toor's data; Taylor & Krishna 1993,
         p. 91, says they "have been estimated").  No correlation is asked for;
         no value is fitted.
-      * the dimensionless NRTL parameters of Renon et al. (1971), as the paper
-        lists them, all alpha = 0.2:
-            tau_12 = -0.46504   tau_21 =  0.74632
+      * the dimensionless NRTL parameters of Renon et al. (1971), all alpha =
+        0.2, with ONE value taken from the second source (see the next item):
+            tau_12 = -0.46504   tau_21 =  0.76432
             tau_13 = -0.42790   tau_31 =  1.5931
             tau_23 = -0.51821   tau_32 =  0.7338
         They are a_ij with b_ij = 0: the numbers are dimensionless and stated
         for 25 C only, so the case is run at 298.15 K and nowhere else.
+      * A DISCREPANCY BETWEEN TWO SOURCES, MEASURED: Taylor & Krishna (1993),
+        Example 3.3.1, p. 61 -- the example whose NRTL parameters their Example
+        4.2.6 uses -- prints tau_21 = 0.76432 where the paper's Table I (p. 1218)
+        prints 0.74632.  With the book's 0.76432 the case reproduces the paper's
+        own Table IV "eq 23" row to its four printed digits (0.0763, 0.0916,
+        0.0611) and the book's Gamma at 0.70/0.15/0.15 to every printed digit;
+        with the printed 0.74632 it is 0.0782 and 0.002 away.  So the case
+        carries 0.76432, and the paper's Table I print reads as a transposition
+        (gate arm 5b runs both and pins the difference).
       * (the molar volumes 74.05, 89.41 and 97.09 cm3/mol are in the table
         too; its header prints them as "1e-6 m3/kmol", which is cm3/mol.  The
         Fick matrix in the molar-average frame does not use them.)
@@ -60,7 +69,7 @@ equilibrium
                 acetone-benzene
                 {
                     i acetone;  j benzene;
-                    a_ij -0.46504;  b_ij 0;  a_ji 0.74632;  b_ji 0;
+                    a_ij -0.46504;  b_ij 0;  a_ji 0.76432;  b_ji 0;
                     alpha 0.2;
                 }
                 acetone-carbonTetrachloride

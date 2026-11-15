@@ -432,8 +432,9 @@ std::string ruleCitation(Rule r)
             return "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Eq. 23 (the limiting"
                    " value of Eq. 21, p. 1219); the form printed in Taylor & Kooijman (2014) Eq. 3.41"
                    " and Taylor & Krishna (1993) Eq. 4.2.19, (D0_ik D0_ki)^(1/2), is a misprint of it"
-                   " (it does not contain j; on the paper's own Table I it gives an average"
-                   " discrepancy of 0.1002 against 0.0782)";
+                   " (it does not contain j, so it is not symmetric; on the paper's own Table I, with each"
+                   " pair evaluated for i < j and copied to j, i, it gives an average discrepancy of"
+                   " 0.1002 against 0.0782)";
         case Rule::none: break;
     }
     return "";
@@ -807,6 +808,9 @@ std::vector<std::string> describe(const DiffusivityDeclaration& d, const std::ve
                                                    : reductionName(d.reduction))
                 + (d.reduction == Reduction::none ? std::string()
                    : ": " + reductionEquation(d.reduction) + "; " + reductionCitation(d.reduction)));
+            out.push_back("liquidDiffusivity Gamma: the film takes 1; Gamma_<i>_<j> and D_L_Fick_<i>_<j> are"
+                " printed as props quantities for the student, from the activity model, the last component"
+                " taking the change");
             out.push_back("liquidDiffusivity limiting value of the third component: (D0_ik D0_jk)^(1/2),"
                 " Kooijman & Taylor (1991) Eq. 21, the one the paper's own Table I scores best; the form"
                 " the two books print is a misprint, and the Wesselingh-Krishna value (D0_ij D0_ji)^(1/2),"

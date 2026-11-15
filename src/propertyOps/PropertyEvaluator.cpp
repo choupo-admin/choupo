@@ -345,14 +345,22 @@ scalar evaluateProperty(const std::string& propKey,
             const std::size_t i = thermo.indexOf(propKey.substr(14));
             if (!(xLiquid[i] > 0.0))
                 throw std::runtime_error("property '" + propKey + "': the component is not present.");
+            std::size_t nPresent = 0;
+            for (const scalar v : xLiquid) if (v > 0.0) ++nPresent;
+            if (nPresent < 2)
+                throw std::runtime_error("property '" + propKey + "': a gas of one component has no"
+                    " effective mixture diffusivity (Wilke's reduction is 0/0 there); give two components"
+                    " or more.");
             std::vector<scalar> row(xLiquid.size(), 0.0);
             for (std::size_t j = 0; j < xLiquid.size(); ++j)
                 if (j != i && xLiquid[j] > 0.0) row[j] = thermo.diffusivityGas(T, P_Pa, i, j);
             return liquidTransport::wilkeEffective(xLiquid, row, i);
         }
         if (propKey.compare(0, 14, "D_L_effective_") == 0)
-            return thermo.diffusivityLiquidEffective(T, xLiquid,
-                       thermo.indexOf(propKey.substr(14)));                   // m2/s
+            //  Through the DOOR, so the door's per-component request is exercised
+            //  and held by the gate against the value by hand (review row B2-03).
+            return liquidProperty::evaluate(thermo, liquidProperty::Property::diffusivity, T, P_Pa,
+                       xLiquid, nullptr, "", static_cast<long>(thermo.indexOf(propKey.substr(14)))).value;   // m2/s
         std::size_t a = 0, b = 0;
         if (twoNames("D_L_MS_", a, b, false))
             return thermo.liquidPairDiffusivity(T, xLiquid, a, b);            // m2/s

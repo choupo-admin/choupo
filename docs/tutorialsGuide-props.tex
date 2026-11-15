@@ -6009,30 +6009,30 @@ liquidDiffusivity02 -- the multicomponent liquid diffusivity of Kooijman \& Tayl
 
 WHAT IT SHOWS. Acetone (1) / benzene (2) / carbon tetrachloride (3) at 25 C. At each of the paper's four compositions (and at a fifth, the one of Taylor \& Krishna 1993, Example 4.2.6, p. 92) the operation prints D\_L\_MS\_<i>\_<j> the three Maxwell-Stefan pair values in the mixture, Eq. 23 of the paper (D0\_ij\textasciicircum{}xj D0\_ji\textasciicircum{}xi times (D0\_ik D0\_jk)\textasciicircum{}(xk/2) for the third component); Gamma\_<i>\_<j> the thermodynamic-factor matrix of the NRTL liquid (paper Eq. 4: a central difference of ln gamma, step 1e-6 in mole fraction, component 3 -- the LAST -- taking the change); D\_L\_Fick\_<i>\_<j> the Fick matrix [B]\textasciicircum{}-1 [Gamma] (paper Eqs. 6-8), in 1e-9 m2/s a student reads against the measured one below. It depends on which component is numbered last, and carbon tetrachloride is, as in the paper; D\_L\_effective\_<c> the effective diffusivity of each component by Wilke's reduction (Taylor \& Krishna 1993, Eq. 6.1.14): what a rate-based column's film would take.
 
-THE MEASURED MATRIX (the paper's Table I, molar-average frame, 1e-9 m2/s, D11 D12 D21 D22; Cullinan \& Toor 1965, converted by the authors): x = 0.2989 0.3490 0.3521 1.8690 -0.2129 -0.0043 2.2730 x = 0.1496 0.1499 0.7005 1.5968 -0.0592 -0.0771 1.8132 x = 0.1497 0.6984 0.1519 1.9652 0.0137 -0.1522 1.9248 x = 0.6999 0.1497 0.1504 2.3041 -0.4019 0.1848 2.9969 THE ACCEPTANCE (gate check\_liquid\_diffusivity\_declaration, arm 8): the average of the paper's discrepancy |D\_calc - D\_expt| / D\_ii over the four points within 0.005 of the paper's Table IV, column "eq 23" (overall 0.0763, diagonal 0.0916, off-diagonal 0.0611); Gamma at 0.70/0.15/0.15 within 0.005 of Taylor \& Krishna's printed matrix [0.788 -0.088; 0.075 1.043]. Nothing is fitted: the six D0 and the NRTL parameters are the paper's inputs.
+THE MEASURED MATRIX (the paper's Table I, molar-average frame, 1e-9 m2/s, D11 D12 D21 D22; Cullinan \& Toor 1965, converted by the authors): x = 0.2989 0.3490 0.3521 1.8690 -0.2129 -0.0043 2.2730 x = 0.1496 0.1499 0.7005 1.5968 -0.0592 -0.0771 1.8132 x = 0.1497 0.6984 0.1519 1.9652 0.0137 -0.1522 1.9248 x = 0.6999 0.1497 0.1504 2.3041 -0.4019 0.1848 2.9969 THE ACCEPTANCE (gate check\_liquid\_diffusivity\_declaration, arm 5b): the average of the paper's discrepancy |D\_calc - D\_expt| / D\_ii over the four points within 1e-4 of the paper's Table IV, column "eq 23" (overall 0.0763, diagonal 0.0916, off-diagonal 0.0611); Gamma at 0.70/0.15/0.15 to Taylor \& Krishna's printed matrix, every digit, [0.788 -0.088; 0.075 1.043] (tau\_21 = 0.76432 as Taylor \& Krishna print it; the paper's Table I prints 0.74632, and with that the numbers are 0.002 away: the thermophysical dict says so). Nothing is fitted: the six D0 and the NRTL parameters are the sources' inputs.
 
 WHAT IT DOES NOT SHOW. Nothing about an associating liquid: the paper's own Table IV gives 0.19 on acetone / benzene / methanol, with a maximum of 0.71, and says why (the Vignes equation does not perform well for associating binaries). The rule is an interpolation of six numbers, not a theory.
 
-THE MISPRINT. The two books print the limiting value of the third component as (D0\_ik D0\_ki)\textasciicircum{}(1/2) (Taylor \& Kooijman 2014, Eq. 3.41; Taylor \& Krishna 1993, Eq. 4.2.19); the paper's Eq. 21 is (D0\_ik D0\_jk)\textasciicircum{}(1/2), and it is the one implemented. On this table the paper's form scores 0.078 and the books' 0.100 (Theory Guide, section "The multicomponent liquid diffusivity", prints the measurement).
+THE MISPRINT. The two books print the limiting value of the third component as (D0\_ik D0\_ki)\textasciicircum{}(1/2) (Taylor \& Kooijman 2014, Eq. 3.41; Taylor \& Krishna 1993, Eq. 4.2.19); the paper's Eq. 21 is (D0\_ik D0\_jk)\textasciicircum{}(1/2), and it is the one implemented. On this table the paper's form scores 0.078 and the books' 0.100 (each pair evaluated for i < j and copied; the books' form is not symmetric, so the number depends on that order) (Theory Guide, section "The multicomponent liquid diffusivity", prints the measurement).
 
 The golden master locks every computed value at reltol 1e-4.
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{t1}{Cp\_ig}{80.8738593285}
-\goldrow{diag}{t1}{D\_L\_Fick\_acetone\_acetone}{1.66586154747e-09}
-\goldrow{diag}{t1}{D\_L\_Fick\_acetone\_benzene}{-3.74741956226e-10}
-\goldrow{diag}{t1}{D\_L\_Fick\_benzene\_acetone}{-2.90443950338e-11}
-\goldrow{diag}{t1}{D\_L\_Fick\_benzene\_benzene}{2.35197771203e-09}
+\goldrow{diag}{t1}{D\_L\_Fick\_acetone\_acetone}{1.65882143345e-09}
+\goldrow{diag}{t1}{D\_L\_Fick\_acetone\_benzene}{-3.67154630884e-10}
+\goldrow{diag}{t1}{D\_L\_Fick\_benzene\_acetone}{-2.02762410233e-11}
+\goldrow{diag}{t1}{D\_L\_Fick\_benzene\_benzene}{2.34692500418e-09}
 \goldrow{diag}{t1}{D\_L\_MS\_acetone\_benzene}{2.54356348616e-09}
 \goldrow{diag}{t1}{D\_L\_MS\_acetone\_carbonTetrachloride}{2.35525249577e-09}
 \goldrow{diag}{t1}{D\_L\_MS\_benzene\_carbonTetrachloride}{2.12160692451e-09}
 \goldrow{diag}{t1}{D\_L\_effective\_acetone}{2.44537300974e-09}
 \goldrow{diag}{t1}{D\_L\_effective\_benzene}{2.29652786716e-09}
 \goldrow{diag}{t1}{D\_L\_effective\_carbonTetrachloride}{2.22336006366e-09}
-\goldrow{diag}{t1}{Gamma\_acetone\_acetone}{0.688748377606}
-\goldrow{diag}{t1}{Gamma\_acetone\_benzene}{-0.132899891614}
-\goldrow{diag}{t1}{Gamma\_benzene\_acetone}{0.0324484917747}
+\goldrow{diag}{t1}{Gamma\_acetone\_acetone}{0.685918879495}
+\goldrow{diag}{t1}{Gamma\_acetone\_benzene}{-0.129809151424}
+\goldrow{diag}{t1}{Gamma\_benzene\_acetone}{0.036184239379}
 \goldmore{116}
 \end{tutgolden}
 

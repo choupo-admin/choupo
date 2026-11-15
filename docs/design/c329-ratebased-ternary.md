@@ -138,9 +138,11 @@ books are wrong, on three grounds:
 
    The script reproduces all three printed columns to within 0.004 with the
    primary's form, and misses the "eq 23" column by 0.024 with the books'.
-   (The residual 0.002-0.004 is unexplained; KT91 says more complete
-   tabulations are in supplementary material, which was not read, so the
-   printed averages may cover more points than the four of Table I.)
+   (The residual 0.002-0.004 IS EXPLAINED, slice B2a review row B2-05: KT91
+   Table I prints tau_21 = 0.74632 and TK93 Example 3.3.1, p. 61, prints
+   0.76432; with 0.76432 the primary's form gives 0.0763 / 0.0916 / 0.0611,
+   the printed "eq 23" column to its four digits, and the books' form (pairs
+   evaluated i<j and copied) 0.0974.  The 0.1002 above is with 0.74632.)
 
 A second misprint of the same chapter was met on the way and matters for
 slice B2c: TK14 Eq. 3.120 (p. 125, page image) prints the off-diagonal rate
@@ -232,7 +234,12 @@ factor belongs with a Maxwell-Stefan liquid film, which is not planned.
 How large the omission is, from what was read: at 0.70 / 0.15 / 0.15 in
 acetone / benzene / carbon tetrachloride TK93 Example 4.2.6 (p. 92) prints
 `[Gamma] = [0.788 -0.088; 0.075 1.043]` (script: 0.789, -0.090, 0.073,
-1.045).  For an aqueous alcohol mixture it will be further from the
+1.045).  THE 0.002 IS EXPLAINED (slice B2a review, row B2-05, read at the
+page): TK93 Example 3.3.1 (p. 61), whose NRTL parameters Example 4.2.6
+cites, prints tau_21 = 0.76432 where KT91 Table I prints 0.74632; with the
+book's value an independent NRTL gives [0.78751 -0.08751; 0.07476 1.04330],
+the book's matrix to every printed digit.  The B2a witness carries the
+paper's 0.74632 and its gate checks both.  For an aqueous alcohol mixture it will be further from the
 identity; nobody has computed it here.  In which direction it acts: with
 the equilibrium linearised as `[M] = [K][Gamma]` (TK93 Eq. 7.3.7, p. 150)
 the overall resistance is `[R_OV] = [R_V] + (c_V/c_L) [K] [R_L]` and "the
