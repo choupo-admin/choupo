@@ -3518,6 +3518,35 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C402 (Vitor, 2026-11-15: "eu nao quero manter legacy!  A ideia e o
+> simulador ficar com uma arquitetura nova").**  A COMMISSION, and a
+> ruling on what it means.  THE END STATE: every shipped case is written in
+> the C398 forms, and the engine's readers of the old forms are DELETED,
+> not kept beside the new ones; an old form met afterwards is refused BY
+> NAME with the line to write instead.  Backwards compatibility in the
+> sense of the settled contract (every shipped tutorial keeps passing) is
+> kept, because each case is migrated before its reader goes.  WHAT IS
+> LEGACY, measured on main the same day: (1) a property value typed in a
+> unit block, 42 cases (17 columns migrated in C398 slice (d); 25 left:
+> about 20 membrane cases with viscosity, diffusivity or density typed in
+> the module, apalutamide01's spray-dryer viscosity, pipe02's water
+> viscosity, pfr05's heat capacity); the refusal then covers EVERY unit,
+> not the column alone; (2) a per-unit `thermo { }` fragment, 7 cases (hda,
+> acetonePlant, basis01, flash20, perUnitThermo01, esterification2sector's
+> SEPARATION flash, crystalliser09), each becoming a named variant chosen
+> by `thermo <name>;`, and the fragment reader removed; (3) the old
+> `diffusivity { model WilkeChang; }` form, read beside the new grammar
+> since slice (d); (4) the literal defaults in code (8); (5) the sites that
+> price a liquid property without the door (80 before slice (d), 76 after):
+> the ratchet goes to ZERO and is then a refusal.  NOT LEGACY: a property
+> dictionary with one system and no `variants {}` is the base form of the
+> new architecture (a variant derives from it), not an old one.  ORDER:
+> after C398 (c) and (d) land, one migration slice per family (membranes
+> first, then the dryer, the pipe and the reactor, then the fragments), each
+> deleting its reader in the same slice, each with its moved rows listed;
+> then the door ratchet to zero; the done-state measured by a gate that
+> counts every old form in the tree and the engine and must read zero.
+
 > **C329 SLICE B2 DESIGNED AND RULED (2026-11-15).**  The sources Vitor
 > filed the same night (Kooijman & Taylor 1991, Vignes 1967, Leffler &
 > Cullinan 1970, Anderson & Babb 1961, Taylor & Krishna 1993) unblocked the
