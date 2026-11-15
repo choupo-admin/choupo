@@ -19,3 +19,26 @@ source "NBS = Wagman et al. 1982, J. Phys. Chem. Ref. Data 11 Suppl. 2, Table 10
 hfAq { value -103970; unit J/mol;}
 sAq  { value 162.3;  unit J/mol/K;}
 }
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C403).  No `radius` is curated for this ion: the tier's radius is the HYDRATED radius of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I, and it was not read for this record.  A Stokes radius
+    //  computed from D0 would be a different convention under the same key, so none is written: DSPM-DE still
+    //  refuses this ion by name, while the multi-ionic polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 1.72e-09; unit m2/s; }
+    provenance
+    {
+        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table
+        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page
+        //  as a second opinion on this ion at 25 C; it is a compilation and is not this value's origin.
+        D0
+        {
+            source        "R. A. Robinson and R. H. Stokes, Electrolyte Solutions, 2nd ed., Butterworths, London, 1959, read in the Russian translation (R. Robinson, R. Stoks, Rastvory elektrolitov, ed. A. N. Frumkin, Izdatel'stvo Inostrannoi Literatury, Moskva, 1963), Appendix 6.1 (Predel'naya ekvivalentnaya elektroprovodnost' ionov pri 25 C v vode), p. 534 (PDF p. 531 of the folder copy), row ClO3-: lambda0 = 64.6 S cm2/eq at 25 C; the book's own literature reference for the row: no. 10, C. B. Monk, J. Am. Chem. Soc. 70, 3281 (1948)";
+            origin        literature;
+            method        "read at the page image, 2026-11-15 (DEV.md 4c C403): lambda0 = 64.6 S cm2/eq (x 1e-4 = 0.00646 S m2/eq), converted by the Nernst relation D = R T lambda0 / (|z| F^2) with R = 8.314462618 J/mol/K, F = 96485.33212 C/mol, T = 298.15 K (RT/F^2 = 2.662848e-07), |z| = 1, to 1.72e-09 m2/s";
+            reviewStatus  interim;
+            notes         "The same conversion applied to the book's Na+ row (lambda0 50.10) gives 1.334e-09 m2/s, +0.3 % against Li & Gregory's 1.33e-9 for Na+ (the conductance and tracer routes differ by that much).  No page of the English edition was seen: every page named here is the Russian translation's. A second compiled table (named in the comment above) gives 1.72e-09 m2/s for this ion at 25 C (-0.01 %).";
+        }
+    }
+}

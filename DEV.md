@@ -3518,6 +3518,28 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C403 LANDED (2026-11-15): 54 ions and boric acid carry their own D0.**
+> Read at the page: 41 ions from Li & Gregory 1974 Table 1 (p. 705; the 0
+> and 18 C values in the notes), 12 from Robinson & Stokes 1959, Appendix
+> 6.1, read in the Russian translation (Moscow 1963, pp. 534-535; D =
+> RT lambda0/(|z|F^2), checked on Na+ at +0.3 % against Li & Gregory), Cu+
+> from Dudek & Fedkiw 1999, boric acid 1.6405e-9 m2/s from Park & Lee 1994
+> (Table 2, p. 893, the zero-concentration intercept).  The 22 values
+> machine-transcribed before were read back (18 equal; Br- -3.8 %, HPO4 2-
+> +6.4 %, Cl- and Ca2+ under 0.2 %) and replaced.  The CRC is a named
+> cross-check only: its ionic table cites five books for all rows, so no
+> CRC-only value was entered; it disagrees by over 1 % on 18 ions, and its
+> printed MoO4 2- D omits the division by |z|.  A reviewer read every value
+> against the page image (ID-01: I- had its provenance and no value, fixed;
+> check_species_records now refuses either half alone).  NO NUMBER MOVED:
+> the 189 sealed cases keep their frozen copies; re-sealing them is a
+> separate decision (the list of value changes is in the builder's
+> report).  Held by --fast 87/0 and the species and licence gates.  STILL
+> UNFILLED (no source read): permanganate, thiocyanate, sulfite, bisulfite,
+> hydrazinium, triethylammonium, several organic anions (citrate, lactate,
+> tartrate, succinate, malate...), the borates, the Good's buffers, the
+> amino acids; Vitor was given a list of papers with DOIs for them.
+
 > **EX-05 FIXED AND LANDED (2026-11-15): the phiPhi dew and bubble points.**
 > On a package with one equation of state for both phases, DewPoint made a
 > single outer pass (the `ideal` activity placeholder read as an ideal
