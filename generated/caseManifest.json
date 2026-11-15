@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1866,
+  "cases": 1867,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 25
@@ -24700,6 +24700,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/mixing01_water_acetone": {
    "application": "choupoProps",
    "ops": [
@@ -31559,6 +31573,7 @@
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
     "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
+    "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
@@ -33593,6 +33608,7 @@
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/ternary01_audit_vlle",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
+    "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
     "tutorials/steady/absorption/extraction01_waterButanol",
     "tutorials/steady/distillation/column03_azeotrope_mesh",
     "tutorials/steady/flash/bubbleT01_ethanol_water",
@@ -36459,6 +36475,7 @@
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
+    "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
