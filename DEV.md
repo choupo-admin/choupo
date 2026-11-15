@@ -3518,6 +3518,28 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398 SLICE (c) LANDED (2026-11-15).**  A table is a law type: liquid
+> viscosity and liquid and solid heat capacity, in a record or a case
+> experiments file, with `linear`, `logLinear`, `logReciprocal` or
+> `monotoneCubic` in the pin; refused at evaluation outside its points
+> unless the CASE declares a bounded `extend` (the end segment's chord,
+> announced, the largest excursion restated); Cp integrated in closed form
+> per segment.  Two rulings of the first review are in the code: a hard
+> property refusal is never a number (105 of 283 generic catches rethrow;
+> each decision listed in 46f44e163), and an experiments file resolves from
+> the declaring constant/ (the density pilot's reader fixed with it).
+> Reviewed in three rounds by two reviewers (rows TB-01..06, TG-01..21;
+> reports docs/reviews/2026-11-14-c398c-numbers and -c398c-grammar): every
+> new golden recomputed by hand, refusals forced through an exchanger, a
+> column stage, a recycle tear, a design spec, a batch and a sweep; the gate
+> sabotages caught went from 6 of 13 to 12 of 13 (S10 not observable).
+> Validation: 573 of 587 cases byte-identical against 679eebd28 (2 by a
+> bench row, 12 by a run-directory hash), the builder's --scope 1695/0 and
+> 1402/0 with mass, element, energy and campaign closures, --fast 87/0 and
+> --gui 49/0 on the merged tree.  The full sweep runs with slice (d) on top.
+> OPEN: no solid-Cp witness (Robie & Hemingway 1995 is in the folder, unread
+> for this slice); not seen in a browser; WASM not rebuilt.
+
 > **C402 (Vitor, 2026-11-15: "eu nao quero manter legacy!  A ideia e o
 > simulador ficar com uma arquitetura nova").**  A COMMISSION, and a
 > ruling on what it means.  THE END STATE: every shipped case is written in
