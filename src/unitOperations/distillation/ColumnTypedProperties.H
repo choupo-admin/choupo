@@ -33,6 +33,7 @@ Description
 #include "core/Dictionary.H"
 #include "thermo/ThermoPackage.H"
 
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -42,40 +43,56 @@ namespace Choupo {
 namespace columnTypedProperties {
 
 //  The property words a column block might carry, each with the line that
-//  holds it in the property dictionary.
+//  holds it in the property dictionary.  THE LIST IS OF WHAT THE COLUMN CODE
+//  READ AS A PROPERTY, aliases included (DEV.md 4c C398 review row DG-01,
+//  audited 2026-11-15 over every key src/unitOperations/distillation/ looks
+//  up): `liquidViscosity` (packing, efficiency) and `sigma` (hydraulics) were
+//  the two it read; every other spelling of a transport or volumetric
+//  property is refused beside them, so a case cannot type one under another
+//  name.  The reaction and adsorption data a reactive column reads (`Ka`,
+//  `lnKa`, `dHrxn`, `K`) are the case's kinetics and equilibrium constants,
+//  not a phase property, and stay where they are.
 inline const std::vector<std::pair<std::string, std::string>>& words()
 {
+    static const std::string visc =
+        "`transport { liquid { viscosity { measured { <name> { use method; reason"
+        " \"...\"; } } } } }` in constant/thermoPhysPropDict, with the value in"
+        " constant/experiments/<name>.dat (property liquidViscosity; system; solvent;"
+        " columns mu [Pa.s] and, where the source states them, T and w[<c>]; a box"
+        " in T and the mass fractions; provenance { citation; basis })";
+    static const std::string diff =
+        "`transport { liquid { diffusivity { returns effective; composition { rule"
+        " <name>; } infiniteDilution { default { model WilkeChang; } entries ("
+        " ... ); } thermodynamicFactor { take 1; } } } }`";
+    static const std::string dens =
+        "`volumetric { liquid { measured { <name> { use method; ... } } } }` with"
+        " constant/experiments/<name>.dat (property liquidDensity)";
+    static const std::string sigma =
+        "`transport { interface { surfaceTension { model <word>; } } }` (or the"
+        " records' laws, `surfaceTension { }`)";
+    static const std::string lk  = "`transport { liquid { thermalConductivity { model <word>; } } }`";
+    static const std::string vv  = "`transport { vapour { viscosity { model <word>; } } }`";
+    static const std::string vd  = "`transport { vapour { diffusivity { model <word>; } } }`";
+    static const std::string vk  = "`transport { vapour { thermalConductivity { model <word>; } } }`";
+    static const std::string rhoV = "the vapour's equation of state (`equilibrium { vapour { fugacityModel"
+                                    " <word>; } }`): a vapour density is computed, never typed";
     static const std::vector<std::pair<std::string, std::string>> w = {
-        { "liquidViscosity",
-          "`transport { liquid { viscosity { measured { <name> { use method; reason"
-          " \"...\"; } } } } }` in constant/thermoPhysPropDict, with the value in"
-          " constant/experiments/<name>.dat (property liquidViscosity; system; solvent;"
-          " columns mu [Pa.s] and, where the source states them, T and w[<c>]; a box"
-          " in T and the mass fractions; provenance { citation })" },
-        { "liquidDiffusivity",
-          "`transport { liquid { diffusivity { returns effective; composition { rule"
-          " <name>; } infiniteDilution { default { model WilkeChang; } entries ("
-          " ... ); } thermodynamicFactor { take 1; } } } }`" },
-        { "liquidDensity",
-          "`volumetric { liquid { measured { <name> { use method; ... } } } }` with"
-          " constant/experiments/<name>.dat (property liquidDensity)" },
-        { "surfaceTension",
-          "`transport { interface { surfaceTension { model <word>; } } }`" },
-        { "liquidThermalConductivity",
-          "`transport { liquid { thermalConductivity { model <word>; } } }`" },
-        { "liquidConductivity",
-          "`transport { liquid { thermalConductivity { model <word>; } } }`" },
-        { "vapourViscosity",
-          "`transport { vapour { viscosity { model <word>; } } }`" },
-        { "vapourDiffusivity",
-          "`transport { vapour { diffusivity { model <word>; } } }`" },
-        { "vapourThermalConductivity",
-          "`transport { vapour { thermalConductivity { model <word>; } } }`" },
+        { "liquidViscosity", visc }, { "viscosity", visc }, { "mu", visc }, { "muL", visc },
+        { "mu_L", visc }, { "liquidDiffusivity", diff }, { "diffusivity", diff }, { "DL", diff },
+        { "D_L", diff }, { "liquidDensity", dens }, { "density", dens }, { "rho", dens },
+        { "rhoL", dens }, { "rho_L", dens }, { "surfaceTension", sigma }, { "sigma", sigma },
+        { "liquidThermalConductivity", lk }, { "liquidConductivity", lk },
+        { "thermalConductivity", lk }, { "vapourViscosity", vv }, { "vaporViscosity", vv },
+        { "muV", vv }, { "mu_V", vv }, { "muG", vv }, { "vapourDiffusivity", vd },
+        { "vaporDiffusivity", vd }, { "DV", vd }, { "D_V", vd }, { "DG", vd },
+        { "vapourThermalConductivity", vk }, { "vapourDensity", rhoV }, { "vaporDensity", rhoV },
+        { "rhoV", rhoV }, { "rho_V", rhoV }, { "rhoG", rhoV },
     };
     return w;
 }
 
-//  Refuse a property word in `operation` or in any block directly inside it.
+//  Refuse a property word in `operation` or in ANY block inside it, at every
+//  depth (lists of blocks included: `feeds ( { ... } )`).
 inline void refuse(const DictPtr& operDict, const std::string& who)
 {
     auto check = [&](const DictPtr& d, const std::string& where)
@@ -87,9 +104,14 @@ inline void refuse(const DictPtr& operDict, const std::string& who)
                     " holds it, and the column asks the package for it (DEV.md 4c C398,"
                     " A4).  Write " + line + ", and remove the key here.");
     };
-    check(operDict, "operation");
-    for (const auto& [path, child] : operDict->childDictsUnnoted())
-        check(child, "operation." + path);
+    std::function<void(const DictPtr&, const std::string&)> walk =
+        [&](const DictPtr& d, const std::string& where)
+    {
+        check(d, where);
+        for (const auto& [path, child] : d->childDictsUnnoted(where))
+            walk(child, path);
+    };
+    walk(operDict, "operation");
 }
 
 //  The column's liquid film takes the EFFECTIVE liquid diffusivity the

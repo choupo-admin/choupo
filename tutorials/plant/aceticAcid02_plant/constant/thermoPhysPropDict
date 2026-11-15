@@ -46,6 +46,18 @@ equilibrium
     }
 }
 
+//  THE SURFACE TENSION THE LIGHTS COLUMN'S TRAYS ARE RATED ON (C398 A4): each
+//  component by Brock-Bird (corresponding states, Tc/Pc/Tb from the records),
+//  mixed by Butler, the package's default rule.  Until C398 A4 the column's
+//  `hydraulics {}` typed 0.019 N/m, assumed with no source read.
+transport
+{
+    interface
+    {
+        surfaceTension { model BrockBird; }
+    }
+}
+
 //  C256 (2026-11-09), MEASURED: the CO dissolved in the 30 bar condensate
 //  (3.3 mol %, K_CO 29.9 in the condenser flash) and carried into the column
 //  feed (0.065 %) rests on a vapour pressure CONTINUED past CO's Tc

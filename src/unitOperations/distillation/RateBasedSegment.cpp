@@ -81,6 +81,10 @@ struct SegmentCoefficients
     scalar m     = 0.0;                // slope of the equilibrium line at xbar
     scalar HG = 0.0, HL = 0.0, HOG = 0.0;  // m, at this segment's own loads
     scalar F  = 0.0, uL = 0.0, aeOverAp = 0.0, holdup = 0.0, flood = 0.0;
+    //  The liquid film's properties AS THE PACKAGE GAVE THEM and the state it
+    //  was asked at (C398 ruling 7: published, so a property operation at the
+    //  same state can be held equal to them).
+    scalar DL = 0.0, muL = 0.0, TL = 0.0, P = 0.0, xlk = 0.0;
 };
 
 scalar relChange(scalar a, scalar b)
@@ -444,6 +448,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         //  rule, the thermodynamic factor taken as 1 -- the same value the
         //  transfer-unit bed takes, so the limit compares like with like.
         st.DL = liquidProperty::evaluate(thermo, liquidProperty::Property::diffusivity, TLm, Pm, xl).value;
+        c.DL = st.DL; c.muL = st.muL; c.TL = TLm; c.P = Pm; c.xlk = xl[lk];
         scalar ys = 0.0;
         (void)ystarAndSlope(xl[lk], Pm, TLm, ys, c.m);
         st.lambda = c.m * vm / lm;
@@ -881,6 +886,12 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         profile_.columns["HL"].push_back(HLk);
         profile_.columns["m"].push_back(c.m);
         profile_.columns["liquidFilmShare"].push_back(share);
+        //  C398 ruling 7: what the liquid film took from the package, and where.
+        profile_.columns["D_L"].push_back(c.DL);
+        profile_.columns["mu_L"].push_back(c.muL);
+        profile_.columns["liquidFilm_T"].push_back(c.TL);
+        profile_.columns["liquidFilm_P"].push_back(c.P);
+        profile_.columns["liquidFilm_x_" + thermo.comp(lk).name()].push_back(c.xlk);
     }
     if (!std::isfinite(HETP) || !std::isfinite(discErr))
         throw std::runtime_error(who + "the bed's HETP or its discretisation estimate is not a"

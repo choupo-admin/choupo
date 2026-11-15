@@ -61,13 +61,12 @@ const std::map<std::string, std::vector<Row>>& table()
         { "phaseChanger",      { { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel" } },
                                  { "surfaceTension",    { "kernel" } } } },
-        //  C398 slice (d): the liquid viscosity, diffusivity and thermal
-        //  conductivity through the door; `declared` stays on the surface
-        //  tension for a tray hydraulics' `sigma` (aceticAcid02_plant), the
-        //  unit-block family that is next.
+        //  C398 slice (d): the liquid viscosity, diffusivity, thermal
+        //  conductivity and surface tension through the door (a `sigma` typed
+        //  in `hydraulics {}` is refused since review row DG-01).
         { "distillationColumn",{ { "liquidDensity",     { "kernel" } },
                                  { "liquidViscosity",   { "kernel" } },
-                                 { "surfaceTension",    { "kernel", "declared" } },
+                                 { "surfaceTension",    { "kernel" } },
                                  { "liquidDiffusivity", { "kernel" } },
                                  { "liquidThermalConductivity", { "kernel" } } } },
         //  The time-integrated vessels (the dynamic driver declares as the

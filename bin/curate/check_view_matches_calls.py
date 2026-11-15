@@ -106,7 +106,7 @@ WITNESSES = [
     #  declared liquid diffusivity; the props witness's entry and the
     #  association factor taken by default.
     ("tutorials/steady/distillation/ratebased01_schulz_0p10bar", 4,
-     ["measured mixture value schulz2018_0p10bar_liquidViscosity (use method)",
+     ["stated value schulz2018_0p10bar_liquidViscosity (representative values as employed by the authors",
       "liquidDiffusivity composition rule AndersonBabb", "liquidDiffusivity thermodynamic factor: taken as 1"], []),
     ("tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary", 4,
      ["isopropanol as a solvent: associationFactor default 1.0, not in the record",

@@ -88,6 +88,28 @@ def edit(path: Path, old: str, new: str):
     path.write_text(s.replace(old, new, 1))
 
 
+COMPONENT_DIR = WITNESS / "constant" / "components"
+
+
+def record_number(comp, key):
+    m = re.search(r"^\s*" + key + r"\s+([0-9.eE+-]+)\s*;", (COMPONENT_DIR / f"{comp}.dat").read_text(), re.M)
+    return float(m.group(1))
+
+
+def wilke_chang(solute, solvent, T, mu_solvent, phi):
+    """Poling 5th ed. Eq. 11-9.1, by hand: 7.4e-8 (phi M_B)^0.5 T / (eta_B[cP] V_A^0.6) cm2/s."""
+    MB = record_number(solvent, "MW")
+    VA = record_number(solute, "Vliq") * 1.0e6
+    return 7.4e-8 * (phi * MB) ** 0.5 * T / (mu_solvent * 1.0e3 * VA ** 0.6) * 1.0e-4
+
+
+def profile_of(out, unit="column"):
+    a = out.find("<<<Choupo:result-begin>>>")
+    b = out.find("<<<Choupo:result-end>>>")
+    r = json.loads(out[a + len("<<<Choupo:result-begin>>>"):b])
+    return r.get("profiles", {}).get(unit)
+
+
 def main():
     fails, notes = [], []
     with tempfile.TemporaryDirectory(prefix="ldd_") as tmp:
@@ -104,16 +126,42 @@ def main():
                              " is not the declared 1.26e-5 cm2/s")
             if p.get("D_L_inf_water_in_methanol") in (None, 1.26e-09):
                 fails.append("(1) poling288: water in methanol took the methanol-in-water datum")
-            b = dg.get("binaryEffective", {})
+            #  EACH RULE BY HAND (review rows DG-06, DG-07): on the methanol-water
+            #  binary, where D0(water in methanol) / D0(methanol in water) ~ 2.5,
+            #  from the two infinite-dilution values (in the PURE solvents'
+            #  viscosities) and the viscosities the same run prints.
             x_m, x_w = 0.9459, 0.0541
-            dmw, dwm, eff = (b.get(k) for k in ("D_L_inf_methanol_in_water",
-                                                 "D_L_inf_water_in_methanol", "D_L_effective"))
-            if None in (dmw, dwm, eff):
-                fails.append("(1) binaryEffective: a value is missing")
+            mu_m = dg.get("muMethanol", {}).get("viscosity_liquid")
+            mu_w = dg.get("muWater", {}).get("viscosity_liquid")
+            for op, rule in (("binaryEffective", "Vignes"), ("cbBinary", "CaldwellBabb"),
+                             ("lcBinary", "LefflerCullinan"), ("abBinary", "AndersonBabb")):
+                b = dg.get(op, {})
+                dmw, dwm, eff, mu = (b.get(k) for k in ("D_L_inf_methanol_in_water",
+                                     "D_L_inf_water_in_methanol", "D_L_effective", "viscosity_liquid"))
+                if None in (dmw, dwm, eff, mu, mu_m, mu_w):
+                    fails.append(f"(1) {op}: a value is missing")
+                    continue
+                hand = {"Vignes": dwm ** x_m * dmw ** x_w,
+                        "CaldwellBabb": x_m * dwm + x_w * dmw,
+                        "LefflerCullinan": (dwm * mu_m) ** x_m * (dmw * mu_w) ** x_w / mu,
+                        "AndersonBabb": (x_m * dwm * mu_m + x_w * dmw * mu_w) / mu}[rule]
+                if abs(eff / hand - 1.0) > 1e-11:
+                    fails.append(f"(1) {op}: D_L_effective {eff} is not {rule}'s value by hand {hand}")
+            if dg.get("cbBinary", {}).get("D_L_effective") == dg.get("abBinary", {}).get("D_L_effective"):
+                fails.append("(1) CaldwellBabb and AndersonBabb give the same number: the witness cannot"
+                             " tell the two rules apart")
+            #  THE ASSOCIATION FACTOR TAKEN BY DEFAULT, by value AND by its words
+            #  (review row DG-06 item 3): D0(methanol in 2-propanol) is Wilke-Chang
+            #  with phi = 1.0 exactly, and the view says so.
+            mu_i = dg.get("muIsopropanol", {}).get("viscosity_liquid")
+            d_mi = dg.get("topDinf", {}).get("D_L_inf_methanol_in_isopropanol")
+            if None in (mu_i, d_mi):
+                fails.append("(1) the 2-propanol values are missing")
             else:
-                vig = dmw ** x_w * dwm ** x_m
-                if abs(eff / vig - 1.0) > 1e-12:
-                    fails.append(f"(1) binaryEffective: D_L_effective {eff} is not the Vignes value {vig}")
+                hand = wilke_chang("methanol", "isopropanol", 328.62, mu_i, 1.0)
+                if abs(d_mi / hand - 1.0) > 1e-10:
+                    fails.append(f"(1) D0(methanol in 2-propanol) {d_mi} is not Wilke-Chang with phi 1.0"
+                                 f" by hand ({hand}): the default association factor moved")
             for rec in ASSOCIATION_FACTOR_DEFAULTED:
                 text = (ROOT / "data" / "standards" / "components" / f"{rec}.dat").read_text()
                 if re.search(r"^\s*associationFactor\s", text, re.M):
@@ -122,7 +170,11 @@ def main():
                 elif f"{rec} as a solvent: associationFactor default 1.0, not in the record" not in out \
                         and rec in ("isopropanol",):
                     fails.append(f"(1) the view does not say {rec}'s association factor is the default")
-            notes.append("witness: 3 operations, entry exact, Vignes to 1e-12, the default announced")
+            #  WATER AS THE SOLUTE (review row DF-01): named for the pair, marked.
+            if out.count("OUTSIDE THE METHOD'S STATED SCOPE") < 2:
+                fails.append("(1) the view does not mark the two water-solute pairs outside the"
+                             " method's stated scope")
+            notes.append("witness")
 
         # ---- (1b) an inline entry, and a `use check` viscosity --------------
         d = copy(WITNESS, tmp, "inline")
@@ -138,18 +190,18 @@ def main():
         edit(d / "constant/thermoPhysPropDict", "viscosity   { }",
              'viscosity   { measured { muCheck { use check; reason "a probe"; } } }')
         (d / "constant/experiments/muCheck.dat").write_text(
-            'provenance { citation "a probe of this gate"; }\nproperty liquidViscosity;\n'
-            "system ( methanol isopropanol water );\nsolvent water;\n"
+            'provenance { citation "a probe of this gate"; basis "a probe value"; }\n'
+            "property liquidViscosity;\nsystem ( methanol isopropanol water );\nsolvent water;\n"
             "columns ( { name mu; unit mPa.s; } );\ndata ( 0.5 );\n"
             "box { T ( 280 400 ); w[methanol] ( 0 1 ); w[isopropanol] ( 0 1 ); }\n")
         edit(d / "system/propsDict", "D_L_inf_isopropanol_in_water     D_L_inf_water_in_isopropanol );",
              "D_L_inf_isopropanol_in_water     D_L_inf_water_in_isopropanol  viscosity_liquid );")
         rc, out = run(d, "choupoProps")
         mu = diagnostics(out).get("topDinf", {}).get("viscosity_liquid")
-        if rc != 0 or "[liquid viscosity] measured muCheck 0.0005 Pa s beside the computed" not in out \
-                or mu is None or abs(mu - 5e-4) < 1e-12:
-            fails.append(f"(1b) a `use check` measurement: exit {rc}, the comparison line "
-                         f"{'printed' if 'measured muCheck' in out else 'NOT printed'}, value {mu}"
+        if rc != 0 or "[liquid viscosity] stated value muCheck (a probe value) 0.0005 Pa s beside the computed" \
+                not in out or mu is None or abs(mu - 5e-4) < 1e-12:
+            fails.append(f"(1b) a `use check` stated value: exit {rc}, the comparison line "
+                         f"{'printed' if 'muCheck' in out else 'NOT printed'}, value {mu}"
                          " (a check is never used)")
         else:
             notes.append("use check")
@@ -157,10 +209,17 @@ def main():
         # ---- (2) refusals of the grammar -----------------------------------
         tp = "constant/thermoPhysPropDict"
         ex = "constant/experiments/methanolInWater288.dat"
+        pd = "system/propsDict"
+        STATED = ("provenance { citation \"a probe of this gate\"; basis \"a probe value\"; }\n"
+                  "property liquidViscosity;\n")
+        def stated_file(d, name, system, solvent, cols, data, box):
+            (d / f"constant/experiments/{name}.dat").write_text(
+                STATED + f"system ( {system} );\n" + (f"solvent {solvent};\n" if solvent else "")
+                + f"columns ( {cols} );\ndata ( {data} );\nbox {{ {box} }}\n")
         arms = [
             ("an effective value of three components",
-             [("system/propsDict", "composition { methanol 0.9459;  water 0.0541; }",
-               "composition { methanol 0.8;  isopropanol 0.1;  water 0.1; }")],
+             [(pd, "composition { methanol 0.9459;  water 0.0541; } }\n        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective  viscosity_liquid );\n    }\n    {\n        name        cbBinary;",
+                   "composition { methanol 0.8;  isopropanol 0.1;  water 0.1; } }\n        properties  ( D_L_effective );\n    }\n    {\n        name        cbBinary;")],
              "a liquid of 3 components"),
             ("VignesKooijmanTaylor", [(tp, "{ rule Vignes; }", "{ rule VignesKooijmanTaylor; }")],
              "refused until its source is read"),
@@ -169,23 +228,92 @@ def main():
              "The direction of an infinite-dilution value is part of the datum"),
             ("a file of two points", [(ex, "data        ( 288 1.26e-5 );", "data        ( 288 1.26e-5  298 1.6e-5 );")],
              "slice (c)'s table type"),
-            ("kind fick", [(tp, "solvent water;  kind infiniteDilution;", "solvent water;  kind fick;")],
+            ("kind fick", [(tp, "solvent water;  kind infiniteDilution;\n                              experiments",
+                                "solvent water;  kind fick;\n                              experiments")],
              "no consumer reads a datum of that kind"),
+            ("an entry with no kind", [(tp, "solvent water;  kind infiniteDilution;\n                              experiments",
+                                            "solvent water;\n                              experiments")],
+             "the entry names no `kind`"),
             ("a thermodynamic factor from the activity model",
-             [(tp, "thermodynamicFactor { take 1; }", "thermodynamicFactor { from equilibrium.liquid; }")],
+             [(tp, "{ rule Vignes; }\n                    infiniteDilution", "{ rule Vignes; }\n                    infiniteDilution"),
+              (tp, "                    thermodynamicFactor { take 1; }\n                }\n            }\n        }\n    }\n    cbBinary",
+                   "                    thermodynamicFactor { from equilibrium.liquid; }\n                }\n            }\n        }\n    }\n    cbBinary")],
              "the liquid film takes the thermodynamic factor as 1"),
-            ("returns effective without the factor", [(tp, "thermodynamicFactor { take 1; }", "")],
+            ("`take 2`", [(tp, "                    thermodynamicFactor { take 1; }\n                }\n            }\n        }\n    }\n    cbBinary",
+                               "                    thermodynamicFactor { take 2; }\n                }\n            }\n        }\n    }\n    cbBinary")],
+             "write `take 1;`"),
+            ("`take 0`", [(tp, "                    thermodynamicFactor { take 1; }\n                }\n            }\n        }\n    }\n    cbBinary",
+                               "                    thermodynamicFactor { take 0; }\n                }\n            }\n        }\n    }\n    cbBinary")],
+             "write `take 1;`"),
+            ("`take x`", [(tp, "                    thermodynamicFactor { take 1; }\n                }\n            }\n        }\n    }\n    cbBinary",
+                               "                    thermodynamicFactor { take x; }\n                }\n            }\n        }\n    }\n    cbBinary")],
+             "take"),
+            ("returns effective without the factor",
+             [(tp, "                    thermodynamicFactor { take 1; }\n                }\n            }\n        }\n    }\n    cbBinary",
+                   "                }\n            }\n        }\n    }\n    cbBinary")],
              "needs the thermodynamic factor"),
             ("an entry used outside its box",
-             [("system/propsDict", "{ T 288 K;  P 1 bar;", "{ T 290 K;  P 1 bar;")],
+             [(pd, "{ T 288 K;  P 1 bar;", "{ T 290 K;  P 1 bar;")],
              "is outside the box"),
             ("a column without a unit", [(ex, "{ name D; unit cm2/s; }", "{ name D; }")],
              "has no `unit`"),
+            ("the default Wilke-Chang with water as the solute (DF-01)",
+             [(tp, "                    { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;\n"
+                   "                      reason \"no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so\"; }\n", "")],
+             "The method should not be used when water is the solute"),
+            ("an unlisted pair names the slice's grammar (DG-05)",
+             [(tp, "                default { model WilkeChang; }\n                entries\n                (\n                    { solute water;",
+                   "                entries\n                (\n                    { solute water;")],
+             "infiniteDilution { default { model WilkeChang; } entries ("),
         ]
+        #  The stated mixture viscosity's refusals (DG-02, DG-03, DG-04).
+        stated_arms = [
+            ("a stated value applied to a liquid holding another component (DG-02)",
+             "muS { use method; reason \"a probe\"; }",
+             lambda d: stated_file(d, "muS", "methanol water", "water", "{ name mu; unit mPa.s; }", "0.5",
+                                   "T ( 280 400 ); w[methanol] ( 0 1 );"),
+             "also holds isopropanol"),
+            ("a one-component stated value (DG-03)",
+             "muS { use method; reason \"a probe\"; }",
+             lambda d: stated_file(d, "muS", "methanol", None, "{ name mu; unit mPa.s; }", "0.5", "T ( 280 400 );"),
+             "names ONE component"),
+            ("`use check` beside `use method` on one set (DG-04)",
+             "muS { use method; reason \"a probe\"; } muC { use check; reason \"a probe\"; }",
+             lambda d: (stated_file(d, "muS", "methanol water", "water", "{ name mu; unit mPa.s; }", "0.5",
+                                    "T ( 280 400 ); w[methanol] ( 0 1 );"),
+                        stated_file(d, "muC", "methanol water", "water", "{ name mu; unit mPa.s; }", "0.6",
+                                    "T ( 280 400 ); w[methanol] ( 0 1 );")),
+             "on the same set"),
+            ("a stated value with no basis (DF-04)",
+             "muS { use method; reason \"a probe\"; }",
+             lambda d: (d / "constant/experiments/muS.dat").write_text(
+                 "provenance { citation \"a probe\"; }\nproperty liquidViscosity;\nsystem ( methanol water );\n"
+                 "solvent water;\ncolumns ( { name mu; unit mPa.s; } );\ndata ( 0.5 );\n"
+                 "box { T ( 280 400 ); w[methanol] ( 0 1 ); }\n"),
+             "states no `basis"),
+        ]
+        k = 0
         for label, edits, words in arms:
-            d = copy(WITNESS, tmp, "a" + str(len(notes)) + re.sub(r"\W", "", label)[:20])
+            k += 1
+            d = copy(WITNESS, tmp, f"a{k}")
             for f, old, new in edits:
-                edit(d / f, old, new)
+                if old != new:
+                    edit(d / f, old, new)
+            rc, out = run(d, "choupoProps")
+            if rc == 0:
+                fails.append(f"(2) {label}: ran to exit 0")
+            elif words not in out:
+                fails.append(f"(2) {label}: refused, but not by its words ({words!r})")
+            else:
+                notes.append(label)
+        for label, decl, files, words in stated_arms:
+            k += 1
+            d = copy(WITNESS, tmp, f"s{k}")
+            edit(d / tp, "viscosity   { }", "viscosity   { measured { " + decl + " } }")
+            files(d)
+            #  The ternary state topDinf holds isopropanol beside the stated set.
+            edit(d / pd, "D_L_inf_isopropanol_in_water     D_L_inf_water_in_isopropanol );",
+                 "D_L_inf_isopropanol_in_water     D_L_inf_water_in_isopropanol  viscosity_liquid );")
             rc, out = run(d, "choupoProps")
             if rc == 0:
                 fails.append(f"(2) {label}: ran to exit 0")
@@ -200,15 +328,19 @@ def main():
              [("system/flowsheetDict", "                segments          100;",
                "                liquidViscosity   3.91e-4;\n                segments          100;")],
              "transport { liquid { viscosity { measured"),
+            ("sigma typed two blocks deep (DG-01)",
+             [("system/flowsheetDict", "                segments          100;",
+               "                segments          100;\n                probe { inner { sigma 0.02; } }")],
+             "`sigma` typed in `operation.packing.probe.inner`"),
             ("no liquid diffusivity declared",
              [(tp, "            returns             effective;", "            returns             infiniteDilution;"),
               (tp, "            composition         { rule AndersonBabb; }\n", ""),
               (tp, "            thermodynamicFactor { take 1; }\n", "")],
              "the liquid film needs the effective liquid diffusivity"),
-            ("a measured viscosity box that misses the bed",
+            ("a stated viscosity box that misses the bed",
              [("constant/experiments/schulz2018_0p10bar_liquidViscosity.dat",
                "T           ( 320 370 );", "T           ( 345 347.5 );")],
-             "is outside the box the case declared for its measurement"),
+             "is outside the box the case declared for its stated value"),
         ]
         for label, edits, words in col:
             d = copy(RATE, tmp, "c" + re.sub(r"\W", "", label)[:24])
@@ -224,15 +356,49 @@ def main():
             else:
                 notes.append(label)
 
+        # ---- (4) RULING 7: the column and a property operation, one state ---
+        d = copy(RATE, tmp, "r7col")
+        (d / "system" / "outerDict").unlink(missing_ok=True)
+        rc, out = run(d, "choupoSolve")
+        prof = profile_of(out) if rc == 0 else None
+        if not prof or "D_L" not in prof.get("columns", prof):
+            fails.append(f"(4) ratebased01 (exit {rc}) publishes no D_L / mu_L in its profile")
+        else:
+            cols = prof.get("columns", prof)
+            k50 = len(cols["D_L"]) // 2
+            T, P = cols["liquidFilm_T"][k50], cols["liquidFilm_P"][k50]
+            x = cols["liquidFilm_x_pXylene"][k50]
+            p = copy(RATE, tmp, "r7props")
+            (p / "system" / "flowsheetDict").unlink()
+            (p / "system" / "outerDict").unlink(missing_ok=True)
+            cd = (p / "system" / "controlDict").read_text()
+            (p / "system" / "controlDict").write_text(re.sub(r"application\s+\w+;", "application   choupoProps;", cd))
+            (p / "system" / "propsDict").write_text(
+                "operations\n(\n    {\n        name        film;\n        type        propertyPoint;\n"
+                f"        state       {{ T {T!r} K;  P {P!r} Pa;  composition {{ pXylene {x!r};  oXylene {1.0 - x!r}; }} }}\n"
+                "        properties  ( D_L_effective  viscosity_liquid );\n    }\n);\n")
+            rc2, out2 = run(p, "choupoProps")
+            fd = diagnostics(out2).get("film", {})
+            for key, col in (("D_L_effective", "D_L"), ("viscosity_liquid", "mu_L")):
+                got, want = fd.get(key), cols[col][k50]
+                if rc2 != 0 or got is None or abs(got / want - 1.0) > 1e-10:
+                    fails.append(f"(4) ruling 7: the column's {col} at segment {k50} ({want}) and a"
+                                 f" property operation at its state ({got}, exit {rc2}) differ")
+            notes.append("ruling 7")
+
     if fails:
         print(f"{NAME}: FAIL")
         for f in fails:
             print("  " + f)
         return 1
-    print(f"{NAME}: OK -- the witness returns its declared entry exactly (from a file and inline) and"
-          f" the Vignes value to 1e-12; a `use check` viscosity is printed and not used;"
-          f" {len(notes) - 3} refusals each by name (9 of the grammar, 3 of the column).  NOT"
-          " CHECKED: the migrated cases' numbers (their goldens), Wilke-Chang's fitness for a pair.")
+    print(f"{NAME}: OK -- the witness returns its declared entry exactly (from a file and inline);"
+          f" each of the four rules equals its value by hand to 1e-11 on a binary whose two"
+          f" infinite-dilution values differ 2.5-fold; the default association factor holds by value"
+          f" and by its words; the column's liquid film and a property operation at its state agree to"
+          f" 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used;"
+          f" {len(notes) - 5} refusals each by name.  NOT CHECKED: the migrated cases' numbers (their"
+          f" goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Leffler-Cullinan"
+          f" against Vignes (equal on this witness: its mixture viscosity is the log-mole average).")
     return 0
 
 

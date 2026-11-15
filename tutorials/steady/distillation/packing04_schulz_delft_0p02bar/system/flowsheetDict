@@ -31,10 +31,10 @@
   constants for Montz B1-200, B2-300, C1-200, C2-200 and no gauze packing --
   nothing for A3-500M.  The Delft model needs only the geometry.
 
-  MEASURED INPUTS (Schulz section 2 and Table 1): diameter, bed height,
+  STATED INPUTS (Schulz section 2 and Table 1): diameter, bed height,
     installed area 478, void fraction 0.92, angle 60 deg, top pressure; the
     liquid viscosity 0.539 mPa s (Table 1; the property dictionary carries it as the
-    set's measured value, constant/experiments/schulz2018_0p02bar_liquidViscosity.dat).
+    set's stated value, constant/experiments/schulz2018_0p02bar_liquidViscosity.dat).
   ESTIMATED: the corrugation base b = 11.5 mm and height h = 6.1 mm -- NOT
     printed by Schulz.  Taken with the base/height ratio of Montz B1-400
     (14.0/7.4 mm, Fair et al. 2000 Table 1) and scaled so that Fair's Eq 2,

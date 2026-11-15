@@ -50,7 +50,7 @@ transport
 
     liquid
     {
-        //  The paper's own liquid viscosity, the set's measured value (C398 (d)):
+        //  The paper's own liquid viscosity, the set's stated value (C398 (d)):
         //  constant/experiments/yanagi1982_165kPa_liquidViscosity.dat.
         viscosity
         {

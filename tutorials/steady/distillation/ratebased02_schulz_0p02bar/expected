@@ -45,6 +45,6 @@ utility column                 cooling.chilledWater.kg_s 10.9147469827    1e-4
 utility column                 cooling.chilledWater.eur_h 3.30061948755    1e-4
 source  column                 liquidDensity    liquidVolume.idealMix[anchoredRackett] exact
 source  column                 liquidDiffusivity effective.AndersonBabb[WilkeChang] exact
-source  column                 liquidViscosity  measured.schulz2018_0p02bar_liquidViscosity    exact
+source  column                 liquidViscosity  stated.schulz2018_0p02bar_liquidViscosity    exact
 source  column                 surfaceTension   BrockBird/Butler exact
 source  column                 liquidThermalConductivity SatoRiedel/Li exact

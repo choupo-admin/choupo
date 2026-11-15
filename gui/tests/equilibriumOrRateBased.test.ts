@@ -195,7 +195,7 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       "DistillationColumn.cpp:1597": "lookupScalarOrDefault(\"murphreeEfficiency\", 1.0);",
       "DistillationColumn.cpp:1729": "Keff[j][i] = std::max(0.0, Emv * K[j][i] + (1.0 - Emv) * yDown / xj);",
       "DistillationColumn.cpp:2397": "`murphreeEfficiency` is not ",
-      "DistillationColumn.cpp:5058": "tray efficiency is implemented for a BINARY",
+      "DistillationColumn.cpp:5078": "tray efficiency is implemented for a BINARY",
     };
     for (const c of cited) expect(CLAIMS[c], `uncovered citation ${c}`).toBeDefined();
     const src = tree("src/unitOperations/distillation/DistillationColumn.cpp").split("\n");

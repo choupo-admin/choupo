@@ -9,24 +9,32 @@
 /*  liquidDiffusivity01 -- what `transport { liquid { diffusivity {} } }`
     returns, and in which direction (DEV.md 4c C398 slice (d)).
 
-    topDinf        the system: `returns infiniteDilution`, Wilke-Chang for
-                   every pair, at the top of Pelkonen et al.'s Clausthal column,
-                   run MIW9 (Chem. Eng. Process. 40 (2001) 235, Table 3: the
-                   reflux at 55.47 C, 960 mbar; the liquid at 1.790 m, methanol
-                   0.8175, 2-propanol 0.1357, water by difference).  The six
-                   values D0(solute in solvent) differ by direction -- the
-                   solvent's viscosity and association factor, the solute's
-                   volume.  An EFFECTIVE value of this ternary is not asked:
-                   it is refused (no rule that reduces the pair values to it
-                   has been read; the view says so, and the gate
-                   check_liquid_diffusivity_declaration holds the refusal).
+    topDinf        the system: `returns infiniteDilution`, at a state taken
+                   from Pelkonen et al.'s Clausthal column, run MIW9 (Chem. Eng.
+                   Process. 40 (2001) 235, Table 3): the temperature is T_Top,
+                   55.47 C, which their nomenclature defines as the REFLUX
+                   stream's; the composition is the liquid SAMPLED at 1.790 m
+                   (methanol 0.8175, 2-propanol 0.1357, water by difference);
+                   960 mbar.  That liquid's own bubble point at 960 mbar is
+                   339.18 K (this package), so the state is the reflux's
+                   temperature with the packing's liquid, not a film state.
+                   The six values D0(solute in solvent) differ by direction --
+                   the solvent's viscosity and association factor, the solute's
+                   volume.  An EFFECTIVE value of this ternary is refused (no
+                   rule that reduces the pair values to it has been read).
     poling288      the variant `poling288`: methanol in water replaced by the
-                   measured value Poling 5th ed. Table 11-5 prints at 288 K;
-                   water in methanol stays Wilke-Chang.  The datum is used at
-                   its own temperature only (its box is the point).
-    binaryEffective  the variant `binaryEffective`: `returns effective` with
-                   the Vignes rule, on the methanol-water binary at the top's
-                   temperature -- the value a column's liquid film would take.
+                   value Poling 5th ed. Table 11-5 prints at 288 K (p. 11.31);
+                   water in methanol stays Wilke-Chang, named with its reason.
+                   The datum is used at its own temperature only (its box is
+                   the point).
+    binaryEffective, cbBinary, lcBinary, abBinary
+                   `returns effective` by Vignes, Caldwell-Babb,
+                   Leffler-Cullinan and Anderson-Babb on the methanol-water
+                   binary at the same temperature, each beside the two
+                   infinite-dilution values and the mixture's viscosity.
+    muMethanol, muWater, muIsopropanol
+                   the pure liquids' viscosities at that temperature (what
+                   Wilke-Chang and the viscosity-corrected rules read).
 
     The golden master locks every computed value at reltol 1e-4.  */
 
@@ -43,7 +51,7 @@ operations
     {
         name        poling288;
         type        propertyPoint;
-        thermo      poling288;            // the variant with the measured entry
+        thermo      poling288;            // the variant with the stated entry
         state       { T 288 K;  P 1 bar;  composition { methanol 0.5;  water 0.5; } }
         properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol );
     }
@@ -52,6 +60,45 @@ operations
         type        propertyPoint;
         thermo      binaryEffective;      // `returns effective`, rule Vignes
         state       { T 328.62 K;  P 96000 Pa;  composition { methanol 0.9459;  water 0.0541; } }
-        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective );
+        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective  viscosity_liquid );
+    }
+    {
+        name        cbBinary;
+        type        propertyPoint;
+        thermo      cbBinary;      // `returns effective`, rule CaldwellBabb
+        state       { T 328.62 K;  P 96000 Pa;  composition { methanol 0.9459;  water 0.0541; } }
+        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective  viscosity_liquid );
+    }
+    {
+        name        lcBinary;
+        type        propertyPoint;
+        thermo      lcBinary;      // `returns effective`, rule LefflerCullinan
+        state       { T 328.62 K;  P 96000 Pa;  composition { methanol 0.9459;  water 0.0541; } }
+        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective  viscosity_liquid );
+    }
+    {
+        name        abBinary;
+        type        propertyPoint;
+        thermo      abBinary;      // `returns effective`, rule AndersonBabb
+        state       { T 328.62 K;  P 96000 Pa;  composition { methanol 0.9459;  water 0.0541; } }
+        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective  viscosity_liquid );
+    }
+    {
+        name        muMethanol;
+        type        propertyPoint;
+        state       { T 328.62 K;  P 96000 Pa;  composition { methanol 1; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muWater;
+        type        propertyPoint;
+        state       { T 328.62 K;  P 96000 Pa;  composition { water 1; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muIsopropanol;
+        type        propertyPoint;
+        state       { T 328.62 K;  P 96000 Pa;  composition { isopropanol 1; } }
+        properties  ( viscosity_liquid );
     }
 );

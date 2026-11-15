@@ -202,10 +202,11 @@ units
                 orificeCoefficient     0.84;     // C_o -- the Liebson chart value
                                                  // column09 reads; not re-read here
                 floodFraction          0.80;     // design target -- ASSUMED
-                //  The package carries no surface-tension model, so it is
-                //  DECLARED: of the order of acetic acid's near its normal
-                //  boiling point -- ASSUMED, no source was read for it.
-                sigma                  0.019;    // N/m
+                //  The surface tension is the PACKAGE's (Brock-Bird, mixed by
+                //  Butler: constant/thermoPhysPropDict), the one the trays'
+                //  flooding is rated on.  Until C398 A4 this block typed
+                //  `sigma 0.019;`, assumed with no source read; a column block
+                //  no longer carries a property.
                 //  `K2` (the weep-point chart) is NOT declared: it is read off
                 //  a chart against this tray's own h_w + h_ow, and nobody has
                 //  read it for this tray.  The run says the weep check was not

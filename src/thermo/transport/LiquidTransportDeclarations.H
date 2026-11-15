@@ -20,7 +20,10 @@ Description
     hand-back; Theory Guide sections "The liquid diffusivity a package
     returns" and "A measured liquid viscosity of a constituent set").
 
-    (1) A MEASURED MIXTURE VISCOSITY.  In the property dictionary,
+    (1) A STATED MIXTURE VISCOSITY (the grammar key is `measured`, as for the
+        density pilot; what the value IS -- a measurement, an average, a
+        representative value -- is the file's `provenance { basis }`, and the
+        run prints it in those words).  In the property dictionary,
 
           transport { liquid { viscosity { measured
           {
@@ -85,6 +88,7 @@ namespace liquidTransport {
 struct ViscosityMeasurement
 {
     std::string name, use, reason, citation, where, solvent;
+    std::string basis;                       // provenance.basis: what kind of value the source states
     std::vector<std::size_t> set;            // package indices, ascending
     scalar mu = 0.0;                         // Pa s
     bool   hasT = false;
@@ -108,6 +112,25 @@ massFractionsOf(const std::vector<Component>& comps, const std::vector<std::size
 //  "" inside the box; otherwise the words of the first limit crossed.
 std::string outsideBox(const ViscosityMeasurement& m, scalar T,
                        const std::map<std::string, scalar>& w);
+
+//  True only when T AND every mass fraction equal the source's stated point
+//  (review row DG-08); a source that states no T or no composition has no
+//  point, and every value it gives is the case's assumption.
+bool atStatedPoint(const ViscosityMeasurement& m, scalar T,
+                   const std::map<std::string, scalar>& w);
+
+//  The source's stated value is named by what the file declares it to be
+//  (review row DF-04): "stated value (<basis>)".
+std::string statedWords(const ViscosityMeasurement& m);
+
+//  WILKE-CHANG IS NOT USED WITH WATER AS THE SOLUTE (review row DF-01; Poling,
+//  Prausnitz & O'Connell 5th ed., p. 11.22: "The method should not be used
+//  when water is the solute").  A pair whose solute is water is refused by the
+//  DEFAULT correlation; an entry may carry a value with its source, or name
+//  the correlation explicitly with the reason it is accepted outside its
+//  stated scope (the view marks it so).
+bool isWater(const Component& c);
+std::string waterSoluteRefusal(const std::string& model, const std::string& solvent);
 
 // ---------------------------------------------------------------------------
 //  (2) the liquid diffusivity
@@ -135,6 +158,8 @@ struct DiffusivityEntry
     std::string source;                      // citation (inline `source`, or the file's)
     std::string reason;
     std::string where;                       // "inline" or constant/experiments/<name>.dat
+    std::string model;                       // an explicit correlation for this pair (no value)
+    bool        outsideScope = false;        // the correlation applied where its source says not to
 };
 
 struct DiffusivityDeclaration

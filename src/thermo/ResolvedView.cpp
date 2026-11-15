@@ -690,10 +690,20 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 declared.push_back("  " + line);
             if (pkg.liquidDiffusivityDeclaration().declared && !pkg.liquidDiffusivityDeclaration().defaultModel.empty())
                 for (std::size_t i = 0; i < n; ++i)
+                    declared.push_back("  " + pkg.comp(i).name() + " as a solute: V_A " + si(pkg.comp(i).Vliq() * 1.0e6)
+                        + " cm3/mol, the record's Vliq at " + si(pkg.comp(i).VliqT()) + " K"
+                        + (pkg.comp(i).hasVliqT() ? std::string() : std::string(" (25 C, no VliqT stated)"))
+                        + "; Wilke-Chang defines V_A at the normal boiling point (review row DF-03;"
+                          " the boiling-point volume is C398 slice d2)");
+            if (pkg.liquidDiffusivityDeclaration().declared && !pkg.liquidDiffusivityDeclaration().defaultModel.empty())
+                for (std::size_t i = 0; i < n; ++i)
                     declared.push_back("  " + pkg.comp(i).name() + " as a solvent: associationFactor "
                         + (pkg.comp(i).associationFactorStated()
                                ? si(pkg.comp(i).associationFactor()) + " (its record)"
-                               : std::string("default 1.0, not in the record")));
+                               : std::string("default 1.0, not in the record (Wilke and Chang's"
+                                             " values, Poling 5th ed. p. 11.22: water 2.6, methanol 1.9,"
+                                             " ethanol 1.5, an unassociated solvent 1.0; the source gives"
+                                             " no value for this component)")));
         }
         if (info.model.empty() && !hasLaws && !declared.empty())
         {

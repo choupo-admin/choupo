@@ -4855,6 +4855,26 @@ void DistillationColumn::hydraulicsPass(const DictPtr&              operDict,
             std::cerr << "  [hydraulics] " << unitName << ": " << msg << ".\n";
     }
 
+    //  THE SURFACE TENSION'S LEFT-OUT COMPONENTS (C398 A4), announced as the
+    //  density's are: a component above its critical temperature has no
+    //  liquid surface; the trays' surface tension is the rest's.
+    if (!res.surfaceTensionDropped.empty())
+    {
+        kpis_["surfaceTensionUnpricedFraction_max"] = res.surfaceTensionDroppedMax;
+        const std::string msg =
+            "the tray hydraulics' surface tension is the package's over the"
+            " components that have a liquid surface at each tray's temperature,"
+            " renormalised: " + res.surfaceTensionDropped + " ha"
+            + (res.surfaceTensionDropped.find(',') != std::string::npos ? "ve" : "s")
+            + " none there -- a component above its critical temperature has no"
+              " liquid surface.  The largest excluded mole fraction is the KPI"
+              " `surfaceTensionUnpricedFraction_max`";
+        if (AdvisoryLog::instance().addAnnouncedOnce(
+                "hydraulicsSurfaceTension:" + unitName, "approximation", "warning",
+                "distillationColumn '" + unitName + "' hydraulics", msg))
+            std::cerr << "  [hydraulics] " << unitName << ": " << msg << ".\n";
+    }
+
     // The profile carries one row per stage; a non-tray stage (condenser,
     // reboiler) leaves zeros rather than pretending to have hydraulics.
     const std::size_t N = T.size();
@@ -5203,9 +5223,8 @@ int DistillationColumn::solveTotalReflux(const DictPtr& dict,
         st.DV     = DV;
         st.DL     = DL;
         st.muL    = muL;
-        st.sigma  = thermo.hasSurfaceTension() ? liquidProperty::evaluate(thermo, liquidProperty::Property::surfaceTension, T[j], P, x[j]).value : geo.sigma;
-        if (!thermo.hasSurfaceTension())
-            PropertySourceLog::instance().useHere("surfaceTension", liquidSource::declaredByCase, "declared", took(geo.sigma, T[j], P));
+        st.sigma  = TrayHydraulics::surfaceTension(thermo, T[j], P, x[j]).rho;   // the package's, exactly as the hydraulics take it (C398 A4)
+        //  (no `sigma` typed in `hydraulics {}` since C398 A4: one surface tension per tray)
         st.m      = m;
         st.lambda = m * V[j] / L[j];
         //  Molar densities: c_G = rho_V/M_V, c_L = rho_L/M_L.

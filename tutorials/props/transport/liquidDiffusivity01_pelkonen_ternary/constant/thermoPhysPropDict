@@ -15,13 +15,26 @@
     liquid-viscosity law gives (the block below names no model: C398 slice
     (b)).  Wilke-Chang reads the SOLVENT's association factor: water 2.6 and
     methanol 1.9 are in their records; 2-propanol's record writes none, so it
-    is 1.0 by default -- the view prints "default 1.0, not in the record".
+    is 1.0 by default -- the view prints "default 1.0, not in the record" and
+    that the source gives no value for this alcohol.
 
-    TWO VARIANTS (C398 ruling 1: one base, only what differs; the atom
-    replaced is the whole property block):
+    WATER AS THE SOLUTE.  Poling 5th ed. p. 11.22: "The method should not be
+    used when water is the solute".  The default refuses the two pairs whose
+    solute is water; this case names the correlation for each of them with its
+    reason (no measured value of either was read), and the view marks both
+    "outside the method's stated scope".
+
+    VARIANTS (C398 ruling 1: one base, only what differs; the atom replaced is
+    the whole property block):
       poling288        one declared entry, methanol in water, from
                        constant/experiments/methanolInWater288.dat;
-      binaryEffective  `returns effective`, the Vignes rule, Gamma taken as 1.
+      binaryEffective, cbBinary, lcBinary, abBinary
+                       `returns effective` with the four rules (Vignes,
+                       CaldwellBabb, LefflerCullinan, AndersonBabb), Gamma taken
+                       as 1: on the methanol-water binary, where the two
+                       infinite-dilution values differ by a factor 2.5, each
+                       rule gives a different number (the gate
+                       check_liquid_diffusivity_declaration recomputes each).
 
     Activity model ideal: nothing here flashes.  Sealed: the three records
     are this case's own copies (constant/components).  */
@@ -46,7 +59,17 @@ transport
         diffusivity
         {
             returns          infiniteDilution;
-            infiniteDilution { default { model WilkeChang; } }
+            infiniteDilution
+            {
+                default { model WilkeChang; }
+                entries
+                (
+                    { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
+                      reason "no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
+                    { solute water;  solvent isopropanol;  kind infiniteDilution;  model WilkeChang;
+                      reason "no value of water in 2-propanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
+                );
+            }
         }
     }
 }
@@ -69,6 +92,10 @@ variants
                         (
                             { solute methanol;  solvent water;  kind infiniteDilution;
                               experiments methanolInWater288; }
+                            { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
+                              reason "no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
+                            { solute water;  solvent isopropanol;  kind infiniteDilution;  model WilkeChang;
+                              reason "no value of water in 2-propanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
                         );
                     }
                 }
@@ -85,7 +112,87 @@ variants
                 {
                     returns             effective;
                     composition         { rule Vignes; }
-                    infiniteDilution    { default { model WilkeChang; } }
+                    infiniteDilution
+                    {
+                        default { model WilkeChang; }
+                        entries
+                        (
+                            { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
+                              reason "no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
+                        );
+                    }
+                    thermodynamicFactor { take 1; }
+                }
+            }
+        }
+    }
+    cbBinary
+    {
+        transport
+        {
+            liquid
+            {
+                diffusivity
+                {
+                    returns             effective;
+                    composition         { rule CaldwellBabb; }
+                    infiniteDilution
+                    {
+                        default { model WilkeChang; }
+                        entries
+                        (
+                            { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
+                              reason "no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
+                        );
+                    }
+                    thermodynamicFactor { take 1; }
+                }
+            }
+        }
+    }
+    lcBinary
+    {
+        transport
+        {
+            liquid
+            {
+                diffusivity
+                {
+                    returns             effective;
+                    composition         { rule LefflerCullinan; }
+                    infiniteDilution
+                    {
+                        default { model WilkeChang; }
+                        entries
+                        (
+                            { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
+                              reason "no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
+                        );
+                    }
+                    thermodynamicFactor { take 1; }
+                }
+            }
+        }
+    }
+    abBinary
+    {
+        transport
+        {
+            liquid
+            {
+                diffusivity
+                {
+                    returns             effective;
+                    composition         { rule AndersonBabb; }
+                    infiniteDilution
+                    {
+                        default { model WilkeChang; }
+                        entries
+                        (
+                            { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
+                              reason "no value of water in methanol was read (Poling 5th ed. Table 11-5 lists none); the correlation is taken outside its stated scope, and the view says so"; }
+                        );
+                    }
                     thermodynamicFactor { take 1; }
                 }
             }

@@ -1419,11 +1419,12 @@ rate-based segment and the computed tray efficiency take the liquid's density,
 viscosity, thermal conductivity and diffusivity from the PACKAGE, never from a
 column block: a property word typed in `operation` or any block of it
 (`liquidViscosity`, `liquidDiffusivity`, `liquidDensity`, `surfaceTension`, ...)
-is REFUSED with the line to write.  The column needs the EFFECTIVE liquid
-diffusivity, declared in `constant/thermoPhysPropDict` (Theory Guide "The liquid
-diffusivity a package returns"); a paper's one liquid viscosity for the run is a
-measured mixture value (Theory Guide "A measured liquid viscosity of a
-constituent set"):
+is REFUSED with the line to write, at any depth of the column's `operation` tree
+and under every spelling (`sigma`, `rhoL`, `muL`, `DL`, ...).  The column needs the
+EFFECTIVE liquid diffusivity, declared in `constant/thermoPhysPropDict` (Theory
+Guide "The liquid diffusivity a package returns"); a paper's one liquid viscosity
+for the run is a stated mixture value (Theory Guide "A stated liquid viscosity of
+a constituent set"), named by its file's `basis`:
 ```
 transport { liquid {
     viscosity { measured { schulz2018_0p10bar_liquidViscosity
@@ -1436,7 +1437,7 @@ transport { liquid {
 //   property liquidViscosity; system ( pXylene oXylene ); solvent oXylene;
 //   columns ( { name T; unit K; } { name mu; unit Pa.s; } { name w[pXylene]; unit -; } );
 //   data ( 347.15 3.91e-4 0.54 ); box { T ( 320 370 ); w[pXylene] ( 0 1 ); }
-//   provenance { citation "..."; }
+//   provenance { citation "..."; basis "representative values as employed by the authors"; }
 ```
 `AndersonBabb` (D mu linear in x) on Wilke-Chang IS the infinite-dilution values
 taken in the mixture's viscosity and combined linearly: the rule every shipped
@@ -1465,7 +1466,7 @@ hydraulics
     orificeCoefficient     0.84;     // C_o -- a CHART (Liebson 1957); declared, printed back
     floodFraction          0.80;     // design target
     K2                     30.7;     // optional CHART constant; absent => weep check skipped
-    // sigma                0.021;    // N/m; else the package must supply surfaceTension
+    // no property here: the surface tension is the package's (C398 A4; a typed `sigma` is refused)
 }
 ```
 Flooding: Souders-Brown `u_flood = C_SB (σ/20)^0.2 √((ρL−ρV)/ρV)` on the net area, with
@@ -1474,8 +1475,10 @@ That fit misbehaves for `F_LV < 0.03` and the pass **says so** rather than repor
 number it does not believe.  Pressure drop / weir crest / residual head / downcomer
 backup / weep point follow Sinnott (mm of clear liquid).  Kister & Haas (1990) is
 deliberately NOT implemented — two of its constants are unverified against a primary
-source.  **σ is required**: add `transport { surfaceTension { model BrockBird; } }` to the
-thermoPhysPropDict or declare `sigma`.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
+source.  **σ is required, from the package**: add `transport { interface { surfaceTension {
+model BrockBird; } } }` to the thermoPhysPropDict.  A `sigma` typed in `hydraulics {}` is
+REFUSED (C398 A4): the hydraulics and the computed efficiency take ONE surface tension per
+tray.  KPIs: `diameter`, `floodApproach_max`, `floodStage`,
 `dP_column_kPa`, `downcomerBackup_max_mm`, `downcomerFloodStages`, `weepingStages`;
 profile gains `floodApproach`, `dP_Pa`, `h_backup_mm`.
 Examples: `column09_tray_hydraulics` (design → D = 1.316 m) · `column10_flooding`

@@ -122,6 +122,16 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
         m.citation = f.citation;
         onlyKeys(f.dict, { "provenance", "system", "property", "solvent", "columns", "data",
                            "uncertainty", "box" }, f.where);
+        //  WHAT KIND OF VALUE THE SOURCE STATES (review row DF-04): a measurement,
+        //  an average, a representative value the authors employed.  The run and
+        //  the guide name it in these words; nothing calls a stated value a
+        //  measurement unless its file says it is one.
+        m.basis = f.dict->subDict("provenance")->lookupWordOrDefault("basis", "");
+        if (blank(m.basis))
+            throw std::runtime_error(f.where + ": `provenance` states no `basis \"...\";` --"
+                " what kind of value the source gives (a measurement, an average over"
+                " operating conditions, a representative value the authors employed),"
+                " in the source's own words.  The run prints it beside the value.");
         if (f.property != "liquidViscosity")
             throw std::runtime_error(f.where + ": `property " + f.property + "` -- the"
                 " declaration `" + here + "` reads a liquidViscosity point.");
@@ -135,6 +145,18 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
         std::set<std::size_t> set;
         for (const auto& c : f.system) set.insert(indexOf(comps, c, f.where + " system"));
         m.set.assign(set.begin(), set.end());
+        //  A ONE-CONSTITUENT SET IS REFUSED (review row DG-03): the pure liquid's
+        //  viscosity is a LAW of its record, read wherever the package needs a
+        //  pure value (the mixing rule's inputs, Wilke-Chang's solvent, the mu_j
+        //  of a viscosity-corrected rule); a measured mixture value would give
+        //  the same pure liquid two viscosities in one run.
+        if (m.set.size() < 2)
+            throw std::runtime_error(here + " (" + f.where + "): `system` names ONE"
+                " component.  A stated value of a pure liquid is not a mixture value: it"
+                " belongs to the component, as a law of its record or a table law pinned"
+                " for it (`transport { liquid { viscosity { pin ( { component " + f.system.front()
+                + "; law <name>; reason \"...\"; } ); } } }`, the table type of C398"
+                " slice (c)), so the package prices that liquid with one viscosity.");
         if (m.set.size() > 1)
         {
             m.solvent = f.dict->lookupWordOrDefault("solvent", "");
@@ -179,9 +201,19 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
             if (m.w.count(c) && !(m.w.at(c) >= lim.first && m.w.at(c) <= lim.second))
                 throw std::runtime_error(f.where + ": the stated point is outside its own box.");
         for (const auto& o : out)
+        {
             if (o.set == m.set && o.use == "method" && m.use == "method")
                 throw std::runtime_error(here + ": a second `use method` measurement for the"
                     " set of `" + o.name + "` -- one constituent set holds one method.");
+            //  review row DG-04: a check beside the method of the same set is
+            //  never reached (the method answers first) and would never print.
+            if (o.set == m.set && o.use != m.use)
+                throw std::runtime_error(here + ": `use " + m.use + "` beside `" + o.name
+                    + "` (`use " + o.use + "`) on the same set -- a stated value that is the"
+                      " set's method answers every state, so a check beside it is never"
+                      " compared.  Keep one: the method, or the check (with the law"
+                      " answering).");
+        }
         out.push_back(std::move(m));
     }
     return out;
@@ -214,6 +246,43 @@ std::string outsideBox(const ViscosityMeasurement& m, scalar T,
                  + fmt("-%.6g", kv.second.second) + ")";
     }
     return "";
+}
+
+bool atStatedPoint(const ViscosityMeasurement& m, scalar T,
+                   const std::map<std::string, scalar>& w)
+{
+    if (!m.hasT || m.w.empty()) return false;
+    if ((T - m.T) * (T - m.T) > 1e-18) return false;
+    for (const auto& [c, ws] : m.w)
+    {
+        const auto it = w.find(c);
+        const scalar v = it == w.end() ? 0.0 : it->second;
+        if ((v - ws) * (v - ws) > 1e-24) return false;
+    }
+    return true;
+}
+
+std::string statedWords(const ViscosityMeasurement& m)
+{
+    return "stated value " + m.name + " (" + m.basis + ")";
+}
+
+bool isWater(const Component& c)
+{
+    return c.cas() == "7732-18-5" || (c.cas().empty() && c.name() == "water");
+}
+
+std::string waterSoluteRefusal(const std::string& model, const std::string& solvent)
+{
+    return "the default " + model + " is not used with water as the solute (Poling,"
+           " Prausnitz & O'Connell, The Properties of Gases and Liquids, 5th ed., p. 11.22:"
+           " \"The method should not be used when water is the solute\").  Remedy: an entry"
+           " for the pair in `transport { liquid { diffusivity { infiniteDilution { entries ("
+           " ... ); } } } }` -- a value with its source, `{ solute water; solvent " + solvent
+         + "; kind infiniteDilution; value <D> <unit>; T <T> K; box { T (lo hi); } source"
+           " \"...\"; reason \"...\"; }`, or the correlation named for the pair with the"
+           " reason it is accepted outside its stated scope, `{ solute water; solvent " + solvent
+         + "; kind infiniteDilution; model " + model + "; reason \"...\"; }`";
 }
 
 // ===========================================================================
@@ -263,8 +332,9 @@ std::string ruleCitation(Rule r)
                    " Poling, Prausnitz & O'Connell, 5th ed., Eq. 11-10.2 with the"
                    " thermodynamic factor 1";
         case Rule::Vignes:
-            return "Taylor & Kooijman (2014), Eq. 3.33; Poling, Prausnitz & O'Connell,"
-                   " 5th ed., Eq. 11-10.4";
+            return "Taylor & Kooijman (2014), Eq. 3.33, printed as a SUM of the two powers, a"
+                   " misprint of the logarithmic average its text describes; the product is"
+                   " Poling, Prausnitz & O'Connell, 5th ed., Eq. 11-10.4";
         case Rule::LefflerCullinan:
             return "Poling, Prausnitz & O'Connell, 5th ed., Eq. 11-10.5 (Leffler & Cullinan"
                    " 1970, not read)";
@@ -296,7 +366,7 @@ DiffusivityEntry readEntry(const DictPtr& e, const std::vector<Component>& comps
     const std::string here = "transport liquid.diffusivity.infiniteDilution.entries["
                            + std::to_string(k) + "]";
     onlyKeys(e, { "solute", "solvent", "kind", "value", "T", "box", "source", "reason",
-                  "experiments" }, here);
+                  "experiments", "model" }, here);
     DiffusivityEntry d;
     if (!e->found("solute") || !e->found("solvent"))
         throw std::runtime_error(here + ": an entry names its `solute` and its `solvent`"
@@ -309,6 +379,10 @@ DiffusivityEntry readEntry(const DictPtr& e, const std::vector<Component>& comps
         throw std::runtime_error(here + ": solute and solvent are both '" + su + "' -- a"
             " self-diffusion coefficient is the kind `self`, not consumed in this slice.");
     d.kind = e->lookupWordOrDefault("kind", "");
+    if (d.kind.empty())
+        throw std::runtime_error(here + ": the entry names no `kind` -- write `kind"
+            " infiniteDilution;` (the only kind a consumer reads in this slice; a datum"
+            " states what it is, C398 ruling 6).");
     if (d.kind != "infiniteDilution")
     {
         if (d.kind == "fick" || d.kind == "maxwellStefan" || d.kind == "self")
@@ -320,6 +394,28 @@ DiffusivityEntry readEntry(const DictPtr& e, const std::vector<Component>& comps
             d.kind, { "infiniteDilution" }, "Accepted"));
     }
     d.reason = e->lookupWordOrDefault("reason", "");
+    if (e->found("model"))
+    {
+        //  THE CORRELATION NAMED FOR THIS PAIR, e.g. Wilke-Chang where the
+        //  default refuses it (water as the solute): no value, a reason.
+        for (const char* k2 : { "value", "T", "box", "source", "experiments" })
+            if (e->found(k2))
+                throw std::runtime_error(here + ": `" + std::string(k2) + "` beside `model` --"
+                    " an entry is a datum (a value with its source, or a file) OR a"
+                    " correlation named for the pair, not both.");
+        d.model = e->lookupWord("model");
+        if (blank(d.reason))
+            throw std::runtime_error(here + ": `model " + d.model + "` named for " + su + " in "
+                + sv + " needs its `reason \"...\";` -- why the correlation is accepted for"
+                  " this pair.");
+        d.outsideScope = isWater(comps[d.solute]) && d.model == "WilkeChang";
+        d.where  = "the correlation " + d.model;
+        d.source = d.outsideScope
+            ? "outside the method's stated scope (Poling 5th ed. p. 11.22: not to be used with"
+              " water as the solute)"
+            : "the correlation " + d.model;
+        return d;
+    }
     if (e->found("experiments"))
     {
         for (const char* k2 : { "value", "T", "box", "source" })
@@ -534,7 +630,7 @@ std::string describe(const ViscosityMeasurement& m, const std::vector<Component>
 {
     std::string set;
     for (const std::size_t i : m.set) set += (set.empty() ? "" : " + ") + comps[i].name();
-    std::string s = "measured mixture value " + m.name + " (use " + m.use + ") of " + set + ": "
+    std::string s = statedWords(m) + ", use " + m.use + ", a mixture value of " + set + ": "
                   + fmt("%.6g Pa s", m.mu);
     if (m.hasT) s += fmt(" at %.6g K", m.T);
     if (m.hasP) s += fmt(" at %.6g Pa (stated; not applied)", m.P);
@@ -542,7 +638,8 @@ std::string describe(const ViscosityMeasurement& m, const std::vector<Component>
     if (!m.hasT && m.w.empty()) s += " (the source states no temperature and no composition)";
     s += "; box T " + fmt("%.6g", m.boxT.first) + fmt("-%.6g K", m.boxT.second);
     for (const auto& [c, lim] : m.boxW) s += ", w[" + c + "] " + fmt("%.6g", lim.first) + fmt("-%.6g", lim.second);
-    s += " (hard); away from the stated point an assumption, reason: " + m.reason
+    s += std::string(" (hard); ") + (m.hasT && !m.w.empty() ? "away from the stated point" : "at every state (no stated point)")
+       + " the case's assumption, reason: " + m.reason
        + "; source: " + m.citation + " (" + m.where + ")";
     return s;
 }
@@ -562,11 +659,19 @@ std::vector<std::string> describe(const DiffusivityDeclaration& d, const std::ve
                    ? " in the mixture's viscosity (the rule's D0 mu_solvent / mu, term for term)"
                    : " in the pure solvent's viscosity"));
     for (const auto& e : d.entries)
-        out.push_back("liquidDiffusivity infinite dilution, " + comps[e.solute].name() + " in "
-            + comps[e.solvent].name() + " (kind " + e.kind + "): " + fmt("%.6g m2/s", e.D)
-            + fmt(" at %.6g K", e.T) + "; box T " + fmt("%.6g", e.boxT.first) + fmt("-%.6g K", e.boxT.second)
-            + " (hard)" + (e.reason.empty() ? std::string() : ", reason: " + e.reason)
-            + "; source: " + e.source + " (" + e.where + ")");
+        if (!e.model.empty())
+            out.push_back("liquidDiffusivity infinite dilution, " + comps[e.solute].name() + " in "
+                + comps[e.solvent].name() + " (kind " + e.kind + "): " + e.model + " named for the"
+                " pair" + (e.outsideScope ? ", OUTSIDE THE METHOD'S STATED SCOPE (Poling 5th ed."
+                                            " p. 11.22: not to be used with water as the solute)"
+                                          : std::string())
+                + ", reason: " + e.reason);
+        else
+            out.push_back("liquidDiffusivity infinite dilution, " + comps[e.solute].name() + " in "
+                + comps[e.solvent].name() + " (kind " + e.kind + "): " + fmt("%.6g m2/s", e.D)
+                + fmt(" at %.6g K", e.T) + "; box T " + fmt("%.6g", e.boxT.first) + fmt("-%.6g K", e.boxT.second)
+                + " (hard)" + (e.reason.empty() ? std::string() : ", reason: " + e.reason)
+                + "; source: " + e.source + " (" + e.where + ")");
     if (d.returns == Returns::effective)
     {
         out.push_back(std::string("liquidDiffusivity composition rule ") + ruleName(d.rule) + ": "

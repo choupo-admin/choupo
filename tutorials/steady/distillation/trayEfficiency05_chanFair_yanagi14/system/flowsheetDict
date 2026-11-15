@@ -29,9 +29,9 @@
   prescribes.  The tray pressure drop is Bolles & Fair's (Perry 9ed
   14-100..14-109).
 
-  MEASURED INPUTS (the paper): the tray geometry (Table I); the liquid
+  STATED INPUTS (the paper): the tray geometry (Table I); the liquid
     viscosity 0.37 mPa s (Table II, 34 kPa -- the property dictionary carries the paper's
-    average as the set's measured value, constant/experiments/yanagi1982_34kPa_liquidViscosity.dat); the column pressure.
+    average as the set's stated value, constant/experiments/yanagi1982_34kPa_liquidViscosity.dat); the column pressure.
   ASSUMED: the reboiler liquid, 0.29 mol fraction cyclohexane (Table III gives
     0.284 and 0.294 for the two runs it lists; the other points' compositions
     are not published); every point of the sweep uses it.

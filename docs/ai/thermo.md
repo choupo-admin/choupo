@@ -551,7 +551,7 @@ Pick by need:
 When a unit op needs a transport property the system doesn't supply, the
 solver throws a clear error naming the missing slot.
 
-### The liquid diffusivity a package returns, and a measured mixture viscosity (C398 slice (d))
+### The liquid diffusivity a package returns, and a stated mixture viscosity (C398 slice (d))
 
 - `returns infiniteDilution` (the default meaning of the legacy `{ model WilkeChang; }`):
   D0 of a NAMED solute in a NAMED solvent (props keys `D_L_inf_<solute>_in_<solvent>`).
@@ -560,20 +560,31 @@ solver throws a clear error naming the missing slot.
   `CaldwellBabb` (x2 D0_12 + x1 D0_21), `Vignes` (D0_12^x2 D0_21^x1), each D0 in its
   own solvent's pure viscosity; `LefflerCullinan` ((D0_12 mu2)^x2 (D0_21 mu1)^x1 / mu)
   and `AndersonBabb` ((x2 D0_12 mu2 + x1 D0_21 mu1) / mu), mu the mixture's viscosity.
-  `thermodynamicFactor { take 1; }` is required with `effective`; `from ...` is refused.
-  REFUSED by name: three or more components with `effective`; `VignesKooijmanTaylor`
-  (until its source is read); `kind fick|maxwellStefan|self`.
+  `thermodynamicFactor { take 1; }` is required with `effective`; any other `take`, and
+  `from ...`, are refused.  REFUSED by name: three or more components with `effective`;
+  `VignesKooijmanTaylor` (until its source is read); `kind fick|maxwellStefan|self`; an
+  entry with no `kind`.
+- WATER AS THE SOLUTE: the DEFAULT Wilke-Chang refuses it (Poling 5th ed. p. 11.22: "The
+  method should not be used when water is the solute").  Write an entry for the pair:
+  a value with its source, or `{ solute water; solvent methanol; kind infiniteDilution;
+  model WilkeChang; reason "..."; }` (the view marks it "outside the method's stated
+  scope").  Wilke-Chang's V_A is the record's `Vliq` at its datum temperature (25 C
+  unless `VliqT`), printed in the view; the method defines it at Tb (slice d2).
 - An entry replaces the default for ONE direction:
   `infiniteDilution { entries ( { solute methanol; solvent water; kind infiniteDilution;
   experiments methanolInWater288; } ); }` (or inline `value 1.26e-5 cm2/s; T 288 K;
   box { T (288 288); } source "...";`).  The experiments file names `solute`, `solvent`,
   `kind`, columns `T` and `D` WITH units, ONE point (tables: slice (c)), a `box`; cited
   the other way round it is refused.  A box wider than the point needs `reason`.
-- A paper's one liquid viscosity for a run is a measured MIXTURE value of a constituent
-  set: `viscosity { measured { <name> { use method|check; reason "..."; } } }` with
-  `constant/experiments/<name>.dat` (`property liquidViscosity; system; solvent;`
-  columns `mu` and, if stated, `T`, `w[<c>]`; `box { T (lo hi); w[<c>] (lo hi); }`;
-  provenance citation).  Outside the box: refused, never handed to a law.
+- A paper's one liquid viscosity for a run is a STATED mixture value of a constituent
+  set (grammar key `measured`, as for the density): `viscosity { measured { <name> { use
+  method|check; reason "..."; } } }` with `constant/experiments/<name>.dat` (`property
+  liquidViscosity; system; solvent;` columns `mu` and, if stated, `T`, `P`, `w[<c>]`;
+  `box { T (lo hi); w[<c>] (lo hi); }`; `provenance { citation "..."; basis "<what the
+  source says the value is>"; }`, `basis` REQUIRED and printed).  Outside the box --
+  including a liquid holding another component, or lacking one of the set -- refused,
+  never handed to a law.  REFUSED at load: a one-component set (a pure liquid's
+  viscosity is its record's law); `use check` beside `use method` on one set.
   Witness: `props/transport/liquidDiffusivity01_pelkonen_ternary`; the columns
   `packing01..05`, `ratebased01..04`, `trayEfficiency01..07`.
 

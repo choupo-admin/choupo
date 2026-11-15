@@ -25,6 +25,7 @@ provenance
     //  corrected one.
     sha256       "9299fd670cfa680939d0e2eeaaa8a3af9a0a56d59f4415257da5992127d5fc13";
     source       literature;
+    basis        "averaged values, footnoted to Lenoir & Sakata 1978 and Zuiderweg 1969 (Table II: 'Average Physical Properties of the Test Systems under Operating Conditions'), not a measurement of this run";
     citation     "Yanagi, T.; Sakata, M. (1982). Performance of a Commercial Scale 14% Hole Area Sieve Tray. Ind. Eng. Chem. Process Des. Dev. 21, 712-717. doi:10.1021/i200019a029, Table II";
 }
 

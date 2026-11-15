@@ -109,9 +109,16 @@ LINE_CLASSES = {
 #  The class judged per STATEMENT (lines joined up to the `;`), because a
 #  call may be split over lines.  The density call is judged by its LAST
 #  argument (see `density_calls`).
+#  C398 slice (d), review row DG-06: the declared quantity asked of the package
+#  directly (`diffusivityLiquidEffective(`), a Wilke-Chang constructed in any
+#  form (`WilkeChang w(...)`, `WilkeChang w{...}`, `= WilkeChang(...)`), and a
+#  liquid-diffusivity model built outside the package, are each a unit pricing
+#  a liquid property itself.
 DIRECT_OTHER = re.compile(
-    r"(\.|->)(viscosityLiquid\(|surfaceTension\(|diffusivityLiquid\(|thermalConductivityLiquid\()"
-    r"|stokesEinstein::factor(For)?\(|\bWilkeChang\s+\w+\s*\(")
+    r"(\.|->)(viscosityLiquid\(|surfaceTension\(|diffusivityLiquid\(|diffusivityLiquidEffective\("
+    r"|thermalConductivityLiquid\()"
+    r"|stokesEinstein::factor(For)?\(|\bWilkeChang\s+\w+\s*[({]|=\s*(std::make_unique<)?WilkeChang\s*[(>{]"
+    r"|\bLiquidDiffusivityModel::New\s*\(")
 DENSITY_CALL = re.compile(r"(\.|->)density\s*\(")
 CLASSES = ("vliq", "direct", "phaseVariable", "literal", "conversion")
 COMMENT = re.compile(r"^\s*(//|\*)")
@@ -132,6 +139,11 @@ FIXTURES = [
     "const scalar r = thermo.density(T, P, x, DensityPhase::Liquid);",
     "const scalar s = thermo.surfaceTension(T, x);",
     "const scalar D = thermo.diffusivityLiquid(T, i, j);",
+    #  C398 slice (d), DG-06
+    "st.DL = thermo.diffusivityLiquidEffective(p.T, x);",
+    "const WilkeChang wc{nullptr};",
+    "auto wc = WilkeChang(nullptr);",
+    "auto m = LiquidDiffusivityModel::New(d);",
     "const scalar r = op->lookupScalarOrDefault(\"rho_feed\", 1000.0);",
     "const scalar r = op->lookupScalarOrDefault(\"liquidDensity\", 1000.0);",
     "const auto f = stokesEinstein::factorFor(thermo, iW, T);",

@@ -163,7 +163,6 @@ public:
         scalar orificeCoeff  = 0.84;     // C_o -- Liebson chart; declared
         scalar floodFraction = 0.80;     // design target
         scalar K2            = 0.0;      // weep chart; 0 => no weep check
-        scalar sigma         = 0.0;      // N/m; 0 => ask the thermo package
         //  Tray pressure-drop route (C329): false = Sinnott (the default,
         //  h_d + h_w + h_ow + h_r); true = Bolles & Fair as printed by Perry
         //  9th ed. Eqs. 14-100..14-109, h_d + beta (h_w + h_ow), the aeration
@@ -232,6 +231,10 @@ public:
         //  and zero on every column whose liquid the package prices whole.
         std::string liquidDensityDropped;
         scalar      liquidDensityDroppedMax = 0.0;
+        //  What the surface tension left out (C398 A4: the package's, over the
+        //  components that have a liquid surface at the tray's T).
+        std::string surfaceTensionDropped;
+        scalar      surfaceTensionDroppedMax = 0.0;
     };
 
     //  A liquid density as the hydraulics ask for it (see the header): the
@@ -246,6 +249,15 @@ public:
     };
     static LiquidDensity liquidDensity(const ThermoPackage& thermo,
                                        scalar T, scalar P, const sVector& x);
+
+    //  THE SURFACE TENSION AS THE TRAYS ASK FOR IT (C398 A4, review row DG-01):
+    //  the PACKAGE's, the one value the hydraulics and the computed efficiency
+    //  both take, over the components that have a liquid surface at T -- a
+    //  component above its critical temperature has none (Brock-Bird refuses
+    //  it), so it is left out and the rest renormalised, as the density leaves
+    //  it out (C79).  Nothing left out: the question is asked of x itself.
+    static LiquidDensity surfaceTension(const ThermoPackage& thermo, scalar T, scalar P,
+                                        const sVector& x);
 
     //  Merge one reading's left-out components into a running union
     //  (names, largest fraction) -- the one place the union is formed.
