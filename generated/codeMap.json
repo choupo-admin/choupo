@@ -3855,6 +3855,7 @@
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/ThermalConductivityModel.H",
    "src/thermo/transport/TransportModel.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
@@ -3884,6 +3885,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
@@ -3922,6 +3924,7 @@
    "src/thermo/transport/LiquidViscosityMixingRule.H",
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/SurfaceTensionMixingRule.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/applications/choupoProps/RecordLawChecks.cpp": [
@@ -3948,6 +3951,7 @@
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/LiquidViscosityModel.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/applications/choupoProps/main.cpp": [
@@ -4028,11 +4032,13 @@
    "src/thermo/transport/CorrelationVerify.H",
    "src/thermo/transport/DiffusivityModel.H",
    "src/thermo/transport/LiquidConductivityModel.H",
+   "src/thermo/transport/LiquidDiffusionMatrix.H",
    "src/thermo/transport/LiquidDiffusivityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/ThermalConductivityModel.H",
    "src/thermo/transport/TransportModel.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H"
   ],
@@ -4145,6 +4151,7 @@
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/ThermalConductivityModel.H",
    "src/thermo/transport/TransportModel.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
@@ -4183,6 +4190,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
@@ -4204,6 +4212,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
@@ -4227,6 +4236,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
@@ -4249,6 +4259,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H"
   ],
@@ -4495,6 +4506,7 @@
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/ThermalConductivityModel.H",
    "src/thermo/transport/TransportModel.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
@@ -4542,7 +4554,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/io/EquipmentListWriter.cpp": [
    "src/core/Advisory.H",
@@ -4574,7 +4587,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/io/InternalStateIO.cpp": [
    "src/core/Advisory.H",
@@ -4605,7 +4619,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/io/SolutionWriter.cpp": [
    "src/core/Advisory.H",
@@ -4640,7 +4655,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/materials/MaterialRegistry.cpp": [
    "src/core/Dictionary.H",
@@ -4691,7 +4707,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/outerDriver/GridSweepDriver.cpp": [
    "src/core/Advisory.H",
@@ -4725,7 +4742,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/outerDriver/OptimizationDriver.cpp": [
    "src/core/Advisory.H",
@@ -4765,7 +4783,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/outerDriver/OuterDriver.cpp": [
    "src/core/Advisory.H",
@@ -4804,7 +4823,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/outerDriver/ParetoSweepDriver.cpp": [
    "src/core/Advisory.H",
@@ -4841,7 +4861,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/outerDriver/ResponseExtractor.cpp": [
    "src/core/Advisory.H",
@@ -4872,7 +4893,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/outerDriver/SweepDriver.cpp": [
    "src/core/Advisory.H",
@@ -4909,7 +4931,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/BatchPlanPass.cpp": [
    "src/core/Advisory.H",
@@ -4942,7 +4965,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/CleanUtilitiesPass.cpp": [
    "src/core/Advisory.H",
@@ -4977,7 +5001,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/CostingPass.cpp": [
    "src/core/Advisory.H",
@@ -5014,7 +5039,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/EconomicsPass.cpp": [
    "src/core/Advisory.H",
@@ -5053,7 +5079,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/PinchPass.cpp": [
    "src/core/Advisory.H",
@@ -5088,7 +5115,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/PostProcessor.cpp": [
    "src/core/Advisory.H",
@@ -5128,7 +5156,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/SizingPass.cpp": [
    "src/core/Advisory.H",
@@ -5168,7 +5197,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/costing/CostingModel.cpp": [
    "src/core/Advisory.H",
@@ -5202,7 +5232,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/costing/DeclaredQuote.cpp": [
    "src/core/Advisory.H",
@@ -5235,7 +5266,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/costing/SteelMassCost.cpp": [
    "src/core/Advisory.H",
@@ -5268,7 +5300,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/costing/Turton.cpp": [
    "src/core/Advisory.H",
@@ -5302,7 +5335,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/layout/BuildingLayout.cpp": [
    "src/core/Advisory.H",
@@ -5348,7 +5382,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/layout/TypicalTrain.cpp": [
    "src/core/Dictionary.H",
@@ -5400,6 +5435,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/heatTransfer/htc/HeatTransferCorrelation.H",
    "src/unitOperations/heatTransfer/htc/ShellTubeDesign.H"
   ],
@@ -5438,7 +5474,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/CompressorSize.cpp": [
    "src/core/Advisory.H",
@@ -5472,7 +5509,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/ConverterShellSize.cpp": [
    "src/core/Advisory.H",
@@ -5509,7 +5547,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/CrystalliserSize.cpp": [
    "src/core/Advisory.H",
@@ -5543,7 +5582,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/CycloneSize.cpp": [
    "src/core/Advisory.H",
@@ -5577,7 +5617,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/DesignDefaults.cpp": [
    "src/core/Advisory.H",
@@ -5633,7 +5674,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/EquipmentTag.cpp": [
    "src/core/Advisory.H",
@@ -5664,7 +5706,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/EvaporatorSize.cpp": [
    "src/core/Advisory.H",
@@ -5698,7 +5741,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/GasStoreSize.cpp": [
    "src/core/Advisory.H",
@@ -5742,6 +5786,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
@@ -5776,7 +5821,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/MaterialLimits.cpp": [
    "src/core/Advisory.H",
@@ -5808,7 +5854,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/MembraneBankSize.cpp": [
    "src/core/Advisory.H",
@@ -5843,7 +5890,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/PhaseDensity.cpp": [
    "src/core/Advisory.H",
@@ -5876,7 +5924,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/PipeHeaderSize.cpp": [
    "src/core/Advisory.H",
@@ -5914,6 +5963,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/hydraulics/friction/FrictionFactorCorrelation.H"
   ],
   "src/postProcessing/sizing/PressureExchangerSize.cpp": [
@@ -5949,7 +5999,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/RatedMachineSize.cpp": [
    "src/core/Advisory.H",
@@ -5986,7 +6037,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/ReliefValveSize.cpp": [
    "src/core/Advisory.H",
@@ -6027,6 +6079,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
@@ -6069,6 +6122,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/unitOperations/UnitAcceptance.H",
@@ -6112,7 +6166,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/StirredTank.cpp": [
    "src/core/Advisory.H",
@@ -6148,7 +6203,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/StorageLink.cpp": [
    "src/core/Advisory.H",
@@ -6179,7 +6235,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/StorageTankSize.cpp": [
    "src/core/Advisory.H",
@@ -6214,7 +6271,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/sizing/VesselMechanics.cpp": [
    "src/core/Constants.H",
@@ -6257,7 +6315,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/views/RunPublications.cpp": [
    "src/core/Advisory.H",
@@ -6291,7 +6350,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/postProcessing/views/Views.cpp": [
    "src/core/Advisory.H",
@@ -6326,7 +6386,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/BellDelawareBench.cpp": [
    "src/core/Dictionary.H",
@@ -6355,7 +6416,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/CompactionFit.cpp": [
    "src/core/Dictionary.H",
@@ -6507,7 +6569,8 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/BoilingPointRise.H",
    "src/thermo/electrolyte/ElectrolyteModel.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/ElementCompositionOp.cpp": [
    "src/core/Constants.H",
@@ -6528,7 +6591,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/EnthalpyConcentration.cpp": [
    "src/core/Advisory.H",
@@ -6557,6 +6621,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H"
@@ -6636,7 +6701,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/ExplainProperty.cpp": [
    "src/core/Constants.H",
@@ -6657,7 +6723,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/ExtractionShortcutOp.cpp": [
    "src/core/Dictionary.H",
@@ -6713,6 +6780,7 @@
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -6751,6 +6819,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -6789,6 +6858,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -6865,6 +6935,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/reactor/GibbsReactor.H",
@@ -6892,7 +6963,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/HansenMixture.cpp": [
    "src/core/Advisory.H",
@@ -6919,7 +6991,8 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/phase/Phase.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/HeatCapacityFit.cpp": [
    "src/core/Constants.H",
@@ -6943,7 +7016,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/HeatTransferBench.cpp": [
    "src/core/Dictionary.H",
@@ -7033,6 +7107,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H"
@@ -7061,6 +7136,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H"
@@ -7088,6 +7164,7 @@
    "src/thermo/membrane/MembraneModuleRegistry.H",
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/RatedTestInversion.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -7112,7 +7189,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/MolecularActivity.cpp": [
    "src/core/Advisory.H",
@@ -7138,7 +7216,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/PetroleumCuts.cpp": [
    "src/core/Dictionary.H",
@@ -7182,6 +7261,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/BubblePoint.H",
@@ -7214,6 +7294,7 @@
    "src/thermo/phase/Phase.H",
    "src/thermo/phase/SolidPhase.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H"
@@ -7267,6 +7348,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/massTransfer/StirredCell.H"
@@ -7294,6 +7376,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -7319,7 +7402,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/PropertyEvaluator.cpp": [
    "src/core/Constants.H",
@@ -7444,6 +7528,7 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/propertyOps/PropertyPoint.cpp": [
@@ -7466,7 +7551,9 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidDiffusionMatrix.H",
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/PropertyScan1D.cpp": [
    "src/core/Advisory.H",
@@ -7488,7 +7575,9 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidDiffusionMatrix.H",
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/PropertyScan2D.cpp": [
    "src/core/Constants.H",
@@ -7509,7 +7598,9 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidDiffusionMatrix.H",
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/PropertyScanBinary.cpp": [
    "src/core/Constants.H",
@@ -7535,6 +7626,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H"
@@ -7561,6 +7653,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -7596,6 +7689,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/propertyOps/PurePhaseDiagram.cpp": [
@@ -7619,6 +7713,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/propertyOps/RateLawBench.cpp": [
@@ -7668,7 +7763,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/ReferenceEoSOp.cpp": [
    "src/core/Dictionary.H",
@@ -7731,7 +7827,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/Speciate.cpp": [
    "src/core/Advisory.H",
@@ -7778,6 +7875,7 @@
    "src/thermo/solidEquilibrium/SolidEquilibrium.H",
    "src/thermo/solidEquilibrium/SolidEquilibriumService.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/propertyOps/SteamTables.cpp": [
@@ -7815,6 +7913,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/pellet/Catalyst.H",
    "src/unitOperations/reactor/pellet/CatalystRegistry.H",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.H",
@@ -7846,7 +7945,8 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/LiquidViscosityModel.H",
    "src/thermo/transport/ThermalConductivityModel.H",
-   "src/thermo/transport/TransportModel.H"
+   "src/thermo/transport/TransportModel.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/propertyOps/VanKrevelen.cpp": [
    "src/core/Dictionary.H",
@@ -7899,6 +7999,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/propertyOps/Yang2020.cpp": [
@@ -7945,7 +8046,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/reporting/DesignReport.cpp": [
    "src/core/Advisory.H",
@@ -7978,7 +8080,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/reporting/EconomicsReport.cpp": [
    "src/core/Advisory.H",
@@ -8011,7 +8114,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/reporting/ElementBalanceReport.cpp": [
    "src/core/Advisory.H",
@@ -8055,6 +8159,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8104,6 +8209,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8140,7 +8246,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/reporting/MassBalanceReport.cpp": [
    "src/core/Advisory.H",
@@ -8183,6 +8290,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8232,6 +8340,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8269,7 +8378,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/reporting/Report.cpp": [
    "src/core/Advisory.H",
@@ -8312,7 +8422,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/reporting/SpreadsheetReport.cpp": [
    "src/core/Advisory.H",
@@ -8354,6 +8465,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8400,6 +8512,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -8437,6 +8550,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H"
   ],
@@ -8479,6 +8593,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/unitOperations/UnitAcceptance.H",
@@ -8517,7 +8632,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/result/BuildingJson.cpp": [
    "src/core/Advisory.H",
@@ -8549,7 +8665,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/result/ComponentIdentity.cpp": [
    "src/core/Advisory.H",
@@ -8580,7 +8697,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/result/EquipmentList.cpp": [
    "src/core/Advisory.H",
@@ -8611,7 +8729,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/result/PanelJson.cpp": [
    "src/core/Advisory.H",
@@ -8643,7 +8762,8 @@
    "src/thermo/SaturationCurves.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/result/ResultEmitter.cpp": [
    "src/core/Advisory.H",
@@ -8682,7 +8802,8 @@
    "src/thermo/SealCheck.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/solver/ActiveSetQP.cpp": [
    "src/core/Types.H",
@@ -8792,7 +8913,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/streams/SpeciationBlock.cpp": [
    "src/core/Constants.H",
@@ -8812,7 +8934,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/streams/Stream.cpp": [
    "src/core/Types.H",
@@ -8856,7 +8979,8 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/streams/UtilityCircuit.cpp": [
    "src/core/Advisory.H",
@@ -8880,6 +9004,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H"
   ],
@@ -8979,7 +9104,8 @@
    "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/pureFluid/PureFluidModel.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/PackageAudit.cpp": [
    "src/core/Constants.H",
@@ -9013,7 +9139,8 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/PropertyTable.cpp": [
    "src/core/Advisory.H",
@@ -9076,6 +9203,7 @@
    "src/thermo/transport/LiquidConductivityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/LiquidViscosityModel.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/ReviewRecord.cpp": [
@@ -9103,7 +9231,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/equationOfState/EquationOfState.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/SealCheck.cpp": [
    "src/core/DictCanonical.H",
@@ -9136,7 +9265,8 @@
    "src/thermo/SolidMixture.H",
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/SurfaceTensionModel.cpp": [
    "src/core/Dictionary.H",
@@ -9272,6 +9402,7 @@
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/Measured.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/activityCoefficient/ActivityModel.cpp": [
@@ -9310,7 +9441,8 @@
    "src/thermo/electrolyte/PitzerForm.H",
    "src/thermo/electrolyte/PitzerSingleSalt.H",
    "src/thermo/electrolyte/SolventProperties.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/activityCoefficient/CosmoSac.cpp": [
    "src/core/Dictionary.H",
@@ -9388,7 +9520,8 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/activityCoefficient/NRTL.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/activityCoefficient/UNIFAC.cpp": [
    "src/core/Advisory.H",
@@ -9429,7 +9562,8 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/activityCoefficient/UNIQUAC.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/activityCoefficient/Wilson.cpp": [
    "src/core/Advisory.H",
@@ -9696,7 +9830,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/UnmodelledSolutes.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/equationOfState/CubicEoS.cpp": [
    "src/core/Advisory.H",
@@ -9919,7 +10054,8 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/DensityMethod.cpp": [
    "src/core/Constants.H",
@@ -9945,7 +10081,8 @@
    "src/thermo/liquidProperty/PureFluidLeaf.H",
    "src/thermo/liquidProperty/RecordVolumeLeaf.H",
    "src/thermo/liquidProperty/SolutionLaw.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/DensityResolver.cpp": [
    "src/core/Advisory.H",
@@ -9973,7 +10110,8 @@
    "src/thermo/liquidProperty/DensityResolver.H",
    "src/thermo/liquidProperty/Measured.H",
    "src/thermo/liquidProperty/SolutionLaw.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/ExperimentsFile.cpp": [
    "src/core/Dictionary.H",
@@ -10012,7 +10150,8 @@
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/DensityResolver.H",
    "src/thermo/liquidProperty/IdealMixing.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/MassWithoutVolume.cpp": [
    "src/core/Constants.H",
@@ -10034,7 +10173,8 @@
    "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/MassWithoutVolume.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/Measured.cpp": [
    "src/core/Advisory.H",
@@ -10062,7 +10202,8 @@
    "src/thermo/liquidProperty/ExperimentsFile.H",
    "src/thermo/liquidProperty/Measured.H",
    "src/thermo/liquidProperty/SolutionLaw.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/PureFluidLeaf.cpp": [
    "src/core/Advisory.H",
@@ -10090,7 +10231,8 @@
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/PureFluidLeaf.H",
    "src/thermo/pureFluid/PureFluidModel.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/RecordVolumeLeaf.cpp": [
    "src/core/Constants.H",
@@ -10111,7 +10253,8 @@
    "src/thermo/liquidProperty/DensityLeaf.H",
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/RecordVolumeLeaf.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/liquidProperty/SolutionLaw.cpp": [
    "src/core/Advisory.H",
@@ -10136,7 +10279,8 @@
    "src/thermo/liquidProperty/DensityMethod.H",
    "src/thermo/liquidProperty/DensityResolver.H",
    "src/thermo/liquidProperty/SolutionLaw.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/membrane/FeedSpacer.cpp": [
    "src/core/Dictionary.H",
@@ -10236,6 +10380,7 @@
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/pureFluid/SaturationCurve.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H"
   ],
   "src/thermo/phase/Phase.cpp": [
@@ -10359,7 +10504,8 @@
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/reaction/Reaction.cpp": [
    "src/core/Constants.H",
@@ -10377,7 +10523,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/Reaction.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/reaction/ReactionRate.cpp": [
    "src/core/Constants.H",
@@ -10399,7 +10546,8 @@
    "src/thermo/reaction/ExpressionRate.H",
    "src/thermo/reaction/RateLaw.H",
    "src/thermo/reaction/ReactionRate.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/solidEquilibrium/SolidEquilibriumService.cpp": [
    "src/core/Advisory.H",
@@ -10582,7 +10730,8 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/transport/LiquidDiffusionMatrix.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/transport/LiquidDiffusivityModel.cpp": [
    "src/core/Dictionary.H",
@@ -10609,7 +10758,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/liquidProperty/ExperimentsFile.H",
-   "src/thermo/transport/LiquidTransportDeclarations.H"
+   "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/transport/LiquidViscosityMixingRule.cpp": [
    "src/core/Advisory.H",
@@ -10686,7 +10836,8 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
-   "src/thermo/transport/StokesEinstein.H"
+   "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H"
   ],
   "src/thermo/transport/StoredCorrelation.cpp": [
    "src/core/Advisory.H",
@@ -10860,6 +11011,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -10887,6 +11039,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/crystallisation/Crystalliser.H",
@@ -10982,6 +11135,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchAccumulator.H",
    "src/unitOperations/batch/BatchUnitOperation.H"
@@ -11021,6 +11175,7 @@
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchAdsorber.H",
    "src/unitOperations/batch/BatchUnitOperation.H"
@@ -11058,6 +11213,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/batch/BatchCrystalliser.H",
@@ -11101,6 +11257,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchDiafilter.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
@@ -11142,6 +11299,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchDryer.H",
@@ -11195,6 +11353,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchElectrodialysis.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
@@ -11240,6 +11399,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchReactor.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
@@ -11280,6 +11440,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/batch/BatchStill.H",
@@ -11321,6 +11482,7 @@
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchAccumulator.H",
    "src/unitOperations/batch/BatchAdsorber.H",
@@ -11379,6 +11541,7 @@
    "src/thermo/adsorbent/IsothermModel.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/batch/FixedBedAdsorber.H"
@@ -11401,6 +11564,7 @@
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/crystallisation/CrystallisationHeat.H"
   ],
   "src/unitOperations/crystallisation/CrystallisationSaturation.cpp": [
@@ -11422,6 +11586,7 @@
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/electrolyte/UnmodelledSolutes.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/crystallisation/CrystallisationSaturation.H"
   ],
   "src/unitOperations/crystallisation/Crystalliser.cpp": [
@@ -11453,6 +11618,7 @@
    "src/thermo/electrolyte/ElectrolyteModel.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/crystallisation/CrystallisationHeat.H",
@@ -11497,6 +11663,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
@@ -11568,6 +11735,7 @@
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
@@ -11602,6 +11770,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/distillation/ShortcutColumn.H",
@@ -11636,6 +11805,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/distillation/TrayHydraulics.H"
   ],
   "src/unitOperations/dynamic/DynamicCSTR.cpp": [
@@ -11664,6 +11834,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicCSTR.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
@@ -11690,6 +11861,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicTank.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
@@ -11715,6 +11887,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/PropertySourceDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -11747,6 +11920,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/PropertySourceDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -11774,6 +11948,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/VariableVolumeHoldup.H"
   ],
   "src/unitOperations/dynamic/WilliamsOttoPlant.cpp": [
@@ -11794,6 +11969,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/dynamic/BalanceSnapshot.H",
    "src/unitOperations/dynamic/DynamicUnitOperation.H",
    "src/unitOperations/dynamic/WilliamsOttoPlant.H"
@@ -11832,6 +12008,7 @@
    "src/thermo/electrolyte/SaltFromCatalogue.H",
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/electrochem/EDCell.H",
    "src/unitOperations/electrochem/Electrochem.H",
    "src/unitOperations/electrochem/LimitingCurrent.H"
@@ -11877,6 +12054,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/electrochem/EDCell.H",
@@ -11934,6 +12112,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/AdiabaticFlash.H",
@@ -11978,6 +12157,7 @@
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/solidEquilibrium/SolidEquilibrium.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12011,6 +12191,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -12085,6 +12266,7 @@
    "src/thermo/liquidProperty/ExperimentsFile.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
@@ -12129,6 +12311,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/PropertySourceDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12153,6 +12336,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/flowsheet/UnitInputs.H"
   ],
   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp": [
@@ -12179,6 +12363,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12212,6 +12397,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12246,6 +12432,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12280,6 +12467,7 @@
    "src/thermo/electrolyte/UnmodelledSolutes.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12316,6 +12504,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -12351,6 +12540,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12382,6 +12572,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -12417,6 +12608,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12453,6 +12645,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12494,6 +12687,7 @@
    "src/thermo/heatCapacity/HeatCapacityModel.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
@@ -12584,6 +12778,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -12614,6 +12809,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/hydraulics/PneumaticConveyor.H"
@@ -12641,6 +12837,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/AqueousSplit.H"
   ],
   "src/unitOperations/membrane/RatedTestInversion.cpp": [
@@ -12678,6 +12875,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/membrane/MembraneModule.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/membrane/RatedTestInversion.H",
@@ -12725,6 +12923,7 @@
    "src/thermo/membrane/MembraneRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/membrane/AqueousSplit.H",
@@ -12792,6 +12991,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H"
   ],
@@ -12830,6 +13030,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/ConstantRejection.H",
@@ -12872,6 +13073,7 @@
    "src/thermo/membrane/Membrane.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/../osmotic/OsmoticModel.H",
@@ -12897,6 +13099,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/GelPolarisation.H",
@@ -12948,6 +13151,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/../osmotic/OsmoticModel.H",
@@ -12972,6 +13176,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/thermo/transport/StokesEinstein.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/membrane/transport/../massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/transport/../massTransfer/Polarisation.H",
    "src/unitOperations/membrane/transport/../osmotic/OsmoticModel.H",
@@ -13021,6 +13226,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13052,6 +13258,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13090,6 +13297,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13127,6 +13335,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13161,6 +13370,7 @@
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13198,6 +13408,7 @@
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13242,6 +13453,7 @@
    "src/thermo/reaction/Reaction.H",
    "src/thermo/reaction/ReactionRate.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/utility/Utility.H",
    "src/thermo/utility/UtilityCatalogue.H",
    "src/unitOperations/UnitAcceptance.H",
@@ -13287,6 +13499,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/PureSolidPhase.H"
   ],
   "src/unitOperations/reactor/ReactionHeat.cpp": [
@@ -13308,6 +13521,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/ReactionHeat.H"
   ],
   "src/unitOperations/reactor/ReactorOutlet.cpp": [
@@ -13333,6 +13547,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13363,6 +13578,7 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.H",
@@ -13385,6 +13601,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
@@ -13407,6 +13624,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -13432,6 +13650,7 @@
    "src/thermo/equationOfState/EquationOfState.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/DirectMin.H",
    "src/unitOperations/reactor/gibbsMethod/ElementPotential.H",
@@ -13455,6 +13674,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H"
   ],
@@ -13478,6 +13698,7 @@
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/reaction/Reaction.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/thermo/vaporPressure/VaporPressureModel.H",
    "src/unitOperations/reactor/PureSolidPhase.H",
    "src/unitOperations/reactor/gibbsMethod/GibbsMethod.H",
@@ -13521,6 +13742,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/reactor/pellet/Catalyst.H",
    "src/unitOperations/reactor/pellet/EffectiveDiffusivity.H"
   ],
@@ -13563,6 +13785,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13591,6 +13814,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/rotating/ElectricLoad.H"
@@ -13612,6 +13836,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/rotating/IsentropicCore.H"
   ],
   "src/unitOperations/rotating/PressureExchanger.cpp": [
@@ -13636,6 +13861,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/rotating/PressureExchanger.H"
@@ -13666,6 +13892,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13692,6 +13919,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/rotating/IsentropicCore.H",
@@ -13719,6 +13947,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IncipientPhase.H",
@@ -13747,6 +13976,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/saturation/DewPoint.H"
@@ -13774,6 +14004,7 @@
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/Absorber.H",
@@ -13799,6 +14030,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/BagFilter.H"
@@ -13823,6 +14055,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/Cyclone.H",
@@ -13847,6 +14080,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -13875,6 +14109,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/GasSolidSplitter.H"
@@ -13912,6 +14147,7 @@
    "src/thermo/electrolyte/SolventProperties.H",
    "src/thermo/electrolyte/SpeciationSolver.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/IonExchanger.H"
@@ -13934,6 +14170,7 @@
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/separation/KremserAcceptance.H"
   ],
@@ -13959,6 +14196,7 @@
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/PSA.H"
@@ -13986,6 +14224,7 @@
    "src/thermo/henrysLaw/HenrysLaw.H",
    "src/thermo/henrysLaw/HenrysLawRegistry.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/KremserAcceptance.H",
@@ -14014,6 +14253,7 @@
    "src/thermo/adsorbent/AdsorbentRegistry.H",
    "src/thermo/adsorbent/IsothermModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/separation/TSATwinBed.H"
@@ -14084,6 +14324,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/solids/CakeFilter.H",
@@ -14108,6 +14349,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/solids/Classifier.H",
@@ -14135,6 +14377,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/solids/ClassifierCore.H",
    "src/unitOperations/solids/classifierModel/PartitionCurves.H",
    "src/unitOperations/solids/millModel/MillModels.H"
@@ -14159,6 +14402,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/solids/ClassifierCore.H",
@@ -14191,6 +14435,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -14219,6 +14464,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/solids/ClassifierCore.H",
@@ -14246,6 +14492,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/solids/ClassifierCore.H",
@@ -14270,6 +14517,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/solids/SolidLiquidCore.H"
   ],
   "src/unitOperations/solids/Thickener.cpp": [
@@ -14292,6 +14540,7 @@
    "src/thermo/ThermoPackage.H",
    "src/thermo/VapourAssociation.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/solids/SolidLiquidCore.H",
@@ -14335,6 +14584,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -14368,6 +14618,7 @@
    "src/thermo/VapourAssociation.H",
    "src/thermo/pureFluid/PureFluidModel.H",
    "src/thermo/transport/LiquidTransportDeclarations.H",
+   "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
    "src/unitOperations/flash/IsothermalFlash.H",
@@ -23570,7 +23821,11 @@
    "src/thermo/transport/SatoRiedel.cpp"
   ],
   "src/thermo/transport/LiquidDiffusionMatrix.H": [
+   "src/applications/choupoProps/main.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
+   "src/propertyOps/PropertyPoint.cpp",
+   "src/propertyOps/PropertyScan1D.cpp",
+   "src/propertyOps/PropertyScan2D.cpp",
    "src/thermo/transport/LiquidDiffusionMatrix.cpp"
   ],
   "src/thermo/transport/LiquidDiffusivityModel.H": [
@@ -23945,8 +24200,255 @@
    "src/thermo/transport/WilkeChang.cpp"
   ],
   "src/thermo/transport/WilkeReduction.H": [
+   "src/applications/choupoBatch/main.cpp",
+   "src/applications/choupoCtrl/main.cpp",
+   "src/applications/choupoProps/PropertyRouteBench.cpp",
+   "src/applications/choupoProps/RecordLawChecks.cpp",
+   "src/applications/choupoProps/main.cpp",
+   "src/applications/choupoSolve/main.cpp",
+   "src/control/Controller.cpp",
+   "src/control/PIDController.cpp",
+   "src/control/ScheduleController.cpp",
+   "src/control/SignalController.cpp",
+   "src/dynamicDriver/DynamicDriver.cpp",
+   "src/io/DesignSheetWriter.cpp",
+   "src/io/EquipmentListWriter.cpp",
+   "src/io/InternalStateIO.cpp",
+   "src/io/SolutionWriter.cpp",
+   "src/outerDriver/DesignSpec.cpp",
+   "src/outerDriver/GridSweepDriver.cpp",
+   "src/outerDriver/OptimizationDriver.cpp",
+   "src/outerDriver/OuterDriver.cpp",
+   "src/outerDriver/ParetoSweepDriver.cpp",
+   "src/outerDriver/ResponseExtractor.cpp",
+   "src/outerDriver/SweepDriver.cpp",
+   "src/postProcessing/BatchPlanPass.cpp",
+   "src/postProcessing/CleanUtilitiesPass.cpp",
+   "src/postProcessing/CostingPass.cpp",
+   "src/postProcessing/EconomicsPass.cpp",
+   "src/postProcessing/PinchPass.cpp",
+   "src/postProcessing/PostProcessor.cpp",
+   "src/postProcessing/SizingPass.cpp",
+   "src/postProcessing/costing/CostingModel.cpp",
+   "src/postProcessing/costing/DeclaredQuote.cpp",
+   "src/postProcessing/costing/SteelMassCost.cpp",
+   "src/postProcessing/costing/Turton.cpp",
+   "src/postProcessing/layout/PlantLayout.cpp",
+   "src/postProcessing/sizing/CatalystBedSize.cpp",
+   "src/postProcessing/sizing/ColumnSize.cpp",
+   "src/postProcessing/sizing/CompressorSize.cpp",
+   "src/postProcessing/sizing/ConverterShellSize.cpp",
+   "src/postProcessing/sizing/CrystalliserSize.cpp",
+   "src/postProcessing/sizing/CycloneSize.cpp",
+   "src/postProcessing/sizing/EquipmentSize.cpp",
+   "src/postProcessing/sizing/EquipmentTag.cpp",
+   "src/postProcessing/sizing/EvaporatorSize.cpp",
+   "src/postProcessing/sizing/GasStoreSize.cpp",
+   "src/postProcessing/sizing/Inventory.cpp",
+   "src/postProcessing/sizing/MaterialLimits.cpp",
+   "src/postProcessing/sizing/MembraneBankSize.cpp",
+   "src/postProcessing/sizing/PhaseDensity.cpp",
+   "src/postProcessing/sizing/PipeHeaderSize.cpp",
+   "src/postProcessing/sizing/PressureExchangerSize.cpp",
+   "src/postProcessing/sizing/RatedMachineSize.cpp",
+   "src/postProcessing/sizing/ReliefValveSize.cpp",
+   "src/postProcessing/sizing/ShellTubeHX.cpp",
+   "src/postProcessing/sizing/SprayDryerSize.cpp",
+   "src/postProcessing/sizing/StirredTank.cpp",
+   "src/postProcessing/sizing/StorageLink.cpp",
+   "src/postProcessing/sizing/StorageTankSize.cpp",
+   "src/postProcessing/sizing/VesselSize.cpp",
+   "src/postProcessing/views/RunPublications.cpp",
+   "src/postProcessing/views/Views.cpp",
+   "src/propertyOps/CatalogueLookup.cpp",
+   "src/propertyOps/ElectrolytePackageActivity.cpp",
+   "src/propertyOps/ElementCompositionOp.cpp",
+   "src/propertyOps/EnthalpyConcentration.cpp",
+   "src/propertyOps/Exergy.cpp",
+   "src/propertyOps/ExplainProperty.cpp",
+   "src/propertyOps/FitParameters.cpp",
+   "src/propertyOps/FitParametersMembrane.cpp",
+   "src/propertyOps/FlashSpec.cpp",
+   "src/propertyOps/GibbsMapOp.cpp",
+   "src/propertyOps/HConsistency.cpp",
+   "src/propertyOps/HansenMixture.cpp",
+   "src/propertyOps/HeatCapacityFit.cpp",
+   "src/propertyOps/LleResidual.cpp",
+   "src/propertyOps/LleTieLines.cpp",
+   "src/propertyOps/MembraneShortlist.cpp",
+   "src/propertyOps/MixingRules.cpp",
+   "src/propertyOps/MolecularActivity.cpp",
+   "src/propertyOps/PhaseEnvelope.cpp",
+   "src/propertyOps/PhaseSplitScan.cpp",
+   "src/propertyOps/PolarisationIndex.cpp",
+   "src/propertyOps/PoreTransportBench.cpp",
+   "src/propertyOps/Ppr78Kij.cpp",
    "src/propertyOps/PropertyEvaluator.cpp",
-   "src/thermo/ThermoPackage.cpp"
+   "src/propertyOps/PropertyOperation.cpp",
+   "src/propertyOps/PropertyPoint.cpp",
+   "src/propertyOps/PropertyScan1D.cpp",
+   "src/propertyOps/PropertyScan2D.cpp",
+   "src/propertyOps/PropertyScanBinary.cpp",
+   "src/propertyOps/PropertyScanTernary.cpp",
+   "src/propertyOps/PsychrometricChart.cpp",
+   "src/propertyOps/PurePhaseDiagram.cpp",
+   "src/propertyOps/ReactionGibbs.cpp",
+   "src/propertyOps/SolubilityParameter.cpp",
+   "src/propertyOps/Speciate.cpp",
+   "src/propertyOps/ThielePellet.cpp",
+   "src/propertyOps/TransportBench.cpp",
+   "src/propertyOps/VleConsistency.cpp",
+   "src/reporting/ComputedReport.cpp",
+   "src/reporting/DesignReport.cpp",
+   "src/reporting/EconomicsReport.cpp",
+   "src/reporting/ElementBalanceReport.cpp",
+   "src/reporting/EnergyBalanceReport.cpp",
+   "src/reporting/EnergyStreamsReport.cpp",
+   "src/reporting/MassBalanceReport.cpp",
+   "src/reporting/ModelBoundaryLedger.cpp",
+   "src/reporting/ProfilesReport.cpp",
+   "src/reporting/Report.cpp",
+   "src/reporting/SpreadsheetReport.cpp",
+   "src/reporting/StreamTableReport.cpp",
+   "src/reporting/UtilitiesReport.cpp",
+   "src/reporting/UtilityAllocationReport.cpp",
+   "src/result/BatchPlanJson.cpp",
+   "src/result/BuildingJson.cpp",
+   "src/result/ComponentIdentity.cpp",
+   "src/result/EquipmentList.cpp",
+   "src/result/PanelJson.cpp",
+   "src/result/ResultEmitter.cpp",
+   "src/streams/Composition.cpp",
+   "src/streams/SpeciationBlock.cpp",
+   "src/streams/StreamStateIO.cpp",
+   "src/streams/UtilityCircuit.cpp",
+   "src/thermo/LiquidPropertyDoor.cpp",
+   "src/thermo/PricedDensity.cpp",
+   "src/thermo/ResolvedView.cpp",
+   "src/thermo/SaturationCurves.cpp",
+   "src/thermo/SolidMixture.cpp",
+   "src/thermo/ThermoPackage.cpp",
+   "src/thermo/ThermoPackageBuilder.cpp",
+   "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/NRTL.cpp",
+   "src/thermo/activityCoefficient/UNIQUAC.cpp",
+   "src/thermo/electrolyte/UnmodelledSolutes.cpp",
+   "src/thermo/liquidProperty/DensityLeaf.cpp",
+   "src/thermo/liquidProperty/DensityMethod.cpp",
+   "src/thermo/liquidProperty/DensityResolver.cpp",
+   "src/thermo/liquidProperty/IdealMixing.cpp",
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/Measured.cpp",
+   "src/thermo/liquidProperty/PureFluidLeaf.cpp",
+   "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp",
+   "src/thermo/phase/LiquidPhase.cpp",
+   "src/thermo/reaction/RateLaw.cpp",
+   "src/thermo/reaction/Reaction.cpp",
+   "src/thermo/reaction/ReactionRate.cpp",
+   "src/thermo/transport/LiquidDiffusionMatrix.cpp",
+   "src/thermo/transport/LiquidTransportDeclarations.cpp",
+   "src/thermo/transport/StokesEinstein.cpp",
+   "src/unitOperations/UnitAcceptance.cpp",
+   "src/unitOperations/UnitOperation.cpp",
+   "src/unitOperations/batch/BatchAccumulator.cpp",
+   "src/unitOperations/batch/BatchAdsorber.cpp",
+   "src/unitOperations/batch/BatchCrystalliser.cpp",
+   "src/unitOperations/batch/BatchDiafilter.cpp",
+   "src/unitOperations/batch/BatchDryer.cpp",
+   "src/unitOperations/batch/BatchElectrodialysis.cpp",
+   "src/unitOperations/batch/BatchReactor.cpp",
+   "src/unitOperations/batch/BatchStill.cpp",
+   "src/unitOperations/batch/BatchUnitOperation.cpp",
+   "src/unitOperations/batch/FixedBedAdsorber.cpp",
+   "src/unitOperations/crystallisation/CrystallisationHeat.cpp",
+   "src/unitOperations/crystallisation/CrystallisationSaturation.cpp",
+   "src/unitOperations/crystallisation/Crystalliser.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
+   "src/unitOperations/distillation/ShortcutColumn.cpp",
+   "src/unitOperations/distillation/TrayHydraulics.cpp",
+   "src/unitOperations/dynamic/DynamicCSTR.cpp",
+   "src/unitOperations/dynamic/DynamicTank.cpp",
+   "src/unitOperations/dynamic/DynamicUnitOperation.cpp",
+   "src/unitOperations/dynamic/QuasiSteadyUnit.cpp",
+   "src/unitOperations/dynamic/VariableVolumeHoldup.cpp",
+   "src/unitOperations/dynamic/WilliamsOttoPlant.cpp",
+   "src/unitOperations/electrochem/EDCell.cpp",
+   "src/unitOperations/electrochem/ElectrodialysisStack.cpp",
+   "src/unitOperations/flash/AdiabaticFlash.cpp",
+   "src/unitOperations/flash/IsothermalFlash.cpp",
+   "src/unitOperations/flash/SpecifiedFlash.cpp",
+   "src/unitOperations/flowsheet/Flowsheet.cpp",
+   "src/unitOperations/flowsheet/FlowsheetAcceptance.cpp",
+   "src/unitOperations/flowsheet/UnitInputs.cpp",
+   "src/unitOperations/heatTransfer/ConvectiveDryer.cpp",
+   "src/unitOperations/heatTransfer/CoolingTower.cpp",
+   "src/unitOperations/heatTransfer/EvaporativeDryer.cpp",
+   "src/unitOperations/heatTransfer/Evaporator.cpp",
+   "src/unitOperations/heatTransfer/HeatExchanger.cpp",
+   "src/unitOperations/heatTransfer/Heater.cpp",
+   "src/unitOperations/heatTransfer/MultiStreamHX.cpp",
+   "src/unitOperations/heatTransfer/PhaseChanger.cpp",
+   "src/unitOperations/heatTransfer/SolidDryer.cpp",
+   "src/unitOperations/heatTransfer/SprayDryer.cpp",
+   "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/hydraulics/PneumaticConveyor.cpp",
+   "src/unitOperations/membrane/AqueousSplit.cpp",
+   "src/unitOperations/membrane/RatedTestInversion.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp",
+   "src/unitOperations/membrane/massTransfer/Polarisation.cpp",
+   "src/unitOperations/membrane/transport/ConstantRejection.cpp",
+   "src/unitOperations/membrane/transport/DSPM_DE.cpp",
+   "src/unitOperations/membrane/transport/GelPolarisation.cpp",
+   "src/unitOperations/membrane/transport/SDEM.cpp",
+   "src/unitOperations/membrane/transport/SolutionDiffusion.cpp",
+   "src/unitOperations/mixer/Mixer.cpp",
+   "src/unitOperations/mixer/Splitter.cpp",
+   "src/unitOperations/reactor/CSTR.cpp",
+   "src/unitOperations/reactor/ConversionReactor.cpp",
+   "src/unitOperations/reactor/EquilibriumReactor.cpp",
+   "src/unitOperations/reactor/GibbsReactor.cpp",
+   "src/unitOperations/reactor/PFR.cpp",
+   "src/unitOperations/reactor/PureSolidPhase.cpp",
+   "src/unitOperations/reactor/ReactionHeat.cpp",
+   "src/unitOperations/reactor/ReactorOutlet.cpp",
+   "src/unitOperations/reactor/gibbsMethod/DirectMin.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ElementPotential.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsLog.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsMethod.cpp",
+   "src/unitOperations/reactor/gibbsMethod/GibbsSolidPhase.cpp",
+   "src/unitOperations/reactor/gibbsMethod/ReactiveFlash.cpp",
+   "src/unitOperations/reactor/pellet/EffectiveDiffusivity.cpp",
+   "src/unitOperations/rotating/Compressor.cpp",
+   "src/unitOperations/rotating/ElectricLoad.cpp",
+   "src/unitOperations/rotating/IsentropicCore.cpp",
+   "src/unitOperations/rotating/PressureExchanger.cpp",
+   "src/unitOperations/rotating/Pump.cpp",
+   "src/unitOperations/rotating/Turbine.cpp",
+   "src/unitOperations/saturation/BubblePoint.cpp",
+   "src/unitOperations/saturation/DewPoint.cpp",
+   "src/unitOperations/separation/Absorber.cpp",
+   "src/unitOperations/separation/BagFilter.cpp",
+   "src/unitOperations/separation/Cyclone.cpp",
+   "src/unitOperations/separation/Extractor.cpp",
+   "src/unitOperations/separation/GasSolidSplitter.cpp",
+   "src/unitOperations/separation/IonExchanger.cpp",
+   "src/unitOperations/separation/KremserAcceptance.cpp",
+   "src/unitOperations/separation/PSA.cpp",
+   "src/unitOperations/separation/Stripper.cpp",
+   "src/unitOperations/separation/TSATwinBed.cpp",
+   "src/unitOperations/solids/CakeFilter.cpp",
+   "src/unitOperations/solids/Classifier.cpp",
+   "src/unitOperations/solids/ClassifierCore.cpp",
+   "src/unitOperations/solids/Hydrocyclone.cpp",
+   "src/unitOperations/solids/Mill.cpp",
+   "src/unitOperations/solids/Screen.cpp",
+   "src/unitOperations/solids/SedimentingCentrifuge.cpp",
+   "src/unitOperations/solids/SolidLiquidCore.cpp",
+   "src/unitOperations/solids/Thickener.cpp",
+   "src/unitOperations/storage/StorageTank.cpp",
+   "src/unitOperations/valve/Valve.cpp"
   ],
   "src/thermo/utility/Utility.H": [
    "src/applications/choupoBatch/main.cpp",
