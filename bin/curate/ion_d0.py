@@ -18,6 +18,9 @@ when they are rendered, so the generator and this tool cannot disagree about a b
 Primary tables (read at the page from the images, because Li & Gregory's text layer is garbled):
   LG     Li & Gregory 1974, Geochim. Cosmochim. Acta 38, 703-714, Table 1 (p. 705), 10^-6 cm2/s
   DUDEK  Dudek & Fedkiw 1999, Anal. Chem. 71, 1469-1473, Table 1 (p. 1470), 10^-5 cm2/s
+  RS     Robinson & Stokes, Electrolyte Solutions, 2nd ed. 1959, READ IN THE RUSSIAN TRANSLATION (Izdatel'stvo
+         Inostrannoi Literatury, Moscow, 1963), Appendix 6.1, pp. 534-535: the limiting equivalent ionic conductance
+         lambda0 at 25 C, S cm2/eq as printed; D = RT lambda0 / (|z| F^2) (the Nernst relation), z from the `z` column.
 """
 import re
 import sys
@@ -26,7 +29,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SPECIES = ROOT / "data" / "standards" / "species"
 TABLE = ROOT / "data" / "curation" / "batches" / "ion_d0_c403" / "ion_d0.tsv"
-COLS = ["species", "src", "label", "t0", "t18", "t25", "crc_label", "crc_d"]
+COLS = ["species", "src", "label", "t0", "t18", "t25", "crc_label", "crc_d", "z", "page", "ref", "temps"]
 
 LG_SRC = ("Y.-H. Li and S. Gregory, Diffusion of ions in sea water and in deep-sea sediments, "
           "Geochim. Cosmochim. Acta 38 (1974) 703-714, Table 1 (p. 705: tracer and self-diffusion "
@@ -34,6 +37,10 @@ LG_SRC = ("Y.-H. Li and S. Gregory, Diffusion of ions in sea water and in deep-s
 DUDEK_SRC = ("D. A. Dudek and P. S. Fedkiw, Infinite-Dilution Diffusion Coefficients of Complex Ions "
              "from Solution Conductivity Data, Anal. Chem. 71 (1999) 1469-1473, doi:10.1021/ac981054i, "
              "Table 1 (p. 1470: handbook values of diffusion coefficients at infinite dilution and 25 C)")
+
+RS_SRC = ("R. A. Robinson and R. H. Stokes, Electrolyte Solutions, 2nd ed., Butterworths, London, 1959, read in the Russian "
+          "translation (R. Robinson, R. Stoks, Rastvory elektrolitov, ed. A. N. Frumkin, Izdatel'stvo Inostrannoi Literatury, "
+          "Moskva, 1963), Appendix 6.1 (Predel'naya ekvivalentnaya elektroprovodnost' ionov pri 25 C v vode)")
 
 CROSS = ("        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table\n"
          "        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page\n"
@@ -70,10 +77,22 @@ def _num(s):
     return None if s == "" else float(s)
 
 
+R_GAS = 8.314462618      # J/(mol K), CODATA 2018 exact
+F_FARADAY = 96485.33212  # C/mol, CODATA 2018 exact
+T_REF = 298.15           # K
+
+
+def nernst(lam_scm2_per_eq, z):
+    """D = R T lambda0 / (|z| F^2), lambda0 in S cm2/eq converted to S m2/eq (x 1e-4); m2/s."""
+    return R_GAS * T_REF / F_FARADAY ** 2 * lam_scm2_per_eq * 1e-4 / abs(z)
+
+
 def value(r):
     """The stored D0, m2/s: the primary table's 25 C entry."""
     if r["src"] == "LG":
         return _num(r["t25"]) * 1e-10
+    if r["src"] == "RS":
+        return nernst(_num(r["t25"]), int(r["z"]))
     return _num(r["t25"]) * 1e-9          # DUDEK, 10^-5 cm2/s
 
 
@@ -108,6 +127,23 @@ def d0_block(r):
                           "appears to omit the division by |z|, and the primary table agrees with the implied value.")
             elif abs(c - v) / v > 0.2:
                 notes += " The two tables disagree by far more than for the other ions; this record keeps the primary table's value and flags the pair for the reader."
+    elif r["src"] == "RS":
+        lam = _num(r["t25"])
+        z = int(r["z"])
+        source = (RS_SRC + ", " + r["page"] + ", row %s: lambda0 = %s S cm2/eq at 25 C; the book's own literature reference for the row: %s"
+                  % (r["label"], r["t25"], r["ref"]))
+        method = ("read at the page image, 2026-11-15 (DEV.md 4c C403): lambda0 = %s S cm2/eq (x 1e-4 = %s S m2/eq), converted by the Nernst "
+                  "relation D = R T lambda0 / (|z| F^2) with R = 8.314462618 J/mol/K, F = 96485.33212 C/mol, T = 298.15 K "
+                  "(RT/F^2 = %.6e), |z| = %d, to %s m2/s" % (r["t25"], fmt(lam * 1e-4), R_GAS * T_REF / F_FARADAY ** 2, abs(z), fmt(v)))
+        notes = ("The same conversion applied to the book's Na+ row (lambda0 50.10) gives %s m2/s, +%.1f %% against Li & Gregory's "
+                 "1.33e-9 for Na+ (the conductance and tracer routes differ by that much).  No page of the English edition "
+                 "was seen: every page named here is the Russian translation's." % (fmt(nernst(50.10, 1)), (nernst(50.10, 1) / 1.33e-9 - 1) * 100))
+        if r["temps"]:
+            notes += "  " + r["temps"]
+        if r["crc_d"]:
+            c = _num(r["crc_d"]) * 1e-9
+            notes += (" A second compiled table (named in the comment above) gives %s m2/s for this ion at 25 C (%+.2f %%)."
+                      % (fmt(c), (c - v) / v * 100))
     else:
         source = (DUDEK_SRC + ", row D(Cu+): 1.20 x 10^-5 cm2/s (the paper cites it to its ref. 8, Y. Marcus, "
                   "Ion Properties, Marcel Dekker 1997, ch. 11, and uses it in its own analysis)")
