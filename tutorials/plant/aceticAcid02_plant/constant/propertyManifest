@@ -81,30 +81,18 @@ propertyManifest
         }
         "components/aceticAcid.dat"
         {
-            type          imported;
-            sha256        "e9e9eb213c624f399a0e9fe940781ec01424eadf3ed13a5eecc6663b9e07bebf";
-            computationalSha256 "0e231feba1502b6a0c763290b63985629230091fd2dbf35f25432fcc94e61678";
-            origin        "data/standards/components/aceticAcid.dat";
-            originSha256  "eacf79e8829707ebca54dbeadb5cab6429828f86f45d4ba4d5b14fd3d0a4e8fa";
-            release       Choupo-2608;
+            type          adopted;
+            adoptedAt     "2026-11-15";
         }
         "components/dimethylEther.dat"
         {
-            type          imported;
-            sha256        "718fafd228b9307246632b3413f8d7a3330d3b9daa87036c2ac4f6be56ffef49";
-            computationalSha256 "4680403c2fc43f79bb7cdd2cb0cca5b7e8ad5a65a6819ceb4eb49834390b4c6b";
-            origin        "data/standards/components/dimethylEther.dat";
-            originSha256  "2d7e072fc0a5bb0de75dd39008053de8dbeee23ed7ffd277fc13b8c3fab32df2";
-            release       Choupo-2608;
+            type          adopted;
+            adoptedAt     "2026-11-15";
         }
         "components/methanol.dat"
         {
-            type          imported;
-            sha256        "8a5d7eada35ef18aafd03f99eaeaa45a0837da565ac71b4ffb3574e7a99df54a";
-            computationalSha256 "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
-            origin        "data/standards/components/methanol.dat";
-            originSha256  "8cedd68cbab3194cfb72728ae31e42118e256931e9e166b4c53ace9dbbe27376";
-            release       Choupo-2608;
+            type          adopted;
+            adoptedAt     "2026-11-15";
         }
         "components/methylAcetate.dat"
         {
@@ -117,12 +105,8 @@ propertyManifest
         }
         "components/water.dat"
         {
-            type          imported;
-            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
-            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
-            origin        "data/standards/components/water.dat";
-            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
-            release       Choupo-2608;
+            type          adopted;
+            adoptedAt     "2026-11-15";
         }
         "parameters/UNIFAC/groups.dat"
         {

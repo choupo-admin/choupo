@@ -202,8 +202,8 @@ units
                 orificeCoefficient     0.84;     // C_o -- the Liebson chart value
                                                  // column09 reads; not re-read here
                 floodFraction          0.80;     // design target -- ASSUMED
-                //  The surface tension is the PACKAGE's (Brock-Bird, mixed by
-                //  Butler: constant/thermoPhysPropDict), the one the trays'
+                //  The surface tension is the PACKAGE's (each record's own law,
+                //  mixed by Butler: constant/thermoPhysPropDict), the one the trays'
                 //  flooding is rated on.  Until C398 A4 this block typed
                 //  `sigma 0.019;`, assumed with no source read; a column block
                 //  no longer carries a property.

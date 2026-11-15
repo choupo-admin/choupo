@@ -47,14 +47,21 @@ equilibrium
 }
 
 //  THE SURFACE TENSION THE LIGHTS COLUMN'S TRAYS ARE RATED ON (C398 A4): each
-//  component by Brock-Bird (corresponding states, Tc/Pc/Tb from the records),
-//  mixed by Butler, the package's default rule.  Until C398 A4 the column's
-//  `hydraulics {}` typed 0.019 N/m, assumed with no source read.
+//  component by its RECORD'S OWN law (sigma = A tau^n, fitted to measurements;
+//  the four laws are evaluated near 400 K, about 60 K past their fitted
+//  ranges, and the run announces each extrapolation), mixed by Butler, the
+//  package's default rule.  methylAcetate's record carries no law, so it is
+//  priced by Brock-Bird, announced with that method's stated scope (Poling 5th
+//  ed. p. 12.3: "for nonpolar liquids"); CO is above its critical temperature
+//  and left out.  Brock-Bird alone was the surface until review row DF-15:
+//  Poling's Table 12-1 measures it +53 % on acetic acid at 293 K, where the
+//  record law gives 27.53 against the measured 27.59 mN/m.  Until C398 A4 the
+//  column's `hydraulics {}` typed 0.019 N/m, assumed with no source read.
 transport
 {
     interface
     {
-        surfaceTension { model BrockBird; }
+        surfaceTension { model StoredCorrelation; }
     }
 }
 
