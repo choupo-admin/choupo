@@ -305,4 +305,44 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
 } // namespace
 
 } // namespace liquidProperty
+
+//  ThermoPackage::soluteVolumeAtTb (declared in ThermoPackage.H, C398 slice d2).
+//  Defined HERE, beside the door whose density it asks and whose words (the
+//  route) it prints, so that the package's own source keeps its line numbers
+//  (the EduTool lessons cite ThermoPackage.cpp by line).
+const ThermoPackage::SoluteVolumeAtTb& ThermoPackage::soluteVolumeAtTb(std::size_t i) const
+{
+    const auto it = soluteVolumeTb_.find(i);
+    if (it != soluteVolumeTb_.end()) return it->second;
+    SoluteVolumeAtTb v;
+    const Component& c = components_.at(i);
+    v.Tb = c.Tb();
+    if (!(v.Tb > 0.0))
+        v.refusal = c.name() + " has no normal boiling point (Tb) in its record, so the"
+                    " solute volume V_A of Wilke-Chang (Poling Eq. 11-9.1) cannot be taken at it";
+    else
+    {
+        try
+        {
+            sVector e(n(), 0.0);
+            e[i] = 1.0;
+            const auto r = liquidProperty::evaluateUnrecorded(*this, liquidProperty::Property::density,
+                                                              v.Tb, 101325.0, e);
+            if (!(r.value > 0.0)) throw std::runtime_error("non-positive density");
+            v.rho   = r.value;
+            v.V_m3  = (c.MW() / 1000.0) / r.value;
+            v.route = r.label;
+            v.ok    = true;
+        }
+        catch (const std::exception& ex)
+        {
+            char tb[32];
+            std::snprintf(tb, sizeof tb, "%.6g K", v.Tb);
+            v.refusal = c.name() + " has no liquid density at its normal boiling point ("
+                      + tb + "): " + ex.what();
+        }
+    }
+    return soluteVolumeTb_.emplace(i, std::move(v)).first->second;
+}
+
 } // namespace Choupo
