@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  The P-x-y diagram of ethanol/water at 70 C -- the FIXED-T mirror of the
+    T-x-y (2026-11-15).
+
+    WHAT IT SHOWS.  The bubble pressure of every liquid composition at
+    343.15 K (`P_bubble`) and the vapour that first appears at it
+    (`y_eqT_ethanol`), from the engine's one bubble-pressure home,
+    BubblePoint::pressure.  Pure water boils at 31.47 kPa, pure ethanol at
+    72.22 kPa, and the mixture peaks above both near x_ethanol = 0.9
+    (72.69 kPa): the MAXIMUM-pressure azeotrope that the T-x-y shows as a
+    minimum-boiling one.
+
+    THE ROUND TRIP.  At x_ethanol = 0.4 the bubble temperature at 1 atm is
+    353.500724827 K (txy_point); the bubble pressure at that temperature
+    (pxy_point) returns 101325 Pa, and the vapour compositions of the two
+    agree.  Both properties solve sum K_i x_i = 1, one for T and one for P;
+    the golden rows hold P_bubble to 1e-6 relative.
+
+    THE PACKAGE is hxy01_ethanol_water_1atm's: NRTL with the curated pair, an
+    ideal-gas vapour.  One liquid is assumed (no liquid-liquid probe at fixed
+    T); ethanol/water is miscible, so nothing is lost here.
+
+    NOT VALIDATED here against a measured P-x-y; the pair's own record
+    carries its evidence.  Run-only + KPI golden. */
+application   choupoProps;
+description   "P-x-y of ethanol/water at 70 C (bubble pressure and incipient vapour along x, a maximum-pressure azeotrope near x = 0.9) and the T_bubble -> P_bubble round trip at one composition";
+verbosity     2;

@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  thermophysicalPropertySystem (v2) -- gammaPhi for ethanol/water, the SAME
+  package as hxy01_ethanol_water_1atm: NRTL with the curated pair, an
+  ideal-gas vapour (the frame the pair was regressed in).  The P-x-y and the
+  T-x-y of this case therefore read one equilibrium, and the round trip in
+  system/propsDict holds them to each other.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( ethanol water );
+
+equilibrium
+{
+    formulation gammaPhi;               // gamma (liquid) x phi (vapour)
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters            // declared WHERE consumed
+            {
+                ethanol-water { source "data/standards/parameters/NRTL/ethanol-water.dat"; }
+            }
+        }
+        standardState pureLiquid;       // gamma_i -> 1 as x_i -> 1 (Raoult datum)
+    }
+    vapour
+    {
+        fugacityModel idealGas;         // consistent with the pair regression
+    }
+}

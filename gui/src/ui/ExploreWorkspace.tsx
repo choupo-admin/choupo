@@ -75,6 +75,7 @@ import { CsvAutoPlot, axisDisplay } from "./plotting/CsvAutoPlot.js";
 import { GibbsMapPanel } from "./GibbsMapPanel.js";
 import type { JsonDict } from "../dict/index.js";
 import { PurePhaseDiagram } from "./plotting/PurePhaseDiagram.js";
+import { PxyPlot } from "./plotting/PxyPlot.js";
 import { BinaryLlePlot } from "./plotting/BinaryLlePlot.js";
 import { dropCsvColumn } from "./plotting/csvShape.js";
 import {
@@ -89,12 +90,13 @@ import { EstimateForm } from "./explore/EstimateForm.js";
 import { ComponentInspector } from "./explore/ComponentInspector.js";
 import { EvidenceLens } from "./explore/EvidenceLens.js";
 import { PhaseSplitLens } from "./explore/PhaseSplitLens.js";
+import { EnvelopeLens } from "./explore/EnvelopeLens.js";
 import {
   CATALOGUE_BROWSER_PANEL, EXPLORE_SET_PANEL, PanelCollapseButton, PanelReopenStrip, PanelResizeHandle,
   panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
 } from "./panelContract.js";
 import { useMeasuredBoxWidth, useNarrowViewport } from "./methods/methodsChrome.js";
-import { binaryVleSpec, orderBinaryByVolatility } from "../case/methodFeeds.js";
+import { binaryPxySpec, binaryVleSpec, orderBinaryByVolatility, readPxyCsv } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { PLOT_KINDS, type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { LENS_SHORT, PLOT_TYPES, defaultLensFor, type PlotType } from "../case/exploreLenses.js";
@@ -524,7 +526,9 @@ export function ExploreWorkspace() {
   //  grows a header, it does not belong on this plane -- the chrome budget
   //  says its knobs go in the toolbar, and the plot's top-left origin is
   //  FIXED.)
-  const isVle = plotType === "txy" || plotType === "yx" || plotType === "gamma";
+  //  `pxy` (2026-11-15) is a member of the binary-VLE family for every
+  //  purpose but one: it holds T, not P (the toolbar shows a T menu for it).
+  const isVle = plotType === "txy" || plotType === "yx" || plotType === "gamma" || plotType === "pxy";
   const isTernary = plotType === "ternary" || plotType === "ternaryLle";
   //  THE LABEL MUST NAME THE PAIR THE SPEC RAN, not the order they were picked
   //  in.  `binaryVleSpec` puts the MORE VOLATILE component on the x axis
@@ -612,7 +616,7 @@ export function ExploreWorkspace() {
       //  Names what the STRIP will say (LENS_SHORT), plus the two EduTools
       //  constructions that read the same run on the other plane.  The binary
       //  flash joined McCabe-Thiele there 2026-09-21.
-      return "+1 VLE compound → T-x-y, y-x, activity γ (and McCabe-Thiele + flash in EduTools)";
+      return "+1 VLE compound → T-x-y, P-x-y, y-x, activity γ, envelope (and McCabe-Thiele + flash in EduTools)";
     if (selected.length === 2 && allVle && !currentViews.has("ternary"))
       return "+1 VLE compound → ternary boiling surface";
     if (hasWater && !hasElectrolyte && !currentViews.has("scaling"))
@@ -806,6 +810,17 @@ export function ExploreWorkspace() {
       };
     }
 
+    if (plotType === "pxy") {
+      // The FIXED-T mirror of the T-x-y: P_bubble + y_eqT_<c1> along x at
+      // the toolbar's T, the more volatile component on the axis (the same
+      // ordering rule as binaryVleSpec, so vlePair labels it correctly).
+      return binaryPxySpec({
+        pair: [selected[0] ?? "", selected[1] ?? ""],
+        catalogue, activity, eos, T: fixedT, n: nPts, localUnifac,
+        componentFiles: hasLocal ? localComponentFiles : undefined,
+      });
+    }
+
     if (plotType === "txy" || plotType === "yx" || plotType === "gamma") {
       // binary VLE: sweep x of the more volatile component 0->1 at fixed P.
       // The T-x-y and the equilibrium curve y(x) are TWO READINGS of ONE
@@ -894,7 +909,7 @@ export function ExploreWorkspace() {
     //  EvidenceLens); the generic scan run has nothing to ask for it.
     //  So does the phase-split lens (one phaseSplitScan, inside
     //  PhaseSplitLens, DEV.md 4c C118).
-    if (plotType === "evidence" || plotType === "phaseSplit") {
+    if (plotType === "evidence" || plotType === "phaseSplit" || plotType === "envelope") {
       abortRef.current?.abort();
       setCsv(null); setErr(null); setCompareInfo(null); setOpAdvisories([]);
       setBusy(false); return;
@@ -1141,7 +1156,8 @@ export function ExploreWorkspace() {
   //  vapour pressure would be a warning about a curve nobody asked for.
   //  `phaseSplit` too (C118): it asks for no curve, and the engine names a
   //  component it cannot flash in its own refusal, inside the lens.
-  const skipped = (!isVle && plotType !== "scaling" && plotType !== "bjerrum" && plotType !== "phaseSplit")
+  const skipped = (!isVle && plotType !== "scaling" && plotType !== "bjerrum" && plotType !== "phaseSplit"
+                   && plotType !== "envelope")
     ? scanKeys.skipped : [];
 
   // Scaling validity surface: the ionic strength at the scan end-points, read
@@ -1204,6 +1220,21 @@ export function ExploreWorkspace() {
       : null;
   })();
 
+  // P-x-y compositions the engine gave no bubble pressure for (a nan row:
+  // `BubblePoint::pressure` found none, or the liquid does not boil even at
+  // its 0.01 bar floor).  COUNTED from the engine's CSV and said, because a
+  // curve with a hole in it otherwise reads as a curve that was never asked
+  // there.  The reason sentence is the engine's, in the run's log.
+  const pxyGap = (() => {
+    if (plotType !== "pxy" || !csv) return null;
+    const r = readPxyCsv(csv);
+    if (!r || r.missing === 0) return null;
+    return `The engine found no bubble pressure at ${r.missing} of ${r.missing + r.rows.length} `
+      + `compositions at this temperature (no pressure up to 10 kbar stops the liquid boiling, the `
+      + `equation of state has one root for both phases, or the liquid does not boil even at `
+      + `0.01 bar).  Those points are left out, never interpolated.`;
+  })();
+
   // The honesty footer re-expands whenever a NEW alert appears (an error,
   // advisory, or model-lie warning), so a folded footer never SWALLOWS a fresh
   // honesty signal — the student always SEES the new flag.
@@ -1212,7 +1243,7 @@ export function ExploreWorkspace() {
   // whether that cost was measured or only asserted), not an occasional alarm —
   // and a folded footer must never be where that statement first appears.
   const hasAlert = !!err || !!activeReason || opAdvisories.length > 0 || linkRefused.length > 0
-    || !!idealLieWarning || !!lleInTxy
+    || !!idealLieWarning || !!lleInTxy || !!pxyGap
     || plotType === "gibbsmap" || (plotType === "bjerrum" && !!bjRun);
   useEffect(() => { if (hasAlert) setFooterOpen(true); }, [hasAlert]);
 
@@ -1327,6 +1358,11 @@ export function ExploreWorkspace() {
     : isVle
       ? plotType === "txy"
         ? `Binary VLE — liquid composition swept 0→1 at ${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)}`
+        //  THE MIRROR, and the one thing it does not carry: the T-x-y's
+        //  liquid-liquid probe is a fixed-P construction, so the P-x-y
+        //  assumes ONE liquid and says so (pxyNote below).
+        : plotType === "pxy"
+        ? `Binary VLE at fixed T = ${kToDisplay(fixedT, Tu).toFixed(1)} ${temperatureLabel(Tu)} — the bubble PRESSURE of each liquid composition (upper curve) and the incipient vapour at it (lower curve); liquid above, vapour below. One liquid is assumed: no liquid-liquid probe at fixed T.`
         //  WHAT THE PICTURE CLAIMS, and what is deliberately NOT on it.  This
         //  is the equilibrium SURFACE — the engine's y*(x) against the y = x
         //  reference, on equal axes so the diagonal is drawn at 45 degrees and
@@ -1882,13 +1918,13 @@ export function ExploreWorkspace() {
           {/* The fixed (T,P) the lens evaluates at — compact menu-buttons that
               SHOW their value (`P 1 bar`, `T 25 °C`); they MOVE the curve, so
               they sit in the toolbar, each opening a stable popover. */}
-          {plotType === "ternaryLle" && (
+          {(plotType === "ternaryLle" || plotType === "pxy") && (
             <ToolMenu label="T" value={`${kToDisplay(fixedT, Tu).toFixed(1)} ${temperatureLabel(Tu)}`}>
               <NumberInput size="xs" label={`T (${temperatureLabel(Tu)})`} value={kToDisplay(fixedT, Tu)} w={130}
                 onChange={(v) => setFixedT(parseTemperature(num(v, kToDisplay(fixedT, Tu)), Tu))} />
             </ToolMenu>
           )}
-          {(isVle || isTernary || (plotType === "scan" && axisVar === "T")) && (
+          {((isVle && plotType !== "pxy") || isTernary || (plotType === "scan" && axisVar === "T")) && (
             <ToolMenu label="P" value={`${paToDisplay(fixedP, Pu)} ${pressureLabel(Pu)}`}>
               <NumberInput size="xs" label={`P (${pressureLabel(Pu)})`} value={paToDisplay(fixedP, Pu)} w={130}
                 onChange={(v) => setFixedP(parsePressure(num(v, paToDisplay(fixedP, Pu)), Pu))} />
@@ -1943,7 +1979,7 @@ export function ExploreWorkspace() {
           {/* resolution / performance knobs in the ⚙ overflow — not the
               physics, so they don't clutter the row.  size md → fits 44px. */}
 {/* The phase-split lens carries its own points (inside the lens). */}
-          {plotType !== "phaseSplit" && (
+          {plotType !== "phaseSplit" && plotType !== "envelope" && (
                     <Popover position="bottom-end" withArrow shadow="md">
             <Popover.Target>
               <Tooltip label="resolution & display options" withArrow>
@@ -2000,7 +2036,13 @@ export function ExploreWorkspace() {
             on-plot overlays (top-left), annotating the curve ON the curve. */}
         <Box style={{ flex: 1, minWidth: 0, overflow: "hidden", padding: 16, paddingTop: 12, display: "flex", flexDirection: "column" }}>
         <Stack gap="sm" style={{ flex: 1, minHeight: 0 }}>
-          {plotType === "phaseSplit" && !activeReason ? (
+          {plotType === "envelope" && !activeReason ? (
+            //  The P-T envelope of one feed (2026-11-15): its own component,
+            //  one choupoProps run of one phaseEnvelope op, the figure and
+            //  the engine's report of where each branch stopped and why.
+            <EnvelopeLens components={selected} catalogue={catalogue}
+              componentFiles={hasLocal ? localComponentFiles : undefined} narrow={narrow} />
+          ) : plotType === "phaseSplit" && !activeReason ? (
             //  The phase split of one feed along T or P (DEV.md 4c C118):
             //  its own component, one choupoProps run of one phaseSplitScan,
             //  three figures and the engine's sentences.
@@ -2052,6 +2094,8 @@ export function ExploreWorkspace() {
                   tc={metaByName(selected[0] ?? "", catalogue)?.tc}
                   pc={metaByName(selected[0] ?? "", catalogue)?.pc}
                   tb={metaByName(selected[0] ?? "", catalogue)?.tb} />
+              ) : plotType === "pxy" ? (
+                <PxyPlot csv={csv} partner={vlePair?.[1] ?? selected[1]} T={fixedT} />
               ) : plotType === "binaryLle" ? (
                 <BinaryLlePlot csv={csv} compA={selected[0] ?? ""} compB={selected[1] ?? ""} />
               ) : plotType === "bjerrum" && spec.bjerrum ? (
@@ -2246,6 +2290,10 @@ export function ExploreWorkspace() {
           if (idealLieWarning) alerts.push(
             <Alert key="ideal" color="orange" variant="light" title="Assuming ideal mixing — not your real system">
               <Text size="xs">{idealLieWarning}</Text>
+            </Alert>);
+          if (pxyGap) alerts.push(
+            <Alert key="pxygap" color="orange" variant="light" title="No bubble pressure at some compositions">
+              <Text size="xs">{pxyGap}</Text>
             </Alert>);
           if (lleInTxy) alerts.push(
             <Alert key="lle" color="orange" variant="light" title="Heteroazeotrope — flat three-phase line">

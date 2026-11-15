@@ -103,6 +103,12 @@ export function theoryAnchor(plotType: PlotKind, property: string): string {
     //  is evidence about.
     case "evidence": return "ch:fittable";
     case "phaseSplit": return "ch:flash";   // one isothermal flash per grid point
+    //  The P-x-y: the bubble PRESSURE at fixed T, its own subsection inside
+    //  the K-value chapter (the T-x-y's mirror, solved the other way round).
+    case "pxy": return "sec:bubble-pressure";
+    //  The mixture P-T envelope: bubble and dew curves of one feed on a
+    //  cubic, where the method stops, and why the nose stays open.
+    case "envelope": return "sec:mixture-envelope";
     case "scan":                             // the property IS the subject here
     default:
       if (property === "Psat") return "ch:vap";
