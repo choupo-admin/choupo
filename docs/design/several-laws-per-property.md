@@ -205,10 +205,12 @@ table (TB-01).  (5) A per-mass column on a record with MW <= 0 is refused
 (TB-02); the density pilot's columns keep exactly their old unit words per
 role (TG-12).  (6) The probe of a table is inside a segment (TG-04); the
 table's arithmetic is held by the gate `check_table_laws`, which recomputes
-it independently.  UNCOVERED: a SOLID heat-capacity table has no witness --
-the literature archive holds no solid table read for this slice -- so the
+it independently.  UNCOVERED: a SOLID heat-capacity table has no witness.
+The literature archive holds one candidate source (Robie & Hemingway 1995,
+USGS Bulletin 2131, `report.pdf`), but no table of it was read for this
+slice, and a witness may only carry values read at their page.  So the
 solid path (the same TableCp object as the liquid's) is built and refused
-by the same rules but not exercised by a case.
+by the same rules, but no case exercises it.
 
 ## The review rows, answered
 
