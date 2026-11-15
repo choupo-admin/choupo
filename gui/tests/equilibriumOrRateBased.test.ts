@@ -205,7 +205,7 @@ describe("equilibrium-or-rate-based: the lesson", () => {
       expect(src[line - 1], c).toContain(want);
     }
     //  The refusal at 2398 is the MESH one, two lines on.
-    expect(src.slice(2397, 2400).join("\n")).toContain("implemented for `method simultaneous`");
+    expect(src.slice(2400, 2403).join("\n")).toContain("implemented for `method simultaneous`");
   });
   it("names the four witnesses it runs, and each exists in the tree", () => {
     for (const w of [MURPHREE_WITNESS, ...EFFICIENCY_WITNESSES.map((x) => x.witness)])

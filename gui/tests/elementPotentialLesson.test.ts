@@ -243,7 +243,7 @@ describe("every number the prose quotes is the engine's own", () => {
 // ---- citations ----------------------------------------------------------------
 
 /** Every `File.ext:NNN(–MMM)` the lesson cites; a bare `:NNN` inherits the
- *  file named before it ("NewtonND.cpp:478 ... (:479)"). */
+ *  file named before it ("NewtonND.cpp:478 ... (:480)"). */
 function citations(): { file: string; lo: number; hi: number }[] {
   const src = readFileSync(join(ROOT, "gui/src/ui/methods/elementPotentialLesson.ts"), "utf-8");
   const out: { file: string; lo: number; hi: number }[] = [];

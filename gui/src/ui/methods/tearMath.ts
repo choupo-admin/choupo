@@ -39,7 +39,7 @@
   both halves of that: a backward edge left undeclared refuses (MISSING TEAR
   when it closes a cycle, INVALID ORDER when it does not), and a FORWARD edge
   declared as a tear refuses too, in those words, because a forward stream
-  needs no cut (:4466-4473).  So for a given order the admissible tear set is
+  needs no cut (:4469-4476).  So for a given order the admissible tear set is
   not a choice at all: IT IS EXACTLY THE SET OF BACKWARD EDGES.  Choosing the
   tear in Choupo means choosing the ORDER, and a graph's minimum tear set is
   reachable only if some order makes exactly those edges the backward ones.
@@ -102,7 +102,7 @@ export interface TeachGraph {
 /** An INTERNAL edge — one with a producer and a consumer — is the only kind
  *  that can be torn.  A domain inlet has no producer to disagree with and a
  *  domain outlet has no consumer waiting on it; the engine refuses both by
- *  name (INLET TEAR at :4446-4452, UNCONSUMED TEAR at :4457-4459). */
+ *  name (INLET TEAR at :4449-4455, UNCONSUMED TEAR at :4460-4462). */
 export const isInternal = (e: TeachEdge): boolean =>
   e.from !== null && e.to !== null;
 
@@ -251,7 +251,7 @@ export function cyclesOf(g: TeachGraph): Cycle[] {
  *  tear.  A backward edge on NO cycle is a declaration-order mistake — the
  *  producer simply runs too late — and declaring it a tear would compensate a
  *  mistake with an artificial iteration, which the engine refuses in those
- *  words (OFF-CYCLE TEAR, :4543-4548). */
+ *  words (OFF-CYCLE TEAR, :4546-4551). */
 export interface BackwardEdge {
   name: string;
   producer: string;
@@ -396,8 +396,8 @@ export function bestOrder(g: TeachGraph): BestOrder {
  *
  *  So this is a TRANSCRIPTION of `Flowsheet::validateSequentialPlan`
  *  (src/unitOperations/flowsheet/Flowsheet.cpp:4967-5175), in the same two
- *  passes and the same order: the ordered walk first (:4414-4446), then the
- *  declared-tear pass (:4448-4501).  It is the same posture `wegsteinStep`
+ *  passes and the same order: the ordered walk first (:4417-4449), then the
+ *  declared-tear pass (:4451-4504).  It is the same posture `wegsteinStep`
  *  takes toward `Wegstein::step` -- the arithmetic is the engine's, the toy
  *  it runs on is this file's own, and neither invents a rule.
  *
@@ -414,7 +414,7 @@ export function bestOrder(g: TeachGraph): BestOrder {
  *  would be teaching a refusal the reader will never actually see.
  *
  *  ONE REFUSAL IS NOT REACHABLE HERE, and it is named rather than faked:
- *  UNKNOWN TEAR (:4462) fires on a name that is not a stream of the graph at
+ *  UNKNOWN TEAR (:4465) fires on a name that is not a stream of the graph at
  *  all -- a spelling mistake in the dict.  Every name a reader can click on
  *  this page IS a stream, so the class is implemented (a declaration naming
  *  no edge still returns it) and simply has no button.  */
@@ -455,7 +455,7 @@ export function judgeDeclaration(
   const marks: { [stream: string]: StreamMark } = {};
   for (const e of g.edges) marks[e.name] = "forward";
 
-  //  PASS ONE -- the ordered walk (:4414-4446).  Every input that is not
+  //  PASS ONE -- the ordered walk (:4417-4449).  Every input that is not
   //  declared a tear must already have been produced by an earlier unit, or
   //  be a domain inlet.  Anything else is a backward edge nobody cut.
   const produced = new Set<string>();
@@ -487,7 +487,7 @@ export function judgeDeclaration(
     for (const e of g.edges) if (e.from === u) produced.add(e.name);
   }
 
-  //  PASS TWO -- the declared-tear pass (:4448-4501).  Each declared tear
+  //  PASS TWO -- the declared-tear pass (:4451-4504).  Each declared tear
   //  must be a backward edge lying on a real cycle; the four ways it can
   //  fail are four different mistakes with four different remedies.
   const accepted: string[] = [];
@@ -524,7 +524,7 @@ export function judgeDeclaration(
     const producer = g.units[edge.from]!.name;
     //  `<=` and not `<`: a unit consuming its own output is a genuine
     //  one-unit cycle, and the engine counts it backward for that reason
-    //  (:4477-4480).
+    //  (:4480-4483).
     const pProd = pos.get(edge.from) ?? 0;
     const backward = consumers.filter((c) => (pos.get(c.to!) ?? 0) <= pProd);
     if (backward.length === 0) {

@@ -49,7 +49,7 @@ License
   `temperatureApproach` as a MAGNITUDE; a negative value is refused by name
   (GibbsReactor.cpp:338-349), and the engine assigns the direction from the
   isothermal enthalpy change between the feed and its true equilibrium at the
-  physical T (`GibbsReactor::approachDirection`, :67-106).  This panel reads
+  physical T (`GibbsReactor::approachDirection`, :68-107).  This panel reads
   the SAME quantity the same way -- on these witnesses the feed and the
   reactor share a temperature, so the published `Q_kW` IS that isothermal
   change -- and moves the second run in the direction the engine would take.
@@ -444,7 +444,7 @@ export function ApproachToEquilibriumTool(): JSX.Element {
           Since 2026-09-26 the author declares only a magnitude and the engine
           assigns the sign from the thermicity you see above; a negative
           <code>temperatureApproach</code> is refused by name
-          (<code>GibbsReactor.cpp:338–343</code>). A Gibbs reactor is told no
+          (<code>GibbsReactor.cpp:338–344</code>). A Gibbs reactor is told no
           reactions, so it takes its thermicity from the one extent it has —
           the transformation from its own feed to the true equilibrium at T,
           solved once more before the detuned solve

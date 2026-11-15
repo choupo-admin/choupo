@@ -258,8 +258,8 @@ describe("the page warns when rung 1 declares more than rung 2 allows", () => {
     const cr = readFileSync(new URL(
       "../../src/unitOperations/reactor/ConversionReactor.cpp", import.meta.url),
       "utf-8").split("\n");
-    expect(cr[214]).toContain('lookupScalar("conversion")');
-    expect(cr.slice(215, 218).join(" ")).toContain("X < 0.0 || X > 1.0");
-    expect(cr.slice(229, 233).join(" ")).toContain("went negative");
+    expect(cr[215]).toContain('lookupScalar("conversion")');
+    expect(cr.slice(216, 219).join(" ")).toContain("X < 0.0 || X > 1.0");
+    expect(cr.slice(230, 234).join(" ")).toContain("went negative");
   });
 });

@@ -105,7 +105,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     note: "The engine runs the first four on this page and cannot run the "
       + "fifth: a coal or biomass feed is a solid, and no reactor in Choupo "
       + "carries a solid feed into its equilibrium -- the equilibrium reactor "
-      + "refuses one by name (EquilibriumReactor.cpp:87-91).  Gasification is "
+      + "refuses one by name (EquilibriumReactor.cpp:86-90).  Gasification is "
       + "told here, not run.",
   },
   {

@@ -114,7 +114,7 @@ export function gainResponse(K: number): Response {
  *  `dn_i/dt = F_in z_in_i - F_out (n_i/Sum n)` with `F_out = F_in`
  *  (src/unitOperations/dynamic/DynamicCSTR.cpp:788-791), whose single time
  *  constant is the residence time `nTot / F_in` the same unit computes at
- *  :626.  Put a sinusoid in and the closed forms below come out; the
+ *  :628.  Put a sinusoid in and the closed forms below come out; the
  *  measured plane checks them. */
 export function firstOrderLagResponse(tauS: number, omegaRadS: number): Response {
   const wt = omegaRadS * tauS;

@@ -300,7 +300,7 @@ describe("syngas: the lesson text", () => {
       "GibbsSolidPhase.cpp:231": "if (v.lnActivityWithout > pureSolidPhase::kLnActivityAppears)",
       "EquilibriumReactor.cpp:63": 'const scalar P      = feedDict->lookupScalar("P", Dims::pressure);',
       "EquilibriumReactor.cpp:64": 'const scalar T      = operDict->lookupScalarOrDefault("T", T_feed);   // isothermal',
-      "EquilibriumReactor.cpp:87-91": /if \(n0\[i\] > 0\.0\)\s*throw std::runtime_error\("equilibriumReactor: the feed carries pure"[\s\S]*a solid in the feed is not implemented/,
+      "EquilibriumReactor.cpp:86-90": /if \(n0\[i\] > 0\.0\)\s*throw std::runtime_error\("equilibriumReactor: the feed carries pure"[\s\S]*a solid in the feed is not implemented/,
       "EquilibriumReactor.cpp:105": 'auto rxnList = dict->lookupDictList("reactions");',
       "EquilibriumReactor.cpp:121": "pureSolidPhase::reactionEquilibrium(thermo, nu[j], T);   // Kp from dG°(T)",
       "EquilibriumReactor.cpp:200": "g_j = Sum_i nu_ij (x_i - ln n_tot + ln P/P0) - ln Kp_j  = 0",

@@ -163,7 +163,7 @@ function fmt(v: number | null | undefined, d = 4): string {
 /** RUNG 1 AGAINST RUNG 2, compared by the PAGE (C112 point 12).
  *
  *  The conversion reactor checks only 0 <= X <= 1 and that no outlet goes
- *  negative (ConversionReactor.cpp:216-219, 230-233), so a declared X above the
+ *  negative (ConversionReactor.cpp:216-219, 231-234), so a declared X above the
  *  equilibrium conversion runs to exit 0.  This page holds both numbers the
  *  engine PUBLISHES for the same feed at the same T and P -- the `stoich`
  *  unit's echoed `conversion` and the `limit` unit's `conversion_wgs` (the
