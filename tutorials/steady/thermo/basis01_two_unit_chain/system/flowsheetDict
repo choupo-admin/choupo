@@ -24,7 +24,7 @@
   WHAT THE CHAIN IS FOR.  The `speciator` runs the case's electrolyte world
   and SOLVES the chemistry: its brine outlet carries a speciation block
   stamped `origin "solved:speciator"`.  The `transporter` runs a DIFFERENT
-  world -- a plain molecular gammaPhi declared in its own `thermo {}` block,
+  world -- a plain molecular gammaPhi declared in its own named variant (`thermo idealMolecular;`),
   which resolves no ions at all.  It changes T (a duty) and nothing else:
   one material in, one material out, F and z untouched.
 
@@ -79,7 +79,7 @@
   a unit there that can solve one; the molecular world cannot, which is the
   whole point of the boundary.
 
-  THE IDENTITY SECOND WITNESS.  Delete the `thermo {}` block below: the
+  THE IDENTITY SECOND WITNESS.  Delete the `thermo idealMolecular;` lines below: the
   transporter then runs the GLOBAL electrolyte world, which CAN re-solve the
   chemistry, and does -- at 332.23 K, giving a different (and locally
   correct) block.  What must be identical either way is the INTERMEDIATE

@@ -22,7 +22,7 @@
                  PREDICTED: nothing in this route was fitted to any
                  ethanol/water datum.  Only the PURE parameters are fits.
 
-    flashNRTL    a per-unit thermo {} override: the classic gamma-phi
+    flashNRTL    a per-unit variant (`thermo nrtlEthanolWater;`): the classic gamma-phi
                  route on the curated NRTL pair (fitted TO ethanol/water
                  VLE data) + Antoine.  This is the case's experimental
                  anchor: the fitted route reproduces the measured

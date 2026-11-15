@@ -108,6 +108,28 @@ for fs in sorted((ROOT / "tutorials").rglob("system/flowsheetDict")):
                    f" (equilibria.solidPhases); use `reportMinerals` for the"
                    f" unit's reporting subset")
 
+# ---- 2b. THE OLD FORM COUNT (C402): no unit carries an inline `thermo { }` ---
+#  A unit's own property world is a NAMED variant (`thermo <name>;`, the body
+#  under `variants {}` in the dictionary the unit reads).  The inline fragment
+#  is refused by the engine; this arm counts it across the tree -- cases,
+#  benchmarks, curation batches, docs examples, gui fixtures -- and the count
+#  must read zero.  (A property OPERATION's `thermo { }` in a propsDict is the
+#  props bench's own grammar and is not a unit's.)
+nFragments = 0
+for root in ("tutorials", "benchmarks", "data", "docs", "gui/tests", "gui/public"):
+    for fs in sorted((ROOT / root).rglob("flowsheetDict")) if (ROOT / root).is_dir() else []:
+        if fs.parent.name != "system":
+            continue
+        txt = re.sub(r'/\*.*?\*/', '', fs.read_text(errors="replace"), flags=re.S)
+        txt = re.sub(r'//.*$', '', txt, flags=re.M)
+        k = len(re.findall(r'\bthermo\s*\{', txt))
+        if k:
+            nFragments += k
+            bad.append(f"{fs.parent.parent.relative_to(ROOT)}: {k} inline unit `thermo {{ }}` "
+                       f"fragment(s) in flowsheetDict -- a unit's own world is a named variant "
+                       f"(`variants {{ <name> {{ ... }} }}` in the dictionary it reads, "
+                       f"`thermo <name>;` in the unit; DEV.md 4c C402)")
+
 # ---- 3. a declared aqueous model must be implemented -----------------------
 nDeclared = 0
 for tpp in sorted((ROOT / "tutorials").rglob("constant/thermoPhysPropDict")):
@@ -209,6 +231,7 @@ else:
     print("  ok   the old inline `thermo { ... }` form is refused by name")
 
 print(f"unit-chemistry gate: no unit op selects thermodynamics; "
+      f"{nFragments} inline unit thermo fragment(s) in the tree; "
       f"{nDeclared} case(s) declare an aqueous activity model, all implemented"
       + (f"; {len(pending)} still construct a solver directly" if pending else ""))
 for p in pending:

@@ -5,7 +5,7 @@
   at 322.03 K -- the first separator's declared temperature -- and written
   as a kij SET record by the `ppr78Kij` op in kijTables/ (route P, DEV.md 4c
   C123: "kij a T declarada").  The three other separators carry their own
-  set at their own T through a `thermo {}` override in system/flowsheetDict.
+  set at their own T through a named variant (`thermo ppr78Sep1;` ...) in system/flowsheetDict.
 
   No component of this case has omega > 0.491 (nDecane, the heaviest, is
   0.4884), so the 1978 branch is not exercised here; the corpus cavett01,

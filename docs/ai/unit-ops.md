@@ -16,7 +16,7 @@ top of each entry and elided in per-op examples.
   reaction <ref>;     // when needed
   crystallisation <ref>;  // when needed
   dryingCurve <ref>;  // when needed
-  thermo {... }      // optional per-unit override
+  thermo <name>;     // optional: a named variant of the property dictionary (a per-unit world)
 }
 ```
 
@@ -975,7 +975,7 @@ liquid, the compressor and the turbine a vapour) refuses, at the hand-over, a
 pure stream that its OWN world places beyond the 1e-6 band on the other side
 of the saturation line -- priced at (T, P) there it is the other phase.  It
 arises where a saturated state crosses a model boundary (a producer under its
-own `thermo {}` puts it on ITS line).  The message names the stream, the unit,
+own variant puts it on ITS line).  The message names the stream, the unit,
 T, P, p_sat(T) and the formulation in the unit's own world, P/p_sat - 1
 against the band, and the producing unit with its formulation; the remedy is
 one world for producer and consumer.  One home:

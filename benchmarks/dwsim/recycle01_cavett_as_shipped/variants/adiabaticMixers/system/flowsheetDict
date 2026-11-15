@@ -44,7 +44,7 @@
   THERMODYNAMICS: phi-phi PR78 (constant/thermoPhysPropDict), the PPR78 kij
   SET evaluated at 322.03 K for the package every unit inherits, and a
   per-unit set at each of the other three separators' declared T
-  (`thermo {}` overrides below; the sets are in
+  (`thermo <variant>;` selectors below; the sets are in
   constant/parameters/PengRobinson/, written by kijTables/).  Stated
   default: a compressor, valve or mixer declares no temperature and reads
   the inherited 322.03 K set.

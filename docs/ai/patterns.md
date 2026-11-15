@@ -348,7 +348,7 @@ final product concentration + a specific operating pressure.
 A plant is a TREE of folders.  Any `flowsheetDict` is ONE of two kinds:
 
 - **LEAF** — one piece of hardware.  Has `type` (+ optional `model`,
-  `reaction`, `thermo {}`), an `operation {}` block and its stream
+  `reaction`, `thermo <variant>;`), an `operation {}` block and its stream
   MENTIONS (`inputs (...)` / `outputs (...)`).  Its boundary state lives
   in the case's `0/` files, never inline.
 - **COMPOSITE** — a SECTOR or the PLANT.  Lists its members

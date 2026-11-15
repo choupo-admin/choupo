@@ -756,8 +756,12 @@ def closure_of(pp_path, caseDir, std, AQ):
                         a, b = sorted((comps[i], comps[j]))
                         want("parameters/" + mdl + "/" + a + "-" + b + ".dat")
 
-    # ---- per-unit thermo{} overrides in system/flowsheetDict -----------------
-    # A unit's `thermo { equilibrium { ... activityModel NRTL; } }` selects a
+    # ---- per-unit worlds: named variants (C402) ------------------------------
+    # A unit's own world is a NAMED VARIANT of the case's dictionary (`thermo
+    # <name>;` in the unit, `variants { <name> { ... } }` in the dictionary
+    # read above as t_nc); the inline `thermo { }` form is retired and refused
+    # by the engine.  The scan below therefore reads the dictionary text too.
+    # A unit's variant `equilibrium { ... activityModel NRTL; }` selects a
     # model the GLOBAL package never names (flash20's fitted-vs-predictive
     # twin: global PCSAFT, one unit overridden to gamma-phi NRTL); the pair
     # records that unit reads must ride the closure, or sealing CHANGES the
@@ -770,6 +774,7 @@ def closure_of(pp_path, caseDir, std, AQ):
         fs_text = fs_dict.read_text()
         fs_text = re.sub(r'/\*.*?\*/', '', fs_text, flags=re.S)
         fs_text = re.sub(r'(^|\s)//.*$', '', fs_text, flags=re.M)
+        fs_text = fs_text + "\n" + t_nc          # C402: a variant lives in the dictionary
         if re.search(r'\bactivityModel\s+NRTL\s*;', fs_text):
             for i in range(len(comps)):
                 for j in range(i + 1, len(comps)):

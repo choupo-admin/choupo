@@ -650,13 +650,13 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             u->insert("type", cd->entryValue("type")); propertyVariants::refuseInlineFragment(cd, "unit '" + qname + "'");   // C402
             for (const char* k : { "operation", "model", "thermo", "utility" })   // utility: C52, read by the allocation
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
-            //  A UNIT'S INLINE `thermo {}` READS ITS OWN constant/ (C398 review
-            //  row TG-19): a table pin or a measurement written in the unit's
-            //  flowsheetDict reads the experiments/ of THIS member's folder,
-            //  never the plant root's.  The same stamp resolvePropertyContext
-            //  puts on a sector's dictionary; no walk up.
-            if (u->found("thermo") && !propertyVariants::selectsByName(u))
-                experiments::stampExperimentsDir(u->subDict("thermo"), memberBase + "constant");
+            //  A UNIT'S INLINE `thermo {}` NO LONGER READS (C402): it was refused above
+            //  (refuseInlineFragment), so the stamp of its experiments/ folder that
+            //  stood here is gone.  A table pin in a unit's own variant reads the
+            //  experiments/ of the dictionary that declares it (resolvePropertyContext's
+            //  stamp; review row TG-19, held by check_table_laws (j)); no walk up.
+            //  (The experiments/ folder is recorded by the engine under a key no
+            //  dictionary can write; a hand-written `experimentsDir` is refused by name.)
             if (propertyVariants::selectsByName(u))   // `thermo <name>;` (C398): VariantSelection.H
                 flowsheetVariants::resolve(u, flowsheetVariants::nodeSystem(
                     memberBase.substr(0, memberBase.size() - 1), rootSystem), qname);

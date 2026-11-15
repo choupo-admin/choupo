@@ -290,10 +290,10 @@ ModelBoundaryLedger::ModelBoundaryLedger(const DictPtr&         flowsheetDict,
     //  the same base flattenNode resolves member folders against.
     collectDeclarations(flowsheetDict_, "", "", declared_, declarations_, declaredBase_);
     //  A unit that selected a NAMED variant: its declaration is the variant's
-    //  body, read through the same reader the solver uses.  A name the case
-    //  system does not resolve (a sector's own variant) leaves the unit
-    //  undeclared here -- a named gap, as for any declaration the auditor
-    //  cannot read; the solver refuses an unknown name by itself.
+    //  body, read through the same reader the solver uses, against the
+    //  dictionary the unit's own folder reads (a sector's variants are the
+    //  sector's own, C402).  A name that dictionary does not resolve leaves the
+    //  unit undeclared here -- a named gap; the solver refuses it by itself.
     for (auto it = declared_.begin(); it != declared_.end();)
     {
         const DictPtr& th = it->second;

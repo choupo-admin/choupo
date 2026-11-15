@@ -11,8 +11,9 @@
   ========================
 
   Demonstrates PER-UNIT thermo models: the global package (Raoult) is the
-  default, but each unit can override it with a `thermo { ... }` block that
-  replaces the model it cares about.  Components stay global.
+  default, but each unit can select a NAMED VARIANT of the property
+  dictionary (`thermo <name>;`, declared under `variants {}` in
+  constant/thermoPhysPropDict) that replaces the model it cares about.  Components stay global.
 
     turbine  ->  equationOfState SRK   (real-gas expansion, high P)
     flash    ->  activityModel  NRTL   (non-ideal ethanol/water liquid)

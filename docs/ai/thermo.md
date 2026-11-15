@@ -659,7 +659,7 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
 - WHICH FILE: the `experiments/` of the `constant/` whose dictionary declares
   the pin -- a sector's pin reads `sectors/<S>/constant/experiments/`, never
   the root's (no walk up the folders); the view prints the path.  A pin in a
-  unit's inline `thermo {}` reads that UNIT's `constant/experiments/`.  Never
+  variant of a unit's OWN `constant/thermoPhysPropDict` reads that UNIT's `constant/experiments/`.  Never
   write `experimentsDir` (refused by name): the folder is decided by where the
   pin is declared.  A heat-capacity
   table takes `linear` or `monotoneCubic` only (H and S are its closed-form
@@ -745,8 +745,8 @@ citable from any source in the tree (record:
 properties.  Its blocks are the case's system; `variants {}` adds named
 variants, each stating ONLY what differs and deriving DIRECTLY from the
 system (one base: no chain, no cycle).  A unit or a props operation selects
-one with `thermo <name>;`; an inline `thermo { ... }` still reads, as an
-unnamed variant.  Grammar, refusals and a worked example:
+one with `thermo <name>;` (a UNIT's inline `thermo { ... }` is refused by name,
+C402; a props operation's inline fragment still reads, as an unnamed variant).  Grammar, refusals and a worked example:
 [`dict-syntax.md`](dict-syntax.md) → "Named variants".
 
 - **The atom inside `transport` is the PROPERTY BLOCK**
@@ -912,8 +912,8 @@ The builder **assembles, never estimates** — a missing datum is a curation
 problem solved before the run (`curation-protocol.md`), not a runtime guess.
 After assembly the package is passed to every unit op's `solve(dict, thermo,
 verbosity)`.  Units consume only the slice they need.  A unit (or a props
-operation) that selects a variant -- `thermo <name>;`, or an inline `thermo
-{}` -- gets that variant's package for itself only (components stay global);
+operation) that selects a variant -- `thermo <name>;` (or, for a props operation, an inline `thermo
+{}`) -- gets that variant's package for itself only (components stay global);
 a variant that changes `equilibrium` or `caloric` is a model boundary, see
 `energy.md` §model boundaries.  Before the solve the engine prints the
 RESOLVED VIEW of every property context the run uses (see "variants" above).

@@ -203,7 +203,7 @@ toggles the whole energy/utility layer so a busy plant declutters.
 
 ## 7. Model boundaries (when adjacent units use different thermo)
 
-A per-unit `thermo {}` override (or one sector on eNRTL feeding another on
+A per-unit variant (`thermo <name>;`, or one sector on eNRTL feeding another on
 NRTL) creates a **model boundary**: the stream is described by model X on the
 upstream side and model Y on the downstream side.  The components are the same
 (the species set is a plant-wide contract); only the *model* differs.
@@ -267,8 +267,8 @@ change to absorb.  Choupo therefore makes the honest choice:
   formation/sensible datum of the generic package, so a `ΔH` across that
   junction would subtract two unrelated gauges.  (A closed single-package loop
   — e.g. an IF97 Rankine cycle — never triggers this: the constant offset
-  cancels around the loop.  The refusal only fires across a per-unit `thermo{}`
-  override that adds/removes a pure-fluid between adjacent units; that override
+  cancels around the loop.  The refusal only fires across a per-unit variant
+  (`thermo <name>;`) that adds/removes a pure-fluid between adjacent units; that override
   is itself a deferred feature, so until it ships a pure-fluid datum and the
   formation datum simply cannot coexist in one case.)
 

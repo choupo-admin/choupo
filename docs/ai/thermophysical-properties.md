@@ -164,7 +164,7 @@ each resolution once per method and unit (`[liquid density] <unit>: <set> by
 <method> (origin ...; evidence); passed over: ...`), and every refusal ends in
 its remedy.  The resolution is kept per WORLD (the components' names,
 pure-fluid selections, Henry status and volume routes): a unit's own
-`thermo {}` that changes one of them is a second world, not a contradiction.
+variant (`thermo <name>;`) that changes one of them is a second world, not a contradiction.
 
 ### The grammar the pilot reads
 
