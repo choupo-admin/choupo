@@ -3556,7 +3556,16 @@ accepts today, and that is a policy call.
 > segment with effective-diffusivity films; B2c the Maxwell-Stefan vapour
 > film.  (10) ASKED OF VITOR: Gorak & Vogelpohl 1985, Sep. Sci. Technol.
 > 20, 33-61 (the same ternary on ONE packing at total reflux, the clean
-> height witness).
+> height witness).  FILED THE SAME NIGHT (~/Choupo-Literature
+> Articles/Distillation, gorak1985-*): 0.1 m column, SULZER-CY in two parts
+> of 0.8 m, 1 atm, total reflux; Table 2 gives the compositions below the
+> packing and the distillate, Table 3 measured against calculated
+> distillate; the authors compared over the upper 0.8 m only (methanol
+> below the packing under 0.002).  The packing's mass-transfer correlation
+> is Zogg's, printed in the paper (its Eqs. 17-18); B2b reads it and the
+> geometry it needs at source before adding a record.  This is B2b's
+> second witness, on endpoints (inlet below the bed given, distillate
+> predicted), beside Pelkonen's composition path.
 
 > **C398, SLICES (c) AND (d): RULINGS AT THE FIRST REVIEW (2026-11-15).**
 > Four reviewers, two per slice, read the slices by measurement: (c) rows
