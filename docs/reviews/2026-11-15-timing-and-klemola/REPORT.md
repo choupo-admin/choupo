@@ -107,7 +107,7 @@ by itself close this gap: what decides it is how E_MV and the reflux
 subcooling were combined, and the case header already shows that two of
 the four printed minors are not usable targets below about 1 %.
 
-## 2b. Follow-up the same day: the fair column model, the the reference NRTL cost, and the energy gap
+## 2b. Follow-up the same day: the fair column model, the reference's NRTL cost, and the energy gap
 
 **Choupo's `simultaneous` is not the counterpart of the reference's
 Naphtali-Sandholm.**  It carries constant molar overflow and closes the
@@ -190,123 +190,91 @@ is about 1.3, where a small change in the ratio moves an impurity by a
 large factor, and their heat capacities and latent heats), plus the
 latent-heat difference of section 2b.  Not decomposed.
 
-## 2d. Proposals for the laptop, from the same day's conversation with the owner (nothing built)
+## 2d. Proposals for the laptop, filtered by Gall's law (nothing built)
 
-The owner asked whether Choupo could become equation-oriented, which
-Jacobians it uses, and what could be taken from OpenFOAM.  Measured
-first: Choupo's Jacobians are finite differences almost everywhere
-(`DistillationColumn.cpp:2120`; the simultaneous MESH colours them by
-Curtis-Powell-Reid, `NewtonND.H:121`, `DistillationColumn.cpp:3602`;
-`ReactiveVLE.cpp` and the rate-based segment central differences), with
-ONE analytic Jacobian, the DSPM-DE pore (`PoreNernstPlanck.H:36`), whose
-finite-difference one is kept as the test oracle; and `NewtonND` already
-accepts a caller's analytic Jacobian and audits it against the dense
-finite-difference one on the first iteration (`NewtonND.H:139-143`).
-OpenFOAM, read 2026-11-14 (`../2026-11-14-openfoam-property-architecture/`),
-assembles its matrices from the discretisation and resolves nonlinearity
-by outer correctors; where it does use Newton it uses analytic
-derivatives: the energy-to-temperature inversion with Cp
-(`thermoI.H:238-299`), the chemistry ODE with rate derivatives
-(`thermo.H`, `dKcdTbyKc`, "Derivative term used for Jacobian").
+The owner's filter, stated when these were reviewed: **only suggestions
+that follow Gall's law go to the laptop** -- a complex system that works
+has evolved from a simple system that worked; a complex system designed
+from scratch never works.  So each proposal below grows from a piece of
+Choupo that already works, is small, and answers a need that exists
+today.  The ones that did not pass are listed at the end with the reason,
+so they are not re-proposed by accident.
 
-Four proposals, in the order of value for cost.  They are proposals for
-the owner's decision with the architect, NOT findings:
+Measured context.  Choupo's Jacobians are finite differences almost
+everywhere (`DistillationColumn.cpp:2120`; the simultaneous MESH colours
+them by Curtis-Powell-Reid, `NewtonND.H:121`; `ReactiveVLE.cpp` and the
+rate-based segment by central differences), with ONE analytic Jacobian,
+the DSPM-DE pore (`PoreNernstPlanck.H:36`), and `NewtonND` already accepts
+a caller's analytic Jacobian and audits it on the first iteration
+(`NewtonND.H:139-143`).  OpenFOAM (read 2026-11-14,
+`../2026-11-14-openfoam-property-architecture/`) assembles its matrices
+from the discretisation and, where it uses Newton, uses analytic
+derivatives; it has ONE energy-to-temperature Newton with Cp as the
+derivative (`thermoI.H:238-299`).
 
-1. **One temperature-from-enthalpy inversion with an analytic
-   derivative.**  Choupo has two named homes
-   (`reactorOutlet::temperatureOfEnthalpy`, `ReactorOutlet.cpp:189`;
+**Passed:**
+
+1. **One temperature-from-enthalpy inversion.**  Grows from two working
+   homes (`reactorOutlet::temperatureOfEnthalpy`, `ReactorOutlet.cpp:189`;
    `VariableVolumeHoldup::temperatureFromEnthalpy`,
    `VariableVolumeHoldup.cpp:203`) and, by a rough count not verified file
-   by file, eighteen unit files that price an enthalpy and loop on a
-   temperature.  One home that asks the package for H and the Cp
-   consistent with it (one law, so dH/dT IS that Cp) converges in two or
-   three steps and removes a class of divergence between units.
-2. **A mixed Jacobian in the column MESH.**  The cheap analytic
-   derivatives exist or are one line away: d ln p_sat / dT
-   (`VaporPressureModel::computeDlnPsatDT`), Cp as dH/dT, dK/dT.  They
-   could fill the energy and equilibrium rows, leaving finite differences
-   only where derivation is expensive (NRTL, UNIFAC); `NewtonND`'s audit
-   checks the result on the first iteration.
-3. **Analytic Jacobians of case-written rate laws.**  `core/Formula`
-   parses a rate law into an expression tree; differentiating the tree
-   gives its Jacobian, dimension-checked, for an implicit (Rosenbrock)
-   integrator in `batchReactor` / `dynamicCSTR`, which integrate
-   explicitly today.  Worth it only if the corpus has stiff kinetics; not
-   measured.
-4. **Frozen-property inner loops** (the SIMPLE/PIMPLE spirit; the
-   inside-out method of distillation): speed, which section 2c shows is
-   not today's problem.  Last.
+   by file, eighteen unit files that loop on a temperature against an
+   enthalpy.  It REMOVES complexity rather than adding it: one home that
+   asks the package for H and the Cp of the same law.  Start by moving the
+   two named homes into one and pointing their callers at it; take the
+   other units one at a time, each with its cases unchanged.
+2. **The enthalpy carried by diffusion in the film's energy balance.**
+   Not new machinery: a check on the working slice B1 before the ternary
+   slice builds on it.  OpenFOAM adds sum_i j_i h_s,i to the heat flux; a
+   rate-based interface must carry sum_i N_i h_i.  NOT checked whether B1
+   does; a question for the ternary slice's review.
+3. **Property-law information for the agents that write cases.**  Grows
+   from the working `choupoSolve --describe-units`: the same output for
+   the property laws (form, the units and logarithm base of the
+   coefficients -- C398's U3 -- the window rule, an example block), read
+   from each law's registration.  The need is now: several laws per
+   property are arriving and an agent must write a record or a pin
+   correctly.  **Audience (the owner's words): the AI agents that author
+   cases, with the STUDENT AS THE MAN IN THE MIDDLE** -- the agent writes,
+   the student reads, questions and approves; the output is exact for the
+   agent and readable by the student, one text for both, and is what the
+   agent quotes to the student when it explains a choice.  Belongs beside
+   `bin/llmctx` and `docs/ai/`.
+4. **Set one dictionary entry by path from the command line, for the
+   same agents.**  Grows from the working `Dictionary::setScalarAtPath`:
+   a thin command that edits ONE entry through the engine's own parser
+   and unit check, so the student sees a one-line change instead of a
+   text edit.  Build it only when an agent's text edit has broken a case
+   (no such failure was measured here).
 
-On an equation-oriented flowsheet mode: the roadmap already defers it and
-names the only form it would take (`docs/engine-capabilities.md`, the
-"big" row: opt-in `solver eo;` beside the sequential solver, each unit
-gaining an optional `residuals()`, started small).  The owner discussed it
-against Gall's law (a complex system that works evolves from a simple
-system that worked): the simple working system is the per-unit full MESH;
-any step should grow from it, opt-in, two or three units first, and only
-on a concrete need (product specifications without a `designSpec`,
-recycles that do not converge today), not for speed.  Proposals 1 and 2
-make that step cheaper whenever it comes, because they leave reusable
-analytic derivatives.
+On an equation-oriented flowsheet mode the roadmap already names the only
+Gall-compatible form (`docs/engine-capabilities.md`, the "big" row:
+opt-in `solver eo;` beside the sequential solver, each unit gaining an
+optional `residuals()`, started small): the simple working system is the
+per-unit full MESH; any step grows from it, opt-in, two or three units
+first, on a concrete need (product specifications without a `designSpec`,
+recycles that do not converge today), never for speed -- section 2c shows
+speed is not today's problem.
 
-## 2e. Further ideas from the OpenFOAM reading that the earlier report missed (proposals, nothing built)
+**Did not pass, and why** (kept here so they are not re-proposed):
+* A mixed analytic / finite-difference Jacobian in the column MESH, and
+  analytic Jacobians of case-written rate laws with an implicit
+  integrator: no measured need (speed is not a problem; no stiff case or
+  failing Newton was shown); justified only by a future system, which is
+  designing ahead of need.
+* Frozen-property inner loops (the inside-out method): speed only.
+* Models attachable to ANY unit (a generic heat loss): a general
+  framework with no case asking for it; if a unit ever needs a loss to
+  ambient, it starts in that unit and is generalised only when a second
+  one does.
+* A deferred correction for a hard Newton: a remedy for a failure that
+  has not happened.
 
-Read from the four readers' notes of 2026-11-14 and checked against this
-tree.  Most of the toolbox's good ideas Choupo already has (one knob that
-settles dependent choices -- the formulation; a refusal that lists the
-valid options; one-shot migrators instead of two readers; `$variable`
-references, `src/core/Dictionary.cpp:483`; a unit description,
-`choupoSolve --describe-units`).  Five it does not, in order of value.
-
-**The audience, stated by the owner when these were written down: the
-tools in items 3 and 4 are for the AI agents that author cases, with the
-STUDENT AS THE MAN IN THE MIDDLE** -- the agent writes, the student reads,
-questions and approves what the agent wrote.  So what those tools print
-must be exact and machine-readable for the agent AND readable by the
-student who audits it: the same text, never a summary for one and a
-different truth for the other.  They belong beside `bin/llmctx` and
-`docs/ai/`, and their output should be what an agent quotes back to the
-student when it explains a choice.
-
-1. **The enthalpy carried by diffusion in the film's energy balance.**
-   OpenFOAM adds to the heat flux the sensible enthalpy each diffusing
-   species carries (q includes sum_i j_i h_s,i;
-   `Fickian.C:404-427`, `MaxwellStefan.C:651-673` in the reader's notes).
-   At a rate-based interface the energy balance must carry
-   sum_i N_i h_i.  NOT checked whether slice B1 does; a question for the
-   review of the ternary rate-based slice, where it starts to matter.
-2. **Models attachable to ANY unit** (OpenFOAM's `fvModels`: a heat loss,
-   a phase change, a source added to any solver without touching it).
-   Choupo has no generic heat loss (`git grep heatLoss` finds none in a
-   unit); each unit that needed one would implement its own.  A declared
-   loss (UA and an ambient temperature) applicable to any unit would let
-   a student see insulation act on a column, a tank or a pipe.  An
-   architecture decision (where it attaches, how the energy report
-   books it).
-3. **A model-information tool for agents** (OpenFOAM's `foamInfo`, which
-   prints any model's description and usage from its own source).  Choupo
-   has it for units (`--describe-units`) and not for property laws.  With
-   several laws per property arriving, `choupo-info <law>` printing, from
-   the law's registration, its form, the units and logarithm base of its
-   coefficients (C398's U3), its window rule and an example block, is what
-   an agent needs to write a record or a pin correctly -- and what it
-   quotes to the student who approves it.
-4. **Read and set one dictionary entry from the command line**
-   (OpenFOAM's `foamDictionary`).  Choupo does it internally
-   (`Dictionary::setScalarAtPath`) and offers no command.  For an agent
-   preparing a sweep or editing a case, a command that edits ONE entry by
-   path, through the engine's own parser and unit check, is safer than a
-   text edit; the student sees the one-line change it made.
-5. **A deferred correction that vanishes at convergence** (OpenFOAM writes
-   the heat flux as an implicit part plus an explicit correction that is
-   zero at convergence, `Fourier.C:174-180` per the notes).  A technique
-   to keep for when the ternary film model's Newton proves hard.
-
-Side note, from the reference simulator rather than OpenFOAM, seen in its flash settings
-during the timings: `PVFlash_TryIdealCalcOnFailure = True` and a
-`FailSafeCalculationMode`, i.e. a failed calculation silently retried as
-ideal.  Choupo's no-silent-crutch rule forbids exactly that; a contrast
-worth showing a student.
+Observation, not a proposal: the reference simulator's flash settings
+include `PVFlash_TryIdealCalcOnFailure = True` and a fail-safe mode, i.e.
+a failed calculation silently retried as ideal.  Choupo's
+no-silent-crutch rule forbids exactly that; a contrast worth showing a
+student.
 
 ## 3. Not done
 
