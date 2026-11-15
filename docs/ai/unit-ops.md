@@ -3882,7 +3882,7 @@ Supported property keywords (in `propertyPoint.state` selectors and
 in `propertyScanND.properties`): `T`, `P`, `Psat_<comp>`, `T_bubble`,
 `gamma_<comp>`, `y_eq_<comp>`, `P_bubble` and `y_eqT_<comp>` (the FIXED-T
 mirror of `T_bubble` / `y_eq_<comp>`: the bubble pressure [Pa] of the liquid at
-the state T and the incipient vapour at it, from `BubblePoint::pressure`; the
+the state T and the incipient vapour at it, per component, from `BubblePoint::pressure`; the
 state P only starts the bracket; swept along `x[<comp>]` they draw a P-x-y,
 `tutorials/props/scan/pxy01_ethanol_water_70C`; one liquid assumed), `Cp_liquid_<comp>` (pure-component liquid Cp,
 per compound — fails loudly if a compound has no `liquidHeatCapacity`),
@@ -3891,7 +3891,7 @@ carried to T by Watson — refuses without Tc/Tb/HvapTb or at T >= Tc),
 `Cp_ig`, `H_ig`, `S_ig`, `Z`, `v_molar`, `H_R`, `S_R`,
 `H_real`, `S_real`, `viscosity` / `mu`, `thermal_conductivity` / `k`,
 `diffusivity` / `D`, `mu_L`, `k_L`, `D_L`.  `Psat_<comp>`, `gamma_<comp>`,
-`y_eq_<comp>`, `y_eqT_<comp>`, `Cp_liquid_<comp>`, `Hvap_<comp>` are PER-COMPONENT (one value per named
+`y_eq_<comp>`, `Cp_liquid_<comp>`, `Hvap_<comp>` are PER-COMPONENT (one value per named
 compound); the rest are mixture scalars at `state.composition`.
 
 # More steady units (choupoSolve)
