@@ -73,7 +73,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "order, its name and type, the streams it reads and writes, and a "
       + "line saying which property package it computes with — `thermo: "
       + "inherited (global package)`, or `LOCAL override` when the unit "
-      + "carries its own thermo {} block (" + at("unitThermo") + ", "
+      + "selects its own named variant (`thermo <name>;`) (" + at("unitThermo") + ", "
       + at("unitThermoLocal") + "). The inheritance is printed for every unit "
       + "so that an override can never pass unnoticed.",
   },

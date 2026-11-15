@@ -533,7 +533,7 @@ export const MARKERS: readonly LogMarker[] = [
     cite: "unitThermo",
     means: "Which property package this unit computes with: \"inherited "
       + "(global package)\", or \"LOCAL override\" when the unit carries its "
-      + "own thermo {} block. The inheritance is printed for every unit, so "
+      + "own named variant (thermo <name>;). The inheritance is printed for every unit, so "
       + "an override can never pass unnoticed." },
   { id: "finalPass", kind: "trace", stream: "out",
     startsWith: "----- Final pass with full unit logging", opens: "region",

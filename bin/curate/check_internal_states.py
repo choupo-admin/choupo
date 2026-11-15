@@ -1986,7 +1986,9 @@ def check_interior_completeness(problems, notes):
         elif "C2" not in blob:
             problems.append("(u) the refusal does not NAME the unit whose interior is "
                             "missing:\n    %s" % blob.strip()[-400:])
-        elif "absorber" in blob.split("Materialise the missing")[0]:
+        elif "absorber" in blob.split("Materialise the missing")[0][blob.find("and not for every unit that READS one") - 200:]:
+            #  (C402: only the refusal's own text is read: a named variant's resolved
+            #  view, printed before the solve, names its users and may name the absorber.)
             problems.append("(u) the refusal names `absorber`, a unit that reads NO "
                             "interior.  A unit that reads none must gain no entry, no "
                             "count and no refusal:\n    %s" % blob.strip()[-400:])
