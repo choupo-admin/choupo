@@ -4213,14 +4213,14 @@ Nothing here is a validation against measurement: every number is the engine's o
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 64 bar and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed}
+\tutwhat{P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 45 bar and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed}
 \begin{tutnarrative}
 One phaseEnvelope op over envelope02's feed, to 80 bar in 1-bar steps. The range is the point: it contains both branches' stopping pressures.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{63}
-\goldrow{diag}{envelope}{bubble\_stopped\_bar}{64}
+\goldrow{diag}{envelope}{bubble\_points}{44}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{45}
 \goldrow{diag}{envelope}{dew\_points}{46}
 \goldrow{diag}{envelope}{dew\_stopped\_bar}{47}
 \end{tutgolden}
@@ -5186,7 +5186,7 @@ pxy\_peak the scan's highest point, x\_ethanol = 0.9, pinned by its golden rows:
 
 txy\_point ONE point of the T-x-y at 1 atm: the bubble temperature of the liquid x\_ethanol = 0.4.
 
-pxy\_point THE ROUND TRIP: the bubble PRESSURE of the same liquid at the temperature txy\_point returned. It must return 1 atm -- 101325 Pa -- because the two properties solve the same equation, sum K\_i x\_i = 1, for the other variable. The golden row pins it at 1e-6 relative. The op's state P is HALF an atmosphere -- it only starts the pressure bracket -- so an evaluator that handed back the state pressure would print 50662.5 Pa and fail the row (EX-08: before, the state P was the expected answer itself). The round trip holds on THIS case's ideal-gas vapour; with a PR or SRK vapour T\_bubble reads the vapour fugacity at y = x while P\_bubble iterates y, and the two differ by 1.3e-4 at 1 atm and 7.8e-4 at 20 bar (EX-04, Theory Guide sec:bubble-pressure).
+pxy\_point THE ROUND TRIP: the bubble PRESSURE of the same liquid at the temperature txy\_point returned. It must return 1 atm -- 101325 Pa -- because the two properties solve the same equation, sum K\_i x\_i = 1, for the other variable. The golden row pins it at 1e-6 relative. The op's state P is HALF an atmosphere -- it only starts the pressure bracket -- so an evaluator that handed back the state pressure would print 50662.5 Pa and fail the row (EX-08: before, the state P was the expected answer itself). The round trip holds on THIS case's ideal-gas vapour, and since 2026-11-15 on a PR or SRK vapour too: T\_bubble iterates the incipient vapour from the same Raoult seed P\_bubble uses, where it used to read the vapour fugacity at y = x and missed by 1.3e-4 at 1 atm and 7.8e-4 at 20 bar (EX-04). Gate check\_phase\_envelope arm (n) holds that round trip to 1e-9 on this liquid with a PR vapour (Theory Guide sec:bubble-pressure).
 
 THE TEMPERATURE IN pxy\_point IS COPIED FROM txy\_point's golden row, and that is the one hand-carried number in this case. If a thermo change moves T\_bubble, txy\_point's own row fails first; re-record it, paste the new value here, and the round trip holds again. A round trip whose T drifted from its T\_bubble would fail on P\_bubble, which is the point.
 

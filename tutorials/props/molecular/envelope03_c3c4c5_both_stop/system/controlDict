@@ -14,8 +14,14 @@
 
   WHAT THE RUN SHOWS (native build, 2026-11-15):
 
-    * the bubble branch keeps 63 points and stops at 64 bar (last kept point
-      408.282 K at 63 bar);
+    * the bubble branch keeps 44 points and stops at 45 bar (last kept point
+      395.780 K at 44 bar).  It stopped at 64 bar until 2026-11-15, when
+      T_bubble priced the vapour at the liquid's own composition (y = x,
+      EX-04); it now iterates the incipient vapour, which is about 63 %
+      propane and nears its own pseudo-critical region (about 395 K and
+      40 bar on Kay's rule) there -- P_bubble on this package jumps between
+      vapour roots above 397 K for the same reason, so 45 bar is where the
+      iterated vapour stops being a vapour, not a tolerance;
     * the dew branch keeps 46 points and stops at 47 bar (last kept point
       408.151 K at 46 bar);
     * both stops are reported as a pressure-marched trace running out of
@@ -23,8 +29,9 @@
       root jump, and no cricondentherm is claimed: neither branch has an
       interior temperature maximum in what it kept.
 
-  WHAT IT DOES NOT SHOW.  The two last kept points are 0.13 K apart near
-  408 K, where the nose of this feed is; the op does not close it
+  WHAT IT DOES NOT SHOW.  The last kept points are 395.780 K (bubble, 44
+  bar) and 408.151 K (dew, 46 bar), on either side of the nose of this feed;
+  the op does not close it
   (Michelsen's continuation is not implemented) and in this frame the liquid
   is not described by the equation of state, so the frame has no mixture
   critical point of its own.  The stopping pressures are properties of the
@@ -36,5 +43,5 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoProps;
-description  "P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 64 bar and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed";
+description  "P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 45 bar and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed";
 verbosity     3;

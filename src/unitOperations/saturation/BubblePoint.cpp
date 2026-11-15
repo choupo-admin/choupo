@@ -45,9 +45,12 @@ namespace {
 //  unchanged.  On an ASSOCIATED ideal-gas vapour (DEV.md 4c C201 item 1) the
 //  dimer split depends on y, so the K is the package's at the liquid's own
 //  incipient vapour (`incipientPhase::vapour`, the one home of that
-//  iteration).  An EoS vapour keeps the y = x form it always had here -- the
-//  column and the relief sizer iterate it themselves; changing this kernel
-//  for them is outside this slice and is not done silently.
+//  iteration).  A gamma-phi package with an EoS vapour iterates it too
+//  (EX-04, 2026-11-15): it used to keep K(T, P, x, x), pricing the vapour at
+//  the liquid's composition, while `BubblePoint::pressure` iterated y, so the
+//  round trip T_bubble(P_bubble(T)) missed T by 1.3e-4 at 1 atm and 7.8e-4
+//  at 20 bar on ethanol + water under PR.  Its seed is the Raoult K, the
+//  seed `pressure` uses, so both solves iterate the same vapour.
 sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
                 const sVector& x, bool* settled = nullptr)
 {
@@ -68,8 +71,25 @@ sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
             return r.K;
         }
     }
+    //  `vapourAssociationPriced()` is asked first and always: on an EoS
+    //  vapour it is what announces, once per run, that the association is
+    //  not added on top of the EoS -- an announcement this kernel has always
+    //  raised and must not lose by short-circuiting past it.
+    const bool associated = thermo.vapourAssociationPriced();
+    if (!associated && thermo.vleWorld() != "phiPhi"
+        && thermo.vapourFugacityDependsOnComposition())
+    {
+        const auto r = incipientPhase::vapour(thermo, T, P, x,
+                                              thermo.Kvec_Raoult(T, P));
+        if (!r.K.empty())
+        {
+            if (settled) *settled = r.converged;
+            return r.K;
+        }
+        return thermo.Kvec(T, P, x, x);
+    }
     const sVector K0 = thermo.Kvec(T, P, x, x);
-    if (!thermo.vapourAssociationPriced()) return K0;
+    if (!associated) return K0;
     const auto r = incipientPhase::vapour(thermo, T, P, x, K0);
     return r.K.empty() ? K0 : r.K;
 }
@@ -108,7 +128,8 @@ void phiPhiBubbleRefusals(const ThermoPackage& thermo, scalar Tbub, scalar P,
 //  THE T SEED IS THE WEIGHTED BOILING POINT AT THE PRESSURE (C235).  The
 //  mole-weighted NORMAL boiling point is a subcooled state at any pressure
 //  above 1 atm.  An ideal vapour prices it smoothly; on a cubic EoS this
-//  kernel reads K(T, P, x, x), the y = x vapour is a liquid at that state,
+//  kernel then read K(T, P, x, x) (it iterates the vapour since EX-04,
+//  2026-11-15), the y = x vapour is a liquid at that state,
 //  the cubic returns its liquid root, f(T) turns non-monotone and the
 //  Newton walked down to its 200 K bracket (column14's feed at 8.93 bar).
 //  A vapour whose fugacity depends on composition therefore uses each
