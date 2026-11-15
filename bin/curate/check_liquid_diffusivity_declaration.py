@@ -22,7 +22,9 @@ src/thermo/transport/LiquidTransportDeclarations.{H,cpp}).
       the view says 2-propanol's association factor is the default, and every
       record of debt_registry.ASSOCIATION_FACTOR_DEFAULTED still writes none.
   (2) REFUSALS OF THE GRAMMAR, each by its words, on a copy of the witness:
-      an effective value of three components; VignesKooijmanTaylor; a file
+      an effective value of three components by a binary rule;
+      VignesKooijmanTaylor without its reduction, a reduction beside a binary
+      rule, a reduction not built; a file
       cited in the other direction; a file of two points; `kind fick`;
       `thermodynamicFactor { from ... }`; `returns effective` without the
       factor; an entry's datum used outside its box; a column without a unit.
@@ -31,6 +33,22 @@ src/thermo/transport/LiquidTransportDeclarations.{H,cpp}).
       write; with no `diffusivity` block the column says what to declare; a
       measured viscosity box that misses the bed's temperatures is refused
       at its first use, never handed to another source.
+
+  (5) C329 SLICE B2a, THE MULTICOMPONENT LIQUID DIFFUSIVITY
+      (tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary,
+      Theory Guide sec:liquid-diffusivity-multicomponent): the pair values are
+      Kooijman & Taylor 1991 Eq. 23 by hand and the effective values Wilke's
+      reduction (Taylor & Krishna 1993 Eq. 6.1.14) by hand, both to 1e-11; the
+      average discrepancy of the Fick matrix against the paper's Table I is
+      within 0.005 of its Table IV "eq 23" row (overall, diagonal and
+      off-diagonal); Gamma at 0.70/0.15/0.15 within 0.005 of Example 4.2.6 (p. 92);
+      the books' limiting value (D0_ik D0_ki)^(1/2) scores 0.1002 on the same table
+      against the paper's 0.078, so the misprint note is a measurement; the binary
+      edge equals the shipped Vignes rule to 1e-12 for each of the three edges and
+      the ternary is its limit (x_k = 1e-9 within 1e-6); the result does not
+      depend on the order of the components; Wilke compiled from the engine's own
+      header gives 50.99 and 16.95 mm2/s on Example 6.1.1 (p. 127); seven refusals
+      of the new grammar by their words.
 
 WHAT IT DOES NOT CHECK: the numbers of the sixteen migrated column cases (their
 goldens hold them, and the slice's byte-identity run compared every line);
@@ -115,6 +133,253 @@ def profile_of(out, unit="column"):
     b = out.find("<<<Choupo:result-end>>>")
     r = json.loads(out[a + len("<<<Choupo:result-begin>>>"):b])
     return r.get("profiles", {}).get(unit)
+
+
+KT = ROOT / "tutorials" / "props" / "transport" / "liquidDiffusivity02_kooijmanTaylor_ternary"
+KT_NAMES = ("acetone", "benzene", "carbonTetrachloride")
+#  Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Table I (p. 1218):
+#  x1 x2 x3 and the measured Fick matrix D11 D12 D21 D22 (1e-9 m2/s, molar-average frame).
+KT_TABLE_I = [
+    ((0.2989, 0.3490, 0.3521), (1.8690, -0.2129, -0.0043, 2.2730)),
+    ((0.1496, 0.1499, 0.7005), (1.5968, -0.0592, -0.0771, 1.8132)),
+    ((0.1497, 0.6984, 0.1519), (1.9652, 0.0137, -0.1522, 1.9248)),
+    ((0.6999, 0.1497, 0.1504), (2.3041, -0.4019, 0.1848, 2.9969)),
+]
+#  Same page: D0_ij, i infinitely dilute in j (1e-9 m2/s), by 0-based (i, j).
+KT_D0 = {(0, 1): 2.75, (1, 0): 4.15, (0, 2): 1.70, (2, 0): 3.57, (1, 2): 1.42, (2, 1): 1.91}
+#  Table IV (p. 1221), column "eq 23", acetone-benzene-carbon tetrachloride.
+KT_TABLE_IV_EQ23 = {"overall": 0.0763, "diagonal": 0.0916, "offDiagonal": 0.0611}
+#  Taylor & Krishna (1993), Example 4.2.6, p. 92: [Gamma] at 0.70 / 0.15 / 0.15.
+TK93_GAMMA = ((0.788, -0.088), (0.075, 1.043))
+#  Taylor & Krishna (1993), Example 6.1.1, p. 127 (mm2/s).
+TK93_EX611 = (50.99, 16.95)
+
+WILKE_PROBE = r'''
+#include "thermo/transport/WilkeReduction.H"
+#include <cstdio>
+int main()
+{
+    //  Taylor & Krishna 1993, Example 6.1.1, p. 127: H2 (1), N2 (2), CCl2F2 (3),
+    //  x = 0.35 0.40 0.25;  D12 = 77.0, D13 = 33.1, D23 = 8.1 mm2/s.
+    const std::vector<double> x = { 0.35, 0.40, 0.25 };
+    const double D[3][3] = { { 0, 77.0, 33.1 }, { 77.0, 0, 8.1 }, { 33.1, 8.1, 0 } };
+    for (std::size_t i = 0; i < 2; ++i)
+    {
+        const std::vector<double> row = { D[i][0], D[i][1], D[i][2] };
+        std::printf("%.10g\n", Choupo::liquidTransport::wilkeEffective(x, row, i));
+    }
+    return 0;
+}
+'''
+
+
+def kt_pair_by_hand(x, i, j):
+    k = 3 - i - j
+    return (KT_D0[(i, j)] ** x[j] * KT_D0[(j, i)] ** x[i]
+            * (KT_D0[(i, k)] * KT_D0[(j, k)]) ** (x[k] / 2.0)) * 1e-9
+
+
+def kt_ops(points, props):
+    s = "operations\n(\n"
+    for name, comp, ps in points:
+        c = "  ".join(f"{n} {v!r};" for n, v in comp.items())
+        s += (f"    {{\n        name {name};\n        type propertyPoint;\n"
+              f"        state {{ T 298.15 K;  P 1 bar;  composition {{ {c} }} }}\n"
+              f"        properties ( {' '.join(ps)} );\n    }}\n")
+    return s + ");\n"
+
+
+def kt_run(src: Path, tmp: str, name: str, ops=None, edits=()):
+    d = copy(src, tmp, name)
+    for f, old, new in edits:
+        edit(d / f, old, new)
+    if ops is not None:
+        (d / "system" / "propsDict").write_text(ops)
+    rc, out = run(d, "choupoProps")
+    return rc, out, diagnostics(out)
+
+
+def kt_section(tmp, fails, notes):
+    """C329 slice B2a: the multicomponent liquid diffusivity on Kooijman & Taylor's Table I."""
+    rc, out, dg = kt_run(KT, tmp, "kt")
+    if rc != 0 or not dg:
+        fails.append(f"(5) the Kooijman-Taylor witness did not run (exit {rc})")
+        return
+    # (5a) the pair values are Eq. 23 by hand, the effective values are Wilke by hand.
+    pairs = {(0, 1): "acetone_benzene", (0, 2): "acetone_carbonTetrachloride",
+             (1, 2): "benzene_carbonTetrachloride"}
+    for pt in ("t1", "t2", "t3", "t4", "tk93"):
+        d = dg.get(pt, {})
+        x = {"t1": KT_TABLE_I[0][0], "t2": KT_TABLE_I[1][0], "t3": KT_TABLE_I[2][0],
+             "t4": KT_TABLE_I[3][0], "tk93": (0.70, 0.15, 0.15)}[pt]
+        ms = {}
+        for (i, j), key in pairs.items():
+            got = d.get("D_L_MS_" + key)
+            ms[(i, j)] = ms[(j, i)] = kt_pair_by_hand(x, i, j)
+            if got is None or abs(got / ms[(i, j)] - 1.0) > 1e-11:
+                fails.append(f"(5a) {pt}: D_L_MS_{key} {got} is not Eq. 23 by hand {ms[(i, j)]}")
+        for i, n in enumerate(KT_NAMES):
+            others = [j for j in range(3) if j != i]
+            hand = (sum(x[j] for j in others)) / sum(x[j] / ms[(i, j)] for j in others)
+            got = d.get("D_L_effective_" + n)
+            if got is None or abs(got / hand - 1.0) > 1e-11:
+                fails.append(f"(5a) {pt}: D_L_effective_{n} {got} is not Wilke's reduction by hand {hand}")
+    # (5b) the paper's own score (Table IV, "eq 23") and Taylor & Krishna's Gamma.
+    diag, off = [], []
+    for pt, (x, E) in zip(("t1", "t2", "t3", "t4"), KT_TABLE_I):
+        d = dg.get(pt, {})
+        F = (d.get("D_L_Fick_acetone_acetone"), d.get("D_L_Fick_acetone_benzene"),
+             d.get("D_L_Fick_benzene_acetone"), d.get("D_L_Fick_benzene_benzene"))
+        if None in F:
+            fails.append(f"(5b) {pt}: the Fick matrix is missing")
+            return
+        for k, (f, e) in enumerate(zip(F, E)):
+            row_diag = E[0] if k < 2 else E[3]
+            err = abs(f * 1e9 - e) / row_diag
+            (diag if k in (0, 3) else off).append(err)
+    avg = {"overall": sum(diag + off) / 16, "diagonal": sum(diag) / len(diag),
+           "offDiagonal": sum(off) / len(off)}
+    for k, want in KT_TABLE_IV_EQ23.items():
+        if abs(avg[k] - want) > 0.005:
+            fails.append(f"(5b) the {k} average discrepancy {avg[k]:.4f} is not within 0.005 of the"
+                         f" paper's Table IV eq 23 value {want}")
+    g = dg.get("tk93", {})
+    G = ((g.get("Gamma_acetone_acetone"), g.get("Gamma_acetone_benzene")),
+         (g.get("Gamma_benzene_acetone"), g.get("Gamma_benzene_benzene")))
+    for i in range(2):
+        for j in range(2):
+            if G[i][j] is None or abs(G[i][j] - TK93_GAMMA[i][j]) > 0.005:
+                fails.append(f"(5b) Gamma[{i}][{j}] {G[i][j]} is not within 0.005 of Taylor & Krishna's"
+                             f" Example 4.2.6 value {TK93_GAMMA[i][j]}")
+    # (5c) THE MISPRINT, measured: the books' limiting value scores worse than the paper's on
+    #      the paper's own table (0.1002 against 0.0782, by hand with the engine's Gamma).
+    def books_score():
+        e = []
+        for pt, (x, E) in zip(("t1", "t2", "t3", "t4"), KT_TABLE_I):
+            G = dg[pt]
+            Gm = [[G["Gamma_acetone_acetone"], G["Gamma_acetone_benzene"]],
+                  [G["Gamma_benzene_acetone"], G["Gamma_benzene_benzene"]]]
+            P = {}
+            for (i, j) in ((0, 1), (0, 2), (1, 2)):
+                k = 3 - i - j
+                P[(i, j)] = P[(j, i)] = (KT_D0[(i, j)] ** x[j] * KT_D0[(j, i)] ** x[i]
+                                         * (KT_D0[(i, k)] * KT_D0[(k, i)]) ** (x[k] / 2.0))
+            B = [[0.0, 0.0], [0.0, 0.0]]
+            for i in range(2):
+                B[i][i] = x[i] / P[(i, 2)] + sum(x[k] / P[(i, k)] for k in range(3) if k != i)
+                for j in range(2):
+                    if j != i:
+                        B[i][j] = -x[i] * (1 / P[(i, j)] - 1 / P[(i, 2)])
+            det = B[0][0] * B[1][1] - B[0][1] * B[1][0]
+            Bi = [[B[1][1] / det, -B[0][1] / det], [-B[1][0] / det, B[0][0] / det]]
+            F = [[sum(Bi[i][k] * Gm[k][j] for k in range(2)) for j in range(2)] for i in range(2)]
+            Em = [[E[0], E[1]], [E[2], E[3]]]
+            for i in range(2):
+                for j in range(2):
+                    e.append(abs(F[i][j] - Em[i][j]) / Em[i][i])
+        return sum(e) / 16.0
+    try:
+        bs = books_score()
+        if abs(bs - 0.1002) > 0.001 or not bs > avg["overall"] + 0.01:
+            fails.append(f"(5c) the books' limiting value (D0_ik D0_ki)^(1/2) scores {bs:.4f}, expected 0.1002"
+                         f" and worse than the paper's {avg['overall']:.4f}: the misprint note is not what it says")
+    except (KeyError, TypeError):
+        fails.append("(5c) the misprint measurement could not read the Gamma rows")
+    # (5d) the binary reduction is exact: each edge equals the shipped Vignes rule to 1e-12 and
+    #      is the limit of the ternary (x_k = 1e-9 within 1e-6); the result does not depend
+    #      on the order of the components.
+    edges = [("e12", {"acetone": 0.3, "benzene": 0.7}, (0, 1)),
+             ("e13", {"acetone": 0.3, "carbonTetrachloride": 0.7}, (0, 2)),
+             ("e23", {"benzene": 0.3, "carbonTetrachloride": 0.7}, (1, 2))]
+    pts = []
+    for name, comp, (i, j) in edges:
+        pts.append((name, comp, [f"D_L_effective_{KT_NAMES[i]}", f"D_L_effective_{KT_NAMES[j]}"]))
+    for name, comp, (i, j) in edges:
+        k = 3 - i - j
+        near = dict(comp)
+        first = list(comp)[0]
+        near[first] = comp[first] - 1e-9
+        near[KT_NAMES[k]] = 1e-9
+        pts.append(("n" + name[1:], near, [f"D_L_effective_{KT_NAMES[i]}", f"D_L_effective_{KT_NAMES[j]}"]))
+    rcv, _, dgv = kt_run(KT, tmp, "kt_edge", ops=kt_ops(pts, None))
+    vig_pts = [(name, comp, ["D_L_effective"]) for name, comp, _ in edges]
+    rcw, _, dgw = kt_run(KT, tmp, "kt_vignes", ops=kt_ops(vig_pts, None),
+                         edits=[("constant/thermoPhysPropDict",
+                                 "{ rule VignesKooijmanTaylor;  reduction Wilke; }", "{ rule Vignes; }")])
+    if rcv != 0 or rcw != 0:
+        fails.append(f"(5d) the edge runs failed (exit {rcv}, {rcw})")
+    else:
+        for name, comp, (i, j) in edges:
+            vig = dgw[name]["D_L_effective"]
+            for c in (i, j):
+                got = dgv[name][f"D_L_effective_{KT_NAMES[c]}"]
+                if abs(got / vig - 1.0) > 1e-12:
+                    fails.append(f"(5d) edge {name}: D_L_effective_{KT_NAMES[c]} {got} is not the shipped"
+                                 f" Vignes value {vig} to 1e-12")
+                nr = dgv["n" + name[1:]][f"D_L_effective_{KT_NAMES[c]}"]
+                if abs(nr / got - 1.0) > 1e-6:
+                    fails.append(f"(5d) edge {name}: at x_k = 1e-9 D_L_effective_{KT_NAMES[c]} {nr} is not"
+                                 f" within 1e-6 of the edge value {got}: the route is a switch, not a limit")
+    ptx = [("p", {"acetone": 0.2989, "benzene": 0.3490, "carbonTetrachloride": 0.3521},
+            ["D_L_effective_acetone", "D_L_effective_benzene", "D_L_effective_carbonTetrachloride",
+             "D_L_MS_acetone_benzene", "D_L_MS_acetone_carbonTetrachloride", "D_L_MS_benzene_carbonTetrachloride"])]
+    rcp, _, dgp = kt_run(KT, tmp, "kt_perm", ops=kt_ops(ptx, None),
+                         edits=[("constant/thermoPhysPropDict",
+                                 "components ( acetone benzene carbonTetrachloride );",
+                                 "components ( carbonTetrachloride acetone benzene );")])
+    if rcp != 0:
+        fails.append(f"(5e) the reordered package did not run (exit {rcp})")
+    else:
+        for key, v in dgp["p"].items():
+            if key.startswith(("D_L_effective_", "D_L_MS_")):
+                ref = dg["t1"][key]
+                if abs(v / ref - 1.0) > 1e-12:
+                    fails.append(f"(5e) {key} depends on the order of the components: {v} against {ref}")
+    # (5f) the reduction against the book's number, compiled from the header the engine uses.
+    probe = Path(tmp) / "wilke_probe.cpp"
+    probe.write_text(WILKE_PROBE)
+    exe = Path(tmp) / "wilke_probe"
+    cp = subprocess.run(["g++", "-std=c++17", "-O1", f"-I{ROOT / 'src'}", str(probe), "-o", str(exe)],
+                        capture_output=True, text=True)
+    if cp.returncode != 0:
+        fails.append("(5f) the Wilke probe did not compile: " + cp.stderr[:200])
+    else:
+        vals = [float(v) for v in subprocess.run([str(exe)], capture_output=True, text=True).stdout.split()]
+        for got, want in zip(vals, TK93_EX611):
+            #  the book prints two decimals and 0.6/(0.35/77.0 + 0.25/8.1) = 16.944: its 16.95 is its
+            #  own rounding of intermediate terms, so the line is the second decimal.
+            if abs(got - want) > 0.01:
+                fails.append(f"(5f) Wilke on Taylor & Krishna's Example 6.1.1: {got:.4f}, the book prints {want}")
+    # (5g) refusals of the new grammar, each by its words.
+    tp = "constant/thermoPhysPropDict"
+    one = [("t", {"acetone": 0.3, "benzene": 0.3, "carbonTetrachloride": 0.4}, ["D_L_effective"])]
+    arms = [
+        ("a ternary without the reduction",
+         (None, [(tp, "{ rule VignesKooijmanTaylor;  reduction Wilke; }", "{ rule VignesKooijmanTaylor; }")]),
+         "needs the reduction that turns its pair values"),
+        ("a reduction other than Wilke",
+         (None, [(tp, "reduction Wilke;", "reduction BurghardtKrupiczka;")]), "Accepted"),
+        ("a reduction beside a binary rule",
+         (None, [(tp, "{ rule VignesKooijmanTaylor;  reduction Wilke; }", "{ rule Vignes; reduction Wilke; }")]),
+         "only VignesKooijmanTaylor has a form for three or more"),
+        ("an effective value of a ternary with no component named",
+         (kt_ops(one, None), []), "has one effective diffusivity PER COMPONENT"),
+        ("a pair value under another rule",
+         (kt_ops([("t", {"acetone": 0.3, "benzene": 0.3, "carbonTetrachloride": 0.4}, ["D_L_MS_acetone_benzene"])], None),
+          [(tp, "{ rule VignesKooijmanTaylor;  reduction Wilke; }", "{ rule Vignes; }")]),
+         "Eq. 23"),
+        ("a Fick matrix with a component absent",
+         (kt_ops([("t", {"acetone": 0.5, "benzene": 0.5}, ["D_L_Fick_acetone_acetone"])], None), []),
+         "every component must be present"),
+        ("an unknown rule word", (None, [(tp, "rule VignesKooijmanTaylor;", "rule KooijmanTaylor;")]), "Accepted"),
+    ]
+    for n, (label, (ops, edits), words) in enumerate(arms):
+        rc2, out2, _ = kt_run(KT, tmp, f"ktarm{n}", ops=ops, edits=edits)
+        if rc2 == 0:
+            fails.append(f"(5g) {label}: ran to exit 0")
+        elif words not in out2:
+            fails.append(f"(5g) {label}: refused, but not by its words ({words!r})")
+    notes.append("kt")
 
 
 def main():
@@ -228,8 +493,19 @@ def main():
              [(pd, "composition { methanol 0.9459;  water 0.0541; } }\n        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective  viscosity_liquid );\n    }\n    {\n        name        cbBinary;",
                    "composition { methanol 0.8;  isopropanol 0.1;  water 0.1; } }\n        properties  ( D_L_effective );\n    }\n    {\n        name        cbBinary;")],
              "a liquid of 3 components"),
-            ("VignesKooijmanTaylor", [(tp, "{ rule Vignes; }", "{ rule VignesKooijmanTaylor; }")],
-             "refused until its source is read"),
+            ("VignesKooijmanTaylor on a three-component package without its reduction",
+             [(tp, "{ rule Vignes; }", "{ rule VignesKooijmanTaylor; }")],
+             "needs the reduction that turns its pair values"),
+            ("a reduction beside a binary rule (C329 B2a)",
+             [(tp, "{ rule Vignes; }", "{ rule Vignes; reduction Wilke; }")],
+             "only VignesKooijmanTaylor has a form for three or more"),
+            ("a reduction that is not built (C329 B2a)",
+             [(tp, "{ rule Vignes; }", "{ rule VignesKooijmanTaylor; reduction BurghardtKrupiczka; }")],
+             "not built"),
+            ("another rule on three components present (C329 B2a)",
+             [(pd, "composition { methanol 0.9459;  water 0.0541; } }\n        properties  ( D_L_inf_methanol_in_water  D_L_inf_water_in_methanol  D_L_effective  viscosity_liquid );\n    }\n    {\n        name        cbBinary;",
+                   "composition { methanol 0.8;  isopropanol 0.1;  water 0.1; } }\n        properties  ( D_L_effective_methanol );\n    }\n    {\n        name        cbBinary;")],
+             "no multicomponent form of it has been read"),
             ("a file cited in the other direction",
              [(ex, "solute      methanol;\nsolvent     water;", "solute      water;\nsolvent     methanol;")],
              "The direction of an infinite-dilution value is part of the datum"),
@@ -497,6 +773,9 @@ def main():
             else:
                 notes.append("one surface tension per tray; left out only above Tc")
 
+        # ---- (5) C329 slice B2a: the multicomponent liquid diffusivity ----------
+        kt_section(tmp, fails, notes)
+
         # ---- (4) RULING 7: the column and a property operation, one state ---
         d = copy(RATE, tmp, "r7col")
         (d / "system" / "outerDict").unlink(missing_ok=True)
@@ -539,9 +818,13 @@ def main():
           f" 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used;"
           f" a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it"
           f" differs from Vignes; one surface tension per tray, left out only at or above Tc; a sector's file read from the sector's constant/, never the root's;"
-          f" {len(notes) - 9} refusals each by name, the old `diffusivity {{ model <word>; }}` form among them.  NOT CHECKED: the migrated cases' numbers (their"
+          f" {len(notes) - 10} refusals each by name, the old `diffusivity {{ model <word>; }}` form among them.  NOT CHECKED: the migrated cases' numbers (their"
           f" goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's"
-          f" fitness for a polar liquid (announced, not judged).")
+          f" fitness for a polar liquid (announced, not judged).  C329 B2a: Kooijman & Taylor's Eq. 23 and"
+          f" Wilke's reduction by hand to 1e-11, the Fick matrix within 0.005 of the paper's Table IV"
+          f" eq 23 row, Gamma within 0.005 of Taylor & Krishna's Example 4.2.6, the books' misprint"
+          f" measured (0.1002 against 0.078), the binary edge equal to Vignes to 1e-12 and the ternary its"
+          f" limit, order-independence, Example 6.1.1's 50.99 and 16.95 mm2/s, and seven refusals by name.")
     return 0
 
 

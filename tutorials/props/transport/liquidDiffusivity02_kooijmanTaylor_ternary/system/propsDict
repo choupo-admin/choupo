@@ -1,0 +1,105 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  liquidDiffusivity02 -- the multicomponent liquid diffusivity of Kooijman &
+    Taylor (1991), on their own Table I (DEV.md 4c C329, slice B2a).
+
+    WHAT IT SHOWS.  Acetone (1) / benzene (2) / carbon tetrachloride (3) at
+    25 C.  At each of the paper's four compositions (and at a fifth, the one
+    of Taylor & Krishna 1993, Example 4.2.6, p. 92) the operation prints
+        D_L_MS_<i>_<j>      the three Maxwell-Stefan pair values in the mixture,
+                            Eq. 23 of the paper (D0_ij^xj D0_ji^xi times
+                            (D0_ik D0_jk)^(xk/2) for the third component);
+        Gamma_<i>_<j>       the thermodynamic-factor matrix of the NRTL liquid
+                            (paper Eq. 4: a central difference of ln gamma, step
+                            1e-6 in mole fraction, component 3 -- the LAST --
+                            taking the change);
+        D_L_Fick_<i>_<j>   the Fick matrix [B]^-1 [Gamma] (paper Eqs. 6-8), in
+                            1e-9 m2/s a student reads against the measured one
+                            below.  It depends on which component is numbered
+                            last, and carbon tetrachloride is, as in the paper;
+        D_L_effective_<c>   the effective diffusivity of each component by
+                            Wilke's reduction (Taylor & Krishna 1993, Eq.
+                            6.1.14): what a rate-based column's film would take.
+
+    THE MEASURED MATRIX (the paper's Table I, molar-average frame, 1e-9 m2/s,
+    D11 D12 D21 D22; Cullinan & Toor 1965, converted by the authors):
+        x = 0.2989 0.3490 0.3521   1.8690 -0.2129 -0.0043 2.2730
+        x = 0.1496 0.1499 0.7005   1.5968 -0.0592 -0.0771 1.8132
+        x = 0.1497 0.6984 0.1519   1.9652  0.0137 -0.1522 1.9248
+        x = 0.6999 0.1497 0.1504   2.3041 -0.4019  0.1848 2.9969
+    THE ACCEPTANCE (gate check_liquid_diffusivity_declaration, arm 8): the
+    average of the paper's discrepancy |D_calc - D_expt| / D_ii over the four
+    points within 0.005 of the paper's Table IV, column "eq 23" (overall
+    0.0763, diagonal 0.0916, off-diagonal 0.0611); Gamma at 0.70/0.15/0.15
+    within 0.005 of Taylor & Krishna's printed matrix [0.788 -0.088; 0.075
+    1.043].  Nothing is fitted: the six D0 and the NRTL parameters are the
+    paper's inputs.
+
+    WHAT IT DOES NOT SHOW.  Nothing about an associating liquid: the paper's own
+    Table IV gives 0.19 on acetone / benzene / methanol, with a maximum of 0.71,
+    and says why (the Vignes equation does not perform well for associating
+    binaries).  The rule is an interpolation of six numbers, not a theory.
+
+    THE MISPRINT.  The two books print the limiting value of the third
+    component as (D0_ik D0_ki)^(1/2) (Taylor & Kooijman 2014, Eq. 3.41; Taylor
+    & Krishna 1993, Eq. 4.2.19); the paper's Eq. 21 is (D0_ik D0_jk)^(1/2),
+    and it is the one implemented.  On this table the paper's form scores
+    0.078 and the books' 0.100 (Theory Guide, section "The multicomponent
+    liquid diffusivity", prints the measurement).
+
+    The golden master locks every computed value at reltol 1e-4.  */
+
+operations
+(
+    {
+        name        t1;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { acetone 0.2989;  benzene 0.349;  carbonTetrachloride 0.3521; } }
+        properties  ( D_L_MS_acetone_benzene D_L_MS_acetone_carbonTetrachloride D_L_MS_benzene_carbonTetrachloride
+                      Gamma_acetone_acetone Gamma_acetone_benzene Gamma_benzene_acetone Gamma_benzene_benzene
+                      D_L_Fick_acetone_acetone D_L_Fick_acetone_benzene D_L_Fick_benzene_acetone D_L_Fick_benzene_benzene
+                      D_L_effective_acetone D_L_effective_benzene D_L_effective_carbonTetrachloride );
+    }
+    {
+        name        t2;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { acetone 0.1496;  benzene 0.1499;  carbonTetrachloride 0.7005; } }
+        properties  ( D_L_MS_acetone_benzene D_L_MS_acetone_carbonTetrachloride D_L_MS_benzene_carbonTetrachloride
+                      Gamma_acetone_acetone Gamma_acetone_benzene Gamma_benzene_acetone Gamma_benzene_benzene
+                      D_L_Fick_acetone_acetone D_L_Fick_acetone_benzene D_L_Fick_benzene_acetone D_L_Fick_benzene_benzene
+                      D_L_effective_acetone D_L_effective_benzene D_L_effective_carbonTetrachloride );
+    }
+    {
+        name        t3;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { acetone 0.1497;  benzene 0.6984;  carbonTetrachloride 0.1519; } }
+        properties  ( D_L_MS_acetone_benzene D_L_MS_acetone_carbonTetrachloride D_L_MS_benzene_carbonTetrachloride
+                      Gamma_acetone_acetone Gamma_acetone_benzene Gamma_benzene_acetone Gamma_benzene_benzene
+                      D_L_Fick_acetone_acetone D_L_Fick_acetone_benzene D_L_Fick_benzene_acetone D_L_Fick_benzene_benzene
+                      D_L_effective_acetone D_L_effective_benzene D_L_effective_carbonTetrachloride );
+    }
+    {
+        name        t4;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { acetone 0.6999;  benzene 0.1497;  carbonTetrachloride 0.1504; } }
+        properties  ( D_L_MS_acetone_benzene D_L_MS_acetone_carbonTetrachloride D_L_MS_benzene_carbonTetrachloride
+                      Gamma_acetone_acetone Gamma_acetone_benzene Gamma_benzene_acetone Gamma_benzene_benzene
+                      D_L_Fick_acetone_acetone D_L_Fick_acetone_benzene D_L_Fick_benzene_acetone D_L_Fick_benzene_benzene
+                      D_L_effective_acetone D_L_effective_benzene D_L_effective_carbonTetrachloride );
+    }
+    {
+        name        tk93;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { acetone 0.7;  benzene 0.15;  carbonTetrachloride 0.15; } }
+        properties  ( D_L_MS_acetone_benzene D_L_MS_acetone_carbonTetrachloride D_L_MS_benzene_carbonTetrachloride
+                      Gamma_acetone_acetone Gamma_acetone_benzene Gamma_benzene_acetone Gamma_benzene_benzene
+                      D_L_Fick_acetone_acetone D_L_Fick_acetone_benzene D_L_Fick_benzene_acetone D_L_Fick_benzene_benzene
+                      D_L_effective_acetone D_L_effective_benzene D_L_effective_carbonTetrachloride );
+    }
+);

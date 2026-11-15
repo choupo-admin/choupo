@@ -1,0 +1,120 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  liquidDiffusivity02 -- acetone (1), benzene (2), carbon tetrachloride (3)
+    at 25 C: the thermophysical system of C329 slice B2a.
+
+    EVERYTHING HERE IS KOOIJMAN & TAYLOR'S TABLE I, read at its page (H. A.
+    Kooijman and R. Taylor, Ind. Eng. Chem. Res. 30 (1991) 1217-1222, p. 1218):
+
+      * the six infinite-dilution diffusion coefficients D0_ij, in 1e-9 m2/s,
+        D0_ij being i infinitely dilute in j:
+            D0_12 = 2.75    D0_21 = 4.15
+            D0_13 = 1.70    D0_31 = 3.57
+            D0_23 = 1.42    D0_32 = 1.91
+        They enter below as six declared entries, each with its source (the
+        paper takes them from Cullinan & Toor's data; Taylor & Krishna 1993,
+        p. 91, says they "have been estimated").  No correlation is asked for;
+        no value is fitted.
+      * the dimensionless NRTL parameters of Renon et al. (1971), as the paper
+        lists them, all alpha = 0.2:
+            tau_12 = -0.46504   tau_21 =  0.74632
+            tau_13 = -0.42790   tau_31 =  1.5931
+            tau_23 = -0.51821   tau_32 =  0.7338
+        They are a_ij with b_ij = 0: the numbers are dimensionless and stated
+        for 25 C only, so the case is run at 298.15 K and nowhere else.
+      * (the molar volumes 74.05, 89.41 and 97.09 cm3/mol are in the table
+        too; its header prints them as "1e-6 m3/kmol", which is cm3/mol.  The
+        Fick matrix in the molar-average frame does not use them.)
+
+    THE RULE is the paper's Eq. 23, `VignesKooijmanTaylor`, and THE REDUCTION
+    Taylor & Krishna's Eq. 6.1.14, `Wilke`.  The thermodynamic factor of the
+    liquid film stays `take 1` (a film with one coefficient per component has
+    no place for the off-diagonal of Gamma); Gamma is a props quantity here,
+    printed so the student sees what that choice omits.
+
+    Activity model NRTL, ideal gas: nothing here flashes, and no pure-component
+    vapour pressure is read.  Sealed: the three records are this case's own
+    copies (constant/components).  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( acetone benzene carbonTetrachloride );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters
+            {
+                acetone-benzene
+                {
+                    i acetone;  j benzene;
+                    a_ij -0.46504;  b_ij 0;  a_ji 0.74632;  b_ji 0;
+                    alpha 0.2;
+                }
+                acetone-carbonTetrachloride
+                {
+                    i acetone;  j carbonTetrachloride;
+                    a_ij -0.42790;  b_ij 0;  a_ji 1.5931;  b_ji 0;
+                    alpha 0.2;
+                }
+                benzene-carbonTetrachloride
+                {
+                    i benzene;  j carbonTetrachloride;
+                    a_ij -0.51821;  b_ij 0;  a_ji 0.7338;  b_ji 0;
+                    alpha 0.2;
+                }
+            }
+        }
+        standardState pureLiquid;
+    }
+    vapour { fugacityModel idealGas; }
+}
+
+transport
+{
+    liquid
+    {
+        diffusivity
+        {
+            returns             effective;
+            composition         { rule VignesKooijmanTaylor;  reduction Wilke; }
+            infiniteDilution
+            {
+                entries
+                (
+                    { solute acetone;  solvent benzene;  kind infiniteDilution;
+                      value 2.75e-9 m2/s;  T 298.15 K;  box { T (298.15 298.15); }
+                      source "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Table I, p. 1218: D0_12"; }
+                    { solute benzene;  solvent acetone;  kind infiniteDilution;
+                      value 4.15e-9 m2/s;  T 298.15 K;  box { T (298.15 298.15); }
+                      source "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Table I, p. 1218: D0_21"; }
+                    { solute acetone;  solvent carbonTetrachloride;  kind infiniteDilution;
+                      value 1.70e-9 m2/s;  T 298.15 K;  box { T (298.15 298.15); }
+                      source "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Table I, p. 1218: D0_13"; }
+                    { solute carbonTetrachloride;  solvent acetone;  kind infiniteDilution;
+                      value 3.57e-9 m2/s;  T 298.15 K;  box { T (298.15 298.15); }
+                      source "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Table I, p. 1218: D0_31"; }
+                    { solute benzene;  solvent carbonTetrachloride;  kind infiniteDilution;
+                      value 1.42e-9 m2/s;  T 298.15 K;  box { T (298.15 298.15); }
+                      source "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Table I, p. 1218: D0_23"; }
+                    { solute carbonTetrachloride;  solvent benzene;  kind infiniteDilution;
+                      value 1.91e-9 m2/s;  T 298.15 K;  box { T (298.15 298.15); }
+                      source "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Table I, p. 1218: D0_32"; }
+                );
+            }
+            thermodynamicFactor { take 1; }
+        }
+    }
+}

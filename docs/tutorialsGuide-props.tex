@@ -5969,7 +5969,7 @@ The brine is NaCl-dominated (3 mol/kg, near seawater) with CaSO4 (0.10 mol/kg) r
 \begin{tutnarrative}
 liquidDiffusivity01 -- what `transport \{ liquid \{ diffusivity \{\} \} \}` returns, and in which direction (DEV.md 4c C398 slice (d)).
 
-topDinf the system: `returns infiniteDilution`, at a state taken from Pelkonen et al.'s Clausthal column, run MIW9 (Chem. Eng. Process. 40 (2001) 235, Table 3): the temperature is T\_Top, 55.47 C, which their nomenclature defines as the REFLUX stream's; the composition is the liquid SAMPLED at 1.790 m (methanol 0.8175, 2-propanol 0.1357, water by difference); 960 mbar. That liquid's own bubble point at 960 mbar is 339.18 K (this package), so the state is the reflux's temperature with the packing's liquid, not a film state. The six values D0(solute in solvent) differ by direction -- the solvent's viscosity and association factor, the solute's volume. An EFFECTIVE value of this ternary is refused (no rule that reduces the pair values to it has been read). poling288 the variant `poling288`: methanol in water replaced by the value Poling 5th ed. Table 11-5 prints at 288 K (p. 11.31); water in methanol stays Wilke-Chang, named with its reason. The datum is used at its own temperature only (its box is the point). wc313, leeLi313 methanol-water at 313.13 K: Wilke-Chang beside the two values Lee \& Li measured (Poling 5th ed. p. 11.38, Example 11-8): water in methanol is where Wilke-Chang is used outside its stated scope, and the gap is printed, not hidden. binaryEffective, cbBinary, lcBinary, abBinary `returns effective` by Vignes, Caldwell-Babb, Leffler-Cullinan and Anderson-Babb on the methanol-water binary at the same temperature, each beside the two infinite-dilution values and the mixture's viscosity. muMethanol, muWater, muIsopropanol the pure liquids' viscosities at that temperature (what Wilke-Chang and the viscosity-corrected rules read).
+topDinf the system: `returns infiniteDilution`, at a state taken from Pelkonen et al.'s Clausthal column, run MIW9 (Chem. Eng. Process. 40 (2001) 235, Table 3): the temperature is T\_Top, 55.47 C, which their nomenclature defines as the REFLUX stream's; the composition is the liquid SAMPLED at 1.790 m (methanol 0.8175, 2-propanol 0.1357, water by difference); 960 mbar. That liquid's own bubble point at 960 mbar is 339.18 K (this package), so the state is the reflux's temperature with the packing's liquid, not a film state. The six values D0(solute in solvent) differ by direction -- the solvent's viscosity and association factor, the solute's volume. The EFFECTIVE value of this ternary is not asked here: it takes rule VignesKooijmanTaylor and a reduction (C329 slice B2a; the case liquidDiffusivity02 runs them on the paper that proposed them), and the six values here are the pairs that rule combines. poling288 the variant `poling288`: methanol in water replaced by the value Poling 5th ed. Table 11-5 prints at 288 K (p. 11.31); water in methanol stays Wilke-Chang, named with its reason. The datum is used at its own temperature only (its box is the point). wc313, leeLi313 methanol-water at 313.13 K: Wilke-Chang beside the two values Lee \& Li measured (Poling 5th ed. p. 11.38, Example 11-8): water in methanol is where Wilke-Chang is used outside its stated scope, and the gap is printed, not hidden. binaryEffective, cbBinary, lcBinary, abBinary `returns effective` by Vignes, Caldwell-Babb, Leffler-Cullinan and Anderson-Babb on the methanol-water binary at the same temperature, each beside the two infinite-dilution values and the mixture's viscosity. muMethanol, muWater, muIsopropanol the pure liquids' viscosities at that temperature (what Wilke-Chang and the viscosity-corrected rules read).
 
 The golden master locks every computed value at reltol 1e-4.
 
@@ -5990,6 +5990,50 @@ The golden master locks every computed value at reltol 1e-4.
 \goldrow{diag}{topDinf}{S\_ig}{257.012392533}
 \goldrow{diag}{topDinf}{S\_real}{257.012392533}
 \goldmore{149}
+\end{tutgolden}
+
+\clearpage
+\tutentry{liquidDiffusivity02\_kooijmanTaylor\_ternary}{tutorials/props/transport/liquidDiffusivity02\_kooijmanTaylor\_ternary}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{t1}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{t2}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{t3}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{t4}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{tk93}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The multicomponent liquid diffusivity of Kooijman \& Taylor (1991) on their own Table I, acetone / benzene / carbon tetrachloride at 25 C: the three Maxwell-Stefan pair values (Eq. 23), the thermodynamic-factor matrix, the Fick matrix against the measured one, and the effective diffusivity of each component by Wilke's reduction (Taylor \& Krishna 1993, Eq. 6.1.14)}
+\begin{tutnarrative}
+liquidDiffusivity02 -- the multicomponent liquid diffusivity of Kooijman \& Taylor (1991), on their own Table I (DEV.md 4c C329, slice B2a).
+
+WHAT IT SHOWS. Acetone (1) / benzene (2) / carbon tetrachloride (3) at 25 C. At each of the paper's four compositions (and at a fifth, the one of Taylor \& Krishna 1993, Example 4.2.6, p. 92) the operation prints D\_L\_MS\_<i>\_<j> the three Maxwell-Stefan pair values in the mixture, Eq. 23 of the paper (D0\_ij\textasciicircum{}xj D0\_ji\textasciicircum{}xi times (D0\_ik D0\_jk)\textasciicircum{}(xk/2) for the third component); Gamma\_<i>\_<j> the thermodynamic-factor matrix of the NRTL liquid (paper Eq. 4: a central difference of ln gamma, step 1e-6 in mole fraction, component 3 -- the LAST -- taking the change); D\_L\_Fick\_<i>\_<j> the Fick matrix [B]\textasciicircum{}-1 [Gamma] (paper Eqs. 6-8), in 1e-9 m2/s a student reads against the measured one below. It depends on which component is numbered last, and carbon tetrachloride is, as in the paper; D\_L\_effective\_<c> the effective diffusivity of each component by Wilke's reduction (Taylor \& Krishna 1993, Eq. 6.1.14): what a rate-based column's film would take.
+
+THE MEASURED MATRIX (the paper's Table I, molar-average frame, 1e-9 m2/s, D11 D12 D21 D22; Cullinan \& Toor 1965, converted by the authors): x = 0.2989 0.3490 0.3521 1.8690 -0.2129 -0.0043 2.2730 x = 0.1496 0.1499 0.7005 1.5968 -0.0592 -0.0771 1.8132 x = 0.1497 0.6984 0.1519 1.9652 0.0137 -0.1522 1.9248 x = 0.6999 0.1497 0.1504 2.3041 -0.4019 0.1848 2.9969 THE ACCEPTANCE (gate check\_liquid\_diffusivity\_declaration, arm 8): the average of the paper's discrepancy |D\_calc - D\_expt| / D\_ii over the four points within 0.005 of the paper's Table IV, column "eq 23" (overall 0.0763, diagonal 0.0916, off-diagonal 0.0611); Gamma at 0.70/0.15/0.15 within 0.005 of Taylor \& Krishna's printed matrix [0.788 -0.088; 0.075 1.043]. Nothing is fitted: the six D0 and the NRTL parameters are the paper's inputs.
+
+WHAT IT DOES NOT SHOW. Nothing about an associating liquid: the paper's own Table IV gives 0.19 on acetone / benzene / methanol, with a maximum of 0.71, and says why (the Vignes equation does not perform well for associating binaries). The rule is an interpolation of six numbers, not a theory.
+
+THE MISPRINT. The two books print the limiting value of the third component as (D0\_ik D0\_ki)\textasciicircum{}(1/2) (Taylor \& Kooijman 2014, Eq. 3.41; Taylor \& Krishna 1993, Eq. 4.2.19); the paper's Eq. 21 is (D0\_ik D0\_jk)\textasciicircum{}(1/2), and it is the one implemented. On this table the paper's form scores 0.078 and the books' 0.100 (Theory Guide, section "The multicomponent liquid diffusivity", prints the measurement).
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{t1}{Cp\_ig}{80.8738593285}
+\goldrow{diag}{t1}{D\_L\_Fick\_acetone\_acetone}{1.66586154747e-09}
+\goldrow{diag}{t1}{D\_L\_Fick\_acetone\_benzene}{-3.74741956226e-10}
+\goldrow{diag}{t1}{D\_L\_Fick\_benzene\_acetone}{-2.90443950338e-11}
+\goldrow{diag}{t1}{D\_L\_Fick\_benzene\_benzene}{2.35197771203e-09}
+\goldrow{diag}{t1}{D\_L\_MS\_acetone\_benzene}{2.54356348616e-09}
+\goldrow{diag}{t1}{D\_L\_MS\_acetone\_carbonTetrachloride}{2.35525249577e-09}
+\goldrow{diag}{t1}{D\_L\_MS\_benzene\_carbonTetrachloride}{2.12160692451e-09}
+\goldrow{diag}{t1}{D\_L\_effective\_acetone}{2.44537300974e-09}
+\goldrow{diag}{t1}{D\_L\_effective\_benzene}{2.29652786716e-09}
+\goldrow{diag}{t1}{D\_L\_effective\_carbonTetrachloride}{2.22336006366e-09}
+\goldrow{diag}{t1}{Gamma\_acetone\_acetone}{0.688748377606}
+\goldrow{diag}{t1}{Gamma\_acetone\_benzene}{-0.132899891614}
+\goldrow{diag}{t1}{Gamma\_benzene\_acetone}{0.0324484917747}
+\goldmore{116}
 \end{tutgolden}
 
 \clearpage

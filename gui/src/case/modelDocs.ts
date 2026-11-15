@@ -378,6 +378,9 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   Vignes:          { guide: "theory", dest: "sec:liquid-diffusivity-declared" },
   LefflerCullinan: { guide: "theory", dest: "sec:liquid-diffusivity-declared" },
   AndersonBabb:    { guide: "theory", dest: "sec:liquid-diffusivity-declared" },
+  //  C329 slice B2a: the rule for three or more components and its reduction
+  VignesKooijmanTaylor: { guide: "theory", dest: "sec:liquid-diffusivity-multicomponent" },
+  Wilke:                { guide: "theory", dest: "sec:liquid-diffusivity-multicomponent" },
   Scheibel:     { guide: "theory", dest: "ch:diffusivity" },
   // -- heat capacity (HeatCapacityModel.cpp) ------------------------------
   polynomial: { guide: "theory", dest: "ch:heat" },       // ideal-gas/liquid Cp = a + bT + cT^2 + ...

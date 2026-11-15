@@ -15228,8 +15228,8 @@ full composition range Vignes interpolates logarithmically:
 \end{equation}
 For multicomponent systems the Maxwell-Stefan framework promotes
 each binary $D_{ij}$ to a matrix that combines them rigorously.
-Reid Chapter~12 treats this in depth; we will not need it before
-v1.x of the simulator.
+Reid Chapter~12 treats this in depth; the multicomponent form the engine
+implements is section~\ref{sec:liquid-diffusivity-multicomponent}.
 
 \subsection{The liquid diffusivity a package returns}\label{sec:liquid-diffusivity-declared}
 
@@ -15358,15 +15358,13 @@ solution, an effective-diffusivity film otherwise (DEV.md~4c C329,
 decision~(2) amended; a factor \code{from} the activity model has no consumer
 and is refused).
 
-\paragraph{Three components or more.}  An effective value of a liquid of
-three or more components is REFUSED.  Taylor \& Kooijman define the
-effective diffusivity $D_{i,\mathrm{eff}}$ (Eq.~3.26) but give no formula
-that reduces the pair values to it, and the multicomponent Vignes rule they
-report (Eqs.~3.38--3.41) is refused by name, \code{VignesKooijmanTaylor},
-until its source is read: as printed, Eq.~(3.40) carries $\mathcal{D}_{i,i}$
-on its left-hand side and Eq.~(3.41) gives the limiting diffusivity
-$\mathcal{D}_{i,j,x_k\to1} = (\mathcal{D}^{\circ}_{i,k}\mathcal{D}^{\circ}_{k,i})^{1/2}$,
-which does not contain $j$; the 1991 paper that proposed it is not in hand.
+\paragraph{Three components or more.}  The binary rules above combine TWO
+pair values and have no multicomponent form in anything read: an effective value
+of a liquid of three or more components under \code{CaldwellBabb},
+\code{Vignes}, \code{LefflerCullinan} or \code{AndersonBabb} is REFUSED, by name,
+naming the rule that is accepted.  The fifth word, \code{VignesKooijmanTaylor},
+with a \code{reduction}, answers for three components or more, one value PER
+COMPONENT: section~\ref{sec:liquid-diffusivity-multicomponent}.
 \code{returns infiniteDilution} gives every pair of a ternary (the witness
 \file{tutorials/props/transport/liquidDiffusivity01\_pelkonen\_ternary}).
 
@@ -15389,10 +15387,217 @@ citation, the factor taken, and each solvent's association factor; a unit's
 refusal above by its words; \code{check\_view\_matches\_calls} holds the
 view's lines to the objects the package calls.
 
-\paragraph{Validity window.}  A binary for \code{returns effective};
+\paragraph{Validity window.}  A binary for the four binary rules;
+\code{VignesKooijmanTaylor} for two or more components;
 infinite-dilution values inside their correlation's or their datum's window;
 nothing fitted (no number here was regressed against the papers the cases
 reproduce).
+
+\subsection{The multicomponent liquid diffusivity}\label{sec:liquid-diffusivity-multicomponent}
+
+A rate-based column fed three components needs a liquid diffusivity for each
+of them, and a table of binaries does not give one.  The engine builds it in
+two steps (DEV.md~4c C329, slice~B2a; design record
+\file{docs/design/c329-ratebased-ternary.md}), selected in the property
+dictionary by the fifth composition rule and a reduction:
+\begin{lstlisting}
+transport { liquid { diffusivity
+{
+    returns             effective;
+    composition         { rule VignesKooijmanTaylor;  reduction Wilke; }
+    infiniteDilution    { default { model WilkeChang; }   entries ( ... ); }
+    thermodynamicFactor { take 1; }
+} } }
+\end{lstlisting}
+
+\paragraph{Step 1: the pair values in the mixture (the rule).}  Write
+$D^{\circ}_{ij}$ for the value of $i$ infinitely dilute in $j$ (the binary
+section, \ref{sec:liquid-diffusivity-declared}, takes them from an entry or
+from Wilke-Chang) and $\mathcal{D}_{ij}$ for the Maxwell-Stefan diffusivity of
+the pair $i$--$j$ in the mixture.  Kooijman \& Taylor (Ind.\ Eng.\ Chem.\ Res.\
+30 (1991) 1217, Eq.~23, p.~1219):
+\begin{equation}
+  \mathcal{D}_{ij} \;=\; \bigl(D^{\circ}_{ij}\bigr)^{x_j}
+  \bigl(D^{\circ}_{ji}\bigr)^{x_i}
+  \prod_{k\neq i,j}\bigl(D^{\circ}_{ik}\,D^{\circ}_{jk}\bigr)^{x_k/2}.
+  \label{eq:kt-pair}
+\end{equation}
+It is the paper's Eq.~19, the generalised Vignes equation
+$\mathcal{D}_{ij}=\prod_k(\mathcal{D}_{ij,x_k\to1})^{x_k}$ with the two
+limits that are the binary infinite-dilution values (Eq.~18), and the limit
+of the $i$--$j$ pair in nearly pure $k$ taken as the geometric mean
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$ (Eq.~21, p.~1219).  It is symmetric
+($\mathcal{D}_{ij}=\mathcal{D}_{ji}$), continuous at every corner of the
+composition triangle (the paper's Eqs.~14 and 17: the two limits of a
+$\mathcal{D}$ as $x_i$ and $x_j$ vanish are the same number), and with
+$x_k=0$ for every $k\ne i,j$ it IS the binary Vignes equation
+$(D^{\circ}_{ij})^{x_j}(D^{\circ}_{ji})^{x_i}$.  Each $D^{\circ}$ is the
+engine's infinite-dilution value in the PURE solvent (as for
+\code{CaldwellBabb} and \code{Vignes}); an $x_k=0$ asks for no $D^{\circ}_{ik}$ at all.
+
+\paragraph{Two limiting values the paper rejects.}  The paper tries two
+others and recommends Eq.~21 (its Conclusion, p.~1221): the geometric mean of
+the $i$--$j$ and $j$--$i$ values, $(D^{\circ}_{ij}D^{\circ}_{ji})^{1/2}$
+(Eq.~20, the Wesselingh-Krishna proposal, giving the paper's Eq.~22), and the
+pseudo-binary form (Eqs.~12--13), whose two different limits at a corner make
+$\mathcal{D}$ discontinuous (Eq.~14).  Neither is built.  On the paper's own
+Table~I (below) the average discrepancy of the predicted Fick matrix is
+0.0763 for Eq.~23, 0.1125 for Eq.~22 and 0.1145 for Eq.~12 (its Table~IV),
+and the paper's text reports the second of these as ``not significantly
+better'' than the third.
+
+\paragraph{A misprint in two books, measured.}  Taylor \& Kooijman (Mass
+Transfer in Distillation, 2014) Eq.~3.41 and Taylor \& Krishna (Multicomponent
+Mass Transfer, 1993) Eq.~4.2.19 print the limiting value as
+$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$.  The paper's Eq.~21 has
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, and the paper is the authority for
+three reasons the run can show.  (1)~The books' form does not contain $j$, so
+$\mathcal{D}_{ij}\ne\mathcal{D}_{ji}$, against the symmetry the same page of
+each book requires.  (2)~Taylor \& Kooijman's Eq.~3.42, which they say contains
+Eq.~3.41 as a special case, carries $D_{i,k}D_{j,k}$.  (3)~Measured, on the
+paper's Table~I, with the paper's own six $D^{\circ}$ and NRTL parameters and
+its discrepancy $\epsilon_{ij}=|D_{ij,\mathrm{calc}}-D_{ij,\mathrm{expt}}|/D_{ii}$
+averaged over the four points:
+\begin{center}\small
+\begin{tabular}{lccc}
+\hline
+limiting value & overall & diagonal & off-diagonal\\ \hline
+paper's Table IV, ``eq 23'' (printed) & 0.0763 & 0.0916 & 0.0611\\
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, as implemented & 0.0782 & 0.0924 & 0.0639\\
+$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$, as the books print & 0.1002 & 0.0995 & 0.1009\\
+\hline
+\end{tabular}
+\end{center}
+The engine's form misses the printed average by 0.002 (the paper says the
+complete tabulations are in a supplement that was not read, so its averages
+may cover more points than the four of Table~I); the books' form misses it by
+0.024 and scores worse on the off-diagonal elements, the ones that carry the
+coupling.  Gate \code{check\_liquid\_diffusivity\_declaration} recomputes the
+second and third rows on every run.  A second misprint of the same chapter
+was met on the way: its Eq.~3.120 prints the off-diagonal rate factor as
+$-N_i\bigl(1/(c\kappa_{ij})-1/(c\kappa_{ij})\bigr)$, which is identically zero
+(Taylor \& Krishna's Eq.~8.3.29 has $\kappa_{in}$ in the second term).  The
+chapter is therefore not cited as the authority for any equation of this
+section.
+
+\paragraph{Step 2: one value per component (the reduction).}  A film with one
+coefficient per component needs an EFFECTIVE diffusivity $D_{i,\mathrm{eff}}$,
+$J_i=-c\,D_{i,\mathrm{eff}}\nabla x_i$.  The engine takes Wilke's
+(Taylor \& Krishna 1993, Eq.~6.1.14, p.~126):
+\begin{equation}
+  D_{i,\mathrm{eff}} \;=\; \frac{1-x_i}{\displaystyle\sum_{j\neq i} x_j/\mathcal{D}_{ij}}.
+  \label{eq:wilke-effective}
+\end{equation}
+Derivation: with every other component at rest, $N_j=0$ for $j\ne i$, the
+Maxwell-Stefan relation for $i$ reads $\nabla x_i=\dfrac{N_i}{c}
+\sum_{j\ne i}x_j/\mathcal{D}_{ij}$ for an ideal mixture, and $J_i=N_i-x_iN_i
+=N_i(1-x_i)$, which is Eq.~\eqref{eq:wilke-effective}.  It is the form that
+is a function of the state alone (it does not depend on the order in which
+the components are numbered, and needs no component to take the remainder),
+that reduces to $\mathcal{D}_{ij}$ for BOTH components of a binary, and whose
+dilute limit is the Blanc's-law form (Poling, Prausnitz \& O'Connell, 5th ed.,
+Eq.~11-7.4).  The engine writes the sum of the other components' mole
+fractions for $1-x_i$, the same number for a normalised composition.  The
+book's worked number is its Example~6.1.1 (p.~127): hydrogen (1), nitrogen
+(2), dichlorodifluoromethane (3), $x=(0.35,\,0.40,\,0.25)$, $\mathcal{D}_{12}=77.0$,
+$\mathcal{D}_{13}=33.1$, $\mathcal{D}_{23}=8.1$~mm\textsuperscript{2}/s gives
+$D_{1,\mathrm{eff}}=50.99$ and $D_{2,\mathrm{eff}}=16.95$
+mm\textsuperscript{2}/s (the second is $16.944$ by the formula; the book
+rounds); the gate compiles the engine's own header against those numbers.
+The same reduction applies to a gas, whose pair diffusivities do not depend on
+composition and are the Maxwell-Stefan values (props key \code{D\_G\_effective\_<c>}).
+
+\paragraph{What the source says against it, and the engine prints.}  Taylor \&
+Krishna are hostile to the class of effective diffusivities: they ``assume
+values ranging from minus to plus infinity'' (p.~126), and the limiting
+formulas used outside their limits stand ``about as much chance of
+successfully predicting the fluxes as the throw of a dice'' (p.~208).  On the
+book's own example the Burghardt-Krupiczka form (Eq.~6.1.15), which is not
+built, gives 42.88 and 11.79 where Wilke gives 50.99 and 16.95: a difference
+of 16 to 30~\%.  Wilke is chosen on the four grounds above and not on an
+accuracy that no source read compares in distillation; the comparison that
+matters, the effective-diffusivity film against the Maxwell-Stefan film, is
+carried by a later slice (B2c).
+
+\paragraph{What \code{take 1} omits.}  The Fick matrix of a nonideal liquid is
+$[D]=[B]^{-1}[\Gamma]$ (paper Eqs.~6--8), with
+\begin{align}
+  B_{ii} &= \frac{x_i}{\mathcal{D}_{in}} + \sum_{k\ne i}\frac{x_k}{\mathcal{D}_{ik}},
+  & B_{ij} &= -x_i\Bigl(\frac1{\mathcal{D}_{ij}}-\frac1{\mathcal{D}_{in}}\Bigr),
+  \label{eq:kt-B}\\
+  \Gamma_{ij} &= \delta_{ij} + x_i\,\frac{\partial\ln\gamma_i}{\partial x_j}
+  \Big|_{T,P,\,x_{k\ne j,\,k<n}} & & (i,j=1\ldots n-1),
+  \label{eq:kt-Gamma}
+\end{align}
+the last component $n$ taking every change of mole fraction, so the matrix
+depends on which component is numbered last (the paper's Figs.~5--7): the
+engine takes the LAST component of the package and the props case says so.
+A film with one coefficient per component has no place for the off-diagonal
+of $[\Gamma]$, so the liquid film keeps \code{thermodynamicFactor \{ take 1;
+\}}: the liquid term of the overall resistance is then multiplied by
+$[\Gamma]$ (Taylor \& Krishna Eqs.~8.8.19--8.8.20 show the factors cancel in
+the Maxwell-Stefan film), an error of about the liquid film's share of the
+resistance times $(\Gamma-1)$.  The props operation prints $[\Gamma]$ and
+$[D]$ so the student sees how far from the identity it is: at
+$x=(0.70,0.15,0.15)$ in acetone / benzene / carbon tetrachloride, with the
+paper's NRTL parameters, the engine gives $\Gamma=\begin{psmallmatrix}0.789&-0.090\\0.073&1.045\end{psmallmatrix}$
+against Taylor \& Krishna's printed $\begin{psmallmatrix}0.788&-0.088\\0.075&1.043\end{psmallmatrix}$
+(Example~4.2.6, p.~92).  $[\Gamma]$ is a central difference of the
+activity model's own $\ln\gamma$ in mole fraction, step $10^{-6}$; it exists
+as a props quantity only, and no unit reads it: the statement that no activity
+model hands a unit its liquid thermodynamic factor remains true of the runtime.
+
+\paragraph{The witness and its in-sample statement.}
+\file{tutorials/props/transport/liquidDiffusivity02\_kooijmanTaylor\_ternary}
+is the paper's Table~I: acetone (1), benzene (2), carbon tetrachloride (3) at
+25~°C, its six $D^{\circ}$ and its NRTL parameters (all $\alpha=0.2$), each
+read at its page and carried as a declared entry with its source; nothing is
+fitted.  The engine's Fick matrix against the measured one (Cullinan \& Toor
+1965, converted by the authors to the molar-average frame), $\times10^{-9}$
+m\textsuperscript{2}/s:
+\begin{center}\small
+\begin{tabular}{c|cccc|cccc}
+\hline
+$x_1,x_2,x_3$ & \multicolumn{4}{c|}{engine $D_{11},D_{12},D_{21},D_{22}$}
+              & \multicolumn{4}{c}{measured}\\ \hline
+0.2989, 0.3490, 0.3521 & 1.666 & $-0.375$ & $-0.029$ & 2.352 & 1.869 & $-0.213$ & $-0.004$ & 2.273\\
+0.1496, 0.1499, 0.7005 & 1.394 & $-0.237$ & $-0.151$ & 1.742 & 1.597 & $-0.059$ & $-0.077$ & 1.813\\
+0.1497, 0.6984, 0.1519 & 2.164 & $-0.235$ & $-0.288$ & 2.236 & 1.965 & \phantom{$-$}0.014 & $-0.152$ & 1.925\\
+0.6999, 0.1497, 0.1504 & 2.381 & $-0.545$ & \phantom{$-$}0.194 & 3.397 & 2.304 & $-0.402$ & \phantom{$-$}0.185 & 2.997\\
+\hline
+\end{tabular}
+\end{center}
+The average discrepancy is $0.0782$ (diagonal $0.0924$, off-diagonal
+$0.0639$), within $0.005$ of the paper's $0.0763$.  What it shows: that the
+engine computes the rule the paper proposed, and that on a NON-ASSOCIATING
+system that rule's Fick matrix is within about 8~\% of a measurement,
+off-diagonal elements included.  What it does not show: anything about an
+associating liquid.  The paper's own Table~IV gives 0.1862 for acetone /
+benzene / methanol, with a maximum of 0.7051, and gives the reason (the Vignes
+equation does not perform well for associating binaries); methanol, 2-propanol
+and water is such a system, and nothing read measures the rule on it.  The six
+$D^{\circ}$ are the paper's inputs and the NRTL parameters Renon's, so the
+comparison is not in sample of anything Choupo fitted; the molar volumes in
+the paper's Table~I header ($74.05$, $89.41$, $97.09$) are printed there as
+``$10^{-6}$~m\textsuperscript{3}/kmol'', which are cm\textsuperscript{3}/mol, and the Fick
+matrix in the molar-average frame does not use them.
+
+\paragraph{Validity window and refusals.}  Two or more components present;
+every pair of a present component with a present one needs its two
+infinite-dilution values; a $D^{\circ}$ is asked for only when its exponent is
+positive.  Refused by name: \code{reduction} with a rule that has no
+multicomponent form (the four binary rules: no source read gives one, and the
+paper says arithmetic and mole-fraction-weighted averages were tried and none
+was better than Eq.~23); a package of three or more components with the rule
+and no reduction; an effective value of three components asked without the
+component (\code{D\_L\_effective} is the binary's one value; a ternary's is
+\code{D\_L\_effective\_<component>}); a Fick or $\Gamma$ matrix with a
+component absent.  Gate \code{check\_liquid\_diffusivity\_declaration}
+holds: Eq.~\eqref{eq:kt-pair} and Eq.~\eqref{eq:wilke-effective} by hand to
+$10^{-11}$; the binary edge, for each of the three edges, equal to the
+shipped Vignes rule to $10^{-12}$ and the ternary its limit (a third component
+at $10^{-9}$ within $10^{-6}$); the independence of the result from the order
+of the components; the book's example; and each refusal by its words.
 
 \subsection{A stated liquid viscosity of a constituent set}\label{sec:measured-liquid-viscosity}
 

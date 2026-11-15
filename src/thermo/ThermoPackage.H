@@ -683,11 +683,20 @@ public:
     //  the effective liquid diffusivity of the liquid x by the case's
     //  `composition { rule; }`, with the thermodynamic factor it declares
     //  taken.  Refused by name: no `returns effective`, three or more
-    //  components present (no reduction rule read), a pure liquid.
+    //  components present (the binary value is one number: a ternary's is one
+    //  per component, the overload below), a pure liquid.
     scalar diffusivityLiquidEffective(scalar T_K, const sVector& x) const;
+    //  C329 slice B2a: the effective diffusivity of the NAMED component i of a
+    //  liquid of two or more components, by the case's rule and reduction
+    //  (rule VignesKooijmanTaylor + reduction Wilke for three or more).  With
+    //  two present it is the binary value above.
+    scalar diffusivityLiquidEffective(scalar T_K, const sVector& x, std::size_t i) const;
+    //  The pair (Maxwell-Stefan) value D_ij in the mixture, Kooijman & Taylor
+    //  (1991) Eq. 23; refused unless the case declares that rule.
+    scalar liquidPairDiffusivity(scalar T_K, const sVector& x, std::size_t i, std::size_t j) const;
     const liquidTransport::DiffusivityDeclaration& liquidDiffusivityDeclaration() const
     { return liquidDiffusionDecl_; }
-    std::string liquidDiffusivityMethod() const;        // "AndersonBabb[WilkeChang]" or ""
+    std::string liquidDiffusivityMethod() const;        // "effective.AndersonBabb[WilkeChang]" or ""
     std::string liquidConductivityMethod() const;       // "model/rule" or ""
     //  The case's measured mixture viscosities (`measured {}`), and the
     //  `use method` one whose constituent set is x's (nullptr when none).
