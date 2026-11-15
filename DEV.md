@@ -3518,6 +3518,46 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C329 SLICE B2 DESIGNED AND RULED (2026-11-15).**  The sources Vitor
+> filed the same night (Kooijman & Taylor 1991, Vignes 1967, Leffler &
+> Cullinan 1970, Anderson & Babb 1961, Taylor & Krishna 1993) unblocked the
+> three-component rate-based column; a design general (Fable) wrote
+> docs/design/c329-ratebased-ternary.md.  RULED, all seventeen of its
+> recommendations, with these decisions: (1) the liquid pair values are the
+> 1991 paper's Eq. 23, the rule word `VignesKooijmanTaylor`, lifting slice
+> (d)'s refusal for n >= 3 only for this rule; the three other binary
+> rules stay refused for n >= 3 (no multicomponent form read).  (2) THE
+> REDUCTION IS WILKE (Taylor & Krishna Eq. 6.1.14), the one question the
+> record left open: it is a function of state, needs no remainder component,
+> and reduces exactly to the binary; Burghardt-Krupiczka is not built, and
+> the comparison it would teach is carried by B2c's table of the effective
+> film against the Maxwell-Stefan film.  (3) `thermodynamicFactor { take 1; }`
+> kept, Gamma printed as a props quantity.  (4) The binary limit held by
+> two gate arms (the edge to 1e-12, continuity at x_k = 1e-9); the n = 3
+> limit test is a binary with one component split into two identical halves,
+> to 1e-8 under both films.  (5) No high-flux correction; the rate factor is
+> printed and 0.05 is the line.  (6) The film heat-transfer coefficients
+> become rho cp k(alpha) for every n; ratebased01-04's energy rows move in
+> late digits, listed at the landing.  (7) THE PELKONEN 2001 WITNESS IS
+> ACCEPTED ON THE COMPOSITION PATH ONLY (2-propanol against methanol, the
+> authors' own comparison), mean |dx| <= 0.03; no claim on height: the
+> paper's Table 3 and Fig. 1 disagree on the section order, the second
+> packing has no geometry in the folder, and no temperature profile is
+> tabulated.  Step 0 of B2b maps the azeotrope and boundary with Choupo's
+> own pairs before any column runs.  (8) MISPRINTS FOUND BY MEASUREMENT:
+> the multicomponent limiting value printed as (D_ik D_ki)^1/2 in Taylor &
+> Kooijman 2014 Eq. 3.41 and Taylor & Krishna 1993 Eq. 4.2.19 is (D_ik
+> D_jk)^1/2 in the 1991 paper's Eq. 21 (on its own Table I: 0.0782 against
+> its printed 0.0763, the books' form 0.1002); the chapter's Eq. 3.120 is
+> zero as printed; neither equation is cited by the engine or the guides
+> (grepped).  The chapter is not the authority for this slice.  (9)
+> SLICING: B2a properties (a props case on the 1991 paper's Table I, within
+> 0.005 of its Table IV averages), after C398 slice (d) lands; B2b the
+> segment with effective-diffusivity films; B2c the Maxwell-Stefan vapour
+> film.  (10) ASKED OF VITOR: Gorak & Vogelpohl 1985, Sep. Sci. Technol.
+> 20, 33-61 (the same ternary on ONE packing at total reflux, the clean
+> height witness).
+
 > **C398, SLICES (c) AND (d): RULINGS AT THE FIRST REVIEW (2026-11-15).**
 > Four reviewers, two per slice, read the slices by measurement: (c) rows
 > TB-01..05 and TG-01..16, (d) rows DF-01..12 and DG-01..10 (reports under
