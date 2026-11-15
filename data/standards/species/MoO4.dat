@@ -38,7 +38,7 @@ transport
             origin        literature;
             method        "read at the page, 2026-11-15 (DEV.md 4c C403): the scan's text layer of this table is garbled, so the row was read from the page image; the 25 C entry converted (1 x 10^-6 cm2/s = 1 x 10^-10 m2/s) to 9.91e-10 m2/s";
             reviewStatus  interim;
-            notes         "Li & Gregory give, for the same row, 0 C not given; 18 C not given; 25 C 9.91 x 1e-10 m2/s (kept here for the later check of the Stokes-Einstein correction to the run temperature, thermo/transport/StokesEinstein.H, which is applied by the consumer). A second compiled table (named in the comment above) gives 1.984e-09 m2/s for this ion at 25 C (+100.2 %). The two tables disagree by far more than for the other ions; this record keeps the primary table's value and flags the pair for the reader.";
+            notes         "Li & Gregory give, for the same row, 0 C not given; 18 C not given; 25 C 9.91 x 1e-10 m2/s (kept here for the later check of the Stokes-Einstein correction to the run temperature, thermo/transport/StokesEinstein.H, which is applied by the consumer). A second compiled table (named in the comment above) gives 1.984e-09 m2/s for this ion at 25 C (+100.2 %). The second table's printed D is twice this value, but its own conductivity entry (74.5 x 1e-4 m2 S/mol per equivalent) gives 9.92e-10 m2/s through its own formula D = (RT/F^2)(lambda/|z|): the printed D appears to omit the division by |z|, and the primary table agrees with the implied value.";
         }
     }
 }

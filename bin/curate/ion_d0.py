@@ -102,7 +102,11 @@ def d0_block(r):
             c = _num(r["crc_d"]) * 1e-9
             notes += (" A second compiled table (named in the comment above) gives %s m2/s for this ion at 25 C (%+.1f %%)."
                       % (fmt(c), (c - v) / v * 100))
-            if abs(c - v) / v > 0.2:
+            if r["species"] == "MoO4":
+                notes += (" The second table's printed D is twice this value, but its own conductivity entry (74.5 x 1e-4 m2 S/mol "
+                          "per equivalent) gives 9.92e-10 m2/s through its own formula D = (RT/F^2)(lambda/|z|): the printed D "
+                          "appears to omit the division by |z|, and the primary table agrees with the implied value.")
+            elif abs(c - v) / v > 0.2:
                 notes += " The two tables disagree by far more than for the other ions; this record keeps the primary table's value and flags the pair for the reader."
     else:
         source = (DUDEK_SRC + ", row D(Cu+): 1.20 x 10^-5 cm2/s (the paper cites it to its ref. 8, Y. Marcus, "
