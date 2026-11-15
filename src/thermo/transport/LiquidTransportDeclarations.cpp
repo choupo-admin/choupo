@@ -20,6 +20,7 @@ Description
 #include "core/Dimensions.H"
 #include "core/RegistryRefusal.H"
 #include "thermo/Component.H"
+#include "thermo/ThermoPackage.H"
 #include "thermo/liquidProperty/ExperimentsFileAdapter.H"
 
 #include <algorithm>
@@ -269,7 +270,10 @@ std::string statedWords(const ViscosityMeasurement& m)
 
 bool isWater(const Component& c)
 {
-    return c.cas() == "7732-18-5" || (c.cas().empty() && c.name() == "water");
+    //  By its CAS number; a record that states none is matched by the one home
+    //  of the aqueous solvent's name (check_aqueous_solvent_home).
+    return c.cas() == "7732-18-5"
+        || (c.cas().empty() && c.name() == ThermoPackage::defaultAqueousSolvent());
 }
 
 std::string waterSoluteRefusal(const std::string& model, const std::string& solvent)
