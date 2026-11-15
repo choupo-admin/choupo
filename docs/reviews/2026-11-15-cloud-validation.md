@@ -135,3 +135,61 @@ after this fix.
 
 **Not done:** MB-05 (pinned debt, as asked); the reviewer's sabotages;
 the 20-case byte identity against a baseline build; the full sweep.
+
+## 3. Task 3: `gui/c404-total-reflux-loop`
+
+Head received: cc391ac9bb.  Merged with main (clean) and pushed.  No fix
+was needed on the branch.
+
+| step | command | result |
+|---|---|---|
+| build | `make all -j2` (gate zero needs a native build) | exit 0 |
+| gui | `bin/runTests --gui` | PASS 46 / FAIL 3: `gui-tests` (3 tests in 2 files), `check_capability_index`, `check_gate_selftest` |
+
+None is caused by the slice: the 3 GUI tests are main's stale lesson
+citations (`runLog.test.ts`, `equilibriumOrRateBased.test.ts`), the
+index is main's bare case name, the self-test needs rsync.  With main's
+citation fix cherry-picked locally (throwaway branch, deleted):
+`runLog.test.ts`, `equilibriumOrRateBased.test.ts` and the slice's own
+`totalRefluxLoop.test.ts` pass, **170 of 170**.  Of the whole GUI suite
+on the branch: 326 of 328 files and 8297 of 8301 tests passed before that
+fix (3 failed, 1 skipped).
+
+Not done: seeing the drawing in a browser; the DEV.md status row (not
+touched, as asked).
+
+## 4. The environment, and what it cost
+
+* No `rsync` in this container, so `check_gate_selftest` could not run on
+  any branch.  Worse, each attempt first cloned its four workers into
+  `~/.cache/choupo/gate-selftest/<tree hash>/w0..w3` (about 2 GB per tree)
+  and only then failed, leaving the pool behind.  Two GUI runs at once
+  exhausted the session's disk allowance: one `check_plant_layout` run
+  died on `[Errno 28] No space left on device`, and one `--gui` was
+  stopped and re-run alone.  Suggestion for the gate (not made): check
+  for rsync BEFORE cloning the workers.
+* Every suite here ran with the branch's own root and `bin/` first on
+  PATH and `CHOUPO_HOME` set to the branch (see task 2 on `runCase`).
+
+## 5. Fixes to main's own defects, each on its own branch off main
+
+| branch | commit | what | evidence |
+|---|---|---|---|
+| `cloud/fix-capability-index-envelope05` | 151a007140 | `envelope05_natural_gas_phiphi` named by its full `tutorials/props/molecular/...` path in docs/ai/capabilities.md | `check_capability_index` OK (204 names, 100 paths); `check_doc_references` OK |
+| `cloud/fix-lesson-citations-bubblepoint` | 3032e772dc | three lesson citations re-pointed with `repoint_lesson_citations --window 80`: BubblePoint.cpp:334 -> 393 and :383 -> 447 (runLog.ts), DistillationColumn.cpp:5092 -> 5103 (equilibriumOrRateBased lesson and test) | `--check` reads 515 citations current; the GUI suites of tasks 1 and 3 green with it |
+| `cloud/fix-guide-environments-mathtools` | 79ab253f0f | `check_guide_environments` knows `psmallmatrix` (mathtools, loaded by theoryGuide.tex); claim re-observed | the gate failed on main saying theoryGuide dies at 15770-15772; `make -B theoryGuide.pdf` built it (task 2) |
+
+All three are reached by every branch merged with today's main, so they
+should land before (or with) the three branches above.
+
+## 6. What waits on the laptop
+
+1. Task 2, `check_spiral_array` (h): the allow-list hides the retired-key
+   remedy (engine code).
+2. Task 2, the CRC citations: NaCl-water.dat:60 (gated) and the seawater
+   viscosity datasets (same class, not gated) -- a source read.
+3. The full sweeps the plans of tasks 1 and 2 reach: the owner's
+   authorisation.
+4. `check_gate_selftest` on all three branches, on a machine with rsync.
+5. The full GUI suite of task 2 after its last test fix (only the fixed
+   file and its gate were re-run).
