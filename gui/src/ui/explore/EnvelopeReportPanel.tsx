@@ -48,6 +48,7 @@ export function EnvelopeReportPanel({ report }: { report: EnvelopeReport }) {
             color={b.end === "stopped" ? "orange" : b.end === "neverStarted" ? "gray" : "teal"}>
             {branchEndLabel(b)}
           </Badge>
+          {b.startSentence && <Text size="xs" mt={2}>{b.startSentence}</Text>}
           {b.sentence && <Text size="xs" mt={2}>{b.sentence}</Text>}
           {b.cricondenthermSentence && <Text size="xs" mt={2}>{b.cricondenthermSentence}</Text>}
         </Box>

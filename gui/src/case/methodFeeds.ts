@@ -179,6 +179,22 @@ export function readPxyCsv(csv: string): {
   return { comp, rows, missing };
 }
 
+/** EX-06: the engine's supercritical vapour-pressure sentences of a run, by
+ *  component (`<who>: <message>`), deduplicated; solver-path ("trial")
+ *  advisories left out.  Empty when `applies` is false.  Read, never
+ *  computed: the engine decides what is above its Tc. */
+export function supercriticalNotes(applies: boolean,
+  advisories: { locus: string; message: string; status?: string }[] | undefined): string[] {
+  if (!applies) return [];
+  const out: string[] = [];
+  for (const a of advisories ?? []) {
+    if (a.status === "trial" || !/ABOVE its critical temperature/.test(a.message)) continue;
+    const s = `${a.locus}: ${a.message}`;
+    if (!out.includes(s)) out.push(s);
+  }
+  return out;
+}
+
 /** The psychrometric-chart feed (psychrometricChart engine op).  Carrier =
  *  the lower-Tb of the pair (stays gas); condensable = the higher-Tb (needs a
  *  vapour-pressure model).  Transport models ride along so the op can compute

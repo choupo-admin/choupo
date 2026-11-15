@@ -1,7 +1,14 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    envelope               bubble_points    0                1e-4
-diag    envelope               bubble_stopped_bar 1                1e-4
+# EX-01 (2026-11-15): the bubble branch no longer ends at its first failed
+# pressure.  It fails at the 30 pressures from 1 to 44.9 bar (below the
+# solvers' 200 K bracket), first converges at 46.385 bar (200.119 K) and keeps
+# 10 points to 60 bar: bubble_points 0 -> 10, bubble_stopped_bar 1 (removed:
+# the branch now reaches the top), bubble_failed_before 30 and
+# bubble_first_bar 46.385 added.  The dew rows are unchanged.
+diag    envelope               bubble_points    10               1e-4
 diag    envelope               dew_cricondentherm_K 275.946403666    1e-4
 diag    envelope               dew_points       40               1e-4
+diag    envelope               bubble_failed_before 30               1e-4
+diag    envelope               bubble_first_bar 46.3846153846    1e-4

@@ -10136,10 +10136,14 @@ critical point the two branches merge and the Jacobian degenerates.  The op
 does not extrapolate a nose: it keeps a point only when it is continuous with
 its branch (the bubble curve may not fall as $P$ rises; a dew step many times
 the branch's own recent steps is a jump to another root), and it reports how
-each branch ended --- it reached the top of the requested range, it
+each branch ended --- it reached the top of the requested range, or it
 \emph{stopped} (at a turning point, or because the solve converged to a
-different root), or it \emph{never started} in the range (for a light gas
-the bubble curve can lie below the saturation solvers' $200$~K bracket).  An
+different root).  A branch is not ended before it has started: for a light
+gas the bubble curve lies below the saturation solvers' $200$~K bracket at
+low pressure, so the march keeps trying until the first pressure converges
+and reports every pressure that failed below it (a \emph{late start}:
+\file{envelope01} fails at $1$--$44.9$~bar and starts at $46.385$~bar).  A
+branch \emph{never started} only when no pressure in the range converged.  An
 \emph{interior} temperature maximum of a branch is reported as a
 \emph{bracketed} cricondentherm, naming the two pressures it lies between; an
 endpoint maximum is not, because it says where the range stops.  Closing the
@@ -10148,8 +10152,9 @@ nose needs arc-length continuation with a switching specification
 quantity becomes $\ln K_i$ or $\ln P$ as the curve turns; it is not
 implemented, and the op says so on every run.
 
-\emph{The thermodynamic frame.}  The corpus witnesses and the Explorer lens
-run $\gamma$--$\varphi$ with an ideal liquid on the pure-liquid reference
+\emph{The thermodynamic frame.}  The corpus witnesses run $\gamma$--$\varphi$
+with an ideal liquid (the Explorer lens offers the $T$--$x$--$y$ lens's four
+liquid models, ideal, NRTL, Wilson, UNIFAC) on the pure-liquid reference
 (carrying $\varphi_i^{\mathrm{sat}}$ and the Poynting factor, held continuous
 above $0.99\,T_{c,i}$ so a branch can cross a component's critical
 temperature) and a cubic vapour (SRK or PR, \S\ref{ch:cubic-eos}), with
@@ -10157,15 +10162,25 @@ $k_{ij} = 0$ unless a curated pair is declared --- each announced by the
 engine where it bites.  In this frame the liquid is not described by the
 equation of state, so the frame has no mixture critical point of its own:
 near the nose the two branches are an extrapolation of a hypothetical
-liquid, which is one more reason the nose is left open.  An ideal-gas vapour
+liquid, which is one more reason the nose is left open.  \emph{One liquid is
+assumed} by both saturation solves.  An ideal solution cannot split; for a
+\emph{binary} on a non-ideal model the Explorer runs the $T$--$x$--$y$'s own
+liquid-stability probe at every pressure (the feed's bubble temperature, then
+a liquid--liquid flash there) and does not draw a bubble point where the
+liquid splits: there the single-liquid bubble point is a phantom, and the feed
+starts to boil on the three-phase line instead
+(\file{envelope04\_water\_benzene\_two\_liquids}: two liquids at all $80$
+pressures on UNIFAC).  The dew curve is not probed, and for three or more
+components the probe the engine has (binary-only) does not apply, which the
+figure says.  An ideal-gas vapour
 cannot make the diagram at all --- its dew curve keeps rising with $P$ and
 neither the cricondentherm nor the retrograde region forms --- and the
 Explorer refuses it with that reason.
 
 \begin{tutoriallink}
 \file{tutorials/props/molecular/envelope01\_natural\_gas} (a lean natural
-gas: a bracketed cricondentherm on the dew branch, a bubble branch that never
-starts), \file{envelope02\_c3c4c5\_branch\_stop} (both branches cross
+gas: a bracketed cricondentherm on the dew branch, a bubble branch that starts
+late, at $46$~bar), \file{envelope02\_c3c4c5\_branch\_stop} (both branches cross
 propane's $T_c$ and reach $40$~bar) and \file{envelope03\_c3c4c5\_both\_stop}
 (the same feed to $80$~bar: both branches stop, and say where).  In the
 Explorer: two or more VLE-able compounds, lens \emph{Mixture phase envelope
@@ -10995,10 +11010,17 @@ that gives a \emph{minimum}-boiling azeotrope on the $T$--$x$--$y$ gives a
 \emph{maximum}-pressure azeotrope here: ethanol/water at $70\,^\circ$C on
 the curated NRTL pair peaks near $x_{\mathrm{EtOH}} \approx 0.9$.  The
 evaluator keywords are \code{P\_bubble} [Pa] and \code{y\_eqT\_<comp>} [--],
-beside \code{T\_bubble} and \code{y\_eq\_<comp>}; at a temperature
-$T_{\mathrm{bubble}}(\mathbf{x}, P)$ the bubble pressure returns $P$, and
-\file{tutorials/props/scan/pxy01\_ethanol\_water\_70C} holds that round trip
-to $10^{-6}$ relative.
+beside \code{T\_bubble} and \code{y\_eq\_<comp>}.  On an \emph{ideal-gas}
+vapour, at a temperature $T_{\mathrm{bubble}}(\mathbf{x}, P)$ the bubble
+pressure returns $P$, and \file{tutorials/props/scan/pxy01\_ethanol\_water\_70C}
+holds that round trip to $10^{-6}$ relative.  With a cubic vapour (PR or SRK)
+the two are \emph{not} the same equilibrium: \code{T\_bubble} evaluates the
+vapour fugacity at $\mathbf{y} = \mathbf{x}$ while \code{P\_bubble} iterates
+the incipient vapour to its own composition, so on pxy01's liquid with a PR
+vapour the bubble pressure at $T_{\mathrm{bubble}}$ differs from $P$ by
+$+1.3\times10^{-4}$ at $1$~atm and $+7.8\times10^{-4}$ at $20$~bar (the
+iterated vapour is the more correct of the two; the $T_{\mathrm{bubble}}$
+frame is recorded as a defect of its own).
 
 \emph{Validity and what is not done.}  One liquid is assumed.  The fixed-$P$
 lenses replace the homogeneous bubble curve across an immiscibility gap by

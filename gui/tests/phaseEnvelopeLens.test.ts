@@ -53,9 +53,11 @@ import { LENS_SHORT, PLOT_TYPES } from "../src/case/exploreLenses.js";
 import { theoryAnchor } from "../src/case/exploreTheory.js";
 import { viewsFor } from "../src/case/exploreViews.js";
 import {
-  ENVELOPE_OUTPUT, EXPLORER_GUIDE_ENVELOPE, branchEndLabel, envelopeModelWhy, envelopePlan, envelopeReport,
-  readEnvelopeCsv,
+  ENVELOPE_OUTPUT, ENVELOPE_PROBE_OUTPUT, EXPLORER_GUIDE_ENVELOPE, activityWarning, branchEndLabel,
+  envelopeModelWhy, envelopePlan, envelopeReport, envelopeTraces, liquidStatement, readEnvelopeCsv,
+  readProbeCsv, splitPressures, type EnvelopeReport, type EnvelopeTrace,
 } from "../src/case/phaseEnvelopeLens.js";
+import { supercriticalNotes } from "../src/case/methodFeeds.js";
 import { buildLocalUnifac } from "../src/case/unifacGroups.js";
 import { witnessOutput } from "./witnessRead.js";
 
@@ -147,6 +149,46 @@ describe("the case the lens builds", () => {
   });
 });
 
+describe("EX-02: the liquid model, the pair warning, and what the figure says about a second liquid", () => {
+  const wb = { components: ["water", "benzene"], amounts: { water: 1, benzene: 1 },
+    eos: "PR", Pfrom: 1e5, Pto: 80e5, n: 80 };
+
+  it("an ideal liquid: a gamma-phi package, no probe, and the figure says an ideal solution cannot split", () => {
+    const p = envelopePlan({ ...wb, activity: "ideal" });
+    expect(p.liquidCheck).toBe("idealCannotSplit");
+    expect((p.files!.propsDict!["operations"] as unknown[])).toHaveLength(1);
+    expect(liquidStatement(p.liquidCheck!, 0, 0)).toMatch(/cannot split/);
+  });
+
+  it("a binary on a non-ideal model: the T-x-y's two-liquid package and its liquid_stable probe on the SAME grid", () => {
+    const p = envelopePlan({ ...wb, activity: "UNIFAC" });
+    expect(p.liquidCheck).toBe("probed");
+    const eq = p.files!.thermoPackage!["equilibrium"] as Record<string, unknown>;
+    expect(eq["formulation"]).toBe("gammaGamma");
+    expect((eq["vapour"] as Record<string, unknown>)["fugacityModel"]).toBe("PR");
+    const ops = p.files!.propsDict!["operations"] as Record<string, Record<string, unknown>>[];
+    expect(ops[1]!["properties"]).toEqual(["liquid_stable"]);
+    expect(ops[1]!["vary"]).toEqual({ variable: "P", from: 1e5, to: 80e5, n: 80 });
+    expect((ops[1]!["output"] as Record<string, unknown>)["file"]).toBe(ENVELOPE_PROBE_OUTPUT);
+    expect((ops[1]!["state"] as Record<string, Record<string, number>>)["composition"]).toEqual({ water: 0.5, benzene: 0.5 });
+  });
+
+  it("three components on a non-ideal model: one liquid ASSUMED and NOT checked, said on the figure", () => {
+    const p = envelopePlan({ ...base, activity: "NRTL" });
+    expect(p.liquidCheck).toBe("notProbed");
+    expect((p.files!.propsDict!["operations"] as unknown[])).toHaveLength(1);
+    expect(liquidStatement("notProbed", 0, 0)).toMatch(/ASSUMED, not checked/);
+  });
+
+  it("NRTL/Wilson without a curated pair warn as the T-x-y does; UNIFAC names the components without groups", () => {
+    const none = () => false;
+    expect(activityWarning("NRTL", ["a", "b", "c"], none, () => true)).toMatch(/No curated NRTL pair covers a–b, a–c, b–c/);
+    expect(activityWarning("NRTL", ["a", "b"], () => true, () => true)).toBeNull();
+    expect(activityWarning("UNIFAC", ["a", "b"], none, (c) => c === "a")).toMatch(/missing for b/);
+    expect(activityWarning("ideal", ["a", "b"], none, none)).toBeNull();
+  });
+});
+
 function load(caseDir: string) {
   const log = witnessOutput(caseDir, "log.choupoProps");
   const csv = witnessOutput(caseDir, "envelope.csv");
@@ -156,6 +198,30 @@ function load(caseDir: string) {
   };
   const op = s.operationResults?.find((o) => o.type === "phaseEnvelope");
   return { log, csv, op, report: envelopeReport(op, s.advisories, log), branches: readEnvelopeCsv(csv) };
+}
+
+/** EX-03: the figure as the lens builds it (identity units). */
+const figureOf = (csv: string, report: EnvelopeReport, splitAt: number[] = []): EnvelopeTrace[] =>
+  envelopeTraces({ csv, report, splitAt, tx: (K) => K, px: (Pa) => Pa,
+    colours: { bubble: "b", dew: "d", text: "t", phantom: "p" }, tUnit: "K", pUnit: "Pa" });
+
+/** No trace carries points of BOTH branches (the branches are never joined). */
+function assertNeverJoined(traces: EnvelopeTrace[], csv: string) {
+  const { bubble, dew } = readEnvelopeCsv(csv);
+  const key = (T: number, P: number) => `${T.toPrecision(12)}|${P.toPrecision(12)}`;
+  const B = new Set(bubble.map((p) => key(p.T, p.P)));
+  const D = new Set(dew.map((p) => key(p.T, p.P)));
+  for (const t of traces) {
+    let b = 0, d = 0;
+    t.x.forEach((x, i) => {
+      const y = t.y[i];
+      if (x === null || y === null || y === undefined) return;
+      const k = key(x, y);
+      if (B.has(k) && !D.has(k)) b++;
+      if (D.has(k) && !B.has(k)) d++;
+    });
+    expect(b > 0 && d > 0, `trace "${t.name}" carries ${b} bubble and ${d} dew points: the branches are joined`).toBe(false);
+  }
 }
 
 describe("both branches STOP (envelope03): the stop is reported as a stop, in the engine's words", () => {
@@ -201,6 +267,17 @@ describe("both branches STOP (envelope03): the stop is reported as a stop, in th
     expect(branches.dew[branches.dew.length - 1]!.P).toBeLessThan(report.branches[1]!.stoppedBar! * 1e5);
   });
 
+  it("EX-03: the FIGURE never joins the branches and stars nothing the engine did not report", () => {
+    const { csv, report } = w();
+    const traces = figureOf(csv, report);
+    assertNeverJoined(traces, csv);
+    expect(traces.filter((t) => t.role === "cricondentherm")).toHaveLength(0);
+    expect(traces.filter((t) => t.role === "stop").map((t) => t.name).sort())
+      .toEqual(["bubble branch stopped", "dew branch stopped"]);
+    const bub = traces.find((t) => t.role === "bubble")!;
+    expect(bub.x).toHaveLength(63);
+  });
+
   it("the report rendered beside the figure says each stop, the open nose, and no failure", async () => {
     const { EnvelopeReportPanel } = await import("../src/ui/explore/EnvelopeReportPanel.js");
     const html = renderToStaticMarkup(createElement(MantineProvider, null,
@@ -213,16 +290,29 @@ describe("both branches STOP (envelope03): the stop is reported as a stop, in th
   });
 });
 
-describe("a branch that never started, a branch that ran out, a cricondentherm (envelope01)", () => {
+describe("a late start, a branch that ran out, a cricondentherm (envelope01)", () => {
   let cache: ReturnType<typeof load> | null = null;
   const w = () => (cache ??= load("tutorials/props/molecular/envelope01_natural_gas"));
 
-  it("the empty bubble branch is 'never started', not 'stopped', and says so in the engine's words", () => {
+  it("EX-01: the bubble branch STARTS LATE at 46.385 bar -- not 'never started' -- with every lower pressure tried", () => {
     const b = w().report.branches[0]!;
-    expect(b.end).toBe("neverStarted");
-    expect(b.stoppedBar).toBeUndefined();
-    expect(branchEndLabel(b)).toBe("bubble: never started in this range");
-    expect(b.sentence).toMatch(/the branch never started/);
+    expect(b.end).toBe("ranOut");
+    expect(b.points).toBe(10);
+    expect(b.startedBar).toBeCloseTo(46.3846153846, 8);
+    expect(b.failedBefore).toBe(30);
+    expect(branchEndLabel(b)).toMatch(/^bubble: started late at 46\.385 bar \(30 lower pressures tried, no point\); reached the top/);
+    expect(b.startSentence).toMatch(/produced no point at the 30 pressure\(s\) from 1\.000 to 44\.872 bar, every one tried, and first converged at 46\.385 bar/);
+    expect(w().log).toMatch(/pressures tried below the first point \[bar\]/);
+    expect(w().log).not.toMatch(/never started/);
+  });
+
+  it("'never started' is kept for a branch where NO pressure converged (the published shape of such a run)", () => {
+    const r = envelopeReport({ name: "envelope", type: "phaseEnvelope",
+      diagnostics: { bubble_points: 0, dew_points: 5 } },
+      [{ category: "approximation", severity: "warning", locus: "phaseEnvelope bubble",
+         message: "the bubble branch produced NO converged point at any of the 40 pressure(s) tried in the requested range, every one of them attempted.  This is not a turning point: the branch never started." }], "");
+    expect(r.branches[0]!.end).toBe("neverStarted");
+    expect(branchEndLabel(r.branches[0]!)).toBe("bubble: never started in this range (no pressure converged)");
   });
 
   it("the dew branch ran out of range, and the engine's sentence says that is not a turning point", () => {
@@ -240,5 +330,53 @@ describe("a branch that never started, a branch that ran out, a cricondentherm (
     expect(d.cricondenthermSentence).toMatch(/CRICONDENTHERM on the dew branch/);
     expect(d.cricondenthermSentence).toMatch(/BRACKETED/);
     expect(report.branches[0]!.cricondenthermK).toBeUndefined();
+  });
+
+  it("EX-03: exactly ONE star, at the reported temperature, on the dew branch; the branches never joined", () => {
+    const { csv, report } = w();
+    const traces = figureOf(csv, report);
+    assertNeverJoined(traces, csv);
+    const stars = traces.filter((t) => t.role === "cricondentherm");
+    expect(stars).toHaveLength(1);
+    expect(stars[0]!.x[0]).toBe(report.branches[1]!.cricondenthermK);
+  });
+});
+
+describe("EX-02 against the engine: the two-liquid flag (envelope04, water + benzene on UNIFAC + PR)", () => {
+  let cache: (ReturnType<typeof load> & { probe: ReturnType<typeof readProbeCsv> }) | null = null;
+  const w = () => (cache ??= { ...load("tutorials/props/molecular/envelope04_water_benzene_two_liquids"),
+    probe: readProbeCsv(witnessOutput("tutorials/props/molecular/envelope04_water_benzene_two_liquids", ENVELOPE_PROBE_OUTPUT)) });
+
+  it("the probe answers at every pressure of the envelope's grid, and finds two liquids at all of them", () => {
+    const { probe, branches } = w();
+    expect(probe).toHaveLength(80);
+    expect(splitPressures(probe)).toHaveLength(80);
+    const grid = branches.bubble.map((p) => p.P);
+    for (const P of grid) expect(probe.some((r) => Math.abs(r.P - P) <= 1e-6 * P)).toBe(true);
+  });
+
+  it("a split bubble point is NOT drawn as curve: a gap in the bubble line, a hollow x per phantom point, said on the figure", () => {
+    const { csv, report, probe } = w();
+    const split = splitPressures(probe);
+    const traces = figureOf(csv, report, split);
+    assertNeverJoined(traces, csv);
+    const bub = traces.find((t) => t.role === "bubble")!;
+    expect(bub.x.every((x) => x === null)).toBe(true);
+    expect(traces.find((t) => t.role === "phantom")!.x).toHaveLength(80);
+    expect(liquidStatement("probed", split.length, probe.length)).toMatch(/Two liquids at the bubble point at 80 of 80 pressures/);
+  });
+});
+
+describe("EX-06: a supercritical component is said on the binary-VLE figure (the engine's words)", () => {
+  it("lifts the engine's ABOVE-Tc sentences, deduplicated, skipping solver-path ones; none off the VLE lenses", () => {
+    const msg = "vapour pressure requested at T = 298.15 K, ABOVE its critical temperature Tc = 190.56 K -- there is no saturation state there; the value returned is not a vapour pressure";
+    const adv = [
+      { locus: "CH4 Psat", message: msg, status: "accepted" },
+      { locus: "CH4 Psat", message: msg, status: "accepted" },
+      { locus: "CH4 Psat", message: msg.replace("298.15", "310"), status: "trial" },
+      { locus: "x", message: "something else", status: "accepted" },
+    ];
+    expect(supercriticalNotes(true, adv)).toEqual([`CH4 Psat: ${msg}`]);
+    expect(supercriticalNotes(false, adv)).toEqual([]);
   });
 });

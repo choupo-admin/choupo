@@ -4121,12 +4121,13 @@ Nothing here is a validation against measurement: every number is the engine's o
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that never starts}
+\tutwhat{P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that starts late (46 bar), every lower pressure tried and listed}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{0}
-\goldrow{diag}{envelope}{bubble\_stopped\_bar}{1}
+\goldrow{diag}{envelope}{bubble\_points}{10}
 \goldrow{diag}{envelope}{dew\_cricondentherm\_K}{275.946403666}
 \goldrow{diag}{envelope}{dew\_points}{40}
+\goldrow{diag}{envelope}{bubble\_failed\_before}{30}
+\goldrow{diag}{envelope}{bubble\_first\_bar}{46.3846153846}
 \end{tutgolden}
 
 \clearpage
@@ -4159,6 +4160,40 @@ One phaseEnvelope op over envelope02's feed, to 80 bar in 1-bar steps. The range
 \goldrow{diag}{envelope}{bubble\_stopped\_bar}{64}
 \goldrow{diag}{envelope}{dew\_points}{46}
 \goldrow{diag}{envelope}{dew\_stopped\_bar}{47}
+\end{tutgolden}
+
+\clearpage
+\tutentry{envelope04\_water\_benzene\_two\_liquids}{tutorials/props/molecular/envelope04\_water\_benzene\_two\_liquids}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{liquidProbe}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{probe\_1bar}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{P-T envelope of equimolar water + benzene on UNIFAC + PR beside the T-x-y's liquid-stability probe: two liquids at the bubble point at all 80 pressures, so the single-liquid bubble curve is a phantom the lens does not draw}
+\begin{tutnarrative}
+Two operations on ONE pressure grid (and a third that pins the probe's first point as a golden row) (1-80 bar, 80 points), exactly what the Explorer's envelope lens builds for this binary:
+
+envelope phaseEnvelope of the equimolar feed (single-liquid bubble and dew curves). liquidProbe the T-x-y's own probe, `liquid\_stable`, at every pressure: the feed's bubble temperature, then a liquid-liquid flash there (1 = one liquid, 0 = two). The state T is unused by the probe.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{envelope}{bubble\_points}{80}
+\goldrow{diag}{envelope}{dew\_points}{38}
+\goldrow{diag}{envelope}{dew\_stopped\_bar}{39}
+\goldrow{diag}{liquidProbe}{n\_emptyCurves}{0}
+\goldrow{diag}{liquidProbe}{n\_failures}{0}
+\goldrow{diag}{liquidProbe}{n\_points}{80}
+\goldrow{diag}{probe\_1bar}{Cp\_ig}{59.466634}
+\goldrow{diag}{probe\_1bar}{H\_R}{-175.742197533}
+\goldrow{diag}{probe\_1bar}{H\_ig}{-79338.258952}
+\goldrow{diag}{probe\_1bar}{H\_real}{-79514.0011495}
+\goldrow{diag}{probe\_1bar}{P}{100000}
+\goldrow{diag}{probe\_1bar}{S\_R}{-0.358120633114}
+\goldrow{diag}{probe\_1bar}{S\_ig}{235.202081429}
+\goldrow{diag}{probe\_1bar}{S\_real}{234.843960796}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -5060,7 +5095,7 @@ pxy\_peak the scan's highest point, x\_ethanol = 0.9, pinned by its golden rows:
 
 txy\_point ONE point of the T-x-y at 1 atm: the bubble temperature of the liquid x\_ethanol = 0.4.
 
-pxy\_point THE ROUND TRIP: the bubble PRESSURE of the same liquid at the temperature txy\_point returned. It must return 1 atm -- 101325 Pa -- because the two properties solve the same equation, sum K\_i x\_i = 1, for the other variable. The golden row pins it at 1e-6 relative.
+pxy\_point THE ROUND TRIP: the bubble PRESSURE of the same liquid at the temperature txy\_point returned. It must return 1 atm -- 101325 Pa -- because the two properties solve the same equation, sum K\_i x\_i = 1, for the other variable. The golden row pins it at 1e-6 relative. The op's state P is HALF an atmosphere -- it only starts the pressure bracket -- so an evaluator that handed back the state pressure would print 50662.5 Pa and fail the row (EX-08: before, the state P was the expected answer itself). The round trip holds on THIS case's ideal-gas vapour; with a PR or SRK vapour T\_bubble reads the vapour fugacity at y = x while P\_bubble iterates y, and the two differ by 1.3e-4 at 1 atm and 7.8e-4 at 20 bar (EX-04, Theory Guide sec:bubble-pressure).
 
 THE TEMPERATURE IN pxy\_point IS COPIED FROM txy\_point's golden row, and that is the one hand-carried number in this case. If a thermo change moves T\_bubble, txy\_point's own row fails first; re-record it, paste the new value here, and the round trip holds again. A round trip whose T drifted from its T\_bubble would fail on P\_bubble, which is the point.
 

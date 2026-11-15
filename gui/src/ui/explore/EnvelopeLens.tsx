@@ -53,10 +53,15 @@ import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
 import { resolveAdapter } from "../../adapters/index.js";
 import type { Advisory, OperationResult } from "../../adapters/SolverAdapter.js";
 import type { ComponentMeta } from "../../case/catalogue.js";
+import { metaByName } from "../../case/catalogue.js";
+import { hasPair } from "../../case/pairsCatalogue.js";
 import {
-  ENVELOPE_EOS, ENVELOPE_OUTPUT, EXPLORER_GUIDE_ENVELOPE, envelopeModelWhy, envelopePlan,
-  envelopeReport, readEnvelopeCsv, type EnvelopeReport,
+  ENVELOPE_ACTIVITY, ENVELOPE_EOS, ENVELOPE_OUTPUT, ENVELOPE_PROBE_OUTPUT, EXPLORER_GUIDE_ENVELOPE,
+  activityWarning, envelopeModelWhy, envelopePlan, envelopeReport, envelopeTraces, liquidStatement,
+  readProbeCsv, splitPressures, type EnvelopeReport,
 } from "../../case/phaseEnvelopeLens.js";
+import { hasUnifacGroups, type UnifacGroup } from "../../case/unifacGroups.js";
+import { defaultActivity } from "./PhaseSplitLens.js";
 import { guideUrl, openGuide } from "../../help/guideLinks.js";
 import {
   kToDisplay, paToDisplay, parsePressure, pressureLabel, temperatureLabel,
@@ -65,9 +70,10 @@ import { useStore } from "../../state/store.js";
 import { Plot, PLOT_COLORS, PLOT_CONFIG, darkLayout } from "../plotting/plotly.js";
 import { EnvelopeReportPanel } from "./EnvelopeReportPanel.js";
 
-export function EnvelopeLens({ components, componentFiles, narrow }: {
+export function EnvelopeLens({ components, catalogue, localUnifac, componentFiles, narrow }: {
   components: string[];
   catalogue: ComponentMeta[];
+  localUnifac: Record<string, UnifacGroup[]>;
   componentFiles?: { [relPath: string]: string };
   narrow: boolean;
 }) {
@@ -78,6 +84,11 @@ export function EnvelopeLens({ components, componentFiles, narrow }: {
   // ---- the student's choices (canonical SI in state) ----------------------
   const [amounts, setAmounts] = useState<{ [c: string]: number }>({});
   const [eos, setEos] = useState<string>("PR");
+  //  The liquid model, the T-x-y's four (EX-02).  The default is the
+  //  phase-split lens's rule: NRTL where a curated pair covers every pair,
+  //  else UNIFAC where every component has groups, else ideal -- named in the
+  //  panel, never silent.
+  const [activity, setActivity] = useState(() => defaultActivity(components, catalogue, localUnifac));
   const [pFrom, setPFrom] = useState(1.0e5);      // Pa
   const [pTo, setPTo] = useState(80.0e5);         // Pa
   const [n, setN] = useState(80);
@@ -87,13 +98,17 @@ export function EnvelopeLens({ components, componentFiles, narrow }: {
   const plan = useMemo(() => envelopePlan({
     components,
     amounts: Object.fromEntries(components.map((c) => [c, amountOf(c)])),
-    eos, Pfrom: pFrom, Pto: pTo, n, componentFiles,
+    eos, activity, Pfrom: pFrom, Pto: pTo, n, componentFiles,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [components, amounts, eos, pFrom, pTo, n, componentFiles]);
+  }), [components, amounts, eos, activity, pFrom, pTo, n, componentFiles]);
+  const modelWarning = useMemo(() => activityWarning(activity, components, hasPair,
+    (c) => (metaByName(c, catalogue)?.hasUnifac ?? false) || hasUnifacGroups(c, localUnifac)),
+  [activity, components, catalogue, localUnifac]);
 
   // ---- the run --------------------------------------------------------------
   const [csv, setCsv] = useState<string | null>(null);
   const [report, setReport] = useState<EnvelopeReport | null>(null);
+  const [probe, setProbe] = useState<{ P: number; stable: boolean | null }[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [adapterNote, setAdapterNote] = useState<string | null>(null);
@@ -105,7 +120,7 @@ export function EnvelopeLens({ components, componentFiles, narrow }: {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     const seq = ++seqRef.current;
-    if (!plan.files) { setCsv(null); setReport(null); setError(null); setBusy(false); return; }
+    if (!plan.files) { setCsv(null); setReport(null); setProbe([]); setError(null); setBusy(false); return; }
     setBusy(true);
     try {
       const resolved = await resolveAdapter("wasm");
@@ -119,6 +134,7 @@ export function EnvelopeLens({ components, componentFiles, narrow }: {
       const out = r.csvFiles?.[ENVELOPE_OUTPUT] ?? null;
       const op: OperationResult | undefined = r.operationResults?.find((o) => o.type === "phaseEnvelope");
       setCsv(out);
+      setProbe(readProbeCsv(r.csvFiles?.[ENVELOPE_PROBE_OUTPUT] ?? ""));
       setReport(op ? envelopeReport(op, r.advisories as (Advisory & { status?: string })[] | undefined, r.log) : null);
       //  The engine's own sentence when it stopped the whole run -- e.g.
       //  "neither branch converged at any pressure in the requested range",
@@ -143,56 +159,22 @@ export function EnvelopeLens({ components, componentFiles, narrow }: {
   // ---- the figure -------------------------------------------------------------
   const tUnit = temperatureLabel(tU);
   const pUnit = pressureLabel(pU);
+  const splitAt = useMemo(() => splitPressures(probe), [probe]);
+  const statement = plan.liquidCheck
+    ? liquidStatement(plan.liquidCheck, splitAt.length, probe.filter((r) => r.stable !== null).length)
+    : null;
+  //  The figure is BUILT in case/phaseEnvelopeLens.ts (envelopeTraces), where
+  //  a test holds it: the branches never joined, a star only where the engine
+  //  reported one (EX-03).
   const figure = useMemo(() => {
-    if (!csv) return null;
-    const { bubble, dew } = readEnvelopeCsv(csv);
-    const tx = (K: number) => kToDisplay(K, tU);
-    const px = (Pa: number) => paToDisplay(Pa, pU);
-    const traces: Record<string, unknown>[] = [];
-    const line = (pts: { P: number; T: number }[], name: string, colour: string) => ({
-      type: "scatter", mode: "lines+markers", name,
-      x: pts.map((p) => tx(p.T)), y: pts.map((p) => px(p.P)),
-      line: { color: colour, width: 2.4 }, marker: { size: 4, color: colour },
-      hovertemplate: `T = %{x:.2f} ${tUnit}<br>P = %{y:.4g} ${pUnit}<extra>${name}</extra>`,
+    if (!csv || !report) return null;
+    return envelopeTraces({
+      csv, report, splitAt,
+      tx: (K: number) => kToDisplay(K, tU), px: (Pa: number) => paToDisplay(Pa, pU),
+      colours: { bubble: PLOT_COLORS.accent, dew: PLOT_COLORS.warm, text: PLOT_COLORS.text, phantom: PLOT_COLORS.axis },
+      tUnit, pUnit,
     });
-    if (bubble.length) traces.push(line(bubble, "bubble curve (V/F → 0)", PLOT_COLORS.accent));
-    if (dew.length) traces.push(line(dew, "dew curve (V/F → 1)", PLOT_COLORS.warm));
-    //  WHERE A BRANCH STOPPED: its last kept point, hollow, named for what it
-    //  is.  Never connected to the other branch.
-    for (const b of report?.branches ?? []) {
-      if (b.end !== "stopped") continue;
-      const pts = b.branch === "bubble" ? bubble : dew;
-      const last = pts[pts.length - 1];
-      if (!last) continue;
-      traces.push({
-        type: "scatter", mode: "markers+text", name: `${b.branch} branch stopped`,
-        x: [tx(last.T)], y: [px(last.P)], text: [`${b.branch} stopped`], textposition: "middle left",
-        marker: { symbol: "circle-open", size: 13, line: { width: 2 },
-                  color: b.branch === "bubble" ? PLOT_COLORS.accent : PLOT_COLORS.warm },
-        hovertemplate: `${b.branch} branch STOPPED at ${b.stoppedBar?.toFixed(3)} bar<br>last kept point: `
-          + `T = %{x:.2f} ${tUnit}, P = %{y:.4g} ${pUnit}<br>a stopping point of the method, not an extremum<extra></extra>`,
-      });
-    }
-    //  A CRICONDENTHERM ONLY WHERE THE ENGINE REPORTED ONE: the kept point at
-    //  that temperature on that branch (the engine reports a bracketed point
-    //  of the trace, not a refined extremum).  No cricondenbar is marked: a
-    //  pressure-marched trace cannot reach it, and the engine never reports one.
-    for (const b of report?.branches ?? []) {
-      if (b.cricondenthermK === undefined) continue;
-      const pts = b.branch === "bubble" ? bubble : dew;
-      const at = pts.reduce<{ P: number; T: number } | null>((best, p) =>
-        (!best || Math.abs(p.T - b.cricondenthermK!) < Math.abs(best.T - b.cricondenthermK!) ? p : best), null);
-      if (!at) continue;
-      traces.push({
-        type: "scatter", mode: "markers", name: "cricondentherm (bracketed, as reported)",
-        x: [tx(b.cricondenthermK)], y: [px(at.P)],
-        marker: { symbol: "star", size: 14, color: PLOT_COLORS.text },
-        hovertemplate: `cricondentherm on the ${b.branch} branch, as the engine reported it:<br>`
-          + `T = %{x:.2f} ${tUnit} near P = %{y:.4g} ${pUnit} (bracketed, not refined)<extra></extra>`,
-      });
-    }
-    return traces;
-  }, [csv, report, tU, pU, tUnit, pUnit]);
+  }, [csv, report, splitAt, tU, pU, tUnit, pUnit]);
 
   // ---- the panel ------------------------------------------------------------
   const sumMoles = components.reduce((s, c) => s + amountOf(c), 0);
@@ -223,10 +205,13 @@ export function EnvelopeLens({ components, componentFiles, narrow }: {
         <Stack gap={4} mt={4}>
           <Select size="xs" label="vapour equation of state" data={[...ENVELOPE_EOS]} value={eos}
             onChange={(v) => setEos(v ?? "PR")} allowDeselect={false} />
+          <Select size="xs" label="γ model (liquid)" data={[...ENVELOPE_ACTIVITY]} value={activity}
+            onChange={(v) => setActivity(v ?? "ideal")} allowDeselect={false} />
+          {modelWarning && <Text size="xs" c="orange">{modelWarning}</Text>}
           <Text size="xs" c="dimmed">
-            Liquid: ideal solution on the pure-liquid reference (with its saturation fugacity and
+            Liquid: the γ model above on the pure-liquid reference (with its saturation fugacity and
             Poynting factor); vapour: the cubic above, binary kij = 0 unless curated -- the engine says
-            which.
+            which.  NRTL and Wilson resolve curated pairs by name, as on the T-x-y.
           </Text>
           {envelopeModelWhy(eos) && <Text size="xs" c="orange">{envelopeModelWhy(eos)}</Text>}
         </Stack>
@@ -272,6 +257,13 @@ export function EnvelopeLens({ components, componentFiles, narrow }: {
                 xaxis: { ...darkLayout.xaxis, title: { text: `temperature   T   [${tUnit}]` } },
                 yaxis: { ...darkLayout.yaxis, title: { text: `pressure   P   [${pUnit}]` } },
                 margin: { ...darkLayout.margin, b: 96, t: 52 },
+                //  THE ONE-LIQUID STATEMENT IS ON THE FIGURE (EX-02), not only
+                //  in the panel: what the figure assumes about a second liquid.
+                annotations: statement ? [{ xref: "paper", yref: "paper", x: 0.01, y: 0.99,
+                  xanchor: "left", yanchor: "top", align: "left", showarrow: false,
+                  text: statement.replace(/(.{1,90})(\s|$)/g, "$1<br>").replace(/<br>$/, ""),
+                  font: { size: 10, color: splitAt.length > 0 ? "#e8590c" : PLOT_COLORS.axis },
+                  bgcolor: "rgba(128,128,128,0.08)" }] : [],
               } as never}
               config={plotConfig} style={{ width: "100%", height: "100%" }} useResizeHandler />
             {busy && (

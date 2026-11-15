@@ -24,7 +24,14 @@
     the golden rows hold P_bubble to 1e-6 relative.
 
     THE PACKAGE is hxy01_ethanol_water_1atm's: NRTL with the curated pair, an
-    ideal-gas vapour.  One liquid is assumed (no liquid-liquid probe at fixed
+    ideal-gas vapour.  Water's vapour pressure is its record's ANTOINE law
+    (31.471 kPa at 70 C), not the IAPWS-95 reference equation, which gives
+    31.20 kPa (+0.9 %): the pure-water end is the record's number, not the
+    reference value.  constant/parameters/Helmholtz/IAPWS95.dat is in the
+    seal only because water's record names it (for the liquid density); the
+    gamma-phi package does not price Psat with it.  The azeotrope, 72.69 kPa
+    near x = 0.9, agrees with the measured 72.54-72.67 kPa at x 0.895-0.902
+    compiled by Voutsas et al. (2011) at 343.15 K.  One liquid is assumed (no liquid-liquid probe at fixed
     T); ethanol/water is miscible, so nothing is lost here.
 
     NOT VALIDATED here against a measured P-x-y; the pair's own record

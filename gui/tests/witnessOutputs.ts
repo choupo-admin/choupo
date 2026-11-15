@@ -590,6 +590,24 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["phaseEnvelopeLens.test.ts"],
     stdout: true,
   },
+  //  The two-liquid flag (EX-02): the envelope beside the T-x-y's own
+  //  liquid-stability probe on one pressure grid.
+  {
+    caseDir: "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    file: "envelope.csv",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    file: "liquidProbe.csv",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    file: "log.choupoProps",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+    stdout: true,
+  },
   //  The P-x-y lens (2026-11-15): the engine's P_bubble / y_eqT scan, read by
   //  the lens's own CSV reader.
   {

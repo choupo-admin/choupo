@@ -50,6 +50,13 @@ Description
     single-specification march dies at a turning point, and at the critical
     point the two branches merge and the Jacobian degenerates.
 
+    A BRANCH STARTS AT ITS FIRST CONVERGED PRESSURE (EX-01, 2026-11-15).  The
+    march keeps trying a branch until one pressure converges -- a light feed's
+    bubble line lies below the solvers' 200 K bracket at low pressure -- and
+    reports every pressure tried below that point; only after it does a
+    failure END the branch.  A branch "never started" only when no pressure
+    in the range converged.
+
     SO THIS OP DOES NOT PRETEND TO CLOSE THE NOSE.  It traces each branch as
     far as its specification remains single-valued, DETECTS where the march
     stops, and says so naming the PHYSICS rather than the solver: a branch
@@ -111,7 +118,8 @@ public:
     {
         std::vector<std::string> h;
         for (const char* k : { "bubble_points", "dew_points",
-                               "bubble_stopped_bar", "dew_stopped_bar" })
+                               "bubble_stopped_bar", "dew_stopped_bar",
+                               "bubble_first_bar", "dew_first_bar" })
             if (diag_.count(k)) h.push_back(k);
         return h;
     }

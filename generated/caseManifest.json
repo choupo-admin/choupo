@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1863,
+  "cases": 1864,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 25
@@ -24064,6 +24064,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/envelope04_water_benzene_two_liquids": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseEnvelope",
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/eval_nrtl_catalogue": {
    "application": "choupoProps",
    "ops": [
@@ -31468,6 +31484,7 @@
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
     "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/exergy01_air_dead_state",
@@ -33594,6 +33611,7 @@
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/compare/lle01_acetic_mibk_perry",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
     "tutorials/props/transport/mixing01_water_acetone",
@@ -36362,7 +36380,8 @@
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
-    "tutorials/props/molecular/envelope03_c3c4c5_both_stop"
+    "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids"
    ],
    "phaseSplitScan": [
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"
@@ -36396,6 +36415,7 @@
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/molecular/entropy01_air_ledger",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
@@ -37287,6 +37307,7 @@
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/molecular/entropy01_air_ledger",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/scan/pxy01_ethanol_water_70C",
     "tutorials/props/steam/steam02_water_transport",

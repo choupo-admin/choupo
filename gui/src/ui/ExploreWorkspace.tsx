@@ -96,7 +96,7 @@ import {
   panelBoxProps, usePanel, usePanelShortcut, type PanelHandle,
 } from "./panelContract.js";
 import { useMeasuredBoxWidth, useNarrowViewport } from "./methods/methodsChrome.js";
-import { binaryPxySpec, binaryVleSpec, orderBinaryByVolatility, readPxyCsv } from "../case/methodFeeds.js";
+import { binaryPxySpec, binaryVleSpec, orderBinaryByVolatility, readPxyCsv, supercriticalNotes } from "../case/methodFeeds.js";
 import { buildLocalUnifac, unifacGroupsBlock, hasUnifacGroups } from "../case/unifacGroups.js";
 import { PLOT_KINDS, type PlotKind, viewsFor } from "../case/exploreViews.js";
 import { LENS_SHORT, PLOT_TYPES, defaultLensFor, type PlotType } from "../case/exploreLenses.js";
@@ -415,6 +415,12 @@ export function ExploreWorkspace() {
   // engine's honesty lines, e.g. scalingScan's Davies trust-range warning,
   // must not be swallowed).
   const [opAdvisories, setOpAdvisories] = useState<string[]>([]);
+  //  EX-06 (2026-11-15): the engine's own "ABOVE its critical temperature"
+  //  sentences from a binary-VLE run (T-x-y, y-x, P-x-y), shown ON THE FIGURE
+  //  as well as in the footer: a component above its Tc has no vapour
+  //  pressure, and the curve drawn on a continued law is not a saturation
+  //  curve.  Not refused -- said where the curve is.
+  const [supercritNotes, setSupercritNotes] = useState<string[]>([]);
   const [snippetOpen, setSnippetOpen] = useState(false);
   // The honesty footer (alerts + validity readouts) collapses to a `⚠ N` pill
   // so it never pushes the plot's top origin down — but it stays VISIBLE
@@ -923,7 +929,7 @@ export function ExploreWorkspace() {
     const ctrl = new AbortController();
     abortRef.current = ctrl;
     const seq = ++runSeq.current;
-    setBusy(true); setErr(null);
+    setBusy(true); setErr(null); setSupercritNotes([]);
     try {
       const resolved = await resolveAdapter("wasm");
       if (seq !== runSeq.current) return;
@@ -1042,6 +1048,7 @@ export function ExploreWorkspace() {
       } else {
         const result = await resolved.adapter.run(synthesizeExploreCase(spec), () => {}, ctrl.signal, "choupoProps");
         if (seq !== runSeq.current) return;   // superseded by a newer change
+        setSupercritNotes(supercriticalNotes(isVle && plotType !== "gamma", result.advisories));
         out = result.csvFiles?.[EXPLORE_OUTPUT];
         notDone = result.status !== "done";
         failureDetail = result.log
@@ -1085,7 +1092,7 @@ export function ExploreWorkspace() {
   // stale scan CSV froze the tab).  Drop it so the new run starts from blank.
   // steamMode joins the deps: saturation and isobar own DIFFERENT CSV schemas
   // (h_f/h_g/… vs h/s/v/cp), so a stale CSV must not survive the mode switch.
-  useEffect(() => { setCsv(null); setErr(null); setOpAdvisories([]); }, [plotType, steamMode]);
+  useEffect(() => { setCsv(null); setErr(null); setOpAdvisories([]); setSupercritNotes([]); }, [plotType, steamMode]);
 
   //  THE ADDRESS NAMES THE VIEW, THE SET AND THE LENS (2026-10-20 the lens,
   //  2026-10-21 the view and the set, C116).  Written in place, never pushed
@@ -2040,7 +2047,7 @@ export function ExploreWorkspace() {
             //  The P-T envelope of one feed (2026-11-15): its own component,
             //  one choupoProps run of one phaseEnvelope op, the figure and
             //  the engine's report of where each branch stopped and why.
-            <EnvelopeLens components={selected} catalogue={catalogue}
+            <EnvelopeLens components={selected} catalogue={catalogue} localUnifac={localUnifac}
               componentFiles={hasLocal ? localComponentFiles : undefined} narrow={narrow} />
           ) : plotType === "phaseSplit" && !activeReason ? (
             //  The phase split of one feed along T or P (DEV.md 4c C118):
@@ -2088,6 +2095,13 @@ export function ExploreWorkspace() {
                     borderRadius: 4, padding: "1px 4px", lineHeight: 1.3 }}>
                   {subtitle}
                 </Text>
+                {supercritNotes.length > 0 && (plotType === "txy" || plotType === "yx" || plotType === "pxy") && (
+                  <Text size="xs" c="orange" fw={600}
+                    style={{ background: "light-dark(rgba(255,255,255,0.85), rgba(0,0,0,0.65))",
+                      borderRadius: 4, padding: "2px 6px", lineHeight: 1.3 }}>
+                    Above a critical temperature — this part of the curve is not a saturation curve:{" "}
+                    {supercritNotes.join("  ")}
+                  </Text>)}
               </Box>
               {plotType === "phase" ? (
                 <PurePhaseDiagram csv={csv} comp={selected[0] ?? ""}

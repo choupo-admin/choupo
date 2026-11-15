@@ -1,0 +1,46 @@
+/*---------------------------------------------------------------------------*\
+  Two operations on ONE pressure grid (and a third that pins the probe's
+  first point as a golden row) (1-80 bar, 80 points), exactly what the
+  Explorer's envelope lens builds for this binary:
+
+  envelope     phaseEnvelope of the equimolar feed (single-liquid bubble and
+               dew curves).
+  liquidProbe  the T-x-y's own probe, `liquid_stable`, at every pressure: the
+               feed's bubble temperature, then a liquid-liquid flash there
+               (1 = one liquid, 0 = two).  The state T is unused by the probe.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        envelope;
+        type        phaseEnvelope;
+        composition { water 1;  benzene 1; }
+        pressure    { from 1 bar;  to 80 bar;  n 80; }
+        output      { file envelope.csv; }
+    }
+
+    {
+        name        liquidProbe;
+        type        propertyScan1D;
+        vary        { variable P;  from 1 bar;  to 80 bar;  n 80; }
+        state
+        {
+            T            300 K;
+            composition  { water 0.5;  benzene 0.5; }
+        }
+        properties  ( liquid_stable );
+        output      { file liquidProbe.csv; }
+    }
+
+    {
+        name        probe_1bar;         // the probe's first point, pinned (a
+        type        propertyPoint;      // scan's CSV carries no golden): 0 =
+        state                           // two liquids at the bubble point
+        {
+            T            300 K;
+            P            1 bar;
+            composition  { water 0.5;  benzene 0.5; }
+        }
+        properties  ( liquid_stable );
+    }
+);

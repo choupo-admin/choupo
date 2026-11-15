@@ -36,15 +36,17 @@ diag    pxy_point              Cp_ig            50.1598720291      1e-4
 diag    pxy_point              H_R              0                  1e-4
 diag    pxy_point              H_ig             -236403.391447     1e-4
 diag    pxy_point              H_real           -236403.391447     1e-4
-diag    pxy_point              P                101325             1e-4
+diag    pxy_point              P                50662.5            1e-4
 # THE ROUND TRIP (system/propsDict header): the bubble pressure at T_bubble(x, 1 atm)
-# is 1 atm, held to 1e-6 relative; the two incipient vapours agree to the same band.
+# is 1 atm, held to 1e-6 relative, from a state P of 0.5 atm (EX-08: the state P
+# only starts the bracket, so returning it would fail this row); the two incipient
+# vapours agree to the same band.
 diag    pxy_point              P_bubble         101325             1e-6
 diag    pxy_point              S_R              0                  1e-4
-diag    pxy_point              S_ig             239.646683073      1e-4
-diag    pxy_point              S_real           239.646683073      1e-4
+diag    pxy_point              S_ig             245.409829395      1e-4
+diag    pxy_point              S_real           245.409829395      1e-4
 diag    pxy_point              T                353.500724827      1e-4
 diag    pxy_point              Z                1                  1e-4
 diag    pxy_point              gamma            1.19869473701      1e-4
-diag    pxy_point              v_molar          0.0290073383865    1e-4
+diag    pxy_point              v_molar          0.058014676773     1e-4
 diag    pxy_point              y_eqT_ethanol    0.617673423159     1e-6
