@@ -20,8 +20,11 @@
                    temperature with the packing's liquid, not a film state.
                    The six values D0(solute in solvent) differ by direction --
                    the solvent's viscosity and association factor, the solute's
-                   volume.  An EFFECTIVE value of this ternary is refused (no
-                   rule that reduces the pair values to it has been read).
+                   volume.  The EFFECTIVE value of this ternary is not asked
+                   here: it takes rule VignesKooijmanTaylor and a reduction
+                   (C329 slice B2a; the case liquidDiffusivity02 runs them on
+                   the paper that proposed them), and the six values here are
+                   the pairs that rule combines.
     poling288      the variant `poling288`: methanol in water replaced by the
                    value Poling 5th ed. Table 11-5 prints at 288 K (p. 11.31);
                    water in methanol stays Wilke-Chang, named with its reason.

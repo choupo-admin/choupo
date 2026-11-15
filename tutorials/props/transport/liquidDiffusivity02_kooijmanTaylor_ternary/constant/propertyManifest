@@ -1,0 +1,56 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-15";
+    importerVersion    "3";
+    records
+    {
+        "components/acetone.dat"
+        {
+            type          imported;
+            sha256        "1b8fde539f6ee5ccf4ff3e6c2bcd76e9ee4e28f468d921075096fcef91d5b13c";
+            computationalSha256 "a419e95ede7566b6ec572f82ec21b3094b12659ed126456b030b1cde16f361c9";
+            origin        "data/standards/components/acetone.dat";
+            originSha256  "8af24e21736bffc0842f879c213b7fe425e1f70509f1839ae83fd7284466a825";
+            release       Choupo-2608;
+        }
+        "components/benzene.dat"
+        {
+            type          imported;
+            sha256        "098ed16fd2fd346f65ce0f6dd753e1ce221ec53733afa1f8ab08a69f2de73cf1";
+            computationalSha256 "9c0098b95b4668efe2dc030173fb151c1a44cc12d783c572342d0220e0a3bc2c";
+            origin        "data/standards/components/benzene.dat";
+            originSha256  "de0221a779ba556d7e1c8b7a724423251f38d727efcc6f9fa5333a4e79d513d6";
+            release       Choupo-2608;
+        }
+        "components/carbonTetrachloride.dat"
+        {
+            type          imported;
+            sha256        "849304c597f9629e78529f1070394e57ef3edc876a0dfb5b4438aba3520a18b1";
+            computationalSha256 "d54c47c0843de73ce61bea572a1ee65fb4db433626d6080f424d94235c58fda9";
+            origin        "data/standards/components/carbonTetrachloride.dat";
+            originSha256  "59e36c57323a7bcb01eaa635da77585eaf7ff4fb0780f5128abcae97324a332c";
+            release       Choupo-2608;
+        }
+    }
+}

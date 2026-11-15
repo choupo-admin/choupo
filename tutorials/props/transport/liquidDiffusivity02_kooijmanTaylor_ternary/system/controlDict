@@ -1,0 +1,12 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "The multicomponent liquid diffusivity of Kooijman & Taylor (1991) on their own Table I, acetone / benzene / carbon tetrachloride at 25 C: the three Maxwell-Stefan pair values (Eq. 23), the thermodynamic-factor matrix, the Fick matrix against the measured one, and the effective diffusivity of each component by Wilke's reduction (Taylor & Krishna 1993, Eq. 6.1.14)";
+verbosity     2;

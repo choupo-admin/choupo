@@ -68,6 +68,7 @@ Description
 #pragma once
 
 #include "core/Dictionary.H"
+#include "thermo/transport/WilkeReduction.H"   // the Wilke reduction (C329 B2a), used by ThermoPackage
 #include "core/Types.H"
 
 #include <map>
@@ -136,7 +137,14 @@ std::string waterSoluteRefusal(const std::string& model, const std::string& solv
 //  (2) the liquid diffusivity
 // ---------------------------------------------------------------------------
 enum class Returns { infiniteDilution, effective };
-enum class Rule    { none, CaldwellBabb, Vignes, LefflerCullinan, AndersonBabb };
+enum class Rule    { none, CaldwellBabb, Vignes, LefflerCullinan, AndersonBabb, VignesKooijmanTaylor };
+//  How the pair values of a mixture of three or more components are reduced to
+//  ONE effective diffusivity per component (C329 slice B2a).
+enum class Reduction { none, Wilke };
+
+const char* reductionName(Reduction r);
+std::string reductionEquation(Reduction r);
+std::string reductionCitation(Reduction r);
 
 const char* returnsName(Returns r);
 const char* ruleName(Rule r);
@@ -167,6 +175,7 @@ struct DiffusivityDeclaration
     bool        declared = false;            // a liquid.diffusivity block exists
     Returns     returns  = Returns::infiniteDilution;
     Rule        rule     = Rule::none;
+    Reduction   reduction = Reduction::none;   // `composition { reduction Wilke; }`
     bool        gammaTakenOne = false;       // `thermodynamicFactor { take 1; }`
     std::string defaultModel;                // the infinite-dilution correlation
     std::vector<DiffusivityEntry> entries;
@@ -174,8 +183,9 @@ struct DiffusivityDeclaration
     const DiffusivityEntry* entryFor(std::size_t solute, std::size_t solvent) const;
 };
 
-//  Reads the flat `liquidDiffusivity` block.  Refused by name: a rule not in
-//  this slice (VignesKooijmanTaylor, until its source is read), `returns
+//  Reads the flat `liquidDiffusivity` block.  Refused by name: a `reduction`
+//  with a rule that has no multicomponent form, a ternary or larger package
+//  with `rule VignesKooijmanTaylor` and no `reduction`, `returns
 //  effective` without a rule or without `thermodynamicFactor`, a kind other
 //  than infiniteDilution, a factor other than `take 1`, a duplicate or self
 //  pair, an experiments file that does not describe its entry, a file of

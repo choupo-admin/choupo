@@ -1441,8 +1441,10 @@ transport { liquid {
 ```
 `AndersonBabb` (D mu linear in x) on Wilke-Chang IS the infinite-dilution values
 taken in the mixture's viscosity and combined linearly: the rule every shipped
-column uses.  A ternary liquid is refused for `returns effective` (no reduction
-rule read).
+column uses.  A ternary liquid is refused for `returns effective` under every rule
+but `VignesKooijmanTaylor` (with `reduction Wilke`: one effective diffusivity per
+component, props keys `D_L_effective_<component>`; the column does not read it yet,
+the three-component rate-based segment is slice B2b of C329).
 
 **Sieve-tray hydraulics** (optional `operation { hydraulics { ... } }`, works with BOTH
 methods).  The MESH equations contain no diameter — a column of any width converges to
@@ -3925,7 +3927,9 @@ carried to T by Watson — refuses without Tc/Tb/HvapTb or at T >= Tc),
 `H_real`, `S_real`, `viscosity` / `mu`, `thermal_conductivity` / `k`,
 `diffusivity` / `D`, `mu_L`, `k_L`, `D_L`, `D_L_inf_<solute>_in_<solvent>` (one
 infinite-dilution value, the direction named), `D_L_effective` (the binary liquid's
-value by the declared rule).  `Psat_<comp>`, `gamma_<comp>`,
+value by the declared rule), `D_L_effective_<c>`, `D_L_MS_<i>_<j>`, `Gamma_<i>_<j>`,
+`D_L_Fick_<i>_<j>`, `D_G_effective_<c>` (three or more components: Theory Guide
+"The multicomponent liquid diffusivity").  `Psat_<comp>`, `gamma_<comp>`,
 `y_eq_<comp>`, `Cp_liquid_<comp>`, `Hvap_<comp>` are PER-COMPONENT (one value per named
 compound); the rest are mixture scalars at `state.composition`.
 
