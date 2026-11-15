@@ -18,8 +18,8 @@ data/standards/species/<name>.dat, BYTE-IDENTICAL to what bin/curate/species_c32
      and must differ from NBS by no more than 6 (kJ/mol or J/mol/K) -- an evaluated revision, not a misreading;
   4. the Gibbs identity on the NBS row: dGf = dHf - T (S - sum S(elements) + (z/2) S(H2)) within 0.6 kJ/mol -- three
      numbers read from one scanned row must be consistent with each other (a misread digit breaks it);
-  5. no record outside the table carries the batch header; no held species has a record; no transport block (no
-     cited radius / D0 source was read for these ions).
+  5. no record outside the table carries the batch header; no held species has a record; no volumetric block, and a transport
+     block only where bin/curate/ion_d0.py's table names the species (its D0 read at the page).
 Reads data/ only; writes nothing.
 """
 import re
@@ -134,7 +134,10 @@ def main() -> int:
         mm = re.search(r"MW\s*\{\s*value\s+([0-9.]+);\s*unit\s+g/mol;", t)
         if not mm or abs(float(mm.group(1)) - sum(w[e] * n for e, n in at.items() if e in w)) > 0.002:
             errs.append(f"{name}: MW differs from the engine's atomic weights")
-        if "transport" in t or "volumetric" in t:
+        #  C403: a `transport` block is allowed exactly when the ion's D0 table (ion_d0.py) names the species;
+        #  render() above has already proved the block is that table's bytes.  `volumetric` stays refused.
+        import ion_d0
+        if "volumetric" in t or ("transport" in t and name not in ion_d0.load()):
             errs.append(f"{name}: carries a transport/volumetric block with no cited source read")
         hf = re.search(r"hfAq\s*\{\s*value\s+(-?\d+);\s*unit\s+J/mol;", t)
         if not hf or int(hf.group(1)) != sc.fmt_j(q["hfAq"]["chosen"]):
@@ -153,7 +156,7 @@ def main() -> int:
         return 1
     print(f"check_species_records: OK -- {n_inc} aqueous species reproduce from species.tsv "
           f"(NBS 1982 read against the CRC reprint and the Gibbs identity, {n_codata} CODATA-chosen quantities, "
-          f"{n_held} held; NOT CHECKED: any radius or D0 -- none is carried)")
+          f"{n_held} held; NOT CHECKED: any radius; a D0 is held to its table by render equality, not to its page)")
     return 0
 
 

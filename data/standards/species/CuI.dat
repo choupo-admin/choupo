@@ -16,3 +16,23 @@ aqueousThermo
 hfAq { value 71670; unit J/mol;}
 sAq  { value 40.6;  unit J/mol/K;}
 }
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C403).  No `radius` is curated for this ion: the tier's radius is the HYDRATED radius of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I, and it was not read for this record.  A Stokes radius
+    //  computed from D0 would be a different convention under the same key, so none is written: DSPM-DE still
+    //  refuses this ion by name, while the multi-ionic polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 1.2e-09; unit m2/s; }
+    provenance
+    {
+        D0
+        {
+            source        "D. A. Dudek and P. S. Fedkiw, Infinite-Dilution Diffusion Coefficients of Complex Ions from Solution Conductivity Data, Anal. Chem. 71 (1999) 1469-1473, doi:10.1021/ac981054i, Table 1 (p. 1470: handbook values of diffusion coefficients at infinite dilution and 25 C), row D(Cu+): 1.20 x 10^-5 cm2/s (the paper cites it to its ref. 8, Y. Marcus, Ion Properties, Marcel Dekker 1997, ch. 11, and uses it in its own analysis)";
+            origin        literature;
+            method        "read at the page, 2026-11-15 (DEV.md 4c C403): Table 1 of the paper, row D_Cu+, 1.20e-5 cm2/s converted to 1.20e-9 m2/s; the value is the paper's quotation of a handbook value, not its own measurement";
+            reviewStatus  interim;
+            notes         "Neither Li & Gregory 1974 nor the second compiled table lists Cu+.  A quoted secondary value: the primary measurement behind it is not read here.";
+        }
+    }
+}
