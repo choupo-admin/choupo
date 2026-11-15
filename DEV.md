@@ -3518,6 +3518,20 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C404 (Vitor, 2026-11-15, on the canvas of ratebased04 in the browser:
+> "Isto nao tem correntes?!").**  A COMMISSION.  A column at TOTAL REFLUX
+> has no feed and no product, so its flowsheet holds one unit, a condenser
+> duty and a reboiler duty, and the canvas draws a box with nothing flowing:
+> physically right, pedagogically empty, and it reads as a broken case.
+> RULING: a column whose operation declares `totalReflux` draws its internal
+> loop on the canvas (the vapour rising to the condenser, the reflux
+> returning, the boilup at the bottom), labelled "total reflux: no feed, no
+> product", with the declared composition at the specified end before the
+> run and the converged L, V and end compositions after it; the same holds
+> for every total-reflux case (packing, rateBased, trayEfficiency,
+> totalReflux).  The loop is drawn from what the engine publishes, never
+> computed in the GUI.
+
 > **C403 (Vitor, 2026-11-15, on seeing the boron of swro01 borrow NaCl's
 > diffusivity: "Em solucoes multionicas era importante ter listas enormes de
 > D_i de cada iao!").**  A COMMISSION: every ion the catalogue carries gets
