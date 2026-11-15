@@ -37,6 +37,7 @@ Description
 
       Single-value:         T   P
       Pure / mixture VLE:   Psat_<comp>   T_bubble   T_dew
+      Fixed-T VLE (P-x-y):  P_bubble [Pa]   y_eqT_<comp>
       Pure liquid:          Cp_liquid_<comp>   rho_liquid_<comp> [kg/m3]
       Liquid (kernel):      rho_liquid_kernel [kg/m3]  (the C378 methods)
       Activity model:       gamma_<comp>

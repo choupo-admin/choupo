@@ -342,6 +342,32 @@ scalar evaluateProperty(const std::string& propKey,
         return r.T;
     }
 
+    // P_bubble and y_eqT_<comp>: the FIXED-T mirror of the pair above -- the
+    // bubble PRESSURE of the liquid `xLiquid` at the scan T, and the incipient
+    // vapour's mole fraction of <comp> at that pressure.  Scanned along
+    // x[<comp>] they are the two curves of a P-x-y diagram.  Both come from
+    // the engine's one bubble-pressure home, `BubblePoint::pressure` (the
+    // incipient vapour iterated to its own composition); no residual is
+    // written here.  The state P is only the bracket's starting pressure.
+    // ONE liquid is assumed: the fixed-P heteroazeotrope above has no
+    // fixed-T counterpart here, so a P-x-y through an immiscibility gap
+    // draws the homogeneous (phantom) curve, and the Explorer says so.
+    if (propKey == "P_bubble" || matchPerComp("y_eqT", i))
+    {
+        const auto r = BubblePoint::pressure(thermo, xLiquid, T, P_Pa);
+        if (!r.converged)
+            throw std::runtime_error(
+                propKey + ": no bubble pressure found at T = " + std::to_string(T)
+                + " K (no pressure up to 10 kbar makes the liquid stop boiling,"
+                " or the equation of state has one root for both phases)");
+        if (r.belowFloor)
+            throw std::runtime_error(
+                propKey + ": the liquid does not boil even at 0.01 bar at T = "
+                + std::to_string(T) + " K -- below the bubble-pressure"
+                " solver's floor, so no bubble pressure is reported");
+        return propKey == "P_bubble" ? r.P : r.y[i];
+    }
+
     // liquid_stable: 1 if the liquid at xLiquid is a single stable phase, 0 if a
     // Michelsen TPD finds a liquid-liquid split (the homogeneous bubble curve is a
     // PHANTOM there -- the T-x-y assumes one liquid).  Tested at the bubble-T so
@@ -395,6 +421,8 @@ std::string propertyUnit(const std::string& k)
     if (perComp("rho_liquid"))                            return "kg/m3";
     if (k == "T" || k == "T_bubble")                      return "K";
     if (k == "P")                                         return "Pa";
+    if (k == "P_bubble")                                  return "Pa";
+    if (perComp("y_eqT"))                                 return "-";
     if (k == "H_ig" || k == "H_R" || k == "H_real")       return "J/mol";
     if (k == "S_ig" || k == "S_R" || k == "S_real" || k == "Cp_ig")
                                                           return "J/(mol*K)";

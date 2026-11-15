@@ -80,10 +80,17 @@ import { buildLocalUnifac, hasUnifacGroups } from "./unifacGroups.js";
 // ONE feed swept along T or P -- what EXISTS at each state, and how much.  A
 // property surface by the same criterion (what a system IS at a state), and
 // not a method construction: the student draws nothing on it.
+//
+// "pxy" and "envelope" JOINED 2026-11-15 (Vitor asked whether the Explorer
+// draws phase diagrams of mixtures): the binary boiling envelope at FIXED T
+// (P_bubble and y_eqT along x, the mirror of the T-x-y), and the P-T phase
+// envelope of a feed of 2+ compounds (the engine op `phaseEnvelope`, with
+// where each branch stopped and why, in the engine's own words).  Both are
+// property surfaces: what a mixture IS, not a construction drawn on it.
 export const PLOT_KINDS = [
   "scan", "txy", "yx", "gamma", "binaryLle", "ternary",
   "ternaryLle", "phase", "scaling", "steam", "gibbsmap", "bjerrum",
-  "solubility", "evidence", "phaseSplit",
+  "solubility", "evidence", "phaseSplit", "pxy", "envelope",
 ] as const;
 export type PlotKind = (typeof PLOT_KINDS)[number];
 
@@ -143,7 +150,12 @@ export function viewsFor(sel: string[], cat: ComponentMeta[],
   //  nothing and hiding one behind a control inside the plot cost three
   //  reports.  (The binary FLASH shared this front door until 2026-09-21; it
   //  is a method construction and lives in EduTools.)
-  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("yx"); out.add("gamma"); }
+  if (n === 2 && vleMix && allVle) { out.add("txy"); out.add("yx"); out.add("gamma"); out.add("pxy"); }
+  //  The P-T envelope of a feed: every component VLE-able and no electrolyte
+  //  (the op runs the molecular saturation solvers).  A carrier gas is
+  //  welcome here -- a natural gas with N2 or CO2 is the classic envelope --
+  //  so the humid-gas class qualifies, unlike the binary-VLE family.
+  if (n >= 2 && n <= 12 && allVle && !metas.some((m) => m?.isElectrolyte)) out.add("envelope");
   //  Evidence: a MEASURED dataset for this pair exists in some tier.  Read
   //  from the files, never assumed from the class -- a pair with VLE-able
   //  components and no study is a pair the view would have nothing to show.

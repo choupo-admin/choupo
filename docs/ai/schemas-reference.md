@@ -1125,7 +1125,7 @@ Single-point property evaluation: at a given (T, P, composition) the thermo pack
 | Field | Required | Type | Unit | Description |
 |---|:-:|---|---|---|
 | `state` | ✓ | object | — | The (T, P, composition) at which properties are evaluated. |
-| `properties` |   | array[string] | — | What to compute at the declared state. Fixed names (Z, molarVolume, v_molar, T_bubble, viscosity, surface_tension, thermal_conductivity, … |
+| `properties` |   | array[string] | — | What to compute at the declared state. Fixed names (Z, molarVolume, v_molar, T_bubble, P_bubble, viscosity, surface_tension, thermal_cond… |
 
 ## `propertyScan1D`  (propertyScan1D operation)
 
