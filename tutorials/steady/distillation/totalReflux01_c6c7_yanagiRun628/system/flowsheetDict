@@ -14,6 +14,13 @@
   correlations and applied to equilibrium stages, not a rate-based model)
   stands on.
 
+  ON THE CANVAS the unit is one box with two duty wires and no stream, because
+  none crosses its boundary; the web app draws the loop that DOES flow inside
+  it -- vapour up to the condenser, reflux back, boilup at the base -- in a
+  dashed frame labelled "total reflux: no feed, no product", with the
+  composition declared below before the run and the engine's published
+  numbers after it (C404).  The frame is a drawing of the unit, not a stream.
+
   WHAT IS SPECIFIED, AND WHY THESE NUMBERS (the degrees of freedom).  With no
   stream crossing the column boundary the component balances, summed over the
   stages, read 0 = 0: c of them are dependent, and what is left open is how
