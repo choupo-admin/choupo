@@ -251,6 +251,13 @@ int PhaseEnvelope::run(const DictPtr& dict,
 
     diag_["bubble_points"] = static_cast<scalar>(bub.pts.size());
     diag_["dew_points"]    = static_cast<scalar>(dew.pts.size());
+    //  The temperature at each end of each drawn branch, so a case that
+    //  marches two pressures pins the temperature AT those pressures against
+    //  an independent calculation (envelope05, EX-05).
+    if (!bub.pts.empty())
+    { diag_["bubble_first_K"] = bub.pts.front().T; diag_["bubble_last_K"] = bub.pts.back().T; }
+    if (!dew.pts.empty())
+    { diag_["dew_first_K"] = dew.pts.front().T; diag_["dew_last_K"] = dew.pts.back().T; }
 
     // ---- WHERE IT STOPPED, AND WHY -- the part that is the deliverable ----
     //

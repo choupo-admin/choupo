@@ -189,6 +189,14 @@ GAS = ROOT / "tutorials" / "props" / "molecular" / "envelope01_natural_gas"
 #  branches cross propane's Tc: the bubble branch reaches the top of the range
 #  and the dew branch ends at a reported root jump.
 JUMP = ROOT / "tutorials" / "props" / "molecular" / "envelope02_c3c4c5_branch_stop"
+#  EX-05 (2026-11-15): envelope01's feed on ONE Peng-Robinson cubic for both
+#  phases.  The expected temperatures are an INDEPENDENT calculation (a
+#  Peng-Robinson phi-phi dew/bubble point with the incipient phase iterated,
+#  kij = 0, the record's Tc/Pc/omega, written outside the engine), NOT the
+#  engine's own output.
+PHIPHI = ROOT / "tutorials" / "props" / "molecular" / "envelope05_natural_gas_phiphi"
+PHIPHI_DEW_K = {1: 208.56, 5: 235.82, 10: 249.47, 20: 263.61, 40: 276.03}
+PHIPHI_BUBBLE_K = {50: 205.65, 60: 214.57}
 OP = ROOT / "src" / "propertyOps" / "PhaseEnvelope.cpp"
 
 
@@ -637,6 +645,33 @@ def main() -> int:
                              f" {m76:.5f}")
 
     eos_root_arms(fails, notes)
+    # ---- (k) phi-phi dew and bubble points iterate the incipient phase ----
+    #  EX-05: a phiPhi package carries an `ideal` activity PLACEHOLDER; read
+    #  as "ideal liquid" it made ONE outer pass at x = y and returned 209.6 K
+    #  at 5 bar and 220.1 K at 10 bar (independent: 235.8, 249.5), failing at
+    #  1, 20 and 40 bar.  Held to the independent values within 0.1 K.
+    rc5, out5 = run(PHIPHI)
+    if rc5 != 0:
+        fails.append(f"envelope05 (phi-phi) did not run (exit {rc5})")
+    else:
+        c5 = curves(PHIPHI)
+        for curve, table in (("dew", PHIPHI_DEW_K), ("bubble", PHIPHI_BUBBLE_K)):
+            got = {round(P / 1e5): T for P, T in c5.get(curve, [])}
+            for bar, want in table.items():
+                if bar not in got:
+                    fails.append(f"envelope05: no {curve} point at {bar} bar"
+                                 " (the phi-phi solve failed there; EX-05)")
+                elif abs(got[bar] - want) > 0.1:
+                    fails.append(
+                        f"envelope05: {curve} point at {bar} bar is"
+                        f" {got[bar]:.3f} K, the independent Peng-Robinson"
+                        f" value is {want:.2f} K (> 0.1 K): a phi-phi"
+                        " incipient phase is not being iterated (EX-05)")
+        if not fails:
+            notes.append("phi-phi dew points at 1/5/10/20/40 bar and bubble"
+                         " points at 50/60 bar agree with an independent"
+                         " Peng-Robinson calculation to 0.1 K")
+
 
     if fails:
         print("check_phase_envelope: FAILED")

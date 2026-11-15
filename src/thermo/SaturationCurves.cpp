@@ -51,6 +51,22 @@ bool trivialSaturationRoot(const ThermoPackage& thermo, scalar T, scalar P,
     return std::abs(vV - vL) <= 1.0e-9 * std::max(std::abs(vV), std::abs(vL));
 }
 
+sVector wilsonK(const ThermoPackage& thermo, scalar T, scalar P)
+{
+    const std::size_t n = thermo.n();
+    sVector K(n, 1.0);
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        const Component& c = thermo.comp(i);
+        if (c.Tc() > 0.0 && c.Pc() > 0.0)
+            K[i] = (c.Pc() / P)
+                 * std::exp(5.373 * (1.0 + c.omega()) * (1.0 - c.Tc() / T));
+        else if (thermo.hasSaturationCurve(i))
+            K[i] = thermo.Psat(i, T) / P;
+    }
+    return K;
+}
+
 scalar bubbleT(const ThermoPackage& thermo,
                const sVector& x,
                scalar P,

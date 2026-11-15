@@ -1,0 +1,23 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( CH4 ethane propane nButane );
+
+//  The same four components on ONE cubic for both phases (phi-phi, kij = 0).
+//  The incipient liquid is an EoS root, so its fugacity depends on its own
+//  composition and the dew search iterates it (EX-05, 2026-11-15).
+
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PengRobinson; mixingRule vanDerWaalsOneFluid; }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

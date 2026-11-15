@@ -51,6 +51,17 @@ namespace {
 sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
                 const sVector& x)
 {
+    //  A phiPhi package prices the vapour on the same cubic as the liquid, so
+    //  the incipient vapour is NOT the liquid: K(T, P, x, x) asks the cubic
+    //  for a vapour root at the liquid's own composition and is wrong by
+    //  about a kelvin on a natural gas near its bubble line (EX-05's mirror,
+    //  measured 2026-11-15).  Iterate the vapour, seeded by Wilson's K.
+    if (thermo.hasEos() && thermo.vleWorld() == "phiPhi")
+    {
+        const auto r = incipientPhase::vapour(thermo, T, P, x,
+                                              wilsonK(thermo, T, P));
+        if (!r.K.empty()) return r.K;
+    }
     const sVector K0 = thermo.Kvec(T, P, x, x);
     if (!thermo.vapourAssociationPriced()) return K0;
     const auto r = incipientPhase::vapour(thermo, T, P, x, K0);

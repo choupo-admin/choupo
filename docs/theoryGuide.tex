@@ -10481,7 +10481,31 @@ starts to boil on the three-phase line instead
 (\file{envelope04\_water\_benzene\_two\_liquids}: two liquids at all $80$
 pressures on UNIFAC).  The dew curve is not probed, and for three or more
 components the probe the engine has (binary-only) does not apply, which the
-figure says.  An ideal-gas vapour
+figure says.
+
+\emph{The phi--phi frame: the incipient phase is iterated, and a trivial root
+is refused} (EX-05, 2026-11-15).  When both phases come from ONE cubic
+(\code{formulation phiPhi}), the liquid's fugacity coefficient depends on the
+liquid's own composition, so a dew point is a fixed point in the incipient
+liquid $\mathbf{x}$ at every temperature: from Wilson's seed
+$K_i = (P_{c,i}/P)\exp[5.373(1+\omega_i)(1-T_{c,i}/T)]$ the solve repeats
+$x_i \leftarrow (z_i/K_i)/\sum_j (z_j/K_j)$ with $K_i =
+\varphi_i^{L}(\mathbf{x})/\varphi_i^{V}(\mathbf{z})$ until $\mathbf{x}$
+stops moving, and the temperature is the root of
+$\sum_i z_i/K_i = 1$ over that converged liquid.  The bubble point is the
+mirror (iterate the incipient vapour).  Two traps are closed by name.  A
+phi--phi package carries an \code{ideal} activity as an unused placeholder,
+so the placeholder is never read as ``ideal liquid'': that reading made one
+pass at $\mathbf{x} = \mathbf{z}$ (a lean gas gave $209.6$~K at $5$~bar
+against $235.8$~K).  And at $\mathbf{x} = \mathbf{z}$ the cubic has a single
+root, $K_i = 1$ satisfies the dew equation trivially, and the answer is not a
+dew point: a converged point whose liquid equals its vapour (or whose two
+roots are the same root) is reported as NOT converged.  Against an independent
+Peng--Robinson calculation the dew temperatures of
+\file{envelope05\_natural\_gas\_phiphi} agree to $0.01$~K at $1$, $5$, $10$,
+$20$ and $40$~bar ($208.56$, $235.82$, $249.47$, $263.61$, $276.03$~K).
+
+An ideal-gas vapour
 cannot make the diagram at all --- its dew curve keeps rising with $P$ and
 neither the cricondentherm nor the retrograde region forms --- and the
 Explorer refuses it with that reason.
@@ -10491,7 +10515,10 @@ Explorer refuses it with that reason.
 gas: a bracketed cricondentherm on the dew branch, a bubble branch that starts
 late, at $46$~bar), \file{envelope02\_c3c4c5\_branch\_stop} (both branches cross
 propane's $T_c$ and reach $40$~bar) and \file{envelope03\_c3c4c5\_both\_stop}
-(the same feed to $80$~bar: both branches stop, and say where).  In the
+(the same feed to $80$~bar: both branches stop, and say where) and
+\file{envelope05\_natural\_gas\_phiphi} (envelope01's feed on one
+Peng--Robinson cubic for both phases: dew points iterated and held to an
+independent calculation).  In the
 Explorer: two or more VLE-able compounds, lens \emph{Mixture phase envelope
 (P-T)}.
 \end{tutoriallink}

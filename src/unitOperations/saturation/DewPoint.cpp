@@ -29,6 +29,7 @@ License
 #include "DewPoint.H"
 #include "solver/NewtonRaphson.H"
 #include "thermo/SaturationCurves.H"
+#include "unitOperations/flash/IncipientPhase.H"
 
 #include <cmath>
 #include <iomanip>
@@ -64,6 +65,58 @@ DewPoint::Result DewPoint::compute(const ThermoPackage& thermo,
         T0 = 0.0;
         for (std::size_t i = 0; i < n; ++i)
             T0 += y[i] * (thermo.comp(i).Tb() > 0 ? thermo.comp(i).Tb() : 350.0);
+    }
+
+    //  A phiPhi package carries an `ideal` activity PLACEHOLDER (it is unused
+    //  in the phi-phi K), so the name says nothing about the liquid: the
+    //  liquid is an EoS root and its fugacity depends on its composition.
+    //  Reading the placeholder as "ideal" made ONE outer pass and left the
+    //  incipient liquid at x = y, where the cubic has a single root and the
+    //  dew equation holds trivially (EX-05: 209.6 K at 5 bar for a lean gas
+    //  whose dew point is 235.8 K).  The liquid's composition is therefore
+    //  iterated AT EVERY T of the search, from Wilson's seed, which places it
+    //  on the other side of the surface.
+    if (thermo.hasEos() && thermo.vleWorld() == "phiPhi")
+    {
+        sVector xLast = y;
+        auto f = [&](scalar T)
+        {
+            const auto r = incipientPhase::liquid(thermo, T, P, y,
+                                                  wilsonK(thermo, T, P));
+            if (!r.trial.empty()) xLast = r.trial;
+            if (!std::isfinite(r.S)) return 1.0e6;
+            return r.S - 1.0;
+        };
+        auto df = [&](scalar T)
+        {
+            const scalar dT = 1.0e-3;
+            return (f(T + dT) - f(T - dT)) / (2.0 * dT);
+        };
+        solver::NROptions nro;
+        nro.tolerance          = 1.0e-8;
+        nro.maxIter            = 60;
+        nro.lower              = 100.0;
+        nro.upper              = 700.0;
+        nro.bracket            = true;
+        nro.monotoneIncreasing = false;
+        nro.maxStep            = 25.0;
+        if (nroOverride) nro = *nroOverride;
+        auto r = solver::newton1D(f, df, T0, nro);
+        out.T = r.x;
+        out.newtonIterations = r.iterations;
+        out.outerIterations  = 1;
+        f(out.T);                                 // leaves xLast at the answer
+        out.x = xLast;
+        scalar d2 = 0.0;
+        for (std::size_t i = 0; i < n; ++i)
+            d2 += (out.x[i] - y[i]) * (out.x[i] - y[i]);
+        out.compDelta = std::sqrt(d2);
+        const sVector K = thermo.Kvec(out.T, P, out.x, y);
+        //  A dew point whose liquid IS its vapour is not a dew point: refused.
+        out.converged = r.converged && out.compDelta > 1.0e-6
+                     && !trivialSaturationRoot(thermo, out.T, P, y, K);
+        if (onOuter) onOuter(0, out.T, out.compDelta);
+        return out;
     }
 
     const bool isIdeal = (thermo.activity().modelName() == "ideal");

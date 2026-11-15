@@ -4260,6 +4260,34 @@ envelope phaseEnvelope of the equimolar feed (single-liquid bubble and dew curve
 \end{tutgolden}
 
 \clearpage
+\tutentry{envelope05\_natural\_gas\_phiphi}{tutorials/props/molecular/envelope05\_natural\_gas\_phiphi}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{dew5and10}\\[-1pt]{\tiny phaseEnvelope}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{bubble50and60}\\[-1pt]{\tiny phaseEnvelope}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{P-T phase envelope of a lean natural gas on one Peng-Robinson cubic for both phases: dew and bubble points with the incipient phase iterated, held to an independent calculation}
+\begin{tutgolden}
+\goldrow{diag}{envelope}{bubble\_failed\_before}{43}
+\goldrow{diag}{envelope}{bubble\_first\_K}{200.061199098}
+\goldrow{diag}{envelope}{bubble\_first\_bar}{44}
+\goldrow{diag}{envelope}{bubble\_last\_K}{214.567714564}
+\goldrow{diag}{envelope}{bubble\_points}{17}
+\goldrow{diag}{envelope}{dew\_first\_K}{208.560808171}
+\goldrow{diag}{envelope}{dew\_last\_K}{279.601396062}
+\goldrow{diag}{envelope}{dew\_points}{60}
+\goldrow{diag}{dew5and10}{bubble\_points}{0}
+\goldrow{diag}{dew5and10}{dew\_first\_K}{235.817660513}
+\goldrow{diag}{dew5and10}{dew\_last\_K}{249.472256813}
+\goldrow{diag}{dew5and10}{dew\_points}{2}
+\goldrow{diag}{bubble50and60}{bubble\_first\_K}{205.652363942}
+\goldrow{diag}{bubble50and60}{bubble\_last\_K}{214.567714583}
+\goldmore{2}
+\end{tutgolden}
+
+\clearpage
 \tutentry{eval\_nrtl\_catalogue}{tutorials/props/molecular/eval\_nrtl\_catalogue}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

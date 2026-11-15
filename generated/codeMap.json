@@ -13726,6 +13726,7 @@
    "src/thermo/transport/LiquidTransportDeclarations.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/flash/IncipientPhase.H",
    "src/unitOperations/saturation/DewPoint.H"
   ],
   "src/unitOperations/separation/Absorber.cpp": [
@@ -24361,7 +24362,8 @@
   "src/unitOperations/flash/IncipientPhase.H": [
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/flash/IsothermalFlash.cpp",
-   "src/unitOperations/saturation/BubblePoint.cpp"
+   "src/unitOperations/saturation/BubblePoint.cpp",
+   "src/unitOperations/saturation/DewPoint.cpp"
   ],
   "src/unitOperations/flash/IsothermalFlash.H": [
    "src/dynamicDriver/DynamicDriver.cpp",

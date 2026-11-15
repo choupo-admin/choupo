@@ -176,6 +176,15 @@ bool trivialSaturationRoot(const ThermoPackage& thermo, scalar T, scalar P,
                            const sVector& comp, const sVector& K,
                            scalar tol = 1.0e-9);
 
+/// WILSON'S K-VALUES, the seed of an EoS saturation search (2026-11-15, EX-05).
+/// K_i = (Pc_i/P) exp(5.373 (1 + omega_i)(1 - Tc_i/T)), a rule of the critical
+/// constants.  A phi-phi saturation point cannot be started at the incipient
+/// phase equal to the given one (the cubic then has ONE root and K = 1 is the
+/// trivial solution); this seed is what places the incipient phase on the
+/// OTHER side of the surface.  A component without critical constants falls
+/// back to its own saturation curve over P, and to 1 when it has neither.
+sVector wilsonK(const ThermoPackage& thermo, scalar T, scalar P);
+
 /// Stored binary T-x-y locus.  Both vectors share the same temperature
 /// axis: Tbubble[i] is the bubble-T of liquid xBubble[i] AND the dew-T
 /// of vapour yDew[i].
