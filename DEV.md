@@ -3518,6 +3518,27 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C403 (Vitor, 2026-11-15, on seeing the boron of swro01 borrow NaCl's
+> diffusivity: "Em solucoes multionicas era importante ter listas enormes de
+> D_i de cada iao!").**  A COMMISSION: every ion the catalogue carries gets
+> its own limiting diffusivity D0 at 25 C in its species record, read at the
+> page, so a multi-ionic case (DSPM-DE, SDEM, the spiral-wound film,
+> electrodialysis) takes each ion's own value and never borrows another
+> salt's.  MEASURED the same day: 22 of 250 species records carry `D0`,
+> transcribed by machine from a public geochemical database and marked
+> interim; the CRC Handbook 82nd ed. table "Ionic conductivity and diffusion
+> at infinite dilution" (in the folder) lists about 100 ions with lambda and
+> D at 25 C, read back by the membrane slice for five salts.  PLAN: one
+> curation slice reads that table at its page into every matching species
+> record (value, unit, page, the ion's row; the existing 22 read back against
+> it and any disagreement listed), names the ions the table lacks, and the
+> membrane units then take per-ion D0 from the records (the salt relation of
+> the same page where a salt is lumped).  Neutral solutes are not ions: boric
+> acid, the dominant boron species in seawater near pH 8, needs a molecular
+> value (Park & Lee 1994, J. Chem. Eng. Data 39, 891-894, requested from
+> Vitor); until it is read, a case refuses or announces boron's diffusivity
+> and never borrows NaCl's.
+
 > **C329 SLICE B2a LANDED (2026-11-15): the liquid properties of the
 > three-component rate-based column.**  The rule `VignesKooijmanTaylor`
 > (Kooijman & Taylor 1991 Eq. 23 with Eq. 21's limiting value) lifts slice
