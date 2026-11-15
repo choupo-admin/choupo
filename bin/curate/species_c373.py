@@ -162,7 +162,14 @@ def render_species(t, sp):
         L.append("{")
         L += thermo_lines(t, form)
         L.append("}")
-    return "\n".join(L) + "\n"
+    out = "\n".join(L) + "\n"
+    #  C403: the ion's limiting diffusivity, from its own table (bin/curate/ion_d0.py), the same bytes that tool
+    #  writes into a record it does not generate.
+    import ion_d0
+    row = ion_d0.load().get(sp["key"])
+    if row is not None:
+        out += "\n" + ion_d0.transport_block(row)
+    return out
 
 
 def thermo_lines(t, form):
