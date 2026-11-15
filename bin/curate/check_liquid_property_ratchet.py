@@ -91,7 +91,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DEBT = ROOT / "bin" / "curate" / "liquid_property_ratchet_debt.tsv"
 NAME = "check_liquid_property_ratchet"
-SCAN = [ROOT / "src" / "unitOperations", ROOT / "src" / "postProcessing"]
+SCAN = [ROOT / "src" / "unitOperations", ROOT / "src" / "postProcessing", ROOT / "src" / "propertyOps"]   # propertyOps since C402 (MB-05): the bench readers of a typed viscosity / density are debt, counted
 #  A positive literal, and a property-like NAME (the left-hand side).
 LIT = r"([1-9][0-9.]*|0\.[0-9]*[1-9][0-9]*)([eE][+-]?[0-9]+)?"
 PNAME = (r"\b\w*(rho|Rho|RHO|density|Density|[Kk]gPerM3|visc|Visc|sigma|Sigma|surfaceTension"

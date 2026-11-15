@@ -10267,6 +10267,7 @@
    "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
+   "src/thermo/ApproximationAuthorisation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/LiquidPropertyDoor.H",
@@ -20257,7 +20258,8 @@
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
-   "src/thermo/liquidProperty/MassWithoutVolume.cpp"
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp"
   ],
   "src/thermo/AtomicWeights.H": [
    "src/streams/StreamStateIO.cpp",

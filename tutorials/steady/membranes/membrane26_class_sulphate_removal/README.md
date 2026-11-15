@@ -19,10 +19,10 @@ product ...`, on stdout, on stderr and in the end-of-run caveat block.
 INTRINSIC rejection (against the wall); the class states the OBSERVED one
 (against the feed).  `rejection { NaCl fromRatedTest; MgSO4 fromRatedTest; }`
 runs this element at the class's reference test and inverts it
-(DEV.md 4c C189 slice 1): R_int(NaCl) = 0.37566, R_int(MgSO4) = 0.96342.
+(DEV.md 4c C189 slice 1): R_int(NaCl) = 0.36464, R_int(MgSO4) = 0.96561.
 
-**The answer.** Three elements at 7 bar: recovery 32.45 %, the permeate at
-2140 ppm NaCl and 107 ppm MgSO4 (85 ppm as sulphate).
+**The answer.** Three elements at 7 bar: recovery 32.28 %, the permeate at
+2143 ppm NaCl and 106 ppm MgSO4 (85 ppm as sulphate).
 
 **What a student should change.** The class (`NF_OPEN`, `NF_TIGHT`); the
 pressure and the number of elements; the class's own assumptions, by copying

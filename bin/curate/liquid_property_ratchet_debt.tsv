@@ -1,12 +1,8 @@
 # file	class	count -- the debt of check_liquid_property_ratchet (C378 slice 0);
 # it may only shrink: lower a count in the commit that removes a site
-# PAID 2026-11-14 (C398 slice (d), A4): DistillationColumn.cpp direct 2 and
-# RateBasedSegment.cpp direct 2 -- the columns' three own Wilke-Chang instances and the rate
-# model's liquid thermal conductivity now go through the door (Property::diffusivity, the
-# quantity the property dictionary declares; Property::thermalConductivity).
-# PAID 2026-11-15 (C402, the membrane family): SpiralWoundModule.cpp direct 1 -- the solute's own diffusivity now goes
-# through the door (liquidProperty::soluteDiffusivity).  NEW CLASS keyRead (a property word read from a unit's own
-# dictionary): the pins below are the families not yet migrated; the membrane family holds ZERO (enforced in the gate).
+# C402 round 2 (review MB-05): src/propertyOps is in the scan; the keyRead pins there are the props benches' readers of a typed
+# viscosity / density (PolarisationIndex, FitParametersMembrane), left in place: their shipped cases reproduce a paper's own inputs
+# at several temperatures, which the one-stated-value-per-set grammar of slice (d) cannot hold (hand-back).
 src/postProcessing/EconomicsPass.cpp	literal	2
 src/postProcessing/sizing/PipeHeaderSize.cpp	keyRead	2
 src/postProcessing/sizing/RatedMachineSize.cpp	conversion	1
@@ -15,6 +11,23 @@ src/postProcessing/sizing/ReliefValveSize.cpp	conversion	1
 src/postProcessing/sizing/ReliefValveSize.cpp	literal	1
 src/postProcessing/sizing/ShellTubeHX.cpp	conversion	1
 src/postProcessing/sizing/ShellTubeHX.cpp	direct	1
+src/propertyOps/DataReconciliation.cpp	keyRead	1
+src/propertyOps/EstimateComponent.cpp	keyRead	2
+src/propertyOps/FitParametersMembrane.cpp	keyRead	5
+src/propertyOps/FitParametersMembrane.cpp	literal	1
+src/propertyOps/HansenMixture.cpp	vliq	2
+src/propertyOps/HeatTransferBench.cpp	literal	1
+src/propertyOps/LleResidual.H	literal	1
+src/propertyOps/LleResidual.cpp	keyRead	2
+src/propertyOps/PolarisationIndex.cpp	keyRead	4
+src/propertyOps/PoreTransportBench.cpp	keyRead	4
+src/propertyOps/PropertyEvaluator.cpp	direct	7
+src/propertyOps/PropertyPoint.cpp	direct	1
+src/propertyOps/ReferenceEoSOp.cpp	keyRead	2
+src/propertyOps/ReferenceEoSOp.cpp	phaseVariable	1
+src/propertyOps/SolubilityParameter.cpp	vliq	2
+src/propertyOps/SteamTables.cpp	keyRead	2
+src/propertyOps/ThielePellet.cpp	keyRead	1
 src/unitOperations/batch/BatchElectrodialysis.cpp	direct	1
 src/unitOperations/batch/BatchReactor.cpp	literal	1
 src/unitOperations/crystallisation/CrystallisationSaturation.cpp	vliq	1

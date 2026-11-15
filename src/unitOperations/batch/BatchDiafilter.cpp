@@ -146,7 +146,7 @@ void BatchDiafilter::initialise(const DictPtr&       unitDict,
     //  default of 1000 kg/m3 in this block is gone, and the block is refused
     //  if it carries one.  It is set below, once the initial holdup is read.
     unitTypedProperties::refuse(op, "batchDiafilter '" + name() + "': ", "membrane module",
-                                membrane::typedPropertyWords());
+                                membrane::typedPropertyWords(), membrane::diafilterOperationKeys());
 
     // ---- fouling: absent unless declared -----------------------------------
     if (op->found("fouling"))

@@ -297,6 +297,15 @@ DensityResolution resolveCatalogue(const ThermoPackage& thermo, const std::vecto
         for (const std::size_t i : set)
             if (ApproximationAuthorisation::instance().massWithoutVolume().count(thermo.comp(i).name()))
                 listed += (listed.empty() ? "" : ", ") + thermo.comp(i).name();
+        std::vector<std::size_t> sub;
+        const std::string recSub = rec.empty() && set.size() >= 3 ? SolutionLaw::recordForSubset(thermo, set, sub) : std::string();
+        if (!recSub.empty())
+        {
+            //  C402: the record's binary plus constituents listed under massWithoutVolume (a label solute)
+            r.method = "solutionLaw";
+            r.record = recSub;
+            return r;
+        }
         if (!rec.empty() && !listed.empty())
             r.passedOver.push_back("solutionLaw." + rec + ": the case lists " + listed
                 + " under massWithoutVolume, a hypothesis the solution's own law cannot"

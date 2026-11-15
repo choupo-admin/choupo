@@ -1,0 +1,64 @@
+/*--------------------------------*- Choupo -*-----------------------*\
+  Solution properties: SODIUM CHLORIDE dissolved in liquid WATER -- the
+  solution's own DENSITY law (DEV.md 4c C402, MB-02: the seawater-strength
+  membrane cases price their feed on it instead of the massWithoutVolume
+  hypothesis, which overstates a 35 g/kg solution by 1 %).
+
+  WHERE THE NUMBERS COME FROM.  The law is a REGRESSION of the form
+  polynomialTSqrtX (rho = b1 + b2 t + b3 t^2, b_j = sum_k c_jk x^(k/2),
+  x = mass fraction of water, t in degC) to the model of Laliberte and Cooper
+  (J. Chem. Eng. Data 49 (2004) 1141-1151), with NaCl's constants read at the
+  page (Table 1, p. 1144: c0 -0.00433, c1 0.06471, c2 1.0166, c3 0.014624,
+  c4 3315.6; Eq. 9 p. 1142 for the apparent specific volume, Eq. 6 for the
+  mixture, Eq. 8 for Kell's water, which is the model's own water) on a grid
+  of 31 temperatures (0-60 degC) x 53 mass fractions (0-0.26), by least squares
+  in the relative density (bin/curate/fit_nacl_water_density.py).  Laliberte
+  and Cooper's NaCl is valid 0-140 degC, w up to 0.26 (Table 3).
+
+  THE EVIDENCE.  In sample (the model it was regressed to): max 0.32 kg/m3
+  (0.03 %), rms 0.09 kg/m3 on the grid.  OUT of sample, against tables read at
+  their page: the CRC Handbook of Chemistry and Physics, 82nd ed., p. 8-77,
+  NaCl at 20 degC: 3 wt % 1019.6 against 1019.35, 4 wt % 1026.8 against
+  1026.54 kg/m3 (-0.02 %); and seawater at S = 35 (CRC p. 14-12, PDF p. 1638):
+  1023.343 kg/m3 at 25 degC and 1024.763 at 20 degC against 1021.61 and
+  1022.94 for NaCl at 35 g/kg -- the seawater is 0.17 % denser because its
+  other salts (MgSO4, MgCl2, CaSO4) are denser than their NaCl equivalent;
+  the same comparison for the massWithoutVolume reading is +0.96 %.
+  Pure water end: 996.99 kg/m3 at 25 degC against Kell's 997.05 (-0.06 %).
+
+  The law carries no pressure term.  Licence of the numbers: the constants of
+  a published correlation are facts, cited to their paper.
+\*---------------------------------------------------------------------------*/
+
+solute      NaCl;
+solvent     water;
+
+liquidDensity
+{
+    returns           solutionDensity;     // kg/m3 of the solution
+    form              polynomialTSqrtX;    // rho = b1 + b2 t + b3 t^2, b_j = sum_i c_ji x^(i/2)
+    variable          w[water];            // kg water / kg solution
+    temperatureOrigin 273.15 K;            // t = T - 273.15 K, in degC
+
+    //  x^0, x^(1/2), x^1, x^(3/2), x^2, x^(5/2)
+    b1 ( 1864.88141041  -1301.17063037  5048.41992874  -9787.21878272  6781.04369193  -1605.79464827 );
+    b2 ( -2.00496065907  16.7838211445  -70.4329583116  112.251637848  -74.2686894463  17.658124328 );
+    b3 ( -0.0087764906382  0.22161272733  -0.49245115392  0.355898286199  -0.0740150545047  -0.00682733397946 );
+
+    //  the regression's grid: 0-60 degC, w[NaCl] 0-0.26 (the model's own limit)
+    domain
+    (
+        { T ( 273.15 333.15 ); w[water] ( 0.74 1 ); }
+    );
+
+    pressure          notCarried;
+
+    provenance
+    {
+        origin        literature;
+        citation      "M. Laliberte and W. E. Cooper, J. Chem. Eng. Data 49 (2004) 1141-1151, Eqs. (6), (8), (9) p. 1142 and Table 1 (NaCl) p. 1144, regressed to this form over 0-60 degC and w[NaCl] 0-0.26";
+        uncertainty   "in sample (the model): max 0.32 kg/m3 (0.03 %), rms 0.09 kg/m3; out of sample: CRC Handbook 82nd ed. p. 8-77 NaCl at 20 degC -0.02 %, and seawater S = 35 (p. 14-12) -0.17 % (other salts)";
+        maxDeviation  1.8 kg/m3;           // against the seawater of CRC p. 14-12 at 25 degC, the largest comparison
+        read          "Laliberte and Cooper 2004 pp. 1142 and 1144 read from the page image (Eq. 8) and the text (Table 1); CRC tables from the text layer of the file";
+    }
+}

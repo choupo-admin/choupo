@@ -26,45 +26,48 @@
   for isobaric rotary devices): pressure-transfer efficiency 0.96 (95-98 %),
   leakage 0.015 (1-2 %), both the middle of their ranges; mixing 0.03, the
   LOW end of his 3-6 %, because under this unit's definition (the brine
-  share of the pressurised outlet's VOLUME) 3 % on this brine (6.3 % w/w
-  against a 3.3 % feed) already raises the feed's salinity 2.8 %, the top
+  share of the pressurised outlet's VOLUME) 3 % on this brine (6.2 % w/w
+  against a 3.3 % feed) already raises the feed's salinity 2.7 %, the top
   of the 1-3 % he quotes for that penalty; the middle of his mixing range
   would give 4.3 %.  His two ranges are not consistent under this
-  definition at 47 % recovery -- a finding about the definition, recorded
+  definition at 46 % recovery -- a finding about the definition, recorded
   and not tuned away.
 
-  THE ANSWER (read off the run, 2026-11-01):
-      plant recovery        47.2 % of the RO feed (16.2 m3/h), 48.3 % of
-                            the seawater drawn (16.4 m3/h); permeate 7.94
-                            m3/h, 99.23 % observed NaCl rejection
-      brine                 8.31 m3/h at 54.12 bar, 6.3 % w/w
-      exchanger             P_HPout 53.37 bar (solved from eta): 51.4 bar
-                            recovered on 8.18 m3/h of seawater, 11.7 kW
+  THE ANSWER (read off the run, 2026-11-15, after C402: the module prices its feed on the
+  NaCl-water solution law, rho = 1020.5 kg/m3 at 3.3 % w/w, and every volume below is mass
+  over that density; the figures of 2026-11-01 were 47.2 % / 7.94 m3/h / 14.47 kW, on a
+  typed 1000 kg/m3):
+      plant recovery        46.26 % of the RO feed (16.45 m3/h), 45.78 % of
+                            the seawater drawn (4.711 kg/s); permeate 7.61
+                            m3/h, 99.21 % observed NaCl rejection
+      brine                 8.84 m3/h at 54.12 bar, 6.2 % w/w
+      exchanger             P_HPout 53.36 bar (solved from eta): 51.36 bar
+                            recovered on 8.36 m3/h of seawater, 11.9 kW
                             hydraulic; HP-side loss 0.76 bar; feed
-                            salinity 3.30 -> 3.39 % w/w (+2.83 %); flows
-                            balanced to 1.0 % (LP in 8.39 vs HP in 8.31
-                            m3/h); dissipated 0.52 kW
-      high-pressure pump    14.47 kW shaft (8.06 m3/h, 2 -> 55 bar, eta 0.82)
-      booster               0.46 kW shaft (8.18 m3/h, 53.37 -> 55 bar, eta 0.80)
+                            salinity 3.30 -> 3.39 % w/w (+2.72 %); flows
+                            balanced to 0.6 % (LP in 8.54 vs HP in 8.49
+                            m3/h); dissipated 0.53 kW
+      high-pressure pump    14.36 kW shaft (2 -> 55 bar, eta 0.82)
+      booster               0.48 kW shaft (53.36 -> 55 bar, eta 0.80)
 
   THE SPECIFIC ENERGY, DECOMPOSED (pump SHAFT powers over the permeate; no
   motor or drive efficiency is modelled, no pretreatment, no permeate
   delivery):
-      with the exchanger      (14.47 + 0.46) kW / 7.94 m3/h  =  1.88 kWh/m3
-      WITHOUT it, the same plant pumping its whole RO feed (16.24 m3/h,
-      8.06 + 8.18) through the high-pressure pump and throttling the brine:
-                              (16.24/3600) x 53e5 Pa / 0.82 = 29.2 kW
-                                                     -> 3.67 kWh/m3
+      with the exchanger      (14.36 + 0.48) kW / 7.61 m3/h  =  1.95 kWh/m3
+      WITHOUT it, the same plant pumping its whole RO feed (16.45 m3/h)
+      through the high-pressure pump and throttling the brine:
+                              (16.45/3600) x 53e5 Pa / 0.82 = 29.5 kW
+                                                     -> 3.88 kWh/m3
       so the device halves the plant's pumping energy, at the price of
-      2.8 % more salinity on the membrane's feed.
+      2.7 % more salinity on the membrane's feed.
       THE THERMODYNAMIC MINIMUM for this feed and this recovery, from the
       osmotic pressure the package gives (the module's own van't Hoff
-      model, pi = 2 c R T; c = 9.568 kmol/h NaCl in 16.45 m3/h = 0.582
-      kmol/m3, so pi_0 = 28.8 bar) at the plant recovery r = 0.483:
-          w_min = pi_0 (-ln(1 - r)) / r = 28.8 x 1.366 = 39.3 bar
-                = 3.93 MJ/m3 = 1.09 kWh/m3.
-      The 0.79 kWh/m3 between the minimum and the plant is the membrane's
-      overpressure (55 bar fed against 28.8-54 bar of osmotic pressure
+      model, pi = 2 c R T; c = 0.584 kmol/m3 of NaCl in the RO feed, so
+      pi_0 = 28.9 bar) at the plant recovery r = 0.458:
+          w_min = pi_0 (-ln(1 - r)) / r = 38.7 bar
+                = 3.87 MJ/m3 = 1.07 kWh/m3.
+      The 0.88 kWh/m3 between the minimum and the plant is the membrane's
+      overpressure (55 bar fed against 28.9-54 bar of osmotic pressure
       along the vessel), the pumps' efficiencies, the exchanger's 4 % and
       its booster.  A student should move the pressure, the recovery (the
       split fraction) and the three device numbers and watch the terms.
@@ -73,7 +76,7 @@
   brine's VOLUME to the membrane feed, so the loop's gain is 0.985 and the
   recovery is set by the 1.5 % that leaks and by how the permeate moves
   with the feed: the high-pressure pump's flow IS the permeate (plus the
-  leak), and the split fraction here (0.49 to the pump) was tuned by hand
+  leak), and the split fraction here (0.481 to the pump) was tuned by hand
   until the device ran balanced -- what a real train's control does with
   that pump's drive.  Newton on the tear overshoots on such a loop (a trial
   brine with no water, a booster asked to pump down); system/solverDict
@@ -116,7 +119,7 @@ units
         type        splitter;
         in          feed;
         outputs     ( toHPpump  toPX );
-        operation   { fractions ( 0.475  0.525 ); }   // tuned so the exchanger runs balanced (see header); 0.49 / 0.51 before C402, when the module began to price its feed density from the package (3.3 % over the 1000 kg/m3 it used to take) and the knife edge moved
+        operation   { fractions ( 0.481  0.519 ); }   // tuned so the exchanger runs balanced (see header); 0.49 / 0.51 until C402, then 0.475 / 0.525 on the density of massWithoutVolume, now 0.481 / 0.519 on the NaCl-water solution law (the loop has gain 0.985, so the split follows the feed density)
     }
     {
         name        HPpump;

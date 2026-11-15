@@ -1,0 +1,34 @@
+/*---------------------------------------------------------------------------*\
+  Seawater at S = 35 and 25 C: 0.966 mPa s, the CRC Handbook's table (p. 14-12).  The cases typed 1.0 or
+  0.95 mPa s with no source until C402 (review MB-03).  The salinity 35 g/kg is stated here as the NaCl-equivalent
+  mass fraction 0.035 of the case's lumped salt; the box lets the value stand over every feed of this liquid
+  up to 7 wt % (the brine of a 45-50 % recovery), where it is a hypothesis: the same table shows the viscosity
+  rising with salinity, so a brine is a little more viscous than this, and the run prints the origin (literature
+  at the stated point, assumed away from it).  The CRC NaCl table at 20 C (p. 8-77) gives +5 to +7 % for 3 to 4 wt %.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    sha256       "b2d8d5385837206771d31c361bd08f53145e02c58ab724bf0ca667851429a283";
+    source       literature;
+    basis        "seawater of salinity 35 at 25 C, the CRC Handbook's tabulated value; a lumped NaCl stands for the salts";
+    citation     "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Properties of seawater as a function of temperature at salinity S=35 and normal atmospheric pressure', p. 14-12 (PDF page 1638 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): eta = 0.966 mPa s at 25 C, 1.085 at 20 C";
+}
+
+property    liquidViscosity;
+system      ( boron water );
+solvent     water;
+
+columns
+(
+    { name T;       unit K;    }
+    { name mu;      unit Pa.s; }
+    { name w[boron]; unit -;    }
+);
+data        ( 298.15 0.966e-3 0 );
+
+box
+{
+    T        ( 297.65 298.65 );
+    w[boron]  ( 0 0.001 );
+}

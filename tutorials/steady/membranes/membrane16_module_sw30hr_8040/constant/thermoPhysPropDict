@@ -29,15 +29,6 @@ equilibrium
     }
 }
 
-approximations
-{
-    massWithoutVolume
-    {
-        components      ( NaCl );
-        maxMassFraction 0.05;
-        reason          "the membrane feed's dissolved salts keep their mass and add no volume to the feed's liquid density (their mass fraction is at most 0.032); a membrane unit asks the package for the feed density and a solute with no liquid volume needs this declared reading (C402: the 1000 kg/m3 the unit used to type is gone); the engine's own bound on it is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H); at seawater strength it OVERSTATES the density by about 1 % (the measured NaCl-water density of Rogers and Pitzer 1982 is the better law and is not yet a record)";
-    }
-}
 
 transport
 {
@@ -50,7 +41,7 @@ transport
             pin ( { component water; law vogel; reason "the temperature scaling of an ion's D0 reads water's viscosity; the Vogel fit is the one the membrane cases that declared a viscosity model used"; } );
             measured
             {
-                sw0p95_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; its own assumption for a seawater feed, the status in the file's basis"; }
+                seawater35_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; seawater of salinity 35 at 25 C (CRC p. 14-12), stood over a brine as a hypothesis, the status in the file's basis"; }
             }
         }
         diffusivity

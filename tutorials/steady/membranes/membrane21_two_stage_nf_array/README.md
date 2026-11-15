@@ -34,13 +34,13 @@ Eq. 24) WITH their window, 100 < Re < 1000: the case names the model, the
 record supplies the numbers, and a run outside the window is announced.
 
 **What a student sees.**
-- Per stage: stage 1 recovers 37.7 % of its feed, stage 2 35.1 % of its
-  own (about 60 % overall); the observed rejections rise in stage 2
-  (Na+ 35.1 % -> 40.2 %) because its flux is lower against a richer feed.
+- Per stage: stage 1 recovers 37.5 % of its feed, stage 2 34.5 % of its
+  own (about 59 % overall); the observed rejections rise in stage 2
+  (Na+ 34.8 % -> 40.0 %) because its flux is lower against a richer feed.
 - Per element (`J_w_avg_elemK`, `dP_elemK`, `feedFlow_elemK`,
   `Re_in_elemK`, `Gamma_<ion>_elemK`): the first element of each vessel does
-  the most work and polarises the most (Gamma_Na 0.090 in element 1 of
-  stage 1, 0.014 in element 6); Re falls from 213 to 132 along a stage-1
+  the most work and polarises the most (Gamma_Na 0.099 in element 1 of
+  stage 1, 0.015 in element 6); Re falls from 212 to 133 along a stage-1
   vessel, still inside the spacer's window -- the 4:2 taper keeps stage 2's
   inlet Re at 265.
 - Per ion: the film coefficient is the spacer correlation evaluated on each

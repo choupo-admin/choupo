@@ -8928,20 +8928,20 @@ Expected (with the SW30HR parameters): water recovery $\approx$ 18 \% (single pa
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.997775338452}
-\goldrow{kpi}{ROunit}{water\_recovery}{0.154487036696}
-\goldrow{kpi}{ROunit}{J\_w\_avg}{1.25751693252e-05}
+\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.99780925276}
+\goldrow{kpi}{ROunit}{water\_recovery}{0.155813985178}
+\goldrow{kpi}{ROunit}{J\_w\_avg}{1.28495707363e-05}
 \goldrow{stream}{feed}{F}{0.159722222222}
 \goldrow{stream}{feed}{T}{298.15}
-\goldrow{stream}{permeate}{F}{0.0252495779201}
+\goldrow{stream}{permeate}{F}{0.025466475938}
 \goldrow{stream}{permeate}{T}{298.15}
-\goldrow{stream}{retentate}{F}{0.134472644302}
+\goldrow{stream}{retentate}{F}{0.134255746284}
 \goldrow{stream}{retentate}{T}{298.15}
 \goldrow{kpi}{ROunit}{dP\_feed}{200000}
-\goldrow{kpi}{ROunit}{mass\_closure\_rel}{3.01635071855e-16}
-\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.28527969148}
-\goldrow{kpi}{ROunit}{solute\_closure\_rel}{1.30539392005e-16}
-\goldrow{source}{ROunit}{liquidDensity}{idealMixing[referenceEquation.IAPWS95+massWithoutVolume]}
+\goldrow{kpi}{ROunit}{mass\_closure\_rel}{9.04905215566e-16}
+\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.292352503434}
+\goldrow{kpi}{ROunit}{solute\_closure\_rel}{0}
+\goldrow{source}{ROunit}{liquidDensity}{solutionLaw.NaCl-water}
 \goldmore{1}
 \end{tutgolden}
 
@@ -9013,19 +9013,19 @@ This sweep illustrates why membrane-module designers obsess over spacer geometry
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.159722222222}
-\goldrow{stream}{permeate}{F}{0.0306022340114}
-\goldrow{stream}{retentate}{F}{0.129119988211}
-\goldrow{kpi}{ROunit}{J\_w\_avg}{1.52408012042e-05}
-\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.998285442175}
+\goldrow{stream}{permeate}{F}{0.0308552480292}
+\goldrow{stream}{retentate}{F}{0.128866974193}
+\goldrow{kpi}{ROunit}{J\_w\_avg}{1.55683937941e-05}
+\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.998314249834}
 \goldrow{kpi}{ROunit}{dP\_feed}{200000}
-\goldrow{kpi}{ROunit}{mass\_closure\_rel}{3.01635071855e-16}
-\goldrow{kpi}{ROunit}{water\_recovery}{0.18723455359}
+\goldrow{kpi}{ROunit}{mass\_closure\_rel}{1.50817535928e-16}
+\goldrow{kpi}{ROunit}{water\_recovery}{0.188782452712}
 \goldrow{stream}{feed}{T}{298.15}
 \goldrow{stream}{permeate}{T}{298.15}
 \goldrow{stream}{retentate}{T}{298.15}
-\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.174704016484}
-\goldrow{kpi}{ROunit}{solute\_closure\_rel}{6.52696960025e-16}
-\goldrow{source}{ROunit}{liquidDensity}{idealMixing[referenceEquation.IAPWS95+massWithoutVolume]}
+\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.178784884476}
+\goldrow{kpi}{ROunit}{solute\_closure\_rel}{2.6107878401e-16}
+\goldrow{source}{ROunit}{liquidDensity}{solutionLaw.NaCl-water}
 \goldmore{1}
 \end{tutgolden}
 
@@ -9056,19 +9056,19 @@ Expected (with the SW30HR parameters): water recovery $\approx$ 18 \% (single pa
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.159722222222}
-\goldrow{stream}{permeate}{F}{0.0280774073407}
-\goldrow{stream}{retentate}{F}{0.131644814882}
-\goldrow{kpi}{ROunit}{J\_w\_avg}{1.39834467461e-05}
-\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.998026609822}
-\goldrow{kpi}{ROunit}{dP\_feed}{25296.0012586}
-\goldrow{kpi}{ROunit}{water\_recovery}{0.171787845931}
+\goldrow{stream}{permeate}{F}{0.0285171979521}
+\goldrow{stream}{retentate}{F}{0.13120502427}
+\goldrow{kpi}{ROunit}{J\_w\_avg}{1.43887798756e-05}
+\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.998076792973}
+\goldrow{kpi}{ROunit}{dP\_feed}{25298.1914669}
+\goldrow{kpi}{ROunit}{water\_recovery}{0.174478446035}
 \goldrow{stream}{feed}{T}{298.15}
 \goldrow{stream}{permeate}{T}{298.15}
 \goldrow{stream}{retentate}{T}{298.15}
-\goldrow{kpi}{ROunit}{mass\_closure\_rel}{1.50817535928e-16}
-\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.253521604148}
-\goldrow{kpi}{ROunit}{solute\_closure\_rel}{5.2215756802e-16}
-\goldrow{source}{ROunit}{liquidDensity}{idealMixing[referenceEquation.IAPWS95+massWithoutVolume]}
+\goldrow{kpi}{ROunit}{mass\_closure\_rel}{7.54087679638e-16}
+\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.254970998029}
+\goldrow{kpi}{ROunit}{solute\_closure\_rel}{0}
+\goldrow{source}{ROunit}{liquidDensity}{solutionLaw.NaCl-water}
 \goldmore{8}
 \end{tutgolden}
 
@@ -9090,28 +9090,28 @@ The pedagogical point is the per-element DEGRADATION reported in the KPIs (recov
 
 Feed: 35 g/L NaCl seawater, z\_NaCl = 0.01040, F = 575 kmol/h (\textasciitilde{}10 m$^3$/h), 55 bar, 298.15 K --- the same feed as membrane01/04. Each of the 3 elements is 35 m$^2$ / 1 m, SW30HR, permeate at 1 bar, with a 0.2 bar inter-element connector loss.
 
-What this run produces (golden master): train water recovery 36.1 \% (3 elements, cumulative) observed NaCl rejection 99.69 \% train-average water flux 36.47 LMH (1.013e-5 m/s) total feed-side $\Delta$P \textasciitilde{}1.01 bar (Schock-Miquel friction + 2 connector losses)
+What this run produces (golden master; re-read 2026-11-15 after C402, when the feed density became the NaCl-water solution law's 1020 kg/m3 and the viscosity the CRC's seawater value 0.966 mPa s): train water recovery 35.7 \% (3 elements, cumulative) observed NaCl rejection 99.69 \% train-average water flux 35.34 LMH (9.82e-6 m/s) total feed-side $\Delta$P \textasciitilde{}1.00 bar (Schock-Miquel friction + 2 connector losses)
 
-The per-element DEGRADATION (the teaching point) reads off the KPIs: recovery\_elem1 17.5 \% c\_ret\_elem1 0.684 (fresh feed) recovery\_elem2 29.0 \% c\_ret\_elem2 0.794 (cumulative) recovery\_elem3 36.1 \% c\_ret\_elem3 0.882 (cumulative) The retentate concentration climbs element to element while each successive element adds less recovery: a single SW30HR element at this feed recovers \textasciitilde{}17.5 \%, the second adds \textasciitilde{}11.5 \%, the third only \textasciitilde{}7 \% --- the diminishing return of stacking elements in series at fixed feed.
+The per-element DEGRADATION (the teaching point) reads off the KPIs: recovery\_elem1 17.4 \% c\_ret\_elem1 0.697 (fresh feed) recovery\_elem2 28.7 \% c\_ret\_elem2 0.807 (cumulative) recovery\_elem3 35.7 \% c\_ret\_elem3 0.894 (cumulative) The retentate concentration climbs element to element while each successive element adds less recovery: a single SW30HR element at this feed recovers \textasciitilde{}17.4 \%, the second adds \textasciitilde{}11.3 \%, the third only \textasciitilde{}7 \% --- the diminishing return of stacking elements in series at fixed feed.
 
 The material balance CLOSES, per solute, to round-off (the module refuses otherwise). Until 2026-09-29 it did not: the element balance lost 0.07 \% of the chlorine, because the axial march advanced the concentration rather than the solute flow -- see membrane02's element balance for the same defect, and DEV.md C27. The figures above are this run's, rounded (the header had drifted from its own golden before the repair: 35.3 \% against 36.2 \%).
 
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.159722222222}
-\goldrow{stream}{permeate}{F}{0.0574026092249}
-\goldrow{stream}{retentate}{F}{0.102319612997}
-\goldrow{kpi}{ROunit}{J\_w\_avg}{9.52970940311e-06}
-\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.996810159828}
-\goldrow{kpi}{ROunit}{c\_ret\_elem1}{0.70375256034}
-\goldrow{kpi}{ROunit}{c\_ret\_elem2}{0.812246643112}
-\goldrow{kpi}{ROunit}{c\_ret\_elem3}{0.897686080009}
-\goldrow{kpi}{ROunit}{dP\_feed}{99796.3522624}
+\goldrow{stream}{permeate}{F}{0.0583607980655}
+\goldrow{stream}{retentate}{F}{0.101361424157}
+\goldrow{kpi}{ROunit}{J\_w\_avg}{9.81587254791e-06}
+\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.996882910332}
+\goldrow{kpi}{ROunit}{c\_ret\_elem1}{0.696906126375}
+\goldrow{kpi}{ROunit}{c\_ret\_elem2}{0.806974036201}
+\goldrow{kpi}{ROunit}{c\_ret\_elem3}{0.894147607637}
+\goldrow{kpi}{ROunit}{dP\_feed}{99527.5416912}
 \goldrow{kpi}{ROunit}{elements}{3}
-\goldrow{kpi}{ROunit}{recovery\_elem1}{0.171787845931}
-\goldrow{kpi}{ROunit}{recovery\_elem2}{0.282685530218}
-\goldrow{kpi}{ROunit}{recovery\_elem3}{0.351219898879}
-\goldrow{kpi}{ROunit}{water\_recovery}{0.351219898879}
+\goldrow{kpi}{ROunit}{recovery\_elem1}{0.174478446035}
+\goldrow{kpi}{ROunit}{recovery\_elem2}{0.287343742883}
+\goldrow{kpi}{ROunit}{recovery\_elem3}{0.357082018789}
+\goldrow{kpi}{ROunit}{water\_recovery}{0.357082018789}
 \goldmore{30}
 \end{tutgolden}
 
@@ -9142,19 +9142,19 @@ Expected (with the SW30HR parameters): water recovery $\approx$ 18 \% (single pa
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.159722222222}
-\goldrow{stream}{permeate}{F}{0.028001997598}
-\goldrow{stream}{retentate}{F}{0.131720224624}
-\goldrow{kpi}{ROunit}{J\_w\_avg}{1.39459250662e-05}
-\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.997917245315}
+\goldrow{stream}{permeate}{F}{0.0281872491382}
+\goldrow{stream}{retentate}{F}{0.131534973084}
+\goldrow{kpi}{ROunit}{J\_w\_avg}{1.42223419568e-05}
+\goldrow{kpi}{ROunit}{R\_obs\_NaCl}{0.997945137374}
 \goldrow{kpi}{ROunit}{dP\_feed}{200000}
-\goldrow{kpi}{ROunit}{water\_recovery}{0.171326888867}
+\goldrow{kpi}{ROunit}{water\_recovery}{0.172460218659}
 \goldrow{stream}{feed}{T}{298.15}
 \goldrow{stream}{permeate}{T}{298.15}
 \goldrow{stream}{retentate}{T}{298.15}
-\goldrow{kpi}{ROunit}{mass\_closure\_rel}{1.50817535928e-16}
-\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.321035709393}
-\goldrow{kpi}{ROunit}{solute\_closure\_rel}{6.52696960025e-16}
-\goldrow{source}{ROunit}{liquidDensity}{idealMixing[referenceEquation.IAPWS95+massWithoutVolume]}
+\goldrow{kpi}{ROunit}{mass\_closure\_rel}{0}
+\goldrow{kpi}{ROunit}{Gamma\_NaCl\_avg}{0.328358368697}
+\goldrow{kpi}{ROunit}{solute\_closure\_rel}{5.2215756802e-16}
+\goldrow{source}{ROunit}{liquidDensity}{solutionLaw.NaCl-water}
 \goldmore{1}
 \end{tutgolden}
 
@@ -9506,7 +9506,7 @@ membrane12's feed and law (NF270, NaCl 0.01 M with NO3-/NH4+ traces, `transport 
 \tutreadme{The question. membrane12 keeps its film out of the way (k\_film 1e-2, wall = bulk) so the SDEM rejections are intrinsic. In a module the wall is NOT the bulk: what does concentration polarisation look like when the feed is four ions of different mobility and charge, and how do they pile up?}
 \tutreadme{The lesson. The film model needs ONE diffusivity and a mixture of ions has none; applied ion by ion it lets each ion polarise alone, so a fast anion runs ahead and charge separates. Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27, keep the module's own mass-transfer correlation, evaluate it PER ION on the ion's own D (k\_film\_<ion> columns, Cl- above Na+), correct it for the suction of the permeation (the 2006 factor), and add ONE unknown -- the electrical potential gradient at the interface, fixed by electroneutrality at the wall. No film thickness, no new parameter. This case declares it:}
 \tutreadme{massTransfer \{ model SchockMiquel; channelHeight 0.7 mm; spacerPorosity 0.9; \} pressureDrop \{ model SchockMiquel; \} polarisation \{ suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; \}}
-\tutreadme{What a student sees: the polarisation index Gamma = (c\_m - c\_b)/c\_b differs BY ION (Gamma\_<ion>\_avg: Na+ 0.163, Cl- 0.163, NO3- 0.064, NH4+ 0.118 -- the dominant pair driven together by the field, the traces each on their own rejection); the interface field xi\_V\_per\_m\_avg (\textasciitilde{}34 V/m) beside the membrane's own potential membranePotential\_mV\_avg (\textasciitilde{}31 mV) -- two fields, one in the solution and one across the active layer; R\_obs BELOW the intrinsic witness (Cl- 68.9 \% here against membrane12's 77.5 \%), because the wall is richer than the bulk. Set ionCoupling none; and each ion polarises alone: Na+ 0.187, Cl- 0.135, NO3- 0.043, NH4+ 0.143 -- the coupling moves the trace anion's Gamma by half. (The README that briefed this case said the trace anion's Gamma might go negative; on this feed it does not, and the number above is what the run says.)}
+\tutreadme{What a student sees: the polarisation index Gamma = (c\_m - c\_b)/c\_b differs BY ION (Gamma\_<ion>\_avg: Na+ 0.179, Cl- 0.181, NO3- 0.070, NH4+ 0.130 -- the dominant pair driven together by the field, the traces each on their own rejection); the interface field xi\_V\_per\_m\_avg (\textasciitilde{}38 V/m) beside the membrane's own potential membranePotential\_mV\_avg (\textasciitilde{}31 mV) -- two fields, one in the solution and one across the active layer; R\_obs BELOW the intrinsic witness (Cl- 68.3 \% here against membrane12's 77.5 \%), because the wall is richer than the bulk. Set ionCoupling none; and each ion polarises alone: Na+ 0.207, Cl- 0.149, NO3- 0.047, NH4+ 0.158 -- the coupling moves the trace anion's Gamma by half. (The README that briefed this case said the trace anion's Gamma might go negative; on this feed it does not, and the number above is what the run says.)}
 \tutreadme{Geometry. One nominal 4-inch element (7.9 m2, 1.016 m) fed at 4 m3/h, so the spacer-channel crossflow is \textasciitilde{}0.45 m/s (a realistic velocity) and the recovery \textasciitilde{}16 \%. Membrane12's composition (NaCl 0.01 M, traces 2e-4 M) and its NF270 permeance record, unchanged.}
 \tutreadme{Source of the numbers. Permeances: Fernandez de Labastida \& Yaroshchuk, Membranes 11 (2021) 272, Table 1 (CC BY 4.0), as in membrane12. Ion diffusivities: the species records' D0 -- Na+/Cl- from the standards; NO3-/NH4+ from case-local copies under constant/species/ that add a Nernst-Einstein D0 from lambda0 (Robinson \& Stokes 1959, App. 6.1), cited in the record and not promoted. Correlation: Schock \& Miquel 1987.}
 \begin{tutgolden}
@@ -9589,18 +9589,18 @@ the 8-inch seawater element named as a RECORD. membrane01 typed `area 35 m2; len
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.203553611111}
 \goldrow{stream}{feed}{T}{298.15}
-\goldrow{stream}{permeate}{F}{0.0327034070457}
+\goldrow{stream}{permeate}{F}{0.0328364956467}
 \goldrow{stream}{permeate}{T}{298.15}
-\goldrow{stream}{retentate}{F}{0.170850204065}
+\goldrow{stream}{retentate}{F}{0.170717115464}
 \goldrow{stream}{retentate}{T}{298.15}
-\goldrow{kpi}{RO}{Gamma\_NaCl\_avg}{0.228890716219}
-\goldrow{kpi}{RO}{J\_w\_avg}{1.63034491577e-05}
-\goldrow{kpi}{RO}{R\_obs\_NaCl}{0.998357544661}
-\goldrow{kpi}{RO}{dP\_feed}{31687.5795243}
+\goldrow{kpi}{RO}{Gamma\_NaCl\_avg}{0.234960669314}
+\goldrow{kpi}{RO}{J\_w\_avg}{1.65791576916e-05}
+\goldrow{kpi}{RO}{R\_obs\_NaCl}{0.998376341781}
+\goldrow{kpi}{RO}{dP\_feed}{32237.8331465}
 \goldrow{kpi}{RO}{mass\_closure\_rel}{1.18422667173e-16}
-\goldrow{kpi}{RO}{u\_crossflow\_inlet}{0.308028685301}
-\goldrow{kpi}{RO}{water\_recovery}{0.157111391388}
-\goldrow{kpi}{RO}{solute\_closure\_rel}{2.11179646744e-16}
+\goldrow{kpi}{RO}{u\_crossflow\_inlet}{0.311968330829}
+\goldrow{kpi}{RO}{water\_recovery}{0.15775070057}
+\goldrow{kpi}{RO}{solute\_closure\_rel}{0}
 \goldmore{9}
 \end{tutgolden}
 
@@ -9844,7 +9844,7 @@ PER ION, PER ELEMENT. The film coefficient is priced for each ion on its own Sc\
 \tutreadme{feed (2.4 bar) $\to$ Stage1 (4 vessels x 6) $\to$ concentrate1 $\to$ Booster (+1.5 bar) $\to$ Stage2 (2 vessels x 6) $\to$ concentrate2 permeate1, permeate2 leave as two product streams}
 \tutreadme{spiralWoundModule with vessels <n>; elements <m>; IS a stage: the vessels are identical, so the engine solves ONE vessel on F/n and scales its outlets by n, and says so ([array]). The booster is a pump of its own, so its shaft work is on the stream table.}
 \tutreadme{The hardware is records. module Generic-8040; is a generic 8-inch x 40-inch element (data/standards/assets/Generic-8040.dat): 37.2 m2, 16 leaves, 0.854 m leaf length -- every value an ANNOUNCED estimate -- and the leaf width DERIVED, W = A/(2 n L) = 1.361 m. It is wound with the FilmTec FT30 feed spacer of Schock \& Miquel, Desalination 64 (1987) 339-352, Tab. 1 (assets/SchockMiquel-FilmTecFT30.dat): h = 0.77 mm, d\_F = 0.385 mm, eps = 0.89, so S\_v = 4/d\_F (Eq. 23) and the hydraulic diameter is their Eq. 17, d\_h = 4 eps/(2/h + (1 - eps) S\_v) = 0.952 mm -- not the 2 h eps = 1.37 mm an inline channel would use. The spacer record carries the two correlations (Sh = 0.065 Re\textasciicircum{}0.875 Sc\textasciicircum{}0.25, Eq. 30; lambda = 6.23 Re\textasciicircum{}-0.3, Eq. 24) WITH their window, 100 < Re < 1000: the case names the model, the record supplies the numbers, and a run outside the window is announced.}
-\tutreadme{What a student sees. - Per stage: stage 1 recovers 37.7 \% of its feed, stage 2 35.1 \% of its own (about 60 \% overall); the observed rejections rise in stage 2 (Na+ 35.1 \% $\to$ 40.2 \%) because its flux is lower against a richer feed. - Per element (J\_w\_avg\_elemK, dP\_elemK, feedFlow\_elemK, Re\_in\_elemK, Gamma\_<ion>\_elemK): the first element of each vessel does the most work and polarises the most (Gamma\_Na 0.090 in element 1 of stage 1, 0.014 in element 6); Re falls from 213 to 132 along a stage-1 vessel, still inside the spacer's window -- the 4:2 taper keeps stage 2's inlet Re at 265. - Per ion: the film coefficient is the spacer correlation evaluated on each ion's own D (k\_film\_<ion>, k proportional to D\textasciicircum{}0.75 through Sc\textasciicircum{}0.25), and the four ions are coupled at the wall by electroneutrality (Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27): the trace nitrate passes NEGATIVELY rejected under the dominant NaCl (R\_obs -4.7 \% in stage 1), as in membrane12/14.}
+\tutreadme{What a student sees. - Per stage: stage 1 recovers 37.5 \% of its feed, stage 2 34.5 \% of its own (about 59 \% overall); the observed rejections rise in stage 2 (Na+ 34.8 \% $\to$ 40.0 \%) because its flux is lower against a richer feed. - Per element (J\_w\_avg\_elemK, dP\_elemK, feedFlow\_elemK, Re\_in\_elemK, Gamma\_<ion>\_elemK): the first element of each vessel does the most work and polarises the most (Gamma\_Na 0.099 in element 1 of stage 1, 0.015 in element 6); Re falls from 212 to 133 along a stage-1 vessel, still inside the spacer's window -- the 4:2 taper keeps stage 2's inlet Re at 265. - Per ion: the film coefficient is the spacer correlation evaluated on each ion's own D (k\_film\_<ion>, k proportional to D\textasciicircum{}0.75 through Sc\textasciicircum{}0.25), and the four ions are coupled at the wall by electroneutrality (Geraldes \& Afonso, J. Membr. Sci. 300 (2007) 20-27): the trace nitrate passes NEGATIVELY rejected under the dominant NaCl (R\_obs -4.7 \% in stage 1), as in membrane12/14.}
 \begin{tutgolden}
 \goldrow{stream}{boosted}{F}{0.462391433766}
 \goldrow{stream}{boosted}{T}{293.165366494}
@@ -10074,9 +10074,9 @@ THE TASK. A brackish water (3 g/L NaCl, 2 g/L MgSO4) must lose its sulphate and 
 
 WHAT THE CLASS IS. An ILLUSTRATIVE teaching profile, not a membrane anyone sells and not a measurement: an OBSERVED rejection per salt at its own reference test (2,000 ppm, 4.8 bar gauge, 25 C, 15 \% recovery) -- NaCl 30 \%, MgSO4 95 \%, each the middle of the class's screening window (10-50 \%, > 90 \%) -- a water permeance (10 L m-2 h-1 bar-1) and the generic element it is deployed in (Generic-4040, by reference). The run says so on every line that matters: `[illustrative]`, and the element's own `[estimate]` lines.
 
-WHAT THE ENGINE DERIVES. `constantRejection` needs the INTRINSIC rejection, against the wall; the class states the OBSERVED one, against the feed. `fromRatedTest` runs THIS element at the class's reference test and finds the R\_int whose predicted observed rejection is the class's (src/unitOperations/membrane/RatedTestInversion): R\_int(NaCl) = 0.37566 (KPI R\_int\_fromRatedTest\_NaCl) R\_int(MgSO4) = 0.96342 (KPI R\_int\_fromRatedTest\_MgSO4)
+WHAT THE ENGINE DERIVES. `constantRejection` needs the INTRINSIC rejection, against the wall; the class states the OBSERVED one, against the feed. `fromRatedTest` runs THIS element at the class's reference test and finds the R\_int whose predicted observed rejection is the class's (src/unitOperations/membrane/RatedTestInversion): R\_int(NaCl) = 0.36464 (KPI R\_int\_fromRatedTest\_NaCl) R\_int(MgSO4) = 0.96561 (KPI R\_int\_fromRatedTest\_MgSO4)
 
-THE ANSWER, three elements in series at 7 bar absolute: water recovery 32.45 \%, permeate 811 kg/h; R\_obs(NaCl) 0.2865 $\to$ permeate 2140 ppm NaCl (feed 3000 mg/L) R\_obs(MgSO4) 0.9466 $\to$ permeate 107 ppm MgSO4 (feed 2000 mg/L), i.e. 85 ppm as sulphate. The sodium chloride passes, the sulphate stays: what the class was chosen to do. Both observed rejections sit a little below the class's stated ones (30 \%, 95 \%): at 7 bar a third of the water leaves, so the bulk concentrates along the vessel, which the reference test at 15 \% recovery barely saw.
+THE ANSWER, three elements in series at 7 bar absolute: water recovery 32.28 \%, permeate 807 kg/h; R\_obs(NaCl) 0.2856 $\to$ permeate 2143 ppm NaCl (feed 3000 mg/L) R\_obs(MgSO4) 0.9470 $\to$ permeate 106 ppm MgSO4 (feed 2000 mg/L), i.e. 85 ppm as sulphate. (2026-11-15, after C402; until then 32.45 \%, 811 kg/h, R\_int 0.37566 / 0.96342.) The sodium chloride passes, the sulphate stays: what the class was chosen to do. Both observed rejections sit a little below the class's stated ones (30 \%, 95 \%): at 7 bar a third of the water leaves, so the bulk concentrates along the vessel, which the reference test at 15 \% recovery barely saw.
 
 WHAT A STUDENT SHOULD CHANGE. The CLASS: `module NF\_OPEN;` passes more salt of every kind (it rates NaCl only, so MgSO4 then needs a typed R\_int with its source -- a class says nothing about a salt it does not rate); `module NF\_TIGHT;` holds more NaCl too. The PRESSURE and the number of ELEMENTS: recovery against permeate sulphate. The CLASS's assumptions themselves: copy the record into this case's constant/assets/ and move its MgSO4 rejection inside its band -- the intrinsic value is re-derived; typing a number here instead is refused, because a rated salt's intrinsic rejection is derived. Then the PRODUCT: a commercial element (`module NF270-4040;`, its data sheet's rated test) -- the shortlist from a class to products is the props op `membraneShortlist` (tutorials/props/membrane/ shortlist01\_class\_to\_modules, DEV.md 4c C189 slice 5).
 
@@ -10085,25 +10085,25 @@ NOT a validation: no number in this case is measured.
 \end{tutnarrative}
 \tutreadme{The question. A brackish water (3 g/L NaCl, 2 g/L MgSO4) must lose its sulphate and may keep its sodium chloride. Which membrane? Before a product, a student chooses a FUNCTION.}
 \tutreadme{The choice. module NF\_DIVALENT\_SELECTIVE; names a functional CLASS -- data/standards/assets/NF\_DIVALENT\_SELECTIVE.dat, kind membraneClass -- one of six (NF\_OPEN, NF\_DIVALENT\_SELECTIVE, NF\_TIGHT, BWRO\_HIGH\_FLUX, BWRO\_HIGH\_REJECTION, SWRO). A class is an ILLUSTRATIVE teaching profile, not a product and not a measurement: an OBSERVED rejection per salt at its own reference test (here NaCl 30 \% and MgSO4 95 \%, each the middle of the class's screening window), a water permeance, and the generic element it is deployed in (Generic-4040, by reference). The run says so: [illustrative] module 'NF\_DIVALENT\_SELECTIVE': a FUNCTIONAL CLASS, not a product ..., on stdout, on stderr and in the end-of-run caveat block.}
-\tutreadme{What the engine derives. transport constantRejection; takes the INTRINSIC rejection (against the wall); the class states the OBSERVED one (against the feed). rejection \{ NaCl fromRatedTest; MgSO4 fromRatedTest; \} runs this element at the class's reference test and inverts it (DEV.md 4c C189 slice 1): R\_int(NaCl) = 0.37566, R\_int(MgSO4) = 0.96342.}
-\tutreadme{The answer. Three elements at 7 bar: recovery 32.45 \%, the permeate at 2140 ppm NaCl and 107 ppm MgSO4 (85 ppm as sulphate).}
+\tutreadme{What the engine derives. transport constantRejection; takes the INTRINSIC rejection (against the wall); the class states the OBSERVED one (against the feed). rejection \{ NaCl fromRatedTest; MgSO4 fromRatedTest; \} runs this element at the class's reference test and inverts it (DEV.md 4c C189 slice 1): R\_int(NaCl) = 0.36464, R\_int(MgSO4) = 0.96561.}
+\tutreadme{The answer. Three elements at 7 bar: recovery 32.28 \%, the permeate at 2143 ppm NaCl and 106 ppm MgSO4 (85 ppm as sulphate).}
 \tutreadme{What a student should change. The class (NF\_OPEN, NF\_TIGHT); the pressure and the number of elements; the class's own assumptions, by copying the record into constant/assets/ and moving a rejection inside its band (typing a number for a rated salt in the case is refused -- the intrinsic value is derived); then a product (module NF270-4040;).}
 \tutreadme{Not a validation. No number here is measured. Gate: bin/curate/check\_membrane\_classes.py. Record: docs/design/an-observed-rejection-is-not-an-intrinsic-one.md section 8.}
 \begin{tutgolden}
 \goldrow{stream}{feed}{F}{0.0384027444444}
 \goldrow{stream}{feed}{T}{298.15}
-\goldrow{stream}{permeate}{F}{0.0124296516153}
+\goldrow{stream}{permeate}{F}{0.012422968549}
 \goldrow{stream}{permeate}{T}{298.15}
-\goldrow{stream}{retentate}{F}{0.0259730928291}
+\goldrow{stream}{retentate}{F}{0.0259797758954}
 \goldrow{stream}{retentate}{T}{298.15}
-\goldrow{kpi}{NF}{Gamma\_MgSO4\_avg}{0.292344748696}
-\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem1}{0.292391925472}
-\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem2}{0.2929661497}
-\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem3}{0.291673812078}
-\goldrow{kpi}{NF}{Gamma\_NaCl\_avg}{0.0596461070766}
-\goldrow{kpi}{NF}{Gamma\_NaCl\_elem1}{0.0596544709268}
-\goldrow{kpi}{NF}{Gamma\_NaCl\_elem2}{0.059755843624}
-\goldrow{kpi}{NF}{Gamma\_NaCl\_elem3}{0.0595275884866}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_avg}{0.292439560328}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem1}{0.292477515484}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem2}{0.293056694992}
+\goldrow{kpi}{NF}{Gamma\_MgSO4\_elem3}{0.291782572749}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_avg}{0.0596691094672}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_elem1}{0.0596758441885}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_elem2}{0.0597780945006}
+\goldrow{kpi}{NF}{Gamma\_NaCl\_elem3}{0.0595530529766}
 \goldmore{51}
 \end{tutgolden}
 
@@ -10135,13 +10135,13 @@ WHERE THE ENERGY OF SEAWATER RO GOES.
 
 THE PLANT. membrane01's seawater (35 g/L NaCl, 25 C), 16 m3/h at 2 bar after pretreatment, split between a HIGH-PRESSURE PUMP (to 55 bar) and the low-pressure side of a ROTARY PRESSURE EXCHANGER (the ERI PX class: a ceramic rotor whose ducts are filled in turn by the high-pressure brine, which pushes the seawater they held out at nearly its own pressure, and by low-pressure seawater, which pushes the spent brine to drain). The pressurised seawater the exchanger returns is lifted the last 1.6 bar by a BOOSTER pump, joins the high-pressure pump's discharge, and the two feed ONE SW30HR-380 stage (2 vessels x 7 elements, the record data/standards/assets/SW30HR-380.dat). The stage's brine is the exchanger's high-pressure inlet -- a recycle, cut at `brine`.
 
-THE EXCHANGER'S THREE NUMBERS are a maker's and are declared, never defaulted (Stover, Desalination 203 (2007) 168-175, the ranges he states for isobaric rotary devices): pressure-transfer efficiency 0.96 (95-98 \%), leakage 0.015 (1-2 \%), both the middle of their ranges; mixing 0.03, the LOW end of his 3-6 \%, because under this unit's definition (the brine share of the pressurised outlet's VOLUME) 3 \% on this brine (6.3 \% w/w against a 3.3 \% feed) already raises the feed's salinity 2.8 \%, the top of the 1-3 \% he quotes for that penalty; the middle of his mixing range would give 4.3 \%. His two ranges are not consistent under this definition at 47 \% recovery -- a finding about the definition, recorded and not tuned away.
+THE EXCHANGER'S THREE NUMBERS are a maker's and are declared, never defaulted (Stover, Desalination 203 (2007) 168-175, the ranges he states for isobaric rotary devices): pressure-transfer efficiency 0.96 (95-98 \%), leakage 0.015 (1-2 \%), both the middle of their ranges; mixing 0.03, the LOW end of his 3-6 \%, because under this unit's definition (the brine share of the pressurised outlet's VOLUME) 3 \% on this brine (6.2 \% w/w against a 3.3 \% feed) already raises the feed's salinity 2.7 \%, the top of the 1-3 \% he quotes for that penalty; the middle of his mixing range would give 4.3 \%. His two ranges are not consistent under this definition at 46 \% recovery -- a finding about the definition, recorded and not tuned away.
 
-THE ANSWER (read off the run, 2026-11-01): plant recovery 47.2 \% of the RO feed (16.2 m3/h), 48.3 \% of the seawater drawn (16.4 m3/h); permeate 7.94 m3/h, 99.23 \% observed NaCl rejection brine 8.31 m3/h at 54.12 bar, 6.3 \% w/w exchanger P\_HPout 53.37 bar (solved from eta): 51.4 bar recovered on 8.18 m3/h of seawater, 11.7 kW hydraulic; HP-side loss 0.76 bar; feed salinity 3.30 $\to$ 3.39 \% w/w (+2.83 \%); flows balanced to 1.0 \% (LP in 8.39 vs HP in 8.31 m3/h); dissipated 0.52 kW high-pressure pump 14.47 kW shaft (8.06 m3/h, 2 $\to$ 55 bar, eta 0.82) booster 0.46 kW shaft (8.18 m3/h, 53.37 $\to$ 55 bar, eta 0.80)
+THE ANSWER (read off the run, 2026-11-15, after C402: the module prices its feed on the NaCl-water solution law, rho = 1020.5 kg/m3 at 3.3 \% w/w, and every volume below is mass over that density; the figures of 2026-11-01 were 47.2 \% / 7.94 m3/h / 14.47 kW, on a typed 1000 kg/m3): plant recovery 46.26 \% of the RO feed (16.45 m3/h), 45.78 \% of the seawater drawn (4.711 kg/s); permeate 7.61 m3/h, 99.21 \% observed NaCl rejection brine 8.84 m3/h at 54.12 bar, 6.2 \% w/w exchanger P\_HPout 53.36 bar (solved from eta): 51.36 bar recovered on 8.36 m3/h of seawater, 11.9 kW hydraulic; HP-side loss 0.76 bar; feed salinity 3.30 $\to$ 3.39 \% w/w (+2.72 \%); flows balanced to 0.6 \% (LP in 8.54 vs HP in 8.49 m3/h); dissipated 0.53 kW high-pressure pump 14.36 kW shaft (2 $\to$ 55 bar, eta 0.82) booster 0.48 kW shaft (53.36 $\to$ 55 bar, eta 0.80)
 
-THE SPECIFIC ENERGY, DECOMPOSED (pump SHAFT powers over the permeate; no motor or drive efficiency is modelled, no pretreatment, no permeate delivery): with the exchanger (14.47 + 0.46) kW / 7.94 m3/h = 1.88 kWh/m3 WITHOUT it, the same plant pumping its whole RO feed (16.24 m3/h, 8.06 + 8.18) through the high-pressure pump and throttling the brine: (16.24/3600) x 53e5 Pa / 0.82 = 29.2 kW $\to$ 3.67 kWh/m3 so the device halves the plant's pumping energy, at the price of 2.8 \% more salinity on the membrane's feed. THE THERMODYNAMIC MINIMUM for this feed and this recovery, from the osmotic pressure the package gives (the module's own van't Hoff model, pi = 2 c R T; c = 9.568 kmol/h NaCl in 16.45 m3/h = 0.582 kmol/m3, so pi\_0 = 28.8 bar) at the plant recovery r = 0.483: w\_min = pi\_0 (-ln(1 - r)) / r = 28.8 x 1.366 = 39.3 bar = 3.93 MJ/m3 = 1.09 kWh/m3. The 0.79 kWh/m3 between the minimum and the plant is the membrane's overpressure (55 bar fed against 28.8-54 bar of osmotic pressure along the vessel), the pumps' efficiencies, the exchanger's 4 \% and its booster. A student should move the pressure, the recovery (the split fraction) and the three device numbers and watch the terms.
+THE SPECIFIC ENERGY, DECOMPOSED (pump SHAFT powers over the permeate; no motor or drive efficiency is modelled, no pretreatment, no permeate delivery): with the exchanger (14.36 + 0.48) kW / 7.61 m3/h = 1.95 kWh/m3 WITHOUT it, the same plant pumping its whole RO feed (16.45 m3/h) through the high-pressure pump and throttling the brine: (16.45/3600) x 53e5 Pa / 0.82 = 29.5 kW $\to$ 3.88 kWh/m3 so the device halves the plant's pumping energy, at the price of 2.7 \% more salinity on the membrane's feed. THE THERMODYNAMIC MINIMUM for this feed and this recovery, from the osmotic pressure the package gives (the module's own van't Hoff model, pi = 2 c R T; c = 0.584 kmol/m3 of NaCl in the RO feed, so pi\_0 = 28.9 bar) at the plant recovery r = 0.458: w\_min = pi\_0 (-ln(1 - r)) / r = 38.7 bar = 3.87 MJ/m3 = 1.07 kWh/m3. The 0.88 kWh/m3 between the minimum and the plant is the membrane's overpressure (55 bar fed against 28.9-54 bar of osmotic pressure along the vessel), the pumps' efficiencies, the exchanger's 4 \% and its booster. A student should move the pressure, the recovery (the split fraction) and the three device numbers and watch the terms.
 
-THE KNIFE EDGE, which is real. The exchanger returns 98.5 \% of the brine's VOLUME to the membrane feed, so the loop's gain is 0.985 and the recovery is set by the 1.5 \% that leaks and by how the permeate moves with the feed: the high-pressure pump's flow IS the permeate (plus the leak), and the split fraction here (0.49 to the pump) was tuned by hand until the device ran balanced -- what a real train's control does with that pump's drive. Newton on the tear overshoots on such a loop (a trial brine with no water, a booster asked to pump down); system/solverDict selects Wegstein with its full secant step, which converges in five.
+THE KNIFE EDGE, which is real. The exchanger returns 98.5 \% of the brine's VOLUME to the membrane feed, so the loop's gain is 0.985 and the recovery is set by the 1.5 \% that leaks and by how the permeate moves with the feed: the high-pressure pump's flow IS the permeate (plus the leak), and the split fraction here (0.481 to the pump) was tuned by hand until the device ran balanced -- what a real train's control does with that pump's drive. Newton on the tear overshoots on such a loop (a trial brine with no water, a booster asked to pump down); system/solverDict selects Wegstein with its full secant step, which converges in five.
 
 WHAT THE RUN SAYS AND CANNOT SAY. The mixer `Join` is DECLARED isothermal at the feed temperature: an adiabatic mix would need NaCl's liquid heat capacity, which its record does not carry (membrane01's component set), so the pumps' 0.28 K and 0.01 K dissipation rises are discarded there and no mixing duty is priced -- announced. FOR THE SAME REASON THE PLANT'S FIRST LAW IS UNAVAILABLE on this component set (`energyBalance UNAVAILABLE`, as on membrane01): the exchanger's own row closes by construction (T unchanged, Q = 0), but nothing here can show it, and the pumps' useful work v dP is not carried by the liquid enthalpy surface in any case (Pump.cpp says why). An ion-written twin (water, Na, Cl) would have a first law and would show the pumps' residual; it is not built here. The exchanger's three balances ARE checked, independently of the engine, by bin/curate/check\_pressure\_exchanger.py on this case's result JSON.
 
@@ -10151,19 +10151,19 @@ NOT a validation: no number here is measured. NOT modelled: the rotor's hydrauli
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{stream}{boosted}{F}{0.131405782154}
-\goldrow{stream}{boosted}{T}{298.159753726}
-\goldrow{stream}{brine}{F}{0.134638209412}
+\goldrow{stream}{boosted}{F}{0.129878887298}
+\goldrow{stream}{boosted}{T}{298.159928736}
+\goldrow{stream}{brine}{F}{0.133104266691}
 \goldrow{stream}{brine}{T}{298.15}
 \goldrow{stream}{feed}{F}{0.255555}
 \goldrow{stream}{feed}{T}{298.15}
-\goldrow{stream}{hpFeed}{F}{0.121388625}
-\goldrow{stream}{hpFeed}{T}{298.428411097}
-\goldrow{stream}{permeate}{F}{0.118156197742}
+\goldrow{stream}{hpFeed}{F}{0.122921955}
+\goldrow{stream}{hpFeed}{T}{298.431392669}
+\goldrow{stream}{permeate}{F}{0.119696575607}
 \goldrow{stream}{permeate}{T}{298.15}
-\goldrow{stream}{pxHPout}{F}{0.131405782154}
+\goldrow{stream}{pxHPout}{F}{0.129878887298}
 \goldrow{stream}{pxHPout}{T}{298.15}
-\goldrow{stream}{roFeed}{F}{0.252794407154}
+\goldrow{stream}{roFeed}{F}{0.252800842298}
 \goldrow{stream}{roFeed}{T}{298.15}
 \goldmore{168}
 \end{tutgolden}
@@ -10205,11 +10205,11 @@ TWO UNITS, one per sheet: NF270-4040 (MgSO4, rated 4.8 bar gauge) fed at 8 bar a
 \goldrow{stream}{feedRO}{T}{298.15}
 \goldrow{stream}{permeateNF}{F}{0.00941652363347}
 \goldrow{stream}{permeateNF}{T}{298.15}
-\goldrow{stream}{permeateRO}{F}{0.0171511115405}
+\goldrow{stream}{permeateRO}{F}{0.0169655198108}
 \goldrow{stream}{permeateRO}{T}{298.15}
 \goldrow{stream}{retentateNF}{F}{0.0312039614468}
 \goldrow{stream}{retentateNF}{T}{298.15}
-\goldrow{stream}{retentateRO}{F}{0.186402499571}
+\goldrow{stream}{retentateRO}{F}{0.1865880913}
 \goldrow{stream}{retentateRO}{T}{298.15}
 \goldrow{kpi}{NF}{A\_w\_alternations}{6}
 \goldrow{kpi}{NF}{A\_w\_fromRatedTest\_LMH\_per\_bar}{14.8785142624}

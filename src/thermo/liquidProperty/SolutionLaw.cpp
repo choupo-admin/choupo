@@ -21,6 +21,7 @@
 #include "thermo/PropertyDomainError.H"
 #include "thermo/RecordResolver.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/ApproximationAuthorisation.H"
 
 #include <algorithm>
 #include <cmath>
@@ -138,6 +139,17 @@ std::string SolutionLaw::recordFor(const ThermoPackage& thermo, const std::vecto
     return p.string();
 }
 
+std::string SolutionLaw::recordForSubset(const ThermoPackage& thermo, const std::vector<std::size_t>& set,
+                                         std::vector<std::size_t>& sub)
+{
+    sub.clear();
+    const auto& listed = ApproximationAuthorisation::instance().massWithoutVolume();
+    for (const std::size_t i : set)
+        if (!listed.count(thermo.comp(i).name())) sub.push_back(i);
+    if (sub.size() != 2 || sub.size() == set.size()) return "";
+    return recordFor(thermo, sub);
+}
+
 SolutionLaw::SolutionLaw(const Binding& b)
   : thermo_(b.thermo), set_(b.set), path_(b.recordName)
 {
@@ -160,7 +172,14 @@ SolutionLaw::SolutionLaw(const Binding& b)
         recSet.push_back(i);
     }
     std::sort(recSet.begin(), recSet.end());
-    if (recSet != set_)
+    recSet_ = recSet;
+    //  the set may exceed the record's binary only by constituents the case lists under massWithoutVolume
+    bool extrasListed = std::includes(set_.begin(), set_.end(), recSet.begin(), recSet.end());
+    for (const std::size_t i : set_)
+        if (std::find(recSet.begin(), recSet.end(), i) == recSet.end()
+            && !ApproximationAuthorisation::instance().massWithoutVolume().count(thermo_->comp(i).name()))
+            extrasListed = false;
+    if (!extrasListed)
         throw std::runtime_error(where + ": the record states the set "
             + setDisplayName(*thermo_, recSet) + " (one solute, one solvent) and was found"
             " for the set " + setName_ + ".  The solution record holds a binary only;"
@@ -239,8 +258,13 @@ std::string SolutionLaw::id() const
 DensityAnswer SolutionLaw::evaluate(scalar T, scalar P, const sVector& x) const
 {
     //  Mass fractions over the set, from the request's mole fractions.
-    scalar M = 0.0;
-    for (const std::size_t i : set_) if (x[i] > 0.0) M += x[i] * thermo_->comp(i).MW();
+    scalar M = 0.0, Mextra = 0.0;
+    for (const std::size_t i : set_)
+        if (x[i] > 0.0)
+        {
+            if (std::find(recSet_.begin(), recSet_.end(), i) != recSet_.end()) M += x[i] * thermo_->comp(i).MW();
+            else                                                               Mextra += x[i] * thermo_->comp(i).MW();
+        }
     if (!(M > 0.0))
         throw PropertyDomainError(PropertyDomainError::Kind::invalidState,
             "liquid density: empty composition");
@@ -268,7 +292,26 @@ DensityAnswer SolutionLaw::evaluate(scalar T, scalar P, const sVector& x) const
         throw PropertyDomainError(PropertyDomainError::Kind::invalidState,
             "liquid density of " + setName_ + ": the law of " + shown_
             + " gives no finite positive density");
-    a.v = (M / 1000.0) / a.rho;                                    // m3/mol
+    a.v = (M / 1000.0) / a.rho;                                    // m3/mol of the mixture: the binary's volume
+    if (Mextra > 0.0)
+    {
+        //  the listed constituents keep their mass and add no volume, inside the hypothesis' own bound
+        const scalar wE = Mextra / (M + Mextra);
+        const scalar wMax = ApproximationAuthorisation::instance().maxMassFractionWithoutVolume();
+        if (wE > wMax)
+            throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
+                "liquid density of " + setName_ + ": the case's hypothesis massWithoutVolume (the constituents the"
+                " law does not carry keep their mass and add no volume) does not stand here: the sum of their mass"
+                " fractions is " + fmt("%.6g", wE) + ", above the maxMassFraction " + fmt("%.6g", wMax)
+                + " the case itself declared (approximations.massWithoutVolume).",
+                "a liquid within the declared bound, or a larger bound with its reason");
+        a.rho = a.rho / (1.0 - wE);
+        std::string names;
+        for (const std::size_t i : set_)
+            if (std::find(recSet_.begin(), recSet_.end(), i) == recSet_.end() && x[i] > 0.0)
+                names += (names.empty() ? "" : ", ") + thermo_->comp(i).name();
+        PropertySourceLog::instance().hypothesisHere("massWithoutVolume", names, wE, wMax);
+    }
     a.methodId = id();
     a.label = "property kernel: the solution's own density law (" + form_->name()
             + ", " + citation_ + "), at the temperature; the law carries no pressure term";

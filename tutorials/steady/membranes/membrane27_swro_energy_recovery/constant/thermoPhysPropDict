@@ -34,15 +34,6 @@ equilibrium
 // component with no liquid volume.  This case declares, with its bound set
 // from its own feed, that the listed components keep their mass and add no
 // volume -- what the pump did unannounced before the pilot.
-approximations
-{
-    massWithoutVolume
-    {
-        components      ( NaCl );
-        maxMassFraction 0.08;
-        reason          "seawater RO feed: the salt keeps its mass and adds no volume to the pumps' and the module's liquid density (its mass fraction is 0.034 at the seawater feed, 0.0456 at the module's feed and 0.065 in the brine the booster pump takes; the bound 0.08 was 0.05 until C402, when the module began to ask the same density and the recycle iteration reached 0.053); the engine's own bound on this reading is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
-    }
-}
 
 transport
 {
@@ -55,7 +46,7 @@ transport
             pin ( { component water; law vogel; reason "the temperature scaling of an ion's D0 reads water's viscosity; the Vogel fit is the one the membrane cases that declared a viscosity model used"; } );
             measured
             {
-                sw0p95_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; its own assumption for a seawater feed, the status in the file's basis"; }
+                seawater35_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; seawater of salinity 35 at 25 C (CRC p. 14-12), stood over a brine as a hypothesis, the status in the file's basis"; }
             }
         }
         diffusivity

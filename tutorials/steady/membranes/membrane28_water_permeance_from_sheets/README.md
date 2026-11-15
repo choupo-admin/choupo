@@ -23,8 +23,8 @@ records are NOT edited: their fit still serves the cases it was fitted to.
 
 | element | record A_w | derived A_w | R_int | sheet's permeate |
 |---|---|---|---|---|
-| NF270-4040 (MgSO4) | 36 | 14.88 | 0.979347 | 9.5 m3/d at 15 %, reproduced to 5e-15 |
-| SW30HR-380 (NaCl) | 3.6 | 1.318 | 0.997398 | 26 m3/d at 8 %, reproduced to 2e-15 |
+| NF270-4040 (MgSO4) | 36 | 14.88 | 0.979354 | 9.5 m3/d at 15 %, reproduced to 5e-15 |
+| SW30HR-380 (NaCl) | 3.6 | 1.352 | 0.997397 | 26 m3/d at 8 %, reproduced to 2e-15 |
 
 (A_w in L/m2/h/bar; KPIs `A_w_fromRatedTest_LMH_per_bar`,
 `A_w_record_LMH_per_bar`.)  The derived value is a MODEL parameter of the

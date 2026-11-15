@@ -3849,6 +3849,18 @@ law's pure-water end is not the reference water ($+0.23$\,\% at 273.16\,K,
 $-0.09$\,\% at 298.15\,K against IAPWS-95): a liquid crossing from the set
 $\{\mathrm{water}\}$ to $\{\mathrm{NaOH, water}\}$ steps by that much.
 
+\paragraph{A second record and a trace constituent (C402).}  \file{NaCl-water.dat}
+is the same form regressed to the Laliberté--Cooper (2004) model for NaCl (its
+header carries the grid, the in-sample error and the comparisons with the CRC
+Handbook, p.~8-77 and p.~14-12; the regression is
+\file{bin/curate/fit\_nacl\_water\_density.py}).  The method now also applies to
+a set that exceeds the record's binary by constituents the case lists under
+\code{massWithoutVolume}: the law prices the binary, and the listed
+constituents keep their mass and add no volume,
+$\rho=\rho_{\mathrm{binary}}/(1-w_{\mathrm{listed}})$, inside the
+hypothesis' own \code{maxMassFraction}.  A constituent the law \emph{carries}
+that the case also lists passes the law over, as before.
+
 \subsection{A measurement as a method, with a hard box: \code{measured}}\label{sec:liquid-density-measured}
 
 A case may hold a measured density of its own liquid
@@ -22418,40 +22430,55 @@ to write in \file{constant/thermoPhysPropDict} instead
 shared with the column).
 
 \paragraph{Density.}  A dissolved salt has no liquid volume of its own in
-its record, so the case declares the reading it takes,
+its record, so the density of a NaCl solution is its \emph{solution law}
+(section~\ref{sec:liquid-density-solution-law}), the record
+\file{parameters/solution/NaCl-water.dat}: the form \code{polynomialTSqrtX}
+regressed to the Laliberté--Cooper (2004) model for NaCl (Table~1, Eqs.~6, 8,
+9) over $0$--$60\,^\circ$C and $w_{\mathrm{NaCl}} \le 0.26$, with its
+in-sample error (0.32~kg/m$^3$ at most) and the two out-of-sample comparisons
+the record prints: the CRC Handbook's NaCl table at $20\,^\circ$C (p.~8-77:
+1019.6 and 1026.8 against 1019.35 and 1026.54~kg/m$^3$ at 3 and 4 wt\,\%) and
+its seawater at $S=35$ (p.~14-12: 1023.343 at $25\,^\circ$C against 1021.61,
+$-0.17\,\%$, the other salts of the sea being denser than their NaCl
+equivalent).  The cases whose salt passes 1~wt\,\% (the seawater, brackish and
+energy-recovery cases, the rated-test probes of the class library) take it.
+A constituent the law does not carry and the case lists under
 \begin{lstlisting}
 approximations { massWithoutVolume
-  { components ( NaCl MgSO4 ); maxMassFraction 0.005; reason "..."; } }
+  { components ( boron ); maxMassFraction 0.001; reason "..."; } }
 \end{lstlisting}
-under which the solute keeps its mass and adds no volume,
-$\rho = \rho_{\mathrm{w}}(T)/(1-w_s)$ with $\rho_{\mathrm{w}}$ the package's
-water density (IAPWS-95 or the record's Rackett law).  It is a hypothesis with
-a hard bound: a liquid whose solute mass fraction passes
-\code{maxMassFraction} is refused, never extrapolated.  Its error is the
-one \file{AqueousVolumetric.H} states, about $+1.8\,\%$ at $1$~mol/kg; at
-seawater strength it overstates $\rho$ by about $1\,\%$ (the NaCl--water
-table of the CRC Handbook, 82nd ed., p.~8-77, gives $1.0196$ and $1.0268$
-g/cm$^3$ at $3$ and $4$ wt\,\% and $20\,^\circ$C, against about $1.031$ here at $25\,^\circ$C).  A
-measured NaCl--water law (Rogers and Pitzer 1982) is the better reading and
-is not yet a record.
+keeps its mass and adds no volume on top of it, $\rho =
+\rho_{\mathrm{NaCl\text{-}water}}/(1-w_{\mathrm{listed}})$ under the
+hypothesis' own bound (the label solute of the Campo de Dal\'ias plant).  A
+dilute feed of a salt with no law (the divalent salts, ions) keeps the
+hypothesis alone, $\rho = \rho_{\mathrm{w}}(T)/(1-w_s)$ with $\rho_{\mathrm{w}}$
+the package's water density: its bias against the NaCl law is measured, below
+$0.15\,\%$ at $w \le 0.5$~wt\,\%, and $+0.96\,\%$ at seawater strength,
+which is why it is not used there.  Either way a liquid whose listed mass
+fraction passes \code{maxMassFraction} is refused, never extrapolated.
 
 \paragraph{Viscosity.}  A mixing rule needs a law for every constituent, and a
 lumped salt has none, so a membrane case states the mixture's viscosity
 for its constituent set, with its source, in
 \code{transport \{ liquid \{ viscosity \{ measured \{ <name> \{ use
 method; reason "..."; \} \} \} \} \}} (section~\ref{sec:measured-liquid-viscosity}).
-The values the shipped cases state are of two kinds, and the file says
-which in its \code{basis}: \emph{water's viscosity} at the feed temperature
-($0.890$~mPa\,s at $25\,^\circ$C, CRC 82nd ed., p.~6-170; $1.002$ at
-$20\,^\circ$C, p.~8-57), stood over a dilute feed --- the same book's table
-gives NaCl at $1$~wt\,\% only $1.8\,\%$ above water at $20\,^\circ$C --- and an
-\emph{assumed} seawater value ($0.95$ or $1.0$~mPa\,s) that the case had
-typed since its first version, kept as it was and now marked ASSUMED,
-because no source for seawater at $25\,^\circ$C was read.  A stated value is
-never called a measurement; a feed whose constituent set none of the
-case's values describes is refused, and an exact set always wins.
+The shipped values are of two kinds, and the file says which in its
+\code{basis}: \emph{water's viscosity} at the feed temperature ($0.890$~mPa\,s
+at $25\,^\circ$C, CRC 82nd ed., p.~6-170; $1.002$ at $20\,^\circ$C, p.~8-57),
+stood over a dilute feed --- the same book's table gives NaCl at $1$~wt\,\%
+only $1.8\,\%$ above water at $20\,^\circ$C --- and \emph{seawater at
+$S=35$}, $0.966$~mPa\,s at $25\,^\circ$C (CRC p.~14-12; $1.085$ at
+$20\,^\circ$C), for the seawater feeds, stated at $w=0.035$ and stood over a
+brine up to $7$~wt\,\% as a hypothesis (the table's viscosity rises with
+salinity, so a brine is a little more viscous).  A stated value is never called a
+measurement; a feed whose constituent set none of the case's values describes
+is refused, and an exact set always wins.  Water's viscosity has two homes in a
+run: the stated value above prices the \emph{feed} (Re and Sc), and water's own
+record law (the \code{pin} or \code{model} the case declares, Vogel) prices the
+Stokes--Einstein factor of the temperature rule below; they agree to the
+tolerance of the two sources and are not the same number.
 
-\paragraph{Diffusivity.}  Each lumped salt has its own entry in water,
+\paragraph{Diffusivity.}  Each lumped solute has its own entry in water,
 \code{transport \{ liquid \{ diffusivity \{ returns infiniteDilution;
 infiniteDilution \{ entries ( \{ solute NaCl; solvent water; kind
 infiniteDilution; value 1.611e-9 m2/s; T 298.15 K; box \{ T (lo hi); \}
@@ -22463,12 +22490,28 @@ single-ion values combined by that page's own relation,
 D_{\mathrm{salt}} = \frac{(z_++z_-)\,D_+D_-}{z_+D_++z_-D_-},
 \end{equation}
 giving, at $25\,^\circ$C, NaCl $1.611$, MgSO$_4$ $0.849$, CaCl$_2$ $1.335$,
-MgCl$_2$ $1.250$ and Na$_2$SO$_4$ $1.230\times10^{-9}$~m$^2$/s.  A datum
-outside its box is refused, never handed to a correlation, and a box wider
-than the stated point carries its \code{reason}.  \emph{Boron} has no value
-in any source read for this slice: the Campo de Dal\'ias case takes NaCl's
-as an explicit, labelled hypothesis (the film goes as $D^{0.75}$), and a
-measured boric-acid value replaces it.
+MgCl$_2$ $1.250$ and Na$_2$SO$_4$ $1.230\times10^{-9}$~m$^2$/s.  Boric acid
+(the Campo de Dal\'ias plant's boron) is Park and Lee's
+(J.\ Chem.\ Eng.\ Data 39 (1994) 891, Eq.~8 and Table~2, model 6, no pH
+control): $1.640516\times10^{-5}$~cm$^2$/s at $c\to0$, extrapolated below
+their lowest measurement (0.01~mol/dm$^3$) and declared so in the entry's
+\code{reason}.
+
+\emph{One temperature rule.}  A declared entry is stated at \emph{its own}
+temperature $T_e$; a run at $T$ takes it there by the same Stokes--Einstein
+factor an ion's $D_0$ gets,
+$D(T)=D(T_e)\,(T/T_e)\,\mu_{\mathrm{w}}(T_e)/\mu_{\mathrm{w}}(T)$, on water's
+pure viscosity, when the case declares a liquid viscosity.  It is announced
+(\code{[D(T)]}, with the factor and both numbers) and, with no viscosity
+declared, announced as \emph{not} corrected.  The box still bounds where the
+entry stands: outside it the entry is refused, never extrapolated.
+
+\paragraph{What the unit's block may carry.}  The keys of a membrane
+unit's \code{operation} are an allow-list read from the code
+(\file{MembraneTypedProperties.H}): a key outside it --- \code{nu},
+\code{rhoFeed}, \code{D0}, a typo --- is refused by name, so a spelling nobody
+reads is never accepted in silence; a property word is refused with the line
+to write instead.
 
 \paragraph{A hand check.}  For \code{membrane15\_module\_nf270\_4040} (NaCl
 2\,g/L, $25\,^\circ$C) the package gives $\rho = 999.217$~kg/m$^3$ (IAPWS-95

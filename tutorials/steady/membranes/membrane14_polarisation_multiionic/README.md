@@ -20,14 +20,14 @@ case declares it:
     polarisation  { suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }
 
 What a student sees: the polarisation index Gamma = (c_m - c_b)/c_b differs
-BY ION (`Gamma_<ion>_avg`: Na+ 0.163, Cl- 0.163, NO3- 0.064, NH4+ 0.118 --
+BY ION (`Gamma_<ion>_avg`: Na+ 0.179, Cl- 0.181, NO3- 0.070, NH4+ 0.130 --
 the dominant pair driven together by the field, the traces each on their own
-rejection); the interface field `xi_V_per_m_avg` (~34 V/m) beside the
+rejection); the interface field `xi_V_per_m_avg` (~38 V/m) beside the
 membrane's own potential `membranePotential_mV_avg` (~31 mV) -- two fields,
 one in the solution and one across the active layer; R_obs BELOW the
-intrinsic witness (Cl- 68.9 % here against membrane12's 77.5 %), because
+intrinsic witness (Cl- 68.3 % here against membrane12's 77.5 %), because
 the wall is richer than the bulk.  Set `ionCoupling none;` and each ion
-polarises alone: Na+ 0.187, Cl- 0.135, NO3- 0.043, NH4+ 0.143 -- the
+polarises alone: Na+ 0.207, Cl- 0.149, NO3- 0.047, NH4+ 0.158 -- the
 coupling moves the trace anion's Gamma by half.  (The README that briefed
 this case said the trace anion's Gamma might go negative; on this feed it
 does not, and the number above is what the run says.)

@@ -523,6 +523,51 @@ def main():
             p.write_text(p.read_text().replace("area         5.0;", "area         5.0;\n            rho          1000;", 1))
         refusal("typedDiafilterDensity", DIAF, typed_diafilter_rho, ["`rho`", "batchDiafilter"] + typed, "choupoBatch")
 
+        #  MB-07 (C402 review): EVERY refused word, not four of them.  The list is read from the two headers that
+        #  hold it (UnitTypedProperties.H words(), MembraneTypedProperties.H typedPropertyWords()), and each word is
+        #  typed twice -- at the top of `operation` and inside `massTransfer` -- on a spiral module and a diafilter;
+        #  every run must refuse BY NAME, and the count is printed.  A word dropped from the list (the reviewer's
+        #  sabotage 5, `mu_feed`) leaves its runs exit 0 and fails here.
+        hdr = (ROOT / "src/unitOperations/UnitTypedProperties.H").read_text() \
+            + (ROOT / "src/unitOperations/membrane/MembraneTypedProperties.H").read_text()
+        wl = sorted(set(re.findall(r'\{\s*"([A-Za-z_0-9]+)"\s*,\s*[A-Za-z]+\s*\}', hdr)))
+        if len(wl) < 35:
+            failures.append(f"(c) only {len(wl)} refused words found in the headers -- a collapsed list is not a gate")
+        nrun = 0
+        for w_ in wl:
+            def top(dd, w_=w_):
+                add_op(dd, f"{w_} 1;")
+            def nested(dd, w_=w_):
+                p_ = dd / "system/flowsheetDict"
+                p_.write_text(p_.read_text().replace("model          SchockMiquel;", f"model          SchockMiquel;\n                {w_} 1;", 1))
+            for how, fn in (("top", top), ("nested", nested)):
+                dd = tmp / f"allwords_{how}_{w_}"
+                copy_case(M15, dd)
+                fn(dd)
+                rc_, out_ = run(dd)
+                nrun += 1
+                if rc_ == 0 or f"`{w_}`" not in out_ or "does not carry a property" not in out_:
+                    failures.append(f"(c) typed word `{w_}` ({how}): exit {rc_}, not refused by name:\n" + out_[-300:])
+        for w_ in wl:
+            dd = tmp / f"allwords_diaf_{w_}"
+            copy_case(DIAF, dd)
+            pp = dd / "system/flowsheetDict"
+            pp.write_text(pp.read_text().replace("area         5.0;", f"area         5.0;\n            {w_} 1;", 1))
+            rc_, out_ = run(dd, "choupoBatch")
+            nrun += 1
+            if rc_ == 0 or f"`{w_}`" not in out_:
+                failures.append(f"(c) typed word `{w_}` (diafilter): exit {rc_}, not refused by name:\n" + out_[-300:])
+        #  MB-06: a spelling the code does not read is refused by the allow-list, not ignored
+        for bad in ("nNode", "nu_feed", "viscosityFeed"):
+            dd = tmp / f"allowlist_{bad}"
+            copy_case(M15, dd)
+            add_op(dd, f"{bad} 1;")
+            rc_, out_ = run(dd)
+            nrun += 1
+            if rc_ == 0 or f"`{bad}` is not a key" not in out_:
+                failures.append(f"(c) unlisted key `{bad}`: exit {rc_}, not refused by the allow-list:\n" + out_[-300:])
+        print(f"  (c) {len(wl)} refused words x (top, nested, diafilter) + 3 unlisted keys: {nrun} runs")
+
         def drop_membrane(dd):
             p = dd / "system/flowsheetDict"
             p.write_text(re.sub(r"membrane\s+NF270_sdem_NaCl;[^\n]*\n", "", p.read_text()))
@@ -672,7 +717,8 @@ def main():
     legacy = re.compile(r"^\s*(rho|rho_feed|rho_diafiltrate|viscosity|diffusivity|mu_feed|D_solute|liquidViscosity"
                         r"|liquidDiffusivity|liquidDensity)\s+[-+0-9.eE]+", re.M)
     members = 0
-    for fd in sorted((ROOT / "tutorials").rglob("system/flowsheetDict")):
+    for fd in sorted(list((ROOT / "tutorials").rglob("system/flowsheetDict"))
+                     + list((ROOT / "tutorials").rglob("system/propsDict"))):   # propsDicts too (MB-05)
         t = strip_comments(fd.read_text())
         if not re.search(r"type\s+(spiralWoundModule|membraneSW|batchDiafilter)\b", t):
             continue

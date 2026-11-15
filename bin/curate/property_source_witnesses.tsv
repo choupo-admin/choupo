@@ -1,7 +1,8 @@
 # case	unit	property	sourceId -- check_property_source_witnesses (C378 slice 0, review DR-11): one witness per source class
 tutorials/steady/rotating/pump01_water	pump01	liquidDensity	referenceEquation.IAPWS95
-tutorials/steady/membranes/membrane27_swro_energy_recovery	HPpump	liquidDensity	idealMixing[referenceEquation.IAPWS95+massWithoutVolume]
-tutorials/steady/membranes/membrane27_swro_energy_recovery	RO	liquidViscosity	stated.sw0p95_NaCl_liquidViscosity
+tutorials/steady/membranes/membrane27_swro_energy_recovery	HPpump	liquidDensity	solutionLaw.NaCl-water
+tutorials/steady/membranes/membrane15_module_nf270_4040	NF	liquidDensity	idealMixing[referenceEquation.IAPWS95+massWithoutVolume]
+tutorials/steady/membranes/membrane27_swro_energy_recovery	RO	liquidViscosity	stated.seawater35_NaCl_liquidViscosity
 tutorials/steady/crystallisation/crystalliser08_nacl_antisolvent_msmpr	cryst	liquidVolume	bypass.recordVliq25C.missingIsZero
 tutorials/steady/drying/sprayDryer01_sugar	dryer	liquidDensity	bypass.solventVliq25C
 tutorials/steady/electrodialysis/ed01_nacl_desalination	edStack	liquidKinematicViscosity	constant.waterKinematic1e-6

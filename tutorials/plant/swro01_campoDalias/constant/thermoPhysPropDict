@@ -52,9 +52,9 @@ approximations
 {
     massWithoutVolume
     {
-        components      ( NaCl );
-        maxMassFraction 0.05;
-        reason          "seawater RO plant: the salt keeps its mass and adds no volume to the pumps' liquid density (its mass fraction is about 0.035); the engine's own bound on this reading is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
+        components      ( boron );
+        maxMassFraction 0.001;
+        reason          "boron, a label solute at about 5 mg/L, keeps its mass and adds no volume to the feed's liquid density (its mass fraction is at most 0.001); the NaCl is priced by its own solution law (parameters/solution/NaCl-water.dat, Laliberte and Cooper 2004), to which the hypothesis adds the listed constituent as rho / (1 - w_listed) (C402, MB-02)";
     }
 }
 
@@ -69,9 +69,9 @@ transport
             pin ( { component water; law vogel; reason "the temperature scaling of an ion's D0 reads water's viscosity; the Vogel fit is the one the membrane cases that declared a viscosity model used"; } );
             measured
             {
-                sw1p0_NaClboron_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; its own assumption for a seawater feed, the status in the file's basis"; }
-                sw1p0_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; its own assumption for a seawater feed, the status in the file's basis"; }
-                sw1p0_boron_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; its own assumption for a seawater feed, the status in the file's basis"; }
+                seawater35_NaClboron_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; seawater of salinity 35 at 25 C (CRC p. 14-12), stood over a brine as a hypothesis, the status in the file's basis"; }
+                seawater35_NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; seawater of salinity 35 at 25 C (CRC p. 14-12), stood over a brine as a hypothesis, the status in the file's basis"; }
+                seawater35_boron_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; seawater of salinity 35 at 25 C (CRC p. 14-12), stood over a brine as a hypothesis, the status in the file's basis"; }
             }
         }
         diffusivity
@@ -86,9 +86,9 @@ transport
                       reason "the datum is at 25 C; the module runs within a few tenths of a kelvin of it (pump heating), and D moves about 2 to 3 % per K on that page, so the box stands it over +-0.5 K, about 1 % of D, as a hypothesis";
                       source "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Ionic conductivity and diffusion at infinite dilution' (Vanysek; PDF page 304 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): Na+ 1.334, Cl- 2.032 x 1e-5 cm2/s, combined by the page's salt relation D = (z+ + z-) D+ D- / (z+ D+ + z- D-)"; }
                     { solute boron; solvent water; kind infiniteDilution;
-                      value 1.611e-09 m2/s;  T 298.15 K;  box { T (297.65 298.65); }
-                      reason "boron has no diffusivity in any source read for this slice; the film coefficient goes as D^0.75 (Schock and Miquel), so the hypothesis is worth a few percent of k on the boron row; a measured value of boric acid in water replaces it";
-                      source "NO SOURCE READ for boric acid in water: the value is NaCl's (Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Ionic conductivity and diffusion at infinite dilution' (Vanysek; PDF page 304 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): Na+ 1.334, Cl- 2.032 x 1e-5 cm2/s, combined by the page's salt relation), the case's own earlier assumption that one value serves both solutes, kept as an explicit hypothesis"; }
+                      value 1.6405e-9 m2/s;  T 298.15 K;  box { T (297.65 298.65); }
+                      reason "the value is the c -> 0 end of Park and Lee's fit, EXTRAPOLATED below their lowest measurement (0.01 mol/dm3; the seawater's boron is about 0.5 mmol/dm3); the datum is at 25 C and the module runs within a few tenths of a kelvin of it, so the box stands it over +-0.5 K (about 1 % of D) as a hypothesis; the transport is of the neutral acid, the form that holds at the module's pH 8.2";
+                      source "Park and Lee, J. Chem. Eng. Data 39 (1994) 891-894, Eq. (8) p. 894 and Table 2 p. 893 (model 6, no pH control, P0 = 1.640516): 1e5 D / (cm2/s) = 1.640516 - 0.678597 c^0.5 for c in 0-0.65 mol/dm3, 25 C, at c = 0 (Articles/Electrolytes/park1994-diffusion-coefficients-aqueous-boric-acid.pdf)"; }
                 );
             }
         }

@@ -34,6 +34,7 @@ Description
 
 #include "core/Dictionary.H"
 
+#include <algorithm>
 #include <functional>
 #include <stdexcept>
 #include <string>
@@ -100,8 +101,25 @@ inline const std::vector<std::pair<std::string, std::string>>& words()
 //  one where the family asks for a different quantity (a key and its line).
 inline void refuse(const DictPtr& operDict, const std::string& who,
                    const std::string& kind,
-                   const std::vector<std::pair<std::string, std::string>>& extraWords = {})
+                   const std::vector<std::pair<std::string, std::string>>& extraWords = {},
+                   const std::vector<std::string>& allowedKeys = {})
 {
+    //  C402 (review MB-06): where the family lists the keys its code READS (`allowedKeys`), any other key of
+    //  `operation` is refused by name -- a spelling nobody listed (`nu`, `D0`, `rhoFeed`, `muFeed`) can never be
+    //  accepted in silence.  A property word keeps its own message (with the line to write) and is judged first.
+    auto checkKeys = [&]()
+    {
+        if (allowedKeys.empty()) return;
+        for (const auto& k : operDict->keys())
+            if (std::find(allowedKeys.begin(), allowedKeys.end(), k) == allowedKeys.end())
+            {
+                std::string list;
+                for (const auto& a : allowedKeys) list += (list.empty() ? "" : " ") + a;
+                throw std::runtime_error(who + "`" + k + "` is not a key a " + kind + " reads in `operation`"
+                    " (a spelling nobody reads is refused, never ignored).  The keys it reads: " + list
+                    + ".  A liquid property is never one of them: the property dictionary holds it (DEV.md 4c C402).");
+            }
+    };
     auto check = [&](const DictPtr& d, const std::string& where)
     {
         auto one = [&](const std::string& k, const std::string& line)
@@ -123,6 +141,7 @@ inline void refuse(const DictPtr& operDict, const std::string& who,
             walk(child, path);
     };
     walk(operDict, "operation");
+    checkKeys();
 }
 
 } // namespace unitTypedProperties

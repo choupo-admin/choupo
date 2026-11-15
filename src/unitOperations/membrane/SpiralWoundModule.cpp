@@ -130,7 +130,7 @@ int SpiralWoundModule::solve(const DictPtr& dict,
     //  viscosity or a diffusivity typed here, at any depth, is refused BY
     //  NAME with the line to write in the property dictionary.
     unitTypedProperties::refuse(opDict, "spiralWoundModule '" + unitLabel + "': ",
-                                "membrane module", membrane::typedPropertyWords());
+                                "membrane module", membrane::typedPropertyWords(), membrane::spiralOperationKeys());
 
     // ---- Module RECORD (2026-09-15): `module <name>;` names a commercial
     //      element or a laboratory cell in assets/ (kind membraneModule) and
@@ -922,11 +922,11 @@ scalar h_ch = 0.7e-3, eps = 0.9, mu_feed = 0.0;
                 + transportModel->type() + ";` the passage of each form depends"
                   " on the local flux, the reduction is not exact, and no"
                   " approximation is applied in its place (Stage 1).");
-        if (polar.perSoluteK())
-            throw std::runtime_error(who + ": `aqueousSplit {}` shares ONE film"
-                " coefficient between the two forms; this unit's polarisation"
-                " gives each solute its own, and the reduction would no longer"
-                " be exact.  Declare one `diffusivity` for the component.");
+        //  (C402) The guard that stood here refused ANY pair of solutes with different diffusivities, because
+        //  until C402 a neutral solute took the unit's ONE diffusivity.  The reduction's condition is that the
+        //  TWO FORMS of the split component share one film coefficient, and they do: the component is one
+        //  solute of the march with ONE entry in the property dictionary (boron's own, Park and Lee 1994),
+        //  whatever the other solutes' D are.  The two forms never see a film of their own.
         bool listed = false;
         for (std::size_t i = 0; i < Ncomp; ++i)
             if (thermo.comp(i).name() == splitRun.spec.component)

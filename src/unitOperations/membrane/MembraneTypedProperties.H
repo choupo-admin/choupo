@@ -69,8 +69,28 @@ inline const std::vector<std::pair<std::string, std::string>>& typedPropertyWord
         { "mu_feed", visc }, { "viscosity", visc }, { "liquidViscosity", visc },
         { "mu", visc },
         { "D_solute", diff }, { "diffusivity", diff }, { "liquidDiffusivity", diff },
+        { "rhoFeed", dens }, { "muFeed", visc }, { "nu", visc }, { "kinematicViscosity", visc },
+        { "D0", diff }, { "Dsolute", diff },
     };
     return w;
+}
+
+//  THE KEYS THE CODE READS in `operation` (C402, MB-06): read from SpiralWoundModule.cpp, RatedTestInversion.cpp
+//  and BatchDiafilter.cpp, and held against every shipped membrane case by check_membrane_modules (g).
+inline const std::vector<std::string>& spiralOperationKeys()
+{
+    static const std::vector<std::string> k = {
+        "P_permeate", "aqueousSplit", "area", "dP_feed_total", "elements", "feedSpacer", "interElementDP",
+        "k_film", "length", "massTransfer", "membrane", "module", "nNodes", "osmotic", "polarisation",
+        "pressureDrop", "scaling", "solver", "transport", "transportParameters", "vessels", "waterPermeance" };
+    return k;
+}
+inline const std::vector<std::string>& diafilterOperationKeys()
+{
+    static const std::vector<std::string> k = {
+        "P_feed", "P_permeate", "area", "fouling", "k_film", "membrane", "mode", "osmotic", "polarisation",
+        "solver", "transport", "transportParameters" };
+    return k;
 }
 
 } // namespace membrane
