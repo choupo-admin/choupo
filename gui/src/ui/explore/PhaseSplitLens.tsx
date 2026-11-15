@@ -106,7 +106,7 @@ declare global {
 /** The default activity model: NRTL where a curated pair covers every pair
  *  of the set, else UNIFAC where every component carries groups, else ideal
  *  -- a starting point the panel names, never a silent choice. */
-function defaultActivity(sel: string[], catalogue: ComponentMeta[],
+export function defaultActivity(sel: string[], catalogue: ComponentMeta[],
                          localUnifac: Record<string, UnifacGroup[]>): string {
   const pairs: [string, string][] = [];
   for (let i = 0; i < sel.length; ++i) for (let j = i + 1; j < sel.length; ++j) pairs.push([sel[i]!, sel[j]!]);

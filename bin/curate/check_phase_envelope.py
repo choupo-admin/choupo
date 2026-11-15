@@ -38,7 +38,16 @@ WHAT THIS GATE CHECKS.
       in the text: they have different remedies, and calling a jump a
       turning point invents a feature of the mixture.
 
-  (d) AN EMPTY BRANCH IS NOT A STOPPED BRANCH.  envelope01's bubble line lies
+  (d) AN EMPTY BRANCH IS NOT A STOPPED BRANCH, AND A LATE START IS NEITHER
+      (EX-01, 2026-11-15).  The op used to END a branch at its first failed
+      pressure and then call it "never started" -- yet envelope01's own feed
+      has bubble points from 46 bar.  The march now keeps trying a branch
+      until it first converges, names every pressure that failed below that,
+      and calls a branch never started only when NO pressure converged.
+      Held both ways: envelope01 reports the late start (and not "never
+      started"); a probe of the same feed on 1-40 bar, where no bubble point
+      converges, reports "never started".  The text that follows is the
+      arm's original statement, kept for its history:  envelope01's bubble line lies
       below the solver's own 200 K bracket and produces nothing; the first
       version reported "stopped at 1.000 bar, last converged point 0.000 K at
       0.000 bar", a sentence about nothing.
@@ -110,9 +119,11 @@ SABOTAGE-VERIFIED 2026-11-08 (C245), by hand, observed:
       as unwitnessed.
 
 WHAT THIS GATE DOES **NOT** COVER, stated so its green line cannot imply it.
-No number in either witness is checked against a MEASURED envelope -- the
-feeds are plausible, not sampled, and the K-values come from Peng-Robinson
-over an ideal liquid.  Both cases are STRUCTURAL witnesses: they pin what the
+No number in the witnesses is checked against a MEASURED envelope -- the
+feeds are plausible, not sampled; envelope01/02 take the K-values from
+Peng-Robinson over an ideal liquid, envelope05 puts BOTH phases on the cubic
+and holds it to an independent Peng-Robinson calculation (arms k, l), which is
+a calculation, not a measurement.  Envelope01-03 are STRUCTURAL witnesses: they pin what the
 op reports and refuses to report, never that the curve is right.  The gate
 says nothing about the nose itself (it is not drawn), about the critical
 point (not located), or about whether the continuity thresholds would catch a
@@ -180,6 +191,14 @@ GAS = ROOT / "tutorials" / "props" / "molecular" / "envelope01_natural_gas"
 #  branches cross propane's Tc: the bubble branch reaches the top of the range
 #  and the dew branch ends at a reported root jump.
 JUMP = ROOT / "tutorials" / "props" / "molecular" / "envelope02_c3c4c5_branch_stop"
+#  EX-05 (2026-11-15): envelope01's feed on ONE Peng-Robinson cubic for both
+#  phases.  The expected temperatures are an INDEPENDENT calculation (a
+#  Peng-Robinson phi-phi dew/bubble point with the incipient phase iterated,
+#  kij = 0, the record's Tc/Pc/omega, written outside the engine), NOT the
+#  engine's own output.
+PHIPHI = ROOT / "tutorials" / "props" / "molecular" / "envelope05_natural_gas_phiphi"
+PHIPHI_DEW_K = {1: 208.56, 5: 235.82, 10: 249.47, 20: 263.61, 40: 276.03}
+PHIPHI_BUBBLE_K = {2: 123.38, 30: 185.43, 50: 205.65, 60: 214.57}
 OP = ROOT / "src" / "propertyOps" / "PhaseEnvelope.cpp"
 
 
@@ -200,6 +219,68 @@ def curves(case: Path):
         if len(f) == 3:
             out.setdefault(f[2], []).append((float(f[0]), float(f[1])))
     return out
+
+
+
+# ---- (l) phi-phi saturation points THROUGH the units (DP-01..04) ---------
+#  The dewT / bubbleT units call DewPoint::compute / BubblePoint::compute, so
+#  a case built here and run through choupoSolve holds the very routines the
+#  envelope op calls.  Expected values are an INDEPENDENT Peng-Robinson
+#  phi-phi calculation (kij = 0 unless stated), not the engine's output.
+_PHIPHI_THERMO = """recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+components    ( %(comps)s );
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState { model PengRobinson; mixingRule vanDerWaalsOneFluid; %(bi)s }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}
+"""
+
+
+def unit_point(td, name, utype, pbar, flows, kij=None):
+    """Run ONE dewT/bubbleT unit on a phi-phi PR package; return
+    (exit code, T [K] or None, converged word or None, stdout)."""
+    d = Path(td) / name
+    (d / "system").mkdir(parents=True)
+    (d / "constant").mkdir()
+    (d / "0").mkdir()
+    (d / f"{name}.cho").write_text("")
+    bi = ""
+    if kij is not None:
+        pd = d / "constant" / "parameters" / "PR"
+        pd.mkdir(parents=True)
+        (pd / "CO2-ethane.dat").write_text(
+            "recordType eosBinaryInteraction;\nschemaVersion 1;\ni    CO2;\n"
+            f"j    ethane;\nkij  {kij};\neos  PengRobinson;\n")
+        bi = ('binaryInteractions { CO2-ethane { source '
+              '"constant/parameters/PR/CO2-ethane.dat"; } }')
+    comps = " ".join(c for c, _ in flows)
+    (d / "constant" / "thermoPhysPropDict").write_text(
+        _PHIPHI_THERMO % {"comps": comps, "bi": bi})
+    (d / "system" / "controlDict").write_text(
+        'application choupoSolve;\ndescription "gate probe";\nverbosity 3;\n')
+    (d / "system" / "flowsheetDict").write_text(
+        "units\n(\n    { name dp; type %s; in feed; outputs ( ); operation"
+        " { P %s bar; } }\n);\n" % (utype, pbar))
+    body = "".join(f"    {c} {q} kmol/h;\n" for c, q in flows)
+    (d / "0" / "feed").write_text(
+        "componentMolarFlows\n{\n" + body + "}\nT 250 K;\nP 1e6 Pa;\n")
+    p = subprocess.run([str(BUILD / "choupoSolve"), str(d)],
+                       capture_output=True, text=True, timeout=300)
+    out = p.stdout + p.stderr
+    m = re.search(r"T_(?:dew|bub(?:ble)?):\s+([0-9.]+)\s+K", out)
+    c = re.search(r"Converged:\s+(yes|NO)", out)
+    return p.returncode, (float(m.group(1)) if m else None), \
+        (c.group(1) if c else None), out
 
 
 # ---- (i)(j) EoS root continuity (DEV.md 4c C245 slice 4) ----------------
@@ -463,12 +544,41 @@ def main() -> int:
     rc, gas = run(GAS)
     rc2, jump = run(JUMP)
 
-    if "never started" not in gas:
-        fails.append("envelope01's bubble branch produces no point at all, and"
-                     " the run does not distinguish that from a branch that"
-                     " STOPPED -- the two have different remedies")
+    #  (d) EX-01: a late start is reported as one, with every pressure tried
+    #  below it, and is not called "never started"; an empty branch is.
+    bub1 = curves(GAS).get("bubble", [])
+    if not bub1:
+        fails.append("envelope01's bubble branch is empty: since EX-01 the march"
+                     " keeps trying past failures and its feed has bubble"
+                     " points from about 46 bar")
+    if "never started" in gas:
+        fails.append("envelope01's bubble branch has points and is still"
+                     " reported as never started (EX-01)")
+    if ("bubble branch produced no point at the" not in gas
+            or "first converged at" not in gas
+            or "pressures tried below the first point" not in gas):
+        fails.append("envelope01's late bubble start is not reported with the"
+                     " pressures tried below its first point (EX-01)")
+    import shutil
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="choupo-envstart-") as td:
+        probe = Path(td) / "envelope01_probe"
+        shutil.copytree(GAS, probe)
+        pd = probe / "system" / "propsDict"
+        txt = pd.read_text()
+        pd.write_text(txt.replace("to 60 bar", "to 40 bar"))
+        rcp, outp = run(probe)
+        bubp = curves(probe).get("bubble", [])
+    if "to 60 bar" not in txt:
+        fails.append("the probe could not narrow envelope01's range (its"
+                     " propsDict no longer says `to 60 bar`)")
+    elif rcp != 0 or bubp or "never started" not in outp:
+        fails.append("envelope01's feed on 1-40 bar (no bubble point"
+                     " converges there) is not reported as never started"
+                     " (exit %d, %d bubble points)" % (rcp, len(bubp)))
     else:
-        notes.append("an empty branch is reported as never started")
+        notes.append("a late start is reported with its failed pressures, and"
+                     " an empty branch as never started")
 
     #  envelope02 (C239, 2026-11-08; C245 slice 4, 2026-11-08): with the
     #  liquid reference CONTINUOUS in T (held above 0.99 Tc) the branches
@@ -599,6 +709,101 @@ def main() -> int:
                              f" {m76:.5f}")
 
     eos_root_arms(fails, notes)
+    # ---- (k) phi-phi dew and bubble points iterate the incipient phase ----
+    #  EX-05: a phiPhi package carries an `ideal` activity PLACEHOLDER; read
+    #  as "ideal liquid" it made ONE outer pass at x = y and returned 209.6 K
+    #  at 5 bar and 220.1 K at 10 bar (independent: 235.8, 249.5), failing at
+    #  1, 20 and 40 bar.  Held to the independent values within 0.1 K.
+    rc5, out5 = run(PHIPHI)
+    if rc5 != 0:
+        fails.append(f"envelope05 (phi-phi) did not run (exit {rc5})")
+    else:
+        c5 = curves(PHIPHI)
+        for curve, table in (("dew", PHIPHI_DEW_K), ("bubble", PHIPHI_BUBBLE_K)):
+            got = {round(P / 1e5): T for P, T in c5.get(curve, [])}
+            for bar, want in table.items():
+                if bar not in got:
+                    fails.append(f"envelope05: no {curve} point at {bar} bar"
+                                 " (the phi-phi solve failed there; EX-05)")
+                elif abs(got[bar] - want) > 0.02:
+                    fails.append(
+                        f"envelope05: {curve} point at {bar} bar is"
+                        f" {got[bar]:.3f} K, the independent Peng-Robinson"
+                        f" value is {want:.2f} K (> 0.02 K): a phi-phi"
+                        " incipient phase is not being iterated (EX-05)")
+        if not fails:
+            notes.append("phi-phi dew points at 1/5/10/20/40 bar and bubble"
+                         " points at 50/60 bar agree with an independent"
+                         " Peng-Robinson calculation to 0.1 K")
+
+
+    # ---- (l) the units' phi-phi points: pure fluids, an azeotrope, the
+    #  near-critical refusal, the brackets, the Wilson seed (DP-01..04) -----
+    import tempfile as _tf
+    LEAN = [("CH4", 80), ("ethane", 10), ("propane", 7), ("nButane", 3)]
+    with _tf.TemporaryDirectory(prefix="choupo-dewunit-") as td:
+        def want(name, utype, pbar, flows, T, conv, kij=None, tol=0.01):
+            rc, got, cw, out = unit_point(td, name, utype, pbar, flows, kij)
+            if got is None or cw is None:
+                fails.append(f"(l) {name}: the {utype} unit printed no result"
+                             f" (exit {rc})")
+                return
+            if (cw == "yes") != conv:
+                fails.append(f"(l) {name}: Converged = {cw}, expected"
+                             f" {'yes' if conv else 'NO'} (T = {got:.4f} K,"
+                             f" exit {rc})")
+            elif conv and abs(got - T) > tol:
+                fails.append(f"(l) {name}: T = {got:.4f} K, the independent"
+                             f" Peng-Robinson value is {T:.4f} K")
+        # DP-01: a pure fluid below its critical point and an azeotrope are
+        # genuine dew points although x = y; one-root states are not.
+        want("pure_propane_10", "dewT", 10, [("propane", 100)], 300.0733, True)
+        want("pure_butane_5", "dewT", 5, [("nButane", 100)], 323.5036, True)
+        want("azeo_co2_ethane_20", "dewT", 20,
+             [("CO2", 66.18868905), ("ethane", 33.81131095)], 247.6830, True,
+             kij=0.13)
+        want("azeo_co2_ethane_20_bub", "bubbleT", 20,
+             [("CO2", 66.18868905), ("ethane", 33.81131095)], 247.6830, True,
+             kij=0.13)
+        #  Pure CH4 at 20 bar is BELOW its critical pressure: its dew point is
+        #  Tsat = 165.6442 K (independent PR).  The 200.0000 K "answer" of the
+        #  one-root plateau (the old unit bracket) must never come back; above
+        #  Pc (60 bar) the cubic has one root and no dew point exists.
+        want("pure_ch4_20", "dewT", 20, [("CH4", 100)], 165.6442, True)
+        want("pure_ch4_60_supercritical", "dewT", 60, [("CH4", 100)], 0.0,
+             False)
+        # DP-02: a near-critical bubble point is NOT converged, named.
+        rc, got, cw, out = unit_point(td, "bub_mix82", "bubbleT", 82, LEAN)
+        if cw != "NO" or "[bubbleT] NOT converged:" not in out:
+            fails.append("(l) bub_mix82: the feed's bubble point at 82 bar is"
+                         " near-critical (independent value 235.255 K; the"
+                         " engine's plateau at 234.03 K was once published as"
+                         " converged) and must be reported NOT converged with"
+                         f" the physics named (Converged = {cw}, T = {got})")
+        #  And one where ONLY the unsettled incipient vapour refuses (84 bar:
+        #  its K is not at a plateau of x = y, so the coincident-root clause is
+        #  silent): the incipient iteration's own `converged` flag is honoured.
+        rc, got, cw, out = unit_point(td, "bub_mix84", "bubbleT", 84, LEAN)
+        if cw != "NO" or "did not settle" not in out:
+            fails.append("(l) bub_mix84: an incipient vapour that does not"
+                         " settle must be reported NOT converged, naming the"
+                         f" critical point (Converged = {cw}, T = {got})")
+        # the same point where it IS resolved
+        want("bub_mix50", "bubbleT", 50, LEAN, 205.652, True, tol=0.05)
+        # DP-03: ONE lower bracket, the unit included: both below 200 K.
+        want("bub_mix30", "bubbleT", 30, LEAN, 185.427, True, tol=0.05)
+        want("dew_lean20", "dewT", 20, [("CH4", 99), ("ethane", 1)], 170.891,
+             True, tol=0.05)
+        # DP-04: Wilson's seed (a Raoult seed lands on the trivial plateau)
+        want("dew_mix20", "dewT", 20, LEAN, 263.614, True, tol=0.05)
+        want("dew_mix5", "dewT", 5, LEAN, 235.818, True, tol=0.05)
+    if not any(f.startswith("(l)") for f in fails):
+        notes.append("the units' phi-phi points: pure propane/butane dew and"
+                     " the CO2/ethane azeotrope converge at their independent"
+                     " values, pure CH4 at 20 bar and the 82-bar bubble point"
+                     " are refused naming the physics, and both brackets"
+                     " reach below 200 K")
+
 
     if fails:
         print("check_phase_envelope: FAILED")
@@ -609,7 +814,9 @@ def main() -> int:
     print("check_phase_envelope: OK -- " + "; ".join(notes) + "."
           "  NOT COVERED: no number in either witness is checked against a"
           " MEASURED envelope (the feeds are plausible, not sampled, and the"
-          " K-values are Peng-Robinson over an ideal liquid) -- both are"
+          " envelope01/02 K-values are Peng-Robinson over an ideal liquid;"
+          " envelope05 is held to an independent calculation, not a"
+          " measurement) -- envelope01-03 are"
           " STRUCTURAL witnesses for what the op reports and refuses to"
           " report.  The nose itself is not drawn and the critical point is"
           " not located.  The continuity thresholds are sized for the"

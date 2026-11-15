@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*-------------------------------*\
+  envelope04_water_benzene_two_liquids -- a P-T envelope whose bubble curve
+  is a PHANTOM, and the probe that says so.
+
+  WHY THIS CASE EXISTS (EX-02, 2026-11-15).  The Explorer offered the
+  envelope for water + benzene on an ideal liquid and drew a clean
+  single-liquid envelope: bubble 362.2 K at 1 bar, while the mixture splits
+  into two liquids and starts to boil on the heteroazeotrope line, near
+  342 K at 1 atm.  The lens now takes the T-x-y's activity models and, for a
+  binary on a non-ideal model, runs the T-x-y's own liquid-stability probe
+  on the envelope's pressure grid.  This is that run, on UNIFAC + PR.
+
+  WHAT THE RUN SHOWS (native build, 2026-11-15):
+
+    * the single-liquid envelope: bubble 327.755 K at 1 bar, 80 bubble
+      points to 80 bar; the dew branch keeps 38 points and is ended at
+      39 bar by a reported root jump;
+    * the probe finds TWO LIQUIDS at the feed's bubble point at all 80
+      pressures (liquid_stable = 0 everywhere): the homogeneous bubble curve
+      above is a phantom over the whole range, and the lens draws none of it
+      as a curve (each point a hollow x);
+    * the dew curve is NOT probed (the probe tests the liquid at the bubble
+      point only).
+
+  NOT VALIDATED: no number here is checked against a measured envelope; the
+  probe's verdict rests on UNIFAC's predicted split.  Structural witness of
+  the lens's two-liquid flag; its counts are the golden rows.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description  "P-T envelope of equimolar water + benzene on UNIFAC + PR beside the T-x-y's liquid-stability probe: two liquids at the bubble point at all 80 pressures, so the single-liquid bubble curve is a phantom the lens does not draw";
+verbosity     2;

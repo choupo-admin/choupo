@@ -981,7 +981,9 @@ inside its dispersion sum.
 % Drawn from src/propertyOps/PhaseEnvelope.H:28-80 (purpose, geometry, what is
 % not closed, the shared saturation solves) and
 % src/propertyOps/PhaseEnvelope.cpp:118-140 (the root-jump test), 242-262 (the
-% bracketed cricondentherm), 285-299 (a branch that never started); numbers
+% bracketed cricondentherm), 285-299 (a branch that never started), and the
+% late start of EX-01 (2026-11-15: a branch marches on past failures until it
+% first converges, and reports every pressure that failed below it); numbers
 % from tutorials/props/molecular/envelope01_natural_gas/expected and
 % tutorials/props/molecular/envelope02_c3c4c5_branch_stop/expected.
 \subsection{The K-values, traced: \code{phaseEnvelope}}
@@ -999,13 +1001,22 @@ point, never an extremum.  An \emph{interior} temperature maximum is
 reported as a \emph{bracketed} cricondentherm; a converged point
 discontinuous with its branch (a root jump) ends the branch.  Witnesses:
 \code{envelope01\_natural\_gas} ($40$ dew points, cricondentherm
-bracketed at $275.946$~K, bubble branch never started) and
+bracketed at $275.946$~K; the bubble branch fails at the $30$ pressures from
+$1$ to $44.9$~bar, every one tried and listed, and first converges at
+$46.385$~bar --- a late start, reported as one, never ``never started'') and
 \code{envelope02\_c3c4c5\_branch\_stop} (a C$_3$/C$_4$/C$_5$ feed marched
 through propane's critical temperature: the liquid reference is held
 continuous in $T$ above $0.99\,T_c$, so the bubble branch crosses $T_c$ and
 reaches the top of the range, $40$~bar in $40$ points, while the dew branch
-crosses it too and is ended at $36$~bar by a \emph{reported} root jump, with
-its last kept point and no cricondentherm claimed).  Michelsen's arc-length continuation is the named,
+crosses it too; both branches now reach $40$~bar) and
+\code{envelope03\_c3c4c5\_both\_stop} (the same feed to $80$~bar: the bubble
+branch stops at $64$~bar and the dew branch at $47$~bar, each reported, no
+cricondentherm claimed) and \code{envelope05\_natural\_gas\_phiphi}
+(envelope01's feed on one Peng--Robinson cubic for both phases: the incipient
+phase is iterated at every temperature and the dew points, $208.56$, $235.82$,
+$249.47$, $263.61$ and $276.03$~K at $1$, $5$, $10$, $20$ and $40$~bar, agree
+with an independent calculation to $0.1$~K).  A branch is \emph{never started} only when no
+pressure in the range converged.  Michelsen's arc-length continuation is the named,
 unimplemented next step.
 
 % =====================================================================

@@ -564,6 +564,57 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     file: "sweep_fFactor.csv",
     readBy: ["equilibriumOrRateBased.test.ts"],
   },
+  //  The Explorer's mixture envelope lens (2026-11-15): a run in which BOTH
+  //  branches stop (envelope03) and one with a branch that never starts and a
+  //  bracketed cricondentherm (envelope01) -- the report the lens shows is
+  //  read from these, never from a transcription.  CSV first, stdout last.
+  {
+    caseDir: "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
+    file: "envelope.csv",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
+    file: "log.choupoProps",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/props/molecular/envelope01_natural_gas",
+    file: "envelope.csv",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/molecular/envelope01_natural_gas",
+    file: "log.choupoProps",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+    stdout: true,
+  },
+  //  The two-liquid flag (EX-02): the envelope beside the T-x-y's own
+  //  liquid-stability probe on one pressure grid.
+  {
+    caseDir: "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    file: "envelope.csv",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    file: "liquidProbe.csv",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+  },
+  {
+    caseDir: "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    file: "log.choupoProps",
+    readBy: ["phaseEnvelopeLens.test.ts"],
+    stdout: true,
+  },
+  //  The P-x-y lens (2026-11-15): the engine's P_bubble / y_eqT scan, read by
+  //  the lens's own CSV reader.
+  {
+    caseDir: "tutorials/props/scan/pxy01_ethanol_water_70C",
+    file: "pxy.csv",
+    readBy: ["pxyLens.test.ts"],
+  },
 ];
 
 /** What `witnessSetup.ts` found for each declared output, keyed by

@@ -197,6 +197,12 @@ const DECLARED: Record<PlotKind, string | typeof PROPERTY_DISPATCH> = {
   bjerrum: "sec:bjerrum",
   evidence: "ch:fittable",    // measured data vs candidate models: what is fittable, what is not
   phaseSplit: "ch:flash",     // one isothermal flash per grid point, the phase split along T or P
+  //  The P-x-y: the bubble PRESSURE at fixed T, written as its own subsection
+  //  of the K-value chapter -- the same equation as the T-x-y, solved for P.
+  pxy: "sec:bubble-pressure",
+  //  The mixture P-T envelope: bubble and dew curves of one feed on a cubic
+  //  vapour, why a pressure march stops, and the nose it cannot close.
+  envelope: "sec:mixture-envelope",
 };
 
 /** The property-scan's own dispatch, declared independently of the switch. */

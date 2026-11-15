@@ -1,0 +1,29 @@
+operations
+(
+    //  The whole envelope, 1 to 60 bar in 1 bar steps: the gate
+    //  check_phase_envelope reads its CSV against the independent values.
+    {
+        name        envelope;
+        type        phaseEnvelope;
+        composition { CH4 0.80;  ethane 0.10;  propane 0.07;  nButane 0.03; }
+        pressure    { from 1 bar;  to 60 bar;  n 60; }
+        output      { file envelope.csv; }
+    }
+
+    //  The dew points at exactly 5 and 10 bar (EX-05's two numbers):
+    //  dew_first_K and dew_last_K are the temperatures at the two ends.
+    {
+        name        dew5and10;
+        type        phaseEnvelope;
+        composition { CH4 0.80;  ethane 0.10;  propane 0.07;  nButane 0.03; }
+        pressure    { from 5 bar;  to 10 bar;  n 2; }
+    }
+
+    //  The bubble points at exactly 50 and 60 bar.
+    {
+        name        bubble50and60;
+        type        phaseEnvelope;
+        composition { CH4 0.80;  ethane 0.10;  propane 0.07;  nButane 0.03; }
+        pressure    { from 50 bar;  to 60 bar;  n 2; }
+    }
+);

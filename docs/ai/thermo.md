@@ -561,9 +561,27 @@ solver throws a clear error naming the missing slot.
   own solvent's pure viscosity; `LefflerCullinan` ((D0_12 mu2)^x2 (D0_21 mu1)^x1 / mu)
   and `AndersonBabb` ((x2 D0_12 mu2 + x1 D0_21 mu1) / mu), mu the mixture's viscosity.
   `thermodynamicFactor { take 1; }` is required with `effective`; any other `take`, and
-  `from ...`, are refused.  REFUSED by name: three or more components with `effective`;
-  `VignesKooijmanTaylor` (until its source is read); `kind fick|maxwellStefan|self`; an
-  entry with no `kind`.
+  `from ...`, are refused.  REFUSED by name: three or more components with `effective`
+  under any rule but `VignesKooijmanTaylor`; `kind fick|maxwellStefan|self`; an entry with
+  no `kind`.
+- THREE COMPONENTS OR MORE (C329 slice B2a; Theory Guide "The multicomponent liquid
+  diffusivity"): `composition { rule VignesKooijmanTaylor; reduction Wilke; }`.  The rule
+  is Kooijman & Taylor 1991 Eq. 23, the pair (Maxwell-Stefan) value in the mixture,
+  D_ij = D0_ij^xj D0_ji^xi prod_{k != i,j} (D0_ik D0_jk)^(xk/2) (D0_ij: i infinitely
+  dilute in j; each pair needs its own entry or the default); the reduction is Wilke,
+  Taylor & Krishna 1993 Eq. 6.1.14, D_i,eff = (1 - x_i) / sum_{j != i} x_j / D_ij: ONE
+  value per COMPONENT, so the props key is `D_L_effective_<component>` and the bare
+  `D_L_effective` is refused on a ternary.  `reduction` is required with three or more
+  components in the package, refused beside any other rule; `thermodynamicFactor { take
+  1; }` stays.  With two components present it IS `Vignes` (to 1e-12).  The two books
+  print the limiting value as (D0_ik D0_ki)^(1/2): a misprint (the paper's Eq. 21 is
+  (D0_ik D0_jk)^(1/2), measured on the paper's own Table I: 0.078 against 0.100).  Props
+  quantities, nothing in a unit reads them: `D_L_MS_<i>_<j>` (the pair values),
+  `Gamma_<i>_<j>` and `D_L_Fick_<i>_<j>` (the thermodynamic-factor and Fick matrices,
+  i and j among the first n-1 components; the LAST component of the package takes the
+  change, so reordering the components changes the Fick matrix), and `D_G_effective_<c>`
+  (the same Wilke reduction of the gas pair values).  Witness:
+  `props/transport/liquidDiffusivity02_kooijmanTaylor_ternary`.
 - WATER AS THE SOLUTE: the DEFAULT Wilke-Chang refuses it (Poling 5th ed. p. 11.22: "The
   method should not be used when water is the solute").  Write an entry for the pair:
   a value with its source, or `{ solute water; solvent methanol; kind infiniteDilution;

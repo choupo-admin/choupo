@@ -10408,6 +10408,136 @@ their \file{.dat} files (the loader rejects the EoS otherwise --- see
 \code{requiredComponentProperties}).
 \end{tutoriallink}
 
+\subsection{The \texorpdfstring{$P$--$T$}{P-T} envelope of a mixture}\label{sec:mixture-envelope}
+% Written 2026-11-15 against src/propertyOps/PhaseEnvelope.{H,cpp} (the
+% pressure march, BubblePoint::compute and DewPoint::compute, the
+% monotone-bubble and dew-continuity guards, the bracketed cricondentherm,
+% the three branch ends and their advisories) and the two corpus witnesses
+% envelope01/envelope02 plus envelope03 (both branches stop).
+A pure substance coexists as liquid and vapour along a single \emph{line} in
+the $(T, P)$ plane, ending at its critical point (\S\ref{ch:criticals}).  A
+mixture of fixed overall composition $\mathbf{z}$ has instead a
+\emph{region}: it starts to boil on the \textbf{bubble curve} (vapour
+fraction $V/F \to 0$, the first bubble) and finishes on the \textbf{dew
+curve} ($V/F \to 1$, the last drop).  The two curves meet at the mixture's
+critical point, which in general is neither the highest pressure on the
+envelope (the \textbf{cricondenbar}) nor the highest temperature (the
+\textbf{cricondentherm}).  Between the critical point and the cricondentherm
+lies the \emph{retrograde} region, where a gas \emph{condenses} on being
+depressurised --- the reason the cricondentherm is what a gas pipeline is
+designed against.
+
+Each point is one saturation solve at fixed $\mathbf{z}$: a bubble point is
+$\sum_i K_i z_i = 1$ with the vapour incipient, a dew point
+$\sum_i z_i / K_i = 1$ with the liquid incipient, $K_i$ from
+\eqref{eq:gamma-phi-here}.  Choupo's op \code{phaseEnvelope} marches
+\emph{pressure} and, at each pressure, solves the bubble temperature with
+\code{BubblePoint::compute} and the dew temperature with
+\code{DewPoint::compute} --- the same routines the \code{bubbleT} and
+\code{dewT} units call, so neither residual exists twice.
+
+\emph{Why the trace stops, and why that is the result.}  $T_{\mathrm{bubble}}(P)$
+is single-valued up to the critical point, so the bubble branch marches
+cleanly.  $T_{\mathrm{dew}}(P)$ is not: above the cricondenbar there is no
+dew point, and below it there are two (the retrograde pair).  A
+single-specification march therefore ends at a turning point, and at the
+critical point the two branches merge and the Jacobian degenerates.  The op
+does not extrapolate a nose: it keeps a point only when it is continuous with
+its branch (the bubble curve may not fall as $P$ rises; a dew step many times
+the branch's own recent steps is a jump to another root), and it reports how
+each branch ended --- it reached the top of the requested range, or it
+\emph{stopped} (at a turning point, or because the solve converged to a
+different root).  A branch is not ended before it has started: for a light
+gas the bubble curve lies below the saturation solvers' $200$~K bracket at
+low pressure, so the march keeps trying until the first pressure converges
+and reports every pressure that failed below it (a \emph{late start}:
+\file{envelope01} fails at $1$--$44.9$~bar and starts at $46.385$~bar).  A
+branch \emph{never started} only when no pressure in the range converged.  An
+\emph{interior} temperature maximum of a branch is reported as a
+\emph{bracketed} cricondentherm, naming the two pressures it lies between; an
+endpoint maximum is not, because it says where the range stops.  Closing the
+nose needs arc-length continuation with a switching specification
+(Michelsen, \emph{Fluid Phase Equilib.}\ 4 (1980) 1), in which the marched
+quantity becomes $\ln K_i$ or $\ln P$ as the curve turns; it is not
+implemented, and the op says so on every run.
+
+\emph{The thermodynamic frame.}  The corpus witnesses run $\gamma$--$\varphi$
+with an ideal liquid (the Explorer lens offers the $T$--$x$--$y$ lens's four
+liquid models, ideal, NRTL, Wilson, UNIFAC) on the pure-liquid reference
+(carrying $\varphi_i^{\mathrm{sat}}$ and the Poynting factor, held continuous
+above $0.99\,T_{c,i}$ so a branch can cross a component's critical
+temperature) and a cubic vapour (SRK or PR, \S\ref{ch:cubic-eos}), with
+$k_{ij} = 0$ unless a curated pair is declared --- each announced by the
+engine where it bites.  In this frame the liquid is not described by the
+equation of state, so the frame has no mixture critical point of its own:
+near the nose the two branches are an extrapolation of a hypothetical
+liquid, which is one more reason the nose is left open.  \emph{One liquid is
+assumed} by both saturation solves.  An ideal solution cannot split; for a
+\emph{binary} on a non-ideal model the Explorer runs the $T$--$x$--$y$'s own
+liquid-stability probe at every pressure (the feed's bubble temperature, then
+a liquid--liquid flash there) and does not draw a bubble point where the
+liquid splits: there the single-liquid bubble point is a phantom, and the feed
+starts to boil on the three-phase line instead
+(\file{envelope04\_water\_benzene\_two\_liquids}: two liquids at all $80$
+pressures on UNIFAC).  The dew curve is not probed, and for three or more
+components the probe the engine has (binary-only) does not apply, which the
+figure says.
+
+\emph{The phi--phi frame: the incipient phase is iterated, a trivial root is
+refused, and the brackets reach below $200$~K} (EX-05 and its review, 2026-11-15).
+When both phases come from ONE cubic (\code{formulation phiPhi}), the liquid's
+fugacity coefficient depends on the liquid's own composition, so a dew point is
+a fixed point in the incipient liquid $\mathbf{x}$ \emph{at every temperature
+of the search}: from Wilson's seed
+$K_i = (P_{c,i}/P)\exp[5.373(1+\omega_i)(1-T_{c,i}/T)]$ the solve repeats
+$x_i \leftarrow (z_i/K_i)/\sum_j (z_j/K_j)$ with $K_i =
+\varphi_i^{L}(\mathbf{x})/\varphi_i^{V}(\mathbf{z})$ until $\mathbf{x}$
+stops moving, and Newton's method finds the root of $\sum_i z_i/K_i = 1$ over
+that converged liquid.  The bubble point is the mirror (the incipient vapour is
+iterated).  A phi--phi package carries an \code{ideal} activity as an unused
+placeholder; reading it as ``ideal liquid'' made one pass at $\mathbf{x} =
+\mathbf{z}$ (a lean gas gave $209.6$~K at $5$~bar against $235.8$~K).
+Three refusals are made by name.  (i)~\emph{The trivial root.}  At
+$\mathbf{x} = \mathbf{z}$ with the cubic's two roots \emph{coinciding}, $K_i =
+1$ satisfies the equation trivially and the answer is not a dew (or bubble)
+point; the test is the coincidence of the roots at that composition, so it holds
+for one component too (pure methane at $60$~bar, above its critical pressure,
+is refused) and does \emph{not} refuse a pure fluid below its critical point
+(propane at $10$~bar: $300.07$~K) or an azeotrope (CO$_2$/ethane, $k_{ij} =
+0.13$, $247.68$~K at $20$~bar), where $\mathbf{x} = \mathbf{z}$ with two
+distinct roots is genuine.  (ii)~\emph{An incipient phase that did not settle}
+within its pass budget is reported NOT converged, naming the mixture's critical
+point: near it successive substitution collapses onto the plateau and Newton's
+tolerance is met there at a wrong temperature (the lean gas at $82$~bar,
+$234.03$~K against $235.26$~K).  (iii)~\emph{A temperature outside the
+bracket.}  A phi--phi saturation solve brackets $T$ in $100$--$700$~K for
+\emph{every} caller, the \code{dewT} and \code{bubbleT} units and the
+envelope op alike (the light gas's bubble curve runs from $113.8$~K at $1$~bar);
+a $\gamma$--$\varphi$ package keeps $200$--$700$~K.  Against an independent
+Peng--Robinson calculation the dew temperatures of
+\file{envelope05\_natural\_gas\_phiphi} agree to $0.01$~K at $1$, $5$, $10$,
+$20$ and $40$~bar ($208.56$, $235.82$, $249.47$, $263.61$, $276.03$~K) and the
+bubble temperatures at $2$, $30$, $50$ and $60$~bar ($123.38$, $185.43$,
+$205.65$, $214.57$~K).
+
+An ideal-gas vapour
+cannot make the diagram at all --- its dew curve keeps rising with $P$ and
+neither the cricondentherm nor the retrograde region forms --- and the
+Explorer refuses it with that reason.
+
+\begin{tutoriallink}
+\file{tutorials/props/molecular/envelope01\_natural\_gas} (a lean natural
+gas: a bracketed cricondentherm on the dew branch, a bubble branch that starts
+late, at $46$~bar), \file{envelope02\_c3c4c5\_branch\_stop} (both branches cross
+propane's $T_c$ and reach $40$~bar) and \file{envelope03\_c3c4c5\_both\_stop}
+(the same feed to $80$~bar: both branches stop, and say where) and
+\file{envelope05\_natural\_gas\_phiphi} (envelope01's feed on one
+Peng--Robinson cubic for both phases: dew points iterated and held to an
+independent calculation).  In the
+Explorer: two or more VLE-able compounds, lens \emph{Mixture phase envelope
+(P-T)}.
+\end{tutoriallink}
+
 % ---------------------------------------------------------------------
 \section{COSMO-SAC: an activity coefficient from a charge surface}\label{ch:cosmosac}
 
@@ -11176,6 +11306,86 @@ superheated vapour.}
 \file{tutorials/steady/flash/flash01\_benzene\_toluene} --- run with
 \code{verbosity 3} and watch the Newton trace converge in 3--4
 iterations.
+\end{tutoriallink}
+
+\subsection{The bubble pressure, and the \texorpdfstring{$P$--$x$--$y$}{P-x-y} diagram}\label{sec:bubble-pressure}
+% Written 2026-11-15 against src/unitOperations/saturation/BubblePoint.cpp
+% (BubblePoint::pressure: the incipient vapour from incipientPhase::vapour,
+% S(P) = sum K_i x_i, the ln-P bisection between 0.01 bar and a doubled
+% start, 1e-10 relative, the trivial-root floor handling) and
+% src/propertyOps/PropertyEvaluator.cpp (the P_bubble and y_eqT_<comp>
+% branch, beside T_bubble).
+The $T$--$x$--$y$ diagram above fixes $P$ and asks, for each liquid
+composition, at what \emph{temperature} the first bubble of vapour appears.
+The same equation can be solved for the other variable: fix $T$ and ask at
+what \emph{pressure} the liquid starts to boil.  With $K_i = y_i/x_i$ from
+\eqref{eq:gamma-phi-here}, the incipient vapour must close
+\begin{equation}
+   S(P) \;=\; \sum_i K_i(T, P, \mathbf{x}, \mathbf{y})\,x_i \;=\; 1,
+   \qquad
+   y_i = \frac{K_i x_i}{\sum_j K_j x_j},
+   \label{eq:bubble-pressure}
+\end{equation}
+for $P$ at the given $T$ and $\mathbf{x}$.  In the modified-Raoult limit
+\eqref{eq:modified-raoult} the unknown drops out of every $K_i$ except as
+$1/P$, and the bubble pressure is explicit,
+\begin{equation}
+   P_{\mathrm{bubble}} \;=\; \sum_i x_i\,\gamma_i(\mathbf{x},T)\,P_i^{\mathrm{sat}}(T),
+   \qquad
+   y_i = \frac{x_i\,\gamma_i\,P_i^{\mathrm{sat}}}{P_{\mathrm{bubble}}},
+   \label{eq:bubble-pressure-raoult}
+\end{equation}
+the ``BUBL~P'' calculation of Smith, Van~Ness \& Abbott (\emph{Introduction
+to Chemical Engineering Thermodynamics}, Ch.~10).  With a real vapour
+($\hat\varphi_i$ from a cubic) $K_i$ depends on $P$ and on $\mathbf{y}$, so
+the engine solves \eqref{eq:bubble-pressure} numerically, in ONE place,
+\code{BubblePoint::pressure}: at each trial pressure the incipient vapour is
+iterated to its own composition, started from the ideal $K_i$
+($P_i^{\mathrm{sat}}/P$, or $H_i/P$ for a Henry solute) and never from
+$\mathbf{y} = \mathbf{x}$, which would let the equation of state hand the
+``vapour'' a liquid-like root.  $S > 1$ below the bubble pressure and $S < 1$
+above it, so the pressure is bracketed (doubling up from the starting
+pressure, down to a floor of $0.01$~bar) and bisected on $\ln P$ to
+$10^{-10}$ relative.  Two outcomes are not a bubble pressure and are refused
+by name: a liquid that does not boil even at the $0.01$~bar floor, and a
+state where no pressure up to $10$~kbar makes $S$ fall below one, or where
+the cubic has a single root so that ``liquid'' and ``vapour'' are the same
+phase and $S = 1$ says nothing.
+
+Swept along $x_1$ at fixed $T$, $P_{\mathrm{bubble}}(x_1)$ is the bubble
+curve and the same pressures read against $y_1$ are the dew curve: the
+$P$--$x$--$y$ diagram.  It is the $T$--$x$--$y$ turned over --- the liquid
+lies \emph{above} the bubble curve (pressure squeezes the vapour out), the
+vapour \emph{below} the dew curve --- and a positive deviation from Raoult
+that gives a \emph{minimum}-boiling azeotrope on the $T$--$x$--$y$ gives a
+\emph{maximum}-pressure azeotrope here: ethanol/water at $70\,^\circ$C on
+the curated NRTL pair peaks near $x_{\mathrm{EtOH}} \approx 0.9$.  The
+evaluator keywords are \code{P\_bubble} [Pa] and \code{y\_eqT\_<comp>} [--],
+beside \code{T\_bubble} and \code{y\_eq\_<comp>}.  On an \emph{ideal-gas}
+vapour, at a temperature $T_{\mathrm{bubble}}(\mathbf{x}, P)$ the bubble
+pressure returns $P$, and \file{tutorials/props/scan/pxy01\_ethanol\_water\_70C}
+holds that round trip to $10^{-6}$ relative.  With a cubic vapour (PR or SRK)
+the two are \emph{not} the same equilibrium: \code{T\_bubble} evaluates the
+vapour fugacity at $\mathbf{y} = \mathbf{x}$ while \code{P\_bubble} iterates
+the incipient vapour to its own composition, so on pxy01's liquid with a PR
+vapour the bubble pressure at $T_{\mathrm{bubble}}$ differs from $P$ by
+$+1.3\times10^{-4}$ at $1$~atm and $+7.8\times10^{-4}$ at $20$~bar (the
+iterated vapour is the more correct of the two; the $T_{\mathrm{bubble}}$
+frame is recorded as a defect of its own).
+
+\emph{Validity and what is not done.}  One liquid is assumed.  The fixed-$P$
+lenses replace the homogeneous bubble curve across an immiscibility gap by
+the heteroazeotrope's flat three-phase line; the fixed-$T$ evaluator has no
+such probe, so a $P$--$x$--$y$ through a liquid-liquid gap draws the
+homogeneous (phantom) curve, and the Explorer says so on the lens.  Every
+model limit of $\gamma_i$, $P_i^{\mathrm{sat}}$ and $\hat\varphi_i$ carries
+over unchanged.
+
+\begin{tutoriallink}
+\file{tutorials/props/scan/pxy01\_ethanol\_water\_70C} --- the $P$--$x$--$y$
+of ethanol/water at $70\,^\circ$C, and the $T_{\mathrm{bubble}} \to
+P_{\mathrm{bubble}}$ round trip at one composition.  In the Explorer: two
+VLE-able compounds, lens \emph{Binary boiling envelope at fixed T (P-x-y)}.
 \end{tutoriallink}
 
 \section*{Part IV --- Numerical methods}
@@ -15228,8 +15438,8 @@ full composition range Vignes interpolates logarithmically:
 \end{equation}
 For multicomponent systems the Maxwell-Stefan framework promotes
 each binary $D_{ij}$ to a matrix that combines them rigorously.
-Reid Chapter~12 treats this in depth; we will not need it before
-v1.x of the simulator.
+Reid Chapter~12 treats this in depth; the multicomponent form the engine
+implements is section~\ref{sec:liquid-diffusivity-multicomponent}.
 
 \subsection{The liquid diffusivity a package returns}\label{sec:liquid-diffusivity-declared}
 
@@ -15358,15 +15568,13 @@ solution, an effective-diffusivity film otherwise (DEV.md~4c C329,
 decision~(2) amended; a factor \code{from} the activity model has no consumer
 and is refused).
 
-\paragraph{Three components or more.}  An effective value of a liquid of
-three or more components is REFUSED.  Taylor \& Kooijman define the
-effective diffusivity $D_{i,\mathrm{eff}}$ (Eq.~3.26) but give no formula
-that reduces the pair values to it, and the multicomponent Vignes rule they
-report (Eqs.~3.38--3.41) is refused by name, \code{VignesKooijmanTaylor},
-until its source is read: as printed, Eq.~(3.40) carries $\mathcal{D}_{i,i}$
-on its left-hand side and Eq.~(3.41) gives the limiting diffusivity
-$\mathcal{D}_{i,j,x_k\to1} = (\mathcal{D}^{\circ}_{i,k}\mathcal{D}^{\circ}_{k,i})^{1/2}$,
-which does not contain $j$; the 1991 paper that proposed it is not in hand.
+\paragraph{Three components or more.}  The binary rules above combine TWO
+pair values and have no multicomponent form in anything read: an effective value
+of a liquid of three or more components under \code{CaldwellBabb},
+\code{Vignes}, \code{LefflerCullinan} or \code{AndersonBabb} is REFUSED, by name,
+naming the rule that is accepted.  The fifth word, \code{VignesKooijmanTaylor},
+with a \code{reduction}, answers for three components or more, one value PER
+COMPONENT: section~\ref{sec:liquid-diffusivity-multicomponent}.
 \code{returns infiniteDilution} gives every pair of a ternary (the witness
 \file{tutorials/props/transport/liquidDiffusivity01\_pelkonen\_ternary}).
 
@@ -15389,10 +15597,234 @@ citation, the factor taken, and each solvent's association factor; a unit's
 refusal above by its words; \code{check\_view\_matches\_calls} holds the
 view's lines to the objects the package calls.
 
-\paragraph{Validity window.}  A binary for \code{returns effective};
+\paragraph{Validity window.}  A binary for the four binary rules;
+\code{VignesKooijmanTaylor} for two or more components;
 infinite-dilution values inside their correlation's or their datum's window;
 nothing fitted (no number here was regressed against the papers the cases
 reproduce).
+
+\subsection{The multicomponent liquid diffusivity}\label{sec:liquid-diffusivity-multicomponent}
+
+A rate-based column fed three components needs a liquid diffusivity for each
+of them, and a table of binaries does not give one.  The engine builds it in
+two steps (DEV.md~4c C329, slice~B2a; design record
+\file{docs/design/c329-ratebased-ternary.md}), selected in the property
+dictionary by the fifth composition rule and a reduction:
+\begin{lstlisting}
+transport { liquid { diffusivity
+{
+    returns             effective;
+    composition         { rule VignesKooijmanTaylor;  reduction Wilke; }
+    infiniteDilution    { default { model WilkeChang; }   entries ( ... ); }
+    thermodynamicFactor { take 1; }
+} } }
+\end{lstlisting}
+
+\paragraph{Step 1: the pair values in the mixture (the rule).}  Write
+$D^{\circ}_{ij}$ for the value of $i$ infinitely dilute in $j$ (the binary
+section, \ref{sec:liquid-diffusivity-declared}, takes them from an entry or
+from Wilke-Chang) and $\mathcal{D}_{ij}$ for the Maxwell-Stefan diffusivity of
+the pair $i$--$j$ in the mixture.  Kooijman \& Taylor (Ind.\ Eng.\ Chem.\ Res.\
+30 (1991) 1217, Eq.~23, p.~1219):
+\begin{equation}
+  \mathcal{D}_{ij} \;=\; \bigl(D^{\circ}_{ij}\bigr)^{x_j}
+  \bigl(D^{\circ}_{ji}\bigr)^{x_i}
+  \prod_{k\neq i,j}\bigl(D^{\circ}_{ik}\,D^{\circ}_{jk}\bigr)^{x_k/2}.
+  \label{eq:kt-pair}
+\end{equation}
+It is the paper's Eq.~19, the generalised Vignes equation
+$\mathcal{D}_{ij}=\prod_k(\mathcal{D}_{ij,x_k\to1})^{x_k}$ with the two
+limits that are the binary infinite-dilution values (Eq.~18), and the limit
+of the $i$--$j$ pair in nearly pure $k$ taken as the geometric mean
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$ (Eq.~21, p.~1219).  It is symmetric
+($\mathcal{D}_{ij}=\mathcal{D}_{ji}$), continuous at every corner of the
+composition triangle (the paper's Eqs.~14 and 17: the two limits of a
+$\mathcal{D}$ as $x_i$ and $x_j$ vanish are the same number), and with
+$x_k=0$ for every $k\ne i,j$ it IS the binary Vignes equation
+$(D^{\circ}_{ij})^{x_j}(D^{\circ}_{ji})^{x_i}$.  Each $D^{\circ}$ is the
+engine's infinite-dilution value in the PURE solvent (as for
+\code{CaldwellBabb} and \code{Vignes}); an $x_k=0$ asks for no $D^{\circ}_{ik}$ at all.
+
+\paragraph{Two limiting values the paper rejects.}  The paper tries two
+others and recommends Eq.~21 (its Conclusion, p.~1221): the geometric mean of
+the $i$--$j$ and $j$--$i$ values, $(D^{\circ}_{ij}D^{\circ}_{ji})^{1/2}$
+(Eq.~20, the Wesselingh-Krishna proposal, giving the paper's Eq.~22), and the
+pseudo-binary form (Eqs.~12--13), whose two different limits at a corner make
+$\mathcal{D}$ discontinuous (Eq.~14).  Neither is built.  On the paper's own
+Table~I (below) the average discrepancy of the predicted Fick matrix is
+0.0763 for Eq.~23, 0.1125 for Eq.~22 and 0.1145 for Eq.~12 (its Table~IV),
+and the paper's text reports the second of these as ``not significantly
+better'' than the third.
+
+\paragraph{A misprint in two books, measured.}  Taylor \& Kooijman (Mass
+Transfer in Distillation, 2014) Eq.~3.41 and Taylor \& Krishna (Multicomponent
+Mass Transfer, 1993) Eq.~4.2.19 print the limiting value as
+$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$.  The paper's Eq.~21 has
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, and the paper is the authority for
+three reasons the run can show.  (1)~The books' form does not contain $j$, so
+$\mathcal{D}_{ij}\ne\mathcal{D}_{ji}$, against the symmetry the same page of
+each book requires.  (2)~Taylor \& Kooijman's Eq.~3.42, which they say contains
+Eq.~3.41 as a special case, carries $D_{i,k}D_{j,k}$.  (3)~Measured, on the
+paper's Table~I, with the paper's own six $D^{\circ}$ and NRTL parameters (the
+$\tau_{21}$ question below) and
+its discrepancy $\epsilon_{ij}=|D_{ij,\mathrm{calc}}-D_{ij,\mathrm{expt}}|/D_{ii}$
+averaged over the four points:
+\begin{center}\small
+\begin{tabular}{lccc}
+\hline
+limiting value, $\tau_{21}$ & overall & diagonal & off-diagonal\\ \hline
+paper's Table IV, ``eq 23'' (printed) & 0.0763 & 0.0916 & 0.0611\\
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, as implemented, $\tau_{21}=0.76432$ & 0.0763 & 0.0916 & 0.0611\\
+$(D^{\circ}_{ik}D^{\circ}_{jk})^{1/2}$, as implemented, $\tau_{21}=0.74632$ & 0.0782 & 0.0924 & 0.0639\\
+$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$, as the books print, $\tau_{21}=0.76432$ & 0.0974 & 0.0975 & 0.0974\\
+$(D^{\circ}_{ik}D^{\circ}_{ki})^{1/2}$, as the books print, $\tau_{21}=0.74632$ & 0.1002 & 0.0995 & 0.1009\\
+\hline
+\end{tabular}
+\end{center}
+Both books' rows evaluate each pair for $i<j$ and copy it to $j,i$, which is
+how the engine fills the matrix: the books' form is NOT symmetric, so its
+score depends on the order in which each pair is evaluated (with
+$\tau_{21}=0.74632$: 0.1002 as above, 0.0852 evaluated $j$ first, 0.0886 when
+each row of $[B]$ takes its own component as $i$, an independent recomputation
+by the reviewer of this slice).  Every ordering is worse than the paper's form.
+\paragraph{Which $\tau_{21}$.}  Taylor \& Krishna's Example~3.3.1 (p.~61), the
+example whose NRTL parameters their Example~4.2.6 uses, prints
+$\tau_{21}=0.76432$; the paper's Table~I prints $0.74632$.  With the book's
+value the engine's form reproduces the paper's own Table~IV ``eq 23'' row to
+its four printed digits (the residual of 0.002 that an earlier version of this
+section called unexplained is this one digit transposition), and Gamma
+reproduces the book's printed matrix to every digit; the witness therefore
+carries $0.76432$, and the gate runs both values and pins the difference.
+Which source typed it wrongly is not decided by anything read; the numbers
+decide only which one the paper computed with.  The engine's form with either
+value scores better than the books' form, which scores worse on the
+off-diagonal elements, the ones that carry the
+coupling.  Gate \code{check\_liquid\_diffusivity\_declaration} recomputes the
+rows on every run.  A second misprint of the same chapter
+was met on the way: its Eq.~3.120 prints the off-diagonal rate factor as
+$-N_i\bigl(1/(c\kappa_{ij})-1/(c\kappa_{ij})\bigr)$, which is identically zero
+(Taylor \& Krishna's Eq.~8.3.29 has $\kappa_{in}$ in the second term).  The
+chapter is therefore not cited as the authority for any equation of this
+section.
+
+\paragraph{Step 2: one value per component (the reduction).}  A film with one
+coefficient per component needs an EFFECTIVE diffusivity $D_{i,\mathrm{eff}}$,
+$J_i=-c\,D_{i,\mathrm{eff}}\nabla x_i$.  The engine takes Wilke's
+(Taylor \& Krishna 1993, Eq.~6.1.14, p.~126):
+\begin{equation}
+  D_{i,\mathrm{eff}} \;=\; \frac{1-x_i}{\displaystyle\sum_{j\neq i} x_j/\mathcal{D}_{ij}}.
+  \label{eq:wilke-effective}
+\end{equation}
+Derivation: with every other component at rest, $N_j=0$ for $j\ne i$, the
+Maxwell-Stefan relation for $i$ reads $\nabla x_i=\dfrac{N_i}{c}
+\sum_{j\ne i}x_j/\mathcal{D}_{ij}$ for an ideal mixture, and $J_i=N_i-x_iN_i
+=N_i(1-x_i)$, which is Eq.~\eqref{eq:wilke-effective}.  It is the form that
+is a function of the state alone (it does not depend on the order in which
+the components are numbered, and needs no component to take the remainder),
+that reduces to $\mathcal{D}_{ij}$ for BOTH components of a binary, and whose
+dilute limit is the Blanc's-law form (Poling, Prausnitz \& O'Connell, 5th ed.,
+Eq.~11-7.4).  The engine writes the sum of the other components' mole
+fractions for $1-x_i$, the same number for a normalised composition.  The
+book's worked number is its Example~6.1.1 (p.~127): hydrogen (1), nitrogen
+(2), dichlorodifluoromethane (3), $x=(0.35,\,0.40,\,0.25)$, $\mathcal{D}_{12}=77.0$,
+$\mathcal{D}_{13}=33.1$, $\mathcal{D}_{23}=8.1$~mm\textsuperscript{2}/s gives
+$D_{1,\mathrm{eff}}=50.99$ and $D_{2,\mathrm{eff}}=16.95$
+mm\textsuperscript{2}/s (the second is $16.944$ by the formula; the book
+rounds); the gate compiles the engine's own header against those numbers.
+The same reduction applies to a gas, whose pair diffusivities do not depend on
+composition and are the Maxwell-Stefan values (props key \code{D\_G\_effective\_<c>}).
+
+\paragraph{What the source says against it, and the engine prints.}  Taylor \&
+Krishna are hostile to the class of effective diffusivities: they ``assume
+values ranging from minus to plus infinity'' (p.~126), and the limiting
+formulas used outside their limits stand ``about as much chance of
+successfully predicting the fluxes as the throw of a dice'' (p.~208).  On the
+book's own example the Burghardt-Krupiczka form (Eq.~6.1.15), which is not
+built, gives 42.88 and 11.79 where Wilke gives 50.99 and 16.95: a difference
+of 16 to 30~\%.  Wilke is chosen on the four grounds above and not on an
+accuracy that no source read compares in distillation; the comparison that
+matters, the effective-diffusivity film against the Maxwell-Stefan film, is
+carried by a later slice (B2c).
+
+\paragraph{What \code{take 1} omits.}  The Fick matrix of a nonideal liquid is
+$[D]=[B]^{-1}[\Gamma]$ (paper Eqs.~6--8), with
+\begin{align}
+  B_{ii} &= \frac{x_i}{\mathcal{D}_{in}} + \sum_{k\ne i}\frac{x_k}{\mathcal{D}_{ik}},
+  & B_{ij} &= -x_i\Bigl(\frac1{\mathcal{D}_{ij}}-\frac1{\mathcal{D}_{in}}\Bigr),
+  \label{eq:kt-B}\\
+  \Gamma_{ij} &= \delta_{ij} + x_i\,\frac{\partial\ln\gamma_i}{\partial x_j}
+  \Big|_{T,P,\,x_{k\ne j,\,k<n}} & & (i,j=1\ldots n-1),
+  \label{eq:kt-Gamma}
+\end{align}
+the last component $n$ taking every change of mole fraction, so the matrix
+depends on which component is numbered last (the paper's Figs.~5--7): the
+engine takes the LAST component of the package and the props case says so.
+A film with one coefficient per component has no place for the off-diagonal
+of $[\Gamma]$, so the liquid film keeps \code{thermodynamicFactor \{ take 1;
+\}}: the liquid term of the overall resistance is then multiplied by
+$[\Gamma]$ (Taylor \& Krishna Eqs.~8.8.19--8.8.20 show the factors cancel in
+the Maxwell-Stefan film), an error of about the liquid film's share of the
+resistance times $(\Gamma-1)$.  The props operation prints $[\Gamma]$ and
+$[D]$ so the student sees how far from the identity it is: at
+$x=(0.70,0.15,0.15)$ in acetone / benzene / carbon tetrachloride, with the
+paper's NRTL parameters, the engine gives $\Gamma=\begin{psmallmatrix}0.788&-0.088\\0.075&1.043\end{psmallmatrix}$
+against Taylor \& Krishna's printed $\begin{psmallmatrix}0.788&-0.088\\0.075&1.043\end{psmallmatrix}$
+(Example~4.2.6, p.~92).  With the NRTL parameters of that example (its $\tau_{21}=0.76432$, see above) the engine gives $\begin{psmallmatrix}0.78751&-0.08751\\0.07476&1.04330\end{psmallmatrix}$, the book's matrix to every printed digit; with the paper's printed $0.74632$ it is 0.002 away.  $[\Gamma]$ is a central difference of the
+activity model's own $\ln\gamma$ in mole fraction, step $10^{-6}$; the effective-diffusivity film uses $\Gamma=1$ and $\Gamma$ is printed for the student; it exists
+as a props quantity only, and no unit reads it: the statement that no activity
+model hands a unit its liquid thermodynamic factor remains true of the runtime.
+
+\paragraph{The witness and its in-sample statement.}
+\file{tutorials/props/transport/liquidDiffusivity02\_kooijmanTaylor\_ternary}
+is the paper's Table~I: acetone (1), benzene (2), carbon tetrachloride (3) at
+25~°C, its six $D^{\circ}$ and its NRTL parameters (all $\alpha=0.2$), each
+read at its page and carried as a declared entry with its source; nothing is
+fitted.  The engine's Fick matrix against the measured one (Cullinan \& Toor
+1965, converted by the authors to the molar-average frame), $\times10^{-9}$
+m\textsuperscript{2}/s:
+\begin{center}\small
+\begin{tabular}{c|cccc|cccc}
+\hline
+$x_1,x_2,x_3$ & \multicolumn{4}{c|}{engine $D_{11},D_{12},D_{21},D_{22}$}
+              & \multicolumn{4}{c}{measured}\\ \hline
+0.2989, 0.3490, 0.3521 & 1.659 & $-0.367$ & $-0.020$ & 2.347 & 1.869 & $-0.213$ & $-0.004$ & 2.273\\
+0.1496, 0.1499, 0.7005 & 1.392 & $-0.233$ & $-0.146$ & 1.740 & 1.597 & $-0.059$ & $-0.077$ & 1.813\\
+0.1497, 0.6984, 0.1519 & 2.156 & $-0.230$ & $-0.277$ & 2.231 & 1.965 & \phantom{$-$}0.014 & $-0.152$ & 1.925\\
+0.6999, 0.1497, 0.1504 & 2.377 & $-0.537$ & \phantom{$-$}0.198 & 3.391 & 2.304 & $-0.402$ & \phantom{$-$}0.185 & 2.997\\
+\hline
+\end{tabular}
+\end{center}
+The average discrepancy is $0.0763$ (diagonal $0.0916$, off-diagonal
+$0.0611$), the paper's Table~IV row to its four digits.  What it shows: that the
+engine computes the rule the paper proposed, and that on a NON-ASSOCIATING
+system that rule's Fick matrix is within about 8~\% of a measurement,
+off-diagonal elements included.  What it does not show: anything about an
+associating liquid.  The paper's own Table~IV gives 0.1862 for acetone /
+benzene / methanol, with a maximum of 0.7051, and gives the reason (the Vignes
+equation does not perform well for associating binaries); methanol, 2-propanol
+and water is such a system, and nothing read measures the rule on it.  The six
+$D^{\circ}$ are the paper's inputs and the NRTL parameters Renon's, so the
+comparison is not in sample of anything Choupo fitted (and the one parameter taken from the second source, $\tau_{21}$, was chosen by the book's page and its measured agreement, not fitted); the molar volumes in
+the paper's Table~I header ($74.05$, $89.41$, $97.09$) are printed there as
+``$10^{-6}$~m\textsuperscript{3}/kmol'', which are cm\textsuperscript{3}/mol, and the Fick
+matrix in the molar-average frame does not use them.
+
+\paragraph{Validity window and refusals.}  Two or more components present;
+every pair of a present component with a present one needs its two
+infinite-dilution values; a $D^{\circ}$ is asked for only when its exponent is
+positive.  Refused by name: \code{reduction} with a rule that has no
+multicomponent form (the four binary rules: no source read gives one, and the
+paper says arithmetic and mole-fraction-weighted averages were tried and none
+was better than Eq.~23); a package of three or more components with the rule
+and no reduction; an effective value of three components asked without the
+component (\code{D\_L\_effective} is the binary's one value; a ternary's is
+\code{D\_L\_effective\_<component>}); a Fick or $\Gamma$ matrix with a
+component absent.  Gate \code{check\_liquid\_diffusivity\_declaration}
+holds: Eq.~\eqref{eq:kt-pair} and Eq.~\eqref{eq:wilke-effective} by hand to
+$10^{-11}$; the binary edge, for each of the three edges, equal to the
+shipped Vignes rule to $10^{-12}$ and the ternary its limit (a third component
+at $10^{-9}$ within $10^{-6}$); the independence of the result from the order
+of the components; the book's example; and each refusal by its words.
 
 \subsection{A stated liquid viscosity of a constituent set}\label{sec:measured-liquid-viscosity}
 

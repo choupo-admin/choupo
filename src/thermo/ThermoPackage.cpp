@@ -3573,14 +3573,23 @@ scalar ThermoPackage::diffusivityLiquidEffective(scalar T, const sVector& x) con
     for (std::size_t k = 0; k < x.size() && k < components_.size(); ++k)
         if (x[k] > 0.0) present.push_back(k);
     if (present.size() >= 3)
+    {
+        if (d.rule != Rule::VignesKooijmanTaylor)
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                "liquid diffusivity: an effective diffusivity of a constituent in a liquid of "
+                + std::to_string(present.size()) + " components (" + setWords(components_, present)
+                + ") is refused for rule " + ruleName(d.rule) + ": no multicomponent form of it has"
+                  " been read (Kooijman & Taylor 1991 say arithmetic and mole-fraction-weighted"
+                  " averages were tried and none was better than their Eq. 23).  DEV.md 4c C329"
+                  " slice B2, ruling 1.",
+                "`composition { rule VignesKooijmanTaylor; reduction Wilke; }`, or a binary liquid");
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
-            "liquid diffusivity: an effective diffusivity of a constituent in a liquid of "
-            + std::to_string(present.size()) + " components (" + setWords(components_, present)
-            + ") is refused -- no rule that reduces the pair values to it has been read (Taylor"
-              " & Kooijman 2014 define D_i,eff, Eq. 3.26, and give no formula for it; the"
-              " multicomponent Vignes rule is refused until its source is read).  DEV.md 4c"
-              " C398 slice (d), ruling 5.",
-            "a binary liquid, or `returns infiniteDilution` for the pair values");
+            "liquid diffusivity: a liquid of " + std::to_string(present.size()) + " components ("
+            + setWords(components_, present) + ") has one effective diffusivity PER COMPONENT"
+            " (Taylor & Krishna 1993, Eq. 6.1.14), and this request names none.",
+            "the component: `D_L_effective_<component>` in a props case, or the request's"
+            " component in `liquidProperty::evaluate`");
+    }
     if (present.size() < 2)
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
             "liquid diffusivity: the liquid is pure, so its diffusivity is a self-diffusion"
@@ -3608,11 +3617,73 @@ scalar ThermoPackage::diffusivityLiquidEffective(scalar T, const sVector& x) con
             return x[a] * Dba + x[b] * Dab;
         case Rule::Vignes:
         case Rule::LefflerCullinan:
+        case Rule::VignesKooijmanTaylor:    // Eq. 23 with no third component IS Vignes
             return std::pow(Dba, x[a]) * std::pow(Dab, x[b]);
         case Rule::none: break;
     }
     throw std::logic_error("diffusivityLiquidEffective: no rule (the reader refuses this)");
 }
+
+//  C329 slice B2a.  The pair (Maxwell-Stefan) value D_ij of i and j in the
+//  mixture x, Kooijman & Taylor (1991) Eq. 23:
+//      D_ij = (D0_ij)^x_j (D0_ji)^x_i  prod_{k != i,j} (D0_ik D0_jk)^(x_k/2).
+//  A D0 is asked for only when its exponent is positive, so a component that
+//  is absent asks for nothing and a binary is exactly the shipped Vignes
+//  product (the gate holds both to 1e-12).
+scalar ThermoPackage::liquidPairDiffusivity(scalar T, const sVector& x,
+                                            std::size_t i, std::size_t j) const
+{
+    using namespace liquidTransport;
+    const DiffusivityDeclaration& d = liquidDiffusionDecl_;
+    if (!d.declared || d.returns != Returns::effective || d.rule != Rule::VignesKooijmanTaylor)
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity: the pair values of a mixture are the Maxwell-Stefan values of"
+            " Kooijman & Taylor (1991) Eq. 23, and the property dictionary does not declare"
+            " `returns effective` with `rule VignesKooijmanTaylor`.",
+            "`diffusivity { returns effective; composition { rule VignesKooijmanTaylor; reduction"
+            " Wilke; } infiniteDilution { ... } thermodynamicFactor { take 1; } }`");
+    if (i == j || i >= components_.size() || j >= components_.size() || i >= x.size() || j >= x.size())
+        throw std::invalid_argument("liquidPairDiffusivity: two different components of the package");
+    scalar D = 1.0;
+    if (x[j] > 0.0) D *= std::pow(diffusivityLiquid(T, i, j), x[j]);
+    if (x[i] > 0.0) D *= std::pow(diffusivityLiquid(T, j, i), x[i]);
+    for (std::size_t k = 0; k < components_.size() && k < x.size(); ++k)
+    {
+        if (k == i || k == j || !(x[k] > 0.0)) continue;
+        D *= std::pow(diffusivityLiquid(T, i, k) * diffusivityLiquid(T, j, k), 0.5 * x[k]);
+    }
+    return D;
+}
+
+//  The effective diffusivity of component i, by the case's rule and reduction.
+//  Two components present: the binary value (every reduction returns it).
+//  Three or more: Wilke, Taylor & Krishna (1993) Eq. 6.1.14,
+//      D_i,eff = (1 - x_i) / sum_{j != i} x_j / D_ij,
+//  written with the sum of the others' mole fractions for (1 - x_i), the same
+//  number for a normalised x and exact when only two are present.
+scalar ThermoPackage::diffusivityLiquidEffective(scalar T, const sVector& x, std::size_t i) const
+{
+    using namespace liquidTransport;
+    const DiffusivityDeclaration& d = liquidDiffusionDecl_;
+    std::vector<std::size_t> present;
+    for (std::size_t k = 0; k < x.size() && k < components_.size(); ++k)
+        if (x[k] > 0.0) present.push_back(k);
+    if (i >= components_.size() || i >= x.size() || !(x[i] > 0.0))
+        throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+            "liquid diffusivity: the effective diffusivity of a component asks for a component"
+            " present in the liquid (" + setWords(components_, present) + " are).",
+            "a component with a positive mole fraction");
+    if (present.size() == 2) return diffusivityLiquidEffective(T, x);
+    if (present.size() < 2) return diffusivityLiquidEffective(T, x);    // refuses, naming why
+    if (!d.declared || d.returns != Returns::effective || d.rule != Rule::VignesKooijmanTaylor
+        || d.reduction != Reduction::Wilke)
+        return diffusivityLiquidEffective(T, x);    // refuses, naming why
+    std::vector<scalar> row(x.size(), 0.0);
+    for (const std::size_t j : present)
+        if (j != i) row[j] = liquidPairDiffusivity(T, x, i, j);
+    return wilkeEffective(x, row, i);
+}
+
 
 std::string ThermoPackage::liquidDiffusivityMethod() const
 {
@@ -3621,7 +3692,10 @@ std::string ThermoPackage::liquidDiffusivityMethod() const
     std::string base = d.defaultModel;
     if (!d.entries.empty()) base += std::string(base.empty() ? "" : "+") + "entries";
     if (d.returns == liquidTransport::Returns::infiniteDilution) return "infiniteDilution[" + base + "]";
-    return std::string("effective.") + liquidTransport::ruleName(d.rule) + "[" + base + "]";
+    return std::string("effective.") + liquidTransport::ruleName(d.rule)
+         + (d.reduction == liquidTransport::Reduction::none ? std::string()
+                : std::string(".") + liquidTransport::reductionName(d.reduction))
+         + "[" + base + "]";
 }
 
 std::string ThermoPackage::liquidConductivityMethod() const

@@ -64,7 +64,7 @@
     "properties": {
       "type": "array",
       "title": "Properties to evaluate",
-      "description": "Properties to compute at each point and write to the CSV (e.g. Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, Z, v_molar, H_real, S_real, rho_liquid_<comp>).  rho_liquid_kernel is the liquid density of the state's composition through the property kernel's methods -- the one the pump and the CSTR use (Theory Guide sec:liquid-density-methods): its entry, so a set no method prices is refused here as the units refuse it.",
+      "description": "Properties to compute at each point and write to the CSV (e.g. Psat_<comp>, T_bubble, gamma_<comp>, Cp_ig, Z, v_molar, H_real, S_real, rho_liquid_<comp>).  P_bubble [Pa] and y_eqT_<comp> are the FIXED-T mirror of T_bubble and y_eq_<comp>: the bubble pressure of the liquid at the state T and the incipient vapour at it (BubblePoint::pressure; the state P only starts the bracket), so x[<comp>] swept at fixed T gives a P-x-y diagram (Theory Guide sec:bubble-pressure).  rho_liquid_kernel is the liquid density of the state's composition through the property kernel's methods -- the one the pump and the CSTR use (Theory Guide sec:liquid-density-methods): its entry, so a set no method prices is refused here as the units refuse it.",
       "items": {
         "type": "string"
       },

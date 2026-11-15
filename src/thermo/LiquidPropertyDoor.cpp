@@ -69,13 +69,14 @@ const char* name(Property p)
 namespace {
 Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                     const sVector& x, const Consumer* who, const std::string& leftOut,
-                    bool record);
+                    bool record, long component = -1);
 }
 
 Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
-                const sVector& x, const Consumer* who, const std::string& leftOut)
+                const sVector& x, const Consumer* who, const std::string& leftOut,
+                long component)
 {
-    return evaluateImpl(thermo, p, T, P, x, who, leftOut, true);
+    return evaluateImpl(thermo, p, T, P, x, who, leftOut, true, component);
 }
 
 Result soluteDiffusivity(const ThermoPackage& thermo, scalar T, std::size_t iSolute,
@@ -124,7 +125,7 @@ Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T,
 namespace {
 Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                     const sVector& x, const Consumer* who, const std::string& leftOut,
-                    bool record)
+                    bool record, long component)
 {
     Result r;
     //  THE VALUE FIRST, through the package's own method: the same double,
@@ -140,7 +141,9 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
         case Property::thermalConductivity:
             r.value = thermo.thermalConductivityLiquid(T, x);               break;
         case Property::diffusivity:
-            r.value = thermo.diffusivityLiquidEffective(T, x);              break;
+            r.value = component >= 0
+                ? thermo.diffusivityLiquidEffective(T, x, static_cast<std::size_t>(component))
+                : thermo.diffusivityLiquidEffective(T, x);                  break;
     }
 
     //  THEN THE DESCRIPTION, read from the decision the package took.
@@ -201,7 +204,14 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
             const auto& d = thermo.liquidDiffusivityDeclaration();
             r.label = "property kernel: the effective liquid diffusivity the case declares --"
                       " rule " + std::string(liquidTransport::ruleName(d.rule)) + " ("
-                    + liquidTransport::ruleEquation(d.rule) + ") on infinite-dilution values"
+                    + liquidTransport::ruleEquation(d.rule) + ")"
+                    + (d.reduction == liquidTransport::Reduction::none ? std::string()
+                        : ", reduced to one value per component by " + std::string(liquidTransport::reductionName(d.reduction))
+                          + " (" + liquidTransport::reductionEquation(d.reduction) + ")"
+                          + (component >= 0 && static_cast<std::size_t>(component) < thermo.n()
+                                 ? ", for " + thermo.comp(static_cast<std::size_t>(component)).name()
+                                 : std::string()))
+                    + " on infinite-dilution values"
                       " from " + (d.defaultModel.empty() ? std::string("the case's entries")
                                                           : d.defaultModel
                                   + (d.entries.empty() ? "" : " and the case's entries"))

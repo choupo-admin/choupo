@@ -8,11 +8,17 @@
       specification, so the trace walks straight over it and the maximum is
       visible in the data;
 
-    * the BUBBLE branch producing NOTHING, announced as what it is.  This
-      feed is 80 % methane and its bubble line lies below the saturation
-      solver's own 200 K bracket.  A branch that never started is NOT a
-      branch that stopped at a turning point, and the two are reported
-      differently because the remedies differ.
+    * the BUBBLE branch STARTING LATE, announced as what it is.  This feed
+      is 80 % methane and below about 45 bar its bubble line lies under the
+      saturation solver's own 200 K bracket: the 30 pressures from 1 to
+      44.9 bar produce no point, every one of them tried and listed, and the
+      branch first converges at 46.385 bar (200.119 K) and keeps 10 points
+      to 60 bar.  Until EX-01 (2026-11-15) the op ended a branch at its first
+      failed pressure and reported this one as "never started"; a branch
+      now "never started" only when no pressure in the range converged (the
+      gate check_phase_envelope probes the same feed on 1-40 bar for that).
+      A late start, a stop at a turning point and a branch that never
+      started are reported differently because the remedies differ.
 
   NOT CLAIMED: the nose.  A pressure-marched trace cannot pass the
   cricondenbar, nor the critical point where the branches merge.  Closing it
@@ -27,5 +33,5 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoProps;
-description   "P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that never starts";
+description   "P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that starts late (46 bar), every lower pressure tried and listed";
 verbosity     3;

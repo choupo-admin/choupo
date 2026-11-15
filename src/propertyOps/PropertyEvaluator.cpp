@@ -312,6 +312,70 @@ scalar evaluateProperty(const std::string& propKey,
     //  correlation in the pure solvent's viscosity).
     if (propKey == "D_L_effective" || propKey == "diffusivity_liquid_effective")
         return thermo.diffusivityLiquidEffective(T, xLiquid);   // m²/s
+    //  C329 slice B2a.  A liquid of three or more components, in the words of
+    //  Kooijman & Taylor (1991) and Taylor & Krishna (1993):
+    //    D_L_effective_<c>        the effective diffusivity of component c
+    //                             (the case's reduction; Wilke, Eq. 6.1.14)
+    //    D_L_MS_<i>_<j>           the pair (Maxwell-Stefan) value of i and j in
+    //                             the mixture (Kooijman & Taylor Eq. 23)
+    //    Gamma_<i>_<j>            the thermodynamic factor, i and j among the
+    //                             first n-1 components (the LAST takes the change)
+    //    D_L_Fick_<i>_<j>         the Fick matrix [B]^-1 [Gamma], same indexing
+    //  Component names may hold underscores: the two names are found by trying
+    //  every split.
+    {
+        auto twoNames = [&](const std::string& prefix, std::size_t& a, std::size_t& b,
+                            bool allowSame) -> bool
+        {
+            if (propKey.compare(0, prefix.size(), prefix) != 0) return false;
+            for (std::size_t i = 0; i < thermo.n(); ++i)
+                for (std::size_t j = 0; j < thermo.n(); ++j)
+                    if ((allowSame || i != j) && propKey == prefix + thermo.comp(i).name() + "_" + thermo.comp(j).name())
+                    { a = i; b = j; return true; }
+            throw std::runtime_error("property '" + propKey + "': write " + prefix
+                + "<component>_<component>, two components of the package"
+                + std::string(allowSame ? "." : ", different.") );
+        };
+        //  The same reduction of a GAS: the pair diffusivities of a low-pressure
+        //  gas do not depend on composition and ARE the Maxwell-Stefan values
+        //  (Taylor & Krishna 1993, p. 162); the state's composition is the
+        //  vapour's.  D_G_effective_<c>, m2/s.
+        if (propKey.compare(0, 14, "D_G_effective_") == 0)
+        {
+            const std::size_t i = thermo.indexOf(propKey.substr(14));
+            if (!(xLiquid[i] > 0.0))
+                throw std::runtime_error("property '" + propKey + "': the component is not present.");
+            std::size_t nPresent = 0;
+            for (const scalar v : xLiquid) if (v > 0.0) ++nPresent;
+            if (nPresent < 2)
+                throw std::runtime_error("property '" + propKey + "': a gas of one component has no"
+                    " effective mixture diffusivity (Wilke's reduction is 0/0 there); give two components"
+                    " or more.");
+            std::vector<scalar> row(xLiquid.size(), 0.0);
+            for (std::size_t j = 0; j < xLiquid.size(); ++j)
+                if (j != i && xLiquid[j] > 0.0) row[j] = thermo.diffusivityGas(T, P_Pa, i, j);
+            return liquidTransport::wilkeEffective(xLiquid, row, i);
+        }
+        if (propKey.compare(0, 14, "D_L_effective_") == 0)
+            //  Through the DOOR, so the door's per-component request is exercised
+            //  and held by the gate against the value by hand (review row B2-03).
+            return liquidProperty::evaluate(thermo, liquidProperty::Property::diffusivity, T, P_Pa,
+                       xLiquid, nullptr, "", static_cast<long>(thermo.indexOf(propKey.substr(14)))).value;   // m2/s
+        std::size_t a = 0, b = 0;
+        if (twoNames("D_L_MS_", a, b, false))
+            return thermo.liquidPairDiffusivity(T, xLiquid, a, b);            // m2/s
+        if (twoNames("Gamma_", a, b, true) || twoNames("D_L_Fick_", a, b, true))
+        {
+            const bool gam = propKey.compare(0, 6, "Gamma_") == 0;
+            if (a + 1 >= thermo.n() || b + 1 >= thermo.n())
+                throw std::runtime_error("property '" + propKey + "': the matrix is (n-1) x (n-1); "
+                    + thermo.comp(thermo.n() - 1).name() + ", numbered last, takes the change and"
+                    " has no row or column.");
+            const auto M = gam ? liquidDiffusion::thermodynamicFactor(thermo, T, xLiquid)
+                               : liquidDiffusion::fickMatrix(thermo, T, xLiquid);
+            return M[a][b];                                                   // - or m2/s
+        }
+    }
     if (propKey.compare(0, 8, "D_L_inf_") == 0)
     {
         const std::string rest = propKey.substr(8);
@@ -340,6 +404,32 @@ scalar evaluateProperty(const std::string& propKey,
             throw std::runtime_error(
                 "T_bubble: Newton-1D did not converge at this point");
         return r.T;
+    }
+
+    // P_bubble and y_eqT_<comp>: the FIXED-T mirror of the pair above -- the
+    // bubble PRESSURE of the liquid `xLiquid` at the scan T, and the incipient
+    // vapour's mole fraction of <comp> at that pressure.  Scanned along
+    // x[<comp>] they are the two curves of a P-x-y diagram.  Both come from
+    // the engine's one bubble-pressure home, `BubblePoint::pressure` (the
+    // incipient vapour iterated to its own composition); no residual is
+    // written here.  The state P is only the bracket's starting pressure.
+    // ONE liquid is assumed: the fixed-P heteroazeotrope above has no
+    // fixed-T counterpart here, so a P-x-y through an immiscibility gap
+    // draws the homogeneous (phantom) curve, and the Explorer says so.
+    if (propKey == "P_bubble" || matchPerComp("y_eqT", i))
+    {
+        const auto r = BubblePoint::pressure(thermo, xLiquid, T, P_Pa);
+        if (!r.converged)
+            throw std::runtime_error(
+                propKey + ": no bubble pressure found at T = " + std::to_string(T)
+                + " K (no pressure up to 10 kbar makes the liquid stop boiling,"
+                " or the equation of state has one root for both phases)");
+        if (r.belowFloor)
+            throw std::runtime_error(
+                propKey + ": the liquid does not boil even at 0.01 bar at T = "
+                + std::to_string(T) + " K -- below the bubble-pressure"
+                " solver's floor, so no bubble pressure is reported");
+        return propKey == "P_bubble" ? r.P : r.y[i];
     }
 
     // liquid_stable: 1 if the liquid at xLiquid is a single stable phase, 0 if a
@@ -395,10 +485,13 @@ std::string propertyUnit(const std::string& k)
     if (perComp("rho_liquid"))                            return "kg/m3";
     if (k == "T" || k == "T_bubble")                      return "K";
     if (k == "P")                                         return "Pa";
+    if (k == "P_bubble")                                  return "Pa";
+    if (perComp("y_eqT"))                                 return "-";
     if (k == "H_ig" || k == "H_R" || k == "H_real")       return "J/mol";
     if (k == "S_ig" || k == "S_R" || k == "S_real" || k == "Cp_ig")
                                                           return "J/(mol*K)";
     if (k == "Z" || k == "gamma" || k == "liquid_stable") return "-";
+    if (k.compare(0, 6, "Gamma_") == 0)                   return "-";
     if (k == "v_molar" || k == "molarVolume")             return "m3/mol";
     if (k == "viscosity" || k == "viscosity_gas" || k == "mu"
         || k == "viscosity_liquid" || k == "mu_L")        return "Pa*s";
@@ -408,6 +501,8 @@ std::string propertyUnit(const std::string& k)
     if (k == "diffusivity" || k == "D_gas" || k == "D"
         || k == "diffusivity_liquid" || k == "D_liquid" || k == "D_L"
         || k == "D_L_effective" || k == "diffusivity_liquid_effective"
+        || k.compare(0, 14, "D_L_effective_") == 0 || k.compare(0, 14, "D_G_effective_") == 0 || k.compare(0, 7, "D_L_MS_") == 0
+        || k.compare(0, 9, "D_L_Fick_") == 0
         || k.compare(0, 8, "D_L_inf_") == 0)                  return "m2/s";
     if (k == "surface_tension" || k == "surfaceTension" || k == "sigma")
                                                           return "N/m";

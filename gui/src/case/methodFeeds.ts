@@ -112,6 +112,89 @@ export function binaryVleSpec(args: {
   };
 }
 
+/** The FIXED-T mirror of `binaryVleSpec`: the P-x-y feed.  Sweep x of the
+ *  more volatile component 0→1 at fixed T and ask the engine for the bubble
+ *  PRESSURE and the incipient vapour at it (`P_bubble`, `y_eqT_<c1>`, both
+ *  from `BubblePoint::pressure` through src/propertyOps/PropertyEvaluator.cpp).
+ *  The bubble curve is P_bubble(x); the dew curve is the SAME pressures read
+ *  against y — no second solve, no physics here.  ONE liquid is assumed: the
+ *  fixed-P lenses' heteroazeotrope probe has no fixed-T counterpart in the
+ *  evaluator, so no two-liquid package is requested and the lens says so.
+ *  `state.P` is only the engine's starting pressure for the bracket. */
+export function binaryPxySpec(args: {
+  pair: [string, string];
+  catalogue: ComponentMeta[];
+  /** Liquid activity model ("ideal" | "NRTL" | "Wilson" | "UNIFAC"). */
+  activity: string;
+  /** Vapour EOS ("idealGas" | "SRK" | "PR"). */
+  eos: string;
+  /** Fixed temperature [K], canonical SI. */
+  T: number;
+  /** Points along the composition axis. */
+  n: number;
+  localUnifac: LocalUnifac;
+  componentFiles?: Record<string, string>;
+}): ExploreSpec {
+  const vle = orderBinaryByVolatility(args.pair, args.catalogue);
+  const c1 = vle[0], c2 = vle[1];
+  return {
+    components: [...vle],
+    properties: ["P_bubble", `y_eqT_${c1}`],
+    axis: { variable: `x[${c1}]`, from: 0, to: 1, n: Math.max(2, Math.round(args.n)) },
+    state: { T: args.T, P: 101325, composition: { [c1]: 0.5, [c2]: 0.5 } },
+    activityModel: { model: args.activity },
+    equationOfState: { model: args.eos },
+    ...(args.activity === "UNIFAC"
+      ? { unifacGroups: unifacGroupsBlock(vle, args.localUnifac) } : {}),
+    ...(args.componentFiles && Object.keys(args.componentFiles).length > 0
+      ? { componentFiles: args.componentFiles } : {}),
+  };
+}
+
+/** The P-x-y rows read off the engine's CSV `x[<c1>],P_bubble,y_eqT_<c1>`:
+ *  sorted by x, rows the engine could not answer (nan) dropped and COUNTED,
+ *  so the lens can say how many compositions have no bubble pressure.
+ *  Pure reading — every number is the engine's. */
+export function readPxyCsv(csv: string): {
+  comp: string; rows: { x: number; P: number; y: number }[]; missing: number;
+} | null {
+  const lines = csv.trim().split(/\r?\n/);
+  const head = (lines[0] ?? "").split(",").map((h) => h.trim());
+  const m = /^x\[([^\]]+)\]$/.exec(head[0] ?? "");
+  if (!m) return null;
+  const comp = m[1]!;
+  const iP = head.indexOf("P_bubble");
+  const iY = head.indexOf(`y_eqT_${comp}`);
+  if (iP < 0 || iY < 0) return null;
+  const rows: { x: number; P: number; y: number }[] = [];
+  let missing = 0;
+  for (const line of lines.slice(1)) {
+    if (!line.trim()) continue;
+    const c = line.split(",");
+    const x = Number(c[0]), P = Number(c[iP]), y = Number(c[iY]);
+    if ([x, P, y].every(Number.isFinite)) rows.push({ x, P, y });
+    else missing++;
+  }
+  rows.sort((a, b) => a.x - b.x);
+  return { comp, rows, missing };
+}
+
+/** EX-06: the engine's supercritical vapour-pressure sentences of a run, by
+ *  component (`<who>: <message>`), deduplicated; solver-path ("trial")
+ *  advisories left out.  Empty when `applies` is false.  Read, never
+ *  computed: the engine decides what is above its Tc. */
+export function supercriticalNotes(applies: boolean,
+  advisories: { locus: string; message: string; status?: string }[] | undefined): string[] {
+  if (!applies) return [];
+  const out: string[] = [];
+  for (const a of advisories ?? []) {
+    if (a.status === "trial" || !/ABOVE its critical temperature/.test(a.message)) continue;
+    const s = `${a.locus}: ${a.message}`;
+    if (!out.includes(s)) out.push(s);
+  }
+  return out;
+}
+
 /** The psychrometric-chart feed (psychrometricChart engine op).  Carrier =
  *  the lower-Tb of the pair (stays gas); condensable = the higher-Tb (needs a
  *  vapour-pressure model).  Transport models ride along so the op can compute

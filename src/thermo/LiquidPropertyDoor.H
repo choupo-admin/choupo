@@ -105,9 +105,12 @@ std::vector<std::string> statedDatumTemperatures(const ThermoPackage& thermo, co
 
 //  Evaluate through the package.  `who` (when given) records the use;
 //  `leftOut` names components the CALLER left out of `x` (pricedDensity).
+//  `component` (>= 0): the package component a PER-COMPONENT quantity is asked
+//  for -- the effective diffusivity of a liquid of three or more components
+//  has one value per component (C329 slice B2a).  -1: the binary's one value.
 Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K, scalar P_Pa,
                 const sVector& x, const Consumer* who = nullptr,
-                const std::string& leftOut = "");
+                const std::string& leftOut = "", long component = -1);
 
 //  THE DIFFUSIVITY OF A SOLUTE IN A SOLVENT AT INFINITE DILUTION (DEV.md 4c
 //  C402, the membrane family): the quantity a film model reads when the
@@ -149,9 +152,9 @@ Result density(const Request& r);
 
 inline Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K,
                        scalar P_Pa, const sVector& x, const Consumer& who,
-                       const std::string& leftOut = "")
+                       const std::string& leftOut = "", long component = -1)
 {
-    return evaluate(thermo, p, T_K, P_Pa, x, &who, leftOut);
+    return evaluate(thermo, p, T_K, P_Pa, x, &who, leftOut, component);
 }
 
 } // namespace liquidProperty

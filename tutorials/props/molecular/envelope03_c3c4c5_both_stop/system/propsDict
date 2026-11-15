@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------*\
+  One phaseEnvelope op over envelope02's feed, to 80 bar in 1-bar steps.  The
+  range is the point: it contains both branches' stopping pressures.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        envelope;
+        type        phaseEnvelope;
+        composition { propane 0.50;  nButane 0.30;  nPentane 0.20; }
+        pressure    { from 1 bar;  to 80 bar;  n 80; }
+        output      { file envelope.csv; }
+    }
+);

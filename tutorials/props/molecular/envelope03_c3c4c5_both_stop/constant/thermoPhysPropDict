@@ -1,0 +1,16 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+// The same frame and feed as envelope02_c3c4c5_branch_stop, and the same
+// statement (C256, 2026-11-09, measured there): the branches marched past
+// propane's Tc (369.8 K) rest on its vapour pressure CONTINUED past Tc, with
+// the liquid reference factor held continuous -- a surface of the method,
+// not a measured envelope.
+components    ( propane nButane nPentane );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid  { activityModel ideal;      standardState pureLiquid; }
+    vapour  { fugacityModel PengRobinson; }
+}
