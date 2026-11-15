@@ -139,7 +139,7 @@ describe("the reactor-ladder lesson", () => {
 
   it("names the liquid-basis volume among its limits", () => {
     const l = LADDER_LIMITS.find((x) => x.id === "volume-is-a-shape");
-    expect(l?.body).toContain("PFR.cpp:676");  // C259: the comment moved from 647 to 649 to 675
+    expect(l?.body).toContain("PFR.cpp:677");  // C259: the comment moved from 647 to 649 to 675
   });
 });
 
@@ -258,8 +258,8 @@ describe("the page warns when rung 1 declares more than rung 2 allows", () => {
     const cr = readFileSync(new URL(
       "../../src/unitOperations/reactor/ConversionReactor.cpp", import.meta.url),
       "utf-8").split("\n");
-    expect(cr[214]).toContain('lookupScalar("conversion")');
-    expect(cr.slice(215, 218).join(" ")).toContain("X < 0.0 || X > 1.0");
-    expect(cr.slice(229, 233).join(" ")).toContain("went negative");
+    expect(cr[215]).toContain('lookupScalar("conversion")');
+    expect(cr.slice(216, 219).join(" ")).toContain("X < 0.0 || X > 1.0");
+    expect(cr.slice(230, 234).join(" ")).toContain("went negative");
   });
 });

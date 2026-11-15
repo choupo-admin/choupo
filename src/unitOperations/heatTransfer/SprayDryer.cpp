@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SprayDryer.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "streams/PsdOnGrid.H"
@@ -146,6 +147,7 @@ int SprayDryer::solve(const DictPtr& dict,
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error("SprayDryer '" + (dict->name().empty() ? type() : dict->name()) + "': the case"
                 " declares a liquidViscosity transport model and it cannot"
                 " price the feed -- " + std::string(e.what()) + "\n  Remedy:"
@@ -419,6 +421,7 @@ int SprayDryer::solve(const DictPtr& dict,
         }
         catch (const std::exception&)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             sigma = liquidSource::waterSurfaceTensionFallback.value;   // no sigma model -> byte-stable fallback
             PropertySourceLog::instance().useHere("surfaceTension", liquidSource::waterSurfaceTensionFallback);
             sigmaSource = "default (0.072 N/m, water -- no surfaceTension model)";

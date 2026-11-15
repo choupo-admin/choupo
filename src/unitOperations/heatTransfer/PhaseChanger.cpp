@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PhaseChanger.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "unitOperations/flash/IsothermalFlash.H"
 #include "unitOperations/flash/PureSaturationPlateau.H"
@@ -872,7 +873,7 @@ int PhaseChanger::solveGeometry(const DictPtr& operDict,
         if (thermo.hasSurfaceTension() || !thermo.pureFluidSelections().empty())
         {
             try { ctx.sigma = liquidProperty::evaluateUnrecorded(thermo, liquidProperty::Property::surfaceTension, Tsat, P_out, z).value; }
-            catch (const std::exception&) { ctx.sigma = 0.0; }
+            catch (const std::exception&) { rethrowHardRefusal(); ctx.sigma = 0.0; }
         }
         ctx.rho_l       = liquidProperty::evaluate(thermo, liquidProperty::Property::density, T_f, P_out, z).value;
         ctx.lambda_l    = thermo.thermalConductivityLiquid(T_f, z);

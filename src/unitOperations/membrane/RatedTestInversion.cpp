@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "RatedTestInversion.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "SpiralWoundModule.H"
 
@@ -251,6 +252,7 @@ ModuleAtConditions runModuleAt(const DictPtr& unitDict,
         try { m.solve(probe, thermo, 0); }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error("spiralWoundModule '" + unitLabel + "':"
                 " the " + probeName + " of module '" + record.name() + "' ("
                 + fmt(w * 1e6, "%.0f") + " ppm " + solute + ", "

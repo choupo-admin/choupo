@@ -1,0 +1,108 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table01 -- water's liquid viscosity at 5, 25, 50 and 80 degC, two ways,
+    then one point past the table.
+
+    muVogel_*   the record's preferred law, `vogel` (a fit).
+    muTable_*   the variant `crcPoints`: the case's table, logReciprocal.
+                5 and 25 degC lie BETWEEN points: the value is the
+                interpolant's; 50 and 80 degC are points themselves, so the
+                table returns the printed value exactly.
+    muPastEnd_extended  105 degC on `crcExtended`, strictly INSIDE the
+                extension (up to 110 degC): the end segment's chord, announced;
+                the largest excursion restated at the end of the run.
+    muPastUpTo_refused  a scan 109.9-110.1 degC on `crcExtended`: the first
+                two points are inside the extension, the last one, 0.1 K past
+                upTo, is REFUSED by name (nan, with the note).
+    muPastEnd_refused   a scan 90-110 degC on `crcPoints`: 90 and 100 degC are
+                points; 110 degC is REFUSED by name (written as nan, with the
+                note naming the table, the span and the remedies).
+
+    The golden master locks every computed value at reltol 1e-4.  */
+
+operations
+(
+    {
+        name        muVogel_278K;
+        type        propertyPoint;
+        state       { T 278.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muVogel_298K;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muVogel_323K;
+        type        propertyPoint;
+        state       { T 323.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muVogel_353K;
+        type        propertyPoint;
+        state       { T 353.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muTable_278K;
+        type        propertyPoint;
+        thermo      crcPoints;            // the variant that pins the case's table
+        state       { T 278.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muTable_298K;
+        type        propertyPoint;
+        thermo      crcPoints;
+        state       { T 298.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muTable_323K;
+        type        propertyPoint;
+        thermo      crcPoints;
+        state       { T 323.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muTable_353K;
+        type        propertyPoint;
+        thermo      crcPoints;
+        state       { T 353.15 K;  P 1 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muPastEnd_extended;
+        type        propertyPoint;
+        thermo      crcExtended;          // the same table, extended to 110 degC
+        state       { T 378.15 K;  P 2 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+    }
+    {
+        name        muPastUpTo_refused;
+        type        propertyScan1D;
+        thermo      crcExtended;          // inside, on, and 0.1 K past upTo
+        vary        { variable T;  from 383.05 K;  to 383.25 K;  n 3; }
+        state       { P 2 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+        output      { file muPastUpTo_refused.csv; }
+    }
+    {
+        name        muPastEnd_refused;
+        type        propertyScan1D;
+        thermo      crcPoints;            // no extension: refused past 100 degC
+        vary        { variable T;  from 363.15 K;  to 383.15 K;  n 3; }
+        state       { P 2 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+        output      { file muPastEnd_refused.csv; }
+    }
+);

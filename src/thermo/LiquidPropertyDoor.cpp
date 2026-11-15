@@ -265,6 +265,15 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                 + " model and mixing rule the case selects (" + m + ")";
         r.quality.origin     = "regressed";
         r.quality.provenance = "the component records' transport blocks";
+        //  A block that names no model: each constituent's own law (a pin of a
+        //  record law, a case's table), never an empty "()" (review row TG-07).
+        if (p == Property::viscosity && m.empty())
+        {
+            const std::string laws = thermo.liquidViscosityLawsText(x, r.quality.origin,
+                                                                    r.quality.provenance);
+            r.methodId = "perConstituent";
+            r.label = "property kernel: one law per constituent -- " + laws;
+        }
         pressure = (p == Property::viscosity) ? "not applied (saturated liquid)" : "";
         scalar zs = 0.0;
         for (std::size_t k = 0; k < x.size(); ++k) if (x[k] > 0.0) zs += x[k];

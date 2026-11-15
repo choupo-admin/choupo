@@ -13,6 +13,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "GasStoreSize.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "DesignDefaults.H"
 #include "MaterialLimits.H"
@@ -320,6 +321,7 @@ std::vector<EquipmentSizing> GasStoreSize::size(const std::string& name,
         try { r = tp.density(T, P, s.z, DensityPhase::Vapour); }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error(who + ": the case's package gives no"
                 " vapour density for stream '" + stream + "' at " + end + " ("
                 + fmt("%.6g", P * 1.0e-5) + " bar, " + fmt("%.2f", T)
@@ -657,7 +659,7 @@ std::vector<EquipmentSizing> LiquefiedGasStoreSize::size(
         rho = 0.0;
         if (sel.keptFraction > 0.0)
             try { rho = liquidProperty::evaluate(tp, liquidProperty::Property::density, T, d.P, sel.zPriced, liquidProperty::Consumer{"sizing", who}, sel.dropped).value; }
-            catch (const std::exception&) { rho = 0.0; }
+            catch (const std::exception&) { rethrowHardRefusal(); rho = 0.0; }
         const std::string m = "the liquid of stream '" + stream + "' arrives"
             " at " + fmt("%.2f", d.T) + " K and is stored at the declared "
             + fmt("%.2f", T) + " K: what warms or cools it between the two (an"

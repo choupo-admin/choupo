@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PFR.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "CatalystPellet.H"
@@ -494,7 +495,7 @@ int PFR::solve(const DictPtr& dict,
                     nullptr);
                 kpis_["Q_kW"] = H_out_kW - H_in_kW;          // <0 exothermic
             }
-            catch (const std::exception&) { /* no formation datum -- no duty */ }
+            catch (const std::exception&) { rethrowHardRefusal(); /* no formation datum -- no duty */ }
         }
     }
 
@@ -647,7 +648,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                     const Component& ci = thermo.comp(i);
                     std::string igWhy;
                     try { (void) ci.h_pure_ig(T); continue; }
-                    catch (const std::exception& e) { igWhy = e.what(); }
+                    catch (const std::exception& e) { rethrowHardRefusal(); igWhy = e.what(); }
                     if (!ci.hasGibbsData())
                         throw std::runtime_error("PFR: thermalMode `" + tmode + "` needs the "
                             "heat of reaction, so every reacting species needs a "
@@ -665,7 +666,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                                 ThermoPackage::ReferenceContext::StandardPhase);
                         continue;
                     }
-                    catch (const std::exception& e) { datumWhy = e.what(); }
+                    catch (const std::exception& e) { rethrowHardRefusal(); datumWhy = e.what(); }
                     throw std::runtime_error("PFR: thermalMode `" + tmode + "` needs the "
                         "heat of reaction, so every reacting species must be priceable on the "
                         "elements datum -- '" + ci.name() + "' carries a "
@@ -793,7 +794,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             sVector phiPkg;
             if (thermo.hasEos())
             {
-                try { phiPkg = thermo.eos().phi(T, P, z_in); } catch (const std::exception&) {}
+                try { phiPkg = thermo.eos().phi(T, P, z_in); } catch (const std::exception&) { rethrowHardRefusal(); }
                 eosNote = thermo.eos().modelName();
             }
             std::ostringstream act;
@@ -1361,7 +1362,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
                     const scalar v_in = thermo.eos().molarVolume(T, P, z_in);   // m3/mol
                     if (v_in > 0.0) kpis_["tau_gas_s"] = V_R / (F_in * v_in);
                 }
-                catch (const std::exception&) {}
+                catch (const std::exception&) { rethrowHardRefusal(); }
             }
         }
 
@@ -1489,7 +1490,7 @@ int PFR::solveMultiReaction(const DictPtr&       dict,
             closures_.push_back(std::move(c));
         }
     }
-    catch (const std::exception&) { /* a species lacks formation data */ }
+    catch (const std::exception&) { rethrowHardRefusal(); /* a species lacks formation data */ }
     //  The march conserves H on the surface the duty is priced on (C77), so
     //  the duty IS the marched wall heat: zero adiabatic.  An outlet whose
     //  enthalpy no T on that surface carries is a pure product on its

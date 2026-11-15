@@ -28,6 +28,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "CoolingTower.H"
+#include "thermo/PropertyDomainError.H"
 #include "Psychrometry.H"
 #include "thermo/ThermoPackage.H"
 #include "core/Advisory.H"
@@ -177,6 +178,7 @@ int CoolingTower::solve(const DictPtr& dict,
         }
         catch (const std::runtime_error& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error(std::string(e.what()) + " -- the water"
                 " inlet is too hot for an evaporative tower at "
                 + std::to_string(P / 1.0e5) + " bar.");

@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "unitOperations/solids/Mill.H"
+#include "thermo/PropertyDomainError.H"
 #include "unitOperations/solids/millModel/MillModels.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "streams/PsdOnGrid.H"
@@ -280,6 +281,7 @@ int Mill::solve(const DictPtr& dict, const ThermoPackage& thermo, int verbosity)
     try { Hin = H(T); }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         throw std::runtime_error(std::string("mill: the feed cannot be priced "
             "on the elements datum, so the temperature rise from the shaft work "
             "cannot be computed: ") + ex.what());

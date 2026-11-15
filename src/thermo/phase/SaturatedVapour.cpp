@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SaturatedVapour.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -144,7 +145,7 @@ scalar liquidReferenceFactor(const EquationOfState& eos, const Component& c,
     scalar v = 0.0;
     try { v = eos.phi(T, Psat, e)[i]; }
     catch (const std::exception& ex)
-    { return factorOne(eos, c, std::string("the EoS refused: ") + ex.what()); }
+    { rethrowHardRefusal(); return factorOne(eos, c, std::string("the EoS refused: ") + ex.what()); }
     if (!(v > 0.0) || !std::isfinite(v))
         return factorOne(eos, c, "the EoS returned a non-finite coefficient");
     if (!(c.Vliq() > 0.0))

@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1861,
+  "cases": 1866,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 25
@@ -23829,6 +23829,38 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/heat/table02_water_liquid_cp_points": {
+   "application": "choupoProps",
+   "ops": [
+    "flashSpec",
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/heat/table03_trial_state_refused": {
+   "application": "choupoProps",
+   "ops": [
+    "flashSpec"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [
+    "expectedFail"
+   ],
+   "hasGolden": false
+  },
   "tutorials/props/hydraulics/letdown02_valve_fluid_properties": {
    "application": "choupoProps",
    "ops": [
@@ -24654,6 +24686,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/transport/mixing01_water_acetone": {
    "application": "choupoProps",
    "ops": [
@@ -24686,6 +24732,21 @@
    "application": "choupoProps",
    "ops": [
     "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/transport/table01_water_viscosity_points": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
    ],
    "thermo": {
     "formulation": "gammaPhi",
@@ -27167,6 +27228,17 @@
     "mixer",
     "splitter"
    ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/steady/flowsheets/table05_sector_table_pins": {
+   "application": "choupoSolve",
    "thermo": {
     "formulation": "gammaPhi",
     "activityModels": [
@@ -31422,6 +31494,8 @@
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
+    "tutorials/props/heat/table02_water_liquid_cp_points",
+    "tutorials/props/heat/table03_trial_state_refused",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/hydraulics/moody02_correlation_sweeps",
@@ -31484,9 +31558,11 @@
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
     "tutorials/props/thermoTest/model4_speciation_scaling",
+    "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
+    "tutorials/props/transport/table01_water_viscosity_points",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/optimisation/fitNRTL01_ethanol_water",
@@ -31678,6 +31754,7 @@
     "tutorials/steady/flowsheets/proxy01_gas_loop",
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/flowsheets/table05_sector_table_pins",
     "tutorials/steady/flowsheets/twoSectorDemo",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_R",
     "tutorials/steady/flowsheets/twoSectorDemo/SECTOR_S",
@@ -34975,6 +35052,8 @@
     "tutorials/props/heat/htbench01_correlations",
     "tutorials/props/heat/psychro01_n2_water",
     "tutorials/props/heat/psychro02_air_water",
+    "tutorials/props/heat/table02_water_liquid_cp_points",
+    "tutorials/props/heat/table03_trial_state_refused",
     "tutorials/props/hydraulics/moody01_friction_correlations",
     "tutorials/props/hydraulics/moody02_correlation_sweeps",
     "tutorials/props/kinetics/ammoniaRate01_dyson_simon",
@@ -35012,8 +35091,10 @@
     "tutorials/props/thermo/temperature02_engineers_ladder",
     "tutorials/props/thermoTest/atoms01_formula_parser",
     "tutorials/props/thermoTest/h_surface_identity",
+    "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
+    "tutorials/props/transport/table01_water_viscosity_points",
     "tutorials/props/transport/transport01_gas_bench",
     "tutorials/props/transport/transport02_chapman_enskog",
     "tutorials/steady/crystallisation/crystalliser01_sugar",
@@ -35102,6 +35183,7 @@
     "tutorials/steady/flowsheets/process05_isomerization_recycle",
     "tutorials/steady/flowsheets/recycle02_dominant_eigenvalue",
     "tutorials/steady/flowsheets/recycle_autoinit_tear",
+    "tutorials/steady/flowsheets/table05_sector_table_pins",
     "tutorials/steady/gas-solid/bagFilter01_dust",
     "tutorials/steady/gas-solid/cyclone01_dust_removal",
     "tutorials/steady/gas-solid/cyclone02_leith_licht",
@@ -36272,6 +36354,8 @@
     "tutorials/steady/optimisation/fitNRTL02_thermoml_isobars"
    ],
    "flashSpec": [
+    "tutorials/props/heat/table02_water_liquid_cp_points",
+    "tutorials/props/heat/table03_trial_state_refused",
     "tutorials/props/thermo/flashSpec01_wet_steam_expansion"
    ],
    "freezingPoint": [
@@ -36360,6 +36444,7 @@
     "tutorials/props/compare/aceticWater01_txy_association",
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
+    "tutorials/props/heat/table02_water_liquid_cp_points",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
@@ -36373,9 +36458,11 @@
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
     "tutorials/props/thermo/temperature01_gas_thermometer",
     "tutorials/props/thermo/temperature02_engineers_ladder",
+    "tutorials/props/transport/liquidDiffusivity01_pelkonen_ternary",
     "tutorials/props/transport/mixing01_water_acetone",
     "tutorials/props/transport/purelaws01_methanol_isopropanol_water",
     "tutorials/props/transport/surfacetension01_stored_vs_brockbird",
+    "tutorials/props/transport/table01_water_viscosity_points",
     "tutorials/steady/thermo/variants01_ethanol_water_line"
    ],
    "propertyScan1D": [
@@ -37251,11 +37338,13 @@
     "tutorials/props/curation/curate10_nrtl_acetonitrile_water",
     "tutorials/props/curation/curate11_nrtl_acetone_ethanol",
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
+    "tutorials/props/heat/table02_water_liquid_cp_points",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
-    "tutorials/props/thermo/temperature01_gas_thermometer"
+    "tutorials/props/thermo/temperature01_gas_thermometer",
+    "tutorials/props/transport/table01_water_viscosity_points"
    ],
    "propertyScan2D": [
     "tutorials/props/scan/scan2d01_co2_compressibility"

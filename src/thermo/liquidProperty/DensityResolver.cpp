@@ -552,7 +552,9 @@ Result density(const Request& q)
     try { res = resolveDensity(*q.thermo, q.x); }
     catch (const PropertyDomainError& e)
     {
-        throw PropertyDomainError(e.kind, withRemedy(e), e.remedy);
+        PropertyDomainError again(e.kind, withRemedy(e), e.remedy);
+        again.aboveCriticalTemperature = e.aboveCriticalTemperature;
+        throw again;
     }
     DensityAnswer a;
     try { a = build(res, *q.thermo)->evaluate(q.T, q.P, q.x); }

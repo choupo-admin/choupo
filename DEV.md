@@ -3518,6 +3518,142 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398 SLICE (c) LANDED (2026-11-15).**  A table is a law type: liquid
+> viscosity and liquid and solid heat capacity, in a record or a case
+> experiments file, with `linear`, `logLinear`, `logReciprocal` or
+> `monotoneCubic` in the pin; refused at evaluation outside its points
+> unless the CASE declares a bounded `extend` (the end segment's chord,
+> announced, the largest excursion restated); Cp integrated in closed form
+> per segment.  Two rulings of the first review are in the code: a hard
+> property refusal is never a number (105 of 283 generic catches rethrow;
+> each decision listed in 46f44e163), and an experiments file resolves from
+> the declaring constant/ (the density pilot's reader fixed with it).
+> Reviewed in three rounds by two reviewers (rows TB-01..06, TG-01..21;
+> reports docs/reviews/2026-11-14-c398c-numbers and -c398c-grammar): every
+> new golden recomputed by hand, refusals forced through an exchanger, a
+> column stage, a recycle tear, a design spec, a batch and a sweep; the gate
+> sabotages caught went from 6 of 13 to 12 of 13 (S10 not observable).
+> Validation: 573 of 587 cases byte-identical against 679eebd28 (2 by a
+> bench row, 12 by a run-directory hash), the builder's --scope 1695/0 and
+> 1402/0 with mass, element, energy and campaign closures, --fast 87/0 and
+> --gui 49/0 on the merged tree.  The full sweep runs with slice (d) on top.
+> OPEN: no solid-Cp witness (Robie & Hemingway 1995 is in the folder, unread
+> for this slice); not seen in a browser; WASM not rebuilt.
+
+> **C402 (Vitor, 2026-11-15: "eu nao quero manter legacy!  A ideia e o
+> simulador ficar com uma arquitetura nova").**  A COMMISSION, and a
+> ruling on what it means.  THE END STATE: every shipped case is written in
+> the C398 forms, and the engine's readers of the old forms are DELETED,
+> not kept beside the new ones; an old form met afterwards is refused BY
+> NAME with the line to write instead.  Backwards compatibility in the
+> sense of the settled contract (every shipped tutorial keeps passing) is
+> kept, because each case is migrated before its reader goes.  WHAT IS
+> LEGACY, measured on main the same day: (1) a property value typed in a
+> unit block, 42 cases (17 columns migrated in C398 slice (d); 25 left:
+> about 20 membrane cases with viscosity, diffusivity or density typed in
+> the module, apalutamide01's spray-dryer viscosity, pipe02's water
+> viscosity, pfr05's heat capacity); the refusal then covers EVERY unit,
+> not the column alone; (2) a per-unit `thermo { }` fragment, 7 cases (hda,
+> acetonePlant, basis01, flash20, perUnitThermo01, esterification2sector's
+> SEPARATION flash, crystalliser09), each becoming a named variant chosen
+> by `thermo <name>;`, and the fragment reader removed; (3) the old
+> `diffusivity { model WilkeChang; }` form, read beside the new grammar
+> since slice (d); (4) the literal defaults in code (8); (5) the sites that
+> price a liquid property without the door (80 before slice (d), 76 after):
+> the ratchet goes to ZERO and is then a refusal.  NOT LEGACY: a property
+> dictionary with one system and no `variants {}` is the base form of the
+> new architecture (a variant derives from it), not an old one.  ORDER:
+> after C398 (c) and (d) land, one migration slice per family (membranes
+> first, then the dryer, the pipe and the reactor, then the fragments), each
+> deleting its reader in the same slice, each with its moved rows listed;
+> then the door ratchet to zero; the done-state measured by a gate that
+> counts every old form in the tree and the engine and must read zero.
+
+> **C329 SLICE B2 DESIGNED AND RULED (2026-11-15).**  The sources Vitor
+> filed the same night (Kooijman & Taylor 1991, Vignes 1967, Leffler &
+> Cullinan 1970, Anderson & Babb 1961, Taylor & Krishna 1993) unblocked the
+> three-component rate-based column; a design general (Fable) wrote
+> docs/design/c329-ratebased-ternary.md.  RULED, all seventeen of its
+> recommendations, with these decisions: (1) the liquid pair values are the
+> 1991 paper's Eq. 23, the rule word `VignesKooijmanTaylor`, lifting slice
+> (d)'s refusal for n >= 3 only for this rule; the three other binary
+> rules stay refused for n >= 3 (no multicomponent form read).  (2) THE
+> REDUCTION IS WILKE (Taylor & Krishna Eq. 6.1.14), the one question the
+> record left open: it is a function of state, needs no remainder component,
+> and reduces exactly to the binary; Burghardt-Krupiczka is not built, and
+> the comparison it would teach is carried by B2c's table of the effective
+> film against the Maxwell-Stefan film.  (3) `thermodynamicFactor { take 1; }`
+> kept, Gamma printed as a props quantity.  (4) The binary limit held by
+> two gate arms (the edge to 1e-12, continuity at x_k = 1e-9); the n = 3
+> limit test is a binary with one component split into two identical halves,
+> to 1e-8 under both films.  (5) No high-flux correction; the rate factor is
+> printed and 0.05 is the line.  (6) The film heat-transfer coefficients
+> become rho cp k(alpha) for every n; ratebased01-04's energy rows move in
+> late digits, listed at the landing.  (7) THE PELKONEN 2001 WITNESS IS
+> ACCEPTED ON THE COMPOSITION PATH ONLY (2-propanol against methanol, the
+> authors' own comparison), mean |dx| <= 0.03; no claim on height: the
+> paper's Table 3 and Fig. 1 disagree on the section order, the second
+> packing has no geometry in the folder, and no temperature profile is
+> tabulated.  Step 0 of B2b maps the azeotrope and boundary with Choupo's
+> own pairs before any column runs.  (8) MISPRINTS FOUND BY MEASUREMENT:
+> the multicomponent limiting value printed as (D_ik D_ki)^1/2 in Taylor &
+> Kooijman 2014 Eq. 3.41 and Taylor & Krishna 1993 Eq. 4.2.19 is (D_ik
+> D_jk)^1/2 in the 1991 paper's Eq. 21 (on its own Table I: 0.0782 against
+> its printed 0.0763, the books' form 0.1002); the chapter's Eq. 3.120 is
+> zero as printed; neither equation is cited by the engine or the guides
+> (grepped).  The chapter is not the authority for this slice.  (9)
+> SLICING: B2a properties (a props case on the 1991 paper's Table I, within
+> 0.005 of its Table IV averages), after C398 slice (d) lands; B2b the
+> segment with effective-diffusivity films; B2c the Maxwell-Stefan vapour
+> film.  (10) ASKED OF VITOR: Gorak & Vogelpohl 1985, Sep. Sci. Technol.
+> 20, 33-61 (the same ternary on ONE packing at total reflux, the clean
+> height witness).  FILED THE SAME NIGHT (~/Choupo-Literature
+> Articles/Distillation, gorak1985-*): 0.1 m column, SULZER-CY in two parts
+> of 0.8 m, 1 atm, total reflux; Table 2 gives the compositions below the
+> packing and the distillate, Table 3 measured against calculated
+> distillate; the authors compared over the upper 0.8 m only (methanol
+> below the packing under 0.002).  The packing's mass-transfer correlation
+> is Zogg's, printed in the paper (its Eqs. 17-18); B2b reads it and the
+> geometry it needs at source before adding a record.  This is B2b's
+> second witness, on endpoints (inlet below the bed given, distillate
+> predicted), beside Pelkonen's composition path.
+
+> **C398, SLICES (c) AND (d): RULINGS AT THE FIRST REVIEW (2026-11-15).**
+> Four reviewers, two per slice, read the slices by measurement: (c) rows
+> TB-01..05 and TG-01..16, (d) rows DF-01..12 and DG-01..10 (reports under
+> docs/reviews/2026-11-14-c398c-* and -c398d-* at the landing).  Both go
+> back for a second round.  Rulings: (1) V4 AMENDED: a table of a property
+> that must be positive (viscosity, Cp, density, conductivity,
+> diffusivity) refuses a value <= 0 under EVERY interpolation, not only the
+> log forms (TG-08: a negative point under `linear` ran at exit 0).  (2) A
+> PropertyDomainError propagates through every catch on a property path
+> (TG-01: a Cp table refused outside its span became H = 0 at exit 0,
+> swallowed in the flowsheet's enthalpy and the blend fallback).  (3) An
+> experiments file resolves from the `constant/` of the dictionary that
+> DECLARES the pin, never by an upward walk from the working directory
+> (TG-02: a sector took the root's file); the density pilot's reader, which
+> shared the walk, is fixed in the same slice.  (4) The default
+> Wilke-Chang refuses a pair whose solute is water (Poling p. 11.22); the
+> remedy is a pair entry, a value with its source or an explicit choice of
+> the method with a reason, marked outside the method's stated scope
+> (DF-01).  (5) A measured liquid viscosity whose components differ from
+> those present is refused at evaluation, never handed to the law (DG-02);
+> a one-component measured set is refused, the remedy a table pin or a
+> record law, so a pure liquid has one viscosity per run (DG-03).  (6) A4
+> refuses every key the column reads as a property at every depth (DG-01:
+> `hydraulics { sigma }` passed); aceticAcid02_plant's typed surface
+> tension, read from no source, is removed and the package's used, its
+> moved rows listed at the landing.  (7) A stated value (a paper's
+> "representative" or averaged property) is never printed as a measurement
+> (DF-04).  (8) SLICE d2 REGISTERED: Wilke-Chang's solute volume at the
+> normal boiling point, as the method defines it, through the door (DF-03:
+> today the record's 25 C volume, +2 to +6 % on the 16 column cases), after
+> (d), with its own moved rows.  (9) DG-10 (a zero liquid-viscosity
+> interaction must be declared, ruling 6) goes to the migration lane.  (10)
+> ORDER: (c) lands first; (d) is rebased on it with its local reader
+> adapter replaced by a shim over (c)'s reader; ONE full sweep covers both,
+> because both reach the package's shared paths.
+
 > **C398 SLICES (a)+(b) LANDED (2026-11-14), with PA-09 and the B1 review
 > rows.**  Named `variants {}` in a case's property dictionary selected by
 > `thermo <name>;`; the property block as the atom inside `transport`;

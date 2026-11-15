@@ -37,6 +37,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "EDCell.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "Electrochem.H"
 
@@ -290,6 +291,7 @@ scalar splitDiffusivity(const std::string& who, const SpeciesId& sp,
     try { return electrolyte::ionD0(sp); }
     catch (const std::exception& e)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         std::string list;
         for (auto k : rows) list += " " + ch.ion[k].key;
         throw std::runtime_error(who + ": the counter-ion current is shared"

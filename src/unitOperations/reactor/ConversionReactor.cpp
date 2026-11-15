@@ -30,6 +30,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "ConversionReactor.H"
+#include "thermo/PropertyDomainError.H"
 
 #include "ReactorOutlet.H"                             // the ONE outlet-state home
 #include "unitOperations/flash/StreamEquilibrium.H"   // the ONE resolve-and-price home
@@ -136,7 +137,7 @@ ReactorDuty reactorDuty(scalar               T,
         d.Q_W      = (H_out - H_in)  * 1000.0;
         d.ok       = true;
     }
-    catch (const std::exception&) { d.ok = false; }
+    catch (const std::exception&) { rethrowHardRefusal(); d.ok = false; }
     return d;
 }
 
@@ -282,7 +283,7 @@ int ConversionReactor::solve(const DictPtr& dict,
         for (std::size_t i = 0; i < n; ++i)
             if (nu[i] != 0.0) dHrxn += nu[i] * thermo.comp(i).h_pure_ig(T);
     }
-    catch (const std::exception&) { haveRxnHeat = false; }
+    catch (const std::exception&) { rethrowHardRefusal(); haveRxnHeat = false; }
 
     //  The outlet's phase state FIRST: the duty is priced on it.
     const OutletState outSt = outletState(T, P, zout, pinned_in, vf_in,
@@ -471,7 +472,7 @@ int ConversionReactor::solveMultiReaction(const DictPtr&       dict,
         for (std::size_t j = 0; j < R; ++j)
             for (std::size_t i = 0; i < n; ++i)
                 if (nu[j][i] != 0.0) dHrxn[j] += nu[j][i] * thermo.comp(i).h_pure_ig(T);
-    } catch (const std::exception&) { haveRxnHeat = false; }
+    } catch (const std::exception&) { rethrowHardRefusal(); haveRxnHeat = false; }
 
     //  The duty, by the SAME one home the single-reaction path uses.  The two
     //  branches differ only in how they reached `zout`.

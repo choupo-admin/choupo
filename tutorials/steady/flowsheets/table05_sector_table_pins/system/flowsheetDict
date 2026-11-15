@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table05 -- A TABLE PIN READS THE FILE OF THE DICTIONARY THAT DECLARES IT
+    (DEV.md 4c C398 slice (c), review row TG-02).
+
+        feedA -> [ A: pipe P1 ] -> outA
+        feedB -> [ B: pipe P1 ] -> outB
+
+    Each sector keeps its own property dictionary (sectors/<S>/constant/
+    thermoPhysPropDict, inheriting the plant's) and pins water's liquid
+    viscosity to `table crcWaterMu` -- the SAME pin text in both.  Each
+    sector holds its own constant/experiments/crcWaterMu.dat: sector A the
+    eleven evaluated points of the handbook table, sector B every second of
+    them (six points, 20 K apart).  At 300 K (between the 20 and 30 degC
+    points of A, and the 20 and 40 degC points of B) the two interpolants
+    differ, so each pipe's viscosity, Reynolds number and friction show
+    which file its sector read.  The plant's own constant/experiments/ holds
+    a DECOY of the same name with every value doubled: no sector may read it
+    (there is no walk up the folders), and the golden master would show it
+    if one did.
+
+    The two sectors' packages are told apart by their identity, which
+    carries each table's own text and file (review row TG-15). */
+
+sectors
+(
+    A
+    B
+);
+
+connections
+{
+    feedA   { to A/feed; }
+    feedB   { to B/feed; }
+    outA    { from A/downstream; }
+    outB    { from B/downstream; }
+}
+
+reports
+{
+    streamTable    { }
+    massBalance    { }
+    energyBalance  { }
+}

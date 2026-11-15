@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "CSTR.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 #include "CatalystPellet.H"
@@ -713,7 +714,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                     const Component& ci = thermo.comp(i);
                     std::string igWhy;
                     try { (void) ci.h_pure_ig(T); continue; }
-                    catch (const std::exception& e) { igWhy = e.what(); }
+                    catch (const std::exception& e) { rethrowHardRefusal(); igWhy = e.what(); }
                     if (!ci.hasGibbsData())
                         throw std::runtime_error("CSTR: thermalMode `" + tmode + "` needs the "
                             "elements datum on every reacting species -- '" + ci.name()
@@ -734,7 +735,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
                                 ThermoPackage::ReferenceContext::StandardPhase);
                         continue;
                     }
-                    catch (const std::exception& e) { liqWhy = e.what(); }
+                    catch (const std::exception& e) { rethrowHardRefusal(); liqWhy = e.what(); }
                     throw std::runtime_error("CSTR: thermalMode `" + tmode + "` needs the "
                         "elements datum on every reacting species -- '" + ci.name()
                         + "' carries a `standardThermochemistry` block on the "
@@ -1344,7 +1345,7 @@ int CSTR::solveMultiReaction(const DictPtr&       dict,
         kpis_["Q_kW"] = cstrDutyKW(F_in_kmols, T, P, pinned_in, vf_in,
                                    z_in, produced_, thermo);
     }
-    catch (const std::exception&) { /* a species lacks formation data -- no duty */ }
+    catch (const std::exception&) { rethrowHardRefusal(); /* a species lacks formation data -- no duty */ }
     //  The non-isothermal balance above is solved on the surface the duty is
     //  priced on (C77), so the duty IS the external heat: zero adiabatic, the
     //  jacket's U A (T_c - T_out) jacketed.  A steady state that leaves more

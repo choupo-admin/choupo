@@ -200,7 +200,18 @@ uncertainty 2.0;                            // kg/m3, expanded
 box         { T ( 301.65 304.65 ); P ( 50e3 1500e3 ); w[NaOH] ( 0.199 0.201 ); }   // K, Pa, -
 ```
 
-marked in `constant/thermoPhysPropDict` (top level):
+The same file grammar with MANY rows is a pure component's TABLE (C398
+slice (c)): `system` names exactly one component, `property` is
+`liquidViscosity`, `liquidHeatCapacity` or `solidHeatCapacity`, the columns
+are `T` and the property's symbol (`mu`, `Cp`), `data` is flat row after row,
+`provenance` needs a `citation` (an aggregator goes in `via`), and the file is
+cited by a pin, `pin ( { component water; table <name>; interpolation
+logReciprocal; reason "..."; } );` -- see thermo.md, "A table is a law type".
+Every column of every experiments file is read through the one unit table
+(src/core/Units; `degC` allowed for T).  A MIXTURE measurement is the `box`
+form above, never a table pin.
+
+The one point above is marked in `constant/thermoPhysPropDict` (top level):
 
 ```
 volumetric { liquid { measured

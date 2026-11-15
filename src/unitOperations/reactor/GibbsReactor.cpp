@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "GibbsReactor.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/InfeasibleTrial.H"   // the adiabatic T search refuses a trial (C245 3a)
 #include "core/Advisory.H"
 #include "core/Constants.H"
@@ -962,6 +963,7 @@ scalar GibbsReactor::pricedOrAsPublished(scalar               T,
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         //  The report's own reading of this state cannot be priced either
         //  (EnergyBalanceReport.cpp catches the same throw and files the
         //  stream as a GAP, its energy balance UNAVAILABLE), so there is no

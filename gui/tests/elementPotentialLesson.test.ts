@@ -243,7 +243,7 @@ describe("every number the prose quotes is the engine's own", () => {
 // ---- citations ----------------------------------------------------------------
 
 /** Every `File.ext:NNN(–MMM)` the lesson cites; a bare `:NNN` inherits the
- *  file named before it ("NewtonND.cpp:477 ... (:479)"). */
+ *  file named before it ("NewtonND.cpp:478 ... (:480)"). */
 function citations(): { file: string; lo: number; hi: number }[] {
   const src = readFileSync(join(ROOT, "gui/src/ui/methods/elementPotentialLesson.ts"), "utf-8");
   const out: { file: string; lo: number; hi: number }[] = [];
@@ -286,11 +286,11 @@ const ANCHORS: readonly [string, number, string][] = [
   ["GibbsMethod.cpp", 313, "NO clamp"],
   ["GibbsMethod.cpp", 409, "GibbsPrimalSeed gibbsPrimalSeed("],
   ["GibbsMethod.cpp", 519, "scalar lambda = (big > 2.0)"],
-  ["NewtonND.cpp", 768, "fdJacobian(F, x, Fx"],
-  ["NewtonND.cpp", 770, "gaussSolve(J, minusFx)"],
-  ["NewtonND.cpp", 773, "Singular Jacobian"],
-  ["NewtonND.cpp", 797, "Backtracking line search"],
-  ["NewtonND.cpp", 935, "if (normFNew < normF) break"],
+  ["NewtonND.cpp", 769, "fdJacobian(F, x, Fx"],
+  ["NewtonND.cpp", 771, "gaussSolve(J, minusFx)"],
+  ["NewtonND.cpp", 774, "Singular Jacobian"],
+  ["NewtonND.cpp", 798, "Backtracking line search"],
+  ["NewtonND.cpp", 936, "if (normFNew < normF) break"],
   ["ElementPotential.cpp", 63, "if (y_i * P > Psat)"],
   ["ElementPotential.cpp", 71, "if (nSuper > 1) { eq.supersaturatedNotCondensed"],
   ["ElementPotential.cpp", 79, "const scalar sat_y = PsatC / P"],
@@ -299,7 +299,7 @@ const ANCHORS: readonly [string, number, string][] = [
   ["GibbsSolidPhase.cpp", 231, "v.lnActivityWithout > pureSolidPhase::kLnActivityAppears"],
   ["GibbsSolidPhase.cpp", 259, "const scalar lim = p.b[k] / p.A[k][c]"],
   ["GibbsSolidPhase.cpp", 310, "if (rn > 0.0) lo = n; else hi = n;"],
-  ["GibbsReactor.cpp", 762, "kpis_[\"lambda_\" + elems[j]]"],
+  ["GibbsReactor.cpp", 763, "kpis_[\"lambda_\" + elems[j]]"],
 ];
 
 describe("every file:line the lesson cites lands on what it claims", () => {

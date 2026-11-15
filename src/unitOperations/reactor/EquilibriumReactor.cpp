@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EquilibriumReactor.H"
+#include "thermo/PropertyDomainError.H"
 #include "PureSolidPhase.H"
 #include "TemperatureApproach.H"
 #include "ReactorOutlet.H"
@@ -130,7 +131,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         try { for (std::size_t i = 0; i < n; ++i)
                   if (nu[j][i] != 0.0)
                       dHrxn[j] += nu[j][i] * pureSolidPhase::speciesEnthalpy(thermo.comp(i), T); }
-        catch (const std::exception&) { haveDuty = false; dHok[j] = false; }
+        catch (const std::exception&) { rethrowHardRefusal(); haveDuty = false; dHok[j] = false; }
     }
 
     // ---- The temperature approach: DECLARED magnitudes (C11) -------------
@@ -622,6 +623,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         try { s0 = solveOnce(nullptr); }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error(std::string(e.what()) + "  [while solving the"
                 " SOLID-FREE equilibrium along the declared reactions, which decides"
                 " whether pure solid " + solidNames + " appears]");
@@ -656,6 +658,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         try { s1 = solveOnce(&warm); }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error(std::string(e.what()) + "  [while re-solving"
                 " the declared equilibrium with pure solid " + cname + " PRESENT]");
         }
@@ -940,7 +943,7 @@ int EquilibriumReactor::solve(const DictPtr&       dict,
         H_out += flashState::priceSolids(nSolidOut, T, thermo);
         Q_W = (H_out - H_in) * 1000.0;                // kW -> W
     }
-    catch (const std::exception&) { haveDuty = false; }
+    catch (const std::exception&) { rethrowHardRefusal(); haveDuty = false; }
 
     // ---- Outlet stream (at its own equilibrium; a downstream flash re-splits)
     produced_.clear();

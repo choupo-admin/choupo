@@ -1,0 +1,28 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  Sector B: the plant's dictionary, with water's liquid viscosity pinned to
+    the table `crcWaterMu` -- read from THIS sector's constant/experiments/
+    (six points, every second of the handbook's), never from the plant's.  */
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+inherits      "../../../constant";
+
+transport
+{
+    liquid
+    {
+        viscosity
+        {
+            pin ( { component water;  table crcWaterMu;  interpolation logReciprocal;
+                    reason "this sector's own table (the same pin text in both sectors)"; } );
+        }
+    }
+}

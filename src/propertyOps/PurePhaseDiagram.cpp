@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "PurePhaseDiagram.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/Component.H"
 
@@ -122,7 +123,7 @@ int PurePhaseDiagram::run(const DictPtr& dict,
     {
         const scalar T = Tlo + (Tc - Tlo) * static_cast<scalar>(k) / static_cast<scalar>(n - 1);
         scalar P = 0.0;
-        try { P = thermo.Psat(0, T); } catch (const std::exception&) { continue; }
+        try { P = thermo.Psat(0, T); } catch (const std::exception&) { rethrowHardRefusal(); continue; }
         if (P > 0.0) csv << T << "," << P << ",saturation\n";
     }
     csv << Tc << "," << Pc << ",critical\n";

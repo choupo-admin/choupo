@@ -802,7 +802,7 @@ export function trayPlanSvg(unit: UnitSpec, kpis: Kpis, shell: DesignSheet | nul
   notes.push(`Single-pass crossflow tray. Each downcomer is ${fmt.n(fd * 100)} % of the tower area `
     + `(${fdDeclared ? "declared" : "the engine's announced default 0.12"}), A_d = ${fmt.n(plan.A_d)} m²; `
     + `the active area A_a = A_T − 2 A_d = ${fmt.n(plan.A_a)} m² of A_T = ${fmt.n(plan.A_T)} m², as `
-    + `TrayHydraulics.cpp:321 takes it`
+    + `TrayHydraulics.cpp:323 takes it`
     + (plan.A_h !== undefined ? `; holes A_h = ${fmt.n(plan.A_h)} m²` : "") + ".");
   notes.push(`The chord drawn is the one A_d implies: l = ${fmt.n(plan.chordFraction)} D = ${fmt.n(plan.chordLength)} m.`
     + (plan.weirFraction !== undefined

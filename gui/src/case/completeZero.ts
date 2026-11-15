@@ -54,11 +54,11 @@ import { readEdges, zeroStatePath } from "./toGraph.js";
 
 /*  THE ENGINE'S OWN REFUSAL, matched by its words.
  *
- *    src/unitOperations/flowsheet/Flowsheet.cpp:2453
+ *    src/unitOperations/flowsheet/Flowsheet.cpp:2461
  *      "Flowsheet: 0/ COMPLETENESS violated BEFORE the solve (graph stream IDs != 0/ state files):"
- *    src/unitOperations/flowsheet/Flowsheet.cpp:2462 (and main.cpp:1274)
+ *    src/unitOperations/flowsheet/Flowsheet.cpp:2470 (and main.cpp:1274)
  *      "  MISSING  0/<path>  (graph stream, no state file)"
- *    src/unitOperations/flowsheet/Flowsheet.cpp:2471
+ *    src/unitOperations/flowsheet/Flowsheet.cpp:2479
  *      "... fix the state tree (bin/choupo-init0 materialises missing files; ..."
  *
  *  Only MISSING lines are offered the action: an ORPHAN or a RELOCATED file

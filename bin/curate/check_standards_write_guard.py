@@ -137,7 +137,10 @@ def scan_sources():
 
 
 def run_case(case_dir, binary="choupoProps", env=None):
-    e = dict(os.environ)
+    #  The containment root is THIS tree's catalogue (review row TG-13): a
+    #  shell CHOUPO_HOME naming another checkout would point the probes at a
+    #  root the symlink does not reach, and PROBE (b) would fail for that alone.
+    e = dict(os.environ, CHOUPO_HOME=str(ROOT))
     if env:
         e.update(env)
     p = subprocess.run([str(ROOT / binary), "."], cwd=case_dir, env=e,

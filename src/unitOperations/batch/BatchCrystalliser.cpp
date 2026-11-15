@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchCrystalliser.H"
+#include "thermo/PropertyDomainError.H"
 #include "unitOperations/crystallisation/CrystallisationSaturation.H"
 #include "streams/Composition.H"
 #include "thermo/Component.H"
@@ -289,6 +290,7 @@ scalar BatchCrystalliser::vesselEnthalpy(bool& ok, std::string& why) const
         }
         catch (const std::exception& ex)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             ok  = false;
             why = std::string("solid-rung enthalpy failed: ") + ex.what();
             return 0.0;

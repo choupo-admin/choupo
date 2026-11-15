@@ -21,11 +21,12 @@ Description
 #include "core/RegistryRefusal.H"
 #include "thermo/Component.H"
 #include "thermo/ThermoPackage.H"
-#include "thermo/liquidProperty/ExperimentsFileAdapter.H"
+#include "thermo/liquidProperty/ExperimentsFile.H"
 
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <functional>
 #include <map>
 #include <set>
 #include <stdexcept>
@@ -53,13 +54,69 @@ std::size_t indexOf(const std::vector<Component>& comps, const std::string& name
         " components (" + have + ").");
 }
 
-void onlyKeys(const DictPtr& d, const std::vector<std::string>& allowed, const std::string& where)
+//  ONE POINT OF AN EXPERIMENTS FILE, read by slice (c)'s one reader
+//  (thermo/liquidProperty/ExperimentsFile.H): the file comes from the
+//  experiments/ folder of the constant/ that DECLARES the entry citing it
+//  (`@experimentsDir`, stamped by the dictionary's reader; review row TG-02 on
+//  slice (c)), never from an ancestor; each column is checked against the
+//  dimension its name gives (U1-U2).
+struct PointFile
 {
+    experiments::File           f;
+    experiments::Table          t;
+    std::vector<std::string>    names;            // column names, in order
+    std::size_t rows() const { return t.rows(); }
+    bool has(const std::string& c) const
+    { return std::find(names.begin(), names.end(), c) != names.end(); }
+    scalar at(std::size_t r, const std::string& c) const
+    {
+        const auto it = std::find(names.begin(), names.end(), c);
+        if (it == names.end())
+            throw std::runtime_error(f.where + ": no column `" + c + "`.");
+        return t.si[static_cast<std::size_t>(it - names.begin())].at(r);
+    }
+};
+
+experiments::ColumnRole role(const Dimensions& d, const char* what, bool affine = false)
+{
+    experiments::ColumnRole r;
+    r.dims = d;
+    r.what = what;
+    r.affineAllowed = affine;
+    return r;
+}
+
+PointFile readPointFile(const std::string& name, const std::string& here, const DictPtr& citing,
+                        const std::function<experiments::ColumnRole(const std::string&)>& roleOf)
+{
+    PointFile pf;
+    experiments::refuseWrittenExperimentsDir(citing, here);
+    const std::string dir = citing->lookupWordOrDefault(experiments::experimentsDirKey(), "");
+    pf.f = experiments::readFile(name, "", here, dir);
+    std::vector<experiments::ColumnRole> roles;
+    if (pf.f.dict->found("columns") && pf.f.dict->hasDictList("columns"))
+        for (const auto& c : pf.f.dict->lookupDictList("columns"))
+        {
+            const std::string cn = c->lookupWordOrDefault("name", "");
+            if (std::find(pf.names.begin(), pf.names.end(), cn) != pf.names.end())
+                throw std::runtime_error(pf.f.where + ": column `" + cn + "` twice.");
+            pf.names.push_back(cn);
+            roles.push_back(roleOf(cn));
+        }
+    pf.t = experiments::readTable(pf.f.dict, roles, pf.f.where);
+    return pf;
+}
+
+void onlyKeys(const DictPtr& d, const std::vector<std::string>& allowed0, const std::string& where)
+{
+    std::vector<std::string> allowed = allowed0;
+    allowed.push_back(experiments::experimentsDirKey());   // stamped by the reader (TG-02), never written
+    experiments::refuseWrittenExperimentsDir(d, where);     // TG-17: refused by name, before "unknown word"
     for (const auto& k : d->keys())
         if (std::find(allowed.begin(), allowed.end(), k) == allowed.end())
         {
             std::string list;
-            for (const auto& a : allowed) list += (list.empty() ? "" : ", ") + a;
+            for (const auto& a : allowed0) list += (list.empty() ? "" : ", ") + a;
             throw std::runtime_error(where + ": unknown word '" + k + "' -- this block"
                 " reads " + list + ".");
         }
@@ -107,18 +164,19 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
                 " box against the value's uncertainty in this slice, so standing one"
                 " value over a box is a hypothesis, and the run says why.");
 
-        const auto f = liquidProperty::experimentsAdapter::read(name, here,
-            [&](const std::string& col) -> Dimensions
+        const PointFile pf = readPointFile(name, here, dec,
+            [&](const std::string& col) -> experiments::ColumnRole
             {
-                if (col == "T")  return Dims::temperature;
-                if (col == "P")  return Dims::pressure;   // stated by the source; a liquid viscosity is not corrected for it
-                if (col == "mu") return Dims::viscosity;
+                if (col == "T")  return role(Dims::temperature, "a temperature", true);
+                if (col == "P")  return role(Dims::pressure, "a pressure");   // stated by the source; a liquid viscosity is not corrected for it
+                if (col == "mu") return role(Dims::viscosity, "a liquid viscosity");
                 if (col.size() > 3 && col.compare(0, 2, "w[") == 0 && col.back() == ']')
-                    return Dims::dimensionless;
-                throw std::runtime_error("constant/experiments/" + name + ".dat: column `" + col
+                    return role(Dims::dimensionless, "a mass fraction");
+                throw std::runtime_error("experiments file " + name + ".dat: column `" + col
                     + "` -- a liquid-viscosity point reads `mu` (required), `T`, `P` and"
                       " mass fractions `w[<component>]`.");
             });
+        const experiments::File& f = pf.f;
         m.where    = f.where;
         m.citation = f.citation;
         onlyKeys(f.dict, { "provenance", "system", "property", "solvent", "columns", "data",
@@ -136,8 +194,8 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
         if (f.property != "liquidViscosity")
             throw std::runtime_error(f.where + ": `property " + f.property + "` -- the"
                 " declaration `" + here + "` reads a liquidViscosity point.");
-        if (f.rows.size() != 1)
-            throw std::runtime_error(f.where + ": " + std::to_string(f.rows.size())
+        if (pf.rows() != 1)
+            throw std::runtime_error(f.where + ": " + std::to_string(pf.rows())
                 + " points -- a marked mixture measurement is ONE point (a table of a"
                   " pure component's values is a law, slice (c)).");
         if (f.system.empty())
@@ -165,22 +223,22 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
                 throw std::runtime_error(f.where + ": `solvent` must name one of `system`"
                     " -- the constituent whose mass fraction is the rest.");
         }
-        m.mu = liquidProperty::experimentsAdapter::valueOf(f, 0, "mu");
+        if (!pf.has("mu"))
+            throw std::runtime_error(f.where + ": no `mu` column -- the stated viscosity.");
+        m.mu = pf.at(0, "mu");
         if (!(m.mu > 0.0))
             throw std::runtime_error(f.where + ": `mu` must be positive.");
-        if (liquidProperty::experimentsAdapter::hasColumn(f, "T"))
-        { m.hasT = true; m.T = liquidProperty::experimentsAdapter::valueOf(f, 0, "T"); }
-        if (liquidProperty::experimentsAdapter::hasColumn(f, "P"))
-        { m.hasP = true; m.P = liquidProperty::experimentsAdapter::valueOf(f, 0, "P"); }
+        if (pf.has("T")) { m.hasT = true; m.T = pf.at(0, "T"); }
+        if (pf.has("P")) { m.hasP = true; m.P = pf.at(0, "P"); }
         scalar wsum = 0.0;
-        for (const auto& col : f.columns)
-            if (col.name.compare(0, 2, "w[") == 0)
+        for (const auto& colName : pf.names)
+            if (colName.compare(0, 2, "w[") == 0)
             {
-                const std::string cn = col.name.substr(2, col.name.size() - 3);
+                const std::string cn = colName.substr(2, colName.size() - 3);
                 if (cn == m.solvent || std::find(f.system.begin(), f.system.end(), cn) == f.system.end())
-                    throw std::runtime_error(f.where + ": column `" + col.name + "` names a"
+                    throw std::runtime_error(f.where + ": column `" + colName + "` names a"
                         " constituent that is not a non-solvent member of `system`.");
-                m.w[cn] = liquidProperty::experimentsAdapter::valueOf(f, 0, col.name);
+                m.w[cn] = pf.at(0, colName);
                 wsum += m.w[cn];
             }
         if (!m.w.empty()) m.w[m.solvent] = 1.0 - wsum;
@@ -428,14 +486,15 @@ DiffusivityEntry readEntry(const DictPtr& e, const std::vector<Component>& comps
                     " `experiments` -- the file holds the value, its temperature, its"
                     " box and its source; one home.");
         const std::string name = e->lookupWord("experiments");
-        const auto f = liquidProperty::experimentsAdapter::read(name, here,
-            [&](const std::string& col) -> Dimensions
+        const PointFile pf = readPointFile(name, here, e,
+            [&](const std::string& col) -> experiments::ColumnRole
             {
-                if (col == "T") return Dims::temperature;
-                if (col == "D") return Dims::diffusivity;
-                throw std::runtime_error("constant/experiments/" + name + ".dat: column `" + col
+                if (col == "T") return role(Dims::temperature, "a temperature", true);
+                if (col == "D") return role(Dims::diffusivity, "a diffusivity");
+                throw std::runtime_error("experiments file " + name + ".dat: column `" + col
                     + "` -- an infinite-dilution liquid diffusivity reads `T` and `D`.");
             });
+        const experiments::File& f = pf.f;
         onlyKeys(f.dict, { "provenance", "system", "property", "solute", "solvent", "kind",
                            "columns", "data", "uncertainty", "box" }, f.where);
         //  THE FILE DESCRIBES ITS ENTRY, or it is refused (SECOND ADDENDUM V3:
@@ -461,13 +520,15 @@ DiffusivityEntry readEntry(const DictPtr& e, const std::vector<Component>& comps
                 throw std::runtime_error(f.where + ": `system` names a set other than the"
                     " solute and the solvent.");
         }
-        if (f.rows.size() != 1)
-            throw std::runtime_error(f.where + ": " + std::to_string(f.rows.size())
-                + " points.  A table of values with an interpolation is slice (c)'s table"
-                  " type, not yet in the tree; in this slice an entry's file holds ONE"
-                  " point (a value at a stated temperature).");
-        d.T  = liquidProperty::experimentsAdapter::valueOf(f, 0, "T");
-        d.D  = liquidProperty::experimentsAdapter::valueOf(f, 0, "D");
+        if (pf.rows() != 1)
+            throw std::runtime_error(f.where + ": " + std::to_string(pf.rows())
+                + " points.  An entry's file holds ONE point (a value at a stated"
+                  " temperature); a table of values with an interpolation is a law of"
+                  " type `table` (C398 slice (c)), not an entry.");
+        if (!pf.has("T") || !pf.has("D"))
+            throw std::runtime_error(f.where + ": an infinite-dilution value reads columns `T` and `D`.");
+        d.T  = pf.at(0, "T");
+        d.D  = pf.at(0, "D");
         if (!f.dict->found("box"))
             throw std::runtime_error(f.where + ": no `box { T (lo hi); }` -- the extent"
                 " the case stands the one point over (K).");

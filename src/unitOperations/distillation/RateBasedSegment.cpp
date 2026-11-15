@@ -42,6 +42,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "DistillationColumn.H"
+#include "thermo/PropertyDomainError.H"
 #include "RateBasedSegment.H"
 #include "PackingRBF.H"
 #include "PackingDelft.H"
@@ -388,6 +389,7 @@ int DistillationColumn::solveRateBased(const DictPtr& dict,
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error(who + "the components carry no formation"
                 " enthalpy the energy balances can be written on (" + std::string(e.what())
                 + "); add the `standardThermochemistry` block to their records.");

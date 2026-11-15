@@ -50,6 +50,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "core/Advisory.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "unitOperations/PropertySourceDeclarations.H"
 #include "core/AdvisorySummary.H"
@@ -921,6 +922,7 @@ if (flowsheetDict->found("cycle"))
         }
         catch (const std::exception&)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             // Datum present but the evaluation itself threw: the record is
             // just as unpriceable, and the poison must be NAMED so the
             // monotonic-validity invariant below (poisoned <=> H_missing

@@ -3497,6 +3497,69 @@ What the twin buys over psychro01: Y\_sat(60 C) = 0.1534 against the \textasciit
 \goldrow{diag}{airWater}{nTrueWetBulbCurves}{3}
 \end{tutgolden}
 
+\clearpage
+\tutentry{table02\_water\_liquid\_cp\_points}{tutorials/props/heat/table02\_water\_liquid\_cp\_points}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{cpConstant\_278K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{cpConstant\_298K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{cpConstant\_308K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{cpConstant\_353K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{cpTable\_278K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{cpTable\_298K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{cpTable\_308K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{cpTable\_353K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{h80\_constant}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{h80\_table}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{cpExtended\_375K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{h375\_extended}\\[-1pt]{\tiny flashSpec}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A heat capacity given as points: liquid water's Cp from the record's constant and from eleven evaluated points (CRC 82nd ed. p. 6-3, primary Marsh 1987, per mass, converted with the molar mass) in one run, with the sensible enthalpy the table integrates in closed form}
+\begin{tutnarrative}
+table02 -- liquid water's Cp at 5, 25, 35 and 80 degC, and its enthalpy at 80 degC, two ways.
+
+cpConstant\_$\ast$ the record's preferred law (75.5 J/(mol K), constant). cpTable\_$\ast$ the variant `crcPoints`: the table, monotoneCubic. 25 and 35 degC lie between points; 80 degC is a point, so the table returns the printed 4.1963 J/(g K) x M exactly. h80\_$\ast$ a flash specified by (P, H), whose H is that of the liquid at 80 degC and 1 bar: `ref\_H` is the liquid enthalpy, the formation datum plus the sensible leg from 298.15 K -- for the table, the closed-form integral of its interpolant.
+
+cpExtended\_375K, h375\_extended the variant `crcExtended` at 102 degC, strictly inside its extension: Cp, H and S on the chord. cpPastUpTo\_refused a scan across upTo: its last point, 0.1 K past it, is refused by name (nan, with the note).
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{cpConstant\_278K}{Cp\_ig}{33.5173887286}
+\goldrow{diag}{cpConstant\_278K}{Cp\_liquid\_water}{75.5}
+\goldrow{diag}{cpConstant\_278K}{H\_R}{0}
+\goldrow{diag}{cpConstant\_278K}{H\_ig}{-242497.759997}
+\goldrow{diag}{cpConstant\_278K}{H\_real}{-242497.759997}
+\goldrow{diag}{cpConstant\_278K}{P}{100000}
+\goldrow{diag}{cpConstant\_278K}{S\_R}{0}
+\goldrow{diag}{cpConstant\_278K}{S\_ig}{186.501834759}
+\goldrow{diag}{cpConstant\_278K}{S\_real}{186.501834759}
+\goldrow{diag}{cpConstant\_278K}{T}{278.15}
+\goldrow{diag}{cpConstant\_278K}{Z}{1}
+\goldrow{diag}{cpConstant\_278K}{gamma}{1.32990068619}
+\goldrow{diag}{cpConstant\_278K}{v\_molar}{0.023126677772}
+\goldrow{diag}{cpConstant\_298K}{Cp\_ig}{33.6596038227}
+\goldmore{163}
+\end{tutgolden}
+
+\clearpage
+\tutentry{table03\_trial\_state\_refused}{tutorials/props/heat/table03\_trial\_state\_refused}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{hExtended}\\[-1pt]{\tiny flashSpec}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{hRefused}\\[-1pt]{\tiny flashSpec}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The known cost of a table's hard end: a (P, H) search whose answer lies inside a liquid-Cp table is seeded outside it; with a bounded extension the seed is answered and announced, without one it is refused by name (an EXPECTED-FAIL lesson)}
+\begin{tutnarrative}
+table03 -- one (P, H) flash, twice. The specified enthalpy is that of liquid water at 80 degC and 1 bar, so the ANSWER (353.15 K) is inside the table; the search is seeded at 262 K, a trial state outside it.
+
+hExtended the variant `extended`: the seed is answered by the chord, the excursion announced, the search converges at 353.15 K. hRefused the variant `points`: the seed is REFUSED by name, and the run ends there -- the lesson.
+
+\end{tutnarrative}
+
 \subsection{hydraulics}
 \grouptheory{hydraulics}
 \clearpage
@@ -6069,6 +6132,50 @@ Read the pairs: n-hexane, a hydrocarbon, is where Brock-Bird works (its largest 
 \end{tutgolden}
 
 \clearpage
+\tutentry{table01\_water\_viscosity\_points}{tutorials/props/transport/table01\_water\_viscosity\_points}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{muVogel\_278K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{muVogel\_298K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{muVogel\_323K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{muVogel\_353K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{muTable\_278K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{muTable\_298K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{muTable\_323K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{muTable\_353K}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{muPastEnd\_extended}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{muPastUpTo\_refused}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{muPastEnd\_refused}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{A table is a law type: water's liquid viscosity from the record's Vogel fit and from eleven evaluated points (CRC 82nd ed. p. 6-3, primary Sengers \& Watson 1986) in one run; the table refuses outside its points, and a case's bounded extension is announced}
+\begin{tutnarrative}
+table01 -- water's liquid viscosity at 5, 25, 50 and 80 degC, two ways, then one point past the table.
+
+muVogel\_$\ast$ the record's preferred law, `vogel` (a fit). muTable\_$\ast$ the variant `crcPoints`: the case's table, logReciprocal. 5 and 25 degC lie BETWEEN points: the value is the interpolant's; 50 and 80 degC are points themselves, so the table returns the printed value exactly. muPastEnd\_extended 105 degC on `crcExtended`, strictly INSIDE the extension (up to 110 degC): the end segment's chord, announced; the largest excursion restated at the end of the run. muPastUpTo\_refused a scan 109.9-110.1 degC on `crcExtended`: the first two points are inside the extension, the last one, 0.1 K past upTo, is REFUSED by name (nan, with the note). muPastEnd\_refused a scan 90-110 degC on `crcPoints`: 90 and 100 degC are points; 110 degC is REFUSED by name (written as nan, with the note naming the table, the span and the remedies).
+
+The golden master locks every computed value at reltol 1e-4.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{muVogel\_278K}{Cp\_ig}{33.5173887286}
+\goldrow{diag}{muVogel\_278K}{H\_R}{0}
+\goldrow{diag}{muVogel\_278K}{H\_ig}{-242497.759997}
+\goldrow{diag}{muVogel\_278K}{H\_real}{-242497.759997}
+\goldrow{diag}{muVogel\_278K}{P}{100000}
+\goldrow{diag}{muVogel\_278K}{S\_R}{0}
+\goldrow{diag}{muVogel\_278K}{S\_ig}{186.501834759}
+\goldrow{diag}{muVogel\_278K}{S\_real}{186.501834759}
+\goldrow{diag}{muVogel\_278K}{T}{278.15}
+\goldrow{diag}{muVogel\_278K}{Z}{1}
+\goldrow{diag}{muVogel\_278K}{gamma}{1.32990068619}
+\goldrow{diag}{muVogel\_278K}{v\_molar}{0.023126677772}
+\goldrow{diag}{muVogel\_278K}{viscosity\_liquid}{0.00150220814353}
+\goldrow{diag}{muVogel\_298K}{Cp\_ig}{33.6596038227}
+\goldmore{109}
+\end{tutgolden}
+
+\clearpage
 \tutentry{transport01\_gas\_bench}{tutorials/props/transport/transport01\_gas\_bench}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
@@ -6101,11 +6208,11 @@ WHAT THIS CASE DOES NOT DO. It does not say which model is right, and it does no
 \goldrow{diag}{bench}{dev\_chemsepEq101}{0}
 \goldrow{diag}{bench}{dev\_chemsepEq16}{0}
 \goldrow{diag}{bench}{dev\_wilkePhi}{0}
+\goldrow{diag}{bench}{dev\_table}{9.02243745198e-16}
 \goldrow{diag}{bench}{k\_Eucken\_CO2}{0.021231358218}
 \goldrow{diag}{bench}{k\_Eucken\_N2}{0.0297082727854}
 \goldrow{diag}{bench}{k\_Eucken\_O2}{0.0306615645526}
-\goldrow{diag}{bench}{k\_Eucken\_water}{0.0250221542205}
-\goldmore{21}
+\goldmore{22}
 \end{tutgolden}
 
 \clearpage
@@ -6141,8 +6248,8 @@ WHAT THIS CASE DOES NOT DO. It does not say which viscosity is right for water o
 \goldrow{diag}{bench}{dev\_chemsepEq16}{0}
 \goldrow{diag}{bench}{dev\_modifiedEucken}{0}
 \goldrow{diag}{bench}{dev\_wilkePhi}{0}
+\goldrow{diag}{bench}{dev\_table}{9.02243745198e-16}
 \goldrow{diag}{bench}{k\_Eucken\_Ar}{0.0178116749867}
-\goldrow{diag}{bench}{k\_Eucken\_CH4}{0.0321131371617}
-\goldmore{37}
+\goldmore{38}
 \end{tutgolden}
 

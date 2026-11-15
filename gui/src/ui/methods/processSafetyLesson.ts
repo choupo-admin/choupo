@@ -690,11 +690,11 @@ export const SAFETY_TECH_NOTES: readonly LessonLimit[] = [
       + "it (`to heldFeed; fraction 1;` the interlock holds the feed, "
       + "`fraction 0;` it fails, `to reactor; fraction 1;` the whole tank "
       + "enters).  The cooling failure is the batchReactor's own branch for "
-      + "that key (src/unitOperations/batch/BatchReactor.cpp:660-726): from "
+      + "that key (src/unitOperations/batch/BatchReactor.cpp:661-727): from "
       + "the event the reactor is integrated by the same adiabatic energy "
       + "balance `mode adiabatic` uses, from the temperature it was held at.  "
       + "A dose charged into a hot reactor is mixed by enthalpy equality "
-      + "(src/unitOperations/batch/BatchUnitOperation.cpp:236-274).  A "
+      + "(src/unitOperations/batch/BatchUnitOperation.cpp:238-276).  A "
       + "failure is placed one second after (or before) a portion, never "
       + "on it: two events at one instant would be ordered by the driver's "
       + "sort." },

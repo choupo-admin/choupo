@@ -54,6 +54,7 @@ NAME = "check_liquid_diffusivity_declaration"
 WITNESS = ROOT / "tutorials" / "props" / "transport" / "liquidDiffusivity01_pelkonen_ternary"
 RATE = ROOT / "tutorials" / "steady" / "distillation" / "ratebased01_schulz_0p10bar"
 TRAYS = ROOT / "tutorials" / "steady" / "distillation" / "trayEfficiency01_yanagi14"
+SECTORS = ROOT / "tutorials" / "steady" / "flowsheets" / "table05_sector_table_pins"
 
 
 def run(case: Path, binary: str, timeout=600):
@@ -233,7 +234,7 @@ def main():
              [(ex, "solute      methanol;\nsolvent     water;", "solute      water;\nsolvent     methanol;")],
              "The direction of an infinite-dilution value is part of the datum"),
             ("a file of two points", [(ex, "data        ( 288 1.26e-5 );", "data        ( 288 1.26e-5  298 1.6e-5 );")],
-             "slice (c)'s table type"),
+             "a law of type `table`"),
             ("kind fick", [(tp, "solvent water;  kind infiniteDilution;\n                              experiments",
                                 "solvent water;  kind fick;\n                              experiments")],
              "no consumer reads a datum of that kind"),
@@ -262,7 +263,7 @@ def main():
              [(pd, "{ T 288 K;  P 1 bar;", "{ T 290 K;  P 1 bar;")],
              "is outside the box"),
             ("a column without a unit", [(ex, "{ name D; unit cm2/s; }", "{ name D; }")],
-             "has no `unit`"),
+             "declares no unit"),
             ("the default Wilke-Chang with water as the solute (DF-01)",
              [(tp, "                    { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;\n"
                    "                      reason \"taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)\"; }\n", "")],
@@ -380,6 +381,37 @@ def main():
                          f"{'' if line in out else ', without the line to write'}")
         else:
             notes.append("the old form refused by name")
+
+        # ---- (3e) a sector's file is read from the sector's constant/, never
+        #      the root's (slice (c)'s TG-02, held for this slice's entries) ---
+        d = copy(SECTORS, tmp, "sector")
+        for mf in d.rglob("propertyManifest"):
+            mf.write_text(mf.read_text().replace("sealed             true;", "sealed             false;"))
+        edit(d / tp, "components ( water );", "components ( water methanol );")
+        edit(d / "sectors/A" / tp, "    liquid\n    {\n",
+             "    liquid\n    {\n        diffusivity\n        {\n            returns infiniteDilution;\n"
+             "            infiniteDilution\n            {\n                default { model WilkeChang; }\n"
+             "                entries ( { solute methanol; solvent water; kind infiniteDilution;"
+             " experiments methanolInWater288; } );\n            }\n        }\n")
+        datum = WITNESS / "constant/experiments/methanolInWater288.dat"
+        shutil.copy(datum, d / "sectors/A/constant/experiments" / datum.name)
+        rc1, out1 = run(d, "choupoSolve")
+        (d / "sectors/A/constant/experiments" / datum.name).rename(d / "constant/experiments" / datum.name)
+        rc2, out2 = run(d, "choupoSolve")
+        if rc1 != 0 or "methanol in water (kind infiniteDilution): 1.26e-09" not in out1:
+            fails.append(f"(3e) a sector's diffusivity entry with its file in the sector: exit {rc1}, not read")
+        elif rc2 == 0 or "no file sectors/A/constant/experiments/methanolInWater288.dat" not in out2:
+            fails.append(f"(3e) the sector's file moved to the root: exit {rc2}, "
+                         f"{'read from the root' if rc2 == 0 else 'refused, but not naming the sector path'}")
+        else:
+            notes.append("a sector's file from the sector, never the root")
+        d = copy(WITNESS, tmp, "writtenDir")
+        edit(d / tp, "experiments methanolInWater288;", "experiments methanolInWater288;  experimentsDir \"x\";")
+        rc, out = run(d, "choupoProps")
+        if rc == 0 or "is not a word a dictionary writes" not in out:
+            fails.append(f"(3e) a hand-written experimentsDir: exit {rc}, not refused by name")
+        else:
+            notes.append("a hand-written experimentsDir refused")
 
         # ---- (3b) a stated mixture value and its constituents (DG-11) -----
         def stated_probe(name, box_w, ops_edit=None):
@@ -505,8 +537,8 @@ def main():
           f" and by its words; the column's liquid film and a property operation at its state agree to"
           f" 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used;"
           f" a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it"
-          f" differs from Vignes; one surface tension per tray, left out only at or above Tc;"
-          f" {len(notes) - 8} refusals each by name, the old `diffusivity {{ model <word>; }}` form among them.  NOT CHECKED: the migrated cases' numbers (their"
+          f" differs from Vignes; one surface tension per tray, left out only at or above Tc; a sector's file read from the sector's constant/, never the root's;"
+          f" {len(notes) - 9} refusals each by name, the old `diffusivity {{ model <word>; }}` form among them.  NOT CHECKED: the migrated cases' numbers (their"
           f" goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's"
           f" fitness for a polar liquid (announced, not judged).")
     return 0

@@ -1,0 +1,34 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  table03 -- one (P, H) flash, twice.  The specified enthalpy is that of
+    liquid water at 80 degC and 1 bar, so the ANSWER (353.15 K) is inside the
+    table; the search is seeded at 262 K, a trial state outside it.
+
+    hExtended   the variant `extended`: the seed is answered by the chord,
+                the excursion announced, the search converges at 353.15 K.
+    hRefused    the variant `points`: the seed is REFUSED by name, and the
+                run ends there -- the lesson.  */
+
+operations
+(
+    {
+        name        hExtended;
+        type        flashSpec;
+        thermo      extended;
+        composition { water 1; }
+        spec        { pair PH;  P 1 bar;  targetFrom { T 353.15 K;  P 1 bar; }  seed 262 K; }
+    }
+    {
+        name        hRefused;
+        type        flashSpec;
+        thermo      points;
+        composition { water 1; }
+        spec        { pair PH;  P 1 bar;  targetFrom { T 353.15 K;  P 1 bar; }  seed 262 K; }
+    }
+);

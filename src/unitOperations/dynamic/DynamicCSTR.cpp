@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "DynamicCSTR.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "streams/Composition.H"
@@ -396,6 +397,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
             try { (void) hLiq_(i, T_); continue; }
             catch (const std::exception& e)
             {
+                rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
                 canonicalEnergy_ = false;
                 if (!blocker.empty()) blocker += "; ";
                 blocker += thermo.comp(i).name() + std::string(" (per-species"
@@ -423,7 +425,7 @@ void DynamicCSTR::initialise(const DictPtr&        unitDict,
             (void) hMix_(z_in_, T_in_);                    // the inlet leg too
             mixtureH_ = true;
         }
-        catch (const std::exception&) { mixtureH_ = false; }
+        catch (const std::exception&) { rethrowHardRefusal(); mixtureH_ = false; }
     }
 
     if (isothermal_)

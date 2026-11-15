@@ -179,17 +179,17 @@ export const TEAR_STEPS: readonly LessonStep[] = [
     derivation: [
       { step: "Per torn stream, the Wegstein branch packs the total flow, "
           + "every mole fraction, the temperature and the pressure "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1836-1869).",
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:1844-1877).",
         eq: String.raw`n_W = N_t (N_c + 3)`},
       { step: "Per torn stream, the Newton branch packs component flows, "
           + "the temperature and the pressure "
-          + "(src/unitOperations/flowsheet/Flowsheet.cpp:3721-3730). The "
+          + "(src/unitOperations/flowsheet/Flowsheet.cpp:3729-3738). The "
           + "pressure has been a tear variable since DEV.md 4c C186 (5).",
         eq: String.raw`n_N = N_t (N_c + 2)`},
       { step: "And one Newton step perturbs each of those variables up and "
           + "down, running a full sweep at each. That is the usual case: a "
           + "variable pressed against a bound is differenced on one side "
-          + "only (src/solver/NewtonND.cpp:189-258).",
+          + "only (src/solver/NewtonND.cpp:190-259).",
         eq: String.raw`\text{sweeps per Newton step} = 2 n_N`},
     ],
     formula: String.raw`\begin{aligned}
@@ -240,8 +240,8 @@ n_W &= N_t (N_c + 3) &\qquad n_N &= N_t (N_c + 2)\\[4pt]
     title: "What the engine does when you get it wrong",
     body: "The plan is validated once the tear list is final and the state "
       + "has been read and seeded from 0/, and before any unit is solved "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:2286 reads 0/, "
-      + "Flowsheet.cpp:2672 validates the plan) — so an invalid plan refuses "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:2294 reads 0/, "
+      + "Flowsheet.cpp:2680 validates the plan) — so an invalid plan refuses "
       + "with every stream still at its 0/ value, and writes no converged/. "
       + "The findings are collected and reported as one list, "
       + "each carrying its own remedy — a lint tool describes the whole "

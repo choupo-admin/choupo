@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "TrayHydraulics.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "thermo/LiquidPropertyDoor.H"
 
@@ -262,6 +263,7 @@ TrayHydraulics::Result TrayHydraulics::evaluate(const ThermoPackage&        ther
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             throw std::runtime_error(std::string("TrayHydraulics: a tray needs both phase "
                 "densities and the package cannot supply them -- ") + e.what());
         }

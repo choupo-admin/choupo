@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "SpecifiedFlash.H"
+#include "thermo/PropertyDomainError.H"
 
 #include "core/Advisory.H"
 #include "solver/NewtonRaphson.H"
@@ -183,6 +184,7 @@ struct Searcher
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             refuse(spec.pair, "the package could not answer the trial state"
                 " T = " + num(T) + " K, P = " + num(P) + " Pa (" + e.what()
                 + ").  The specification is refused rather than searched"
@@ -237,7 +239,7 @@ std::optional<scalar> pureSaturationT(const ThermoPackage& thermo,
         if (Tc > 0.0 && r.x >= Tc) return std::nullopt;
         return r.x;
     }
-    catch (const std::exception&) { return std::nullopt; }
+    catch (const std::exception&) { rethrowHardRefusal(); return std::nullopt; }
 }
 
 //  The saturation pressure of a pure stream at T: ln K(T, e^u) = 0, the root
@@ -270,7 +272,7 @@ std::optional<scalar> pureSaturationP(const ThermoPackage& thermo,
         if (!std::isfinite(slope) || std::fabs(slope) < 1.0e-12) return std::nullopt;
         return std::exp(r.x);
     }
-    catch (const std::exception&) { return std::nullopt; }
+    catch (const std::exception&) { rethrowHardRefusal(); return std::nullopt; }
 }
 
 scalar defaultTseed(const ThermoPackage& thermo, const sVector& z)
@@ -292,7 +294,7 @@ scalar defaultPseed(const ThermoPackage& thermo, const sVector& z, scalar T)
                 const scalar ps = thermo.Psat(i, T);
                 if (ps > 0.0 && std::isfinite(ps)) P0 += z[i] * ps;
             }
-            catch (const std::exception&) {}
+            catch (const std::exception&) { rethrowHardRefusal(); }
         }
     return (P0 > 0.0) ? P0 : 1.0e5;
 }

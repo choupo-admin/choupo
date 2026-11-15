@@ -323,6 +323,24 @@ public:
     void pinLaw(const std::string& property, const std::string& law,
                 const std::string& reason);
 
+    //  A CASE'S TABLE (C398 slice (c)): a pin `{ component; table <name>;
+    //  interpolation; reason; }` adds a law of type `table`, read from the
+    //  case's constant/experiments/<name>.dat, to this constituent's block of
+    //  `property` (under the file's name; refused when the record holds a law
+    //  of that name), with the file's citation as its source.  The pin then
+    //  chooses it like any law.  A record with no block of the property gets
+    //  one holding the case's law alone.
+    void addCaseLaw(const std::string& property, const recordLaws::Law& law,
+                    const OriginInfo& source);
+
+    //  Apply a case pin: add its table law when it names one, then pin.
+    void applyPin(const struct RecordLawPin& pin);
+
+    //  A RECORD'S TABLE LAW CARRIES ITS SOURCE in the provenance block, by
+    //  property and law; refused by name otherwise (a case's table carries
+    //  its file's citation).
+    void requireTableSource(const std::string& property, const recordLaws::Law& law) const;
+
     //  WHERE THIS RECORD WAS READ FROM (review row CV-05): "catalogue
     //  data/standards", "sealed case copy <path>", "case copy <path> over the
     //  catalogue", "data/local (UNVERIFIED)".  Set by Database::loadComponent.
@@ -972,6 +990,8 @@ private:
     void buildVP_(std::size_t lawIndex);
     void readLiquidCpBlock_(const DictPtr& d);   // setLiquidCp's body (C398 SB-02)
     void buildCp_(const std::string& property, std::size_t lawIndex);
+    void refreshTables_(const std::string& property, recordLaws::Block& blk) const;   // C398 TG-06
+    void requireViscosityTableSources_() const;                                       // C398 TG-14
 
     // Per-value provenance, parsed-if-present (side-channel; never the hot path).
     std::map<std::string, OriginInfo> provenanceMap_;
