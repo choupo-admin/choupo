@@ -364,10 +364,16 @@ else:
             shutil.rmtree(tmp2, ignore_errors=True)
         print("  ok   a sector-level `thermo` key is refused by name")
 
-print(f"unit-chemistry gate: no unit op selects thermodynamics; "
+#  The claim line (bin/curate/gate_claim.py): what was verified, and what was
+#  NOT -- the engine arm (check 4) is named as skipped when no binary exists.
+print(f"no_unit_chemistry: OK -- no unit op selects thermodynamics; "
       f"{nFragments} inline unit thermo fragment(s) in the tree and {nReaders} engine reader(s) of one; "
       f"{nDeclared} case(s) declare an aqueous activity model, all implemented"
-      + (f"; {len(pending)} still construct a solver directly" if pending else ""))
+      + (f"; {len(pending)} still construct a solver directly" if pending else "")
+      + ("; the engine's refusals (check 4) ran through choupoSolve" if SOLVER.exists()
+         else "; check 4 (the engine's refusals) was SKIPPED: no choupoSolve binary")
+      + ".  Not verified: a unit's operation keys outside the refused words, and"
+        " whether a declared model's parameters are the ones its case needs.")
 for p in pending:
     print("  [pending] " + p)
 sys.exit(0)
