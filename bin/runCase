@@ -320,18 +320,24 @@ if [ "$RUNNER" != "$APP" ]; then
     RUN_BIN="$CASE_ABS/code/.build/choupoCase"
 else
     echo "  binary: $APP"
-    # Resolve via PATH (etc/bashrc sourced) when available; otherwise fall
-    # back to the repo-root symlink next to this script's parent, so a bare
-    # `bin/runCase` works from any environment (gates, CI, fresh shells).
-    if command -v "$APP" >/dev/null 2>&1; then
-        RUN_BIN="$APP"
+    # THIS TREE'S OWN BUILD FIRST, PATH only as the fallback (2026-11-15).
+    # The order used to be the other way round, and a machine holding two
+    # checkouts ran the OTHER tree's binary whenever that tree's bin/ came
+    # first on PATH: a gate that drives `bin/runCase` then judged a
+    # different engine from the one it was checking (check_fit_then_simulate
+    # failed on a laptop with a sibling checkout sourced).  The repo-root
+    # symlink next to this script's parent IS this tree's build; PATH is for
+    # a script copied out of its tree.
+    TREE_BIN="$(cd "$(dirname "$0")/.." && pwd)/$APP"
+    if [ -x "$TREE_BIN" ]; then
+        RUN_BIN="$TREE_BIN"
+    elif command -v "$APP" >/dev/null 2>&1; then
+        RUN_BIN="$(command -v "$APP")"
+        echo "  (no $APP built in this tree; using $RUN_BIN from PATH)"
     else
-        RUN_BIN="$(cd "$(dirname "$0")/.." && pwd)/$APP"
-        if [ ! -x "$RUN_BIN" ]; then
-            echo "runCase: '$APP' is neither on PATH nor built at $RUN_BIN" >&2
-            echo "         (build with 'make all', or source etc/bashrc)" >&2
-            exit 1
-        fi
+        echo "runCase: '$APP' is neither built at $TREE_BIN nor on PATH" >&2
+        echo "         (build with 'make all', or source etc/bashrc)" >&2
+        exit 1
     fi
 fi
 
