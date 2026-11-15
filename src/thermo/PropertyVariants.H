@@ -48,9 +48,10 @@ Description
 
         thermo line;
 
-    and the variant is applied by the ONE typed merge every inline
-    `thermo { ... }` fragment already goes through (ThermoOverride.H) -- an
-    inline fragment keeps reading exactly as before, as an UNNAMED variant.
+    and the variant is applied by the ONE typed merge every fragment goes
+    through (ThermoOverride.H).  A UNIT's inline `thermo { ... }` block no
+    longer reads (C402: refused by name, with the lines to write); a property
+    operation's inline fragment keeps reading, as an UNNAMED variant.
     So a unit and an operation that name the same variant receive the same
     package, built by the same builder from the same merged text.
 
@@ -116,6 +117,15 @@ void validate(const DictPtr& system);
 //  builder makes through it are seen by the unread-key audit.
 DictPtr body(const DictPtr& system, const std::string& name,
              const std::string& who);
+
+//  A UNIT's authored `thermo { ... }` block is REFUSED (DEV.md 4c C402,
+//  Vitor 2026-11-15: no legacy form kept beside the new one).  The refusal
+//  names the unit, says what the block is for, and gives the lines to write:
+//  the variant in constant/thermoPhysPropDict and the selector in the unit.
+//  A unit's `thermo <name>;` and a unit with no `thermo` pass.  (A property
+//  OPERATION's inline fragment is the props bench's own grammar and is read
+//  by fragmentOf(), below.)
+void refuseInlineFragment(const DictPtr& unit, const std::string& who);
 
 //  The fragment `holder` selects against `system`: the named variant's
 //  body, the inline `thermo { ... }` block, or null when the holder

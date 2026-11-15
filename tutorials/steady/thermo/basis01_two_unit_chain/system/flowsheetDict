@@ -159,15 +159,7 @@ units
         //  check_model_boundary_ledger pins and two design records quote, so
         //  the change is the architect's to take with those re-pinned, and
         //  the number stays a declared non-K here.
-        thermo
-        {
-            equilibrium
-            {
-                formulation gammaPhi;
-                liquid { activityModel { model ideal; } }
-                vapour { fugacityModel idealGas; }
-            }
-        }
+        thermo      idealMolecular;
     }
 
     {
@@ -196,14 +188,6 @@ units
 
         operation   { fractions ( 0.25  0.75 ); }
 
-        thermo
-        {
-            equilibrium
-            {
-                formulation gammaPhi;
-                liquid { activityModel { model ideal; } }
-                vapour { fugacityModel idealGas; }
-            }
-        }
+        thermo      idealMolecular;
     }
 );

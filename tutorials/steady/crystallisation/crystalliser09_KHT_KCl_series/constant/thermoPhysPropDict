@@ -86,3 +86,20 @@ caloric
         enthalpyRoute idealGasCp;
     }
 }
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  Molecular gamma-phi over the electrolyte world, for the ethanol-water column.
+    nrtlEthanolWater
+    {
+        equilibrium
+        {
+            formulation gammaPhi;
+            liquid { activityModel { model NRTL; } }
+            vapour { fugacityModel idealGas; }
+        }
+    }
+}

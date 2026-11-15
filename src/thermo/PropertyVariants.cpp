@@ -187,6 +187,31 @@ DictPtr body(const DictPtr& system, const std::string& name,
     return system->subDict("variants")->subDict(name);
 }
 
+void refuseInlineFragment(const DictPtr& unit, const std::string& who)
+{
+    if (!unit || selectsByName(unit)) return;
+    bool present = false;
+    for (const auto& k : unit->keys()) if (k == "thermo") { present = true; break; }
+    if (!present) return;
+    if (!std::holds_alternative<DictPtr>(unit->entryValue("thermo"))) return;
+    //  An engine-stamped fragment (a resolved `thermo <name>;`) carries the
+    //  variant's name; it is never authored.
+    const DictPtr d = std::get<DictPtr>(unit->entryValue("thermo"));
+    for (const auto& k : d->keys()) if (k == selectedKey()) return;
+    throw std::runtime_error(who + ": an inline `thermo { ... }` block in a unit is"
+        " no longer read (DEV.md 4c C402).  A unit's own property world is a NAMED"
+        " variant of the case's property dictionary.  Move the body of the block"
+        " into `variants {}` in constant/thermoPhysPropDict (the sector's own"
+        " constant/thermoPhysPropDict for a unit inside a sector -- variants are not"
+        " inherited), and select it in the unit:\n"
+        "    // constant/thermoPhysPropDict\n"
+        "    variants { <name> { <the blocks the old fragment carried> } }\n"
+        "    // system/flowsheetDict (or the unit's own flowsheetDict)\n"
+        "    thermo <name>;\n"
+        "A variant states only what differs from the system, exactly as the"
+        " fragment did.  See docs/ai/dict-syntax.md, \"Named variants\".");
+}
+
 DictPtr fragmentOf(const DictPtr& system, const DictPtr& holder,
                    const std::string& who, std::string& name)
 {

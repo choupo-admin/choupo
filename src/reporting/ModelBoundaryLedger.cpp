@@ -35,6 +35,7 @@ License
 #include "thermo/ThermoPackageBuilder.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
 #include "unitOperations/flowsheet/MemberFolder.H"
+#include "unitOperations/flowsheet/VariantSelection.H"
 
 #include <algorithm>
 #include <cmath>
@@ -86,6 +87,10 @@ bool fragmentDeclaresWorld(const DictPtr& th)
 //  is read here is a DECLARATION; the world it names is still assembled
 //  independently in worldOf().  A member that cannot be opened is skipped:
 //  the solver already refused it, or will.
+//  The engine-injected key beside selectedKey() in a variant stub: the folder
+//  the selecting unit lives in, so the name resolves against ITS dictionary.
+const char* selectedDirKey() { return "selectedFromDir"; }
+
 void collectDeclarations(const DictPtr&                  node,
                          const std::string&              prefix,
                          const std::string&              folderPath,
@@ -94,7 +99,8 @@ void collectDeclarations(const DictPtr&                  node,
                          std::map<std::string, std::string>& bases)
 {
     if (!node) return;
-    auto declareFrom = [&](const DictPtr& u, const std::string& name)
+    auto declareFrom = [&](const DictPtr& u, const std::string& name,
+                           const std::string& dirWithSlash)
     {
         if (!u->found("thermo")) return;
         //  `thermo <name>;` selects a variant of the case's property
@@ -104,6 +110,13 @@ void collectDeclarations(const DictPtr&                  node,
         {
             auto stub = std::make_shared<Dictionary>("thermo");
             stub->insert(propertyVariants::selectedKey(), u->lookupWord("thermo"));
+            //  The unit's own folder (no trailing slash; "" for a unit of the
+            //  case root): the variant is resolved against the property
+            //  dictionary that folder reads -- a sector's variants are the
+            //  sector's own (C402: the gap this comment used to name).
+            std::string dir = dirWithSlash;
+            if (!dir.empty() && dir.back() == '/') dir.pop_back();
+            stub->insert(selectedDirKey(), dir);
             out[name] = stub;
             return;
         }
@@ -119,7 +132,7 @@ void collectDeclarations(const DictPtr&                  node,
         {
             const std::string name = prefix + u->lookupWordOrDefault("name", "?");
             ++count[name];
-            declareFrom(u, name);
+            declareFrom(u, name, folderPath);
             //  An inline entry may itself be composite (a nested dict-list).
             if (u->hasDictList("units"))
                 collectDeclarations(u, name + ".", folderPath, out, count, bases);
@@ -143,7 +156,7 @@ void collectDeclarations(const DictPtr&                  node,
             //  A LEAF unit: its override is at the top of its own dict, and
             //  its pair records resolve by the walk-up from ITS folder.
             ++count[name];
-            declareFrom(cd, name);
+            declareFrom(cd, name, base);
             if (out.count(name) && !base.empty())
                 bases[name] = nearestPairBase(base.substr(0, base.size() - 1));
         }
@@ -284,15 +297,22 @@ ModelBoundaryLedger::ModelBoundaryLedger(const DictPtr&         flowsheetDict,
     for (auto it = declared_.begin(); it != declared_.end();)
     {
         const DictPtr& th = it->second;
-        if (th->keys().size() == 1 && th->keys().front() == propertyVariants::selectedKey())
+        if (!th->keys().empty() && th->keys().front() == propertyVariants::selectedKey())
         {
             const std::string vn = th->lookupWord(propertyVariants::selectedKey());
+            const std::string dir = th->found(selectedDirKey())
+                ? th->lookupWord(selectedDirKey()) : std::string();
             DictPtr f;
             try
             {
-                if (packageDict_ && propertyVariants::names(packageDict_).size())
+                //  The system the unit's own folder reads (a sector's
+                //  dictionary, resolved through its `inherits`), the case's
+                //  when the unit sits at the root.
+                const DictPtr sys = packageDict_
+                    ? flowsheetVariants::nodeSystem(dir, packageDict_) : nullptr;
+                if (sys && propertyVariants::names(sys).size())
                     f = propertyVariants::stampedFragment(propertyVariants::body(
-                        packageDict_, vn, "energyBalance audit of unit '" + it->first + "'"), vn);
+                        sys, vn, "energyBalance audit of unit '" + it->first + "'"), vn);
             }
             catch (const std::exception&) { f = nullptr; }
             if (f && fragmentDeclaresWorld(f)) { it->second = f; ++it; }

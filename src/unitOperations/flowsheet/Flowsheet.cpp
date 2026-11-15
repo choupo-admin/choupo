@@ -647,7 +647,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             //  case gains no key and its dict is unchanged.
             if (!nsPrefix.empty())
                 u->insert("sector", nsPrefix.substr(0, nsPrefix.size() - 1));
-            u->insert("type", cd->entryValue("type"));
+            u->insert("type", cd->entryValue("type")); propertyVariants::refuseInlineFragment(cd, "unit '" + qname + "'");   // C402
             for (const char* k : { "operation", "model", "thermo", "utility" })   // utility: C52, read by the allocation
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
             //  A UNIT'S INLINE `thermo {}` READS ITS OWN constant/ (C398 review
@@ -2344,14 +2344,14 @@ int Flowsheet::solve(const DictPtr& dict,
             "member's real kind (leaf or composite) from its own dict.");
     if (dict->hasDictList("units"))
     {
-        units = dict->lookupDictList("units");
+        units = dict->lookupDictList("units"); for (const auto& iu : units) propertyVariants::refuseInlineFragment(iu, "unit '" + iu->lookupWordOrDefault("name", "?") + "'");   // C402
     }
     else if (dict->found("type"))
     {
         const std::string nodeName = dict->lookupWordOrDefault("name", "node");
         auto u = std::make_shared<Dictionary>(nodeName);
         u->insert("name", std::string(nodeName));
-        u->insert("type", dict->entryValue("type"));
+        u->insert("type", dict->entryValue("type")); propertyVariants::refuseInlineFragment(dict, "unit '" + nodeName + "'");   // C402
         for (const char* k : { "operation", "model", "dryingCurve", "crystallisation", "thermo", "reaction", "utility" })
             if (dict->found(k)) u->insert(k, dict->entryValue(k));
         // A standalone unit MENTIONS its streams directly (sequential-modular:
