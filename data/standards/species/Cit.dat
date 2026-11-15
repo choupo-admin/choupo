@@ -15,3 +15,26 @@ aqueousThermo
 source "Kochergina, Volkov, Krutov & Krutova, Russ. J. Phys. Chem. 80 (2006) 899-903, Table 4 (weighted mean of two calorimetric procedures; the species are the hypothetical non-dissociated H2Cit-/HCit2- and Cit3- of the paper's reference state)";
 hfAq { value -1528500; unit J/mol;}
 }
+
+transport
+{
+    //  D0 ONLY (DEV.md 4c C403).  No `radius` is curated for this ion: the tier's radius is the HYDRATED radius of
+    //  Nightingale, J. Phys. Chem. 63 (1959) 1381, Table I, and it was not read for this record.  A Stokes radius
+    //  computed from D0 would be a different convention under the same key, so none is written: DSPM-DE still
+    //  refuses this ion by name, while the multi-ionic polarisation film and the electrodialysis units read D0 alone.
+    D0 { value 6.395e-10; unit m2/s; }
+    provenance
+    {
+        //  Cross-check, entering no value: the CRC Handbook of Chemistry and Physics, 82nd ed., table
+        //  'Ionic Conductivity and Diffusion at Infinite Dilution' (PDF pp. 304-306 of the folder copy), read at its page
+        //  as a second opinion on this ion at 25 C; it is a compilation and is not this value's origin.
+        D0
+        {
+            source        "A. Apelblat and J. Barthel, Conductance Studies on Aqueous Citric Acid, Z. Naturforsch. 46a (1991) 131-140, Table 4 (p. 135) and Table 9 (p. 138), row 1/3 Cit3-: lambda0 = 72.05 S cm2/eq at 25 C (MEASURED: the average of the tri-lithium (73.24), tri-sodium (72.07) and tri-potassium (70.85) citrate conductances at 298.15 K, printed as 72.05 +- 1.20)";
+            origin        literature;
+            method        "read at the page image, 2026-11-15 (DEV.md 4c C403): lambda0 = 72.05 S cm2/eq (x 1e-4 = 0.007205 S m2/eq), converted by the Nernst relation D = R T lambda0 / (|z| F^2) with R = 8.314462618 J/mol/K, F = 96485.33212 C/mol, T = 298.15 K (RT/F^2 = 2.662848e-07), |z| = 3, to 6.395e-10 m2/s";
+            reviewStatus  interim;
+            notes         "The same row at 278.15, 283.15, 288.15, 293.15, 298.15, 303.15, 308.15 K: 42.59, 49.14, 56.40, 64.04, 72.05, 80.43, 89.16 S cm2/eq (Table 4, average column).  The authors give lambda0 per equivalent (1/3 Cit3-). A second compiled table (named in the comment above) gives 6.23e-10 m2/s for this ion at 25 C (-2.6 %).";
+        }
+    }
+}
