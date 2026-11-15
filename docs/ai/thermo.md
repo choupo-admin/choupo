@@ -586,8 +586,11 @@ solver throws a clear error naming the missing slot.
   method should not be used when water is the solute").  Write an entry for the pair:
   a value with its source, or `{ solute water; solvent methanol; kind infiniteDilution;
   model WilkeChang; reason "..."; }` (the view marks it "outside the method's stated
-  scope").  Wilke-Chang's V_A is the record's `Vliq` at its datum temperature (25 C
-  unless `VliqT`), printed in the view; the method defines it at Tb (slice d2).
+  scope").  Wilke-Chang's V_A is the pure solute's molar volume AT ITS NORMAL BOILING
+  POINT, M / rho(Tb) from the package's liquid density at the record's Tb and 101325 Pa
+  (Poling 5th ed. Eq. 11-9.1; C398 slice d2); the view prints it with its temperature,
+  density and route.  A solute with no Tb, or no liquid density there, is REFUSED by
+  name -- the 25 C `Vliq` is never substituted; write an entry for the pair.
 - An entry replaces the default for ONE direction:
   `infiniteDilution { entries ( { solute methanol; solvent water; kind infiniteDilution;
   experiments methanolInWater288; } ); }` (or inline `value 1.26e-5 cm2/s; T 288 K;

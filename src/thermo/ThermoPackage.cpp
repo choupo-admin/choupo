@@ -54,6 +54,7 @@ License
 #include "transport/LiquidDiffusivityModel.H"
 
 #include "PackageAudit.H"
+#include "LiquidPropertyDoor.H"
 #include "ThermoAnnounce.H"   // load-phase announcement gate (verbosity contract)
 #include "activityCoefficient/Wilson.H"
 #include "activityCoefficient/UNIFAC.H"
@@ -2362,6 +2363,41 @@ void announceAcross(const char* what, const std::string& comp,
 }
 } // namespace
 
+const ThermoPackage::SoluteVolumeAtTb& ThermoPackage::soluteVolumeAtTb(std::size_t i) const
+{
+    const auto it = soluteVolumeTb_.find(i);
+    if (it != soluteVolumeTb_.end()) return it->second;
+    SoluteVolumeAtTb v;
+    const Component& c = components_.at(i);
+    v.Tb = c.Tb();
+    if (!(v.Tb > 0.0))
+        v.refusal = c.name() + " has no normal boiling point (Tb) in its record, so the"
+                    " solute volume V_A of Wilke-Chang (Poling Eq. 11-9.1) cannot be taken at it";
+    else
+    {
+        try
+        {
+            sVector e(n(), 0.0);
+            e[i] = 1.0;
+            const auto r = liquidProperty::evaluateUnrecorded(*this, liquidProperty::Property::density,
+                                                              v.Tb, 101325.0, e);
+            if (!(r.value > 0.0)) throw std::runtime_error("non-positive density");
+            v.rho   = r.value;
+            v.V_m3  = (c.MW() / 1000.0) / r.value;
+            v.route = r.label;
+            v.ok    = true;
+        }
+        catch (const std::exception& ex)
+        {
+            char tb[32];
+            std::snprintf(tb, sizeof tb, "%.6g K", v.Tb);
+            v.refusal = c.name() + " has no liquid density at its normal boiling point ("
+                      + tb + "): " + ex.what();
+        }
+    }
+    return soluteVolumeTb_.emplace(i, std::move(v)).first->second;
+}
+
 scalar ThermoPackage::density(scalar T, scalar P_Pa, const sVector& z,
                               DensityPhase ph) const
 {
@@ -3487,6 +3523,20 @@ scalar ThermoPackage::measuredOrCheckedViscosity(scalar T, const sVector& x,
 scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::size_t j,
                                                 scalar muMix) const
 {
+    //  V_A at the normal boiling point (slice d2), or the refusal by name.
+    auto soluteVolumeOrRefuse = [&](std::size_t a, std::size_t b)
+    {
+        const SoluteVolumeAtTb& v = soluteVolumeAtTb(a);
+        if (!v.ok)
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                "liquid diffusivity of " + components_[a].name() + " at infinite dilution in "
+                + components_[b].name() + ": " + v.refusal + ".  The record's 25 C volume is"
+                  " never substituted for it.",
+                "an entry for the pair with a value and its source: `infiniteDilution { entries ("
+                " { solute " + components_[a].name() + "; solvent " + components_[b].name()
+                + "; kind infiniteDilution; ... } ); }`");
+        return v.V_m3;
+    };
     //  The pure solvent's viscosity, for a correlation in its textbook form.
     auto pureSolvent = [&]()
     {
@@ -3510,7 +3560,8 @@ scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::si
             md->insert("model", EntryValue(e->model));
             const auto mdl = LiquidDiffusivityModel::New(md);
             return mdl->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
-                                                muMix > 0.0 ? muMix : pureSolvent());
+                                                muMix > 0.0 ? muMix : pureSolvent(),
+                                                soluteVolumeOrRefuse(i, j));
         }
         if (T < e->boxT.first || T > e->boxT.second)
             throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
@@ -3544,7 +3595,8 @@ scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::si
                 liquidDiffusivity_->modelName(), components_[j].name()),
             "an entry for the pair (a value with its source, or the correlation named with its reason)");
     return liquidDiffusivity_->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
-                                                        muMix > 0.0 ? muMix : pureSolvent());
+                                                        muMix > 0.0 ? muMix : pureSolvent(),
+                                                        soluteVolumeOrRefuse(i, j));
 }
 
 scalar ThermoPackage::diffusivityLiquidEffective(scalar T, const sVector& x) const

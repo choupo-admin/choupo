@@ -783,6 +783,26 @@ public:
     scalar density(scalar T_K, scalar P_Pa, const sVector& z,
                    DensityPhase ph) const;
 
+    //  The molar volume of component i's pure liquid at its NORMAL BOILING
+    //  POINT, V_A of Wilke and Chang (Poling, Prausnitz and O'Connell, 5th ed.,
+    //  Eq. 11-9.1, p. 11.22; the worked Example 11-5 takes it as M / rho at
+    //  Tb).  C398 slice d2 (review row DF-03).  Evaluated ONCE per component
+    //  and cached: the package's liquid density of the pure component at its
+    //  declared Tb and 101325 Pa, through the same method the door reports
+    //  (`route`).  `ok` false: no Tb in the record, or the package has no
+    //  liquid density there -- `refusal` says which; the diffusivity path
+    //  refuses by name and never falls back to the 25 C volume.
+    struct SoluteVolumeAtTb
+    {
+        bool        ok = false;
+        scalar      V_m3 = 0.0;       // m3/mol
+        scalar      Tb = 0.0;         // K
+        scalar      rho = 0.0;        // kg/m3
+        std::string route;            // the density's route, in the door's words
+        std::string refusal;
+    };
+    const SoluteVolumeAtTb& soluteVolumeAtTb(std::size_t i) const;
+
     // Designated solvent -----------------------------------------
     // The component name nominated by `solvent <name>;` in the thermo
     // package, used as the second key of the HenrysLaw lookup whenever a
@@ -992,6 +1012,7 @@ private:
     //  One law per constituent (C398 slice (b)); the objects are built at
     //  first evaluation.
     std::vector<LiquidLaw> liquidViscosityLaws_, liquidConductivityLaws_, surfaceTensionLaws_;
+    mutable std::map<std::size_t, SoluteVolumeAtTb>               soluteVolumeTb_;
     mutable std::vector<std::unique_ptr<LiquidViscosityModel>>    liquidViscosityObj_;
     mutable std::vector<std::unique_ptr<LiquidConductivityModel>> liquidConductivityObj_;
     mutable std::vector<std::unique_ptr<SurfaceTensionModel>>     surfaceTensionObj_;

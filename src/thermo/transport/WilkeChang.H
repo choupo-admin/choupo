@@ -40,11 +40,12 @@ Description
               the solvent's.dat
         M_B : solvent molar mass [g/mol]
         η_B : solvent viscosity [cP]   (passed in, from the liquidViscosity model)
-        V_A : solute molar volume [cm³/mol].  The correlation defines it AT
-              THE NORMAL BOILING POINT; this implementation reads the
-              record's `Vliq`, a 25 C value (C378 slice 0 finding, kept
-              as it is until the diffusivity slice decides the datum).
-              (taken here from the solute's Vliq)
+        V_A : solute molar volume AT ITS NORMAL BOILING POINT [cm³/mol]
+              (Poling p. 11.22; Example 11-5 takes M_A / rho(Tb)).  The
+              package resolves it from the pure liquid's density at Tb
+              (ThermoPackage::soluteVolumeAtTb, C398 slice d2) and passes it
+              in; a solute with no Tb or no liquid density there is refused
+              by the package, never given the record's 25 C volume.
 
     Returns m²/s.  The default, association-aware member of the selectable
     liquid-diffusivity family; ~±15 % typical accuracy (e.g. ethanol in
@@ -66,7 +67,8 @@ public:
     scalar diffusivityLiquidBinary(const Component& solute,
                                    const Component& solvent,
                                    scalar T_K,
-                                   scalar muSolvent_PaS) const override;
+                                   scalar muSolvent_PaS,
+                                   scalar soluteVolumeTb_m3) const override;
 
 private:
     inline static const std::string name_ = "WilkeChang";

@@ -2574,8 +2574,8 @@ $\Lambda_{ij}=(V_j/V_i)\exp(\cdots)$ wants both volumes at 25\,$^\circ$C,
 the convention its pairs are regressed under; a parametrised Wilson pair
 over a record that states another \code{VliqT} is refused by name (no
 catalogue Wilson pair names one).  Wilke-Chang \emph{wants} the solute's
-volume at its normal boiling point, which is what these records store; it
-reads the datum as stored.  The Poynting factor keeps its constant-volume
+volume at its normal boiling point, and since C398 slice~d2 it takes it
+there, from the package's density at $T_b$, not from the stored datum.  The Poynting factor keeps its constant-volume
 form with the stored datum.  The units that still read the volume
 themselves (pump, pressure exchanger, CSTR, liquid PFR, crystallisers,
 spray dryer; \S\ref{sec:liquid-property-sources}) read the datum flat, at
@@ -15355,9 +15355,10 @@ corrections become necessary.
    \;}
    \label{eq:wilke-chang}
 \end{equation}
-where $V_A$ is the molar volume of solute $A$ at its boiling point
-(LeBas group-contribution table, or just $V^{\mathrm{liq}}_A$ from
-the data file as a first approximation) and $\phi_B$ is the
+where $V_A$ is the molar volume of solute $A$ at its normal boiling
+point (Poling 5th ed., p.~11.22: from experimental data, or the Le~Bas
+additive table if none exist; the book's Example~11-5 takes
+$M_A/\rho(T_b)$) and $\phi_B$ is the
 association factor of solvent $B$ (water: 2.6; methanol: 1.9;
 ethanol: 1.5; benzene/other unassociated: 1.0).  The result is the
 \emph{infinite-dilution} diffusivity --- valid as $x_A \to 0$.  The
@@ -15366,16 +15367,26 @@ cm²/s with $\eta_B$ in cP, carried to m²/s; with $\mu_B$ in Pa·s it would be
 $7.4\times10^{-15}$ (review row DF-02: this box printed Pa·s until 2026-11-15,
 a factor 1000; the engine always took cP, WilkeChang.cpp).  Check by hand:
 methanol in water at 288 K, $\mu_B = 1.13983$ mPa·s, $M_B = 18.015$, $V_A =
-40.7$ cm³/mol, $\phi_B = 2.6$: $1.385\times10^{-9}$ m²/s, the engine's
-1.38462e-09.  Two limits the engine states: (i) Poling 5th ed.\ p.~11.22,
+43.3474$ cm³/mol, $\phi_B = 2.6$: $1.3332\times10^{-9}$ m²/s, the engine's
+1.33325e-09 (the volume is the one the view prints, in six digits).  Two limits the engine states: (i) Poling 5th ed.\ p.~11.22,
 ``the method should not be used when water is the solute'' --- the default
 refuses such a pair, and a case that accepts it names the correlation for the
 pair with its reason (section~\ref{sec:liquid-diffusivity-declared}); (ii)
-$V_A$ is read as the record's \code{Vliq} at its datum temperature (25~°C
-unless \code{VliqT} says otherwise), not at the boiling point the method
-defines it at; the resolved view prints the volume and its temperature for
-every solute (the boiling-point volume through the property door is
-C398 slice d2; at Tb the six values of the ternary witness fall by 2 to 6~\%).
+$V_A$ is taken AT THE NORMAL BOILING POINT, as the method defines it
+(C398 slice d2, review row DF-03): $V_A = M_A/\rho_A(T_b)$ with $\rho_A$ the
+package's liquid density of the pure solute at its declared $T_b$ and
+101\,325~Pa, through the same property door every unit asks, resolved once
+per component and printed in the resolved view with its temperature, density
+and route.  A solute with no $T_b$ in its record, or no liquid density there,
+is refused by name, and the record's 25~°C volume is never substituted; the
+remedy is a declared entry for the pair.  Until this slice the engine read
+the record's 25~°C \code{Vliq}, which made the six values of the ternary
+witness higher by 2.4 to 6.1~\%.  Against Poling's Table~11-5 (methanol in
+water at 288~K, $1.26\times10^{-5}$~cm²/s) the engine's Wilke-Chang value is
+$1.333\times10^{-5}$, $+5.8$~\% (it was $+9.9$~\%; Poling's own Wilke-Chang
+value is $+5.4$~\%, with other inputs).  The engine's density at $T_b$ is the
+package's (the Rackett route scaled from the 25~°C volume for these records),
+so $V_A$ inherits that density's own error.
 
 \begin{intuition}
 Liquid diffusivities are six to seven orders of magnitude lower
@@ -15497,20 +15508,20 @@ zero only when $\mu_1 = \mu_2$ or $D^{\circ}_{12} = D^{\circ}_{21}$ (review row
 DF-14; this paragraph said the opposite until 2026-11-15).  Check on the
 witness's methanol-water binary at 328.62~K ($x_1 = 0.9459$ methanol, $\mu_1 =
 0.37184$, $\mu_2 = 0.49841$ mPa·s, mole-average $\mu = 0.37868$ mPa·s,
-$D^{\circ}_{12} = 3.6132$ methanol in water, $D^{\circ}_{21} = 8.9874$ water in
-methanol, $\times10^{-9}$~m²/s): Caldwell-Babb $8.6966$, and
-Eq.~\eqref{eq:ab-minus-cb} gives $-0.0919$, so Anderson-Babb on that $\mu$ is
-$8.6047\times10^{-9}$.  The engine's mixture viscosity there is the package's
+$D^{\circ}_{12} = 3.4791$ methanol in water, $D^{\circ}_{21} = 8.5900$ water in
+methanol, $\times10^{-9}$~m²/s): Caldwell-Babb $8.3135$, and
+Eq.~\eqref{eq:ab-minus-cb} gives $-0.0874$, so Anderson-Babb on that $\mu$ is
+$8.2261\times10^{-9}$.  The engine's mixture viscosity there is the package's
 (Grunberg-Nissan with no interaction, the log-mole average, $0.37778$ mPa·s),
-so the witness prints $8.697$ (Caldwell-Babb), $8.625$ (Anderson-Babb) and
-$8.555$ (Vignes and Leffler-Cullinan) $\times10^{-9}$~m²/s.
+so the witness prints $8.314$ (Caldwell-Babb), $8.246$ (Anderson-Babb) and
+$8.180$ (Vignes and Leffler-Cullinan) $\times10^{-9}$~m²/s.
 
 \paragraph{Water as the solute.}  The DEFAULT correlation refuses a pair
 whose solute is water (Poling 5th ed.\ p.~11.22; review row DF-01).  The gap
 it would hide, measured: at 313.13~K Lee \& Li (1991), as Poling p.~11.38
 (Example 11-8) reports them, give water in methanol $2.67\times10^{-5}$ and
-methanol in water $2.10\times10^{-5}$~cm²/s; Wilke-Chang gives $+167$~\% and
-$+25$~\% (the witness's variant \code{leeLi313}).  The
+methanol in water $2.10\times10^{-5}$~cm²/s; Wilke-Chang gives $+156$~\% and
+$+21$~\% (the witness's variant \code{leeLi313}).  The
 remedy is an entry for the pair: a value with its source, or the correlation
 named for the pair with the reason it is accepted outside its stated scope,
 \code{\{ solute water; solvent methanol; kind infiniteDilution; model
@@ -30369,10 +30380,11 @@ Eq.~\eqref{eq:leffler-cullinan}, and is no longer printed: the declared rule
 is the one used, and the one named.  Against the liquid diffusivity Schulz et
 al.\ themselves state for the two runs (Table~1, beside the viscosity the
 cases take; printed ``m/s2'', a misprint for m²/s): the engine's declared
-effective value at the same stated states is $3.78\times10^{-9}$ against
-$3.57\times10^{-9}$ at 0.1~bar ($+6.0$~\%) and $2.50\times10^{-9}$ against
-$2.36\times10^{-9}$ at 0.02~bar ($+5.8$~\%) --- of the order of the 25~°C
-solute volume Wilke-Chang reads instead of the boiling-point one (slice d2).
+effective value at the same stated states is $3.49\times10^{-9}$ against
+$3.57\times10^{-9}$ at 0.1~bar ($-2.1$~\%) and $2.31\times10^{-9}$ against
+$2.36\times10^{-9}$ at 0.02~bar ($-2.2$~\%); before slice~d2, which put
+Wilke-Chang's solute volume at the normal boiling point, they were $3.78$
+($+6.0$~\%) and $2.50$ ($+5.8$~\%).
 $\Gamma$ is taken as $1$ (declared):
 exact for an ideal solution, an \emph{effective-diffusivity} film otherwise.  That is the
 house's film model for the liquid (DEV.md~4c C329, decision~(2) amended): the
@@ -30591,15 +30603,18 @@ $0.0079\,\%$) agrees with it.  The reflux composition moves by at most
 $1.4\times10^{-5}$.  100 segments, the transfer-unit bed's own count, is the
 default.
 
-\paragraph{Known limitation: the liquid diffusivity's solute volume.}
+\paragraph{The liquid diffusivity's solute volume (slice d2).}
 The liquid film's diffusivity is Wilke--Chang's, which defines the solute volume
-$V_A$ at the normal boiling point; the component records the four cases use
-give the liquid molar volume at 298~K, and that is the one the code reads (the
-run announces ``25 C volume'').  Replacing it by the boiling-point volume
-lowers the liquid diffusivity by $7.6\,\%$ and raises $H_{OG}$ at mid-bed of
-\code{ratebased01} by $0.72\,\%$.  The transfer-unit bed reads the same volume
-and carries the same effect.  It is a property-model matter, left as it is
-here and recorded so that no one reads the HETP to a better accuracy than this.
+$V_A$ at the normal boiling point (Poling 5th ed., Eq.~11-9.1); since C398 slice~d2
+the engine takes it so, $M/\rho(T_b)$ from the package's liquid density, and the
+run's view prints the volume, the temperature and the density's route.  Before the
+slice it read the record's 298~K volume, which lowered nothing but overstated
+$D_L$ by 2 to 8~\%; the shipped packing and rate-based cases now report an HETP
+0.3 to 0.7~\% larger (\code{ratebased01} 0.15979 to 0.16091~m, \code{packing01}
+0.15949 to 0.16060~m).  The convergence figures of the HETP in the segment count
+quoted in the paragraphs above were taken BEFORE this slice (at F-factor 1.5) and
+are not retaken here; their differences between segment counts, which is what
+they show, are not changed in kind.
 
 \paragraph{Validity window.}
 A binary; an ideal-gas vapour; a liquid on an activity model, with the
