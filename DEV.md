@@ -3518,6 +3518,26 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C329 SLICE B2a LANDED (2026-11-15): the liquid properties of the
+> three-component rate-based column.**  The rule `VignesKooijmanTaylor`
+> (Kooijman & Taylor 1991 Eq. 23 with Eq. 21's limiting value) lifts slice
+> (d)'s refusal for three or more components, for this rule only; `reduction
+> Wilke` (Taylor & Krishna 1993 Eq. 6.1.14) gives one effective diffusivity
+> per component; props keys for the pair values, the thermodynamic factor
+> and the Fick matrix (refused without an activity model, B2-01); no column
+> change.  WITNESS: the paper's Table I (acetone/benzene/CCl4): with the
+> NRTL tau_21 the book prints (0.76432; the paper's Table I prints 0.74632,
+> and nothing read says which is the typing error) the engine gives the
+> paper's Table IV "eq 23" row to its four digits (0.0763 / 0.0916 / 0.0611)
+> and the book's Gamma matrix; the printed 0.74632 is kept as a pinned
+> variant (0.0782).  The two-component limit equals the shipped Vignes rule
+> to 1e-12 and 90 existing cases are byte-identical.  Built on the lighter
+> model, first review on the strongest (rows B2-01..07: one S2, three S3,
+> all fixed; report docs/reviews/2026-11-15-c329-b2a).  Held by --fast 87/0
+> on the merged tree, the builder's --scope 26/0 with the closures and --gui
+> 49/0.  NEXT: d2, then B2b (the segment).  OPEN: the two water-as-solute
+> entries B2b needs are not sourced; not seen in a browser.
+
 > **THE EXPLORER'S P-x-y AND MIXTURE-ENVELOPE LENSES LANDED (2026-11-15;
 > the architect's decision after Vitor asked whether the Explorer draws phase
 > diagrams of pure substances and mixtures).**  `P_bubble` and `y_eqT_<c>`
