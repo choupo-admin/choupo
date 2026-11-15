@@ -336,6 +336,27 @@ export const WITNESS_OUTPUTS: readonly WitnessOutput[] = [
     readBy: ["batchGantt.test.ts", "citation.test.ts", "machineUtilisation.test.ts"],
     stdout: true,
   },
+  //  The total-reflux loop of a column's node (DEV.md 4c C404): the run logs
+  //  of one case per model family -- the tray model, the packed bed and the
+  //  rate-based bed -- whose published KPIs the loop's numbers are held to.
+  {
+    caseDir: "tutorials/steady/distillation/totalReflux01_c6c7_yanagiRun628",
+    file: "log.choupoSolve",
+    readBy: ["totalRefluxLoop.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/steady/distillation/packing05_schulz_record_0p10bar",
+    file: "log.choupoSolve",
+    readBy: ["totalRefluxLoop.test.ts"],
+    stdout: true,
+  },
+  {
+    caseDir: "tutorials/steady/distillation/ratebased04_schulz_delft_0p02bar",
+    file: "log.choupoSolve",
+    readBy: ["totalRefluxLoop.test.ts"],
+    stdout: true,
+  },
   //  The per-machine utilisation table (DEV.md 4c C195/C210): the two tablet
   //  plants' run logs (apalutamide01's is the entry above), whose result blocks carry `equipment` (the
   //  `ratedMachine` sheets) and the sizing advisories.

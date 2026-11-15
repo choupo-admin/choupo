@@ -417,3 +417,23 @@ legend says so.  `LayoutFacts` is built from the run in Reports; the exported pa
 the pop-out tab hold only the layout block, so they offer the tour, cameras, T / P / phase
 colours, the minimap, the pipe cards and the layout headline, and not the sheets, the
 costs or the colour by composition.
+
+## 8. A drawing inside a node, not a graph member (DEV.md 4c C404)
+
+A column at TOTAL REFLUX has no feed and no product, so its graph is one unit and two
+duty wires.  Its node draws the loop that flows inside it (vapour to the condenser,
+reflux back, boilup at the base) in a dashed frame labelled "total reflux: no feed, no
+product".  The pattern, for any later case where the unit has internal flow that crosses
+no boundary:
+
+| file | role |
+|---|---|
+| `case/totalRefluxLoop.ts` | PURE.  `isTotalRefluxColumn` (the `operation.totalReflux { }` block is the test, never the `model` word), `totalRefluxLoop(unit, kpis)` (the declared composition before a run, the published KPIs after it, keys listed in `PUBLISHED`), `loopRows` (the value untouched plus its text in display units). |
+| `ui/TotalRefluxLoop.tsx` | the drawing; phase colours from `ui/plotting/palette.ts`; the detail chip hides the numbers and keeps label and arrows. |
+| `ui/UnitNode.tsx` | one line: `loop && <TotalRefluxLoop/>`. |
+| `tests/totalRefluxLoop.test.ts` | the family list, the ordinary column drawing nothing, the graph unchanged, and three witness logs (`witnessOutputs.ts`) holding every row to the engine's KPI with `toBe`. |
+
+Rules kept: nothing is added to the graph, the stream table, the balances or the layout;
+the GUI computes nothing (the engine publishes no molar reflux flow `L`, so none is
+drawn; the only arithmetic is the unit presentation, kmol/s to the chosen flow unit and
+m3/s to m3/h).

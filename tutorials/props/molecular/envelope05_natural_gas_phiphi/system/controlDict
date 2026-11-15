@@ -1,0 +1,25 @@
+/*--------------------------------*- Choupo -*-------------------------------*\
+  envelope05_natural_gas_phiphi -- envelope01's lean natural gas on ONE
+  Peng-Robinson cubic for BOTH phases (phi-phi, kij = 0).
+
+  WHAT IT DEMONSTRATES: when the liquid is an equation-of-state root, its
+  fugacity depends on its own composition, so a dew point is a fixed point in
+  the incipient liquid and a bubble point one in the incipient vapour.  Both
+  solves iterate that phase at every temperature, seeded by Wilson's K, and
+  refuse a root whose incipient phase equals the feed (at x = z the cubic has
+  one root and K = 1 satisfies the saturation equation trivially).  Until
+  EX-05 (2026-11-15) the unit read the phi-phi package's unused `ideal`
+  activity placeholder as an ideal liquid, made one pass at x = z and
+  returned 209.6 K at 5 bar and 220.1 K at 10 bar (and failed at 1, 20, 40).
+
+  HELD TO: an independent Peng-Robinson phi-phi calculation written outside
+  the engine (same Tc, Pc, omega, kij = 0): dew 208.56, 235.82, 249.47,
+  263.61, 276.03 K at 1, 5, 10, 20, 40 bar; bubble 205.65 and 214.57 K at 50
+  and 60 bar; every one within 0.1 K (gate check_phase_envelope, arm k).
+  The golden rows pin the same numbers.  Not checked against a measured
+  envelope: the feed is a plausible lean gas, not a sampled one.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "P-T phase envelope of a lean natural gas on one Peng-Robinson cubic for both phases: dew and bubble points with the incipient phase iterated, held to an independent calculation";
+verbosity     3;

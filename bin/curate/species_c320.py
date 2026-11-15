@@ -140,7 +140,14 @@ def render(name, rows):
     if "cpAq" in q:
         lines.append(f"cpAq {{ value {fnum(q['cpAq']['chosen'])}; unit J/mol/K;}}")
     lines.append("}")
-    return "\n".join(lines) + "\n"
+    out = "\n".join(lines) + "\n"
+    #  C403: the limiting diffusivity of the ion, from its own table (bin/curate/ion_d0.py), the same bytes
+    #  that tool writes into a record it does not generate.
+    import ion_d0
+    row = ion_d0.load().get(name)
+    if row is not None:
+        out += "\n" + ion_d0.transport_block(row)
+    return out
 
 
 def main():

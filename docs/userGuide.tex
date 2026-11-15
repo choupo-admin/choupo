@@ -4538,6 +4538,24 @@ Stream colour encodes phase and comes straight from the solver ($vf$
 plus solid mass fraction); it never changes on hover or selection ---
 selection is signalled by a halo, not a recolour.
 
+\paragraph{A column at total reflux.}\label{sec:gui-total-reflux}  A column
+whose operation declares a \code{totalReflux \{\}} block (the packed-bed,
+tray-efficiency and rate-based tutorials) has no feed and no product, so its
+flowsheet is one unit and two duty wires and nothing crosses its boundary.
+Its node therefore draws the loop that does flow inside it, in a dashed
+frame labelled \emph{total reflux: no feed, no product}: the vapour rising to
+the condenser, the reflux returning and the boilup entering the base, in the
+vapour and liquid colours of the streams.  The three arrows are not
+streams --- nothing is added to the flowsheet, the stream table or the
+balances.  Before a run the frame shows the composition the case declares at
+the specified end; after a run it shows the numbers the engine published in
+the column's KPIs (\code{V\_boilup}, \code{V\_top} where the model has it,
+the light-key mole fractions of the reflux and the reboiler, the top and
+bottom temperatures), unconverted and in your display units.  The engine
+publishes no separate molar reflux flow, so none is drawn: at total reflux it
+equals the vapour flow, which is stated here and not computed on the screen.
+The detail chip hides the numbers and keeps the label and the arrows.
+
 \paragraph{What the Plots and Streams views open on.}  After a run the
 \emph{Plots} view lands on a unit's \emph{Profile} when a unit published one
 (a column opens on its stage profile; before, it opened on the two-bar element

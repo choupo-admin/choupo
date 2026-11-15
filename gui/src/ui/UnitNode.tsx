@@ -51,6 +51,8 @@ import { DUTY_TIER_COLOUR, type DutyTier } from "../case/dutySign.js";
 import { useStore } from "../state/store.js";
 import { dutyText } from "../case/resultUnits.js";
 import { SolvingHalo } from "./SolvingHalo.js";
+import { TotalRefluxLoop } from "./TotalRefluxLoop.js";
+import { totalRefluxLoop } from "../case/totalRefluxLoop.js";
 import { NODE_BG, NODE_FONT, NODE_PADDING, NODE_RADIUS, nodeBorder, nodeShadow } from "./nodeCard.js";
 import {
   type DisplayPrefs,
@@ -160,6 +162,7 @@ export function UnitNode({ id, data, selected }: NodeProps) {
         return [k, e === undefined ? v
                  : (e.unit ? `${e.value} ${e.unit}` : e.value)];
       }));
+  const loop = totalRefluxLoop(unit, kpis);
   const opSummary = summarise(effectiveOp, operationSchemaFor(unit.type) ?? undefined, prefs, kpis);
 
   // One handle per stream (in / outputs), spread vertically.  React Flow
@@ -436,6 +439,10 @@ export function UnitNode({ id, data, selected }: NodeProps) {
             ))}
           </Stack>
         )}
+        {/*  A COLUMN AT TOTAL REFLUX has no feed and no product, so the canvas
+             would show one box with nothing flowing (C404).  Its internal
+             loop is drawn here -- not a stream, nothing added to the graph. */}
+        {loop && <TotalRefluxLoop loop={loop} prefs={prefs} showDetails={showDetails} />}
       </Stack>
       {outputs.map((name, i) => {
         // Vapour/liquid separators leave vapour at the TOP, liquid at the

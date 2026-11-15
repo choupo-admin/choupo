@@ -1,0 +1,62 @@
+species	src	label	t0	t18	t25	crc_label	crc_d	z	page	ref	temps
+H	LG	H+	56.1	81.7	93.1	H+	9.311				
+Li	LG	Li+	4.72	8.69	10.3	Li+	1.029				
+Na	LG	Na+	6.27	11.3	13.3	Na+	1.334				
+K	LG	K+	9.86	16.7	19.6	K+	1.957				
+Rb	LG	Rb+	10.6	17.6	20.6	Rb+	2.072				
+Cs	LG	Cs+	10.6	17.7	20.7	Cs+	2.056				
+NH4	LG	NH4+	9.8	16.8	19.8	NH4+	1.957				
+Ag	LG	Ag+	8.5	14	16.6	Ag+	1.648				
+TlI	LG	Tl+	10.6	17	20.1	Tl+	1.989				
+Mg	LG	Mg2+	3.56	5.94	7.05	1/2Mg2+	0.706				
+Ca	LG	Ca2+	3.73	6.73	7.93	1/2Ca2+	0.792				
+Sr	LG	Sr2+	3.72	6.7	7.94	1/2Sr2+	0.791				
+Ba	LG	Ba2+	4.04	7.13	8.48	1/2Ba2+	0.847				
+MnII	LG	Mn2+	3.05	5.75	6.88	1/2Mn2+	0.712				
+FeII	LG	Fe2+	3.41	5.82	7.19	1/2Fe2+	0.719				
+CoII	LG	Co2+	3.41	5.72	6.99	1/2Co2+	0.732				
+NiII	LG	Ni2+	3.11	5.81	6.79	1/2Ni2+	0.661				
+CuII	LG	Cu2+	3.41	5.88	7.33	1/2Cu2+	0.714				
+Zn	LG	Zn2+	3.35	6.13	7.15	1/2Zn2+	0.703				
+Cd	LG	Cd2+	3.41	6.03	7.17	1/2Cd2+	0.719				
+Pb	LG	Pb2+	4.56	7.95	9.45	1/2Pb2+	0.945				
+Al	LG	Al3+	2.36	3.46	5.59	1/3Al3+	0.541				
+FeIII	LG	Fe3+		5.28	6.07	1/3Fe3+	0.604				
+OH	LG	OH-	25.6	44.9	52.7	OH-	5.273				
+F	LG	F-		12.1	14.6	F-	1.475				
+Cl	LG	Cl-	10.1	17.1	20.3	Cl-	2.032				
+Br	LG	Br-	10.5	17.6	20.1	Br-	2.08				
+I	LG	I-	10.3	17.2	20	I-	2.045				
+IO3	LG	IO3-	5.05	8.79	10.6	IO3-	1.078				
+HS	LG	HS-	9.75	14.8	17.3	HS-	1.731				
+HSO4	LG	HSO4-			13.3	HSO4-	1.385				
+SO4	LG	SO4 2-	5	8.9	10.7	1/2SO42-	1.065				
+NO2	LG	NO2-		15.3	19.1	NO2-	1.912				
+NO3	LG	NO3-	9.78	16.1	19	NO3-	1.902				
+HCO3	LG	HCO3-			11.8	HCO3-	1.185				
+CO3	LG	CO3 2-	4.39	7.8	9.55	1/2CO32-	0.923				
+H2PO4	LG	H2PO4-		7.15	8.46	H2PO4-	0.959				
+HPO4	LG	HPO4 2-			7.34	1/2HPO42-	0.759				
+PO4	LG	'HP4 3-' (read as PO4 3-)			6.12	1/3PO43-	0.824				
+H2AsO4	LG	H2AsO4-			9.05	H2AsO4-	0.905				
+CrO4	LG	CrO4 2-	5.12	9.36	11.2	1/2CrO42-	1.132				
+MoO4	LG	MoO4 2-			9.91	1/2MoO42-	1.984				
+CuI	DUDEK	Cu+			1.20						
+BrO3	RS	BrO3-			55.74	BrO3-	1.483	1	p. 534 (PDF p. 531 of the folder copy)	no. 12, Daggett, Bair and Kraus, J. Am. Chem. Soc. 73, 799 (1951)	
+ClO3	RS	ClO3-			64.6	ClO3-	1.720	1	p. 534 (PDF p. 531 of the folder copy)	no. 10, C. B. Monk, J. Am. Chem. Soc. 70, 3281 (1948)	
+ClO4	RS	ClO4-			67.36	ClO4-	1.792	1	p. 534 (PDF p. 531 of the folder copy)	no. 13, J. H. Jones, J. Am. Chem. Soc. 67, 855 (1945)	The book's Appendix 6.2 (p. 537) also gives lambda0 for this ion at 0 C 36.9 and 18 C 58.8 S cm2/eq (0 and 18 C taken by the book from Landolt-Bornstein).
+P2O7	RS	P2O7 4-			95.9	1/4P2O74-	0.639	4	p. 535 (PDF p. 532 of the folder copy)	no. 30, C. B. Monk, J. Chem. Soc. 423 (1949)	
+Acetate	RS	Atsetat (acetate)			40.90	Acetate-	1.089	1	p. 534 (PDF p. 531 of the folder copy)	no. 16, MacInnes and Shedlovsky, J. Am. Chem. Soc. 54, 1429 (1932)	The book's Appendix 6.2 (p. 537) also gives lambda0 for this ion at 0 C 20.1 and 18 C 35 S cm2/eq (0 and 18 C taken by the book from Landolt-Bornstein).
+Formate	RS	Formiat (formate)			54.59	Formate-	1.454	1	p. 534 (PDF p. 531 of the folder copy)	no. 15, Saxton and Darken, J. Am. Chem. Soc. 62, 846 (1940)	
+Benz	RS	Benzoat (benzoate)			32.38	Benzoate-	0.863	1	p. 534 (PDF p. 531 of the folder copy)	no. 20, Brockman and Kilpatrick, J. Am. Chem. Soc. 56, 1483 (1934)	
+But	RS	Butirat (butyrate)			32.6	Butyrate-	0.868	1	p. 534 (PDF p. 531 of the folder copy)	no. 18, D. Belcher, J. Am. Chem. Soc. 60, 2744 (1938)	
+Propn	RS	Propionat (propionate)			35.8	Propionate-	0.953	1	p. 534 (PDF p. 531 of the folder copy)	no. 18, D. Belcher, J. Am. Chem. Soc. 60, 2744 (1938)	
+Ox	RS	C2O4 2-			74.1	1/2Oxalate2-	0.987	2	p. 535 (PDF p. 532 of the folder copy)	no. 23, L. S. Darken, J. Am. Chem. Soc. 63, 1007 (1941)	
+HMeNH2	RS	CH3NH3+			58.72	Methylammonium+	1.563	1	p. 534 (PDF p. 531 of the folder copy)	no. 11a, Jones, Spuhler and Felsing, J. Am. Chem. Soc. 64, 965 (1942)	
+HMEA	RS	CH2OHCH2NH3+			42.23	Ethanolammonium+	1.124	1	p. 534 (PDF p. 531 of the folder copy)	no. 12, Daggett, Bair and Kraus, J. Am. Chem. Soc. 73, 799 (1951)	
+Cit	AB91	1/3 Cit3-			72.05	1/3Citrate3-	0.623	3	Table 4 (p. 135) and Table 9 (p. 138)	MEASURED: the average of the tri-lithium (73.24), tri-sodium (72.07) and tri-potassium (70.85) citrate conductances at 298.15 K, printed as 72.05 +- 1.20	The same row at 278.15, 283.15, 288.15, 293.15, 298.15, 303.15, 308.15 K: 42.59, 49.14, 56.40, 64.04, 72.05, 80.43, 89.16 S cm2/eq (Table 4, average column).  The authors give lambda0 per equivalent (1/3 Cit3-).
+H2Cit	AB91	H2Cit-			36.70	Dihydrogencitrate-	0.799	1	Table 9 (p. 138)	A FIT RESULT, not a measurement: the Quint-Viallard equations solved with the measured citric acid conductance, the first dissociation constant and lambda0(H+) = 349.85, giving lambda0(H2Cit-) at each temperature	The same row at 278.15 to 308.15 K (7 temperatures): 21.62, 25.08, 28.69, 32.56, 36.70, 41.03, 45.56 S cm2/eq (Table 9).  It depends on the assumed distance of closest approach and on the dissociation constant, so it carries more uncertainty than the trivalent anion.  The same table assigns lambda0(1/2 HCit2-) = 46.00 from a fixed ratio to lambda0(H2Cit-) and lambda0(1/3 Cit3-) (an assumption, not a measurement): NOT entered here.
+Succ	AB92	1/2 Succ2-			56.20	1/2Succinate2-	0.783	2	Table 2 (p. 496)	MEASURED: from the Kohlrausch law applied to di-sodium succinate with lambda0(Na+) = 50.15, printed as 56.2 in the text	The same row at 278.15 to 308.15 K (7 temperatures): 33.01, 38.31, 43.98, 49.92, 56.20, 62.89, 69.55 S cm2/eq (Table 2); the Walden product is 0.503 +- 0.001 at every temperature.  The hydrosuccinate ion has no measured value (the paper says lambda0(HSucc-) cannot be determined from conductance and must be assigned): NOT entered.
+Tart	BR97I	1/2 Tar2-			60.49			2	Table IV (p. 132; the first-page footer of the scan reads 132)	MEASURED: the mean of the four salts Na2Tar (60.95), K2Tar (60.46), KNaTar (60.44) and (NH4)2Tar (60.14) at 298.15 K, printed as 60.49	The same row at 278.15, 283.15, 288.15, 293.15, 298.15, 303.15, 308.15 K: 35.82, 41.58, 47.67, 53.99, 60.49, 67.44, 74.53 S cm2/eq (Table IV, mean column); the Walden product is 53.85e-3 S cm2 Pa s/eq at 298.15 K.  The authors compare it at 25 C with 59.6 (Milazzo), 62.7 (Topp and Davies recalculated by them) and 63.19 (Dippy et al.), and call the others higher.  The CRC table has no tartrate row.
+HTart	BR97II	HTar-			31.75			1	Table III (p. 545); the same values in Part III, Table II (p. 304), J. Solution Chem. 27 (1998) 299-307	A FIT RESULT, not a direct measurement: lambda0(HTar-) that makes the calculated conductivity of D-, L- and meso-tartaric acid agree with the measured one, with K1 = 5.3e-4 mol/dm3 and K2 = 1.21e-5 mol/dm3 and lambda0(1/2 Tar2-) = 60.49	The same row at 278.15, 283.15, 288.15, 293.15, 298.15, 303.15, 308.15 K: 19.75, 22.51, 25.42, 28.45, 31.75, 35.06, 38.61 S cm2/eq (Part II Table III; Part III Table II p. 304 prints the same row).  The authors quote 38.89 for the same ion from Dippy et al.; that value is not used.  The CRC table has no hydrogen tartrate row.
+B4O5OH4	AY07	B4O7 2- (the paper writes the anhydrous formula; the record is the hydrated ion)			34.58			2	Eq. 12b (p. 897)	ESTIMATED, not measured in dilute solution: lambda0(Na2B4O7) = 84.73 from the conductivity of concentrated sodium tetraborate solutions scaled to those of Na2SO4 (lambda0 = 130.15) and extrapolated, less lambda0(Na+) = 50.15; the paper prints 1/2 lambda0(B4O7 2-) = 34.58 ohm-1 cm2	25 C only (no other temperature).  Ionic radius 3.507 +- 0.076 Angstrom by the same paper.  The paper treats Na2B4O7 as a 2:1 salt (tetraborate also hydrolyses in water, which that treatment ignores); this value is that estimate and not the mobility of a separately existing B4O5(OH)4 2- ion.  The CRC table has no tetraborate row.

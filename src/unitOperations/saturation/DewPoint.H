@@ -78,6 +78,10 @@ public:
         int     newtonIterations = 0;
         bool    converged  = false;
         scalar  compDelta  = 0.0;   // |dx|_2 at the last outer sweep
+        //  Why `converged` is false, in the physics' words, when the solver
+        //  knows ("" otherwise): a trivial one-root point, or an incipient
+        //  liquid that did not settle (near the critical point).
+        std::string note;
     };
 
     //  `onOuter(iteration, T, |dx|_2)` lets the UNIT keep its console trace

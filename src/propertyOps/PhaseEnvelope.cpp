@@ -251,6 +251,13 @@ int PhaseEnvelope::run(const DictPtr& dict,
 
     diag_["bubble_points"] = static_cast<scalar>(bub.pts.size());
     diag_["dew_points"]    = static_cast<scalar>(dew.pts.size());
+    //  The temperature at each end of each drawn branch, so a case that
+    //  marches two pressures pins the temperature AT those pressures against
+    //  an independent calculation (envelope05, EX-05).
+    if (!bub.pts.empty())
+    { diag_["bubble_first_K"] = bub.pts.front().T; diag_["bubble_last_K"] = bub.pts.back().T; }
+    if (!dew.pts.empty())
+    { diag_["dew_first_K"] = dew.pts.front().T; diag_["dew_last_K"] = dew.pts.back().T; }
 
     // ---- WHERE IT STOPPED, AND WHY -- the part that is the deliverable ----
     //
@@ -310,7 +317,7 @@ int PhaseEnvelope::run(const DictPtr& dict,
               << " not a turning point: the branch never started.  The usual causes are a"
               << " pressure range that does not reach it, or a "
               << what << " temperature outside the saturation solver's own"
-              << " bracket (200-700 K), which a light feed's bubble line sits"
+              << " bracket (200-700 K; 100-700 K on a phi-phi package), which a light feed's bubble line sits"
               << " below.  Nothing is drawn for it and nothing is claimed"
               << " about it.";
             if (AdvisoryLog::instance().add("approximation", "warning",
@@ -333,7 +340,7 @@ int PhaseEnvelope::run(const DictPtr& dict,
               << fmt(b.pts.front().P / 1.0e5, 3) << " bar ("
               << fmt(b.pts.front().T, 3) << " K); it is drawn from there.  The"
               << " usual cause is a " << what << " temperature outside the"
-              << " saturation solver's own bracket (200-700 K) at the lower"
+              << " saturation solver's own bracket (200-700 K; 100-700 K on a phi-phi package) at the lower"
               << " pressures, which a light feed's bubble line sits below.  The"
               << " missing low-pressure part is not drawn and nothing is"
               << " claimed about it.";
@@ -370,7 +377,7 @@ int PhaseEnvelope::run(const DictPtr& dict,
                     ? "a bubble temperature falling as pressure rises, which"
                       " is impossible"
                     : "a step many times the branch's own recent steps")
-              << ").  Both saturation solvers bracket T in 200-700 K and are"
+              << ").  Both saturation solvers bracket T in 200-700 K (100-700 K on a phi-phi package) and are"
               << " warm-started, so a wide bracket lets Newton land elsewhere"
               << " and report success.  The point was DISCARDED rather than"
               << " drawn: a converged point is not necessarily a point on this"

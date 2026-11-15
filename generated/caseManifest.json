@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1870,
+  "cases": 1871,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 25
@@ -24112,6 +24112,17 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/envelope05_natural_gas_phiphi": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseEnvelope"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/eval_nrtl_catalogue": {
    "application": "choupoProps",
    "ops": [
@@ -31573,6 +31584,7 @@
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
     "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
     "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    "tutorials/props/molecular/envelope05_natural_gas_phiphi",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/exergy01_air_dead_state",
@@ -36481,7 +36493,8 @@
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
     "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
-    "tutorials/props/molecular/envelope04_water_benzene_two_liquids"
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    "tutorials/props/molecular/envelope05_natural_gas_phiphi"
    ],
    "phaseSplitScan": [
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"

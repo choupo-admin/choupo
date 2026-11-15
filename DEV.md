@@ -3518,6 +3518,152 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C403 ROUND 3 LANDED (2026-11-15): six more ions from the papers Vitor
+> filed.**  Citrate 3- (lambda0 72.05, measured, mean of three salts) and
+> H2Cit- (36.70, a fit) from Apelblat & Barthel 1991; succinate 2- (56.20)
+> from Apelblat & Barthel 1992; tartrate 2- (60.49, mean of four salts) and
+> HTart- (31.75, a fit) from Bester-Rogac et al. 1997 Parts I-II; tetraborate
+> (34.58, an estimate from concentrated solutions, so marked) from Ayata
+> 2007; each converted D = RT lambda0/(|z|F^2), the other temperatures in
+> the notes, the CRC a named cross-check (H2Cit- -18 %, succinate +4.6 %,
+> citrate -2.6 %).  The 17 papers filed and indexed.  No sealed case
+> re-sealed; no golden moved.  STILL UNFILLED, no measured source in hand:
+> permanganate, thiocyanate, sulfite, bisulfite, the Good's buffers, the
+> amino acids, lactate.
+
+> **C404 LANDED, AND THE CLOUD SESSION'S THREE FIXES TO MAIN (2026-11-15).**
+> While the laptop was suspended (Vitor's trip), the cloud session took three
+> validation tasks; its report is docs/reviews/2026-11-15-cloud-validation.md
+> (the fragments slice validated: --scope 66/0 with the closures, --fast 86/0;
+> the membranes slice validated with two open rows; C404 green).  Landed now:
+> (1) C404: a column at total reflux draws its internal loop (vapour,
+> reflux, boilup) on the canvas, labelled "total reflux: no feed, no
+> product", with the declared composition before a run and the engine's
+> published KPIs after it (17 cases); the engine publishes no molar L, so
+> none is drawn; (2) envelope05 named by its full path in
+> docs/ai/capabilities.md; (3) three lesson citations into BubblePoint.cpp
+> and DistillationColumn.cpp re-pointed (the dew-point fix had moved them
+> beyond the tool's window); (4) check_guide_environments knows
+> `psmallmatrix`.  Held by --gui 49/0 on the merged tree.  OPEN: the loop is
+> not seen in a browser; check_gate_selftest needs rsync, absent in the cloud
+> container.
+
+> **C406 (Vitor, 2026-11-15, filing Izutsu's "Electrochemistry in
+> Nonaqueous Solutions" (Wiley-VCH 2002): "pode dar jeito para a simulacao
+> de vinho surrogate?").**  A CANDIDATE, judged useful: the wine cases
+> (wineAcids01, ed09_wine_multiionic, the tartaric plant) speciate their
+> acids in WATER, and a wine is 10-15 % ethanol.  What the book gives, read
+> the same day: the pH scale in water + ethanol (the reference value of the
+> potassium hydrogen phthalate standard, 4.230 at 10 wt % and 4.488 at 20 wt
+> % EtOH against 4.005 in water, and a regression in the ethanol mole
+> fraction, Ch. 6, p. 178), the Gibbs energies of transfer of ions from
+> water to organic solvents and the transfer activity coefficients (Ch. 2),
+> selective solvation in mixed solvents (p. 47).  What it does not give:
+> the dissociation constants of tartaric, malic and lactic acid in
+> hydroalcoholic solution, which a wine surrogate needs measured; a primary
+> on wine acids in water-ethanol is to be found before any build.  Scope
+> when built: a solvent-composition-dependent pKa and activity, the pH
+> reported on the scale a pH meter in wine reads, one witness against a
+> measured hydroalcoholic titration.
+
+> **C403 LANDED (2026-11-15): 54 ions and boric acid carry their own D0.**
+> Read at the page: 41 ions from Li & Gregory 1974 Table 1 (p. 705; the 0
+> and 18 C values in the notes), 12 from Robinson & Stokes 1959, Appendix
+> 6.1, read in the Russian translation (Moscow 1963, pp. 534-535; D =
+> RT lambda0/(|z|F^2), checked on Na+ at +0.3 % against Li & Gregory), Cu+
+> from Dudek & Fedkiw 1999, boric acid 1.6405e-9 m2/s from Park & Lee 1994
+> (Table 2, p. 893, the zero-concentration intercept).  The 22 values
+> machine-transcribed before were read back (18 equal; Br- -3.8 %, HPO4 2-
+> +6.4 %, Cl- and Ca2+ under 0.2 %) and replaced.  The CRC is a named
+> cross-check only: its ionic table cites five books for all rows, so no
+> CRC-only value was entered; it disagrees by over 1 % on 18 ions, and its
+> printed MoO4 2- D omits the division by |z|.  A reviewer read every value
+> against the page image (ID-01: I- had its provenance and no value, fixed;
+> check_species_records now refuses either half alone).  NO NUMBER MOVED:
+> the 189 sealed cases keep their frozen copies; re-sealing them is a
+> separate decision (the list of value changes is in the builder's
+> report).  Held by --fast 87/0 and the species and licence gates.  STILL
+> UNFILLED (no source read): permanganate, thiocyanate, sulfite, bisulfite,
+> hydrazinium, triethylammonium, several organic anions (citrate, lactate,
+> tartrate, succinate, malate...), the borates, the Good's buffers, the
+> amino acids; Vitor was given a list of papers with DOIs for them.
+
+> **EX-05 FIXED AND LANDED (2026-11-15): the phiPhi dew and bubble points.**
+> On a package with one equation of state for both phases, DewPoint made a
+> single outer pass (the `ideal` activity placeholder read as an ideal
+> liquid) and stopped at x = y: a lean natural gas came out 20-35 K low or
+> failed.  Now the incipient phase is iterated (Wilson seed); a point is
+> refused only when the cubic's two roots coincide (pure fluids and
+> azeotropes converge; a supercritical pure fluid is refused); a
+> non-converged incipient phase near the critical point is refused with the
+> physics named; both solvers bracket 100-700 K on phiPhi.  Measured against
+> an independent Peng-Robinson Newton solver: within 0.0005-0.01 K on dew
+> and bubble curves of the lean gas (envelope05, new) from 1 to 60 bar.
+> Moved: column08's two feed dew points (378.94 -> 380.06 K, 435.23 ->
+> 435.48 K; independent SRK 380.062 K), now pinned; envelope05's own rows.
+> Gamma-phi untouched (byte-identical).  Built on the lighter model; the
+> first review on the strongest found two S2 the build had introduced (pure
+> fluids and azeotropes refused; a near-critical bubble point accepted at
+> the wrong T), both fixed in round 2 (rows DP-01..06; report
+> docs/reviews/2026-11-15-dewpoint-phiphi).  Held by --fast 87/0 on the
+> merged tree and the builder's --scope 134/0 with the closures.  OPEN: the
+> "did not settle" refusal's onset depends on the incipient iteration's
+> 200-pass budget; between 74 and 80 bar the lean gas's bubble solve is
+> refused without the physics named.
+
+> **C405 (Vitor, 2026-11-15: "regista", on the surface-tension sources).**
+> A COMMISSION.  MEASURED the same day: 88 of 696 component records carry
+> their own surface-tension law, sigma = A tau^n fitted by
+> bin/curate/transport_fit.py to every laboratory the local ThermoML archive
+> holds for the pure liquid (<= 200 kPa, points beyond 15 % discarded by
+> name), each with its kept T range, its largest error and a fit grade, and
+> every one `reviewStatus autoPromoted`, reviewed by nobody; the other 608
+> fall back to Brock-Bird, which Poling states is for nonpolar liquids (+53 %
+> on acetic acid, +101 % on methanol in his Table 12-1) and which announces
+> its scope since C398 slice (d).  PLAN, after C403: (1) review the 88 fitted
+> laws against their own points (the residuals, the range, the outliers
+> dropped) and mark each reviewed or send it back; (2) list the components
+> the shipped cases actually ask a surface tension of (columns, sprays,
+> pipes, foams) and read a tabulated source at its page for each one that
+> has no law, polar and associating liquids first; (3) a gate that counts
+> Brock-Bird use on a polar or associating component in a shipped case, as
+> a ratchet that only falls.
+
+> **C404 (Vitor, 2026-11-15, on the canvas of ratebased04 in the browser:
+> "Isto nao tem correntes?!").**  A COMMISSION.  A column at TOTAL REFLUX
+> has no feed and no product, so its flowsheet holds one unit, a condenser
+> duty and a reboiler duty, and the canvas draws a box with nothing flowing:
+> physically right, pedagogically empty, and it reads as a broken case.
+> RULING: a column whose operation declares `totalReflux` draws its internal
+> loop on the canvas (the vapour rising to the condenser, the reflux
+> returning, the boilup at the bottom), labelled "total reflux: no feed, no
+> product", with the declared composition at the specified end before the
+> run and the converged L, V and end compositions after it; the same holds
+> for every total-reflux case (packing, rateBased, trayEfficiency,
+> totalReflux).  The loop is drawn from what the engine publishes, never
+> computed in the GUI.
+
+> **C403 (Vitor, 2026-11-15, on seeing the boron of swro01 borrow NaCl's
+> diffusivity: "Em solucoes multionicas era importante ter listas enormes de
+> D_i de cada iao!").**  A COMMISSION: every ion the catalogue carries gets
+> its own limiting diffusivity D0 at 25 C in its species record, read at the
+> page, so a multi-ionic case (DSPM-DE, SDEM, the spiral-wound film,
+> electrodialysis) takes each ion's own value and never borrows another
+> salt's.  MEASURED the same day: 22 of 250 species records carry `D0`,
+> transcribed by machine from a public geochemical database and marked
+> interim; the CRC Handbook 82nd ed. table "Ionic conductivity and diffusion
+> at infinite dilution" (in the folder) lists about 100 ions with lambda and
+> D at 25 C, read back by the membrane slice for five salts.  PLAN: one
+> curation slice reads that table at its page into every matching species
+> record (value, unit, page, the ion's row; the existing 22 read back against
+> it and any disagreement listed), names the ions the table lacks, and the
+> membrane units then take per-ion D0 from the records (the salt relation of
+> the same page where a salt is lumped).  Neutral solutes are not ions: boric
+> acid, the dominant boron species in seawater near pH 8, needs a molecular
+> value (Park & Lee 1994, J. Chem. Eng. Data 39, 891-894, requested from
+> Vitor); until it is read, a case refuses or announces boron's diffusivity
+> and never borrows NaCl's.
+
 > **C329 SLICE B2a LANDED (2026-11-15): the liquid properties of the
 > three-component rate-based column.**  The rule `VignesKooijmanTaylor`
 > (Kooijman & Taylor 1991 Eq. 23 with Eq. 21's limiting value) lifts slice

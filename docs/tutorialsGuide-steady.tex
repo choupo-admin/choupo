@@ -1255,7 +1255,7 @@ Expected --- close to, but NOT equal to, column02 (the gap IS the energy-balance
 \goldrow{kpi}{radfrac}{T\_bottom}{449.386733804}
 \goldrow{kpi}{radfrac}{T\_top}{326.652515723}
 \goldrow{kpi}{radfrac}{feedStage}{10}
-\goldmore{24}
+\goldmore{32}
 \end{tutgolden}
 
 \clearpage
@@ -2545,6 +2545,8 @@ DATA SCOPE: sealed (bin/choupo-import); records mirrored under constant/ and sha
 \tutwhat{Total reflux: a 10-tray cyclohexane/n-heptane column at 34 kPa on the conditions of FRI run 628 (Yanagi \& Sakata 1982, Table III), ideal trays}
 \begin{tutnarrative}
 a column at TOTAL REFLUX: no feed, no products, every mole of overhead vapour back as reflux. This is how tray efficiency is measured on a test column, and it is the mode every later tray-efficiency comparison (C329: an efficiency computed from mass-transfer correlations and applied to equilibrium stages, not a rate-based model) stands on.
+
+ON THE CANVAS the unit is one box with two duty wires and no stream, because none crosses its boundary; the web app draws the loop that DOES flow inside it -- vapour up to the condenser, reflux back, boilup at the base -- in a dashed frame labelled "total reflux: no feed, no product", with the composition declared below before the run and the engine's published numbers after it (C404). The frame is a drawing of the unit, not a stream.
 
 WHAT IS SPECIFIED, AND WHY THESE NUMBERS (the degrees of freedom). With no stream crossing the column boundary the component balances, summed over the stages, read 0 = 0: c of them are dependent, and what is left open is how much of each component circulates -- a test column fixes it by its charge and hold-up, which a steady stage model does not have. So the case gives c numbers: the boil-up (one) and the liquid composition at one point (c - 1). Both come from a measured run:
 
