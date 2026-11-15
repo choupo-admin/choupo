@@ -3518,6 +3518,23 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C404 LANDED, AND THE CLOUD SESSION'S THREE FIXES TO MAIN (2026-11-15).**
+> While the laptop was suspended (Vitor's trip), the cloud session took three
+> validation tasks; its report is docs/reviews/2026-11-15-cloud-validation.md
+> (the fragments slice validated: --scope 66/0 with the closures, --fast 86/0;
+> the membranes slice validated with two open rows; C404 green).  Landed now:
+> (1) C404: a column at total reflux draws its internal loop (vapour,
+> reflux, boilup) on the canvas, labelled "total reflux: no feed, no
+> product", with the declared composition before a run and the engine's
+> published KPIs after it (17 cases); the engine publishes no molar L, so
+> none is drawn; (2) envelope05 named by its full path in
+> docs/ai/capabilities.md; (3) three lesson citations into BubblePoint.cpp
+> and DistillationColumn.cpp re-pointed (the dew-point fix had moved them
+> beyond the tool's window); (4) check_guide_environments knows
+> `psmallmatrix`.  Held by --gui 49/0 on the merged tree.  OPEN: the loop is
+> not seen in a browser; check_gate_selftest needs rsync, absent in the cloud
+> container.
+
 > **C406 (Vitor, 2026-11-15, filing Izutsu's "Electrochemistry in
 > Nonaqueous Solutions" (Wiley-VCH 2002): "pode dar jeito para a simulacao
 > de vinho surrogate?").**  A CANDIDATE, judged useful: the wine cases
