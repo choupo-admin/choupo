@@ -1,0 +1,109 @@
+# Column timings against an open-source simulator, and the Klemola minors
+
+Date: 2026-11-15.  Asked by the owner after an outside assistant reported
+Choupo faster than DWSIM on two columns (2.4x and 7.9x, Choupo in
+WebAssembly against DWSIM natively) and named the Klemola C4 splitter as
+the first gap to close.  Measured in the cloud container on main at
+0cddb183cb.  No tracked file outside this folder was changed; every run
+was on a copy of a case outside the tree.  Scripts in `scripts/` (machine
+paths written `<scratch>` and `<repo>`).
+
+## 1. Timings, same machine, same specification
+
+DWSIM 9.0.5 for Linux (the `.deb` from the project's SourceForge page,
+GPL-3.0), driven headless through its automation API (`Automation3`,
+pythonnet on a private .NET 8 runtime).  Each column built in DWSIM to
+the Choupo case's specification: `column02_simultaneous` (benzene /
+toluene, ideal liquid, 14 trays + reboiler, feed on tray 8, R = 2,
+D = 50 kmol/h, 1 atm, feed 100 kmol/h at 365 K) and
+`column03_azeotrope_mesh` (ethanol / water, NRTL, 15 trays + reboiler,
+feed on tray 8, R = 2.5, D = 25 kmol/h, 1 atm, feed 100 kmol/h liquid at
+354.42 K).  DWSIM's stage count adds the condenser (16 and 17); its
+specifications are the reflux ratio and the BOTTOMS molar flow (the
+complement of D); its column method `Napthali-Sandholm (Simultaneous
+Correction)`; DWSIM's own NRTL parameters for ethanol / water (Choupo's
+inline pair was NOT transferred: see 1.2).
+
+26 timed runs per case and engine after one untimed first run; 4 cores,
+nothing else running.
+
+| case | Choupo native: the whole process (start, read, solve, write outputs and reports), fresh copy each run | DWSIM: the flowsheet calculation only, process loaded, flowsheet rebuilt before each run |
+|---|---|---|
+| benzene / toluene | median 0.019 s, p95 0.027, min 0.018 (first 0.028) | median 0.227 s, p95 0.351, min 0.099 (first 0.685) |
+| ethanol / water | median 0.021 s, p95 0.027, min 0.019 (first 0.031) | median 29.3 s, p95 33.4, min 26.5 (first 29.6) |
+
+### 1.1 What may and may not be concluded
+
+* Benzene / toluene: Choupo native about 12x faster than DWSIM here,
+  with the comparison tilted AGAINST Choupo (its time includes process
+  start and file output, DWSIM's does not).  The outside report's 2.4x
+  compared Choupo in WebAssembly; the factor between the two is the
+  WebAssembly cost, which was not measured here (no Emscripten in the
+  container).
+* Ethanol / water: the 29 s are NOT a fair DWSIM number.  The outside
+  report measured 1.73 s on its own machine with a DWSIM it calls "Core
+  10.2.16" (an edition not identified here).  This build loads its NRTL
+  package on Linux through .NET 8 and uses all four cores (load average 4
+  during the runs); the cause was not isolated.  The number is recorded,
+  not claimed.
+* A wider benchmark (several initial estimates, a 74-tray column, a
+  flowsheet with recycles) is the outside report's point 5 and is not
+  done.
+
+### 1.2 Results agree on separation, differ on the reboiler
+
+| | Choupo | DWSIM |
+|---|---|---|
+| benzene in distillate (mole fraction) | 0.9812 | 0.9784 |
+| ethanol in distillate | 0.8046 | 0.8003 |
+| reboiler duty, benzene / toluene | 1324.6 kW | 1308.0 kW (-1.3 %) |
+| reboiler duty, ethanol / water | 1000.2 kW | 954.1 kW (-4.6 %) |
+
+The ethanol / water pair differs because DWSIM ran its own NRTL
+parameters; the benzene / toluene difference (ideal liquid on both sides)
+is an enthalpy-model difference (Cp laws, latent heat, reference) that
+was not decomposed.  The outside report's "up to 4 % on the reboiler" is
+reproduced.
+
+## 2. Klemola: what the n-butane impurity in the distillate depends on
+
+`column14_klemola_c4_splitter` (74 trays, Wang-Henke, E_MV = 1.191
+measured, subcooled reflux at 18.5 C) gives 0.0082 wt % n-butane in the
+distillate against 0.20 wt % in the paper's Table 2.  One assumption
+changed at a time (copies of the case; `klemola_runs.txt`):
+
+| run | n-butane in D (wt %) | i-butane in B (wt %) |
+|---|---|---|
+| base | 0.0082 | 0.411 |
+| P = 685 kPa (uniform, not the paper's) | 0.0095 | 0.413 |
+| P = 710 kPa (uniform) | 0.0107 | 0.415 |
+| feed on tray 38 (assumption A0 the other way) | 0.0067 | 0.411 |
+| E_MV 1.10 | 0.0231 | 0.419 |
+| E_MV 1.00 | 0.0755 | 0.444 |
+| ideal liquid instead of UNIFAC | 0.0204 | 0.166 |
+| **saturated reflux**, E_MV 1.191 | **0.1115** | 0.461 |
+| saturated reflux, E_MV 1.10 | 0.3184 | 0.553 |
+| saturated reflux, E_MV 1.00 | 0.7278 | 0.734 |
+| Table 2 (printed) | 0.20 | 0.30 (its own balance gives 0.69: case header 14) |
+
+The impurity hardly moves with the column pressure or the feed tray; it
+moves by an order of magnitude with the reflux's thermal treatment and
+with the efficiency.  With saturated reflux the printed 0.20 lies between
+E_MV 1.10 and 1.191, and the bottoms impurity between the printed 0.30
+and the balance's 0.69.  With subcooled reflux AND the paper's 119 % the
+column is far too clean.  HYPOTHESIS, to be checked in the paper (a
+source read, not done here): the 119.1 % was back-calculated by the
+authors with their own model; if that model did not raise the internal
+reflux for the subcooling, adding Choupo's subcooled internal reflux to
+their efficiency counts the same separating power twice.
+
+So the outside report's first priority ("Klemola in full MESH") would not
+by itself close this gap: what decides it is how E_MV and the reflux
+subcooling were combined, and the case header already shows that two of
+the four printed minors are not usable targets below about 1 %.
+
+## 3. Not done
+
+The WebAssembly timing; the DWSIM ethanol / water cause; DWSIM run with
+Choupo's NRTL pair; the enthalpy decomposition of the reboiler duties;
+the wider benchmark; the paper read for the efficiency's derivation.
