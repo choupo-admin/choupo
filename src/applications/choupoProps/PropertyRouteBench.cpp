@@ -526,7 +526,8 @@ int run(const std::string& manifestPath, const std::string& outPath)
                 {
                     w.block(rec, "diffusivity." + m + ".in." + solvent);
                     const std::string extra = "transport { liquid { viscosity { model "
-                        + viscForDiffusivity + "; } diffusivity { model " + m + "; } } }\n";
+                        + viscForDiffusivity + "; } diffusivity { returns infiniteDilution; infiniteDilution {"
+                          " default { model " + m + "; } } } } }\n";   // C402: the old form is refused
                     if (auto pk = assemble(db, systemText({ rec, solvent }, extra), w))
                         sweep(g, w, "", [&](double T, double)
                               { return pk->diffusivityLiquid(T, 0, 1); });
