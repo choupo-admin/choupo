@@ -363,9 +363,31 @@ const char* ruleName(Rule r)
         case Rule::Vignes:          return "Vignes";
         case Rule::LefflerCullinan: return "LefflerCullinan";
         case Rule::AndersonBabb:    return "AndersonBabb";
+        case Rule::VignesKooijmanTaylor: return "VignesKooijmanTaylor";
         case Rule::none:            break;
     }
     return "none";
+}
+
+const char* reductionName(Reduction r)
+{
+    return r == Reduction::Wilke ? "Wilke" : "none";
+}
+
+std::string reductionEquation(Reduction r)
+{
+    if (r == Reduction::Wilke)
+        return "D_i,eff = (1 - x_i) / sum_{j != i} x_j / D_ij, with D_ij the pair values the"
+               " composition rule gives";
+    return "";
+}
+
+std::string reductionCitation(Reduction r)
+{
+    if (r == Reduction::Wilke)
+        return "Taylor & Krishna (1993), Multicomponent Mass Transfer, Eq. 6.1.14, p. 126"
+               " (the book's Example 6.1.1, p. 127, is the worked number)";
+    return "";
 }
 
 std::string ruleEquation(Rule r)
@@ -380,6 +402,9 @@ std::string ruleEquation(Rule r)
             return "D_12 mu = (D0_12 mu_2)^x_2 (D0_21 mu_1)^x_1, mu the mixture's viscosity";
         case Rule::AndersonBabb:
             return "D_12 mu = x_2 D0_12 mu_2 + x_1 D0_21 mu_1, mu the mixture's viscosity";
+        case Rule::VignesKooijmanTaylor:
+            return "D_ij = D0_ij^x_j D0_ji^x_i prod_{k != i,j} (D0_ik D0_jk)^(x_k/2), each D0 in its"
+                   " own solvent's viscosity (the Maxwell-Stefan pair value; a binary gives Vignes)";
         case Rule::none: break;
     }
     return "";
@@ -403,6 +428,13 @@ std::string ruleCitation(Rule r)
         case Rule::AndersonBabb:
             return "the form as stated in Poling 5th ed. p. 11.34 (the group D mu / alpha"
                    " linear in mole fraction); the original (Anderson & Babb 1961) not read";
+        case Rule::VignesKooijmanTaylor:
+            return "Kooijman & Taylor (1991), Ind. Eng. Chem. Res. 30, 1217, Eq. 23 (the limiting"
+                   " value of Eq. 21, p. 1219); the form printed in Taylor & Kooijman (2014) Eq. 3.41"
+                   " and Taylor & Krishna (1993) Eq. 4.2.19, (D0_ik D0_ki)^(1/2), is a misprint of it"
+                   " (it does not contain j, so it is not symmetric; on the paper's own Table I, with each"
+                   " pair evaluated for i < j and copied to j, i, it gives an average discrepancy of"
+                   " 0.1002 against 0.0782)";
         case Rule::none: break;
     }
     return "";
@@ -609,22 +641,33 @@ DiffusivityDeclaration readDiffusivity(const DictPtr& b, const std::vector<Compo
     if (b->found("composition"))
     {
         const DictPtr c = b->subDict("composition");
-        onlyKeys(c, { "rule" }, here + ".composition");
+        onlyKeys(c, { "rule", "reduction" }, here + ".composition");
         const std::string r = c->lookupWordOrDefault("rule", "");
         if (r == "CaldwellBabb")         d.rule = Rule::CaldwellBabb;
         else if (r == "Vignes")          d.rule = Rule::Vignes;
         else if (r == "LefflerCullinan") d.rule = Rule::LefflerCullinan;
         else if (r == "AndersonBabb")    d.rule = Rule::AndersonBabb;
-        else if (r == "VignesKooijmanTaylor")
-            throw std::runtime_error(here + ".composition: `rule VignesKooijmanTaylor` is"
-                " refused until its source is read.  The chapter that reports it (Taylor &"
-                " Kooijman 2014, Eqs. 3.38-3.41) prints its limiting diffusivity as"
-                " (D0_ik D0_ki)^(1/2), which does not contain j, and the 1991 paper that"
-                " proposed it is not in hand (DEV.md 4c C398, slice (d) ruling 5).");
+        else if (r == "VignesKooijmanTaylor") d.rule = Rule::VignesKooijmanTaylor;
         else
             throw std::runtime_error(here + ".composition: " + registryRefusal::message(
                 "liquid-diffusivity composition rule", r.empty() ? "(none written)" : r,
-                { "CaldwellBabb", "Vignes", "LefflerCullinan", "AndersonBabb" }, "Accepted"));
+                { "CaldwellBabb", "Vignes", "LefflerCullinan", "AndersonBabb",
+                  "VignesKooijmanTaylor" }, "Accepted"));
+        if (c->found("reduction"))
+        {
+            const std::string w = c->lookupWordOrDefault("reduction", "");
+            if (w != "Wilke")
+                throw std::runtime_error(here + ".composition: " + registryRefusal::message(
+                    "liquid-diffusivity reduction", w.empty() ? "(none written)" : w,
+                    { "Wilke" }, "Accepted") + "  (Burghardt-Krupiczka, Kato and Stewart are"
+                    " not built: DEV.md 4c C329 slice B2, ruling 2.)");
+            d.reduction = Reduction::Wilke;
+            if (d.rule != Rule::VignesKooijmanTaylor)
+                throw std::runtime_error(here + ".composition: `reduction " + w + "` with `rule "
+                    + r + "` -- only VignesKooijmanTaylor has a form for three or more"
+                    " components (the binary rules combine two pair values and have nothing to"
+                    " reduce); write `reduction` beside `rule VignesKooijmanTaylor`.");
+        }
     }
     if (b->found("thermodynamicFactor"))
     {
@@ -646,7 +689,12 @@ DiffusivityDeclaration readDiffusivity(const DictPtr& b, const std::vector<Compo
         if (d.rule == Rule::none)
             throw std::runtime_error(here + ": `returns effective` needs the rule that"
                 " combines the infinite-dilution values: `composition { rule <name>; }`"
-                " (CaldwellBabb, Vignes, LefflerCullinan, AndersonBabb).");
+                " (CaldwellBabb, Vignes, LefflerCullinan, AndersonBabb, VignesKooijmanTaylor).");
+        if (d.rule == Rule::VignesKooijmanTaylor && comps.size() >= 3 && d.reduction == Reduction::none)
+            throw std::runtime_error(here + ".composition: `rule VignesKooijmanTaylor` in a package"
+                " of " + std::to_string(comps.size()) + " components needs the reduction that turns"
+                " its pair values into one diffusivity per component: `composition { rule"
+                " VignesKooijmanTaylor; reduction Wilke; }` (Taylor & Krishna 1993, Eq. 6.1.14).");
         if (!d.gammaTakenOne)
             throw std::runtime_error(here + ": `returns effective` needs the"
                 " thermodynamic factor it is taken with: `thermodynamicFactor { take 1; }`"
@@ -721,10 +769,14 @@ std::vector<std::string> describe(const DiffusivityDeclaration& d, const std::ve
 {
     std::vector<std::string> out;
     if (!d.declared) return out;
+    const bool kt = d.rule == Rule::VignesKooijmanTaylor;
     out.push_back(std::string("liquidDiffusivity returns ") + returnsName(d.returns)
         + (d.returns == Returns::effective
-               ? ": the effective diffusivity of a BINARY liquid, by the composition rule below;"
-                 " three or more components present are refused (no reduction rule read)"
+               ? (kt ? ": the effective diffusivity of a named component of a liquid of two or more"
+                       " components, by the composition rule and the reduction below"
+                     : ": the effective diffusivity of a BINARY liquid, by the composition rule below;"
+                       " three or more components present are refused under this rule (no multicomponent form of it"
+                       " has been read; rule VignesKooijmanTaylor with a reduction answers for them)")
                : ": the infinite-dilution value of a named solute in a named solvent, combined by nothing"));
     if (!d.defaultModel.empty())
         out.push_back("liquidDiffusivity infinite dilution, every pair not listed below: " + d.defaultModel
@@ -749,6 +801,21 @@ std::vector<std::string> describe(const DiffusivityDeclaration& d, const std::ve
     {
         out.push_back(std::string("liquidDiffusivity composition rule ") + ruleName(d.rule) + ": "
             + ruleEquation(d.rule) + "; " + ruleCitation(d.rule));
+        if (kt)
+        {
+            out.push_back(std::string("liquidDiffusivity reduction ")
+                + (d.reduction == Reduction::none ? "(none: a binary liquid, every reduction returns the pair value)"
+                                                   : reductionName(d.reduction))
+                + (d.reduction == Reduction::none ? std::string()
+                   : ": " + reductionEquation(d.reduction) + "; " + reductionCitation(d.reduction)));
+            out.push_back("liquidDiffusivity Gamma: the film takes 1; Gamma_<i>_<j> and D_L_Fick_<i>_<j> are"
+                " printed as props quantities for the student, from the activity model, the last component"
+                " taking the change");
+            out.push_back("liquidDiffusivity limiting value of the third component: (D0_ik D0_jk)^(1/2),"
+                " Kooijman & Taylor (1991) Eq. 21, the one the paper's own Table I scores best; the form"
+                " the two books print is a misprint, and the Wesselingh-Krishna value (D0_ij D0_ji)^(1/2),"
+                " Eq. 20, is not used");
+        }
         out.push_back("liquidDiffusivity thermodynamic factor: taken as 1 (`take 1`; the effective"
             " value is the Maxwell-Stefan one, announced in every run that uses it)");
     }

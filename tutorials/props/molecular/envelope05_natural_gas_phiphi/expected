@@ -1,0 +1,29 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+# EX-05 (2026-11-15): a phi-phi saturation point iterates its incipient phase.
+# Held to an independent Peng-Robinson calculation (kij = 0, same Tc/Pc/omega):
+# dew 235.82 K at 5 bar and 249.47 K at 10 bar (dew5and10), bubble 205.65 K at
+# 50 bar and 214.57 K at 60 bar (bubble50and60); the one-pass shape gave
+# 209.609 and 220.057 K.
+diag    envelope               bubble_first_K   113.782006175    1e-4
+diag    envelope               bubble_last_K    214.567714564    1e-4
+diag    envelope               bubble_points    60               1e-4
+diag    envelope               dew_first_K      208.560808171    1e-4
+diag    envelope               dew_last_K       279.601396062    1e-4
+diag    envelope               dew_points       60               1e-4
+diag    dew5and10              bubble_points    2                1e-4
+diag    dew5and10              dew_first_K      235.817660513    1e-4
+diag    dew5and10              dew_last_K       249.472256813    1e-4
+diag    dew5and10              dew_points       2                1e-4
+diag    bubble50and60          bubble_first_K   205.652363943    1e-4
+diag    bubble50and60          bubble_last_K    214.567714583    1e-4
+diag    bubble50and60          bubble_points    2                1e-4
+diag    bubble50and60          dew_points       0                1e-4
+diag    dew5and10              bubble_first_K   139.033028949    1e-4
+diag    dew5and10              bubble_last_K    153.880815705    1e-4
+# DP-03 (2026-11-15): the bubble branch is bracketed 100-700 K like the dew
+# one, so it now starts at 1 bar (113.782 K, independent 113.78) instead of at
+# 44 bar: bubble_points 17 -> 60, bubble_first_K 200.06 -> 113.78; the rows
+# bubble_failed_before 43 and bubble_first_bar 44 are removed (no failed
+# pressure); dew5and10 bubble_points 0 -> 2; bubble50and60 unchanged.

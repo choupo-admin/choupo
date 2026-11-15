@@ -45,6 +45,10 @@ Description
       Real-gas mixture:     Z   v_molar   H_R   S_R   H_real   S_real
       Liquid diffusivity:   D_L_inf_<solute>_in_<solvent>   D_L_effective
                             (the declared quantity, C398 slice (d)) [m2/s]
+                            D_L_effective_<c>   D_L_MS_<i>_<j>   (C329 B2a, three
+                            or more components: Wilke reduction; Kooijman-Taylor pair)
+      Liquid matrices:      Gamma_<i>_<j>   D_L_Fick_<i>_<j>   (props quantities only;
+                            the LAST component of the package takes the change)
 
     Throws with a clear, student-readable message if the keyword is
     not in the catalogue, or if the state is missing a piece of data
@@ -54,6 +58,8 @@ Description
 #pragma once
 
 #include "core/Types.H"
+#include "thermo/transport/WilkeReduction.H"          // C329 B2a (D_G_effective_<c>)
+#include "thermo/transport/LiquidDiffusionMatrix.H"    // C329 B2a (Gamma, Fick matrix)
 #include <string>
 
 namespace Choupo {

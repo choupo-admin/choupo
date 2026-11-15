@@ -3518,6 +3518,102 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **EX-05 FIXED AND LANDED (2026-11-15): the phiPhi dew and bubble points.**
+> On a package with one equation of state for both phases, DewPoint made a
+> single outer pass (the `ideal` activity placeholder read as an ideal
+> liquid) and stopped at x = y: a lean natural gas came out 20-35 K low or
+> failed.  Now the incipient phase is iterated (Wilson seed); a point is
+> refused only when the cubic's two roots coincide (pure fluids and
+> azeotropes converge; a supercritical pure fluid is refused); a
+> non-converged incipient phase near the critical point is refused with the
+> physics named; both solvers bracket 100-700 K on phiPhi.  Measured against
+> an independent Peng-Robinson Newton solver: within 0.0005-0.01 K on dew
+> and bubble curves of the lean gas (envelope05, new) from 1 to 60 bar.
+> Moved: column08's two feed dew points (378.94 -> 380.06 K, 435.23 ->
+> 435.48 K; independent SRK 380.062 K), now pinned; envelope05's own rows.
+> Gamma-phi untouched (byte-identical).  Built on the lighter model; the
+> first review on the strongest found two S2 the build had introduced (pure
+> fluids and azeotropes refused; a near-critical bubble point accepted at
+> the wrong T), both fixed in round 2 (rows DP-01..06; report
+> docs/reviews/2026-11-15-dewpoint-phiphi).  Held by --fast 87/0 on the
+> merged tree and the builder's --scope 134/0 with the closures.  OPEN: the
+> "did not settle" refusal's onset depends on the incipient iteration's
+> 200-pass budget; between 74 and 80 bar the lean gas's bubble solve is
+> refused without the physics named.
+
+> **C405 (Vitor, 2026-11-15: "regista", on the surface-tension sources).**
+> A COMMISSION.  MEASURED the same day: 88 of 696 component records carry
+> their own surface-tension law, sigma = A tau^n fitted by
+> bin/curate/transport_fit.py to every laboratory the local ThermoML archive
+> holds for the pure liquid (<= 200 kPa, points beyond 15 % discarded by
+> name), each with its kept T range, its largest error and a fit grade, and
+> every one `reviewStatus autoPromoted`, reviewed by nobody; the other 608
+> fall back to Brock-Bird, which Poling states is for nonpolar liquids (+53 %
+> on acetic acid, +101 % on methanol in his Table 12-1) and which announces
+> its scope since C398 slice (d).  PLAN, after C403: (1) review the 88 fitted
+> laws against their own points (the residuals, the range, the outliers
+> dropped) and mark each reviewed or send it back; (2) list the components
+> the shipped cases actually ask a surface tension of (columns, sprays,
+> pipes, foams) and read a tabulated source at its page for each one that
+> has no law, polar and associating liquids first; (3) a gate that counts
+> Brock-Bird use on a polar or associating component in a shipped case, as
+> a ratchet that only falls.
+
+> **C404 (Vitor, 2026-11-15, on the canvas of ratebased04 in the browser:
+> "Isto nao tem correntes?!").**  A COMMISSION.  A column at TOTAL REFLUX
+> has no feed and no product, so its flowsheet holds one unit, a condenser
+> duty and a reboiler duty, and the canvas draws a box with nothing flowing:
+> physically right, pedagogically empty, and it reads as a broken case.
+> RULING: a column whose operation declares `totalReflux` draws its internal
+> loop on the canvas (the vapour rising to the condenser, the reflux
+> returning, the boilup at the bottom), labelled "total reflux: no feed, no
+> product", with the declared composition at the specified end before the
+> run and the converged L, V and end compositions after it; the same holds
+> for every total-reflux case (packing, rateBased, trayEfficiency,
+> totalReflux).  The loop is drawn from what the engine publishes, never
+> computed in the GUI.
+
+> **C403 (Vitor, 2026-11-15, on seeing the boron of swro01 borrow NaCl's
+> diffusivity: "Em solucoes multionicas era importante ter listas enormes de
+> D_i de cada iao!").**  A COMMISSION: every ion the catalogue carries gets
+> its own limiting diffusivity D0 at 25 C in its species record, read at the
+> page, so a multi-ionic case (DSPM-DE, SDEM, the spiral-wound film,
+> electrodialysis) takes each ion's own value and never borrows another
+> salt's.  MEASURED the same day: 22 of 250 species records carry `D0`,
+> transcribed by machine from a public geochemical database and marked
+> interim; the CRC Handbook 82nd ed. table "Ionic conductivity and diffusion
+> at infinite dilution" (in the folder) lists about 100 ions with lambda and
+> D at 25 C, read back by the membrane slice for five salts.  PLAN: one
+> curation slice reads that table at its page into every matching species
+> record (value, unit, page, the ion's row; the existing 22 read back against
+> it and any disagreement listed), names the ions the table lacks, and the
+> membrane units then take per-ion D0 from the records (the salt relation of
+> the same page where a salt is lumped).  Neutral solutes are not ions: boric
+> acid, the dominant boron species in seawater near pH 8, needs a molecular
+> value (Park & Lee 1994, J. Chem. Eng. Data 39, 891-894, requested from
+> Vitor); until it is read, a case refuses or announces boron's diffusivity
+> and never borrows NaCl's.
+
+> **C329 SLICE B2a LANDED (2026-11-15): the liquid properties of the
+> three-component rate-based column.**  The rule `VignesKooijmanTaylor`
+> (Kooijman & Taylor 1991 Eq. 23 with Eq. 21's limiting value) lifts slice
+> (d)'s refusal for three or more components, for this rule only; `reduction
+> Wilke` (Taylor & Krishna 1993 Eq. 6.1.14) gives one effective diffusivity
+> per component; props keys for the pair values, the thermodynamic factor
+> and the Fick matrix (refused without an activity model, B2-01); no column
+> change.  WITNESS: the paper's Table I (acetone/benzene/CCl4): with the
+> NRTL tau_21 the book prints (0.76432; the paper's Table I prints 0.74632,
+> and nothing read says which is the typing error) the engine gives the
+> paper's Table IV "eq 23" row to its four digits (0.0763 / 0.0916 / 0.0611)
+> and the book's Gamma matrix; the printed 0.74632 is kept as a pinned
+> variant (0.0782).  The two-component limit equals the shipped Vignes rule
+> to 1e-12 and 90 existing cases are byte-identical.  Built on the lighter
+> model, first review on the strongest (rows B2-01..07: one S2, three S3,
+> all fixed; report docs/reviews/2026-11-15-c329-b2a).  Held by --fast 87/0
+> on the merged tree, the builder's --scope 26/0 with the closures and --gui
+> 49/0.  NEXT: d2, then B2b (the segment).  OPEN: the two water-as-solute
+> entries B2b needs are not sourced; not seen in a browser.
+
 > **THE EXPLORER'S P-x-y AND MIXTURE-ENVELOPE LENSES LANDED (2026-11-15;
 > the architect's decision after Vitor asked whether the Explorer draws phase
 > diagrams of pure substances and mixtures).**  `P_bubble` and `y_eqT_<c>`
