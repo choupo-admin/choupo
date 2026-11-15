@@ -111,13 +111,19 @@ not a `Q` key here (the key was removed on purpose: "heat is a stream").
 <!-- END GENERATED unit-acceptance adiabaticFlash -->
 
 ### `bubbleT`
-Newton-1D in T on `Σᵢ Kᵢ(T) xᵢ = 1` at fixed P.
+Newton-1D in T on `Σᵢ Kᵢ(T) xᵢ = 1` at fixed P.  On a `phiPhi` package the
+incipient vapour is iterated at every T (Wilson-seeded; EX-05).
 ```
 operation { P <Pa>; }
 ```
 
 ### `dewT`
-Newton-1D in T on `Σᵢ yᵢ / Kᵢ(T) = 1` at fixed P.
+Newton-1D in T on `Σᵢ yᵢ / Kᵢ(T) = 1` at fixed P.  On a `phiPhi` package
+(an EoS liquid) the incipient liquid is iterated at every T from Wilson's seed;
+a root whose liquid equals the vapour on COINCIDENT cubic roots (the trivial
+root, pure components included) or an incipient liquid that does not settle is
+reported NOT converged with the physics named; a pure fluid below its critical
+point and an azeotrope (two roots) are genuine; the T bracket is 100-700 K (EX-05).
 ```
 operation { P <Pa>; }
 ```

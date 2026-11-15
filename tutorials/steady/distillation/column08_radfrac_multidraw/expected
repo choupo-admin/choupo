@@ -38,3 +38,11 @@ boundary global                 Q_boundary_kW    872.106254434    1e-4
 boundary global                 H_products_kW    -7918.34310212   1e-4
 boundary global                 residual_kW      0                abs:0.02498
 kpi     radfrac                Q_reboiler_ownEnvelope_kW 1684.99879662    1e-4
+kpi     radfrac                feed_feed1_T_bubble 353.977024986    1e-4
+kpi     radfrac                feed_feed1_T_dew 380.062026821    1e-4
+kpi     radfrac                feed_feed1_q     1.4723799797     1e-4
+kpi     radfrac                feed_feed2_T_bubble 419.226423665    1e-4
+kpi     radfrac                feed_feed2_T_dew 435.478976236    1e-4
+kpi     radfrac                feed_feed2_q     1.86029630562    1e-4
+boundary global                 noBoundary       false            exact
+boundary global                 residual_denom_kW 2497.89133881    1e-4
