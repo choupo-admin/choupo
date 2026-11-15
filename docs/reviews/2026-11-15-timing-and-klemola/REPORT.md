@@ -102,8 +102,58 @@ by itself close this gap: what decides it is how E_MV and the reflux
 subcooling were combined, and the case header already shows that two of
 the four printed minors are not usable targets below about 1 %.
 
+## 2b. Follow-up the same day: the fair column model, the DWSIM NRTL cost, and the energy gap
+
+**Choupo's `simultaneous` is not the counterpart of DWSIM's
+Naphtali-Sandholm.**  It carries constant molar overflow and closes the
+reboiler as the remainder of the column balance (its own report prints
+`Q_reboiler_ownEnvelope_kW` 1445.7 beside the plug's 1324.6 on
+benzene / toluene: the C174 finding).  The counterpart, with an energy
+balance on every stage, is `model fullMESH;`.  Both cases re-run with
+`fullMESH` (copies; 26 timed runs; whole process):
+
+| case | Choupo fullMESH | DWSIM Naphtali-Sandholm |
+|---|---|---|
+| benzene / toluene, time | median 0.023 s, p95 0.028 | median 0.227 s, p95 0.351 |
+| benzene / toluene, x_D benzene | 0.9776 | 0.9784 |
+| benzene / toluene, Q_reboiler / Q_condenser | 1325.3 / 1308.1 kW | 1308.0 / 1286.7 kW |
+| ethanol / water, time | median 0.022 s, p95 0.025 | median 29.3 s (not comparable, below) |
+| ethanol / water, x_D ethanol | 0.8044 | 0.8003 (DWSIM's NRTL pair); 0.8028 with Choupo's pair |
+| ethanol / water, Q_reboiler / Q_condenser | 1000.2 / 996.9 kW | 954.1 / 957.5 kW; 953.5 kW with Choupo's pair |
+
+**The DWSIM ethanol / water time.**  Same column, same build: with an
+ideal liquid (Raoult) it solves in 0.10 s; with NRTL, 28-34 s, at a
+similar iteration count.  Parallel processing on or off, automatic
+estimation of missing NRTL parameters on or off, and the initialisation
+scheme change nothing.  So the cost is in this build's NRTL evaluation
+(DWSIM 9.0.5 on Linux, .NET 8, 894 pairs in the package's table), not in
+the column method; the outside report's 1.73 s on its machine is
+plausible and the 29 s here is not a statement about DWSIM.  With
+Choupo's NRTL pair transferred (DWSIM's form is tau = (A + B T)/(1.98721
+T), so A = b R and B = a R with R = 1.98721 cal/(mol K)), DWSIM's
+distillate moves to 0.8028 against Choupo's 0.8044, and its reboiler
+does not move: the energy gap is not the activity model.
+
+**The energy gap is on Choupo's side, and it is the known one.**  DWSIM's
+latent heats at the normal boiling points equal Choupo's records within
+0.13 % (benzene 30759 against `HvapTb 30720` J/mol, toluene 33212
+against 33180).  Per mole of top vapour (total condenser, V1 = (R + 1) D
+= 150 kmol/h on benzene / toluene), DWSIM condenses 30881 J/mol, which is
+its correlation at the top composition (0.978 benzene, 353.8 K: 0.978 x
+30759 + 0.022 x about 34900 = 30851); Choupo condenses 31394 J/mol,
+which implies about 31300 J/mol for benzene at that temperature, +1.9 %
+above its own record's `HvapTb`.  Choupo's liquid enthalpy reaches the
+latent heat by its 298.15 K bridge and the two heat-capacity laws, not
+by the record's boiling-point datum: the "two latent heats" already
+named in `docs/design/what-water-dat-does-not-say.md`.  On ethanol /
+water the same arithmetic gives +4.1 % (41016 against 39394 J/mol of top
+vapour).  These are derived from published duties and records, not from
+a call of Choupo's latent heat; a props operation printing the surface's
+implied latent heat beside `HvapTb` would settle it.
+
 ## 3. Not done
 
-The WebAssembly timing; the DWSIM ethanol / water cause; DWSIM run with
-Choupo's NRTL pair; the enthalpy decomposition of the reboiler duties;
-the wider benchmark; the paper read for the efficiency's derivation.
+The WebAssembly timing; the deeper cause inside DWSIM's NRTL; a props
+operation that prints Choupo's implied latent heat; the wider benchmark
+(Klemola in both engines, a recycle flowsheet, several initial
+estimates); the paper read for the efficiency's derivation.
