@@ -38,7 +38,16 @@ WHAT THIS GATE CHECKS.
       in the text: they have different remedies, and calling a jump a
       turning point invents a feature of the mixture.
 
-  (d) AN EMPTY BRANCH IS NOT A STOPPED BRANCH.  envelope01's bubble line lies
+  (d) AN EMPTY BRANCH IS NOT A STOPPED BRANCH, AND A LATE START IS NEITHER
+      (EX-01, 2026-11-15).  The op used to END a branch at its first failed
+      pressure and then call it "never started" -- yet envelope01's own feed
+      has bubble points from 46 bar.  The march now keeps trying a branch
+      until it first converges, names every pressure that failed below that,
+      and calls a branch never started only when NO pressure converged.
+      Held both ways: envelope01 reports the late start (and not "never
+      started"); a probe of the same feed on 1-40 bar, where no bubble point
+      converges, reports "never started".  The text that follows is the
+      arm's original statement, kept for its history:  envelope01's bubble line lies
       below the solver's own 200 K bracket and produces nothing; the first
       version reported "stopped at 1.000 bar, last converged point 0.000 K at
       0.000 bar", a sentence about nothing.
@@ -463,12 +472,41 @@ def main() -> int:
     rc, gas = run(GAS)
     rc2, jump = run(JUMP)
 
-    if "never started" not in gas:
-        fails.append("envelope01's bubble branch produces no point at all, and"
-                     " the run does not distinguish that from a branch that"
-                     " STOPPED -- the two have different remedies")
+    #  (d) EX-01: a late start is reported as one, with every pressure tried
+    #  below it, and is not called "never started"; an empty branch is.
+    bub1 = curves(GAS).get("bubble", [])
+    if not bub1:
+        fails.append("envelope01's bubble branch is empty: since EX-01 the march"
+                     " keeps trying past failures and its feed has bubble"
+                     " points from about 46 bar")
+    if "never started" in gas:
+        fails.append("envelope01's bubble branch has points and is still"
+                     " reported as never started (EX-01)")
+    if ("bubble branch produced no point at the" not in gas
+            or "first converged at" not in gas
+            or "pressures tried below the first point" not in gas):
+        fails.append("envelope01's late bubble start is not reported with the"
+                     " pressures tried below its first point (EX-01)")
+    import shutil
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="choupo-envstart-") as td:
+        probe = Path(td) / "envelope01_probe"
+        shutil.copytree(GAS, probe)
+        pd = probe / "system" / "propsDict"
+        txt = pd.read_text()
+        pd.write_text(txt.replace("to 60 bar", "to 40 bar"))
+        rcp, outp = run(probe)
+        bubp = curves(probe).get("bubble", [])
+    if "to 60 bar" not in txt:
+        fails.append("the probe could not narrow envelope01's range (its"
+                     " propsDict no longer says `to 60 bar`)")
+    elif rcp != 0 or bubp or "never started" not in outp:
+        fails.append("envelope01's feed on 1-40 bar (no bubble point"
+                     " converges there) is not reported as never started"
+                     " (exit %d, %d bubble points)" % (rcp, len(bubp)))
     else:
-        notes.append("an empty branch is reported as never started")
+        notes.append("a late start is reported with its failed pressures, and"
+                     " an empty branch as never started")
 
     #  envelope02 (C239, 2026-11-08; C245 slice 4, 2026-11-08): with the
     #  liquid reference CONTINUOUS in T (held above 0.99 Tc) the branches

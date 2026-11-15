@@ -64,6 +64,13 @@ struct Branch
     scalar          stoppedAt = 0.0;    // Pa, the first pressure that failed
     bool            ranOut    = false;  // reached the requested top instead
     bool            rootJump  = false;  // it CONVERGED -- to another root
+    //  Every pressure tried BELOW the branch's first converged point and
+    //  failed there (EX-01, 2026-11-15).  A branch is not ended by a failure
+    //  before it has started: a light feed's bubble line lies below the
+    //  saturation solvers' 200 K bracket at low pressure and enters it higher
+    //  up, so the march keeps trying until the first point converges, and
+    //  only from then on does a failure END the branch.
+    std::vector<scalar> failedBefore;   // Pa
 };
 
 } // namespace
@@ -163,6 +170,8 @@ int PhaseEnvelope::run(const DictPtr& dict,
             const bool falls = ok && !bub.pts.empty() && r.T < bub.pts.back().T;
             if (ok && !falls)
             { bub.pts.push_back({P, r.T}); Tguess_b = r.T; }
+            else if (bub.pts.empty())
+                bub.failedBefore.push_back(P);      // not started yet: march on
             else
             { bub.stoppedAt = P; bub.rootJump = falls; }
         }
@@ -175,6 +184,8 @@ int PhaseEnvelope::run(const DictPtr& dict,
                            && std::fabs(r.T - dew.pts.back().T) > 8.0 * typ;
             if (ok && !jump)
             { dew.pts.push_back({P, r.T}); Tguess_d = r.T; }
+            else if (dew.pts.empty())
+                dew.failedBefore.push_back(P);      // not started yet: march on
             else
             { dew.stoppedAt = P; dew.rootJump = jump; }
         }
@@ -294,8 +305,9 @@ int PhaseEnvelope::run(const DictPtr& dict,
         {
             std::ostringstream m;
             m << "the " << what << " branch produced NO converged point at any"
-              << " pressure in the requested range.  This is not a turning"
-              << " point: the branch never started.  The usual causes are a"
+              << " of the " << b.failedBefore.size() << " pressure(s) tried in"
+              << " the requested range, every one of them attempted.  This is"
+              << " not a turning point: the branch never started.  The usual causes are a"
               << " pressure range that does not reach it, or a "
               << what << " temperature outside the saturation solver's own"
               << " bracket (200-700 K), which a light feed's bubble line sits"
@@ -306,6 +318,36 @@ int PhaseEnvelope::run(const DictPtr& dict,
                                             m.str()))
                 std::cout << "\n      " << m.str() << "\n";
             return;
+        }
+        if (!b.failedBefore.empty())
+        {
+            //  A LATE START (EX-01): the pressures below the first converged
+            //  point, every one tried, each named in the console, the range
+            //  and count on the advisory log.
+            std::ostringstream m;
+            m << "the " << what << " branch produced no point at the "
+              << b.failedBefore.size() << " pressure(s) from "
+              << fmt(b.failedBefore.front() / 1.0e5, 3) << " to "
+              << fmt(b.failedBefore.back() / 1.0e5, 3) << " bar, every one"
+              << " tried, and first converged at "
+              << fmt(b.pts.front().P / 1.0e5, 3) << " bar ("
+              << fmt(b.pts.front().T, 3) << " K); it is drawn from there.  The"
+              << " usual cause is a " << what << " temperature outside the"
+              << " saturation solver's own bracket (200-700 K) at the lower"
+              << " pressures, which a light feed's bubble line sits below.  The"
+              << " missing low-pressure part is not drawn and nothing is"
+              << " claimed about it.";
+            if (AdvisoryLog::instance().add("approximation", "warning",
+                                            std::string("phaseEnvelope ") + what
+                                            + " start", m.str()))
+            {
+                std::cout << "\n      " << m.str() << "\n      pressures tried"
+                             " below the first point [bar]:";
+                for (std::size_t k = 0; k < b.failedBefore.size(); ++k)
+                    std::cout << (k % 12 == 0 ? "\n        " : " ")
+                              << fmt(b.failedBefore[k] / 1.0e5, 3);
+                std::cout << "\n";
+            }
         }
         if (b.ranOut)
         {
@@ -363,6 +405,18 @@ int PhaseEnvelope::run(const DictPtr& dict,
 
     if (!bub.ranOut) diag_["bubble_stopped_bar"] = bub.stoppedAt / 1.0e5;
     if (!dew.ranOut) diag_["dew_stopped_bar"]    = dew.stoppedAt / 1.0e5;
+    //  A late start (EX-01): where the branch first converged and how many
+    //  pressures below it were tried and failed.  Only when the branch has
+    //  points: a branch with none "never started" and says so.
+    for (const Branch* pb : { &bub, &dew })
+    {
+        const std::string what = (pb == &bub) ? "bubble" : "dew";
+        if (!pb->pts.empty() && !pb->failedBefore.empty())
+        {
+            diag_[what + "_first_bar"]     = pb->pts.front().P / 1.0e5;
+            diag_[what + "_failed_before"] = static_cast<scalar>(pb->failedBefore.size());
+        }
+    }
 
     (void)verbosity;
     return 0;

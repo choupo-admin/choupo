@@ -1,0 +1,40 @@
+/*--------------------------------*- Choupo -*-------------------------------*\
+  envelope03_c3c4c5_both_stop -- the same C3/C4/C5 feed as envelope02,
+  marched to 80 bar instead of 40: BOTH branches stop, and the run says where
+  and why.
+
+  WHY THIS CASE EXISTS (2026-11-15).  envelope02 was the corpus witness of a
+  stopped branch until C245 (2026-11-08); since then both of its branches
+  reach the top of its 1-40 bar range, so no case in the corpus showed a
+  branch that STOPS.  The Explorer's envelope lens is built around that
+  report -- a stopped branch must never look like a closed envelope or like a
+  solver failure -- and its test needs an engine run in which a stop
+  happens.  This is that run, on the lens's own frame (an ideal liquid on the
+  pure-liquid reference, a Peng-Robinson vapour, kij = 0 announced).
+
+  WHAT THE RUN SHOWS (native build, 2026-11-15):
+
+    * the bubble branch keeps 63 points and stops at 64 bar (last kept point
+      408.282 K at 63 bar);
+    * the dew branch keeps 46 points and stops at 47 bar (last kept point
+      408.151 K at 46 bar);
+    * both stops are reported as a pressure-marched trace running out of
+      single-valuedness (the cricondenbar or the critical region), not as a
+      root jump, and no cricondentherm is claimed: neither branch has an
+      interior temperature maximum in what it kept.
+
+  WHAT IT DOES NOT SHOW.  The two last kept points are 0.13 K apart near
+  408 K, where the nose of this feed is; the op does not close it
+  (Michelsen's continuation is not implemented) and in this frame the liquid
+  is not described by the equation of state, so the frame has no mixture
+  critical point of its own.  The stopping pressures are properties of the
+  METHOD on this frame, not measured features of the mixture.
+
+  NOT VALIDATED: no number here is checked against a measured envelope.  This
+  is a STRUCTURAL witness for the stop report; its counts and stopping
+  pressures are the golden rows.
+\*---------------------------------------------------------------------------*/
+
+application   choupoProps;
+description  "P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 64 bar and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed";
+verbosity     3;

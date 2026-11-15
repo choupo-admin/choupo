@@ -4184,12 +4184,13 @@ Nothing here is a validation against measurement: every number is the engine's o
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
 \end{tikzpicture}
 \end{tutscheme}
-\tutwhat{P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that never starts}
+\tutwhat{P-T phase envelope of a lean natural gas: the dew branch over its cricondentherm, and a bubble branch that starts late (46 bar), every lower pressure tried and listed}
 \begin{tutgolden}
-\goldrow{diag}{envelope}{bubble\_points}{0}
-\goldrow{diag}{envelope}{bubble\_stopped\_bar}{1}
+\goldrow{diag}{envelope}{bubble\_points}{10}
 \goldrow{diag}{envelope}{dew\_cricondentherm\_K}{275.946403666}
 \goldrow{diag}{envelope}{dew\_points}{40}
+\goldrow{diag}{envelope}{bubble\_failed\_before}{30}
+\goldrow{diag}{envelope}{bubble\_first\_bar}{46.3846153846}
 \end{tutgolden}
 
 \clearpage
@@ -4203,6 +4204,59 @@ Nothing here is a validation against measurement: every number is the engine's o
 \begin{tutgolden}
 \goldrow{diag}{envelope}{bubble\_points}{40}
 \goldrow{diag}{envelope}{dew\_points}{40}
+\end{tutgolden}
+
+\clearpage
+\tutentry{envelope03\_c3c4c5\_both\_stop}{tutorials/props/molecular/envelope03\_c3c4c5\_both\_stop}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{P-T envelope of a C3/C4/C5 feed marched to 80 bar on an ideal liquid and a PR vapour: the bubble branch stops at 64 bar and the dew branch at 47 bar, each reported in the engine's words, and no cricondentherm is claimed}
+\begin{tutnarrative}
+One phaseEnvelope op over envelope02's feed, to 80 bar in 1-bar steps. The range is the point: it contains both branches' stopping pressures.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{envelope}{bubble\_points}{63}
+\goldrow{diag}{envelope}{bubble\_stopped\_bar}{64}
+\goldrow{diag}{envelope}{dew\_points}{46}
+\goldrow{diag}{envelope}{dew\_stopped\_bar}{47}
+\end{tutgolden}
+
+\clearpage
+\tutentry{envelope04\_water\_benzene\_two\_liquids}{tutorials/props/molecular/envelope04\_water\_benzene\_two\_liquids}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{envelope}\\[-1pt]{\tiny phaseEnvelope}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{liquidProbe}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{probe\_1bar}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{P-T envelope of equimolar water + benzene on UNIFAC + PR beside the T-x-y's liquid-stability probe: two liquids at the bubble point at all 80 pressures, so the single-liquid bubble curve is a phantom the lens does not draw}
+\begin{tutnarrative}
+Two operations on ONE pressure grid (and a third that pins the probe's first point as a golden row) (1-80 bar, 80 points), exactly what the Explorer's envelope lens builds for this binary:
+
+envelope phaseEnvelope of the equimolar feed (single-liquid bubble and dew curves). liquidProbe the T-x-y's own probe, `liquid\_stable`, at every pressure: the feed's bubble temperature, then a liquid-liquid flash there (1 = one liquid, 0 = two). The state T is unused by the probe.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{envelope}{bubble\_points}{80}
+\goldrow{diag}{envelope}{dew\_points}{38}
+\goldrow{diag}{envelope}{dew\_stopped\_bar}{39}
+\goldrow{diag}{liquidProbe}{n\_emptyCurves}{0}
+\goldrow{diag}{liquidProbe}{n\_failures}{0}
+\goldrow{diag}{liquidProbe}{n\_points}{80}
+\goldrow{diag}{probe\_1bar}{Cp\_ig}{59.466634}
+\goldrow{diag}{probe\_1bar}{H\_R}{-175.742197533}
+\goldrow{diag}{probe\_1bar}{H\_ig}{-79338.258952}
+\goldrow{diag}{probe\_1bar}{H\_real}{-79514.0011495}
+\goldrow{diag}{probe\_1bar}{P}{100000}
+\goldrow{diag}{probe\_1bar}{S\_R}{-0.358120633114}
+\goldrow{diag}{probe\_1bar}{S\_ig}{235.202081429}
+\goldrow{diag}{probe\_1bar}{S\_real}{234.843960796}
+\goldmore{7}
 \end{tutgolden}
 
 \clearpage
@@ -5084,6 +5138,47 @@ Complete pure-compound P-T phase diagram of water: liquid-vapour saturation (to 
 \goldrow{diag}{pd}{Pc\_bar}{220.64}
 \goldrow{diag}{pd}{Tc}{647.14}
 \goldrow{diag}{pd}{has\_solid}{1}
+\end{tutgolden}
+
+\clearpage
+\tutentry{pxy01\_ethanol\_water\_70C}{tutorials/props/scan/pxy01\_ethanol\_water\_70C}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{pxy}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{pxy\_peak}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_point}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{pxy\_point}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{P-x-y of ethanol/water at 70 C (bubble pressure and incipient vapour along x, a maximum-pressure azeotrope near x = 0.9) and the T\_bubble $\to$ P\_bubble round trip at one composition}
+\begin{tutnarrative}
+pxy the P-x-y diagram at 70 C: x[ethanol] swept 0 $\to$ 1, P\_bubble and y\_eqT\_ethanol at every point (BubblePoint::pressure, the incipient vapour iterated to its own composition). The state P is only where the pressure bracket starts.
+
+pxy\_peak the scan's highest point, x\_ethanol = 0.9, pinned by its golden rows: the maximum-pressure azeotrope sits near it.
+
+txy\_point ONE point of the T-x-y at 1 atm: the bubble temperature of the liquid x\_ethanol = 0.4.
+
+pxy\_point THE ROUND TRIP: the bubble PRESSURE of the same liquid at the temperature txy\_point returned. It must return 1 atm -- 101325 Pa -- because the two properties solve the same equation, sum K\_i x\_i = 1, for the other variable. The golden row pins it at 1e-6 relative. The op's state P is HALF an atmosphere -- it only starts the pressure bracket -- so an evaluator that handed back the state pressure would print 50662.5 Pa and fail the row (EX-08: before, the state P was the expected answer itself). The round trip holds on THIS case's ideal-gas vapour; with a PR or SRK vapour T\_bubble reads the vapour fugacity at y = x while P\_bubble iterates y, and the two differ by 1.3e-4 at 1 atm and 7.8e-4 at 20 bar (EX-04, Theory Guide sec:bubble-pressure).
+
+THE TEMPERATURE IN pxy\_point IS COPIED FROM txy\_point's golden row, and that is the one hand-carried number in this case. If a thermo change moves T\_bubble, txy\_point's own row fails first; re-record it, paste the new value here, and the round trip holds again. A round trip whose T drifted from its T\_bubble would fail on P\_bubble, which is the point.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{pxy}{n\_emptyCurves}{0}
+\goldrow{diag}{pxy}{n\_failures}{0}
+\goldrow{diag}{pxy}{n\_points}{21}
+\goldrow{diag}{pxy\_peak}{Cp\_ig}{68.7927352441}
+\goldrow{diag}{pxy\_peak}{H\_R}{0}
+\goldrow{diag}{pxy\_peak}{H\_ig}{-232688.031908}
+\goldrow{diag}{pxy\_peak}{H\_real}{-232688.031908}
+\goldrow{diag}{pxy\_peak}{P}{101325}
+\goldrow{diag}{pxy\_peak}{P\_bubble}{72691.5686997}
+\goldrow{diag}{pxy\_peak}{S\_R}{0}
+\goldrow{diag}{pxy\_peak}{S\_ig}{284.137931461}
+\goldrow{diag}{pxy\_peak}{S\_real}{284.137931461}
+\goldrow{diag}{pxy\_peak}{T}{343.15}
+\goldrow{diag}{pxy\_peak}{Z}{1}
+\goldmore{31}
 \end{tutgolden}
 
 \clearpage

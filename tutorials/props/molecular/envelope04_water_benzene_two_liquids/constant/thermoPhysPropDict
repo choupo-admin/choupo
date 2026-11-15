@@ -1,0 +1,21 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+// The Explorer envelope lens's frame for a BINARY on a non-ideal liquid
+// (EX-02, 2026-11-15): two liquid phases on UNIFAC, so the T-x-y's own
+// `liquid_stable` probe can fire, and a Peng-Robinson vapour.  The envelope
+// op's bubble and dew solves read the single-liquid K either way: with a
+// gammaPhi package of the same models the op writes a byte-identical
+// envelope.csv (measured 2026-11-15).
+components    ( water benzene );
+
+equilibrium
+{
+    formulation gammaGamma;
+    liquidPhases
+    (
+        { name liquid1;  activityModel { model UNIFAC; } }
+        { name liquid2;  activityModel { model UNIFAC; } }
+    );
+    vapour  { fugacityModel PengRobinson; }
+}

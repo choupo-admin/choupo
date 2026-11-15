@@ -153,6 +153,69 @@ cross the touching point.  Switch the activity model (ideal $\to$ NRTL
 $\to$ UNIFAC) and watch the envelope bend --- ideal solutions cannot
 azeotrope; real ones do.
 
+\subsection{Binary boiling envelope at fixed $T$ ($P$--$x$--$y$)}\label{sec:explorer-pxy}
+% Written 2026-11-15 against gui/src/case/methodFeeds.ts (binaryPxySpec,
+% readPxyCsv), gui/src/ui/plotting/PxyPlot.tsx and the evaluator keywords
+% P_bubble / y_eqT_<comp> (src/propertyOps/PropertyEvaluator.cpp).
+The mirror of the $T$--$x$--$y$: the temperature is held (the \textbf{T}
+menu in the toolbar) and the engine returns, for each liquid composition, the
+\emph{bubble pressure} and the vapour that first appears at it ---
+\code{P\_bubble} and \code{y\_eqT\_<comp>}, one run, the more volatile
+component on the axis.  The upper curve is the bubble curve (liquid above
+it), the lower the dew curve (vapour below it).  A minimum-boiling azeotrope
+of the $T$--$x$--$y$ is a \emph{maximum-pressure} azeotrope here.  The
+$\gamma$ and EoS menus act as on the $T$--$x$--$y$.  When a component is
+above its critical temperature the engine says so, and the $P$--$x$--$y$,
+$T$--$x$--$y$ and $y$--$x$ lenses repeat its sentence \emph{on the figure}, in
+orange, not only in the footer: that part of the curve rests on a continued
+vapour-pressure law and is not a saturation curve.  It is not refused.  Two things are said on
+the lens rather than hidden: one liquid is assumed (the $T$--$x$--$y$'s
+liquid-liquid probe is a fixed-$P$ construction, so a gap is drawn as the
+homogeneous curve), and a composition at which the engine found no bubble
+pressure is left out and counted, never interpolated.  \textbf{F1} opens the
+Theory Guide's \code{sec:bubble-pressure}.
+
+\subsection{Mixture phase envelope ($P$--$T$)}\label{sec:explorer-envelope}
+% Written 2026-11-15 against gui/src/case/phaseEnvelopeLens.ts (envelopePlan,
+% envelopeReport, branchEndLabel), gui/src/ui/explore/EnvelopeLens.tsx and
+% src/propertyOps/PhaseEnvelope.cpp (the diagnostics and advisories read).
+The bubble and dew curves of ONE feed of two or more compounds in the
+$(T, P)$ plane, from the engine op \code{phaseEnvelope}.  Set the feed in
+moles (sent as typed; the engine normalises it and says so), the vapour's
+equation of state, the liquid's $\gamma$ model and the pressure range.  The
+$\gamma$ model is the $T$--$x$--$y$ lens's four (ideal, NRTL, Wilson, UNIFAC),
+with the same pair resolution and the same warning when a pair has no curated
+parameters and mixes ideally; the default is NRTL where curated pairs cover
+the feed, else UNIFAC where every component has groups, else ideal.  An
+ideal-gas vapour is refused with its reason, because it cannot form a
+cricondentherm or a retrograde region.
+
+\emph{One liquid is assumed, and the figure says so in its corner.}  On an
+ideal liquid: an ideal solution cannot split.  For a \emph{binary} on a
+non-ideal model the $T$--$x$--$y$'s own liquid-stability probe runs at every
+pressure, and where the feed splits at its bubble point the bubble curve is
+\emph{not drawn}: the line has a gap and each phantom single-liquid point is
+a hollow x (water + benzene on UNIFAC splits at every pressure).  For three or
+more components on a non-ideal model the probe does not apply (it is
+binary-only), and the figure says one liquid is assumed and not checked.
+
+The op marches pressure and does \emph{not} close the nose, and the lens is
+built so that this can never be misread.  Under the figure each branch gets
+a badge saying how it ended --- \emph{reached the top of the range},
+\emph{stopped at $p$ bar}, \emph{started late at $p$ bar} (the pressures
+below it tried and failed, every one listed), or \emph{never started in this
+range} (no pressure converged) --- decided
+from the numbers the engine published, with the engine's own sentence beside
+it, then the method statement it prints on every run and the other
+announcements of the run (the $k_{ij}$ default, a held liquid reference, a
+cubic pseudo-root).  On the figure a stopped branch ends at its last kept
+point, marked by a hollow circle; the two branches are never joined.  A
+cricondentherm is starred only where the engine reported one (an interior
+maximum it bracketed); no cricondenbar is marked, because a pressure march
+cannot reach it and the engine never reports one.  A run in which neither
+branch converges shows the engine's refusal, which is a statement about the
+range.  \textbf{F1} opens the Theory Guide's \code{sec:mixture-envelope}.
+
 \subsection{$\gamma(x)$ --- activity coefficients}
 The raw non-ideality of a binary: $\gamma_1, \gamma_2$ against composition,
 with the infinite-dilution values $\gamma^\infty$ at the edges.

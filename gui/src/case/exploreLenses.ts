@@ -140,6 +140,17 @@ export const PLOT_TYPES: PlotType[] = [
   //  declaring a thermophysical system over it (exploreViews).
   { id: "phaseSplit", label: "Phase split along T or P (V / L / S, pH)", min: 2, max: 99, vle: false,
     why: "needs 2+ VLE-able components, or 2+ components of the open case's own thermophysical system" },
+  //  The FIXED-T mirror of the T-x-y (2026-11-15): the bubble PRESSURE and
+  //  the incipient vapour along x, one engine run of `P_bubble` and
+  //  `y_eqT_<c>` (case/methodFeeds.ts binaryPxySpec).
+  { id: "pxy", label: "Binary boiling envelope at fixed T (P-x-y)", min: 2, max: 2, vle: true,
+    why: "needs exactly 2 VLE-able components" },
+  //  The P-T envelope of ONE feed of 2+ compounds (2026-11-15): the engine op
+  //  `phaseEnvelope`, its bubble and dew branches, and where each one stopped
+  //  and why (case/phaseEnvelopeLens.ts).  It runs on a cubic equation of
+  //  state; the lens says why when the chosen model cannot make an envelope.
+  { id: "envelope", label: "Mixture phase envelope (P-T)", min: 2, max: 12, vle: true,
+    why: "needs 2 to 12 VLE-able components and no electrolyte — an envelope belongs to ONE mixture feed" },
 ];
 
 // Short lens labels for the toolbar SegmentedControl (the full label rides the
@@ -164,6 +175,8 @@ export const LENS_SHORT: Record<PlotKind, string> = {
   solubility: "delta",
   evidence: "evidence",
   phaseSplit: "phase split",
+  pxy: "P-x-y",
+  envelope: "envelope",
 };
 
 /** The lens a selection OPENS on.  The property scan is the honest default for

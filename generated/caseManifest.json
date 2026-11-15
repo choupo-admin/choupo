@@ -6,7 +6,7 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1867,
+  "cases": 1870,
   "witnesses": 16,
   "validationOp": 6,
   "anchored": 25
@@ -24082,6 +24082,36 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/envelope03_c3c4c5_both_stop": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseEnvelope"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/molecular/envelope04_water_benzene_two_liquids": {
+   "application": "choupoProps",
+   "ops": [
+    "phaseEnvelope",
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaGamma",
+    "activityModels": [
+     "UNIFAC"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/eval_nrtl_catalogue": {
    "application": "choupoProps",
    "ops": [
@@ -24383,6 +24413,21 @@
     "formulation": "gammaPhi",
     "activityModels": [
      "ideal"
+    ]
+   },
+   "roles": [],
+   "hasGolden": true
+  },
+  "tutorials/props/scan/pxy01_ethanol_water_70C": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
     ]
    },
    "roles": [],
@@ -31526,6 +31571,8 @@
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
+    "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/exergy01_air_dead_state",
@@ -31550,6 +31597,7 @@
     "tutorials/props/scan/binary01_lle_water_nbutanol",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/phase01_water_full",
+    "tutorials/props/scan/pxy01_ethanol_water_70C",
     "tutorials/props/scan/scan2d01_co2_compressibility",
     "tutorials/props/scan/ternary01_audit_vlle",
     "tutorials/props/scan/ternary02_bubbleT_benzene_toluene_water",
@@ -33606,6 +33654,7 @@
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
+    "tutorials/props/scan/pxy01_ethanol_water_70C",
     "tutorials/props/scan/ternary01_audit_vlle",
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol",
     "tutorials/props/transport/liquidDiffusivity02_kooijmanTaylor_ternary",
@@ -33655,6 +33704,7 @@
     "tutorials/props/compare/acetone01_ipa_water_azeotrope",
     "tutorials/props/compare/acetone04_acetone_water_vle",
     "tutorials/props/compare/lle01_acetic_mibk_perry",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/scan/ternary03_lle_water_ethanol_benzene",
     "tutorials/props/solvents/solvent02_polystyrene_hexane_blends",
     "tutorials/props/transport/mixing01_water_acetone",
@@ -35081,6 +35131,7 @@
     "tutorials/props/molecular/componentLookup01_catalogue_ladder",
     "tutorials/props/molecular/envelope01_natural_gas",
     "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
+    "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
     "tutorials/props/molecular/flash01_operating_line",
     "tutorials/props/molecular/pairLookup01_catalogue_ladder",
     "tutorials/props/molecular/pairLookup03_provenance_stale_seal",
@@ -36428,7 +36479,9 @@
    ],
    "phaseEnvelope": [
     "tutorials/props/molecular/envelope01_natural_gas",
-    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop"
+    "tutorials/props/molecular/envelope02_c3c4c5_branch_stop",
+    "tutorials/props/molecular/envelope03_c3c4c5_both_stop",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids"
    ],
    "phaseSplitScan": [
     "tutorials/props/thermo/phaseSplit01_freeze_water_ethanol"
@@ -36463,12 +36516,14 @@
     "tutorials/props/heat/table02_water_liquid_cp_points",
     "tutorials/props/hydraulics/letdown02_valve_fluid_properties",
     "tutorials/props/molecular/entropy01_air_ledger",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
     "tutorials/props/molecular/srk01_h2n2_density",
     "tutorials/props/safety/relief01_ammonia_loop_gas",
     "tutorials/props/safety/relief02_acetone_fire_case",
+    "tutorials/props/scan/pxy01_ethanol_water_70C",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/bubble01_reaction_mass_boiling_point",
     "tutorials/props/thermo/purelaws02_water_two_vapour_pressure_laws",
@@ -37357,7 +37412,9 @@
     "tutorials/props/curation/curate12_nrtl_ethanol_cyclohexane",
     "tutorials/props/heat/table02_water_liquid_cp_points",
     "tutorials/props/molecular/entropy01_air_ledger",
+    "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/flash01_operating_line",
+    "tutorials/props/scan/pxy01_ethanol_water_70C",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/heavyWater01_isotope_effect",
     "tutorials/props/thermo/temperature01_gas_thermometer",

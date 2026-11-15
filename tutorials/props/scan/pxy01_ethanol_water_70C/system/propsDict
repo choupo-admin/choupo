@@ -1,0 +1,95 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  Four operations.
+
+  pxy        the P-x-y diagram at 70 C: x[ethanol] swept 0 -> 1, P_bubble
+             and y_eqT_ethanol at every point (BubblePoint::pressure, the
+             incipient vapour iterated to its own composition).  The state P
+             is only where the pressure bracket starts.
+
+  pxy_peak   the scan's highest point, x_ethanol = 0.9, pinned by its
+             golden rows: the maximum-pressure azeotrope sits near it.
+
+  txy_point  ONE point of the T-x-y at 1 atm: the bubble temperature of the
+             liquid x_ethanol = 0.4.
+
+  pxy_point  THE ROUND TRIP: the bubble PRESSURE of the same liquid at the
+             temperature txy_point returned.  It must return 1 atm --
+             101325 Pa -- because the two properties solve the same equation,
+             sum K_i x_i = 1, for the other variable.  The golden row pins it
+             at 1e-6 relative.  The op's state P is HALF an atmosphere -- it
+             only starts the pressure bracket -- so an evaluator that handed
+             back the state pressure would print 50662.5 Pa and fail the row
+             (EX-08: before, the state P was the expected answer itself).
+             The round trip holds on THIS case's ideal-gas vapour; with a
+             PR or SRK vapour T_bubble reads the vapour fugacity at y = x
+             while P_bubble iterates y, and the two differ by 1.3e-4 at
+             1 atm and 7.8e-4 at 20 bar (EX-04, Theory Guide
+             sec:bubble-pressure).
+
+  THE TEMPERATURE IN pxy_point IS COPIED FROM txy_point's golden row, and
+  that is the one hand-carried number in this case.  If a thermo change moves
+  T_bubble, txy_point's own row fails first; re-record it, paste the new
+  value here, and the round trip holds again.  A round trip whose T drifted
+  from its T_bubble would fail on P_bubble, which is the point.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        pxy;
+        type        propertyScan1D;
+        vary        { variable x[ethanol];  from 0;  to 1;  n 21; }
+        state
+        {
+            T            343.15 K;
+            P            1 atm;
+            composition  { ethanol 0.5;  water 0.5; }
+        }
+        properties  ( P_bubble  y_eqT_ethanol );
+        output      { file pxy.csv; }
+    }
+
+    {
+        name        pxy_peak;           // the scan's highest point, pinned
+        type        propertyPoint;      // (the scan's CSV carries no golden)
+        state
+        {
+            T            343.15 K;
+            P            1 atm;
+            composition  { ethanol 0.9;  water 0.1; }
+        }
+        properties  ( P_bubble  y_eqT_ethanol );
+    }
+
+    {
+        name        txy_point;
+        type        propertyPoint;
+        state
+        {
+            T            350 K;
+            P            1 atm;
+            composition  { ethanol 0.4;  water 0.6; }
+        }
+        properties  ( T_bubble  y_eq_ethanol );
+    }
+
+    {
+        name        pxy_point;
+        type        propertyPoint;
+        state
+        {
+            T            353.500724827 K;   // = txy_point's T_bubble (see header)
+            P            0.5 atm;           // the bracket's START, not the answer (EX-08)
+            composition  { ethanol 0.4;  water 0.6; }
+        }
+        properties  ( P_bubble  y_eqT_ethanol );
+    }
+);
