@@ -256,12 +256,57 @@ first, on a concrete need (product specifications without a `designSpec`,
 recycles that do not converge today), never for speed -- section 2c shows
 speed is not today's problem.
 
+5. **Stiff kinetics: measure, then make the rate evaluation cheaper,
+   before any analytic Jacobian.**  The owner's point: a Jacobian for the
+   kinetics, so as not to depend on RK4.  MEASURED that the simple
+   working system already exists: `choupoBatch` and the dynamic driver
+   carry an L-stable, error-controlled Rosenbrock23 (and Rodas4, EulerSI;
+   `src/solver/ODE/`), opt-in, selected by 23 cases; its Jacobian is
+   finite-difference (dense, or coloured when a structure is declared,
+   audited on the first step, `Rosenbrock23.H:42-52`).  On
+   `ignition01_h2o2` (O Conaire 2004 H2/O2, 1100 K, 5 bar) it runs in
+   1.53 s wall and reaches ignition; the sibling `ignition01_h2o2_rk4`
+   (explicit RK4, same deltaT) clips negative amounts and stops with
+   T = nan after 0.02 s -- the stiffness lesson, as the case says.
+   Profiled with callgrind (one run, instruction counts, the whole
+   process = 100 %):
+
+   | where | share |
+   |---|---|
+   | `BatchReactor::derivatives_` (the right-hand side, all calls) | 97.0 % |
+   | `rateOfReaction_` | 91.1 % |
+   | `fdJacobianODE` (the finite-difference Jacobian, inclusive) | 68.9 % |
+   | `Component::h_pure_ig` | 35.4 % |
+   | NASA-9 `H` + `S` (`DomainBoundCp`) | 42.0 % |
+   | `modifiedArrheniusRate` | 1.6 % |
+
+   So the Jacobian IS most of the time, but what makes it expensive is not
+   the Arrhenius arithmetic: it is the species enthalpies and entropies
+   that `Reaction::equilibriumKc` recomputes for every reversible reaction
+   at every call (`BatchReactor.cpp:537`), and the finite-difference
+   columns that perturb a species amount do not change T, so they
+   recompute the same Kc again.  Gall's order, each step measured before
+   the next:
+   (a) evaluate each species' standard Gibbs energy ONCE per state and
+       share it across the reactions, and reuse Kc across the Jacobian
+       columns that leave T unchanged -- no new algorithm, same numbers
+       to round-off, and by the profile above it should remove most of
+       the thermochemistry's ~55 %;
+   (b) re-profile; only if the Jacobian still dominates, an analytic
+       Jacobian for the commonest form (mass-action Arrhenius rates, whose
+       derivative in the amounts is closed-form), audited against the
+       finite-difference one by the audit that already exists;
+   (c) the case-written formulas of `core/Formula` (differentiating their
+       expression tree) only if (b) pays.
+   The need today is modest -- the stiff case takes 1.5 s -- and grows
+   with the mechanism: the finite-difference Jacobian costs one
+   right-hand side per species, each of which costs one Kc per reaction.
+
 **Did not pass, and why** (kept here so they are not re-proposed):
-* A mixed analytic / finite-difference Jacobian in the column MESH, and
-  analytic Jacobians of case-written rate laws with an implicit
-  integrator: no measured need (speed is not a problem; no stiff case or
-  failing Newton was shown); justified only by a future system, which is
-  designing ahead of need.
+* A mixed analytic / finite-difference Jacobian in the column MESH: no
+  measured need (speed is not a problem; no failing Newton was shown);
+  justified only by a future system, which is designing ahead of need.
+  (The analytic Jacobian of the KINETICS is item 5, with its measurement.)
 * Frozen-property inner loops (the inside-out method): speed only.
 * Models attachable to ANY unit (a generic heat loss): a general
   framework with no case asking for it; if a unit ever needs a loss to
