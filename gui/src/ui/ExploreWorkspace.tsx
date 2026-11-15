@@ -2380,9 +2380,14 @@ export function ExploreWorkspace() {
                     : undefined}>
                   {footerOpen ? "Hide details" : nFlags > 0 ? "Honesty & details" : "Details"}
                 </Button>
+                {/*  Not for the envelope lens: it builds its own case inside
+                     EnvelopeLens, and `spec` here would hand over a property
+                     scan nobody asked for (the phase-split and evidence
+                     lenses carry the same defect, recorded, not changed here). */}
+                {plotType !== "envelope" && (
                 <Button variant="subtle" size="compact-xs" onClick={() => setSnippetOpen((o) => !o)}>
                   {snippetOpen ? "Hide propsDict" : "Author → copy propsDict"}
-                </Button>
+                </Button>)}
                 {!footerOpen && nFlags === 0 && isVle && (
                   <Text size="xs" c="dimmed" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).
@@ -2407,7 +2412,7 @@ export function ExploreWorkspace() {
                   {isVle && <Text size="xs" c="dimmed">NRTL/Wilson pairs auto-resolve by name; absent → ideal (no azeotrope).</Text>}
                 </Stack>
               </Collapse>
-              <Collapse in={snippetOpen}>
+              <Collapse in={snippetOpen && plotType !== "envelope"}>
                 <Stack gap={4} mt={6}>
                   <Text size="xs" c="dimmed">
                     Create or open a case, then put this block in <code>system/propsDict</code> under
