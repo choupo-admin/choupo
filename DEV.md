@@ -3518,6 +3518,41 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C398 SLICE (d) + A4 LANDED (2026-11-15), and with it the C398 grammar is
+> complete.**  The liquid diffusivity a package returns is declared
+> (`returns effective|infiniteDilution`, a composition rule among
+> CaldwellBabb, Vignes, LefflerCullinan, AndersonBabb, directed
+> infinite-dilution entries, `thermodynamicFactor { take 1; }`); a stated
+> liquid viscosity is a `measured {}` set with its basis, never called a
+> measurement; the column asks the package through the door for every
+> liquid property and refuses a property word at any depth of its block
+> (A4); the default Wilke-Chang refuses water as the solute (Poling p.
+> 11.22), the witness showing Poling's Example 11-8 values beside it (+167 %
+> and +25 %); Brock-Bird announces its stated scope; the old
+> `diffusivity { model ...; }` reader DELETED (C402), the old form refused by
+> name.  MOVED NUMBERS: aceticAcid02_plant's lights column only (its
+> unsourced typed surface tension replaced by the records' own laws,
+> extrapolated about 60 K and announced; D 0.337 -> 0.342 m, dP 13.86 ->
+> 13.77 kPa, flood stage 17 -> 19; the four sealed copies adopted, debt
+> SEALED_COPIES_ADOPTED); labels on the 16 migrated column cases.  Reviewed
+> in three rounds (rows DF-01..16, DG-01..15; reports
+> docs/reviews/2026-11-14-c398d-numbers and -c398d-grammar).  VALIDATION:
+> ONE FULL SWEEP over (c)+(d) on the integration tree, reason: both reach the
+> package's shared paths (ThermoPackage, Component, Database, the flowsheet's
+> catches): 2240 PASS / 1 FAIL / 9 EXPECTED-FAIL; the failure the decision
+> index missing the C329 B2 record (docs, fixed and re-run); held: mass on
+> 306 steady cases, every element on 286, energy on 123 steady cases (pins
+> unchanged), the closures of 87 time-integrated cases, 801 pinned
+> boundary first-law quantities.  OPEN: d2 (Wilke-Chang's solute volume at
+> Tb); DG-10 and the rest of A4 in the C402 lane; not seen in a browser;
+> WASM not rebuilt.  DEFECTS REGISTERED from the Explorer's review (EX-04,
+> EX-05) and its builder: phiPhi DewPoint takes one outer pass on a lean gas
+> (DewPoint.cpp:69-71, the `ideal` activity placeholder); T_bubble prices the
+> vapour at y = x (BubblePoint.cpp:51-57) while P_bubble iterates y; on a
+> gamma-phi package the liquid-stability probe reports water + benzene
+> stable.  And the importer's `--adopt-local` re-imports records it was not
+> asked to (CO, methylAcetate, IAPWS95, H, OH), seen by slice (d)'s builder.
+
 > **C398 SLICE (c) LANDED (2026-11-15).**  A table is a law type: liquid
 > viscosity and liquid and solid heat capacity, in a record or a case
 > experiments file, with `linear`, `logLinear`, `logReciprocal` or
