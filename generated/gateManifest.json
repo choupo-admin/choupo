@@ -1819,7 +1819,7 @@
     "check_liquid_diffusivity_declaration": {
       "exit": 0,
       "claim": "check_liquid_diffusivity_declaration: OK -- the witness returns its declared entry exactly (from a file and inline); each of the four rules equals its value by hand to 1e-11 on a binary whose two infinite-dilution values differ 2.5-fold; the default association factor holds by value and by its words; the column's liquid film and a property operation at its state agree to 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used; a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it differs from Vignes; one surface tension per tray, left out only at or above Tc; a sector's file read from the sector's constant/, never the root's; 25 refusals each by name, the old `diffusivity { model <word>; }` form among them.  NOT CHECKED: the migrated cases' numbers (their goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's fitness for a polar liquid (announced, not judged).",
-      "seconds": 1.1
+      "seconds": 1.3
     }
   }
 }
