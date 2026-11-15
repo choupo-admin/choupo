@@ -133,8 +133,14 @@ code).  The file passes 7/7; `check_pressure_exchanger` (which holds the
 fixture to the witness's sheet) OK.  The full GUI suite was NOT re-run
 after this fix.
 
-**Not done:** MB-05 (pinned debt, as asked); the reviewer's sabotages;
-the 20-case byte identity against a baseline build; the full sweep.
+**Not done, against the paused commit's own list:** MB-05 (pinned debt,
+as asked); the reviewer's sabotages re-run; the 20-case byte identity
+against a baseline build; the search for OTHER membrane case headers
+gone stale (the paused commit says they are not detected
+automatically); the full sweep.  Done from that list: the PDFs, the
+tutorials guide check, check_property_source_witnesses re-checked (its
+claim updated), swro01 and membrane27 against their goldens after the
+header-only edits (both PASS in the scope run), --fast, --gui.
 
 ## 3. Task 3: `gui/c404-total-reflux-loop`
 
