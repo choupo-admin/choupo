@@ -41,6 +41,7 @@ Description
 
 #include "core/Dictionary.H"
 #include "thermo/ChemistrySystem.H"
+#include "thermo/liquidProperty/ExperimentsFile.H"
 
 #include <filesystem>
 #include <iostream>
@@ -198,6 +199,9 @@ inline DictPtr resolvePropertyContext(const std::string&      constantDir,
         throw std::runtime_error("Choupo: property-context `inherits` CYCLE at "
                                  + path);
     DictPtr local = Dictionary::fromFile(path);
+    //  A table pin or a measurement declared HERE reads THIS constant/'s
+    //  experiments/ (C398 review row TG-02), never the root's by a walk up.
+    experiments::stampExperimentsDir(local, constantDir);
     if (!local->found("inherits")) return local;
 
     const std::string rel = local->lookupWord("inherits");

@@ -13,6 +13,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "PricedDensity.H"
+#include "thermo/PropertyDomainError.H"
 
 #include <cmath>
 #include <exception>
@@ -32,6 +33,10 @@ Selection select(const ThermoPackage& thermo, scalar T, scalar P,
         sVector pure(n, 0.0); pure[i] = 1.0;
         scalar rhoPure = 0.0;
         try { rhoPure = thermo.density(T, P, pure, ph); }
+        //  NOT rethrown (C398 TG-01, decided per site): this is the SELECTION
+        //  of the priced set -- a component no route can price a pure liquid
+        //  volume for is DROPPED and the dropped fraction is published and
+        //  announced by the caller, never a number in its place.
         catch (const std::exception&) { rhoPure = 0.0; }
         if (rhoPure > 0.0 && std::isfinite(rhoPure))
         { s.zPriced[i] = z[i]; s.keptFraction += z[i]; }

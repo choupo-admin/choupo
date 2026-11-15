@@ -129,6 +129,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "FitParameters.H"
+#include "thermo/PropertyDomainError.H"
 #include "FitAlgebra.H"
 #include "EvidencePartition.H"
 #include "CurationDossier.H"
@@ -739,6 +740,7 @@ int FitParameters::runMembraneFit(const DictPtr& dict, const ThermoPackage& ther
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             if (firstEval) throw;   // a refusal at the start is the author's to read
             E.ok = false; E.why = e.what();
         }

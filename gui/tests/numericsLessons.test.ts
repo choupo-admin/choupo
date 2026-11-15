@@ -452,9 +452,9 @@ describe("every file:line these pages cite into the engine resolves", () => {
     //  the relaxation lesson (C246): the knob, the update, the Newton contract
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3391, "recycleRelaxation"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3660, "recRelax"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3837, "Globalisation::armijo"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3839, "recycleMaxStep"],
-    ["src/solver/NewtonND.cpp", 618, "armijo"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3838, "Globalisation::armijo"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3840, "recycleMaxStep"],
+    ["src/solver/NewtonND.cpp", 619, "armijo"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3530, "recycleWegsteinQmin"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3531, "recycleWegsteinQmax"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3619, "normL2(gx, x)"],
@@ -462,7 +462,7 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 1904, "z /= zsum"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3725, "s.F * (i < s.z.size()"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3787, "latent under-convergence"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3825, "/ scale[i]"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3826, "/ scale[i]"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 1956, "mixes flows and"],
     //  C259 (2026-11-09): the pressure is a tear variable in both branches
     //  (DEV.md 4c C186 (5)), and the pages had kept the pre-C186 counts.
@@ -476,11 +476,11 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 1941, "scalar normL2("],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3727, "pressure is a tear variable"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3801, "// P"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3909, "the phase proxy"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 3910, "the phase proxy"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3528, "γ-info"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3645, "|dQ/Q|"],
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 3291, "FAILED solve"],
-    ["src/solver/NewtonND.cpp", 189, "central finite differences"],
+    ["src/solver/NewtonND.cpp", 190, "central finite differences"],
     //  291, not 290: the engine gained a comment line above it and the
     //  anchor was left behind.  The lesson's own citation is the RANGE
     //  288-291 and still covers it; this list holds the ONE line that must
@@ -489,15 +489,15 @@ describe("every file:line these pages cite into the engine resolves", () => {
     ["src/applications/choupoSolve/main.cpp", 319, "Mass balance (global)"],
     ["src/streams/ProcessStream.H", 95, "kmol/s"],
     // --- tear streams: the plan contract
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4963, "Flowsheet::validateSequentialPlan"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5054, "MISSING TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5062, "INVALID ORDER"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5090, "INLET TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5097, "UNCONSUMED TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5108, "FORWARD TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5164, "OFF-CYCLE TEAR"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5221, "[plan] material recycle"],
-    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5105, "c <= p->second"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 4966, "Flowsheet::validateSequentialPlan"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5057, "MISSING TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5065, "INVALID ORDER"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5093, "INLET TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5100, "UNCONSUMED TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5111, "FORWARD TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5167, "OFF-CYCLE TEAR"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5224, "[plan] material recycle"],
+    ["src/unitOperations/flowsheet/Flowsheet.cpp", 5108, "c <= p->second"],
     //  C259: the plan is validated AFTER 0/ is read and seeded and before any
     //  unit solves (tearLesson step 7, caseAssemblyLesson step 3).
     ["src/unitOperations/flowsheet/Flowsheet.cpp", 2286, "StreamStateIO::readStateDir(\"0\""],

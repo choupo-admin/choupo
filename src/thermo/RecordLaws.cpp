@@ -43,6 +43,7 @@ Description
 #include <functional>
 #include <iostream>
 #include <iomanip>
+#include <limits>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -191,7 +192,7 @@ std::string modelLine(const std::string& who, const std::string& key, const std:
 
 double probeT(const Law& L, double Tc)
 {
-    if (L.isTable)   return 0.5 * (L.tableLo + L.tableHi);
+    if (L.isTable)   return L.tableProbe;
     if (L.hasDomain) return 0.5 * (L.domainLo + L.domainHi);
     if (L.hasSoft)   return 0.5 * (L.softLo + L.softHi);
     if (Tc > 0.0 && L.type == "RowlinsonBondi") return 0.55 * Tc;
@@ -248,11 +249,17 @@ void readTableLaw(Law& L, const std::string& property, const std::string& where,
                 + std::string(fromCase ? " and the pin's `extend`" : "") + "; its source goes in"
                 " the record's provenance block.");
     }
+    refreshTableText(L, property, std::numeric_limits<scalar>::quiet_NaN(), where);
+}
+
+void refreshTableText(Law& L, const std::string& property, scalar MW, const std::string& where)
+{
     std::string cols;
-    const auto t = PropertyTable::fromLaw(L.body, property, where, 0.0, &cols);
+    const auto t = PropertyTable::fromLaw(L.body, property, where.empty() ? property : where, MW, &cols);
     L.isTable   = true;
     L.tableLo   = t->lo();
     L.tableHi   = t->hi();
+    L.tableProbe = t->probeT();
     L.tableText = "table: " + t->describe() + "; columns " + cols;
 }
 

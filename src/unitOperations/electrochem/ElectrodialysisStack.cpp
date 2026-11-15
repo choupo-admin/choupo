@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ElectrodialysisStack.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/PropertySourceLog.H"
 #include "Electrochem.H"
 #include "EDCell.H"
@@ -323,6 +324,7 @@ int ElectrodialysisStack::solve(const DictPtr& dict,
                 try { (void) electrolyte::ionD0(sp); }
                 catch (const std::exception& e)
                 {
+                    rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
                     predictiveBlocker = std::string("an ion has no curated"
                         " diffusivity -- ") + e.what();
                     break;

@@ -852,7 +852,8 @@ void readCaseTablePin(const DictPtr& entry, const std::string& property, RecordL
         throw std::runtime_error(where + ": a pin names `law <name>` (a law the record holds) OR"
             " `table <name>` (the case's points), never both.");
     for (const auto& k : entry->keys())
-        if (k != "component" && k != "table" && k != "interpolation" && k != "reason" && k != "extend")
+        if (k != "component" && k != "table" && k != "interpolation" && k != "reason" && k != "extend"
+            && k != experiments::experimentsDirKey())
             throw std::runtime_error(where + ": `" + k + "` is read by nothing -- a table pin reads"
                 " component, table, interpolation, reason and, optionally, extend.");
     if (property != "liquidViscosity" && property != "liquidHeatCapacity"
@@ -860,7 +861,8 @@ void readCaseTablePin(const DictPtr& entry, const std::string& property, RecordL
         throw std::runtime_error(where + ": a case table of " + property + " is not accepted in this"
             " slice (C398 (c): liquid viscosity, liquid and solid heat capacity).");
     const std::string name = entry->lookupWord("table");
-    const experiments::File f = experiments::readFile(name, property, where);
+    const experiments::File f = experiments::readFile(name, property, where,
+        entry->lookupWordOrDefault(experiments::experimentsDirKey(), ""));
     for (const auto& k : f.dict->keys())
         if (k != "provenance" && k != "system" && k != "property" && k != "columns" && k != "data"
             && k != "uncertainty")

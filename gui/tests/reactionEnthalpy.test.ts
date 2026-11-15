@@ -96,8 +96,8 @@ describe("the lesson", () => {
   });
 
   it("cites the engine where it prices the reaction heat", () => {
-    expect(all(5)).toContain("ReactionHeat.cpp:41");
-    expect(all(5)).toContain("PFR.cpp:467");  // C259: the call moved from 464 to 466
+    expect(all(5)).toContain("ReactionHeat.cpp:42");
+    expect(all(5)).toContain("PFR.cpp:468");  // C259: the call moved from 464 to 466
   });
 
   it("names its three limits", () => {

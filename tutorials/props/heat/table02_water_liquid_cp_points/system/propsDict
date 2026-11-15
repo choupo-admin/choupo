@@ -18,6 +18,11 @@
                    formation datum plus the sensible leg from 298.15 K -- for
                    the table, the closed-form integral of its interpolant.
 
+    cpExtended_375K, h375_extended   the variant `crcExtended` at 102 degC,
+                   strictly inside its extension: Cp, H and S on the chord.
+    cpPastUpTo_refused   a scan across upTo: its last point, 0.1 K past it,
+                   is refused by name (nan, with the note).
+
     The golden master locks every computed value at reltol 1e-4.  */
 
 operations
@@ -86,5 +91,30 @@ operations
         thermo      crcPoints;
         composition { water 1; }
         spec        { pair PH;  P 1 bar;  targetFrom { T 353.15 K;  P 1 bar; } }
+    }
+    {
+        name        cpExtended_375K;
+        type        propertyPoint;
+        thermo      crcExtended;          // strictly inside the extension (to 378.15 K)
+        state       { T 375.15 K;  P 2 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+    }
+    {
+        name        h375_extended;
+        type        flashSpec;
+        thermo      crcExtended;          // H and S integrate the chord past 373.15 K; without the
+                                          // window the (P, H) search tries 392 K and is refused (table03)
+        composition { water 1; }
+        spec        { pair PH;  P 2 bar;  targetFrom { T 375.15 K;  P 2 bar; }  seed 370 K; }
+        window      { Tmin 330 K;  Tmax 378 K; }   // the search stays inside the table and its extension
+    }
+    {
+        name        cpPastUpTo_refused;
+        type        propertyScan1D;
+        thermo      crcExtended;          // inside, on, and 0.1 K past upTo
+        vary        { variable T;  from 378.05 K;  to 378.25 K;  n 3; }
+        state       { P 2 bar;  composition { water 1.0; } }
+        properties  ( Cp_liquid_water );
+        output      { file cpPastUpTo_refused.csv; }
     }
 );

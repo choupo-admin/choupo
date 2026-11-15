@@ -11,6 +11,7 @@ diag    bench                  dev_Vogel        0                1e-4
 diag    bench                  dev_chemsepEq101 0                1e-4
 diag    bench                  dev_chemsepEq16  0                1e-4
 diag    bench                  dev_wilkePhi     0                1e-4
+diag    bench                  dev_table        9.02243745198e-16 abs:1e-12
 diag    bench                  k_Eucken_CO2     0.021231358218   1e-4
 diag    bench                  k_Eucken_N2      0.0297082727854  1e-4
 diag    bench                  k_Eucken_O2      0.0306615645526  1e-4

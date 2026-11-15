@@ -77,7 +77,7 @@
   (src/unitOperations/flowsheet/Flowsheet.cpp:3721-3730) and divides each
   residual by a characteristic scale
   (src/unitOperations/flowsheet/Flowsheet.cpp:3785-3804, applied at
-  src/unitOperations/flowsheet/Flowsheet.cpp:3825), and its own comment names
+  src/unitOperations/flowsheet/Flowsheet.cpp:3826), and its own comment names
   what the absence of that scaling costs — "the latent under-convergence the
   old Wegstein default also had"
   (src/unitOperations/flowsheet/Flowsheet.cpp:3785-3789).

@@ -173,7 +173,10 @@ siblings:
   of exactly one component, `property`, `columns`, flat `data`) and are
   chosen by `pin ( { component; table <name>; interpolation <word>; reason;
   } );` -- `table` OR `law`, never both; only such a pin may carry
-  `extend { upTo; downTo; reason; }`.
+  `extend { upTo; downTo; reason; }`.  Every value of a table is > 0 (a
+  viscosity and a heat capacity are positive), whatever the interpolation;
+  a case's file is the one in the `experiments/` of the `constant/` whose
+  dictionary declares the pin (a sector's own), never an ancestor's.
 
 ## Where Choupo goes further, and why it must not be traded away
 

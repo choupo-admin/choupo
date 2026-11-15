@@ -30,6 +30,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "LleResidual.H"
+#include "thermo/PropertyDomainError.H"
 
 #include "core/Advisory.H"
 #include "thermo/ThermoPackage.H"
@@ -257,6 +258,7 @@ Binodal solveTie(const ThermoPackage& thermo, scalar T, scalar xLo, scalar xHi,
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             //  ONE liquid in the package is a property of the CASE, not of a
             //  feed: refuse by name instead of reading it as "no split".
             if (std::string(e.what()).find("needs >= 2 liquid phases") != std::string::npos)

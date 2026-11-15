@@ -33,6 +33,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "DynamicTank.H"
+#include "thermo/PropertyDomainError.H"
 #include "streams/Composition.H"
 
 #include <algorithm>
@@ -145,6 +146,7 @@ void DynamicTank::initialise(const DictPtr&        unitDict,
     }
     catch (const std::exception& e)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         throw std::runtime_error(who + ": the package cannot price the"
             " mixture liquid enthalpy on the elements datum (" + e.what()
             + ").  The tank stores H on that datum so that its first law"

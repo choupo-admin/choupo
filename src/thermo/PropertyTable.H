@@ -129,13 +129,20 @@ public:
     //  extension when one is declared).
     std::string describe() const;
 
+    //- The temperature a table is PROBED at by the view and its gate (review
+    //  row TG-04): inside a segment, never on a node (where every
+    //  interpolation returns the node itself) -- 0.37 of the segment that
+    //  holds the midpoint of the span.
+    scalar probeT() const;
+
     //- A LAW OF TYPE `table` read into a table: its `columns` (T, then the
     //  property's symbol), its flat `data`, its `interpolation` and, in a
     //  case's law only, `extend`.  `property` is liquidViscosity,
     //  liquidHeatCapacity or solidHeatCapacity (an idealGasHeatCapacity table
     //  is refused: addendum A2(v)).  `MW` (kg/kmol) converts a heat capacity
-    //  declared per mass; 0 means "not known yet" (validation only, the
-    //  conversion is not applied).  `columnsText` receives the columns as
+    //  declared per mass; NaN means "not known yet" (validation only, the
+    //  conversion is not applied); a known MW <= 0 with a per-mass column is
+    //  refused (TB-02).  `columnsText` receives the columns as
     //  declared ("T [degC, +273.15 K at read], Cp [J/g/K, x MW/1000 -> J/(mol K)]").
     static std::unique_ptr<PropertyTable> fromLaw(const DictPtr& body, const std::string& property,
                                                   const std::string& label, scalar MW,
@@ -156,7 +163,6 @@ private:
     std::vector<std::array<scalar, 4>> poly_;       // segment k: y = c0 + c1 s + c2 s^2 + c3 s^3
     std::vector<scalar> cum1_, cum2_;               // I1, I2 at the nodes
 
-    mutable scalar maxBelow_ = 0.0, maxAbove_ = 0.0;   // largest excursion, K
 
     //- The segment holding T (T inside the points); the extension uses the
     //  end segment.

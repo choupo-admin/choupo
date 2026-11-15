@@ -5041,6 +5041,21 @@ PYEOF
     fi
     rm -f /tmp/varsame.$$
 
+    # Table-law gate (2026-11-15, DEV.md 4c C398 slice (c), second round):
+    # a property given as points computes what its points and its declared
+    # interpolation say (recomputed in the gate, independently of the
+    # engine), refuses outside them -- a hard refusal is never a number --
+    # and a pin reads the file of the constant/ that declares it.
+    if gate_exec "$ROOT/bin/curate/check_table_laws.py" > /tmp/tablelaws.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "table-laws-gate" "$(grep -m1 '^check_table_laws: OK' /tmp/tablelaws.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_table_laws.py)\n" "table-laws-gate"
+        cat /tmp/tablelaws.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/tablelaws.$$
+
     # Record-law gates (2026-11-14, DEV.md 4c C398 slice (b)).
     #  * check_record_law_values: every block of several named laws in a
     #    catalogue record marks one `preferred`; every law's `check {}` value

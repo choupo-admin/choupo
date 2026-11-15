@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "Polarisation.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/transport/StokesEinstein.H"
 
 #include "core/Advisory.H"
@@ -683,6 +684,7 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
             }
             catch (const std::exception& e)
             {
+                rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
                 throw std::runtime_error(
                     "polarisation: ion '" + s.name + "' needs its own"
                     " diffusivity -- " + std::string(correlation ? "the mass-"

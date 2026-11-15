@@ -17,10 +17,10 @@
     THE VARIANT `crcExtended` is the same table with a bounded extension to
     110 degC, the only way past a table's last point: inside it the value is
     the end segment's chord, the first excursion is announced and the largest
-    is restated at the end of the run.  Without it, the table REFUSES any
-    temperature outside its points -- an answer or a solver's trial state
-    alike -- because a table has no value there (the operation at 110 degC on
-    `crcPoints` shows that refusal, by name).
+    is restated at the end of the run; past 110 degC it refuses again.
+    Without it, the table REFUSES any temperature outside its points -- an
+    answer or a solver's trial state alike -- because a table has no value
+    there (the scan on `crcPoints` shows that refusal, by name).
 
     The resolved view of each package prints the law water took, who chose
     it (with the pin's reason), the table's points, span, interpolation and
@@ -71,7 +71,7 @@ variants
                 viscosity
                 {
                     pin ( { component water;  table crcWaterMu;  interpolation logReciprocal;
-                            extend { upTo 110 degC;  reason "a superheated-liquid point 10 K past the table, to show the bounded extension and its announcement"; }
+                            extend { upTo 110 degC;  reason "liquid water at 2 bar a few kelvin past the table (it boils near 120 degC there), to show the bounded extension and its announcement"; }
                             reason "the evaluated values, extended by the end segment's chord"; } );
                 }
             }

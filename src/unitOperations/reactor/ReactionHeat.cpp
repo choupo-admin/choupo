@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "ReactionHeat.H"
+#include "thermo/PropertyDomainError.H"
 #include "thermo/ThermoPackage.H"
 #include "thermo/Component.H"
 
@@ -89,6 +90,7 @@ scalar reactionHeat(const ThermoPackage&            thermo,
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             // standardThermochemistry present but a Cp / Hvap leg is missing for this
             // phase -- announce and fall through to the explicit override.
             ok = false;

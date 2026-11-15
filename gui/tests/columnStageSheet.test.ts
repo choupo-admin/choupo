@@ -96,7 +96,7 @@ describe("tray geometry from the declared fractions", () => {
       const R = 0.6, c = p.chordOffset;
       const seg = R * R * Math.acos(c / R) - c * Math.sqrt(R * R - c * c);
       expect(seg / p.A_T).toBeCloseTo(f, 9);
-      expect(p.A_a).toBeCloseTo(p.A_T * (1 - 2 * f), 12);  // TrayHydraulics.cpp:321
+      expect(p.A_a).toBeCloseTo(p.A_T * (1 - 2 * f), 12);  // TrayHydraulics.cpp:323
     }
   });
   it("column09's declared 0.12 implies a chord of 0.764 D, and its 0.77 D weir 'goes with' it", () => {

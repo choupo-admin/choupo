@@ -105,7 +105,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
     note: "The engine runs the first four on this page and cannot run the "
       + "fifth: a coal or biomass feed is a solid, and no reactor in Choupo "
       + "carries a solid feed into its equilibrium -- the equilibrium reactor "
-      + "refuses one by name (EquilibriumReactor.cpp:85-89).  Gasification is "
+      + "refuses one by name (EquilibriumReactor.cpp:87-91).  Gasification is "
       + "told here, not run.",
   },
   {
@@ -142,8 +142,8 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
         unit: "kmol/h" },
     ],
     note: "The elements and the allowed species are read from the unit's "
-      + "operation block, GibbsReactor.cpp:225-228; the pressure from the same "
-      + "block, GibbsReactor.cpp:180; the duty, GibbsReactor.cpp:754.",
+      + "operation block, GibbsReactor.cpp:226-229; the pressure from the same "
+      + "block, GibbsReactor.cpp:181; the duty, GibbsReactor.cpp:755.",
     leadsTo: {
       tool: "approach-to-equilibrium",
       toolLabel: "Approach to equilibrium (Gibbs reactor)",
@@ -175,8 +175,8 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       { sym: "T_\\mathrm{ad}", means: "the adiabatic outlet temperature, which "
         + "the engine solves for", unit: "K" },
     ],
-    note: "The adiabatic mode and its residual: GibbsReactor.cpp:181-184 (the "
-      + "mode word) and GibbsReactor.cpp:513 (enthalpy out minus enthalpy in, "
+    note: "The adiabatic mode and its residual: GibbsReactor.cpp:182-185 (the "
+      + "mode word) and GibbsReactor.cpp:514 (enthalpy out minus enthalpy in, "
       + "driven to zero by a Newton on T).  An adiabatic reactor publishes no "
       + "duty, so the Q column reads a dash.",
   },
@@ -229,7 +229,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "this equation, but at its minimum every reaction among the declared "
       + "species satisfies it (the element-potential page shows why).  The "
       + "equilibrium reactor writes it literally, in logarithms, with the "
-      + "pressure term ln P/P0: EquilibriumReactor.cpp:199.",
+      + "pressure term ln P/P0: EquilibriumReactor.cpp:200.",
   },
   {
     n: 6,
@@ -333,11 +333,11 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       { sym: "y_{\\ce{CO2}}", means: "the mole fraction of CO2" },
     ],
     note: "The shift reactors are equilibrium reactors told one reaction, "
-      + "reactions ( wgs ); (EquilibriumReactor.cpp:104), so they cannot make "
+      + "reactions ( wgs ); (EquilibriumReactor.cpp:105), so they cannot make "
       + "methane: which pathways a catalyst allows is the declared-pathways "
       + "page.  The constant is computed from the standard Gibbs energy of "
-      + "reaction at the reactor temperature, EquilibriumReactor.cpp:120; the "
-      + "pressure is read from the feed, EquilibriumReactor.cpp:62.",
+      + "reaction at the reactor temperature, EquilibriumReactor.cpp:121; the "
+      + "pressure is read from the feed, EquilibriumReactor.cpp:63.",
     leadsTo: {
       tool: "declared-pathways",
       toolLabel: "Declared pathways (equilibrium over the reactions you allow)",
@@ -365,7 +365,7 @@ export const SYNGAS_STEPS: readonly LessonStep[] = [
       + "heat that holding costs is the negative duty each one publishes.",
     note: "The equilibrium reactor is isothermal: its temperature defaults to "
       + "the feed's and is otherwise the declared one, "
-      + "EquilibriumReactor.cpp:63; its duty, EquilibriumReactor.cpp:1059.",
+      + "EquilibriumReactor.cpp:64; its duty, EquilibriumReactor.cpp:1062.",
   },
 
   // ---- Part 5: each destination asks its own ratio ---------------------------------
@@ -561,7 +561,7 @@ a + c &= n_{\ce{CO}} + n_{\ce{CO2}}\\
     note: "The same reactor and the same reaction (wgs) as the shift; at "
       + "1100 K its constant is near one and the extent comes out negative -- "
       + "the engine solves for extents of either sign "
-      + "(EquilibriumReactor.cpp:199).",
+      + "(EquilibriumReactor.cpp:200).",
     leadsTo: {
       tool: "route-screening",
       toolLabel: "Route screening",

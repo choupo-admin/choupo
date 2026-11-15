@@ -2017,7 +2017,7 @@ FeedScales computeFeedScales(const std::map<std::string, ProcessStream>& streams
         // per-natural-phase blend (handles solutes; see computeTearImbalance).
         scalar h = 0.0;
         try { h = thermo.H_blendPerNaturalPhase(s.T, s.P, s.vf, s.z); }   // AUTHORIZED-BLEND: tear-residual feed scale
-        catch (const std::exception&) { h = 0.0; }
+        catch (const std::exception&) { rethrowHardRefusal(); h = 0.0; }
         eFeedAbs  += s.F * h;                          // kmol/s * J/mol
         molarFeed += s.F;
         tAcc += s.T; ++nT;
@@ -2055,7 +2055,7 @@ TearImbalance computeTearImbalance(
     // energy term rather than aborting the residual.
     auto hDot = [&](const ProcessStream& s) -> scalar {
         try { return s.F * thermo.H_blendPerNaturalPhase(s.T, s.P, s.vf, s.z); }   // AUTHORIZED-BLEND: tear-residual energy norm
-        catch (const std::exception&) { return 0.0; }
+        catch (const std::exception&) { rethrowHardRefusal(); return 0.0; }
     };
     scalar dMass = 0.0, dEnergy = 0.0;
     for (const auto& t : tears)
@@ -3816,6 +3816,7 @@ int Flowsheet::solve(const DictPtr& dict,
                 catch (const InfeasibleTrial&) { throw; }
                 catch (const std::exception& e)
                 {
+                    rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
                     throw InfeasibleTrial(std::string("a unit failed on a"
                         " trial tear iterate: ") + e.what());
                 }
@@ -4315,6 +4316,7 @@ int Flowsheet::solve(const DictPtr& dict,
         }
         catch (const std::exception& e)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             // LOUD fallback (forum 2026-06-28; no silent crutch): a species could
             // not be placed on the formation datum.  Announce it ONCE per distinct
             // cause (the kernel names the species), then fall back to the SENSIBLE
@@ -4330,7 +4332,7 @@ int Flowsheet::solve(const DictPtr& dict,
                              " canonical surface and never enters a closed"
                              " balance; fix the species data to close it).\n";
             try { s.H = thermo.H_blendPerNaturalPhase(s.T, s.P, s.vf, s.z); s.H_valid = std::isfinite(s.H); }   // AUTHORIZED-BLEND: announced degraded .H fallback
-            catch (const std::exception&) { s.H_valid = false; }
+            catch (const std::exception&) { rethrowHardRefusal(); s.H_valid = false; }
         }
         // Record WHICH present species (if any) have no elements-datum enthalpy
         // -- so a downstream consumer (the energy-balance report, the GUI
@@ -4355,6 +4357,7 @@ int Flowsheet::solve(const DictPtr& dict,
         }
         catch (const std::exception&)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             s.H_flow_valid = false;
         }
     }

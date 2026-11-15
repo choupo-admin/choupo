@@ -611,7 +611,11 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
 - `interpolation` is always declared: `linear` (y in T), `logLinear` (ln y
   in T), `logReciprocal` (ln y in 1/T, Arrhenius: the choice for a
   viscosity), `monotoneCubic` (Fritsch-Carlson).  Minimum points 2, 2, 2, 3;
-  T strictly increasing; positive values for the log forms.  A heat-capacity
+  T strictly increasing; every value > 0 under every interpolation (a
+  viscosity and a heat capacity are positive).
+- WHICH FILE: the `experiments/` of the `constant/` whose dictionary declares
+  the pin -- a sector's pin reads `sectors/<S>/constant/experiments/`, never
+  the root's (no walk up the folders); the view prints the path.  A heat-capacity
   table takes `linear` or `monotoneCubic` only (H and S are its closed-form
   integrals) and its points must contain 298.15 K.
 - Every column has a unit (`degC` allowed for T, +273.15 K at read; `mPa.s`,
@@ -619,8 +623,9 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
 - THE ENDS ARE HARD: outside its points the table REFUSES, every time (an
   answer or a solver's trial state): "the computation asked for T = ...".
   The only way past an end is the pin's `extend { upTo; downTo; reason; }`:
-  the end segment's chord, the first excursion announced, the largest in
-  the end-of-run advisory.  `clamp` is refused.  A consumer evaluating
+  the end segment's chord, the first excursion announced, the largest (over
+  every package of the table) in the end-of-run advisory.  A refusal is never
+  turned into a number by a fallback: the run ends with it.  `clamp` is refused.  A consumer evaluating
   inside a search (a packed or rate-based column segment; a flash's search
   for a Cp) may be refused at a trial state: add points, or `extend`.
 - In a RECORD a table is a named law, inline, its source in the record's
@@ -628,9 +633,11 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
   columns (...); data (...); }` -- no window keys, no `extend`.
 - A pin names `law` OR `table`; `interpolation` / `extend` on a `law` pin are
   refused.  The resolved view prints points, span, interpolation, columns as
-  declared, source and home.  Witnesses: `props/transport/table01_water_viscosity_points`,
+  declared (a per-mass Cp with the M it was converted with), source and
+  home.  Witnesses: `props/transport/table01_water_viscosity_points`,
   `props/heat/table02_water_liquid_cp_points`, `props/heat/table03_trial_state_refused`
-  (EXPECTED-FAIL lesson).  Theory Guide `sec:record-law-table`.
+  (EXPECTED-FAIL lesson), `steady/flowsheets/table05_sector_table_pins` (two
+  sectors, one pin text, one file each).  Gate `check_table_laws`.  Theory Guide `sec:record-law-table`.
 
 ### Liquid mixing rules (`mixingRule`, C331)
 

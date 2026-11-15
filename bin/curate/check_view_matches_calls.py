@@ -109,7 +109,13 @@ WITNESSES = [
       "the case extends it up to 383.15 K"], []),
     ("tutorials/props/heat/table02_water_liquid_cp_points", 2,
      ["law `crc82` (table)", "table: 11 points, 273.15-373.15 K, interpolation monotoneCubic",
-      "Cp [J/g/K, per mass: converted with the record's M]"], []),
+      "Cp [J/g/K, x M = 18.015 g/mol -> J/(mol K)]"], []),
+    #  TG-02/TG-15: two sectors, one pin text, each its own file; the two
+    #  packages are told apart by the identity (the table's text and file).
+    ("tutorials/steady/flowsheets/table05_sector_table_pins", 2,
+     ["record: case sectors/A/constant/experiments/crcWaterMu.dat",
+      "record: case sectors/B/constant/experiments/crcWaterMu.dat"],
+     ["record: case constant/experiments/crcWaterMu.dat"]),
 ]
 
 

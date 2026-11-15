@@ -141,7 +141,8 @@ struct Silence
     ~Silence() { std::cout.rdbuf(o); std::cerr.rdbuf(e); }
 };
 
-double freshValue(const recordLaws::Law& L, const std::string& property, double T, double MW = 0.0)
+double freshValue(const recordLaws::Law& L, const std::string& property, double T,
+                  double MW = std::numeric_limits<double>::quiet_NaN())
 {
     Silence quiet;
     try
@@ -295,7 +296,8 @@ void canon(const DictPtr& d, std::ostringstream& o)
     for (const auto& k : d->keys())
     {
         if (k == "components" || k == "binaryPairsBase" || k == "activeComponents"
-            || k == "variants")
+            || k == "variants"
+            || k == "experimentsDir")   // where a table pin was declared: a path, not a choice (C398 TG-15: the identity carries it)
             continue;
         o << k << "=";
         const auto& v = d->entryValue(k);

@@ -771,6 +771,7 @@ void Component::readFromDict(const DictPtr& d)
         if (!d->found(key)) continue;
         auto blk = recordLaws::parse(d->subDict(key), key, name_,
                                      [](const std::string& w) { return HeatCapacityModel::hasModel(w); });
+        refreshTables_(key, blk);
         if (blk.preferred < 0)
             throw std::runtime_error("Component '" + name_ + "': " + key + " holds "
                 + std::to_string(blk.laws.size()) + " laws (" + blk.names() + ") and"
@@ -1068,6 +1069,9 @@ void Component::readFromDict(const DictPtr& d)
         if (laws_.count(key))
             for (const auto& L : laws_.at(key).laws)
                 requireTableSource(key, L);
+    //  ... and a liquid-viscosity table's source is checked at load too
+    //  (review row TG-14), though the block itself is parsed at first use.
+    requireViscosityTableSources_();
 
     // ---- Per-method molecular group decomposition (the curation recipe) -------
     // `groups { joback ( {group; count;} ... ); unifac ( ... ); }` -- method-keyed
@@ -1873,6 +1877,7 @@ const recordLaws::Block* Component::recordLaws(const std::string& property) cons
         else
             isType = [](const std::string& w) { return SurfaceTensionModel::hasModel(w); };
         laws_[property] = recordLaws::parse(block, property, name_, isType);
+        refreshTables_(property, laws_.at(property));
         return &laws_.at(property);
     }
     catch (const std::exception& e)
@@ -2055,6 +2060,7 @@ void Component::readLiquidCpBlock_(const DictPtr& d)
     //  the owner, so a warning names its component on both paths.
     auto blk = recordLaws::parse(d, "liquidHeatCapacity", name_,
                                  [](const std::string& w) { return HeatCapacityModel::hasModel(w); });
+    refreshTables_("liquidHeatCapacity", blk);
     if (blk.preferred < 0)
         throw std::runtime_error("Component '" + name_ + "': liquidHeatCapacity holds "
             + std::to_string(blk.laws.size()) + " laws (" + blk.names() + ") and marks"
@@ -2098,6 +2104,8 @@ void Component::addCaseLaw(const std::string& property, const recordLaws::Law& l
         if (blk.laws[std::size_t(at)].home == law.home && !law.home.empty())
         {
             blk.laws[std::size_t(at)] = law;
+            recordLaws::refreshTableText(blk.laws[std::size_t(at)], property, MW_,
+                                         name_ + "'s " + property + " table `" + law.name + "`");
         }
         else
             throw std::runtime_error("the case's table `" + law.name + "` for " + name_ + "'s " + property
@@ -2105,7 +2113,11 @@ void Component::addCaseLaw(const std::string& property, const recordLaws::Law& l
                   " (constant/experiments/<name>.dat) so the two are told apart.");
     }
     else
+    {
         blk.laws.push_back(law);
+        recordLaws::refreshTableText(blk.laws.back(), property, MW_,
+                                     name_ + "'s " + property + " table `" + law.name + "`");
+    }
     provenanceMap_[property + "/" + law.name] = source;
     self_->prov = provenanceMap_;
 }
@@ -2126,6 +2138,34 @@ void Component::requireTableSource(const std::string& property, const recordLaws
         + "origin literature; method \"<primary source>, via <route, page>\"; }"
         + (law.name.empty() ? std::string() : " }") + " }` (C398 slice (c): a table without a source"
           " is refused).");
+}
+
+//  A table law's view text with THIS record's molar mass (review row TG-06).
+void Component::refreshTables_(const std::string& property, recordLaws::Block& blk) const
+{
+    for (auto& L : blk.laws)
+        if (L.isTable)
+            recordLaws::refreshTableText(L, property, MW_,
+                "component '" + name_ + "': " + property + (L.name.empty() ? "" : "." + L.name));
+}
+
+//  A record's liquid-viscosity table carries its source, checked at load
+//  (review row TG-14): the laws of that block are parsed at first use, so the
+//  table laws are found here by their `model table;` word alone.
+void Component::requireViscosityTableSources_() const
+{
+    if (!liquidViscDict_) return;
+    for (const auto& k : liquidViscDict_->keys())
+    {
+        if (!std::holds_alternative<DictPtr>(liquidViscDict_->entryValue(k))) continue;
+        const DictPtr b = liquidViscDict_->subDict(k);
+        if (b->lookupWordOrDefault("model", "") != "table") continue;
+        recordLaws::Law L;
+        L.name = k;
+        L.type = "table";
+        L.isTable = true;
+        requireTableSource("liquidViscosity", L);
+    }
 }
 
 } // namespace Choupo

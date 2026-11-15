@@ -64,6 +64,7 @@ Description
 #pragma once
 
 #include "core/Advisory.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/Dictionary.H"
 #include "core/Types.H"
 #include "streams/ProcessStream.H"
@@ -287,6 +288,7 @@ inline std::optional<FlashSolution> equilibriumAt(scalar               T,
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         //  A STREAM WHOSE OWN EQUILIBRIUM THE PACKAGE WILL NOT RESOLVE still
         //  has a defined enthalpy under the state it carries -- and refusing
         //  outright would report NOTHING about a unit whose energy is
@@ -455,6 +457,7 @@ pureSaturationProximity(scalar               T,
     }
     catch (const std::exception&)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         return std::nullopt;
     }
     return sp;

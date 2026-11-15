@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "core/Advisory.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/InfeasibleTrial.H"
 #include "NewtonND.H"
 #include "LU.H"
@@ -825,7 +826,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                     sVector Ft;
                     bool ok = true;
                     try { Ft = F(xNew); }
-                    catch (const std::exception&) { ok = false; }
+                    catch (const std::exception&) { rethrowHardRefusal(); ok = false; }
                     const scalar nt = ok ? normL2(Ft) : 0.0;
                     if (!ok || !std::isfinite(nt))
                     {
@@ -898,7 +899,7 @@ NDResult newtonND(const std::function<sVector(const sVector&)>& F,
                     for (std::size_t i = 0; i < n; ++i) xNew[i] = x[i] + dl[i];
                     sVector Ft;
                     try { Ft = F(xNew); }
-                    catch (const std::exception&) { ++refusals; continue; }
+                    catch (const std::exception&) { rethrowHardRefusal(); ++refusals; continue; }
                     const scalar nt = normL2(Ft);
                     if (!std::isfinite(nt)) { ++refusals; continue; }
                     if (0.5 * nt * nt <= f0 + c1 * pred)

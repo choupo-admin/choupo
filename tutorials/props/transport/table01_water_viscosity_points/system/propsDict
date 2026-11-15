@@ -14,8 +14,12 @@
                 5 and 25 degC lie BETWEEN points: the value is the
                 interpolant's; 50 and 80 degC are points themselves, so the
                 table returns the printed value exactly.
-    muPastEnd_extended  110 degC on `crcExtended`: the end segment's chord,
-                announced; the largest excursion restated at the end of run.
+    muPastEnd_extended  105 degC on `crcExtended`, strictly INSIDE the
+                extension (up to 110 degC): the end segment's chord, announced;
+                the largest excursion restated at the end of the run.
+    muPastUpTo_refused  a scan 109.9-110.1 degC on `crcExtended`: the first
+                two points are inside the extension, the last one, 0.1 K past
+                upTo, is REFUSED by name (nan, with the note).
     muPastEnd_refused   a scan 90-110 degC on `crcPoints`: 90 and 100 degC are
                 points; 110 degC is REFUSED by name (written as nan, with the
                 note naming the table, the span and the remedies).
@@ -80,8 +84,17 @@ operations
         name        muPastEnd_extended;
         type        propertyPoint;
         thermo      crcExtended;          // the same table, extended to 110 degC
-        state       { T 383.15 K;  P 2 bar;  composition { water 1.0; } }
+        state       { T 378.15 K;  P 2 bar;  composition { water 1.0; } }
         properties  ( viscosity_liquid );
+    }
+    {
+        name        muPastUpTo_refused;
+        type        propertyScan1D;
+        thermo      crcExtended;          // inside, on, and 0.1 K past upTo
+        vary        { variable T;  from 383.05 K;  to 383.25 K;  n 3; }
+        state       { P 2 bar;  composition { water 1.0; } }
+        properties  ( viscosity_liquid );
+        output      { file muPastUpTo_refused.csv; }
     }
     {
         name        muPastEnd_refused;

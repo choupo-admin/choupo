@@ -168,6 +168,7 @@ struct Law
     //  columns as declared, the case's extension).
     bool   isTable  = false;
     scalar tableLo  = 0.0, tableHi = 0.0;
+    scalar tableProbe = 0.0;     // inside a segment, never a node (TG-04)
     std::string tableText;
     std::string home;            // "" = the record; a case table: its file
 
@@ -212,6 +213,11 @@ Block parse(const DictPtr& block, const std::string& property,
 //  it, and fills isTable / tableLo / tableHi / tableText.  `fromCase` admits
 //  `extend`.  Throws, naming `where`, on every rule of PropertyTable.
 void readTableLaw(Law& L, const std::string& property, const std::string& where, bool fromCase);
+
+//  The table's view text with the molar mass of the record that HOLDS it
+//  (review row TG-06, U4): a per-mass heat-capacity column then prints the
+//  M it was converted with.  Called by the component, which knows its MW.
+void refreshTableText(Law& L, const std::string& property, scalar MW, const std::string& where = "");
 
 
 } // namespace recordLaws

@@ -18,6 +18,11 @@
     THE VARIANT `crcPoints` pins the table beside the property, in
     `caloric`.  A variant that changes `caloric` is a model boundary,
     announced as one.
+    THE VARIANT `crcExtended` pins the SAME points as the case's own table
+    (constant/experiments/crcWaterCp.dat) with a bounded extension to 105
+    degC: a record never carries `extend`, a case's table may.  Inside the
+    extension Cp is the last segment's chord and the enthalpy and entropy are
+    its closed-form integral; 0.1 K past 105 degC the table refuses again.
 
     A table of a heat capacity is INTEGRATED ONCE, at construction, in closed
     form (the sensible enthalpy and entropy follow from it exactly, as from a
@@ -46,6 +51,18 @@ variants
             {
                 pin ( { component water;  law crc82;
                         reason "the evaluated heat capacity, which falls to a minimum near 35 degC, in place of the record's constant"; } );
+            }
+        }
+    }
+    crcExtended                         // the same points as the CASE's table, extended
+    {
+        caloric
+        {
+            liquidHeatCapacity
+            {
+                pin ( { component water;  table crcWaterCp;  interpolation monotoneCubic;
+                        extend { upTo 105 degC;  reason "liquid water at 2 bar a few kelvin past the table (it boils near 120 degC there)"; }
+                        reason "the evaluated heat capacity, as the case's own table, extended by its last segment's chord"; } );
             }
         }
     }

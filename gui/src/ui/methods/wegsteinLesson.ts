@@ -376,7 +376,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
           + "run a complete flowsheet sweep at each, over the N_c + 2 "
           + "numbers of step 2 for each torn stream (a variable pressed "
           + "against a bound is differenced on one side only, "
-          + "src/solver/NewtonND.cpp:189-258, so the count below is the "
+          + "src/solver/NewtonND.cpp:190-259, so the count below is the "
           + "usual case and not a law). Wegstein takes one "
           + "sweep per step, whatever the size of the vector.",
         eq: String.raw`\text{Newton: } 2 (N_c + 2) \text{ sweeps per step and tear;} \qquad \text{Wegstein: } 1`},
@@ -425,7 +425,7 @@ q &= \operatorname{clamp}\!\left( \frac{s}{s - 1},\ q_\mathrm{min},\ q_\mathrm{m
           + "divides each residual by a characteristic scale — the tear's "
           + "own total flow for a flow entry, the temperature itself for the "
           + "temperature entry, the pressure itself for the pressure entry "
-          + "(Flowsheet.cpp:3785-3804, applied at Flowsheet.cpp:3825).",
+          + "(Flowsheet.cpp:3785-3804, applied at Flowsheet.cpp:3826).",
         eq: String.raw`r_i = \frac{g_i(x) - x_i}{\mathrm{scale}_i}`},
       { step: "The engine's own comment on that scaling names what its "
           + "absence costs, in those words: the latent under-convergence the "
@@ -521,7 +521,7 @@ export const WEGSTEIN_LIMITS: readonly LessonLimit[] = [
       + "not torn: the vapour fraction sitting on the torn stream is whatever "
       + "the previous sweep left there — the engine says so in its own words "
       + "on the Newton side, calling it the phase proxy "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3909-3910). So the state "
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3910-3911). So the state "
       + "handed to the first consumer of a tear is an assumption about four "
       + "quantities carrying a fifth along for the ride, and only at "
       + "convergence, when the assumption and its image agree, is it a state "

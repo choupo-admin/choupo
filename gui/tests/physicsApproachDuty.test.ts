@@ -93,7 +93,7 @@ describe("the page names what is carried and what is recomputed", () => {
       "utf-8").split("\n");
     expect(gb.slice(748 - 1, 754).join(" ")).toContain("s.T, s.P, s.z");
     expect(gb[754 - 1]).toContain("kpis_[\"Q_kW\"] = H_out_kW - H_in_kW");
-    expect(body).toContain("EquilibriumReactor.cpp:874, 937–941, 948");
-    expect(body).toContain("GibbsReactor.cpp:748–754");
+    expect(body).toContain("EquilibriumReactor.cpp:877, 937–941, 948");
+    expect(body).toContain("GibbsReactor.cpp:749–754");
   });
 });

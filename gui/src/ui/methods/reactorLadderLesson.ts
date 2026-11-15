@@ -93,12 +93,12 @@ export const LADDER_SECTIONS: readonly LadderSection[] = [
     title: "Rung 1 — what the atoms allow: a declared conversion",
     body: "The conversion reactor is told the stoichiometry, the limiting "
       + "reactant and a conversion $X$, and returns every outlet flow by "
-      + "arithmetic (ConversionReactor.cpp:220–238).  There is no solver.  "
+      + "arithmetic (ConversionReactor.cpp:221–238).  There is no solver.  "
       + "It is the right model for a first mass balance, and whenever $X$ "
       + "is known from a running plant, a patent or a vendor.  What it cannot "
       + "do is tell you whether $X$ is possible: the only bounds it checks are "
       + "$0 \\le X \\le 1$ and that no outlet amount goes negative "
-      + "(ConversionReactor.cpp:215–218 and 230–233).  The witness declares $X = 0.90$ "
+      + "(ConversionReactor.cpp:216–218 and 230–233).  The witness declares $X = 0.90$ "
       + "on purpose.  At 600 K that is above this feed's equilibrium, and the "
       + "rung prints it without complaint.  The page above does complain: it "
       + "puts the declared $X$ beside the equilibrium reactor's answer for "
@@ -197,7 +197,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
       + "$T + \\Delta T$ for a reaction that is exothermic as it runs, at "
       + "$T - \\Delta T$ for one that is endothermic.  You declare only the "
       + "magnitude and the engine picks the side from a probe solve at $T$ "
-      + "(EquilibriumReactor.cpp:743–786; announced in the run log).  The "
+      + "(EquilibriumReactor.cpp:746–786; announced in the run log).  The "
       + "outlet stays at the physical $T$; only $K$ moves.  $\\Delta T$ is a "
       + "number calibrated from plants and catalyst vendors, never predicted, "
       + "and it is the bridge between the limit and a real reactor.  The "
@@ -230,7 +230,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
     title: "Rung 3 — what the rate delivers: a volume",
     body: "Only now does a volume appear.  The plug-flow reactor integrates "
       + "the rate along the bed.  Its reverse term is built from the same "
-      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:179–187), so the net "
+      + "equilibrium constant, $k_r = k_f / K$ (PFR.cpp:180–187), so the net "
       + "rate vanishes exactly at the limit: the profile rises toward the "
       + "rung-2 line and cannot cross it, however long the bed.  That "
       + "closure holds here for two reasons worth naming: the law's orders "
@@ -241,7 +241,7 @@ X_\mathrm{eq} = \frac{\sqrt{K}}{1+\sqrt{K}}`,
       + "the same basis and standard state as the rate law (the engine "
       + "converts for an ideal gas, Reaction.cpp:104–112, which is the basis "
       + "of the batch reactor; this liquid-basis PFR refuses such a reverse "
-      + "term by name, PFR.cpp:182–183), and a law whose "
+      + "term by name, PFR.cpp:183–183), and a law whose "
       + "orders are not the stoichiometric ones does not vanish at "
       + "equilibrium through that ratio alone.  Read the "
       + "shape.  Most of the conversion arrives in the first part of the bed, "
@@ -316,7 +316,7 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
     id: "volume-is-a-shape",
     title: "The PFR's volume axis is a shape, not a size.",
     body: "This kinetic reactor prices concentrations on a liquid molar volume "
-      + "(PFR.cpp:676, \"liquid-basis volumetric flow\"), so on a gas at "
+      + "(PFR.cpp:677, \"liquid-basis volumetric flow\"), so on a gas at "
       + "10 bar the concentrations, and hence the volume, are not those of "
       + "the real gas.  The rate constant is pfr02's illustrative one, chosen "
       + "small for the same reason.  What the profile shows faithfully is its "
@@ -342,7 +342,7 @@ export const LADDER_LIMITS: readonly LadderLimit[] = [
     id: "no-cross-check",
     title: "The engine does not warn when rung 1 exceeds rung 2; this page does.",
     body: "The conversion reactor does not compare a declared conversion "
-      + "with the equilibrium one (ConversionReactor.cpp:215–218 and 230–233 "
+      + "with the equilibrium one (ConversionReactor.cpp:216–218 and 230–233 "
       + "check only "
       + "0 ≤ X ≤ 1 and non-negative outlets), so a flowsheet case with an "
       + "impossible X runs to exit 0.  This page compares the declared X "

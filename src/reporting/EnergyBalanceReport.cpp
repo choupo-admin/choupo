@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EnergyBalanceReport.H"
+#include "thermo/PropertyDomainError.H"
 #include "BalanceAlarm.H"
 #include "core/Advisory.H"
 #include "unitOperations/flash/StreamEquilibrium.H"
@@ -655,7 +656,7 @@ void EnergyBalanceReport::run(const DictPtr& dict, const ReportContext& ctx)
                             std::cerr << "[phase] stream '" << sp->name << "' "
                                       << one.str() << ".\n";
                     }
-                } catch (const std::exception&) { /* package cannot answer here */ }
+                } catch (const std::exception&) { rethrowHardRefusal(); /* package cannot answer here */ }
             }
 
             impossibleOf[r.name] = found;

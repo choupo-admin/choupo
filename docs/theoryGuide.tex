@@ -3122,6 +3122,23 @@ written: its first and last points ARE its domain, so \code{Trange},
 first column is \code{T}, the second the property's symbol (\code{mu},
 \code{Cp}).
 
+WHICH FILE (review row TG-02).  A pin reads the \file{experiments/} folder of
+the \file{constant/} whose dictionary DECLARES it, and nothing else: a sector's
+pin, written in \file{sectors/<S>/constant/thermoPhysPropDict}, reads
+\file{sectors/<S>/constant/experiments/}; the case's own dictionary reads the
+case's.  There is no walk up the folders, so a file of the same name in an
+ancestor is never found in place of the sector's (and a sector file that is
+missing is refused, not replaced).  The reader of a sector's (or an
+\code{inherits} parent's) dictionary stamps each table pin, and each density
+measurement, with that folder; the view prints the file's path relative to the
+case root (``\code{record: case sectors/A/constant/experiments/crcWaterMu.dat}'').
+The path is not part of the definition's fingerprint: the package IDENTITY
+carries each table's own text and file, so two sectors whose dictionaries say
+the same words over two different files are two packages
+(\file{tutorials/steady/flowsheets/table05\_sector\_table\_pins}: two sectors,
+one pin text, one file each, and a decoy of the same name at the root that no
+package reads).
+
 \paragraph{Units (C398, third addendum, U1--U2).}  Every column carries a
 unit, looked up in the ONE unit table (\file{src/core/Units.cpp}) and checked
 against the dimension the column serves; a column without a unit is refused
@@ -3129,10 +3146,15 @@ against the dimension the column serves; a column without a unit is refused
 temperature column may be in \code{degC}: 273.15\,K is added at read, and
 the view says so (``\code{T [degC, +273.15 K at read]}'').  A molar heat
 capacity may be declared PER MASS (\code{J/g/K}, as handbooks print it): it
-is converted with the record's molar mass, $C_p = c_p\,M/1000$.  The density
-pilot's measurement reader, which kept a private table of unit words, reads
-its columns through the same reader since this slice (the six density
-witnesses are byte-identical).
+is converted with the record's molar mass, $C_p = c_p\,M$ (J\,g$^{-1}$K$^{-1}$
+times g\,mol$^{-1}$), and the view prints the $M$ it used (``\code{Cp [J/g/K, x M =
+18.015 g/mol -> J/(mol K)]}''); on a record whose $M$ is not positive the
+column is refused.  The density pilot's measurement reader, which kept a
+private table of unit words, reads its columns through the same reader since
+this slice, and keeps EXACTLY the words it accepted before for each role (K;
+Pa, kPa, MPa, bar; kg/m3; \code{-} for a mass fraction): a role is narrower
+than its dimension, so a mass fraction in \code{deg} or a density in
+\code{ppm} is refused (the six density witnesses are byte-identical).
 
 \paragraph{Interpolation (always declared).}  On the segment $x_k \le T \le
 x_{k+1}$, with $w = (T - x_k)/(x_{k+1} - x_k)$:
@@ -3155,8 +3177,11 @@ interpolant is $C^1$ and monotone between the nodes, with no overshoot.
 Andrade law (the type's self-check), and the natural choice for a liquid
 viscosity.  On a node the node's own value is returned exactly.  Minimum
 points: 2 for the three linear forms, 3 for \code{monotoneCubic} (V4);
-abscissae strictly increasing with no duplicate; values strictly positive
-for the two log forms.  The view prints the table as ``\code{table: 11
+abscissae strictly increasing with no duplicate.  A viscosity and a heat
+capacity are positive by definition, so a value $\le 0$ is refused under
+EVERY interpolation, not only the two log forms (V4 as amended by the
+architect, review row TG-08: one sign typo in a linear table gave a silent
+wrong number).  The view prints the table as ``\code{table: 11
 points, 273.15-373.15 K, interpolation logReciprocal; no value outside its
 points (refused); columns T [degC, +273.15 K at read], mu [uPa.s]}'', with
 its source and its home (the record, or the case's file).
@@ -3193,6 +3218,23 @@ The temperature is printed to six decimals, so a refusal can never read as a
 bound (review row CV-24).  \code{clamp} is refused (an end value held with a
 zero slope has no bound on its error).
 
+A HARD REFUSAL IS NEVER TURNED INTO A NUMBER (review row TG-01).  Before this
+round a liquid feed past a heat-capacity table published $H = 0$ at exit 0: the
+refusal reached a fallback in the stream pricer (``enthalpy GAP''), and a
+second fallback in the per-phase blend skipped the species.  Every
+\code{catch} on a property path --- 105 sites in the units, the flowsheet, the
+thermodynamic kernel, the reports and the property operations --- now rethrows
+a refusal of kind \code{outsideHardDomain} (a table, or a density route outside
+its hard domain) before its fallback runs (\code{rethrowHardRefusal},
+\file{src/thermo/PropertyDomainError.H}); the run ends with the refusal.  The
+handlers that publish NO number in its place and name it (a property scan's
+\code{nan} with its note, a sweep point marked failed, an item not sized, a
+report's gap, the liquid density's selection of its priced set, which drops a
+component no route gives a volume and publishes the dropped fraction) keep
+reporting it; the absences of kind \code{missingDatum} keep
+the handling each site announced, because those fallbacks are the debts the
+property layout turns into refusals in its own, later slices.
+
 \paragraph{The known cost, and the bounded extension.}  A consumer that
 evaluates inside a search can be refused at a TRIAL state although its answer
 lies inside the table: the liquid viscosity in the segments of a packed or
@@ -3205,8 +3247,12 @@ extension, written on the pin that names the case's table, never in a record
 each with a unit, the reason required).  Inside it the value is the CHORD OF
 THE END SEGMENT in the interpolation's own variables (for
 \code{monotoneCubic} the linear chord, never the cubic); the first excursion
-is announced, the largest is restated in the end-of-run advisory, and beyond
-the extension the same refusal holds.
+is announced, the largest --- over every package that built the same table
+(review row TB-01) --- is restated in the end-of-run advisory, and beyond the
+extension the same refusal holds.  A search can also be kept inside a table by
+its own window: \file{table02}'s $(P, H)$ flash at 2\,bar declares
+\code{window \{ Tmin 330 K; Tmax 378 K; \}}, without which it tries 392\,K and
+is refused.
 \file{tutorials/props/heat/table03\_trial\_state\_refused} shows it on purpose
 (an EXPECTED-FAIL lesson): a $(P, H)$ flash whose answer, 353.15\,K, is inside
 a liquid-$C_p$ table, seeded at 262\,K; with \code{extend \{ downTo 260 K;
@@ -3220,9 +3266,16 @@ at most 3 in $s = T - x_k$, $p(s) = c_0 + c_1 s + c_2 s^2 + c_3 s^3$, so
 \begin{equation*}
 I_1(T) = \int_{x_0}^{T} C_p\,dT', \qquad I_2(T) = \int_{x_0}^{T} \frac{C_p}{T'}\,dT'
 \end{equation*}
-are computed IN CLOSED FORM: $I_1$ term by term, $I_2$ by dividing $p$ by
-$s + x_k$, $p(s) = q(s)(s + x_k) + r$, whose integral is that of $q$ plus $r
-\ln[(x_k + s)/x_k]$.  The cumulative values at the nodes are built ONCE, at
+are computed IN CLOSED FORM: $I_1$ term by term; $I_2$, on a segment no longer
+than half its left temperature ($|s| \le x_k/2$, every liquid table), term by
+term from $\int_0^s t^j/(x_k + t)\,dt = (s^{j+1}/x_k)\sum_m (-u)^m/(j + m + 1)$,
+$u = s/x_k$, an alternating series that carries no cancellation, and
+otherwise by dividing $p$ by $s + x_k$, $p(s) = q(s)(s + x_k) + r$, whose
+integral is that of $q$ plus $r \ln[(x_k + s)/x_k]$.  The division loses
+digits on a short, steep segment (review row TB-03: $2.5\times10^{-13}$
+relative on a 10\,K segment at 300\,K with a cubic of slope
+$45$\,J\,mol$^{-1}$K$^{-2}$, against a 50-digit evaluation); the series is
+within $3\times10^{-16}$ there.  The cumulative values at the nodes are built ONCE, at
 construction, and $H(T, T_\mathrm{ref}) = I_1(T) - I_1(T_\mathrm{ref})$,
 $S(T, T_\mathrm{ref}) = I_2(T) - I_2(T_\mathrm{ref})$ are exact for the
 declared interpolant; the log forms have no closed-form $I_2$ and are refused
@@ -3246,9 +3299,10 @@ evaluation, by name.
 \paragraph{Witnesses.}
 \file{tutorials/props/transport/table01\_water\_viscosity\_points}: water's
 liquid viscosity from the record's Vogel fit and from eleven evaluated points
-(0--100\,$^\circ$C, a case table, \code{logReciprocal}) in one run, one point
-past the table on a bounded extension, and one scan whose last point is
-refused.  At 25\,$^\circ$C the fit gives 0.8899\,mPa\,s and the table
+(0--100\,$^\circ$C, a case table, \code{logReciprocal}) in one run, a point
+strictly inside a bounded extension (105\,$^\circ$C, the extension reaching
+110\,$^\circ$C), a scan whose last point 0.1\,K past the extension is refused,
+and a scan whose last point past the table is refused.  At 25\,$^\circ$C the fit gives 0.8899\,mPa\,s and the table
 0.8923; at 5\,$^\circ$C, between the points 0 and 10\,$^\circ$C, 1.502 and
 1.526, where the viscosity curves most and the two part by 1.6\,\% (the
 fit's window was 10--100\,$^\circ$C; the table's 10\,K step is the
@@ -3256,12 +3310,38 @@ interpolant's own limit, and a finer table is the remedy).  \file{tutorials/prop
 liquid water's heat capacity from the record's constant (75.5) and from eleven
 evaluated points (a record table, per mass, \code{monotoneCubic}); the
 liquid enthalpy at 80\,$^\circ$C differs by 7.4\,J/mol, the integral of the
-difference from 298.15\,K.  Both read the CRC Handbook of Chemistry and
+difference from 298.15\,K; and the same points as the case's own table,
+extended to 105\,$^\circ$C, with $C_p$, $H$ and $S$ at 102\,$^\circ$C inside the
+extension in the golden master and a refusal 0.1\,K past it.
+\file{tutorials/steady/flowsheets/table05\_sector\_table\_pins}: the sector
+rule above.  Both read the CRC Handbook of Chemistry and
 Physics, 82nd ed., p.~6-3 (\emph{Properties of water in the range
 0--100\,$^\circ$C}) as the route, each value's primary cited (Sengers and
-Watson 1986 for the viscosity; Marsh 1987 for $C_p$).  The gate
-\code{check\_view\_matches\_calls} holds both views to the objects called,
-with a sabotage of the interpolation and of the span.
+Watson 1986 for the viscosity; Marsh 1987 for $C_p$).
+
+WHAT THE GATES HOLD (review rows TG-04, TG-16).  \code{check\_view\_matches\_calls}
+holds that each package's view PRINTS the table it calls --- its law, type,
+points, span, interpolation, columns, source, file and a value at a probe
+temperature inside a segment (0.37 of the segment holding the midpoint, never
+a node, where every interpolation returns the node) --- but the view's value
+and the object's come from one code path, so it cannot see an arithmetic
+error.  The arithmetic is held by \code{check\_table\_laws}, which recomputes in
+the gate, independently, what the points and the declared interpolation say:
+the four interpolations at non-node temperatures (Fritsch--Carlson limiter
+included), a heat-capacity table's $C_p$, $H$ and $S$ (into its extension), the
+refusal past the extension's bound, the refusal of a liquid feed past a
+$C_p$ table (TG-01), \file{table03}'s refusal text, the largest excursion over
+two packages, the sector rule and identity of \file{table05}, and the
+record- and unit-level refusals.  Each of five source sabotages --- a
+\code{logReciprocal} evaluated as linear, the extension's upper bound
+ignored, the Fritsch--Carlson limiter removed, the sign of the extension's
+enthalpy integral flipped, the viscosity object forced to linear --- makes it
+fail, as does restating the last excursion instead of the largest (verified by
+hand on this round's build).  Removing the table's text from the package
+identity is NOT observable today: two packages can hold two files of one
+name only from two \file{constant/} folders, and their per-node pairs base
+already differs, so the identities differ anyway; the table's text is kept
+in the identity as the guard that does not depend on that base.
 
 % ---------------------------------------------------------------------
 \section{Where a unit takes its liquid properties from}\label{sec:liquid-property-sources}

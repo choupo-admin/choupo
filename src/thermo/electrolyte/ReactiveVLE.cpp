@@ -6,6 +6,7 @@
 \*---------------------------------------------------------------------------*/
 
 #include "thermo/electrolyte/ReactiveVLE.H"
+#include "thermo/PropertyDomainError.H"
 #include "solver/NewtonND.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/VapourAssociation.H"
@@ -1046,7 +1047,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         {
             try { SpeciationResult srD; speciate(vap, 0.0, srD);
                   awFrozen = srD.aw; }
-            catch (const std::exception&) {}
+            catch (const std::exception&) { rethrowHardRefusal(); }
         }
         const sVector nBl = backboneMoles(vap);
         LiquidState one; split.single(nBl, one);
@@ -1506,7 +1507,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
         return r;
         }
         catch (const std::exception&)
-        { termsLast.clear(); return sVector(nV, 1.0e6); }
+        { rethrowHardRefusal(); termsLast.clear(); return sVector(nV, 1.0e6); }
     };
 
     // Seed: V = 2 % of the feed, vapour ratio from the feed ratio of the
@@ -1642,7 +1643,7 @@ ReactiveVLEResult ReactiveVLE::solve(scalar T_K, scalar P_Pa, scalar F,
                         p[k] += 2.0*Kd*p[k]*p[k];    // apparent moles / dimer
                 }
             }
-            catch (const std::exception&) { return false; }
+            catch (const std::exception&) { rethrowHardRefusal(); return false; }
             return true;
         };
         //  ---- SEED THE AMOUNT, not just the ratio -----------------------

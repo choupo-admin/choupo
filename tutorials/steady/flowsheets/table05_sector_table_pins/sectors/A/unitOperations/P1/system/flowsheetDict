@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*--- the pipe of pipe01_water_line: 50 m of 0.1 m commercial steel, two
+  elbows, a globe valve, a 2 m rise.  Its viscosity is the sector's table's. */
+
+name        P1;
+type        pipe;
+model       Churchill;
+in          feed;
+outputs     ( downstream );
+
+operation
+{
+    geometry
+    {
+        D          0.1     m;
+        L          50.0    m;
+        roughness  4.6e-5  m;
+        dz         2.0     m;
+        fittings
+        (
+            { K 0.9;  count 2; }
+            { K 10.0;          }
+        );
+    }
+}

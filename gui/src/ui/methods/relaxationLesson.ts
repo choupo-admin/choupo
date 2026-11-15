@@ -249,12 +249,12 @@ export const RELAXATION_STEPS: readonly LessonStep[] = [
       + "tries the full step and shortens it only if the residual does not "
       + "fall enough (Armijo's rule), so the damping adapts to each "
       + "iterate. Choupo's Newton uses it "
-      + "(src/solver/NewtonND.cpp:618, enabled for the tear loop at "
-      + "src/unitOperations/flowsheet/Flowsheet.cpp:3837). What a user "
+      + "(src/solver/NewtonND.cpp:619, enabled for the tear loop at "
+      + "src/unitOperations/flowsheet/Flowsheet.cpp:3838). What a user "
       + "may legitimately tune is a step cap: no unknown moves more than a "
       + "stated amount in one step, which limits damage without slowing "
       + "the good steps -- `recycleMaxStep` for the tear "
-      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3839-3857).",
+      + "(src/unitOperations/flowsheet/Flowsheet.cpp:3840-3858).",
     derivation: [
       { step: "Newton's step for the tear residual r(x) = G(x) - x, whose "
           + "slope is a - 1 on the toy.",

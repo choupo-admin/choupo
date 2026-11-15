@@ -182,6 +182,34 @@ Marsh (1987).  U1: the density pilot's private unit table is gone
 THIS SLICE: a file beside a record, CSV, 2-D and mixture tables, a
 vapour-pressure table.  Theory Guide `sec:record-law-table`.
 
+**SLICE (c), SECOND ROUND (2026-11-15; the reviewers' rows TG-01..16 and
+TB-01..05 and the architect's rulings on them).**  (1) V4 AMENDED BY THE
+ARCHITECT (TG-08): a table of a property that must be positive (viscosity,
+heat capacity, density, conductivity, diffusivity) refuses a value <= 0
+under EVERY interpolation, not only the two log forms.  (2) A HARD REFUSAL
+IS NEVER A NUMBER (TG-01): every catch on a property path rethrows a
+PropertyDomainError of kind outsideHardDomain before its fallback
+(`rethrowHardRefusal`, 105 sites, each listed with its decision in the
+commit); handlers that publish no number in its place and name the refusal
+(a scan's nan, a sweep point, a sizing item, a report gap) keep reporting
+it; missingDatum keeps the handling each site announced (those fallbacks
+become refusals in the layout's later slices).  (3) THE FILE OF THE
+DECLARING constant/ (TG-02): a table pin and a density measurement read the
+`experiments/` of the `constant/` whose dictionary declares them, never an
+ancestor's (the reader of a sector's or parent's dictionary stamps the
+folder; no walk up); the stamp is not in the definition fingerprint, and the
+package identity carries each table's text and file (TG-15), so two sectors
+with one pin text and two files are two packages.  (4) The largest
+excursion of an extension is the maximum over every package that built the
+table (TB-01).  (5) A per-mass column on a record with MW <= 0 is refused
+(TB-02); the density pilot's columns keep exactly their old unit words per
+role (TG-12).  (6) The probe of a table is inside a segment (TG-04); the
+table's arithmetic is held by the gate `check_table_laws`, which recomputes
+it independently.  UNCOVERED: a SOLID heat-capacity table has no witness --
+the literature archive holds no solid table read for this slice -- so the
+solid path (the same TableCp object as the liquid's) is built and refused
+by the same rules but not exercised by a case.
+
 ## The review rows, answered
 
 | row | what the record now says, or why not |

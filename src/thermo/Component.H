@@ -986,6 +986,8 @@ private:
     void buildVP_(std::size_t lawIndex);
     void readLiquidCpBlock_(const DictPtr& d);   // setLiquidCp's body (C398 SB-02)
     void buildCp_(const std::string& property, std::size_t lawIndex);
+    void refreshTables_(const std::string& property, recordLaws::Block& blk) const;   // C398 TG-06
+    void requireViscosityTableSources_() const;                                       // C398 TG-14
 
     // Per-value provenance, parsed-if-present (side-channel; never the hot path).
     std::map<std::string, OriginInfo> provenanceMap_;

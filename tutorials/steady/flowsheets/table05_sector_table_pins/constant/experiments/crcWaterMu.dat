@@ -1,0 +1,42 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  A DECOY, NOT DATA (review row TG-02).  The handbook's water viscosities of
+    sectors/A/constant/experiments/crcWaterMu.dat with EVERY VALUE DOUBLED, so
+    that a package reading this file instead of its sector's own shows it at
+    once (a viscosity, a Reynolds number and a friction pressure drop off by a
+    factor of about two).  No entry of this plant cites it: the plant's
+    dictionary pins nothing, and a sector's pin reads its own constant/.  It
+    is a well-formed table, so a resolver that walked up the folders would
+    find it and read it without complaint -- which is the defect it guards. */
+
+provenance
+{
+    origin      literature;
+    citation    "A DECOY: Sengers & Watson (1986), J. Phys. Chem. Ref. Data 15, 1291, values doubled on purpose -- never data";
+    via         "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), p. 6-3, values doubled";
+    sha256      "b22f885358c743540a85aecb05a2545238bef5fddb58445537659c0df4b48384";   // of the handbook file the true values were read from
+}
+
+system      ( water );
+property    liquidViscosity;
+columns     ( { name T;  unit degC; }  { name mu;  unit uPa.s; } );
+data
+(
+      0   3586
+     10   2614
+     20   2004
+     30   1595.4
+     40   1306.4
+     50   1094.0
+     60    933.0
+     70    808.0
+     80    708.8
+     90    629.0
+    100    563.6
+);

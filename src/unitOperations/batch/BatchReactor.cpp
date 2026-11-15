@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "BatchReactor.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/Constants.H"
 #include "streams/Composition.H"
 #include "thermo/ThermoPackage.H"
@@ -763,6 +764,7 @@ void BatchReactor::noteTimeAdvanced(scalar t)
         }
         catch (const std::exception&)
         {
+            rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
             demandDead_ = true;
             demandLog_.clear();
         }
@@ -870,6 +872,7 @@ void BatchReactor::emitImpulse_(scalar T_old, scalar T_new)
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         ok = false;
         er.E_missing.push_back(std::string("enthalpy evaluation failed: ")
                                + ex.what());
@@ -1033,6 +1036,7 @@ void BatchReactor::closeSegment_(scalar t)
     }
     catch (const std::exception& ex)
     {
+        rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
         er.E_valid   = false;
         er.E_missing = { std::string("enthalpy evaluation failed: ")
                          + ex.what() };

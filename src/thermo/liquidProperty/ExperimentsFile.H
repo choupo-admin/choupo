@@ -75,6 +75,11 @@ struct ColumnRole
     bool        affineAllowed = false;
     Dimensions  alternative;
     bool        hasAlternative = false;
+    //  When not empty, the ONLY unit words accepted for this column (a role
+    //  narrower than its dimension: a mass fraction is not an angle, a
+    //  density point is not in ppm -- review row TG-12).  Empty: any unit of
+    //  the dimension.
+    std::vector<std::string> allowedUnits;
 };
 
 //- Read one `{ name; unit; }` entry; `role` checks its dimension.  Throws,
@@ -110,11 +115,28 @@ struct File
     std::string              uncertainty; // as written, "" when absent
 };
 
-//- Read `constant/experiments/<name>.dat` of the case being run (the case's
-//  own data: never a catalogue file).  Refuses a missing file, a missing
+//- Read `<experimentsDir>/<name>.dat` (the case's own data: never a
+//  catalogue file).  `experimentsDir` is the `experiments/` folder of the
+//  `constant/` that DECLARES the entry citing the file (review row TG-02: a
+//  sector's pin reads the sector's file); empty means the case root's
+//  `constant/experiments` (relative to the run's directory).  There is NO walk
+//  up the folders: a file the declaring constant/ does not hold is refused,
+//  never found in an ancestor.  Refuses a missing file, a missing
 //  `provenance.citation`, and a `property` other than `expectProperty`.
 File readFile(const std::string& name, const std::string& expectProperty,
-              const std::string& citedBy);
+              const std::string& citedBy, const std::string& experimentsDir = "");
+
+//- The key a citing entry carries for that folder.
+inline const char* experimentsDirKey() { return "experimentsDir"; }
+
+//- STAMP a freshly read property dictionary with the `experiments/` folder of
+//  its own `constant/` (TG-02): every `pin` entry that names a `table`, and
+//  every `volumetric.liquid.measured.<name>` entry, gets `experimentsDir
+//  "<path>";` unless it already has one.  Called where a dictionary file is
+//  read for a sector or an `inherits` parent; the case root's dictionary
+//  needs no stamp (an unstamped entry reads the root's constant/).  The path
+//  is relative to the run's directory when it lies inside it.
+void stampExperimentsDir(const DictPtr& d, const std::string& constantDir);
 
 } // namespace experiments
 } // namespace Choupo

@@ -85,4 +85,26 @@ struct PropertyDomainTrial : public InfeasibleTrial
     std::string               remedy;
 };
 
+//  A HARD REFUSAL IS NEVER TURNED INTO A NUMBER (DEV.md 4c C398 slice (c),
+//  review row TG-01).  Called FIRST inside a `catch (...)` /
+//  `catch (const std::exception&)` handler on a property path: when the
+//  exception being handled is a PropertyDomainError of kind outsideHardDomain
+//  -- a table asked outside its points, a density route outside its hard
+//  domain -- it is rethrown, unchanged, so no fallback, default, skipped term
+//  or "trial refused" branch can publish a number in its place; any other
+//  exception returns here and the handler goes on as before.  missingDatum and
+//  invalidState keep the behaviour the struct above guarantees (every catch
+//  catches them as it caught the runtime_error they replaced): those
+//  fallbacks are announced debts the property layout turns into refusals in
+//  its own, later slices.  Only call it while an exception is being handled.
+inline void rethrowHardRefusal()
+{
+    try { throw; }
+    catch (const PropertyDomainError& e)
+    {
+        if (e.kind == PropertyDomainError::Kind::outsideHardDomain) throw;
+    }
+    catch (...) {}
+}
+
 } // namespace Choupo

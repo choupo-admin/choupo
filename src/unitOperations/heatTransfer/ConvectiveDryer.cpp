@@ -30,6 +30,7 @@ Description
 \*---------------------------------------------------------------------------*/
 
 #include "ConvectiveDryer.H"
+#include "thermo/PropertyDomainError.H"
 #include "DryingCurve.H"
 #include "Psychrometry.H"
 
@@ -278,7 +279,7 @@ int ConvectiveDryer::solve(const DictPtr& dict,
         {
             scalar tw;
             try { tw = Twb(T, Y); }
-            catch (const std::exception&) { return -1.0e30; }
+            catch (const std::exception&) { rethrowHardRefusal(); return -1.0e30; }
             return counter ? Hair(Y, T) - Hsolid(X, tw) - Hconst
                            : Hair(Y, T) + Hsolid(X, tw) - Hconst;
         };

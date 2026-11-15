@@ -62,11 +62,14 @@ std::pair<scalar, scalar> pairOf(const DictPtr& d, const std::string& k, const s
 experiments::ColumnRole roleOf(const std::string& col, const std::string& where)
 {
     experiments::ColumnRole r;
-    if (col == "T")        { r.dims = Dims::temperature; r.what = "a temperature"; r.affineAllowed = true; }
-    else if (col == "P")   { r.dims = Dims::pressure;    r.what = "a pressure"; }
-    else if (col == "rho") { r.dims = Dims::density;     r.what = "a mass density"; }
+    //  The units the density pilot read before C398 U1, EXACTLY (review row
+    //  TG-12): the one unit table gives the factors; this list keeps a mass
+    //  fraction from being an angle and a density from being ppm.
+    if (col == "T")        { r.dims = Dims::temperature; r.what = "a temperature"; r.allowedUnits = { "K" }; }
+    else if (col == "P")   { r.dims = Dims::pressure;    r.what = "a pressure"; r.allowedUnits = { "Pa", "kPa", "MPa", "bar" }; }
+    else if (col == "rho") { r.dims = Dims::density;     r.what = "a mass density"; r.allowedUnits = { "kg/m3" }; }
     else if (col.compare(0, 2, "w[") == 0 && col.back() == ']')
-                           { r.dims = Dims::dimensionless; r.what = "a mass fraction"; }
+                           { r.dims = Dims::dimensionless; r.what = "a mass fraction"; r.allowedUnits = { "-" }; }
     else
         throw std::runtime_error(where + ": column `" + col + "` -- a density point carries the"
             " columns T, P, rho and mass fractions `w[<component>]`.");
@@ -122,18 +125,22 @@ void MeasurementDeclarations::readFrom(const DictPtr& top)
             m.replacesRecord = r->lookupWordOrDefault("record", "");
         }
         for (const auto& kk : dec->keys())
-            if (kk != "use" && kk != "reason" && kk != "replaces")
+            if (kk != "use" && kk != "reason" && kk != "replaces"
+                && kk != experiments::experimentsDirKey())   // stamped by the reader of its dictionary (TG-02)
                 throw std::runtime_error(here + ": unknown word '" + kk + "' (use,"
                     " replaces, reason).");
 
-        const std::string sub = "experiments/" + name + ".dat";
-        const auto p = records::localRecord(sub);
-        if (p.empty())
-            throw std::runtime_error(here + ": no file constant/" + sub + " in this"
+        //  THE FILE OF THE DECLARING constant/, NEVER AN ANCESTOR'S (review row
+        //  TG-02): a sector's measurement reads the sector's experiments/; an
+        //  unstamped (case-root) declaration reads the root's.  No walk up.
+        const std::string dir = dec->lookupWordOrDefault(experiments::experimentsDirKey(),
+                                                         "constant/experiments");
+        const std::string where = dir + "/" + name + ".dat";
+        if (!std::filesystem::exists(where))
+            throw std::runtime_error(here + ": no file " + where + " in this"
                 " case.  A measurement the case marks is the case's own data.");
-        m.path = p.string();
+        m.path = where;
         const DictPtr f = Dictionary::fromFile(m.path);
-        const std::string where = "constant/" + sub;
         m.property = f->lookupWord("property");
         if (m.property != "liquidDensity")
             throw std::runtime_error(where + ": `property " + m.property + "` -- the"

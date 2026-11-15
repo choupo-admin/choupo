@@ -1,0 +1,37 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  Sector B's crcWaterMu -- every SECOND point of the handbook table sector A
+    holds (0, 20, ..., 100 degC: six points, 20 K apart), so the same pin text
+    gives a different interpolant than sector A's between the points.
+
+    READ AT: Lide, D.R. (ed.), CRC Handbook of Chemistry and Physics, 82nd ed.
+    (2001), printed page 6-3, table "Properties of water in the range
+    0 - 100 C", column "Visc. / uPa s" (100 kPa; IPTS-68); the column's
+    reference 3 is the primary cited below.  */
+
+provenance
+{
+    origin      literature;
+    citation    "Sengers, J.V.; Watson, J.T.R. (1986). Improved international formulations for the viscosity and thermal conductivity of water substance. J. Phys. Chem. Ref. Data 15, 1291 (the table's reference 3)";
+    via         "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), p. 6-3, Properties of water in the range 0-100 C (100 kPa; IPTS-68), every second row";
+    sha256      "b22f885358c743540a85aecb05a2545238bef5fddb58445537659c0df4b48384";   // of the handbook file read (the literature archive's lide-crc-handbook-chemistry-physics-82ed.pdf)
+}
+
+system      ( water );
+property    liquidViscosity;
+columns     ( { name T;  unit degC; }  { name mu;  unit uPa.s; } );
+data
+(
+      0   1793
+     20   1002
+     40    653.2
+     60    466.5
+     80    354.4
+    100    281.8
+);

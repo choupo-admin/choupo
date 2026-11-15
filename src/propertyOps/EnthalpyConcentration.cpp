@@ -14,6 +14,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "EnthalpyConcentration.H"
+#include "thermo/PropertyDomainError.H"
 
 #include "core/Advisory.H"
 #include "thermo/ThermoPackage.H"
@@ -284,7 +285,7 @@ int EnthalpyConcentration::run(const DictPtr& dict,
             ok = r.converged && r.y.size() == 2;
             if (ok) { T = r.T; return r.y[0]; }
         }
-        catch (const std::exception&) { ok = false; }
+        catch (const std::exception&) { rethrowHardRefusal(); ok = false; }
         return 0.0;
     };
 

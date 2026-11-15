@@ -27,6 +27,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "IsothermalFlash.H"
+#include "thermo/PropertyDomainError.H"
 #include "core/Advisory.H"
 #include "core/Constants.H"
 #include "thermo/phase/SolidPhase.H"
@@ -1687,7 +1688,7 @@ IsothermalFlash::solveCore(const FlashInput&    in,
                     for (std::size_t i = 0; i < n; ++i)
                         if (std::isfinite(Kr[i]) && Kr[i] > 0.0) K0[i] = Kr[i];
                 }
-                catch (const std::exception&) { /* keep sol.K as the seed */ }
+                catch (const std::exception&) { rethrowHardRefusal(); /* keep sol.K as the seed */ }
             }
             const scalar band = opts.tolerance;
             bool    splitL = false, splitV = false;
@@ -2319,6 +2320,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
             }
             catch (const std::exception& fe)
             {
+                rethrowHardRefusal();   // C398 TG-01: a hard refusal is never a number
                 //  ONE CONVENTION IN THE REFUSAL CASE TOO (R-E5).  The balance
                 //  report prices a stream whose own equilibrium will not
                 //  resolve on the state it CARRIES and announces that; a duty
@@ -2582,7 +2584,7 @@ int IsothermalFlash::solve(const DictPtr& dict,
                          "conditions would read 0 -- the pin is the physics "
                          "here, not the operation.\n";
     }
-    catch (const std::exception& e) { Q_valid = false; Q_gap = e.what(); }
+    catch (const std::exception& e) { rethrowHardRefusal(); Q_valid = false; Q_gap = e.what(); }
 
     // ---- Produced streams ----------------------------------------------
     //   VL:    (liquid, vapor)                  — vf = 0, vf = 1

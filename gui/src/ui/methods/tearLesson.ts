@@ -189,7 +189,7 @@ export const TEAR_STEPS: readonly LessonStep[] = [
       { step: "And one Newton step perturbs each of those variables up and "
           + "down, running a full sweep at each. That is the usual case: a "
           + "variable pressed against a bound is differenced on one side "
-          + "only (src/solver/NewtonND.cpp:189-258).",
+          + "only (src/solver/NewtonND.cpp:190-259).",
         eq: String.raw`\text{sweeps per Newton step} = 2 n_N`},
     ],
     formula: String.raw`\begin{aligned}

@@ -24,6 +24,7 @@
 #include <cmath>
 #include <cstdio>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <stdexcept>
@@ -112,6 +113,11 @@ std::unique_ptr<PropertyTable> PropertyTable::fromLaw(const DictPtr& body, const
     if (cp && t.cols[1].spec.dims == Dims::heatCapacity)
     {
         //  Per mass -> molar: J/(kg K) x MW [kg/kmol] / 1000 = J/(mol K).
+        if (!std::isnan(MW) && !(MW > 0.0))
+            throw std::runtime_error(label + ": the heat capacity is declared PER MASS (`"
+                + t.cols[1].unit + "`) and the record's molar mass is " + fmtG(MW) + " -- it cannot be"
+                " converted to a molar heat capacity (review row TB-02).  Give the record its `MW`,"
+                " or declare the column in J/mol/K.");
         if (MW > 0.0)
         {
             for (auto& v : y) v *= MW * 1.0e-3;
@@ -140,7 +146,12 @@ std::unique_ptr<PropertyTable> PropertyTable::fromLaw(const DictPtr& body, const
             if (!e->hasDimensions(k))
                 throw std::runtime_error(label + ": extend: `" + std::string(k) + "` carries no unit"
                     " (write it in K or degC).");
-            return e->lookupScalar(k, Dims::temperature);
+            try { return e->lookupScalar(k, Dims::temperature); }
+            catch (const std::exception& ex)   // a parse refusal, named by its table (TG-14)
+            {
+                throw std::runtime_error(label + ": extend: `" + std::string(k) + "` must be a"
+                    " temperature (K or degC) -- " + ex.what());
+            }
         };
         if (e->found("upTo"))   { x.hasHi = true; x.hi = tOf("upTo"); }
         if (e->found("downTo")) { x.hasLo = true; x.lo = tOf("downTo"); }
@@ -204,10 +215,15 @@ PropertyTable::PropertyTable(std::vector<scalar> x, std::vector<scalar> y, Inter
             throw std::runtime_error(label_ + ": the temperatures must be strictly increasing, with no"
                 " duplicate (point " + std::to_string(k + 1) + ", " + fmtT(x_[k]) + ", after "
                 + fmtT(x_[k - 1]) + ").");
-        if (isLog(m_) && !(y_[k] > 0.0))
-            throw std::runtime_error(label_ + ": interpolation " + std::string(word(m_)) + " takes ln y,"
-                " and point " + std::to_string(k + 1) + " is " + fmtG(y_[k]) + " (values must be"
-                " strictly positive).");
+        //  Every property a table may carry (a viscosity, a heat capacity) is
+        //  positive by definition, so a value <= 0 is refused under EVERY
+        //  interpolation, not only the two log forms (C398 V4 as amended by
+        //  the architect, review row TG-08: one sign typo gave a silent wrong
+        //  number through a linear table).
+        if (!(y_[k] > 0.0))
+            throw std::runtime_error(label_ + ": point " + std::to_string(k + 1) + " gives the "
+                + quantity_ + " as " + fmtG(y_[k]) + " -- it is positive by definition, so a value"
+                " <= 0 is refused whatever the interpolation (C398 V4, amended).");
     }
     if (!(x_.front() > 0.0))
         throw std::runtime_error(label_ + ": the first temperature is not above 0 K.");
@@ -342,23 +358,33 @@ int PropertyTable::admit(scalar T, const char* what) const
     }
     //  Inside the declared extension: announced once, the largest excursion
     //  restated (C398 end rule (c)).
+    //  THE MAXIMUM OVER EVERY OBJECT THAT BUILT THE SAME TABLE (review row
+    //  TB-01): a second package's object of the same table must not restate a
+    //  smaller excursion, so the largest is kept per LOCUS (the table's label
+    //  and side), process-wide, and restated in each pass of the log.
     const scalar exc = above ? T - x_.back() : x_.front() - T;
+    const std::string locus = label_ + (above ? " (above)" : " (below)");
+    struct Held { scalar max = 0.0; unsigned long long generation = 0; bool told = false; };
+    static std::map<std::string, Held> held;
     std::lock_guard<std::mutex> lk(excursionMutex());
-    scalar& mx = above ? maxAbove_ : maxBelow_;
-    const bool first = (maxAbove_ == 0.0 && maxBelow_ == 0.0);
-    if (exc > mx)
+    Held& h = held[locus];
+    const unsigned long long gen = AdvisoryLog::instance().generation();
+    if (exc > h.max || h.generation != gen)
     {
-        mx = exc;
-        const std::string locus = label_ + (above ? " (above)" : " (below)");
+        h.max = std::max(h.max, exc);
+        h.generation = gen;
         const std::string msg = "the " + quantity_ + " was taken past the table's "
             + std::string(above ? "last" : "first") + " point by the case's extension (chord of the end"
-            " segment, " + word(m_) + "); largest excursion " + fmtG(mx) + " K, to T = "
-            + fmtT(above ? x_.back() + mx : x_.front() - mx) + "; reason: " + ext_.reason;
+            " segment, " + word(m_) + "); largest excursion " + fmtG(h.max) + " K, to T = "
+            + fmtT(above ? x_.back() + h.max : x_.front() - h.max) + "; reason: " + ext_.reason;
         AdvisoryLog::instance().restate("table", "warning", locus, msg);
-        if (first)
-            std::cerr << "[table] " << label_ << ": evaluated at T = " << fmtT(T) << ", past its "
-                      << (above ? "last" : "first") << " point, by the case's extension (" << ext_.reason
-                      << "); the largest excursion is restated at the end of the run.\n";
+    }
+    if (!h.told)
+    {
+        h.told = true;
+        std::cerr << "[table] " << label_ << ": evaluated at T = " << fmtT(T) << ", past its "
+                  << (above ? "last" : "first") << " point, by the case's extension (" << ext_.reason
+                  << "); the largest excursion is restated at the end of the run.\n";
     }
     return above ? 1 : -1;
 }
@@ -385,12 +411,37 @@ void PropertyTable::segmentIntegrals(const std::array<scalar, 4>& c, scalar x0, 
 {
     //  I1 = c0 s + c1 s^2/2 + c2 s^3/3 + c3 s^4/4.
     i1 = s * (c[0] + s * (c[1] / 2.0 + s * (c[2] / 3.0 + s * c[3] / 4.0)));
-    //  p(s) = q(s) (s + x0) + r (synthetic division); I2 = int q + r ln((x0+s)/x0).
+    //  I2 = int_0^s p(t) / (x0 + t) dt.  On a SHORT segment (|s| <= x0/2, every
+    //  table of a liquid: 10 K at 300 K is s/x0 = 0.03) term by term, each
+    //  int_0^s t^j / (x0 + t) dt = (s^(j+1)/x0) sum_k (-u)^k / (j+k+1), u = s/x0,
+    //  an alternating series with no cancellation between large terms (review
+    //  row TB-03: the closed form below loses about 1e-10 relative on a steep
+    //  short segment).  Otherwise the closed form: p(s) = q(s) (s + x0) + r by
+    //  synthetic division, I2 = int q + r ln((x0+s)/x0).
+    const scalar u = s / x0;
+    if (std::fabs(u) <= 0.5)
+    {
+        i2 = 0.0;
+        scalar sj = s;                                   // s^(j+1)
+        for (int j = 0; j < 4; ++j, sj *= s)
+        {
+            if (c[std::size_t(j)] == 0.0) continue;
+            scalar sum = 0.0, uk = 1.0;
+            for (int k = 0; k < 200; ++k, uk *= -u)
+            {
+                const scalar term = uk / scalar(j + k + 1);
+                sum += term;
+                if (std::fabs(term) <= 1.0e-18 * std::fabs(sum)) break;
+            }
+            i2 += c[std::size_t(j)] * sj / x0 * sum;
+        }
+        return;
+    }
     const scalar q2 = c[3];
     const scalar q1 = c[2] - x0 * q2;
     const scalar q0 = c[1] - x0 * q1;
     const scalar r  = c[0] - x0 * q0;
-    i2 = s * (q0 + s * (q1 / 2.0 + s * q2 / 3.0)) + r * std::log1p(s / x0);
+    i2 = s * (q0 + s * (q1 / 2.0 + s * q2 / 3.0)) + r * std::log1p(u);
 }
 
 scalar PropertyTable::integral(scalar T) const
@@ -435,6 +486,12 @@ scalar PropertyTable::integralOverT(scalar T) const
     const std::size_t k = segment(T);
     segmentIntegrals(poly_[k], x_[k], T - x_[k], i1, i2);
     return cum2_[k] + i2;
+}
+
+scalar PropertyTable::probeT() const
+{
+    const std::size_t k = segment(0.5 * (x_.front() + x_.back()));
+    return x_[k] + 0.37 * (x_[k + 1] - x_[k]);
 }
 
 std::string PropertyTable::describe() const

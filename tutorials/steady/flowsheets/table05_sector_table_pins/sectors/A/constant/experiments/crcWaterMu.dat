@@ -1,0 +1,50 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*  crcWaterMu -- the viscosity of liquid water at eleven temperatures, 0 to
+    100 degC, as a case's own table (DEV.md 4c C398, slice (c)).
+
+    READ AT: Lide, D.R. (ed.), CRC Handbook of Chemistry and Physics, 82nd ed.
+    (2001), printed page 6-3, table "Properties of water in the range
+    0 - 100 C", column "Visc. / uPa s".  The table states: all values refer to
+    100 kPa (1 bar); temperature scale IPTS-68 (at 100 C it differs from
+    ITS-90 by about 0.03 K, below the last printed digit here); the column's
+    reference is its ref. 3, which is the PRIMARY cited below.  The handbook
+    is the route (`via`), never the authority.
+
+    The file is the experiments grammar the case already reads (provenance,
+    system, property, columns with units, data), with many rows: `data` is
+    flat, one value per column, row after row.  The interpolation is not
+    here: it is a choice about how to USE the data, written on the pin that
+    cites this file.  */
+
+provenance
+{
+    origin      literature;
+    citation    "Sengers, J.V.; Watson, J.T.R. (1986). Improved international formulations for the viscosity and thermal conductivity of water substance. J. Phys. Chem. Ref. Data 15, 1291 (the table's reference 3)";
+    via         "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), p. 6-3, Properties of water in the range 0-100 C (100 kPa; IPTS-68)";
+    sha256      "b22f885358c743540a85aecb05a2545238bef5fddb58445537659c0df4b48384";   // of the handbook file read (the literature archive's lide-crc-handbook-chemistry-physics-82ed.pdf)
+}
+
+system      ( water );
+property    liquidViscosity;
+columns     ( { name T;  unit degC; }  { name mu;  unit uPa.s; } );
+data
+(
+      0   1793
+     10   1307
+     20   1002
+     30    797.7
+     40    653.2
+     50    547.0
+     60    466.5
+     70    404.0
+     80    354.4
+     90    314.5
+    100    281.8
+);

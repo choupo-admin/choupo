@@ -16,7 +16,9 @@
 
 #include "thermo/RecordResolver.H"
 
+#include <algorithm>
 #include <cstdio>
+#include <filesystem>
 #include <stdexcept>
 
 namespace Choupo {
@@ -54,6 +56,14 @@ Column readColumn(const DictPtr& col, const ColumnRole& role, const std::string&
     if (!okDims)
         throw std::runtime_error(where + ": column `" + c.name + "` must be " + role.what
             + " (" + role.dims.toPretty() + "), and `" + c.unit + "` is " + u->dims.toPretty() + ".");
+    if (!role.allowedUnits.empty()
+        && std::find(role.allowedUnits.begin(), role.allowedUnits.end(), c.unit) == role.allowedUnits.end())
+    {
+        std::string list;
+        for (const auto& w : role.allowedUnits) list += (list.empty() ? "" : ", ") + w;
+        throw std::runtime_error(where + ": column `" + c.name + "` in `" + c.unit + "` -- " + role.what
+            + " is read here in " + list + ".");
+    }
     if (u->affine && !role.affineAllowed)
         throw std::runtime_error(where + ": column `" + c.name + "` in `" + c.unit + "`, an offset"
             " scale -- only a temperature column may be declared in one.");
@@ -90,16 +100,63 @@ Table readTable(const DictPtr& d, const std::vector<ColumnRole>& roles, const st
     return t;
 }
 
-File readFile(const std::string& name, const std::string& expectProperty, const std::string& citedBy)
+namespace {
+
+std::string experimentsPathOf(const std::string& constantDir)
+{
+    namespace fs = std::filesystem;
+    std::error_code ec;
+    const fs::path abs = fs::weakly_canonical(fs::path(constantDir) / "experiments", ec);
+    const fs::path cwd = fs::current_path(ec);
+    const fs::path rel = fs::relative(abs, cwd, ec);
+    if (!ec && !rel.empty() && rel.string().rfind("..", 0) != 0) return rel.string();
+    return abs.string();
+}
+
+void stampWalk(const DictPtr& d, const std::string& dir, const std::string& parentKey,
+               const std::string& grandKey)
+{
+    for (const auto& k : d->keys())
+    {
+        const auto& v = d->entryValue(k);
+        if (std::holds_alternative<std::vector<DictPtr>>(v))
+        {
+            for (const auto& e : std::get<std::vector<DictPtr>>(v))
+            {
+                if (k == "pin" && e->found("table") && !e->found(experimentsDirKey()))
+                    e->insert(experimentsDirKey(), EntryValue(dir));
+                stampWalk(e, dir, k, parentKey);
+            }
+        }
+        else if (std::holds_alternative<DictPtr>(v))
+        {
+            const DictPtr sub = std::get<DictPtr>(v);
+            //  volumetric { liquid { measured { <name> { ... } } } }
+            if (parentKey == "measured" && grandKey == "liquid" && !sub->found(experimentsDirKey()))
+                sub->insert(experimentsDirKey(), EntryValue(dir));
+            stampWalk(sub, dir, k, parentKey);
+        }
+    }
+}
+
+} // namespace
+
+void stampExperimentsDir(const DictPtr& d, const std::string& constantDir)
+{
+    if (d) stampWalk(d, experimentsPathOf(constantDir), "", "");
+}
+
+File readFile(const std::string& name, const std::string& expectProperty, const std::string& citedBy,
+              const std::string& experimentsDir)
 {
     File f;
-    const std::string sub = "experiments/" + name + ".dat";
-    f.where = "constant/" + sub;
-    const auto p = records::localRecord(sub);
-    if (p.empty())
-        throw std::runtime_error(citedBy + ": no file " + f.where + " in this case.  A table the"
-            " case cites is the case's own data, in its constant/experiments/.");
-    f.path = p.string();
+    const std::string dir = experimentsDir.empty() ? std::string("constant/experiments") : experimentsDir;
+    f.where = dir + "/" + name + ".dat";
+    if (!std::filesystem::exists(f.where))
+        throw std::runtime_error(citedBy + ": no file " + f.where + ".  A table the case cites is"
+            " the case's own data, in the experiments/ folder of the constant/ that declares the"
+            " entry citing it (never found by walking up to another constant/).");
+    f.path = f.where;
     f.dict = Dictionary::fromFile(f.path);
     const DictPtr& d = f.dict;
     if (!d->found("provenance"))
