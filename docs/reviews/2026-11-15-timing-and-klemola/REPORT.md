@@ -185,6 +185,65 @@ is about 1.3, where a small change in the ratio moves an impurity by a
 large factor, and their heat capacities and latent heats), plus the
 latent-heat difference of section 2b.  Not decomposed.
 
+## 2d. Proposals for the laptop, from the same day's conversation with the owner (nothing built)
+
+The owner asked whether Choupo could become equation-oriented, which
+Jacobians it uses, and what could be taken from OpenFOAM.  Measured
+first: Choupo's Jacobians are finite differences almost everywhere
+(`DistillationColumn.cpp:2120`; the simultaneous MESH colours them by
+Curtis-Powell-Reid, `NewtonND.H:121`, `DistillationColumn.cpp:3602`;
+`ReactiveVLE.cpp` and the rate-based segment central differences), with
+ONE analytic Jacobian, the DSPM-DE pore (`PoreNernstPlanck.H:36`), whose
+finite-difference one is kept as the test oracle; and `NewtonND` already
+accepts a caller's analytic Jacobian and audits it against the dense
+finite-difference one on the first iteration (`NewtonND.H:139-143`).
+OpenFOAM, read 2026-11-14 (`../2026-11-14-openfoam-property-architecture/`),
+assembles its matrices from the discretisation and resolves nonlinearity
+by outer correctors; where it does use Newton it uses analytic
+derivatives: the energy-to-temperature inversion with Cp
+(`thermoI.H:238-299`), the chemistry ODE with rate derivatives
+(`thermo.H`, `dKcdTbyKc`, "Derivative term used for Jacobian").
+
+Four proposals, in the order of value for cost.  They are proposals for
+the owner's decision with the architect, NOT findings:
+
+1. **One temperature-from-enthalpy inversion with an analytic
+   derivative.**  Choupo has two named homes
+   (`reactorOutlet::temperatureOfEnthalpy`, `ReactorOutlet.cpp:189`;
+   `VariableVolumeHoldup::temperatureFromEnthalpy`,
+   `VariableVolumeHoldup.cpp:203`) and, by a rough count not verified file
+   by file, eighteen unit files that price an enthalpy and loop on a
+   temperature.  One home that asks the package for H and the Cp
+   consistent with it (one law, so dH/dT IS that Cp) converges in two or
+   three steps and removes a class of divergence between units.
+2. **A mixed Jacobian in the column MESH.**  The cheap analytic
+   derivatives exist or are one line away: d ln p_sat / dT
+   (`VaporPressureModel::computeDlnPsatDT`), Cp as dH/dT, dK/dT.  They
+   could fill the energy and equilibrium rows, leaving finite differences
+   only where derivation is expensive (NRTL, UNIFAC); `NewtonND`'s audit
+   checks the result on the first iteration.
+3. **Analytic Jacobians of case-written rate laws.**  `core/Formula`
+   parses a rate law into an expression tree; differentiating the tree
+   gives its Jacobian, dimension-checked, for an implicit (Rosenbrock)
+   integrator in `batchReactor` / `dynamicCSTR`, which integrate
+   explicitly today.  Worth it only if the corpus has stiff kinetics; not
+   measured.
+4. **Frozen-property inner loops** (the SIMPLE/PIMPLE spirit; the
+   inside-out method of distillation): speed, which section 2c shows is
+   not today's problem.  Last.
+
+On an equation-oriented flowsheet mode: the roadmap already defers it and
+names the only form it would take (`docs/engine-capabilities.md`, the
+"big" row: opt-in `solver eo;` beside the sequential solver, each unit
+gaining an optional `residuals()`, started small).  The owner discussed it
+against Gall's law (a complex system that works evolves from a simple
+system that worked): the simple working system is the per-unit full MESH;
+any step should grow from it, opt-in, two or three units first, and only
+on a concrete need (product specifications without a `designSpec`,
+recycles that do not converge today), not for speed.  Proposals 1 and 2
+make that step cheaper whenever it comes, because they leave reusable
+analytic derivatives.
+
 ## 3. Not done
 
 The WebAssembly timing; the deeper cause inside DWSIM's NRTL; a props
