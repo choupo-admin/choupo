@@ -3518,6 +3518,24 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **C406 (Vitor, 2026-11-15, filing Izutsu's "Electrochemistry in
+> Nonaqueous Solutions" (Wiley-VCH 2002): "pode dar jeito para a simulacao
+> de vinho surrogate?").**  A CANDIDATE, judged useful: the wine cases
+> (wineAcids01, ed09_wine_multiionic, the tartaric plant) speciate their
+> acids in WATER, and a wine is 10-15 % ethanol.  What the book gives, read
+> the same day: the pH scale in water + ethanol (the reference value of the
+> potassium hydrogen phthalate standard, 4.230 at 10 wt % and 4.488 at 20 wt
+> % EtOH against 4.005 in water, and a regression in the ethanol mole
+> fraction, Ch. 6, p. 178), the Gibbs energies of transfer of ions from
+> water to organic solvents and the transfer activity coefficients (Ch. 2),
+> selective solvation in mixed solvents (p. 47).  What it does not give:
+> the dissociation constants of tartaric, malic and lactic acid in
+> hydroalcoholic solution, which a wine surrogate needs measured; a primary
+> on wine acids in water-ethanol is to be found before any build.  Scope
+> when built: a solvent-composition-dependent pKa and activity, the pH
+> reported on the scale a pH meter in wine reads, one witness against a
+> measured hydroalcoholic titration.
+
 > **C403 LANDED (2026-11-15): 54 ions and boric acid carry their own D0.**
 > Read at the page: 41 ions from Li & Gregory 1974 Table 1 (p. 705; the 0
 > and 18 C values in the notes), 12 from Robinson & Stokes 1959, Appendix
