@@ -3518,6 +3518,29 @@ accepts today, and that is a policy call.
 > property dictionary, every unit that prices a property itself, the
 > reaction records) BEFORE the rate-based column is taken up again.
 
+> **EX-05 FIXED AND LANDED (2026-11-15): the phiPhi dew and bubble points.**
+> On a package with one equation of state for both phases, DewPoint made a
+> single outer pass (the `ideal` activity placeholder read as an ideal
+> liquid) and stopped at x = y: a lean natural gas came out 20-35 K low or
+> failed.  Now the incipient phase is iterated (Wilson seed); a point is
+> refused only when the cubic's two roots coincide (pure fluids and
+> azeotropes converge; a supercritical pure fluid is refused); a
+> non-converged incipient phase near the critical point is refused with the
+> physics named; both solvers bracket 100-700 K on phiPhi.  Measured against
+> an independent Peng-Robinson Newton solver: within 0.0005-0.01 K on dew
+> and bubble curves of the lean gas (envelope05, new) from 1 to 60 bar.
+> Moved: column08's two feed dew points (378.94 -> 380.06 K, 435.23 ->
+> 435.48 K; independent SRK 380.062 K), now pinned; envelope05's own rows.
+> Gamma-phi untouched (byte-identical).  Built on the lighter model; the
+> first review on the strongest found two S2 the build had introduced (pure
+> fluids and azeotropes refused; a near-critical bubble point accepted at
+> the wrong T), both fixed in round 2 (rows DP-01..06; report
+> docs/reviews/2026-11-15-dewpoint-phiphi).  Held by --fast 87/0 on the
+> merged tree and the builder's --scope 134/0 with the closures.  OPEN: the
+> "did not settle" refusal's onset depends on the incipient iteration's
+> 200-pass budget; between 74 and 80 bar the lean gas's bubble solve is
+> refused without the physics named.
+
 > **C405 (Vitor, 2026-11-15: "regista", on the surface-tension sources).**
 > A COMMISSION.  MEASURED the same day: 88 of 696 component records carry
 > their own surface-tension law, sigma = A tau^n fitted by
