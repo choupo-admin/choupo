@@ -75,13 +75,13 @@ const RVIEW = "src/thermo/ResolvedView.cpp";
  *  prose and the page all reach a line through this map. */
 export const CITES = {
   // -- where the log goes ----------------------------------------------------
-  runCaseRedirect: { file: "bin/runCase", line: 356,
+  runCaseRedirect: { file: "bin/runCase", line: 362,
     contains: '"$RUN_BIN" "$CASE_ABS"  > "$LOG" 2>&1 || rc=$?' },
   runCaseLog: { file: "bin/runCase", line: 302,
     contains: 'LOG="$CASE_ABS/log.$APP"' },
-  runCaseSummary: { file: "bin/runCase", line: 371,
+  runCaseSummary: { file: "bin/runCase", line: 377,
     contains: "tail -14" },
-  runCaseFailed: { file: "bin/runCase", line: 416,
+  runCaseFailed: { file: "bin/runCase", line: 422,
     contains: 'FAILED (exit $rc) -- last 20 lines of log:' },
   resultJson: { file: MAIN, line: 1643,
     contains: "emitResultJson(std::cout, result);" },
@@ -163,11 +163,11 @@ export const CITES = {
   rrNewton: { file: FLASH, line: 1798,
     contains: '"] Rachford-Rice Newton (inner):\\n"' },
   bubbleNewton: { file: "src/unitOperations/saturation/BubblePoint.cpp",
-    line: 414, contains: '"Bubble-T Newton-Raphson:\\n"' },
+    line: 433, contains: '"Bubble-T Newton-Raphson:\\n"' },
   // -- convergence -----------------------------------------------------------------
   flashResult: { file: FLASH, line: 2798, contains: "Flash Result" },
   bubbleResult: { file: "src/unitOperations/saturation/BubblePoint.cpp",
-    line: 468, contains: "Bubble-T Result" },
+    line: 489, contains: "Bubble-T Result" },
   compositionLoop: { file: FLASH, line: 1921,
     contains: '"\\nComposition outer loop (gamma/K refresh) converged after "' },
   convergenceControls: { file: CONV, line: 196,
