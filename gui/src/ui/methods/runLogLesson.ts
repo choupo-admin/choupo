@@ -22,8 +22,8 @@
   three very different statements as one wall of text.
 
   Every line of the engine this prose names is reached through `at(...)`,
-  never typed: tests/runLog.test.ts holds each citation to the statement on
-  its line, refuses a bare `file:line` here, and checks every number quoted
+  never typed: tests/runLog.test.ts holds each citation to the statement inside
+  its symbol, refuses a bare `file:line` here, and checks every number quoted
   below against a native run of the same witness.
 \*---------------------------------------------------------------------------*/
 
@@ -51,7 +51,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "under the viewer says what each level adds, measured on flash01 — "
       + "and verbosity 0 is not silent. Pick a level and a run in the viewer: "
       + "every line is coloured by what kind of line it is, and a click on a "
-      + "line says what it is and which line of the engine printed it.",
+      + "line says what it is and which function of the engine printed it.",
   },
   {
     n: 2,
@@ -288,10 +288,11 @@ export const RUN_LOG_LIMITS: readonly LessonLimit[] = [
   },
   {
     id: "snapshot",
-    title: "Line numbers are a snapshot of this version",
-    body: "Each file:line on this page points at the engine as it stands in "
-      + "this version of Choupo, and a test holds every one of them to the "
-      + "statement it names. When the engine changes, the lines move and the "
-      + "page is corrected; what the log says does not change that way.",
+    title: "The page names the function, not a line number",
+    body: "Each citation on this page names the engine file and the function "
+      + "that holds the statement (file#function), and a test holds every "
+      + "one of them to the statement it quotes. When the engine moves code "
+      + "the page still holds; if a function is renamed or the statement "
+      + "goes, the test fails by name and the page is corrected.",
   },
 ];
