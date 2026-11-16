@@ -262,6 +262,7 @@ DictPtr Database::componentDict(const std::string& name) const
             p = p.parent_path();
         }
     }
+    records::noteLoadedComponent(name);    // C413: the names a scanned registry's pairs are relevant to
     // SEALED: the property manifest FORBIDS the catalogue.
     const bool sealed = records::sealed();
     if (sealed)

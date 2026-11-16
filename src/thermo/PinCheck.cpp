@@ -30,7 +30,6 @@ License
 
 #include "core/DictCanonical.H"
 #include "core/ReadLog.H"
-#include "core/Sha256.H"
 #include "thermo/Database.H"
 #include "thermo/ElementComposition.H"
 #include "thermo/RecordResolver.H"
@@ -38,11 +37,14 @@ License
 #include "thermo/ThermoAnnounce.H"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <set>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -76,34 +78,12 @@ fs::path catalogueRoot()
     return ec ? fs::path(r) / "standards" : c;
 }
 
+//  The computational hash of a record file; "" when it does not PARSE.  An
+//  unparseable record is never hashed as empty (PN-07): callers refuse it.
 std::string computationalHash(const fs::path& f)
 {
     try { return canonical::sha256OfFile(f.string()); }
     catch (const std::exception&) { return ""; }
-}
-
-//  The directory pin (key ends in "/"): see pinHash().
-std::string directoryHash(const fs::path& dir)
-{
-    std::vector<std::string> names;
-    for (const auto& e : fs::directory_iterator(dir))
-        if (e.path().extension() == ".dat") names.push_back(e.path().filename().string());
-    std::sort(names.begin(), names.end());
-    std::string lines;
-    for (const auto& n : names)
-        lines += n + "\t" + computationalHash(dir / n) + "\n";
-    return sha256::hex(lines);
-}
-
-bool isDirKey(const std::string& k) { return !k.empty() && k.back() == '/'; }
-
-//  A catalogue file is COVERED when it is pinned itself, or when its directory
-//  is pinned as a whole.
-bool covered(const std::set<std::string>& pinned, const std::string& sub)
-{
-    if (pinned.count(sub)) return true;
-    const std::size_t k = sub.rfind('/');
-    return k != std::string::npos && pinned.count(sub.substr(0, k + 1)) > 0;
 }
 
 DictPtr pinsOf()
@@ -131,6 +111,141 @@ bool announceOnceKey(const std::string& k)
 {
     static std::set<std::string> said;
     return said.insert(k).second;
+}
+
+//  The components the run loaded (Database::loadComponent notes each): the
+//  names a scanned registry's pair files are relevant to.  Leaked: read from
+//  the ledger's static destructor.
+std::set<std::string>& loadedComponents_()
+{
+    static std::set<std::string>* s = new std::set<std::string>();
+    return *s;
+}
+
+//  What the run would PIN: sub -> computational hash, or "absent".
+std::map<std::string, std::string>& proposed_()
+{
+    static std::map<std::string, std::string>* m = new std::map<std::string, std::string>();
+    return *m;
+}
+
+//  ---- the words a case names (comments stripped): assets and utilities it
+//  selects are the files of those names ------------------------------------
+std::set<std::string> caseWords()
+{
+    std::set<std::string> words;
+    fs::path root = manifestRoot();
+    if (root.empty()) root = fs::current_path();
+    static const std::set<std::string> skipDirs = {
+        "converged", "postProcessing", "reports", "iterations", "archiveExtracts",
+        "experiments", ".git" };
+    std::error_code ec;
+    for (fs::recursive_directory_iterator it(root, fs::directory_options::skip_permission_denied, ec), end;
+         it != end; it.increment(ec))
+    {
+        if (ec) break;
+        if (it->is_directory(ec))
+        {
+            if (skipDirs.count(it->path().filename().string())) it.disable_recursion_pending();
+            continue;
+        }
+        const std::string ext = it->path().extension().string();
+        if (ext == ".dat" || ext == ".csv" || ext == ".log" || ext == ".cho"
+            || it->path().filename() == "propertyManifest") continue;
+        if (!it->is_regular_file(ec) || fs::file_size(it->path(), ec) > (1u << 20)) continue;
+        std::ifstream f(it->path());
+        std::ostringstream ss; ss << f.rdbuf();
+        const std::string t = ss.str();
+        std::string tok;
+        auto flush = [&]()
+        {
+            if (!tok.empty()) words.insert(tok);
+            tok.clear();
+        };
+        for (std::size_t i = 0; i < t.size(); ++i)
+        {
+            if (t[i] == '/' && i + 1 < t.size() && t[i + 1] == '/')
+            { flush(); while (i < t.size() && t[i] != '\n') ++i; continue; }
+            if (t[i] == '/' && i + 1 < t.size() && t[i + 1] == '*')
+            { flush(); i += 2; while (i + 1 < t.size() && !(t[i] == '*' && t[i + 1] == '/')) ++i; ++i; continue; }
+            const unsigned char c = static_cast<unsigned char>(t[i]);
+            if (std::isalnum(c) || c == '_') tok += t[i];
+            else flush();
+        }
+        flush();
+    }
+    return words;
+}
+
+bool startsWith(const std::string& s, const std::string& p) { return s.rfind(p, 0) == 0; }
+
+//  A pair stem `A-B` is relevant when it splits (at some '-') into two loaded components.
+bool pairRelevant(const std::string& stem, const std::set<std::string>& comps)
+{
+    for (std::size_t k = stem.find('-'); k != std::string::npos; k = stem.find('-', k + 1))
+        if (comps.count(stem.substr(0, k)) && comps.count(stem.substr(k + 1))) return true;
+    return false;
+}
+
+//  Is a PARSED catalogue file relevant to this case?  A registry parses a whole
+//  directory whether or not the case uses a record; only the names the case
+//  selects are consumed.  Everything not in a scanned directory is consumed
+//  when parsed (a record read by name).
+bool consumed(const std::string& sub, const std::set<std::string>& comps,
+              const std::set<std::string>& words)
+{
+    const std::size_t k = sub.rfind('/');
+    const std::string dir = (k == std::string::npos) ? "" : sub.substr(0, k);
+    const std::string stem = fs::path(sub).stem().string();
+    if (dir == "parameters/Henry" || dir == "parameters/solution")
+        return pairRelevant(stem, comps);
+    if (dir == "assets" || dir == "utilities")
+        return words.count(stem) > 0;
+    if (startsWith(dir, "parameters/adsorption/equilibria/"))
+        return words.count(fs::path(dir).filename().string()) > 0 && comps.count(stem) > 0;
+    return true;
+}
+
+//  Compute what the run consumed -- the records parsed that the case selects --
+//  plus the ABSENCES that could change a resolution: the pair files among the
+//  loaded components that do not exist, so that adding one later is a drift.
+void computeProposed()
+{
+    auto& out = proposed_();
+    out.clear();
+    const std::set<std::string>& comps = loadedComponents_();
+    const std::set<std::string> words = caseWords();
+    const fs::path cat = catalogueRoot();
+    for (const auto& p : readlog::state().paths)
+    {
+        const std::string sub = catalogueSubOf(p);
+        if (sub.empty() || !consumed(sub, comps, words)) continue;
+        const std::string h = computationalHash(cat / sub);
+        if (h.empty())
+            throw std::runtime_error("pins: the catalogue record data/standards/" + sub
+                + " was read by this run and does not PARSE -- a record that does not"
+                  " parse is refused, never pinned as empty.  Remedy: repair the record.");
+        out[sub] = h;
+    }
+    for (const char* dir : { "parameters/Henry", "parameters/solution" })
+        for (const auto& a : comps)
+            for (const auto& b : comps)
+            {
+                if (a == b) continue;
+                const std::string sub = std::string(dir) + "/" + a + "-" + b + ".dat";
+                if (!fs::exists(cat / sub)) out[sub] = "absent";
+            }
+    std::error_code ec;
+    const fs::path eq = cat / "parameters" / "adsorption" / "equilibria";
+    if (fs::is_directory(eq, ec))
+        for (const auto& e : fs::directory_iterator(eq, ec))
+            if (e.is_directory() && words.count(e.path().filename().string()))
+                for (const auto& c : comps)
+                {
+                    const std::string sub = "parameters/adsorption/equilibria/"
+                        + e.path().filename().string() + "/" + c + ".dat";
+                    if (!fs::exists(cat / sub)) out[sub] = "absent";
+                }
 }
 
 //  ---- a record's identity: formula (atoms + charge), charge, CAS ----------
@@ -215,6 +330,19 @@ const DictPtr& localDict(const fs::path& p)
     return it->second;
 }
 
+//  The catalogue record's identity, parsed ONCE per run (PN-03).
+const Identity& catalogueIdentity(const fs::path& cat)
+{
+    static std::map<std::string, Identity> cache;
+    auto it = cache.find(cat.string());
+    if (it == cache.end())
+    {
+        readlog::Pause compare;     // an identity comparison reads nothing (never pinned)
+        it = cache.emplace(cat.string(), identityOf(Dictionary::fromFile(cat.string()))).first;
+    }
+    return it->second;
+}
+
 bool identityKind(const std::string& sub)
 {
     return sub.rfind("components/", 0) == 0 || sub.rfind("species/", 0) == 0;
@@ -227,7 +355,6 @@ std::string stemOf(const std::string& sub)
 
 } // namespace
 
-//  standards-relative name of a file under the catalogue, "" when it is not.
 static const fs::path& leakedCatalogueRoot()
 {
     static const fs::path* cat = new fs::path(catalogueRoot());   // leaked on purpose
@@ -238,8 +365,6 @@ void primeCatalogueRoot() { (void)leakedCatalogueRoot(); }
 
 std::string pinHash(const std::string& path)
 {
-    std::error_code ec;
-    if (fs::is_directory(path, ec)) return directoryHash(path);
     return computationalHash(path);
 }
 
@@ -258,6 +383,9 @@ std::string catalogueSubOf(const std::string& path)
     return out;
 }
 
+void noteLoadedComponent(const std::string& name) { loadedComponents_().insert(name); }
+
+const std::map<std::string, std::string>& proposedPinsSnapshot() { return proposed_(); }
 
 bool pinsActive() { return pinsOf() != nullptr; }
 
@@ -304,21 +432,28 @@ int verifyPinsStart(const DictPtr& m, int verbosity)
     if (onDiv != "announce" && onDiv != "refuse")
         throw std::runtime_error("propertyManifest: onDivergence '" + onDiv
             + "' is not one of announce / refuse");
-    (void)strictPins();     // a junk CHOUPO_PINS word refuses at START, not only on a drift
+    const bool strict = strictPins();   // a junk CHOUPO_PINS word refuses at START, not only on a drift
 
     const fs::path root = manifestRoot();
     const fs::path cat  = catalogueRoot();
     std::vector<std::string> bad;      // "<sub> (class)"
-    std::vector<std::string> repin;    // records to re-pin
 
     DictPtr pins = m->subDict("pins");
     for (const auto& key : pins->keys())
     {
         const std::string want = pins->lookupWord(key);
         const fs::path f = cat / key;
-        if (!fs::exists(f)) { bad.push_back(key + " (vanished)"); repin.push_back(key); continue; }
-        if (pinHash(f.string()) != want)
-        { bad.push_back(key + " (changed)"); repin.push_back(key); }
+        if (want == "absent")
+        {
+            //  An ABSENCE pin: the record did not exist when the case was pinned,
+            //  and its arrival could change a resolution (a Henry pair, a solution pair).
+            if (fs::exists(f)) bad.push_back(key + " (appeared)");
+            continue;
+        }
+        if (!fs::exists(f)) { bad.push_back(key + " (vanished)"); continue; }
+        const std::string got = computationalHash(f);
+        if (got.empty()) { bad.push_back(key + " (unparseable)"); continue; }
+        if (got != want) bad.push_back(key + " (changed)");
     }
 
     if (DictPtr held = heldOf())
@@ -327,13 +462,18 @@ int verifyPinsStart(const DictPtr& m, int verbosity)
             const std::string want = held->lookupWord(key);
             const fs::path f = root / "constant" / key;
             if (!fs::exists(f)) { bad.push_back("held " + key + " (missing)"); continue; }
-            if (computationalHash(f) != want)
-            { bad.push_back("held " + key + " (changed)"); continue; }
+            const std::string got = computationalHash(f);
+            if (got.empty()) { bad.push_back("held " + key + " (unparseable)"); continue; }
+            if (got != want) { bad.push_back("held " + key + " (changed)"); continue; }
+            //  Said only when it is TRUE: the copy differs from the catalogue record
+            //  (a stale copy, or another species); never "older than the catalogue".
+            const fs::path c = cat / key;
             if (verbosity >= 1 && announceOnceKey("held:" + key))
-                std::cerr << "[held] " << key << ": catalogue copy older than"
-                             " the catalogue, read ALONE as the case's own"
-                             " record (transitional -- the catalogue record"
-                             " is not read for it)\n";
+                std::cerr << "[held] " << key << ": the case's own copy"
+                          << (fs::exists(c) && computationalHash(c) != want
+                                  ? ", which differs from the catalogue record," : ",")
+                          << " is read ALONE (transitional -- the catalogue record is"
+                             " not read for it)\n";
         }
 
     detail::setSealVerdict(bad.empty() ? "pinned" : "drifted", bad);
@@ -345,12 +485,13 @@ int verifyPinsStart(const DictPtr& m, int verbosity)
         std::cerr << "[pins] " << bad.size() << " pinned record(s) no longer"
                      " match the catalogue this case was pinned against:\n";
         for (const auto& b : bad) std::cerr << "[pins]   " << b << "\n";
-        std::cerr << "[pins] the run CONTINUES on the catalogue as it is --"
-                     " follow the new record with `bin/choupo-import --repin"
-                     " <record>` (then read which goldens moved), or restore"
-                     " the record.\n";
+        if (!strict)
+            std::cerr << "[pins] the run CONTINUES on the catalogue as it is --"
+                         " follow the new record with `bin/choupo-import --repin"
+                         " <record>` (then read which goldens moved), or restore"
+                         " the record.\n";
     }
-    if (strictPins())
+    if (strict)
         throw std::runtime_error("pins: " + std::to_string(bad.size())
             + " pinned record(s) no longer match the catalogue ("
             + joinNames(bad) + ") and this run is STRICT (CHOUPO_PINS=refuse,"
@@ -367,73 +508,73 @@ void finalizePins()
     if (done) return;
     done = true;
     DictPtr pins = pinsOf();
-    if (!pins) return;
+    if (!pins && !ledger::target()) return;
+    if (!pins && sealed()) return;           // a sealed case reads no catalogue
+
+    computeProposed();
+    if (!pins) return;                        // observation run: the ledger writes the proposal
 
     std::set<std::string> pinned(pins->keys().begin(), pins->keys().end());
     std::vector<std::string> unpinned, notRead;
-    std::set<std::string> read;
-    for (const auto& p : readlog::state().paths)
-    {
-        const std::string sub = catalogueSubOf(p);
-        if (!sub.empty()) read.insert(sub);
-    }
-    for (const auto& r : read)
-        if (!covered(pinned, r)) unpinned.push_back(r);
+    for (const auto& kv : proposed_())
+        if (!pinned.count(kv.first)) unpinned.push_back(kv.first);
     for (const auto& k : pinned)
-    {
-        bool hit = read.count(k) > 0;
-        if (!hit && isDirKey(k))
-            for (const auto& r : read)
-                if (r.rfind(k, 0) == 0 && r.find('/', k.size()) == std::string::npos)
-                { hit = true; break; }
-        if (!hit) notRead.push_back(k);
-    }
+        if (!proposed_().count(k)) notRead.push_back(k);
 
     const int verbosity = thermoAnnounceLevel();
     if (verbosity >= 2 && !notRead.empty())
     {
         std::cerr << "[pins] " << notRead.size() << " pinned record(s) were"
-                     " not read by this run (not a drift):";
+                     " not consumed by this run (not a drift):";
         for (const auto& k : notRead) std::cerr << " " << k;
         std::cerr << "\n";
     }
     if (unpinned.empty()) return;
 
     std::vector<std::string> all = drifted_();
-    for (const auto& u : unpinned) all.push_back(u + " (unpinned)");
+    for (const auto& u : unpinned)
+        all.push_back(u + (proposed_()[u] == "absent" ? " (unpinned absence)" : " (unpinned)"));
     detail::setSealVerdict("drifted", all);
     drifted_() = all;
     if (verbosity >= 1)
     {
         std::cerr << "[pins] " << unpinned.size() << " catalogue record(s) were"
-                     " READ by this run and are not pinned by the case's"
-                     " manifest:\n";
+                     " CONSUMED by this run (or are absences that could change a"
+                     " resolution) and are not pinned by the case's manifest:\n";
         for (const auto& u : unpinned) std::cerr << "[pins]   " << u << " (unpinned)\n";
         std::cerr << "[pins] pin them with `bin/choupo-import --pin <case>`"
                      " (it prints every record it adds, so a record that"
-                     " should NOT have been read -- a radical for an ion --"
-                     " is a diff you read).\n";
+                     " should NOT have been read -- a radical for an ion -- is a"
+                     " diff you read).\n";
     }
     if (strictPins())
-        throw std::runtime_error("pins: this run read " + std::to_string(unpinned.size())
+        throw std::runtime_error("pins: this run consumed " + std::to_string(unpinned.size())
             + " catalogue record(s) the case's manifest does not pin ("
             + joinNames(unpinned) + ") and it is STRICT (CHOUPO_PINS=refuse /"
               " `runCase --strict` / `onDivergence refuse;`).  Remedy:"
               " `bin/choupo-import --pin <case>` observes the run and pins what"
-              " it read; if a record on that list should not have been read"
+              " it consumed; if a record on that list should not have been read"
               " (a local ion record deleted so its name fell through to the"
               " catalogue's radical), restore the local record.");
 }
 
 void checkLocalShadow(const std::string& sub, const fs::path& local)
 {
-    if (local.empty() || sealed()) return;
+    if (local.empty()) return;
+    //  ONCE per (record, file) per run (PN-03): the answer cannot change inside a
+    //  run, and asking first keeps every later hit off the working-directory and
+    //  manifest lookups (a sealed time-integrated case hits this per step).
+    static std::set<std::string> checked;
+    if (!checked.insert(sub + "|" + local.string()).second) return;
+    if (sealed()) return;
+
     const fs::path cat = catalogueRoot() / sub;
     if (!fs::exists(cat)) return;                    // no homonym: nothing to say
 
     const std::string name = stemOf(sub);
     const bool held = pinsActive() && isHeld(sub);
-    const bool strictRule = pinsActive() && strictPins();
+    const bool strictEnv = strictPins();
+    const bool strictRule = pinsActive() && strictEnv;
     DictPtr ld = localDict(local);
     const Decl d = declarationOf(ld);
 
@@ -460,10 +601,8 @@ void checkLocalShadow(const std::string& sub, const fs::path& local)
     Identity li, ci;
     if (identityKind(sub))
     {
-        readlog::Pause compare;
-        const DictPtr cd = Dictionary::fromFile(cat.string());
         li = identityOf(ld);
-        ci = identityOf(cd);
+        ci = catalogueIdentity(cat);
         diff = disagreements(li, ci);
     }
 
@@ -491,35 +630,41 @@ void checkLocalShadow(const std::string& sub, const fs::path& local)
                    " `overlayOf " + name + ";` (a delta) with a variationReason,"
                    " or delete the copy and follow the catalogue.");
     }
-    else if (!held)
+    else
     {
+        //  Undeclared, or HELD (a held copy is a copy of the SAME species: it is
+        //  identity-checked like any other copy -- PN-06).
         if (!diff.empty())
         {
-            const std::string why = "is a DIFFERENT species under the catalogue's name (they"
-                " disagree on " + diffText + "): " + both;
+            const std::string why = std::string(held ? "is HELD as a copy of the catalogue's record but is"
+                                                     : "is")
+                + " a DIFFERENT species under the catalogue's name (they"
+                  " disagree on " + diffText + "): " + both;
             const std::string how = "declare `distinctFrom " + name + "; variationReason \"...\";`"
                 " in the record, or rename it.  Left undeclared, deleting"
                 " this record would make the name fall through to the"
                 " catalogue's species with exit 0.";
-            //  A case that REFERENCES the catalogue refuses.  A legacy UNSEALED case
-            //  (a sealed ion case copied out without its manifest, a demo written
-            //  before the declaration existed) is ANNOUNCED, never refused: the
-            //  refusal for those arrives with slice 4, which declares them.
-            if (pinsActive()) refuse(why, how);
+            //  Refuses for a held copy, a case that REFERENCES the catalogue, and any
+            //  case run STRICT (CHOUPO_PINS=refuse); a legacy unsealed case outside
+            //  strict is announced, as before.
+            if (held || pinsActive() || strictEnv) refuse(why, how);
             if (thermoAnnounceLevel() >= 1 && announceOnceKey("shadow:" + sub))
                 std::cerr << "[shadow] " << where << " " << why << "  " << how << "\n";
         }
-        if (strictRule)
-            refuse("shadows the catalogue record of the same name without"
-                   " declaring it (CHOUPO_PINS=refuse).",
-                   "declare `variationOf " + name + ";` or `overlayOf " + name
-                   + ";` with a `variationReason \"...\";`, or delete the copy"
-                     " and run `bin/choupo-import --pin <case>`.");
-        if (thermoAnnounceLevel() >= 1 && announceOnceKey("shadow:" + sub))
-            std::cerr << "[shadow] " << where << " shadows the catalogue record"
-                         " of the same name without a declaration -- declare"
-                         " `variationOf " << name << ";` / `overlayOf " << name
-                      << ";` with a `variationReason`, or delete the copy.\n";
+        if (!held)
+        {
+            if (strictRule)
+                refuse("shadows the catalogue record of the same name without"
+                       " declaring it (CHOUPO_PINS=refuse).",
+                       "declare `variationOf " + name + ";` or `overlayOf " + name
+                       + ";` with a `variationReason \"...\";`, or delete the copy"
+                         " and run `bin/choupo-import --pin <case>`.");
+            if (thermoAnnounceLevel() >= 1 && announceOnceKey("shadow:" + sub))
+                std::cerr << "[shadow] " << where << " shadows the catalogue record"
+                             " of the same name without a declaration -- declare"
+                             " `variationOf " << name << ";` / `overlayOf " << name
+                          << ";` with a `variationReason`, or delete the copy.\n";
+        }
     }
 
     if (d.count == 1 && d.reason.empty())

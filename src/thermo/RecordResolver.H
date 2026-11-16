@@ -123,21 +123,31 @@ inline const DictPtr& parsedManifest(const fs::path& p)
 // manifest BODY dict, or nullptr when the case carries none.
 inline DictPtr nearestManifest()
 {
-    fs::path p = fs::current_path();
+    //  The answer for a working directory cannot change inside a run, and every
+    //  resolver hit asks (sealed(), the shadow rule, the pin check): walking up to
+    //  eight levels of fs::exists each time cost a sealed time-integrated case
+    //  16 % (PN-03).  Cached per working directory; nullptr is cached too.
+    static std::map<std::string, DictPtr> cache;
+    const fs::path cwd = fs::current_path();
+    auto hit = cache.find(cwd.string());
+    if (hit != cache.end()) return hit->second;
+    DictPtr found = nullptr;
+    fs::path p = cwd;
     for (int up = 0; up < walkUpDepth; ++up)
     {
         fs::path m = p / "constant" / "propertyManifest";
         if (fs::exists(m))
         {
             const DictPtr& d = parsedManifest(m);
-            if (d->found("propertyManifest")) return d->subDict("propertyManifest");
-            return d;
+            found = d->found("propertyManifest") ? d->subDict("propertyManifest") : d;
+            break;
         }
         fs::path par = p.parent_path();
         if (par == p) break;
         p = par;
     }
-    return nullptr;
+    cache.emplace(cwd.string(), found);
+    return found;
 }
 
 // Does the case carry a property manifest at all?  (Database::resolveRoot's
@@ -330,6 +340,11 @@ struct Ledger
                 lines.insert("@ case " + p.substr(k + 9));
         }
         for (const auto& l : lines) o << l << "\n";
+        //  ... and what the run CONSUMED, as the pin set it proposes (PinCheck):
+        //  `@ pin <standards path> <hash|absent>`.  Computed at the end of the run,
+        //  never here: a destructor must not parse files.
+        for (const auto& kv : proposedPinsSnapshot())
+            o << "@ pin " << kv.first << " " << kv.second << "\n";
     }
 };
 

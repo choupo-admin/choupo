@@ -361,7 +361,7 @@ try
             if (a == "--canonical-dump")
                 std::cout << canonical::dump(*Dictionary::fromFile(f)) << "\n";
             else
-                std::cout << records::pinHash(f) << "  " << f << "\n";   // a file, or a pinned directory (C413)
+                std::cout << canonical::sha256OfFile(f) << "  " << f << "\n";
             return 0;
         }
         if (a == "--aqueous-graph" || a == "--family")

@@ -74,6 +74,7 @@ Description
 #include "core/Dictionary.H"
 
 #include <filesystem>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -85,14 +86,20 @@ namespace records {
 //  verifySeal, which every binary runs once at start.
 void primeCatalogueRoot();
 
-//- THE pin hash, one implementation: the COMPUTATIONAL hash of a record file;
-//  of a DIRECTORY (a pin whose key ends in "/"), the hash of the sorted lines
-//  "<file>\t<computational hash>\n" of every *.dat directly in it.  A directory
-//  scan (Henry pairs, assets, utilities, ...) reads every file of its directory
-//  whether or not the case needs one, so it is pinned as a WHOLE by one line --
-//  a catalogue edit or a NEW file in that directory moves exactly that pin.
-//  (choupoProps --canonical-hash <path> prints it; "" when unreadable.)
+//- THE pin hash, one implementation: the COMPUTATIONAL hash of a record file
+//  ("" when the file does not PARSE -- an unparseable record is refused, never
+//  hashed as empty).  (choupoProps --canonical-hash <file> prints it.)
 std::string pinHash(const std::string& path);
+
+//- Database::loadComponent notes every component it loads: the names a scanned
+//  registry's pair files are relevant to (a Henry pair `A-B` is consumed when A
+//  and B are both loaded components).
+void noteLoadedComponent(const std::string& name);
+
+//- What the finished run would PIN: sub -> computational hash, or "absent" for
+//  a name that does not exist but whose arrival could change a resolution.
+//  Computed by finalizePins; the consumption ledger writes it (`@ pin ...`).
+const std::map<std::string, std::string>& proposedPinsSnapshot();
 
 //- The standards-relative name of a file under the installation catalogue
 //  ("components/water.dat"), "" when the path is not under it.
