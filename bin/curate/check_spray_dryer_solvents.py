@@ -91,6 +91,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
+
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
 SRC = ROOT / "tutorials/steady/drying/sprayDryer01_sugar"
@@ -195,6 +198,12 @@ def antoine(name):
     src = (SRC / "constant/components" / f"{name}.dat")
     if not src.exists():
         src = STD / f"{name}.dat"
+    kind, par = record_psat.law_of(src.read_text())
+    if kind == "Wagner":
+        #  The IAPWS equation (water since 2026-11-16): the engine's Wagner model
+        #  returns the reducing pressure above the reducing temperature.
+        Tr_w, Pr_w = par[0], par[1]
+        return lambda T: record_psat.psat_pa(src.read_text(), T) if T <= Tr_w else Pr_w
     m = re.search(r"\nvaporPressure\s*\{[^}]*?model\s+Antoine;[^}]*?coefficients\s*"
                   r"\(\s*([-\d.eE+]+)\s+([-\d.eE+]+)\s+([-\d.eE+]+)\s*\)", src.read_text())
     if not m:

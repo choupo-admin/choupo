@@ -165,6 +165,9 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import record_psat  # noqa: E402
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 WITNESS = "tutorials/steady/flowsheets/process02_reactor_hx_flash"
@@ -228,20 +231,16 @@ def closure(case: pathlib.Path, unit: str):
 
 
 def antoine_tsat(case: pathlib.Path, component: str, P_Pa: float):
-    """Tsat(P) [K] from the case's OWN Antoine record, recomputed here, never
-    read off the engine: log10(P/bar) = A - B/(T + C).  None if the record
-    does not carry that form."""
+    """Tsat(P) [K] from the case's OWN vapour-pressure record (Antoine, or the
+    IAPWS Wagner form water carries since 2026-11-16), recomputed here, never
+    read off the engine.  None if the record carries neither."""
     rec = case / "constant" / "components" / (component + ".dat")
     if not rec.is_file() or P_Pa <= 0.0:
         return None
-    txt = rec.read_text()
-    m = re.search(r"vaporPressure\s*\{[^}]*model\s+Antoine\s*;[^}]*"
-                  r"coefficients\s*\(\s*([-+0-9.eE]+)\s+([-+0-9.eE]+)\s+"
-                  r"([-+0-9.eE]+)\s*\)", txt, re.S)
-    if not m:
+    try:
+        return record_psat.tsat_k(rec.read_text(), P_Pa)
+    except ValueError:
         return None
-    A, B, C = (float(g) for g in m.groups())
-    return B / (A - math.log10(P_Pa / 1.0e5)) - C
 
 
 def main() -> int:

@@ -1752,9 +1752,9 @@ the engine (\file{src/thermo/vaporPressure/Wagner.cpp}):
 with $T_r = 647.096$~K, $P_r = 22.064$~MPa, exponents
 $e = (1,\,1.5,\,3,\,3.5,\,4,\,7.5)$ and
 $a = (-7.85951783,\ 1.84408259,\ -11.7866497,\ 22.6807411,\ -15.9618719,\
-1.80122502)$.  The reducing constants belong to the equation: water's own
-$T_c$ in the record (647.14~K) is a different, older number and must not be
-substituted --- the engine refuses a \code{Wagner} block without its own
+1.80122502)$.  The reducing constants belong to the equation: the
+$T_c$ stored in water's record differs from it by 0.044~K (an older value) and must
+not be substituted --- the engine refuses a \code{Wagner} block without its own
 \code{reducing \{ T; P; \}}.  Valid 273.16--647.096~K.  The equation reproduces
 the release's Table~1 (611.657~Pa at 273.16~K, 101\,325~Pa at 373.1243~K,
 22.064~MPa at 647.096~K) to $1.5\times10^{-7}$ and the IF97 region-4

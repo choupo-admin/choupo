@@ -2405,3 +2405,9 @@ Reason: K_water = gamma Psat / P (or the pure-water saturation point itself): Ps
   max error 0.94 -> 1.22 K, fit grade clean -> warning); the shipped records under `data/standards/parameters/` (24 of them,
   see `check_regressed_pairs`) are the product of those fits.  Recording the cases would freeze a fit that disagrees with the
   shipped record; re-promoting the 24 records is a curation slice of its own with its own moved goldens.
+* `flash17_two_liquids_reactive`: NOT recorded.  Its rows moved (V/F 0.324 -> 0.341, K_water -0.9 %, K_benzene 37.5 -> 424), but
+  the declared second (organic) liquid, 1.7 % of the liquid before, VANISHES: the run no longer writes the `phases{}` block and
+  `check_phase_speciation` and `check_two_liquids` fail on it.  The reactive electrolyte flash prices water's vapour through the
+  H2O(g) = H2O gas-liquid record (the second home of the saturation curve, now derived from the IAPWS equation), which moved
+  water's K by 0.9 % at 313 K and tipped a case that sat at the edge of its phase.  The case needs authoring (a feed with a
+  decisive second liquid), not a golden.
