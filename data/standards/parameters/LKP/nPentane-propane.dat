@@ -1,0 +1,17 @@
+/*---------------------------------------------------------------------------*\
+  Lee-Kesler-Ploecker binary parameter kappa for nPentane - propane.
+  Source: Ploecker, U.; Knapp, H.; Prausnitz, J. "Calculation of High-Pressure
+  Vapor-Liquid Equilibria from a Corresponding-States Correlation with Emphasis
+  on Asymmetric Mixtures", Ind. Eng. Chem. Process Des. Dev. 17 (1978) 324-332,
+  Table I (p. 327), row "n-pentane - propane".
+  kappa multiplies the geometric-mean pseudo-critical temperature (Eq. 12,
+  T_cjk = (T_cj T_ck)^(1/2) kappa_jk): 1 means NO interaction.  It is NOT a
+  cubic k_ij; the field is named `kij` because the case grammar reads one name.
+  Not temperature-, density- or composition-dependent (p. 325).
+\*---------------------------------------------------------------------------*/
+recordType eosBinaryInteraction;
+schemaVersion 1;
+i    nPentane;
+j    propane;
+kij  1.006;
+eos  LeeKeslerPloecker;
