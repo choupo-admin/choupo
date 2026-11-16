@@ -55,6 +55,9 @@ def run_case(tmp, name, overlay=None, overlay_name="toluene.dat"):
     #  kept the last, so the fixture ran with whichever block came second.
     #  It worked by luck of the source cases; the parser now refuses the
     #  duplicate, which is how the fixture's own defect surfaced.
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import case_records
+    case_records.unpin(case)       # a case that references the catalogue, probed as the unsealed case it behaves as
     cd = case / "system" / "controlDict"
     if not re.search(r"^\s*reports\s*$|^\s*reports\s*\{", cd.read_text(), re.M):
         with open(cd, "a") as f:

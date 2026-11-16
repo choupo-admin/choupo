@@ -763,7 +763,7 @@ def pinned_key_parts(case_abs: Path):
     if m is None:
         return None
     mf = case_records.read_manifest(m)
-    if not mf["pins"]:
+    if not mf["has_pins"]:
         return None
     parts = []
     for sub in sorted(mf["pins"]):

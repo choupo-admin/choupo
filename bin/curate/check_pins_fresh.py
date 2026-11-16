@@ -56,15 +56,15 @@ def main():
     for m in case_records.manifests(ROOT):
         mf = case_records.read_manifest(m)
         case = m.parent.parent.relative_to(ROOT)
-        if mf["pins"] and (mf["sealed"] or mf["records"]):
+        if mf["has_pins"] and (mf["sealed"] or mf["records"]):
             bad.append(f"{case}: the manifest holds `pins` AND `sealed true;"
                        f" records` -- a referencing case and a sealed case are"
                        f" two claims.  Remedy: keep one (`bin/choupo-import"
                        f" --seal <case> --to <dir>` exports the sealed copy)")
-        if mf["held"] and not mf["pins"]:
+        if mf["held"] and not mf["has_pins"]:
             bad.append(f"{case}: `held` without `pins` -- held is the"
                        f" transitional block of a pinned case")
-        if not mf["pins"]:
+        if not mf["has_pins"]:
             continue
         nCases += 1
         for rel, want in sorted(mf["pins"].items()):

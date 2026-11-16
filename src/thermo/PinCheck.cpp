@@ -221,6 +221,13 @@ void computeProposed()
     {
         const std::string sub = catalogueSubOf(p);
         if (sub.empty() || !consumed(sub, comps, words)) continue;
+        //  A record the case reads ALONE (a held copy, a declared variation) is not
+        //  consumed from the catalogue even when a registry that scans the catalogue
+        //  directory parses the homonym on its way to the case's own copy.
+        {
+            const fs::path loc = localRecord(sub);
+            if (!loc.empty() && readsAlone(sub, loc)) continue;
+        }
         const std::string h = computationalHash(cat / sub);
         if (h.empty())
             throw std::runtime_error("pins: the catalogue record data/standards/" + sub
@@ -244,6 +251,10 @@ void computeProposed()
         {
             const std::string sub = dir + "/" + n;
             if (out.count(sub)) continue;
+            {   // the name is in the SET; a record the case reads ALONE is not pinned as consumed
+                const fs::path loc = localRecord(sub);
+                if (!loc.empty() && readsAlone(sub, loc)) continue;
+            }
             const std::string h = computationalHash(cat / sub);
             if (h.empty())
                 throw std::runtime_error("pins: the catalogue record data/standards/" + sub

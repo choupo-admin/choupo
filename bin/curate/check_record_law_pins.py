@@ -145,7 +145,7 @@ def make_case(tmp, witness, comp, prop, mode, how="system"):
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import case_records
     man = d / "constant" / "propertyManifest"
-    if man.is_file() and case_records.read_manifest(man)["pins"]:
+    if man.is_file() and case_records.read_manifest(man)["has_pins"]:
         man.unlink()
     rec = d / "constant" / "components" / f"{comp}.dat"
     if not rec.exists():

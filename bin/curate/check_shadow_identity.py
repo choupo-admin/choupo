@@ -54,6 +54,9 @@ CAT_BENZENE = ROOT / "data" / "standards" / "components" / "benzene.dat"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import case_records  # noqa: E402
 
+#  Its walks (`glob('*.dat')` over the catalogue copy) read the gate's OWN scratch copy, never the tree.
+SCAN_ROOTS = ()
+
 failures = []
 
 

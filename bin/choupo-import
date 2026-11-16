@@ -1808,10 +1808,12 @@ def cmd_pin(root, caseDir, from_sealed, repoint=()):
         (const / rel).unlink()
     # empty directories left by the deletions
     for d in sorted({(const / r).parent for r in identical}, reverse=True):
-        try:
-            d.rmdir()
-        except OSError:
-            pass
+        while d != const and d != d.parent:        # the whole emptied chain, not only the leaf
+            try:
+                d.rmdir()
+            except OSError:
+                break
+            d = d.parent
     print("choupo-import --pin %s" % caseDir)
     print("  pins: %d record(s); held: %d; copies deleted (identical): %d"
           % (len(pins), len(held), len(identical)))
@@ -1980,7 +1982,7 @@ def main():
     caseDir = Path(pos[0]).resolve()
     if not caseDir.is_dir():
         die("not a directory: " + str(caseDir))
-    if case_records.read_manifest(caseDir / "constant" / "propertyManifest")["pins"]:
+    if case_records.read_manifest(caseDir / "constant" / "propertyManifest")["has_pins"]:
         die("%s REFERENCES the catalogue (its manifest holds `pins`): a bare"
             " `choupo-import <case>` would seal it in place and throw the pins"
             " away.  To pin what the case reads again use `choupo-import --pin"

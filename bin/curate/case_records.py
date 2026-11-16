@@ -64,7 +64,7 @@ def read_manifest(path):
     A manifest that is absent returns all-empty.  `records` is the sealed
     form's keys (a `"<sub>" { ... }` block); `pins`/`held` are the scalar form.
     """
-    out = dict(sealed=False, pins={}, held={}, records=set())
+    out = dict(sealed=False, pins={}, held={}, records=set(), has_pins=False)
     p = Path(path)
     if not p.is_file():
         return out
@@ -72,6 +72,8 @@ def read_manifest(path):
     out["sealed"] = bool(re.search(r'\bsealed\s+true\s*;', txt))
     for name in ("pins", "held"):
         b = _block(txt, name)
+        if name == "pins":
+            out["has_pins"] = b is not None      # an EMPTY `pins {}` is a referencing case too
         if b:
             out[name] = {k: v for k, v in _PAIR.findall(b)}
     rec = _block(txt, "records")
@@ -129,8 +131,27 @@ def copy_constant(case, dest):
     dst = Path(dest) / "constant"
     shutil.copytree(src, dst)
     m = dst / "propertyManifest"
-    if m.is_file() and read_manifest(m)["pins"]:
+    if m.is_file() and read_manifest(m)["has_pins"]:
         m.unlink()
+    return dst
+
+
+def unpin(case_copy):
+    """A probe copy of a case that references the catalogue behaves as the UNSEALED
+    case it is once its manifest is gone (reads the catalogue under CHOUPO_HOME)."""
+    m = Path(case_copy) / "constant" / "propertyManifest"
+    if m.is_file() and read_manifest(m)["has_pins"]:
+        m.unlink()
+
+
+def ensure_local(case_copy, sub):
+    """Put the record `sub` (standards-relative) in the copy's own constant/ when the
+    copy does not carry it (it reads it from the catalogue): for a probe that edits it."""
+    dst = Path(case_copy) / "constant" / sub
+    if not dst.exists():
+        src = STD / sub
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(src, dst)
     return dst
 
 
@@ -150,7 +171,7 @@ def manifests(root=None):
 def pinned_case_dirs(root=None):
     root = Path(root) if root else ROOT
     for m in manifests(root):
-        if read_manifest(m)["pins"]:
+        if read_manifest(m)["has_pins"]:
             yield m.parent.parent
 
 

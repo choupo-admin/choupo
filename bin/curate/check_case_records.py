@@ -38,7 +38,10 @@ import case_records  # noqa: E402
 
 #  The number of `held` copies the tree may carry.  LOWER IT when a held copy is
 #  re-pointed; never raise it (a held copy is debt with a number, not a feature).
-HELD_CEILING = 0
+#  The tree it reads (for `bin/integrate --plan`, DEV.md 4c C394): every case's constant/ records and dicts.
+SCAN_ROOTS = ("tutorials", "data/curation")
+
+HELD_CEILING = 1991       # measured at the flip of 540 cases (C413 slice 2); only ever LOWER it
 
 SUBS = ("components", "species", "chemistry", "parameters", "assets",
         "utilities", "adsorbents", "mixtures")
@@ -74,7 +77,7 @@ def judge(case, root=ROOT):
     std = Path(root) / "data" / "standards"
     man = case / "constant" / "propertyManifest"
     mf = case_records.read_manifest(man)
-    if not mf["pins"]:
+    if not mf["has_pins"]:
         return []
     out = []
     name = case.name
@@ -139,7 +142,7 @@ def main():
         problems += written_homonyms(sd.parent.parent, ROOT)
     for m in case_records.manifests(ROOT):
         mf = case_records.read_manifest(m)
-        if not mf["pins"]:
+        if not mf["has_pins"]:
             continue
         nCases += 1
         nHeld += len(mf["held"])

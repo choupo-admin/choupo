@@ -56,9 +56,27 @@ MAN = "constant/propertyManifest"
 failures = []
 
 
+SEALED_BASE = None     # the fixture, sealed by the EXPORT (a tree case may reference the catalogue)
+
+
+def export_sealed_base(tmp: Path) -> Path:
+    """The sealed fixture is made by `choupo-import --seal --to` (C413): the tree's own
+    case is no longer sealed once it references the catalogue."""
+    dest = tmp / "sealed_base"
+    if (BASE / MAN).exists() and "sealed" in (BASE / MAN).read_text() and "pins" not in (BASE / MAN).read_text():
+        shutil.copytree(BASE, dest, ignore=shutil.ignore_patterns(
+            "expected", "*.csv", "converged", "iterations", "log.*", "resultJson*"))
+        return dest
+    r = subprocess.run([str(ROOT / "bin" / "choupo-import"), "--seal", str(BASE), "--to", str(dest)],
+                       capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SystemExit("check_seal_verdict: could not export the sealed fixture:\n" + r.stderr[-600:])
+    return dest
+
+
 def make_case(tmp: Path, tag: str, rec_edit=None, man_edit=None) -> Path:
     case = tmp / f"probe_{tag}"
-    shutil.copytree(BASE, case, ignore=shutil.ignore_patterns(
+    shutil.copytree(SEALED_BASE or BASE, case, ignore=shutil.ignore_patterns(
         "expected", "*.csv", "converged", "iterations", "resultJson*"))
     if rec_edit:
         p = case / REC
@@ -123,8 +141,10 @@ def main() -> int:
     if not (BASE / MAN).exists():
         print(f"check_seal_verdict: fixture {BASE/MAN} missing")
         return 1
+    global SEALED_BASE
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
+        SEALED_BASE = export_sealed_base(tmp)
         #  A COMPUTATIONAL edit: a new key reaches the parsed tree.  (Under
         #  `sealSchema computational;` -- the 2026-08-03 schema migration --
         #  a comment-only edit is COSMETIC and no longer diverges; that
