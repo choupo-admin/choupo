@@ -425,6 +425,7 @@ public:
     // and every brine reported "no molecular formula declared" about a record
     // that has one.  ONE parse, two callers.
     void   readIdentity(const DictPtr& d);
+    void   readCubicAlpha(const DictPtr& d);   // C408 slice 0 (cubicAlpha {})
     //  `VliqT`, the temperature of the `Vliq` datum (C378): one reader for
     //  both sites that read `Vliq`.
     void   readVliqT(const DictPtr& d);

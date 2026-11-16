@@ -1133,46 +1133,7 @@ void Component::readFromDict(const DictPtr& d)
                 " together (or none, for a non-associating fluid).  Curate"
                 " the missing value(s) from the primary source.");
     }
-
-    // The cubic's alpha-function constants (C408 slice 0): `cubicAlpha { <cubic>
-    // { form MathiasCopeman; c1; c2; c3; Trange (lo hi); valueSha256 "..."; } }`,
-    // one sub-block per cubic (SRK | PengRobinson).  The constants are a CURATION
-    // product (bin/curate/fit_alpha_function.py), never typed from a table; a
-    // partial or unknown block is refused at load.
-    if (d->found("cubicAlpha"))
-    {
-        auto ca = d->subDict("cubicAlpha");
-        for (const auto& cubic : ca->keys())
-        {
-            if (cubic != "SRK" && cubic != "PengRobinson")
-                throw std::runtime_error("Component '" + name_ + "': cubicAlpha"
-                    " names cubic '" + cubic + "' -- implemented: SRK |"
-                    " PengRobinson");
-            auto b = ca->subDict(cubic);
-            CubicAlphaFit f;
-            f.form = b->lookupWordOrDefault("form", "");
-            if (f.form != "MathiasCopeman")
-                throw std::runtime_error("Component '" + name_ + "': cubicAlpha."
-                    + cubic + " form '" + f.form + "' -- implemented:"
-                    " MathiasCopeman (Poling et al. 5th ed., Table 4-7)");
-            for (const char* k : { "c1", "c2", "c3", "Trange" })
-                if (!b->found(k))
-                    throw std::runtime_error("Component '" + name_
-                        + "': cubicAlpha." + cubic + " lacks `" + k + "` -- re-run"
-                        " bin/curate/fit_alpha_function.py (a partial block is"
-                        " refused, never completed with a default)");
-            f.c1 = b->lookupScalar("c1");
-            f.c2 = b->lookupScalar("c2");
-            f.c3 = b->lookupScalar("c3");
-            auto tr = b->lookupList("Trange");
-            if (tr.size() != 2)
-                throw std::runtime_error("Component '" + name_ + "': cubicAlpha."
-                    + cubic + ".Trange must hold (Tlow Thigh)");
-            f.Tlow = tr[0]; f.Thigh = tr[1];
-            cubicAlpha_[cubic] = f;
-        }
-    }
-
+    readCubicAlpha(d);   // C408 slice 0: `cubicAlpha {}`, defined at the end of this file
     // COSMO-SAC surface data (intrinsic): `cosmo { <setName> { variant; source;
     // area; volume; sigmaProfile ( ... ); } }`.  ONE or MORE named parameter sets
     // (VT2005, LVPP, ...) living ONCE in the component; the CosmoSac model picks a
@@ -2204,6 +2165,52 @@ void Component::requireViscosityTableSources_() const
         L.type = "table";
         L.isTable = true;
         requireTableSource("liquidViscosity", L);
+    }
+}
+
+// ---------------------------------------------------------------------------
+//  The cubic's alpha-function constants (C408 slice 0): `cubicAlpha { <cubic>
+//  { form MathiasCopeman; c1; c2; c3; Trange (lo hi); } }`, one sub-block per
+//  cubic (SRK | PengRobinson).  The constants are a CURATION product
+//  (bin/curate/fit_alpha_function.py), never typed from a table; a partial or
+//  unknown block is refused at load.  Defined HERE, at the end of the file, so
+//  that no line the EduTool lessons cite by file:line moves
+//  (gui/tests/standardState.test.ts holds Component.cpp:1689 and four more).
+// ---------------------------------------------------------------------------
+void Component::readCubicAlpha(const DictPtr& d)
+{
+    if (d->found("cubicAlpha"))
+    {
+        auto ca = d->subDict("cubicAlpha");
+        for (const auto& cubic : ca->keys())
+        {
+            if (cubic != "SRK" && cubic != "PengRobinson")
+                throw std::runtime_error("Component '" + name_ + "': cubicAlpha"
+                    " names cubic '" + cubic + "' -- implemented: SRK |"
+                    " PengRobinson");
+            auto b = ca->subDict(cubic);
+            CubicAlphaFit f;
+            f.form = b->lookupWordOrDefault("form", "");
+            if (f.form != "MathiasCopeman")
+                throw std::runtime_error("Component '" + name_ + "': cubicAlpha."
+                    + cubic + " form '" + f.form + "' -- implemented:"
+                    " MathiasCopeman (Poling et al. 5th ed., Table 4-7)");
+            for (const char* k : { "c1", "c2", "c3", "Trange" })
+                if (!b->found(k))
+                    throw std::runtime_error("Component '" + name_
+                        + "': cubicAlpha." + cubic + " lacks `" + k + "` -- re-run"
+                        " bin/curate/fit_alpha_function.py (a partial block is"
+                        " refused, never completed with a default)");
+            f.c1 = b->lookupScalar("c1");
+            f.c2 = b->lookupScalar("c2");
+            f.c3 = b->lookupScalar("c3");
+            auto tr = b->lookupList("Trange");
+            if (tr.size() != 2)
+                throw std::runtime_error("Component '" + name_ + "': cubicAlpha."
+                    + cubic + ".Trange must hold (Tlow Thigh)");
+            f.Tlow = tr[0]; f.Thigh = tr[1];
+            cubicAlpha_[cubic] = f;
+        }
     }
 }
 
