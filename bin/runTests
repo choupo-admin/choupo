@@ -8861,7 +8861,7 @@ check_case() {
     if [ -n "${CASE_REUSE[$_d]:-}" ]; then
         while IFS= read -r _l; do
             [ -n "$_l" ] || continue
-            printf "REUSED %-40s  (PASS taken %s; its keyed inputs are unchanged (key %s))\n" \
+            printf "REUSED %-40s  (PASS taken %s; its keyed inputs are unchanged, key %s: bin/curate/suite_reuse.py case-plan --explain)\n" \
                 "$_l" "${CASE_REUSE_DATE[$_d]}" "${_k:0:12}"
             reused=$((reused+1))
         done <<< "$(printf '%s' "${CASE_REUSE[$_d]}" | tr '\037' '\n')"
@@ -8876,7 +8876,7 @@ check_case() {
         local _s
         _s="$ROOT/build/reuse/cases/$(printf '%s' "${_d#"$ROOT"/}" | sed 's#/#__#g').tsv"
         mkdir -p "$ROOT/build/reuse/cases"
-        { printf '%s\n' "$_k" "$(date -u '+%Y-%m-%d %H:%M UTC')"
+        { printf '%s\n' "$_k" "$(date -u '+%Y-%m-%d %H:%M UTC'), commit $(git -C "$ROOT" rev-parse --short=10 HEAD 2>/dev/null || echo unknown)"
           printf '%s\n' "${PASSED_LABELS[@]}"; } > "$_s.$$" && mv -f "$_s.$$" "$_s"
     fi
 }
