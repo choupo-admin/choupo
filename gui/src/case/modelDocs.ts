@@ -350,6 +350,7 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   SRK:          { guide: "theory", dest: "ch:cubic-eos" },// Soave-Redlich-Kwong
   PR:           { guide: "theory", dest: "ch:cubic-eos" },// Peng-Robinson (same chapter)
   PengRobinson: { guide: "theory", dest: "ch:cubic-eos" },
+  MathiasCopeman: { guide: "theory", dest: "sec:cubic-alpha-mc" }, // per-component cubic alpha, fitted to the record's own Psat law (C408 slice 0)
   // -- vapour pressure (VaporPressureModel.cpp) ---------------------------
   Antoine:       { guide: "theory", dest: "ch:vap" },     // log10 P = A - B/(C+T)
   AmbroseWalton: { guide: "theory", dest: "ch:vap" },     // corresponding-states, needs Tc/Pc/omega

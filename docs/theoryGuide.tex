@@ -10101,6 +10101,108 @@ Eq.~\eqref{eq:srk-alpha}:
    \label{eq:srk-dadT}
 \end{equation}
 
+\subsection{A per-component alpha function: Mathias--Copeman}\label{sec:cubic-alpha-mc}
+
+\paragraph{Why.}  The generalised Soave slope of Eq.~\eqref{eq:srk-m}
+is one curve in $\omega$ for every fluid.  With the records' own
+$T_c,P_c,\omega$ it puts the SRK saturation pressure at the normal
+boiling point $-8.8\,\%$ low for water and $-2.7\,\%$ for methanol
+(acetone $-1.6\,\%$, ethanol $-1.1\,\%$; the design record
+\file{docs/design/c408-eos-ge-mixing-rules.md}, finding F2).  Any mixing
+rule built on that cubic inherits the error at both ends of the
+diagram.  The remedy is \emph{opt-in}: a case writes
+\code{alphaFunction MathiasCopeman;} in its \code{equationOfState}
+block, and the default (Soave for \code{SRK}, the 1978 PR slope for
+\code{PengRobinson}) is unchanged.
+
+\paragraph{Equations as implemented.}  With
+$x_i = 1-\sqrt{T/T_{c,i}}$ the attraction parameter keeps its form
+$a_i(T) = a_{c,i}\,\alpha_i(T)$, Eq.~\eqref{eq:srk-alpha}, and only
+$\alpha_i$ changes (Poling, Prausnitz \& O'Connell, \emph{The Properties of
+Gases and Liquids}, 5th ed., Table~4-7, pp.~4.19--4.20, the Mathias--Copeman
+row \cite{RPP}):
+\begin{equation}
+   \alpha_i(T) = \bigl[\,1 + c_{1,i}\,x_i + c_{2,i}\,x_i^{2}
+                   + c_{3,i}\,x_i^{3}\,\bigr]^{2},
+   \qquad T \le T_{c,i}.
+   \label{eq:mc-alpha}
+\end{equation}
+Above $T_c$ the engine uses the Soave branch with $c_1$ alone,
+$\alpha_i = [1 + c_{1,i}x_i]^2$.  Poling prints Eq.~\eqref{eq:mc-alpha}
+only; the supercritical branch is the engine's own continuous extension
+(the original paper, Mathias \& Copeman, \emph{Fluid Phase Equilib.}
+\textbf{13} (1983) 91, is not held), chosen because $\alpha$ and
+$\mathrm{d}\alpha/\mathrm{d}T$ are then continuous at $T_c$ ($x=0$);
+only $\mathrm{d}^2\alpha/\mathrm{d}T^2$ jumps there.  With
+$c_2=c_3=0$ Eq.~\eqref{eq:mc-alpha} \emph{is} Eq.~\eqref{eq:srk-alpha}
+with $m=c_1$, so a record without constants means today's behaviour.
+Writing $g_i=\sqrt{\alpha_i}$, $\mathrm{d}x_i/\mathrm{d}T=-1/(2\sqrt{T\,T_{c,i}})$:
+\begin{equation}
+   \frac{\mathrm{d}a_i}{\mathrm{d}T} = 2\,a_{c,i}\,g_i\,g_i',
+   \qquad
+   g_i' = \bigl(c_{1,i} + 2c_{2,i}x_i + 3c_{3,i}x_i^{2}\bigr)\,
+          \frac{\mathrm{d}x_i}{\mathrm{d}T}\quad(T\le T_{c,i}),
+   \label{eq:mc-dadT}
+\end{equation}
+and $g_i'=c_{1,i}\,\mathrm{d}x_i/\mathrm{d}T$ above $T_c$.  The code keeps
+the signed root $s_i=\sqrt{a_{c,i}}\,g_i$ of the mixing rule
+(Eq.~\eqref{eq:srk-damixdT}) so the derivative stays finite where
+$g_i=0$.  The second derivative is also closed-form in
+\code{CubicEoS::mathiasCopemanG}, for the heat-capacity departure of a
+later slice; no departure function reads it today.
+
+\paragraph{Symbols.}  $c_{1,i},c_{2,i},c_{3,i}$ are dimensionless and
+\emph{per component and per cubic}: constants fitted for \code{SRK} are
+wrong for \code{PengRobinson}, whose $a_c$ and $b$ differ.  The record
+holds them as \code{cubicAlpha \{ SRK \{ form MathiasCopeman; c1; c2; c3;
+Trange (lo hi); \} \}}.
+
+\paragraph{Where the constants come from.}  Never from a table.  The
+curation tool \file{bin/curate/fit\_alpha\_function.py} fits
+$c_1,c_2,c_3$ by least squares in $\ln P^{\mathrm{sat}}$ of the pure
+cubic's saturation pressure (forty-one points) against the component
+record's \emph{own} vapour-pressure law over the window that law declares,
+keeps $\sqrt{\alpha}$ positive up to $T_c$, writes the block and a
+provenance entry (\code{origin derived}, the law, the window, the
+largest deviation, \code{valueSha256}) into the record.  Nothing
+estimates during a run.  A component without the block, under
+\code{alphaFunction MathiasCopeman;}, is refused by name and the message
+names the tool.  The choice is printed in the run and in the resolved
+view.
+
+\paragraph{Validity window and an honest in-sample statement.}  The
+constants reproduce \emph{the record's law over its window}, in-sample
+(Table~\ref{tab:mc-fits}); outside it they extrapolate, and above $T_c$
+only $c_1$ acts.  A cubic can follow a vapour-pressure law only where
+that law is the liquid--vapour curve: CO$_2$'s Antoine record is the
+sublimation line (its window ends below the triple point) and the tool
+refuses it by name, so CO$_2$ has no Mathias--Copeman constants until a
+saturated-liquid law is curated.  Water's Antoine law is itself 0.1--2.5
+\% off IAPWS across its window (the record's header says so), so
+water's cubic follows that law, not the primary: at the normal boiling
+point it lands $+2.3\,\%$ high against $101325$~Pa while within
+$0.26\,\%$ of the record's law.
+\begin{table}[ht]
+\centering
+\caption{Fitted constants and the saturation-pressure deviation from the
+record's own law over its window (201 points), default alpha function
+against Mathias--Copeman.  Produced by \code{fit\_alpha\_function.py};
+held by the gate \code{check\_alpha\_function}.}
+\label{tab:mc-fits}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+component & cubic & $c_1$ & $c_2$ & $c_3$ & default & fitted\\
+\midrule
+water    & SRK & 0.96335 &  0.15290 & $-0.60907$ & 34.1\,\% & 0.26\,\%\\
+water    & PR  & 0.80628 &  0.37236 & $-0.77634$ & 21.3\,\% & 0.27\,\%\\
+methanol & SRK & 1.41822 & $-0.60449$ & $-0.23147$ & 19.3\,\% & 0.05\,\%\\
+methanol & PR  & 1.22117 & $-0.20453$ & $-0.68580$ & 14.7\,\% & 0.06\,\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+Witness: \code{tutorials/props/molecular/alpha01\_water\_methanol\_psat}.
+
 \subsection{Mixing rules}
 
 A mixture needs single effective $a_{\mathrm{mix}}, b_{\mathrm{mix}}$.

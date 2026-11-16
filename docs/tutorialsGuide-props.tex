@@ -4006,6 +4006,53 @@ WHAT TO READ. The printed rows (and shortlist.csv): permeate flow and concentrat
 \subsection{molecular}
 \grouptheory{molecular}
 \clearpage
+\tutentry{alpha01\_water\_methanol\_psat}{tutorials/props/molecular/alpha01\_water\_methanol\_psat}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{water\_soave\_window}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{water\_soave\_Tb}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{water\_mathiasCopeman\_window}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{water\_mathiasCopeman\_Tb}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{methanol\_soave\_window}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{methanol\_soave\_Tb}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{methanol\_mathiasCopeman\_window}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{methanol\_mathiasCopeman\_Tb}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{The saturation pressure of water and of methanol from the SRK cubic with its default (Soave) alpha function, from the same cubic with the per-component Mathias-Copeman alpha function fitted to each record's own vapour-pressure law, and from that law itself.}
+\begin{tutnarrative}
+DOES A PER-COMPONENT ALPHA FUNCTION FIX THE CUBIC'S OWN VAPOUR PRESSURE? (DEV.md 4c C408, slice 0; design record docs/design/c408-eos-ge-mixing-rules.md, finding F2 and ruling 2.)
+
+THE PROBLEM. SRK with the engine's generalised (Graboski-Daubert) Soave slope misses the normal-boiling vapour pressure by -8.8 \% for water and -2.7 \% for methanol. A mixing rule built on that cubic inherits the error at both ends of the diagram, whatever the rule.
+
+THE REMEDY, OPT-IN. `alphaFunction MathiasCopeman;` on the cubic replaces alpha = [1 + m(1 - sqrt Tr)]\textasciicircum{}2 by alpha = [1 + c1 x + c2 x\textasciicircum{}2 + c3 x\textasciicircum{}3]\textasciicircum{}2, x = 1 - sqrt(Tr) (Tr <= 1) (Poling, Prausnitz \& O'Connell, 5th ed., Table 4-7, pp. 4.19-4.20; above Tc the Soave branch with c1 only). c1..c3 are NOT typed from a table: they are fitted BY CURATION (bin/curate/fit\_alpha\_function.py) to each record's OWN vapour-pressure law over the window that law declares, and stored in the record (`cubicAlpha \{ SRK \{ ... \} \}`, provenance origin `derived`, with the law, the window, the largest deviation and a value sha). With c2 = c3 = 0 the form IS Soave's, so a record without the block is today's behaviour.
+
+WHAT EACH OPERATION PRINTS. For the pure liquid, `P\_bubble` is the CUBIC's saturation pressure at T (the incipient vapour is the same pure fluid) and `Psat\_<component>` is the record's own Antoine law, read from the same package. The ratio is the deviation. Nine to eleven temperatures span the law's declared window (water 293-373 K of its 273-373 K -- below 293 K the pure liquid's pressure is under the 0.01 bar floor of the bubble-pressure solver, which refuses it by name -- and methanol's whole 288-356 K); the `\_Tb` points sit at the normal boiling point.
+
+ANCHORS. The `\_Tb` rows of the Mathias-Copeman operations carry an anchor: at the normal boiling point the saturation pressure is 101325 Pa BY DEFINITION. Water is read at 373.1243 K, the temperature at which IAPWS SR1-86 Table 1 tabulates p = 101325 Pa (quoted in data/standards/components/ water.dat's header); methanol at the record's Tb = 337.85 K. The anchor tolerances (3e-2 and 1e-2) are the in-sample deviation of the SAVED records plus margin: water's Antoine law is itself 0.1-2.5 \% off IAPWS across its window (its header says so), and the Mathias-Copeman constants reproduce THAT law, not the primary -- which is the honest statement of what curating to the record's own law buys.
+
+WHAT THIS DOES NOT SAY. It does not say the constants are right outside the window: above it they extrapolate, and CO2 is not curated at all -- its Antoine law is the SUBLIMATION line and the tool refuses it by name.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{water\_soave\_window}{n\_emptyCurves}{0}
+\goldrow{diag}{water\_soave\_window}{n\_failures}{0}
+\goldrow{diag}{water\_soave\_window}{n\_points}{9}
+\goldrow{diag}{water\_soave\_Tb}{Cp\_ig}{34.2435751855}
+\goldrow{diag}{water\_soave\_Tb}{H\_R}{-72.161464993}
+\goldrow{diag}{water\_soave\_Tb}{H\_ig}{-239280.990399}
+\goldrow{diag}{water\_soave\_Tb}{H\_real}{-239353.151864}
+\goldrow{diag}{water\_soave\_Tb}{P}{101325}
+\goldrow{diag}{water\_soave\_Tb}{P\_bubble}{92363.3324518}
+\goldrow{diag}{water\_soave\_Tb}{Psat\_water}{103828.92914}
+\goldrow{diag}{water\_soave\_Tb}{S\_R}{-0.123242446572}
+\goldrow{diag}{water\_soave\_Tb}{S\_ig}{196.336501981}
+\goldrow{diag}{water\_soave\_Tb}{S\_real}{196.213259534}
+\goldrow{diag}{water\_soave\_Tb}{T}{373.1243}
+\goldmore{62}
+\end{tutgolden}
+
+\clearpage
 \tutentry{componentLookup01\_catalogue\_ladder}{tutorials/props/molecular/componentLookup01\_catalogue\_ladder}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
