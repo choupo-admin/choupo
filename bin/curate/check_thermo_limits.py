@@ -25,15 +25,22 @@ through the real binary; nothing in the tree is written.
       same case uncapped to exit 0 converged (so the refusal is not a refusal
       of every flash).
 
-  (c) A TRIVIAL BUBBLE ROOT and (d) A TRIVIAL DEW ROOT.  `BubblePoint::
-      compute` prices the vapour at the liquid's own composition (y = x) and
-      `DewPoint::compute` starts the liquid at x = y; on a phi-phi cubic both
-      fugacities then come off ONE root and every K is 1, which satisfies the
-      residual identically.  flash09's own liquid (N2 + CH4, SRK, saturated at
-      149.82 K and 20.616 bar by the flash) came back "T_bubble 200 K,
-      Converged: yes" at the bracket floor.  The arms require both probes to
-      report NOT converged, naming the trivial root, and a genuine bubble
-      point (bubbleT01, ideal gas vapour) to stay converged.
+  (c) A TRIVIAL BUBBLE ROOT and (d) A TRIVIAL DEW ROOT.  On a phi-phi cubic a
+      saturation search whose trial phase equals the given phase prices both
+      fugacities off ONE root and every K is 1, which satisfies the residual
+      identically.  flash09's own liquid (N2 + CH4, SRK, saturated at 149.82 K
+      and 20.616 bar by the flash) once came back "T_bubble 200 K, Converged:
+      yes" at the bracket floor, because the solvers priced the trial phase at
+      the given phase's composition.  SINCE EX-05 (2026-11-15) the solvers
+      iterate the incipient phase (Wilson-seeded), so at that state they find
+      the GENUINE saturation point and the old probe is no longer a trivial
+      root: the arms are in two halves.  (c-genuine)/(d-genuine): at the
+      flash's own state both solvers converge to the flash's own temperature
+      (149.82 K, within 0.01 K) -- the saturation the flash found by another
+      route.  (c)/(d): above the mixture's critical pressure (50 bar, the same
+      two compositions) there is no saturation point, the cubic has one root,
+      and both solvers must report NOT converged naming the trivial root.  A
+      genuine bubble point (bubbleT01, ideal gas vapour) must stay converged.
 
   (c') AN AZEOTROPE IS NOT A TRIVIAL ROOT.  Every K = 1 is ALSO the
       signature of a genuine azeotropic bubble point; the first cut of the
@@ -51,15 +58,15 @@ through the real binary; nothing in the tree is written.
       why, and flash01's (a genuine ideal-gas binary) to still carry one.
 
 WHAT THIS GATE DOES NOT COVER, so its OK line cannot imply it:
-  * It does NOT make the bubble/dew solvers RIGHT on a cubic: they still
-    price the trial phase at the given phase's composition (no incipient-
-    phase iteration, as `BubblePoint::pressure` has) and still bracket T in
-    200-700 K.  Those are proposals in docs/design/review-c131-thermodynamics.md;
-    this gate only holds the refusal of the trivial root.
-  * The trivial-root test excludes a PURE component on purpose: its genuine
-    saturation point has K = 1 too.  A pure component on a liquid-only root
-    (propane at 15 bar, y = x, gamma-phi + PR: 228.6 K against 316.3 K) is NOT
-    caught here; it is the incipient-phase proposal.
+  * The independent value of (c-genuine)/(d-genuine) is the FLASH's own
+    saturation (same equation of state, a different algorithm), not a
+    calculation outside the engine; bin/curate/check_phase_envelope.py holds
+    the phi-phi dew/bubble solvers to an independent Peng-Robinson calculation
+    (arms k, l: pure fluids, an azeotrope, the near-critical refusals).
+  * On a phi-phi package the solvers iterate the incipient phase and bracket
+    T in 100-700 K (EX-05); the gamma-phi path keeps 200-700 K.  The pure
+    component on a liquid-only root of a GAMMA-phi package (propane at 15 bar,
+    y = x, gamma-phi + PR) is not covered here.
   * It says nothing about the missing phi_sat in gamma-phi, nor about the
     phi-phi liquid enthalpy (both in the review, both golden-moving).
 
@@ -178,7 +185,7 @@ with tempfile.TemporaryDirectory() as td:
                          " exhausted outer loop")
 
 # ---- (c), (d) trivial bubble / dew roots on phi-phi SRK ------------------
-def satProbe(unitType, flows, label, word):
+def satProbe(unitType, flows, label, word, P="2061600", genuine=None):
     with tempfile.TemporaryDirectory() as td:
         case = Path(td) / "sat"
         shutil.copytree(flash09, case)
@@ -196,8 +203,16 @@ def satProbe(unitType, flows, label, word):
         (case / "system/flowsheetDict").write_text(
             "units\n(\n    {\n        name sat01;\n        type %s;\n"
             "        in feed;\n        outputs ( );\n"
-            "        operation { P 2061600 Pa; }\n    }\n);\n" % unitType)
+            "        operation { P %s Pa; }\n    }\n);\n" % (unitType, P))
         rc, out = run(solve, case)
+        if genuine is not None:
+            m = re.search(r"T_(?:bubble|dew):\s+([0-9.]+)\s+K", out)
+            if (rc != 0 or not re.search(r"Converged:\s+yes", out)
+                    or not m or abs(float(m.group(1)) - genuine) > 0.01):
+                return (f"{label}: the genuine {word} point at the flash's own"
+                        f" state must converge to {genuine} K (exit {rc},"
+                        f" T = {m.group(1) if m else None})")
+            return None
         if rc == 0 or not re.search(r"Converged:\s+NO", out):
             return (f"{label}: the trivial {word} root was published as"
                     f" converged (exit {rc})")
@@ -207,9 +222,13 @@ def satProbe(unitType, flows, label, word):
 
 
 for f in (satProbe("bubbleT", ("0.149515816249", "0.850484183751"),
-                   "(c) bubble", "bubble"),
+                   "(c-genuine) bubble", "bubble", genuine=149.82),
           satProbe("dewT", ("0.465833270562", "0.534166730281"),
-                   "(d) dew", "dew")):
+                   "(d-genuine) dew", "dew", genuine=149.82),
+          satProbe("bubbleT", ("0.149515816249", "0.850484183751"),
+                   "(c) bubble", "bubble", P="5000000"),
+          satProbe("dewT", ("0.465833270562", "0.534166730281"),
+                   "(d) dew", "dew", P="5000000")):
     if f:
         fails.append(f)
 
@@ -298,10 +317,14 @@ if fails:
     sys.exit(1)
 print("thermo-limits: OK -- (a) " + claimA + ", continuous to 1e-6;"
       " (b) flash02 capped at maxOuterIter 1 refuses naming the exhausted"
-      " loop, uncapped converges; (c)/(d) flash09's phi-phi SRK liquid and"
-      " vapour give TRIVIAL bubble/dew roots that are reported NOT converged,"
+      " loop, uncapped converges; (c-genuine)/(d-genuine) flash09's own"
+      " saturated liquid and vapour give their GENUINE bubble/dew point (149.82"
+      " K, the flash's own); (c)/(d) the same compositions at 50 bar (above the"
+      " mixture's critical pressure) give a TRIVIAL root reported NOT"
+      " converged,"
       " bubbleT01 and the UNIQUAC ethanol-water azeotrope (every K = 1, a"
       " genuine bubble point) stay converged; (e) flash09 publishes no T-x-y block and"
-      " says why, flash01 keeps its.  NOT covered: the y = x pricing and the"
-      " 200-700 K bracket themselves, a pure component on a liquid-only root,"
-      " phi_sat in gamma-phi, the phi-phi liquid enthalpy.")
+      " says why, flash01 keeps its.  NOT covered: the flash is not an"
+      " independent calculation (check_phase_envelope holds one), a pure"
+      " component on a liquid-only root of a gamma-phi package, phi_sat in"
+      " gamma-phi, the phi-phi liquid enthalpy.")
