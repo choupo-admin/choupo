@@ -11095,6 +11095,209 @@ fractions and the closed-form oracle echoed at verbosity~3).
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
+\section{Lee--Kesler--Pl\"ocker: corresponding states as an equation of state}\label{sec:lkp}
+% Written 2026-11-16 against src/thermo/equationOfState/LeeKeslerPloecker.{H,cpp}
+% and DEV.md 4c C408 (d).  Sources: Lee and Kesler, AIChE J. 21, 510--527 (1975)
+% [LK] and Pl\"ocker, Knapp and Prausnitz, Ind. Eng. Chem. Process Des. Dev.
+% 17, 324--332 (1978) [PKP]; every equation number below is theirs, read from the
+% PDFs in the project's literature folder.  Cross-check: Poling, Prausnitz and
+% O'Connell, 5th ed., Example 4-1.
+
+\code{model LeeKeslerPloecker;} is a third equation of state beside the cubics
+(Section~\ref{ch:cubic-eos}) and PC-SAFT (Section~\ref{ch:pcsaft}), for the
+fluids the first two serve badly or only by tuning: non-polar and slightly
+polar hydrocarbons and their light-gas mixtures from the dilute gas to the
+compressed liquid, with the pressure, enthalpy and entropy departures and the
+fugacity coefficients that a phi--phi flash, a column or a compressor needs.  It
+is a \emph{correlation} of volumetric and caloric data, not a model of
+molecules (Lee and Kesler \cite{LeeKesler1975}, with the mixing rules of
+Pl\"ocker, Knapp and Prausnitz \cite{PloeckerKnapp1978}), and it is written in reduced variables: a fluid enters only through
+$T_c$, $P_c$ and the acentric factor $\omega$.
+
+\paragraph{Two fluids of one equation.}  A fluid of acentric factor $\omega$ is
+priced as an interpolation, at the \emph{same} reduced temperature and
+pressure, between two fluids that obey the same modified Benedict--Webb--Rubin
+equation with different constants: a \emph{simple fluid} ($\omega=0$) and a
+\emph{reference fluid} (n-octane, $\omega^{(r)}=0.3978$),
+\begin{equation}
+  Z \;=\; Z^{(0)} + \frac{\omega}{\omega^{(r)}}\bigl(Z^{(r)} - Z^{(0)}\bigr)
+  \qquad(\text{LK eq.\ 2}),
+  \label{eq:lkp-Z}
+\end{equation}
+and every other property is blended the same way, from the two fluids' \emph{own}
+functions.  Each fluid obeys
+\begin{equation}
+  Z=\frac{P_rV_r}{T_r}
+   = 1+\frac{B}{V_r}+\frac{C}{V_r^{2}}+\frac{D}{V_r^{5}}
+   +\frac{c_4}{T_r^{3}V_r^{2}}\Bigl(\beta+\frac{\gamma}{V_r^{2}}\Bigr)
+     \exp\!\Bigl(-\frac{\gamma}{V_r^{2}}\Bigr)
+  \qquad(\text{LK eq.\ 3}),
+  \label{eq:lkp-bwr}
+\end{equation}
+\begin{equation}
+  B=b_1-\frac{b_2}{T_r}-\frac{b_3}{T_r^{2}}-\frac{b_4}{T_r^{3}},\quad
+  C=c_1-\frac{c_2}{T_r}+\frac{c_3}{T_r^{3}},\quad
+  D=d_1+\frac{d_2}{T_r}
+  \qquad(\text{eqs 4--6}).
+  \label{eq:lkp-BCD}
+\end{equation}
+$V_r=P_cV/(\Rgas T_c)$ is \emph{not} the reduced volume (LK p.~513).  The twelve
+constants of each fluid are LK Table~1 (p.~511); they are compiled into
+\file{LeeKeslerPloecker.cpp} exactly as printed and held against the page by
+\code{check\_lee\_kesler\_ploecker}.  Pl\"ocker's Table~A-I prints the same table
+again and differs in one entry, $d_1\times10^{4}$ of the simple fluid
+($0.155428$ there, $0.155488$ in LK); the engine carries LK's.
+
+\paragraph{The departure functions and the fugacity.}  From \eqref{eq:lkp-bwr},
+with $E$ the integral of the exponential term,
+\begin{align}
+  \ln\frac{f}{P} &= Z-1-\ln Z+\frac{B}{V_r}+\frac{C}{2V_r^{2}}+\frac{D}{5V_r^{5}}+E
+    &&(\text{eq.\ 9}),\\
+  \frac{H^R}{\Rgas T} &= Z-1-\frac{b_2+2b_3/T_r+3b_4/T_r^{2}}{T_rV_r}
+    -\frac{c_2-3c_3/T_r^{2}}{2T_rV_r^{2}}+\frac{d_2}{5T_rV_r^{5}}+3E
+    &&(\text{eq.\ 11}),\\
+  \frac{S^R}{\Rgas} &= \ln Z-\frac{b_1+b_3/T_r^{2}+2b_4/T_r^{3}}{V_r}
+    -\frac{c_1-2c_3/T_r^{3}}{2V_r^{2}}-\frac{d_1}{5V_r^{5}}+2E
+    &&(\text{eq.\ 12}),
+\end{align}
+\begin{equation}
+  E=\frac{c_4}{2T_r^{3}\gamma}\Bigl\{\beta+1-\Bigl(\beta+1+\frac{\gamma}{V_r^{2}}\Bigr)
+     e^{-\gamma/V_r^{2}}\Bigr\}\qquad(\text{eq.\ 10}).
+  \label{eq:lkp-E}
+\end{equation}
+LK print eq.\ 11 as $(H-H^{*})/(\Rgas T_c)=T_r\{\dots\}$, so $H^R=\Rgas T\{\dots\}$,
+and eq.\ 12 as $(S-S^{*})/\Rgas+\ln(P/P^{*})$, the departure against the ideal
+gas at the \emph{same} $P$.  The three expressions satisfy $G^R=H^R-TS^R=\Rgas
+T\ln\varphi$ identically (the $1/V_r$ terms combine to $B$, the $1/V_r^{2}$ terms
+to $C/2$, the $1/V_r^{5}$ terms to $D/5$, and $3E-2E=E$), which the gate checks
+to $10^{-9}$ on 378 reduced states and on the package.  \emph{Symbols:}
+$T_r=T/T_c$, $P_r=P/P_c$; $H^R,S^R$ departures at $(T,P)$ [J\,mol$^{-1}$,
+J\,mol$^{-1}$\,K$^{-1}$]; $\varphi=f/P$.
+
+\paragraph{The root.}  Eq.~\eqref{eq:lkp-bwr} has one or three real roots in
+$V_r$.  The vapour root is the \emph{largest}, the liquid root the \emph{smallest};
+each of the two fluids takes the requested phase's root of its own equation,
+which is what the printed tables do.  A single root answers both requests, and
+the model's pseudo-root flags (the family's convention) say which phase it
+belongs to by $V_r$ against $0.29$, the simple fluid's value at its critical
+point.  The family's contract holds: $Z$, the volume, $H^R$ and $S^R$ report
+the vapour root, and \code{molarVolumeLiquid} and \code{phiLiquid} the liquid.
+
+\paragraph{Mixtures: one fluid with pseudo-critical constants.}  Pl\"ocker, Knapp
+and Prausnitz treat a mixture as one fluid whose $T_c$, $V_c$, $P_c$ and $\omega$
+are averages of the components',
+\begin{align}
+  V_{cM}&=\sum_j\sum_kz_jz_kV_{cjk},\quad
+  T_{cM}=\frac{1}{V_{cM}^{\eta}}\sum_j\sum_kz_jz_kV_{cjk}^{\eta}T_{cjk},\quad
+  \omega_M=\sum_jz_j\omega_j,\label{eq:lkp-mix}\\
+  T_{cjk}&=(T_{cj}T_{ck})^{1/2}\kappa_{jk},\quad
+  V_{cjk}=\tfrac18\bigl(V_{cj}^{1/3}+V_{ck}^{1/3}\bigr)^{3},\quad
+  P_{cM}=\frac{(0.2905-0.085\,\omega_M)\Rgas T_{cM}}{V_{cM}}
+  \label{eq:lkp-mix2}
+\end{align}
+(PKP eqs 9--14), with the universal exponent $\eta=0.25$ (p.~325).  The pure
+critical volume is \emph{derived}, $V_c=(0.2905-0.085\,\omega)\Rgas T_c/P_c$
+(LK eqs 20--21, p.~525), so the catalogue needs no new field, and for one
+component eqs 9--14 return exactly $T_c$ and $P_c$.  The exponent interpolates
+between the Prausnitz--Gunn rule ($\eta=0$) and the van der Waals rule ($\eta=1$);
+PKP found that $\eta=1$ overstates the effect of a size difference and that
+$\eta=0.25$ serves mixtures whose components differ in size by a factor of three
+or more.
+
+\paragraph{The binary constant $\kappa_{jk}$.}  PKP Table~I (p.~327) lists
+$\kappa_{jk}$ in 142 rows.  It is a \emph{multiplier} of the geometric-mean
+$T_c$ --- $1$ means no interaction --- and not a cubic's $k_{ij}$: it runs from
+$0.92$ (carbon dioxide with light alkanes) to $1.53$ (methane with $n$-decane)
+and to $2.6$ with hydrogen.  Each pair is a record
+(\file{data/standards/parameters/LKP/<i>-<j>.dat}, one per printed row except the
+hydrogen rows, which are not shipped, see below) declared in the case's
+\code{binaryInteractions} like a cubic's, with the page cited.  A pair with no
+record runs at $\kappa=1$, the geometric mean PKP's eq.~12 reduces to for a
+symmetric pair; this is \emph{announced by name} in the run and appears in the
+resolved view, because for an asymmetric pair it is not harmless (methane
+against a heavy alkane has $\kappa=1.2$--$1.5$ in the table), and PKP's own
+estimate for an unlisted pair is read from a graph (their Figures 10--13) that is
+not read here.
+
+\paragraph{The fugacity of a component.}  Differentiating $\ln\varphi_M$ with
+$T_{cM}$, $P_{cM}$ and $\omega_M$ as functions of composition (PKP A6--A13):
+\begin{equation}
+  \ln\varphi_i=\ln\varphi_M-\sum_{j\neq i}z_j\Bigl[
+    \frac{H^R/(\Rgas T)}{T_{cM}}\frac{dT_{cM}}{dz_j}
+    -\frac{Z_M-1}{P_{cM}}\frac{dP_{cM}}{dz_j}
+    +\frac{\partial\ln\varphi_M}{\partial\omega_M}\frac{d\omega_M}{dz_j}\Bigr],
+  \label{eq:lkp-phii}
+\end{equation}
+with $\partial\ln\varphi_M/\partial\omega_M=[(\ln\varphi)^{(r)}-(\ln\varphi)^{(0)}]/\omega^{(r)}$
+(A8) and the composition derivatives A9--A13, the mole fraction $z_i$ being the
+dependent one.  Because it is the closed form of the mole-number derivative of
+$n\ln\varphi_M$, the gate compares it with a central-difference derivative of an
+independent Python transcription of the whole mixture model, to $10^{-6}$.
+
+\paragraph{What is refused, and what is announced.}  Hydrogen and helium
+($T_c<35$\,K) are \emph{refused by name}: PKP (p.~325) price them with
+temperature-dependent effective critical constants (Gunn, Chueh and Prausnitz
+1966) that this model does not carry.  A $\kappa\le0$, a pair record regressed
+for another equation of state, and a pair naming a component the package does
+not carry are refused.  An evaluation outside $0.3\le T_r\le4$,
+$P_r\le10$ --- the window LK fitted (p.~510) --- is announced once with its
+$T_r$ and $P_r$; the value is an extrapolation of eq.~\eqref{eq:lkp-bwr}, never
+silent.  Strongly polar fluids are outside the model; the three water pairs of
+Table~I carry the paper's own warning (``fortuitous'', p.~326).
+
+\paragraph{What was checked.}  (1)~The correlation against the numbers its
+authors print: 17 reduced states chosen to include the dilute gas, the compressed
+liquid, the region where eq.~\eqref{eq:lkp-bwr} has three roots and the extremes
+$T_r=0.3$ and $3$, read in LK Tables 5, 7, 9 and 11 ($Z^{(0)}$,
+$(H^*-H)/\Rgas T_c$, $(S^*-S)/\Rgas$, $\log_{10}f/P$) on the root each table
+prints, and 6 states in Tables 6, 8, 10 and 12 (the deviation function
+$(q^{(r)}-q^{(0)})/\omega^{(r)}$); $Z$ agrees within $0.6\times10^{-4}$ and the
+others within $0.6\times10^{-3}$, half a unit of the last printed place plus the
+rounding of the printed constants, and the deviation functions within $3\times10^{-4}$
+of their value (the rounding of $\omega^{(r)}$ to four places is $1.3\times10^{-4}$).  The one exception that is a property of the
+correlation: at the simple fluid's critical point $T_r=P_r=1$, $V_r$ responds to
+$P_r$ as a cube root, and half a unit of the last printed digit of any \emph{one} of the
+twelve constants moves $Z$ between $0.284$ and $0.300$; the engine gives
+$0.2918$ against the printed $0.2901$, and the gate asks that point only for the
+band.  Poling, Prausnitz and O'Connell \cite{RPP} (5th ed., Example~4-1, p.~4.7) print
+$Z^{(0)}=0.697$ and $Z^{(1)}=-0.111$ at $T_r=0.95$, $P_r=0.60$, whence $Z=0.661$
+for $\omega=0.326$; the engine gives the same.  These tables are the correlation's
+\emph{own output}: agreeing with them proves the implementation of the equations
+and the constants, not the physics.  (2)~Against measurement, with nothing fitted:
+the N$_2$ + CH$_4$, N$_2$ + Ar and N$_2$ + Ar + CH$_4$ liquid--vapour equilibrium
+at 112.00\,K of Miller, Kidnay and Hiza \cite{Miller1973}, with the three $\kappa$ of Table~I
+(0.977, 0.988, 0.984) used as printed, evaluated at the experimenter's liquid
+compositions (case \file{tutorials/props/compare/lkp02\_n2\_ch4\_ar\_112K}): the
+mean absolute error of the bubble pressure is $1.6\,\%$ (11 runs, N$_2$ + CH$_4$),
+$0.75\,\%$ (7 runs, N$_2$ + Ar) and $0.48\,\%$ (10 ternary liquids, largest
+$1.3\,\%$).  \textbf{In sample:} the simple-fluid constants were fitted to
+argon, krypton and methane data (LK p.~512), so the pure-fluid side of Ar and
+CH$_4$ is not out of sample, and Table~I does not say which VLE measurements the
+$\kappa$ were regressed on, so no claim of independence is made for them; the
+data LK mark as used in the correlation are pure fluids.  (3)~The constants,
+the shipped records (against the printed table and the PDF's OCR layer), the
+closure, the derivative, the pure limit and the refusals are held by
+\code{check\_lee\_kesler\_ploecker} with seven sabotages.
+
+\paragraph{Limits.}  Accuracy is best subcooled and superheated and falls near the
+critical region of a widely boiling mixture (LK, p.~510); the correlation is for
+non-polar and slightly polar fluids and was not fitted to hydrogen-bonding
+fluids; the liquid enthalpy of a \emph{mixture} in a phi--phi package follows the
+family contract (vapour-root departures), see DEV.md 4c C410; and $\kappa=1$ for
+an unlisted asymmetric pair can be badly wrong.  Where a cubic with a good
+$k_{ij}$ exists the two will agree to a few per cent on a gas; the reason to
+reach for this model is the dense and the liquid region of a hydrocarbon
+mixture without a tuned alpha function, and a printed table to check it against.
+
+\begin{tutoriallink}
+\textbf{Related tutorials.}
+\file{tutorials/props/molecular/lkp01\_lee\_kesler\_tables} (the equation against
+Tables 5, 7, 9 of Lee and Kesler),
+\file{tutorials/props/compare/lkp02\_n2\_ch4\_ar\_112K} (against Miller, Kidnay and
+Hiza 1973).
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
 \section{Reference equations of state (Helmholtz energy)}\label{ch:helmholtz-eos}
 
 A cubic equation or PC-SAFT is a \emph{model} of a fluid with a handful of
@@ -32266,6 +32469,25 @@ Chem. Res.}\ \textbf{41}, 5510, 2002.  The working form of the
 association contribution Choupo implements (Wertheim TPT1, after Chapman
 et al.\ 1990), with the $\sigma_{ij}^3$ convention under which the
 published $\kappa^{AB}$ were fitted.
+
+\bibitem{LeeKesler1975} Lee, B. I. \& Kesler, M. G., ``A Generalized Thermodynamic
+Correlation Based on Three-Parameter Corresponding States'', \emph{AIChE J.}
+\textbf{21}, 510--527, 1975.  The modified BWR equation for the simple and
+reference fluids (Eq.~3, Table~1), the departure functions (Eqs 9--12) and the
+tables they print (Tables 5--14); the source of the critical-volume rule
+(Eqs 20--21).
+
+\bibitem{PloeckerKnapp1978} Pl\"ocker, U., Knapp, H., \& Prausnitz, J., ``Calculation
+of High-Pressure Vapor-Liquid Equilibria from a Corresponding-States Correlation
+with Emphasis on Asymmetric Mixtures'', \emph{Ind. Eng. Chem. Process Des. Dev.}
+\textbf{17}, 324--332, 1978.  The mixing rules (Eqs 9--14), the component fugacity
+(A6--A13) and the $\kappa_{ij}$ of Table~I bundled in
+\file{data/standards/parameters/LKP/}.
+
+\bibitem{Miller1973} Miller, R. C., Kidnay, A. J., \& Hiza, M. J., ``Liquid-Vapor
+Equilibria at 112.00\,K for Systems Containing Nitrogen, Argon, and Methane'',
+\emph{AIChE J.} \textbf{19}, 145--148, 1973.  The measured N$_2$ + Ar, N$_2$ + CH$_4$
+and ternary data (Tables 1--3) the Lee--Kesler--Pl\"ocker case is compared with.
 
 \bibitem{Span2000N2} R.~Span, E.~W.~Lemmon, R.~T Jacobsen, W.~Wagner and
   A.~Yokozeki, A Reference Equation of State for the Thermodynamic Properties
