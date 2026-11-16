@@ -1830,6 +1830,11 @@
       "exit": 0,
       "claim": "check_unifac_dortmund: OK -- the Dortmund UNIFAC records equal the printed tables where read (112 of 530 Table IV rows and 39 of 85 Table III rows held to the page, both files sha-256 pinned), no later revision is named as a source, a component without its own unifacDortmund block and a main-group pair Table IV does not print are each refused by name, and all 32 values of the paper's Table XI are reproduced within 0.06.  NOT CHECKED: the other Table IV rows beyond the pin, any measurement (Table XI prints predictions), the equations beyond that reproduction.",
       "seconds": 0.1
+    },
+    "check_cubic_mixing_rule": {
+      "exit": 0,
+      "claim": "check_cubic_mixing_rule: OK -- SRK + MHV1/MHV2 on methanol + water: ln phi_i of both roots equal this gate's own implementation of Michelsen Eq. 12 and Dahl & Michelsen Eq. 13/A3 to 1e-9 and sum y ln phi equals the closed form Z - 1 - ln(Z-B) - beta I on 6 states; H_R and S_R equal the temperature differences of the engine's own ln phi on the vapour root (one-fluid to 1e-7, MHV1/MHV2 to 2e-6); `vanDerWaalsOneFluid` is byte-identical to no mixingRule word; every rule returns the pure cubic at y = 1; MHV2 returns the fed NRTL gammas to 0.0091 and MHV1 to 0.0291 in ln gamma (one-fluid kij = 0: 0.42); P_bubble of three measured points equals an independent solve to 1e-5; eleven refusals each by name, and a pure beta outside 10-13 is announced. NOT CHECKED: any measured diagram, H_R of the liquid root, Peng-Robinson.",
+      "seconds": 1.2
     }
   }
 }
