@@ -1079,6 +1079,19 @@ def main() -> int:
         print("check_gate_selftest: FAILED\n  no platform build under build/ -- the "
               "source tier has no binary to sabotage.  Run `make all`.")
         return 1
+    #  THE POOL NEEDS rsync, SO IT IS ASKED FOR BEFORE ANY WORKER IS CLONED
+    #  (2026-11-15).  Each worker is a full clone plus a copy of the build,
+    #  about 2 GB; without rsync the sync failed only AFTER the clones, so a
+    #  machine with no rsync was left with gigabytes of half-made workers
+    #  under the pool home and a disk that filled on the next run.  A check
+    #  that cannot run must not pass, and must not leave its wreckage either:
+    #  it refuses by name, before the first byte is written.
+    if shutil.which("rsync") is None:
+        print("check_gate_selftest: FAILED\n  `rsync` is not on PATH, and the "
+              "worker pool copies the build and data/local with it.  Nothing "
+              "was cloned and no arm ran.  Install rsync (for example "
+              "`apt-get install rsync`) and run the self-test again.")
+        return 1
     jobs = gate_jobs()
     snap_files = sorted({s["file"] for s in SABOTAGES} | {s["file"] for s in SOURCE_SABOTAGES})
     snap_before = tree_snapshot(snap_files)
