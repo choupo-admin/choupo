@@ -100,6 +100,25 @@ public:
         return 0.0;
     }
 
+    // THE LIQUID ROOT'S DEPARTURES (C410, 2026-11-17).  The same two functions
+    // priced at the LIQUID root (H_R(T,P,x;Z_L), S_R likewise): what a
+    // liquid-phase stream of a phiPhi package is priced on, so that one
+    // equation of state prices both phases and G = H - T S closes on each
+    // root.  Guard with hasLiquidRoot(); the base REFUSES, so an ideal-gas
+    // package can never silently fake a liquid enthalpy.
+    virtual scalar H_residualLiquid(scalar, scalar, const sVector&) const
+    {
+        throw std::runtime_error("EquationOfState '" + modelName() + "': no"
+            " liquid root -- a liquid enthalpy on the equation of state needs"
+            " a model that resolves one (SRK/PengRobinson/LKP/PC-SAFT).");
+    }
+    virtual scalar S_residualLiquid(scalar, scalar, const sVector&) const
+    {
+        throw std::runtime_error("EquationOfState '" + modelName() + "': no"
+            " liquid root -- a liquid entropy on the equation of state needs"
+            " a model that resolves one (SRK/PengRobinson/LKP/PC-SAFT).");
+    }
+
     // ---- the mixing-rule ledger (glass-box surface, not the hot path) ----
     //
     // The van der Waals one-fluid decomposition at (T, y), for models that
