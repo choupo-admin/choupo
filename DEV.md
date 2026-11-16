@@ -3562,6 +3562,29 @@ accepts today, and that is a policy call.
 > none of the printed errors.  Report:
 > docs/reviews/2026-11-15-geraldes2008-errata/REPORT.md.
 
+> **C408 (Vitor, 2026-11-16: "Ataca ainda hoje o que nos falta de
+> propriedades!  Se precisares de artigos, pede", after the architect's list
+> of what the breadth-first simulators do that Choupo does not).**  A
+> COMMISSION.  It moves C407 forward (no longer "after C329 B2b") and widens
+> it to the property gaps of that list, in this order: (a) PENELOUX volume
+> translation (C407 (1); Peneloux 1982 held); (b) the EoS/G^E family,
+> designed once and built as named variants of one mixing-rule object:
+> Huron-Vidal 1979, MHV1 (Michelsen 1990), MHV2 (Dahl & Michelsen 1990),
+> PSRK (Holderbaum & Gmehling 1991), Wong-Sandler 1992 (held); (c) modified
+> UNIFAC (Dortmund): ONLY the parameters printed in Weidlich & Gmehling 1987
+> and Gmehling, Li & Schiller 1993 -- later revisions are distributed under
+> licence and are not entered (check_source_licence); (d) Lee-Kesler-Plocker
+> (Lee & Kesler 1975; Plocker, Knapp & Prausnitz 1978); (e) GERG-2008 (Kunz &
+> Wagner 2012), after (a)-(d), on the Helmholtz path that already carries
+> Span-Wagner and Setzmann-Wagner.  Out of this round: BWRS (no primary
+> source in hand), polymers (a campaign of its own).  DOIs Crossref-checked
+> 2026-11-16: Huron 10.1016/0378-3812(79)80001-1; Michelsen
+> 10.1016/0378-3812(90)85053-d; Dahl 10.1002/aic.690361207; Holderbaum
+> 10.1016/0378-3812(91)85038-v; Weidlich 10.1021/ie00067a018; Gmehling
+> 10.1021/ie00013a024; Lee 10.1002/aic.690210313; Plocker
+> 10.1021/i260067a020; Kunz 10.1021/je300655b.  Each slice carries rule 4d
+> (guide section, Theory link, catalogue, PDFs) and a measured witness.
+
 > **C407 (Vitor, 2026-11-15: "Isso e tao facil de fazer!  Achas que vale a
 > pena adiar?!", on the EoS/G^E mixing rules and volume translation).**  A
 > COMMISSION, not deferred.  (1) PENELOUX VOLUME TRANSLATION: a small slice
