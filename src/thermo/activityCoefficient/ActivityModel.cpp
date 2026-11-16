@@ -31,6 +31,7 @@ License
 #include "IdealSolution.H"
 #include "NRTL.H"
 #include "UNIFAC.H"
+#include "UNIFACDortmund.H"
 #include "UNIQUAC.H"
 #include "Wilson.H"
 #include "CosmoSac.H"
@@ -128,6 +129,12 @@ void ActivityModel::registerBuiltins()
         [](const DictPtr& d, const std::vector<Component>& comps)
             -> std::unique_ptr<ActivityModel>
         { return std::make_unique<UNIFAC>(d, namesOf(comps)); });
+
+    // Modified UNIFAC (Dortmund): Gmehling, Li & Schiller 1993 Tables III-IV.
+    registerModel("UNIFACDortmund",
+        [](const DictPtr& d, const std::vector<Component>& comps)
+            -> std::unique_ptr<ActivityModel>
+        { return std::make_unique<UNIFACDortmund>(d, namesOf(comps)); });
 
     registerModel("UNIQUAC",
         [](const DictPtr& d, const std::vector<Component>& comps)
