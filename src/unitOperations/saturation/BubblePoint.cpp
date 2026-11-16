@@ -86,6 +86,10 @@ sVector bubbleK(const ThermoPackage& thermo, scalar T, scalar P,
             if (settled) *settled = r.converged;
             return r.K;
         }
+        //  The iteration produced no K: the y = x form this slice removed is
+        //  NOT used silently in its place -- the point is refused by name
+        //  (CL-02).
+        if (settled) *settled = false;
         return thermo.Kvec(T, P, x, x);
     }
     const sVector K0 = thermo.Kvec(T, P, x, x);
@@ -123,6 +127,19 @@ void phiPhiBubbleRefusals(const ThermoPackage& thermo, scalar Tbub, scalar P,
                " critical point of the mixture, where the bubble temperature"
                " is not resolved";
     }
+}
+
+//  The same `settled` refusal on a GAMMA-PHI package whose cubic vapour
+//  depends on composition (CL-02): an incipient vapour that did not settle,
+//  or that could not be iterated at all, publishes no bubble temperature.
+void gammaPhiBubbleRefusals(bool settled, bool& converged, std::string& note)
+{
+    if (!converged || settled) return;
+    converged = false;
+    note = "the incipient vapour did not settle or could not be iterated"
+           " (successive substitution still moving after its pass budget, or"
+           " the cubic returned no vapour K): the bubble temperature is not"
+           " resolved, and the y = x vapour is not used in its place";
 }
 
 //  THE T SEED IS THE WEIGHTED BOILING POINT AT THE PRESSURE (C235).  The
@@ -234,6 +251,8 @@ BubblePoint::Result BubblePoint::compute(const ThermoPackage& thermo,
     if (phiPhi)
         phiPhiBubbleRefusals(thermo, Tbub, P, x, out.y, settled,
                              out.converged, out.note);
+    else
+        gammaPhiBubbleRefusals(settled, out.converged, out.note);
     out.residual   = r.residual;
     return out;
 }
@@ -438,6 +457,8 @@ int BubblePoint::solve(const DictPtr& dict,
         if (phiPhi)
             phiPhiBubbleRefusals(thermo, Tbub, P, x, r.y, settled,
                                  r.converged, r.note);
+        else
+            gammaPhiBubbleRefusals(settled, r.converged, r.note);
     }
     else
     {
