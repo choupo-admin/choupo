@@ -116,7 +116,7 @@ export const CITES = {
     contains: '"\\nsolverDict:        "' },
   reactionsLine: { file: MAIN, line: 982,
     contains: '"\\nreactions library: "' },
-  v2GammaPhi: { file: BUILDER, line: 2842,
+  v2GammaPhi: { file: BUILDER, line: 2862,
     contains: '"[v2 native] equilibrium gammaPhi: liquid activity."' },
   v2Reactive: { file: BUILDER, line: 1951,
     contains: '"[v2 native] equilibrium electrolyteGammaPhi (REACTIVE"' },
