@@ -3583,6 +3583,19 @@ accepts today, and that is a policy call.
 > energy closures, --fast 87/0, --gui 49/0 on the merge with main, 98 of the
 > plan's 101 gates (check_regressed_pairs not run: NIST unreachable).
 
+> **C414 (architect, 2026-11-16, agreed by Vitor after reading Gall's law
+> together: "Concordo").**  A CONSOLIDATION FREEZE of three to four days
+> after the 2026-11-16 batch lands: no new feature until the three layers
+> that accreted patches are made simple -- in order (1) C413, cases reference
+> the catalogue; (2) C412, test selection by model signature and one sweep
+> per batch; (3) the gates (364 on 11-16): an audit that merges the ones
+> that hold the same claim, and a declaration of what each gate READS so it
+> runs only when that changes.  The engine is NOT rewritten: it works, and
+> the day's additions (Dortmund, Peneloux, IAPWS) went in as subclasses and
+> records.  The month's items (Jacobs & Krishna, the demonstration path)
+> resume after the freeze; the freeze is cut short before it runs past
+> 2026-11-21.
+
 > **C413 (Vitor, 2026-11-16: "como agora ja temos uma base de compostos
 > bastante alargada, eventualmente podes omitir ter de registar todos os
 > componentes no caso ... so compostos que nao estao na base standard e que
