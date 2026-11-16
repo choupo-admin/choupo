@@ -79,6 +79,7 @@ groups
 {
     joback ( { group rCH2; count 6; } );
     unifac ( { group CH2; count 6; } );
+    unifacDortmund ( { group c-CH2; count 6; } );   // C408 (c): P cyclohexane, Table III p. 182-183
 }
 liquidViscosity
 {

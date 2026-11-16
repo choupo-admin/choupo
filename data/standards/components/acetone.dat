@@ -177,6 +177,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group ketone; count 1; } );
     unifac ( { group CH3; count 1; } { group CH3CO; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group CH3CO; count 1; } );   // C408 (c): S 2-butanone, Table III p. 182-183
 }
 
 diffusionVolume  67.7;   // Fuller (FSG revised: 3C+6H+O) -- enables Lewis-number wet-bulb

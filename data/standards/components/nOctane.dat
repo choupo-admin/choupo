@@ -99,6 +99,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 6; } );
     unifac ( { group CH3; count 2; } { group CH2; count 6; } );
+    unifacDortmund ( { group CH3; count 2; } { group CH2; count 6; } );   // C408 (c): P octane, Table III p. 182-183
 }
 
 // Friendly-name aliases -- resolved to this file via the generated ALIASES index.
