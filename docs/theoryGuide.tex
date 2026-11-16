@@ -1735,6 +1735,40 @@ vaporPressure
 the bug-watch.  But the data are there and the reader of a
 \file{.dat} is expected to honour them.
 
+\subsection{Water: the IAPWS saturation equation}\label{sec:water-iapws-psat}
+
+Water is the one component whose vapour pressure the catalogue takes from a
+reference formulation rather than from a regression: the IAPWS saturation
+equation (SR1-86(1992), Eq.~1; the same six coefficients are printed as
+Eq.~(2.5) of Wagner and Pruss, \emph{J.\ Phys.\ Chem.\ Ref.\ Data} \textbf{31}
+(2002) 387, p.~399).  It is a Wagner equation, the \code{Wagner} model of
+the engine (\file{src/thermo/vaporPressure/Wagner.cpp}):
+\begin{equation}
+   \ln\frac{P^{\mathrm{sat}}}{P_r}
+   = \frac{T_r}{T}\sum_{i=1}^{6} a_i\,\tau^{e_i},
+   \qquad \tau = 1 - \frac{T}{T_r},
+   \label{eq:water-iapws-psat}
+\end{equation}
+with $T_r = 647.096$~K, $P_r = 22.064$~MPa, exponents
+$e = (1,\,1.5,\,3,\,3.5,\,4,\,7.5)$ and
+$a = (-7.85951783,\ 1.84408259,\ -11.7866497,\ 22.6807411,\ -15.9618719,\
+1.80122502)$.  The reducing constants belong to the equation: water's own
+$T_c$ in the record (647.14~K) is a different, older number and must not be
+substituted --- the engine refuses a \code{Wagner} block without its own
+\code{reducing \{ T; P; \}}.  Valid 273.16--647.096~K.  The equation reproduces
+the release's Table~1 (611.657~Pa at 273.16~K, 101\,325~Pa at 373.1243~K,
+22.064~MPa at 647.096~K) to $1.5\times10^{-7}$ and the IF97 region-4
+equation to $1.8\times10^{-4}$.  The Antoine fit it replaced was $+2.5\,\%$
+high at 373~K, $+6.4\,\%$ at 423~K and $+18\,\%$ at 573~K.
+
+\paragraph{One home.}  The saturation curve of water lives in this block
+only.  The PHREEQC-convention record of \texttt{H2O(g) = H2O}, which states
+the same curve as a dissolution constant, is derived from it:
+$\log K = -\log_{10}(P^{\mathrm{sat}}/101\,325\,\mathrm{Pa})$ fitted with the
+six-term analytic form over 273.16--473.15~K (maximum $5\times10^{-6}$ in
+$\log K$; \file{bin/curate/fit\_water\_vapour\_equilibrium.py}), and the gate
+\code{check\_water\_one\_home} recomputes both from the printed coefficients.
+
 \subsection{Watson for $\Hvap(T)$}
 
 The latent heat is already derived in
@@ -1753,9 +1787,11 @@ The simulator computes it in \code{Component::Hvap\_latent}.
 \subsection{Worked example: water from $\ln P$ vs $1/T$ to Antoine}
 
 \begin{example}[Two ways to compute $\Psat$ of water at 320~K]
-Data from
-\file{data/standards/components/water.dat} (DIPPR-style, valid
-273--373~K): $A = 5.40221$, $B = 1838.675$, $C = -31.737$, $T_b =
+Data: the Antoine fit that
+\file{data/standards/components/water.dat} carried until 2026-11-16
+(DIPPR-style, valid 273--373~K; the record now uses the IAPWS equation of
+Section~\ref{sec:water-iapws-psat}, which is 2.5\,\% lower at 373~K):
+$A = 5.40221$, $B = 1838.675$, $C = -31.737$, $T_b =
 373.15$~K, $T_c = 647.10$~K, $\Hvap(T_b) = 40\,650$~J/mol.
 
 \textbf{Antoine, direct.}
