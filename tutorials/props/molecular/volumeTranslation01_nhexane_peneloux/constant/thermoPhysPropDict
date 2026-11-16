@@ -135,7 +135,7 @@ variants
 
                 volumeTranslation
                 {
-                    model Peneloux;
+                    model JhaveriYoungren;
                     components
                     {
                         nHexane { shiftTable1 nHexane;

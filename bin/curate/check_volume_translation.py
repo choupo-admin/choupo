@@ -79,6 +79,10 @@ def main() -> int:
     if not PROPS.exists():
         print("check_volume_translation: REFUSED -- choupoProps is not built.")
         return 1
+    #  The two scan files are DELETED first: a stale CSV from an earlier run
+    #  must never stand in for this run's (VT-11).
+    for name in ("txy_SRK.csv", "txy_SRK_Peneloux.csv"):
+        (CASE / name).unlink(missing_ok=True)
     p = run(CASE)
     if p.returncode != 0:
         print(f"check_volume_translation: FAILED\n  - the case did not run (exit {p.returncode})")
@@ -138,6 +142,64 @@ def main() -> int:
         if abs(tr["S_R"] - base["S_R"]) > 1e-12 * max(1.0, abs(base["S_R"])):
             fail.append(f"PR {tag}: S_R moved")
 
+    #  (f) THE FUGACITY CONVENTION AND G = H - T S, from a probe linked to the
+    #  library (bin/curate/_volumeTranslationProbe.cpp): the translated fluid
+    #  is ONE fluid, ln phi_i(on) - ln phi_i(off) = -c_i P/RT per component,
+    #  per root (vapour AND liquid), per cubic, at 4 states, to 1e-9; the
+    #  volumes of both roots drop by c; and G^R = RT sum y ln phi equals
+    #  H^R - T S^R on the vapour root, with the shift off AND on, to 1e-9
+    #  relative (VT-08, VT-11).
+    probe = tempfile.mkdtemp(prefix="vt_probe_")
+    try:
+        exe = Path(probe) / "probe"
+        b = subprocess.run(["g++", "-std=c++17", "-O2", f"-I{ROOT / 'src'}", f"-I{ROOT}",
+                            str(ROOT / "bin/curate/_volumeTranslationProbe.cpp"),
+                            str(ROOT / "build/linux64Gcc/libchoupo.so"),
+                            "-Wl,-rpath," + str(ROOT / "build/linux64Gcc"), "-o", str(exe)],
+                           capture_output=True, text=True)
+        if b.returncode != 0:
+            fail.append("the probe did not compile: " + b.stderr[-600:])
+        else:
+            import os
+            pr = subprocess.run([str(exe)], capture_output=True, text=True, timeout=300,
+                                env=dict(os.environ, CHOUPO_HOME=str(ROOT)))
+            lines = pr.stdout.split("<<<PROBE\n")[-1].split("PROBE>>>")[0].splitlines()
+            rows = {}
+            for ln in lines:
+                f = ln.split()
+                if len(f) >= 4 and f[0] in ("SRK", "PR") and f[1].isdigit():
+                    rows[(f[0], int(f[1]), f[2])] = [float(v) for v in f[3:]]
+            if not rows:
+                fail.append("the probe printed nothing")
+            cmap = {"SRK": [c["nHexane"], c["nDecane"]], "PR": [cp["nHexane"], cp["nDecane"]]}
+            for (tag, k, key), v in rows.items():
+                if key != "state":
+                    continue
+                T, P, y0 = v
+                y = [y0, 1.0 - y0]
+                cs = cmap[tag]
+                for i in range(2):
+                    for root, kk in (("V", f"lnphiV{i}"), ("L", f"lnphiL{i}")):
+                        off, on = rows[(tag, k, kk)]
+                        want = -cs[i] * P / (R * T)
+                        if abs((on - off) - want) > 1e-9:
+                            fail.append(f"{tag} state {k}: ln phi_{i}({root}) moved by {on - off:.12e}, "
+                                        f"-c_i P/RT = {want:.12e}")
+                cc = y[0] * cs[0] + y[1] * cs[1]
+                for key2 in ("vV", "vL"):
+                    off, on = rows[(tag, k, key2)]
+                    if abs((off - on) - cc) > 1e-9 * abs(cc):
+                        fail.append(f"{tag} state {k}: {key2} moved by {off - on:.9e}, c = {cc:.9e}")
+                for lab, idx in (("off", 0), ("on", 1)):
+                    G = R * T * sum(y[i] * rows[(tag, k, f"lnphiV{i}")][idx] for i in range(2))
+                    H = rows[(tag, k, "HR")][idx]
+                    S = rows[(tag, k, "SR")][idx]
+                    if abs(G - (H - T * S)) > 1e-9 * max(1.0, abs(G)):
+                        fail.append(f"{tag} state {k} (shift {lab}): G^R = {G:.9e} but H^R - T S^R = "
+                                    f"{H - T * S:.9e}")
+    finally:
+        shutil.rmtree(probe, ignore_errors=True)
+
     #  (e) the refusal, on a throwaway copy
     tmp = Path(tempfile.mkdtemp(prefix="vt_gate_"))
     try:
@@ -163,6 +225,23 @@ def main() -> int:
         if q3.returncode == 0 or "nHexane" not in m3 or "heavier than n-hexane" not in m3:
             fail.append("PR: a Table-2 family declared for n-hexane was not "
                         "refused by name")
+        #  (e'') VT-14 / VT-12 / VT-10: the wrong model word under each cubic, an
+        #  entry for a component that is not in the system, and a translation
+        #  under a gammaPhi vapour, each refused by name.
+        # PR variant carrying `model Peneloux` / SRK variant carrying `model JhaveriYoungren`
+        a_pr = t.replace("model JhaveriYoungren;", "model Peneloux;")
+        a_srk = t.replace("model Peneloux;", "model JhaveriYoungren;")
+        a_unk = t.replace("nHexane { ZRA 0.2636;", "water { ZRA 0.2636; source \"x\"; }\n                        nHexane { ZRA 0.2636;", 1)
+        for label, text, needle in (
+                ("PR with `model Peneloux`", a_pr, "takes `model JhaveriYoungren;`"),
+                ("SRK with `model JhaveriYoungren`", a_srk, "takes `model Peneloux;`"),
+                ("an entry for a component not in the system", a_unk, "not a component of this system")):
+            f.write_text(text)
+            qq = run(cp)
+            mm = qq.stdout + qq.stderr
+            if qq.returncode == 0 or needle not in mm:
+                fail.append(f"{label} was not refused by name ({needle!r})")
+        f.write_text(t)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
