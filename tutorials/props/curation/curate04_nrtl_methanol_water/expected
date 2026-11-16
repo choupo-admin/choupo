@@ -88,6 +88,6 @@ aad     heldout_methanol_water txy_ideal.y_eq_methanol.aadAbs 0.0381764860354   
 aad     heldout_methanol_water txy_unifac.T_bubble.aadAbs 0.317660876923     1e-4
 aad     heldout_methanol_water txy_unifac.T_bubble.aadRelPct 0.0883513303676     1e-4
 aad     heldout_methanol_water txy_unifac.y_eq_methanol.aadAbs 0.0115123486846    1e-4
-aad     heldout_methanol_water txy_nrtl.T_bubble.aadAbs 0.607346          1e-4
-aad     heldout_methanol_water txy_nrtl.T_bubble.aadRelPct 0.170062644183     1e-4
-aad     heldout_methanol_water txy_nrtl.y_eq_methanol.aadAbs 0.0123317162346    1e-4
+aad     heldout_methanol_water txy_nrtl.T_bubble.aadAbs 0.574525676923          1e-4
+aad     heldout_methanol_water txy_nrtl.T_bubble.aadRelPct 0.160923125803     1e-4
+aad     heldout_methanol_water txy_nrtl.y_eq_methanol.aadAbs 0.01221240685    1e-4

@@ -20,10 +20,6 @@ kpi     flash01                p_eq_sum_atm     0.353            1e-4
 kpi     flash01                p_ethanol_atm    0.0524891375995  1e-4
 kpi     flash01                p_mono_atm       6.2380235633e-05 1e-4
 kpi     flash01                phaseSet         0                1e-4
-utility flash01                heating.steamLP.duty_kW 0.0868677617756  1e-4
-utility flash01                heating.steamLP.T 313.15           1e-4
-utility flash01                heating.steamLP.kg_s 3.97382258809e-05 1e-4
-utility flash01                heating.steamLP.eur_h 0.0037526873087  1e-4
 kpi     flash01                K_aceticAcid     0.130851099581   1e-4
 kpi     flash01                K_benzene        6.50314561791    1e-4
 kpi     flash01                K_ethanol        2.0146786135     1e-4

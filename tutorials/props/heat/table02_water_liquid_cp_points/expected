@@ -130,7 +130,7 @@ diag    h80_table              P                100000           1e-4
 diag    h80_table              S                80.7903460419    1e-4
 diag    h80_table              S_per_mass       4.4846153784     1e-4
 diag    h80_table              T                353.150000007    1e-4
-diag    h80_table              dH_fromReference 5.06930518895e-07 1e-4
+diag    h80_table              dH_fromReference 5.40108885616e-07 1e-4
 diag    h80_table              flashes          11               1e-4
 diag    h80_table              iterations       2                1e-4
 diag    h80_table              onSaturationPlateau 0                1e-4
@@ -138,7 +138,7 @@ diag    h80_table              ref_H            -282256.530376   1e-4
 diag    h80_table              ref_P            100000           1e-4
 diag    h80_table              ref_T            353.15           1e-4
 diag    h80_table              ref_vaporFraction 0                1e-4
-diag    h80_table              residual         5.06930518895e-07 1e-4
+diag    h80_table              residual         5.40108885616e-07 1e-4
 diag    h80_table              target           -282256.530376   1e-4
 diag    h80_table              vaporFraction    0                1e-4
 diag    h80_table              x_water          1                1e-4
