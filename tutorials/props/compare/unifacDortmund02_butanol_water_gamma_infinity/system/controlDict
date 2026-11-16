@@ -1,0 +1,13 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+application   choupoProps;
+description   "Table XI of Gmehling, Li & Schiller (1993) reproduced: gamma-infinity of four butanols in water at 25-100 C, modified UNIFAC (Dortmund) and original UNIFAC, the 32 printed values as anchors";
+
+verbosity     2;

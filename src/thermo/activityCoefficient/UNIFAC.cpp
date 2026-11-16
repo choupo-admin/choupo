@@ -349,13 +349,20 @@ DictPtr injectUnifacGroups(const DictPtr& activityDict,
     // not out of a marker key an author could write to bypass the refusal --
     // the `groupsInjected` hack lasted one commit and deserved less.
     if (!activityDict) return activityDict;
-    if (activityDict->lookupWordOrDefault("model", "") != "UNIFAC"
-        && activityDict->lookupWordOrDefault("model", "") != "unifac")
+    const std::string modelWord = activityDict->lookupWordOrDefault("model", "");
+    //  Two group-contribution models, two decomposition keys: the Dortmund
+    //  subgroups are NOT the original's (OH split p/s/t, ring c-CH2, ...), so
+    //  `unifacDortmund` is its own key and the original `unifac` is never
+    //  reused for it (DEV.md 4c C408 (c)).
+    const bool dortmund = (modelWord == "UNIFACDortmund");
+    if (modelWord != "UNIFAC" && modelWord != "unifac" && !dortmund)
         return activityDict;
+    const std::string key = dortmund ? "unifacDortmund" : "unifac";
     if (activityDict->found("groups"))
-        throw std::runtime_error("UNIFAC: an inline `groups {}` block in the "
+        throw std::runtime_error(std::string(dortmund ? "UNIFACDortmund" : "UNIFAC")
+            + ": an inline `groups {}` block in the "
             "activity model is RETIRED -- the decomposition lives in each "
-            "component's .dat (`groups { unifac (...) }`); use a case-local "
+            "component's .dat (`groups { " + key + " (...) }`); use a case-local "
             "component overlay for a pedagogical alternative.");
     if (activityDict->found("groupsInjected"))
         throw std::runtime_error("UNIFAC: `groupsInjected` is not an authorable "
@@ -370,9 +377,9 @@ DictPtr injectUnifacGroups(const DictPtr& activityDict,
     bool any = false;
     for (std::size_t i = 0; i < names.size(); ++i)
     {
-        if (!comps[i].hasGroups("unifac")) continue;
+        if (!comps[i].hasGroups(key)) continue;
         std::vector<DictPtr> gl;
-        for (const auto& [g, n] : comps[i].groupsFor("unifac"))
+        for (const auto& [g, n] : comps[i].groupsFor(key))
         {
             auto e = std::make_shared<Dictionary>("g");
             e->insert("group", std::string(g));

@@ -170,3 +170,8 @@ cosmo
         );
     }
 }
+
+groups
+{
+    unifacDortmund ( { group C5H5N; count 1; } );   // C408 (c): P pyridine, Table III p. 182-183
+}

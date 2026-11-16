@@ -1,0 +1,15 @@
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( nButanol  2Methyl1Propanol  2Butanol  2Methyl2Propanol  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel { model UNIFACDortmund; }
+        standardState pureLiquid;
+    }
+    vapour { fugacityModel idealGas; }
+}

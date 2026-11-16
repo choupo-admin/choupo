@@ -170,3 +170,8 @@ cosmo
         );
     }
 }
+
+groups
+{
+    unifacDortmund ( { group CHCl3; count 1; } );   // C408 (c): P chloroform, Table III p. 182-183
+}

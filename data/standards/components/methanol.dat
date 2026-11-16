@@ -73,6 +73,7 @@ liquidViscosity
 groups
 {
     unifac ( { group CH3OH; count 1; } );
+    unifacDortmund ( { group CH3OH; count 1; } );   // C408 (c): P methanol, Table III p. 182-183
     joback ( { group CH3; count 1; } { group OH; count 1; } );
 }
 

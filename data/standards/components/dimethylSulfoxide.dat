@@ -272,3 +272,8 @@ cosmo
         );
     }
 }
+
+groups
+{
+    unifacDortmund ( { group DMSO; count 1; } );   // C408 (c): P dimethyl sulfoxide, Table III p. 182-183
+}

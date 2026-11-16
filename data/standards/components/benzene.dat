@@ -87,6 +87,7 @@ groups
 {
     joback ( { group arCH; count 6; } );
     unifac ( { group ACH; count 6; } );
+    unifacDortmund ( { group ACH; count 6; } );   // C408 (c): S naphthalene/toluene, Table III p. 182-183
 }
 
 // ---- Aqueous-speciation FACTS (substance-level, classifier-read) ----

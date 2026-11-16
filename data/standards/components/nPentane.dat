@@ -79,6 +79,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 3; } );
     unifac ( { group CH3; count 2; } { group CH2; count 3; } );
+    unifacDortmund ( { group CH3; count 2; } { group CH2; count 3; } );   // C408 (c): S hexane, Table III p. 182-183
 }
 surfaceTension
 {
