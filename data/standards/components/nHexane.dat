@@ -63,6 +63,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 4; } );
     unifac ( { group CH3; count 2; } { group CH2; count 4; } );
+    unifacDortmund ( { group CH3; count 2; } { group CH2; count 4; } );   // C408 (c): P hexane, Table III p. 182-183
 }
 
 cosmo

@@ -20,11 +20,9 @@
   Fitted on EVERY laboratory with the NRTL fit's own kept points (C294), so
   the `validation {}` block says, truthfully, that nothing was held out;
   the acceptance is the `curation {}` block.
-  NOT PROMOTED (max |dT| 2.837 K over the 16 kept points, one liquid
-  across the validity span): fit grade severe -- DEV.md 4c C300 rule 3: a
-  severe pair does not enter the default catalogue; its record stays in
-  this curation case's constant/, and a case that needs it carries it in
-  its own constant/
+  PROMOTABLE by `bin/choupo-curate pairs --models --promote`: fit grade
+  clean -- max |dT| 0.362 K over the 16 kept points, one liquid across
+  the validity span
 
   REPRODUCE: run data/curation/pairs/13Propanediol-water (after `bin/choupo-curate fetch` on it); its fit_wilson
   writes 13Propanediol-water.Wilson.proposal.dat, which bin/curate/check_regressed_pairs.py holds
@@ -43,8 +41,8 @@ parameters
 {
     i           water;
     j           13Propanediol;
-    A_ij        5996.23851943;   // J/mol
-    A_ji        -5273.06600862;   // J/mol
+    A_ij        3478.43538011;   // J/mol
+    A_ji        -1886.45499850;   // J/mol
 }
 
 provenance
@@ -56,7 +54,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -76,11 +74,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          245.50147702;
-    rms_K         0.97331537;
+    chi2          5.47059362;
+    rms_K         0.14107064;
     nDataPoints   16;
     identifiable  true;
-    maxAbsCorr    0.99033487;
+    maxAbsCorr    0.98650120;
 
     validity
     {
@@ -111,11 +109,11 @@ curation
     outliersDropped 0;
     pointsKept      16;
     noBubblePoint   0;
-    maxAbsError     2.8374 K;
-    meanAbsError    0.7576 K;
+    maxAbsError     0.3620 K;
+    meanAbsError    0.1047 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
-    grade           severe;
+    grade           clean;
     oneLiquid       true;   // arm (f) on this model's own equation over the validity span
     temperatures    16;   // distinct stated temperatures in the kept evidence
     laboratories    1;   // distinct articles in the kept evidence

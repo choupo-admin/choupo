@@ -170,3 +170,8 @@ cosmo
         );
     }
 }
+
+groups
+{
+    unifacDortmund ( { group c-CH2; count 2; } { group c-CH2OCH2; count 1; } );   // C408 (c): P tetrahydrofuran, Table III p. 182-183
+}

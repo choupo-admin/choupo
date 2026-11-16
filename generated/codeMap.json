@@ -2445,6 +2445,9 @@
   "UNIFAC": [
    "src/thermo/activityCoefficient/UNIFAC.H"
   ],
+  "UNIFACDortmund": [
+   "src/thermo/activityCoefficient/UNIFACDortmund.H"
+  ],
   "UNIQUAC": [
    "src/thermo/activityCoefficient/UNIQUAC.H"
   ],
@@ -9439,6 +9442,7 @@
    "src/thermo/activityCoefficient/IdealSolution.H",
    "src/thermo/activityCoefficient/NRTL.H",
    "src/thermo/activityCoefficient/UNIFAC.H",
+   "src/thermo/activityCoefficient/UNIFACDortmund.H",
    "src/thermo/activityCoefficient/UNIQUAC.H",
    "src/thermo/activityCoefficient/Wilson.H",
    "src/thermo/electrolyte/ENRTLSingleSalt.H",
@@ -9545,6 +9549,21 @@
    "src/thermo/RecordResolver.H",
    "src/thermo/activityCoefficient/ActivityModel.H",
    "src/thermo/activityCoefficient/UNIFAC.H"
+  ],
+  "src/thermo/activityCoefficient/UNIFACDortmund.cpp": [
+   "src/core/Advisory.H",
+   "src/core/Dictionary.H",
+   "src/core/Dimensions.H",
+   "src/core/Identifiers.H",
+   "src/core/Origin.H",
+   "src/core/ThermoResolution.H",
+   "src/core/Types.H",
+   "src/thermo/Component.H",
+   "src/thermo/Database.H",
+   "src/thermo/RecordLaws.H",
+   "src/thermo/RecordResolver.H",
+   "src/thermo/activityCoefficient/ActivityModel.H",
+   "src/thermo/activityCoefficient/UNIFACDortmund.H"
   ],
   "src/thermo/activityCoefficient/UNIQUAC.cpp": [
    "src/core/Advisory.H",
@@ -14801,6 +14820,7 @@
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/IsothermModel.cpp",
@@ -15615,6 +15635,7 @@
    "src/thermo/activityCoefficient/IdealSolution.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/Adsorbent.cpp",
@@ -16040,6 +16061,7 @@
    "src/thermo/activityCoefficient/IdealSolution.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/Adsorbent.cpp",
@@ -16545,6 +16567,7 @@
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
@@ -16969,6 +16992,7 @@
    "src/thermo/activityCoefficient/IdealSolution.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/Adsorbent.cpp",
@@ -17724,6 +17748,7 @@
    "src/thermo/activityCoefficient/IdealSolution.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/electrolyte/AqueousVolumetric.cpp",
@@ -17985,6 +18010,7 @@
    "src/thermo/activityCoefficient/IdealSolution.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/Adsorbent.cpp",
@@ -20443,6 +20469,7 @@
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
@@ -20768,6 +20795,7 @@
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
@@ -21587,6 +21615,7 @@
    "src/thermo/activityCoefficient/IdealSolution.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
@@ -21913,6 +21942,7 @@
    "src/thermo/activityCoefficient/ElectrolyteActivity.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/adsorbent/AdsorbentRegistry.cpp",
    "src/thermo/electrochem/EDStackRegistry.cpp",
@@ -22830,6 +22860,7 @@
    "src/thermo/activityCoefficient/IdealSolution.cpp",
    "src/thermo/activityCoefficient/NRTL.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
    "src/thermo/activityCoefficient/UNIQUAC.cpp",
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/phase/LiquidPhase.cpp",
@@ -22869,6 +22900,10 @@
    "src/thermo/activityCoefficient/ActivityModel.cpp",
    "src/thermo/activityCoefficient/UNIFAC.cpp",
    "src/thermo/phase/LiquidPhase.cpp"
+  ],
+  "src/thermo/activityCoefficient/UNIFACDortmund.H": [
+   "src/thermo/activityCoefficient/ActivityModel.cpp",
+   "src/thermo/activityCoefficient/UNIFACDortmund.cpp"
   ],
   "src/thermo/activityCoefficient/UNIQUAC.H": [
    "src/thermo/ThermoPackage.cpp",

@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ij  1528.80869473;
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ji  -44.8163302269;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ij  1525.30968041;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ji  -30.4789485752;
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ij  1528.80869521;
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ji  -44.8163308161;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ij  1525.30968024;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.b_ji  -30.478948539;
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ij  43.2259548538;
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ji  245.04065473;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ij  35.7025824186;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ji  259.657706489;
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ij  43.2259533425;
-        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ji  245.040656394;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ij  35.702582592;
+        equilibrium.liquid.activityModel.binaryParameters.water-1Methoxy2PropylAcetate.a_ji  259.657706273;
     }
 
     evidence

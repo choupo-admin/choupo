@@ -94,6 +94,7 @@ uniquac
 groups
 {
     unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=CH; count 1; } );   // added from data/groupEstimative (UNIFAC decomposition; vocab-checked vs groups.dat)
+    unifacDortmund ( { group CH3; count 1; } { group CH2; count 1; } { group CH2=CH; count 1; } );   // C408 (c): S 1-hexene, Table III p. 182-183
 }
 
 cosmo

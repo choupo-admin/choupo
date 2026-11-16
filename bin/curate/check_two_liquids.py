@@ -97,8 +97,8 @@ else:
                        f"inner split is not converged whatever the outer "
                        f"residual reports")
 
-    if not re.search(r"V/F = 0\.32", out):
-        bad.append("V/F moved off 0.32 -- the reference three-phase answer "
+    if not re.search(r"V/F = 0\.227", out):
+        bad.append("V/F moved off 0.227 -- the reference three-phase answer "
                    "changed; re-record deliberately or find out why")
 
 #  ---- 4. the pre-check accounts for the DECLARED phases -------------------
@@ -107,7 +107,7 @@ with tempfile.TemporaryDirectory() as td:
     sub = Path(td) / CASE.name
     shutil.copytree(CASE, sub)
     fd = sub / "system" / "flowsheetDict"
-    fd.write_text(re.sub(r"P\s+0\.35\s+atm;", "P 0.50 atm;", fd.read_text()))
+    fd.write_text(re.sub(r"P\s+0\.353\s+atm;", "P 0.50 atm;", fd.read_text()))
     for stale in ("converged", "reports"):
         if (sub / stale).exists():
             shutil.rmtree(sub / stale)
@@ -134,5 +134,8 @@ if bad:
         print("  - " + b)
     sys.exit(1)
 
-print("second-liquid gate: three phases with chemistry; organic phase real, "
-      "activities equal to machine zero, pre-check on the declared phases")
+print("check_two_liquids: OK -- flash17 (reactive electrolyte flash with a declared organic liquid) solves three phases with "
+      "chemistry, the organic phase is real (a non-trivial fraction of the liquid, composition different from the aqueous "
+      "one), ln(a_org/a_aq) is at machine zero for benzene and ethanol, V/F is the recorded 0.227, and the same feed above "
+      "its bubble pressure reports a subsaturated liquid on the DECLARED phases.  NOT checked: any other feed, T or "
+      "system, or that the split itself is physically right")

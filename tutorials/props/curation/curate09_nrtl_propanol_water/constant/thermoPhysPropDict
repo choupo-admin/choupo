@@ -17,7 +17,7 @@
       their error at the held-out set's pure endpoints is measured in the
       acceptance band's origin (system/propsDict), not fitted away;
     * liquid: NRTL, tau_ij = a_ij + b_ij/T, G_ij = exp(-alpha tau_ij),
-      alpha 0.30 FIXED (not identified by bubble temperatures alone).
+      alpha 0.40 FIXED (not identified by bubble temperatures alone; 0.30 until 2026-11-16, see the propsDict header).
 
   The inline pair below is the FIT'S STARTING POINT (all zero = ideal
   mixing), not a result: the regressed pair is the catalogue record
@@ -50,7 +50,7 @@ equilibrium
                     b_ij 0;
                     a_ji 0;
                     b_ji 0;
-                    alpha 0.30;
+                    alpha 0.40;
                 }
             }
         }

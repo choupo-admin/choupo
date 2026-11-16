@@ -1,0 +1,132 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol  claim
+#  The gamma_* rows are ANCHORS: the values Gmehling, Li & Schiller (1993) print in Table XI (p. 192), at their printed precision.
+diag    dortmund_25C           Cp_ig            33.6596046032      1e-4
+diag    dortmund_25C           H_R              0                  1e-4
+diag    dortmund_25C           H_ig             -241826.000489     1e-4
+diag    dortmund_25C           H_real           -241826.000489     1e-4
+diag    dortmund_25C           P                101325             1e-4
+diag    dortmund_25C           S_R              0                  1e-4
+diag    dortmund_25C           S_ig             188.724560189      1e-4
+diag    dortmund_25C           S_real           188.724560189      1e-4
+diag    dortmund_25C           T                298.15             1e-4
+diag    dortmund_25C           Z                1                  1e-4
+diag    dortmund_25C           gamma            1.3280495577       1e-4
+diag    dortmund_25C           gamma_2Butanol           36.2     3e-3  anchor
+diag    dortmund_25C           gamma_2Methyl1Propanol   41.9     3e-3  anchor
+diag    dortmund_25C           gamma_2Methyl2Propanol   27.2     3e-3  anchor
+diag    dortmund_25C           gamma_nButanol           41.9     3e-3  anchor
+diag    dortmund_25C           v_molar          0.0244654036966    1e-4
+diag    dortmund_50C           Cp_ig            33.8456091931      1e-4
+diag    dortmund_50C           H_R              0                  1e-4
+diag    dortmund_50C           H_ig             -240982.204077     1e-4
+diag    dortmund_50C           H_real           -240982.204077     1e-4
+diag    dortmund_50C           P                101325             1e-4
+diag    dortmund_50C           S_R              0                  1e-4
+diag    dortmund_50C           S_ig             191.442155695      1e-4
+diag    dortmund_50C           S_real           191.442155695      1e-4
+diag    dortmund_50C           T                323.15             1e-4
+diag    dortmund_50C           Z                1                  1e-4
+diag    dortmund_50C           gamma            1.32565958577      1e-4
+diag    dortmund_50C           gamma_2Butanol           36.9     3e-3  anchor
+diag    dortmund_50C           gamma_2Methyl1Propanol   43.0     3e-3  anchor
+diag    dortmund_50C           gamma_2Methyl2Propanol   27.6     3e-3  anchor
+diag    dortmund_50C           gamma_nButanol           43.0     3e-3  anchor
+diag    dortmund_50C           v_molar          0.0265168378486    1e-4
+diag    dortmund_75C           Cp_ig            34.0404498531      1e-4
+diag    dortmund_75C           H_R              0                  1e-4
+diag    dortmund_75C           H_ig             -240133.646396     1e-4
+diag    dortmund_75C           H_real           -240133.646396     1e-4
+diag    dortmund_75C           P                101325             1e-4
+diag    dortmund_75C           S_R              0                  1e-4
+diag    dortmund_75C           S_ig             193.971338         1e-4
+diag    dortmund_75C           S_real           193.971338         1e-4
+diag    dortmund_75C           T                348.15             1e-4
+diag    dortmund_75C           Z                1                  1e-4
+diag    dortmund_75C           gamma            1.32319314093      1e-4
+diag    dortmund_75C           gamma_2Butanol           36.0     3e-3  anchor
+diag    dortmund_75C           gamma_2Methyl1Propanol   42.2     3e-3  anchor
+diag    dortmund_75C           gamma_2Methyl2Propanol   26.7     3e-3  anchor
+diag    dortmund_75C           gamma_nButanol           42.2     3e-3  anchor
+diag    dortmund_75C           v_molar          0.0285682720006    1e-4
+diag    dortmund_100C          Cp_ig            34.2437894579      1e-4
+diag    dortmund_100C          H_R              0                  1e-4
+diag    dortmund_100C          H_ig             -239280.110759     1e-4
+diag    dortmund_100C          H_real           -239280.110759     1e-4
+diag    dortmund_100C          P                101325             1e-4
+diag    dortmund_100C          S_R              0                  1e-4
+diag    dortmund_100C          S_ig             196.338864077      1e-4
+diag    dortmund_100C          S_real           196.338864077      1e-4
+diag    dortmund_100C          T                373.15             1e-4
+diag    dortmund_100C          Z                1                  1e-4
+diag    dortmund_100C          gamma            1.32065863759      1e-4
+diag    dortmund_100C          gamma_2Butanol           33.9     3e-3  anchor
+diag    dortmund_100C          gamma_2Methyl1Propanol   40.0     3e-3  anchor
+diag    dortmund_100C          gamma_2Methyl2Propanol   25.0     3e-3  anchor
+diag    dortmund_100C          gamma_nButanol           40.0     3e-3  anchor
+diag    dortmund_100C          v_molar          0.0306197061525    1e-4
+diag    unifac_25C             Cp_ig            33.6596046032      1e-4
+diag    unifac_25C             H_R              0                  1e-4
+diag    unifac_25C             H_ig             -241826.000489     1e-4
+diag    unifac_25C             H_real           -241826.000489     1e-4
+diag    unifac_25C             P                101325             1e-4
+diag    unifac_25C             S_R              0                  1e-4
+diag    unifac_25C             S_ig             188.724560189      1e-4
+diag    unifac_25C             S_real           188.724560189      1e-4
+diag    unifac_25C             T                298.15             1e-4
+diag    unifac_25C             Z                1                  1e-4
+diag    unifac_25C             gamma            1.3280495577       1e-4
+diag    unifac_25C             gamma_2Butanol           54.2     3e-3  anchor
+diag    unifac_25C             gamma_2Methyl1Propanol   54.2     3e-3  anchor
+diag    unifac_25C             gamma_2Methyl2Propanol   51.0     3e-3  anchor
+diag    unifac_25C             gamma_nButanol           54.1     3e-3  anchor
+diag    unifac_25C             v_molar          0.0244654036966    1e-4
+diag    unifac_50C             Cp_ig            33.8456091931      1e-4
+diag    unifac_50C             H_R              0                  1e-4
+diag    unifac_50C             H_ig             -240982.204077     1e-4
+diag    unifac_50C             H_real           -240982.204077     1e-4
+diag    unifac_50C             P                101325             1e-4
+diag    unifac_50C             S_R              0                  1e-4
+diag    unifac_50C             S_ig             191.442155695      1e-4
+diag    unifac_50C             S_real           191.442155695      1e-4
+diag    unifac_50C             T                323.15             1e-4
+diag    unifac_50C             Z                1                  1e-4
+diag    unifac_50C             gamma            1.32565958577      1e-4
+diag    unifac_50C             gamma_2Butanol           48.0     3e-3  anchor
+diag    unifac_50C             gamma_2Methyl1Propanol   48.0     3e-3  anchor
+diag    unifac_50C             gamma_2Methyl2Propanol   45.0     3e-3  anchor
+diag    unifac_50C             gamma_nButanol           47.9     3e-3  anchor
+diag    unifac_50C             v_molar          0.0265168378486    1e-4
+diag    unifac_75C             Cp_ig            34.0404498531      1e-4
+diag    unifac_75C             H_R              0                  1e-4
+diag    unifac_75C             H_ig             -240133.646396     1e-4
+diag    unifac_75C             H_real           -240133.646396     1e-4
+diag    unifac_75C             P                101325             1e-4
+diag    unifac_75C             S_R              0                  1e-4
+diag    unifac_75C             S_ig             193.971338         1e-4
+diag    unifac_75C             S_real           193.971338         1e-4
+diag    unifac_75C             T                348.15             1e-4
+diag    unifac_75C             Z                1                  1e-4
+diag    unifac_75C             gamma            1.32319314093      1e-4
+diag    unifac_75C             gamma_2Butanol           43.2     3e-3  anchor
+diag    unifac_75C             gamma_2Methyl1Propanol   43.2     3e-3  anchor
+diag    unifac_75C             gamma_2Methyl2Propanol   40.3     3e-3  anchor
+diag    unifac_75C             gamma_nButanol           43.1     3e-3  anchor
+diag    unifac_75C             v_molar          0.0285682720006    1e-4
+diag    unifac_100C            Cp_ig            34.2437894579      1e-4
+diag    unifac_100C            H_R              0                  1e-4
+diag    unifac_100C            H_ig             -239280.110759     1e-4
+diag    unifac_100C            H_real           -239280.110759     1e-4
+diag    unifac_100C            P                101325             1e-4
+diag    unifac_100C            S_R              0                  1e-4
+diag    unifac_100C            S_ig             196.338864077      1e-4
+diag    unifac_100C            S_real           196.338864077      1e-4
+diag    unifac_100C            T                373.15             1e-4
+diag    unifac_100C            Z                1                  1e-4
+diag    unifac_100C            gamma            1.32065863759      1e-4
+diag    unifac_100C            gamma_2Butanol           39.4     3e-3  anchor
+diag    unifac_100C            gamma_2Methyl1Propanol   39.4     3e-3  anchor
+diag    unifac_100C            gamma_2Methyl2Propanol   36.6     3e-3  anchor
+diag    unifac_100C            gamma_nButanol           39.4     3e-3  anchor
+diag    unifac_100C            v_molar          0.0306197061525    1e-4

@@ -91,6 +91,7 @@ uniquac
 groups
 {
     unifac ( { group CH3; count 1; } { group CH2; count 2; } { group OH; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group CH2; count 2; } { group OH_p; count 1; } );   // C408 (c): after the 1-propanol sample of Table III p. 182-183, CORRECTED: the paper prints "2 CH3, 1 CH2, 1 OH(p)", a misprint (C3H8O needs 1 CH3 + 2 CH2)
 }
 solubilityParameter 24450;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 

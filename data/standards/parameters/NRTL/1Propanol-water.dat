@@ -14,7 +14,7 @@
       ln gamma_i = sum_j tau_ji G_ji x_j / S_i
                    + sum_j (x_j G_ij / S_j)(tau_ij - sum_k tau_kj G_kj x_k / S_j),
       S_j = sum_k G_kj x_k.  Direction i->j as Renon & Prausnitz, AIChE J. 14
-      (1968) 135: tau_12 = (g_12 - g_22)/RT.  a_ij = a_ji = 0 and alpha = 0.30
+      (1968) 135: tau_12 = (g_12 - g_22)/RT.  a_ij = a_ji = 0 and alpha = 0.40
       were FIXED, not fitted: bubble temperatures alone do not identify them.
 
   FRAME: ideal-gas vapour, no Poynting term, the catalogue's own Antoine
@@ -36,6 +36,7 @@
   validity span is an extrapolation that WILL split the liquid: the
   validity block is the guard, read it.
 
+  REFITTED 2026-11-16 after water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation (the earlier fit had absorbed that curve's error); the case, its numbers and the held-out verdict are the new run's.
   REPRODUCE: run tutorials/props/curation/curate09_nrtl_propanol_water -- its fit writes
   1Propanol-water.proposal.dat; its parameters, evidence, validity and validation
   must equal this record's (bin/curate/check_regressed_pairs.py holds the
@@ -55,10 +56,10 @@ parameters
     i           1Propanol;
     j           water;
     a_ij        0.00000000;
-    b_ij        -25.09964672;
+    b_ij        106.03037225;
     a_ji        0.00000000;
-    b_ji        979.77644383;
-    alpha       0.30000000;
+    b_ji        918.27682589;
+    alpha       0.40000000;
 }
 
 provenance
@@ -70,7 +71,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression, redistributed with the catalogue; the measured points belong to the cited articles and are not reproduced in this record";
-    fitDate       "2026-10-05";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -100,11 +101,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          213.20132638;
-    rms_K         0.52347230;
+    chi2          102.10488574;
+    rms_K         0.44749916;
     nDataPoints   26;
     identifiable  true;
-    maxAbsCorr    0.91986419;
+    maxAbsCorr    0.79249380;
 
     validity
     {
@@ -121,8 +122,8 @@ validation
     heldOut
     {
         points      19;
-        aad_pct     0.056538;
-        aad_K       0.205310;
+        aad_pct     0.039692;
+        aad_K       0.143958;
         domain_x1   ( 0.058000 0.976000 );
     }
 

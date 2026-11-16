@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  584.422562854;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -685.223129179;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  1181.74094878;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -842.503761128;
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  584.421830403;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -685.222853824;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ij  1181.74094243;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.b_ji  -842.503759681;
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  4214.71596549;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -7053.13326087;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  5225.56355694;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -8771.21541134;
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  4214.71596827;
-        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -7053.13327411;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ij  5225.56355813;
+        equilibrium.liquid.activityModel.binaryParameters.water-tetraethyleneGlycol.A_ji  -8771.21541831;
     }
 
     evidence

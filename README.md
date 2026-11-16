@@ -167,7 +167,7 @@ The five binaries share `src/{core,thermo,solver,materials,unitOperations,contro
 
 | Layer | Capability |
 |---|---|
-| Activity coefficients γ_i(T, x) | `ideal`, `NRTL`, `Wilson`, `UNIQUAC`, `UNIFAC` (predictive, group contribution), `cosmoSAC` (2002 variant; surface data per component, VT-2005 sets referenced not shipped) |
+| Activity coefficients γ_i(T, x) | `ideal`, `NRTL`, `Wilson`, `UNIQUAC`, `UNIFAC` (predictive, group contribution), `UNIFACDortmund` (modified UNIFAC, Dortmund: only the parameters printed in Gmehling, Li & Schiller 1993), `cosmoSAC` (2002 variant; surface data per component, VT-2005 sets referenced not shipped) |
 | Aqueous (electrolyte) activity  | `davies` (teaching rung, charge-only), `pitzerHMW` (per-ion virials), `edwardsPitzer` (Edwards et al. 1978 truncation, sour-water), eNRTL + single-salt Pitzer adapters |
 | Equation of state φ_i(T, P, y)  | `idealGas`, `SRK`, `PengRobinson` (alias `PR`), `PCSAFT` (incl. association, 2B/3B/4C schemes) |
 | Vapour pressure Psat_i(T)       | `Antoine`, `AmbroseWalton`, `Wagner` (declared exponents + reducing constants; the IAPWS water saturation equation is one instance) |

@@ -80,6 +80,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 7; } );
     unifac ( { group CH3; count 2; } { group CH2; count 7; } );
+    unifacDortmund ( { group CH3; count 2; } { group CH2; count 7; } );   // C408 (c): S octane, Table III p. 182-183
 }
 liquidViscosity
 {

@@ -21,26 +21,35 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
         "components/furfural.dat"
         {
             type          imported;
-            sha256        "78bdab06724b7e5a8ba37af00f68feb8d65b0c24d36140bbdeaab4616a77fc6f";
-            computationalSha256 "75c923fe8474bace66ff7b8395dc5e523f61614d5189184d5cfa0140cac16d02";
+            sha256        "f2f2a7b7b55ab32eaffb4e42a92a97d1be9177b7181df9be1c627d47ec454d7d";
+            computationalSha256 "7d0057b911a77802c128aa5bb4d32cd68ef6d33f4e93cbd647809a929789e686";
             origin        "data/standards/components/furfural.dat";
-            originSha256  "a7ac9f9dfbf1b396314ae86bace474ee6b22153f5ea3f9a10cc6b23f9bfab6b8";
+            originSha256  "a22381d24ba39a150781e235fc42f1ac68db528c7c3461eb6d9e0ee4dc82a13c";
             release       Choupo-2608;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
     }

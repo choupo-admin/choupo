@@ -19,7 +19,7 @@
   reviewStatus autoPromoted; review { by none; }: PROMOTED AUTOMATICALLY by
   its fitting pipeline (the NRTL case's own evidence and kept points, the
   max |T_model - T| over the kept points, graded 1 / 2 / 4 K -- DEV.md 4c C285, C294;
-  THIS fit: warning in-sample, 1.2381 K; one liquid across its
+  THIS fit: warning in-sample, 1.3645 K; one liquid across its
   validity span), and NO HUMAN HAS REVIEWED IT.  The engine says so on every
   run that reads it, and voices a warning or a severe grade beside it.
   Nothing was held out: the `validation {}` block says so, and the
@@ -44,8 +44,8 @@ parameters
 {
     i           water;
     j           tetraethyleneGlycol;
-    A_ij        4214.71596549;   // J/mol
-    A_ji        -7053.13326087;   // J/mol
+    A_ij        5225.56355694;   // J/mol
+    A_ji        -8771.21541134;   // J/mol
 }
 
 provenance
@@ -58,12 +58,12 @@ provenance
     review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
     fitGrade      warning;   // DEV.md 4c C285 (C294): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxTemperatureError_K 1.2381;
+    fitGradeMaxTemperatureError_K 1.3645;
     promotedBy    "bin/choupo-curate pairs --models --promote";
-    promotedDate  "2026-11-11";
+    promotedDate  "2026-11-16";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -82,11 +82,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          5.04790284;
-    rms_K         0.74567639;
+    chi2          3.51944889;
+    rms_K         0.62271965;
     nDataPoints   38;
     identifiable  true;
-    maxAbsCorr    0.99141774;
+    maxAbsCorr    0.99060054;
 
     validity
     {
@@ -117,8 +117,8 @@ curation
     outliersDropped 0;
     pointsKept      38;
     noBubblePoint   0;
-    maxAbsError     1.2381 K;
-    meanAbsError    0.6544 K;
+    maxAbsError     1.3645 K;
+    meanAbsError    0.4871 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           warning;

@@ -429,6 +429,7 @@ provenance
 groups
 {
     unifac ( { group H2O; count 1; } );
+    unifacDortmund ( { group H2O; count 1; } );   // C408 (c): P water, Table III p. 182-183
 }
 
 uniquac

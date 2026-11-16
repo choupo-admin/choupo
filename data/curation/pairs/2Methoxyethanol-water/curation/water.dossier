@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ij  17.2066769828;
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ji  245.459820881;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ij  594.126441945;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ji  -191.872597035;
     }
 
     evidence
@@ -87,8 +87,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ij  17.206677286;
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ji  245.459820332;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ij  594.126433464;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.b_ji  -191.872593473;
     }
 
     evidence
@@ -143,8 +143,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ij  6266.68151163;
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ji  -4035.71952238;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ij  4006.09336054;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ji  -796.82739425;
     }
 
     evidence
@@ -199,8 +199,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ij  6266.68096625;
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ji  -4035.71917909;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ij  4006.0933608;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.A_ji  -796.827394904;
     }
 
     evidence
@@ -255,8 +255,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ij  -349.364592528;
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ji  753.738154477;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ij  -195.258786759;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ji  311.584117672;
     }
 
     evidence
@@ -311,8 +311,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ij  -349.364593466;
-        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ji  753.738160115;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ij  -195.258786335;
+        equilibrium.liquid.activityModel.binaryParameters.water-2Methoxyethanol.a_ji  311.584116455;
     }
 
     evidence

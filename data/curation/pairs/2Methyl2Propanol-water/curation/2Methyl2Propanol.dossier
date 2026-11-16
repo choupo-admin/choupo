@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ij  -121.006569075;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ji  1271.4242984;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ij  -122.110038357;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ji  1292.63080577;
     }
 
     evidence
@@ -97,8 +97,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ij  -121.006569132;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ji  1271.42429914;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ij  -122.110038388;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.b_ji  1292.63080564;
     }
 
     evidence
@@ -163,8 +163,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ij  131.908824303;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ji  142.973804051;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ij  123.832172957;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ji  153.72336751;
     }
 
     evidence
@@ -229,8 +229,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ij  131.908824433;
-        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ji  142.973803943;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ij  123.832172228;
+        equilibrium.liquid.activityModel.binaryParameters.2Methyl2Propanol-water.a_ji  153.723368198;
     }
 
     evidence

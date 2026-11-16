@@ -14,13 +14,13 @@
   liquid; the molecular path carried up to two liquids and no chemistry.  A
   benzene/water feed with a weak acid in it needs both, and this is the case
   that has both: vapour + a SPECIATED aqueous liquid + a benzene-rich organic
-  liquid, solved together at 313.15 K and 0.35 atm.
+  liquid, solved together at 313.15 K and 0.353 atm.
 
   WHAT THE STUDENT SEES
 
-      V/F = 0.324                       -- a third of the feed leaves as vapour
-      organic = 1.68 % of the backbone liquid moles, 96 % benzene
-      ln(a_org / a_aq) = 2e-15          -- the equality that TIES the two
+      V/F = 0.227                       -- about a fifth of the feed leaves as vapour
+      organic = 10.4 % of the backbone liquid moles, 96 % benzene
+      ln(a_org / a_aq) = 0 to round-off          -- the equality that TIES the two
                                            liquids, printed, not assumed
       pH = 2.89                         -- the acetic acid speciating in the
                                            aqueous phase, unaffected by the
@@ -34,21 +34,35 @@
   there.  Two liquids are not a refinement here; they are the difference
   between a right answer and a wrong one.
 
-  WHERE IT SITS.  The feed's three-phase bubble pressure is 0.357 atm, so
-  0.36 atm gives a SUBSATURATED two-liquid state with no vapour at all, and
-  below about 0.347 atm the vapour has stripped enough benzene that the
+  WHERE IT SITS.  The feed's three-phase bubble pressure is about 0.356 atm,
+  so 0.36 atm gives a SUBSATURATED two-liquid state with no vapour at all,
+  and below about 0.3505 atm the vapour has stripped enough benzene that the
   organic liquid disappears and the case becomes an ordinary reactive flash.
   This case sits between those, in the window where all three phases exist.
   Move P and the phase set follows -- announced, both ways.
 
-  THE 0.0845 kW, AND WHY IT IS NOT ZERO.  This flash is ISOTHERMAL, so the
-  duty that holds 313.15 K is a real, computed quantity: Q = 0.0845 kW.  It
-  is small because the feed enters at the flash temperature and the vapour it
-  makes is mostly benzene, whose latent load is nearly paid for by the acetic
-  dimer association (-0.0024 kW, priced exactly) and by the mixing terms --
-  not because the case is thermally neutral.  The by-unit energy ledger then
-  reports dH = 0.0869 kW against declared items of 0.0845 kW, a 0.0024 kW
-  gap, and it is REPORTED rather than rounded away.
+  RE-AUTHORED 2026-11-16 (water's vapour pressure moved from an Antoine fit,
+  +2.5 % at 100 C, to the IAPWS saturation equation, and the reactive path
+  prices water's vapour through the H2O(g) = H2O record derived from it).  The
+  window above shifted by about +0.004 atm, and at the old 0.35 atm the case
+  fell out of it: the declared organic liquid, 1.7 % of the liquid before,
+  vanished and the case stopped being a two-liquid case.  The SMALLEST change
+  that restores it with a margin is the pressure: 0.35 -> 0.353 atm, the feed
+  and T untouched, which puts the organic liquid at 10.4 % of the backbone
+  liquid (the margin asked for was about 5 %: 0.352 atm gives 6.9 %, 0.351
+  3.2 %, 0.354 13.5 %).  Every number in this header is the new run's, except
+  the duty paragraph below, which keeps its argument and carries the new
+  figures: the flash now CONDENSES more than it vaporises, so its isothermal
+  duty is a cooling load, Q = -100.7 kW, and the first-law gap is zero.
+
+  THE DUTY.  This flash is ISOTHERMAL, so the duty that holds 313.15 K is a
+  real, computed quantity: Q = -100.7 kW (the liquid leaves colder in
+  enthalpy than the feed brings, because more of the benzene condenses into the
+  organic liquid than at the old 0.35 atm; the acetic dimer association is
+  priced exactly inside the vapour enthalpy, -0.0015 kW).  The by-unit energy
+  ledger reports dH = -100.671 kW against declared items of -100.671 kW: the
+  gap the earlier authoring REPORTED (0.0024 kW) is zero here, and a gap that
+  vanishes is reported as faithfully as one that does not.
 
   What that gap is NOT: it is not the convergence residual of the flash.  The
   two are different quantities and the case prints both, which is the point.
@@ -58,12 +72,12 @@
   answer, the normalized residual at both, and the achieved reduction --
   followed by the criterion that decided.  For this case:
 
-      raw   |r|1   6.79e-02  ->  1.28e-09     (log-form, dimensionless)
-      normalized   9.18e-03  ->  1.66e-10
-      reduction    1.81e-08
+      raw   |r|1   4.46e-02  ->  4.37e-09     (log-form, dimensionless)
+      normalized   6.04e-03  ->  5.76e-10
+      reduction    9.53e-08
       criterion    absolute tolerance (normalized residual <= tolerance)
 
-  So the flash is converged on a stated criterion, and the 0.0845 kW duty
+  So the flash is converged on a stated criterion, and the -100.7 kW duty
   beside it is physics, not slack.  A dimensional number is never a verdict
   on its own -- it is a magnitude, and a magnitude means nothing until it is
   compared with the magnitude of what is being balanced.  Ruling:
@@ -82,7 +96,7 @@
 \*---------------------------------------------------------------------------*/
 
 application   choupoSolve;
-description  "Reactive flash with TWO liquids: vapour + speciated aqueous + benzene-rich organic at 313.15 K / 0.35 atm -- V/F = 0.324, organic 1.7 % of the liquid, pH 2.89";
+description  "Reactive flash with TWO liquids: vapour + speciated aqueous + benzene-rich organic at 313.15 K / 0.353 atm -- V/F = 0.227, organic 10.4 % of the liquid, pH 2.89";
 verbosity     3;
 
 reports

@@ -87,29 +87,36 @@
 
   @@MODELS-RESULT-BEGIN@@
   WHAT THE UNIQUAC AND WILSON FITS FOUND (pinned in `expected`; measured,
-  not argued). Beside fit_nrtl's max |dT| 2.325 K (severe) on the same
-  kept points. fit_uniquac: a_ij = -349.4, a_ji = 753.7 K over 31 kept
-  points: max |dT| 2.481 K, mean 0.709 K, graded severe -> accepted;
-  fit_uniquac_start2 lands on the same pair (-349.4, 753.7). PROMOTED on
-  2026-11-12 into
+  not argued). Beside fit_nrtl's max |dT| 1.231 K (warning) on the same
+  kept points. fit_uniquac: a_ij = -195.3, a_ji = 311.6 K over 31 kept
+  points: max |dT| 1.254 K, mean 0.338 K, graded warning -> accepted;
+  fit_uniquac_start2 lands on the same pair (-195.3, 311.6). PROMOTED on
+  2026-11-16 into
   data/standards/parameters/UNIQUAC/2Methoxyethanol-water.dat as
-  reviewStatus autoPromoted, review by none, because: fit grade severe --
-  max |dT| 2.481 K over the 31 kept points, one liquid across the
-  validity span; BEATS THE IDEAL MIXTURE (C334): 2.4807 K against ideal
-  5.3727 K.
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.254 K over the 31 kept points, one liquid across the
+  validity span. fit_wilson: A_ij = 4006.1, A_ji = -796.8 J/mol over 31
+  kept points: max |dT| 1.228 K, mean 0.263 K, graded warning ->
+  accepted; fit_wilson_start2 lands on the same pair (4006.1, -796.8).
+  PROMOTED on 2026-11-16 into
+  data/standards/parameters/Wilson/2Methoxyethanol-water.dat as
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.228 K over the 31 kept points, one liquid across the
+  validity span.
   @@MODELS-RESULT-END@@
 
   @@RESULT-BEGIN@@
   WHAT THE RUN FOUND (pinned in `expected`; measured, not argued).
-  fit_nrtl: b_ij = 17.2 K, b_ji = 245.5 K over 31 kept points of 2
-  laboratories (0 discarded): max |dT| 2.325 K, mean 0.531 K, graded
-  severe (limits 1 / 2 / 4 K) -> accepted. fit_nrtl_start2 lands on the
-  same pair (17.2, 245.5). PROMOTED on 2026-11-12 into
+  fit_nrtl: b_ij = 594.1 K, b_ji = -191.9 K over 31 kept points (0
+  discarded): max |dT| 1.231 K, mean 0.256 K, graded warning (limits 1 /
+  2 / 4 K) -> accepted. fit_nrtl_start2 lands on the same pair (594.1,
+  -191.9). REFITTED on 2026-11-16 after water's vapour pressure moved to
+  the IAPWS equation (the earlier fit had absorbed the Antoine curve's
+  error); PROMOTED on 2026-11-16 into
   data/standards/parameters/NRTL/2Methoxyethanol-water.dat as
-  reviewStatus autoPromoted, review by none, because: fit grade severe --
-  max |dT| 2.325 K over the 31 kept points, one liquid across the
-  validity span; BEATS THE IDEAL MIXTURE (C334): 2.3247 K against ideal
-  5.3727 K
+  reviewStatus autoPromoted, review by none, because: fit grade warning
+  -- max |dT| 1.231 K over the 31 kept points (limits 1 / 2 / 4 K), one
+  liquid across the validity span
   @@RESULT-END@@
 
   WHAT IS NOT CLAIMED.  The pair is correct at these pressures and in this
@@ -500,18 +507,6 @@ operations
     // @@C294-OPS-END@@
     // @@C294-READBACK-BEGIN@@ -- each model's record, read as the catalogue reads it
     {
-        name        txy_wilson;
-        type        propertyScan1D;
-        vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
-        state       { P 101.3 kPa;  composition { water 0.5;  2Methoxyethanol 0.5; } }
-        thermo
-        {
-            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
-        }
-        properties  ( T_bubble  y_eq_water );
-        output      { file txy_wilson.csv; }
-    }
-    {
         name        txy_uniquac;
         type        propertyScan1D;
         vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
@@ -522,6 +517,18 @@ operations
         }
         properties  ( T_bubble  y_eq_water );
         output      { file txy_uniquac.csv; }
+    }
+    {
+        name        txy_wilson;
+        type        propertyScan1D;
+        vary        { variable x[water];  from 0.0;  to 1.0;  n 101; }
+        state       { P 101.3 kPa;  composition { water 0.5;  2Methoxyethanol 0.5; } }
+        thermo
+        {
+            equilibrium { liquid { activityModel { model Wilson; /* no inline pair: the case's own record */ } } }
+        }
+        properties  ( T_bubble  y_eq_water );
+        output      { file txy_wilson.csv; }
     }
     // @@C294-READBACK-END@@
 );

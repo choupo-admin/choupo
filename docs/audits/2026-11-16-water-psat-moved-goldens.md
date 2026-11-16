@@ -2398,16 +2398,136 @@ Reason: K_water = gamma Psat / P (or the pure-water saturation point itself): Ps
   now disagree with the model by more than their bands (y_CO2aq row 1: 0.508 vs 0.494, band 0.025; P row 2: 1.896 vs 1.98 atm,
   band 0.04; P row 3: 1.883 vs 1.97, band 0.04), because water's Psat at 100 C drops 2.5 %.  An anchor is never refreshed and
   widening a band is a decision; the case stays red until one is taken.
-* The 14 pair-curation cases under `data/curation/pairs/*-water` (13Dioxolane, 13Propanediol, 1Methoxy2Propanol,
+* (SUPERSEDED by TASK 3 below: refitted and recorded.)  The 14 pair-curation cases under `data/curation/pairs/*-water` (13Dioxolane, 13Propanediol, 1Methoxy2Propanol,
   1Methoxy2PropylAcetate, 2Amino2Methyl1Propanol, 2Methoxyethanol, 2Methyl2Propanol, dimethylSulfoxide, ethyleneGlycol,
   furfural, methylDiEthanolAmine, nPropylPropionate, tetraethyleneGlycol, triethyleneGlycol): NOT recorded.  Their fits ran
   on water's old Psat and now refit to different NRTL/Wilson/UNIQUAC parameters (e.g. 13Dioxolane b_ij 237.15 -> 238.84, bubble
   max error 0.94 -> 1.22 K, fit grade clean -> warning); the shipped records under `data/standards/parameters/` (24 of them,
   see `check_regressed_pairs`) are the product of those fits.  Recording the cases would freeze a fit that disagrees with the
   shipped record; re-promoting the 24 records is a curation slice of its own with its own moved goldens.
-* `flash17_two_liquids_reactive`: NOT recorded.  Its rows moved (V/F 0.324 -> 0.341, K_water -0.9 %, K_benzene 37.5 -> 424), but
+* `flash17_two_liquids_reactive`: (SUPERSEDED by TASK 3 below: re-authored and recorded.)  Was NOT recorded.  Its rows moved (V/F 0.324 -> 0.341, K_water -0.9 %, K_benzene 37.5 -> 424), but
   the declared second (organic) liquid, 1.7 % of the liquid before, VANISHES: the run no longer writes the `phases{}` block and
   `check_phase_speciation` and `check_two_liquids` fail on it.  The reactive electrolyte flash prices water's vapour through the
   H2O(g) = H2O gas-liquid record (the second home of the saturation curve, now derived from the IAPWS equation), which moved
   water's K by 0.9 % at 313 K and tipped a case that sat at the edge of its phase.  The case needs authoring (a feed with a
   decisive second liquid), not a golden.
+
+
+## TASK 3 (2026-11-16): the pairs, edwards02, flash17, the two gates, the leftover Antoine copies
+
+### 1. The 24 water pair records and their 14 curation cases, refitted on the IAPWS curve
+
+Method: the same regression path `check_regressed_pairs` reproduces (`bin/curate/pairs_c283.py`: ThermoML evidence from the
+local archive cache, sha-checked; same objective, weighting, windows, graded acceptance; the 3 K outlier discards DECLARED in
+each `propsDict` and re-declared only where the new curve changes which points are outliers, ethylene glycol and triethylene
+glycol, with a dated note).  The 14 cases were refitted for NRTL, UNIQUAC and Wilson (C294 reuse of the NRTL case's evidence),
+then promoted to `data/standards/parameters/` with the case re-sealed.  The five pairs curated in tutorials (methanol,
+isopropanol, 1-propanol, acetonitrile, n-butanol) were refitted by running their own case and merging the proposal's numbers
+into the record.  Old and new parameters and statistics, as moved:
+
+(table follows; Wilson rows carry A_ij/A_ji in J/mol, NRTL b in K, UNIQUAC a in K)
+
+## Water pair records refitted on the IAPWS curve (old -> new, 2026-11-16)
+
+Each row: catalogue record, then every parameter or fit statistic that moved (old -> new).  Fit statistics
+are the record's own (aad_pct / aad_K on the held-out set, chi2 and rms_K of the fit).
+
+- `NRTL/13Dioxolane-water.dat`: b_ij 237.15189718 -> 238.83830559 ; b_ji 619.29392328 -> 622.90352921 ; rms_K 0.44511229 -> 0.53908894 ; chi2 291.78182073 -> 348.43494831
+- `NRTL/13Propanediol-water.dat`: b_ij 134.12713244 -> 549.54435000 ; b_ji -77.32618734 -> -304.68636324 ; rms_K 0.67722771 -> 0.20127733 ; chi2 222.81999172 -> 10.65711245
+- `NRTL/1Methoxy2Propanol-water.dat`: b_ij 681.92949422 -> 729.52271422 ; b_ji -108.93299380 -> -120.41665685 ; rms_K 0.65249145 -> 0.76659403 ; chi2 277.10419832 -> 384.60112660
+- `NRTL/1Propanol-water.dat`: b_ij -25.09964672 -> -16.09001652 ; b_ji 979.77644383 -> 989.59694531 ; aad_pct 0.056538 -> 0.056142 ; aad_K 0.205310 -> 0.203827 ; rms_K 0.52347230 -> 0.59714296 ; chi2 213.20132638 -> 214.93937809
+- `NRTL/2Amino2Methyl1Propanol-water.dat`: b_ij -393.27513964 -> -383.02681872 ; b_ji 873.90097473 -> 912.06016754 ; rms_K 0.61990229 -> 0.60693844 ; chi2 7.71810073 -> 6.90162581
+- `NRTL/2Methoxyethanol-water.dat`: b_ij 17.20667698 -> 594.12644195 ; b_ji 245.45982088 -> -191.87259703 ; rms_K 0.68042109 -> 0.40146078 ; chi2 305.60418043 -> 58.24702683
+- `NRTL/acetonitrile-water.dat`: b_ij 218.34737078 -> 220.98779770 ; b_ji 616.29648169 -> 621.71909130 ; aad_pct 0.136733 -> 0.131782 ; aad_K 0.495564 -> 0.476238 ; rms_K 0.52278237 -> 0.65126841 ; chi2 27.58885486 -> 31.43341067
+- `NRTL/dimethylSulfoxide-water.dat`: b_ij -7.65623582 -> -88.72926420 ; b_ji -321.26965510 -> -209.35640117 ; rms_K 0.84393184 -> 1.02477537 ; chi2 10.91880869 -> 16.22305951
+- `NRTL/ethyleneGlycol-water.dat`: b_ij 349.98390173 -> 311.92205198 ; b_ji -358.93949479 -> -298.86357401 ; rms_K 0.90350189 -> 0.80028621 ; chi2 23.08919586 -> 15.33293135
+- `NRTL/isopropanol-water.dat`: b_ij -69.64687747 -> -63.66281388 ; b_ji 968.22281035 -> 970.20246321 ; aad_pct 0.234201 -> 0.231345 ; aad_K 0.841478 -> 0.830837 ; rms_K 0.51694526 -> 0.62595237 ; chi2 90.12578832 -> 105.03001172
+- `NRTL/methanol-water.dat`: b_ij 165.00630266 -> 146.36957085 ; b_ji 41.76488968 -> 61.39688271 ; aad_pct 0.150061 -> 0.160339 ; aad_K 0.534751 -> 0.572376 ; rms_K 0.49995444 -> 0.49942496 ; chi2 315.93727713 -> 326.08576689
+- `NRTL/methylDiEthanolAmine-water.dat`: b_ij 338.24719384 -> 280.45062698 ; b_ji -363.33042228 -> -313.47089306 ; rms_K 1.06911889 -> 1.31897215 ; chi2 109.75250641 -> 217.81830538
+- `NRTL/nButanol-water.dat`: a_ij -4.71077589 -> -4.11160376 ; b_ij 1894.04289944 -> 1708.88106578 ; a_ji 4.09957276 -> 4.05956908 ; b_ji -163.83640884 -> -151.85707409 ; alpha 0.44592340 -> 0.44639312 ; aad_pct 0.102898 -> 0.132477 ; aad_K 0.376320 -> 0.484497 ; rms_K 0.27785134 -> 0.38029294 ; chi2 186.97483204 -> 209.84605627
+- `NRTL/tetraethyleneGlycol-water.dat`: b_ij 584.42256285 -> 1181.74094878 ; b_ji -685.22312918 -> -842.50376113 ; rms_K 0.65467701 -> 0.50040733 ; chi2 3.88998251 -> 2.27567905
+- `NRTL/triethyleneGlycol-water.dat`: b_ij -928.55114382 -> -890.94834003 ; b_ji 609.02733226 -> 578.16862022 ; rms_K 1.26875380 -> 0.83272434 ; chi2 2608.16411374 -> 1010.71437587
+- `UNIQUAC/1Methoxy2Propanol-water.dat`: a_ij -182.99705266 -> -161.79615278 ; a_ji 419.12442068 -> 384.35949464 ; rms_K 0.56457019 -> 0.59193308 ; chi2 217.27572839 -> 253.58645159
+- `UNIQUAC/2Methoxyethanol-water.dat`: a_ij -349.36459253 -> -195.25878676 ; a_ji 753.73815448 -> 311.58411767 ; rms_K 0.92771750 -> 0.42216590 ; chi2 493.85211854 -> 108.69111508
+- `Wilson/13Dioxolane-water.dat`: A_ij 1870.67285147 -> 1936.84885731 ; A_ji 7016.37389375 -> 7036.31510201 ; rms_K 0.76330892 -> 0.66570279 ; chi2 316.53435330 -> 292.50801198
+- `Wilson/1Methoxy2Propanol-water.dat`: A_ij 5181.40115412 -> 5195.38236419 ; A_ji -293.65710282 -> -72.56846431 ; rms_K 0.81385446 -> 0.93188333 ; chi2 454.14787050 -> 592.89292333
+- `Wilson/2Amino2Methyl1Propanol-water.dat`: A_ij -174.41170695 -> -369.97997870 ; A_ji 3503.96201362 -> 3742.56993882 ; rms_K 0.62774066 -> 0.66253862 ; chi2 6.59048504 -> 6.51136705
+- `Wilson/2Methoxyethanol-water.dat`: A_ij 6266.68151163 -> 4006.09336054 ; A_ji -4035.71952238 -> -796.82739425 ; rms_K 0.67671510 -> 0.40490612 ; chi2 304.15336116 -> 60.85685704
+- `Wilson/dimethylSulfoxide-water.dat`: A_ij -834.23066196 -> -585.52771322 ; A_ji 18334.54253703 -> 22663.30191390 ; rms_K 0.99575059 -> 0.93446629 ; chi2 15.39096083 -> 13.56172855
+- `Wilson/ethyleneGlycol-water.dat`: A_ij 3370.65072024 -> 8434.48981644 ; A_ji -4136.37949412 -> -6798.39862950 ; rms_K 1.09247197 -> 0.79041812 ; chi2 29.99038493 -> 15.46891988
+- `Wilson/tetraethyleneGlycol-water.dat`: A_ij 4214.71596549 -> 5225.56355694 ; A_ji -7053.13326087 -> -8771.21541134 ; rms_K 0.74567639 -> 0.62271965 ; chi2 5.04790284 -> 3.51944889
+
+
+### 1b. 1-propanol + water: alpha 0.30 -> 0.40
+
+On the new curve the fixed-alpha 0.30 pair (b_ij -16.09, b_ji 989.60) predicted a liquid-liquid split up to 363.2 K, inside
+its own validity span (360.49-368.64 K); `check_regressed_pairs` arm (f) refuses that (the earlier record split only below
+355.5 K).  alpha is not identified by bubble temperatures (the case says so), so it is a declared choice.  Measured by
+refitting the case: alpha 0.30 / 0.35 / 0.40 give chi2 214.9 / 159.4 / 102.1, held-out AAD 0.204 / 0.178 / 0.144 K and a
+highest splitting temperature of 363.2 / 359.7 / 355.5 K.  alpha = 0.40 is adopted (b_ij 106.03, b_ji 918.28): the fit is
+better on every statistic and the split is back to the earlier record's 355.5 K.  This is a change of the case's declared
+design, written in its header.
+
+### 2. edwards02_table7_vle: NOT widened, reported
+
+Its engine-pinned rows were recorded by hand (P_atm, p_water_atm, y_*, 20 rows of the Psat-only move).  The paper's own
+ANCHOR rows were not touched.  A Psat-only control (the same case, same binary, the case's water record with the old Antoine
+block against the IAPWS block) moves row 1 P 2.5134 -> 2.4900 atm, row 2 1.9188 -> 1.8957, row 3 1.9063 -> 1.8834 and
+y_CO2aq row 1 0.5034 -> 0.5081, so Psat alone moves the model.  The paper's values are P 2.51 / 1.98 / 1.97 atm and y_CO2aq
+0.494: the model was already 3.1 % and 3.2 % BELOW the paper on rows 2 and 3 with Antoine, and the IAPWS curve (which any
+steam-table-based paper agrees with) moves it AWAY from the paper, to 4.3 % and 4.4 % against bands of 4 %.  The move is
+therefore not an old-Antoine artefact that the paper shares; it is a model-vs-paper gap that the correct vapour pressure
+exposes.  Rule 2 of the brief: not explained by Psat, so no band was widened and no anchor refreshed.  The case's anchor rows
+(y_CO2aq row 1; P rows 2 and 3) FAIL in the sweep by design until the gap is understood (electrolyte activity or the carbamate
+chemistry at 100 C, outside this slice).
+
+### 3. flash17_two_liquids_reactive
+
+Re-authored by one number: P 0.35 -> 0.353 atm (feed and T untouched).  The window in which the declared organic liquid
+exists shifted by about +0.004 atm with water's K (H2O(g) = H2O record derived from IAPWS), and at 0.35 atm the organic
+liquid vanished.  Organic liquid at 0.352 / 0.353 / 0.354 atm: 6.9 / 10.4 / 13.5 % of the backbone liquid (0.351: 3.2 %).
+V/F 0.324 -> 0.227, K_benzene 6.503, duty -100.67 kW with a zero first-law gap.  Goldens recorded; check_phase_speciation and
+check_two_liquids pass (the latter's hardcoded V/F 0.32 and P 0.35 became 0.227 and 0.353).
+
+### 4. check_lle_residual (curate13) and check_reference_rung (k)
+
+curate13: the fit's bubble evaluation and propertyPoint agreed everywhere except one fit point: x_butanol = 0.024 fell INSIDE
+the liquid-liquid gap once water's vapour pressure moved (the gap's water-rich edge is now at 0.0235), where the bubble
+evaluation returns the three-phase value (365.43 K), not the one-liquid generating value.  Diagnosis by a scan of
+T_bubble over x at the generating parameters (0.023 -> 368.2885 K, 0.024 -> 365.4312 K).  Cause: Psat.  Remedy: the synthetic
+dataset was regenerated with the engine on the new curve and the offending point replaced by 0.021; the fit then recovers the
+generating b_ij 150 and b_ji 1050 to 1e-5 from both starts (150.000026 / 1049.99993).  The gate passes.
+(k): measured on the new curve AAD T 0.965 K (was 2.187), y_water 0.0330 (was 0.0272).  Ceilings set from this measurement,
+never silently: T 1.3 K, y 0.036, with the reasons in the arm.  The monomer-gas comparison was not retaken on the new curve.
+
+### 5. Antoine copies in cases
+
+17 adopted + 2 merged + 2 authored (twoSectorDemo, overlay02) case copies of water.dat now carry only the catalogue's IAPWS
+vaporPressure block (everything else in the copy unchanged; scoped re-seal for the manifests that claim them; the two merged
+cases had their manifest hashes recomputed).  purelaws02 (two named laws on one record, a grammar witness) keeps both and now
+prefers SR1.  `check_water_one_home` arm (e) refuses any case water.dat with `model Antoine` other than purelaws02's.
+unifacDortmund01/02 (imported, new upstream) re-sealed.
+
+### 6. 273.15 K and the announcement
+
+On the propertyPoint route the window announcement fires at 273.15 K and at 250 K ("OUTSIDE its declared Trange (273.16
+647.096)"); the record's window is 273.16-647.096 and `noteRange` compares with no tolerance.  The missing announcement
+observed earlier is not reproduced by the propsDict route (the per-instance latches announce the first excursion at an
+accepted state), so no code was changed.
+
+## Open after this landing
+
+* `edwards02_table7_vle` is pinned KNOWN-BROKEN by name (`.known-broken` in the case).  Three anchors miss their bands:
+  y_CO2aq row 1 model 0.5034 -> 0.5081 against the cited 0.494 (band 0.025); P row 2 1.9188 -> 1.8957 atm against 1.98 (band
+  0.04); P row 3 1.9063 -> 1.8834 against 1.97 (band 0.04).  Cause: a Psat-only control moves exactly these rows, but the
+  paper's gap to the model GREW with the correct curve (3.1 / 3.2 % -> 4.3 / 4.4 %), so the old Antoine was not shared with
+  the paper and Psat does not explain it.  No band widened, no anchor refreshed; the engine-pinned rows were recorded.  The
+  follow-up is the electrolyte activity / carbamate chemistry at 100 C, not water's curve.
+* `check_reference_rung` arm (k): CLOSED here, not pinned: ceilings re-set from the new measurement (T 0.965 K, y_water
+  0.0330 against 2.187 K / 0.0272 before; ceilings 1.3 K / 0.036), with the reason in the arm.  OPEN: the monomer-ideal-gas
+  reading (3.49 K / 0.0355 on the old curve) was not retaken on the new one, so y_water no longer discriminates it.
+* The 273.15 K window-edge announcement: the missing "OUTSIDE its declared Trange" seen earlier did not reproduce
+  (propertyPoint announces at 273.15 K and 250 K); no code changed.  OPEN: the route on which it was missed is not identified.
+* GUI quotes moved with the goldens (recorded in the same landing): flash20 NRTL K_ethanol 3.896 -> 3.817, V/F 0.512 -> 0.491,
+  K_water 0.602 -> 0.594; fitNRTL02 held-out 0.3857 -> 0.3895 K, catalogue score 0.0821 -> 0.0706 K (factor 4.7 -> 5.5);
+  gibbs07 liquid Psat(350 K) 42169 -> 41683 Pa, L 0.03762 -> 0.03962 mol/s; stripper02 sour-water page and header.

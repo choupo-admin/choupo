@@ -341,6 +341,7 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   Wilson:   { guide: "theory", dest: "ch:activity" },     // no LLE -- single-liquid only
   UNIQUAC:  { guide: "theory", dest: "ch:activity" },     // combinatorial + residual, r/q
   UNIFAC:   { guide: "theory", dest: "ch:activity" },     // PREDICTIVE group contribution
+  UNIFACDortmund: { guide: "theory", dest: "sec:unifac-dortmund" }, // modified UNIFAC (Dortmund), Gmehling 1993 Tables III-IV
   // electrolyte activity (options of the activity slot; ElectrolyteModel iface)
   pitzer:   { guide: "theory", dest: "ch:pitzer-hmw" },   // ion-interaction (HMW virial)
   eNRTL:    { guide: "theory", dest: "ch:enrtl" },        // electrolyte-NRTL (local + PDH)

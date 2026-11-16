@@ -91,6 +91,7 @@ uniquac
 groups
 {
     unifac ( { group CH3; count 1; } { group CH2; count 3; } { group CH3COO; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group CH2; count 3; } { group CH3COO; count 1; } );   // C408 (c): P butyl acetate, Table III p. 182-183
 }
 solubilityParameter 17670;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 

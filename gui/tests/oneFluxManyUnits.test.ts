@@ -311,10 +311,12 @@ describe("one-flux-many-units: the exercises", () => {
   //  the page's functions, then compared at the digits the answer prints.
   const o2Hxp = 1.3e-5 * 0.0180153 / 997;
   const o2Kpx = 1 / o2Hxp;
-  //  water's vapour pressure at 298.15 K from the record's Antoine line, read here from the record itself
-  const ant = /coefficients\s+\(([-0-9.]+)\s+([-0-9.]+)\s+([-0-9.]+)\)/.exec(
-    tree("data/standards/components/water.dat").split("vaporPressure")[1]!)!;
-  const pwIndep = 1e5 * Math.pow(10, Number(ant[1]) - Number(ant[2]) / (298.15 + Number(ant[3])));
+  //  water's vapour pressure at 298.15 K from the IAPWS saturation equation (Wagner & Pruss 2002 Eq. 2.5, the law the
+  //  record carries since 2026-11-16), evaluated here from its published constants, independent of the page's code
+  const tau = 1 - 298.15 / 647.096;
+  const pwIndep = 22.064e6 * Math.exp((647.096 / 298.15) * (-7.85951783 * tau + 1.84408259 * Math.pow(tau, 1.5)
+    - 11.7866497 * Math.pow(tau, 3) + 22.6807411 * Math.pow(tau, 3.5) - 15.9618719 * Math.pow(tau, 4)
+    + 1.80122502 * Math.pow(tau, 7.5)));
   const ammKG = 1 / (1e5 + 1 / (0.59 * 1e-4));
   const ammN = ammKG * 1013.25;
   const ha = (cB: number): number => Math.sqrt(10 * 1.8e-9 * cB) / 4e-4;
