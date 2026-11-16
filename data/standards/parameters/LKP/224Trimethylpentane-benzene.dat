@@ -1,0 +1,19 @@
+/*---------------------------------------------------------------------------*\
+  Lee-Kesler-Ploecker binary parameter kappa for 224Trimethylpentane - benzene.
+  Source: Ploecker, U.; Knapp, H.; Prausnitz, J. "Calculation of High-Pressure
+  Vapor-Liquid Equilibria from a Corresponding-States Correlation with Emphasis
+  on Asymmetric Mixtures", Ind. Eng. Chem. Process Des. Dev. 17 (1978) 324-332,
+  Table I (p. 327), row "isooctane - benzene".
+  kappa multiplies the geometric-mean pseudo-critical temperature (Eq. 12,
+  T_cjk = (T_cj T_ck)^(1/2) kappa_jk): 1 means NO interaction.  It is NOT a
+  cubic k_ij; the field is named `kij` because the case grammar reads one name.
+  "isooctane" is read as 2,2,4-trimethylpentane, the usual meaning; the
+  paper does not say.
+  Not temperature-, density- or composition-dependent (p. 326).
+\*---------------------------------------------------------------------------*/
+recordType eosBinaryInteraction;
+schemaVersion 1;
+i    224Trimethylpentane;
+j    benzene;
+kij  0.982;
+eos  LeeKeslerPloecker;

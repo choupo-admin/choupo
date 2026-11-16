@@ -147,6 +147,13 @@ public:
     // choice is recorded in the result (C408 (a)).
     virtual std::string volumeTranslationNote() const { return ""; }
 
+    // A one-line statement of the MIXING RULE and its binary constants, "" for
+    // a model whose rule needs no statement (the cubics' van der Waals rule is
+    // listed with their pairs).  The resolved view prints it, so a default the
+    // model took for an undeclared pair is in the result, not only the log
+    // (C408 (d), Lee-Kesler-Ploecker).
+    virtual std::string mixingRuleNote() const { return ""; }
+
     // LIQUID-root molar volume [m³/mol], for EoS whose density solve
     // distinguishes a liquid root at (T,P,y) (cubics, SAFT).  Explicitly
     // labelled access -- the vapour-root family above never silently swaps

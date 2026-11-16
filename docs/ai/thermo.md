@@ -240,7 +240,7 @@ equilibrium
 
     equationOfState
     {
-        model      SRK;                        // or PengRobinson (the phi-phi word; PR78 since 2026-10-21)
+        model      SRK;                        // or PengRobinson (the phi-phi word; PR78 since 2026-10-21), PCSAFT, LeeKeslerPloecker
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
@@ -361,6 +361,20 @@ Michelsen 1990 adds `q2 (β² − Σ y_i β_i²)` with `q1 = −0.478`, `q2 = �
 (Eq. 13, p. 1831); Poling Table 5-1 p. 5.17 prints the same SRK constants.
 Theory Guide `sec:cubic-mixing-rule`.
 
+#### Lee–Kesler with the Plöcker mixing rules — corresponding states, both phases, a printed table to check against
+
+`model LeeKeslerPloecker;` is a third phi-phi equation of state beside the cubics
+and PC-SAFT, for non-polar and slightly polar hydrocarbon mixtures and light
+gases from the dilute gas to the compressed liquid (Lee & Kesler 1975, AIChE J.
+21, 510; Plöcker, Knapp & Prausnitz 1978, Ind. Eng. Chem. Process Des. Dev. 17,
+324; Theory Guide `sec:lkp`).  It reads each component's `Tc`, `Pc`, `omega` —
+no new catalogue field (the pure critical volume is `(0.2905 − 0.085 ω) R Tc/Pc`,
+LK Eq. 20–21) — and prices a fluid by interpolating, at the same T_r and P_r,
+between a simple fluid and an n-octane reference fluid of one modified-BWR
+equation (LK Eq. 2–12, constants Table 1).  Vapour and liquid roots, `Z`,
+`H_R`, `S_R` and `ln φ_i` all come from it; the vapour root is the family's
+contract (`Z`, `v`, `H_R`, `S_R`), `phiLiquid` and `molarVolumeLiquid` the liquid.
+
 ```
 equationOfState
 {
@@ -370,6 +384,13 @@ equationOfState
     {
         model NRTL;
         binaryParameters { methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; } }
+
+    model LeeKeslerPloecker;
+    binaryInteractions
+    {
+        // Ploecker, Knapp & Prausnitz 1978, Table I, p. 327 -- one record per pair
+        N2-CH4 { source "data/standards/parameters/LKP/CH4-N2.dat"; }
+        N2-Ar  { source "data/standards/parameters/LKP/Ar-N2.dat"; }
     }
 }
 ```
@@ -399,6 +420,27 @@ the rule) 4.0 / 5.8 %, `MHV2` 4.0 / 7.2 %, the one-fluid rule with kij = 0 39 / 
 on the plain Soave alpha MHV1 6.3 / 11.0 % and MHV2 6.7 / 12.2 %, because SRK's water
 vapour pressure at 100 °C is 8.8 % low; the pair was fitted at 297–361 K and the
 diagram is at 373 K).  Gate `check_cubic_mixing_rule`.
+
+The binary constant is `kappa`, a MULTIPLIER of the geometric-mean pseudo-critical
+temperature (1 = no interaction; 0.92–1.53 in the table, up to 2.6 with
+hydrogen) — NOT a cubic's `k_ij`, though the record keeps the field name `kij`
+and `eos LeeKeslerPloecker;`.  the pairs ship under
+`data/standards/parameters/LKP/` (file names in byte order, `CH4-N2`,
+`Ar-CH4`); a pair with no record runs at kappa = 1 and is ANNOUNCED BY NAME in the
+run and in the resolved view (PKP estimate an unlisted pair from a graph, not read
+here).  Refused by name: hydrogen and helium (PKP price them with temperature-
+dependent effective critical constants), kappa ≤ 0, a pair record regressed for
+another EoS, a pair naming a component the package lacks, `volumeTranslation` and
+a mixing rule other than the model's own.  An evaluation outside T_r 0.3–4 or
+P_r > 10 is announced once.  Limits: no strongly polar fluid (the three water
+pairs carry the paper's own "fortuitous"); accuracy falls near the critical region
+of a widely boiling mixture; the liquid-phase enthalpy of a phiPhi package follows
+the family contract (DEV.md 4c C410).  Witnesses:
+`tutorials/props/molecular/lkp01_lee_kesler_tables` (the equation against Tables
+5, 7, 9 of the paper, 21 anchor rows) and
+`tutorials/props/compare/lkp02_n2_ch4_ar_112K` (N2 + CH4, N2 + Ar and the ternary
+at 112 K against Miller, Kidnay & Hiza 1973, bubble pressure within 1.6 / 0.75 /
+0.48 %).  Gate: `check_lee_kesler_ploecker`.
 
 In a `gammaPhi` system a cubic may still serve the VAPOUR slot alone
 (`vapour { fugacityModel SRK; }`) — that is a γ-φ world with a real-gas φ,

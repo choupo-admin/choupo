@@ -352,6 +352,7 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   PR:           { guide: "theory", dest: "ch:cubic-eos" },// Peng-Robinson (same chapter)
   PengRobinson: { guide: "theory", dest: "ch:cubic-eos" },
   MathiasCopeman: { guide: "theory", dest: "sec:cubic-alpha-mc" }, // per-component cubic alpha, fitted to the record's own Psat law (C408 slice 0)
+  LeeKeslerPloecker: { guide: "theory", dest: "sec:lkp" }, // Lee-Kesler + Ploecker mixing rules (C408 d)
   Peneloux:     { guide: "theory", dest: "sec:peneloux" },
   JhaveriYoungren: { guide: "theory", dest: "sec:peneloux" }, // the PR shift (C408 a)  // volume translation of SRK/PR (C408 a)
   vanDerWaalsOneFluid: { guide: "theory", dest: "sec:cubic-mixing-rule" }, // the cubic's default mixing rule (C408 b)

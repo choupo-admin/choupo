@@ -1,0 +1,208 @@
+# Reference KPIs (golden master, auto-recorded by runTests --record).
+# units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
+# kind   name      key         expected        reltol
+diag    simple_A               Cp_ig            29                 1e-4
+diag    simple_A               H_R              -712.331919488     1e-4
+diag    simple_A               H_ig             -5166.35           1e-4
+diag    simple_A               H_real           -5878.68191949     1e-4
+diag    simple_A               P                1000000            1e-4
+diag    simple_A               S_R              -4.26062338762     1e-4
+diag    simple_A               S_ig             -45.5378018913     1e-4
+diag    simple_A               S_real           -49.7984252789     1e-4
+diag    simple_A               T                120                1e-4
+diag    simple_A               Z                0.785758039597     1e-4
+diag    simple_A               gamma            1.40194569106      1e-4
+diag    simple_A               v_molar          0.000783978701643  1e-4
+diag    simple_B               Cp_ig            29                 1e-4
+diag    simple_B               H_R              -1808.33193475     1e-4
+diag    simple_B               H_ig             -4296.35           1e-4
+diag    simple_B               H_real           -6104.68193475     1e-4
+diag    simple_B               P                5000000            1e-4
+diag    simple_B               S_R              -9.04992248061     1e-4
+diag    simple_B               S_ig             -52.4482502621     1e-4
+diag    simple_B               S_real           -61.4981727427     1e-4
+diag    simple_B               T                150                1e-4
+diag    simple_B               Z                0.820036453268     1e-4
+diag    simple_B               gamma            1.40194569106      1e-4
+diag    simple_B               v_molar          0.000204544873083  1e-4
+diag    simple_C               Cp_ig            29                 1e-4
+diag    simple_C               H_R              -650.581640419     1e-4
+diag    simple_C               H_ig             -2846.35           1e-4
+diag    simple_C               H_real           -3496.93164042     1e-4
+diag    simple_C               P                3000000            1e-4
+diag    simple_C               S_R              -2.69879935584     1e-4
+diag    simple_C               S_ig             -39.8582296079     1e-4
+diag    simple_C               S_real           -42.5570289637     1e-4
+diag    simple_C               T                200                1e-4
+diag    simple_C               Z                0.955006413179     1e-4
+diag    simple_C               gamma            1.40194569106      1e-4
+diag    simple_C               v_molar          0.000529357674822  1e-4
+diag    simple_D               Cp_ig            29                 1e-4
+diag    simple_D               H_R              -2139.99162133     1e-4
+diag    simple_D               H_ig             -5746.35           1e-4
+diag    simple_D               H_real           -7886.34162133     1e-4
+diag    simple_D               P                1000000            1e-4
+diag    simple_D               S_R              -18.020998776      1e-4
+diag    simple_D               S_ig             -50.8251270383     1e-4
+diag    simple_D               S_real           -68.8461258143     1e-4
+diag    simple_D               T                100                1e-4
+diag    simple_D               Z                0.291848738102     1e-4
+diag    simple_D               gamma            1.40194569106      1e-4
+diag    simple_D               v_molar          0.000242656542306  1e-4
+diag    simple_E               Cp_ig            29                 1e-4
+diag    simple_E               H_R              -219.557632303     1e-4
+diag    simple_E               H_ig             -6036.35           1e-4
+diag    simple_E               H_real           -6255.9076323      1e-4
+diag    simple_E               P                200000             1e-4
+diag    simple_E               S_R              -1.6531891076      1e-4
+diag    simple_E               S_ig             -40.4989706335     1e-4
+diag    simple_E               S_real           -42.1521597411     1e-4
+diag    simple_E               T                90                 1e-4
+diag    simple_E               Z                0.901483887816     1e-4
+diag    simple_E               Z_liquid         0.0349606230951    1e-4
+diag    simple_E               gamma            1.40194569106      1e-4
+diag    simple_E               v_molar          0.00337290933869   1e-4
+diag    simple_E               v_molar_liq      0.000130805457222  1e-4
+diag    simple_F               Cp_ig            29                 1e-4
+diag    simple_F               H_R              -4490.74882204     1e-4
+diag    simple_F               H_ig             -7196.35           1e-4
+diag    simple_F               H_real           -11687.098822      1e-4
+diag    simple_F               P                1000000            1e-4
+diag    simple_F               S_R              -46.6295403439     1e-4
+diag    simple_F               S_ig             -70.9263952746     1e-4
+diag    simple_F               S_real           -117.555935618     1e-4
+diag    simple_F               T                50                 1e-4
+diag    simple_F               Z                0.205616242012     1e-4
+diag    simple_F               gamma            1.40194569106      1e-4
+diag    simple_F               v_molar          8.54794278932e-05  1e-4
+diag    simple_G               Cp_ig            29                 1e-4
+diag    simple_G               H_R              -411.804747738     1e-4
+diag    simple_G               H_ig             53.65              1e-4
+diag    simple_G               H_real           -358.154747738     1e-4
+diag    simple_G               P                7000000            1e-4
+diag    simple_G               S_R              -1.95849231965     1e-4
+diag    simple_G               S_ig             -35.1445678592     1e-4
+diag    simple_G               S_real           -37.1030601789     1e-4
+diag    simple_G               T                300                1e-4
+diag    simple_G               Z                1.10751925342      1e-4
+diag    simple_G               gamma            1.40194569106      1e-4
+diag    simple_G               v_molar          0.000394646889912  1e-4
+diag    reference_A            Cp_ig            29                 1e-4
+diag    reference_A            H_R              -827.738454016     1e-4
+diag    reference_A            H_ig             -5166.35           1e-4
+diag    reference_A            H_real           -5994.08845402     1e-4
+diag    reference_A            P                1000000            1e-4
+diag    reference_A            S_R              -5.39452767667     1e-4
+diag    reference_A            S_ig             -45.5378018913     1e-4
+diag    reference_A            S_real           -50.932329568      1e-4
+diag    reference_A            T                120                1e-4
+diag    reference_A            Z                0.814350038709     1e-4
+diag    reference_A            gamma            1.40194569106      1e-4
+diag    reference_A            v_molar          0.000812505954578  1e-4
+diag    reference_B            Cp_ig            29                 1e-4
+diag    reference_B            H_R              -1855.38096127     1e-4
+diag    reference_B            H_ig             -4296.35           1e-4
+diag    reference_B            H_real           -6151.73096127     1e-4
+diag    reference_B            P                5000000            1e-4
+diag    reference_B            S_R              -10.6354657081     1e-4
+diag    reference_B            S_ig             -52.4482502621     1e-4
+diag    reference_B            S_real           -63.0837159702     1e-4
+diag    reference_B            T                150                1e-4
+diag    reference_B            Z                0.911875508659     1e-4
+diag    reference_B            gamma            1.40194569106      1e-4
+diag    reference_B            v_molar          0.00022745264487   1e-4
+diag    reference_C            Cp_ig            29                 1e-4
+diag    reference_C            H_R              -553.049074838     1e-4
+diag    reference_C            H_ig             -2846.35           1e-4
+diag    reference_C            H_real           -3399.39907484     1e-4
+diag    reference_C            P                3000000            1e-4
+diag    reference_C            S_R              -2.95302764607     1e-4
+diag    reference_C            S_ig             -39.8582296079     1e-4
+diag    reference_C            S_real           -42.811257254      1e-4
+diag    reference_C            T                200                1e-4
+diag    reference_C            Z                1.03731442447      1e-4
+diag    reference_C            gamma            1.40194569106      1e-4
+diag    reference_C            v_molar          0.00057498080036   1e-4
+diag    reference_D            Cp_ig            29                 1e-4
+diag    reference_D            H_R              -2927.99535845     1e-4
+diag    reference_D            H_ig             -5746.35           1e-4
+diag    reference_D            H_real           -8674.34535845     1e-4
+diag    reference_D            P                1000000            1e-4
+diag    reference_D            S_R              -25.6632502888     1e-4
+diag    reference_D            S_ig             -50.8251270383     1e-4
+diag    reference_D            S_real           -76.4883773272     1e-4
+diag    reference_D            T                100                1e-4
+diag    reference_D            Z                0.260475838886     1e-4
+diag    reference_D            gamma            1.40194569106      1e-4
+diag    reference_D            v_molar          0.000216571662531  1e-4
+diag    reference_E            Cp_ig            29                 1e-4
+diag    reference_E            H_R              -321.269160192     1e-4
+diag    reference_E            H_ig             -6036.35           1e-4
+diag    reference_E            H_real           -6357.61916019     1e-4
+diag    reference_E            P                200000             1e-4
+diag    reference_E            S_R              -2.64724097372     1e-4
+diag    reference_E            S_ig             -40.4989706335     1e-4
+diag    reference_E            S_real           -43.1462116072     1e-4
+diag    reference_E            T                90                 1e-4
+diag    reference_E            Z                0.883912027459     1e-4
+diag    reference_E            Z_liquid         0.0288635262165    1e-4
+diag    reference_E            gamma            1.40194569106      1e-4
+diag    reference_E            v_molar          0.00330716407946   1e-4
+diag    reference_E            v_molar_liq      0.000107993119388  1e-4
+diag    reference_F            Cp_ig            29                 1e-4
+diag    reference_F            H_R              -7430.08521872     1e-4
+diag    reference_F            H_ig             -7196.35           1e-4
+diag    reference_F            H_real           -14626.4352187     1e-4
+diag    reference_F            P                1000000            1e-4
+diag    reference_F            S_R              -83.5116452329     1e-4
+diag    reference_F            S_ig             -70.9263952746     1e-4
+diag    reference_F            S_real           -154.438040507     1e-4
+diag    reference_F            T                50                 1e-4
+diag    reference_F            Z                0.170095772345     1e-4
+diag    reference_F            gamma            1.40194569106      1e-4
+diag    reference_F            v_molar          7.07127470323e-05  1e-4
+diag    reference_G            Cp_ig            29                 1e-4
+diag    reference_G            H_R              -159.421447171     1e-4
+diag    reference_G            H_ig             53.65              1e-4
+diag    reference_G            H_real           -105.771447171     1e-4
+diag    reference_G            P                7000000            1e-4
+diag    reference_G            S_R              -2.26524108511     1e-4
+diag    reference_G            S_ig             -35.1445678592     1e-4
+diag    reference_G            S_real           -37.4098089444     1e-4
+diag    reference_G            T                300                1e-4
+diag    reference_G            Z                1.21958002376      1e-4
+diag    reference_G            gamma            1.40194569106      1e-4
+diag    reference_G            v_molar          0.000434577965024  1e-4
+
+# ANCHOR rows: AUTHORED, never re-recorded.  The published values are Lee & Kesler, AIChE J. 21
+# (1975) 510, Tables 5, 7 and 9 (pp. 515, 517, 519) for the SIMPLE FLUID, read from the page:
+# Z^(0) to four places, (H*-H)/(R T_c) and (S*-S)/R to three.  The state is T = 100 T_r K,
+# P = 10 P_r bar (T_c = 100 K, P_c = 10 bar), so H_R = -(H*-H)/(R T_c) * R * 100 K and
+# S_R = -(S*-S)/R * R.  Bands: Z 5e-4 (four printed places, smallest value 0.2056), H and S 3e-3
+# (three printed places, smallest 0.199).  These are the CORRELATION'S OWN tables, so agreement
+# validates the implementation of Eqs. 3, 11 and 12 and the constants of Table 1, not the physics.
+# State D is the simple fluid's CRITICAL POINT (T_r = P_r = 1), where V_r responds to P_r as a
+# cube root: the printed 0.2901, 2.584 and 2.178 are asked within 2 % only (the gate
+# check_lee_kesler_ploecker shows the rounding of ONE printed constant moves Z between 0.284
+# and 0.300 there).
+diag    simple_A  Z                0.7858  5e-4  anchor
+diag    simple_A  H_R              -712.55  3e-3  anchor
+diag    simple_A  S_R              -4.2570  3e-3  anchor
+diag    simple_B  Z                0.82  5e-4  anchor
+diag    simple_B  H_R              -1808.40  3e-3  anchor
+diag    simple_B  S_R              -9.0461  3e-3  anchor
+diag    simple_C  Z                0.955  5e-4  anchor
+diag    simple_C  H_R              -650.19  3e-3  anchor
+diag    simple_C  S_R              -2.7022  3e-3  anchor
+diag    simple_E  Z                0.9015  5e-4  anchor
+diag    simple_E  H_R              -219.50  3e-3  anchor
+diag    simple_E  S_R              -1.6546  3e-3  anchor
+diag    simple_F  Z                0.2056  5e-4  anchor
+diag    simple_F  H_R              -4490.64  3e-3  anchor
+diag    simple_F  S_R              -46.6275  3e-3  anchor
+diag    simple_G  Z                1.1075  5e-4  anchor
+diag    simple_G  H_R              -411.57  3e-3  anchor
+diag    simple_G  S_R              -1.9622  3e-3  anchor
+diag    simple_D                Z                0.2901  2e-2  anchor
+diag    simple_D                H_R              -2148.46  2e-2  anchor
+diag    simple_D                S_R              -18.1089  2e-2  anchor

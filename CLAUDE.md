@@ -157,7 +157,7 @@ it.  The rules below; the corollaries that make them concrete are in §10.
    twelve hours: "Já te tinha dito para não fazeres essas merdas!  REGISTA
    ISSO DE UMA VEZ POR TODAS!").**  Three things, each of which he had said
    before.  (1) A job that walks the whole suite -- a full sweep, or a
-   `--scope` of more than about 150 cases -- runs ALONE on the laptop: no
+   `--scope` that reaches most of the corpus -- runs ALONE on the laptop: no
    other general builds, validates or integrates while it runs, and none is
    launched "to use the time" (four builders beside the sweep made every
    pass several times slower).  (2) A fix lands on its CORE: the change, the

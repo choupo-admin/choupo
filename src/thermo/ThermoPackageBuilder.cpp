@@ -2909,10 +2909,21 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
 
     auto eos = eq->subDict("equationOfState");
     const std::string model = eos->lookupWord("model");
-    if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT")
+    if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT"
+        && model != "LeeKeslerPloecker")
         throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
             " equationOfState '" + model + "' -- implemented: SRK |"
-            " PengRobinson | PCSAFT (the non-associating PC-SAFT core).");
+            " PengRobinson | PCSAFT (the non-associating PC-SAFT core) |"
+            " LeeKeslerPloecker (Lee-Kesler with the Ploecker mixing rules).");
+    //  Lee-Kesler-Ploecker carries ONE mixing rule (Ploecker, Knapp & Prausnitz
+    //  1978, Eqs. 9-14); a `mixingRule` key would be ignored in silence, so it
+    //  is refused.
+    if (model == "LeeKeslerPloecker" && eos->found("mixingRule"))
+        throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+            " equationOfState LeeKeslerPloecker has ONE mixing rule, the"
+            " Ploecker-Knapp-Prausnitz one-fluid rule (Eqs. 9-14, eta = 0.25,"
+            " kappa from `binaryInteractions`); `mixingRule` is not a key of"
+            " this model -- remove it.");
     // The cubic's MIXING RULE (DEV.md 4c C408 (b)): `vanDerWaalsOneFluid`
     // (the default, today's arithmetic) or an excess-Gibbs rule (MHV1, MHV2)
     // that takes the `activityModel` block of a gammaPhi liquid.  PC-SAFT has
@@ -2921,11 +2932,11 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     std::string mixingRuleWord = "vanDerWaalsOneFluid";
     if (eos->found("mixingRule")) mixingRuleWord = eos->lookupWord("mixingRule");
     const bool oneFluid = (mixingRuleWord == "vanDerWaalsOneFluid");
-    if (model == "PCSAFT")
+    if (model == "PCSAFT" || model == "LeeKeslerPloecker")
     {
         if (!oneFluid || eos->found("activityModel"))
             throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
-                " equationOfState PCSAFT mixes by its own segment rules; a"
+                " equationOfState " + model + " mixes by its own rules; a"
                 " cubic `mixingRule` other than vanDerWaalsOneFluid, and an"
                 " `activityModel` block, are cubic grammar (SRK | PengRobinson)"
                 " and are not read there.");
@@ -2974,9 +2985,9 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     //  name (CubicEoS::readVolumeTranslation).  Absent = OFF, the default.
     if (eos->found("volumeTranslation"))
     {
-        if (model == "PCSAFT")
+        if (model == "PCSAFT" || model == "LeeKeslerPloecker")
             throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
-                " equationOfState PCSAFT has no `volumeTranslation` -- the"
+                " equationOfState " + model + " has no `volumeTranslation` -- the"
                 " Peneloux shift is implemented for the cubics SRK and"
                 " PengRobinson (declared shift only) alone.");
         eosDict->insert("volumeTranslation", eos->entryValue("volumeTranslation"));

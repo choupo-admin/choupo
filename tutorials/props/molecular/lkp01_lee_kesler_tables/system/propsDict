@@ -1,0 +1,126 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  lkp01_lee_kesler_tables -- THE LEE-KESLER EQUATION OF STATE AGAINST THE
+  TABLES THE PAPER PRINTS.
+
+  THE QUESTION.  Lee & Kesler (AIChE J. 21 (1975) 510-527) print their
+  correlation as numbers: Tables 5-12 give Z, (H*-H)/RT_c, (S*-S)/R and
+  log10(f/P) of the simple fluid (the superscript (0)) and the deviation
+  function (1) = (reference fluid - simple fluid)/0.3978, on a grid of
+  T_r = 0.3-4 and P_r = 0.01-10.  Does the engine's implementation of
+  Eqs. 3, 9, 11 and 12 with the Table 1 constants give those numbers?
+
+  HOW A TABLE ENTRY BECOMES A STATE.  The correlation is written in reduced
+  variables, so a fluid with T_c = 100 K and P_c = 10 bar IS the table's axes
+  in other units: T = 120 K, P = 10 bar is T_r = 1.20, P_r = 1.0.  The two
+  pseudo-components of this case are the paper's two fluids:
+
+      LKsimple     omega = 0       the simple fluid     -> Z^(0), q^(0)
+      LKreference  omega = 0.3978  the reference fluid  -> Z^(r), q^(r)
+
+  and the printed deviation function is (q^(r) - q^(0))/0.3978.  Seven states
+  are run on each fluid, each on its single physical root (supercritical,
+  dilute gas, compressed liquid); the departures come out in J/mol and J/(mol K)
+  and the gate bin/curate/check_lee_kesler_ploecker.py divides by R T_c and R to
+  compare with the page.  Which printed entries were read, and to how many
+  digits they agree, is in that gate, not asserted here.
+
+  WHAT IS NOT CLAIMED.  The tables are the correlation's OWN output; agreeing
+  with them proves the implementation, not the physics.  The physics is tested
+  against measurement in lkp02_n2_ch4_ar_112K.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        simple_A;
+        type        propertyPoint;
+        state       { T 120 K;  P 10 bar;  composition { LKsimple 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        simple_B;
+        type        propertyPoint;
+        state       { T 150 K;  P 50 bar;  composition { LKsimple 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        simple_C;
+        type        propertyPoint;
+        state       { T 200 K;  P 30 bar;  composition { LKsimple 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        simple_D;
+        type        propertyPoint;
+        state       { T 100 K;  P 10 bar;  composition { LKsimple 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        simple_E;
+        type        propertyPoint;
+        state       { T 90 K;  P 2 bar;  composition { LKsimple 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        simple_F;
+        type        propertyPoint;
+        state       { T 50 K;  P 10 bar;  composition { LKsimple 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        simple_G;
+        type        propertyPoint;
+        state       { T 300 K;  P 70 bar;  composition { LKsimple 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        reference_A;
+        type        propertyPoint;
+        state       { T 120 K;  P 10 bar;  composition { LKreference 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        reference_B;
+        type        propertyPoint;
+        state       { T 150 K;  P 50 bar;  composition { LKreference 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        reference_C;
+        type        propertyPoint;
+        state       { T 200 K;  P 30 bar;  composition { LKreference 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        reference_D;
+        type        propertyPoint;
+        state       { T 100 K;  P 10 bar;  composition { LKreference 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        reference_E;
+        type        propertyPoint;
+        state       { T 90 K;  P 2 bar;  composition { LKreference 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        reference_F;
+        type        propertyPoint;
+        state       { T 50 K;  P 10 bar;  composition { LKreference 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+    {
+        name        reference_G;
+        type        propertyPoint;
+        state       { T 300 K;  P 70 bar;  composition { LKreference 1.0; } }
+        properties  ( Z  H_R  S_R );
+    }
+);
