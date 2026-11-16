@@ -75,6 +75,7 @@ uniquac
 groups
 {
     unifac ( { group CH2Cl2; count 1; } );
+    unifacDortmund ( { group CH2Cl2; count 1; } );   // C408 (c): P dichloromethane, Table III p. 182-183
     joback ( { group CH2; count 1; } { group Cl; count 2; } );
 }
 

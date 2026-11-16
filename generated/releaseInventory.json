@@ -21,10 +21,10 @@
     "engines": 5
   },
   "tutorials": {
-    "runnableCases": 612,
-    "regressionChecks": 593,
+    "runnableCases": 614,
+    "regressionChecks": 595,
     "byTier": {
-      "witness": 553,
+      "witness": 555,
       "tutorial": 43,
       "showcase": 16
     }

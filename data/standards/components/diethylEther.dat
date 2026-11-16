@@ -80,6 +80,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 2; } { group ether; count 1; } );
     unifac ( { group CH3; count 2; } { group CH2; count 1; } { group CH2O; count 1; } );
+    unifacDortmund ( { group CH3; count 2; } { group CH2; count 1; } { group CH2O; count 1; } );   // C408 (c): P diethyl ether, Table III p. 182-183
 }
 liquidViscosity
 {

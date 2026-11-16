@@ -1,0 +1,38 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unifacDortmund01_ethanol_water_reduced_pressure -- the thermophysical system.
+
+  gamma-phi at low pressure, the FRAME every residual is conditional on:
+  ideal-gas vapour, the catalogue's own Antoine records for both pure
+  components, and a liquid activity model each operation overrides for itself
+  (the original UNIFAC / the modified UNIFAC of Dortmund).  The system-level
+  model below is the Dortmund one; the operations name theirs explicitly.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components       ( ethanol  water );
+
+equilibrium
+{
+    formulation gammaPhi;
+
+    liquid
+    {
+        activityModel { model UNIFACDortmund; }
+        standardState pureLiquid;
+    }
+
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}

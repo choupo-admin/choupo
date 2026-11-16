@@ -1,0 +1,92 @@
+/*----------------------------------------------------------*\
+  constant/propertyManifest -- property-record OWNERSHIP registry
+  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
+  release; the manifest is the authority on which files under
+  constant/ the importer owns.  A file it does NOT claim is
+  authored and untouchable; a claimed file it verifies by sha256.
+  `sealed true;` FORBIDS the runtime every catalogue fallback --
+  the case runs exclusively from its own constant/ records.
+  claim types:  imported = installed + hash-verified copy;
+                adopted  = authored record explicitly adopted at
+                           import time (never installed, never
+                           hash-enforced, never removed);
+                merged   = standards base with a partial by-name
+                           overlay applied top-level, materialised
+                           at import time (base + overlay hashes
+                           both recorded; durable like adopted).
+\*----------------------------------------------------------*/
+
+propertyManifest
+{
+    sealed             true;
+    sealSchema         computational;
+    catalogueRelease   Choupo-2608;
+    importedAt         "2026-11-16";
+    importerVersion    "3";
+    records
+    {
+        "components/ethanol.dat"
+        {
+            type          imported;
+            sha256        "4eba029989f050fd1f9919a1e8c9b0d74ec4fe9eac36475027f41a5e6444ec02";
+            computationalSha256 "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+            origin        "data/standards/components/ethanol.dat";
+            originSha256  "5a98a4ec3572b92e1d58b42e4a045563528b568f9b07c0be897e3c57b960fe61";
+            release       Choupo-2608;
+        }
+        "components/water.dat"
+        {
+            type          imported;
+            sha256        "72776ec591eda37f57ba3ab81d720da4503b2050ae65d6818b81cec8bb370453";
+            computationalSha256 "c8bd935dbd8f52129adc44793129625b1da4751f4aef21987c783499997d8b61";
+            origin        "data/standards/components/water.dat";
+            originSha256  "148c565d2f006e2977e8fb8a534fd25a482bd18b08b80934456dc0ccce1a347d";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/groups.dat"
+        {
+            type          imported;
+            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
+            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+            origin        "data/standards/parameters/UNIFAC/groups.dat";
+            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFAC/interactions.dat"
+        {
+            type          imported;
+            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
+            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+            origin        "data/standards/parameters/UNIFAC/interactions.dat";
+            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFACDortmund/groups.dat"
+        {
+            type          imported;
+            sha256        "e0223783470c9e81bd4e2275fd7865c6ed682f9157d6ce68e508a6421265c246";
+            computationalSha256 "d8660b3570328a304160d4d422e353c2b2ace72664f4bfc4555768c0f9e4c732";
+            origin        "data/standards/parameters/UNIFACDortmund/groups.dat";
+            originSha256  "89e03784d9b379ebffe872b7bdd31e71c6e8e5163027d2e4a674280a96fe614f";
+            release       Choupo-2608;
+        }
+        "parameters/UNIFACDortmund/interactions.dat"
+        {
+            type          imported;
+            sha256        "10001f02934dac30d47d6c008257117301e52ce16c408c612ccb81e409f217a0";
+            computationalSha256 "20a27c6d97cc1e8c6c71a4a23494511ed12f97e3f6b953249662a165d26c7c6d";
+            origin        "data/standards/parameters/UNIFACDortmund/interactions.dat";
+            originSha256  "5b4edaaaba6e7d6c15b7882adea3fad8800b086556385b435e45109ff1d0685b";
+            release       Choupo-2608;
+        }
+    }
+}

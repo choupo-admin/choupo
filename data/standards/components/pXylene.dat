@@ -80,6 +80,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group arCH; count 4; } { group arC; count 2; } );
     unifac ( { group ACH; count 4; } { group ACCH3; count 2; } );
+    unifacDortmund ( { group ACH; count 4; } { group ACCH3; count 2; } );   // C408 (c): S toluene, Table III p. 182-183
 }
 liquidViscosity
 {

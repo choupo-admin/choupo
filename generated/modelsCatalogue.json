@@ -46,6 +46,17 @@
         ]
       },
       {
+        "key": "UNIFACDortmund",
+        "name": "Modified UNIFAC (Dortmund; Gmehling, Li & Schiller 1993 parameters only)",
+        "source": "src/thermo/activityCoefficient/UNIFACDortmund.cpp",
+        "engine": "all",
+        "phases": "liquid",
+        "tutorials": [
+          "unifacDortmund01_ethanol_water_reduced_pressure",
+          "unifacDortmund02_butanol_water_gamma_infinity"
+        ]
+      },
+      {
         "key": "UNIQUAC",
         "name": "UNIQUAC (universal quasi-chemical)",
         "source": "src/thermo/activityCoefficient/UNIQUAC.cpp",
@@ -1107,6 +1118,12 @@
         "key": "parameters.UNIFAC",
         "name": "UNIFAC group-interaction tables",
         "source": "data/standards/parameters/UNIFAC/",
+        "count": 2
+      },
+      {
+        "key": "parameters.UNIFACDortmund",
+        "name": "Modified UNIFAC (Dortmund) group tables, as printed in Gmehling, Li & Schiller 1993",
+        "source": "data/standards/parameters/UNIFACDortmund/",
         "count": 2
       },
       {

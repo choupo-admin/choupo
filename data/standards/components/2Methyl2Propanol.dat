@@ -91,6 +91,7 @@ uniquac
 groups
 {
     unifac ( { group CH3; count 3; } { group C; count 1; } { group OH; count 1; } );
+    unifacDortmund ( { group CH3; count 3; } { group C; count 1; } { group OH_t; count 1; } );   // C408 (c): P tert-butanol, Table III p. 182-183
 }
 solubilityParameter 21620;   // Pa^0.5  [ANCHOR, ChemSep v8.3 -- checked against, never used]
 

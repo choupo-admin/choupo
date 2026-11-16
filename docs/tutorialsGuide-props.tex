@@ -568,6 +568,92 @@ NOT IN THE READING. The all-binary row of Table 15-8 (water / MIBK mutual solubi
 \goldrow{aad}{perry\_table15\_8}{tie\_unifac.wE\_methylIsobutylKetone.aadAbs}{0.0561117991127}
 \end{tutgolden}
 
+\clearpage
+\tutentry{unifacDortmund01\_ethanol\_water\_reduced\_pressure}{tutorials/props/compare/unifacDortmund01\_ethanol\_water\_reduced\_pressure}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{txy\_unifac\_13p15}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{txy\_dortmund\_13p15}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{txy\_unifac\_19p71}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{txy\_dortmund\_19p71}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{txy\_unifac\_32p86}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{txy\_dortmund\_32p86}\\[-1pt]{\tiny propertyScan1D}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Ethanol/water bubble T and vapour y at the measured x of Voutsas et al. (2011), 13.15 / 19.71 / 32.86 kPa: original UNIFAC and modified UNIFAC (Dortmund), residual = engine minus measurement}
+\begin{tutnarrative}
+THE ORIGINAL UNIFAC AND THE MODIFIED (DORTMUND) UNIFAC, BOTH PREDICTIVE, AGAINST MEASURED VLE.
+
+THE QUESTION. Ethanol + water is the textbook case where the original UNIFAC (Hansen 1991) misplaces the azeotrope. The Dortmund model (Gmehling, Li \& Schiller 1993) was fitted to VLE, excess enthalpies and infinite-dilution activity coefficients together, with a temperature- dependent interaction. Does that show on a measured isobar the fit never saw? Neither model is fitted to anything here; both are evaluated AT THE MEASURED x (the engine asked where the experimenter set the liquid, never a value read off a curve between grid points), and the residual is model(x\_measured) - measurement.
+
+THE EVIDENCE. Voutsas, Pamouktsis, Argyris \& Pappa, Fluid Phase Equilib. 308 (2011) 135-141, Table 1 (p. 137): isobaric ethanol(1) + water(2) VLE at 13.15, 19.71 and 32.86 kPa -- T, x1, y1 of 15 + 16 + 14 interior points. Measured in 2011, so OUT OF SAMPLE for both group tables (1991 and 1993); the data files carry the page and the DOI.
+
+THE TWO MODELS. `model UNIFAC;` is the original; `model UNIFACDortmund;` is the modified, with its parameters ONLY as printed in Gmehling et al. 1993 Tables III-IV (data/standards/parameters/UNIFACDortmund/). Each component's Dortmund decomposition is its own `groups \{ unifacDortmund (...) \}` record (ethanol = CH3 + CH2 + OH\_p, water = H2O), never the original's.
+
+WHAT IS NOT CLAIMED. The pressure is 13-33 kPa, low enough for an ideal-gas vapour and the catalogue's own vapour-pressure records; part of every residual is those records' error at 307-345 K, identical for both models. The Dortmund parameters were fitted mostly to 20-125 C data (the paper, p. 181); this range is inside it. Which model is nearer is READ FROM THE aad ROWS OF `expected`, not asserted here.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{txy\_unifac\_13p15}{n\_emptyCurves}{0}
+\goldrow{diag}{txy\_unifac\_13p15}{n\_failures}{0}
+\goldrow{diag}{txy\_unifac\_13p15}{n\_points}{15}
+\goldrow{diag}{txy\_dortmund\_13p15}{n\_emptyCurves}{0}
+\goldrow{diag}{txy\_dortmund\_13p15}{n\_failures}{0}
+\goldrow{diag}{txy\_dortmund\_13p15}{n\_points}{15}
+\goldrow{diag}{txy\_unifac\_19p71}{n\_emptyCurves}{0}
+\goldrow{diag}{txy\_unifac\_19p71}{n\_failures}{0}
+\goldrow{diag}{txy\_unifac\_19p71}{n\_points}{16}
+\goldrow{diag}{txy\_dortmund\_19p71}{n\_emptyCurves}{0}
+\goldrow{diag}{txy\_dortmund\_19p71}{n\_failures}{0}
+\goldrow{diag}{txy\_dortmund\_19p71}{n\_points}{16}
+\goldrow{diag}{txy\_unifac\_32p86}{n\_emptyCurves}{0}
+\goldrow{diag}{txy\_unifac\_32p86}{n\_failures}{0}
+\goldmore{22}
+\end{tutgolden}
+
+\clearpage
+\tutentry{unifacDortmund02\_butanol\_water\_gamma\_infinity}{tutorials/props/compare/unifacDortmund02\_butanol\_water\_gamma\_infinity}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{dortmund\_25C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{dortmund\_50C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{dortmund\_75C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{dortmund\_100C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{unifac\_25C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{unifac\_50C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{unifac\_75C}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{unifac\_100C}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Table XI of Gmehling, Li \& Schiller (1993) reproduced: gamma-infinity of four butanols in water at 25-100 C, modified UNIFAC (Dortmund) and original UNIFAC, the 32 printed values as anchors}
+\begin{tutnarrative}
+A TABLE THE PAPER PRINTS, REPRODUCED TO ITS DIGITS.
+
+Gmehling, Li \& Schiller, Ind. Eng. Chem. Res. 32 (1993) 178, Table XI (p. 192) prints the activity coefficient at infinite dilution of 1-butanol, isobutanol, 2-butanol and tert-butanol IN WATER at 25, 50, 75 and 100 C, as predicted by the original UNIFAC (Hansen 1991) and by the modified UNIFAC (Dortmund) the paper presents. This case asks the engine for the same 32 numbers with `model UNIFACDortmund;` and `model UNIFAC;`.
+
+THESE ARE PREDICTIONS, NOT MEASUREMENTS. Table XI has no experimental column; what is anchored here is that THIS ENGINE REPRODUCES WHAT THE PAPER PRINTS -- the equations (r\textasciicircum{}(3/4) combinatorial, T-dependent Psi), the parameters it read from Tables III-IV, the OH\_p/OH\_s/OH\_t split (1- and isobutanol are the same numbers by construction: equal r and q), and the untouched original UNIFAC. The `anchor` rows of `expected` carry the printed values at their printed precision (3 significant figures: reltol 3e-3). The measured comparison is unifacDortmund01\_ethanol\_water\_reduced\_pressure.
+
+gamma-infinity is evaluated as gamma at x\_alcohol = 2.5e-9 each in water (the four alcohols are trace at once; the limit differs from the exact one by about one part in 1e8). The paper's own remark applies: for all butanols the model still predicts a miscibility gap with these parameters.
+
+\end{tutnarrative}
+\begin{tutgolden}
+\goldrow{diag}{dortmund\_25C}{Cp\_ig}{33.6596046032}
+\goldrow{diag}{dortmund\_25C}{H\_R}{0}
+\goldrow{diag}{dortmund\_25C}{H\_ig}{-241826.000489}
+\goldrow{diag}{dortmund\_25C}{H\_real}{-241826.000489}
+\goldrow{diag}{dortmund\_25C}{P}{101325}
+\goldrow{diag}{dortmund\_25C}{S\_R}{0}
+\goldrow{diag}{dortmund\_25C}{S\_ig}{188.724560189}
+\goldrow{diag}{dortmund\_25C}{S\_real}{188.724560189}
+\goldrow{diag}{dortmund\_25C}{T}{298.15}
+\goldrow{diag}{dortmund\_25C}{Z}{1}
+\goldrow{diag}{dortmund\_25C}{gamma}{1.3280495577}
+\goldrow{diag}{dortmund\_25C}{gamma\_2Butanol}{36.2}
+\goldrow{diag}{dortmund\_25C}{gamma\_2Methyl1Propanol}{41.9}
+\goldrow{diag}{dortmund\_25C}{gamma\_2Methyl2Propanol}{27.2}
+\goldmore{114}
+\end{tutgolden}
+
 \subsection{curation}
 \grouptheory{curation}
 \clearpage

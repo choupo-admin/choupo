@@ -6104,6 +6104,26 @@ PYEOF
     fi
     rm -f /tmp/unifackey.$$
 
+    # unifac-dortmund gate (2026-11-16, DEV.md 4c C408 (c)).  The modified UNIFAC
+    # (Dortmund) records hold ONLY what Gmehling, Li & Schiller 1993 prints
+    # (Table III R/Q, Table IV a/b/c).  The tables were read from page images
+    # with an OCR first pass, so the gate holds the records to a second,
+    # independent reading of ~110 + 37 rows, pins both files by sha-256, refuses
+    # a source other than the paper, runs the engine for the two refusals (a
+    # component without its own unifacDortmund block; a main-group pair the
+    # paper does not print) and reproduces the paper's own Table XI (32 values).
+    # Five sabotages (--selftest) prove it fails: a sampled a_nm, a deleted row,
+    # an R_k, a later-revision source, and the CH2/OH pair in the Table XI case.
+    if gate_exec "$ROOT/bin/curate/check_unifac_dortmund.py" > /tmp/unifacdort.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "unifac-dortmund-gate" "$(head -1 /tmp/unifacdort.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_unifac_dortmund.py)\n" "unifac-dortmund-gate"
+        cat /tmp/unifacdort.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/unifacdort.$$
+
     # hansen-teas gate (2026-08-26).  The Hildebrand parameter is one number
     # and carries no hydrogen bonding -- ethanol and water sit 21.96 MPa^0.5
     # apart and are miscible in all proportions.  The engine now READS the

@@ -77,6 +77,7 @@ uniquac
 }
 
 groups { unifac ( { group CH3; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } ); joback ( { group CH3; count 1; } { group CH2; count 1; } { group arCH; count 5; } { group arC; count 1; } ); }
+    unifacDortmund ( { group CH3; count 1; } { group ACH; count 5; } { group ACCH2; count 1; } );   // C408 (c): P ethylbenzene, Table III p. 182-183
 
 liquidViscosity
 {

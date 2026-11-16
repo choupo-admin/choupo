@@ -1,0 +1,89 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  unifacDortmund02_butanol_water_gamma_infinity -- A TABLE THE PAPER PRINTS,
+  REPRODUCED TO ITS DIGITS.
+
+  Gmehling, Li & Schiller, Ind. Eng. Chem. Res. 32 (1993) 178, Table XI (p. 192)
+  prints the activity coefficient at infinite dilution of 1-butanol, isobutanol,
+  2-butanol and tert-butanol IN WATER at 25, 50, 75 and 100 C, as predicted by
+  the original UNIFAC (Hansen 1991) and by the modified UNIFAC (Dortmund) the
+  paper presents.  This case asks the engine for the same 32 numbers with
+  `model UNIFACDortmund;` and `model UNIFAC;`.
+
+  THESE ARE PREDICTIONS, NOT MEASUREMENTS.  Table XI has no experimental
+  column; what is anchored here is that THIS ENGINE REPRODUCES WHAT THE PAPER
+  PRINTS -- the equations (r^(3/4) combinatorial, T-dependent Psi), the
+  parameters it read from Tables III-IV, the OH_p/OH_s/OH_t split (1- and
+  isobutanol are the same numbers by construction: equal r and q), and the
+  untouched original UNIFAC.  The `anchor` rows of `expected` carry the printed
+  values at their printed precision (3 significant figures: reltol 3e-3).  The
+  measured comparison is unifacDortmund01_ethanol_water_reduced_pressure.
+
+  gamma-infinity is evaluated as gamma at x_alcohol = 2.5e-9 each in water (the
+  four alcohols are trace at once; the limit differs from the exact one by
+  about one part in 1e8).  The paper's own remark applies: for all butanols
+  the model still predicts a miscibility gap with these parameters.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        dortmund_25C;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+    {
+        name        dortmund_50C;
+        type        propertyPoint;
+        state       { T 323.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+    {
+        name        dortmund_75C;
+        type        propertyPoint;
+        state       { T 348.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+    {
+        name        dortmund_100C;
+        type        propertyPoint;
+        state       { T 373.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+    {
+        name        unifac_25C;
+        type        propertyPoint;
+        state       { T 298.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        thermo { equilibrium { liquid { activityModel { model UNIFAC; } } } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+    {
+        name        unifac_50C;
+        type        propertyPoint;
+        state       { T 323.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        thermo { equilibrium { liquid { activityModel { model UNIFAC; } } } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+    {
+        name        unifac_75C;
+        type        propertyPoint;
+        state       { T 348.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        thermo { equilibrium { liquid { activityModel { model UNIFAC; } } } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+    {
+        name        unifac_100C;
+        type        propertyPoint;
+        state       { T 373.15 K;  P 1 atm;  composition { nButanol 2.5e-9;  2Methyl1Propanol 2.5e-9;  2Butanol 2.5e-9;  2Methyl2Propanol 2.5e-9;  water 0.99999999; } }
+        thermo { equilibrium { liquid { activityModel { model UNIFAC; } } } }
+        properties  ( gamma_nButanol  gamma_2Methyl1Propanol  gamma_2Butanol  gamma_2Methyl2Propanol );
+    }
+);

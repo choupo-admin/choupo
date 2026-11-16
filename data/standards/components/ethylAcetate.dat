@@ -68,6 +68,7 @@ uniquac
 groups
 {
     unifac ( { group CH3; count 1; } { group CH2; count 1; } { group CH3COO; count 1; } );
+    unifacDortmund ( { group CH3; count 1; } { group CH2; count 1; } { group CH3COO; count 1; } );   // C408 (c): S butyl acetate, Table III p. 182-183
     joback ( { group CH3; count 2; } { group CH2; count 1; } { group ester; count 1; } );
 }
 

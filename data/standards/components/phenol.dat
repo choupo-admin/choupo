@@ -170,3 +170,8 @@ cosmo
         );
     }
 }
+
+groups
+{
+    unifacDortmund ( { group ACH; count 5; } { group ACOH; count 1; } );   // C408 (c): P phenol, Table III p. 182-183
+}

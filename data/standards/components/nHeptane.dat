@@ -79,6 +79,7 @@ groups
 {
     joback ( { group CH3; count 2; } { group CH2; count 5; } );
     unifac ( { group CH3; count 2; } { group CH2; count 5; } );
+    unifacDortmund ( { group CH3; count 2; } { group CH2; count 5; } );   // C408 (c): S hexane, Table III p. 182-183
 }
 liquidViscosity
 {

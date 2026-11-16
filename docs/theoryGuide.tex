@@ -6430,9 +6430,10 @@ in the whole model, and they are \emph{universal}, not per-binary ---
 \file{data/standards/parameters/UNIFAC/interactions.dat} (Hansen \emph{et al.}
 \cite{Hansen1991}). The implementation in
 \file{src/thermo/activityCoefficient/UNIFAC.cpp} uses this
-single-parameter $a_{mn}$ (original UNIFAC); the later
+single-parameter $a_{mn}$ (original UNIFAC); the
 temperature-extended form $\Psi_{mn} = \exp[-(a_{mn} + b_{mn}T +
-c_{mn}T^2)/T]$ of modified UNIFAC (Dortmund) is \emph{not} implemented.
+c_{mn}T^2)/T]$ of modified UNIFAC (Dortmund) is a separate model,
+\code{UNIFACDortmund}, described in Section~\ref{sec:unifac-dortmund}.
 
 \paragraph{Subgroups vs.\ main groups.} A subtle but load-bearing point:
 $\Psi_{mn}$ is indexed by \emph{main group}, while $R_k, Q_k$ and the
@@ -6497,6 +6498,142 @@ not bundled here. The standing lesson: a prediction to be \emph{checked
 against data}, never trusted blind --- if you \emph{have} measured VLE for
 the pair, a fitted NRTL will beat UNIFAC, and UNIFAC's value is precisely
 when you do not.
+
+\subsection{Modified UNIFAC (Dortmund): the same idea, three printed changes}%
+\label{sec:unifac-dortmund}
+
+\code{model UNIFACDortmund;} is a \emph{second} predictive group-contribution
+model beside the original UNIFAC of Section~\ref{sec:unifac}; the original is
+untouched.  It keeps the whole architecture of the original --- a molecule is a
+multiset of subgroups, $\ln\gamma_i=\ln\gamma_i^C+\ln\gamma_i^R$, the residual
+part is the group solution of \eqref{eq:unifac-res}--\eqref{eq:unifac-Gamma} ---
+and changes exactly three things.  Weidlich and Gmehling introduced them
+\cite{Weidlich1987} and Gmehling, Li and Schiller extended the parameter matrix
+to 45 main groups \cite{Gmehling1993}; the equation numbers below are those of
+the 1993 paper.
+
+\paragraph{1.\ The combinatorial part carries an exponent $3/4$.}
+\begin{equation}
+   \ln\gamma_i^{C} \;=\; 1 - V_i' + \ln V_i'
+        \;-\; 5\,q_i\Bigl(1 - \frac{V_i}{F_i} + \ln\frac{V_i}{F_i}\Bigr)
+   \qquad(\text{Gmehling et al.\ eq 2}),
+   \label{eq:dortmund-comb}
+\end{equation}
+\begin{equation}
+   V_i' = \frac{r_i^{3/4}}{\sum_j x_j\,r_j^{3/4}}\;(\text{eq 3}),\qquad
+   V_i  = \frac{r_i}{\sum_j x_j\,r_j}\;(\text{eq 4}),\qquad
+   F_i  = \frac{q_i}{\sum_j x_j\,q_j}\;(\text{eq 5}),
+   \label{eq:dortmund-VF}
+\end{equation}
+with $r_i=\sum_k\nu_k^{(i)}R_k$ and $q_i=\sum_k\nu_k^{(i)}Q_k$ (eqs 4a, 5a;
+Weidlich and Gmehling, eq 5, introduced the empirical $3/4$ by fitting
+infinite-dilution data for alkane/alkane, alkane/alcohol and alcohol/alcohol
+systems).  The lattice coordination number is the original's $Z=10$, written
+$Z/2=5$.  The form of \eqref{eq:dortmund-comb} is not the original's
+\eqref{eq:unifac-comb} with $\phi_i/x_i$ renamed: the first two terms use the
+modified $V_i'$ and the surface term keeps the unmodified $V_i$ and $F_i$.
+
+\paragraph{2.\ The group interactions depend on temperature.}
+\begin{equation}
+   \Psi_{nm} \;=\; \exp\!\Bigl(-\frac{a_{nm} + b_{nm}\,T + c_{nm}\,T^{2}}{T}\Bigr)
+   \qquad(\text{eq 10; Weidlich and Gmehling eq 7}),
+   \label{eq:dortmund-psi}
+\end{equation}
+with $a_{nm}$ in K, $b_{nm}$ dimensionless, $c_{nm}$ in K$^{-1}$, $T$ in K.  The
+residual part is \eqref{eq:unifac-res} with $\ln\Gamma_k$ of eq~7
+(identical to \eqref{eq:unifac-Gamma}), $\Theta_m$ of eq~8, $X_m$ of eq~9, and
+$\Psi$ of \eqref{eq:dortmund-psi}; the two triples $(a,b,c)_{nm}$ and
+$(a,b,c)_{mn}$ are independent (the matrix is not symmetric) and the diagonal is
+$\Psi=1$.  The $b$ and $c$ terms are what let the model describe the excess
+enthalpy $h^E=-RT^2\,\partial(g^E/RT)/\partial T$, which the original
+$\Psi=e^{-a/T}$ cannot.
+
+\paragraph{3.\ Different $R_k,Q_k$, and more subgroups.}  The relative van der
+Waals volumes and surfaces were \emph{refitted} with the interaction
+parameters rather than computed from molecular geometry, the three alcohol
+subgroups carry their own values (\code{OH\_p}, \code{OH\_s}, \code{OH\_t} for
+primary, secondary, tertiary), and four main groups were added (cyclic
+hydrocarbons \code{c-CH2}, cyclic ethers, chloroform, formic acid).  The
+Dortmund subgroups are therefore \emph{not} the original's: cyclohexane is
+$6\,\code{c-CH2}$ here and $6\,\code{CH2}$ in the original, and
+1-propanol is $\code{CH3}+2\,\code{CH2}+\code{OH\_p}$.
+
+\paragraph{What is entered, and what is refused.}  The parameters are
+\emph{only those printed} in Gmehling, Li and Schiller (1993): $R_k,Q_k$ of
+Table~III (pp.~182--183, 85 subgroups) in
+\file{data/standards/parameters/UNIFACDortmund/groups.dat}, and
+$a,b,c$ of Table~IV (pp.~184--190, 530 main-group pairs of the $45\times44/2=990$
+possible) in \file{interactions.dat}.  The later Dortmund revisions are
+distributed under licence and are not entered from any source.  Consequences,
+both enforced at construction: a \emph{pair of main groups the paper does not
+print is refused by name} (never taken as $\Psi=1$, as the original does with
+its announced gaps, and never read from another table), and a component without
+a \code{groups \{ unifacDortmund ( ... ); \}} block in its own record is refused
+by name --- the original \code{unifac} block is never reused, because the
+subgroups differ.  The paper marks some rows ``\texttt{+!}'', ``\texttt{-!}'' or
+``\texttt{$\pm$!}'' (parameters to be revised) and warns that the temperature
+dependence fitted to data mostly between 20 and 125\,\textdegree C is dangerous
+outside that window (p.~181); the run announces that window once.
+
+\paragraph{The algorithm.}  \file{src/thermo/activityCoefficient/UNIFACDortmund.cpp}
+builds at construction the dense $G\times G$ matrices of $a,b,c$ per subgroup
+pair (one lookup in the printed table per main-group pair; no map in the hot
+path), then per call: $V_i',V_i,F_i$ from the composition, $\Psi(T)$ once,
+$\ln\Gamma_k$ for the mixture and for each pure component, and
+$\gamma_i=\exp(\ln\gamma_i^C+\ln\gamma_i^R)$.
+
+\begin{table}[ht]\centering
+\caption{The paper's own printed prediction reproduced
+(case \code{unifacDortmund02}):
+$\gamma^\infty$ of butanols in water, modified UNIFAC (Dortmund),
+Gmehling et al.\ Table~XI (p.~192), printed value / this engine.}
+\label{tab:dortmund-tableXI}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+ & 25\,\textdegree C & 50\,\textdegree C & 75\,\textdegree C & 100\,\textdegree C \\
+\midrule
+1-butanol, isobutanol & 41.9 / 41.95 & 43.0 / 43.05 & 42.2 / 42.24 & 40.0 / 39.97 \\
+2-butanol             & 36.2 / 36.22 & 36.9 / 36.93 & 36.0 / 36.03 & 33.9 / 33.91 \\
+tert-butanol          & 27.2 / 27.25 & 27.6 / 27.57 & 26.7 / 26.71 & 25.0 / 24.98 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{What was checked.}  (1)~All $4\times4$ printed values of the
+Dortmund column of Table~XI, and all 16 printed values of its original-UNIFAC
+column, are reproduced by the engine to the printed digit (Table~\ref{tab:dortmund-tableXI};
+the largest difference is 0.05, at the last printed place).  This exercises the
+combinatorial form \eqref{eq:dortmund-comb}, the temperature dependence
+\eqref{eq:dortmund-psi} through the $a,b,c$ of the pairs
+$\code{CH2}$--$\code{OH}$, $\code{CH2}$--$\code{H2O}$ and $\code{OH}$--$\code{H2O}$,
+the $\code{OH\_p}/\code{OH\_s}/\code{OH\_t}$ split, and shows the original model
+unmoved.  It does \emph{not} check any other pair of the table, nor any
+property of the model against a measurement (these are predictions, not data).
+(2)~Against a measurement that postdates both parameter sets:
+ethanol/water isobaric VLE at 13.15, 19.71 and 32.86\,kPa of
+Voutsas~\emph{et al.}\ (2011), Table~1, 45 interior points
+(\file{tutorials/props/compare/unifacDortmund01\_ethanol\_water\_reduced\_pressure}):
+the mean absolute error in bubble temperature is 0.15\,K for the Dortmund model
+against 0.22--0.31\,K for the original, and in vapour mole fraction 0.0039,
+0.0028, 0.0069 against 0.0072, 0.0083, 0.0083 at the three pressures; the
+catalogue's vapour-pressure records contribute the same error to both.
+Neither model was fitted to these points (measured in 2011).  The Dortmund
+matrix was, however, fitted to a data bank whose ethanol/water sets predate
+them --- the pair is the textbook case --- so the test is out of sample for the
+points but not for the system: it shows that the model is better where it was
+trained to be better, not that it extrapolates.  (3)~The parameter records are held against the printed tables by
+\code{check\_unifac\_dortmund} (sampled rows read independently from the page
+images, a sha-256 pin of both files, the refusals, and the Table~XI
+reproduction).
+
+\paragraph{Limits.}  The same group-additivity limits as
+Section~\ref{sec:unifac} apply (isomers the group count cannot tell apart;
+proximity effects).  The paper itself notes that a miscibility gap is still
+predicted for all butanol/water systems, that parameters marked for revision
+exist, and that extrapolation outside the fitted data's temperature range
+should be avoided.  Alcohol/alcohol and alkane/alkane pairs inherit the
+limitations Weidlich and Gmehling list (zero residual part for a single main
+group).  A main-group pair absent from Table~IV makes the whole mixture refuse.
 
 \section{Electrolyte solutions: ionic strength, the osmotic
 coefficient, and Pitzer}\label{ch:electrolytes}
@@ -31968,6 +32105,18 @@ Schiller, M., \& Gmehling, J., ``Vapor-Liquid Equilibria by UNIFAC Group
 Contribution. 5.\ Revision and Extension'', \emph{Ind. Eng. Chem. Res.},
 30, 2352--2355 (1991). The revised original-UNIFAC $R_k/Q_k$ and
 main-group $a_{mn}$ tables bundled in \file{data/standards/parameters/UNIFAC/}.
+
+\bibitem{Weidlich1987} Weidlich, U., \& Gmehling, J., ``A Modified UNIFAC Model.
+1.\ Prediction of VLE, $h^E$, and $\gamma^\infty$'', \emph{Ind. Eng. Chem. Res.},
+26, 1372--1381 (1987). The $r_i^{3/4}$ combinatorial part (eq 5) and the
+temperature-dependent group interaction (eq 7), with a first six-main-group
+matrix.
+
+\bibitem{Gmehling1993} Gmehling, J., Li, J., \& Schiller, M., ``A Modified UNIFAC
+Model. 2.\ Present Parameter Matrix and Results for Different Thermodynamic
+Properties'', \emph{Ind. Eng. Chem. Res.}, 32, 178--193 (1993). The model
+equations (eqs 1--10) and the printed $R_k,Q_k$ (Table III) and $a,b,c$
+(Table IV) bundled in \file{data/standards/parameters/UNIFACDortmund/}.
 
 \bibitem{Pitzer1973} Pitzer, K. S., ``Thermodynamics of Electrolytes.
 I.\ Theoretical Basis and General Equations'', \emph{J.\ Phys.\ Chem.},
