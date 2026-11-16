@@ -257,6 +257,29 @@ surfaceTension
     Tmax  353.15;
 }
 
+//  The cubic's alpha function, fitted BY CURATION to this record's own vapour-pressure
+//  law (C408 slice 0): bin/curate/fit_alpha_function.py writes it, never a table.  Read only when a case
+//  selects `alphaFunction MathiasCopeman;` on that cubic.
+cubicAlpha
+{
+    SRK
+    {
+        form    MathiasCopeman;
+        c1      0.96335074;
+        c2      0.1528957;
+        c3      -0.60907006;
+        Trange  (273 373);   // K, the window the vapour-pressure law declares
+    }
+    PengRobinson
+    {
+        form    MathiasCopeman;
+        c1      0.80628402;
+        c2      0.37235772;
+        c3      -0.77634118;
+        Trange  (273 373);   // K, the window the vapour-pressure law declares
+    }
+}
+
 provenance
 {
     liquidThermalConductivity
@@ -347,6 +370,39 @@ provenance
             dropped     "none";
             aad_pct     0.542756;
             max_pct     2.710171;
+        }
+    }
+    cubicAlpha
+    {
+        SRK
+        {
+            origin        derived;
+            method        "least squares in ln Psat of the SRK cubic's pure-component saturation pressure against this record's own vapour-pressure law (Antoine log10(P/bar) = 5.40221 - 1838.67/((T/K) - 31.737), 273-373 K), 41 points over the law's window; Mathias-Copeman form as printed in Poling et al., 5th ed., Table 4-7; sqrt(alpha) kept positive to Tc";
+            methodVersion "bin/curate/fit_alpha_function.py";
+            fittedTo      "vaporPressure";
+            window        (273 373);
+            maxDeviation_pct  0.2558;   // |Psat_cubic/Psat_law - 1| over the window, 201 points
+            defaultDeviation_pct  34.140;   // the same, with the default alpha function
+            valueSha256   "b27f114a2a9141b00e0b6a937036a327869aebdea2b68e8e1ab88b4eabed0581";   // sha256 of "SRK MathiasCopeman 0.96335074 0.1528957 -0.60907006 273 373"
+            uncertainty   "in-sample: the constants reproduce THIS record's law over its window; outside it they extrapolate and above Tc only c1 acts";
+            reviewStatus  autoPromoted;
+            review        { by none; }
+            reviewReason  "computed by a machine from the record's own law; not yet read back by a human";
+        }
+        PengRobinson
+        {
+            origin        derived;
+            method        "least squares in ln Psat of the PengRobinson cubic's pure-component saturation pressure against this record's own vapour-pressure law (Antoine log10(P/bar) = 5.40221 - 1838.67/((T/K) - 31.737), 273-373 K), 41 points over the law's window; Mathias-Copeman form as printed in Poling et al., 5th ed., Table 4-7; sqrt(alpha) kept positive to Tc";
+            methodVersion "bin/curate/fit_alpha_function.py";
+            fittedTo      "vaporPressure";
+            window        (273 373);
+            maxDeviation_pct  0.2684;   // |Psat_cubic/Psat_law - 1| over the window, 201 points
+            defaultDeviation_pct  21.283;   // the same, with the default alpha function
+            valueSha256   "88bbab14f23dbc56dd98f4e1f2df02a4e537357af00757f76d19b5735de6a495";   // sha256 of "PengRobinson MathiasCopeman 0.80628402 0.37235772 -0.77634118 273 373"
+            uncertainty   "in-sample: the constants reproduce THIS record's law over its window; outside it they extrapolate and above Tc only c1 acts";
+            reviewStatus  autoPromoted;
+            review        { by none; }
+            reviewReason  "computed by a machine from the record's own law; not yet read back by a human";
         }
     }
 }
