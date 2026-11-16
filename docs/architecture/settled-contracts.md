@@ -3161,9 +3161,10 @@ COMPUTATIONAL hash, plus one `relevant:<hash>` line per scanned registry directo
 the pins at the end: `pinned` | `drifted` (`changed`, `vanished`, `appeared`,
 `unpinned`), announced by default,
 REFUSED under `CHOUPO_PINS=refuse` / `runCase --strict` / `onDivergence refuse;`
-(set by `bin/runTests` in every mode).  The reason is measured: of 6115 copies in
-the shipped tutorials 2080 were older than the record they copied, and one
-catalogue correction had to be made 362 times.  A local record with a catalogue
+(set by `bin/runTests` in every mode).  The reason was measured on 2026-11-16 and
+is recorded in docs/audits/2026-11-16-c413-case-copies.md: about a third of the
+shipped copies were older than the record they copied, and one catalogue
+correction had to be repeated in hundreds of cases.  A local record with a catalogue
 homonym declares `overlayOf` / `variationOf` / `distinctFrom` with a parsed
 `variationReason`, checked against formula (with charge), `charge` and `CAS`
 (`records::checkLocalShadow`).  What does NOT move: the sealed path of the engine

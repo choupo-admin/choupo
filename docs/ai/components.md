@@ -1395,35 +1395,6 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
 | `aluminium` |
 | `carbonSteel` |
 
-## A case record that has a catalogue homonym says what it is (C413)
-
-A case's `constant/components/<name>.dat` (or any record kind) whose name is a
-`data/standards/` record is a SHADOW, and a shadow declares itself in the record
-with one of three keys and a parsed `variationReason`:
-
-```
-overlayOf    benzene;   // a DELTA: only the declared leaves are added/changed; the rest follows the
-                        // catalogue (and the catalogue base is pinned like any read)
-variationOf  benzene;   // a FULL record, read ALONE (a block whose model changes; a record that
-                        // reproduces a source; any kind other than a component)
-distinctFrom Cl;        // a DIFFERENT species under the catalogue's name: an ion kept as a component
-                        // over the catalogue's atomic chlorine; read alone
-variationReason "NASA-range Cp for flame temperatures the catalogue's process-range fit does not reach.";
-```
-
-The engine checks the claim against the identity fields both records carry, in
-ONE place (`records::checkLocalShadow`): the `formula` WITH its charge
-(`Cl-` is not `Cl`), `charge`, and `CAS`.  `overlayOf` / `variationOf` refuse when a
-shared field disagrees (it is another species: say `distinctFrom`); `distinctFrom`
-refuses when they all agree (it is the same species: say `variationOf`); a shadow
-with no declaration is announced `[shadow]` in a case that does not hold `pins`, and
-REFUSED in one that does when the identity fields disagree (or, under strict,
-`CHOUPO_PINS=refuse`, when they agree).  A
-declared variation or a `held` copy is read alone; the undeclared top-level
-insertion over the catalogue base stays only for the undeclared shadow.  The catalogue
-spells chlorine `Cl` (`components/Cl.dat`, `components/HOCl.dat`), because the formula
-grammar reads `CL` as carbon and a shadow is compared by formula.
-
 ## Field glossary (what each block on a component means)
 
 - `MW`, `Tc`, `Pc`, `omega`, `Tb`, `Hvap_Tb` — universal pure-compound (axiom 1).

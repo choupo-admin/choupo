@@ -3583,6 +3583,37 @@ accepts today, and that is a policy call.
 > energy closures, --fast 87/0, --gui 49/0 on the merge with main, 98 of the
 > plan's 101 gates (check_regressed_pairs not run: NIST unreachable).
 
+> **C415 (architect, 2026-11-16, after the study of the open CFD toolbox's maintenance (Weller) and a second opinion Vitor brought; Vitor: "tomares tu as decisoes").**  What is adopted, in this order:
+> (1) FIRST, citations stop pinning line numbers.  Measured: 580 `file:line` citations in the EduTool lessons, and the engine is already arranged around them (LiquidPropertyDoor.cpp:349-350 keeps a function out of ThermoPackage.cpp "so that the package's own source keeps its line numbers"); every engine slice on 11-16 re-pointed lesson citations.  A lesson cites a SYMBOL (file + function, or a named marker) and the gate holds the cited text, not its line.  Pilot on two lessons, then generalise only if it simplifies.
+> (2) Gates: merge where they repeat set-up, runs or checks -- the audit's 41 -> 9 is a possibility, not a target; a written map old -> new keeps every boundary case, refusal and real-bug witness; a physics check keeps an INDEPENDENT reference.
+> (3) The mandatory reading shrinks: CLAUDE.md to the rules in force (about 400 lines as a guide, not a quota), DEV.md split into an open register and indexed archives -- without scattering the same reading across more files.
+> (4) Line counts are a DIAGNOSTIC reported per slice (`git diff --shortstat`), never a quota: a consolidation is not required to be net negative.  Comments keep the rule, the source and the reason for a numerical choice; the administrative chronology goes to the commit.
+> (5) The column is split only where a coherent algorithm becomes easier to read or change; a localised `if` choosing an algorithm is acceptable; start with one small split, prove identity, judge, then continue.
+> (6) Each batch reserves capacity for maintenance that answers an OBSERVED difficulty (a fix needing scattered edits, a repeated run, a fragile dependency, instructions hard to find); no invented work.
+> Corrected: the toolbox's practice is not "the tutorials run" only -- its foundation describes unit tests, verification, validation, integration and performance testing; the study measured only the runner it inspected.
+> **C416 (Vitor, 2026-11-16, "para mais tarde": "achas que devia haver um EduTool sobre controlo de qualidade?"; the architect: yes, as a candidate after the month).**  Scope decided: not a statistics course but quality AS A CONSEQUENCE OF THE PROCESS -- a critical quality attribute of a shipped case (a tablet plant's content uniformity, a column's distillate purity) computed by the engine; the variability of its inputs propagated by the outer driver's Monte Carlo into a distribution of that attribute; the specification limits; Cp and Cpk read from that distribution; a Shewhart chart of simulated lots that shows a drift being caught and a common-cause scatter not being chased; and which process change moves Cpk most (the sensitivity the driver already computes).  Sources to read before writing: Montgomery, Introduction to Statistical Quality Control; ICH Q8/Q9 for the pharmaceutical framing.  Every number from the engine, every symbol cited.
+> **C417 (Vitor, 2026-11-16: "quero atacar as vias reacionais de quimica organica e inorganica atraves de EduTools com questionarios no fim").**  A COMMISSION; it absorbs C215 (organic reaction classes), C216 (biorefinery reactions) and C218 (reversible vs irreversible, quenching).  The architect's shape: ONE route-card template and ONE quiz component reused by every route.  Each card: the industrial route from feedstock to product; the balanced equations (checked by the engine's element balance); atom economy and E-factor; Delta_r H and K(T) computed from the catalogue; equilibrium conversion against T and P (the lever a student moves); why this reactor and these conditions; by-products, separations, hazards; a link to the Choupo case that runs it.  The quiz ends each card: 5-8 questions, every answer computed or cited, each with its explanation.  First six, where cases or data exist: inorganic -- Haber-Bosch, Ostwald nitric acid, contact sulfuric acid; organic -- methanol synthesis, ethylene oxide to ethylene glycol, cumene to phenol and acetone.  Next: chlor-alkali, Solvay, acetic acid by carbonylation, hydroformylation, nitration, esterification.  Sources to read first: Moulijn, Makkee & van Diepen, Chemical Process Technology; Weissermel & Arpe, Industrial Organic Chemistry; Buchner et al., Industrial Inorganic Chemistry; Greenwood & Earnshaw for the inorganic chemistry.  After the month.
+> **C418 (Vitor, 2026-11-16, areas not yet covered; the architect's ranking).**  Candidates: (1) bioprocess -- a bioreactor with growth, O2 transfer (kLa) and scale-up, and downstream as a chain; (2) wastewater with activated-sludge models (ASM); (3) multiphase reactors (trickle bed, bubble column, slurry); (4) electrochemistry beyond ED (electrolyser C214 W7, fuel cell, battery); (5) freeze-drying, freezing and thermal sterilisation (F0); then furnaces and combustion, polymerisation, LCA and carbon footprint from the balances, leaching.  Books requested from Vitor for each.  After the month, one at a time.
+
+> **THE 2026-11-16b BATCH LANDED: C413 slices 0-2 and the curation-fit
+> reuse key.**  539 cases reference the catalogue through pins (consumed
+> records plus one `relevant:` set line per scanned registry), 1504 copies
+> deleted, 1982 held under a ceiling that only falls, 64 records declared
+> (`distinctFrom` ions, `variationOf` homonyms), 72 cases left sealed each
+> with its reason (51 aqueous cases that scan whole species directories, 4
+> sector cases, 4 code cases, 3 witnesses, 8 whose output would change by
+> seeing the catalogue, 2 importer refusals); each flip proved against its
+> sealed run (538 of 538).  Every curation fit keyed on what it reads (the
+> engine objects it reaches, the files named by its components; a pinned
+> case's data half from its pins).  ONE full sweep alone: 2254 PASS / 5
+> FAIL / 1 KNOWN-BROKEN, no case failed; mass on 306 steady cases, elements,
+> energy, 87 time-integrated closures held.  The five: three stale generated
+> files (regenerated), a count hand-carried into settled-contracts.md
+> (reworded), check_pcsaft_association building a probe into build/ while
+> PAR (now SERIAL).  OPEN: check_golden_bands fails inside the sweep and
+> passes alone on the same tree, twice on 11-16 (flash13/17/20, gibbs07-09,
+> cstr07 residual bands) -- an order dependence in what it reads, to find.
+
 > **C414 (1) LANDED: THE GATES RUN IN A POOL (2026-11-16).**  The suite
 > walked its gates one at a time while `-j` widened only the cases; 75 gates
 > that write into the tree now run in private slot trees (ISO, a leak scan
