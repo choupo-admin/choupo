@@ -113,8 +113,8 @@
     },
     "check_case_tiers": {
       "exit": 0,
-      "claim": "check_case_tiers: OK -- 480 witness(es), 42 tutorial(s), 16 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
-      "seconds": 0.5
+      "claim": "check_case_tiers: OK -- 553 witness(es), 43 tutorial(s), 16 showcase(s), recounted from the tree rather than trusted.  Every showcase is a multi-unit or sectored flowsheet; every tutorial carries a README; absence of a `tier` key means WITNESS, so a slice's witness is born classified by its author doing nothing.  NOT CHECKED: whether any case sits in the RIGHT tier (a reading judgement about audience, which no gate can make), and coverage -- nothing here demands the learning surface grow, because deliberate smallness is the point.",
+      "seconds": 0.2
     },
     "check_caveat_surface": {
       "exit": 0,
@@ -183,8 +183,8 @@
     },
     "check_cosmo_scrub": {
       "exit": 0,
-      "claim": "cosmo-scrub: OK -- 1060 external references (no values shipped), 498 open-licence profiles; 0 restricted values in the public tree; every variant-\"2002\" set names VT-2005 or a SYNTHETIC surrogate, every LVPP-HFTZVP-2018 set carries the engine's protocol, and no VT2005 set is installed (10172 records enumerated; an absent or collapsed scan root REFUSES).  NOT checked: a `source` string that lies about where its numbers came from, and whether a profile was really built under the protocol it declares (check_cosmo_lvpp_selection holds the shipped ones by result).",
-      "seconds": 1.2
+      "claim": "cosmo-scrub: OK -- 1062 external references (no values shipped), 500 open-licence profiles; 0 restricted values in the public tree; every variant-\"2002\" set names VT-2005 or a SYNTHETIC surrogate, every LVPP-HFTZVP-2018 set carries the engine's protocol, and no VT2005 set is installed (10174 records enumerated; an absent or collapsed scan root REFUSES).  NOT checked: a `source` string that lies about where its numbers came from, and whether a profile was really built under the protocol it declares (check_cosmo_lvpp_selection holds the shipped ones by result).",
+      "seconds": 0.8
     },
     "check_cost_provenance": {
       "exit": 0,
@@ -218,8 +218,8 @@
     },
     "check_debt_registry": {
       "exit": 0,
-      "claim": "check_debt_registry: OK -- 361 gate script(s) scanned; 11 waiver table(s) all resolve to debt_registry.py, and all 29 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
-      "seconds": 0.6
+      "claim": "check_debt_registry: OK -- 362 gate script(s) scanned; 11 waiver table(s) all resolve to debt_registry.py, and all 29 registry entr(ies) are read by a gate.  THIS GATE DOES NOT CHECK WHETHER A WAIVER IS STILL TRUE -- that is each owning gate's stale-pin arm, and duplicating it here would recreate the second home this registry exists to remove.  Green here means the waivers are in one place and consulted, never that they are justified.",
+      "seconds": 0.7
     },
     "check_decision_index": {
       "exit": 0,
@@ -253,8 +253,8 @@
     },
     "check_doc_references": {
       "exit": 0,
-      "claim": "check_doc_references: OK -- 1020 path mention(s) and 284 case name(s) across 26 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
-      "seconds": 3.4
+      "claim": "check_doc_references: OK -- 1022 path mention(s) and 284 case name(s) across 26 AI-facing docs all resolve; 14 deliberate absences are listed with their reason and none of them has quietly come true (build outputs git ignores excepted); 2 mention(s) of a RUN OUTPUT are accepted as such -- git ignores the path and the case that writes it exists -- whether or not it has run here.  NOT checked: that the prose calls it a run output, or that the case really writes that file; 10 former name(s) of a RENAMED case in the dated record (DEV.md) resolve through tutorials/ALIASES to a case that exists",
+      "seconds": 2.1
     },
     "check_doctrine": {
       "exit": 0,
@@ -278,8 +278,8 @@
     },
     "check_duplicate_keys": {
       "exit": 0,
-      "claim": "check_duplicate_keys: OK -- each of 13019 TRACKED dict file(s) declares each key once (standards, tutorials, design drafts); NOT judged: data/local/ and untracked files",
-      "seconds": 5.1
+      "claim": "check_duplicate_keys: OK -- each of 13025 TRACKED dict file(s) declares each key once (standards, tutorials, design drafts); NOT judged: data/local/ and untracked files",
+      "seconds": 4.4
     },
     "check_duty_inversion": {
       "exit": 0,
@@ -373,8 +373,8 @@
     },
     "check_equipment_pinned": {
       "exit": 0,
-      "claim": "check_equipment_pinned: OK -- 6378 equipment key(s) across 27 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
-      "seconds": 44.5
+      "claim": "check_equipment_pinned: OK -- 6460 equipment key(s) across 28 sizing case(s) are pinned in their goldens, in both directions (published implies pinned, pinned implies published), by the generator's own emission rule (basis when stated, every sizing value, every held-inventory quantity, the three cost totals; never the costing factors, which check_cost_provenance recomputes from).  1 golden-less sweep(s) excused by name.  NOT CHECKED: whether any size or cost is RIGHT, whether a sizer STATES a basis (task #78), or the pinned numbers' agreement with the run (bin/runTests' job for every row).",
+      "seconds": 48.6
     },
     "check_estimate_class": {
       "exit": 0,
@@ -423,8 +423,8 @@
     },
     "check_fastset": {
       "exit": 0,
-      "claim": "check_fastset: OK -- 83 declared case(s) covering 73 of the 77 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 4 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/aceticAcid02_plant, tutorials/plant/acetonePlant, tutorials/plant/greenAmmonia03_basicDesign, tutorials/steady/flowsheets/twoSectorDemo).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
-      "seconds": 0.4
+      "claim": "check_fastset: OK -- 85 declared case(s) covering 73 of the 77 tutorial famil(ies) the suite walks, each an existing case the full sweep also walks, no case declared twice; the remaining 4 famil(ies) carry a DECLARED `# EXCLUDED` line with a reason (tutorials/plant/aceticAcid02_plant, tutorials/plant/acetonePlant, tutorials/plant/greenAmmonia03_basicDesign, tutorials/steady/flowsheets/twoSectorDemo).  NOT COVERED: whether the declared cases are CHEAP (a measurement, and one that moved 26 % between two runs of the same tree -- it lives dated in FASTSET's header, not in a gate), whether they PASS (that is `bin/runTests --fast`), and whether a family's representative is REPRESENTATIVE of it (an author's judgement, made in review, exactly as check_witness_tier leaves representativeness to the architect).",
+      "seconds": 0.9
     },
     "check_feed_switch": {
       "exit": 0,
@@ -468,8 +468,8 @@
     },
     "check_gate_selftest": {
       "exit": 0,
-      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_lesson_references.py [detection] -> exit 1; check_feature_documented.py [detection] -> exit 1; check_lesson_references.py [vacuity] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1.  COVERAGE IS 14 of 333 gates, and the other 319 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  The source is then restored, rebuilt, and the covered gates RE-RUN and required to pass, which is the only proof the tree came back.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
-      "seconds": 519.8
+      "claim": "check_gate_selftest: OK -- every sabotage below was OBSERVED failing its gate, not assumed to.  check_ebullioscopic.py [detection] -> exit 1; check_ebullioscopic.py [vacuity] -> exit 1; check_ice_freezing.py [detection] -> exit 1; check_ion_pins.py [vacuity] -> exit 1; check_glossary_bans.py [detection] -> exit 1; check_lesson_references.py [detection] -> exit 1; check_feature_documented.py [detection] -> exit 1; check_lesson_references.py [vacuity] -> exit 1; check_variant_same_values.py [vacuity] -> exit 1; check_variant_same_values.py [detection] -> exit 1; check_golden_bands.py [detection] -> exit 1; check_golden_bands.py [detection] -> exit 1; check_workspace_truth.py [detection/poisoned-overlay] -> exit 1; check_legacy_schema.py [detection] -> exit 1; check_cosmo_scrub.py [detection] -> exit 1; check_validity_windows.py [detection] -> exit 1; check_retired_names.py [detection] -> exit 1; check_property_route_bench.py [detection] -> exit 1; check_liquid_property_ratchet.py [detection] -> exit 1; check_vliq_datum.py [detection] -> exit 1; check_source_headers.py [detection] -> exit 1; check_liquid_density_entry_callers.py [detection] -> exit 1; check_density_pilot.py [source/unit-keeps-its-own-number] -> exit 1; check_pure_fluid_phase_asked.py [source/phase-dropped] -> exit 1; check_property_route_bench.py [source/route-relabelled] -> exit 1; check_property_source_witnesses.py [source/site-retagged] -> exit 1; check_lumped_cp_note.py [source/guard-removed] -> exit 1; check_convergence_residual.py [source/acceptance-always-true] -> exit 1; check_model_boundary_ledger.py [source/filter-restored] -> exit 1; check_estimated_species_announced.py [detection] -> exit 1; check_ratebased_segment.py [source/interface-energy-dropped] -> exit 1; check_packing_record.py [source/reads-not-carried-back] -> exit 1; check_packing_record.py [source/range-check-off] -> exit 1; check_packing_record.py [source/estimate-mark-dropped] -> exit 1.  COVERAGE IS 27 of 363 gates, and the other 336 are UNAUDITED -- not implied sound.  Both sabotage kinds are exercised at the DATA tier: an input REMOVED (the check_true_ions shape, where the subject disappears and the gate agrees with nothing) and a value CORRUPTED.  The SOURCE tier (2026-08-14) edits the ENGINE, rebuilds, and requires the gate to fail on the rebuilt binary -- with the build's exit status AND a newer artefact both checked, because a sabotage that does not compile silently tests the previous binary.  THE POOL (C394): 34 arms in 8 worker copies of this tree, 2 of them for the source tier, at most 8 jobs and one build at a time (sync 1 s, arms 249 s, 293 s in all), each covered gate first required to PASS unsabotaged in the pool (27 controls); this tree was never edited and its build never rebuilt, verified by sha256 of the 25 sabotage subjects and every built artefact.  NOT COVERED: the gates not listed, and any defect needing more than a single-substring edit to express.",
+      "seconds": 293.4
     },
     "check_gibbs_duhem": {
       "exit": 0,
@@ -488,13 +488,13 @@
     },
     "check_glob_raw": {
       "exit": 0,
-      "claim": "check_glob_raw: OK -- 14 source file(s) call import.meta.glob; every glob over a non-JavaScript pattern asks for it raw, so rollup receives strings and never tries to parse a .dat as JavaScript.  The probe (the exact construct that blocked three site publishes on 2026-08-31) is still rejected.  NOT CHECKED: this is a SOURCE scan, not a build -- it cannot see any OTHER way to break `vite build`, and it does not run rollup.",
-      "seconds": 0.1
+      "claim": "check_glob_raw: OK -- 18 source file(s) call import.meta.glob; every glob over a non-JavaScript pattern asks for it raw, so rollup receives strings and never tries to parse a .dat as JavaScript.  The probe (the exact construct that blocked three site publishes on 2026-08-31) is still rejected.  NOT CHECKED: this is a SOURCE scan, not a build -- it cannot see any OTHER way to break `vite build`, and it does not run rollup.",
+      "seconds": 0.0
     },
     "check_glossary_bans": {
       "exit": 0,
-      "claim": "check_glossary_bans: OK -- 58385 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 62847 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
-      "seconds": 34.4
+      "claim": "check_glossary_bans: OK -- 58395 TRACKED file(s) scanned (data/local/ and untracked files are NOT judged); no deprecated glossary wording in live text.  10 file(s) are exempt BY NAME because they state, teach or record the ban (a document that defines a ban must be able to quote it); superseded documents and dated deliberations are exempt as a class -- a forum keeps its own words, as git history does.  And the retired name of the plant-and-sectors layout is absent from 62858 tracked text file(s) outside the dated records, save a line explaining the old name; 6 file(s) are exempt by name, 0 of them PENDING a sweep that fails as stale once done.",
+      "seconds": 14.0
     },
     "check_groups": {
       "exit": 0,
@@ -503,12 +503,12 @@
     },
     "check_guide_anchors": {
       "exit": 0,
-      "claim": "check_guide_anchors: OK -- all 196 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 28 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 49 into per-entry guide, SLOT_MODEL_DEST 3 into per-entry guide, THEORY_DEST 56 into theoryGuide, op:<type> fallback 55 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead.",
+      "claim": "check_guide_anchors: OK -- all 270 guide anchor(s) the GUI links to resolve to a real \\label (OP_DEST 29 into per-entry guide, PROPS_DEST 5 into propsGuide, PROPS_MODEL_DEST 68 into per-entry guide, SLOT_MODEL_DEST 47 into per-entry guide, THEORY_DEST 64 into theoryGuide, op:<type> fallback 57 into propsGuide).  NOT CHECKED, and deliberately: whether a LIVE anchor is the RIGHT one.  That is the defect this gate was written after -- `adiabaticFlash` pointed at `ch:flash`, a label that exists, on a section titled \"Isothermal flash\" -- and every mechanical form of the check accuses innocent umbrella sections, so the judgement is written beside the entries instead.",
       "seconds": 0.0
     },
     "check_guide_environments": {
       "exit": 0,
-      "claim": "check_guide_environments: OK -- 4735 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
+      "claim": "check_guide_environments: OK -- 4748 environment openings across 27 manual(s) all resolve (11 defined in the tree, the rest standard or package-provided) and every one is balanced, and no label is defined twice.  NOT checked: this is not a compile -- an undefined MACRO, bad math, a stray brace or a broken reference still kill `make -C docs all` and none is visible here.",
       "seconds": 0.1
     },
     "check_guide_menu": {
@@ -578,8 +578,8 @@
     },
     "check_ion_pins": {
       "exit": 0,
-      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 3040 component record(s) scanned (data/standards/components + every tutorial constant/components) the 103 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
-      "seconds": 0.3
+      "claim": "check_ion_pins: OK -- 3 dissolution anchor(s) (NaOH, NaCl, KCl) reproduce the aqueous ion tier to within 0.2 kJ/mol, and of 3042 component record(s) scanned (data/standards/components + every tutorial constant/components) the 103 carrying dissolutionEnthalpy declare no second, component-level standardThermochemistry block.  NOT CHECKED: whether any ion hfAq or solid Hf is RIGHT -- the anchors validate the arithmetic that relates them, never the published values; and the anchors above reach 4 ion(s) only, so an ion no anchor touches is unvalidated here.",
+      "seconds": 0.2
     },
     "check_layering": {
       "exit": 0,
@@ -858,8 +858,8 @@
     },
     "check_schema_coverage": {
       "exit": 0,
-      "claim": "check_schema_coverage: OK -- every one of the 117 registered operations carries a schema (113 exercised by the corpus over 1486 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
-      "seconds": 70.5
+      "claim": "check_schema_coverage: OK -- every one of the 117 registered operations carries a schema (113 exercised by the corpus over 1501 case use(s)); no schema rejects a key a running case uses, none marks required a key a running case omits, and 8 registry-derived alias group(s) agree property-for-property",
+      "seconds": 67.3
     },
     "check_sdem": {
       "exit": 0,
@@ -868,8 +868,8 @@
     },
     "check_seal_drift": {
       "exit": 0,
-      "claim": "check_seal_drift: OK -- 1455 sealed manifest(s) and 9615 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design); the 4 copies debt_registry.SEALED_COPIES_ADOPTED lists are still adopted.  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (3493 record(s), 1236 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
-      "seconds": 32.2
+      "claim": "check_seal_drift: OK -- 1461 sealed manifest(s) and 9689 embedded record(s) inspected; every sealed case still reproduces its own records under its declared sealSchema (9 cosmetic difference(s), which the parsed-content claim tolerates by design); the 4 copies debt_registry.SEALED_COPIES_ADOPTED lists are still adopted.  NOT CHECKED: whether any sealed value is RIGHT.  And divergence from the LIVE catalogue (3517 record(s), 1217 case(s) worth a curator's eye) is HISTORY, not a verdict -- this gate reports it, never fails on it, and never re-seals to make the number smaller.",
+      "seconds": 54.6
     },
     "check_seal_growth": {
       "exit": 0,
@@ -888,8 +888,8 @@
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (586) or a live-overlay demo exempt by design (4), 0 unsealed; and the 5610 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
-      "seconds": 5.5
+      "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (605) or a live-overlay demo exempt by design (4), 0 unsealed; and the 5726 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
+      "seconds": 1.3
     },
     "check_sector_hierarchy": {
       "exit": 0,
@@ -933,8 +933,8 @@
     },
     "check_source_licence": {
       "exit": 0,
-      "claim": "check_source_licence: OK -- restricted-notice arm: all 4 file(s) naming a listed reuse-restricted origin (1 listed) also carry its reservation in words.  3997 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 3 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 7 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 11594 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 6164 case-local records under tutorials/**/constant/: 2 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 44 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 18867 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
-      "seconds": 12.7
+      "claim": "check_source_licence: OK -- restricted-notice arm: all 4 file(s) naming a listed reuse-restricted origin (1 listed) also carry its reservation in words.  3997 TRACKED record(s) scanned (untracked and data/local files are NOT judged; an absent or collapsed scan root REFUSES); no encumbered source stands as the authority for a value, except 3 pinned violations awaiting curation (a primary datum, not a guess).  A primary cited via an aggregator is compliant and is not counted.  NonCommercial compilations: no new record names Burcat/ReSpecTh as a value's origin; 7 existing ones do and are pinned.  No-grant mechanism (C164): no line of the 11598 catalogue records and case-local constant/ files names GRI-Mech as a value's origin (none pinned; a cross-check marker before the name is allowed).  Engineering Toolbox and REFPROP (C65) are among the names refused, and they alone are also sought in the 6166 case-local records under tutorials/**/constant/: 2 name one as a value's origin, all sealed NH3 mirrors awaiting re-import, pinned (every other name is judged in data/standards/ only).  Accepted third-party databanks, by CONTRACT here and cross-checked against the importer's LICENSE constant: ChemSep (Artistic-2.0, 360 record(s)); NASA/TP-2002-211556 (publicDomain, 44 record(s)) -- and that acceptance has a SCOPE: 2 excluded interaction-parameter table classes (ChemSep .ipd, the thermo package's copy) are named as a value's origin by no record.  No source file reproduces a no-grant standard's table (1 class: the API STD 526 orifice-letter areas, matched by their VALUES over 18877 source files, not by the name).  Every source ruled on here has a thirdParty/ card and every card on disk is named by a gate (8 card(s)).  Vendored third-party code, by CONTRACT: NanoFiltran -- 3 file(s) each carrying its own licence notice, the LAPACK text the fetched one, NOTICE naming every holder.  Facts from a copyrighted paper, by CONTRACT: Geraldes & Alves 2008 (NanoFiltran paper) -- 9 file(s) each citing it and saying what it carries, and none of the 20 PDF/image file(s) under bin, tutorials, docs, data, gui/public, gui/src, thirdParty is the paper or a figure of it.",
+      "seconds": 15.4
     },
     "check_species_citation": {
       "exit": 0,
@@ -1003,8 +1003,8 @@
     },
     "check_theory_citations": {
       "exit": 0,
-      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 60 of 93 chapters that carry numbered equations carry a citation (33 pinned as owing one, ratcheting down); 203 \\cite keys all resolve, 203 \\bibitem entries all cited (0 orphans pinned); 22 of 22 engine-cited surnames the guide names reach the bibliography; 8 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 677 numbered equation environments individually, and the other seven guides.",
-      "seconds": 2.6
+      "claim": "check_theory_citations: OK -- docs/theoryGuide.tex: 60 of 93 chapters that carry numbered equations carry a citation (33 pinned as owing one, ratcheting down); 205 \\cite keys all resolve, 205 \\bibitem entries all cited (0 orphans pinned); 22 of 22 engine-cited surnames the guide names reach the bibliography; 8 registered eponymous model keys the guide names are sourced. SCANNED: that one file plus src/ for surnames and factory keys; nothing else in docs/ carries a bibliography. NOT CHECKED: whether a citation is TRUE of the equation beside it, whether an equation NEEDS one, the physico-chemical HYPOTHESES Pedro also asked for, the 684 numbered equation environments individually, and the other seven guides.",
+      "seconds": 3.0
     },
     "check_thermal_bed": {
       "exit": 0,
@@ -1108,8 +1108,8 @@
     },
     "check_validity_windows": {
       "exit": 0,
-      "claim": "check_validity_windows: OK -- 7574 declared window(s) across 10172 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)",
-      "seconds": 1.4
+      "claim": "check_validity_windows: OK -- 7585 declared window(s) across 10174 record(s); every one has hi > lo, except 0 pinned CoolProp liquid-Cp fits awaiting re-derivation of their regression domain (a curation act, not a guess)",
+      "seconds": 2.2
     },
     "check_verdict_parity": {
       "exit": 0,
@@ -1118,8 +1118,8 @@
     },
     "check_viewport_units": {
       "exit": 0,
-      "claim": "check_viewport_units: OK -- the full-viewport height has ONE home (gui/src/theme-overrides.css: `100vh` with an `@supports (height: 100dvh)` upgrade), 5 site(s) read var(--choupo-vh), and no bare `100vh` remains in gui/src code except a declaration restated in `100dvh` for a document that cannot inherit the variable.  NOT CHECKED: `100vw` (a different defect with a different remedy, and nothing here was changed for it), whether the app actually fits a phone (no script sees a rendered page), and any stylesheet outside gui/src.",
-      "seconds": 0.4
+      "claim": "check_viewport_units: OK -- the full-viewport height has ONE home (gui/src/theme-overrides.css: `100vh` with an `@supports (height: 100dvh)` upgrade), 11 site(s) read var(--choupo-vh), and no bare `100vh` remains in gui/src code except a declaration restated in `100dvh` for a document that cannot inherit the variable.  NOT CHECKED: `100vw` (a different defect with a different remedy, and nothing here was changed for it), whether the app actually fits a phone (no script sees a rendered page), and any stylesheet outside gui/src.",
+      "seconds": 0.6
     },
     "check_vlle_fallback": {
       "exit": 0,
@@ -1323,8 +1323,8 @@
     },
     "check_props_order": {
       "exit": 0,
-      "claim": "check_props_order: OK -- 57 registered op types each carry a file-traffic row; 57 guarded writes in their sources match a write slot; the GUI's published copy (gui/schemas/propsFileTraffic.json) is the engine's table and no op schema keeps its own writes; 57 op schemas' x-choupo data match the table; 179 corpus propsDicts in declared order (178 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
-      "seconds": 3.7
+      "claim": "check_props_order: OK -- 57 registered op types each carry a file-traffic row; 57 guarded writes in their sources match a write slot; the GUI's published copy (gui/schemas/propsFileTraffic.json) is the engine's table and no op schema keeps its own writes; 57 op schemas' x-choupo data match the table; 180 corpus propsDicts in declared order (179 pass; 1 declaring a process-run input refuse, on a copy without run outputs, naming the Flowsheet run); a read of a later write, by path, default path, membrane name and by construction, refuses with the remedy and the right order passes; ctrl17's absent trajectory refuses before operation [0] naming the Flowsheet run, and four writtenBy misdeclarations refuse.  NOT checked: that the table lists every key an op reads (no single home for reads), computed paths, registry reads other than membranes, the package",
+      "seconds": 2.3
     },
     "check_column_thermo_consistency": {
       "exit": 0,
@@ -1518,8 +1518,8 @@
     },
     "check_capability_index": {
       "exit": 0,
-      "claim": "check_capability_index: OK: 204 typed name(s) resolved against their registries, 100 path(s) present (95 witness case(s)), 69 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked); every brief and pack within its declared word budget; the ONE student prompt names only published URLs and existing packs, stay within 250 words and are carried verbatim by /llm/prompts.md, the landing and the Help module",
-      "seconds": 9.3
+      "claim": "check_capability_index: OK: 204 typed name(s) resolved against their registries, 100 path(s) present (95 witness case(s)), 71 untyped name(s) found in the tree; every concept names a typed name and a witness (names only -- the prose about them is not checked); every brief and pack within its declared word budget; the ONE student prompt names only published URLs and existing packs, stay within 250 words and are carried verbatim by /llm/prompts.md, the landing and the Help module",
+      "seconds": 9.2
     },
     "check_bell_delaware": {
       "exit": 0,
@@ -1703,8 +1703,8 @@
     },
     "check_property_route_bench": {
       "exit": 0,
-      "claim": "check_property_route_bench: OK -- 19500 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 19499, values 162845, refusals 177902, packages not assembled 2224; non-finite values: NaN 1, inf 6; data-root paths replaced in messages: 969; door against the old call: 179223 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
-      "seconds": 10.6
+      "claim": "check_property_route_bench: OK -- 19004 (record, route) blocks of the liquid-property kernel answer bit for bit as recorded, and the door describes each as recorded (records 696, binaries 8, blocks 19003, values 163161, refusals 177058, packages not assembled 1776; non-finite values: NaN 1, inf 6; data-root paths replaced in messages: 969; door against the old call: 179223 compared, 0 disagreements).  NOT CHECKED: whether any value is right, states off the grid, mixtures other than the manifest's binaries, activity-model effects, per-unit overrides.",
+      "seconds": 12.2
     },
     "check_liquid_property_ratchet": {
       "exit": 0,
@@ -1733,8 +1733,8 @@
     },
     "check_golden_bands": {
       "exit": 0,
-      "claim": "check_golden_bands: OK -- all 184728 golden row(s) have a class (condition 4109, count 8297, direct 128728, objective 42715, parameter 752, residual_boundary 79, residual_hx 19, residual_ledger 29); the 127 closure-residual row(s) carry the absolute form on disk (79 boundary row(s) on FORM alone, no cached output carried the term); the cross-platform transformation gives a count 2.0, a condition number 2.0, an objective 1e-2 and a parameter 5e-2 and leaves direct, exact and anchor rows alone; the comparator failed a wrong value and passed a right one in the relative, abs: and exact forms, strict and cross, and a count and an objective off by a factor failed strict, passed cross and failed cross at ten times (18 runs).  NOT CHECKED: that a band is physically right, that direct rows are tight, anchor and exact rows.",
-      "seconds": 56.7
+      "claim": "check_golden_bands: OK -- all 184920 golden row(s) have a class (condition 4109, count 8297, direct 128920, objective 42715, parameter 752, residual_boundary 79, residual_hx 19, residual_ledger 29); the 127 closure-residual row(s) carry the absolute form on disk (79 boundary row(s) on FORM alone, no cached output carried the term); the cross-platform transformation gives a count 2.0, a condition number 2.0, an objective 1e-2 and a parameter 5e-2 and leaves direct, exact and anchor rows alone; the comparator failed a wrong value and passed a right one in the relative, abs: and exact forms, strict and cross, and a count and an objective off by a factor failed strict, passed cross and failed cross at ten times (18 runs).  NOT CHECKED: that a band is physically right, that direct rows are tight, anchor and exact rows.",
+      "seconds": 32.6
     },
     "check_pure_fluid_phase_asked": {
       "exit": 0,
@@ -1768,8 +1768,8 @@
     },
     "check_ratebased_segment": {
       "exit": 0,
-      "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside r_max^2/2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 8 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
-      "seconds": 31.7
+      "claim": "check_ratebased_segment: OK -- the rate-based segment reduces to the transfer-unit bed on packing01-04 (worst 0.0161 %, inside 0.01 r_max^2), audits block-tridiagonal with off-band 0, closes the reboiler's material balance to 1e-9 and its first law VERIFIED (not verified in the limit), moves < 1 % from 100 to 400 segments, and refuses 12 inputs by name while a non-ideal liquid runs announced; it does NOT check that the model is closer to the measurement or the film heat-transfer analogy",
+      "seconds": 48.2
     },
     "check_variant_same_values": {
       "exit": 0,
@@ -1788,8 +1788,8 @@
     },
     "check_provenance_home": {
       "exit": 0,
-      "claim": "check_provenance_home: OK -- 4736 records read; every provenance-shaped entry (a block carrying `origin`, any name, any depth) is in its record's provenance block (4 pinned blocks carry their own `origin`, the debt)",
-      "seconds": 7.0
+      "claim": "check_provenance_home: OK -- 4738 records read; every provenance-shaped entry (a block carrying `origin`, any name, any depth) is in its record's provenance block (4 pinned blocks carry their own `origin`, the debt)",
+      "seconds": 4.7
     },
     "check_record_law_pins": {
       "exit": 0,
@@ -1808,8 +1808,8 @@
     },
     "check_scan_roots": {
       "exit": 0,
-      "claim": "check_scan_roots: OK -- 69 of 362 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
-      "seconds": 5.0
+      "claim": "check_scan_roots: OK -- 69 of 363 gates carry a walk the plan cannot see, each pinned by name in debt_registry.SCAN_ROOTS_UNRESOLVED, and none was added.  NOT checked: whether a declared SCAN_ROOTS is complete, or walks inside an imported helper.",
+      "seconds": 4.5
     },
     "check_table_laws": {
       "exit": 0,
@@ -1824,7 +1824,7 @@
     "check_volume_translation": {
       "exit": 0,
       "claim": "check_volume_translation: OK -- ONE translated fluid: ln phi_i moves by -c_i P/RT per component, root and cubic (probe, 4 states, 1e-9) and G^R = H^R - T S^R closes with the shift off and on; equilibrium byte-identical under the shift (5-point bubble scan); v_liq and v_vap drop by sum x_i c_i (Eq. 6, Eq. 8) on 3 states to 1e-9; H_R moves by -P c, S_R by 0; PR + Jhaveri-Youngren c = s b (Eq. 17-18) on 3 states likewise; a component without Z_RA, and a Table-2 family on hexane, are refused by name.",
-      "seconds": 1.2
+      "seconds": 1.0
     }
   }
 }
