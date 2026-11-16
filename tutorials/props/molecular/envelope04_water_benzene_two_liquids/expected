@@ -1,7 +1,8 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-diag    envelope               bubble_points    80                 1e-4
+diag    envelope               bubble_points    26                 1e-4
+diag    envelope               bubble_stopped_bar 27                 1e-4
 diag    envelope               dew_points       38                 1e-4
 diag    envelope               dew_stopped_bar  39                 1e-4
 diag    liquidProbe            n_emptyCurves    0                  1e-4
