@@ -1415,14 +1415,9 @@ Each carries ρ, F_M (Turton), σ_y, max T, max P.
   `ln(Psat/Pr) = (Tr/T) Σ a_i τ^e_i`, τ = 1 − T/Tr.  The reducing constants
   are REQUIRED and are never taken from the component's Tc/Pc: a Wagner fit
   means something only with the constants it was fitted with.  Water's IAPWS
-  saturation equation (SR1-86(1992), Eq. 1; coefficients as printed in
-  Wagner & Pruss 2002 Eq. 2.5) IS water's catalogue vapour pressure since
-  2026-11-16 (reducing constants 647.096 K, 22.064 MPa -- not the record's
-  Tc; valid 273.16-647.096 K; the Antoine fit it replaced was +2.5 % high at
-  373 K).  Water has ONE saturation curve: the PHREEQC-convention record
-  `chemistry/water-vapour-equilibrium.dat` (`H2O(g) = H2O`) is derived from
-  it (`bin/curate/fit_water_vapour_equilibrium.py`; gate
-  `check_water_one_home`).  Theory Guide section `sec:water-iapws-psat`.
+  saturation equation (SR1-86(1992), Eq. 1) is one instance; a case opts in
+  with a `constant/components/water.dat` overlay (`overlayOf water;`) —
+  see docs/design/what-water-dat-does-not-say.md §3.2.
 - `idealGasHeatCapacity { coefficients (a1 a2 ... ); }` — for H_ig, S_ig.
 - `liquidHeatCapacity { coefficients ( ... ); }` — for sensible H_liq.
 - `standardThermochemistry { dHf_298; s_298; }` — for K_eq + adiabatic flames.
