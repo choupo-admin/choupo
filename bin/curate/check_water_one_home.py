@@ -21,6 +21,8 @@ WHAT THIS GATE CHECKS (second opinions in Python, no code shared with the C++).
       647.096 K, to 3e-7 relative.
   (c) the engine's Psat for water (a props run) equals that evaluation to
       1e-9 relative at 273.16, 298.15, 373.15, 473.15, 573.15 K.
+  (e) no water.dat under tutorials/ carries `model Antoine` (purelaws02, which
+      holds both laws as a grammar witness, must prefer SR1).
   (d) the gas-liquid record of H2O(g) = H2O agrees with -log10(psat/atm) of
       the same curve to 2e-5 in logK over 273.16-473.15 K, and its dH is the
       curve's own to 1 J/mol; no other chemistry record states H2O(g) = H2O.
@@ -110,6 +112,18 @@ def main():
               if f.name != fw.REC.name and re.search(r'reaction\s+"H2O\(g\)\s*=\s*H2O"', f.read_text())]
     if others:
         fails.append("(d) a second record states H2O(g) = H2O: %s" % others)
+    #  (e) no case carries water's OLD law: a water.dat under tutorials/ with an
+    #  Antoine vaporPressure model is a second home for the curve (2026-11-16).
+    #  The one declared exception is purelaws02, whose record holds BOTH named
+    #  laws on purpose (a grammar witness) and prefers the IAPWS one.
+    for w in sorted((ROOT / "tutorials").rglob("water.dat")):
+        txt = w.read_text()
+        if "purelaws02_water_two_vapour_pressure_laws" in str(w):
+            if not re.search(r"preferred\s+SR1\s*;", txt):
+                fails.append("(e) %s must prefer the IAPWS law SR1" % w.relative_to(ROOT))
+            continue
+        if re.search(r"model\s+Antoine\s*;", txt):
+            fails.append("(e) %s still carries water's Antoine vapour pressure" % w.relative_to(ROOT))
     if fails:
         print("check_water_one_home: FAILED")
         for f in fails:
@@ -117,7 +131,7 @@ def main():
         return 1
     print("check_water_one_home: OK -- water.dat's vapour pressure is Wagner & Pruss Eq. (2.5) as printed, Table 1 reproduced "
           "to 3e-7, the engine's Psat equals it to 1e-9 at 5 temperatures, and the H2O(g) = H2O record is the same curve "
-          "(logK within %.1e, dH its own).  NOT CHECKED: the sealed copies inside cases (check_seal_drift reports them)." % worst)
+          "(logK within %.1e, dH its own).  NO case carries the old Antoine law.  NOT CHECKED: the sealed copies' other content (check_seal_drift reports them)." % worst)
     return 0
 
 
