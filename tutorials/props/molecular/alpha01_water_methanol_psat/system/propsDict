@@ -1,0 +1,240 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  alpha01_water_methanol_psat --- DOES A PER-COMPONENT ALPHA FUNCTION FIX THE
+  CUBIC'S OWN VAPOUR PRESSURE?  (DEV.md 4c C408, slice 0; design record
+  docs/design/c408-eos-ge-mixing-rules.md, finding F2 and ruling 2.)
+
+  THE PROBLEM.  SRK with the engine's generalised (Graboski-Daubert) Soave
+  slope misses the normal-boiling vapour pressure by -8.8 % for water and
+  -2.7 % for methanol.  A mixing rule built on that cubic inherits the error
+  at both ends of the diagram, whatever the rule.
+
+  THE REMEDY, OPT-IN.  `alphaFunction MathiasCopeman;` on the cubic replaces
+  alpha = [1 + m(1 - sqrt Tr)]^2 by
+      alpha = [1 + c1 x + c2 x^2 + c3 x^3]^2,  x = 1 - sqrt(Tr)   (Tr <= 1)
+  (Poling, Prausnitz & O'Connell, 5th ed., Table 4-7, pp. 4.19-4.20; above Tc
+  the Soave branch with c1 only).  c1..c3 are NOT typed from a table: they are
+  fitted BY CURATION (bin/curate/fit_alpha_function.py) to each record's OWN
+  vapour-pressure law over the window that law declares, and stored in the
+  record (`cubicAlpha { SRK { ... } }`, provenance origin `derived`, with the
+  law, the window, the largest deviation and a value sha).  With c2 = c3 = 0
+  the form IS Soave's, so a record without the block is today's behaviour.
+
+  WHAT EACH OPERATION PRINTS.  For the pure liquid, `P_bubble` is the CUBIC's
+  saturation pressure at T (the incipient vapour is the same pure fluid) and
+  `Psat_<component>` is the record's own Antoine law, read from the same
+  package.  The ratio is the deviation.  Nine to eleven temperatures span the law's
+  declared window (water 293-373 K of its 273-373 K -- below 293 K the pure
+  liquid's pressure is under the 0.01 bar floor of the bubble-pressure solver,
+  which refuses it by name -- and methanol's whole 288-356 K); the `_Tb` points sit
+  at the normal boiling point.
+
+  ANCHORS.  The `_Tb` rows of the Mathias-Copeman operations carry an anchor:
+  at the normal boiling point the saturation pressure is 101325 Pa BY
+  DEFINITION.  Water is read at 373.1243 K, the temperature at which IAPWS
+  SR1-86 Table 1 tabulates p = 101325 Pa (quoted in data/standards/components/
+  water.dat's header); methanol at the record's Tb = 337.85 K.  The anchor
+  tolerances (3e-2 and 1e-2) are the in-sample deviation of the SAVED records
+  plus margin: water's Antoine law is itself 0.1-2.5 % off IAPWS across its
+  window (its header says so), and the Mathias-Copeman constants reproduce
+  THAT law, not the primary -- which is the honest statement of what curating
+  to the record's own law buys.
+
+  WHAT THIS DOES NOT SAY.  It does not say the constants are right outside the
+  window: above it they extrapolate, and CO2 is not curated at all -- its
+  Antoine law is the SUBLIMATION line and the tool refuses it by name.
+\*---------------------------------------------------------------------------*/
+operations
+(
+    {
+        name        water_soave_window;
+        type        propertyScan1D;
+        vary        { variable T;  from 293 K;  to 373 K;  n 9; }
+        state       { P 1.01325 bar;  composition { water 1.0; methanol 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_water );
+        output      { file water_soave.csv; }
+    }
+    {
+        name        water_soave_Tb;
+        type        propertyPoint;
+        state       { T 373.1243 K;  P 1.01325 bar;  composition { water 1.0; methanol 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_water );
+    }
+    {
+        name        water_mathiasCopeman_window;
+        type        propertyScan1D;
+        vary        { variable T;  from 293 K;  to 373 K;  n 9; }
+        state       { P 1.01325 bar;  composition { water 1.0; methanol 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; alphaFunction MathiasCopeman; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_water );
+        output      { file water_mathiasCopeman.csv; }
+    }
+    {
+        name        water_mathiasCopeman_Tb;
+        type        propertyPoint;
+        state       { T 373.1243 K;  P 1.01325 bar;  composition { water 1.0; methanol 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; alphaFunction MathiasCopeman; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_water );
+    }
+    {
+        name        methanol_soave_window;
+        type        propertyScan1D;
+        vary        { variable T;  from 288 K;  to 356 K;  n 11; }
+        state       { P 1.01325 bar;  composition { methanol 1.0; water 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_methanol );
+        output      { file methanol_soave.csv; }
+    }
+    {
+        name        methanol_soave_Tb;
+        type        propertyPoint;
+        state       { T 337.85 K;  P 1.01325 bar;  composition { methanol 1.0; water 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_methanol );
+    }
+    {
+        name        methanol_mathiasCopeman_window;
+        type        propertyScan1D;
+        vary        { variable T;  from 288 K;  to 356 K;  n 11; }
+        state       { P 1.01325 bar;  composition { methanol 1.0; water 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; alphaFunction MathiasCopeman; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_methanol );
+        output      { file methanol_mathiasCopeman.csv; }
+    }
+    {
+        name        methanol_mathiasCopeman_Tb;
+        type        propertyPoint;
+        state       { T 337.85 K;  P 1.01325 bar;  composition { methanol 1.0; water 0.0; } }
+        thermo
+        {
+            equilibrium
+            {
+                formulation phiPhi;
+                equationOfState { model SRK; alphaFunction MathiasCopeman; }
+                liquid { fugacityRoute equationOfState; root liquid; }
+                vapour { fugacityRoute equationOfState; root vapour; }
+            }
+            caloric
+            {
+                energyBasis elementsDatum;
+                liquid { departureRoute equilibriumEquationOfState; root liquid; }
+                vapour { departureRoute equilibriumEquationOfState; root vapour; }
+            }
+        }
+        properties  ( P_bubble  Psat_methanol );
+    }
+);
