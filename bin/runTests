@@ -6163,6 +6163,21 @@ PYEOF
         fail=$((fail+1))
     fi
 
+    # Water's saturation curve has ONE home (architect's ruling 2026-11-16):
+    # the IAPWS equation (Wagner model, SR1-86 Eq. 1) in water.dat; the
+    # H2O(g) = H2O gas-liquid record is derived from it.  No corpus case reads
+    # the printed coefficients or the second record, so a drifted coefficient
+    # or a stale derived fit would pass every golden that does not price water
+    # near the edit; this gate recomputes both in Python.
+    if gate_exec "$ROOT/bin/curate/check_water_one_home.py" > /tmp/wateronehome.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "water-one-home-gate" "$(head -1 /tmp/wateronehome.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_water_one_home.py)\n" "water-one-home-gate"
+        cat /tmp/wateronehome.$$
+        fail=$((fail+1))
+    fi
+
     # Route P (DEV.md 4c C123, 2026-10-21): the PPR78 / E-PPR78 kij evaluated
     # ONCE at a declared T and WRITTEN into the case (ppr78Kij), read by the
     # phi-phi builder as a kij SET and said on the run (extrapolations
