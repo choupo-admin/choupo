@@ -1751,9 +1751,13 @@ operation
                                      // and give `k_film`
         channelHeight 0.7 mm;        // (refused beside `module` -- the record's)
         spacerPorosity 0.9;          // (idem)
-        diffusivity   1.6e-9;        // D of a NEUTRAL/lumped solute, m²/s (SI);
-                                     // an ION's k is priced on its own species D0
-        viscosity     1.0e-3 Pa.s;
+                                     // NO viscosity, diffusivity or rho here (REFUSED by
+                                     // name): the feed's viscosity and density and each
+                                     // lumped solute's D come from thermoPhysPropDict
+                                     // (`transport { liquid { viscosity { measured {} }
+                                     // diffusivity { returns infiniteDilution; ... } } }`,
+                                     // `approximations { massWithoutVolume {} }`); an
+                                     // ION's k is priced on its own species D0
     }
     pressureDrop  { model SchockMiquel; }   // in-block default SchockMiquel; omit the
                                             // block for the constant dP_feed_total
@@ -1797,6 +1801,30 @@ case's `constant/assets/` to set your own.  Declaring `area`, `length`,
 unknown module name refuses with the registered list.  Witnesses:
 `membrane15_module_nf270_4040`, `membrane16_module_sw30hr_8040`,
 `membrane17_sepa_cf_flat_cell` (a laboratory cell in five lines).
+
+**THE MODULE'S LIQUID PROPERTIES COME FROM THE PROPERTY DICTIONARY** (C402,
+2026-11-15; Theory Guide, "Where a membrane unit's liquid properties come
+from").  A density, a viscosity or a solute diffusivity typed in the unit's
+block (`rho_feed`, `viscosity`, `diffusivity`, at any depth) is REFUSED BY NAME
+with the line to write instead; the 1000 kg/m3, 1 mPa s and 1.6e-9 m2/s the
+module used to keep when a case typed none are gone.  The case declares, in
+`constant/thermoPhysPropDict`:
+
+```
+approximations { massWithoutVolume { components ( NaCl ); maxMassFraction 0.005; reason "..."; } }   // the feed density
+transport { liquid {
+    viscosity { measured { <name> { use method; reason "..."; } } }       // the feed's stated viscosity, constant/experiments/<name>.dat
+    diffusivity { returns infiniteDilution; infiniteDilution { entries (   // ONE entry per lumped solute, a value with its source
+        { solute NaCl; solvent water; kind infiniteDilution; value 1.611e-9 m2/s; T 298.15 K; box { T (297.65 298.65); }
+          reason "..."; source "..."; } ); } }
+} }
+```
+The viscosity is asked only under a `massTransfer` or `pressureDrop` model; the
+module publishes the density and viscosity it used as the KPIs `rho_feed` and
+`mu_feed`.  The batch diafilter takes its density the same way (the make-up
+solvent shares it).  An ion's film coefficient is priced on its species
+record's D0, scaled to temperature by Stokes-Einstein when the case declares
+a liquid viscosity.
 
 **A STAGE, AN ARRAY, AND THE HARDWARE BY SIZE** (2026-10-24, C146).  One
 `spiralWoundModule` is one STAGE: `vessels <n>;` identical pressure vessels in
@@ -3352,7 +3380,8 @@ block) — an inline `initial {}` is refused.
       mode         constantVolume;      // or concentration
       area         5.0;                 // m2
       P_feed       10 bar;  P_permeate 0 bar;
-      rho          1000;                // kg/m3 -- declared, never defaulted
+                                        // no `rho` here (REFUSED by name): the density
+                                        // comes from thermoPhysPropDict
       k_film       1.0e-4 m/s;          // DECLARED: no correlation is invented
       osmotic { model vanHoff; }        // or pitzer
       fouling                           // OPTIONAL -- absent = no fouling, byte-identical run

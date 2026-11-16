@@ -79,6 +79,43 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
     return evaluateImpl(thermo, p, T, P, x, who, leftOut, true, component);
 }
 
+Result soluteDiffusivity(const ThermoPackage& thermo, scalar T, std::size_t iSolute,
+                         std::size_t iSolvent, const Consumer* who)
+{
+    Result r;
+    r.value = thermo.diffusivityLiquid(T, iSolute, iSolvent);
+    const std::string sol = thermo.comp(iSolute).name();
+    const std::string slv = thermo.comp(iSolvent).name();
+    const auto* e = thermo.liquidDiffusivityDeclaration().entryFor(iSolute, iSolvent);
+    if (e && e->model.empty())
+    {
+        r.methodId = "declared.infiniteDilution";
+        r.label = "property kernel: the case's declared value of " + sol + " in " + slv
+                + " at infinite dilution (" + e->where + "; source: " + e->source
+                + "), stood over the box the case declared";
+        r.quality.origin     = "literature";
+        r.quality.provenance = e->source.empty() ? e->where : e->source;
+        r.quality.domain     = "inside the case's box (hard)";
+    }
+    else
+    {
+        r.methodId = thermo.liquidDiffusivityMethod();
+        r.label = "property kernel: the infinite-dilution correlation the case selects ("
+                + (e ? e->model : thermo.liquidDiffusivityMethod()) + ") for " + sol
+                + " in " + slv;
+        r.quality.origin     = "predictive";
+        r.quality.provenance = "the case's transport { liquid { diffusivity } }";
+        r.quality.domain     = "not declared";
+    }
+    r.quality.evidence = "not quantified";
+    r.leaves.push_back({ sol, r.methodId, 1.0 });
+    if (who)
+        PropertySourceLog::instance().use(who->type, who->unit, name(Property::diffusivity),
+            r.methodId, r.label, "kernel", "not applied", "",
+            took(r.value, T));
+    return r;
+}
+
 Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T,
                           scalar P, const sVector& x)
 {
@@ -130,7 +167,7 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                   " (reason: " + measured->reason + ")";
         const bool atPoint = liquidTransport::atStatedPoint(*measured, T,
             liquidTransport::massFractionsOf(thermo.components(), measured->set, x));
-        r.quality.origin     = atPoint ? "literature" : "assumed";
+        r.quality.origin     = (atPoint && !measured->assumedValue) ? "literature" : "assumed";
         {
             std::string type, unit;
             const bool site = who ? (type = who->type, unit = who->unit, true)

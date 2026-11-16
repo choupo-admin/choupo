@@ -30,7 +30,7 @@
     the unit, its model and its scope     src/unitOperations/batch/
                                             BatchDiafilter.H:31-134
     the two modes, and the ONE line
-      that differs (Q_d)                  BatchDiafilter.cpp:397
+      that differs (Q_d)                  BatchDiafilter.cpp:398
     the mode words, and the refusal of
       any third                           BatchDiafilter.cpp:209-217
     the solute balance                    BatchDiafilter.cpp:442-450
@@ -47,7 +47,7 @@
     washoutActual_/washoutIdeal_,
       published in constant volume ONLY   BatchDiafilter.cpp:658-668
     k_film REQUIRED, refused by name      BatchDiafilter.cpp:130-138
-    rho ANNOUNCED when it defaults        BatchDiafilter.cpp:140-158
+    rho from the package; typed refused   BatchDiafilter.cpp:148-150, 262-278
     Hermia's laws; `standard`/`complete`
       refused rather than approximated    BatchDiafilter.cpp:161-182,
                                           BatchDiafilter.H:105-118
@@ -156,7 +156,7 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
       + "keep is washed out.  The two are not different models.  They are the "
       + "same solute balance under two different volume balances, and in the "
       + "code the difference is a single line -- the diafiltrate rate is "
-      + "either zero or the permeate rate (BatchDiafilter.cpp:397).  A word "
+      + "either zero or the permeate rate (BatchDiafilter.cpp:398).  A word "
       + "the engine does not know is refused by name rather than defaulted "
       + "(BatchDiafilter.cpp:209-217).",
     formula: String.raw`\begin{array}{ll}
@@ -185,9 +185,9 @@ export const BATCH_MEMBRANE_STEPS: readonly LessonStep[] = [
         + "diafiltrate.  A clean wash carries none, which is the only case "
         + "this unit supports", unit: "kmol/m³" },
       { sym: "\\rho", means: "the solution mass density every concentration in "
-        + "the vessel is closed on.  The case declares it; when it does not, "
-        + "the engine takes 1000 kg/m³ and announces that it did "
-        + "(BatchDiafilter.cpp:140-158)", unit: "kg/m³" },
+        + "the vessel is closed on.  Since C402 the case does not declare it: "
+        + "the property dictionary does, and the unit takes the package's value at the "
+        + "initial holdup (a typed `rho` is refused by name; BatchDiafilter.cpp:148-150, 262-278)", unit: "kg/m³" },
       { sym: "B_\\mathrm{s,i}",
         means: "the membrane's solute permeability for i, read "
         + "from the membrane record", unit: "m/s" },
@@ -770,8 +770,8 @@ export const BATCH_MEMBRANE_LIMITS: readonly LessonLimit[] = [
       + "starting buffer and again in the diafiltration buffer, takes the "
       + "maximum of concentration times flux on each, and works at the lower "
       + "of the two.  Choupo sweeps one solution.  The only fact the unit holds "
-      + "about the wash buffer is its density (`rho_diafiltrate`, which "
-      + "closes the solvent mass balance and enters no flux law), and it "
+      + "about the wash buffer is its density (the holdup's, from the package: the make-up solvent "
+      + "shares it; it closes the solvent mass balance and enters no flux law), and it "
       + "carries no solute at all -- so there is nothing from which a "
       + "second flux curve could be built, and no case in the corpus even "
       + "declares that density.  So the "

@@ -106,6 +106,28 @@ def declare_viscosity(case):
                  "        viscosity { model Vogel; }\n    }\n}\n")
 
 
+def plain_twin(d, vogel=False, T=None):
+    """C402: membrane14 PRICES ITS FILM from a correlation, so it declares a stated liquid viscosity in its
+    property dictionary, and a declared viscosity activates the Stokes-Einstein correction of the ion D0 --
+    the absence this gate pins (arm (a)) can no longer be reached by that case.  It is reached by this twin:
+    the same ions, the same coupling (`ionCoupling electroneutral` reads every ion's D0), a CONSTANT film
+    (k_film) that needs no viscosity, and no liquid-viscosity declaration at all."""
+    copy_case(M14, d)
+    fl = d / "system/flowsheetDict"
+    t = fl.read_text()
+    t = re.sub(r"massTransfer\s*\{[^}]*\}", "", t)
+    t = re.sub(r"pressureDrop\s*\{[^}]*\}", "", t)
+    t = t.replace("nNodes           20;", "nNodes           20;\n            k_film           5.0e-5;\n            dP_feed_total    0.5 bar;", 1)
+    fl.write_text(t)
+    th = d / "constant/thermoPhysPropDict"
+    th.write_text(re.sub(r"^transport\s*\{.*?^\}\n", "", th.read_text(), flags=re.S | re.M))
+    shutil.rmtree(d / "constant/experiments", ignore_errors=True)
+    if vogel:
+        declare_viscosity(d)
+    if T is not None:
+        set_feed_T(d, T)
+
+
 def set_feed_T(case, T):
     p = Path(case) / "0/feed"
     s, n = re.subn(r"^T\s+[^;]*;", "T               %s K;" % T, p.read_text(), flags=re.M)
@@ -154,23 +176,22 @@ def main():
     try:
         # ---- (a) the absence is said ---------------------------------------
         d = tmp / "m14"
-        copy_case(M14, d)
+        plain_twin(d)
         rc, out, js = run(d, "choupoSolve")
         if rc != 0 or js is None:
-            fail("(a) membrane14 did not run (exit %d)" % rc)
+            fail("(a) the membrane14 constant-film twin did not run (exit %d)" % rc)
             base = None
         else:
             base = js
             adv = [a for a in dt_advisories(js) if "NOT temperature-corrected" in a["message"]]
             if not adv or "model Vogel" not in adv[0]["message"]:
-                fail("(a) membrane14 at 293.15 K does not announce an uncorrected D0")
+                fail("(a) the membrane14 twin at 293.15 K does not announce an uncorrected D0")
             else:
-                print("  (a) membrane14 (293.15 K, no viscosity model): uncorrected D0 announced")
+                print("  (a) membrane14's constant-film twin (293.15 K, no viscosity model): uncorrected D0 announced")
 
         # ---- (b) the factor, recomputed -------------------------------------
         d = tmp / "m14v"
-        copy_case(M14, d)
-        declare_viscosity(d)
+        plain_twin(d, vogel=True)
         rc, out, js = run(d, "choupoSolve")
         f = factor(d, 293.15)
         pf = printed_factor(out)
@@ -179,27 +200,48 @@ def main():
         elif pf is None or abs(pf - f) > 1e-6:
             fail("(b) printed factor %s, recomputed %.8f" % (pf, f))
         elif base is not None:
-            prof = js["profiles"]
-            pb = base["profiles"]
-            unit = next(iter(prof))
-            cols = [c for c in prof[unit]["columns"] if c.startswith("k_film_")]
-            if not cols:
-                fail("(b) no per-ion k_film column to read")
-            for c in cols:
-                r = prof[unit]["columns"][c][0] / pb[unit]["columns"][c][0]
-                if abs(r - f ** 0.75) > 1e-9:
-                    fail("(b) %s moved by %.12f, expected f^0.75 = %.12f" % (c, r, f ** 0.75))
-            print("  (b) factor %.6f printed = recomputed; inlet %s moved by f^0.75 = %.6f"
-                  % (f, "/".join(c[7:] for c in cols), f ** 0.75))
+            #  the D reached the film: the coupled wall's polarisation index of every ion moves with the D0
+            kb, kv = next(iter(base["kpis"].values())), next(iter(js["kpis"].values()))
+            #  (a constant film does not read D; the coupled wall's migration term z D F/RT xi does: with every D
+            #  scaled by f the interface field xi scales by 1/f)
+            moved = [c for c in kb if c.startswith("xi_") and kb[c] and abs(kv[c] / kb[c] - 1.0) > 1e-4]
+            if not moved:
+                fail("(b) the interface field did not move with the corrected D0: the factor did not reach the wall")
+            print("  (b) factor %.6f printed = recomputed; the coupled wall's field moved (%s: x%.4f against 1/f = %.4f)"
+                  % (f, ",".join(moved), kv[moved[0]] / kb[moved[0]] if moved else float("nan"), 1.0 / f))
+        # (b2) THE CORRELATION PATH, on the shipped case itself: membrane14 declares a stated viscosity, so its
+        #  ions' D0 carry the factor, and its inlet k_Na is the spacer correlation on D0 x factor, recomputed here
+        #  from the published density, viscosity and channel (the same arithmetic as check_spiral_array (f)).
+        d = tmp / "m14s"
+        copy_case(M14, d)
+        rc, out, js = run(d, "choupoSolve")
+        pf = printed_factor(out)
+        if rc != 0 or js is None:
+            fail("(b2) membrane14 did not run (exit %d)" % rc)
+        elif pf is None or abs(pf - f) > 1e-6:
+            fail("(b2) membrane14's printed factor %s, recomputed %.8f" % (pf, f))
+        else:
+            unit = next(iter(js["profiles"]))
+            K1, prof = js["kpis"][unit], js["profiles"][unit]["columns"]
+            D0 = float(re.search(r"D0\s*\{\s*value\s+([0-9.eE+-]+)", (d / "constant/species/Na.dat").read_text()).group(1))
+            h, eps, A, L = 0.7e-3, 0.9, 7.9, 1.016
+            dh = 2.0 * h * eps
+            u0 = prof["Q_b"][0] / ((A / (2.0 * L)) * h * eps)
+            Re = K1["rho_feed"] * u0 * dh / K1["mu_feed"]
+            D = D0 * pf
+            Sc = K1["mu_feed"] / (K1["rho_feed"] * D)
+            k0 = 0.065 * Re ** 0.875 * Sc ** 0.25 * D / dh
+            if abs(prof["k_film_Na"][0] / k0 - 1.0) > 1e-5:
+                fail("(b2) inlet k_Na %.9e vs the correlation on D0 x factor %.9e" % (prof["k_film_Na"][0], k0))
+            else:
+                print("  (b2) shipped membrane14: inlet k_Na %.6e = Schock-Miquel on D0 x %.6f (to 1e-5)"
+                      % (prof["k_film_Na"][0], pf))
 
         # ---- (c) the reference temperature moves nothing --------------------
         runs = []
         for tag, visc in (("t0", False), ("t0v", True)):
             d = tmp / tag
-            copy_case(M14, d)
-            set_feed_T(d, "298.15")
-            if visc:
-                declare_viscosity(d)
+            plain_twin(d, vogel=visc, T="298.15")
             rc, out, js = run(d, "choupoSolve")
             if rc != 0 or js is None:
                 fail("(c) the 298.15 K twin %s did not run (exit %d)" % (tag, rc))

@@ -2,17 +2,17 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 stream  feed                   F                0.159722222222   1e-4
-stream  permeate               F                0.0312174168627  1e-4
-stream  retentate              F                0.12850480536    1e-4
-kpi     ROunit                 J_w_avg          1.60686528345e-05 1e-4
-kpi     ROunit                 R_obs_NaCl       0.998356067578   1e-4
+stream  permeate               F                0.0308552480292  1e-4
+stream  retentate              F                0.128866974193   1e-4
+kpi     ROunit                 J_w_avg          1.55683937941e-05 1e-4
+kpi     ROunit                 R_obs_NaCl       0.998314249834   1e-4
 kpi     ROunit                 dP_feed          200000           1e-4
-kpi     ROunit                 mass_closure_rel 0                1e-4
-kpi     ROunit                 water_recovery   0.19099813739    1e-4
+kpi     ROunit                 mass_closure_rel 1.50817535928e-16 1e-4
+kpi     ROunit                 water_recovery   0.188782452712   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     ROunit                 Gamma_NaCl_avg   0.185043964393   1e-4
+kpi     ROunit                 Gamma_NaCl_avg   0.178784884476   1e-4
 kpi     ROunit                 solute_closure_rel 2.6107878401e-16 1e-4
-source  ROunit                 liquidDensity    default.rhoFeed1000 exact
-source  ROunit                 liquidViscosity  default.water1e-3 exact
+source  ROunit                 liquidDensity    solutionLaw.NaCl-water exact
+kpi     ROunit                 rho_feed         1020.15967286    1e-4

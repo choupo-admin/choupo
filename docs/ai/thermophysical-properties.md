@@ -78,9 +78,9 @@ Every run prints, just before its result block, one line per unit:
 | pressureExchanger | the unit's own: 25 C molar volumes, no T or P; a dissolved ion keeps its mass, adds no volume | -- |
 | pfr (liquid), crystalliser (MSMPR, FVM) | the unit's own: 25 C molar volumes, no T or P (crystalliser: a component without one adds nothing, unannounced) | -- |
 | sprayDryer | the unit's own: the solvent's 25 C molar volume, else 1000 kg/m3 | kernel if the case selects a model, else its own defaults (1 mPa s, 72 mN/m) |
-| spiralWoundModule | `rho_feed` if declared, else 1000 kg/m3 | declared, else kernel, else 1 mPa s and 1.6e-9 m2/s |
+| spiralWoundModule | the property kernel's methods (section 3b), at the feed's T, P and composition; a typed `rho_feed` is REFUSED by name | viscosity: the kernel (a stated value of the feed's constituent set, or the mixing rule), asked only when a film or friction model needs it; diffusivity: one kernel value per lumped solute (the declared entries of `diffusivity { returns infiniteDilution; }`); a typed `viscosity`/`diffusivity` is REFUSED by name |
 | electrodialysisStack, batchElectrodialysis | 1000 kg/m3 (the dilute carrier) | kinematic viscosity: the solvent's kernel viscosity / 1000 kg/m3 if a model is declared, else the constant 1e-6 m2/s |
-| batchDiafilter | `rho` if declared, else 1000 kg/m3 (announced) | -- |
+| batchDiafilter | the property kernel's methods, at the initial holdup's T, P and composition (and the pure solvent's, for the diafiltrate); a typed `rho` or `rho_diafiltrate` is REFUSED by name | -- |
 
 ## 3. What the engine accepts, and what it refuses
 

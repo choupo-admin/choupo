@@ -432,7 +432,7 @@ describe("readVessel -- the witnesses' own declared operation", () => {
     expect(v.Pperm).toBeCloseTo(0, 12);
     expect(v.tmp).toBeCloseTo(1.0e6, 6);
     expect(v.kFilm).toBeCloseTo(1.0e-4, 12);
-    expect(v.rho).toBeCloseTo(1000, 12);
+    expect(v.rho).toBeNull();   // C402: the density is the package's, not a case declaration
     expect(v.fouling).toBeNull();
     expect(v.missing).toEqual([]);
   });

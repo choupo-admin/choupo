@@ -90,6 +90,7 @@ struct ViscosityMeasurement
 {
     std::string name, use, reason, citation, where, solvent;
     std::string basis;                       // provenance.basis: what kind of value the source states
+    bool   assumedValue = false;             // provenance.origin `assumed`: no primary read; the value is the case's own assumption, even at its stated point
     std::vector<std::size_t> set;            // package indices, ascending
     scalar mu = 0.0;                         // Pa s
     bool   hasT = false;

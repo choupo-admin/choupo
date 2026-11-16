@@ -1,18 +1,24 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 stream  feed                   F                0.159722222222   1e-4
-stream  permeate               F                0.0286293996445  1e-4
-stream  retentate              F                0.131092822578   1e-4
-kpi     ROunit                 J_w_avg          1.47365990468e-05 1e-4
-kpi     ROunit                 R_obs_NaCl       0.998101402811   1e-4
-kpi     ROunit                 dP_feed          26066.7335536    1e-4
-kpi     ROunit                 water_recovery   0.175164837924   1e-4
+stream  permeate               F                0.0285171979521  1e-4
+stream  retentate              F                0.13120502427    1e-4
+kpi     ROunit                 J_w_avg          1.43887798756e-05 1e-4
+kpi     ROunit                 R_obs_NaCl       0.998076792973   1e-4
+kpi     ROunit                 dP_feed          25298.1914669    1e-4
+kpi     ROunit                 water_recovery   0.174478446035   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     ROunit                 mass_closure_rel 3.01635071855e-16 1e-4
-kpi     ROunit                 Gamma_NaCl_avg   0.268477357047   1e-4
-kpi     ROunit                 solute_closure_rel 2.6107878401e-16 1e-4
-source  ROunit                 liquidDensity    default.rhoFeed1000 exact
-source  ROunit                 liquidDiffusivity declared.case    exact
-source  ROunit                 liquidViscosity  declared.case    exact
+kpi     ROunit                 mass_closure_rel 7.54087679638e-16 1e-4
+kpi     ROunit                 Gamma_NaCl_avg   0.254970998029   1e-4
+kpi     ROunit                 solute_closure_rel 0                1e-4
+source  ROunit                 liquidDensity    solutionLaw.NaCl-water exact
+source  ROunit                 liquidDiffusivity declared.infiniteDilution exact
+source  ROunit                 liquidViscosity  perConstituent,stated.seawater35_NaCl_liquidViscosity exact
+kpi     ROunit                 Re_inlet         348.363945578    1e-4
+kpi     ROunit                 Re_max           348.363945578    1e-4
+kpi     ROunit                 Re_min           287.581945699    1e-4
+kpi     ROunit                 hydraulicDiameter 0.00126          1e-4
+kpi     ROunit                 mu_feed          0.000966         1e-4
+kpi     ROunit                 rho_feed         1020.15967286    1e-4

@@ -62,7 +62,7 @@ converged/):
       (D_i/D_Na)^0.75 (Sc^0.25 -> k ~ D^0.75) to 1e-9, with D read here from
       the case's species records, and the inlet k_Na = 0.065 Re^0.875
       Sc^0.25 D/d_h recomputed from the published Q_b, the record's d_h and
-      the declared viscosity to 1e-9.
+      the package's viscosity and density (published KPIs mu_feed, rho_feed) to 1e-9.
   (g) THE STAGE CLOSES.  On membrane21's stream table each stage's feed
       equals its concentrate plus permeate (molar flows, per component) to
       1e-9 -- the outlets were scaled by the vessel count, both of them.
@@ -314,8 +314,18 @@ def main():
         if "[window]" in out:
             failures.append("(e) membrane21 runs inside the window and printed a [window] line")
         # (f) per ion
-        mu = 1.0e-3; rho = 1000.0
-        D = {ion: species_D(M21, ion) for ion in ("Na", "Cl", "NO3", "NH4")}
+        #  C402: the viscosity and the density are the PACKAGE's (published as KPIs), and the ion D0 carries the
+        #  Stokes-Einstein factor the run announces for the stage's temperature (a declared liquid viscosity prices
+        #  it).  The stated viscosity is the CRC's 1.002 mPa s for water at 20 C, held here independently.
+        K1 = j["kpis"]["Stage1"]
+        mu = K1["mu_feed"]; rho = K1["rho_feed"]
+        if not close(mu, 1.002e-3, 1e-12):
+            failures.append(f"(f) the stage's viscosity {mu:.6e} is not the case's stated 1.002e-3 Pa.s")
+        mse = re.search(r"\[D\(T\)\] ion D0 of the polarisation film at T = 293\.15 K: .*? = ([0-9.]+),", out)
+        fse = float(mse.group(1)) if mse else 1.0
+        if not mse:
+            failures.append("(f) membrane21 did not announce the Stokes-Einstein factor of its ion D0 at 293.15 K")
+        D = {ion: species_D(M21, ion) * fse for ion in ("Na", "Cl", "NO3", "NH4")}
         prof = j["profiles"]["Stage1"]["columns"]
         for ion in ("Cl", "NO3", "NH4"):
             want = (D[ion] / D["Na"]) ** 0.75
@@ -328,7 +338,8 @@ def main():
         Re = rho * u0 * dh / mu
         Sc = mu / (rho * D["Na"])
         k0 = SH[0] * Re ** SH[1] * Sc ** SH[2] * D["Na"] / dh
-        if not close(prof["k_film_Na"][0], k0, 1e-9):
+        #  1e-6, not 1e-9: the Stokes-Einstein factor is read from the run's announcement, which prints six digits
+        if not close(prof["k_film_Na"][0], k0, 1e-6):
             failures.append(f"(f) inlet k_Na {prof['k_film_Na'][0]:.9e} vs Eq. 30 on Eq. 17 {k0:.9e}")
         if not prof["k_film_Cl"][0] > prof["k_film_Na"][0]:
             failures.append("(f) k_Cl is not above k_Na: the film is not per ion")
@@ -443,11 +454,11 @@ def main():
         refusal("spacerAndChannel", lambda dd: asset(dd, "Generic-8040",
                 lambda t: t.replace("leafLength       0.854 m;", "leafLength       0.854 m;\nchannelHeight    0.77 mm;")),
                 ["supplies the channel", "`channelHeight`", "one home"])
-        refusal("caseCoefficient", lambda dd: op(dd, "viscosity      1.0e-3;          // Pa.s",
-                                                 "a 0.08;\n                viscosity      1.0e-3;          // Pa.s"),
+        refusal("caseCoefficient", lambda dd: op(dd, "model          SchockMiquel;    // coefficients + window: the spacer record",
+                                                 "model          SchockMiquel;\n                a 0.08;"),
                 ["massTransfer `a` beside the feed spacer", "one home"])
-        refusal("foreignCorrelation", lambda dd: op(dd, "model          SchockMiquel;    // coefficients + window: the spacer record\n                viscosity",
-                                                    "model          StirredCell;\n                viscosity"),
+        refusal("foreignCorrelation", lambda dd: op(dd, "model          SchockMiquel;    // coefficients + window: the spacer record",
+                                                    "model          StirredCell;"),
                 ["'StirredCell' is not the correlation the feed spacer", "SchockMiquel"])
         refusal("fractionalVessels", lambda dd: op(dd, "vessels          4;", "vessels          2.5;"),
                 ["`vessels` is a whole number"])

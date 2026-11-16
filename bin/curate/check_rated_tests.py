@@ -304,15 +304,24 @@ def arm_h(tmp):
             "name %s;\nkind %s;\nA_w %.15g m/s/bar;\n" % (mem, sh["kind"], sh["Aw"] / 3.6e6))
         t = re.sub(r"rejection \{ %s fromRatedTest; \}" % sh["salt"],
                    "rejection { %s %.15g; }" % (sh["salt"], sh["R"]), t, count=1)
-        Q_m3h = sh["perm"] / sh["rec"] / 24.0
-        kg = Q_m3h * 1000.0
-        (ind / ("0/feed" + unit)).write_text(
-            "componentMolarFlows\n{\n    water   %.15g kmol/h;\n    %s   %.15g kmol/h;\n}\n"
-            "T 298.15 K;\nP %.10g bar;\n" % (kg * (1 - sh["w"]) / mw_of("water"), sh["salt"],
-                                              kg * sh["w"] / mw_of(sh["salt"]), sh["P"]))
     t = re.sub(r"source    \"DERIVED[^\"]*\";", "source    \"gate: typed\";", t)
     fl.write_text(t)
+
+    def write_feeds(rho):
+        #  the sheet's feed is a VOLUME flow, so its mass follows the density the package gives the sheet's
+        #  composition (C402: no typed 1000 kg/m3); read from a first run of this same twin (KPI rho_feed)
+        for unit, sh in sheets.items():
+            Q_m3h = sh["perm"] / sh["rec"] / 24.0
+            kg = Q_m3h * rho.get(unit, 1000.0)
+            (ind / ("0/feed" + unit)).write_text(
+                "componentMolarFlows\n{\n    water   %.15g kmol/h;\n    %s   %.15g kmol/h;\n}\n"
+                "T 298.15 K;\nP %.10g bar;\n" % (kg * (1 - sh["w"]) / mw_of("water"), sh["salt"],
+                                                  kg * sh["w"] / mw_of(sh["salt"]), sh["P"]))
+    write_feeds({})
     rc2, so2, se2 = run(ind)
+    if rc2 == 0:
+        write_feeds({u: kpis_of(so2, u)["rho_feed"] for u in sheets})
+        rc2, so2, se2 = run(ind)
     if rc2 != 0:
         fail("(h) the independent run did not execute (exit %d):\n%s" % (rc2, (so2 + se2)[-600:]))
     else:
@@ -350,8 +359,8 @@ def arm_h(tmp):
         return f
     refuse_h("class", M26, ed("system/flowsheetDict", "elements         3;",
              "elements         3;\n            waterPermeance   fromRatedTest;"), ["functional class", "waterPermeance"])
-    refuse_h("word", M28, ed("system/flowsheetDict", "waterPermeance   fromRatedTest;\n            P_permeate       1.0 bar;\n            nNodes           50;\n            massTransfer\n            {\n                model          SchockMiquel;\n                viscosity      0.89e-3;",
-             "waterPermeance   fromTheCatalogue;\n            P_permeate       1.0 bar;\n            nNodes           50;\n            massTransfer\n            {\n                model          SchockMiquel;\n                viscosity      0.89e-3;"),
+    refuse_h("word", M28, ed("system/flowsheetDict", "waterPermeance   fromRatedTest;\n            P_permeate       1.0 bar;\n            nNodes           50;\n            massTransfer\n            {\n                model          SchockMiquel;",
+             "waterPermeance   fromTheCatalogue;\n            P_permeate       1.0 bar;\n            nNodes           50;\n            massTransfer\n            {\n                model          SchockMiquel;"),
              ["the one accepted word is", "fromRatedTest"])
     refuse_h("law", M28, ed("system/flowsheetDict", "transport        constantRejection;\n            transportParameters\n            {\n                rejection { MgSO4 fromRatedTest; }",
              "transport        solutionDiffusion;\n            transportParameters\n            {\n                rejection { MgSO4 fromRatedTest; }"),

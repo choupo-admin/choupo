@@ -41,7 +41,36 @@ transport
 {
     liquid
     {
-        viscosity { model Vogel; }
+        viscosity
+        {
+            model Vogel;       // the SE temperature correction of the ions' D0 reads water's law
+            measured
+            {
+                dil20_CaCl2MgSO4NaCl_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; water's viscosity for a dilute feed, the status in the file's basis"; }
+            }
+        }
+        diffusivity
+        {
+            returns infiniteDilution;
+            infiniteDilution
+            {
+                entries
+                (
+                    { solute NaCl; solvent water; kind infiniteDilution;
+                      value 1.611e-09 m2/s;  T 298.15 K;  box { T (293.15 298.15); }
+                      reason "the datum is at 25 C and the case runs at 20 C: D falls about 2 to 3 % per K on that page, so the film coefficient of the salt-level column is about 10 % high; the case stands the value over 20 to 25 C as a hypothesis";
+                      source "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Ionic conductivity and diffusion at infinite dilution' (Vanysek; PDF page 304 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): Na+ 1.334, Cl- 2.032 x 1e-5 cm2/s, combined by the page's salt relation D = (z+ + z-) D+ D- / (z+ D+ + z- D-)"; }
+                    { solute CaCl2; solvent water; kind infiniteDilution;
+                      value 1.335e-09 m2/s;  T 298.15 K;  box { T (293.15 298.15); }
+                      reason "the datum is at 25 C and the case runs at 20 C: D falls about 2 to 3 % per K on that page, so the film coefficient of the salt-level column is about 10 % high; the case stands the value over 20 to 25 C as a hypothesis";
+                      source "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Ionic conductivity and diffusion at infinite dilution' (Vanysek; PDF page 304 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): Ca2+ 0.792, Cl- 2.032 x 1e-5 cm2/s, combined by the page's salt relation D = (z+ + z-) D+ D- / (z+ D+ + z- D-)"; }
+                    { solute MgSO4; solvent water; kind infiniteDilution;
+                      value 8.491e-10 m2/s;  T 298.15 K;  box { T (293.15 298.15); }
+                      reason "the datum is at 25 C and the case runs at 20 C: D falls about 2 to 3 % per K on that page, so the film coefficient of the salt-level column is about 10 % high; the case stands the value over 20 to 25 C as a hypothesis";
+                      source "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Ionic conductivity and diffusion at infinite dilution' (Vanysek; PDF page 304 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): Mg2+ 0.706, SO42- 1.065 x 1e-5 cm2/s, combined by the page's salt relation D = (z+ + z-) D+ D- / (z+ D+ + z- D-)"; }
+                );
+            }
+        }
     }
 }
 

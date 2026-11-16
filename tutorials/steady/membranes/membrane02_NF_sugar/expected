@@ -1,20 +1,21 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # kind   name      key         expected        reltol
 stream  feed                   F                0.0555555555556  1e-4
-stream  permeate               F                0.0149590663407  1e-4
-stream  retentate              F                0.0405964892149  1e-4
-kpi     NFunit                 J_w_avg          5.40596785995e-05 1e-4
-kpi     NFunit                 R_obs_glucose    0.662718515801   1e-4
+stream  permeate               F                0.0149702292783  1e-4
+stream  retentate              F                0.0405853262773  1e-4
+kpi     NFunit                 J_w_avg          5.40345388194e-05 1e-4
+kpi     NFunit                 R_obs_glucose    0.662696680728   1e-4
 kpi     NFunit                 dP_feed          100000           1e-4
-kpi     NFunit                 water_recovery   0.267671368561   1e-4
+kpi     NFunit                 water_recovery   0.267871165742   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
 kpi     NFunit                 mass_closure_rel 2.19886558047e-16 1e-4
-kpi     NFunit                 Gamma_glucose_avg 1.3572543181     1e-4
-kpi     NFunit                 solute_closure_rel 6.11698818479e-16 1e-4
+kpi     NFunit                 Gamma_glucose_avg 1.35623921557    1e-4
+kpi     NFunit                 solute_closure_rel 3.67019291087e-16 1e-4
 boundary global                 H_feeds_kW       -15965.9347526   1e-4
 boundary global                 Q_boundary_kW    0                1e-4
 boundary global                 H_products_kW    -15965.9347526   1e-4
-source  NFunit                 liquidDensity    default.rhoFeed1000 exact
-source  NFunit                 liquidViscosity  default.water1e-3 exact
+source  NFunit                 liquidDensity    idealMixing[referenceEquation.IAPWS95+flatVliq] exact
+boundary global                 noBoundary       false            exact
+kpi     NFunit                 rho_feed         1001.21202835    1e-4

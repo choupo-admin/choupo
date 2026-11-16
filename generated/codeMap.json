@@ -10298,6 +10298,7 @@
    "src/core/PropertySourceLog.H",
    "src/core/Types.H",
    "src/solver/Convergence.H",
+   "src/thermo/ApproximationAuthorisation.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/LiquidPropertyDoor.H",
@@ -11278,6 +11279,7 @@
    "src/streams/ProcessStream.H",
    "src/thermo/Component.H",
    "src/thermo/Database.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/RecordLaws.H",
    "src/thermo/RecordResolver.H",
@@ -11291,9 +11293,11 @@
    "src/thermo/transport/StokesEinstein.H",
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/batch/BatchDiafilter.H",
    "src/unitOperations/batch/BatchUnitOperation.H",
    "src/unitOperations/membrane/BulkConversion.H",
+   "src/unitOperations/membrane/MembraneTypedProperties.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
    "src/unitOperations/membrane/massTransfer/Polarisation.H",
    "src/unitOperations/membrane/osmotic/OsmoticModel.H",
@@ -11698,6 +11702,7 @@
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/PackingDelft.H",
@@ -11770,6 +11775,7 @@
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/distillation/ColumnTypedProperties.H",
    "src/unitOperations/distillation/DistillationColumn.H",
    "src/unitOperations/distillation/PackingDelft.H",
@@ -12890,6 +12896,7 @@
    "src/thermo/Component.H",
    "src/thermo/Database.H",
    "src/thermo/FitGrade.H",
+   "src/thermo/LiquidPropertyDoor.H",
    "src/thermo/PackageAudit.H",
    "src/thermo/PairAudit.H",
    "src/thermo/PropertyDomainError.H",
@@ -12958,8 +12965,10 @@
    "src/thermo/transport/WilkeReduction.H",
    "src/unitOperations/UnitAcceptance.H",
    "src/unitOperations/UnitOperation.H",
+   "src/unitOperations/UnitTypedProperties.H",
    "src/unitOperations/membrane/AqueousSplit.H",
    "src/unitOperations/membrane/BulkConversion.H",
+   "src/unitOperations/membrane/MembraneTypedProperties.H",
    "src/unitOperations/membrane/RatedTestInversion.H",
    "src/unitOperations/membrane/SpiralWoundModule.H",
    "src/unitOperations/membrane/massTransfer/MassTransferModel.H",
@@ -20289,7 +20298,8 @@
    "src/thermo/activityCoefficient/Wilson.cpp",
    "src/thermo/liquidProperty/DensityResolver.cpp",
    "src/thermo/liquidProperty/IdealMixing.cpp",
-   "src/thermo/liquidProperty/MassWithoutVolume.cpp"
+   "src/thermo/liquidProperty/MassWithoutVolume.cpp",
+   "src/thermo/liquidProperty/SolutionLaw.cpp"
   ],
   "src/thermo/AtomicWeights.H": [
    "src/streams/StreamStateIO.cpp",
@@ -21035,6 +21045,7 @@
    "src/thermo/liquidProperty/RecordVolumeLeaf.cpp",
    "src/thermo/liquidProperty/SolutionLaw.cpp",
    "src/thermo/transport/StokesEinstein.cpp",
+   "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/crystallisation/Crystalliser.cpp",
    "src/unitOperations/distillation/DistillationColumn.cpp",
    "src/unitOperations/distillation/RateBasedSegment.cpp",
@@ -21044,6 +21055,7 @@
    "src/unitOperations/heatTransfer/PhaseChanger.cpp",
    "src/unitOperations/heatTransfer/SprayDryer.cpp",
    "src/unitOperations/hydraulics/Pipe.cpp",
+   "src/unitOperations/membrane/RatedTestInversion.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp",
    "src/unitOperations/reactor/CSTR.cpp",
    "src/unitOperations/reactor/PFR.cpp",
@@ -24782,6 +24794,12 @@
    "src/unitOperations/storage/StorageTank.cpp",
    "src/unitOperations/valve/Valve.cpp"
   ],
+  "src/unitOperations/UnitTypedProperties.H": [
+   "src/unitOperations/batch/BatchDiafilter.cpp",
+   "src/unitOperations/distillation/DistillationColumn.cpp",
+   "src/unitOperations/distillation/RateBasedSegment.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp"
+  ],
   "src/unitOperations/batch/BatchAccumulator.H": [
    "src/unitOperations/batch/BatchAccumulator.cpp",
    "src/unitOperations/batch/BatchUnitOperation.cpp"
@@ -25264,6 +25282,10 @@
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],
   "src/unitOperations/membrane/BulkConversion.H": [
+   "src/unitOperations/batch/BatchDiafilter.cpp",
+   "src/unitOperations/membrane/SpiralWoundModule.cpp"
+  ],
+  "src/unitOperations/membrane/MembraneTypedProperties.H": [
    "src/unitOperations/batch/BatchDiafilter.cpp",
    "src/unitOperations/membrane/SpiralWoundModule.cpp"
   ],

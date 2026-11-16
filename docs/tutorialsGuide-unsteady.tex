@@ -112,21 +112,21 @@ WHAT IS ASSUMED, and printed on the run: the quasi-steady units hold no inventor
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{MIX}{F\_ToTank\_final}{0.388832449894}
-\goldrow{kpi}{MIX}{kpi\_F\_out\_final}{0.388832449894}
+\goldrow{kpi}{MIX}{F\_ToTank\_final}{0.387769215931}
+\goldrow{kpi}{MIX}{kpi\_F\_out\_final}{0.387769215931}
 \goldrow{kpi}{MIX}{kpi\_P\_out\_final}{1000000}
 \goldrow{kpi}{MIX}{kpi\_T\_out\_final}{298.15}
 \goldrow{kpi}{MIX}{kpi\_n\_in\_final}{2}
 \goldrow{kpi}{MIX}{kpi\_vf\_final}{0}
 \goldrow{kpi}{MIX}{t\_end}{21600}
-\goldrow{kpi}{NF}{F\_Permeate\_final}{0.0380146663544}
-\goldrow{kpi}{NF}{F\_Retentate\_final}{0.350817783479}
-\goldrow{kpi}{NF}{kpi\_Gamma\_glucose\_avg\_final}{1.04649230438}
-\goldrow{kpi}{NF}{kpi\_J\_w\_avg\_final}{4.58864465983e-05}
-\goldrow{kpi}{NF}{kpi\_R\_obs\_glucose\_final}{0.685413515081}
+\goldrow{kpi}{NF}{F\_Permeate\_final}{0.0380706260356}
+\goldrow{kpi}{NF}{F\_Retentate\_final}{0.349698589834}
+\goldrow{kpi}{NF}{kpi\_Gamma\_glucose\_avg\_final}{1.0420277714}
+\goldrow{kpi}{NF}{kpi\_J\_w\_avg\_final}{4.57603069599e-05}
+\goldrow{kpi}{NF}{kpi\_R\_obs\_glucose\_final}{0.685315824006}
 \goldrow{kpi}{NF}{kpi\_dP\_feed\_final}{0}
-\goldrow{kpi}{NF}{kpi\_mass\_closure\_rel\_final}{6.23839085054e-16}
-\goldmore{27}
+\goldrow{kpi}{NF}{kpi\_mass\_closure\_rel\_final}{3.75323251864e-16}
+\goldmore{28}
 \end{tutgolden}
 
 \clearpage
@@ -154,26 +154,26 @@ THE PLANT. 1 m3/h of a 10 kg/m3 BSA solution joins the recycle in MIX and fills 
 
 WHAT IS SOLVED HOW. The TANK is a vessel (dynamicCSTR, no reaction, no jacket), integrated in time, and DECLARED isothermal (`energy isothermal;`): BSA carries no heat capacity, so the tank cannot solve an energy equation, and here nothing would move T anyway -- every stream is at 298.15 K with no reaction and no jacket. MIX, UF and SPLIT hold essentially no liquid and are each a steady unit wrapped as `quasiSteady`, re-solved at every accepted state -- the module is membrane19's, law and all.
 
-WHAT TO WATCH -- the lesson of gel polarisation IN A LOOP. The module is gel-limited, so its flux is k ln(c\_g/c\_b) whatever the pump does (membrane19 shows the plateau). The loop returns the retained protein, the tank concentrates, c\_b rises -- and the flux FALLS with it, as a logarithm, until the protein leaving in the bleed and the permeate balances the protein fed. MEASURED on this case: the module's mean flux falls from 3.30e-5 m/s (119 L/(m2 h)) at start-up to 2.88e-5 m/s (104 L/(m2 h)), 13 \% less, while the tank goes from 10 to 15.3 kg/m3 of protein, with an e-folding time of about 2500 s -- so a plant sized on the FEED's flux is short of area by that 13 \%. 6 h is some 8 time constants. Every <t>/ directory the run writes holds each stream's state and the tank's holdup at t (open 600/ against 21600/), and the module's own J\_w\_avg rides trajectory.csv as a kpi column.
+WHAT TO WATCH -- the lesson of gel polarisation IN A LOOP. The module is gel-limited, so its flux is k ln(c\_g/c\_b) whatever the pump does (membrane19 shows the plateau). The loop returns the retained protein, the tank concentrates, c\_b rises -- and the flux FALLS with it, as a logarithm, until the protein leaving in the bleed and the permeate balances the protein fed. MEASURED on this case: the module's mean flux falls from 3.29e-5 m/s (118 L/(m2 h)) at start-up to 2.86e-5 m/s (103 L/(m2 h)), 13 \% less, while the tank goes from 10 to 15.4 kg/m3 of protein, with an e-folding time of about 2500 s -- so a plant sized on the FEED's flux is short of area by that 13 \%. 6 h is some 8 time constants. Every <t>/ directory the run writes holds each stream's state and the tank's holdup at t (open 600/ against 21600/), and the module's own J\_w\_avg rides trajectory.csv as a kpi column.
 
 EVERY UF NUMBER HERE IS HYPOTHETICAL, as in membrane19 (the membrane, c\_gel, S, k\_film -- read its header); BSA's MW is derived from its UniProt sequence. The shape is the lesson, never a number. NOT MODELLED: the first law (BSA carries no enthalpy datum, and the quasi-steady adapter claims none), a pump, fouling in time.
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{kpi}{MIX}{F\_ToTank\_final}{0.044910327156}
-\goldrow{kpi}{MIX}{kpi\_F\_out\_final}{0.044910327156}
+\goldrow{kpi}{MIX}{F\_ToTank\_final}{0.0447458374224}
+\goldrow{kpi}{MIX}{kpi\_F\_out\_final}{0.0447458374224}
 \goldrow{kpi}{MIX}{kpi\_P\_out\_final}{300000}
 \goldrow{kpi}{MIX}{kpi\_T\_out\_final}{298.15}
 \goldrow{kpi}{MIX}{kpi\_n\_in\_final}{2}
 \goldrow{kpi}{MIX}{kpi\_vf\_final}{0}
 \goldrow{kpi}{MIX}{t\_end}{21600}
-\goldrow{kpi}{SPLIT}{F\_Bleed\_final}{0.00738729355532}
-\goldrow{kpi}{SPLIT}{F\_Recycle\_final}{0.0295491742213}
+\goldrow{kpi}{SPLIT}{F\_Bleed\_final}{0.00734617112192}
+\goldrow{kpi}{SPLIT}{F\_Recycle\_final}{0.0293846844877}
 \goldrow{kpi}{SPLIT}{t\_end}{21600}
-\goldrow{kpi}{TANK}{F\_in\_final}{0.044910327156}
+\goldrow{kpi}{TANK}{F\_in\_final}{0.0447458374224}
 \goldrow{kpi}{TANK}{T\_final}{298.15}
-\goldrow{kpi}{TANK}{n\_BSA\_final}{0.000115420024839}
-\goldrow{kpi}{TANK}{n\_water\_final}{27.6499598825}
+\goldrow{kpi}{TANK}{n\_BSA\_final}{0.000115941953998}
+\goldrow{kpi}{TANK}{n\_water\_final}{27.6499593605}
 \goldmore{29}
 \end{tutgolden}
 

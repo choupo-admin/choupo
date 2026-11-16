@@ -154,6 +154,7 @@ SourceFiles
 #include "thermo/transport/StokesEinstein.H"
 
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <optional>
 #include <string>
@@ -434,7 +435,8 @@ Polarisation buildPolarisation(const DictPtr&                  operation,
                                scalar                          T_K,
                                const std::string&              unitLabel,
                                int                             verbosity,
-                               bool                            lawResolvesIons = false);
+                               bool                            lawResolvesIons = false,
+                               const std::function<scalar(std::size_t)>* neutralD = nullptr);
 
 } // namespace membrane
 } // namespace Choupo

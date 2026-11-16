@@ -52,10 +52,9 @@
   NOTHING IS INVENTED.  Every vessel parameter is read from a surface the case
   or the run publishes, and a parameter on none of them is reported MISSING
   with the surface it would come from (`VesselDeclaration.missing`).  There is
-  no default area, TMP, k_film, rho or rejection anywhere in this file -- and
-  in particular `rho` is reported ABSENT rather than filled in with the 1000
-  kg/m3 the engine announces when a case declares none
-  (BatchDiafilter.cpp:140-158).
+  no default area, TMP, k_film or rejection anywhere in this file.  `rho` is
+  not read at all since C402: a membrane unit's block carries no density (the
+  engine refuses one), and the vessel closes on the package's.
 \*---------------------------------------------------------------------------*/
 
 import type { RunResult, TrajectoryData } from "../../adapters/SolverAdapter.js";
@@ -687,7 +686,7 @@ export function readVessel(
     }
   }
   if (op === null) {
-    out.missing.push(`area, P_feed, P_permeate, k_film, rho, mode: no units[] `
+    out.missing.push(`area, P_feed, P_permeate, k_film, mode: no units[] `
       + `entry named '${unit}' with an operation {} block in `
       + "system/flowsheetDict");
     return out;
@@ -725,14 +724,10 @@ export function readVessel(
   out.tmp = out.Pfeed !== null && out.Pperm !== null
     ? out.Pfeed - out.Pperm : null;
   out.kFilm = readScalar("k_film", "k_film");
-  //  rho: ABSENT is a state of its own, and the message says what the engine
-  //  does about it rather than this reader doing the same thing quietly.
-  if (op["rho"] === undefined)
-    out.missing.push("rho: operation.rho is not declared -- the engine "
-      + "defaults the solution density to 1000 kg/m3 and announces it, and "
-      + "every concentration in the vessel is closed on that number");
-  else
-    out.rho = readScalar("rho", "rho");
+  //  rho: since C402 a membrane unit's block carries NO density (the engine refuses one); the solution density
+  //  the vessel closes on is the package's, from constant/thermoPhysPropDict.  So it is never read here:
+  //  `rho` stays null and the page says where the number lives.
+  out.rho = null;
 
   const fd = op["fouling"];
   if (isDict(fd)) {

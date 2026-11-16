@@ -62,30 +62,38 @@
   (150 psi) beside the elements' flow and rejection, which are test figures.
   The case takes them as the rated tests' pressures.  They cannot be the
   plant's: a 47.2 % recovery of this seawater leaves a concentrate at
-  63.5 g/L NaCl-equivalent (about 53 bar of osmotic pressure), which 55.2 bar
-  cannot push past; the first pass here needs 58.6 bar (HP pump and booster
-  discharge) for 47.2 %.  The second pass runs at 10.74 bar, not 10.3, which
-  puts its recovery at 87 % (the document's 84-90 %) with the first pass's
-  permeate: at 10.3 bar the same array recovers 94.8 %.
+  64.4 g/L NaCl-equivalent (about 55 bar of osmotic pressure), which 55.2 bar
+  cannot push past; the first pass here needs 58.06 bar (HP pump and booster
+  discharge) for 47.2 % in the document's bookkeeping.  The second pass runs at
+  10.74 bar, not 10.3, which puts its recovery at 86.6 % (the document's
+  84-90 %) with the first pass's permeate: at 10.3 bar the same array recovers
+  so much that the recycle's concentrate pressure goes negative and the run is
+  refused (94.8 % was read off the 2026-11-02 run).
 
-  WHAT THE RUN SAYS (2026-11-02, boron split by the pH, C198; the golden is the authority):
-      product                4111.2 m3/h = 98 668.7 m3/day (the document's 98 664)
-      intake                 9461.3 m3/h; recovery of the intake 43.5 %
-      first pass             47.20 % recovery (the document's 47.2 %), 13.05
-                             LMH average flux on 362 082 m2, feed 10 011 m3/h at
-                             58.59 bar, brine 63.5 g/L NaCl-eq at 57.9 bar,
-                             permeate 109.6 mg/L NaCl-eq, boron 0.457 mg/L
-      second pass            87.0 % recovery, 33.99 LMH on 120 960 m2 (the
-                             element's rated 34.7), concentrate 614 m3/h at
-                             0.83 g/L, boron 3.2 mg/L, recycled to the first
-      product                1.9 mg/L NaCl-eq (the document's target < 400
-                             mg/L TDS), boron 0.043 mg/L (< 0.5)
-      energy recovery        flows balanced to 1e-5; 54.1 bar recovered on
-                             5209 m3/h, 7.76 MW hydraulic; the feed's
+  WHAT THE RUN SAYS (2026-11-15, after C402: the modules price their feed on the NaCl-water
+  solution law, 1020.5 kg/m3 at the first pass's feed, and every volume is mass over the
+  density the package gives that liquid; the golden is the authority; the figures of
+  2026-11-02 were product 98 668.7 m3/day, 13.05 LMH, 54.1 bar recovered, 2.81 kWh/m3):
+      product                4111.0 m3/h = 98 664.7 m3/day (the document's 98 664)
+      intake                 9491 m3/h; recovery of the intake 42.3 % (mass)
+      first pass             46.05 % recovery in the engine's one-density
+                             closure, which the document's bookkeeping (permeate
+                             volume at 1000 over feed volume at 1025) reads as
+                             47.20 % (the document's 47.2 %); 12.82 LMH average
+                             flux on 362 082 m2, feed 10 078 m3/h at 58.06 bar,
+                             brine 64.4 g/L NaCl-eq at 57.37 bar, permeate
+                             108.7 mg/L NaCl-eq, boron 0.458 mg/L
+      second pass            86.6 % recovery, 33.99 LMH on 120 960 m2 (the
+                             element's rated 34.7), concentrate 638 m3/h at
+                             0.80 g/L, boron 3.1 mg/L, recycled to the first
+      product                1.8 mg/L NaCl-eq (the document's target < 400
+                             mg/L TDS), boron 0.042 mg/L (< 0.5)
+      energy recovery        flows balanced to 1e-5; 53.64 bar recovered on
+                             5169 m3/h, 7.70 MW hydraulic; the feed's
                              salinity up 1.8 %
-      pump shaft powers      HP pump 9185 kW, booster 437 kW, second-pass
-                             pump 1604 kW, intake 326 kW: 11 552 kW, i.e.
-                             2.81 kWh per m3 of product (shaft only: no
+      pump shaft powers      HP pump 9216 kW, booster 439 kW, second-pass
+                             pump 1606 kW, intake 330 kW: 11 590 kW, i.e.
+                             2.82 kWh per m3 of product (shaft only: no
                              motor losses, no pretreatment or post-treatment
                              loads, no product delivery)
 
@@ -108,8 +116,8 @@
   test cannot identify two permeances.  TWO tests of one element at two pH
   would give both (`rejection { tests ( id1 id2 ) }`; the gate runs that form
   on a fixture), and the engine refuses a single test offered as two or two
-  at the same pH.  The result is R_acid 0.932 and R_base 0.998 for the
-  first-pass element, 0.790 and 0.994 for the second-pass one.
+  at the same pH.  The result is R_acid 0.931 and R_base 0.998 for the
+  first-pass element, 0.786 and 0.994 for the second-pass one.
   THE LIMITS, announced on every run: THE pH IS A DECLARED LABEL of each
   module (8.2, Table 2; 10, Table 1), not a state -- no stream carries a pH,
   and the caustic dosing that would set the second pass's pH is NOT a unit
@@ -119,11 +127,11 @@
   apparent pKa it gives, 9.12, is NOT Dickson's conditional seawater constant,
   8.60 on the total scale -- the comparison is printed by the gate, never
   tuned).  What the case now shows: lower the second pass's declared pH from 10
-  to 9 and the product's boron rises from 0.04 to 0.14 mg/L, as alpha predicts.
+  to 9 and the product's boron rises from 0.042 to 0.141 mg/L, as alpha predicts.
   A finding about the probe: the boron test is water plus 5 ppm boron at the
   test's pressure, with no osmotic pressure to oppose it, so it runs at 19 %
   recovery instead of the test's 8-15 %; the derived effective rejection
-  (0.9357, 0.9642) is that of the probe.  And boron is a solute of the van't
+  (0.9381, 0.9643) is that of the probe.  And boron is a solute of the van't
   Hoff osmotic pressure (`dissociation 1`): the second pass's feed is so dilute
   that boron is about 1 % of its osmotic pressure, so the product moved by
   0.004 % when boron's rejection changed from the lumped to the split form (the
@@ -203,7 +211,7 @@ units
         type        splitter;
         in          feed1;
         outputs     ( toHPpump  toPX );
-        operation   { fractions ( 0.479110  0.520890 ); }
+        operation   { fractions ( 0.479078  0.520922 ); }
     }
     {
         name        HPpump;
@@ -212,7 +220,7 @@ units
         outputs     ( hpFeed );
         operation
         {
-            P_out     58.589 bar;
+            P_out     58.0609 bar;
             eta       0.82;                     // ASSUMED
         }
     }
@@ -227,7 +235,7 @@ units
             mixing          0.02;               // ASSUMED
             leakage         0.01;               // ASSUMED
             P_LPout         1.3 bar;            // ASSUMED: the outfall line
-            targetPressure  58.589 bar;
+            targetPressure  58.0609 bar;
             source          "efficiency 0.95: Toray case study MC-CS-CAMPODEDALIAS-1910 (DWEER, 95 %); mixing and leakage: ASSUMED, low-end values of Stover, Desalination 203 (2007) 168-175, for a device the document does not describe further; the rotary unit of this engine stands in for the document's piston-type work exchanger";
         }
     }
@@ -238,7 +246,7 @@ units
         outputs     ( boosted );
         operation
         {
-            P_out     58.589 bar;
+            P_out     58.0609 bar;
             eta       0.80;                     // ASSUMED
         }
     }
@@ -260,7 +268,6 @@ units
             vessels          1398;              // 6 skids x 233 vessels (the document: "233 (7M)")
             elements         7;                 // "7M": seven elements per vessel
             P_permeate       1.0 bar;
-            rho_feed         1025;              // kg/m3, ASSUMED: seawater near 20 C
             nNodes           10;
             aqueousSplit
             {
@@ -288,8 +295,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;          // Pa.s, ASSUMED seawater near 20 C
-                diffusivity    1.5e-9;          // m2/s, ASSUMED: one value serves both solutes (NaCl at seawater strength)
             }
             pressureDrop
             {
@@ -314,7 +319,7 @@ units
         outputs     ( feed2 );
         operation
         {
-            P_out     10.7447 bar;                 // SOLVED: 87 % second-pass recovery (the document's 1.03 MPa is the test pressure)
+            P_out     10.7393 bar;                 // SOLVED: 86.6 % second-pass recovery (10.7543 bar before the NaCl solution law of C402 MB-02), inside the document's 84-90 %, so that the product holds at the module's own densities (the document's 1.03 MPa is the test pressure); 87 % / 10.7447 bar before C402
             eta       0.80;                     // ASSUMED
         }
     }
@@ -356,8 +361,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;
-                diffusivity    1.5e-9;
             }
             pressureDrop     { model SchockMiquel; }
             polarisation
@@ -405,8 +408,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;
-                diffusivity    1.5e-9;
             }
             pressureDrop     { model SchockMiquel; }
             polarisation

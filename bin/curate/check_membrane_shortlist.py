@@ -410,12 +410,20 @@ def independent(tmp, name, row, P_bar, w):
         tx = (ROOT / "data/standards/components" / (c + ".dat")).read_text()
         return float(re.search(r"^\s*MW\s+([0-9.eE+-]+)\s*;", tx, re.M).group(1))
     mW, mS = mwof("water"), mwof("MgSO4")
-    kg = Q * 1000.0
-    (d / "0/feedDerived").write_text(
-        "componentMolarFlows\n{\n    water   %.15g kmol/h;\n    MgSO4   %.15g kmol/h;\n}\n"
-        "T 298.15 K;\nP %.10g bar;\n" % (kg * (1 - w) / mW, kg * w / mS, P_bar))
+    #  C402: the feed is a VOLUME flow, so its mass follows the density the PACKAGE gives the sheet's composition
+    #  (the module publishes it as KPI rho_feed): run once on a guess, read it, rebuild the feed on it, run again.
+    def write_feed(rho):
+        kg = Q * rho
+        (d / "0/feedDerived").write_text(
+            "componentMolarFlows\n{\n    water   %.15g kmol/h;\n    MgSO4   %.15g kmol/h;\n}\n"
+            "T 298.15 K;\nP %.10g bar;\n" % (kg * (1 - w) / mW, kg * w / mS, P_bar))
     env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+    write_feed(1000.0)
     r = subprocess.run([str(SOLVE), str(d)], capture_output=True, text=True, timeout=900, env=env, cwd=str(d))
+    if r.returncode == 0 and "<<<Choupo:result-begin>>>" in r.stdout:
+        j0 = json.loads(r.stdout.split("<<<Choupo:result-begin>>>")[1].split("<<<Choupo:result-end>>>")[0])
+        write_feed(j0["kpis"]["NFderived"]["rho_feed"])
+        r = subprocess.run([str(SOLVE), str(d)], capture_output=True, text=True, timeout=900, env=env, cwd=str(d))
     if r.returncode != 0 or "<<<Choupo:result-begin>>>" not in r.stdout:
         fail("(b) %s: the independent run did not execute (exit %d):\n%s" % (name, r.returncode, (r.stdout + r.stderr)[-600:]))
         return False

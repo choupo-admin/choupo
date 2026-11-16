@@ -29,14 +29,15 @@
   the feed.  `fromRatedTest` runs THIS element at the class's reference
   test and finds the R_int whose predicted observed rejection is the
   class's (src/unitOperations/membrane/RatedTestInversion):
-      R_int(NaCl)  = 0.37566  (KPI R_int_fromRatedTest_NaCl)
-      R_int(MgSO4) = 0.96342  (KPI R_int_fromRatedTest_MgSO4)
+      R_int(NaCl)  = 0.36464  (KPI R_int_fromRatedTest_NaCl)
+      R_int(MgSO4) = 0.96561  (KPI R_int_fromRatedTest_MgSO4)
 
   THE ANSWER, three elements in series at 7 bar absolute:
-      water recovery 32.45 %, permeate 811 kg/h;
-      R_obs(NaCl)  0.2865 -> permeate 2140 ppm NaCl   (feed 3000 mg/L)
-      R_obs(MgSO4) 0.9466 -> permeate  107 ppm MgSO4  (feed 2000 mg/L),
+      water recovery 32.28 %, permeate 807 kg/h;
+      R_obs(NaCl)  0.2856 -> permeate 2143 ppm NaCl   (feed 3000 mg/L)
+      R_obs(MgSO4) 0.9470 -> permeate  106 ppm MgSO4  (feed 2000 mg/L),
                              i.e. 85 ppm as sulphate.
+      (2026-11-15, after C402; until then 32.45 %, 811 kg/h, R_int 0.37566 / 0.96342.)
   The sodium chloride passes, the sulphate stays: what the class was chosen
   to do.  Both observed rejections sit a little below the class's stated
   ones (30 %, 95 %): at 7 bar a third of the water leaves, so the bulk
@@ -85,8 +86,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;    // coefficients + window: the element's spacer record
-                viscosity      0.89e-3;         // Pa.s, water at 25 C
-                diffusivity    1.2e-9;          // m2/s, ONE value for both lumped salts (NaCl 1.6, MgSO4 0.85 x 1e-9)
             }
             pressureDrop
             {
