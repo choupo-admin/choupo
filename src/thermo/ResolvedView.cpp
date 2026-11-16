@@ -436,10 +436,23 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                         + (ss.empty() ? "" : "; liquid standard state " + ss));
         }
         if (pkg.hasEos() && viewBuiltFor(form))
+        {
             d.push_back("vapour (and, under phiPhi, liquid) model: " + pkg.eos().modelName());
+            if (!pkg.eos().alphaFunctionNote().empty())
+                d.push_back("  " + pkg.eos().alphaFunctionNote());
+        }
         if (pkg.hasEos() && viewBuiltFor(form)
             && !pkg.eos().volumeTranslationNote().empty())
             d.push_back(pkg.eos().volumeTranslationNote());
+        //  THE CUBIC'S MIXING RULE (C408 (b)): CHOICE and DATA, "default" when
+        //  the case wrote none; an excess-Gibbs rule lists its constants, their
+        //  source and the pairs of its G^E model with their tier and span.
+        if (pkg.hasEos() && viewBuiltFor(form))
+            for (const auto& line : pkg.eos().mixingRuleLines())
+                d.push_back(line);
+        if (pkg.hasEos() && viewBuiltFor(form)
+            && !pkg.eos().mixingRuleNote().empty())
+            d.push_back(pkg.eos().mixingRuleNote());
         //  The K-value world is a vapour-liquid notion of the gammaPhi and phiPhi
         //  formulations; the package's word defaults to "gammaPhi" for every
         //  other one, so it is printed only where it is the formulation's own
@@ -700,11 +713,16 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
                 declared.push_back("  " + line);
             if (pkg.liquidDiffusivityDeclaration().declared && !pkg.liquidDiffusivityDeclaration().defaultModel.empty())
                 for (std::size_t i = 0; i < n; ++i)
-                    declared.push_back("  " + pkg.comp(i).name() + " as a solute: V_A " + si(pkg.comp(i).Vliq() * 1.0e6)
-                        + " cm3/mol, the record's Vliq at " + si(pkg.comp(i).VliqT()) + " K"
-                        + (pkg.comp(i).hasVliqT() ? std::string() : std::string(" (25 C, no VliqT stated)"))
-                        + "; Wilke-Chang defines V_A at the normal boiling point (review row DF-03;"
-                          " the boiling-point volume is C398 slice d2)");
+                {
+                    const auto& v = pkg.soluteVolumeAtTb(i);
+                    declared.push_back("  " + pkg.comp(i).name() + " as a solute: V_A "
+                        + (v.ok ? si(v.V_m3 * 1.0e6) + " cm3/mol = M / rho at its normal boiling point "
+                                  + si(v.Tb) + " K, rho " + si(v.rho) + " kg/m3 (" + v.route
+                                  + "); Poling 5th ed., Eq. 11-9.1, p. 11.22"
+                                : "REFUSED if used as a solute -- " + v.refusal + " (an entry for the pair with a value and"
+                                  " its source is the remedy; the record's 25 C volume is never"
+                                  " substituted)"));
+                }
             if (pkg.liquidDiffusivityDeclaration().declared && !pkg.liquidDiffusivityDeclaration().defaultModel.empty())
                 for (std::size_t i = 0; i < n; ++i)
                     declared.push_back("  " + pkg.comp(i).name() + " as a solvent: associationFactor "

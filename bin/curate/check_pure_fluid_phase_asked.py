@@ -447,18 +447,24 @@ AT_TP = "(T, P) is used, as the stream functions price it"
 HELMHOLTZ = "water { method Helmholtz; equation IAPWS95; }"
 
 
-def probe_case(tmp: Path, tag: str, units: str, streams: dict, global_method=None) -> Path:
-    """A scratch case from the template; `streams` maps name -> (T, P, phase)."""
+def probe_case(tmp: Path, tag: str, units: str, streams: dict, global_method=None,
+               variants: str = "") -> Path:
+    """A scratch case from the template; `streams` maps name -> (T, P, phase).
+    `variants` is the body of a `variants {}` block appended to the case's
+    dictionary (C402: a unit's own world is a NAMED variant, `thermo <name>;`)."""
     d = tmp / tag
     (d / "system").mkdir(parents=True)
     (d / "0").mkdir()
     shutil.copytree(TEMPLATE / "constant", d / "constant")
-    if global_method is not None or "pureFluids" in units:
+    if global_method is not None or "pureFluids" in units or "pureFluids" in variants:
         # The Helmholtz record is not in the template's seal: unseal the copy.
         (d / "constant" / "propertyManifest").unlink(missing_ok=True)
     if global_method is not None:
         tp = d / "constant" / "thermoPhysPropDict"
         tp.write_text(tp.read_text().replace("water { method IF97; }", global_method))
+    if variants:
+        tp = d / "constant" / "thermoPhysPropDict"
+        tp.write_text(tp.read_text() + "\nvariants\n{\n" + variants + "\n}\n")
     shutil.copy(TEMPLATE / "system" / "controlDict", d / "system" / "controlDict")
     (d / "system" / "flowsheetDict").write_text("units\n(\n" + units + "\n);\n")
     for nm, (T, P, ph) in streams.items():
@@ -519,9 +525,10 @@ def own_world_arm(tmp: Path, fail: list) -> None:
     P = psat_if97(T) * (1.0 + 2.0e-5)     # liquid side in IF97, vapour side in IAPWS-95
     unit = ("    { name U; type pump; in probe; outputs ( out ); "
             f"operation {{ P_out {2.0 * P!r} Pa; eta 0.8; }} "
-            f"thermo {{ pureFluids {{ {HELMHOLTZ} }} }} }}")
+            "thermo ownWorld; }")
     rc, res, out = run_raw(probe_case(tmp, "h_own", unit, {
-        "probe": (T, P, "liquid"), "out": (T + 1.0, 2.0 * P, "liquid")}))
+        "probe": (T, P, "liquid"), "out": (T + 1.0, 2.0 * P, "liquid")},
+        variants=f"    ownWorld {{ pureFluids {{ {HELMHOLTZ} }} }}"))
     if rc == 0 or CONTRADICTED not in out or "OWN thermophysical world of unit 'U'" not in out:
         fail.append(f"(h) a `phase liquid;` inlet at {T} K, P = p_sat_IF97 (1 + 2e-5) -- "
                     "liquid in the case's IF97, vapour beyond the band in the pump's own "
@@ -543,7 +550,7 @@ def computed_inlet_arm(tmp: Path, fail: list) -> dict:
            "out": (430.0, 1.0e6, "liquid")}
     prod = ("    {{ name prod; type phaseChanger; in feed; outputs ( mid ); "
             "operation {{ outletState {state}; }} "
-            "thermo {{ pureFluids {{ {world} }} }} }}\n")
+            "thermo prodWorld; }}\n")
     cases = (
         ("compressor", "operation { P_out 10 bar; eta 0.8; }", "saturatedVapour",
          HELMHOLTZ, None, vap, "VAPOUR", "liquid", "IAPWS-IF97",
@@ -557,10 +564,11 @@ def computed_inlet_arm(tmp: Path, fail: list) -> dict:
     )
     shown = {}
     for kind, op, state, pworld, gworld, streams, held, side, own, other in cases:
-        units = (prod.format(state=state, world=pworld)
+        units = (prod.format(state=state)
                  + f"    {{ name U; type {kind}; in mid; outputs ( out ); {op} }}")
         rc, res, out = run_raw(probe_case(tmp, f"i_{kind}", units, streams,
-                                          global_method=gworld))
+                                          global_method=gworld,
+                                          variants=f"    prodWorld {{ pureFluids {{ {pworld} }} }}"))
         line = next((ln for ln in out.splitlines() if "cannot take inlet 'mid'" in ln), "")
         want = [f"{kind} 'U' cannot take inlet 'mid'", f"it holds a {held}",
                 f"own world (the pure-fluid formulation {own})", f"on the {side} side",

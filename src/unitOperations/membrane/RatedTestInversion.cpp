@@ -35,6 +35,7 @@ License
 #include "core/Dimensions.H"
 #include "core/Identifiers.H"
 #include "thermo/ThermoPackage.H"
+#include "thermo/LiquidPropertyDoor.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/membrane/MembraneModule.H"
 
@@ -218,18 +219,24 @@ ModuleAtConditions runModuleAt(const DictPtr& unitDict,
         }
 
     //  THE FEED: water + the solute at feedMassFraction, its volume
-    //  closed on the module's own solution density (rho_feed, the key
-    //  toBulk reads), so the probe's volumetric feed is exactly `feedFlow`.
+    //  closed on the solution density the package gives at the test state (the
+    //  door), so the probe volumetric feed is exactly `feedFlow`.
     const std::size_t iW = thermo.aqueousSolventIndex();
     const std::size_t iS = thermo.indexOf(solute);
-    const scalar rho  = op->lookupScalarOrDefault("rho_feed", liquidSource::rhoFeedDefault.value);
-    if (op->found("rho_feed"))
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::declaredByCase, "declared", took(rho));
-    else
-        PropertySourceLog::instance().useHere("liquidDensity", liquidSource::rhoFeedDefault);
     const scalar w    = feedMassFraction;
     const scalar nS   = w / thermo.comp(iS).MW();             // kmol/kg
     const scalar nW   = (1.0 - w) / thermo.comp(iW).MW();
+    //  The probe's solution density comes from the package through the one
+    //  door at the test's own T, P and composition (C402; the `rho_feed` the
+    //  probe used to inherit from the block, and the 1000 kg/m3 behind it,
+    //  are gone) -- the same state the module's own solve prices it at.
+    sVector xFeed(thermo.n(), 0.0);
+    xFeed[iS] = nS / (nS + nW);
+    xFeed[iW] = nW / (nS + nW);
+    const liquidProperty::Consumer whoRho{ "spiralWoundModule", "ratedTest" };
+    liquidProperty::Request askRho;
+    askRho.thermo = &thermo; askRho.T = T; askRho.P = P; askRho.x = xFeed; askRho.who = &whoRho;
+    const scalar rho  = liquidProperty::density(askRho).value;
     const scalar F    = feedFlow * rho * (nS + nW);           // kmol/s
     DictPtr feed = probe->subDict("feed");
     feed->insert("F", F);

@@ -84,6 +84,14 @@ public:
     //  (throws when one exists but is malformed).
     static std::string recordFor(const ThermoPackage& thermo, const std::vector<std::size_t>& set);
 
+    //  C402: a trace constituent the case lists under `massWithoutVolume` (a label solute such as the
+    //  boron of a seawater plant) does not break the solution's own law: the law prices the record's
+    //  binary, the listed constituents keep their mass and add no volume, rho = rho_binary / (1 - w_listed),
+    //  under the hypothesis' own bound.  `set` less the listed constituents, when that is a binary with a
+    //  record; "" otherwise.
+    static std::string recordForSubset(const ThermoPackage& thermo, const std::vector<std::size_t>& set,
+                                       std::vector<std::size_t>& sub);
+
     //  The record's stated maximum deviation [kg/m3]: what a disagreement
     //  with a measurement is counted against (rule 5).
     scalar maxDeviation() const { return maxDeviation_; }
@@ -93,6 +101,7 @@ private:
 
     const ThermoPackage*          thermo_ = nullptr;
     std::vector<std::size_t>      set_;
+    std::vector<std::size_t>      recSet_;           // the record's own binary; set_ \ recSet_ keep mass, add no volume (C402)
     std::string                   path_, shown_, setName_;
     std::unique_ptr<SolutionForm> form_;
     std::size_t                   variable_ = 0;     // component whose mass fraction is x

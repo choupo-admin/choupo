@@ -38,7 +38,7 @@ kpi     evap                   F_vap_mass       0.763437272541   1e-4
 kpi     evap                   P                11700              1.5e-1  anchor
 kpi     evap                   Q_dilution_kW    165.281594619    1e-4
 kpi     evap                   T_boil           362.65             3e-3    anchor
-kpi     evap                   T_sat_pure       319.620697416    1e-4
+kpi     evap                   T_sat_pure       319.299051881    1e-4
 kpi     evap                   T_steam          388.75           1e-4
 kpi     evap                   U                1560             1e-4
 kpi     evap                   U_W_m2_K         1560             1e-4

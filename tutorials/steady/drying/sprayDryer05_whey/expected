@@ -4,7 +4,7 @@
 stream  dryingAir              F                0.138888888889   1e-4
 stream  exhaustAir             F                0.145294374409   1e-4
 stream  feed                   F                0.00649261111111 1e-4
-stream  powder                 F                8.71255906462e-05 1e-4
+stream  powder                 F                8.75689559798e-05 1e-4
 kpi     dryer                  Nu               2.33731434528    1e-4
 kpi     dryer                  Pr               0.745230561117   1e-4
 kpi     dryer                  Re               0.384509154435   1e-4
@@ -13,8 +13,8 @@ kpi     dryer                  Sh               2.31430911286    1e-4
 kpi     dryer                  T_out            378.559527516    1e-4
 kpi     dryer                  T_wetbulb        315.824008236    1e-4
 kpi     dryer                  X_critical       0.5              1e-4
-kpi     dryer                  X_equilibrium    0.0151904301947  1e-4
-kpi     dryer                  X_final          0.0151904301947  1e-4
+kpi     dryer                  X_equilibrium    0.0155355539342  1e-4
+kpi     dryer                  X_final          0.0155355539342  1e-4
 kpi     dryer                  X_initial        5.00133830498    1e-4
 kpi     dryer                  chamberDiameter  1                1e-4
 kpi     dryer                  chamberHeight    10               1e-4
@@ -28,9 +28,9 @@ kpi     dryer                  d_particle_micron 34.3328970408    1e-4
 kpi     dryer                  duty             305089.950888    1e-4
 kpi     dryer                  h                978.856819022    1e-4
 kpi     dryer                  k_c              1.29356579402    1e-4
-kpi     dryer                  moisture_pct_wb  1.49631337559    1e-4
+kpi     dryer                  moisture_pct_wb  1.52978926971    1e-4
 kpi     dryer                  powder_dry       0.0231430805     1e-4
-kpi     dryer                  powder_flow      0.0234946338488  1e-4
+kpi     dryer                  powder_flow      0.0235026210753  1e-4
 kpi     dryer                  residenceTime    1.60154455209    1e-4
 kpi     dryer                  rho_gas          0.905887689475   1e-4
 kpi     dryer                  rho_liquid       996.956281129    1e-4
@@ -42,9 +42,9 @@ kpi     dryer                  thermalEfficiency 0.543163544831   1e-4
 kpi     dryer                  v_gas            6.11439449852    1e-4
 kpi     dryer                  v_particle       6.24397241211    1e-4
 kpi     dryer                  v_terminal       0.129577913589   1e-4
-kpi     dryer                  water_activity   0.0349606827777  1e-4
+kpi     dryer                  water_activity   0.03594405601  1e-4
 kpi     dryer                  water_evaporated 0.115394821651   1e-4
-kpi     dryer                  water_residual   0.000351553348825 1e-4
+kpi     dryer                  water_residual   0.00035954057531 1e-4
 stream  dryingAir              T                453.15           1e-4
 stream  exhaustAir             T                378.559527516    1e-4
 stream  feed                   T                298.15           1e-4

@@ -69,7 +69,7 @@ transport
                 entries
                 (
                     { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
-                      reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)"; }
+                      reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)"; }
                     { solute water;  solvent isopropanol;  kind infiniteDilution;  model WilkeChang;
                       reason "no value of water in 2-propanol was found; the correlation is taken outside its stated scope, and the view says so"; }
                 );
@@ -97,7 +97,7 @@ variants
                             { solute methanol;  solvent water;  kind infiniteDilution;
                               experiments methanolInWater288; }
                             { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
-                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)"; }
+                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)"; }
                             { solute water;  solvent isopropanol;  kind infiniteDilution;  model WilkeChang;
                               reason "no value of water in 2-propanol was found; the correlation is taken outside its stated scope, and the view says so"; }
                         );
@@ -150,7 +150,7 @@ variants
                         entries
                         (
                             { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
-                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)"; }
+                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)"; }
                         );
                     }
                     thermodynamicFactor { take 1; }
@@ -174,7 +174,7 @@ variants
                         entries
                         (
                             { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
-                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)"; }
+                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)"; }
                         );
                     }
                     thermodynamicFactor { take 1; }
@@ -198,7 +198,7 @@ variants
                         entries
                         (
                             { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
-                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)"; }
+                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)"; }
                         );
                     }
                     thermodynamicFactor { take 1; }
@@ -222,7 +222,7 @@ variants
                         entries
                         (
                             { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;
-                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)"; }
+                              reason "taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)"; }
                         );
                     }
                     thermodynamicFactor { take 1; }

@@ -119,12 +119,27 @@ def main():
                      f" {(cg - cb) / cb:.10g}")
         nodes = len(col["J_w"])
 
-        hi = solved(tmp, "5bar",
-                    [("0/feed", "P               3.0 bar;",
-                      "P               5.0 bar;")])["kpis"]["UF"]
-        if abs(hi["J_w_avg"] - k["J_w_avg"]) > 1e-12 * k["J_w_avg"]:
-            fail(f"(b) at 5 bar the flux is {hi['J_w_avg']:.12g}, at 3 bar"
-                 f" {k['J_w_avg']:.12g}: the plateau is not flat")
+        hi_run = solved(tmp, "5bar", [("0/feed", "P               3.0 bar;", "P               5.0 bar;")])
+        hi = hi_run["kpis"]["UF"]
+        #  THE PLATEAU IS FLAT, EXCEPT FOR ONE THING THE CLOSED FORM NAMES (C402, review MB-08): the feed density is
+        #  the package's at the feed pressure, so the bulk concentration c_b ~ rho moves with it (water's
+        #  compressibility, 5e-5 between 3 and 5 bar) and the gel flux J = K ln(c_g (1 - S)/(c_b - S c_g)) with it:
+        #      dJ/J = -(c_b/(c_b - S c_g)) (d rho/rho) / ln(c_g (1 - S)/(c_b - S c_g)).
+        #  Every node of the 5-bar run obeys the closed form to 1e-9, and the first node's change from the 3-bar
+        #  run is that derivative's value (second order in d rho/rho = 5e-5, so to 1e-8 relative of J).
+        colh = hi_run["profiles"]["UF"]["columns"]
+        for J, cb in zip(colh["J_w"], colh["c_b_BSA"]):
+            want = K * math.log(cg * (1 - S_BSA) / (cb - S_BSA * cg))
+            if abs(J - want) > 1e-9 * want:
+                fail(f"(b) 5 bar: node flux {J:.12g} against the closed form {want:.12g}")
+        drho = hi["rho_feed"] / k["rho_feed"] - 1.0
+        cb0 = col["c_b_BSA"][0]
+        ln0 = math.log(cg * (1 - S_BSA) / (cb0 - S_BSA * cg))
+        predicted = -(cb0 / (cb0 - S_BSA * cg)) * drho / ln0
+        seen = colh["J_w"][0] / col["J_w"][0] - 1.0
+        if abs(seen - predicted) > 1e-8:
+            fail(f"(b) the first node's flux moved by {seen:.6e} from 3 to 5 bar; the closed form's derivative gives"
+                 f" {predicted:.6e} (d rho/rho = {drho:.3e})")
 
         lo = solved(tmp, "1.1bar",
                     [("0/feed", "P               3.0 bar;",

@@ -26,7 +26,7 @@ kpi     effect1                F_steam_kg_h     8917.425         1e-4
 kpi     effect1                F_vap            0.0895828875602  1e-4
 kpi     effect1                F_vap_kmol_h     322.498395217    1e-4
 kpi     effect1                F_vap_mass       1.6138357194     1e-4
-kpi     effect1                P                85795.6465841    1e-4
+kpi     effect1                P                83994.8064821    1e-4
 kpi     effect1                T_boil           368.060488604    1e-4
 kpi     effect1                T_sat_pure       367.952180006    1e-4
 kpi     effect1                T_steam          392.1781136      1e-4
@@ -54,7 +54,7 @@ kpi     effect2                F_steam_kg_h     5809.80858983    1e-4
 kpi     effect2                F_vap            0.0956016049063  1e-4
 kpi     effect2                F_vap_kmol_h     344.165777663    1e-4
 kpi     effect2                F_vap_mass       1.72226291239    1e-4
-kpi     effect2                P                43719.9850074    1e-4
+kpi     effect2                P                43198.7770652    1e-4
 kpi     effect2                T_boil           351.046655671    1e-4
 kpi     effect2                T_sat_pure       350.866641152    1e-4
 kpi     effect2                T_steam          368.060488604    1e-4
@@ -82,7 +82,7 @@ kpi     effect3                F_steam_kg_h     6200.14648459    1e-4
 kpi     effect3                F_vap            0.10097266941    1e-4
 kpi     effect3                F_vap_kmol_h     363.501609875    1e-4
 kpi     effect3                F_vap_mass       1.81902263942    1e-4
-kpi     effect3                P                10134.3574354    1e-4
+kpi     effect3                P                10120.9963497    1e-4
 kpi     effect3                T_boil           319.789589073    1e-4
 kpi     effect3                T_sat_pure       319.191042619    1e-4
 kpi     effect3                T_steam          351.046655671    1e-4

@@ -69,7 +69,6 @@ units
             area         5.0;                 // m2 -- membrane area
             P_feed       10 bar;             // transmembrane driving pressure
             P_permeate   0 bar;              // atmospheric permeate side
-            rho          1000;                // kg/m3 -- declared, never defaulted
 
             //  DECLARED, because this unit is told no geometry.  1.0e-4 m/s
             //  is a well-stirred laboratory cell; lowering it makes the

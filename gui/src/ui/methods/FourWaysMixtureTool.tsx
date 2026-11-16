@@ -96,9 +96,9 @@ export const MODEL_LADDER = [
     cite: "src/thermo/activityCoefficient/NRTL.cpp · data/standards/parameters/",
     note: "The gold standard where its evidence was taken — and only "
       + "there.  The held-out lesson (fitNRTL02, a recorded run): the "
-      + "catalogue pair scores 0.0821 K on the 1-atm points its evidence "
+      + "catalogue pair scores 0.0706 K on the 1-atm points its evidence "
       + "covers, while a fit regressed on three vacuum isobars predicts "
-      + "those same points at 0.3857 K — a factor of 4.7 lost where the "
+      + "those same points at 0.3895 K — a factor of 5.5 lost where the "
       + "fit never looked.  A fitted constant is a record of an "
       + "experiment, not a law.",
   },
@@ -140,8 +140,8 @@ export const MODEL_LADDER = [
       + "perturbation theory, pricing vapour, liquid and density with one "
       + "set of physics.  The twin flash (flash20, a recorded run) shows "
       + "what that generality costs on a polar azeotropic pair: at the "
-      + "same 358.15 K and 1 atm, fitted NRTL gives K_ethanol = 3.90 and "
-      + "V/F = 0.512; predictive PC-SAFT gives K_ethanol = 11.47 and "
+      + "same 358.15 K and 1 atm, fitted NRTL gives K_ethanol = 3.82 and "
+      + "V/F = 0.491; predictive PC-SAFT gives K_ethanol = 11.47 and "
       + "V/F = 0.649.  Shown side by side, never hidden — where PC-SAFT "
       + "earns its keep is high pressure, density, and mixtures no one "
       + "has measured.",

@@ -1,0 +1,57 @@
+/*---------------------------------------------------------------------------*\
+  Component: LKsimple -- the SIMPLE FLUID of Lee & Kesler (1975), as a
+  synthetic pseudo-component.
+
+  The Lee-Kesler correlation is written in reduced variables, so a fluid with
+  T_c = 100 K, P_c = 10 bar and acentric factor omega = 0 IS the simple fluid:
+  T = 120 K and P = 10 bar are T_r = 1.2 and P_r = 1.0, and the engine's Z,
+  H_residual and S_residual at that state are the printed Z^(0), (H-H*)/RT_c
+  and (S-S*)/R of Tables 5, 7 and 9.  T_c and P_c are round numbers chosen so
+  that T_r and P_r can be read off the state; they are NOT a substance's.
+
+  NOT A REAL SUBSTANCE.  It carries no standardThermochemistry on purpose (the
+  case reads residual functions only, no energy balance on the elements); the
+  Antoine and heat-capacity blocks are the minimum the package asks for and
+  are never used by the departure functions.
+\*---------------------------------------------------------------------------*/
+
+name        LKsimple;
+formula     LK0;
+CAS         00-00-0;
+
+MW          16.0;
+Tc          100.0;
+Pc          10.0;
+omega       0.0;
+Tb          60.0;
+HvapTb      8000;
+Vliq        4.0e-5;
+
+//  An ARBITRARY datum: the departure functions H_R and S_R this case reads do
+//  not depend on it, and a fictitious species has no elements.  Zero is the
+//  value that makes the ideal-gas part vanish at 298.15 K.
+standardThermochemistry
+{
+    dHf_298   0.0;      // J/mol -- arbitrary datum, see above
+    s_298     0.0;      // J/(mol K) -- arbitrary datum, see above
+}
+
+vaporPressure
+{
+    model         Antoine;
+    coefficients  (3.5   360.0   -10.0);
+    Trange        (60  100);
+}
+
+idealGasHeatCapacity
+{
+    model         polynomial;
+    coefficients  (29.0   0.0   0.0   0.0);
+    Trange        (30  500);
+}
+
+provenance
+{
+    source      synthetic;
+    reason      "the reduced simple fluid of Lee & Kesler (1975): T_c 100 K, P_c 10 bar, omega 0, chosen so that T_r and P_r are read off the state; no physical primary exists";
+}

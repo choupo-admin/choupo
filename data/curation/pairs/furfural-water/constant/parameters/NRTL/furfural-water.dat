@@ -18,9 +18,9 @@
   reviewStatus interim: a case-local record, regressed and not read back.  Fitted on EVERY laboratory (C283), so the
   `validation {}` block below says, truthfully, that nothing
   was held out; the acceptance is the `curation {}` block.
-  NOT PROMOTABLE (fit grade clean, max |dT| 0.798 K): the pair splits ONE
+  NOT PROMOTABLE (fit grade clean, max |dT| 0.727 K): the pair splits ONE
   liquid inside its own validity span (check_regressed_pairs arm f) --
-  predicts a LIQUID-LIQUID SPLIT at 369.45 K (x_water 0.434 .. 0.977),
+  predicts a LIQUID-LIQUID SPLIT at 369.45 K (x_water 0.411 .. 0.984),
   inside its own validity span 369.45-390.05 K -- its evidence is bubble
   temperatures of ONE liquid, which a bubble scan cannot contradict; a
   pair that splits that liquid stays in its case, not the catalogue (or
@@ -44,9 +44,9 @@ parameters
     i           water;
     j           furfural;
     a_ij        0.00000000;
-    b_ij        1386.90792886;
+    b_ij        1478.32748598;
     a_ji        0.00000000;
-    b_ji        42.50107974;
+    b_ji        59.32033979;
     alpha       0.30000000;
 }
 
@@ -59,7 +59,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -79,11 +79,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          321.10283769;
-    rms_K         0.62332530;
+    chi2          248.13296352;
+    rms_K         0.54794241;
     nDataPoints   10;
     identifiable  true;
-    maxAbsCorr    0.59223152;
+    maxAbsCorr    0.22404713;
 
     validity
     {
@@ -112,8 +112,8 @@ curation
     outliersDropped 1;
     pointsKept      10;
     noBubblePoint   0;
-    maxAbsError     0.7983 K;
-    meanAbsError    0.5686 K;
+    maxAbsError     0.7272 K;
+    meanAbsError    0.4965 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           clean;

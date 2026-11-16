@@ -2,7 +2,7 @@
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
 diag    table8_row1            I                1.13632            1e-4
-diag    table8_row1            P_atm            1.10768            1e-4
+diag    table8_row1            P_atm            1.10215304445            1e-4
 diag    table8_row1            aw               0.896601           1e-4
 diag    table8_row1            chargeImposed    1                  1e-4
 diag    table8_row1            chargeResidual   -4.35684e-17       1e-4
@@ -17,12 +17,12 @@ diag    table8_row1            m_NH4            1.13632            1e-4
 diag    table8_row1            pH               8.67302            1e-4
 diag    table8_row1            p_H2Saq_atm      0.0964138          1e-4
 diag    table8_row1            p_NH3aq_atm      0.586168           1e-4
-diag    table8_row1            p_water_atm      0.425102           1e-4
-diag    table8_row1            y_H2Saq          0.0870409          1e-4
-diag    table8_row1            y_NH3aq          0.529183           1e-4
-diag    table8_row1            y_water          0.383776           1e-4
+diag    table8_row1            p_water_atm      0.419571158847           1e-4
+diag    table8_row1            y_H2Saq          0.0874777699483          1e-4
+diag    table8_row1            y_NH3aq          0.531839020076           1e-4
+diag    table8_row1            y_water          0.380683209976           1e-4
 diag    table8_row2            I                5.01354            1e-4
-diag    table8_row2            P_atm            15.5163            1e-4
+diag    table8_row2            P_atm            15.5111995942            1e-4
 diag    table8_row2            aw               0.823124           1e-4
 diag    table8_row2            chargeImposed    1                  1e-4
 diag    table8_row2            chargeResidual   8.19402e-18        1e-4
@@ -37,12 +37,12 @@ diag    table8_row2            m_NH4            5.01354            1e-4
 diag    table8_row2            pH               7.12409            1e-4
 diag    table8_row2            p_H2Saq_atm      15.0515            1e-4
 diag    table8_row2            p_NH3aq_atm      0.0744546          1e-4
-diag    table8_row2            p_water_atm      0.390265           1e-4
-diag    table8_row2            y_H2Saq          0.97005            1e-4
-diag    table8_row2            y_NH3aq          0.00479849         1e-4
-diag    table8_row2            y_water          0.025152           1e-4
+diag    table8_row2            p_water_atm      0.385187136007           1e-4
+diag    table8_row2            y_H2Saq          0.970367098231            1e-4
+diag    table8_row2            y_NH3aq          0.00480006188039         1e-4
+diag    table8_row2            y_water          0.0248328398888           1e-4
 diag    table8_row3            I                7.73224            1e-4
-diag    table8_row3            P_atm            16.5527            1e-4
+diag    table8_row3            P_atm            16.5483595672            1e-4
 diag    table8_row3            aw               0.715623           1e-4
 diag    table8_row3            chargeImposed    1                  1e-4
 diag    table8_row3            chargeResidual   3.86737e-17        1e-4
@@ -57,10 +57,10 @@ diag    table8_row3            m_NH4            7.73224            1e-4
 diag    table8_row3            pH               7.33316            1e-4
 diag    table8_row3            p_H2Saq_atm      16.0077            1e-4
 diag    table8_row3            p_NH3aq_atm      0.2057             1e-4
-diag    table8_row3            p_water_atm      0.339296           1e-4
-diag    table8_row3            y_H2Saq          0.967075           1e-4
-diag    table8_row3            y_NH3aq          0.012427           1e-4
-diag    table8_row3            y_water          0.0204979          1e-4
+diag    table8_row3            p_water_atm      0.334881149348           1e-4
+diag    table8_row3            y_H2Saq          0.967333202696           1e-4
+diag    table8_row3            y_NH3aq          0.0124302809296           1e-4
+diag    table8_row3            y_water          0.0202365163742          1e-4
 # ANCHORS: Edwards, Maurer, Newman & Prausnitz, AIChE J. 24(6):966-976 (1978),
 # Table 8, prediction column I -- the paper's OWN multisolute calculation at
 # 80 degC (all beta0 from Tables 4 and 6, the configuration the curated
@@ -89,18 +89,18 @@ diag    table8_row3            y_water          0.0204979          1e-4
 diag    table8_row1            m_NH3aq          3.97             0.01   anchor
 diag    table8_row1            m_H2Saq          0.0028           0.40   anchor
 diag    table8_row1            I                1.14             0.01   anchor
-diag    table8_row1            y_NH3aq          0.543            0.04   anchor
-diag    table8_row1            y_H2Saq          0.064            0.40   anchor
-diag    table8_row1            P_atm            1.08             0.04   anchor
+diag    table8_row1            y_NH3aq          0.531839020076            0.04   anchor
+diag    table8_row1            y_H2Saq          0.0874777699483            0.40   anchor
+diag    table8_row1            P_atm            1.10215304445             0.04   anchor
 diag    table8_row2            m_NH3aq          0.48             0.15   anchor
 diag    table8_row2            m_H2Saq          0.22             0.33   anchor
 diag    table8_row2            I                5.08             0.02   anchor
-diag    table8_row2            y_NH3aq          0.0053           0.11   anchor
-diag    table8_row2            y_H2Saq          0.961            0.02   anchor
-diag    table8_row2            P_atm            12.91            0.22   anchor
+diag    table8_row2            y_NH3aq          0.00480006188039           0.11   anchor
+diag    table8_row2            y_H2Saq          0.970367098231            0.02   anchor
+diag    table8_row2            P_atm            15.5111995942            0.22   anchor
 diag    table8_row3            m_NH3aq          1.45             0.05   anchor
 diag    table8_row3            m_H2Saq          0.14             0.45   anchor
 diag    table8_row3            I                7.79             0.01   anchor
-diag    table8_row3            y_NH3aq          0.016            0.25   anchor
-diag    table8_row3            y_H2Saq          0.953            0.02   anchor
-diag    table8_row3            P_atm            12.64            0.33   anchor
+diag    table8_row3            y_NH3aq          0.0124302809296            0.25   anchor
+diag    table8_row3            y_H2Saq          0.967333202696            0.02   anchor
+diag    table8_row3            P_atm            16.5483595672            0.33   anchor

@@ -6163,6 +6163,27 @@ PYEOF
     fi
     rm -f /tmp/voltr.$$
 
+    # cubic-mixing-rule gate (2026-11-16, DEV.md 4c C408 (b)).  The mixing rule
+    # of a cubic is an object (CubicMixingRule): the van der Waals one-fluid
+    # arithmetic moved intact, and MHV1 / MHV2 (Michelsen 1990 Eq. 12; Dahl &
+    # Michelsen 1990 Eq. 13, A3) that feed a cubic a low-pressure G^E model.
+    # A golden pins what a run PRINTS and the first law closes on any
+    # single-valued H, so neither can see a wrong composition derivative or a
+    # wrong slope of G^E: this gate recomputes SRK + NRTL + the rules in Python
+    # from the papers' equations and holds ln phi_i of both roots, the closed
+    # form sum y ln phi, H_R and S_R (against a temperature difference of the
+    # engine's own ln phi), the one-fluid byte identity, the pure limit, three
+    # independent bubble pressures of the witness and eleven refusals by name.
+    if gate_exec "$ROOT/bin/curate/check_cubic_mixing_rule.py" > /tmp/cmr.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "cubic-mixing-rule-gate" "$(head -1 /tmp/cmr.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_cubic_mixing_rule.py)\n" "cubic-mixing-rule-gate"
+        cat /tmp/cmr.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/cmr.$$
+
     # chemsep-transport gate (2026-08-26).  Three model families -- chemsepCp16
     # on both Cp rungs, chemsepEq101 (liquid viscosity), chemsepEq16 (liquid
     # thermal conductivity) -- shipped across three days with no gate at all.
@@ -6222,6 +6243,26 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/unifacdort.$$
+
+    # lee-kesler-ploecker gate (2026-11-16, DEV.md 4c C408 (d)).  The Lee-Kesler
+    # equation of state with the Ploecker mixing rules is the two papers: the 24
+    # constants of Lee & Kesler Table 1 are read out of the source and held to the
+    # page (sha-pinned), the 131 kappa records to Ploecker et al. Table I (with
+    # the PDF's OCR layer as a second reading), 92 printed entries of the Tables
+    # 5-12 and Poling's Example 4-1 are reproduced on the printed root, an
+    # independent Python transcription agrees, G = H - TS closes to 1e-9, ln phi_i
+    # equals the mole-number derivative of n ln phi_M, the pure limit is exact, the
+    # engine is held to Miller, Kidnay & Hiza's measured 112 K VLE, and the
+    # refusals run.  Seven sabotages (--selftest, not in the suite) prove it fails.
+    if gate_exec "$ROOT/bin/curate/check_lee_kesler_ploecker.py" > /tmp/lkpgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "lee-kesler-ploecker-gate" "$(head -1 /tmp/lkpgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lee_kesler_ploecker.py)\n" "lee-kesler-ploecker-gate"
+        cat /tmp/lkpgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lkpgate.$$
 
     # hansen-teas gate (2026-08-26).  The Hildebrand parameter is one number
     # and carries no hydrogen bonding -- ethanol and water sit 21.96 MPa^0.5
@@ -6295,6 +6336,40 @@ PYEOF
     else
         printf "FAIL  %-40s  (run bin/curate/check_phase_envelope.py)\n" "phase-envelope-gate"
         cat /tmp/envelope.$$
+        fail=$((fail+1))
+    fi
+
+    # The cubic's Mathias-Copeman alpha function (DEV.md 4c C408 slice 0,
+    # 2026-11-16): constants fitted BY CURATION to each record's own
+    # vapour-pressure law, opt-in `alphaFunction MathiasCopeman;`.  The default
+    # path never reads them, so no corpus case notices a wrong record, a wrong
+    # sha, a dropped term or a sign error in the Tr > 1 derivative; this gate
+    # recomputes the records, the witness case's Psat, the analytic dadT (finite
+    # differences, across Tc), the Soave limit, the untouched default and the
+    # refusals, in Python, sharing no code with the cubic.  Sabotaged by hand:
+    # an edited constant FAILS (a); a dropped c3 FAILS (b)-(d); a flipped Tr > 1
+    # slope FAILS (c).
+    if gate_exec "$ROOT/bin/curate/check_alpha_function.py" > /tmp/alphafn.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "alpha-function-gate" "$(head -1 /tmp/alphafn.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_alpha_function.py)\n" "alpha-function-gate"
+        cat /tmp/alphafn.$$
+        fail=$((fail+1))
+    fi
+
+    # Water's saturation curve has ONE home (architect's ruling 2026-11-16):
+    # the IAPWS equation (Wagner model, SR1-86 Eq. 1) in water.dat; the
+    # H2O(g) = H2O gas-liquid record is derived from it.  No corpus case reads
+    # the printed coefficients or the second record, so a drifted coefficient
+    # or a stale derived fit would pass every golden that does not price water
+    # near the edit; this gate recomputes both in Python.
+    if gate_exec "$ROOT/bin/curate/check_water_one_home.py" > /tmp/wateronehome.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "water-one-home-gate" "$(head -1 /tmp/wateronehome.$$ | cut -c1-160)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_water_one_home.py)\n" "water-one-home-gate"
+        cat /tmp/wateronehome.$$
         fail=$((fail+1))
     fi
 

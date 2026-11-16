@@ -17,9 +17,10 @@ conditions, the water permeances, the geometry) is declared `assumed` or
 `estimated`.  `system/layoutDict` is Choupo's plot plan of a plant of this scale
 up to the fence -- NOT the real site.
 
-**The answer** (2026-11-02; `expected` is the authority).  Product 4111 m3/h
-= 98 668.7 m3/day; first pass 47.20 %, second 87.0 %; 2.0 mg/L NaCl-equivalent
-and 0.043 mg/L boron in the product; 2.81 kWh/m3 of pump shaft work.
+**The answer** (2026-11-15, after C402; `expected` is the authority).  Product 4111 m3/h
+= 98 664.7 m3/day; first pass 47.20 % in the document's bookkeeping (46.05 % mass
+recovery), second 86.6 %; 1.8 mg/L NaCl-equivalent and 0.042 mg/L boron in the
+product; 2.82 kWh/m3 of pump shaft work.
 
 **Boron (DEV.md 4c C198, Stage 1).**  Boron is carried as boric acid and borate,
 split by the pH against the acid's curated pKa through the package; each
@@ -47,8 +48,8 @@ is declared `assumed` and says so.
 
 **What a student should notice.**
 1. The document's "feed pressure" figures (5.52 and 1.03 MPa) are TEST
-   pressures: 47.2 % recovery of this seawater needs 58.6 bar, and the second
-   pass needs 10.74 bar for 87 %.  The header shows the arithmetic.
+   pressures: 47.2 % recovery of this seawater needs 58.1 bar, and the second
+   pass needs 10.74 bar for 86.6 %.  The header shows the arithmetic.
 2. **Boron is where the engine stops.**  The module does not couple the pH to the
    transport, so boron is one lumped solute with a constant rejection read from
    the manufacturer's two pH-labelled tests; the gate pins that relabelling the

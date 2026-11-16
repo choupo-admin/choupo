@@ -713,7 +713,7 @@ correlation per COMPONENT & the component \texttt{.dat} (+ overrides) & pure-spe
 parameter per PAIR & \texttt{parameters \{ ...Pairs \{...\} \}} & declared FILE, verified at assembly, cited to its source\\
 mixing per PROPERTY $\times$ PHASE & \texttt{mixing} slots + \texttt{effective\{\}} & how pures combine (Wilke, Grunberg--Nissan, van-der-Waals one-fluid); two-phase closures (a suspension's Thomas/Einstein viscosity) live in \texttt{effective\{\}}, because they are \emph{media closures}, not thermodynamic mixing\\
 chemistry & \texttt{chemistry \{ salts (...); \}} & real equilibria with $K(T)$ and $\Delta H$\\
-package per UNIT & unit \texttt{thermo \{\}} & the spatial axis: a unit selects ANOTHER whole package --- never a partial patch of single axes (that is the road to two surfaces in one phase); the model boundary is audited ($\Delta H$ at the seam)\\
+package per UNIT & unit \texttt{thermo <name>;} (a named variant) & the spatial axis: a unit selects ANOTHER whole package --- never a partial patch of single axes (that is the road to two surfaces in one phase); the model boundary is audited ($\Delta H$ at the seam)\\
 phase equilibrium & \texttt{phaseEquilibrium \{\}} & for each coexisting phase pair, the imposed equality and the COMMON DATUM (e.g. \texttt{link muEquality; datum aqueousInfDil; transfer <pair-file>;}) --- the bridge between surfaces, first-class and declared, never implicit\\
 \bottomrule
 \end{tabular}

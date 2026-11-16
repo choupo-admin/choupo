@@ -1,0 +1,156 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  lkp02_n2_ch4_ar_112K -- THE LEE-KESLER EQUATION OF STATE WITH THE PLOECKER
+  MIXING RULES, PREDICTING MEASURED CRYOGENIC VAPOUR-LIQUID EQUILIBRIUM.
+
+  THE QUESTION.  A corresponding-states correlation fitted to pure-fluid
+  volumetric and caloric data, plus a one-fluid mixing rule with ONE binary
+  constant per pair read from a published table (Ploecker, Knapp & Prausnitz
+  1978, Table I): how close does it come to the bubble pressures and vapour
+  compositions of the nitrogen + argon + methane system at 112.00 K?  The
+  three kappa -- N2-CH4 0.977, N2-Ar 0.988, Ar-CH4 0.984 -- are the table's
+  own; nothing is fitted here.
+
+  THE EVIDENCE.  Miller, Kidnay & Hiza, AIChE J. 19 (1973) 145-148: Table 1
+  (N2 + Ar, 7 runs), Table 2 (N2 + CH4, 11 runs) and Table 3 (the ternary,
+  28 rows, ten liquid rows of which are evaluated below), measured at 112.00 K with the
+  nitrogen at T_r = 0.887.  Table I of 1978 lists all three pairs and does not
+  say which measurements it was regressed on, so this comparison is NOT
+  claimed to be out of sample for kappa; it is a check that the table's
+  numbers, used as printed, reproduce measured behaviour.
+
+  WHAT IS COMPARED.  Each liquid composition the experimenter set is evaluated
+  at 112 K: P_bubble(x) and the incipient vapour y_eqT(x) -- the engine asked
+  where the experimenter put the liquid, never a value read off a curve.  The
+  residual is model - measurement, in the aad rows of `expected`.  In the
+  binary tables the y of the vapour-sample row stands beside the x of the
+  liquid-sample row; the two samples were taken at pressures that differ by up
+  to 1.6 %, said in the dataset files, and the dilute end of y is sensitive to
+  that: the bubble PRESSURE is the comparison to read, the y a second one.
+
+  WHAT WAS FOUND (the aad rows, and the anchor rows for the ternary).  Bubble
+  pressure: N2 + CH4 1.6 % mean absolute, N2 + Ar 0.75 %, the ten ternary
+  liquids 0.48 % (largest 1.3 %).  Vapour N2 mole fraction: 0.005 absolute for
+  N2 + CH4, 0.013 for N2 + Ar.  Ternary row 10 (x_Ar 0.0878) misses y_N2 by
+  0.034; the paper's own activity coefficient for that row, gamma_Ar = 0.661,
+  is the odd one out of the table (its neighbours sit between 0.98 and 1.22).
+
+  WHAT IS NOT CLAIMED.  The vapour pressures of the pure components come from
+  the catalogue's own records, so part of every residual is theirs.  The
+  correlation is for non-polar and slightly polar fluids; these are the
+  simplest it covers.  IN SAMPLE: the simple-fluid constants of the
+  correlation were fitted to argon, krypton and methane data (Lee & Kesler
+  1975, p. 512), so the pure-fluid side of two of these three components is
+  not out of sample; the data the paper marks as used in the correlation (its
+  Tables 3 and 4) are pure fluids.  Table 3's other
+  eighteen rows are not evaluated here.
+\*---------------------------------------------------------------------------*/
+
+operations
+(
+    {
+        name        pxy_n2_ch4;
+        type        propertyScan1D;
+        vary        { variable x[N2];
+                      points ( 0.0338 0.0545 0.1336 0.1505 0.2170 0.3082 0.4701 0.5172 0.6103 0.7068 0.7811 ); }
+        state       { T 112 K;  P 5 atm;  composition { N2 0.5;  CH4 0.5; } }
+        properties  ( P_bubble  y_eqT_N2 );
+        output      { file pxy_n2_ch4.csv; }
+    }
+    {
+        name        pxy_n2_ar;
+        type        propertyScan1D;
+        vary        { variable x[N2];
+                      points ( 0.1107 0.2452 0.3385 0.5124 0.6243 0.7355 0.8529 ); }
+        state       { T 112 K;  P 10 atm;  composition { N2 0.5;  Ar 0.5; } }
+        properties  ( P_bubble  y_eqT_N2 );
+        output      { file pxy_n2_ar.csv; }
+    }
+    {
+        name        ternary_01;
+        type        propertyPoint;
+        state       { T 112 K;  P 5.021 atm;  composition { Ar 0.4841; N2 0.0422; CH4 0.4738; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_02;
+        type        propertyPoint;
+        state       { T 112 K;  P 6.968 atm;  composition { Ar 0.4181; N2 0.1876; CH4 0.3943; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_03;
+        type        propertyPoint;
+        state       { T 112 K;  P 8.981 atm;  composition { Ar 0.3382; N2 0.3595; CH4 0.3024; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_04;
+        type        propertyPoint;
+        state       { T 112 K;  P 10.955 atm;  composition { Ar 0.253; N2 0.538; CH4 0.209; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_05;
+        type        propertyPoint;
+        state       { T 112 K;  P 12.997 atm;  composition { Ar 0.1585; N2 0.7234; CH4 0.1181; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_06;
+        type        propertyPoint;
+        state       { T 112 K;  P 7.362 atm;  composition { Ar 0.8462; N2 0.0574; CH4 0.0962; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_07;
+        type        propertyPoint;
+        state       { T 112 K;  P 11.002 atm;  composition { Ar 0.5094; N2 0.4341; CH4 0.0566; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_08;
+        type        propertyPoint;
+        state       { T 112 K;  P 8.971 atm;  composition { Ar 0.4959; N2 0.3003; CH4 0.2038; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_09;
+        type        propertyPoint;
+        state       { T 112 K;  P 8.976 atm;  composition { Ar 0.188; N2 0.4156; CH4 0.3964; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+    {
+        name        ternary_10;
+        type        propertyPoint;
+        state       { T 112 K;  P 12.968 atm;  composition { Ar 0.0878; N2 0.7595; CH4 0.1527; } }
+        properties  ( P_bubble  y_eqT_Ar  y_eqT_N2  y_eqT_CH4 );
+    }
+);
+
+experimental
+(
+    {
+        name      miller1973_n2_ch4;
+        component N2;
+        kind      pxy;
+        models    ( pxy_n2_ch4 );
+        dataset   "constant/experiments/N2-CH4-miller1973-112K.dat";
+        source    "Miller, Kidnay & Hiza, AIChE J. 19 (1973) 145, Table 2 (p. 147) -- measured, 112.00 K";
+    }
+    {
+        name      miller1973_n2_ar;
+        component N2;
+        kind      pxy;
+        models    ( pxy_n2_ar );
+        dataset   "constant/experiments/N2-Ar-miller1973-112K.dat";
+        source    "Miller, Kidnay & Hiza, AIChE J. 19 (1973) 145, Table 1 (p. 146) -- measured, 112.00 K";
+    }
+);

@@ -1,4 +1,3 @@
-// [imported] origin "data/standards/parameters/NRTL/acetonitrile-water.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*---------------------------------------------------------------------------*\
   NRTL binary interaction parameters --- acetonitrile(i) + water(j)
 
@@ -37,6 +36,7 @@
   is an extrapolation that WILL split the liquid: the validity block is
   the guard, read it.
 
+  REFITTED 2026-11-16 after water's catalogue vapour pressure moved from an Antoine fit to the IAPWS equation (the earlier fit had absorbed that curve's error); the case, its numbers and the held-out verdict are the new run's.
   REPRODUCE: run tutorials/props/curation/curate10_nrtl_acetonitrile_water -- its fit writes
   acetonitrile-water.proposal.dat; its parameters, evidence, validity and validation
   must equal this record's (bin/curate/check_regressed_pairs.py holds the
@@ -56,9 +56,9 @@ parameters
     i           acetonitrile;
     j           water;
     a_ij        0.00000000;
-    b_ij        218.34737078;
+    b_ij        220.98779770;
     a_ji        0.00000000;
-    b_ji        616.29648169;
+    b_ji        621.71909130;
     alpha       0.30000000;
 }
 
@@ -71,7 +71,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by Choupo from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression, redistributed with the catalogue; the measured points belong to the cited articles and are not reproduced in this record";
-    fitDate       "2026-10-05";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -101,11 +101,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          27.58885486;
-    rms_K         0.52278237;
+    chi2          31.43341067;
+    rms_K         0.65126841;
     nDataPoints   19;
     identifiable  true;
-    maxAbsCorr    0.94038997;
+    maxAbsCorr    0.93955806;
 
     validity
     {
@@ -122,8 +122,8 @@ validation
     heldOut
     {
         points      12;
-        aad_pct     0.136733;
-        aad_K       0.495564;
+        aad_pct     0.131782;
+        aad_K       0.476238;
         domain_x1   ( 0.010200 0.954900 );
     }
 

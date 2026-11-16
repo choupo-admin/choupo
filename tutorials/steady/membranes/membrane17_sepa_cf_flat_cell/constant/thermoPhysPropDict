@@ -34,3 +34,30 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( Na Cl NO3 NH4 );
+        maxMassFraction 0.005;
+        reason          "the membrane feed's dissolved ions keep their mass and add no volume to the feed's liquid density (their mass fraction is at most 0.0006); a membrane unit asks the package for the feed density and a solute with no liquid volume needs this declared reading (C402: the 1000 kg/m3 the unit used to type is gone); the engine's own bound on it is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
+    }
+}
+
+transport
+{
+    liquid
+    {
+        viscosity
+        {
+            //  The Stokes-Einstein correction of an ion's D0 (and of nothing else here) reads WATER's
+            //  viscosity law at the film temperature; the record holds two laws and marks none preferred.
+            pin ( { component water; law vogel; reason "the temperature scaling of an ion's D0 reads water's viscosity; the Vogel fit is the one the membrane cases that declared a viscosity model used"; } );
+            measured
+            {
+                dil20_ClNaNH4NO3_liquidViscosity { use method; reason "the case stands the stated value over every feed of this liquid in its box, as it did when the value was typed in the unit block; water's viscosity for a dilute feed, the status in the file's basis"; }
+            }
+        }
+    }
+}

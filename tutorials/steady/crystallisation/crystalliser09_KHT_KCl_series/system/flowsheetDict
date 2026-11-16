@@ -104,14 +104,6 @@ units
         // The formulation CHANGES here (molecular gamma-phi over the case's
         // electrolyte world) -- the fragment carries the COMPLETE equilibrium
         // for the new world (no hybrid remains of the electrolyte block).
-        thermo
-        {
-            equilibrium
-            {
-                formulation gammaPhi;
-                liquid { activityModel { model NRTL; } }
-                vapour { fugacityModel idealGas; }
-            }
-        }
+        thermo      nrtlEthanolWater;
     }
 );

@@ -253,8 +253,12 @@ def build_probe(dst, salt, trace_scale):
     t = re.sub(r"dP_feed_total\s+[0-9.e-]+ bar;", "dP_feed_total    0.001 bar;", t)
     fd.write_text(t)
     tp = dst / "constant" / "thermoPhysPropDict"
-    tp.write_text(re.sub(r"components\s*\([^)]*\);", "components       ( water " + " ".join(ions) + " );",
-                         tp.read_text()))
+    #  the system's components (column 0), then the density hypothesis's list (C402: a membrane feed's solutes keep
+    #  their mass and add no volume -- the `components` inside `approximations` is the ions of this probe too)
+    txt = re.sub(r"^components\s*\([^)]*\);", "components       ( water " + " ".join(ions) + " );",
+                 tp.read_text(), flags=re.M)
+    txt = re.sub(r"(massWithoutVolume\s*\{\s*components\s*)\([^)]*\)", lambda m: m.group(1) + "( " + " ".join(ions) + " )", txt)
+    tp.write_text(txt)
     for st in ("feed", "permeate", "retentate"):
         p = dst / "0" / st
         if st == "feed":

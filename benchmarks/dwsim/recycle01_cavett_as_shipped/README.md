@@ -37,7 +37,7 @@ primary's psia) is untouched and is a different case.
   (`constant/parameters/PengRobinson/ppr78_<unit>_<T>K.dat`, 105 pairs each,
   every intermediate beside each value); the flowsheet declares them.  The
   global package carries the 322.03 K set (SEP0's); SEP1, SEP2 and SEP3
-  carry their own through a `thermo {}` override.  **Stated default:** a
+  carry their own through a named variant (`thermo ppr78Sep1;`, ...).  **Stated default:** a
   compressor, valve or mixer declares no temperature and reads the
   inherited 322.03 K set.  No component of this case has omega > 0.491
   (n-decane, the heaviest, is 0.4884), so the 1978 branch is not exercised.

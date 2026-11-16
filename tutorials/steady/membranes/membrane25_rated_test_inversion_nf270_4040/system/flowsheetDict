@@ -66,8 +66,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      0.89e-3;           // Pa.s, water at 25 C
-                diffusivity    0.85e-9;           // m2/s, MgSO4 (the value membrane23's header quotes)
             }
             pressureDrop
             {
@@ -100,8 +98,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      0.89e-3;
-                diffusivity    0.85e-9;
             }
             pressureDrop
             {

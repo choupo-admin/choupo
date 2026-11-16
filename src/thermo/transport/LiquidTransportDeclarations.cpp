@@ -179,6 +179,7 @@ readViscosityMeasurements(const DictPtr& block, const std::vector<Component>& co
         const experiments::File& f = pf.f;
         m.where    = f.where;
         m.citation = f.citation;
+        m.assumedValue = (f.origin == "assumed");
         onlyKeys(f.dict, { "provenance", "system", "property", "solvent", "columns", "data",
                            "uncertainty", "box" }, f.where);
         //  WHAT KIND OF VALUE THE SOURCE STATES (review row DF-04): a measurement,

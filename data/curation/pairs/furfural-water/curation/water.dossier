@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ij  1386.90792886;
-        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ji  42.5010797432;
+        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ij  1478.32748598;
+        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ji  59.3203397874;
     }
 
     evidence
@@ -77,8 +77,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ij  1386.9079287;
-        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ji  42.5010797801;
+        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ij  1478.32748735;
+        equilibrium.liquid.activityModel.binaryParameters.water-furfural.b_ji  59.3203397906;
     }
 
     evidence

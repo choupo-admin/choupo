@@ -185,7 +185,7 @@ piece of equipment: equipment is a post-processing realisation
 
 **World** — CANONICAL (a Choupo coinage).  The thermodynamic context a unit
 computes in: its resolved property package, which may be the global one or a
-per-unit `thermo {}` override.  A flowsheet may run units in different worlds
+per-unit named variant (`thermo <name>;`).  A flowsheet may run units in different worlds
 on one global component set.  See G3.
 
 **Model boundary** — CANONICAL.  The seam between two worlds.  It is **not a

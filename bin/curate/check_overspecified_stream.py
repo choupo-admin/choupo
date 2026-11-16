@@ -312,7 +312,9 @@ units
 #  with phi_sat in the liquid reference a pure component's K is 1 on its
 #  Psat curve in EVERY vapour model, so that override no longer moved the
 #  curve and the arm could not tell the unit's world from the global one.)
-OWN_WORLD = "        thermo { pureFluids { water { method IF97; } } }\n"
+#  C402: the unit's world is a NAMED variant of the case's dictionary.
+OWN_WORLD = "        thermo      ifWorld;\n"
+OWN_VARIANT = "\nvariants { ifWorld { pureFluids { water { method IF97; } } } }\n"
 WATER_FLOWS = "    water      40 kmol/h;\n"
 #  (i): the time-integrated witness whose feed is PURE compA.
 DYN = ROOT / "tutorials" / "unsteady" / "unsteady02_tanks_in_series"
@@ -353,7 +355,7 @@ def build_own_world(root: Path, T: str, own: bool) -> Path:
     if nstrip != 1:
         raise SystemExit("check_overspecified_stream: fixture text moved -- "
                          "condenser01 no longer declares one pureFluids block")
-    tp.write_text(txt)
+    tp.write_text(txt + (OWN_VARIANT if own else ""))
     (case / "system" / "controlDict").write_text(CONTROL)
     (case / "system" / "flowsheetDict").write_text(
         SPLIT_OWN_WORLD % {"thermo": OWN_WORLD if own else ""})

@@ -113,8 +113,9 @@ class PR : public CubicEoS
 {
 public:
     PR(const std::vector<Component>& comps,
-       const std::vector<std::vector<scalar>>& kij,
-       const std::vector<scalar>& volumeShift = {});
+        std::unique_ptr<CubicMixingRule> rule,
+        const std::vector<scalar>& volumeShift = {},
+        const AlphaChoice& alpha = AlphaChoice());
 
     static std::unique_ptr<EquationOfState>
     fromDict(const DictPtr& eosDict, const std::vector<Component>& comps);

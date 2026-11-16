@@ -1,0 +1,33 @@
+/*---------------------------------------------------------------------------*\
+  Water's viscosity at 20 C, 1.002 mPa s (CRC), the value this case typed before C402 ("water at 20 C"), now with its source.  It is the viscosity of the solvent, stood over a dilute feed (each solute below 1 wt %).  How far it is from the solution's: the same table at p. 8-77 gives NaCl at 20 C: 0.5 wt % 1.011, 1 wt % 1.020, 3 wt % 1.052, 4 wt % 1.068 mPa s, i.e. NaCl at 1 wt % is +1.8 % over water and at 0.5 wt % +0.9 %, and this feed is below that.
+  Read by transport.liquid.viscosity.measured (DEV.md 4c C398 slice (d)); until C402 the number was typed in the
+  membrane unit's massTransfer block, which now refuses it.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    sha256       "b04f7502c16a37568303fc1d6eed2c9cd28f0d7a53e7e1c5c33087535b25c845";
+    source       literature;
+    basis        "pure water at 20 C, taken for the dilute solution of MgSO4, NaCl: the value of the SOLVENT, not a measurement of the solution";
+    citation     "Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Concentrative properties of aqueous solutions', p. 8-57: 'the viscosity of pure water at 20 C is 1.002 mPa s'";
+}
+
+property    liquidViscosity;
+system      ( MgSO4 NaCl water );
+solvent     water;
+
+columns
+(
+    { name T;       unit K;    }
+    { name mu;      unit Pa.s; }
+    { name w[MgSO4]; unit -;    }
+    { name w[NaCl]; unit -;    }
+);
+data        ( 293.15 1.002e-3 0 0 );
+
+box
+{
+    T        ( 292.65 293.65 );
+    w[MgSO4]  ( 0 0.01 );
+    w[NaCl]  ( 0 0.01 );
+}

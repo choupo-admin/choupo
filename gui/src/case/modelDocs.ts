@@ -351,12 +351,17 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   SRK:          { guide: "theory", dest: "ch:cubic-eos" },// Soave-Redlich-Kwong
   PR:           { guide: "theory", dest: "ch:cubic-eos" },// Peng-Robinson (same chapter)
   PengRobinson: { guide: "theory", dest: "ch:cubic-eos" },
+  MathiasCopeman: { guide: "theory", dest: "sec:cubic-alpha-mc" }, // per-component cubic alpha, fitted to the record's own Psat law (C408 slice 0)
+  LeeKeslerPloecker: { guide: "theory", dest: "sec:lkp" }, // Lee-Kesler + Ploecker mixing rules (C408 d)
   Peneloux:     { guide: "theory", dest: "sec:peneloux" },
   JhaveriYoungren: { guide: "theory", dest: "sec:peneloux" }, // the PR shift (C408 a)  // volume translation of SRK/PR (C408 a)
+  vanDerWaalsOneFluid: { guide: "theory", dest: "sec:cubic-mixing-rule" }, // the cubic's default mixing rule (C408 b)
+  MHV1:         { guide: "theory", dest: "sec:cubic-mixing-rule" },  // zero-pressure excess-Gibbs rule, Michelsen 1990 (C408 b)
+  MHV2:         { guide: "theory", dest: "sec:cubic-mixing-rule" },  // second order, Dahl & Michelsen 1990 (C408 b)
   // -- vapour pressure (VaporPressureModel.cpp) ---------------------------
   Antoine:       { guide: "theory", dest: "ch:vap" },     // log10 P = A - B/(C+T)
   AmbroseWalton: { guide: "theory", dest: "ch:vap" },     // corresponding-states, needs Tc/Pc/omega
-  Wagner:        { guide: "theory", dest: "sec:evap-dilution-window" }, // IAPWS SR1-86 Eq. 1 as implemented (water above 373 K)
+  Wagner:        { guide: "theory", dest: "sec:water-iapws-psat" }, // IAPWS SR1-86 Eq. 1 as implemented: water's catalogue vapour pressure since 2026-11-16
   // -- reference-state / pure-component correlations ----------------------
   Rackett:     { guide: "theory", dest: "ch:rackett" },        // saturated-liquid molar volume
   sublimation: { guide: "theory", dest: "ch:sublimation" },    // solid-vapour curve, triple point

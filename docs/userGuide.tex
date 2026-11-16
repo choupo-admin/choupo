@@ -452,8 +452,8 @@ selector, e.g.\ \code{simultaneous} on a column), then \code{in} (one
 inlet) or \code{inputs (...)} (several), \code{outputs (...)}, the
 \code{operation \{...\}} block of numeric knobs, and finally optional
 \code{reaction} / \code{crystallisation} / \code{dryingCurve}
-references and an optional per-unit \code{thermo \{\}} override
-(\S\ref{sec:thermo-override}).
+references and an optional per-unit \code{thermo <name>;} selecting a named
+variant of the property dictionary (\S\ref{sec:thermo-override}).
 
 \paragraph{Identifying streams: inputs by name, outputs by \emph{position}.}%
 \label{sec:flowsheetDict-streams}
@@ -1273,16 +1273,28 @@ closes its first law to $10^{-12}$ on IF97 --- and its ideal-gas twin
 \file{rankine01\_water} is kept on purpose, to show what an ideal-gas
 water \emph{cannot} do (there is no two-phase dome to cross).
 
-\subsection{Per-unit \code{thermo \{\}} override and model boundaries}\label{sec:thermo-override}
+\subsection{A unit's own world (a named variant) and model boundaries}\label{sec:thermo-override}
 
-A unit may carry a \code{thermo \{...\}} block that \emph{replaces} the
-global models for that unit only (components stay global):
+A unit may select, with \code{thermo <name>;}, a \emph{named variant} of the
+case's property dictionary; the variant \emph{replaces} the global models for
+that unit only (components stay global).  The variant is declared under
+\code{variants \{\}} in \file{constant/thermoPhysPropDict} (in the sector's own
+\file{constant/thermoPhysPropDict} for a unit inside a sector --- variants are
+not inherited) and states only what differs from the dictionary's own system:
 
 \begin{lstlisting}[language=dict]
+// constant/thermoPhysPropDict
+variants { srkVapour { equilibrium { vapour { fugacityModel SRK; } } } }
+
+// system/flowsheetDict
 { name turbine;  type turbine;  in feed;  outputs ( expanded );
   operation { W_shaft -3 kW;  eta 0.8; }
-  thermo    { equationOfState { model SRK; } } }    // real gas here only
+  thermo    srkVapour; }                          // real gas here only
 \end{lstlisting}
+
+The older inline form, a \code{thermo \{ ... \}} block written inside the unit,
+is no longer read: the engine refuses it by name and prints the two lines to
+write instead.
 
 A stream crossing from model X into model Y is re-interpreted at the
 boundary: $(T,P,z)$ are held and each unit recomputes its own enthalpy,
@@ -1291,10 +1303,10 @@ enthalpy.  \textbf{$H$ is the conserved truth; $T$ is the
 model-dependent readout.}  The solver never silently nudges $T$ to
 paper over the step; an opt-in model-boundary audit prints
 $\Delta H = H_{\mathrm{down}} - H_{\mathrm{up}}$ into the first-law
-ledger.  Default to one consistent global model; reach for the override
+ledger.  Default to one consistent global model; reach for a variant
 only when the physics demands it.  The run log is loud either way ---
 every unit prints \code{thermo: inherited (global package)} or
-\code{LOCAL override --- ...}.
+\code{LOCAL override --- variant '...' ...}.
 
 \subsection{Self-contained cases}\label{sec:self-contained}
 
@@ -1440,8 +1452,8 @@ The complete catalogue of steady-state unit operations --- what each
 \end{center}
 
 Each unit also accepts top-level solver-tolerance overrides (same keys
-as \file{solverDict}) and the per-unit \code{thermo \{\}} override
-(\S\ref{sec:thermo-override}).
+as \file{solverDict}) and the per-unit \code{thermo <name>;} variant
+selection (\S\ref{sec:thermo-override}).
 
 % ---------------------------------------------------------------------
 \subsection{Flash and saturation}\label{sec:flash-family}
@@ -2245,8 +2257,9 @@ operation
     elements         1;             // >1 for a train in one vessel
     P_perm           1.01325 bar;
     dP_feed_total    2 bar;
-    massTransfer  { model SchockMiquel;  channelHeight 0.7 mm;
-                    diffusivity 1.6e-9 m2/s;  viscosity 1.0e-3 Pa.s; }
+    massTransfer  { model SchockMiquel;  channelHeight 0.7 mm; }
+    // viscosity, density and the solute's diffusivity come from
+    // constant/thermoPhysPropDict (a membrane block refuses them)
     osmotic       { model Pitzer; }
 }
 \end{lstlisting}

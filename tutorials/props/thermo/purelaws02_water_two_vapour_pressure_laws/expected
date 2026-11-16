@@ -6,7 +6,7 @@ diag    psatPreferred_350K     H_R              0                  1e-4
 diag    psatPreferred_350K     H_ig             -240070.657473     1e-4
 diag    psatPreferred_350K     H_real           -240070.657473     1e-4
 diag    psatPreferred_350K     P                100000             1e-4
-diag    psatPreferred_350K     Psat_water       42168.7918954      1e-4
+diag    psatPreferred_350K     Psat_water       41683.0678117      1e-4
 diag    psatPreferred_350K     S_R              0                  1e-4
 diag    psatPreferred_350K     S_ig             194.26122203       1e-4
 diag    psatPreferred_350K     S_real           194.26122203       1e-4
@@ -19,7 +19,7 @@ diag    psatPreferred_450K     H_R              0                  1e-4
 diag    psatPreferred_450K     H_ig             -236623.011889     1e-4
 diag    psatPreferred_450K     H_real           -236623.011889     1e-4
 diag    psatPreferred_450K     P                100000             1e-4
-diag    psatPreferred_450K     Psat_water       1014452.86125      1e-4
+diag    psatPreferred_450K     Psat_water       932203.214807      1e-4
 diag    psatPreferred_450K     S_R              0                  1e-4
 diag    psatPreferred_450K     S_ig             202.921117474      1e-4
 diag    psatPreferred_450K     S_real           202.921117474      1e-4
@@ -32,7 +32,7 @@ diag    psatPreferred_550K     H_R              0                  1e-4
 diag    psatPreferred_550K     H_ig             -233083.156806     1e-4
 diag    psatPreferred_550K     H_real           -233083.156806     1e-4
 diag    psatPreferred_550K     P                100000             1e-4
-diag    psatPreferred_550K     Psat_water       7152298.65815      1e-4
+diag    psatPreferred_550K     Psat_water       6117184.19721      1e-4
 diag    psatPreferred_550K     S_R              0                  1e-4
 diag    psatPreferred_550K     S_ig             210.021293041      1e-4
 diag    psatPreferred_550K     S_real           210.021293041      1e-4

@@ -73,7 +73,7 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "order, its name and type, the streams it reads and writes, and a "
       + "line saying which property package it computes with — `thermo: "
       + "inherited (global package)`, or `LOCAL override` when the unit "
-      + "carries its own thermo {} block (" + at("unitThermo") + ", "
+      + "selects its own named variant (`thermo <name>;`) (" + at("unitThermo") + ", "
       + at("unitThermoLocal") + "). The inheritance is printed for every unit "
       + "so that an override can never pass unnoticed.",
   },
@@ -135,12 +135,12 @@ export const RUN_LOG_STEPS: readonly LessonStep[] = [
       + "). flash13 is such a flash — pick it in the viewer and click the "
       + "block.",
     derivation: [
-      { step: "flash13's raw residual fell from 1.5741 to 2.9e-12; the "
-          + "normalised one from 7.0351e-02 to 1.8432e-13.",
-        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = \frac{1.8432\times10^{-13}}{7.0351\times10^{-2}}` },
+      { step: "flash13's raw residual fell from 1.6088 to 6.7e-15; the "
+          + "normalised one from 7.1901e-02 to 4.4550e-16.",
+        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = \frac{4.4550\times10^{-16}}{7.1901\times10^{-2}}` },
       { step: "That quotient is the reduction the block prints, "
-          + "2.6199e-12.",
-        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = 2.62\times10^{-12}` },
+          + "6.1961e-15.",
+        eq: String.raw`\frac{\tilde r_\mathrm{final}}{\tilde r_\mathrm{initial}} = 6.20\times10^{-15}` },
       { step: "The absolute test is taken on the normalised residual, against "
           + "the tolerance (" + at("absoluteTest") + "); a relative test on "
           + "the reduction, against relTol, is the second way to pass ("

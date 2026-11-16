@@ -100,6 +100,17 @@
         "tutorials": []
       },
       {
+        "key": "LeeKeslerPloecker",
+        "name": "Lee-Kesler corresponding-states equation with the Ploecker-Knapp-Prausnitz mixing rules",
+        "source": "src/thermo/equationOfState/LeeKeslerPloecker.cpp",
+        "engine": "all",
+        "phases": "vapour/liquid",
+        "tutorials": [
+          "lkp01_lee_kesler_tables",
+          "lkp02_n2_ch4_ar_112K"
+        ]
+      },
+      {
         "key": "SRK",
         "name": "Soave-Redlich-Kwong",
         "source": "src/thermo/equationOfState/SRK.cpp",
@@ -1157,6 +1168,12 @@
         "count": 1
       },
       {
+        "key": "parameters.LKP",
+        "name": "Lee-Kesler-Ploecker binary kappa, as printed in Ploecker, Knapp & Prausnitz 1978 Table I",
+        "source": "data/standards/parameters/LKP/",
+        "count": 131
+      },
+      {
         "key": "parameters.adsorption",
         "name": "Adsorption isotherm parameter records",
         "source": "data/standards/parameters/adsorption/",
@@ -1166,7 +1183,7 @@
         "key": "parameters.solution",
         "name": "Solution-property parameter records",
         "source": "data/standards/parameters/solution/",
-        "count": 12
+        "count": 13
       },
       {
         "key": "mixtures",

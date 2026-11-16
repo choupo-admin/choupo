@@ -31,3 +31,13 @@ equilibrium
         fugacityModel idealGas;
     }
 }
+
+approximations
+{
+    massWithoutVolume
+    {
+        components      ( NaCl MgSO4 );
+        maxMassFraction 0.005;
+        reason          "the membrane feed's dissolved salts keep their mass and add no volume to the feed's liquid density (their mass fraction is at most 0.002); a membrane unit asks the package for the feed density and a solute with no liquid volume needs this declared reading (C402: the 1000 kg/m3 the unit used to type is gone); the engine's own bound on it is about +1.8 % on rho at 1 mol/kg (AqueousVolumetric.H)";
+    }
+}

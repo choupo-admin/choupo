@@ -1,0 +1,37 @@
+/*---------------------------------------------------------------------------*\
+  Seawater at S = 35 and 25 C: 0.966 mPa s, an ASSUMED value (no primary read), cross-checked against the CRC Handbook's
+  table (p. 14-12), which only compiles it.  The cases typed 1.0 or
+  0.95 mPa s with no source until C402 (review MB-03).  The salinity 35 g/kg is stated here as the NaCl-equivalent
+  mass fraction 0.035 of the case's lumped salt; the box lets the value stand over every feed of this liquid
+  up to 7 wt % (the brine of a 45-50 % recovery), where it is a hypothesis: the same table shows the viscosity
+  rising with salinity, so a brine is a little more viscous than this, and the run prints the origin (assumed, here and everywhere:
+  the value has no primary).  The CRC NaCl table at 20 C (p. 8-77) gives +5 to +7 % for 3 to 4 wt %.
+\*---------------------------------------------------------------------------*/
+
+provenance
+{
+    sha256       "a1fd3eb03366f1a9489662926f00202f7647a1b72a33db112044b53d7f38ed26";
+    origin       assumed;
+    basis        "ASSUMED: a representative viscosity of seawater of salinity 35 at 25 C, the figure a handbook compilation tabulates; its primary is not attributed (see the citation), so the case states it as its own assumption; a lumped NaCl stands for the salts";
+    citation     "NO PRIMARY READ, and none in the literature folder.  Cross-check (enters no value): Lide (ed.), CRC Handbook of Chemistry and Physics, 82nd ed. (2001), table 'Properties of seawater as a function of temperature at salinity S=35 and normal atmospheric pressure', p. 14-12 (PDF page 1638 of Handbooks-DataCompilations/lide-crc-handbook-chemistry-physics-82ed.pdf): eta = 0.966 mPa s at 25 C, 1.085 at 20 C.  That table gives three general references (Unesco Technical Papers in Marine Science 36, 1981; Kennish, CRC Practical Handbook of Marine Science, 1989; Poisson, IEEE J. Ocean. Eng. OE-5, 50, 1981) and attributes no column to any of them, so no primary can be cited through it";
+}
+
+property    liquidViscosity;
+system      ( NaCl boron water );
+solvent     water;
+
+columns
+(
+    { name T;       unit K;    }
+    { name mu;      unit Pa.s; }
+    { name w[NaCl]; unit -;    }
+    { name w[boron]; unit -;    }
+);
+data        ( 298.15 0.966e-3 0.035 0 );
+
+box
+{
+    T        ( 297.65 298.65 );
+    w[NaCl]  ( 0 0.07 );
+    w[boron]  ( 0 0.001 );
+}

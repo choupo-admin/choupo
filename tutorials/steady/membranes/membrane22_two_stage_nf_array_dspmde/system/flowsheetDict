@@ -50,9 +50,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;    // coefficients + window: the spacer record
-                viscosity      1.0e-3;          // Pa.s, water at 20 C (prices Re and Sc)
-                diffusivity    1.5e-9;          // m2/s: the SALT-level k_film column only;
-                                                // DSPM-DE prices each ion's k on its own D
             }
             pressureDrop
             {
@@ -94,8 +91,6 @@ units
             massTransfer
             {
                 model          SchockMiquel;
-                viscosity      1.0e-3;
-                diffusivity    1.5e-9;
             }
             pressureDrop
             {

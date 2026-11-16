@@ -83,13 +83,13 @@ describe("the static quotes match their goldens", () => {
   //  A number quoted in prose is a second home; each is pinned against
   //  the golden runTests re-verifies, so the two cannot drift apart.
   it("flash20's twin-flash K-values and V/F", () => {
-    expect(flash20).toMatch(/flashNRTL\s+K_ethanol\s+3\.8955/);
+    expect(flash20).toMatch(/flashNRTL\s+K_ethanol\s+3\.8168/);
     expect(flash20).toMatch(/flashPCSAFT\s+K_ethanol\s+11\.4711/);
-    expect(flash20).toMatch(/flashNRTL\s+V_over_F\s+0\.5120/);
+    expect(flash20).toMatch(/flashNRTL\s+V_over_F\s+0\.4910/);
     expect(flash20).toMatch(/flashPCSAFT\s+V_over_F\s+0\.6489/);
-    expect(prose(SRC)).toContain("K_ethanol = 3.90");
+    expect(prose(SRC)).toContain("K_ethanol = 3.82");
     expect(prose(SRC)).toContain("K_ethanol = 11.47");
-    expect(prose(SRC)).toContain("V/F = 0.512");
+    expect(prose(SRC)).toContain("V/F = 0.491");
     expect(prose(SRC)).toContain("V/F = 0.649");
   });
 
@@ -99,11 +99,11 @@ describe("the static quotes match their goldens", () => {
     //  fixed(4)); the page quotes it to four decimals, so the
     //  pin is the ROUNDING of the golden's number -- a string match on
     //  "0.3857" failed the day the golden stopped rounding for it.
-    expect(dec4(golden(fitNRTL02, /aad_heldout_K\s+([0-9.eE+-]+)/))).toBe(0.3857);
-    expect(dec4(golden(fitNRTL02, /score_catalogue_pair_at_101kPa aad\s+([0-9.eE+-]+)/))).toBe(0.0821);
-    expect(prose(SRC)).toContain("0.0821 K");
-    expect(prose(SRC)).toContain("0.3857 K");
-    expect(prose(SRC)).toContain("4.7");
+    expect(dec4(golden(fitNRTL02, /aad_heldout_K\s+([0-9.eE+-]+)/))).toBe(0.3895);
+    expect(dec4(golden(fitNRTL02, /score_catalogue_pair_at_101kPa aad\s+([0-9.eE+-]+)/))).toBe(0.0706);
+    expect(prose(SRC)).toContain("0.0706 K");
+    expect(prose(SRC)).toContain("0.3895 K");
+    expect(prose(SRC)).toContain("5.5");
   });
 });
 

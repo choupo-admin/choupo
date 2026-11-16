@@ -3,8 +3,8 @@
 # kind   name      key         expected        reltol
 diag    envelope               bubble_points    26                 1e-4
 diag    envelope               bubble_stopped_bar 27                 1e-4
-diag    envelope               dew_points       38                 1e-4
-diag    envelope               dew_stopped_bar  39                 1e-4
+diag    envelope               dew_points       42                 1e-4
+diag    envelope               dew_stopped_bar  43                 1e-4
 diag    liquidProbe            n_emptyCurves    0                  1e-4
 diag    liquidProbe            n_failures       0                  1e-4
 diag    liquidProbe            n_points         80                 1e-4

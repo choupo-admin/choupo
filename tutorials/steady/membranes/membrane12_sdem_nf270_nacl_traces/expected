@@ -1,20 +1,25 @@
 # Reference KPIs (golden master, auto-recorded by runTests --record).
 # units: stream F is kmol/s (canonical SI, as in the result JSON); the run LOG prints kmol/h.
 # kind   name      key         expected        reltol
-stream  feed                   F                0.0154246666667    1e-4
-stream  feed                   T                293.15             1e-4
-stream  permeate               F                0.000143506830367  1e-4
-stream  permeate               T                293.15             1e-4
-stream  retentate              F                0.0152811598484    1e-4
-stream  retentate              T                293.15             1e-4
-kpi     NF                     J_w_avg          2.58542546558e-05  1e-4
-kpi     NF                     R_obs_Cl         0.774930206622     1e-4
-kpi     NF                     R_obs_NH4        0.783943147317     1e-4
-kpi     NF                     R_obs_NO3        0.307702586566     1e-4
-kpi     NF                     R_obs_Na         0.765592156411     1e-4
-kpi     NF                     dP_feed          5000               1e-4
-kpi     NF                     mass_closure_rel 7.98890233342e-16  1e-4
-kpi     NF                     membranePotential_mV_avg 34.2157491014      1e-4
-kpi     NF                     water_recovery   0.00930205511719   1e-4
-source  NF                     liquidDensity    default.rhoFeed1000 exact
-source  NF                     liquidViscosity  default.water1e-3 exact
+stream  feed                   F                0.0154246666667  1e-4
+stream  feed                   T                293.15           1e-4
+stream  permeate               F                0.000143378775925 1e-4
+stream  permeate               T                293.15           1e-4
+stream  retentate              F                0.0152812878907  1e-4
+stream  retentate              T                293.15           1e-4
+kpi     NF                     J_w_avg          2.58582045393e-05 1e-4
+kpi     NF                     R_obs_Cl         0.774956982937   1e-4
+kpi     NF                     R_obs_NH4        0.783969776145   1e-4
+kpi     NF                     R_obs_NO3        0.307764292157   1e-4
+kpi     NF                     R_obs_Na         0.765619620506   1e-4
+kpi     NF                     dP_feed          5000             1e-4
+kpi     NF                     mass_closure_rel 1.99722558336e-16 1e-4
+kpi     NF                     membranePotential_mV_avg 34.2184765323    1e-4
+kpi     NF                     water_recovery   0.00929375461745 1e-4
+source  NF                     liquidDensity    idealMixing[referenceEquation.IAPWS95+massWithoutVolume] exact
+kpi     NF                     Gamma_Cl_avg     0.0020072869625  1e-4
+kpi     NF                     Gamma_NH4_avg    0.00203055645418 1e-4
+kpi     NF                     Gamma_NO3_avg    0.000798410663008 1e-4
+kpi     NF                     Gamma_Na_avg     0.00198317768951 1e-4
+kpi     NF                     solute_closure_rel 1.19114008208e-16 1e-4
+kpi     NF                     rho_feed         998.955054984    1e-4

@@ -128,6 +128,10 @@ public:
         return false;
     }
 
+    // The cubic's MIXING RULE in force, one line per fact, for the resolved
+    // view (C408 (b)).  Empty for a model with no cubic mixing rule.
+    virtual std::vector<std::string> mixingRuleLines() const { return {}; }
+
     // Compressibility Z = P·v / (R·T) at the vapour root.  Default ~ 1
     // for ideal gas; cubic EoS override.  Useful as a diagnostic and
     // as a single number callers can read instead of v.
@@ -142,6 +146,13 @@ public:
     // "" for a model that carries none.  The resolved view prints it, so the
     // choice is recorded in the result (C408 (a)).
     virtual std::string volumeTranslationNote() const { return ""; }
+
+    // A one-line statement of the MIXING RULE and its binary constants, "" for
+    // a model whose rule needs no statement (the cubics' van der Waals rule is
+    // listed with their pairs).  The resolved view prints it, so a default the
+    // model took for an undeclared pair is in the result, not only the log
+    // (C408 (d), Lee-Kesler-Ploecker).
+    virtual std::string mixingRuleNote() const { return ""; }
 
     // LIQUID-root molar volume [m³/mol], for EoS whose density solve
     // distinguishes a liquid root at (T,P,y) (cubics, SAFT).  Explicitly
@@ -171,6 +182,11 @@ public:
     }
 
     virtual const std::string& modelName() const = 0;
+
+    // A NON-DEFAULT choice inside the model that the resolved view and the
+    // run must name (C408 slice 0: a cubic's alpha function).  Empty = the
+    // model's default, so every existing run prints exactly what it printed.
+    virtual std::string alphaFunctionNote() const { return std::string(); }
 
     // Minimum-parameter-set MANIFEST (validation boundary, NOT the hot path):
     // the per-component property keys this model needs to be trustworthy

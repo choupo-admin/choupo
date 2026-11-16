@@ -31,13 +31,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ij  349.983901729;
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ji  -358.939494793;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ij  311.922051984;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ji  -298.86357401;
     }
 
     evidence
     {
-        partitionFingerprint  "d185cc264c30fd5e";   // frozen before the fit
+        partitionFingerprint  "42fde8d8490f3a07";   // frozen before the fit
 
         datasets
         (
@@ -75,7 +75,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.02; max 0.999; n 73; }
+            fit         { min 0.02; max 0.999; n 72; }
         }
     }
 
@@ -96,13 +96,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ij  349.985635515;
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ji  -358.940533846;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ij  311.948360023;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.b_ji  -298.880401605;
     }
 
     evidence
     {
-        partitionFingerprint  "d185cc264c30fd5e";   // frozen before the fit
+        partitionFingerprint  "42fde8d8490f3a07";   // frozen before the fit
 
         datasets
         (
@@ -140,7 +140,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.02; max 0.999; n 73; }
+            fit         { min 0.02; max 0.999; n 72; }
         }
     }
 
@@ -161,13 +161,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ij  3370.65072024;
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ji  -4136.37949412;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ij  8434.48981644;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ji  -6798.3986295;
     }
 
     evidence
     {
-        partitionFingerprint  "d185cc264c30fd5e";   // frozen before the fit
+        partitionFingerprint  "42fde8d8490f3a07";   // frozen before the fit
 
         datasets
         (
@@ -205,7 +205,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.02; max 0.999; n 73; }
+            fit         { min 0.02; max 0.999; n 72; }
         }
     }
 
@@ -226,13 +226,13 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ij  3370.6507081;
-        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ji  -4136.37948163;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ij  8434.48983702;
+        equilibrium.liquid.activityModel.binaryParameters.water-ethyleneGlycol.A_ji  -6798.39863406;
     }
 
     evidence
     {
-        partitionFingerprint  "d185cc264c30fd5e";   // frozen before the fit
+        partitionFingerprint  "42fde8d8490f3a07";   // frozen before the fit
 
         datasets
         (
@@ -270,7 +270,7 @@ properties
         domain
         {
             coordinate  x1;
-            fit         { min 0.02; max 0.999; n 73; }
+            fit         { min 0.02; max 0.999; n 72; }
         }
     }
 

@@ -240,7 +240,7 @@ equilibrium
 
     equationOfState
     {
-        model      SRK;                        // or PengRobinson (the phi-phi word; PR78 since 2026-10-21)
+        model      SRK;                        // or PengRobinson (the phi-phi word; PR78 since 2026-10-21), PCSAFT, LeeKeslerPloecker
         mixingRule vanDerWaalsOneFluid;
         binaryInteractions
         {
@@ -277,6 +277,30 @@ never fake a liquid root), so it is never a legal liquid slot.  No
 `binaryInteractions` → `kij = 0`, announced (predictive-degraded;
 near-critical splits will be off).  SRK/PR read each component's `Tc`, `Pc`,
 `omega` — no model-specific data files.
+
+**The cubic's alpha function (C408 slice 0, opt-in).**  The default is Soave
+for `SRK` and the PR78 slope for `PengRobinson`, one curve in omega for every
+fluid; with the records' own Tc, Pc, omega it misses the normal-boiling
+vapour pressure by -8.8 % for water and -2.7 % for methanol.  Writing
+`alphaFunction MathiasCopeman;` beside `model` (phiPhi cubics only; PCSAFT
+refuses it) switches to the per-component three-constant form of Poling et
+al. 5th ed. Table 4-7 (Theory Guide section `sec:cubic-alpha-mc`):
+
+```
+equationOfState { model SRK; alphaFunction MathiasCopeman; }
+```
+
+The constants `c1..c3` live in each component record's
+`cubicAlpha { SRK { form MathiasCopeman; c1; c2; c3; Trange (lo hi); } PengRobinson { ... } }`
+block, FITTED BY CURATION to that record's own vapour-pressure law over the
+law's declared window (`bin/curate/fit_alpha_function.py <component> --cubic
+SRK|PengRobinson --write`; provenance `origin derived`, with the law, the
+window, the largest deviation and a value sha).  Never type them from a table.
+A component whose record lacks the block is REFUSED by name, the message names
+the tool.  `water` and `methanol` carry both cubics; CO2 does not (its
+Antoine law is the sublimation line and the tool refuses it).  Above Tc the
+Soave branch with `c1` only.  The run prints the choice and the resolved view
+names it.  Witness case: `props/molecular/alpha01_water_methanol_psat`.
 
 #### Volume translation (Péneloux 1982) — a corrected liquid VOLUME, same equilibrium
 
@@ -323,6 +347,100 @@ departure.  What it does NOT change: K-values, flashes, `S_R`, the liquid-phase 
 Rackett liquid density of `ThermoPackage::density`.  Limits: fitted to
 saturated liquids at T_r = 0.7, useless near the critical point.  Witness:
 `tutorials/props/molecular/volumeTranslation01_nhexane_peneloux`.
+
+#### Cubic mixing rules: `vanDerWaalsOneFluid` (default), `MHV1`, `MHV2` — a cubic fed a low-pressure G^E model
+
+`mixingRule` is a key of `equationOfState` (phiPhi).  `vanDerWaalsOneFluid` is
+what every cubic ran before C408 (b): `a = ΣΣ y_i y_j (1−k_ij) √(a_i a_j)`,
+`b = Σ y_i b_i`, the `kij` of `binaryInteractions`.  `MHV1` and `MHV2` match the
+cubic to an excess-Gibbs model at ZERO pressure, so a pair regressed on
+low-pressure data feeds a cubic that reaches high pressure and supercritical
+components with no new parameter: Michelsen 1990, `q1 (β − Σ y_i β_i) = G^E/RT +
+Σ y_i ln(b/b_i)`, `β = a/(bRT)`, `q1 = −0.593` (Eq. 12, p. 215–216); Dahl &
+Michelsen 1990 adds `q2 (β² − Σ y_i β_i²)` with `q1 = −0.478`, `q2 = −0.0047`
+(Eq. 13, p. 1831); Poling Table 5-1 p. 5.17 prints the same SRK constants.
+Theory Guide `sec:cubic-mixing-rule`.
+
+#### Lee–Kesler with the Plöcker mixing rules — corresponding states, both phases, a printed table to check against
+
+`model LeeKeslerPloecker;` is a third phi-phi equation of state beside the cubics
+and PC-SAFT, for non-polar and slightly polar hydrocarbon mixtures and light
+gases from the dilute gas to the compressed liquid (Lee & Kesler 1975, AIChE J.
+21, 510; Plöcker, Knapp & Prausnitz 1978, Ind. Eng. Chem. Process Des. Dev. 17,
+324; Theory Guide `sec:lkp`).  It reads each component's `Tc`, `Pc`, `omega` —
+no new catalogue field (the pure critical volume is `(0.2905 − 0.085 ω) R Tc/Pc`,
+LK Eq. 20–21) — and prices a fluid by interpolating, at the same T_r and P_r,
+between a simple fluid and an n-octane reference fluid of one modified-BWR
+equation (LK Eq. 2–12, constants Table 1).  Vapour and liquid roots, `Z`,
+`H_R`, `S_R` and `ln φ_i` all come from it; the vapour root is the family's
+contract (`Z`, `v`, `H_R`, `S_R`), `phiLiquid` and `molarVolumeLiquid` the liquid.
+
+```
+equationOfState
+{
+    model      SRK;
+    mixingRule MHV2;               // vanDerWaalsOneFluid | MHV1 | MHV2
+    activityModel                  // the block a gammaPhi liquid takes, INSIDE the cubic's block
+    {
+        model NRTL;
+        binaryParameters { methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; } }
+
+    model LeeKeslerPloecker;
+    binaryInteractions
+    {
+        // Ploecker, Knapp & Prausnitz 1978, Table I, p. 327 -- one record per pair
+        N2-CH4 { source "data/standards/parameters/LKP/CH4-N2.dat"; }
+        N2-Ar  { source "data/standards/parameters/LKP/Ar-N2.dat"; }
+    }
+}
+```
+
+What is refused, by name: `MHV1`/`MHV2` on `PengRobinson` (the constants are
+fitted per cubic; only SRK's are read); a G^E rule without `activityModel`, and an
+`activityModel` under the one-fluid rule; `binaryInteractions` under `MHV1`/`MHV2`
+(they have no kij); a G^E model `ideal`; a PAIR WITH NO RECORD (under gammaPhi it
+is an announced ideal assumption; inside a cubic a zero G^E is a definite claim
+about the attraction, not the one-fluid rule, and no kij corrects it); an unknown
+word (the registry is listed); `PCSAFT` with a cubic rule; an `MHV1`/`MHV2` word in a
+gammaPhi / diluteSolution `vapour {}`.  A pure `β_i = a_i/(b_i R T)` outside
+`10 < β < 13`, the interval the polynomial `q(β)` was fitted on, is announced
+once.  The G^E model is called at the composition of the phase priced; its
+`H^E` (`−R T² d(G^E/RT)/dT`) enters `H_R` and `S_R`, the VAPOUR root's departures
+(a liquid stream of a phiPhi package is not the cubic's until DEV.md 4c C410).
+The run prints the rule, its constants with their page, the G^E model and each
+pair with its tier and span, and the resolved view lists them.  What it is NOT:
+Huron–Vidal, Wong–Sandler and PSRK (later slices); a fitted alpha for water
+(slice 0).  The mixing-rule decomposition op `mixingRules` is the ONE-FLUID rule's and
+refuses a G^E rule by name.  Witness:
+`tutorials/props/molecular/mhv01_methanol_water_100C` (12 measured bubble points
+of methanol + water at 100 °C, Griswold & Wong 1952 via Poling Table 8-46: the
+gamma-phi package of the pair misses P by 4.1 % mean / 6.7 % max, SRK + `MHV1` on the
+fitted Mathias-Copeman alpha (`alphaFunction MathiasCopeman;` composes: its a_i feeds
+the rule) 4.0 / 5.8 %, `MHV2` 4.0 / 7.2 %, the one-fluid rule with kij = 0 39 / 78 %;
+on the plain Soave alpha MHV1 6.3 / 11.0 % and MHV2 6.7 / 12.2 %, because SRK's water
+vapour pressure at 100 °C is 8.8 % low; the pair was fitted at 297–361 K and the
+diagram is at 373 K).  Gate `check_cubic_mixing_rule`.
+
+The binary constant is `kappa`, a MULTIPLIER of the geometric-mean pseudo-critical
+temperature (1 = no interaction; 0.92–1.53 in the table, up to 2.6 with
+hydrogen) — NOT a cubic's `k_ij`, though the record keeps the field name `kij`
+and `eos LeeKeslerPloecker;`.  the pairs ship under
+`data/standards/parameters/LKP/` (file names in byte order, `CH4-N2`,
+`Ar-CH4`); a pair with no record runs at kappa = 1 and is ANNOUNCED BY NAME in the
+run and in the resolved view (PKP estimate an unlisted pair from a graph, not read
+here).  Refused by name: hydrogen and helium (PKP price them with temperature-
+dependent effective critical constants), kappa ≤ 0, a pair record regressed for
+another EoS, a pair naming a component the package lacks, `volumeTranslation` and
+a mixing rule other than the model's own.  An evaluation outside T_r 0.3–4 or
+P_r > 10 is announced once.  Limits: no strongly polar fluid (the three water
+pairs carry the paper's own "fortuitous"); accuracy falls near the critical region
+of a widely boiling mixture; the liquid-phase enthalpy of a phiPhi package follows
+the family contract (DEV.md 4c C410).  Witnesses:
+`tutorials/props/molecular/lkp01_lee_kesler_tables` (the equation against Tables
+5, 7, 9 of the paper, 21 anchor rows) and
+`tutorials/props/compare/lkp02_n2_ch4_ar_112K` (N2 + CH4, N2 + Ar and the ternary
+at 112 K against Miller, Kidnay & Hiza 1973, bubble pressure within 1.6 / 0.75 /
+0.48 %).  Gate: `check_lee_kesler_ploecker`.
 
 In a `gammaPhi` system a cubic may still serve the VAPOUR slot alone
 (`vapour { fugacityModel SRK; }`) — that is a γ-φ world with a real-gas φ,
@@ -656,8 +774,11 @@ solver throws a clear error naming the missing slot.
   method should not be used when water is the solute").  Write an entry for the pair:
   a value with its source, or `{ solute water; solvent methanol; kind infiniteDilution;
   model WilkeChang; reason "..."; }` (the view marks it "outside the method's stated
-  scope").  Wilke-Chang's V_A is the record's `Vliq` at its datum temperature (25 C
-  unless `VliqT`), printed in the view; the method defines it at Tb (slice d2).
+  scope").  Wilke-Chang's V_A is the pure solute's molar volume AT ITS NORMAL BOILING
+  POINT, M / rho(Tb) from the package's liquid density at the record's Tb and 101325 Pa
+  (Poling 5th ed. Eq. 11-9.1; C398 slice d2); the view prints it with its temperature,
+  density and route.  A solute with no Tb, or no liquid density there, is REFUSED by
+  name -- the 25 C `Vliq` is never substituted; write an entry for the pair.
 - An entry replaces the default for ONE direction:
   `infiniteDilution { entries ( { solute methanol; solvent water; kind infiniteDilution;
   experiments methanolInWater288; } ); }` (or inline `value 1.26e-5 cm2/s; T 288 K;
@@ -747,7 +868,7 @@ caloric { liquidHeatCapacity { pin ( { component water; table crcWaterCp; interp
 - WHICH FILE: the `experiments/` of the `constant/` whose dictionary declares
   the pin -- a sector's pin reads `sectors/<S>/constant/experiments/`, never
   the root's (no walk up the folders); the view prints the path.  A pin in a
-  unit's inline `thermo {}` reads that UNIT's `constant/experiments/`.  Never
+  variant of a unit's OWN `constant/thermoPhysPropDict` reads that UNIT's `constant/experiments/`.  Never
   write `experimentsDir` (refused by name): the folder is decided by where the
   pin is declared.  A heat-capacity
   table takes `linear` or `monotoneCubic` only (H and S are its closed-form
@@ -833,8 +954,8 @@ citable from any source in the tree (record:
 properties.  Its blocks are the case's system; `variants {}` adds named
 variants, each stating ONLY what differs and deriving DIRECTLY from the
 system (one base: no chain, no cycle).  A unit or a props operation selects
-one with `thermo <name>;`; an inline `thermo { ... }` still reads, as an
-unnamed variant.  Grammar, refusals and a worked example:
+one with `thermo <name>;` (a UNIT's inline `thermo { ... }` is refused by name,
+C402; a props operation's inline fragment still reads, as an unnamed variant).  Grammar, refusals and a worked example:
 [`dict-syntax.md`](dict-syntax.md) → "Named variants".
 
 - **The atom inside `transport` is the PROPERTY BLOCK**
@@ -1000,8 +1121,8 @@ The builder **assembles, never estimates** — a missing datum is a curation
 problem solved before the run (`curation-protocol.md`), not a runtime guess.
 After assembly the package is passed to every unit op's `solve(dict, thermo,
 verbosity)`.  Units consume only the slice they need.  A unit (or a props
-operation) that selects a variant -- `thermo <name>;`, or an inline `thermo
-{}` -- gets that variant's package for itself only (components stay global);
+operation) that selects a variant -- `thermo <name>;` (or, for a props operation, an inline `thermo
+{}`) -- gets that variant's package for itself only (components stay global);
 a variant that changes `equilibrium` or `caloric` is a model boundary, see
 `energy.md` §model boundaries.  Before the solve the engine prints the
 RESOLVED VIEW of every property context the run uses (see "variants" above).

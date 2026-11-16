@@ -2733,7 +2733,7 @@ reactions library cascade UP the parent chain (\S\ref{sec:add-data}), pointing
 \code{choupoSolve} at a sub-sector folder runs that branch as a complete case,
 inheriting the parent's thermo and reactions and announcing what it inherited.
 
-\paragraph{The model-boundary rule.}  A per-unit \code{thermo \{\}} override
+\paragraph{The model-boundary rule.}  A per-unit named variant (\code{thermo <name>;})
 REPLACES the global models for that unit (components stay global, via
 \code{thermoFor}).  A stream crossing such a boundary is re-interpreted there.
 The governing law: \textbf{\(H\) is the conserved truth, \(T\) is the

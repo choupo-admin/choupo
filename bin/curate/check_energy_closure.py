@@ -610,9 +610,14 @@ def ratchet_kW(pin: float) -> float:
 #  against the flat 25 C volumes), which moves its conversion and the flash
 #  downstream; the same model-boundary step, -715.7 -> -689.2 kW.  The balance
 #  is still open.
+#  RE-PINNED 2026-11-16 (water's catalogue vapour pressure is the IAPWS
+#  equation, not an Antoine fit +2.5 % at 100 C): esterification2sector
+#  291.0850 -> 288.9940 and proxy01_gas_loop 51.9550 -> 51.4890.  Both are the
+#  SAME open balances (the model-boundary step and the gas loop), measured on
+#  the new curve; neither was paid.
 KNOWN_OPEN = {
-    "tutorials/steady/flowsheets/esterification2sector": 291.0850,
-    "tutorials/steady/flowsheets/proxy01_gas_loop": 51.9550,
+    "tutorials/steady/flowsheets/esterification2sector": 288.9940,
+    "tutorials/steady/flowsheets/proxy01_gas_loop": 51.4890,
     "tutorials/steady/rotating/pump01_water": 65.0000,
     "tutorials/steady/rotating/pump02_pressure_spec": 65.0000,
     #  The C378 pilot's two demonstrations with a pump (2026-11-13): the same
@@ -662,7 +667,11 @@ KNOWN_OPEN_KW = {
     "tutorials/steady/absorption/acetone05_luyben_absorber": 3.1179,
     "tutorials/steady/absorption/stripper01_NH3_water": 19.8710,
     "tutorials/steady/distillation/shortcut01_benzene_toluene": -1.0804,
-    "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 42.8610,
+    #  42.8610 -> 54.7522 on 2026-11-16 (IAPWS water Psat): the case compares an
+    #  NRTL flash with a PC-SAFT flash on one feed; only the NRTL side reads
+    #  water's Psat, and the gap between them -- the open debt -- GREW by
+    #  11.9 kW (28 %).  Said, not hidden: re-pinned, not paid.
+    "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 54.7522,
     "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
     "tutorials/steady/userops/userOp01_yield_reactor": 2.1701,
 }

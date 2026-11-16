@@ -19,6 +19,7 @@
 #include "thermo/liquidProperty/DensityLeaf.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 
+#include <stdexcept>
 #include <cstdio>
 #include <iostream>
 #include <limits>
@@ -79,6 +80,43 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T, scalar P,
     return evaluateImpl(thermo, p, T, P, x, who, leftOut, true, component);
 }
 
+Result soluteDiffusivity(const ThermoPackage& thermo, scalar T, std::size_t iSolute,
+                         std::size_t iSolvent, const Consumer* who)
+{
+    Result r;
+    r.value = thermo.diffusivityLiquid(T, iSolute, iSolvent);
+    const std::string sol = thermo.comp(iSolute).name();
+    const std::string slv = thermo.comp(iSolvent).name();
+    const auto* e = thermo.liquidDiffusivityDeclaration().entryFor(iSolute, iSolvent);
+    if (e && e->model.empty())
+    {
+        r.methodId = "declared.infiniteDilution";
+        r.label = "property kernel: the case's declared value of " + sol + " in " + slv
+                + " at infinite dilution (" + e->where + "; source: " + e->source
+                + "), stood over the box the case declared";
+        r.quality.origin     = "literature";
+        r.quality.provenance = e->source.empty() ? e->where : e->source;
+        r.quality.domain     = "inside the case's box (hard)";
+    }
+    else
+    {
+        r.methodId = thermo.liquidDiffusivityMethod();
+        r.label = "property kernel: the infinite-dilution correlation the case selects ("
+                + (e ? e->model : thermo.liquidDiffusivityMethod()) + ") for " + sol
+                + " in " + slv;
+        r.quality.origin     = "predictive";
+        r.quality.provenance = "the case's transport { liquid { diffusivity } }";
+        r.quality.domain     = "not declared";
+    }
+    r.quality.evidence = "not quantified";
+    r.leaves.push_back({ sol, r.methodId, 1.0 });
+    if (who)
+        PropertySourceLog::instance().use(who->type, who->unit, name(Property::diffusivity),
+            r.methodId, r.label, "kernel", "not applied", "",
+            took(r.value, T));
+    return r;
+}
+
 Result evaluateUnrecorded(const ThermoPackage& thermo, Property p, scalar T,
                           scalar P, const sVector& x)
 {
@@ -130,7 +168,7 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
                   " (reason: " + measured->reason + ")";
         const bool atPoint = liquidTransport::atStatedPoint(*measured, T,
             liquidTransport::massFractionsOf(thermo.components(), measured->set, x));
-        r.quality.origin     = atPoint ? "literature" : "assumed";
+        r.quality.origin     = (atPoint && !measured->assumedValue) ? "literature" : "assumed";
         {
             std::string type, unit;
             const bool site = who ? (type = who->type, unit = who->unit, true)
@@ -305,4 +343,44 @@ Result evaluateImpl(const ThermoPackage& thermo, Property p, scalar T, scalar P,
 } // namespace
 
 } // namespace liquidProperty
+
+//  ThermoPackage::soluteVolumeAtTb (declared in ThermoPackage.H, C398 slice d2).
+//  Defined HERE, beside the door whose density it asks and whose words (the
+//  route) it prints, so that the package's own source keeps its line numbers
+//  (the EduTool lessons cite ThermoPackage.cpp by line).
+const ThermoPackage::SoluteVolumeAtTb& ThermoPackage::soluteVolumeAtTb(std::size_t i) const
+{
+    const auto it = soluteVolumeTb_.find(i);
+    if (it != soluteVolumeTb_.end()) return it->second;
+    SoluteVolumeAtTb v;
+    const Component& c = components_.at(i);
+    v.Tb = c.Tb();
+    if (!(v.Tb > 0.0))
+        v.refusal = c.name() + " has no normal boiling point (Tb) in its record, so the"
+                    " solute volume V_A of Wilke-Chang (Poling Eq. 11-9.1) cannot be taken at it";
+    else
+    {
+        try
+        {
+            sVector e(n(), 0.0);
+            e[i] = 1.0;
+            const auto r = liquidProperty::evaluateUnrecorded(*this, liquidProperty::Property::density,
+                                                              v.Tb, 101325.0, e);
+            if (!(r.value > 0.0)) throw std::runtime_error("non-positive density");
+            v.rho   = r.value;
+            v.V_m3  = (c.MW() / 1000.0) / r.value;
+            v.route = r.label;
+            v.ok    = true;
+        }
+        catch (const std::exception& ex)
+        {
+            char tb[32];
+            std::snprintf(tb, sizeof tb, "%.6g K", v.Tb);
+            v.refusal = c.name() + " has no liquid density at its normal boiling point ("
+                      + tb + "): " + ex.what();
+        }
+    }
+    return soluteVolumeTb_.emplace(i, std::move(v)).first->second;
+}
+
 } // namespace Choupo

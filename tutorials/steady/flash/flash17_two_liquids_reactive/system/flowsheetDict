@@ -10,8 +10,8 @@
   One isothermal flash, four components, THREE phases:
 
       feed (60 H2O + 20 benzene + 8 EtOH + 0.1 HAc, kmol/h)
-        -> [flash01, 313.15 K / 0.35 atm]
-        -> liquid (59.6 kmol/h: aqueous + organic) + vapor (28.5 kmol/h)
+        -> [flash01, 313.15 K / 0.353 atm]
+        -> liquid (68.1 kmol/h: aqueous + organic) + vapor (20.0 kmol/h)
 
   The two liquids leave as ONE apparent liquid stream.  That is deliberate
   and it is the same contract the speciation already lives under: the split
@@ -33,6 +33,6 @@ units
         in          feed;
         outputs     ( liquid  vapor );
 
-        operation   { T      313.15 K;  P 0.35 atm; }
+        operation   { T      313.15 K;  P 0.353 atm; }
     }
 );

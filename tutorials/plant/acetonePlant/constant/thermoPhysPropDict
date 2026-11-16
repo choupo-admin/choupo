@@ -44,3 +44,45 @@ approximations
         reason     "supercritical permanent gas; no UNIFAC group exists for hydrogen, and its liquid mole fraction in this flowsheet is 2e-4 (Luyben F1). Henry in a mixed solvent is the principled route and is the deferred D3 transfer term";
     }
 }
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  Dilute-solution (Henry) world of the absorber; see the comment on the unit.
+    henryAbsorber
+    {
+        equilibrium
+        {
+            formulation diluteSolution;
+
+            liquid
+            {
+                solvent
+                {
+                    component     water;
+                    standardState pureLiquid;
+                }
+                solutes
+                {
+                    components    ( acetone  H2 );
+                    standardState infiniteDilution;
+                    solutionModel henryDilute;
+                    binaryParameters
+                    {
+                        acetone-water { source "data/standards/parameters/Henry/acetone-water.dat"; }
+                        //  C256 (2026-11-09): H2 is above its critical
+                        //  temperature (33.2 K) here; on the Raoult rung
+                        //  its K was a vapour pressure continued past Tc
+                        //  (A_H2 0.0016 printed from it), so it dissolves
+                        //  by Henry like the acetone -- as in acetone05.
+                        H2-water      { source "data/standards/parameters/Henry/H2-water.dat"; }
+                    }
+                }
+            }
+
+            vapour { fugacityModel idealGas; }
+        }
+    }
+}

@@ -84,7 +84,6 @@ units
             area         1.0;                // m2 -- membrane area
             P_feed       10 bar;             // transmembrane driving pressure
             P_permeate   0 bar;              // atmospheric permeate side
-            rho          1000;               // kg/m3 -- declared, never defaulted
 
             k_film       1.0e-4 m/s;         // DECLARED: a well-stirred cell
 

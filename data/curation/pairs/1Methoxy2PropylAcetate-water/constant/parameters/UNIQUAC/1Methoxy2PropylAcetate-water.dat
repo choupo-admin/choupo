@@ -20,9 +20,9 @@
   Fitted on EVERY laboratory with the NRTL fit's own kept points (C294), so
   the `validation {}` block says, truthfully, that nothing was held out;
   the acceptance is the `curation {}` block.
-  NOT PROMOTABLE (fit grade severe, max |dT| 2.041 K): the pair splits
+  NOT PROMOTABLE (fit grade severe, max |dT| 2.290 K): the pair splits
   ONE liquid inside its own validity span (arm f, UNIQUAC) -- predicts a
-  LIQUID-LIQUID SPLIT at 336.22 K (x_water 0.476 .. 0.985), inside its
+  LIQUID-LIQUID SPLIT at 336.22 K (x_water 0.469 .. 0.985), inside its
   own validity span 336.22-402.43 K -- its evidence is bubble points of
   ONE liquid; a UNIQUAC pair that splits that liquid stays in its case
 
@@ -43,10 +43,10 @@ parameters
 {
     i           water;
     j           1Methoxy2PropylAcetate;
-    a_ij        43.22595485;
+    a_ij        35.70258242;
     b_ij        0.00000000;
     c_ij        0.00000000;
-    a_ji        245.04065473;
+    a_ji        259.65770649;
     b_ji        0.00000000;
     c_ji        0.00000000;
 }
@@ -60,7 +60,7 @@ provenance
     reviewStatus  interim;
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -79,11 +79,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          262.97931438;
-    rms_K         0.65634036;
+    chi2          327.09826594;
+    rms_K         0.73904224;
     nDataPoints   42;
     identifiable  true;
-    maxAbsCorr    0.97822253;
+    maxAbsCorr    0.97707463;
 
     validity
     {
@@ -114,8 +114,8 @@ curation
     outliersDropped 0;
     pointsKept      42;
     noBubblePoint   0;
-    maxAbsError     2.0409 K;
-    meanAbsError    0.4853 K;
+    maxAbsError     2.2895 K;
+    meanAbsError    0.5238 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
     grade           severe;

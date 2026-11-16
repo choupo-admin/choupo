@@ -1,0 +1,32 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  SEPARATION property context (v2).  Inherits the plant root unchanged and
+  adds ONE named variant, `nrtl`, which the sector's flash selects with
+  `thermo nrtl;` (it used to carry an inline `thermo { }` fragment; C402).
+  Variants are NOT inherited, so a variant a sector's unit selects is
+  declared in the sector's own dictionary.  The NRTL pair resolves from this
+  sector's constant/parameters by walk-up; ethanol-water comes from the
+  standard library.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+inherits "../../../constant";
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  NRTL liquid activity for the separation flash.
+    nrtl
+    {
+        equilibrium { liquid { activityModel { model NRTL; } } }
+    }
+}

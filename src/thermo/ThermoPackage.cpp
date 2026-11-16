@@ -115,7 +115,7 @@ ThermoPackage& ThermoPackage::operator=(ThermoPackage&& o) noexcept
         liquidViscosityLaws_      = std::move(o.liquidViscosityLaws_);
         liquidConductivityLaws_   = std::move(o.liquidConductivityLaws_);
         surfaceTensionLaws_       = std::move(o.surfaceTensionLaws_);
-        liquidViscosityObj_       = std::move(o.liquidViscosityObj_);
+        liquidViscosityObj_       = std::move(o.liquidViscosityObj_);   soluteVolumeTb_ = std::move(o.soluteVolumeTb_);   // C398 d2: the moved-in package's own cache
         liquidConductivityObj_    = std::move(o.liquidConductivityObj_);
         surfaceTensionObj_        = std::move(o.surfaceTensionObj_);   identity_ = std::move(o.identity_);   formulation_ = std::move(o.formulation_);   // C398 CV-20
         solventName_        = std::move(o.solventName_);
@@ -3393,6 +3393,12 @@ ThermoPackage::liquidViscosityMeasurementFor(const sVector& x) const
     std::vector<std::size_t> set;
     for (std::size_t i = 0; i < x.size() && i < components_.size(); ++i)
         if (x[i] > 0.0) set.push_back(i);
+    //  AN EXACT SET WINS (C402: a case with two feeds of different sets -- a
+    //  nanofiltration and a seawater unit, a feed with and without a trace
+    //  constituent -- declares one stated value per set; the refusal below is
+    //  for a liquid that NONE of them describes).
+    for (const auto& m : liquidViscosityMeasured_)
+        if (m.use == "method" && m.set == set) return &m;
     for (const auto& m : liquidViscosityMeasured_)
     {
         if (m.use != "method") continue;
@@ -3487,6 +3493,20 @@ scalar ThermoPackage::measuredOrCheckedViscosity(scalar T, const sVector& x,
 scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::size_t j,
                                                 scalar muMix) const
 {
+    //  V_A at the normal boiling point (slice d2), or the refusal by name.
+    auto soluteVolumeOrRefuse = [&](std::size_t a, std::size_t b)
+    {
+        const SoluteVolumeAtTb& v = soluteVolumeAtTb(a);
+        if (!v.ok)
+            throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
+                "liquid diffusivity of " + components_[a].name() + " at infinite dilution in "
+                + components_[b].name() + ": " + v.refusal + ".  The record's 25 C volume is"
+                  " never substituted for it.",
+                "an entry for the pair with a value and its source: `infiniteDilution { entries ("
+                " { solute " + components_[a].name() + "; solvent " + components_[b].name()
+                + "; kind infiniteDilution; ... } ); }`");
+        return v.V_m3;
+    };
     //  The pure solvent's viscosity, for a correlation in its textbook form.
     auto pureSolvent = [&]()
     {
@@ -3510,7 +3530,8 @@ scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::si
             md->insert("model", EntryValue(e->model));
             const auto mdl = LiquidDiffusivityModel::New(md);
             return mdl->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
-                                                muMix > 0.0 ? muMix : pureSolvent());
+                                                muMix > 0.0 ? muMix : pureSolvent(),
+                                                soluteVolumeOrRefuse(i, j));
         }
         if (T < e->boxT.first || T > e->boxT.second)
             throw PropertyDomainError(PropertyDomainError::Kind::outsideHardDomain,
@@ -3520,8 +3541,33 @@ scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::si
                 " declared for its datum (" + e->where + ").  A declared datum is never"
                 " extrapolated nor handed over to the default correlation.",
                 "a state inside the box, or a wider box with its reason (a hypothesis)");
-        if (!(muMix > 0.0)) return e->D;
-        return e->D * pureLiquidViscosity(j, T) / muMix;
+        //  ONE TEMPERATURE RULE (C402, review MB-04): a declared entry is stated at ITS OWN temperature, and the
+        //  run's temperature takes it there by the same Stokes-Einstein factor an ion's D0 gets,
+        //  D(T) = D(T_entry) (T/T_entry)(mu(T_entry)/mu(T)) on the solvent's pure viscosity -- priced only when the
+        //  case declares a liquid viscosity, and said once per entry and temperature either way.
+        scalar Dt = e->D;
+        if (std::fabs(T - e->T) > 1.0e-9)
+        {
+            std::string said;
+            if (!liquidViscosityLaws_.empty())
+            {
+                const scalar f = (T / e->T) * pureLiquidViscosity(j, e->T) / pureLiquidViscosity(j, T);
+                Dt = e->D * f;
+                said = "declared D of " + components_[i].name() + " in " + components_[j].name() + ": "
+                     + fmtG("%.5g", e->D) + " m2/s at " + fmtG("%.6g K", e->T)
+                     + " x Stokes-Einstein (T/T_entry)(mu(T_entry)/mu(T)) = "
+                     + fmtG("%.6f", f) + " at " + fmtG("%.6g K", T) + " -> " + fmtG("%.5g", Dt) + " m2/s";
+            }
+            else
+                said = "declared D of " + components_[i].name() + " in " + components_[j].name() + " (stated at "
+                     + fmtG("%.6g K", e->T) + ") is NOT temperature-corrected to " + fmtG("%.6g K", T)
+                     + ": the case declares no liquid viscosity (`transport { liquid { viscosity { ... } } }`)";
+            if (AdvisoryLog::instance().add("model", liquidViscosityLaws_.empty() ? "warning" : "info",
+                    "liquid diffusivity (" + components_[i].name() + " at " + fmtG("%.4f K", T) + ")", said))
+                std::cout << "  [D(T)] " << said << "\n";
+        }
+        if (!(muMix > 0.0)) return Dt;
+        return Dt * pureLiquidViscosity(j, T) / muMix;
     }
     if (!liquidDiffusivity_)
         throw PropertyDomainError(PropertyDomainError::Kind::missingDatum,
@@ -3544,7 +3590,8 @@ scalar ThermoPackage::infiniteDilutionInMixture(scalar T, std::size_t i, std::si
                 liquidDiffusivity_->modelName(), components_[j].name()),
             "an entry for the pair (a value with its source, or the correlation named with its reason)");
     return liquidDiffusivity_->diffusivityLiquidBinary(components_.at(i), components_.at(j), T,
-                                                        muMix > 0.0 ? muMix : pureSolvent());
+                                                        muMix > 0.0 ? muMix : pureSolvent(),
+                                                        soluteVolumeOrRefuse(i, j));
 }
 
 scalar ThermoPackage::diffusivityLiquidEffective(scalar T, const sVector& x) const

@@ -112,6 +112,18 @@ Result evaluate(const ThermoPackage& thermo, Property p, scalar T_K, scalar P_Pa
                 const sVector& x, const Consumer* who = nullptr,
                 const std::string& leftOut = "", long component = -1);
 
+//  THE DIFFUSIVITY OF A SOLUTE IN A SOLVENT AT INFINITE DILUTION (DEV.md 4c
+//  C402, the membrane family): the quantity a film model reads when the
+//  solute is ONE particle, D0 of `iSolute` in `iSolvent` at T, the way the
+//  property dictionary declares it -- a declared entry (a value with its
+//  source, T and box) or the default correlation -- never a number the unit
+//  was typed.  `evaluate(.., Property::diffusivity, ..)` above is the
+//  EFFECTIVE binary quantity of a mixture; this is the other one, and the
+//  result says which.  Refusals are the package's own (a datum outside its
+//  box is never extrapolated).
+Result soluteDiffusivity(const ThermoPackage& thermo, scalar T_K, std::size_t iSolute,
+                         std::size_t iSolvent, const Consumer* who = nullptr);
+
 //  The same, RECORDING NOTHING: for a value the caller computes into a
 //  context its model may not read (a condensing film's surface tension),
 //  so the table never prints a number as used that was not.

@@ -200,24 +200,17 @@ def make_cold_vapour_feed(case: Path) -> None:
 
 
 def strip_unit_thermo(text: str, unit: str):
-    """The flowsheetDict text with the `thermo { ... }` block of the named
-    unit removed (brace-matched), or None when it is not where expected."""
+    """The flowsheetDict text with the unit's `thermo <name>;` selector removed
+    (C402: a unit's own world is a named variant), or None when it is not where
+    expected.  The unit then computes in the case's world, which is what the
+    gate wants to see."""
     i = text.find("name        %s;" % unit)
     if i < 0:
         return None
-    j = text.find("thermo", i)
-    k = text.find("{", j)
-    if j < 0 or k < 0:
+    m = re.compile(r"[ \t]*thermo[ \t]+\w+[ \t]*;").search(text, i)
+    if not m:
         return None
-    depth, n = 0, k
-    while n < len(text):
-        depth += (text[n] == "{") - (text[n] == "}")
-        n += 1
-        if depth == 0:
-            break
-    if depth != 0:
-        return None
-    return text[:j] + text[n:]
+    return text[:m.start()] + text[m.end():]
 
 
 def main() -> int:
@@ -260,9 +253,9 @@ def main() -> int:
                 failures.append("A1: the step is zero on the case the ruling"
                                 " was measured from -- nothing is being"
                                 " accounted")
-            if not near(raw, -2.9851, 1.0e-3):
+            if not near(raw, -2.9706, 1.0e-3):
                 failures.append("A1: the raw imbalance moved: %s kW, expected"
-                                " -2.9851 kW" % raw)
+                                " -2.9706 kW" % raw)
             # the same three, in the CSV, agreeing with the JSON
             try:
                 if not near(float(t["raw_imbalance_kW"]), raw, 1.0e-3) \
@@ -289,9 +282,13 @@ def main() -> int:
                 failures.append("A2: the downstream world '%s' does not name"
                                 " the models the unit's thermo{} block"
                                 " declares" % dn)
-            if "gammaPhi" not in fsd or "ideal" not in fsd:
+            #  C402: the unit's world is the variant it selects, declared in
+            #  constant/thermoPhysPropDict's `variants {}`.
+            vtext = pkg[pkg.find("variants"):] if "variants" in pkg else ""
+            if ("gammaPhi" not in vtext or "ideal" not in vtext
+                    or not re.search(r"thermo\s+\w+\s*;", fsd)):
                 failures.append("A2: the fixture drifted -- the unit no longer"
-                                " declares gammaPhi/ideal in flowsheetDict")
+                                " selects a variant declaring gammaPhi/ideal")
             if up == dn:
                 failures.append("A2: both sides of the boundary are named the"
                                 " same world")
@@ -322,13 +319,16 @@ def main() -> int:
                                 % t["adjusted_closure_pct"])
         except (KeyError, ValueError):
             failures.append("A3: no adjusted_closure_pct on the transporter")
-        #  The RAW numbers the ruling named must still be visible.
+        #  The RAW numbers the ruling named must still be visible.  (The ruling
+        #  read 37.0149 / 40.0000 kW and -2.9851 kW; they moved to 37.0294 and
+        #  -2.9706 kW on 2026-11-16 -- the aqueous world prices water's vapour
+        #  through the H2O(g) record, now derived from the IAPWS curve.)
         try:
-            if not near(float(t["dH_kW"]), 37.0149, 1.0e-3) \
+            if not near(float(t["dH_kW"]), 37.0294, 1.0e-3) \
                or not near(float(t["energy_items_kW"]), 40.0, 1.0e-3) \
-               or not near(float(t["energy_closure_pct"]), 92.54, 0.05):
+               or not near(float(t["energy_closure_pct"]), 92.57, 0.05):
                 failures.append("A3: the RAW closure figures the ruling named"
-                                " are gone: expected dH 37.0149 and items"
+                                " are gone: expected dH 37.0294 and items"
                                 " 40.0000 on the transporter row")
         except (KeyError, ValueError):
             failures.append("A3: the RAW closure columns are unreadable")

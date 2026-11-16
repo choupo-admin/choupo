@@ -145,6 +145,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import record_psat  # noqa: E402  (Antoine or Wagner, read from the record's own text)
+
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "choupoSolve"
 EVAP01 = ROOT / "tutorials/steady/drying/evapDryer01_nacl"
@@ -274,7 +277,6 @@ def wet_bulb(case, gas, T, P):
        Ysat(Twb) - Y = (cpc + Y cpv)(T - Twb) / lambda(Twb),
     solved by bisection on [273.65 K, T'] where T' is where p_sat = 0.95 P."""
     w = record(case, "water")
-    A, B, C = block_coeffs(w, "vaporPressure", "Antoine", "water")
     Mv = scalar_key(w, "MW", "water")
     Tc, Tb, Hb = (scalar_key(w, k, "water") for k in ("Tc", "Tb", "HvapTb"))
     cpw = block_coeffs(w, "idealGasHeatCapacity", "polynomial", "water")
@@ -283,7 +285,7 @@ def wet_bulb(case, gas, T, P):
         return sum(c * t ** i for i, c in enumerate(a))
 
     def psat(t):
-        return 1e5 * 10 ** (A - B / (t + C))
+        return record_psat.psat_pa(w, t)
 
     def lam(t):
         return Hb * ((Tc - t) / (Tc - Tb)) ** 0.38 / Mv * 1000.0   # J/kg
@@ -524,9 +526,8 @@ def main():
         ex = stream_json(os3, "humidExhaust", "solidDryer02")
         air = stream_json(os3, "hotAir", "solidDryer02")
         w = record(SOLID02, "water")
-        A, B, C = block_coeffs(w, "vaporPressure", "Antoine", "water")
         aw = (ex["composition"]["water"] * ex["P"]
-              / (1e5 * 10 ** (A - B / (ex["T"] + C))))
+              / record_psat.psat_pa(w, ex["T"]))
         #  The unit's bisection ends on the UNSATURATED side (a_w <= 1) to
         #  1e-13 of the water, but the stream is PUBLISHED with 12 significant
         #  digits: T to 5e-10 K, which at d ln p_sat / dT = 0.051 1/K here

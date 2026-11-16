@@ -44,7 +44,7 @@
   THERMODYNAMICS: phi-phi PR78 (constant/thermoPhysPropDict), the PPR78 kij
   SET evaluated at 322.03 K for the package every unit inherits, and a
   per-unit set at each of the other three separators' declared T
-  (`thermo {}` overrides below; the sets are in
+  (`thermo <variant>;` selectors below; the sets are in
   constant/parameters/PengRobinson/, written by kijTables/).  Stated
   default: a compressor, valve or mixer declares no temperature and reads
   the inherited 322.03 K set.
@@ -76,21 +76,7 @@ units
         in          s7;
         outputs     ( s9  s8 );
         operation   { T 310.92 K;  P 5617161.00166 Pa; }
-        thermo
-        {
-            equilibrium
-            {
-                equationOfState
-                {
-                    model      PengRobinson;
-                    mixingRule vanDerWaalsOneFluid;
-                    binaryInteractions
-                    {
-                        ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP1_310.92K.dat"; }
-                    }
-                }
-            }
-        }
+        thermo      ppr78Sep1;
     }
     {
         name        V0;
@@ -112,21 +98,7 @@ units
         in          s12;
         outputs     ( s14  s13 );
         operation   { T 308.7 K;  P 439196.24668 Pa; }
-        thermo
-        {
-            equilibrium
-            {
-                equationOfState
-                {
-                    model      PengRobinson;
-                    mixingRule vanDerWaalsOneFluid;
-                    binaryInteractions
-                    {
-                        ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP2_308.7K.dat"; }
-                    }
-                }
-            }
-        }
+        thermo      ppr78Sep2;
     }
     {
         name        C1;
@@ -148,21 +120,7 @@ units
         in          s16;
         outputs     ( s18  s17 );
         operation   { T 302.6 K;  P 190984.88168 Pa; }
-        thermo
-        {
-            equilibrium
-            {
-                equationOfState
-                {
-                    model      PengRobinson;
-                    mixingRule vanDerWaalsOneFluid;
-                    binaryInteractions
-                    {
-                        ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP3_302.6K.dat"; }
-                    }
-                }
-            }
-        }
+        thermo      ppr78Sep3;
     }
     {
         name        C2;

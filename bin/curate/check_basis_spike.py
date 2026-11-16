@@ -319,6 +319,15 @@ def main() -> int:
                         break
 
         # ---- C8 REFUSALS (see the module docstring's honesty note) --------
+        def bump(text, species, delta):
+            #  Raise ONE species of the converged speciation block by `delta`
+            #  (the old probe typed the converged numbers, which every
+            #  change to a vapour curve moves -- 2026-11-16 -- so a typed
+            #  value silently stopped mutating anything).
+            m = re.search(r"(?m)^(\s*%s\s+)([-+0-9.eE]+)" % species, text)
+            assert m, "no %s line in the converged block" % species
+            return text[:m.start(2)] + repr(float(m.group(2)) + delta) + text[m.end(2):]
+
         def refuse(tag, mutate, *needles):
             d = fresh(tmp, "ref_" + tag)
             shutil.copy(conv / "brine", d / "0" / "brine")
@@ -333,12 +342,10 @@ def main() -> int:
                     failures.append(f"C8 {tag}: message lacks {n!r}")
 
         refuse("R1 charge imbalance",
-               lambda t: t.replace("NH4    0.8508169151",
-                                   "NH4    0.9508169151"),
+               lambda t: bump(t, "NH4", 0.1),
                "does NOT collapse back")
         refuse("R2 m=An broken",
-               lambda t: t.replace("HCO3    0.7034761893",
-                                   "HCO3    0.9034761893"),
+               lambda t: bump(t, "HCO3", 0.2),
                "does NOT collapse back")
         refuse("R3 unknown species id",
                lambda t: t.replace("CO2aq    ", "Xx99zz    "),
@@ -367,25 +374,11 @@ def main() -> int:
         idw = fresh(tmp, "identity")
         fsd = idw / "system" / "flowsheetDict"
         t = fsd.read_text()
-        #  Remove EVERY per-unit thermo override by balanced braces -- the
-        #  boundary is what the probe removes, and the chain carries more
-        #  than one unit that declares a local world.  (Cutting from the
-        #  first `thermo {` to the file's last `}` worked only while there
-        #  was exactly one, and broke when the splitter was added.)
-        while True:
-            i = t.find("        thermo\n        {")
-            if i < 0:
-                break
-            j = t.index("{", i)
-            depth = 0
-            for k2 in range(j, len(t)):
-                if t[k2] == "{":
-                    depth += 1
-                elif t[k2] == "}":
-                    depth -= 1
-                    if depth == 0:
-                        break
-            t = t[:i] + t[k2 + 2:]
+        #  Remove EVERY per-unit thermo selector (C402: a unit's own world is a
+        #  `thermo <name>;` naming a variant) -- the boundary is what the probe
+        #  removes, and the chain carries more than one unit that declares a
+        #  local world.
+        t = re.sub(r"[ \t]*thermo[ \t]+\w+[ \t]*;[ \t]*\n", "", t)
         fsd.write_text(t)
         rc6, out6 = run(idw)
         if rc6 != 0:

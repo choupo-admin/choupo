@@ -31,8 +31,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ij  -393.275139637;
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ji  873.900974728;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ij  -383.026818722;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ji  912.060167538;
     }
 
     evidence
@@ -76,8 +76,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ij  -393.275139538;
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ji  873.900974428;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ij  -383.026818648;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.b_ji  912.060167255;
     }
 
     evidence
@@ -121,8 +121,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ij  -174.411706951;
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ji  3503.96201362;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ij  -369.979978697;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ji  3742.56993882;
     }
 
     evidence
@@ -166,8 +166,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ij  -174.4117164;
-        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ji  3503.96201579;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ij  -369.979993538;
+        equilibrium.liquid.activityModel.binaryParameters.2Amino2Methyl1Propanol-water.A_ji  3742.56994216;
     }
 
     evidence

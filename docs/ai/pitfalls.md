@@ -166,7 +166,8 @@ use the resolved one in the first law).
   and let `T` and `P` decide, or, if the saturated state is meant, write
   `P` = `p_sat(T)` to the digits printed.  Inside the 1e-6 band the pin
   decides (the saturated state).  Checked in the case's world and in the
-  own `thermo {}` world of each unit that consumes the stream.
+  own world (a named `variants {}` entry it selects with `thermo <name>;`) of each
+  unit that consumes the stream.
 - **If the quality IS your specification**, the state is `(P, q)` or `(T, q)`
   and the other variable has to be SOLVED — which this engine does not do
   today.  Declare the `T` at which the `(T,P)` flash gives your `q` (read it
@@ -724,7 +725,7 @@ the printed enthalpy — `H` is the conserved truth, `T` is the
 model-dependent readout, and the solver never silently nudges `T` to hide
 the step.  So if `H` jumps across an override boundary, that is the two
 models disagreeing — information, not a bug.  Default to ONE consistent
-global thermo; reach for `thermo {}` overrides only when you really need
+global thermo; reach for a per-unit variant (`thermo <name>;`) only when you really need
 different models on adjacent units (rare).  Detail: [`energy.md`](energy.md) §7.
 
 ## Electrolytes

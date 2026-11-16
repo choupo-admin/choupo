@@ -38,8 +38,11 @@ Every run prints, just before its result block, one line per unit:
   say they price the same stream -- check the flowsheet.
 * "Parameters of thermodynamic models ...": models that read a component's
   stored 25 C volume as a parameter (Wilson, the Poynting correction,
-  Wilke-Chang, the mixed-solvent activity model, Hildebrand, Hansen).  The
-  volume a record stores is the same datum, with the same caveats (section 4).
+  the mixed-solvent activity model, Hildebrand, Hansen).  The volume a record
+  stores is the same datum, with the same caveats (section 4).  Wilke-Chang is
+  NOT of this list since C398 slice d2: its V_A is the pure liquid's molar volume
+  at its normal boiling point, M / rho(Tb) from the package's density (printed in
+  the resolved view); a solute with no Tb or no density there is refused by name.
 * A pure-fluid line names the formulation behind THAT property: IAPWS-IF97
   gives the density, IAPWS R12-08 the viscosity (on the IF97 density), IAPWS
   R1-76 the surface tension.
@@ -78,9 +81,9 @@ Every run prints, just before its result block, one line per unit:
 | pressureExchanger | the unit's own: 25 C molar volumes, no T or P; a dissolved ion keeps its mass, adds no volume | -- |
 | pfr (liquid), crystalliser (MSMPR, FVM) | the unit's own: 25 C molar volumes, no T or P (crystalliser: a component without one adds nothing, unannounced) | -- |
 | sprayDryer | the unit's own: the solvent's 25 C molar volume, else 1000 kg/m3 | kernel if the case selects a model, else its own defaults (1 mPa s, 72 mN/m) |
-| spiralWoundModule | `rho_feed` if declared, else 1000 kg/m3 | declared, else kernel, else 1 mPa s and 1.6e-9 m2/s |
+| spiralWoundModule | the property kernel's methods (section 3b), at the feed's T, P and composition; a typed `rho_feed` is REFUSED by name | viscosity: the kernel (a stated value of the feed's constituent set, or the mixing rule), asked only when a film or friction model needs it; diffusivity: one kernel value per lumped solute (the declared entries of `diffusivity { returns infiniteDilution; }`); a typed `viscosity`/`diffusivity` is REFUSED by name |
 | electrodialysisStack, batchElectrodialysis | 1000 kg/m3 (the dilute carrier) | kinematic viscosity: the solvent's kernel viscosity / 1000 kg/m3 if a model is declared, else the constant 1e-6 m2/s |
-| batchDiafilter | `rho` if declared, else 1000 kg/m3 (announced) | -- |
+| batchDiafilter | the property kernel's methods, at the initial holdup's T, P and composition (and the pure solvent's, for the diafiltrate); a typed `rho` or `rho_diafiltrate` is REFUSED by name | -- |
 
 ## 3. What the engine accepts, and what it refuses
 
@@ -164,7 +167,7 @@ each resolution once per method and unit (`[liquid density] <unit>: <set> by
 <method> (origin ...; evidence); passed over: ...`), and every refusal ends in
 its remedy.  The resolution is kept per WORLD (the components' names,
 pure-fluid selections, Henry status and volume routes): a unit's own
-`thermo {}` that changes one of them is a second world, not a contradiction.
+variant (`thermo <name>;`) that changes one of them is a second world, not a contradiction.
 
 ### The grammar the pilot reads
 

@@ -348,7 +348,7 @@ final product concentration + a specific operating pressure.
 A plant is a TREE of folders.  Any `flowsheetDict` is ONE of two kinds:
 
 - **LEAF** — one piece of hardware.  Has `type` (+ optional `model`,
-  `reaction`, `thermo {}`), an `operation {}` block and its stream
+  `reaction`, `thermo <variant>;`), an `operation {}` block and its stream
   MENTIONS (`inputs (...)` / `outputs (...)`).  Its boundary state lives
   in the case's `0/` files, never inline.
 - **COMPOSITE** — a SECTOR or the PLANT.  Lists its members
@@ -582,13 +582,13 @@ operations
     { name txy_ideal;  type propertyScan1D;
       vary { variable x[methanol]; from 0; to 1; n 51; }
       state { P 1.01325 bar; composition { methanol 0.5; aceticAcid 0.5; } }
-      thermo { activityModel { model ideal; } }
+      thermo { equilibrium { liquid { activityModel { model ideal; } } } }
       properties ( T_bubble  y_eq_methanol );  output { file txy_ideal.csv; } }
 
     { name txy_nrtl;   type propertyScan1D;
       vary { variable x[methanol]; from 0; to 1; n 51; }
       state { P 1.01325 bar; composition { methanol 0.5; aceticAcid 0.5; } }
-      thermo { activityModel { model NRTL; pairs ( { i methanol; j aceticAcid; a_ij ..; b_ij ..; a_ji ..; b_ji ..; alpha 0.3; } ); } }
+      thermo { equilibrium { liquid { activityModel { model NRTL; binaryParameters { methanol-aceticAcid { i methanol; j aceticAcid; a_ij ..; b_ij ..; a_ji ..; b_ji ..; alpha 0.3; } } } } } }
       properties ( T_bubble  y_eq_methanol );  output { file txy_nrtl.csv; } }
 );
 ```

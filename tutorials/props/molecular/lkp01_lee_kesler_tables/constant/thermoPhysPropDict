@@ -1,0 +1,46 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------*\
+  lkp01_lee_kesler_tables -- the thermophysical system.
+
+  phi-phi with the Lee-Kesler equation of state and the Ploecker mixing rules.
+  The two components are the simple fluid and the reference fluid of Lee &
+  Kesler (1975) as pseudo-components of T_c 100 K and P_c 10 bar, so that a
+  state T = 100 T_r K, P = 10 P_r bar is the reduced state (T_r, P_r) of the
+  printed tables.  No state is a mixture, and the one kappa is the identity.
+\*---------------------------------------------------------------------------*/
+
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components    ( LKsimple  LKreference );
+
+equilibrium
+{
+    formulation phiPhi;
+
+    equationOfState
+    {
+        model LeeKeslerPloecker;
+        binaryInteractions
+        {
+            LKreference-LKsimple { source "data/standards/parameters/LKP/LKreference-LKsimple.dat"; }
+        }
+    }
+
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+
+caloric
+{
+    energyBasis elementsDatum;
+    liquid { departureRoute equilibriumEquationOfState; root liquid; }
+    vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}

@@ -10,7 +10,7 @@ kpi     dryer                  X_final          0                1e-4
 kpi     dryer                  X_initial        0.231198665298   1e-4
 kpi     dryer                  air_in_kmol_h    600.5            1e-4
 kpi     dryer                  drySolid_flow    0.324666666667   1e-4
-kpi     dryer                  exhaust_humidity 0.0392946211155  1e-4
+kpi     dryer                  exhaust_humidity 0.0399691339581  1e-4
 kpi     dryer                  moisture_pct_wb  0                1e-4
 kpi     dryer                  water_removed    0.0750625        1e-4
 stream  drySolid               T                360.675490975    1e-4

@@ -50,9 +50,9 @@ export const EP_QUOTED = {
   shiftK: "4.19",
   // --- gibbs07 at 350 K: the liquid
   liquidYP: "50001",               // y_water P on the gas-only answer, Pa
-  liquidPsat: "42169",             // Psat_water(350 K), Pa
+  liquidPsat: "41683",             // Psat_water(350 K), Pa
   liquidSolves: 38,                // fluid solves the search on L made
-  liquidL: "0.03762",              // mol/s
+  liquidL: "0.03962",              // mol/s
   // --- coking reactor, 1000 K, S/C 0.8 (gibbs11's reformerLow)
   cokingPiC: "-0.6765",
   cokingGRT: "-1.5224",            // g_graphite / RT

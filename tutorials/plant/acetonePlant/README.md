@@ -47,7 +47,7 @@ records the product at 0.9727 mole fraction acetone against his 0.999 spec.
 2. **Two thermodynamic worlds, and the boundary is priced.**  Handed the
    plant's global UNIFAC package the `absorber` REFUSES by name: it solves
    Kremser, Kremser reads Henry's law, and an activity model carries no answer
-   it can use.  So that unit alone carries an inline `thermo {}` block — water
+   it can use.  So that unit alone selects its own named variant (`thermo henryAbsorber;`) — water
    the solvent on the pure-liquid rung, acetone the solute on the Henry rung —
    declared where the model boundary is and announced when the run crosses it.
    The block is inline in `system/flowsheetDict` rather than in a file of its

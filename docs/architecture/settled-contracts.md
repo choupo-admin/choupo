@@ -116,7 +116,7 @@ exactly as it did in `CLAUDE.md`.
   undeterminedSaturationRefusal`, applied once where the authored inlets
   are stamped -- is UNDETERMINED (its side would be the last digits of T)
   and refuses naming `phase liquid;`/`phase gas;` (gate arm (g)); since C37
-  item 5 also in the own `thermo {}` world of each unit that consumes it,
+  item 5 also in the own (variant) world of each unit that consumes it,
   and on the time-integrated binaries' authored inlets (arms (h), (i)).
   The SURFACE draws the state the stream MEANS: after the solve every
   unpinned stream no unit produces is resolved once through
@@ -2993,7 +2993,7 @@ flash collapsed; a mixture witness catches what a pure anchor cannot).
 Witnesses `pcsaft03_association_pure` + `flash20_ethanol_water_pcsaft`
 (predictive vs fitted NRTL side by side); gate `check_pcsaft_association`
 (independent Python closure, per-set anchors, sabotage-verified); theory
-guide `ch:pcsaft`.  Sealing note: per-unit `thermo{}` overrides ride the
+guide `ch:pcsaft`.  Sealing note: per-unit variants ride the
 importer's dependency closure since flash20 (a sealed case must never change
 physics on sealing).
 
@@ -3121,7 +3121,7 @@ allocator.  `notifyStateWillChange()` closes the segment PRE-mutation, and
 
 **General heterogeneous-thermo solver — SETTLED 2026-07-06 (do NOT relitigate).**
 A flowsheet may run units in DIFFERENT thermo WORLDS on ONE global component set,
-each unit computing in its own world via a per-unit `thermo {}` override —
+each unit computing in its own world via a per-unit named variant (`thermo <name>;`) —
 including MANIFEST worlds (electrolyte Pitzer), not only flat activity/eos:
 `thermoFor` routes an electrolyte override through the `ThermoPackageBuilder`
 (subset-aware — it picks its active salt through the component record that OWNS
@@ -3601,7 +3601,7 @@ parameters/PAIR, packages/UNIT — one Gibbs surface per phase, never two.  Reje
   NOT relitigate.**  The flowsheet is a plant and its sectors (composite
   sectors nest leaf units); `flattenNode` collapses the tree to ONE flat solver problem with
   `plant.sector.unit` names — the hierarchy is authoring/namespace only, never a
-  recursive solver-within-a-solver.  Per-unit `thermo {}` REPLACES models, keeps
+  recursive solver-within-a-solver.  A per-unit variant (`thermo <name>;`) REPLACES models, keeps
   components global (`thermoFor`).  Standalone "run one unit with frozen inlets"
   is a GUI 1-unit-case construction (`unitFocus.ts`), NOT a native solver mode.
   **THE RULE: `H` is the conserved truth, `T` is the model-dependent readout.**
@@ -3770,8 +3770,10 @@ VARIANT (2026-11-14, DEV.md 4c C398 ruled, slice (a)).**  The blocks of
 `variants {}`, named variants that state only what differs and derive
 DIRECTLY from the file's own system (one base: no chain, no cycle; a variant
 naming another is refused).  A unit (`system/flowsheetDict`) and a property
-operation (`system/propsDict`) select one by name, `thermo <name>;`; an inline
-`thermo { ... }` keeps reading, as an unnamed variant.  The words `package`,
+operation (`system/propsDict`) select one by name, `thermo <name>;`.  A UNIT's
+inline `thermo { ... }` was REMOVED (C402, 2026-11-15): it is refused by name with the
+lines to write.  A property operation has no flowsheet, so its inline `thermo { ... }`
+is that operation's own package declaration and stays, as the props bench's grammar.  The words `package`,
 `packages`, `derivedFrom` and `propertyPackage` are not used.  THE ATOM OF
 REPLACEMENT inside `transport` is the property block
 (`transport.<phase>.<property>`, the names one table,
@@ -3825,7 +3827,7 @@ the other side, compressed) liquid.  The refusal of a set no method prices
 names every method passed over, with its reason, and the remedy.  The decision is cached on the package's
 serial, never its address, and kept per WORLD (the per-component facts the
 resolution reads: name, pure-fluid selection, Henry status, volume route):
-a unit's own `thermo {}` is a second world and a second recipe; a set of ONE
+a unit's own variant is a second world and a second recipe; a set of ONE
 world that would resolve differently later in the run is refused.  Every
 declared measurement is used, checked or refused, and an unknown key in any
 of the pilot's blocks is refused.  The method's words are written by the

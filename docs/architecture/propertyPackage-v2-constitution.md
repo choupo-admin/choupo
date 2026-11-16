@@ -33,7 +33,7 @@ never patch-by-shout.
 | 6 | Parameter per PAIR | `parameters { henryPairs / kijPairs / binaryPairs / pitzerPairs {…} }` | declared FILE, verified at assembly, cited |
 | 7 | Mixing per PROPERTY | `mixing` sub-slots (A4) | transport rules (Wilke, Wassiljewa…); EoS `vanDerWaals1f`; γ-models are their own |
 | 8 | Chemistry | `chemistry { … }` | real equilibria with K+ΔH (electrolyte tree) |
-| 9 | Package per UNIT | unit `thermo {}` | the spatial axis; model-boundary audit at seams |
+| 9 | Package per UNIT | unit `thermo <name>;` (a named variant) | the spatial axis; model-boundary audit at seams |
 | 10 | **ASSERTED values** | `asserted { … }` (NEW, below) | the martelo tier — legal anywhere a correlation is, with mandatory why |
 
 Nothing else exists: 1-2 name the system, 3-4 the equilibrium surfaces, 5-7

@@ -21,7 +21,7 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
@@ -37,28 +37,37 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
-            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
         "parameters/NRTL/13Dioxolane-water.dat"
         {
             type          imported;
-            sha256        "0561099b031b5312520b9318ea563137ba7402860bb5ca6b0714ada244b3746a";
-            computationalSha256 "0d165499a651f9ab2edcfcd0130ff17b74dc64bd51ca53418eb3595144d351db";
+            sha256        "60dd646af02092d76ca9475f2cade2f2652d63b412caa983f908bd17e2351977";
+            computationalSha256 "c975925349e1e3a3b791d5482c12091c085dbd3993720b1306a12952448c064a";
             origin        "data/standards/parameters/NRTL/13Dioxolane-water.dat";
-            originSha256  "8c107b5df4406c6ed8e6352bc8763300074bf4e672d97c767e9a9ebbeba90c91";
+            originSha256  "51595b0f30f62673bc3f4a89116a73d8038eb500d9e86912c4fd9ac4e71912b0";
             release       Choupo-2608;
         }
         "parameters/Wilson/13Dioxolane-water.dat"
         {
             type          imported;
-            sha256        "6f6c378aa08ab80453ea215fe0bca706f3dd5a58542590ba3a3e4b5e08cbebce";
-            computationalSha256 "32add3488ebf3c9d72d28ea8c4720941d261543775571acca27f7930917216e9";
+            sha256        "21fa9e5d4d9b71c7354d016534f0eb083bd836aab8484c98de7cd175405a066f";
+            computationalSha256 "c1401db54d5bded1aa28bf21d5e559df322cbe214b16f9b1bc344f4a9fbff346";
             origin        "data/standards/parameters/Wilson/13Dioxolane-water.dat";
-            originSha256  "915633608712788a8c2f6f1f3e43adf4708f37549b0ca1c7df01d7fb8889a68b";
+            originSha256  "74f9f8149c3bc79fd0371cf9888a2d023f1fb92416671cdcab4ee846f29240b0";
             release       Choupo-2608;
         }
     }

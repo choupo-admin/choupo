@@ -294,7 +294,7 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
     // the keyword is the author's SEMANTIC label (a plant has sectors; a
     // flowsheet has units), and a member's real kind is read from its own dict
     // (has `sectors`/`units` -> composite; has `type` -> leaf unit).
-    std::vector<std::string> members;
+    std::vector<std::string> members; propertyVariants::refuseNodeThermo(dict, nsPrefix.empty() ? std::string("the plant's flowsheetDict") : "sector '" + nsPrefix.substr(0, nsPrefix.size() - 1) + "'");   // C402
     if (dict->found("sectors"))
         for (const auto& s : dict->lookupWordList("sectors")) members.push_back(s);
     if (dict->found("units"))
@@ -647,16 +647,16 @@ std::map<std::string,std::string> flattenNode(const DictPtr&                    
             //  case gains no key and its dict is unchanged.
             if (!nsPrefix.empty())
                 u->insert("sector", nsPrefix.substr(0, nsPrefix.size() - 1));
-            u->insert("type", cd->entryValue("type"));
+            u->insert("type", cd->entryValue("type")); propertyVariants::refuseInlineFragment(cd, "unit '" + qname + "'");   // C402
             for (const char* k : { "operation", "model", "thermo", "utility" })   // utility: C52, read by the allocation
                 if (cd->found(k)) u->insert(k, cd->entryValue(k));
-            //  A UNIT'S INLINE `thermo {}` READS ITS OWN constant/ (C398 review
-            //  row TG-19): a table pin or a measurement written in the unit's
-            //  flowsheetDict reads the experiments/ of THIS member's folder,
-            //  never the plant root's.  The same stamp resolvePropertyContext
-            //  puts on a sector's dictionary; no walk up.
-            if (u->found("thermo") && !propertyVariants::selectsByName(u))
-                experiments::stampExperimentsDir(u->subDict("thermo"), memberBase + "constant");
+            //  A UNIT'S INLINE `thermo {}` NO LONGER READS (C402): it was refused above
+            //  (refuseInlineFragment), so the stamp of its experiments/ folder that
+            //  stood here is gone.  A table pin in a unit's own variant reads the
+            //  experiments/ of the dictionary that declares it (resolvePropertyContext's
+            //  stamp; review row TG-19, held by check_table_laws (j)); no walk up.
+            //  (The experiments/ folder is recorded by the engine under a key no
+            //  dictionary can write; a hand-written `experimentsDir` is refused by name.)
             if (propertyVariants::selectsByName(u))   // `thermo <name>;` (C398): VariantSelection.H
                 flowsheetVariants::resolve(u, flowsheetVariants::nodeSystem(
                     memberBase.substr(0, memberBase.size() - 1), rootSystem), qname);
@@ -2344,14 +2344,14 @@ int Flowsheet::solve(const DictPtr& dict,
             "member's real kind (leaf or composite) from its own dict.");
     if (dict->hasDictList("units"))
     {
-        units = dict->lookupDictList("units");
+        units = dict->lookupDictList("units"); for (const auto& iu : units) propertyVariants::refuseInlineFragment(iu, "unit '" + iu->lookupWordOrDefault("name", "?") + "'");   // C402
     }
     else if (dict->found("type"))
     {
         const std::string nodeName = dict->lookupWordOrDefault("name", "node");
         auto u = std::make_shared<Dictionary>(nodeName);
         u->insert("name", std::string(nodeName));
-        u->insert("type", dict->entryValue("type"));
+        u->insert("type", dict->entryValue("type")); propertyVariants::refuseInlineFragment(dict, "unit '" + nodeName + "'");   // C402
         for (const char* k : { "operation", "model", "dryingCurve", "crystallisation", "thermo", "reaction", "utility" })
             if (dict->found(k)) u->insert(k, dict->entryValue(k));
         // A standalone unit MENTIONS its streams directly (sequential-modular:

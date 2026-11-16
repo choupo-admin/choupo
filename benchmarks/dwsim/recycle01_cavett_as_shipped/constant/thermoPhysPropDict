@@ -5,7 +5,7 @@
   at 322.03 K -- the first separator's declared temperature -- and written
   as a kij SET record by the `ppr78Kij` op in kijTables/ (route P, DEV.md 4c
   C123: "kij a T declarada").  The three other separators carry their own
-  set at their own T through a `thermo {}` override in system/flowsheetDict.
+  set at their own T through a named variant (`thermo ppr78Sep1;` ...) in system/flowsheetDict.
 
   No component of this case has omega > 0.491 (nDecane, the heaviest, is
   0.4884), so the 1978 branch is not exercised here; the corpus cavett01,
@@ -49,4 +49,59 @@ caloric
     energyBasis elementsDatum;
     liquid { departureRoute equilibriumEquationOfState; root liquid; }
     vapour { departureRoute equilibriumEquationOfState; root vapour; }
+}
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  PR with the PPR78 kij set evaluated at SEP1's declared T (310.92 K); see the unit's comment.
+    ppr78Sep1
+    {
+        equilibrium
+        {
+            equationOfState
+            {
+                model      PengRobinson;
+                mixingRule vanDerWaalsOneFluid;
+                binaryInteractions
+                {
+                    ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP1_310.92K.dat"; }
+                }
+            }
+        }
+    }
+    //  PR with the PPR78 kij set evaluated at SEP2's declared T (308.7 K).
+    ppr78Sep2
+    {
+        equilibrium
+        {
+            equationOfState
+            {
+                model      PengRobinson;
+                mixingRule vanDerWaalsOneFluid;
+                binaryInteractions
+                {
+                    ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP2_308.7K.dat"; }
+                }
+            }
+        }
+    }
+    //  PR with the PPR78 kij set evaluated at SEP3's declared T (302.6 K).
+    ppr78Sep3
+    {
+        equilibrium
+        {
+            equationOfState
+            {
+                model      PengRobinson;
+                mixingRule vanDerWaalsOneFluid;
+                binaryInteractions
+                {
+                    ppr78 { source "constant/parameters/PengRobinson/ppr78_SEP3_302.6K.dat"; }
+                }
+            }
+        }
+    }
 }

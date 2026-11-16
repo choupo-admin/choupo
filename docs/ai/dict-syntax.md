@@ -360,7 +360,7 @@ ordering:
 | 5 | `outputs`   | yes | list of output stream names |
 | 6 | `operation` | yes | sub-dict of operating parameters (the numeric knobs) |
 | 7+ | `reaction` / `crystallisation` / `dryingCurve` | opt | reference to a constant/<lib>/<name> block |
-| 7+ | `thermo`    | opt | `thermo <name>;` selects a named variant of `constant/thermoPhysPropDict`; `thermo { ... }` is an inline (unnamed) variant |
+| 7+ | `thermo`    | opt | `thermo <name>;` selects a named variant of `constant/thermoPhysPropDict`; an inline `thermo { ... }` in a unit is refused by name (C402) |
 
 `name` and `type` are mandatory; the rest depend on the unit.  See
 `unit-ops.md` for per-op required fields.
@@ -672,14 +672,26 @@ dictionary may hold its own variants; a unit in a sector resolves the name
 against its sector's file.  Witness:
 `tutorials/steady/thermo/variants01_ethanol_water_line`.
 
-An inline block keeps reading, as an UNNAMED variant -- e.g. a real gas for
+A unit's own property world is ALWAYS a named variant -- e.g. a real gas for
 one unit only (components stay global):
 
 ```
+// constant/thermoPhysPropDict
+variants { srkVapour { equilibrium { vapour { fugacityModel SRK; } } } }
+
+// system/flowsheetDict
 { name turbine; type turbine;  in feed;  outputs ( expanded );
   operation { W_shaft -3 kW; eta 0.8; }
-  thermo    { equilibrium { vapour { fugacityModel SRK; } } } }   // real gas here only
+  thermo    srkVapour; }                        // real gas here only
 ```
+
+The old inline form, `thermo { equilibrium { ... } }` written inside the unit,
+is REFUSED by name (DEV.md 4c C402) with these lines to write: move the body of
+the block into `variants { <name> { ... } }` and select it with `thermo <name>;`.
+A unit inside a sector declares the variant in the SECTOR's own
+`constant/thermoPhysPropDict` (variants are not inherited).  A property
+operation in `propsDict` keeps its own inline `thermo { }`, the props bench's
+grammar.
 
 A stream crossing from a unit with model X into one with model Y is
 **re-interpreted at the boundary**: (T,P,z) are held and each unit recomputes

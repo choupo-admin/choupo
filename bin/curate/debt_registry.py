@@ -1028,3 +1028,13 @@ SCAN_ROOTS_UNRESOLVED_DEBT = {
               "reason.  Either removes the entry here.",
     "blocked": "Nothing; the audit is gate by gate, one slice at a time.",
 }
+
+#  The engine's readers of a unit's `thermo` sub-dictionary (DEV.md 4c C402):
+#  file -> the number of `subDict("thermo")` sites it may hold.  An authored
+#  unit fragment must have NO reader; these are the engine's own homes.
+#  Read by check_no_unit_chemistry.py.
+THERMO_SUBDICT_READERS = {
+    "src/unitOperations/flowsheet/Flowsheet.cpp": None,   # reads ONLY the engine's stamped copy (counted by the gate)
+    "src/thermo/PropertyVariants.cpp": 1,                 # fragmentOf: a props operation's own declaration
+    "src/reporting/ModelBoundaryLedger.cpp": 1,           # the engine's stamped copy only (`@selectedVariant`)
+}

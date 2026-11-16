@@ -71,7 +71,7 @@ describe("the case and local tiers are DISTINCT entries", () => {
   const caseCopy = `recordType binaryInteractionParameters;
 components ( methanol water );
 model NRTL;
-parameters { i methanol; j water; a_ij 0; b_ij 165.00630266; a_ji 0; b_ji 41.76488968; alpha 0.3; }
+parameters { i methanol; j water; a_ij 0; b_ij 146.36957085; a_ji 0; b_ji 61.39688271; alpha 0.3; }
 provenance { origin fitted; reviewStatus interim; fittedInCase "tutorials/props/curation/curate04_nrtl_methanol_water"; }
 `;
   it("the open case's mirrored record is a second NRTL entry, labelled as the case's", () => {

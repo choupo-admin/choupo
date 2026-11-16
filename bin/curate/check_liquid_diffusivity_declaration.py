@@ -124,10 +124,32 @@ def record_number_at(path, key):
     return float(m.group(1))
 
 
-def wilke_chang(solute, solvent, T, mu_solvent, phi):
-    """Poling 5th ed. Eq. 11-9.1, by hand: 7.4e-8 (phi M_B)^0.5 T / (eta_B[cP] V_A^0.6) cm2/s."""
+RACKETT_R = 8.314462618
+
+
+def rackett(T, Tc, Pc_Pa, omega):
+    """The package's Rackett (src/thermo/DerivedClosures.H, rackettVliq), by hand, m3/mol."""
+    zra = 0.29056 - 0.08775 * omega
+    return RACKETT_R * Tc / Pc_Pa * zra ** (1.0 + (1.0 - T / Tc) ** (2.0 / 7.0))
+
+
+def volume_cm3(comp, at_tb=True):
+    """V_A of Poling's Eq. 11-9.1, cm3/mol, by hand from the witness's own record: the
+    record's 25 C Vliq anchored by Rackett to the record's Tb (the route the view prints for
+    these records), or, for the SABOTAGE ARM, left at the 298.15 K datum."""
+    v0 = record_number(comp, "Vliq")
+    if not at_tb:
+        return v0 * 1.0e6
+    Tc, Pc, om, Tb = (record_number(comp, k) for k in ("Tc", "Pc", "omega", "Tb"))
+    Pc_Pa = Pc * 1.0e5
+    return v0 * rackett(Tb, Tc, Pc_Pa, om) / rackett(298.15, Tc, Pc_Pa, om) * 1.0e6
+
+
+def wilke_chang(solute, solvent, T, mu_solvent, phi, at_tb=True):
+    """Poling 5th ed. Eq. 11-9.1, by hand: 7.4e-8 (phi M_B)^0.5 T / (eta_B[cP] V_A^0.6) cm2/s,
+    V_A AT THE NORMAL BOILING POINT (C398 slice d2; `at_tb=False` is the sabotage: V_A at 298 K)."""
     MB = record_number(solvent, "MW")
-    VA = record_number(solute, "Vliq") * 1.0e6
+    VA = volume_cm3(solute, at_tb)
     return 7.4e-8 * (phi * MB) ** 0.5 * T / (mu_solvent * 1.0e3 * VA ** 0.6) * 1.0e-4
 
 
@@ -546,6 +568,37 @@ def main():
                 if abs(d_mi / hand - 1.0) > 1e-10:
                     fails.append(f"(1) D0(methanol in 2-propanol) {d_mi} is not Wilke-Chang with phi 1.0"
                                  f" by hand ({hand}): the default association factor moved")
+            #  V_A AT THE NORMAL BOILING POINT (slice d2, review row DF-03): all six
+            #  D0 at the witness's top state are Poling's Eq. 11-9.1 by hand with V_A from
+            #  the record's Tb, to the printed digits; and the SAME hand with V_A taken at
+            #  298 K must DISAGREE with the engine by more than 1 % on every pair, so a
+            #  check that could not tell the two volumes apart fails here.
+            mus = {"methanol": dg.get("muMethanol", {}).get("viscosity_liquid"),
+                   "water": dg.get("muWater", {}).get("viscosity_liquid"),
+                   "isopropanol": mu_i}
+            for sol in ("methanol", "isopropanol", "water"):
+                for solv in ("methanol", "isopropanol", "water"):
+                    if sol == solv or (sol == "water"):
+                        continue          # water as the solute is an entry the case names
+                    key = f"D_L_inf_{sol}_in_{solv}"
+                    got = dg.get("topDinf", {}).get(key)
+                    try:
+                        phi = record_number(solv, "associationFactor")
+                    except AttributeError:
+                        phi = 1.0
+                    if got is None or mus[solv] is None:
+                        fails.append(f"(1) {key}: the value or the solvent viscosity is missing")
+                        continue
+                    hand = wilke_chang(sol, solv, 328.62, mus[solv], phi)
+                    if abs(got / hand - 1.0) > 1e-5:
+                        fails.append(f"(1) {key} {got} is not Wilke-Chang with V_A at Tb by hand ({hand})")
+                    sab = wilke_chang(sol, solv, 328.62, mus[solv], phi, at_tb=False)
+                    if abs(got / sab - 1.0) < 1e-2:
+                        fails.append(f"(1) {key}: V_A at 298 K gives {sab}, within 1 % of the engine {got}:"
+                                     " the check cannot tell the boiling-point volume from the 25 C one")
+            for sol in ("methanol", "isopropanol", "water"):
+                if f"{sol} as a solute: V_A" not in out or "at its normal boiling point" not in out:
+                    fails.append(f"(1) the view does not print {sol}'s V_A at its normal boiling point")
             for rec in ASSOCIATION_FACTOR_DEFAULTED:
                 text = (ROOT / "data" / "standards" / "components" / f"{rec}.dat").read_text()
                 if re.search(r"^\s*associationFactor\s", text, re.M):
@@ -654,8 +707,14 @@ def main():
              "declares no unit"),
             ("the default Wilke-Chang with water as the solute (DF-01)",
              [(tp, "                    { solute water;  solvent methanol;  kind infiniteDilution;  model WilkeChang;\n"
-                   "                      reason \"taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +167 % there (variant leeLi313 prints both)\"; }\n", "")],
+                   "                      reason \"taken outside its stated scope, measured against: Lee & Li (1991), as Poling 5th ed. p. 11.38 reports it, give 2.67e-5 cm2/s at 313.13 K, and Wilke-Chang is +156 % there (variant leeLi313 prints both)\"; }\n", "")],
              "The method should not be used when water is the solute"),
+            ("a solute with no normal boiling point (slice d2): no silent 25 C volume",
+             [("constant/components/methanol.dat", "Tb          337.85;\n", "")],
+             "has no normal boiling point"),
+            ("a solute whose Tb lies above its Tc has no liquid density there (slice d2, VB-06)",
+             [("constant/components/isopropanol.dat", "Tb          355.39;", "Tb          600.0;")],
+             "has no liquid density at its normal boiling point"),
             ("an unlisted pair names the slice's grammar (DG-05)",
              [(tp, "                default { model WilkeChang; }\n                entries\n                (\n                    { solute water;",
                    "                entries\n                (\n                    { solute water;")],

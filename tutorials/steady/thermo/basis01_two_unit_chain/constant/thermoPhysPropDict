@@ -87,3 +87,20 @@ approximations
                 rather than a fitted pair nothing here would exercise";
     }
 }
+
+//  VARIANTS (DEV.md 4c C398 / C402): what a unit's inline `thermo { }` used to
+//  carry, now NAMED here and selected by `thermo <name>;` in the unit.  A variant
+//  states only what differs from the system above; the rest is the system's.
+variants
+{
+    //  Ideal-gamma, ideal-gas molecular world of the two units across the model boundary (see their comments).
+    idealMolecular
+    {
+        equilibrium
+        {
+            formulation gammaPhi;
+            liquid { activityModel { model ideal; } }
+            vapour { fugacityModel idealGas; }
+        }
+    }
+}

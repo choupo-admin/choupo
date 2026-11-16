@@ -150,7 +150,7 @@ Legend: **Owner** = canonical home of the logic/representation ·
 
 **N4 — Model-boundary energy ledger**
 - Owner: the independent audit beside the energy report (raw · declared step · remaining; assembles its own worlds via public `ThermoPackageBuilder`)
-- Prod → Cons: per-unit `thermo{}` overrides → energy report, CSV surfaces (raw semantics unchanged)
+- Prod → Cons: per-unit variants (`thermo <name>;`) → energy report, CSV surfaces (raw semantics unchanged)
 - Never: the step charged to the unit as "unexplained"; the audit reusing `Flowsheet::thermoFor` (auditor ≠ auditee)
 - Contract: `docs/design/model-boundary-energy-ledger.md`
 - Witness: `molecularFlash` (per-unit override family) · Gates: `check_model_boundary_ledger`

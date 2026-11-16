@@ -76,10 +76,13 @@ int MixingRules::run(const DictPtr& dict,
         throw std::runtime_error("mixingRules '" + opName
             + "': the model '" + eos.modelName() + "' declares no van der"
               " Waals one-fluid mixing rule -- ideal gas has no a at all,"
-              " and PC-SAFT mixes inside its segment dispersion sum, so"
-              " this table would describe arithmetic the model does not"
-              " run.  Declare SRK or PengRobinson to see the one-fluid"
-              " decomposition.");
+              " PC-SAFT mixes inside its segment dispersion sum, and a cubic"
+              " under an excess-Gibbs rule (MHV1, MHV2) mixes through G^E,"
+              " not through a pair sum, so this table would describe"
+              " arithmetic the model does not run.  Declare SRK or"
+              " PengRobinson with `mixingRule vanDerWaalsOneFluid;` to see"
+              " the one-fluid decomposition; the excess-Gibbs rule's own"
+              " terms are in the resolved view and the run's printed choice.");
 
     //  ---- the re-addition: each pair term from the ledger's own numbers.
     //  For i < j the symmetric double sum contributes twice, so the pair's

@@ -1735,6 +1735,40 @@ vaporPressure
 the bug-watch.  But the data are there and the reader of a
 \file{.dat} is expected to honour them.
 
+\subsection{Water: the IAPWS saturation equation}\label{sec:water-iapws-psat}
+
+Water is the one component whose vapour pressure the catalogue takes from a
+reference formulation rather than from a regression: the IAPWS saturation
+equation (SR1-86(1992), Eq.~1; the same six coefficients are printed as
+Eq.~(2.5) of Wagner and Pruss, \emph{J.\ Phys.\ Chem.\ Ref.\ Data} \textbf{31}
+(2002) 387, p.~399).  It is a Wagner equation, the \code{Wagner} model of
+the engine (\file{src/thermo/vaporPressure/Wagner.cpp}):
+\begin{equation}
+   \ln\frac{P^{\mathrm{sat}}}{P_r}
+   = \frac{T_r}{T}\sum_{i=1}^{6} a_i\,\tau^{e_i},
+   \qquad \tau = 1 - \frac{T}{T_r},
+   \label{eq:water-iapws-psat}
+\end{equation}
+with $T_r = 647.096$~K, $P_r = 22.064$~MPa, exponents
+$e = (1,\,1.5,\,3,\,3.5,\,4,\,7.5)$ and
+$a = (-7.85951783,\ 1.84408259,\ -11.7866497,\ 22.6807411,\ -15.9618719,\
+1.80122502)$.  The reducing constants belong to the equation: the
+$T_c$ stored in water's record differs from it by 0.044~K (an older value) and must
+not be substituted --- the engine refuses a \code{Wagner} block without its own
+\code{reducing \{ T; P; \}}.  Valid 273.16--647.096~K.  The equation reproduces
+the release's Table~1 (611.657~Pa at 273.16~K, 101\,325~Pa at 373.1243~K,
+22.064~MPa at 647.096~K) to $1.5\times10^{-7}$ and the IF97 region-4
+equation to $1.8\times10^{-4}$.  The Antoine fit it replaced was $+2.5\,\%$
+high at 373~K, $+6.4\,\%$ at 423~K and $+18\,\%$ at 573~K.
+
+\paragraph{One home.}  The saturation curve of water lives in this block
+only.  The PHREEQC-convention record of \texttt{H2O(g) = H2O}, which states
+the same curve as a dissolution constant, is derived from it:
+$\log K = -\log_{10}(P^{\mathrm{sat}}/101\,325\,\mathrm{Pa})$ fitted with the
+six-term analytic form over 273.16--473.15~K (maximum $5\times10^{-6}$ in
+$\log K$; \file{bin/curate/fit\_water\_vapour\_equilibrium.py}), and the gate
+\code{check\_water\_one\_home} recomputes both from the printed coefficients.
+
 \subsection{Watson for $\Hvap(T)$}
 
 The latent heat is already derived in
@@ -1753,9 +1787,11 @@ The simulator computes it in \code{Component::Hvap\_latent}.
 \subsection{Worked example: water from $\ln P$ vs $1/T$ to Antoine}
 
 \begin{example}[Two ways to compute $\Psat$ of water at 320~K]
-Data from
-\file{data/standards/components/water.dat} (DIPPR-style, valid
-273--373~K): $A = 5.40221$, $B = 1838.675$, $C = -31.737$, $T_b =
+Data: the Antoine fit that
+\file{data/standards/components/water.dat} carried until 2026-11-16
+(DIPPR-style, valid 273--373~K; the record now uses the IAPWS equation of
+Section~\ref{sec:water-iapws-psat}, which is 2.5\,\% lower at 373~K):
+$A = 5.40221$, $B = 1838.675$, $C = -31.737$, $T_b =
 373.15$~K, $T_c = 647.10$~K, $\Hvap(T_b) = 40\,650$~J/mol.
 
 \textbf{Antoine, direct.}
@@ -2574,8 +2610,8 @@ $\Lambda_{ij}=(V_j/V_i)\exp(\cdots)$ wants both volumes at 25\,$^\circ$C,
 the convention its pairs are regressed under; a parametrised Wilson pair
 over a record that states another \code{VliqT} is refused by name (no
 catalogue Wilson pair names one).  Wilke-Chang \emph{wants} the solute's
-volume at its normal boiling point, which is what these records store; it
-reads the datum as stored.  The Poynting factor keeps its constant-volume
+volume at its normal boiling point, and since C398 slice~d2 it takes it
+there, from the package's density at $T_b$, not from the stored datum.  The Poynting factor keeps its constant-volume
 form with the stored datum.  The units that still read the volume
 themselves (pump, pressure exchanger, CSTR, liquid PFR, crystallisers,
 spray dryer; \S\ref{sec:liquid-property-sources}) read the datum flat, at
@@ -2623,8 +2659,9 @@ variants
 \end{lstlisting}
 A unit (\file{system/flowsheetDict}) or a property operation
 (\file{system/propsDict}) selects a variant by name with one line,
-\code{thermo vogelLaw;}.  An inline \code{thermo \{ ... \}} keeps reading as
-before, as an \emph{unnamed} variant.  The engine resolves a named variant
+\code{thermo vogelLaw;}.  A property operation's inline \code{thermo \{ ... \}} keeps reading as
+an \emph{unnamed} variant; a \emph{unit's} inline block is refused by name
+(C402: a unit's world is always a named variant).  The engine resolves a named variant
 by the same typed merge an inline fragment goes through
 (\file{src/thermo/ThermoOverride.H}), through one reader
 (\file{src/thermo/PropertyVariants.H}); so a pipe and a property check that
@@ -2697,7 +2734,7 @@ can be asked it prints two columns:
 \begin{description}
 \item[CHOICE] where the choice was made: the file's system, a sector file or
   the parent it inherits, \code{variants.<name>}, or the inline \code{thermo
-  \{\}} of a unit.  A choice belongs to the level that \emph{resolved} it,
+  \{\}} of a property operation.  A choice belongs to the level that \emph{resolved} it,
   never to the level that selected the variant.
 \item[DATA] what runs and where its data come from: for each transport
   property, the pure-component law per constituent (with its source and
@@ -3132,8 +3169,8 @@ missing is refused, not replaced).  The reader of a sector's (or an
 \code{inherits} parent's) dictionary stamps each table pin, and each density
 measurement, with that folder; the view prints the file's path relative to the
 case root (``\code{record: case sectors/A/constant/experiments/crcWaterMu.dat}'').
-A unit's inline \code{thermo \{\}} obeys the same rule (review row TG-19): a
-table pin written in a unit's own \file{system/flowsheetDict} reads that
+A unit's own variant obeys the same rule (review row TG-19): a
+table pin written in a variant of a unit's own \file{constant/thermoPhysPropDict} reads that
 unit's \file{constant/experiments/} (for a pipe of sector A,
 \file{sectors/A/unitOperations/P1/constant/experiments/}), never its sector's
 or the plant's, and a file it does not hold is refused naming that path.  The
@@ -3592,14 +3629,14 @@ model.
   does not say so.
 \item \textbf{A constant of the unit} --- 1000\,kg/m$^3$ in the
   electrodialysis cell, stack and batch rig (the dilute carrier they are
-  built on), in the spiral-wound module when the case declares no
-  \code{rho\_feed}, in the batch diafilter when it declares no \code{rho}
-  (announced); a kinematic viscosity of $10^{-6}$\,m$^2$/s in the
+  built on); a kinematic viscosity of $10^{-6}$\,m$^2$/s in the
   electrodialysis stack and batch rig when no viscosity model is declared;
-  1\,mPa\,s, 72\,mN/m and $1.6\times10^{-9}$\,m$^2$/s as the
-  spray dryer's and the module's defaults.
+  1\,mPa\,s and 72\,mN/m as the spray dryer's defaults.  (The spiral-wound
+  module's and the batch diafilter's constants, 1000\,kg/m$^3$, 1\,mPa\,s
+  and $1.6\times10^{-9}$\,m$^2$/s, are gone since C402: section~\ref{sec:membrane-liquid-properties}.)
 \item \textbf{Declared by the case} --- a viscosity or surface tension a pipe,
-  a column or a module reads from its own block.
+  or a column reads from its own block (a column's is refused since C398
+  slice~(d), a membrane unit's since C402).
 \item \textbf{The unit's own correlation} --- the column's liquid diffusivity
   (Wilke--Chang both ways at infinite dilution in the mixture viscosity,
   combined linearly in mole fraction), whatever diffusivity model the case
@@ -3717,7 +3754,7 @@ A resolution is kept per \emph{world} and set for the run.  The world is
 every per-component fact the resolution reads from a package: the name, the
 case's pure-fluid selection, whether the formulation makes the component a
 Henry solute, and the volume route its record offers.  A unit's own
-\code{thermo \{\}} that changes one of them is a second world and a second
+variant (\code{thermo <name>;}) that changes one of them is a second world and a second
 recipe, never a contradiction of the first.  A package met for the first
 time (another pass of an outer driver builds its own) resolves its sets
 again, and a set of the SAME world that would resolve to a \emph{different}
@@ -3848,6 +3885,18 @@ and 0.45\,\% low at 10\,MPa, the compressibility it does not carry.  The
 law's pure-water end is not the reference water ($+0.23$\,\% at 273.16\,K,
 $-0.09$\,\% at 298.15\,K against IAPWS-95): a liquid crossing from the set
 $\{\mathrm{water}\}$ to $\{\mathrm{NaOH, water}\}$ steps by that much.
+
+\paragraph{A second record and a trace constituent (C402).}  \file{NaCl-water.dat}
+is the same form regressed to the Laliberté--Cooper (2004) model for NaCl (its
+header carries the grid, the in-sample error and the comparisons with the CRC
+Handbook, p.~8-77 and p.~14-12; the regression is
+\file{bin/curate/fit\_nacl\_water\_density.py}).  The method now also applies to
+a set that exceeds the record's binary by constituents the case lists under
+\code{massWithoutVolume}: the law prices the binary, and the listed
+constituents keep their mass and add no volume,
+$\rho=\rho_{\mathrm{binary}}/(1-w_{\mathrm{listed}})$, inside the
+hypothesis' own \code{maxMassFraction}.  A constituent the law \emph{carries}
+that the case also lists passes the law over, as before.
 
 \subsection{A measurement as a method, with a hard box: \code{measured}}\label{sec:liquid-density-measured}
 
@@ -10238,6 +10287,111 @@ Eq.~\eqref{eq:srk-alpha}:
    \label{eq:srk-dadT}
 \end{equation}
 
+\subsection{A per-component alpha function: Mathias--Copeman}\label{sec:cubic-alpha-mc}
+
+\paragraph{Why.}  The generalised Soave slope of Eq.~\eqref{eq:srk-m}
+is one curve in $\omega$ for every fluid.  With the records' own
+$T_c,P_c,\omega$ it puts the SRK saturation pressure at the normal
+boiling point $-8.8\,\%$ low for water and $-2.7\,\%$ for methanol
+(acetone $-1.6\,\%$, ethanol $-1.1\,\%$; the design record
+\file{docs/design/c408-eos-ge-mixing-rules.md}, finding F2).  Any mixing
+rule built on that cubic inherits the error at both ends of the
+diagram.  The remedy is \emph{opt-in}: a case writes
+\code{alphaFunction MathiasCopeman;} in its \code{equationOfState}
+block, and the default (Soave for \code{SRK}, the 1978 PR slope for
+\code{PengRobinson}) is unchanged.
+
+\paragraph{Equations as implemented.}  With
+$x_i = 1-\sqrt{T/T_{c,i}}$ the attraction parameter keeps its form
+$a_i(T) = a_{c,i}\,\alpha_i(T)$, Eq.~\eqref{eq:srk-alpha}, and only
+$\alpha_i$ changes (Poling, Prausnitz \& O'Connell, \emph{The Properties of
+Gases and Liquids}, 5th ed., Table~4-7, pp.~4.19--4.20, the Mathias--Copeman
+row \cite{RPP}):
+\begin{equation}
+   \alpha_i(T) = \bigl[\,1 + c_{1,i}\,x_i + c_{2,i}\,x_i^{2}
+                   + c_{3,i}\,x_i^{3}\,\bigr]^{2},
+   \qquad T \le T_{c,i}.
+   \label{eq:mc-alpha}
+\end{equation}
+Above $T_c$ the engine uses the Soave branch with $c_1$ alone,
+$\alpha_i = [1 + c_{1,i}x_i]^2$.  Poling prints Eq.~\eqref{eq:mc-alpha}
+only; the supercritical branch is the engine's own continuous extension
+(the original paper, Mathias \& Copeman, \emph{Fluid Phase Equilib.}
+\textbf{13} (1983) 91, is not held), chosen because $\alpha$ and
+$\mathrm{d}\alpha/\mathrm{d}T$ are then continuous at $T_c$ ($x=0$);
+only $\mathrm{d}^2\alpha/\mathrm{d}T^2$ jumps there.  With
+$c_2=c_3=0$ Eq.~\eqref{eq:mc-alpha} \emph{is} Eq.~\eqref{eq:srk-alpha}
+with $m=c_1$, so a record without constants means today's behaviour.
+Writing $g_i=\sqrt{\alpha_i}$, $\mathrm{d}x_i/\mathrm{d}T=-1/(2\sqrt{T\,T_{c,i}})$:
+\begin{equation}
+   \frac{\mathrm{d}a_i}{\mathrm{d}T} = 2\,a_{c,i}\,g_i\,g_i',
+   \qquad
+   g_i' = \bigl(c_{1,i} + 2c_{2,i}x_i + 3c_{3,i}x_i^{2}\bigr)\,
+          \frac{\mathrm{d}x_i}{\mathrm{d}T}\quad(T\le T_{c,i}),
+   \label{eq:mc-dadT}
+\end{equation}
+and $g_i'=c_{1,i}\,\mathrm{d}x_i/\mathrm{d}T$ above $T_c$.  The code keeps
+the signed root $s_i=\sqrt{a_{c,i}}\,g_i$ of the mixing rule
+(Eq.~\eqref{eq:srk-damixdT}) so the derivative stays finite where
+$g_i=0$.  The second derivative is also closed-form in
+\code{CubicEoS::mathiasCopemanG}, for the heat-capacity departure of a
+later slice; no departure function reads it today.
+
+\paragraph{Symbols.}  $c_{1,i},c_{2,i},c_{3,i}$ are dimensionless and
+\emph{per component and per cubic}: constants fitted for \code{SRK} are
+wrong for \code{PengRobinson}, whose $a_c$ and $b$ differ.  The record
+holds them as \code{cubicAlpha \{ SRK \{ form MathiasCopeman; c1; c2; c3;
+Trange (lo hi); \} \}}.
+
+\paragraph{Where the constants come from.}  Never from a table.  The
+curation tool \file{bin/curate/fit\_alpha\_function.py} fits
+$c_1,c_2,c_3$ by least squares in $\ln P^{\mathrm{sat}}$ of the pure
+cubic's saturation pressure (forty-one points) against the component
+record's \emph{own} vapour-pressure law over the window that law declares,
+keeps $\sqrt{\alpha}$ positive up to $T_c$, writes the block and a
+provenance entry (\code{origin derived}, the law, the window, the
+largest deviation, \code{valueSha256}) into the record.  Nothing
+estimates during a run.  A component without the block, under
+\code{alphaFunction MathiasCopeman;}, is refused by name and the message
+names the tool.  The choice is printed in the run and in the resolved
+view.
+
+\paragraph{Validity window and an honest in-sample statement.}  The
+constants reproduce \emph{the record's law over its window}, in-sample
+(Table~\ref{tab:mc-fits}); outside it they extrapolate, and above $T_c$
+only $c_1$ acts.  A cubic can follow a vapour-pressure law only where
+that law is the liquid--vapour curve: CO$_2$'s Antoine record is the
+sublimation line (its window ends below the triple point) and the tool
+refuses it by name, so CO$_2$ has no Mathias--Copeman constants until a
+saturated-liquid law is curated.  Water's law is the IAPWS equation
+(Section~\ref{sec:water-iapws-psat}), fitted over 273--634\,K (the fit
+stops at $0.98\,T_c$, where a cubic's saturation line has no liquid--vapour
+pair left to follow), so the constants hold the cubic within
+$0.65\,\%$ (SRK) and $0.51\,\%$ (PR) of the primary over the whole span and
+within $0.15\,\%$ of $101325$~Pa at the normal boiling point.  (Until
+2026-11-16 the record's law was an Antoine fit $2.5\,\%$ high there, and
+the constants followed it, not the primary.)
+\begin{table}[ht]
+\centering
+\caption{Fitted constants and the saturation-pressure deviation from the
+record's own law over its window (201 points), default alpha function
+against Mathias--Copeman.  Produced by \code{fit\_alpha\_function.py};
+held by the gate \code{check\_alpha\_function}.}
+\label{tab:mc-fits}
+\small
+\begin{tabular}{llrrrrr}
+\toprule
+component & cubic & $c_1$ & $c_2$ & $c_3$ & default & fitted\\
+\midrule
+water    & SRK & 1.09315 & $-0.67095$ &  0.69183 & 34.1\,\% & 0.65\,\%\\
+water    & PR  & 0.91826 & $-0.32976$ &  0.31981 & 21.3\,\% & 0.51\,\%\\
+methanol & SRK & 1.41822 & $-0.60449$ & $-0.23147$ & 19.3\,\% & 0.05\,\%\\
+methanol & PR  & 1.22117 & $-0.20453$ & $-0.68580$ & 14.7\,\% & 0.06\,\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+Witness: \code{tutorials/props/molecular/alpha01\_water\_methanol\_psat}.
+
 \subsection{Mixing rules}
 
 A mixture needs single effective $a_{\mathrm{mix}}, b_{\mathrm{mix}}$.
@@ -10735,6 +10889,237 @@ a vapour volume.  The liquid density that other units read through
 \code{ThermoPackage::density} remains the Rackett route; the translated
 volume is the equation of state's.
 
+\subsection{Cubic mixing rules: the van der Waals one-fluid rule and the modified Huron--Vidal rules MHV1 and MHV2}\label{sec:cubic-mixing-rule}
+% Written 2026-11-16 against src/thermo/equationOfState/CubicMixingRule.{H,cpp}
+% (VanDerWaalsOneFluid::mix, ExcessGibbsRule::mix, the GE_ROWS table, makeGe),
+% src/thermo/equationOfState/CubicEoS.cpp (buildMix, phiAt, H_residual) and
+% DEV.md 4c C408 (b); design record docs/design/c408-eos-ge-mixing-rules.md.
+% Every equation number below is that of the paper named, read from its page
+% image (Michelsen 1990; Dahl and Michelsen 1990; Poling, Prausnitz and
+% O'Connell 5th ed. Sec.~5-5).
+
+A pure fluid fixes the two parameters $a_i(T)$ and $b_i$ of a cubic equation
+of state; a \emph{mixture} needs a rule that turns them into $a(T,\mathbf y)$
+and $b(\mathbf y)$.  In Choupo the rule is an object, owned by
+\code{CubicEoS} and chosen by the \code{mixingRule} word of the
+\code{equationOfState} block.  It is not a new equation of state: the cubic,
+its root picker and its pseudo-root are untouched, and only the numbers that
+go into them change.  Three words are registered.
+
+\paragraph{\code{vanDerWaalsOneFluid}, the default.}
+\begin{equation}
+   a = \sum_i\sum_j y_i y_j\,(1-k_{ij})\sqrt{a_i a_j}\,,\qquad
+   b = \sum_i y_i b_i\,.
+   \label{eq:cmr-vdw}
+\end{equation}
+This is the arithmetic every cubic of the tree ran before the rule became an
+object; it was moved intact, and every case that does not write another word
+is byte-identical to the build before the move.  Its interaction parameter is
+a property of the \emph{pair of species and the cubic} (a record regressed for
+SRK is refused under Peng--Robinson); it has no memory of any activity model.
+
+\paragraph{What a rule owes the cubic.}  With the reduced attraction
+$\beta = a/(b\Rgas T)$, $B = bP/\Rgas T$, $A = aP/(\Rgas T)^2$,
+$I = \ln[(Z+\sigma B)/(Z+\epsilon B)]/(\sigma-\epsilon)$, the fugacity
+coefficient of \emph{any} two-parameter cubic, under \emph{any} mixing rule, is
+\begin{equation}
+   \ln\varphi_i \;=\; \frac{\bar b_i}{b}\,(Z-1) \;-\; \ln(Z-B)
+        \;-\; \bar\beta_i\, I\,,
+   \qquad
+   \bar b_i = \frac{\partial (n b)}{\partial n_i}\,,\quad
+   \bar\beta_i = \frac{\partial (n\beta)}{\partial n_i}\,.
+   \label{eq:cmr-lnphi}
+\end{equation}
+For SRK ($\epsilon = 0$, $\sigma = 1$) this is Dahl and Michelsen's Eq.~A2
+(p.~1835) written in $Z$ and $B$, and for the one-fluid rule, where
+$\bar b_i = b_i$, it is the
+familiar expression of the engine, term for term.  So the cubic asks a rule
+for $a$, $b$, $\mathrm{d}a/\mathrm{d}T$, $\bar b_i$ and the single number
+$X_i = \bar\beta_i/\beta = \bar a_i/a - \bar b_i/b$ that carries the
+composition derivative of the attraction.  The departures need only $a$ and
+$\mathrm{d}a/\mathrm{d}T$, which is why $H^{\mathrm R}$ and $S^{\mathrm R}$
+below are the cubic's own expressions, unchanged.
+
+\paragraph{\code{MHV1} and \code{MHV2}: a cubic that is told its excess Gibbs energy.}
+Low-pressure phase equilibrium has been correlated for decades by activity
+coefficient models (Chapter~\ref{ch:activity}); a mixing rule that lets a cubic
+\emph{use those parameters} gives a model that covers high pressure and
+supercritical components without a new regression.  Michelsen
+\cite{Michelsen1990} matches the cubic to $g^{\mathrm E}$ at \emph{zero
+pressure}.  Writing $\alpha = a/(bRT)$ (this guide's $\beta$) and
+$u = v/b$, the fugacity of the cubic at zero pressure is a function
+$q(\alpha)$ alone (Eqs.~2--7, pp.~214), and equating the cubic's excess Gibbs
+energy to the model's gives, for the mixture,
+\begin{equation}
+   q(\alpha) - \sum_i y_i\,q(\alpha_{ii})
+   \;=\; \frac{g^{\mathrm E}}{\Rgas T} + \sum_i y_i \ln\frac{b}{b_{ii}}
+   \label{eq:cmr-match}
+\end{equation}
+(Eq.~9, p.~214).  The function $q$ is only defined for $\alpha > 3 + 2\sqrt 2$
+(Eqs.~5--6), so it is replaced by its straight-line fit on the interval
+$10 < \alpha < 13$ of ordinary boiling points (Eq.~10, p.~215), with the
+slope $q_1 = -0.593$ for SRK (p.~216; \cite{RPP}, Table~5-1, p.~5.17).  This gives
+the explicit first-order rule
+\begin{equation}
+   q_1\Bigl(\beta - \sum_i y_i\beta_i\Bigr)
+   \;=\; \frac{g^{\mathrm E}}{\Rgas T} + \sum_i y_i \ln\frac{b}{b_i}\,,
+   \qquad b = \sum_i y_i b_i
+   \label{eq:cmr-mhv1}
+\end{equation}
+(Eq.~12, p.~215), which is \code{MHV1}.  Dahl and Michelsen
+\cite{DahlMichelsen1990} improve the match with a quadratic,
+$q(\alpha) \approx q_0 + q_1\alpha + q_2\alpha^2$ (their Eq.~11 text), giving
+\begin{equation}
+   q_1\Bigl(\beta - \sum_i y_i\beta_i\Bigr)
+   + q_2\Bigl(\beta^2 - \sum_i y_i\beta_i^2\Bigr)
+   \;=\; \frac{g^{\mathrm E}}{\Rgas T} + \sum_i y_i \ln\frac{b}{b_i}
+   \label{eq:cmr-mhv2}
+\end{equation}
+(Eq.~13, p.~1831), \code{MHV2}, with $q_1 = -0.478$, $q_2 = -0.0047$ for SRK
+(p.~1831; Poling Table~5-1 and its note~a).  The quadratic is solved for the
+root that tends to \code{MHV1}'s as $q_2\to 0$ (``the larger root'', p.~1835),
+in the form $\beta = 2r/(q_1 - \sqrt{q_1^2 + 4q_2 r})$, $r$ the right-hand side
+plus $\sum_i y_i(q_1\beta_i + q_2\beta_i^2)$: no cancellation, and a negative
+discriminant is refused by name.
+
+\paragraph{The composition derivative needs no derivative of the model.}
+Because $\partial(n g^{\mathrm E}/\Rgas T)/\partial n_i = \ln\gamma_i$, the
+derivative of the matching condition is, for both rules,
+\begin{equation}
+   (q_1 + 2q_2\beta)\,\bar\beta_i \;=\; q_1\beta_i
+   + q_2\bigl(\beta^2 + \beta_i^2\bigr)
+   + \ln\gamma_i + \ln\frac{b}{b_i} + \frac{b_i}{b} - 1
+   \label{eq:cmr-derivative}
+\end{equation}
+(Dahl and Michelsen Eq.~A3, p.~1835; \code{MHV1} is $q_2 = 0$).  The activity
+model is therefore called \emph{once per phase and state}, at the composition
+of the phase being priced (the liquid's for $\varphi^{\mathrm L}$, the vapour's
+for $\varphi^{\mathrm V}$), and the pressure never reaches it.  The
+implementation of Eqs.~\eqref{eq:cmr-lnphi}--\eqref{eq:cmr-derivative} was
+checked against a finite-difference derivative of the total residual Helmholtz
+energy (agreement $10^{-9}$ in $\ln\varphi_i$, both roots, both rules) before
+it was written into the engine, and the gate
+\code{check\_cubic\_mixing\_rule} holds it to this guide's own transcription.
+
+\paragraph{The energy: the slope of $g^{\mathrm E}$ is inside $H^{\mathrm R}$.}
+Differentiating the matching condition at constant $b$ gives
+\begin{equation}
+   (q_1 + 2q_2\beta)\,\frac{\mathrm d\beta}{\mathrm dT}
+   \;=\; \sum_i y_i\,(q_1 + 2q_2\beta_i)\,\frac{\mathrm d\beta_i}{\mathrm dT}
+   \;-\; \frac{H^{\mathrm E}}{\Rgas T^2}\,,
+   \qquad
+   \frac{\mathrm d\beta_i}{\mathrm dT} = \frac{T a_i' - a_i}{b_i\Rgas T^2}
+   \label{eq:cmr-dbeta}
+\end{equation}
+with $H^{\mathrm E} = -\Rgas T^2\,\mathrm d(g^{\mathrm E}/\Rgas T)/\mathrm dT$
+the activity model's own (\code{ActivityModel::excessEnthalpy}).  Since
+$a = \beta b\Rgas T$ and $b$ is $T$-independent,
+$\mathrm da/\mathrm dT = \Rgas b(\beta + T\,\mathrm d\beta/\mathrm dT)$ and
+$T\,\mathrm da/\mathrm dT - a = \Rgas T^2 b\,\mathrm d\beta/\mathrm dT$: the
+departure expressions of the cubic,
+\begin{equation}
+   H^{\mathrm R} = \Rgas T(Z-1) + \Rgas T^2\,\frac{\mathrm d\beta}{\mathrm dT}\,I\,,
+   \qquad
+   S^{\mathrm R} = \Rgas\ln(Z-B) + \Rgas\Bigl(\beta + T\frac{\mathrm d\beta}{\mathrm dT}\Bigr) I\,,
+   \label{eq:cmr-dep}
+\end{equation}
+carry the temperature slope of the activity model.  Inside an equation of
+state this slope cannot be withheld, as a gamma--phi liquid withholds
+$H^{\mathrm E}$ unless the pairs were fitted to heats of mixing:
+$H^{\mathrm R} = -\Rgas T^2\,\partial(\sum_i y_i\ln\varphi_i)/\partial T$ is
+an identity of the surface the fugacities came from, and a departure that
+dropped the slope would not be the departure of those fugacities.  A pair
+fitted to phase equilibrium alone gives a slope fixed by the same two numbers
+that fix $g^{\mathrm E}$; the run says so once.  The first law of a flowsheet
+closes on \emph{any} single-valued $H(T,P,\mathbf y)$ and so cannot see a wrong
+slope; the gate checks Eq.~\eqref{eq:cmr-dep} against a temperature difference of
+the engine's own $\ln\varphi$ instead.  The departures reach the
+\emph{vapour} phase's enthalpy and entropy: under \code{phiPhi} a liquid
+stream is priced on the liquid formation enthalpy, not on the cubic (DEV.md 4c C410).
+
+\paragraph{What the rule asks of the case.}
+\begin{itemize}
+\item \code{MHV1} and \code{MHV2} take the \code{activityModel} block of a
+  gamma--phi liquid, \emph{inside} the \code{equationOfState} block, read by
+  the same reader (pair records, their citations and spans).  An
+  \code{activityModel} under the one-fluid rule, and an excess-Gibbs word
+  without one, are refused.
+\item They have no $k_{ij}$: a \code{binaryInteractions} block under them is
+  refused.
+\item A pair with no record is \emph{refused}, not run ideal.  Under gamma--phi a
+  missing pair is an announced ideal assumption; here $g^{\mathrm E} = 0$ for
+  that pair is a definite claim about the attraction (Huron--Vidal's
+  $a/b = \sum y_i a_i/b_i$) that is \emph{not} the one-fluid rule, with no
+  $k_{ij}$ to correct it.  A G$^{\mathrm E}$ model \code{ideal} is refused for the same reason.
+\item \code{MHV1} and \code{MHV2} are SRK-only: $q_1$, $q_2$ are fitted per
+  equation of state, Michelsen prints $q_1 = -0.53$ for Peng--Robinson on
+  p.~216 and neither paper prints a Peng--Robinson \code{MHV2} constant, so
+  both refuse \code{PengRobinson} by name.
+\item A pure $\beta_i = a_i/(b_i\Rgas T)$ outside $10 < \beta < 13$ is
+  announced once: the rule is an extrapolation of the fit there.  (Water at
+  $450$~K has $\beta = 8.0$.)
+\end{itemize}
+
+\paragraph{Which pairs can be reused as they are.}  \code{MHV1} and \code{MHV2}
+match $g^{\mathrm E}$ at \emph{zero} pressure, so a pair fitted to
+low-pressure data feeds them with no new parameter: for the catalogue's
+methanol--water NRTL pair at $373.15$~K and $2.5$~bar the activity
+coefficients \emph{recovered from the cubic} ($\gamma_i = \varphi_i^{\mathrm L}(\mathbf x)/\varphi_i^{\mathrm L}(\text{pure } i)$)
+differ from the model fed in by at most $0.009$ in $\ln\gamma$ for
+\code{MHV2} and $0.029$ for \code{MHV1}; the one-fluid rule with $k_{ij}=0$
+is $0.42$ away.  A rule that matches at \emph{infinite} pressure (Huron and
+Vidal's original) would take the pair's $g^{\mathrm E}$ as an infinite-pressure
+quantity, which it is not; it is a later slice of the same object.
+
+\begin{tutoriallink}
+\begin{lstlisting}
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState
+    {
+        model      SRK;
+        mixingRule MHV2;            // vanDerWaalsOneFluid | MHV1 | MHV2
+        alphaFunction MathiasCopeman;   // optional: the fitted alpha feeds the rule
+        activityModel               // the block a gammaPhi liquid takes
+        {
+            model NRTL;
+            binaryParameters
+            {
+                methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+            }
+        }
+    }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+\end{lstlisting}
+\emph{Tutorial:} \file{tutorials/props/molecular/mhv01\_methanol\_water\_100C}
+asks twelve \emph{measured} bubble points of methanol + water at $100\,^\circ$C
+(Griswold and Wong 1952, as printed in Poling et al.\ Table~8-46, p.~8.146)
+six ways.  The catalogue's pair was fitted at $297$--$361$~K and $15$--$95$~kPa
+and this diagram reaches $3.5$~bar, so the numbers measure the rule's use of the pair
+\emph{and} the pair's own error.  Over the ten interior points the
+gamma--phi package the pair was fitted in misses the bubble pressure by $4.1\,\%$
+on average ($6.7\,\%$ at most); SRK with \code{MHV1} on the fitted
+Mathias--Copeman $\alpha$ (Section~\ref{sec:cubic-alpha-mc}) by $4.0\,\%$ ($5.8\,\%$) and
+with \code{MHV2} by $4.0\,\%$ ($7.2\,\%$); SRK with the one-fluid rule and
+$k_{ij}=0$ by $39\,\%$ ($78\,\%$).  The same two rules on the plain Soave $\alpha$
+are worse, $6.3\,\%$ ($11.0\,\%$) and $6.7\,\%$ ($12.2\,\%$), and the reason
+is the cubic's own pure-component vapour pressure: plain-Soave SRK puts water's
+vapour pressure at $100\,^\circ$C $8.8\,\%$ low ($92.5$ against $101.3$~kPa), the
+fitted $\alpha$ puts it within $0.1\,\%$, and a pair fitted in the frame of the records'
+own vapour-pressure laws inherits the cubic's pure-component error at the water end
+whatever the rule.  Dahl and Michelsen likewise fit a Mathias--Copeman $\alpha$ to each
+pure vapour pressure (their Eq.~5 and Table~1, p.~1830).
+\end{tutoriallink}
+
+\paragraph{Validity.}  SRK only; pure $\beta_i$ inside $10 < \beta < 13$ for
+the rule to be an interpolation of its fit; pairs inside their fitted span
+(the span guard of the activity model announces an excursion in $T$ or $P$,
+which is the point of the rule and also its risk); the Huron--Vidal,
+Wong--Sandler and PSRK members of the family are later slices.
+
 \subsection{The \texorpdfstring{$P$--$T$}{P-T} envelope of a mixture}\label{sec:mixture-envelope}
 % Written 2026-11-15 against src/propertyOps/PhaseEnvelope.{H,cpp} (the
 % pressure march, BubblePoint::compute and DewPoint::compute, the
@@ -11092,6 +11477,209 @@ known ones.  Pure-fluid witnesses:
 \file{tutorials/props/molecular/pcsaft01\_pure\_nhexane} (non-associating core),
 \file{tutorials/props/molecular/pcsaft03\_association\_pure} (2B water + 2B ethanol, site
 fractions and the closed-form oracle echoed at verbosity~3).
+\end{tutoriallink}
+
+% ---------------------------------------------------------------------
+\section{Lee--Kesler--Pl\"ocker: corresponding states as an equation of state}\label{sec:lkp}
+% Written 2026-11-16 against src/thermo/equationOfState/LeeKeslerPloecker.{H,cpp}
+% and DEV.md 4c C408 (d).  Sources: Lee and Kesler, AIChE J. 21, 510--527 (1975)
+% [LK] and Pl\"ocker, Knapp and Prausnitz, Ind. Eng. Chem. Process Des. Dev.
+% 17, 324--332 (1978) [PKP]; every equation number below is theirs, read from the
+% PDFs in the project's literature folder.  Cross-check: Poling, Prausnitz and
+% O'Connell, 5th ed., Example 4-1.
+
+\code{model LeeKeslerPloecker;} is a third equation of state beside the cubics
+(Section~\ref{ch:cubic-eos}) and PC-SAFT (Section~\ref{ch:pcsaft}), for the
+fluids the first two serve badly or only by tuning: non-polar and slightly
+polar hydrocarbons and their light-gas mixtures from the dilute gas to the
+compressed liquid, with the pressure, enthalpy and entropy departures and the
+fugacity coefficients that a phi--phi flash, a column or a compressor needs.  It
+is a \emph{correlation} of volumetric and caloric data, not a model of
+molecules (Lee and Kesler \cite{LeeKesler1975}, with the mixing rules of
+Pl\"ocker, Knapp and Prausnitz \cite{PloeckerKnapp1978}), and it is written in reduced variables: a fluid enters only through
+$T_c$, $P_c$ and the acentric factor $\omega$.
+
+\paragraph{Two fluids of one equation.}  A fluid of acentric factor $\omega$ is
+priced as an interpolation, at the \emph{same} reduced temperature and
+pressure, between two fluids that obey the same modified Benedict--Webb--Rubin
+equation with different constants: a \emph{simple fluid} ($\omega=0$) and a
+\emph{reference fluid} (n-octane, $\omega^{(r)}=0.3978$),
+\begin{equation}
+  Z \;=\; Z^{(0)} + \frac{\omega}{\omega^{(r)}}\bigl(Z^{(r)} - Z^{(0)}\bigr)
+  \qquad(\text{LK eq.\ 2}),
+  \label{eq:lkp-Z}
+\end{equation}
+and every other property is blended the same way, from the two fluids' \emph{own}
+functions.  Each fluid obeys
+\begin{equation}
+  Z=\frac{P_rV_r}{T_r}
+   = 1+\frac{B}{V_r}+\frac{C}{V_r^{2}}+\frac{D}{V_r^{5}}
+   +\frac{c_4}{T_r^{3}V_r^{2}}\Bigl(\beta+\frac{\gamma}{V_r^{2}}\Bigr)
+     \exp\!\Bigl(-\frac{\gamma}{V_r^{2}}\Bigr)
+  \qquad(\text{LK eq.\ 3}),
+  \label{eq:lkp-bwr}
+\end{equation}
+\begin{equation}
+  B=b_1-\frac{b_2}{T_r}-\frac{b_3}{T_r^{2}}-\frac{b_4}{T_r^{3}},\quad
+  C=c_1-\frac{c_2}{T_r}+\frac{c_3}{T_r^{3}},\quad
+  D=d_1+\frac{d_2}{T_r}
+  \qquad(\text{eqs 4--6}).
+  \label{eq:lkp-BCD}
+\end{equation}
+$V_r=P_cV/(\Rgas T_c)$ is \emph{not} the reduced volume (LK p.~513).  The twelve
+constants of each fluid are LK Table~1 (p.~511); they are compiled into
+\file{LeeKeslerPloecker.cpp} exactly as printed and held against the page by
+\code{check\_lee\_kesler\_ploecker}.  Pl\"ocker's Table~A-I prints the same table
+again and differs in one entry, $d_1\times10^{4}$ of the simple fluid
+($0.155428$ there, $0.155488$ in LK); the engine carries LK's.
+
+\paragraph{The departure functions and the fugacity.}  From \eqref{eq:lkp-bwr},
+with $E$ the integral of the exponential term,
+\begin{align}
+  \ln\frac{f}{P} &= Z-1-\ln Z+\frac{B}{V_r}+\frac{C}{2V_r^{2}}+\frac{D}{5V_r^{5}}+E
+    &&(\text{eq.\ 9}),\\
+  \frac{H^R}{\Rgas T} &= Z-1-\frac{b_2+2b_3/T_r+3b_4/T_r^{2}}{T_rV_r}
+    -\frac{c_2-3c_3/T_r^{2}}{2T_rV_r^{2}}+\frac{d_2}{5T_rV_r^{5}}+3E
+    &&(\text{eq.\ 11}),\\
+  \frac{S^R}{\Rgas} &= \ln Z-\frac{b_1+b_3/T_r^{2}+2b_4/T_r^{3}}{V_r}
+    -\frac{c_1-2c_3/T_r^{3}}{2V_r^{2}}-\frac{d_1}{5V_r^{5}}+2E
+    &&(\text{eq.\ 12}),
+\end{align}
+\begin{equation}
+  E=\frac{c_4}{2T_r^{3}\gamma}\Bigl\{\beta+1-\Bigl(\beta+1+\frac{\gamma}{V_r^{2}}\Bigr)
+     e^{-\gamma/V_r^{2}}\Bigr\}\qquad(\text{eq.\ 10}).
+  \label{eq:lkp-E}
+\end{equation}
+LK print eq.\ 11 as $(H-H^{*})/(\Rgas T_c)=T_r\{\dots\}$, so $H^R=\Rgas T\{\dots\}$,
+and eq.\ 12 as $(S-S^{*})/\Rgas+\ln(P/P^{*})$, the departure against the ideal
+gas at the \emph{same} $P$.  The three expressions satisfy $G^R=H^R-TS^R=\Rgas
+T\ln\varphi$ identically (the $1/V_r$ terms combine to $B$, the $1/V_r^{2}$ terms
+to $C/2$, the $1/V_r^{5}$ terms to $D/5$, and $3E-2E=E$), which the gate checks
+to $10^{-9}$ on 378 reduced states and on the package.  \emph{Symbols:}
+$T_r=T/T_c$, $P_r=P/P_c$; $H^R,S^R$ departures at $(T,P)$ [J\,mol$^{-1}$,
+J\,mol$^{-1}$\,K$^{-1}$]; $\varphi=f/P$.
+
+\paragraph{The root.}  Eq.~\eqref{eq:lkp-bwr} has one or three real roots in
+$V_r$.  The vapour root is the \emph{largest}, the liquid root the \emph{smallest};
+each of the two fluids takes the requested phase's root of its own equation,
+which is what the printed tables do.  A single root answers both requests, and
+the model's pseudo-root flags (the family's convention) say which phase it
+belongs to by $V_r$ against $0.29$, the simple fluid's value at its critical
+point.  The family's contract holds: $Z$, the volume, $H^R$ and $S^R$ report
+the vapour root, and \code{molarVolumeLiquid} and \code{phiLiquid} the liquid.
+
+\paragraph{Mixtures: one fluid with pseudo-critical constants.}  Pl\"ocker, Knapp
+and Prausnitz treat a mixture as one fluid whose $T_c$, $V_c$, $P_c$ and $\omega$
+are averages of the components',
+\begin{align}
+  V_{cM}&=\sum_j\sum_kz_jz_kV_{cjk},\quad
+  T_{cM}=\frac{1}{V_{cM}^{\eta}}\sum_j\sum_kz_jz_kV_{cjk}^{\eta}T_{cjk},\quad
+  \omega_M=\sum_jz_j\omega_j,\label{eq:lkp-mix}\\
+  T_{cjk}&=(T_{cj}T_{ck})^{1/2}\kappa_{jk},\quad
+  V_{cjk}=\tfrac18\bigl(V_{cj}^{1/3}+V_{ck}^{1/3}\bigr)^{3},\quad
+  P_{cM}=\frac{(0.2905-0.085\,\omega_M)\Rgas T_{cM}}{V_{cM}}
+  \label{eq:lkp-mix2}
+\end{align}
+(PKP eqs 9--14), with the universal exponent $\eta=0.25$ (p.~325).  The pure
+critical volume is \emph{derived}, $V_c=(0.2905-0.085\,\omega)\Rgas T_c/P_c$
+(LK eqs 20--21, p.~525), so the catalogue needs no new field, and for one
+component eqs 9--14 return exactly $T_c$ and $P_c$.  The exponent interpolates
+between the Prausnitz--Gunn rule ($\eta=0$) and the van der Waals rule ($\eta=1$);
+PKP found that $\eta=1$ overstates the effect of a size difference and that
+$\eta=0.25$ serves mixtures whose components differ in size by a factor of three
+or more.
+
+\paragraph{The binary constant $\kappa_{jk}$.}  PKP Table~I (p.~327) lists
+$\kappa_{jk}$ in 142 rows.  It is a \emph{multiplier} of the geometric-mean
+$T_c$ --- $1$ means no interaction --- and not a cubic's $k_{ij}$: it runs from
+$0.92$ (carbon dioxide with light alkanes) to $1.53$ (methane with $n$-decane)
+and to $2.6$ with hydrogen.  Each pair is a record
+(\file{data/standards/parameters/LKP/<i>-<j>.dat}, one per printed row except the
+hydrogen rows, which are not shipped, see below) declared in the case's
+\code{binaryInteractions} like a cubic's, with the page cited.  A pair with no
+record runs at $\kappa=1$, the geometric mean PKP's eq.~12 reduces to for a
+symmetric pair; this is \emph{announced by name} in the run and appears in the
+resolved view, because for an asymmetric pair it is not harmless (methane
+against a heavy alkane has $\kappa=1.2$--$1.5$ in the table), and PKP's own
+estimate for an unlisted pair is read from a graph (their Figures 10--13) that is
+not read here.
+
+\paragraph{The fugacity of a component.}  Differentiating $\ln\varphi_M$ with
+$T_{cM}$, $P_{cM}$ and $\omega_M$ as functions of composition (PKP A6--A13):
+\begin{equation}
+  \ln\varphi_i=\ln\varphi_M-\sum_{j\neq i}z_j\Bigl[
+    \frac{H^R/(\Rgas T)}{T_{cM}}\frac{dT_{cM}}{dz_j}
+    -\frac{Z_M-1}{P_{cM}}\frac{dP_{cM}}{dz_j}
+    +\frac{\partial\ln\varphi_M}{\partial\omega_M}\frac{d\omega_M}{dz_j}\Bigr],
+  \label{eq:lkp-phii}
+\end{equation}
+with $\partial\ln\varphi_M/\partial\omega_M=[(\ln\varphi)^{(r)}-(\ln\varphi)^{(0)}]/\omega^{(r)}$
+(A8) and the composition derivatives A9--A13, the mole fraction $z_i$ being the
+dependent one.  Because it is the closed form of the mole-number derivative of
+$n\ln\varphi_M$, the gate compares it with a central-difference derivative of an
+independent Python transcription of the whole mixture model, to $10^{-6}$.
+
+\paragraph{What is refused, and what is announced.}  Hydrogen and helium
+($T_c<35$\,K) are \emph{refused by name}: PKP (p.~325) price them with
+temperature-dependent effective critical constants (Gunn, Chueh and Prausnitz
+1966) that this model does not carry.  A $\kappa\le0$, a pair record regressed
+for another equation of state, and a pair naming a component the package does
+not carry are refused.  An evaluation outside $0.3\le T_r\le4$,
+$P_r\le10$ --- the window LK fitted (p.~510) --- is announced once with its
+$T_r$ and $P_r$; the value is an extrapolation of eq.~\eqref{eq:lkp-bwr}, never
+silent.  Strongly polar fluids are outside the model; the three water pairs of
+Table~I carry the paper's own warning (``fortuitous'', p.~326).
+
+\paragraph{What was checked.}  (1)~The correlation against the numbers its
+authors print: 17 reduced states chosen to include the dilute gas, the compressed
+liquid, the region where eq.~\eqref{eq:lkp-bwr} has three roots and the extremes
+$T_r=0.3$ and $3$, read in LK Tables 5, 7, 9 and 11 ($Z^{(0)}$,
+$(H^*-H)/\Rgas T_c$, $(S^*-S)/\Rgas$, $\log_{10}f/P$) on the root each table
+prints, and 6 states in Tables 6, 8, 10 and 12 (the deviation function
+$(q^{(r)}-q^{(0)})/\omega^{(r)}$); $Z$ agrees within $0.6\times10^{-4}$ and the
+others within $0.6\times10^{-3}$, half a unit of the last printed place plus the
+rounding of the printed constants, and the deviation functions within $3\times10^{-4}$
+of their value (the rounding of $\omega^{(r)}$ to four places is $1.3\times10^{-4}$).  The one exception that is a property of the
+correlation: at the simple fluid's critical point $T_r=P_r=1$, $V_r$ responds to
+$P_r$ as a cube root, and half a unit of the last printed digit of any \emph{one} of the
+twelve constants moves $Z$ between $0.284$ and $0.300$; the engine gives
+$0.2918$ against the printed $0.2901$, and the gate asks that point only for the
+band.  Poling, Prausnitz and O'Connell \cite{RPP} (5th ed., Example~4-1, p.~4.7) print
+$Z^{(0)}=0.697$ and $Z^{(1)}=-0.111$ at $T_r=0.95$, $P_r=0.60$, whence $Z=0.661$
+for $\omega=0.326$; the engine gives the same.  These tables are the correlation's
+\emph{own output}: agreeing with them proves the implementation of the equations
+and the constants, not the physics.  (2)~Against measurement, with nothing fitted:
+the N$_2$ + CH$_4$, N$_2$ + Ar and N$_2$ + Ar + CH$_4$ liquid--vapour equilibrium
+at 112.00\,K of Miller, Kidnay and Hiza \cite{Miller1973}, with the three $\kappa$ of Table~I
+(0.977, 0.988, 0.984) used as printed, evaluated at the experimenter's liquid
+compositions (case \file{tutorials/props/compare/lkp02\_n2\_ch4\_ar\_112K}): the
+mean absolute error of the bubble pressure is $1.6\,\%$ (11 runs, N$_2$ + CH$_4$),
+$0.75\,\%$ (7 runs, N$_2$ + Ar) and $0.48\,\%$ (10 ternary liquids, largest
+$1.3\,\%$).  \textbf{In sample:} the simple-fluid constants were fitted to
+argon, krypton and methane data (LK p.~512), so the pure-fluid side of Ar and
+CH$_4$ is not out of sample, and Table~I does not say which VLE measurements the
+$\kappa$ were regressed on, so no claim of independence is made for them; the
+data LK mark as used in the correlation are pure fluids.  (3)~The constants,
+the shipped records (against the printed table and the PDF's OCR layer), the
+closure, the derivative, the pure limit and the refusals are held by
+\code{check\_lee\_kesler\_ploecker} with seven sabotages.
+
+\paragraph{Limits.}  Accuracy is best subcooled and superheated and falls near the
+critical region of a widely boiling mixture (LK, p.~510); the correlation is for
+non-polar and slightly polar fluids and was not fitted to hydrogen-bonding
+fluids; the liquid enthalpy of a \emph{mixture} in a phi--phi package follows the
+family contract (vapour-root departures), see DEV.md 4c C410; and $\kappa=1$ for
+an unlisted asymmetric pair can be badly wrong.  Where a cubic with a good
+$k_{ij}$ exists the two will agree to a few per cent on a gas; the reason to
+reach for this model is the dense and the liquid region of a hydrocarbon
+mixture without a tuned alpha function, and a printed table to check it against.
+
+\begin{tutoriallink}
+\textbf{Related tutorials.}
+\file{tutorials/props/molecular/lkp01\_lee\_kesler\_tables} (the equation against
+Tables 5, 7, 9 of Lee and Kesler),
+\file{tutorials/props/compare/lkp02\_n2\_ch4\_ar\_112K} (against Miller, Kidnay and
+Hiza 1973).
 \end{tutoriallink}
 
 % ---------------------------------------------------------------------
@@ -15740,9 +16328,10 @@ corrections become necessary.
    \;}
    \label{eq:wilke-chang}
 \end{equation}
-where $V_A$ is the molar volume of solute $A$ at its boiling point
-(LeBas group-contribution table, or just $V^{\mathrm{liq}}_A$ from
-the data file as a first approximation) and $\phi_B$ is the
+where $V_A$ is the molar volume of solute $A$ at its normal boiling
+point (Poling 5th ed., p.~11.22: from experimental data, or the Le~Bas
+additive table if none exist; the book's Example~11-5 takes
+$M_A/\rho(T_b)$) and $\phi_B$ is the
 association factor of solvent $B$ (water: 2.6; methanol: 1.9;
 ethanol: 1.5; benzene/other unassociated: 1.0).  The result is the
 \emph{infinite-dilution} diffusivity --- valid as $x_A \to 0$.  The
@@ -15751,16 +16340,30 @@ cm²/s with $\eta_B$ in cP, carried to m²/s; with $\mu_B$ in Pa·s it would be
 $7.4\times10^{-15}$ (review row DF-02: this box printed Pa·s until 2026-11-15,
 a factor 1000; the engine always took cP, WilkeChang.cpp).  Check by hand:
 methanol in water at 288 K, $\mu_B = 1.13983$ mPa·s, $M_B = 18.015$, $V_A =
-40.7$ cm³/mol, $\phi_B = 2.6$: $1.385\times10^{-9}$ m²/s, the engine's
-1.38462e-09.  Two limits the engine states: (i) Poling 5th ed.\ p.~11.22,
+43.3474$ cm³/mol, $\phi_B = 2.6$: $1.3332\times10^{-9}$ m²/s, the engine's
+1.33325e-09 (the volume is the one the view prints, in six digits).  Two limits the engine states: (i) Poling 5th ed.\ p.~11.22,
 ``the method should not be used when water is the solute'' --- the default
 refuses such a pair, and a case that accepts it names the correlation for the
 pair with its reason (section~\ref{sec:liquid-diffusivity-declared}); (ii)
-$V_A$ is read as the record's \code{Vliq} at its datum temperature (25~°C
-unless \code{VliqT} says otherwise), not at the boiling point the method
-defines it at; the resolved view prints the volume and its temperature for
-every solute (the boiling-point volume through the property door is
-C398 slice d2; at Tb the six values of the ternary witness fall by 2 to 6~\%).
+$V_A$ is taken AT THE NORMAL BOILING POINT, as the method defines it
+(C398 slice d2, review row DF-03): $V_A = M_A/\rho_A(T_b)$ with $\rho_A$ the
+package's liquid density of the pure solute at its declared $T_b$ and
+101\,325~Pa, through the same property door every unit asks, resolved once
+per component and printed in the resolved view with its temperature, density
+and route.  A solute with no $T_b$ in its record, or no liquid density there,
+is refused by name, and the record's 25~°C volume is never substituted; the
+remedy is a declared entry for the pair.  Until this slice the engine read
+the record's 25~°C \code{Vliq}, which made the six values of the ternary
+witness higher by 3.9 to 6.1~\% ($(V_{T_b}/V_{25})^{0.6}$: 3.85~\% for methanol as
+the solute, 4.63~\% water, 6.09~\% 2-propanol).  Against Poling's Table~11-5 (methanol in
+water at 288~K, $1.26\times10^{-5}$~cm²/s) the engine's Wilke-Chang value is
+$1.333\times10^{-5}$, $+5.8$~\% (it was $+9.9$~\%; Poling's own Wilke-Chang
+value is $+5.4$~\%, with other inputs).  The engine's density at $T_b$ is the
+package's: on the default route for these records the Rackett equation anchored
+at the record's 25~°C volume (Eq.~\eqref{eq:rackett-anchored}), which the review
+measured against tabulated densities at $T_b$ as $-1.4$~\% in volume on methanol
+and $-3.5$~\% on water.  $V_A$ therefore inherits that density's error, and the
+diffusivity (as $V_A^{-0.6}$) about $0.6$ of it, of the opposite sign.
 
 \begin{intuition}
 Liquid diffusivities are six to seven orders of magnitude lower
@@ -15882,20 +16485,20 @@ zero only when $\mu_1 = \mu_2$ or $D^{\circ}_{12} = D^{\circ}_{21}$ (review row
 DF-14; this paragraph said the opposite until 2026-11-15).  Check on the
 witness's methanol-water binary at 328.62~K ($x_1 = 0.9459$ methanol, $\mu_1 =
 0.37184$, $\mu_2 = 0.49841$ mPa·s, mole-average $\mu = 0.37868$ mPa·s,
-$D^{\circ}_{12} = 3.6132$ methanol in water, $D^{\circ}_{21} = 8.9874$ water in
-methanol, $\times10^{-9}$~m²/s): Caldwell-Babb $8.6966$, and
-Eq.~\eqref{eq:ab-minus-cb} gives $-0.0919$, so Anderson-Babb on that $\mu$ is
-$8.6047\times10^{-9}$.  The engine's mixture viscosity there is the package's
+$D^{\circ}_{12} = 3.4791$ methanol in water, $D^{\circ}_{21} = 8.5900$ water in
+methanol, $\times10^{-9}$~m²/s): Caldwell-Babb $8.3135$, and
+Eq.~\eqref{eq:ab-minus-cb} gives $-0.0874$, so Anderson-Babb on that $\mu$ is
+$8.2261\times10^{-9}$.  The engine's mixture viscosity there is the package's
 (Grunberg-Nissan with no interaction, the log-mole average, $0.37778$ mPa·s),
-so the witness prints $8.697$ (Caldwell-Babb), $8.625$ (Anderson-Babb) and
-$8.555$ (Vignes and Leffler-Cullinan) $\times10^{-9}$~m²/s.
+so the witness prints $8.314$ (Caldwell-Babb), $8.246$ (Anderson-Babb) and
+$8.180$ (Vignes and Leffler-Cullinan) $\times10^{-9}$~m²/s.
 
 \paragraph{Water as the solute.}  The DEFAULT correlation refuses a pair
 whose solute is water (Poling 5th ed.\ p.~11.22; review row DF-01).  The gap
 it would hide, measured: at 313.13~K Lee \& Li (1991), as Poling p.~11.38
 (Example 11-8) reports them, give water in methanol $2.67\times10^{-5}$ and
-methanol in water $2.10\times10^{-5}$~cm²/s; Wilke-Chang gives $+167$~\% and
-$+25$~\% (the witness's variant \code{leeLi313}).  The
+methanol in water $2.10\times10^{-5}$~cm²/s; Wilke-Chang gives $+156$~\% and
+$+21$~\% (the witness's variant \code{leeLi313}).  The
 remedy is an entry for the pair: a value with its source, or the correlation
 named for the pair with the reason it is accepted outside its stated scope,
 \code{\{ solute water; solvent methanol; kind infiniteDilution; model
@@ -22728,6 +23331,135 @@ case's.  The leaf \emph{width} is derived, $W = A/(2\,n\,L)$, never stored.
 interstage booster, multi-ion (SDEM and the multi-ionic film), per element.
 \end{tutoriallink}
 
+\subsection{Where a membrane unit's liquid properties come from}\label{sec:membrane-liquid-properties}
+
+A membrane unit does not carry a property.  The spiral-wound module, its
+rated-test probe and the batch diafilter ask the package, through the one
+door every liquid property uses (\file{thermo/LiquidPropertyDoor.H}), for
+three things, each at the \emph{feed's own} temperature, pressure and
+composition, and the run prints where each came from (the
+\emph{liquid-property sources} table, one row per unit and property):
+\begin{itemize}
+\item the \textbf{density} $\rho$ on which every concentration and both outlet
+  masses are closed (\file{BulkConversion.H}, $c_i = \rho\,w_i/M_i$ and
+  $c_{\mathrm{water}} = (\rho-\sum_s c_sM_s)/M_{\mathrm{water}}$);
+\item the \textbf{viscosity} $\mu$ of the feed, which enters $Re=\rho u d_h/\mu$
+  and $Sc=\mu/(\rho D)$ of the Schock--Miquel film, $Sh = 0.065\,Re^{0.875}
+  Sc^{0.25}$, $k = Sh\,D/d_h$, and the friction law; it is asked only when
+  a \code{massTransfer} or a \code{pressureDrop} model is declared (a fixed
+  \code{k\_film} and a fixed \code{dP\_feed\_total} read none);
+\item the \textbf{diffusivity} $D_s$ of each solute that polarises as one
+  particle (a lumped salt, boron, a sugar), one value per solute, because
+  $k_s\propto D_s^{0.75}$ and two salts do not share a film.  An ion's
+  $D_i$ is not asked here: it is the species record's $D_0$, scaled to
+  temperature by Stokes--Einstein on water's viscosity, as before.
+\end{itemize}
+Until C402 these three were typed in the unit's block (\code{rho\_feed},
+\code{rho}, \code{viscosity}, \code{diffusivity}) and, when a case typed none,
+a constant of the unit stood in (1000~kg/m$^3$, $1$~mPa\,s,
+$1.6\times10^{-9}$~m$^2$/s).  Both are gone.  A property word typed at any
+depth of a membrane unit's \code{operation} is refused by name, with the line
+to write in \file{constant/thermoPhysPropDict} instead
+(\file{unitOperations/UnitTypedProperties.H}, the one home of the refusal,
+shared with the column).
+
+\paragraph{Density.}  A dissolved salt has no liquid volume of its own in
+its record, so the density of a NaCl solution is its \emph{solution law}
+(section~\ref{sec:liquid-density-solution-law}), the record
+\file{parameters/solution/NaCl-water.dat}: the form \code{polynomialTSqrtX}
+regressed to the Laliberté--Cooper (2004) model for NaCl (Table~1, Eqs.~6, 8,
+9) over $0$--$60\,^\circ$C and $w_{\mathrm{NaCl}} \le 0.26$, with its
+in-sample error (0.32~kg/m$^3$ at most) and the two out-of-sample comparisons
+the record prints: the CRC Handbook's NaCl table at $20\,^\circ$C (p.~8-77:
+1019.6 and 1026.8 against 1019.35 and 1026.54~kg/m$^3$ at 3 and 4 wt\,\%) and
+its seawater at $S=35$ (p.~14-12: 1023.343 at $25\,^\circ$C against 1021.61,
+$-0.17\,\%$, the other salts of the sea being denser than their NaCl
+equivalent).  The cases whose salt passes 1~wt\,\% (the seawater, brackish and
+energy-recovery cases, the rated-test probes of the class library) take it.
+A constituent the law does not carry and the case lists under
+\begin{lstlisting}
+approximations { massWithoutVolume
+  { components ( boron ); maxMassFraction 0.001; reason "..."; } }
+\end{lstlisting}
+keeps its mass and adds no volume on top of it, $\rho =
+\rho_{\mathrm{NaCl\text{-}water}}/(1-w_{\mathrm{listed}})$ under the
+hypothesis' own bound (the label solute of the Campo de Dal\'ias plant).  A
+dilute feed of a salt with no law (the divalent salts, ions) keeps the
+hypothesis alone, $\rho = \rho_{\mathrm{w}}(T)/(1-w_s)$ with $\rho_{\mathrm{w}}$
+the package's water density: its bias against the NaCl law is measured, below
+$0.15\,\%$ at $w \le 0.5$~wt\,\%, and $+0.96\,\%$ at seawater strength,
+which is why it is not used there.  Either way a liquid whose listed mass
+fraction passes \code{maxMassFraction} is refused, never extrapolated.
+
+\paragraph{Viscosity.}  A mixing rule needs a law for every constituent, and a
+lumped salt has none, so a membrane case states the mixture's viscosity
+for its constituent set, with its source, in
+\code{transport \{ liquid \{ viscosity \{ measured \{ <name> \{ use
+method; reason "..."; \} \} \} \} \}} (section~\ref{sec:measured-liquid-viscosity}).
+The shipped values are of two kinds, and the file says which in its
+\code{basis}: \emph{water's viscosity} at the feed temperature ($0.890$~mPa\,s
+at $25\,^\circ$C, CRC 82nd ed., p.~6-170; $1.002$ at $20\,^\circ$C, p.~8-57),
+stood over a dilute feed --- the same book's table gives NaCl at $1$~wt\,\%
+only $1.8\,\%$ above water at $20\,^\circ$C --- and \emph{seawater at
+$S=35$}, $0.966$~mPa\,s at $25\,^\circ$C, an \emph{assumed} value (the
+handbook's table, CRC p.~14-12, which lists $1.085$ at $20\,^\circ$C, gives three
+general references and attributes no column to a primary, so it is a
+cross-check and the file's \code{origin} is \code{assumed}), for the seawater feeds, stated at $w=0.035$ and stood over a
+brine up to $7$~wt\,\% as a hypothesis (the table's viscosity rises with
+salinity, so a brine is a little more viscous).  A stated value is never called a
+measurement; a feed whose constituent set none of the case's values describes
+is refused, and an exact set always wins.  Water's viscosity has two homes in a
+run: the stated value above prices the \emph{feed} (Re and Sc), and water's own
+record law (the \code{pin} or \code{model} the case declares, Vogel) prices the
+Stokes--Einstein factor of the temperature rule below; they agree to the
+tolerance of the two sources and are not the same number.
+
+\paragraph{Diffusivity.}  Each lumped solute has its own entry in water,
+\code{transport \{ liquid \{ diffusivity \{ returns infiniteDilution;
+infiniteDilution \{ entries ( \{ solute NaCl; solvent water; kind
+infiniteDilution; value 1.611e-9 m2/s; T 298.15 K; box \{ T (lo hi); \}
+source "..."; \} ); \} \} \} \}}, a value with its source, its temperature and
+the box it is stood over.  The shipped salts are the CRC Handbook's
+(82nd ed., table ``Ionic conductivity and diffusion at infinite dilution'')
+single-ion values combined by that page's own relation,
+\begin{equation}
+D_{\mathrm{salt}} = \frac{(z_++z_-)\,D_+D_-}{z_+D_++z_-D_-},
+\end{equation}
+giving, at $25\,^\circ$C, NaCl $1.611$, MgSO$_4$ $0.849$, CaCl$_2$ $1.335$,
+MgCl$_2$ $1.250$ and Na$_2$SO$_4$ $1.230\times10^{-9}$~m$^2$/s.  Boric acid
+(the Campo de Dal\'ias plant's boron) is Park and Lee's
+(J.\ Chem.\ Eng.\ Data 39 (1994) 891, Eq.~8 and Table~2, model 6, no pH
+control): $1.640516\times10^{-5}$~cm$^2$/s at $c\to0$, extrapolated below
+their lowest measurement (0.01~mol/dm$^3$) and declared so in the entry's
+\code{reason}.
+
+\emph{One temperature rule.}  A declared entry is stated at \emph{its own}
+temperature $T_e$; a run at $T$ takes it there by the same Stokes--Einstein
+factor an ion's $D_0$ gets,
+$D(T)=D(T_e)\,(T/T_e)\,\mu_{\mathrm{w}}(T_e)/\mu_{\mathrm{w}}(T)$, on water's
+pure viscosity, when the case declares a liquid viscosity.  It is announced
+(\code{[D(T)]}, with the factor and both numbers) and, with no viscosity
+declared, announced as \emph{not} corrected.  The box still bounds where the
+entry stands: outside it the entry is refused, never extrapolated.
+
+\paragraph{What the unit's block may carry.}  The keys of a membrane
+unit's \code{operation} are an allow-list read from the code
+(\file{MembraneTypedProperties.H}): a key outside it --- \code{nu},
+\code{rhoFeed}, \code{D0}, a typo --- is refused by name, so a spelling nobody
+reads is never accepted in silence; a property word is refused with the line
+to write instead.
+
+\paragraph{A hand check.}  For \code{membrane15\_module\_nf270\_4040} (NaCl
+2\,g/L, $25\,^\circ$C) the package gives $\rho = 999.217$~kg/m$^3$ (IAPWS-95
+water, $997.05/(1-0.00200)$) against the $1000$ typed before, so the crossflow
+$u = F\bar M/(\rho A_{ch})$ rises by $1000/999.217 = 1.000784$ (the run's
+$u$: $0.282313$ against $0.282092$), $Re=\rho u d_h/\mu$ does not move (the
+mass flux is fixed) and $Sc = \mu/(\rho D)$ falls from $556.25$ to $552.88$
+with $D = 1.611$ against $1.6\times10^{-9}$.  Then
+$k_{\mathrm{new}}/k_{\mathrm{old}} = (552.88/556.25)^{0.25}(1.611/1.600) =
+1.005349$, and the run's first-node $k$ is $7.59687\times10^{-5}$ against
+$7.55645\times10^{-5}$ m/s: a ratio of $1.005349$.
+
 %  Engine: src/unitOperations/batch/BatchDiafilter.{H,cpp} (the model, the
 %  two modes, the published pair, the fouling block and its refusals);
 %  src/unitOperations/membrane/BulkConversion.H (the density closure).
@@ -22755,8 +23487,9 @@ make-up rate,
    Q_d = 0 \ \text{(concentration)}\ \ \text{or}\ \ Q_d = Q_p = J_w A
    \ \text{(constant volume)},
 \]
-and the solvent line closes the permeate's \emph{mass} on the same declared
-solution density the concentrations were built from, which is why the
+and the solvent line closes the permeate's \emph{mass} on the same solution
+density the concentrations were built from (the package's, at the initial
+holdup; section~\ref{sec:membrane-liquid-properties}), which is why the
 vessel conserves mass to machine precision rather than leaking the percent
 that a pure-water permeate concentration would.
 
@@ -30754,10 +31487,11 @@ Eq.~\eqref{eq:leffler-cullinan}, and is no longer printed: the declared rule
 is the one used, and the one named.  Against the liquid diffusivity Schulz et
 al.\ themselves state for the two runs (Table~1, beside the viscosity the
 cases take; printed ``m/s2'', a misprint for m²/s): the engine's declared
-effective value at the same stated states is $3.78\times10^{-9}$ against
-$3.57\times10^{-9}$ at 0.1~bar ($+6.0$~\%) and $2.50\times10^{-9}$ against
-$2.36\times10^{-9}$ at 0.02~bar ($+5.8$~\%) --- of the order of the 25~°C
-solute volume Wilke-Chang reads instead of the boiling-point one (slice d2).
+effective value at the same stated states is $3.49\times10^{-9}$ against
+$3.57\times10^{-9}$ at 0.1~bar ($-2.1$~\%) and $2.31\times10^{-9}$ against
+$2.36\times10^{-9}$ at 0.02~bar ($-2.2$~\%); before slice~d2, which put
+Wilke-Chang's solute volume at the normal boiling point, they were $3.78$
+($+6.0$~\%) and $2.50$ ($+5.8$~\%).
 $\Gamma$ is taken as $1$ (declared):
 exact for an ideal solution, an \emph{effective-diffusivity} film otherwise.  That is the
 house's film model for the liquid (DEV.md~4c C329, decision~(2) amended): the
@@ -30976,15 +31710,18 @@ $0.0079\,\%$) agrees with it.  The reflux composition moves by at most
 $1.4\times10^{-5}$.  100 segments, the transfer-unit bed's own count, is the
 default.
 
-\paragraph{Known limitation: the liquid diffusivity's solute volume.}
+\paragraph{The liquid diffusivity's solute volume (slice d2).}
 The liquid film's diffusivity is Wilke--Chang's, which defines the solute volume
-$V_A$ at the normal boiling point; the component records the four cases use
-give the liquid molar volume at 298~K, and that is the one the code reads (the
-run announces ``25 C volume'').  Replacing it by the boiling-point volume
-lowers the liquid diffusivity by $7.6\,\%$ and raises $H_{OG}$ at mid-bed of
-\code{ratebased01} by $0.72\,\%$.  The transfer-unit bed reads the same volume
-and carries the same effect.  It is a property-model matter, left as it is
-here and recorded so that no one reads the HETP to a better accuracy than this.
+$V_A$ at the normal boiling point (Poling 5th ed., Eq.~11-9.1); since C398 slice~d2
+the engine takes it so, $M/\rho(T_b)$ from the package's liquid density, and the
+run's view prints the volume, the temperature and the density's route.  Before the
+slice it read the record's 298~K volume, which lowered nothing but overstated
+$D_L$ by 2 to 8~\%; the shipped packing and rate-based cases now report an HETP
+0.3 to 0.7~\% larger (\code{ratebased01} 0.15979 to 0.16091~m, \code{packing01}
+0.15949 to 0.16060~m).  The convergence figures of the HETP in the segment count
+quoted in the paragraphs above were taken BEFORE this slice (at F-factor 1.5) and
+are not retaken here; their differences between segment counts, which is what
+they show, are not changed in kind.
 
 \paragraph{Validity window.}
 A binary; an ideal-gas vapour; a liquid on an activity model, with the
@@ -32251,6 +32988,19 @@ Improve Volumetric Predictions'', \emph{SPE Reservoir Eng.}, \textbf{3}(3),
 shift $c_i = s_i b_i$ (Eqs.~10--17) and its correlation $s = 1 - d/M^e$
 (Eq.~18, Tables~1--2) of Section~\ref{sec:peneloux}.
 
+\bibitem{Michelsen1990} Michelsen, M. L., ``A Modified Huron--Vidal Mixing Rule
+for Cubic Equations of State'', \emph{Fluid Phase Equilib.}, \textbf{60},
+213--219 (1990).  The zero-pressure matching of a cubic to an excess Gibbs
+energy, $q_1 = -0.593$ for SRK (Eqs.~9--12, pp.~214--216) --- the \code{MHV1}
+rule of Section~\ref{sec:cubic-mixing-rule}.
+
+\bibitem{DahlMichelsen1990} Dahl, S., \& Michelsen, M. L., ``High-Pressure
+Vapor-Liquid Equilibrium with a UNIFAC-Based Equation of State'',
+\emph{AIChE J.}, \textbf{36}(12), 1829--1836 (1990).  The second-order rule
+\code{MHV2} ($q_1 = -0.478$, $q_2 = -0.0047$ for SRK; Eq.~13, p.~1831) and
+its fugacity coefficients (Eqs.~A1--A3, p.~1835) of
+Section~\ref{sec:cubic-mixing-rule}.
+
 \bibitem{LinSandler2002} Lin, S.-T. \& Sandler, S. I., \emph{Ind. Eng.
 Chem. Res.}\ \textbf{41}, 899, 2002.  The COSMO-SAC variant Choupo
 implements as \code{cosmoSAC}; a $\sigma$-profile declared under any
@@ -32266,6 +33016,25 @@ Chem. Res.}\ \textbf{41}, 5510, 2002.  The working form of the
 association contribution Choupo implements (Wertheim TPT1, after Chapman
 et al.\ 1990), with the $\sigma_{ij}^3$ convention under which the
 published $\kappa^{AB}$ were fitted.
+
+\bibitem{LeeKesler1975} Lee, B. I. \& Kesler, M. G., ``A Generalized Thermodynamic
+Correlation Based on Three-Parameter Corresponding States'', \emph{AIChE J.}
+\textbf{21}, 510--527, 1975.  The modified BWR equation for the simple and
+reference fluids (Eq.~3, Table~1), the departure functions (Eqs 9--12) and the
+tables they print (Tables 5--14); the source of the critical-volume rule
+(Eqs 20--21).
+
+\bibitem{PloeckerKnapp1978} Pl\"ocker, U., Knapp, H., \& Prausnitz, J., ``Calculation
+of High-Pressure Vapor-Liquid Equilibria from a Corresponding-States Correlation
+with Emphasis on Asymmetric Mixtures'', \emph{Ind. Eng. Chem. Process Des. Dev.}
+\textbf{17}, 324--332, 1978.  The mixing rules (Eqs 9--14), the component fugacity
+(A6--A13) and the $\kappa_{ij}$ of Table~I bundled in
+\file{data/standards/parameters/LKP/}.
+
+\bibitem{Miller1973} Miller, R. C., Kidnay, A. J., \& Hiza, M. J., ``Liquid-Vapor
+Equilibria at 112.00\,K for Systems Containing Nitrogen, Argon, and Methane'',
+\emph{AIChE J.} \textbf{19}, 145--148, 1973.  The measured N$_2$ + Ar, N$_2$ + CH$_4$
+and ternary data (Tables 1--3) the Lee--Kesler--Pl\"ocker case is compared with.
 
 \bibitem{Span2000N2} R.~Span, E.~W.~Lemmon, R.~T Jacobsen, W.~Wagner and
   A.~Yokozeki, A Reference Equation of State for the Thermodynamic Properties

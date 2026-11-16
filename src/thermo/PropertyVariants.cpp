@@ -166,8 +166,7 @@ DictPtr body(const DictPtr& system, const std::string& name,
         //  the file read and says variants are not inherited.
         const std::string file = system->sourceName().empty()
             ? std::string("constant/thermoPhysPropDict") : system->sourceName();
-        const bool sector = file != "constant/thermoPhysPropDict"
-                         && file.find("sectors/") != std::string::npos;
+        const bool sector = file != "constant/thermoPhysPropDict";
         throw std::runtime_error(who + ": `thermo " + name + ";` names no"
             " variant of the property dictionary it resolves against ("
             + file + ") -- "
@@ -175,16 +174,63 @@ DictPtr body(const DictPtr& system, const std::string& name,
                 ? std::string("that file declares no `variants {}` block.")
                 : "the variants it declares are: " + list + ".")
             + (sector
-                ? "  Variants are NOT inherited through `inherits`: a variant a"
-                  " sector's units select is declared in the sector's own"
-                  " dictionary."
+                ? "  Variants are NOT inherited through `inherits`: a unit"
+                  " resolves against the dictionary of the sector that owns it"
+                  " when that sector has a constant/thermoPhysPropDict of its"
+                  " own, and against the case root's otherwise -- declare the"
+                  " variant in the dictionary the unit resolves against."
                 : "")
             + "  A unit or an operation selects a variant by the name it has"
-              " under `variants {}` (or writes an inline `thermo { ... }`).");
+              " under `variants {}`.");
     }
     validate(system);
     //  THE READ the audit counts as "used": subDict() notes the name.
     return system->subDict("variants")->subDict(name);
+}
+
+void refuseInlineFragment(const DictPtr& unit, const std::string& who)
+{
+    if (!unit || selectsByName(unit)) return;
+    bool present = false;
+    for (const auto& k : unit->keys()) if (k == "thermo") { present = true; break; }
+    if (!present) return;
+    //  The engine's own copy of a selected variant's body carries the stamp key,
+    //  which begins with `@` and cannot be written in a dictionary: it is not an
+    //  authored block.  EVERY other `thermo` that is not a word is refused,
+    //  whatever it contains.
+    const EntryValue& ev = unit->entryValue("thermo");
+    if (std::holds_alternative<DictPtr>(ev))
+        for (const auto& k : std::get<DictPtr>(ev)->keys()) if (k == selectedKey()) return;
+    const bool list = !std::holds_alternative<DictPtr>(ev);
+    throw std::runtime_error(who + ": " + (list
+        ? std::string("`thermo ( ... );` is not a selector")
+        : std::string("an inline `thermo { ... }` block in a unit is no longer read"
+                      " (DEV.md 4c C402)"))
+        + ".  A unit's own property world is a NAMED variant of the property"
+        " dictionary it resolves against.  Write one word, `thermo <name>;`, and"
+        " move the body of the old block into `variants {}` of the dictionary the"
+        " unit reads: constant/thermoPhysPropDict of the sector that owns the unit"
+        " when that sector has one of its own (variants are not inherited), the case"
+        " root's otherwise:\n"
+        "    // constant/thermoPhysPropDict\n"
+        "    variants { <name> { <the blocks the old fragment carried> } }\n"
+        "    // system/flowsheetDict (or the unit's own flowsheetDict)\n"
+        "    thermo <name>;\n"
+        "A variant states only what differs from the system, exactly as the"
+        " fragment did.  See docs/ai/dict-syntax.md, \"Named variants\".");
+}
+
+void refuseNodeThermo(const DictPtr& node, const std::string& who)
+{
+    if (!node) return;
+    for (const auto& k : node->keys())
+        if (k == "thermo")
+            throw std::runtime_error(who + ": a `thermo` key in a sector's (or a"
+                " plant's) flowsheetDict is not read -- a sector's property world is"
+                " its own constant/thermoPhysPropDict (`inherits` the plant's), and a"
+                " unit selects a named variant of it with `thermo <name>;` in the"
+                " unit's own block.  Delete the key, or move its body into `variants {}`"
+                " and select it in the unit (DEV.md 4c C402).");
 }
 
 DictPtr fragmentOf(const DictPtr& system, const DictPtr& holder,

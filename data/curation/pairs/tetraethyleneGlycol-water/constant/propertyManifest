@@ -21,44 +21,53 @@ propertyManifest
     sealed             true;
     sealSchema         computational;
     catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-11";
+    importedAt         "2026-11-16";
     importerVersion    "3";
     records
     {
         "components/tetraethyleneGlycol.dat"
         {
             type          imported;
-            sha256        "d7c04b6f867ed2b47f906e4bff7fda0dc08e3618252e9f66d47e2b71a595240c";
-            computationalSha256 "7923b9ca547f0b3a2086fe2ef621258d0d9984d961b56f1bd50d2ea0927f5672";
+            sha256        "d46cf9c2fab2fd3db50cb1844b9cbbba575305222cc0508b5ed4cf3d74acc819";
+            computationalSha256 "d62b69c1ecea903273b5a20778989166da1eb4222647f75fd7d9588119f5bc17";
             origin        "data/standards/components/tetraethyleneGlycol.dat";
-            originSha256  "4c5782324b4d041ea597c97e5b108eef671c9ebe4dc3a1f58ec5b86c977bad1c";
+            originSha256  "9ea8539f57ff5964ab63851f67f90850958c7ccc6032c7b7536fd0f064b08582";
             release       Choupo-2608;
         }
         "components/water.dat"
         {
             type          imported;
-            sha256        "434214d874e17a076ce391a9d1dbca47321b4285429660688db4e64237ee0b2a";
-            computationalSha256 "ce55eca4e8c4f234b2633edec3fb54de5e630256ace48491a44357db2aaacf5c";
+            sha256        "6594e14a01809d098ebc56e04b5c8165659d00d99f037293bea95258aea02429";
+            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
             origin        "data/standards/components/water.dat";
-            originSha256  "3723b03d86ab148fd084c01f9fc3cce1bb4398a3dc6b6914e0336c40d4ade16d";
+            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
+            release       Choupo-2608;
+        }
+        "parameters/Helmholtz/IAPWS95.dat"
+        {
+            type          imported;
+            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
+            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
+            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
+            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
             release       Choupo-2608;
         }
         "parameters/NRTL/tetraethyleneGlycol-water.dat"
         {
             type          imported;
-            sha256        "b11b72723297c674250efeb672c295564f5f41bd1eb6c9d2eceff294ca8d1e85";
-            computationalSha256 "013f3f4a214a41451ca78822dbe43137e38ce212f04c540739b26a3dd61a24a0";
+            sha256        "a9b91d43583ca2883ab55526849caf68f92acd5292c0dd45a78b2a7abc93e8d3";
+            computationalSha256 "b40b00c29c23e740ffea89fc37ecf3f7aea034cb8e7aac95af8d6d73568deb54";
             origin        "data/standards/parameters/NRTL/tetraethyleneGlycol-water.dat";
-            originSha256  "78ed5bc3e6aa439ded3cdd7c440c5a289bed3c1ee5a3731a9ae34df5e14239cc";
+            originSha256  "69cce2005e509a97bd4cc4d3d5f76392225749329d12fc90644ab60594d003dd";
             release       Choupo-2608;
         }
         "parameters/Wilson/tetraethyleneGlycol-water.dat"
         {
             type          imported;
-            sha256        "da22440951c8582f48b301845e34873816a554381e0e3ab2c0ced833c485ee35";
-            computationalSha256 "b6345aa1c4a6b10685d04404a91265719927c5a6547dc86b0b92587f05764d30";
+            sha256        "728a6587133c718452cee819e9733c5e891ba5a260228b89684f1668d4ac9c0e";
+            computationalSha256 "ae232763147b53c95bd919c5dedc24b843814fd8be5e6fcfe0104a5326668ad7";
             origin        "data/standards/parameters/Wilson/tetraethyleneGlycol-water.dat";
-            originSha256  "76768259714e92a6584f8fab7b73a3b8f9b62eb7a07202a30d117c6fab7e252c";
+            originSha256  "b36ded41c4dc9cc955fb4fe3b75f7c57fd98256b7202efa276407fd59d5b2964";
             release       Choupo-2608;
         }
     }

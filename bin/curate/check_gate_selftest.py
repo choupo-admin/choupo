@@ -363,6 +363,18 @@ SABOTAGES += [
                "new raw read: the gate must NAME the file, not pass.",
     },
     {
+        "gate": "check_liquid_property_ratchet.py",
+        "kind": "detection",
+        "file": "src/unitOperations/membrane/SpiralWoundModule.cpp",
+        "find": "    const liquidProperty::Consumer whoRho{ type(), unitLabel };",
+        "replace": "    const scalar rhoTyped = opDict->lookupScalarOrDefault(\"rho_feed\", 1000.0);   (void)rhoTyped;\n    const liquidProperty::Consumer whoRho{ type(), unitLabel };",
+        "why": "the membrane family reads NO property word from its unit block "
+               "(DEV.md 4c C402): a module that goes back to `rho_feed` -- the "
+               "key and the 1000 kg/m3 behind it -- must be NAMED by the ratchet's "
+               "ZERO rule, whatever the pin file says.  This is the reader the "
+               "slice deleted.",
+    },
+    {
         "gate": "check_vliq_datum.py",
         "kind": "detection",
         "file": "data/standards/components/CO2.dat",

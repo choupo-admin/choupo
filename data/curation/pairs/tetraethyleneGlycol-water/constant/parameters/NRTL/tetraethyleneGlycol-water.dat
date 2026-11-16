@@ -20,7 +20,7 @@
   its fitting pipeline (every laboratory fitted, outliers beyond 3 K
   discarded by name, max |T_model - T| over the kept points GRADED
   clean / warning / severe at 1 / 2 / 4 K -- DEV.md 4c C283
-  amended, C285, C286; THIS fit: warning in-sample, 1.1930 K; one liquid
+  amended, C285, C286; THIS fit: clean in-sample, 0.9561 K, CAPPED at warning by C300 (singleLaboratory); one liquid
   across its validity span), and NO HUMAN HAS REVIEWED IT.  The
   engine says so on every run that reads it, and voices a warning
   or a severe grade beside it.
@@ -48,9 +48,9 @@ parameters
     i           water;
     j           tetraethyleneGlycol;
     a_ij        0.00000000;
-    b_ij        584.42256285;
+    b_ij        1181.74094878;
     a_ji        0.00000000;
-    b_ji        -685.22312918;
+    b_ji        -842.50376113;
     alpha       0.30000000;
 }
 
@@ -64,12 +64,13 @@ provenance
     review        { by none; }   // DEV.md 4c C300 rule 4 (C297): nobody has reviewed it
     fitGrade      warning;   // DEV.md 4c C285 (C286): max |T_model - T| over the kept points, graded 1 / 2 / 4 K
     fitGradeBasis inSample;   // DEV.md 4c C300 rule 1: the residual of the points it was fitted to
-    fitGradeMaxTemperatureError_K 1.1930;
+    fitGradeCap   ( singleLaboratory );   // DEV.md 4c C300 rule 2: in-sample clean, capped -- nothing held out could have contradicted it
+    fitGradeMaxTemperatureError_K 0.9561;
     promotedBy    "bin/choupo-curate pair --promote";
-    promotedDate  "2026-11-11";
+    promotedDate  "2026-11-16";
     reviewReason  "regressed by bin/choupo-curate from archive-transcribed measurements; not yet read back against the articles";
     reuse         "Choupo's own regression; the measured points belong to the cited articles and are not reproduced in this record or this tree";
-    fitDate       "2026-11-11";
+    fitDate       "2026-11-16";
 
     evidence
     (
@@ -88,11 +89,11 @@ provenance
     //  IN-SAMPLE: the model reproducing the very points it was
     //  fitted to.  It is NOT a validation; see the block below.
     weighting     uncertainty;   // chi2 is sum ((T_model - T_exp)/U)^2, dimensionless
-    chi2          3.88998251;
-    rms_K         0.65467701;
+    chi2          2.27567905;
+    rms_K         0.50040733;
     nDataPoints   38;
-    identifiable  false;
-    maxAbsCorr    0.99980052;
+    identifiable  true;
+    maxAbsCorr    0.98659338;
 
     validity
     {
@@ -121,11 +122,11 @@ curation
     outliersDropped 0;
     pointsKept      38;
     noBubblePoint   0;
-    maxAbsError     1.1930 K;
-    meanAbsError    0.5518 K;
+    maxAbsError     0.9561 K;
+    meanAbsError    0.4175 K;
     acceptance      graded;   // max |T_model - T| over the kept points, DEV.md 4c C285 (C286)
     gradeLimits_K   (1 2 4);   // upper limits of clean / warning / severe; above, refused
-    grade           warning;
+    grade           clean;
     oneLiquid       true;   // arm (f) over the validity span; a pair that splits ONE liquid is never promoted, whatever its grade
     verdict         accepted;
 }

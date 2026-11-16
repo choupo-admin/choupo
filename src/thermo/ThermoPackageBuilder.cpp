@@ -15,6 +15,8 @@
 #include "thermo/electrolyte/PitzerSingleSalt.H"
 #include "thermo/electrolyte/SaltFromCatalogue.H"
 #include "thermo/equationOfState/EquationOfState.H"
+#include "thermo/equationOfState/CubicMixingRule.H"
+#include "core/RegistryRefusal.H"
 
 #include "thermo/ElementComposition.H"
 #include "thermo/SystemClassifier.H"
@@ -2270,6 +2272,120 @@ static DictPtr v2TransportDict(const DictPtr& v2)
     return transportDict;
 }
 
+//  THE ACTIVITY CONFIG OF A LIQUID: the `activityModel` entry (a bare word or a
+//  block) read into the dictionary ActivityModel::New consumes.  ONE reader for
+//  the gammaPhi liquid and for the G^E model inside a phiPhi cubic's excess-
+//  Gibbs mixing rule (DEV.md 4c C408 (b)): a pair record is resolved, cited
+//  and announced the same way wherever the model is asked for.  The code is
+//  the gammaPhi branch's, moved intact.
+static DictPtr readActivityConfig(const DictPtr& v2, const DictPtr& holder,
+                                  std::string& modelOut)
+{
+    auto activityDict = std::make_shared<Dictionary>("activityModel");
+    std::string model;
+    const EntryValue& ev = holder->entryValue("activityModel");
+    if (std::holds_alternative<std::string>(ev))
+        model = std::get<std::string>(ev);
+    else
+    {
+        auto am = holder->subDict("activityModel");
+        model = am->lookupWord("model");
+        // An unknown key here would be a silently-dropped declaration
+        // -- refuse.
+        for (const auto& k : am->keys())
+            if (k != "model" && k != "source" && k != "binaryParameters")
+                throw std::runtime_error("thermophysicalPropertySystem:"
+                    " activityModel key '" + k + "' is not part of the"
+                    " grammar (have: model / source / binaryParameters"
+                    + std::string(k == "pairs"
+                        ? "; pairs are declared as binaryParameters"
+                          " { <i>-<j> {...} }"
+                        : "") + ").");
+        if (am->found("source"))
+            activityDict->insert("source", am->entryValue("source"));
+        if (am->found("binaryParameters"))
+        {
+            const fs::path repoRoot =
+                fs::path(Database::currentRoot()).parent_path();
+            auto bp = am->subDict("binaryParameters");
+            std::vector<DictPtr> pairDicts;
+            bool anySource = false, anyInline = false;
+            for (const auto& pr : bp->keys())
+            {
+                auto pd = bp->subDict(pr);
+                if (pd->found("source"))
+                {
+                    anySource = true;
+                    const std::string src = pd->lookupWord("source");
+                    auto pairRec = loadRec(resolveDeclared(repoRoot, src),
+                                           "binary pair " + pr);
+                    if (thermoAnnounce())
+                        std::cout << "[builder] binary pair " << pr
+                                  << "  --- " << src << "\n";
+                    auto pp = pairRec->subDict("parameters");
+                    auto p = std::make_shared<Dictionary>(pr);
+                    p->insert("i", pp->entryValue("i"));
+                    p->insert("j", pp->entryValue("j"));
+                    for (const char* k : {"a_ij", "b_ij", "a_ji", "b_ji",
+                                          "c_ij", "c_ji", "alpha"})
+                        if (pp->found(k)) p->insert(k, pp->entryValue(k));
+                    // Honesty flag rides along (the H^E calorimetric gate).
+                    if (pp->found("calorimetricFit"))
+                        p->insert("calorimetricFit",
+                                  pp->entryValue("calorimetricFit"));
+                    else if (pairRec->found("calorimetricFit"))
+                        p->insert("calorimetricFit",
+                                  pairRec->entryValue("calorimetricFit"));
+                    //  The record file it came from (review row SA-03):
+                    //  the activity model records it as the pair's source.
+                    p->insert("resolvedFrom", std::string(src));
+                    pairDicts.push_back(p);
+                }
+                else
+                {
+                    anyInline = true;
+                    announceInlinePair(model, pr);
+                    auto p = std::make_shared<Dictionary>(pr);
+                    for (const auto& k : pd->keys())
+                    {
+                        const EntryValue& pv = pd->entryValue(k);
+                        if (std::holds_alternative<scalar>(pv)
+                            || std::holds_alternative<std::string>(pv))
+                            p->insert(k, pv);   // verbatim, full precision
+                        else
+                            throw std::runtime_error(
+                                "thermophysicalPropertySystem: inline pair"
+                                " key '" + k + "' is neither scalar nor"
+                                " word.");
+                    }
+                    pairDicts.push_back(p);
+                }
+            }
+            if (anySource && anyInline)
+                throw std::runtime_error(
+                    "thermophysicalPropertySystem: binaryParameters mixes"
+                    " source-form and inline-form pairs -- one dict, one"
+                    " form (STRICT).");
+            if (!pairDicts.empty())
+                activityDict->insert("pairs", EntryValue(pairDicts));
+        }
+    }
+    activityDict->insert("model", model);
+    // Active-set projection (forum M6): the declared pair domain rides
+    // into the activity config -- the NRTL restricts its pair matrix +
+    // announcement to it (components stay GLOBAL; doctrine untouched).
+    if (v2->found("activeComponents"))
+        activityDict->insert("activeComponents",
+                             v2->entryValue("activeComponents"));
+    // Per-node pair home (Flowsheet-injected plumbing, not authored
+    // grammar): the NRTL searches the node's constant/parameters FIRST.
+    if (v2->found("binaryPairsBase"))
+        activityDict->insert("binaryPairsBase",
+                             v2->entryValue("binaryPairsBase"));
+    modelOut = model;
+    return activityDict;
+}
+
 // The formulation dispatch proper.  Wrapped by buildV2 below, which attaches
 // the DECLARED AQUEOUS CHEMISTRY -- a declaration that must not depend on
 // which phase equilibrium (if any) the case computes.
@@ -2675,6 +2791,15 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         //  A volume translation is a declared choice of the phiPhi cubic; a
         //  gammaPhi / diluteSolution vapour slot has no home for it, and
         //  ignoring it in silence would be a lie (C408 (a) round 2, VT-10).
+        if (eq->subDict("vapour")->found("mixingRule")
+            && eq->subDict("vapour")->lookupWord("mixingRule")
+               != "vanDerWaalsOneFluid")
+            throw std::runtime_error("thermophysicalPropertySystem: a cubic"
+                " `mixingRule` other than vanDerWaalsOneFluid under a gammaPhi"
+                " / diluteSolution vapour is not read -- an excess-Gibbs rule"
+                " is a declared choice of the phiPhi cubic: use `formulation"
+                " phiPhi; equationOfState { model SRK; mixingRule MHV1;"
+                " activityModel { ... } }`");
         if (eq->subDict("vapour")->found("volumeTranslation")
             || eq->found("volumeTranslation"))
             throw std::runtime_error("thermophysicalPropertySystem: a"
@@ -2721,112 +2846,22 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
         // authored dict (the dict OWNS the numbers -- fitting /
         // self-contained cases); a cosmoSAC parameter-SET selector
         // (`source <setName>`) rides along verbatim.
-        auto activityDict = std::make_shared<Dictionary>("activityModel");
         std::string model;
-        const EntryValue& ev = liq->entryValue("activityModel");
-        if (std::holds_alternative<std::string>(ev))
-            model = std::get<std::string>(ev);
-        else
-        {
-            auto am = liq->subDict("activityModel");
-            model = am->lookupWord("model");
-            // An unknown key here would be a silently-dropped declaration
-            // -- refuse.
-            for (const auto& k : am->keys())
-                if (k != "model" && k != "source" && k != "binaryParameters")
-                    throw std::runtime_error("thermophysicalPropertySystem:"
-                        " activityModel key '" + k + "' is not part of the"
-                        " grammar (have: model / source / binaryParameters"
-                        + std::string(k == "pairs"
-                            ? "; pairs are declared as binaryParameters"
-                              " { <i>-<j> {...} }"
-                            : "") + ").");
-            if (am->found("source"))
-                activityDict->insert("source", am->entryValue("source"));
-            if (am->found("binaryParameters"))
-            {
-                const fs::path repoRoot =
-                    fs::path(Database::currentRoot()).parent_path();
-                auto bp = am->subDict("binaryParameters");
-                std::vector<DictPtr> pairDicts;
-                bool anySource = false, anyInline = false;
-                for (const auto& pr : bp->keys())
-                {
-                    auto pd = bp->subDict(pr);
-                    if (pd->found("source"))
-                    {
-                        anySource = true;
-                        const std::string src = pd->lookupWord("source");
-                        auto pairRec = loadRec(resolveDeclared(repoRoot, src),
-                                               "binary pair " + pr);
-                        if (thermoAnnounce())
-                            std::cout << "[builder] binary pair " << pr
-                                      << "  --- " << src << "\n";
-                        auto pp = pairRec->subDict("parameters");
-                        auto p = std::make_shared<Dictionary>(pr);
-                        p->insert("i", pp->entryValue("i"));
-                        p->insert("j", pp->entryValue("j"));
-                        for (const char* k : {"a_ij", "b_ij", "a_ji", "b_ji",
-                                              "c_ij", "c_ji", "alpha"})
-                            if (pp->found(k)) p->insert(k, pp->entryValue(k));
-                        // Honesty flag rides along (the H^E calorimetric gate).
-                        if (pp->found("calorimetricFit"))
-                            p->insert("calorimetricFit",
-                                      pp->entryValue("calorimetricFit"));
-                        else if (pairRec->found("calorimetricFit"))
-                            p->insert("calorimetricFit",
-                                      pairRec->entryValue("calorimetricFit"));
-                        //  The record file it came from (review row SA-03):
-                        //  the activity model records it as the pair's source.
-                        p->insert("resolvedFrom", std::string(src));
-                        pairDicts.push_back(p);
-                    }
-                    else
-                    {
-                        anyInline = true;
-                        announceInlinePair(model, pr);
-                        auto p = std::make_shared<Dictionary>(pr);
-                        for (const auto& k : pd->keys())
-                        {
-                            const EntryValue& pv = pd->entryValue(k);
-                            if (std::holds_alternative<scalar>(pv)
-                                || std::holds_alternative<std::string>(pv))
-                                p->insert(k, pv);   // verbatim, full precision
-                            else
-                                throw std::runtime_error(
-                                    "thermophysicalPropertySystem: inline pair"
-                                    " key '" + k + "' is neither scalar nor"
-                                    " word.");
-                        }
-                        pairDicts.push_back(p);
-                    }
-                }
-                if (anySource && anyInline)
-                    throw std::runtime_error(
-                        "thermophysicalPropertySystem: binaryParameters mixes"
-                        " source-form and inline-form pairs -- one dict, one"
-                        " form (STRICT).");
-                if (!pairDicts.empty())
-                    activityDict->insert("pairs", EntryValue(pairDicts));
-            }
-        }
-        activityDict->insert("model", model);
-        // Active-set projection (forum M6): the declared pair domain rides
-        // into the activity config -- the NRTL restricts its pair matrix +
-        // announcement to it (components stay GLOBAL; doctrine untouched).
-        if (v2->found("activeComponents"))
-            activityDict->insert("activeComponents",
-                                 v2->entryValue("activeComponents"));
-        // Per-node pair home (Flowsheet-injected plumbing, not authored
-        // grammar): the NRTL searches the node's constant/parameters FIRST.
-        if (v2->found("binaryPairsBase"))
-            activityDict->insert("binaryPairsBase",
-                                 v2->entryValue("binaryPairsBase"));
+        DictPtr activityDict = readActivityConfig(v2, liq, model);
 
         const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
         //  A volume translation is a declared choice of the phiPhi cubic; a
         //  gammaPhi / diluteSolution vapour slot has no home for it, and
         //  ignoring it in silence would be a lie (C408 (a) round 2, VT-10).
+        if (eq->subDict("vapour")->found("mixingRule")
+            && eq->subDict("vapour")->lookupWord("mixingRule")
+               != "vanDerWaalsOneFluid")
+            throw std::runtime_error("thermophysicalPropertySystem: a cubic"
+                " `mixingRule` other than vanDerWaalsOneFluid under a gammaPhi"
+                " / diluteSolution vapour is not read -- an excess-Gibbs rule"
+                " is a declared choice of the phiPhi cubic: use `formulation"
+                " phiPhi; equationOfState { model SRK; mixingRule MHV1;"
+                " activityModel { ... } }`");
         if (eq->subDict("vapour")->found("volumeTranslation")
             || eq->found("volumeTranslation"))
             throw std::runtime_error("thermophysicalPropertySystem: a"
@@ -2874,16 +2909,42 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
 
     auto eos = eq->subDict("equationOfState");
     const std::string model = eos->lookupWord("model");
-    if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT")
+    if (model != "SRK" && model != "PengRobinson" && model != "PCSAFT"
+        && model != "LeeKeslerPloecker")
         throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
             " equationOfState '" + model + "' -- implemented: SRK |"
-            " PengRobinson | PCSAFT (the non-associating PC-SAFT core).");
-    // The vdW-one-fluid mixing rule is the CUBIC combining rule; PC-SAFT
-    // has its own (sigma arithmetic, epsilon geometric) -- do not impose it.
-    if (model != "PCSAFT" && eos->found("mixingRule")
-        && eos->lookupWord("mixingRule") != "vanDerWaalsOneFluid")
-        throw std::runtime_error("thermophysicalPropertySystem: the cubic"
-            " mixing rule implemented is vanDerWaalsOneFluid.");
+            " PengRobinson | PCSAFT (the non-associating PC-SAFT core) |"
+            " LeeKeslerPloecker (Lee-Kesler with the Ploecker mixing rules).");
+    //  Lee-Kesler-Ploecker carries ONE mixing rule (Ploecker, Knapp & Prausnitz
+    //  1978, Eqs. 9-14); a `mixingRule` key would be ignored in silence, so it
+    //  is refused.
+    if (model == "LeeKeslerPloecker" && eos->found("mixingRule"))
+        throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+            " equationOfState LeeKeslerPloecker has ONE mixing rule, the"
+            " Ploecker-Knapp-Prausnitz one-fluid rule (Eqs. 9-14, eta = 0.25,"
+            " kappa from `binaryInteractions`); `mixingRule` is not a key of"
+            " this model -- remove it.");
+    // The cubic's MIXING RULE (DEV.md 4c C408 (b)): `vanDerWaalsOneFluid`
+    // (the default, today's arithmetic) or an excess-Gibbs rule (MHV1, MHV2)
+    // that takes the `activityModel` block of a gammaPhi liquid.  PC-SAFT has
+    // its own mixing (sigma arithmetic, epsilon geometric) -- do not impose
+    // one on it; a non-one-fluid word, or an activityModel, is refused there.
+    std::string mixingRuleWord = "vanDerWaalsOneFluid";
+    if (eos->found("mixingRule")) mixingRuleWord = eos->lookupWord("mixingRule");
+    const bool oneFluid = (mixingRuleWord == "vanDerWaalsOneFluid");
+    if (model == "PCSAFT" || model == "LeeKeslerPloecker")
+    {
+        if (!oneFluid || eos->found("activityModel"))
+            throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+                " equationOfState " + model + " mixes by its own rules; a"
+                " cubic `mixingRule` other than vanDerWaalsOneFluid, and an"
+                " `activityModel` block, are cubic grammar (SRK | PengRobinson)"
+                " and are not read there.");
+    }
+    else if (!CubicMixingRule::isRegistered(mixingRuleWord))
+        throw std::runtime_error(registryRefusal::message(
+            "cubic mixing rule", mixingRuleWord,
+            CubicMixingRule::registeredNames()));
 
     // phiPhi: departure from the SAME EoS on both phases.
     verifyCal("liquid", "departureRoute", "equilibriumEquationOfState");
@@ -2894,19 +2955,48 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
     // the EoS constructors consume (refusals + citation announced).
     auto eosDict = std::make_shared<Dictionary>("equationOfState");
     eosDict->insert("model", model);
+    //  The mixing rule word as written, and the G^E model of an excess-Gibbs
+    //  rule resolved by the SAME reader a gammaPhi liquid uses (pair records,
+    //  citations, announcements).  Under the one-fluid rule a declared
+    //  `activityModel` is carried raw so the rule refuses it by name.
+    if (eos->found("mixingRule") && model != "PCSAFT")
+        eosDict->insert("mixingRule", mixingRuleWord);
+    if (eos->found("activityModel") && model != "PCSAFT")
+    {
+        if (oneFluid)
+            eosDict->insert("activityModel", eos->entryValue("activityModel"));
+        else
+        {
+            std::string geModel;
+            eosDict->insert("activityModel",
+                EntryValue(readActivityConfig(v2, eos, geModel)));
+        }
+    }
+    //  The cubic's alpha function (C408 slice 0): opt-in, default unchanged.
+    if (eos->found("alphaFunction"))
+    {
+        if (model == "PCSAFT")
+            throw std::runtime_error("thermophysicalPropertySystem: alphaFunction"
+                " is a cubic's alpha (SRK | PengRobinson); PCSAFT has none.");
+        eosDict->insert("alphaFunction", eos->lookupWord("alphaFunction"));
+    }
     //  PENELOUX VOLUME TRANSLATION (C408 (a)): a declared choice of the cubic,
     //  carried verbatim to the constructor, which validates it and refuses by
     //  name (CubicEoS::readVolumeTranslation).  Absent = OFF, the default.
     if (eos->found("volumeTranslation"))
     {
-        if (model == "PCSAFT")
+        if (model == "PCSAFT" || model == "LeeKeslerPloecker")
             throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
-                " equationOfState PCSAFT has no `volumeTranslation` -- the"
+                " equationOfState " + model + " has no `volumeTranslation` -- the"
                 " Peneloux shift is implemented for the cubics SRK and"
                 " PengRobinson (declared shift only) alone.");
         eosDict->insert("volumeTranslation", eos->entryValue("volumeTranslation"));
     }
-    if (eos->found("binaryInteractions"))
+    //  An excess-Gibbs rule has no kij: the block is carried raw and the rule
+    //  refuses it by name, before a single record is read.
+    if (eos->found("binaryInteractions") && !oneFluid && model != "PCSAFT")
+        eosDict->insert("binaryInteractions", eos->entryValue("binaryInteractions"));
+    else if (eos->found("binaryInteractions"))
     {
         const fs::path repoRoot = fs::path(Database::currentRoot()).parent_path();
         auto bi = eos->subDict("binaryInteractions");
@@ -3092,7 +3182,10 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
 
     if (thermoAnnounce())
         std::cout << "[v2 native] equilibrium phiPhi: " << model << " on BOTH"
-                     " phases (one Gibbs surface, two roots); kij declared"
+                     " phases (one Gibbs surface, two roots)"
+                  << (model != "PCSAFT" && !oneFluid ? "; mixing rule " + mixingRuleWord
+                                                      : std::string())
+                  << "; kij declared"
                      " inside the EoS block.  caloric: departure from the SAME"
                      " EoS (elements datum).  Assembled NATIVELY from the v2"
                      " grammar (no translated intermediate).\n";

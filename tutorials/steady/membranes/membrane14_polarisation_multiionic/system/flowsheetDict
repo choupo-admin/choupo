@@ -44,7 +44,8 @@ units
             //  correlation Sh = 0.065 Re^0.875 Sc^0.25 on the local crossflow,
             //  evaluated PER ION on the ion's own D0 (Sc_i = nu/D_i), so the
             //  faster Cl- gets a larger k than Na+ and the run publishes one
-            //  k_film_<ion> column per ion.  The viscosity is declared here;
+            //  k_film_<ion> column per ion.  The viscosity is a stated value in the
+            //  property dictionary (C402), not typed here;
             //  the ions' D come from their species records (NO3/NH4 carry a
             //  case-local transport block, see constant/species/).
             massTransfer
@@ -52,7 +53,6 @@ units
                 model          SchockMiquel;
                 channelHeight  0.7 mm;
                 spacerPorosity 0.9;
-                viscosity      1.0e-3;            // Pa.s, water at 20 C
             }
             pressureDrop
             {

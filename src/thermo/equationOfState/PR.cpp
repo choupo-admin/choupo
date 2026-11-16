@@ -113,18 +113,22 @@ namespace {
 }
 
 PR::PR(const std::vector<Component>& comps,
-       const std::vector<std::vector<scalar>>& kij,
-       const std::vector<scalar>& volumeShift)
+       std::unique_ptr<CubicMixingRule> rule,
+       const std::vector<scalar>& volumeShift,
+       const AlphaChoice& alpha)
   : CubicEoS("PR", Constants{ OMEGA_A, OMEGA_B, EPS, SIG }, comps,
-             slopes(comps), kij, volumeShift)
+             slopes(comps), std::move(rule), volumeShift, alpha)
 {}
 
 std::unique_ptr<EquationOfState>
 PR::fromDict(const DictPtr& eosDict, const std::vector<Component>& comps)
 {
-    auto kij = readKij("PR", eosDict, comps);
-    return std::make_unique<PR>(comps, kij,
-        readVolumeTranslation("PR", eosDict, comps, /*pengRobinson*/ true));
+    //  Order matters for the log only: kij announcements (inside the mixing
+    //  rule), then the volume translation, then the alpha choice.
+    auto rule = readMixingRule("PR", eosDict, comps);
+    auto vt   = readVolumeTranslation("PR", eosDict, comps, /*pengRobinson*/ true);
+    return std::make_unique<PR>(comps, std::move(rule), vt,
+                                readAlpha("PR", eosDict, comps));
 }
 
 } // namespace Choupo

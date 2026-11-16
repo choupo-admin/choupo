@@ -40,6 +40,12 @@ Last reviewed: 2026-11-10 (C277 pass landed; C264, C269, C268 header slice and C
 
 Status words: `todo` · `queued` (built by a general, waiting its turn to integrate) · `integrating` · `running` · `decide` (the architect's, with a written reason) · `waits-Vitor` (a fact or act only he holds) · `blocked` · `done`.
 
+## The next days (2026-11-16, agreed with Vitor)
+
+1. TODAY: the batch `batch/2026-11-16` -- water on IAPWS + 24 water pairs refitted, the per-component alpha, C402 fragments and membranes, d2, MHV1/MHV2, Lee-Kesler-Plocker -- ONE full sweep alone on the laptop, moved rows attributed, landed together (CLAUDE.md 4e).
+2. 11-17 to 11-20: CONSOLIDATION FREEZE (C414), no new feature: C413 cases reference the catalogue; C412 test selection by model signature; the gate audit.
+3. From 11-21: the month's items (Jacobs & Krishna, the demonstration path), then fixes, WASM, publish, rehearsal.
+
 ## Now (running)
 
 | status | what | ref |
