@@ -3562,6 +3562,27 @@ accepts today, and that is a policy call.
 > none of the printed errors.  Report:
 > docs/reviews/2026-11-15-geraldes2008-errata/REPORT.md.
 
+> **EX-04 + the stability probe LANDED (2026-11-16)**, the cloud session's
+> two engine fixes after an Opus review (rows CL-01..07) and a builder's
+> round on CL-01/02/04: T_bubble on a gamma-phi cubic vapour iterates the
+> incipient vapour (round trip 1e-4 -> 1e-11; greenAmmonia03's fire case
+> moved, nine rows, each recomputed by hand by the reviewer); an unsettled
+> incipient vapour is not published as converged; the liquid_stable probe
+> refuses on a one-liquid package, on a refused LL flash and on a
+> non-converged one.  RULING: a phase-envelope bubble march ENDS at the
+> first point whose incipient vapour has only a pseudo-root of the cubic --
+> a point priced on a pseudo-root is not a bubble point.  This REVERSES the
+> C245 continuation that ran envelope02 to 40 bar on the pseudo-root.  Rows
+> moved by hand: envelope03 bubble 44 -> 36 points (stop 45 -> 37 bar, where
+> an independent PR loses the vapour root at 36.7 bar); envelope02 40 -> 36
+> (stop 37, new); envelope04 80 -> 26 (stop 27, new: its single-liquid
+> metastable bubble at 428 K and 27 bar is above the vapour's own
+> saturation, so no vapour exists there).  Registered, not fixed: CL-06 (the
+> Explorer's T-x-y drops the chosen EoS vapour), CL-07 (choupoProps never
+> loads the Henry registry).  Held: --scope 45 cases 50/0 with mass and
+> energy closures, --fast 87/0, --gui 49/0 on the merge with main, 98 of the
+> plan's 101 gates (check_regressed_pairs not run: NIST unreachable).
+
 > **C411 (architect, 2026-11-16, found by an external cross-check that used
 > Choupo as an independent speciation reference).**  DEFECTS in Choupo's
 > aqueous speciation below 0 C and in K(T), to be fixed as one slice after a
