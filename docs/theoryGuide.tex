@@ -10529,7 +10529,8 @@ Explorer refuses it with that reason.
 \file{tutorials/props/molecular/envelope01\_natural\_gas} (a lean natural
 gas: a bracketed cricondentherm on the dew branch, a bubble branch that starts
 late, at $46$~bar), \file{envelope02\_c3c4c5\_branch\_stop} (both branches cross
-propane's $T_c$ and reach $40$~bar) and \file{envelope03\_c3c4c5\_both\_stop}
+propane's $T_c$; the dew branch reaches $40$~bar, the bubble branch ends at
+$37$~bar where the incipient vapour loses its vapour root) and \file{envelope03\_c3c4c5\_both\_stop}
 (the same feed to $80$~bar: both branches stop, and say where) and
 \file{envelope05\_natural\_gas\_phiphi} (envelope01's feed on one
 Peng--Robinson cubic for both phases: dew points iterated and held to an
@@ -11385,7 +11386,8 @@ vapour root of its own (the flagged pseudo-root of the cubic is the answer
 when it has none): the branch \emph{ends} at the first pressure where it does
 not, and the point is discarded, so no point of the drawn branch rests on a
 pseudo-root.  For \file{envelope03} that is $37$~bar, with the last kept
-point $389.554$~K at $36$~bar.
+point $389.554$~K at $36$~bar; the same rule ends \file{envelope02}'s bubble
+branch at $37$~bar and \file{envelope04}'s at $27$~bar.
 
 \emph{Validity and what is not done.}  One liquid is assumed.  The fixed-$P$
 lenses replace the homogeneous bubble curve across an immiscibility gap by
