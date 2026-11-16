@@ -63,6 +63,7 @@ import json
 import os
 import re
 import shutil
+import case_records   # noqa: E402  (C413: a probe copy of a pinned case is materialised)
 import subprocess
 import sys
 import tempfile
@@ -155,7 +156,7 @@ def main() -> int:
     #  found in check_liquid_cp_fallback's own A5 earlier the same day.
     with tempfile.TemporaryDirectory() as td:
         probe = Path(td) / "iso"
-        shutil.copytree(CASES["absorber"], probe)
+        case_records.copytree(CASES["absorber"], probe)
         for junk in ("converged", "reports", "log.choupoSolve", "expected",
                      "constant/propertyManifest"):
             tgt = probe / junk

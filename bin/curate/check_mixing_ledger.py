@@ -83,6 +83,9 @@ import sys
 import tempfile
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import case_records  # noqa: E402  (C413: the case's record, or the catalogue's once it references it)
+
 ROOT = Path(__file__).resolve().parents[2]
 BIN = ROOT / "build" / "linux64Gcc" / "choupoProps"
 WITNESS = ROOT / "tutorials" / "props" / "molecular" / "mixrules01_natural_gas"
@@ -209,7 +212,8 @@ def main() -> int:
 
     # ---- (b) the pure leg from the sealed records -----------------------
     for name in COMPS:
-        rec = WITNESS / "constant" / "components" / f"{name}.dat"
+        rec = case_records.record_path(WITNESS, f"components/{name}.dat") \
+            or WITNESS / "constant" / "components" / f"{name}.dat"
         try:
             a_i, b_i = soave_pure(record_field(rec, "Tc"),
                                   record_field(rec, "Pc"),
@@ -247,7 +251,8 @@ def main() -> int:
                     " pressure is not reaching the cubic")
 
     # ---- (d) the kij is the declared one --------------------------------
-    kijRec = WITNESS / "constant" / "parameters" / "SRK" / "N2-CH4.dat"
+    kijRec = case_records.record_path(WITNESS, "parameters/SRK/N2-CH4.dat") \
+        or WITNESS / "constant" / "parameters" / "SRK" / "N2-CH4.dat"
     try:
         declared = record_field(kijRec, "kij")
         if d30.get("kij_N2_CH4") != declared:

@@ -196,6 +196,7 @@ import math
 import os
 import re
 import shutil
+import case_records   # noqa: E402  (C413: a probe copy of a pinned case is materialised)
 import subprocess
 import sys
 import tempfile
@@ -304,7 +305,7 @@ def build_unit(tmp: Path, kind: str, T: float, ph: str, P: float) -> Path:
     d = tmp / f"{kind}_{ph}_{T!r}_{P!r}"
     (d / "system").mkdir(parents=True)
     (d / "0").mkdir()
-    shutil.copytree(TEMPLATE / "constant", d / "constant")
+    case_records.copytree(TEMPLATE / "constant", d / "constant")
     shutil.copy(TEMPLATE / "system" / "controlDict", d / "system" / "controlDict")
     (d / "system" / "flowsheetDict").write_text(UNIT_CASES[kind])
     (d / "0" / "probe").write_text(STATE.format(T=T, P=P, ph=ph))
@@ -405,7 +406,7 @@ def build(tmp: Path, kind: str, P: float) -> Path:
     d = tmp / f"{kind}_{P!r}"
     (d / "system").mkdir(parents=True)
     (d / "0").mkdir()
-    shutil.copytree(TEMPLATE / "constant", d / "constant")
+    case_records.copytree(TEMPLATE / "constant", d / "constant")
     shutil.copy(TEMPLATE / "system" / "controlDict", d / "system" / "controlDict")
     if kind == "pump":
         (d / "system" / "flowsheetDict").write_text(PUMP)
@@ -455,7 +456,7 @@ def probe_case(tmp: Path, tag: str, units: str, streams: dict, global_method=Non
     d = tmp / tag
     (d / "system").mkdir(parents=True)
     (d / "0").mkdir()
-    shutil.copytree(TEMPLATE / "constant", d / "constant")
+    case_records.copytree(TEMPLATE / "constant", d / "constant")
     if global_method is not None or "pureFluids" in units or "pureFluids" in variants:
         # The Helmholtz record is not in the template's seal: unseal the copy.
         (d / "constant" / "propertyManifest").unlink(missing_ok=True)
@@ -675,7 +676,7 @@ def involatile_arm(tmp: Path, fail: list) -> int:
     d = tmp / "l_involatile"
     (d / "system").mkdir(parents=True)
     (d / "0").mkdir()
-    shutil.copytree(INVOLATILE / "constant", d / "constant")
+    case_records.copytree(INVOLATILE / "constant", d / "constant")
     shutil.copy(INVOLATILE / "system" / "controlDict", d / "system" / "controlDict")
     tp = (d / "constant" / "thermoPhysPropDict").read_text()
     if "pureFluids" in tp:

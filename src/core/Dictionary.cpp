@@ -29,6 +29,7 @@ License
 #include "Dictionary.H"
 
 #include "core/DictAudit.H"
+#include "core/ReadLog.H"
 
 #include "Units.H"
 
@@ -1045,6 +1046,7 @@ DictPtr Dictionary::fromFile(const std::string& path)
     std::ifstream f(path);
     if (!f)
         throw std::runtime_error("Cannot open dictionary file: " + path);
+    readlog::note(path);     // C413: the run's observed reads, noted in ONE place
     std::ostringstream ss; ss << f.rdbuf();
     return fromString(ss.str(), path);
 }
@@ -1149,7 +1151,8 @@ void Dictionary::deepMerge(const DictPtr& overlay,
 {
     for (const auto& k : overlay->order_)
     {
-        if (k == "overlayOf") continue;      // a directive, not data
+        if (k == "overlayOf" || k == "variationReason")
+            continue;                        // a directive, not data
         const EntryValue& ov = overlay->entries_.at(k);
         const std::string path = prefix.empty() ? k : prefix + "." + k;
         const bool bothDict =

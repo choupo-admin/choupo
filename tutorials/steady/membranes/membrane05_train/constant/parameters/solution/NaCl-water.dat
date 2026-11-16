@@ -69,3 +69,6 @@ liquidDensity
         read          "Laliberte and Cooper 2004 pp. 1142 and 1144 read from the page image (Eq. 8) and the text (Table 1); CRC tables from the text layer of the file";
     }
 }
+
+variationOf NaCl-water;
+variationReason "Choupo Solution properties: SODIUM CHLORIDE dissolved in liquid WATER -- the solution's own DENSITY law (DEV.md 4c C402, MB-02: the seawater-strength membrane cases price their feed on it instead of the massWithoutVolume hypothesis, which o";

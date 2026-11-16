@@ -228,6 +228,17 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 export CHOUPO_HOME="$ROOT"
 export PATH="$ROOT:$ROOT/bin:$PATH"
 
+# --- IN THE TREE, A DRIFTED PIN IS A FAIL (2026-11-16, DEV.md 4c C413) --------
+#  A case that REFERENCES the catalogue pins every record its run consumes.  By
+#  default an engine run ANNOUNCES a drifted pin, an unpinned record or an
+#  undeclared shadow (a first-year editing a record learns from the line).  The
+#  suite is not a first-year: every CASE it runs (run_case_raw) gets
+#  CHOUPO_PINS=refuse, so a catalogue edit committed without its re-pin
+#  (bin/choupo-import --repin) is a FAILED case naming the pin, never a line of
+#  stderr.  It is set for the cases, not for the gates: a gate that builds an
+#  unsealed fixture out of a sealed case (an ion record under a catalogue name)
+#  tests something else, and the gates that test the pins set the word themselves.
+
 # --- THE CORES (2026-10-25, DEV.md 4c C167) ------------------------------------
 #  Vitor watched the sweep on a ten-core laptop use one core most of the time.
 #  The case walk and every gate ran one after another, so the cores shortened
@@ -832,9 +843,9 @@ run_case_raw() {
         if ! "$ROOT/bin/buildCode" "$case_dir" >/dev/null 2>&1; then
             echo "__BUILDFAIL__"; return 1
         fi
-        "$case_dir/code/.build/choupoCase" "$case_dir" 2>&1; rc=$?
+        CHOUPO_PINS=refuse "$case_dir/code/.build/choupoCase" "$case_dir" 2>&1; rc=$?
     else
-        "$ROOT/$app" "$case_dir" 2>&1; rc=$?
+        CHOUPO_PINS=refuse "$ROOT/$app" "$case_dir" 2>&1; rc=$?
     fi
     return "$rc"
 }
@@ -1569,6 +1580,25 @@ if [ -z "$RECORD" ]; then
     fi
     rm -f /tmp/clostatic.$$
 fi
+#  THE THREE PIN GATES RUN IN EVERY MODE (C413, PN-04).  A case that REFERENCES
+#  the catalogue is only as true as its pins, and a stale pin is invisible to
+#  `--fast`, `--gui` and `--scope` unless someone looks: so the static check
+#  (check_pins_fresh -- no case is run), the declaration rules
+#  (check_case_records) and the shadow-identity arms (check_shadow_identity --
+#  on copies of the pinned witness, under a second) run HERE, before any mode
+#  branches, and a failure ABORTS naming the pin and its remedy.
+for _pg in check_pins_fresh check_case_records check_shadow_identity; do
+    if "$ROOT/bin/curate/$_pg.py" > /tmp/pingate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "${_pg//_/-}" "$(gate_claim "$_pg" /tmp/pingate.$$ | cut -c1-200)"
+    else
+        printf "FAIL  %-40s  (run bin/curate/%s.py)\n" "${_pg//_/-}" "$_pg"
+        cat /tmp/pingate.$$
+        rm -f /tmp/pingate.$$
+        echo "ABORTED: a case's pins or declarations are broken (DEV.md 4c C413).  No mode may skip this."
+        exit 1
+    fi
+    rm -f /tmp/pingate.$$
+done
 #  RECORD GUARD (C258): `--record` / `--record-append` must never freeze a
 #  violated balance.  _pre snapshots the golden about to be rewritten; _post
 #  runs the closure check on what was written and, on a refusal, restores the
@@ -8701,7 +8731,15 @@ for case_dir in "$1"; do
     #     This is the §10 fix: a crash that emits no result block used to fall
     #     through to a vacuous "smoke pass"; it no longer can.
     if [ "$rc" -ne 0 ]; then
-        printf "FAIL  %-40s  (non-zero exit code %s -- crashed/aborted)\n" "$label" "$rc"
+        #  A refusal by a PIN (a drifted pin, an unpinned read, a shadow the
+        #  case did not declare: C413, PN-04) is a finding about the catalogue,
+        #  not a crash: name it, with its remedy, instead of "crashed/aborted".
+        pin_line=$(printf '%s\n' "$out" | grep -m1 -E '^ERROR: (pins|shadow):' | cut -c1-600)
+        if [ -n "$pin_line" ]; then
+            printf "FAIL  %-40s  (refused by the case's pins, exit %s)\n      %s\n" "$label" "$rc" "$pin_line"
+        else
+            printf "FAIL  %-40s  (non-zero exit code %s -- crashed/aborted)\n" "$label" "$rc"
+        fi
         fail=$((fail+1)); continue
     fi
 

@@ -1,65 +1,31 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-16";
-    importerVersion    "3";
-    records
+    pins
     {
-        "components/methanol.dat"
-        {
-            type          imported;
-            sha256        "0c136d8790f5b9dbb1661bcdd510dae891d2908119fd15e2e4371566e94ecb3e";
-            computationalSha256 "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
-            origin        "data/standards/components/methanol.dat";
-            originSha256  "99579474ad52be6c4db6cf3736eb5c1949b9df27248c2622e36a721c91ba13f1";
-            release       Choupo-2608;
-        }
-        "components/water.dat"
-        {
-            type          imported;
-            sha256        "80737a2defbbf35fccba8637a365dc1ea32985d6b6698a96c612b385457d4429";
-            computationalSha256 "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
-            origin        "data/standards/components/water.dat";
-            originSha256  "12f2c1a12742a7dbb5dd8bf3e44af45ba1612c21bc78af8d236499e61539de7e";
-            release       Choupo-2608;
-        }
-        "parameters/Helmholtz/IAPWS95.dat"
-        {
-            type          imported;
-            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
-            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
-            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
-            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
-            release       Choupo-2608;
-        }
-        "parameters/NRTL/methanol-water.dat"
-        {
-            type          imported;
-            sha256        "39d9664e1fb879d1b52fda6436fc6805dbbf7751bf0557d4444bebdfbbb36123";
-            computationalSha256 "52d668b40a4c42c74e23111c651b1620fe14ccfe88e5bf089950954eade8ea18";
-            origin        "data/standards/parameters/NRTL/methanol-water.dat";
-            originSha256  "0f86cd54a911d8761e2729cdb251d9ef9074098ad338780e7ae6c359efab6c1c";
-            release       Choupo-2608;
-        }
+        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/methanol.dat"  "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
+        "parameters/Henry/"  "relevant:b5509a44f117c0fc315bbde1a2f0196cdb3926add081cc8b02385d7c35fed142";
+        "parameters/Henry/methanol-water.dat"  "054ff87b724b4dceab73ab2c5a0ae65fea700b6a5965cebb67bafc4c6891ca5d";
+        "parameters/NRTL/methanol-water.dat"  "52d668b40a4c42c74e23111c651b1620fe14ccfe88e5bf089950954eade8ea18";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
 }

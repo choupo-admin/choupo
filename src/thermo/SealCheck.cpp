@@ -18,6 +18,7 @@ License
 #include "core/DictCanonical.H"
 #include "core/Dictionary.H"
 #include "core/Sha256.H"
+#include "thermo/PinCheck.H"
 #include "thermo/RecordResolver.H"
 
 #include <filesystem>
@@ -45,6 +46,14 @@ static std::vector<std::string>& divergedRecords_()
     return r;
 }
 
+namespace detail {
+void setSealVerdict(const std::string& v, const std::vector<std::string>& r)
+{
+    verdict_() = v;
+    divergedRecords_() = r;
+}
+} // namespace detail
+
 const std::string& sealVerdict() { return verdict_(); }
 const std::vector<std::string>& sealDivergedRecords() { return divergedRecords_(); }
 
@@ -58,8 +67,15 @@ int verifySeal(int verbosity)
     //  every early return below leaves a case that made no claim saying so.
     verdict_() = "unsealed";
     divergedRecords_().clear();
+    primeCatalogueRoot();      // C413: the ledger resolves paths at exit
 
     DictPtr m = nearestManifest();
+    //  C413: a case that REFERENCES the catalogue pins it (thermo/PinCheck.cpp).
+    if (m && m->found("pins")) return verifyPinsStart(m, verbosity);
+    if (m && m->found("held"))
+        throw std::runtime_error("propertyManifest: `held` is the transitional"
+            " block of a case that holds `pins`; this manifest has none."
+            "  Remedy: pin the case with `bin/choupo-import --pin <case>`.");
     if (!m || !m->found("records")) return 0;
 
     //  A build that miscompiles the digest would report every record as

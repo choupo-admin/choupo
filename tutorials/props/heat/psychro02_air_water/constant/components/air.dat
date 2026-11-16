@@ -168,3 +168,6 @@ provenance
         notes         "ChemSep v8.3 FullerVolume; grafted 2026-08-31";
     }
 }
+
+variationOf air;
+variationReason "Choupo Component: air (CAS 132259-10-0) PROPOSAL TIER -- UNVERIFIED.";

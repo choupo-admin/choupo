@@ -1,74 +1,37 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-12";
-    importerVersion    "3";
-    records
+    pins
     {
-        "components/acetone.dat"
-        {
-            type          imported;
-            sha256        "1b8fde539f6ee5ccf4ff3e6c2bcd76e9ee4e28f468d921075096fcef91d5b13c";
-            computationalSha256 "a419e95ede7566b6ec572f82ec21b3094b12659ed126456b030b1cde16f361c9";
-            origin        "data/standards/components/acetone.dat";
-            originSha256  "d16bd1d06f759dd81521b0d804f034541336a10b17ec4a2ddf97ef391d5d71ab";
-            release       Choupo-2608;
-        }
-        "components/ethanol.dat"
-        {
-            type          imported;
-            sha256        "1eda76a51260e625d2b0333916b8404a846d0d42658d0e5ebab2a6f66b7b8282";
-            computationalSha256 "31f4c8fb850b2e34dc718acce40ecd9457bcc9fdcf7d705fafbefbf94b197a05";
-            origin        "data/standards/components/ethanol.dat";
-            originSha256  "63fc74fa14b7464744e1bfc995cdbe87d72d0d7d56aa188605a5802f3e99de0d";
-            release       Choupo-2608;
-        }
-        "components/water.dat"
-        {
-            type          imported;
-            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
-            origin        "data/standards/components/water.dat";
-            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
-            release       Choupo-2608;
-        }
-        "parameters/UNIFAC/groups.dat"
-        {
-            type          imported;
-            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
-            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
-            origin        "data/standards/parameters/UNIFAC/groups.dat";
-            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
-            release       Choupo-2608;
-        }
-        "parameters/UNIFAC/interactions.dat"
-        {
-            type          imported;
-            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
-            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
-            origin        "data/standards/parameters/UNIFAC/interactions.dat";
-            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
-            release       Choupo-2608;
-        }
+        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "parameters/Henry/"  "relevant:e13fed3c6edd231da77fadd0af734775414a39d40a9f4a5d6ef0974c4aeb9cd0";
+        "parameters/Henry/acetone-water.dat"  "59eb9457c480a6eadb0f48caa20b3e74230c87d69806a000772e23797f7a0843";
+        "parameters/Henry/ethanol-water.dat"  "8d6c542980e2dd37de73fd7fcc8d4e3b6538ccdaf208ec21180ba6dcbc7cf8d8";
+        "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+        "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+        "components/acetone.dat"  "a419e95ede7566b6ec572f82ec21b3094b12659ed126456b030b1cde16f361c9";
+        "components/ethanol.dat"  "31f4c8fb850b2e34dc718acce40ecd9457bcc9fdcf7d705fafbefbf94b197a05";
+        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
     }
 }

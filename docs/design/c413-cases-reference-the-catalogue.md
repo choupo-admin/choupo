@@ -545,3 +545,103 @@ per case it reaches.
 - **Q7. Undeclared shadows in users' cases** are announced, and refused only
   under strict.  Whether a later release refuses them outright is a
   backwards-compatibility decision to take with a release, not here.
+
+## 9. As built -- slices 0 and 1 (2026-11-16, branch c413/pins)
+
+What was built is the section 6 mechanism, with the deviations the build
+forced.  Each is a measurement, not a preference.
+
+1. **Pins are what the run CONSUMED, plus the ABSENCES that could change a
+   resolution (round 2, ruling PN-02).**  Measured on flash01: the run parses 562
+   catalogue files (486 Henry pairs, 35 assets, 13 solution pairs, 10 utilities,
+   15 adsorption equilibria, 2 components, 1 chemistry record) because the
+   registries load whole directories, but it uses a handful.  A first build
+   pinned each scanned directory by a hash (10 lines); that made one Henry edit
+   reach every case, the cascade C413 removes, and the form is DELETED.  Now the
+   engine (`PinCheck.cpp`, one home) applies the relevance rule to what was
+   parsed: a Henry or solution pair `A-B` is consumed when A and B are both
+   loaded components; an asset or utility when the case's text names it; an
+   adsorption equilibrium when its adsorbent is named and its species loaded;
+   every record outside those scanned directories when parsed (read by name).
+   Per scanned registry directory (Henry, solution, a named adsorbent's
+   equilibria) ONE set line, `"parameters/Henry/" "relevant:<hash>"`: the hash
+   of the sorted relevant names that EXIST there, the names themselves pinned
+   one by one.  A relevant arrival changes the set hash (`appeared`), a removal
+   is `vanished`, an unrelated edit or addition changes nothing.  (A first round-2
+   build pinned each non-existent ordered pair `absent`, n(n-1) lines per
+   directory; a manifest a student cannot read is not glass-box, and the form
+   was replaced by the set line.)  The set line needs the loaded components, so
+   it is checked at the END of the run; `check_pins_fresh` cannot check it
+   statically and flash01 is in FASTSET for that reason.  The same function
+   computes the end check and the importer's proposal (`@ pin` lines of
+   the ledger), so they cannot drift.  flash01's manifest is 5 lines (3 records and the Henry and solution set lines, each the
+   hash of an empty set).  The cost is one line per scanned directory, independent of
+   the number of components.  An unrelated Henry edit leaves flash01 `pinned`; a
+   benzene-toluene pair that arrives, or a benzene edit, is a drift
+   (`check_shadow_identity`).
+2. **The ledger notes at `Dictionary::fromFile`, not at the resolver seam.**
+   Fifteen registries scan `data/standards/` directly; a read log at the seam
+   would still be a subset.  `core/ReadLog.H` is the one note; a hash or an
+   identity comparison pauses it (`readlog::Pause`).  The ledger file gains
+   `@ catalogue <sub>` / `@ case <sub>` lines; the importer's reader ignores
+   every line that does not start with `- `.
+3. **Pin values are quoted** (`"<hash>"`): a hash of digits only parses as a
+   number.  Q6 is answered: the quoted-key scalar entry parses.
+4. **flash01's copies were stale**, not identical (the catalogue's benzene and
+   toluene gained blocks since the seal), so the record's rule would have put
+   them under `held`.  The witness was flipped with `--repoint` (delete the
+   stale copy, follow the catalogue) as the brief asked: every number and
+   every written file is byte-identical, and eight stdout lines differ
+   because they name the record's HOME (`sealed case copy ...` becomes
+   `catalogue data/standards/...`) and the package identity.  The held form
+   (`--pin --from-sealed` without `--repoint`) is byte-identical to the
+   sealed run apart from the seal block and two `[held]` lines, which is the
+   proof slice 2 will use: a held copy is labelled as the sealed copy it was.
+5. **`check_seal_drift` and `check_sealed_corpus` are kept, not renamed.**
+   610 cases are still sealed and those gates still judge them; the pin-form
+   gates are new beside them (`check_pins_fresh`, `check_case_records`,
+   `check_shadow_identity`).  Slice 2 retires the old ones when the last copy
+   goes.  `check_seal_verdict` gained the pin probes.
+6. **Announcements, and where the refusal binds.**  D3 says an undeclared
+   shadow that disagrees on identity "refuses always".  Built: it refuses for a
+   case that holds `pins`; for a legacy UNSEALED case it is ANNOUNCED
+   (`[shadow] ... DIFFERENT species ... declare distinctFrom`), because the
+   gates that copy a sealed ion case out without its manifest
+   (`check_unit_acceptance` ran four such probes) and the unsealed demos
+   (overlay02, solvent02, solvent03) are exactly the cases that carry the
+   undeclared record, and refusing them before slice 4 declares the 29 ion
+   records would move numbers' availability, not numbers.  A declaration the
+   identity CONTRADICTS (`variationOf` with another formula, `distinctFrom` on
+   the same species) refuses always: it is new grammar with no legacy.  A
+   missing `variationReason` is announced only for a case that holds `pins`.
+   Strict (`CHOUPO_PINS=refuse`) binds only a case that holds `pins`.  The
+   switch to "refuses always" is a one-line change when slice 4 lands.
+7. **`held` is a ceiling in `check_case_records` (`HELD_CEILING`, 0 today)**,
+   lowered by whoever re-points a held copy.
+8. **The gates that copy a witness for a probe** (`check_record_law_pins`
+   copied flash01 and rewrote its benzene record) drop a manifest that holds
+   `pins`: the probe is the unsealed case it behaves as without it.
+9. **The GUI lesson `caseAssembly`** (which walks flash01's files) was rewritten
+   for the pin form in the same slice, as D5 required.
+10. **Not built here, by the brief:** slice 2 (the 613 flips), the GUI export
+    (`buildCaseZip`), the WASM rebuild.  The browser build is stale: an old
+    engine meets a `pins` manifest as an unclaimed manifest and runs from the
+    embedded catalogue (verdict `unsealed`).
+
+### Round 2 (review PN, rulings of 2026-11-16)
+
+PN-01: `--repin` locates the `pins {}` block on the comment-masked text (it used
+the first occurrence of the word, which is in the header comment) and handles
+`absent`.  PN-02: above.  PN-03: the manifest walk is cached per working
+directory, the shadow rule runs once per (record, file), the catalogue identity
+is parsed once; edbatch01 sealed 2.65 s against main's 2.70 s, pinned 2.66 s, and
+the getcwd count equals main's.  PN-04: the three pin gates run before any mode
+branches in `bin/runTests`; flash01 is in FASTSET; a case refused by its pins
+prints the pin's `ERROR:` line instead of "crashed/aborted"; CHOUPO_PINS=refuse
+is set for the cases the suite runs, not for the gates (a gate that makes an
+unsealed fixture out of a sealed ion case tests something else).  PN-05:
+`--pin` refuses a local homonym that is neither deleted, held nor declared.
+PN-06: a held copy is identity-checked; the held announcement no longer says
+"older than the catalogue"; an unsealed case under CHOUPO_PINS=refuse refuses an
+identity-disagreeing shadow.  PN-07: a record that does not parse is refused,
+never hashed as empty; "the run CONTINUES" is not printed under strict.

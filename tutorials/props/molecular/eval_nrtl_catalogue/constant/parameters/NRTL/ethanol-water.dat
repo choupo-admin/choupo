@@ -37,3 +37,6 @@ provenance
     author        "Curated from DECHEMA by V. Geraldes, 2026";
     notes         "Widely used reference set for ethanol-water VLE at atmospheric pressure. Predicts the minimum-boiling azeotrope at x_ethanol ~ 0.894 (T_b ~ 351.4 K).";
 }
+
+variationOf ethanol-water;
+variationReason "Choupo | C hemicals | Choupo: open-source, glass-box simulation | | H eat-transfer | Version: Choupo-dev | | O perations | Website: https://choupo.org | | U nits | Licence: GPL-3.0-or-later | | P roperties | Tutorial case file -- part of Ch";

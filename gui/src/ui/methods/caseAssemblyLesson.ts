@@ -107,8 +107,8 @@ export const CASE_ASSEMBLY_STEPS: readonly LessonStep[] = [
       + "start. The program then registers every unit type it knows, by "
       + "name, in an explicit list you can read (" + at("registerUnits")
       + "); nothing registers itself behind your back. It parses the "
-      + "flowsheetDict, then the controlDict, checks the seal on the "
-      + "component records, finds the thermoPhysPropDict, picks up whichever "
+      + "flowsheetDict, then the controlDict, checks the manifest's pins "
+      + "against the catalogue records, finds the thermoPhysPropDict, picks up whichever "
       + "optional dictionaries exist and prints a header saying which it "
       + "found. Only then does a pass begin (" + at("solve") + "): the "
       + "thermodynamic package is built from constant/, the streams are "

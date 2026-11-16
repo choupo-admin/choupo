@@ -1,119 +1,42 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-16";
-    importerVersion    "3";
-    records
+    pins
     {
-        "components/2Butanol.dat"
-        {
-            type          imported;
-            sha256        "2a3efd54a4acd66125a6391c8caaa933f80a60547285c406b3121b4f59c35539";
-            computationalSha256 "42eddfbd4c0717f6be5628bb94a55ed1e5ceb23ae3b2f30826048fe0ee966e43";
-            origin        "data/standards/components/2Butanol.dat";
-            originSha256  "15cbb84bf139385146557e3e701fc0798325ccaa2fab2d922ac6b983aa54530f";
-            release       Choupo-2608;
-        }
-        "components/2Methyl1Propanol.dat"
-        {
-            type          imported;
-            sha256        "a3bc848a3edeb2b00ce9aa72c331a76d5f77c1a46a4fd9a83b96989375f844cd";
-            computationalSha256 "6136d178bb4e2ee483ef4d7e2d7d71f28a1114c909f99932261ad519e240c598";
-            origin        "data/standards/components/2Methyl1Propanol.dat";
-            originSha256  "602fffbece9abc9d4e7171d2caba06c3050b0da2b1d26d68da76a351692a0e2e";
-            release       Choupo-2608;
-        }
-        "components/2Methyl2Propanol.dat"
-        {
-            type          imported;
-            sha256        "58677f19e0afbdd49ac7ce22ba48054e444aab627774f9f18896a7399b4d6257";
-            computationalSha256 "df0ed21b2fada807934d00ba8831c810825cce82ee8b524010a6c89dbf90a659";
-            origin        "data/standards/components/2Methyl2Propanol.dat";
-            originSha256  "a5e203a5919c06dde41c279e1f1b19ca54464021e1c11c4cd853021996f8b6db";
-            release       Choupo-2608;
-        }
-        "components/nButanol.dat"
-        {
-            type          imported;
-            sha256        "6d7ffbbf03d59eb5e3ebc14942ab71a843c1691d4f218728ac82dfa4d97b8831";
-            computationalSha256 "d1d94bcafcd69782996c564d7ed953d97b619228aa112a2ecac95bbac8b8471d";
-            origin        "data/standards/components/nButanol.dat";
-            originSha256  "faae2dc7e03935ed0a8950e8ab357f7cda7cd586c719bad6c79e37894b2f9611";
-            release       Choupo-2608;
-        }
-        "components/water.dat"
-        {
-            type          imported;
-            sha256        "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
-            computationalSha256 "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
-            origin        "data/standards/components/water.dat";
-            originSha256  "63aacb038ef2d8da6bfc9166916318c23bd96b6af6fe3ce14ac5d57b7fd95bb0";
-            release       Choupo-2608;
-        }
-        "parameters/Helmholtz/IAPWS95.dat"
-        {
-            type          imported;
-            sha256        "0bc0d23a31da5d1451c0fdfda180cf7b1bf82d81e8c940e727d5c46d6fd3f1cb";
-            computationalSha256 "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
-            origin        "data/standards/parameters/Helmholtz/IAPWS95.dat";
-            originSha256  "e4a617a0e62d30562b500a830601fd0b96db0d510931f45d361bb3c5dc4eb207";
-            release       Choupo-2608;
-        }
-        "parameters/UNIFAC/groups.dat"
-        {
-            type          imported;
-            sha256        "773fd55a7276cfc3cd28955e96b944f1b3c02851840bf389b9bfba6a27efb5a1";
-            computationalSha256 "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
-            origin        "data/standards/parameters/UNIFAC/groups.dat";
-            originSha256  "6b13db7a925decef37de6148546e453b237940267d92138b73fb4f6a7d0ea1d5";
-            release       Choupo-2608;
-        }
-        "parameters/UNIFAC/interactions.dat"
-        {
-            type          imported;
-            sha256        "e8e0f5a2556f215ae3c50aa150f6ee59210231cf112272ac478dc30cd8a58f1e";
-            computationalSha256 "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
-            origin        "data/standards/parameters/UNIFAC/interactions.dat";
-            originSha256  "bfe8db4bd25782471c56f8a4c4ba5615f834fd24e792ec4cf767cc955a62bd31";
-            release       Choupo-2608;
-        }
-        "parameters/UNIFACDortmund/groups.dat"
-        {
-            type          imported;
-            sha256        "e0223783470c9e81bd4e2275fd7865c6ed682f9157d6ce68e508a6421265c246";
-            computationalSha256 "d8660b3570328a304160d4d422e353c2b2ace72664f4bfc4555768c0f9e4c732";
-            origin        "data/standards/parameters/UNIFACDortmund/groups.dat";
-            originSha256  "89e03784d9b379ebffe872b7bdd31e71c6e8e5163027d2e4a674280a96fe614f";
-            release       Choupo-2608;
-        }
-        "parameters/UNIFACDortmund/interactions.dat"
-        {
-            type          imported;
-            sha256        "10001f02934dac30d47d6c008257117301e52ce16c408c612ccb81e409f217a0";
-            computationalSha256 "20a27c6d97cc1e8c6c71a4a23494511ed12f97e3f6b953249662a165d26c7c6d";
-            origin        "data/standards/parameters/UNIFACDortmund/interactions.dat";
-            originSha256  "5b4edaaaba6e7d6c15b7882adea3fad8800b086556385b435e45109ff1d0685b";
-            release       Choupo-2608;
-        }
+        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/2Butanol.dat"  "42eddfbd4c0717f6be5628bb94a55ed1e5ceb23ae3b2f30826048fe0ee966e43";
+        "components/2Methyl1Propanol.dat"  "6136d178bb4e2ee483ef4d7e2d7d71f28a1114c909f99932261ad519e240c598";
+        "components/2Methyl2Propanol.dat"  "df0ed21b2fada807934d00ba8831c810825cce82ee8b524010a6c89dbf90a659";
+        "components/nButanol.dat"  "d1d94bcafcd69782996c564d7ed953d97b619228aa112a2ecac95bbac8b8471d";
+        "parameters/Henry/"  "relevant:725cdac517a63ef3e32aef46b462b9bc4c684efb3ab74760f370988979b48762";
+        "parameters/Henry/2Butanol-water.dat"  "e336e7291a0d11661309236fd6b3ff7a6e187de5a41caa1c0039d3ef75fe4603";
+        "parameters/Henry/2Methyl2Propanol-water.dat"  "edc1ea299b3aa87084e28fa9c496da56ccadb97db2d8c517c3ec564862ba55d2";
+        "parameters/Henry/nButanol-water.dat"  "1b460014cdbd82af4cfb3cac7403e392a0536065129f981ebcdda15dc2921e50";
+        "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
+        "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
+        "parameters/UNIFACDortmund/groups.dat"  "d8660b3570328a304160d4d422e353c2b2ace72664f4bfc4555768c0f9e4c732";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+        "components/water.dat"  "693c5c80e12b77698b4949032ccbb84017d8e42ef6ce3bc0ae192806e7dbe998";
+        "parameters/UNIFACDortmund/interactions.dat"  "20a27c6d97cc1e8c6c71a4a23494511ed12f97e3f6b953249662a165d26c7c6d";
     }
 }

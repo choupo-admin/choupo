@@ -45,7 +45,27 @@ SOLVE = ROOT / "build" / "linux64Gcc" / "choupoSolve"
 MIGRATE = ROOT / "bin" / "curate" / "migrate_seal_schema.py"
 CASE = ROOT / "tutorials" / "steady" / "thermoTest" / "model5_nrtl_flash"
 
+#  Its walk (`rglob('*.dat')` over the witness) reads the gate's OWN scratch copy, never the tree.
+SCAN_ROOTS = ()
+
 failures = []
+WITNESS = None
+
+
+def export_witness(tmp):
+    """The witness is SEALED afresh from the catalogue (C413: the tree's own case references it and
+    holds a stale copy): its local copies and manifest are dropped, then `choupo-import <copy>` seals
+    it, so every record is `imported` and hash-claimed as the probes below require."""
+    dest = Path(tmp) / "witness_sealed"
+    shutil.copytree(CASE, dest, ignore=shutil.ignore_patterns(
+        "expected", "log.*", "reports", "converged", "resultJson*"))
+    for f in (dest / "constant").rglob("*.dat"):
+        f.unlink()
+    (dest / "constant" / "propertyManifest").unlink()
+    r = subprocess.run([str(ROOT / "bin" / "choupo-import"), str(dest)], capture_output=True, text=True)
+    if r.returncode != 0:
+        raise SystemExit("check_seal_schema: could not seal the witness:\n" + (r.stdout + r.stderr)[-600:])
+    return dest
 
 
 def chash(path: Path) -> str:
@@ -69,8 +89,10 @@ def main() -> int:
         if not exe.exists():
             print("check_seal_schema: %s missing -- build first" % exe)
             return 1
+    global WITNESS
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td)
+        WITNESS = export_witness(tmp)
 
         # ---- CANON ------------------------------------------------------
         a = tmp / "a.dat"
@@ -94,7 +116,7 @@ def main() -> int:
 
         # ---- sealed-case probes ----------------------------------------
         case = tmp / CASE.name
-        shutil.copytree(CASE, case, ignore=shutil.ignore_patterns(
+        shutil.copytree(WITNESS or CASE, case, ignore=shutil.ignore_patterns(
             "expected", "log.*", "reports", "converged", "resultJson*"))
         mf = case / "constant" / "propertyManifest"
         if "sealSchema         computational;" not in mf.read_text():
@@ -140,7 +162,7 @@ def main() -> int:
 
         # ---- MIGRATE: idempotence + fail-closed ------------------------
         case2 = tmp / ("m_" + CASE.name)
-        shutil.copytree(CASE, case2, ignore=shutil.ignore_patterns(
+        shutil.copytree(WITNESS or CASE, case2, ignore=shutil.ignore_patterns(
             "expected", "log.*", "reports", "converged", "resultJson*"))
         r = subprocess.run([sys.executable, str(MIGRATE), str(case2)],
                            capture_output=True, text=True)

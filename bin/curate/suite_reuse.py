@@ -137,6 +137,7 @@ ROOT = Path(__file__).resolve().parents[2]
 STORE = ROOT / "build" / "reuse"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import gate_scan_roots as gsr   # noqa: E402
+import case_records             # noqa: E402  (C413: the pins of a case)
 
 #  THE KEYED GATES.  `trees`: the data the verdict reads (repository paths;
 #  git's listing).  `local`: the ignored private tier is read too.  Every
@@ -1240,6 +1241,39 @@ def verify_reads(argv):
     return 1 if bad_total else 0
 
 
+def pinned_key_parts(case_abs: Path):
+    """THE KEY OF A CASE THAT REFERENCES THE CATALOGUE (C413).
+
+    A sealed case carries its records, so its own files ARE the key; a pinned
+    case does not, and a water edit would change its result and none of its
+    files until the re-pin.  So its key holds the CURRENT content hash of every
+    catalogue file its manifest pins (an `absent` pin is keyed by whether the
+    name exists now) -- an edit of a pinned record moves the key (the case
+    runs, and a pin that no longer matches FAILS under CHOUPO_PINS=refuse), an
+    edit of a record the case does not pin moves nothing.  None when the
+    nearest manifest holds no pins."""
+    m = case_records.manifest_of(case_abs)
+    if m is None:
+        return None
+    mf = case_records.read_manifest(m)
+    if not mf["has_pins"]:
+        return None
+    parts = []
+    for sub in sorted(mf["pins"]):
+        f = ROOT / "data" / "standards" / sub
+        if sub.endswith("/"):
+            #  a SET line (relevant names that exist in a registry directory): the
+            #  names the directory holds are the input -- a file added to it may be
+            #  one the case selects (coarser than the engine's own check, which is
+            #  the point of a reuse key: it can only rerun a case, never skip one)
+            parts.append(("pin:" + sub, digest([(x.name, "") for x in sorted(f.glob("*.dat"))])
+                          if f.is_dir() else "ABSENT"))
+            continue
+        #  a pinned file's CONTENT
+        parts.append(("pin:" + sub, H.sha(f) if f.is_file() else "ABSENT"))
+    return parts
+
+
 def case_plan(root_rel, explain=False):
     """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>
     (or, with explain, <dir>\\t<engine>\\t<data>: how each case is keyed)."""
@@ -1255,6 +1289,17 @@ def case_plan(root_rel, explain=False):
     plat = platform_half()
     base = digest([("engine", eng), ("data", dat), ("harness", har),
                    ("platform", plat)])
+    #  The DATA half of a PINNED case (C413): data/standards reduced to the NAMES
+    #  it holds (a new file in a scanned directory is a read the pins do not
+    #  cover); the content of what the case pins is in its own key.
+    pin_data = []
+
+    def pinned_data():
+        if not pin_data:
+            dat2, _n = data_half(["data/groupEstimative", "data/README.md"], True)
+            names = digest([(f, "") for f in (git_files(["data/standards"]) or [])])
+            pin_data.append(digest([("data", dat2), ("standardsNames", names)]))
+        return pin_data[0]
     files = git_files([root_rel]) or []
     #  the case directories: those holding system/controlDict
     cases = sorted({f[:-len("/system/controlDict")] for f in files
@@ -1291,23 +1336,27 @@ def case_plan(root_rel, explain=False):
         #  own constant/ in full (ignored files too, the fetched extracts
         #  aside) and every parent's constant/, present or absent.
         pairs += cascade(ROOT / c)
-        #  THE NARROW KEY (see the block above): a choupoProps fit is keyed on
-        #  the objects it can reach and, for pairs and components, on the
-        #  records of its own components; every other case keeps `base`.
+        #  THE COMPOSED KEY (C414 (3) + C413).  ENGINE: the narrow reach when the
+        #  case is a choupoProps fit, else the whole engine.  DATA: the case's
+        #  PINS when it has them (exact: the current hash of each pinned file
+        #  and the set lines), else the by-name rule of the narrow fit, else the
+        #  whole tree.  A sealed case's own files are in `pairs` as before.
         ne, nn, nops = narrow_engine(c)
-        if ne:
+        pp = pinned_key_parts(ROOT / c)
+        engp = ("engine-narrow", ne) if ne else ("engine", eng)
+        if pp is not None:
+            dpart, dlabel = ("data-pinned", pinned_data()), "data=pins"
+        elif ne:
             dpart, dlabel = data_half_for(c, per[c], dat)
-            cbase = digest([("engine-narrow", ne), dpart, ("harness", har),
-                            ("platform", plat)])
         else:
-            cbase = base
+            dpart, dlabel = ("data", dat), "data=WHOLE-TREE"
+        cbase = digest([engp, dpart, ("harness", har), ("platform", plat)])
         if explain:
             e = (f"engine=narrow({nn} objects; ops {','.join(nops)})" if ne
                  else f"engine=WHOLE ({nn})")
-            d = dlabel if ne else "data=WHOLE-TREE"
-            print(f"{c}\t{e}\t{d}")
+            print(f"{c}\t{e}\t{dlabel}")
             continue
-        key = digest([("base", cbase)] + sorted(pairs))
+        key = digest([("base", cbase)] + sorted(pairs) + (pp or []))
         stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
         labels, date = "-", "-"
         try:

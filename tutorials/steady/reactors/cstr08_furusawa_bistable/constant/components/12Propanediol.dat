@@ -90,3 +90,6 @@ provenance
     Pc                      { origin predictive; method "Joback (data/groupEstimative/components/12Propanediol.dat)"; }
     omega                   { origin predictive; method "Lee-Kesler (data/groupEstimative/components/12Propanediol.dat)"; }
 }
+
+variationOf 12Propanediol;
+variationReason "Choupo Component: 12Propanediol (propylene glycol, C3H8O2, CAS 57-55-6) CASE-LOCAL record, written for cstr08_furusawa_bistable, where it is the PRODUCT of propylene-oxide hydration.";

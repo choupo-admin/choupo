@@ -1324,8 +1324,9 @@ record-ownership registry (one sha256 per imported file;
 \code{sealed true;} forbids the runtime every catalogue fallback).  A
 file the manifest does not claim is yours and untouchable.  The
 definitive test is moving the case out of the repo and watching it still
-run.  Every shipped tutorial is sealed this way; research cases and
-anything you archive with a thesis should be too.
+run.  Most shipped tutorials are sealed this way (the first that instead
+\emph{references} the catalogue is described in \S\ref{sec:case-pins}); research
+cases and anything you archive with a thesis should be sealed too.
 
 \paragraph{What the seal claims: the content, not the bytes.}
 A manifest carrying \code{sealSchema computational;} claims the
@@ -1364,6 +1365,91 @@ Manifests without \code{sealSchema computational;} keep the old whole-file
 byte semantics untouched, and every migrated manifest still carries its
 legacy byte hashes as the historical provenance record --- the migration
 changed what the seal \emph{claims}, and re-validated nothing.
+
+\subsection{Cases that reference the catalogue: pins}\label{sec:case-pins}
+
+A sealed case carries a \emph{copy} of every record it reads.  The catalogue
+moves on, and the copies do not: of the 6115 copies the shipped tutorials
+carried on 2026-11-16, 2080 were older than the record they copied, and a
+correction to \code{water.dat} had to be made 362 times.  A case may instead
+\emph{reference} the catalogue and say, in one line per record, \emph{which}
+record it was run against.  This is design record C413
+(\file{docs/design/c413-cases-reference-the-catalogue.md}); the sealed form
+above is unchanged and remains what \code{bin/choupo-import --seal} exports.
+
+\paragraph{The grammar.}
+The manifest of a referencing case holds \code{pins}, never \code{records}:
+\begin{lstlisting}
+propertyManifest
+{
+    pins
+    {
+        "components/benzene.dat"   "d33a71...";   // the computational hash
+        "components/toluene.dat"   "3d2dfe...";
+        "parameters/Henry/"  "relevant:e3b0c4...";   // the SET of relevant pairs that exist (here: none)
+    }
+}
+\end{lstlisting}
+The key is the \file{data/standards/} path.  The value is the
+\emph{computational} hash of the record (\S\ref{sec:self-contained}: comments,
+whitespace and unit spellings are cosmetic).  A pin lists what the run
+\emph{consumed}, not what a registry happened to parse: a run parses every file
+of the Henry, solution and asset directories (562 files for flash01) but uses a
+handful, so a scanned registry contributes only the names the case selects ---
+the pairs among its components, the assets and utilities it names --- pinned one
+by one, plus \emph{one line per scanned directory}, valued
+\code{relevant:<hash>} of the sorted relevant names that exist there.  A relevant
+pair that arrives changes that hash (\code{appeared}); one that leaves is
+\code{vanished}; an unrelated edit or addition moves nothing; and the manifest
+stays one line per directory however many components the case has.  A manifest with \code{pins} and
+\code{sealed true;} is refused by name.
+
+\paragraph{Who writes it.}
+\code{bin/choupo-import --pin <case>} \emph{observes}: it runs the case once with
+the consumption ledger and pins what the run consumed (every file the run parsed
+is noted where it becomes a dictionary, so no reader can escape; the engine
+then applies the relevance rule above, in one place) and prints each record it
+adds.  \code{--pin <case> --from-sealed} flips a sealed
+case: copies computationally identical to the catalogue are deleted,
+\code{--repoint <rel>} deletes a stale copy on purpose (the case then follows the
+catalogue), and any other copy with a catalogue homonym is kept in force under
+the transitional \code{held \{ "<path>" "<hash>"; \}} block --- read alone,
+announced \code{[held]}, verified against its own hash.
+\code{bin/choupo-import --repin <record>} rewrites that one line in every
+manifest that pins the record: a catalogue edit is committed with its re-pin,
+and the goldens say which cases moved.
+
+\paragraph{What a run does.}
+At start every pin is hashed against the catalogue (\code{changed},
+\code{vanished}, \code{unparseable}); at the end what the run consumed, and the
+set of relevant names per directory, are compared with the pins
+(\code{unpinned}, \code{appeared}).  The result's \code{seal} block carries
+\code{pinned}, or \code{drifted} with each record and its class.  The default
+announces, by name; \code{CHOUPO\_PINS=refuse} in the environment,
+\code{runCase --strict}, or \code{onDivergence refuse;} in the manifest makes the
+same run refuse, naming the remedy.  \code{bin/runTests} sets it in every mode.
+
+\paragraph{A local record that has a catalogue homonym says what it is.}
+\begin{lstlisting}
+overlayOf     benzene;   // a delta: leaves added or changed, the rest follows the catalogue
+variationOf   benzene;   // a full record, read alone (a different model block, a source)
+distinctFrom  Cl;        // a DIFFERENT species under the catalogue's name (an ion over a radical)
+variationReason "Why this record is not the catalogue's, in one sentence.";
+\end{lstlisting}
+The engine checks the claim against the identity fields both records carry
+--- the formula with its charge, \code{charge}, \code{CAS}.  A declared
+variation whose formula disagrees and a \code{distinctFrom} on the same species
+refuse, naming both records; so does an undeclared homonym of another species in a
+case that holds \code{pins} (in an older unsealed case it is announced); an
+undeclared copy that agrees is announced, and refused under strict.  A path
+the case's own run \emph{writes} may have no catalogue homonym.
+
+\begin{pitfall}
+A pin proves which record the case was run \emph{against}, not that the
+record is right.  And a case exported with \code{--seal <case> --to <dir>} is a
+sealed case, staged and validated with the catalogue hidden --- send that,
+not the pinned directory, to a collaborator who has no checkout.
+\end{pitfall}
 
 % =====================================================================
 \section{Built-in unit operations}\label{sec:units}

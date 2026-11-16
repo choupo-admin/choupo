@@ -24,3 +24,6 @@ dissociation   1;              // already an ion: 1 particle/mol
 // Bridge to the aqueous master species of the same spelling -- two
 // identity spaces, one DECLARED crossing (identifier typing, 2026-07-25).
 aqueousMapping ( { species Cl; nu 1; } );
+
+distinctFrom Cl;
+variationReason "kept as a component under the catalogue's name: the case's Cl is formula Cl-, the catalogue's is formula Cl, a different species";

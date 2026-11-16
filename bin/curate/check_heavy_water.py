@@ -180,7 +180,8 @@ def run_checks():
             fail(f"(e) ideal-gas Cp at {T} K vs Simko Table 6: {v / s - 1:+.2e}")
 
     # (f) the engine -- on a witness whose sealed mirror IS the catalogue record
-    mirror = CASE / "constant" / "components" / "heavyWater.dat"
+    import case_records
+    mirror = case_records.record_path(CASE, "components/heavyWater.dat")   # the case's own, else the catalogue's (C413)
     body = [l for l in mirror.read_text().splitlines() if not l.startswith("// [imported]")]
     if body != REC.read_text().splitlines():
         fail("(f) the witness's sealed mirror of heavyWater.dat differs from the catalogue record "

@@ -16,6 +16,7 @@ License
 #include "core/DictCanonical.H"
 
 #include "core/Dictionary.H"
+#include "core/ReadLog.H"
 #include "core/Dimensions.H"
 #include "core/Sha256.H"
 
@@ -132,6 +133,7 @@ std::string dump(const Dictionary& d)
 
 std::string sha256OfFile(const std::string& path)
 {
+    readlog::Pause hashing;   // a hash is a verification, never a consumption (C413)
     DictPtr d = Dictionary::fromFile(path);
     return sha256::hex(dump(*d));
 }

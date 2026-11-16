@@ -1,47 +1,32 @@
 /*----------------------------------------------------------*\
-  constant/propertyManifest -- property-record OWNERSHIP registry
-  (context: case root).  Written by bin/choupo-import from the Choupo-2608 catalogue
-  release; the manifest is the authority on which files under
-  constant/ the importer owns.  A file it does NOT claim is
-  authored and untouchable; a claimed file it verifies by sha256.
-  `sealed true;` FORBIDS the runtime every catalogue fallback --
-  the case runs exclusively from its own constant/ records.
-  claim types:  imported = installed + hash-verified copy;
-                adopted  = authored record explicitly adopted at
-                           import time (never installed, never
-                           hash-enforced, never removed);
-                merged   = standards base with a partial by-name
-                           overlay applied top-level, materialised
-                           at import time (base + overlay hashes
-                           both recorded; durable like adopted).
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: case root).  Written by
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and, per scanned registry directory, ONE
+  `"<dir>/"  "relevant:<hash>"` line: the hash of the sorted names that
+  EXIST there and are relevant to the case (a Henry or solution pair among
+  its components), so a relevant pair that arrives or leaves is a drift
+  and an unrelated edit is not.  A registry parses a whole directory;
+  only the names the case selects are pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
-
 propertyManifest
 {
-    sealed             true;
-    sealSchema         computational;
-    catalogueRelease   Choupo-2608;
-    importedAt         "2026-11-16";
-    importerVersion    "3";
-    records
+    pins
     {
-        "components/nDecane.dat"
-        {
-            type          imported;
-            sha256        "3124acbbfe2627ab7227087e1358dab1eda897d6c01af3aa58c56f6b600e9ac6";
-            computationalSha256 "670f90364a22950fb0fb69a36b79b29100fc249c5d549e6941f5002b404c9cb3";
-            origin        "data/standards/components/nDecane.dat";
-            originSha256  "7a8939dff364b5ef93204be72abcb24a06c7b7c0859bb48ca8c8919021e8638f";
-            release       Choupo-2608;
-        }
-        "components/nHexane.dat"
-        {
-            type          imported;
-            sha256        "9ee4591f10af9ad2988ff1cbc858e78de114eede3f4684a515dab9be4332227a";
-            computationalSha256 "36b3e6bf0143265bc38b1e4d5580d638746a7ccde06e405cabd761d33cd232e4";
-            origin        "data/standards/components/nHexane.dat";
-            originSha256  "b18d4bbcc3f872577185beb700e661f9fd7037ed7b067604316cf50bc5ee0c23";
-            release       Choupo-2608;
-        }
+        "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+    }
+    held
+    {
+        "components/nDecane.dat"  "670f90364a22950fb0fb69a36b79b29100fc249c5d549e6941f5002b404c9cb3";
+        "components/nHexane.dat"  "36b3e6bf0143265bc38b1e4d5580d638746a7ccde06e405cabd761d33cd232e4";
     }
 }
