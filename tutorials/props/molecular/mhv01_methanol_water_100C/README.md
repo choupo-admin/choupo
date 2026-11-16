@@ -105,8 +105,8 @@ Over the ten interior points (mean / maximum |dP/P|, mean |dy|):
   carbon dioxide + methanol witness).
 * It does not say the pair is good at 373 K; its anchor band is the pair's own error.
 * The departures `H_R`, `S_R` carry the slope of G^E (Theory Guide `sec:cubic-mixing-rule`,
-  Eq. cmr-dep); under `phiPhi` they reach the vapour's enthalpy and entropy only -- a liquid
-  stream is priced on the formation enthalpy (DEV.md 4c C410).
+  Eq. cmr-dep); under `phiPhi` they reach both phases, each at its own root (a liquid
+  stream is priced on the cubic's liquid root, DEV.md 4c C410).
 
 ## The gate
 
