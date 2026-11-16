@@ -134,5 +134,8 @@ if bad:
         print("  - " + b)
     sys.exit(1)
 
-print("second-liquid gate: three phases with chemistry; organic phase real, "
-      "activities equal to machine zero, pre-check on the declared phases")
+print("check_two_liquids: OK -- flash17 (reactive electrolyte flash with a declared organic liquid) solves three phases with "
+      "chemistry, the organic phase is real (a non-trivial fraction of the liquid, composition different from the aqueous "
+      "one), ln(a_org/a_aq) is at machine zero for benzene and ethanol, V/F is the recorded 0.227, and the same feed above "
+      "its bubble pressure reports a subsaturated liquid on the DECLARED phases.  NOT checked: any other feed, T or "
+      "system, or that the split itself is physically right")
