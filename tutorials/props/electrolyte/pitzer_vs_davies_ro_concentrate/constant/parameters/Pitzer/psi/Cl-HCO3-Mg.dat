@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/parameters/Pitzer/psi/Cl-HCO3-Mg.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/parameters/Pitzer/psi/Cl-HCO3-Mg.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Pitzer ternary mixing parameter psi(Cl,HCO3|Mg) --- the two anions Cl(-)
   and HCO3(-) with the common cation Mg(2+).

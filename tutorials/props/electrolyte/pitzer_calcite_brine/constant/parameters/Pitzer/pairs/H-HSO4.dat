@@ -1,4 +1,4 @@
-// [imported] origin "data/standards/parameters/Pitzer/pairs/H-HSO4.dat" (Choupo-2607 release) -- owned + sha256-verified by constant/propertyManifest
+// [imported] origin "data/standards/parameters/Pitzer/pairs/H-HSO4.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
 /*--------------------------------*- Choupo -*--------------------------------*\
   Pitzer binary ion-interaction parameters --- H(+) / HSO4(-) in aqueous
   solution.

@@ -138,6 +138,11 @@ public:
         return P_Pa * molarVolume(T_K, P_Pa, y) / (constant::R * T_K);
     }
 
+    // A one-line statement of a declared VOLUME TRANSLATION (Peneloux 1982),
+    // "" for a model that carries none.  The resolved view prints it, so the
+    // choice is recorded in the result (C408 (a)).
+    virtual std::string volumeTranslationNote() const { return ""; }
+
     // LIQUID-root molar volume [m³/mol], for EoS whose density solve
     // distinguishes a liquid root at (T,P,y) (cubics, SAFT).  Explicitly
     // labelled access -- the vapour-root family above never silently swaps

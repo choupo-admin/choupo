@@ -103,10 +103,11 @@ NOT CHECKED, and said plainly:
     1 % on density is good enough for a synthesis loop is an engineering
     judgement no gate can take.
   * WHETHER VOLUME TRANSLATION WOULD FIX IT.  Arm (e) shows that the two
-    knobs this tree HAS do not.  A Peneloux-type volume shift, or a reference
-    Helmholtz equation, is the lever the literature uses and neither exists
-    here -- so the case names that as the remedy and nothing verifies the
-    claim, because there is nothing to run it against.
+    knobs (kij, effective hydrogen) do not.  A Peneloux volume shift now
+    exists in the tree (DEV.md 4c C408 (a); check_volume_translation.py) but
+    is fitted to saturated liquids and has no Z_RA for N2 or H2 in the held
+    literature, so nothing here verifies that it fixes THIS gas; a reference
+    Helmholtz equation does not exist yet.
   * ANY OTHER PROPERTY.  Density only.  The loop's condenser depends on the
     ammonia dew point, which this dataset does not touch and no case here
     tests.

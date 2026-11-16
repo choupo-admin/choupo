@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1871,
+  "cases": 1872,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 25
+  "anchored": 26
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -24292,6 +24292,20 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/volumeTranslation01_nhexane_peneloux": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint",
+    "propertyScan1D"
+   ],
+   "thermo": {
+    "formulation": "phiPhi"
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/props/powder/compaction01_mcc": {
    "application": "choupoProps",
    "ops": [
@@ -31599,6 +31613,7 @@
     "tutorials/props/molecular/ppr78Kij01_ch4_co2_h2",
     "tutorials/props/molecular/solubility01_hildebrand_ladder",
     "tutorials/props/molecular/srk01_h2n2_density",
+    "tutorials/props/molecular/volumeTranslation01_nhexane_peneloux",
     "tutorials/props/powder/compaction01_mcc",
     "tutorials/props/powder/compaction02_dcpd_brittle",
     "tutorials/props/reactor/thiele01_sphere_first_order",
@@ -36534,6 +36549,7 @@
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",
     "tutorials/props/molecular/srk01_h2n2_density",
+    "tutorials/props/molecular/volumeTranslation01_nhexane_peneloux",
     "tutorials/props/safety/relief01_ammonia_loop_gas",
     "tutorials/props/safety/relief02_acetone_fire_case",
     "tutorials/props/scan/pxy01_ethanol_water_70C",
@@ -37427,6 +37443,7 @@
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
     "tutorials/props/molecular/flash01_operating_line",
+    "tutorials/props/molecular/volumeTranslation01_nhexane_peneloux",
     "tutorials/props/scan/pxy01_ethanol_water_70C",
     "tutorials/props/steam/steam02_water_transport",
     "tutorials/props/thermo/heavyWater01_isotope_effect",

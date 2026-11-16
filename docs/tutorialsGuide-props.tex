@@ -2027,7 +2027,7 @@ ion mol/kg w ion mol/kg w Ca 0.010 Cl 0.050 Na 0.030 SO4 0.012 HCO3 0.005 pH 7.6
 
 THE LESSON -- the SIGN of dK/dT:
 
-calcite dissolution is EXOTHERMIC (dH = -28.1 kJ/mol), so log K FALLS as T rises. SI\_calcite = log(IAP) - log K(T) therefore RISES with temperature -- RETROGRADE SOLUBILITY. Calcite is LESS soluble hot, which is exactly why heat-exchanger tubes and warm RO concentrate scale with CaCO3 although the cold feed looks safe. K(T) here is the PHREEQC ANALYTIC expression (-analytical\_ expression A1..A5), anchored on logK25 so logK(25 C) = logK25 EXACTLY.
+calcite dissolution is EXOTHERMIC (CaCO3 = Ca+2 + CO3-2: dH = -9.6 kJ/mol, Plummer \& Busenberg 1982; the record's acid form CaCO3 + H+ = Ca+2 + HCO3-: -24.5 kJ/mol), so log K FALLS as T rises. SI\_calcite = log(IAP) - log K(T) therefore RISES with temperature -- RETROGRADE SOLUBILITY. Calcite is LESS soluble hot, which is exactly why heat-exchanger tubes and warm RO concentrate scale with CaCO3 although the cold feed looks safe. K(T) here is the PHREEQC ANALYTIC expression (-analytical\_ expression A1..A5), anchored on logK25 so logK(25 C) = logK25 EXACTLY.
 
 gypsum analytic too, but only mildly retrograde (its solubility peaks near 40 C) -- a gentler curve for contrast.
 
@@ -2040,19 +2040,19 @@ Speciation/mineral data: case-local constant/electrolyte/ -- a self- contained S
 \end{tutnarrative}
 \begin{tutgolden}
 \goldrow{diag}{T10}{I}{0.0795197}
-\goldrow{diag}{T10}{SI\_calcite}{0.56588}
+\goldrow{diag}{T10}{SI\_calcite}{0.625403959734}
 \goldrow{diag}{T10}{SI\_gypsum}{-0.335309}
 \goldrow{diag}{T10}{SI\_halite}{-4.56674}
 \goldrow{diag}{T10}{aw}{0.998115}
 \goldrow{diag}{T10}{pH}{7.6}
 \goldrow{diag}{T25}{I}{0.0772864}
-\goldrow{diag}{T25}{SI\_calcite}{0.789002}
+\goldrow{diag}{T25}{SI\_calcite}{0.819002408221}
 \goldrow{diag}{T25}{SI\_gypsum}{-0.365046}
 \goldrow{diag}{T25}{SI\_halite}{-4.60657}
 \goldrow{diag}{T25}{aw}{0.998126}
 \goldrow{diag}{T25}{pH}{7.6}
 \goldrow{diag}{T40}{I}{0.074682}
-\goldrow{diag}{T40}{SI\_calcite}{0.981885}
+\goldrow{diag}{T40}{SI\_calcite}{0.979528450423}
 \goldmore{91}
 \end{tutgolden}
 
@@ -2134,21 +2134,21 @@ PRIMARY: L. N. Plummer \& E. Busenberg, Geochim. Cosmochim. Acta 46 (1982) 1011-
 
 THE ANCHOR, and what it independently tests: their MEASURED pH at calcite equilibrium under exactly these conditions, corrected for liquid-junction potential, is 6.004 +/- 0.005 (4 M KCl filling, p. 1022; uncorrected Orion runs read near 5.984); their own aqueous model puts the thermodynamic pH at 6.011. The engine's number below comes out of Henry + K1/K2 + the ion pairs + Davies + electroneutrality + the SI = 0 ceiling END TO END -- none of which was fitted to this pH.
 
-LINEAGE, stated honestly: the calcite log K(T), K\_H, K1, K2 and ion-pair constants in our curated records descend from the USGS PHREEQC database, whose carbonate block IS this paper's Table 3 and Eqs -- so agreement in the CONSTANTS is lineage consistency, not validation. What the measured pH tests independently is the ASSEMBLY: that the engine composes those constants (gas pin, chained carbonate master, ion pairs, activity model, charge balance, mineral ceiling) into the same physical answer the electrode saw.
+LINEAGE, stated honestly: the calcite log K(T), K\_H, K1, K2 and ion-pair constants in our curated records descend from the USGS PHREEQC database, whose carbonate block IS this paper's Table 3 and Eqs -- so agreement in the CONSTANTS is lineage consistency, not validation. (Calcite was the exception until 2026-11-16: the record carried -8.45, a different fit, under this paper's citation; it now carries the paper's -8.480, and the pH below moved from 6.02946 to 6.01859 with it -- docs/reviews/ 2026-11-16-speciation-audit, SP-01/GS-01.) What the measured pH tests independently is the ASSEMBLY: that the engine composes those constants (gas pin, chained carbonate master, ion pairs, activity model, charge balance, mineral ceiling) into the same physical answer the electrode saw.
 
-WHAT IT ACTUALLY LANDS AT, and where that is written. The engine gives pH 6.02946 -- 0.025 ABOVE the measurement, 0.018 above their own model's 6.011 -- and the case attributes that offset to an activity-model difference (Davies here against their Truesdell-Jones, at I = 0.027). SINCE 2026-08-12 THAT COMPARISON IS DATA, NOT PROSE: `expected` carries an `anchor` row on the measured 6.004 with a band set to the explained offset, beside the self-recorded row on 6.02946 -- so a drift AWAY from the electrode fails as an anchor disagreement, and an unexplained drift TOWARD it fails as a moved golden. Both ends, on purpose. This header used to end with "a wrong composition would not land within 0.01 pH", which reads as though the engine does; it does not, and the number is above.
+WHAT IT ACTUALLY LANDS AT, and where that is written. The engine gives pH 6.01859 -- 0.015 ABOVE the measurement, 0.008 above their own model's 6.011 -- and the case attributes that remaining offset to an activity- model difference (Davies here against their Truesdell-Jones, at I = 0.026). Until 2026-11-16 it gave 6.02946 and attributed the whole 0.025 to the activity model; about 0.011 of it was the calcite constant. SINCE 2026-08-12 THAT COMPARISON IS DATA, NOT PROSE: `expected` carries an `anchor` row on the measured 6.004 with a band set to the explained offset, beside the self-recorded row on 6.01859 -- so a drift AWAY from the electrode fails as an anchor disagreement, and an unexplained drift TOWARD it fails as a moved golden. Both ends, on purpose. This header used to end with "a wrong composition would not land within 0.01 pH", which reads as though the engine does; it does not, and the number is above.
 
 APPROACH FROM ABOVE: the engine's equilibrate is a precipitation CEILING (SI $\to$ 0 from supersaturation; it does not dissolve a solid it was never given). The seed is therefore a SUPERSATURATED Ca(HCO3)2 solution under the pin; the ceiling relaxes it down to the same calcite saturation P\&B's dissolution runs approached from below -- one fixed point at (T, pCO2), whichever side you arrive from. The HCO3 seed is an initial guess only: the CO2 pin REPLACES the carbonate mole balance, so dissolved carbonate is a solved outcome (announced by the run).
 
 \end{tutnarrative}
 \begin{tutgolden}
-\goldrow{diag}{calciteEq\_25C}{I}{0.0265778}
-\goldrow{diag}{calciteEq\_25C}{SI\_aragonite}{-0.114}
+\goldrow{diag}{calciteEq\_25C}{I}{0.0258891128996}
+\goldrow{diag}{calciteEq\_25C}{SI\_aragonite}{-0.143999999968}
 \goldrow{diag}{calciteEq\_25C}{SI\_calcite}{3.22147e-11}
-\goldrow{diag}{calciteEq\_25C}{SI\_portlandite}{-13.0919}
+\goldrow{diag}{calciteEq\_25C}{SI\_portlandite}{-13.1219229657}
 \goldrow{diag}{calciteEq\_25C}{aw}{0.998916}
-\goldrow{diag}{calciteEq\_25C}{n\_calcite}{0.00543277}
-\goldrow{diag}{calciteEq\_25C}{pH}{6.02946}
+\goldrow{diag}{calciteEq\_25C}{n\_calcite}{0.00569408636156}
+\goldrow{diag}{calciteEq\_25C}{pH}{6.01859430205}
 \goldrow{diag}{calciteEq\_25C}{pH}{6.004}
 \goldrow{diag}{calciteEq\_25C}{chargeImposed}{1}
 \goldrow{diag}{calciteEq\_25C}{chargeResidual}{2.22179e-18}
@@ -2253,7 +2253,7 @@ DATA SCOPE: self-DESCRIBING (inline manifest); the ions, pairs, mixing WITH carb
 \goldrow{diag}{seawater\_pitzer}{I}{0.682714}
 \goldrow{diag}{seawater\_pitzer}{SI\_anhydrite}{-1.24804}
 \goldrow{diag}{seawater\_pitzer}{SI\_aragonite}{0.540696}
-\goldrow{diag}{seawater\_pitzer}{SI\_calcite}{0.654696}
+\goldrow{diag}{seawater\_pitzer}{SI\_calcite}{0.684695958829}
 \goldrow{diag}{seawater\_pitzer}{SI\_gypsum}{-0.964342}
 \goldrow{diag}{seawater\_pitzer}{SI\_halite}{-2.48855}
 \goldrow{diag}{seawater\_pitzer}{SI\_sylvite}{-3.51959}
@@ -2477,8 +2477,8 @@ DATA SCOPE: self-DESCRIBING (inline manifest); the ions, pairs, mixing with the 
 \goldrow{diag}{scan\_davies}{SI\_anhydrite\_rmax}{0.269649}
 \goldrow{diag}{scan\_davies}{SI\_aragonite\_r0}{1.26146}
 \goldrow{diag}{scan\_davies}{SI\_aragonite\_rmax}{2.0927}
-\goldrow{diag}{scan\_davies}{SI\_calcite\_r0}{1.37546}
-\goldrow{diag}{scan\_davies}{SI\_calcite\_rmax}{2.2067}
+\goldrow{diag}{scan\_davies}{SI\_calcite\_r0}{1.40546447275}
+\goldrow{diag}{scan\_davies}{SI\_calcite\_rmax}{2.23670229659}
 \goldrow{diag}{scan\_davies}{SI\_gypsum\_r0}{-0.607638}
 \goldrow{diag}{scan\_davies}{SI\_gypsum\_rmax}{0.481394}
 \goldrow{diag}{scan\_davies}{SI\_halite\_r0}{-2.3956}
@@ -2523,7 +2523,7 @@ GOLDEN PINS (locked by the golden master): pin\_gypsum\_amount Ca = SO4 = 0.0305
 \goldrow{diag}{feed}{I}{0.0266002}
 \goldrow{diag}{feed}{SI\_anhydrite}{-1.68532}
 \goldrow{diag}{feed}{SI\_aragonite}{0.111093}
-\goldrow{diag}{feed}{SI\_calcite}{0.225093}
+\goldrow{diag}{feed}{SI\_calcite}{0.255093263385}
 \goldrow{diag}{feed}{SI\_gypsum}{-1.38593}
 \goldrow{diag}{feed}{SI\_halite}{-5.35323}
 \goldrow{diag}{feed}{SI\_sylvite}{-6.39779}
@@ -2664,8 +2664,8 @@ Data: curated USGS PHREEQC records (public domain) resolved from data/standards/
 \goldrow{diag}{raw}{SI\_anhydrite\_rmax}{-0.646016}
 \goldrow{diag}{raw}{SI\_aragonite\_r0}{0.111093}
 \goldrow{diag}{raw}{SI\_aragonite\_rmax}{1.26704}
-\goldrow{diag}{raw}{SI\_calcite\_r0}{0.225093}
-\goldrow{diag}{raw}{SI\_calcite\_rmax}{1.38104}
+\goldrow{diag}{raw}{SI\_calcite\_r0}{0.255093263385}
+\goldrow{diag}{raw}{SI\_calcite\_rmax}{1.41104143214}
 \goldrow{diag}{raw}{SI\_gypsum\_r0}{-1.38593}
 \goldrow{diag}{raw}{SI\_gypsum\_rmax}{-0.349983}
 \goldrow{diag}{raw}{SI\_halite\_r0}{-5.35323}
@@ -4736,7 +4736,7 @@ and the two molar masses are in the components' own records (28.013 and 2.016 kg
 
 `bin/curate/check\_srk\_h2n2\_aad.py` does exactly that arithmetic, from THIS run's own output and THIS case's own evidence file, and refuses if either moves. The number is not written down anywhere -- it is recomputed, because a transcribed agreement statistic is a second home for a fact the run owns.
 
-WHAT THIS CASE DOES NOT SAY. It does not say SRK is wrong, and it does not say a better model exists in this tree -- none does for this binary today. It does not test the loop's COMPOSITION: see the caveat in the evidence file's own header. And it says nothing about ammonia, which is the strongly associating component the loop actually has to condense.
+WHAT THIS CASE DOES NOT SAY. It does not say SRK is wrong, and it does not say a better model exists in this tree -- none is demonstrated for this binary today (a Peneloux volume translation exists but is untried on this gas). It does not test the loop's COMPOSITION: see the caveat in the evidence file's own header. And it says nothing about ammonia, which is the strongly associating component the loop actually has to condense.
 
 \end{tutnarrative}
 \tutreadme{The green ammonia plant in tutorials/plant/greenAmmoniaPEQ\_baseCase runs its synthesis loop at around 200 bar and condenses its product near 250 K, and it prices every stream with a Soave--Redlich--Kwong equation of state whose only inputs are each component's critical temperature, critical pressure and acentric factor. Two questions follow, and only the second one has an answer a student can check:}
@@ -4760,6 +4760,57 @@ WHAT THIS CASE DOES NOT SAY. It does not say SRK is wrong, and it does not say a
 \goldrow{diag}{p\_240K\_191bar\_xN2\_0p50008}{v\_molar}{0.000113788478235}
 \goldrow{diag}{p\_250K\_50bar\_xN2\_0p50008}{Cp\_ig}{28.9824821078}
 \goldrow{diag}{p\_250K\_50bar\_xN2\_0p50008}{H\_R}{-156.040876541}
+\goldmore{178}
+\end{tutgolden}
+
+\clearpage
+\tutentry{volumeTranslation01\_nhexane\_peneloux}{tutorials/props/molecular/volumeTranslation01\_nhexane\_peneloux}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{nHexane\_SRK}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{nHexane\_SRK\_Peneloux}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{nDecane\_SRK}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{nDecane\_SRK\_Peneloux}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{nDecane\_SRK\_PenelouxSpencer}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{mixture50\_SRK}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{mixture50\_SRK\_Peneloux}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{nHexane\_PR}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{nHexane\_PR\_Jhaveri}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{nDecane\_PR}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{nDecane\_PR\_Jhaveri}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{mixture50\_PR}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{How wrong is the liquid density of SRK, and what does a Peneloux volume translation do about it? n-Hexane, n-decane and their equimolar mixture at 298.15 K and 1.01325 bar, each evaluated twice -- plain SRK and SRK with the Peneloux shift (Peneloux, Rauzy and Freze 1982) -- beside the evaluated liquid density of Perry's Handbook. The shift moves the volume and the enthalpy departure and leaves every fugacity, K-value and flash exactly where plain SRK puts them.}
+\begin{tutnarrative}
+WHAT A VOLUME TRANSLATION DOES.
+
+Thirteen `propertyPoint` operations (the last six on Peng-Robinson) and two `propertyScan1D` scans: three liquids (n-hexane, n-decane, their equimolar mixture) at 298.15 K and 1.01325 bar, each with the system's plain SRK and with the variant `peneloux` (`thermo peneloux;`), which declares `volumeTranslation Peneloux` on the same cubic. Read `v\_molar\_liq` (m3/mol) of each and turn it into a density with the molar mass of its record; compare with the evaluated density in the README.
+
+THE EXERCISE. (1) The SRK liquid volume is too large, by a percentage that grows with the carbon number. (2) The translated volume is lower by c = sum x\_i c\_i, to the digit: v(SRK) - v(SRK+Peneloux) is c, and c of the mixture is the mole-weighted mean of the two pure shifts. (3) H\_R of the vapour-root block moves by exactly -P c; S\_R does not move. (4) What does NOT move is every fugacity coefficient -- `bin/curate/check\_volume\_translation.py` proves it, flash by flash, on the same two packages.
+
+\end{tutnarrative}
+\tutreadme{runCase tutorials/props/molecular/volumeTranslation01\_nhexane\_peneloux}
+\tutreadme{A cubic equation of state fitted to critical constants and vapour pressures gets a liquid's $\ast$volume$\ast$ wrong, by several per cent, and the error grows with the carbon number. P?neloux, Rauzy and Fr?ze (1982) showed that the volume axis of a cubic can be $\ast$translated$\ast$ without moving a single equilibrium condition, so the volume can be corrected for free. This case measures that, in three states, against evaluated liquid densities.}
+\tutreadme{Thirteen propertyPoint operations at 298.15 K and 1.01325 bar, on n-hexane, n-decane and their equimolar mixture, with the system's plain SRK (kij = 0) and with the variants that declare volumeTranslation Peneloux on the same cubic (thermo peneloux;, thermo penelouxSpencer;), and on Peng--Robinson plain (thermo pr;) and with the Jhaveri--Youngren shift (thermo prJhaveri;, model JhaveriYoungren;). Two propertyScan1D operations scan the bubble temperature of hexane + decane under plain SRK and under SRK + P?neloux.}
+\tutreadme{and the catalogue's records carry no Rackett Z\_RA, so the case declares it, with where it was read: Table 1, p. 10 of the paper. A component with no Z\_RA and no declared shift is refused by name; the Yamada--Gunn estimate is only taken on an explicit missingZRA YamadaGunn;.}
+\tutreadme{Perry's Chemical Engineers' Handbook, 9th ed., Table 2-32 "Densities of Inorganic and Organic Liquids" (DIPPR equation 105, ? = C1 / C2\textasciicircum{}(1 + (1 - T/C3)\textasciicircum{}C4), in mol/dm3; evaluated from measurements, not a measurement of these states):}
+\tutreadme{Cross-check: the CRC Handbook (82nd ed., p. 15-16) prints 0.6548 g/cm3 for hexane at 25 $^\circ$C, 0.2 \% below Perry's value. For the mixture there is no measured volume in the held literature, so the reference is the ideal mixing of the two Perry molar volumes, 163.417 cm3/mol (the excess volume of alkane mixtures is a fraction of a per cent; this is a reference, not a measurement).}
+\begin{tutgolden}
+\goldrow{diag}{nHexane\_SRK}{Cp\_ig}{143.105583613}
+\goldrow{diag}{nHexane\_SRK}{H\_R}{-406.738383524}
+\goldrow{diag}{nHexane\_SRK}{H\_ig}{-167200}
+\goldrow{diag}{nHexane\_SRK}{H\_real}{-167606.738384}
+\goldrow{diag}{nHexane\_SRK}{P}{101325}
+\goldrow{diag}{nHexane\_SRK}{S\_R}{-0.879365761951}
+\goldrow{diag}{nHexane\_SRK}{S\_ig}{388.400556841}
+\goldrow{diag}{nHexane\_SRK}{S\_real}{387.521191079}
+\goldrow{diag}{nHexane\_SRK}{T}{298.15}
+\goldrow{diag}{nHexane\_SRK}{Z}{0.939996543777}
+\goldrow{diag}{nHexane\_SRK}{Z\_liquid}{0.00600512927795}
+\goldrow{diag}{nHexane\_SRK}{gamma}{1.06168405275}
+\goldrow{diag}{nHexane\_SRK}{v\_molar}{0.0229973949169}
+\goldrow{diag}{nHexane\_SRK}{v\_molar\_liq}{0.000146917912035}
 \goldmore{178}
 \end{tutgolden}
 

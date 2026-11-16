@@ -13,6 +13,12 @@ solidPhases
     burkeite
     {
         dissolutionReaction { masters ( { ion HCO3; nu 1; } { ion H; nu -1; } { ion SO4; nu 2; } { ion Na; nu 6; } ); }
-        equilibrium { logK25 9.557; dH -14899.2; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Burkeite"; }
+        //  No dissolution enthalpy in the source.  The dH this entry carried
+        //  until 2026-11-16 (-14899.2 J/mol) was only the enthalpy of the basis
+        //  conversion, which bin/curate/pitzer_minerals_to_choupo.py added to a
+        //  missing value as if it were 0; removed (docs/reviews/2026-11-16-
+        //  speciation-audit, GS-02).  Off 25 C the engine holds log K at its
+        //  25 C value and says so.
+        equilibrium { logK25 9.557; source "USGS PHREEQC pitzer.dat/phreeqc.dat (public domain); reaction re-expressed to Choupo master basis from Burkeite"; }
     }
 }

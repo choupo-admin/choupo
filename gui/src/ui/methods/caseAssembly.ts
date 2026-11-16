@@ -107,7 +107,7 @@ export const CITES = {
     contains: "ThermoPackage thermo = ThermoPackageBuilder::build(" },
   formulationRead: { file: BUILDER, line: 2302,
     contains: 'eq->lookupWord("formulation")' },
-  activityWordRead: { file: BUILDER, line: 2716,
+  activityWordRead: { file: BUILDER, line: 2726,
     contains: 'liq->entryValue("activityModel")' },
   activityLookup: { file: "src/thermo/activityCoefficient/ActivityModel.cpp",
     line: 84, contains: "registry().find(modelName)" },
