@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000020567;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992497;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  147.340500476;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1085.51010329;
     }
 
     evidence
@@ -86,7 +86,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     6.47477872798e-07;
+        aadHeldOutPct     0.0708596717754;
         acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
     }
@@ -100,8 +100,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  150.000020589;
-        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1049.99992491;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ij  147.187583011;
+        equilibrium.liquid.activityModel.binaryParameters.nButanol-water.b_ji  1086.56696597;
     }
 
     evidence
@@ -156,7 +156,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     6.47435737471e-07;
+        aadHeldOutPct     0.0698011003892;
         acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, for a SYNTHETIC zero-noise recovery: 0.1 % of T (about 0.4 K, twice the declared 0.2 K standard uncertainty of a bubble point) and 0.01 in mole fraction (twice the declared sigma of a binodal composition).  The data are generated from the model, so the true deviation is round-off; the bands are generous on purpose and the gate (check_lle_residual) holds the recovery to 1e-5, not these.";
     }

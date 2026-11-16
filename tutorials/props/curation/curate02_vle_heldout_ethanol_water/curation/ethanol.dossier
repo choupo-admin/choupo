@@ -30,10 +30,10 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  5.89152288337;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -2383.55837692;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  11.0833068255;
-        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  -2954.4085826;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ij  6.54044368342;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ij  -2605.13542577;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.a_ji  12.8132510014;
+        equilibrium.liquid.activityModel.binaryParameters.ethanol-water.b_ji  -3589.18515469;
     }
 
     evidence
@@ -68,7 +68,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0736714746429;
+        aadHeldOutPct     0.0729370366247;
         acceptanceMaxAADPct 0.1;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "experimental scatter of atmospheric bubble-T measurements in the source compilation (a few tenths of a kelvin), rounded to 0.1 % of T -- declared before the fit and not adjusted after";
     }

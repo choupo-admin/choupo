@@ -30,8 +30,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ij  -25.0996467159;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ji  979.776443835;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ij  -16.0900165247;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ji  989.59694531;
     }
 
     evidence
@@ -74,7 +74,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0565382893231;
+        aadHeldOutPct     0.056142172489;
         acceptanceMaxAADPct 0.26;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 0.22 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.703 K, 1Propanol +0.051 K; measured with no pair involved), as a percentage of the held-out mean T (362.46 K) = 0.2546 %, rounded UP to two significant figures";
     }
@@ -88,8 +88,8 @@ properties
 
     fittedParameters
     {
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ij  -25.0992325691;
-        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ji  979.775193116;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ij  -16.0902654653;
+        equilibrium.liquid.activityModel.binaryParameters.1Propanol-water.b_ji  989.597657476;
     }
 
     evidence
@@ -132,7 +132,7 @@ properties
     {
         //  r2InSample: not computed by this operation (it reports chi-square).
         //  rmsHeldOut: not computed by this operation (see aadHeldOutPct).
-        aadHeldOutPct     0.0565379938953;
+        aadHeldOutPct     0.0561423535545;
         acceptanceMaxAADPct 0.26;   // DECLARED BEFORE the fit; part of the fingerprint
         acceptanceOrigin  "declared before the fit, by the ONE rule of C16 (slice 1, five systems; slice 2, four more): the held-out set's largest stated expanded uncertainty (U95 = 0.22 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (water -0.703 K, 1Propanol +0.051 K; measured with no pair involved), as a percentage of the held-out mean T (362.46 K) = 0.2546 %, rounded UP to two significant figures";
     }
