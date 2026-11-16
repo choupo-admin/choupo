@@ -4563,6 +4563,59 @@ So this case publishes exactly one thing: the curve. It does NOT flash anything.
 \end{tutgolden}
 
 \clearpage
+\tutentry{mhv01\_methanol\_water\_100C}{tutorials/props/molecular/mhv01\_methanol\_water\_100C}
+\begin{tutscheme}
+\begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-0.0) {\textbf{gammaPhi\_x0p000}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-0.0) {\textbf{gammaPhi\_x0p011}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-0.0) {\textbf{gammaPhi\_x0p035}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-1.3) {\textbf{gammaPhi\_x0p053}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{gammaPhi\_x0p121}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{gammaPhi\_x0p281}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{gammaPhi\_x0p352}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{gammaPhi\_x0p522}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{gammaPhi\_x0p667}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{gammaPhi\_x0p826}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{gammaPhi\_x0p932}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{gammaPhi\_x1p000}\\[-1pt]{\tiny propertyPoint}};
+\end{tikzpicture}
+\end{tutscheme}
+\tutwhat{Can a cubic equation of state be fed a low-pressure excess-Gibbs model? Methanol + water at 100 C, twelve measured bubble points (Griswold and Wong 1952, as printed in Poling et al. Table 8-46), asked four ways: the gamma-phi package the catalogue pair was fitted in, and SRK with the MHV1, MHV2 and van der Waals one-fluid mixing rules.}
+\begin{tutnarrative}
+CAN A CUBIC BE FED A LOW-PRESSURE G\textasciicircum{}E MODEL?
+
+Twelve bubble points of methanol (1) + water (2) at 100 C, the MEASURED vapour-liquid equilibrium of Griswold \& Wong (1952) as printed in Poling, Prausnitz \& O'Connell, 5th ed., Table 8-46 ("Experimental"), p. 8.146: 760.0 to 2650.9 mmHg, x1 = 0 to 1. Each state is asked six ways, by name (mhv1, mhv2 and oneFluid on the fitted Mathias-Copeman alpha, mhv1Soave and mhv2Soave on the plain Soave alpha):
+
+gammaPhi (the system) the catalogue's NRTL pair, ideal-gas vapour, the records' own vapour pressures: the frame the pair was REGRESSED in. mhv1 SRK with the Modified Huron-Vidal first-order mixing rule (Michelsen 1990) fed the SAME pair. mhv2 SRK with the second-order rule (Dahl \& Michelsen 1990), the SAME pair. oneFluid SRK with the van der Waals one-fluid rule, kij = 0 (no G\textasciicircum{}E at all: what the cubic does alone).
+
+Each op reports P\_bubble (Pa) and y\_eqT\_methanol (the incipient vapour). The measurements are in the golden file as `anchor` rows with the band stated in the README. THE PAIR IS NOT THE RULE'S: the catalogue pair was fitted at 297-361 K and 15-95 kPa and this is 373 K and up to 3.5 bar, so what the numbers measure is the rule's use of the pair AND the pair's own error -- see the README for which is which.
+
+\end{tutnarrative}
+\tutreadme{Activity-coefficient models (NRTL, UNIQUAC, UNIFAC) have been fitted to low-pressure phase equilibrium for decades and cannot go to high pressure or to a supercritical component. A cubic equation of state can. A mixing rule that lets a cubic use an activity model's parameters gives both, with no new regression. Michelsen (1990) matches the cubic to the model's excess Gibbs energy at $\ast$zero pressure$\ast$; Dahl \& Michelsen (1990) improve the match with a second term. This case asks what that costs against a measured diagram.}
+\tutreadme{Twelve propertyPoint operations per way of asking, at the twelve measured liquid compositions of methanol (1) + water (2) at 100 C (Griswold \& Wong 1952, as printed in Poling, Prausnitz \& O'Connell, 5th ed., Table 8-46 "Experimental", p. 8.146; 760.0 to 2650.9 mmHg). Each reports P\_bubble and y\_eqT\_methanol (the incipient vapour):}
+\tutreadme{and three pin\_$\ast$ operations (x1 = 0.522) that pin the engine's own value where the anchor rows replace it.}
+\tutreadme{The composition derivatives of the attraction behind the fugacity coefficients (Eq. A3) were checked against a finite-difference derivative of the cubic's total residual Helmholtz energy before they were written into the engine (agreement 1e-9 in ln phi\_i, both roots, both rules).}
+\tutreadme{1. The one-fluid rule with kij = 0 is not a model of this system: 78 \% wrong in the water-rich range. The cubic alone has no way to know that methanol and water attract each other. 2. MHV1 and MHV2 recover a diagram from a G\textasciicircum{}E model, with no new parameter. Fed the $\ast$same pair$\ast$, the activity coefficients recovered from the cubic (gamma\_i = phi\_i\textasciicircum{}L(x)/phi\_i\textasciicircum{}L(pure i) at the same T and P) differ from the NRTL fed in by at most 0.009 (MHV2) and 0.029 (MHV1) (plain Soave alpha) in ln gamma at 373.15 K and 2.5 bar (the gate check\_cubic\_mixing\_rule, arm f); the one-fluid rule is 0.42 away. 3. The alpha function matters as much as the rule. The cubic's own pure-component vapour pressure is the first error an equation of state brings: with the plain Soave alpha SRK puts water at 100 C at 92.5 kPa against 101.3 kPa (-8.8 \%) -- read the first row of the Soave columns -- and the MHV rows carry that error (6.3 \% and 6.7 \% mean, 11.0 \% and 12.2 \% max). With the per-component Mathias-Copeman alpha fitted by curation to each record's own vapour-pressure law (DEV.md 4c C408 slice 0; alphaFunction MathiasCopeman;, and its a\_i feeds the mixing rule) the pure ends are within 0.2 \% and the MHV rows fall to 4.0 \% mean (5.8 \% and 7.2 \% max), level with the gamma-phi column. What remains is the PAIR's: it was fitted to isobaric bubble temperatures at 297-361 K and 15-95 kPa and this diagram is at 373 K up to 3.5 bar -- the rule $\ast$returns the pair, including where the pair is wrong$\ast$. Dahl \& Michelsen fit a Mathias-Copeman alpha too (their Eq. 5 and Table 1, p. 1830). The y bands are loose in the dilute range because y itself is small (0.086 at x1 = 0.011). 4. gammaPhi is the better answer at 1-3.5 bar, and MHV is the only answer where it does not exist. The point of the rule is the supercritical and the high-pressure region the gamma-phi frame cannot enter; this diagram is the place where both are defined, so the comparison is fair.}
+\tutreadme{$\ast$ It does not validate the rule at high pressure (a later slice carries a carbon dioxide + methanol witness). $\ast$ It does not say the pair is good at 373 K; its anchor band is the pair's own error. $\ast$ The departures H\_R, S\_R carry the slope of G\textasciicircum{}E (Theory Guide sec:cubic-mixing-rule, Eq. cmr-dep); under phiPhi they reach the vapour's enthalpy and entropy only -- a liquid stream is priced on the formation enthalpy (DEV.md 4c C410).}
+\begin{tutgolden}
+\goldrow{diag}{gammaPhi\_x0p000}{Cp\_ig}{34.2437884672}
+\goldrow{diag}{gammaPhi\_x0p000}{H\_R}{0}
+\goldrow{diag}{gammaPhi\_x0p000}{H\_ig}{-239280.110337}
+\goldrow{diag}{gammaPhi\_x0p000}{H\_real}{-239280.110337}
+\goldrow{diag}{gammaPhi\_x0p000}{P}{101325}
+\goldrow{diag}{gammaPhi\_x0p000}{P\_bubble}{101325}
+\goldrow{diag}{gammaPhi\_x0p000}{S\_R}{0}
+\goldrow{diag}{gammaPhi\_x0p000}{S\_ig}{196.338860531}
+\goldrow{diag}{gammaPhi\_x0p000}{S\_real}{196.338860531}
+\goldrow{diag}{gammaPhi\_x0p000}{T}{373.15}
+\goldrow{diag}{gammaPhi\_x0p000}{Z}{1}
+\goldrow{diag}{gammaPhi\_x0p000}{gamma}{1.32065864984}
+\goldrow{diag}{gammaPhi\_x0p000}{v\_molar}{0.0306197061525}
+\goldrow{diag}{gammaPhi\_x0p000}{y\_eqT\_methanol}{0}
+\goldmore{1163}
+\end{tutgolden}
+
+\clearpage
 \tutentry{mixrules01\_natural\_gas}{tutorials/props/molecular/mixrules01\_natural\_gas}
 \begin{tutscheme}
 \begin{tikzpicture}[>={Stealth[length=2mm]}, every node/.style={font=\scriptsize}]

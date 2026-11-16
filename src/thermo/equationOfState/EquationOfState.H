@@ -128,6 +128,10 @@ public:
         return false;
     }
 
+    // The cubic's MIXING RULE in force, one line per fact, for the resolved
+    // view (C408 (b)).  Empty for a model with no cubic mixing rule.
+    virtual std::vector<std::string> mixingRuleLines() const { return {}; }
+
     // Compressibility Z = P·v / (R·T) at the vapour root.  Default ~ 1
     // for ideal gas; cubic EoS override.  Useful as a diagnostic and
     // as a single number callers can read instead of v.

@@ -29,6 +29,7 @@ License
 #include "EquationOfState.H"
 #include "core/RegistryRefusal.H"
 #include "IdealGas.H"
+#include "CubicMixingRule.H"
 #include "SRK.H"
 #include "PCSAFT.H"
 #include "PR.H"
@@ -64,6 +65,10 @@ EquationOfState::New(const DictPtr& dict, const std::vector<Component>& comps)
 
 void EquationOfState::registerBuiltins()
 {
+    //  The cubics' mixing rules ride the same explicit call (C408 (b)): one
+    //  home, no main() edited.
+    CubicMixingRule::registerBuiltins();
+
     registerModel("idealGas",
         [](const DictPtr&, const std::vector<Component>& comps)
             -> std::unique_ptr<EquationOfState>

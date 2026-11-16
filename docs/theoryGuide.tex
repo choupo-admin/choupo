@@ -10889,6 +10889,237 @@ a vapour volume.  The liquid density that other units read through
 \code{ThermoPackage::density} remains the Rackett route; the translated
 volume is the equation of state's.
 
+\subsection{Cubic mixing rules: the van der Waals one-fluid rule and the modified Huron--Vidal rules MHV1 and MHV2}\label{sec:cubic-mixing-rule}
+% Written 2026-11-16 against src/thermo/equationOfState/CubicMixingRule.{H,cpp}
+% (VanDerWaalsOneFluid::mix, ExcessGibbsRule::mix, the GE_ROWS table, makeGe),
+% src/thermo/equationOfState/CubicEoS.cpp (buildMix, phiAt, H_residual) and
+% DEV.md 4c C408 (b); design record docs/design/c408-eos-ge-mixing-rules.md.
+% Every equation number below is that of the paper named, read from its page
+% image (Michelsen 1990; Dahl and Michelsen 1990; Poling, Prausnitz and
+% O'Connell 5th ed. Sec.~5-5).
+
+A pure fluid fixes the two parameters $a_i(T)$ and $b_i$ of a cubic equation
+of state; a \emph{mixture} needs a rule that turns them into $a(T,\mathbf y)$
+and $b(\mathbf y)$.  In Choupo the rule is an object, owned by
+\code{CubicEoS} and chosen by the \code{mixingRule} word of the
+\code{equationOfState} block.  It is not a new equation of state: the cubic,
+its root picker and its pseudo-root are untouched, and only the numbers that
+go into them change.  Three words are registered.
+
+\paragraph{\code{vanDerWaalsOneFluid}, the default.}
+\begin{equation}
+   a = \sum_i\sum_j y_i y_j\,(1-k_{ij})\sqrt{a_i a_j}\,,\qquad
+   b = \sum_i y_i b_i\,.
+   \label{eq:cmr-vdw}
+\end{equation}
+This is the arithmetic every cubic of the tree ran before the rule became an
+object; it was moved intact, and every case that does not write another word
+is byte-identical to the build before the move.  Its interaction parameter is
+a property of the \emph{pair of species and the cubic} (a record regressed for
+SRK is refused under Peng--Robinson); it has no memory of any activity model.
+
+\paragraph{What a rule owes the cubic.}  With the reduced attraction
+$\beta = a/(b\Rgas T)$, $B = bP/\Rgas T$, $A = aP/(\Rgas T)^2$,
+$I = \ln[(Z+\sigma B)/(Z+\epsilon B)]/(\sigma-\epsilon)$, the fugacity
+coefficient of \emph{any} two-parameter cubic, under \emph{any} mixing rule, is
+\begin{equation}
+   \ln\varphi_i \;=\; \frac{\bar b_i}{b}\,(Z-1) \;-\; \ln(Z-B)
+        \;-\; \bar\beta_i\, I\,,
+   \qquad
+   \bar b_i = \frac{\partial (n b)}{\partial n_i}\,,\quad
+   \bar\beta_i = \frac{\partial (n\beta)}{\partial n_i}\,.
+   \label{eq:cmr-lnphi}
+\end{equation}
+For SRK ($\epsilon = 0$, $\sigma = 1$) this is Dahl and Michelsen's Eq.~A2
+(p.~1835) written in $Z$ and $B$, and for the one-fluid rule, where
+$\bar b_i = b_i$, it is the
+familiar expression of the engine, term for term.  So the cubic asks a rule
+for $a$, $b$, $\mathrm{d}a/\mathrm{d}T$, $\bar b_i$ and the single number
+$X_i = \bar\beta_i/\beta = \bar a_i/a - \bar b_i/b$ that carries the
+composition derivative of the attraction.  The departures need only $a$ and
+$\mathrm{d}a/\mathrm{d}T$, which is why $H^{\mathrm R}$ and $S^{\mathrm R}$
+below are the cubic's own expressions, unchanged.
+
+\paragraph{\code{MHV1} and \code{MHV2}: a cubic that is told its excess Gibbs energy.}
+Low-pressure phase equilibrium has been correlated for decades by activity
+coefficient models (Chapter~\ref{ch:activity}); a mixing rule that lets a cubic
+\emph{use those parameters} gives a model that covers high pressure and
+supercritical components without a new regression.  Michelsen
+\cite{Michelsen1990} matches the cubic to $g^{\mathrm E}$ at \emph{zero
+pressure}.  Writing $\alpha = a/(bRT)$ (this guide's $\beta$) and
+$u = v/b$, the fugacity of the cubic at zero pressure is a function
+$q(\alpha)$ alone (Eqs.~2--7, pp.~214), and equating the cubic's excess Gibbs
+energy to the model's gives, for the mixture,
+\begin{equation}
+   q(\alpha) - \sum_i y_i\,q(\alpha_{ii})
+   \;=\; \frac{g^{\mathrm E}}{\Rgas T} + \sum_i y_i \ln\frac{b}{b_{ii}}
+   \label{eq:cmr-match}
+\end{equation}
+(Eq.~9, p.~214).  The function $q$ is only defined for $\alpha > 3 + 2\sqrt 2$
+(Eqs.~5--6), so it is replaced by its straight-line fit on the interval
+$10 < \alpha < 13$ of ordinary boiling points (Eq.~10, p.~215), with the
+slope $q_1 = -0.593$ for SRK (p.~216; \cite{RPP}, Table~5-1, p.~5.17).  This gives
+the explicit first-order rule
+\begin{equation}
+   q_1\Bigl(\beta - \sum_i y_i\beta_i\Bigr)
+   \;=\; \frac{g^{\mathrm E}}{\Rgas T} + \sum_i y_i \ln\frac{b}{b_i}\,,
+   \qquad b = \sum_i y_i b_i
+   \label{eq:cmr-mhv1}
+\end{equation}
+(Eq.~12, p.~215), which is \code{MHV1}.  Dahl and Michelsen
+\cite{DahlMichelsen1990} improve the match with a quadratic,
+$q(\alpha) \approx q_0 + q_1\alpha + q_2\alpha^2$ (their Eq.~11 text), giving
+\begin{equation}
+   q_1\Bigl(\beta - \sum_i y_i\beta_i\Bigr)
+   + q_2\Bigl(\beta^2 - \sum_i y_i\beta_i^2\Bigr)
+   \;=\; \frac{g^{\mathrm E}}{\Rgas T} + \sum_i y_i \ln\frac{b}{b_i}
+   \label{eq:cmr-mhv2}
+\end{equation}
+(Eq.~13, p.~1831), \code{MHV2}, with $q_1 = -0.478$, $q_2 = -0.0047$ for SRK
+(p.~1831; Poling Table~5-1 and its note~a).  The quadratic is solved for the
+root that tends to \code{MHV1}'s as $q_2\to 0$ (``the larger root'', p.~1835),
+in the form $\beta = 2r/(q_1 - \sqrt{q_1^2 + 4q_2 r})$, $r$ the right-hand side
+plus $\sum_i y_i(q_1\beta_i + q_2\beta_i^2)$: no cancellation, and a negative
+discriminant is refused by name.
+
+\paragraph{The composition derivative needs no derivative of the model.}
+Because $\partial(n g^{\mathrm E}/\Rgas T)/\partial n_i = \ln\gamma_i$, the
+derivative of the matching condition is, for both rules,
+\begin{equation}
+   (q_1 + 2q_2\beta)\,\bar\beta_i \;=\; q_1\beta_i
+   + q_2\bigl(\beta^2 + \beta_i^2\bigr)
+   + \ln\gamma_i + \ln\frac{b}{b_i} + \frac{b_i}{b} - 1
+   \label{eq:cmr-derivative}
+\end{equation}
+(Dahl and Michelsen Eq.~A3, p.~1835; \code{MHV1} is $q_2 = 0$).  The activity
+model is therefore called \emph{once per phase and state}, at the composition
+of the phase being priced (the liquid's for $\varphi^{\mathrm L}$, the vapour's
+for $\varphi^{\mathrm V}$), and the pressure never reaches it.  The
+implementation of Eqs.~\eqref{eq:cmr-lnphi}--\eqref{eq:cmr-derivative} was
+checked against a finite-difference derivative of the total residual Helmholtz
+energy (agreement $10^{-9}$ in $\ln\varphi_i$, both roots, both rules) before
+it was written into the engine, and the gate
+\code{check\_cubic\_mixing\_rule} holds it to this guide's own transcription.
+
+\paragraph{The energy: the slope of $g^{\mathrm E}$ is inside $H^{\mathrm R}$.}
+Differentiating the matching condition at constant $b$ gives
+\begin{equation}
+   (q_1 + 2q_2\beta)\,\frac{\mathrm d\beta}{\mathrm dT}
+   \;=\; \sum_i y_i\,(q_1 + 2q_2\beta_i)\,\frac{\mathrm d\beta_i}{\mathrm dT}
+   \;-\; \frac{H^{\mathrm E}}{\Rgas T^2}\,,
+   \qquad
+   \frac{\mathrm d\beta_i}{\mathrm dT} = \frac{T a_i' - a_i}{b_i\Rgas T^2}
+   \label{eq:cmr-dbeta}
+\end{equation}
+with $H^{\mathrm E} = -\Rgas T^2\,\mathrm d(g^{\mathrm E}/\Rgas T)/\mathrm dT$
+the activity model's own (\code{ActivityModel::excessEnthalpy}).  Since
+$a = \beta b\Rgas T$ and $b$ is $T$-independent,
+$\mathrm da/\mathrm dT = \Rgas b(\beta + T\,\mathrm d\beta/\mathrm dT)$ and
+$T\,\mathrm da/\mathrm dT - a = \Rgas T^2 b\,\mathrm d\beta/\mathrm dT$: the
+departure expressions of the cubic,
+\begin{equation}
+   H^{\mathrm R} = \Rgas T(Z-1) + \Rgas T^2\,\frac{\mathrm d\beta}{\mathrm dT}\,I\,,
+   \qquad
+   S^{\mathrm R} = \Rgas\ln(Z-B) + \Rgas\Bigl(\beta + T\frac{\mathrm d\beta}{\mathrm dT}\Bigr) I\,,
+   \label{eq:cmr-dep}
+\end{equation}
+carry the temperature slope of the activity model.  Inside an equation of
+state this slope cannot be withheld, as a gamma--phi liquid withholds
+$H^{\mathrm E}$ unless the pairs were fitted to heats of mixing:
+$H^{\mathrm R} = -\Rgas T^2\,\partial(\sum_i y_i\ln\varphi_i)/\partial T$ is
+an identity of the surface the fugacities came from, and a departure that
+dropped the slope would not be the departure of those fugacities.  A pair
+fitted to phase equilibrium alone gives a slope fixed by the same two numbers
+that fix $g^{\mathrm E}$; the run says so once.  The first law of a flowsheet
+closes on \emph{any} single-valued $H(T,P,\mathbf y)$ and so cannot see a wrong
+slope; the gate checks Eq.~\eqref{eq:cmr-dep} against a temperature difference of
+the engine's own $\ln\varphi$ instead.  The departures reach the
+\emph{vapour} phase's enthalpy and entropy: under \code{phiPhi} a liquid
+stream is priced on the liquid formation enthalpy, not on the cubic (DEV.md 4c C410).
+
+\paragraph{What the rule asks of the case.}
+\begin{itemize}
+\item \code{MHV1} and \code{MHV2} take the \code{activityModel} block of a
+  gamma--phi liquid, \emph{inside} the \code{equationOfState} block, read by
+  the same reader (pair records, their citations and spans).  An
+  \code{activityModel} under the one-fluid rule, and an excess-Gibbs word
+  without one, are refused.
+\item They have no $k_{ij}$: a \code{binaryInteractions} block under them is
+  refused.
+\item A pair with no record is \emph{refused}, not run ideal.  Under gamma--phi a
+  missing pair is an announced ideal assumption; here $g^{\mathrm E} = 0$ for
+  that pair is a definite claim about the attraction (Huron--Vidal's
+  $a/b = \sum y_i a_i/b_i$) that is \emph{not} the one-fluid rule, with no
+  $k_{ij}$ to correct it.  A G$^{\mathrm E}$ model \code{ideal} is refused for the same reason.
+\item \code{MHV1} and \code{MHV2} are SRK-only: $q_1$, $q_2$ are fitted per
+  equation of state, Michelsen prints $q_1 = -0.53$ for Peng--Robinson on
+  p.~216 and neither paper prints a Peng--Robinson \code{MHV2} constant, so
+  both refuse \code{PengRobinson} by name.
+\item A pure $\beta_i = a_i/(b_i\Rgas T)$ outside $10 < \beta < 13$ is
+  announced once: the rule is an extrapolation of the fit there.  (Water at
+  $450$~K has $\beta = 8.0$.)
+\end{itemize}
+
+\paragraph{Which pairs can be reused as they are.}  \code{MHV1} and \code{MHV2}
+match $g^{\mathrm E}$ at \emph{zero} pressure, so a pair fitted to
+low-pressure data feeds them with no new parameter: for the catalogue's
+methanol--water NRTL pair at $373.15$~K and $2.5$~bar the activity
+coefficients \emph{recovered from the cubic} ($\gamma_i = \varphi_i^{\mathrm L}(\mathbf x)/\varphi_i^{\mathrm L}(\text{pure } i)$)
+differ from the model fed in by at most $0.009$ in $\ln\gamma$ for
+\code{MHV2} and $0.029$ for \code{MHV1}; the one-fluid rule with $k_{ij}=0$
+is $0.42$ away.  A rule that matches at \emph{infinite} pressure (Huron and
+Vidal's original) would take the pair's $g^{\mathrm E}$ as an infinite-pressure
+quantity, which it is not; it is a later slice of the same object.
+
+\begin{tutoriallink}
+\begin{lstlisting}
+equilibrium
+{
+    formulation phiPhi;
+    equationOfState
+    {
+        model      SRK;
+        mixingRule MHV2;            // vanDerWaalsOneFluid | MHV1 | MHV2
+        alphaFunction MathiasCopeman;   // optional: the fitted alpha feeds the rule
+        activityModel               // the block a gammaPhi liquid takes
+        {
+            model NRTL;
+            binaryParameters
+            {
+                methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+            }
+        }
+    }
+    liquid { fugacityRoute equationOfState; root liquid; }
+    vapour { fugacityRoute equationOfState; root vapour; }
+}
+\end{lstlisting}
+\emph{Tutorial:} \file{tutorials/props/molecular/mhv01\_methanol\_water\_100C}
+asks twelve \emph{measured} bubble points of methanol + water at $100\,^\circ$C
+(Griswold and Wong 1952, as printed in Poling et al.\ Table~8-46, p.~8.146)
+six ways.  The catalogue's pair was fitted at $297$--$361$~K and $15$--$95$~kPa
+and this diagram reaches $3.5$~bar, so the numbers measure the rule's use of the pair
+\emph{and} the pair's own error.  Over the ten interior points the
+gamma--phi package the pair was fitted in misses the bubble pressure by $4.1\,\%$
+on average ($6.7\,\%$ at most); SRK with \code{MHV1} on the fitted
+Mathias--Copeman $\alpha$ (Section~\ref{sec:cubic-alpha-mc}) by $4.0\,\%$ ($5.8\,\%$) and
+with \code{MHV2} by $4.0\,\%$ ($7.2\,\%$); SRK with the one-fluid rule and
+$k_{ij}=0$ by $39\,\%$ ($78\,\%$).  The same two rules on the plain Soave $\alpha$
+are worse, $6.3\,\%$ ($11.0\,\%$) and $6.7\,\%$ ($12.2\,\%$), and the reason
+is the cubic's own pure-component vapour pressure: plain-Soave SRK puts water's
+vapour pressure at $100\,^\circ$C $8.8\,\%$ low ($92.5$ against $101.3$~kPa), the
+fitted $\alpha$ puts it within $0.1\,\%$, and a pair fitted in the frame of the records'
+own vapour-pressure laws inherits the cubic's pure-component error at the water end
+whatever the rule.  Dahl and Michelsen likewise fit a Mathias--Copeman $\alpha$ to each
+pure vapour pressure (their Eq.~5 and Table~1, p.~1830).
+\end{tutoriallink}
+
+\paragraph{Validity.}  SRK only; pure $\beta_i$ inside $10 < \beta < 13$ for
+the rule to be an interpolation of its fit; pairs inside their fitted span
+(the span guard of the activity model announces an excursion in $T$ or $P$,
+which is the point of the rule and also its risk); the Huron--Vidal,
+Wong--Sandler and PSRK members of the family are later slices.
+
 \subsection{The \texorpdfstring{$P$--$T$}{P-T} envelope of a mixture}\label{sec:mixture-envelope}
 % Written 2026-11-15 against src/propertyOps/PhaseEnvelope.{H,cpp} (the
 % pressure march, BubblePoint::compute and DewPoint::compute, the
@@ -32553,6 +32784,19 @@ Improve Volumetric Predictions'', \emph{SPE Reservoir Eng.}, \textbf{3}(3),
 1033--1040 (1988), DOI \texttt{10.2118/13118-PA}.  The Peng--Robinson volume
 shift $c_i = s_i b_i$ (Eqs.~10--17) and its correlation $s = 1 - d/M^e$
 (Eq.~18, Tables~1--2) of Section~\ref{sec:peneloux}.
+
+\bibitem{Michelsen1990} Michelsen, M. L., ``A Modified Huron--Vidal Mixing Rule
+for Cubic Equations of State'', \emph{Fluid Phase Equilib.}, \textbf{60},
+213--219 (1990).  The zero-pressure matching of a cubic to an excess Gibbs
+energy, $q_1 = -0.593$ for SRK (Eqs.~9--12, pp.~214--216) --- the \code{MHV1}
+rule of Section~\ref{sec:cubic-mixing-rule}.
+
+\bibitem{DahlMichelsen1990} Dahl, S., \& Michelsen, M. L., ``High-Pressure
+Vapor-Liquid Equilibrium with a UNIFAC-Based Equation of State'',
+\emph{AIChE J.}, \textbf{36}(12), 1829--1836 (1990).  The second-order rule
+\code{MHV2} ($q_1 = -0.478$, $q_2 = -0.0047$ for SRK; Eq.~13, p.~1831) and
+its fugacity coefficients (Eqs.~A1--A3, p.~1835) of
+Section~\ref{sec:cubic-mixing-rule}.
 
 \bibitem{LinSandler2002} Lin, S.-T. \& Sandler, S. I., \emph{Ind. Eng.
 Chem. Res.}\ \textbf{41}, 899, 2002.  The COSMO-SAC variant Choupo

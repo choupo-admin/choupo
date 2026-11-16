@@ -50,18 +50,19 @@ namespace {
     {
         return (x >= 0.0) ? std::cbrt(x) : -std::cbrt(-x);
     }
-
-    scalar sgn(scalar x) { return (x < 0.0) ? -1.0 : 1.0; }
 }
 
 CubicEoS::CubicEoS(const std::string& name, const Constants& c,
                    const std::vector<Component>& comps,
                    const std::vector<scalar>& slope,
-                   const std::vector<std::vector<scalar>>& kij,
+                   std::unique_ptr<CubicMixingRule> rule,
                    const std::vector<scalar>& volumeShift,
                    const AlphaChoice& alpha)
-  : name_(name), c_(c), n_(comps.size()), cShift_(volumeShift)
+  : name_(name), c_(c), n_(comps.size()), rule_(std::move(rule)),
+    cShift_(volumeShift)
 {
+    if (!rule_)
+        throw std::runtime_error(name_ + ": no mixing rule given");
     if (!cShift_.empty())
     {
         if (cShift_.size() != n_)
@@ -92,25 +93,6 @@ CubicEoS::CubicEoS(const std::string& name, const Constants& c,
             p.c3 = alpha.fit.at(i).c3;
         }
         pure_.push_back(p);
-    }
-
-    if (kij.empty())
-    {
-        kij_.assign(n_, std::vector<scalar>(n_, 0.0));
-    }
-    else
-    {
-        if (kij.size() != n_ || kij[0].size() != n_)
-            throw std::runtime_error(
-                name_ + ": kij matrix size mismatch (expected n×n)");
-        kij_ = kij;
-        // Enforce symmetry and zero diagonal (defensive).
-        for (std::size_t i = 0; i < n_; ++i)
-        {
-            kij_[i][i] = 0.0;
-            for (std::size_t j = i + 1; j < n_; ++j)
-                kij_[j][i] = kij_[i][j];
-        }
     }
 }
 
@@ -231,51 +213,28 @@ void CubicEoS::buildAi(scalar T, std::vector<scalar>& a,
     }
 }
 
-void CubicEoS::buildMix(scalar T, const sVector& y,
-                        scalar& a_mix, scalar& dadT_mix, scalar& b_mix,
-                        std::vector<std::vector<scalar>>* aij_out) const
+void CubicEoS::buildMix(scalar T, const sVector& y, CubicMixingRule::Mixed& mx,
+                        bool partials, bool temperature) const
 {
-    std::vector<scalar> a, dadT, s, dsdT;
-    buildAi(T, a, dadT, &s, &dsdT);
-
-    b_mix = 0.0;
-    for (std::size_t i = 0; i < n_; ++i) b_mix += y[i] * pure_[i].b;
-
-    a_mix    = 0.0;
-    dadT_mix = 0.0;
-    std::vector<std::vector<scalar>> aij;
-    if (aij_out) aij.assign(n_, std::vector<scalar>(n_, 0.0));
-
-    for (std::size_t i = 0; i < n_; ++i)
-    {
-        const scalar sqrt_ai = std::sqrt(a[i]);
-        for (std::size_t j = 0; j < n_; ++j)
-        {
-            const scalar sqrt_aj = std::sqrt(a[j]);
-            const scalar one_kij = 1.0 - kij_[i][j];
-            const scalar aij_val = one_kij * sqrt_ai * sqrt_aj;
-            a_mix += y[i] * y[j] * aij_val;
-            if (aij_out) aij[i][j] = aij_val;
-
-            // d(|s_i|·|s_j|)/dT = sgn(s_i)·s_i'·|s_j| + |s_i|·sgn(s_j)·s_j'
-            // (header: the old ½(√(a_j/a_i)a_i' + ...) form was 0/0 at a_i = 0).
-            const scalar daij_dT =
-                one_kij * ( sgn(s[i]) * dsdT[i] * sqrt_aj
-                          + sqrt_ai * sgn(s[j]) * dsdT[j] );
-            dadT_mix += y[i] * y[j] * daij_dT;
-        }
-    }
-    if (aij_out) *aij_out = std::move(aij);
+    CubicMixingRule::Pure pure;
+    buildAi(T, pure.a, pure.dadT, &pure.s, &pure.dsdT);
+    pure.b.resize(n_);
+    for (std::size_t i = 0; i < n_; ++i) pure.b[i] = pure_[i].b;
+    rule_->mix(T, y, pure, mx, partials, temperature);
 }
 
 bool CubicEoS::mixingLedger(scalar T, const sVector& y, MixingLedger& out) const
 {
+    const auto* kij = rule_->kij();
+    if (!kij) return false;                 // no one-fluid decomposition here
     std::vector<scalar> dadT;
     buildAi(T, out.a, dadT);
     out.b.resize(n_);
     for (std::size_t i = 0; i < n_; ++i) out.b[i] = pure_[i].b;
-    out.kij = kij_;
-    buildMix(T, y, out.a_mix, out.dadT_mix, out.b_mix);
+    out.kij = *kij;
+    CubicMixingRule::Mixed mx;
+    buildMix(T, y, mx, false, true);
+    out.a_mix = mx.a;  out.b_mix = mx.b;  out.dadT_mix = mx.dadT;
     return true;
 }
 
@@ -405,21 +364,16 @@ CubicEoS::Root CubicEoS::pickRoot(scalar A, scalar B, scalar eps, scalar sig,
 }
 
 CubicEoS::Root CubicEoS::root(scalar T, scalar P, const sVector& y, bool liquid,
-                              scalar* A_out, scalar* B_out,
-                              scalar* a_mix_out, scalar* dadT_out,
-                              scalar* b_mix_out,
-                              std::vector<std::vector<scalar>>* aij_out) const
+                              CubicMixingRule::Mixed& mx, scalar* A_out,
+                              scalar* B_out, bool partials,
+                              bool temperature) const
 {
-    scalar a_mix, dadT_mix, b_mix;
-    buildMix(T, y, a_mix, dadT_mix, b_mix, aij_out);
+    buildMix(T, y, mx, partials, temperature);
     const scalar RT = constant::R * T;
-    const scalar A = a_mix * P / (RT * RT);
-    const scalar B = b_mix * P / RT;
+    const scalar A = mx.a * P / (RT * RT);
+    const scalar B = mx.b * P / RT;
     if (A_out)     *A_out = A;
     if (B_out)     *B_out = B;
-    if (a_mix_out) *a_mix_out = a_mix;
-    if (dadT_out)  *dadT_out = dadT_mix;
-    if (b_mix_out) *b_mix_out = b_mix;
     const Root r = pickRoot(A, B, c_.eps, c_.sig, liquid);
     if (r.pseudo) announcePseudo(liquid);
     return r;
@@ -478,7 +432,8 @@ std::string CubicEoS::volumeTranslationNote() const
 
 scalar CubicEoS::Z(scalar T, scalar P, const sVector& y) const
 {
-    const scalar Zr = root(T, P, y, /*liquid*/false).Z;
+    CubicMixingRule::Mixed mx;
+    const scalar Zr = root(T, P, y, /*liquid*/false, mx).Z;
     if (cShift_.empty()) return Zr;
     return Zr - P * volumeShift(y) / (constant::R * T);
 }
@@ -486,40 +441,42 @@ scalar CubicEoS::Z(scalar T, scalar P, const sVector& y) const
 scalar CubicEoS::molarVolume(scalar T, scalar P, const sVector& y) const
 {
     if (cShift_.empty()) return Z(T, P, y) * constant::R * T / P;  // unchanged path
-    return root(T, P, y, /*liquid*/false).Z * constant::R * T / P - volumeShift(y);
+    CubicMixingRule::Mixed mx;
+    return root(T, P, y, /*liquid*/false, mx).Z * constant::R * T / P - volumeShift(y);
 }
 
 // Labelled liquid-root access (the vapour-root family above never swaps root).
 scalar CubicEoS::molarVolumeLiquid(scalar T, scalar P, const sVector& y) const
 {
-    const scalar v = root(T, P, y, /*liquid*/true).Z * constant::R * T / P;
+    CubicMixingRule::Mixed mx;
+    const scalar v = root(T, P, y, /*liquid*/true, mx).Z * constant::R * T / P;
     return cShift_.empty() ? v : v - volumeShift(y);
 }
 
 bool CubicEoS::vapourRootIsPseudo(scalar T, scalar P, const sVector& y) const
 {
-    scalar a_mix, dadT_mix, b_mix;
-    buildMix(T, y, a_mix, dadT_mix, b_mix);
+    CubicMixingRule::Mixed mx;
+    buildMix(T, y, mx, false, false);
     const scalar RT = constant::R * T;
-    return pickRoot(a_mix * P / (RT * RT), b_mix * P / RT,
+    return pickRoot(mx.a * P / (RT * RT), mx.b * P / RT,
                     c_.eps, c_.sig, false).pseudo;
 }
 
 bool CubicEoS::liquidRootIsPseudo(scalar T, scalar P, const sVector& y) const
 {
-    scalar a_mix, dadT_mix, b_mix;
-    buildMix(T, y, a_mix, dadT_mix, b_mix);
+    CubicMixingRule::Mixed mx;
+    buildMix(T, y, mx, false, false);
     const scalar RT = constant::R * T;
-    return pickRoot(a_mix * P / (RT * RT), b_mix * P / RT,
+    return pickRoot(mx.a * P / (RT * RT), mx.b * P / RT,
                     c_.eps, c_.sig, true).pseudo;
 }
 
 sVector CubicEoS::phiAt(scalar T, scalar P, const sVector& y, bool liquid) const
 {
-    scalar A, B, a_mix, dadT_mix, b_mix;
-    std::vector<std::vector<scalar>> aij;
-    const scalar Zr = root(T, P, y, liquid, &A, &B, &a_mix, &dadT_mix, &b_mix,
-                           &aij).Z;
+    scalar A, B;
+    CubicMixingRule::Mixed mx;
+    const scalar Zr = root(T, P, y, liquid, mx, &A, &B, /*partials*/ true,
+                           /*temperature*/ false).Z;
     const scalar ln_ZmB = std::log(std::max(Zr - B, 1.0e-30));
     //  I·(σ − ε) = ln[(Z + σB)/(Z + εB)]
     const scalar lnI  = std::log((Zr + c_.sig * B) / (Zr + c_.eps * B));
@@ -528,15 +485,16 @@ sVector CubicEoS::phiAt(scalar T, scalar P, const sVector& y, bool liquid) const
     sVector phi(n_, 0.0);
     for (std::size_t i = 0; i < n_; ++i)
     {
-        // Σ_j y_j a_ij  --  the inner sum entering ln φ_i.
-        scalar sumA = 0.0;
-        for (std::size_t j = 0; j < n_; ++j)
-            sumA += y[j] * aij[i][j];
-
-        const scalar bi_over_b = pure_[i].b / b_mix;
+        //  ln phi_i = (bbar_i/b)(Z - 1) - ln(Z - B)
+        //             - (A/(B (sig - eps))) X_i ln[(Z + sig B)/(Z + eps B)],
+        //  X_i = betabar_i/beta = abar_i/a - bbar_i/b, supplied by the mixing
+        //  rule (CubicMixingRule.H, eq. (1)); for the one-fluid rule
+        //  bbar_i = b_i and X_i = 2 sum_j y_j a_ij / a - b_i/b -- today's
+        //  expression, term for term.
+        const scalar bi_over_b = mx.bbar[i] / mx.b;
         scalar lnphi = bi_over_b * (Zr - 1.0)
                            - ln_ZmB
-                           - (A / (SmE * B)) * (2.0 * sumA / a_mix - bi_over_b)
+                           - (A / (SmE * B)) * mx.X[i]
                              * lnI;
         //  THE TRANSLATED FLUID IS ONE FLUID (C408 (a), round 2, VT-08):
         //  ln phi_i(translated) = ln phi_i - c_i P/RT, in BOTH roots
@@ -566,13 +524,15 @@ sVector CubicEoS::phiLiquid(scalar T, scalar P, const sVector& y) const
 
 scalar CubicEoS::H_residual(scalar T, scalar P, const sVector& y) const
 {
-    scalar B, a_mix, dadT_mix, b_mix;
-    const scalar Zv = root(T, P, y, false, nullptr, &B, &a_mix, &dadT_mix,
-                           &b_mix).Z;
-    // Sandler 4th ed eq. 6.4-30, generalised cubic.
+    scalar B;
+    CubicMixingRule::Mixed mx;
+    const scalar Zv = root(T, P, y, false, mx, nullptr, &B, false, true).Z;
+    // Sandler 4th ed eq. 6.4-30, generalised cubic.  a and da/dT are the
+    // mixing rule's (CubicMixingRule.H: for an excess-Gibbs rule
+    // da/dT = R b (beta + T dbeta/dT), so this IS Dahl & Michelsen's surface).
     const scalar lnI = std::log((Zv + c_.sig * B) / (Zv + c_.eps * B));
     const scalar HR = constant::R * T * (Zv - 1.0)
-         + (T * dadT_mix - a_mix) / ((c_.sig - c_.eps) * b_mix) * lnI;
+         + (T * mx.dadT - mx.a) / ((c_.sig - c_.eps) * mx.b) * lnI;
     //  The translated fluid's phi is phi_EoS exp(-c P/RT) (Peneloux p. 8
     //  read the other way), so H^R = -RT^2 d(ln phi)/dT moves by -P c for a
     //  T-independent c; equivalently h = u + P v with u unchanged and v
@@ -584,13 +544,13 @@ scalar CubicEoS::H_residual(scalar T, scalar P, const sVector& y) const
 
 scalar CubicEoS::S_residual(scalar T, scalar P, const sVector& y) const
 {
-    scalar B, a_mix, dadT_mix, b_mix;
-    const scalar Zv = root(T, P, y, false, nullptr, &B, &a_mix, &dadT_mix,
-                           &b_mix).Z;
+    scalar B;
+    CubicMixingRule::Mixed mx;
+    const scalar Zv = root(T, P, y, false, mx, nullptr, &B, false, true).Z;
     // Sandler 4th ed eq. 6.4-31, generalised cubic.
     const scalar lnI = std::log((Zv + c_.sig * B) / (Zv + c_.eps * B));
     return constant::R * std::log(std::max(Zv - B, 1.0e-30))
-         + (dadT_mix / ((c_.sig - c_.eps) * b_mix)) * lnI;
+         + (mx.dadT / ((c_.sig - c_.eps) * mx.b)) * lnI;
 }
 
 // --- Peneloux volume translation: the declaration -------------------------
@@ -951,6 +911,25 @@ CubicEoS::readKij(const std::string& model, const DictPtr& eosDict,
         }
     }
     return kij;
+}
+
+// --- the mixing rule the block declares, shared by both cubics --------------
+std::unique_ptr<CubicMixingRule>
+CubicEoS::readMixingRule(const std::string& model, const DictPtr& eosDict,
+                         const std::vector<Component>& comps)
+{
+    const std::string word = eosDict->lookupWordOrDefault(
+        "mixingRule", "vanDerWaalsOneFluid");
+    CubicMixingRule::Context ctx;
+    ctx.eosModel = model;
+    ctx.comps    = &comps;
+    ctx.eosDict  = eosDict;
+    //  The kij list belongs to the one-fluid rule alone: reading it (and its
+    //  "all pairs run kij = 0" announcements) under an excess-Gibbs rule would
+    //  print a statement about a quantity that rule does not have.
+    if (word == "vanDerWaalsOneFluid")
+        ctx.kij = readKij(model, eosDict, comps);
+    return CubicMixingRule::New(word, ctx);
 }
 
 } // namespace Choupo

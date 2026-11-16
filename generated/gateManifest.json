@@ -803,8 +803,8 @@
     },
     "check_reference_rung": {
       "exit": 0,
-      "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; a second rung is accepted and both are reachable; a duplicate of the declared rung is refused as two homes for one datum; the derived liquid potential closes to +2.59 J/mol of CODATA while its legs are -572 J/mol and -1.93 J/(mol K) out -- the cancellation that makes a potential the right interface; the liquid esterification heat is -2.66 kJ/mol against -3.83 from the liquid formation enthalpies (acetic acid bridged to the datum's monomer, +0.24 kJ/mol out); pure acetic acid boils at 391.0085 K (bubble = dew = the record's Antoine root; record Tb 391.05) on the associated vapour, K = 1; latent heat at Tb 24.389 kJ/mol on the associated vapour (closed form 24.389; record HvapTb 24.39, -0.00; dimer heat in the vapour -22.84 kJ/mol); acetic acid/water T-x-y at 1 atm (UNIFAC + associated vapour) against Calvar et al. 2005: AAD T 0.965 K, y_water 0.0330 (monomer ideal gas: 3.486 K, 0.0355); the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol",
-      "seconds": 8.1
+      "claim": "check_reference_rung: OK -- the default (idealGas) rung evaluates, h(400 K) = -2212360.0 J/mol; an explicit `idealGas` is byte-identical to omitting it; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureSolid` is refused by name, quoting the record's own key, with h_formation named as the remedy; `pureLiquid` is refused by name, quoting the record's own key, with h_formation named as the remedy; the refusal explicitly warns AGAINST adding a gas Cp block, which was the old message's advice; s_pure_ig refuses the solid rung ON ITS OWN, not only through g_pure_ig; g = h - T*s refuses the solid rung and accepts the default; a second rung is accepted and both are reachable; a duplicate of the declared rung is refused as two homes for one datum; the derived liquid potential closes to +0.59 J/mol of CODATA while its legs are -572 J/mol and -1.92 J/(mol K) out -- the cancellation that makes a potential the right interface; the liquid esterification heat is -2.66 kJ/mol against -3.83 from the liquid formation enthalpies (acetic acid bridged to the datum's monomer, +0.24 kJ/mol out); pure acetic acid boils at 391.0085 K (bubble = dew = the record's Antoine root; record Tb 391.05) on the associated vapour, K = 1; latent heat at Tb 24.389 kJ/mol on the associated vapour (closed form 24.389; record HvapTb 24.39, -0.00; dimer heat in the vapour -22.84 kJ/mol); acetic acid/water T-x-y at 1 atm (UNIFAC + associated vapour) against Calvar et al. 2005: AAD T 1.503 K, y_water 0.0288 (monomer ideal gas: 3.486 K, 0.0355); the named remedy works: h_formation(400 K, \"solid\") = -2185360.0 J/mol; the named remedy works: h_formation(400 K, \"liquid\") = -2185360.0 J/mol",
+      "seconds": 2.3
     },
     "check_registry_scan": {
       "exit": 0,
@@ -1048,8 +1048,8 @@
     },
     "check_two_liquids": {
       "exit": 0,
-      "claim": "check_two_liquids: OK -- flash17 (reactive electrolyte flash with a declared organic liquid) solves three phases with chemistry, the organic phase is real (a non-trivial fraction of the liquid, composition different from the aqueous one), ln(a_org/a_aq) is at machine zero for benzene and ethanol, V/F is the recorded 0.227, and the same feed above its bubble pressure reports a subsaturated liquid on the DECLARED phases.  NOT checked: any other feed, T or system, or that the split itself is physically right",
-      "seconds": 1.8
+      "claim": null,
+      "seconds": 15.9
     },
     "check_type_coverage": {
       "exit": 0,
@@ -1831,15 +1831,10 @@
       "claim": "check_unifac_dortmund: OK -- the Dortmund UNIFAC records equal the printed tables where read (112 of 530 Table IV rows and 39 of 85 Table III rows held to the page, both files sha-256 pinned), no later revision is named as a source, a component without its own unifacDortmund block and a main-group pair Table IV does not print are each refused by name, and all 32 values of the paper's Table XI are reproduced within 0.06.  NOT CHECKED: the other Table IV rows beyond the pin, any measurement (Table XI prints predictions), the equations beyond that reproduction.",
       "seconds": 0.1
     },
-    "check_water_one_home": {
+    "check_cubic_mixing_rule": {
       "exit": 0,
-      "claim": "check_water_one_home: OK -- water.dat's vapour pressure is Wagner & Pruss Eq. (2.5) as printed, Table 1 reproduced to 3e-7, the engine's Psat equals it to 1e-9 at 5 temperatures, and the H2O(g) = H2O record is the same curve (logK within 4.8e-06, dH its own).  NO case carries the old Antoine law.  NOT CHECKED: the sealed copies' other content (check_seal_drift reports them).",
-      "seconds": 1.7
-    },
-    "check_alpha_function": {
-      "exit": 0,
-      "claim": "check_alpha_function: OK -- (a) 4 record blocks (methanol, water) self-consistent, sha and window checked, in-sample Psat deviation recomputed <= 1.0 %; (b) witness case: engine P_bubble = independent solve to 1e-4 at every point under Soave and Mathias-Copeman; Soave misses the law by 28/19 % (max), Mathias-Copeman by <= its stored deviation; the choice is announced and in the view; (c) dadT_mix = central finite difference of a_mix to 1e-5 for the mixture and both pure components at 350/450/512.64/520/800 K (below, at and above Tc); (d) the block c1 = m, c2 = c3 = 0 reproduces the default Soave a_i, a_mix and da_mix/dT (to the 12 digits printed) at 350/500/800 K; (e) with the selector absent, records that carry the block still give the Graboski-Daubert Soave a_i to 1e-9; (f) refused by name: a record without the block (names the component, the block and the tool), an unknown word, PC-SAFT, the tool on CO2.  NOT COVERED: the constants outside the window they were fitted over, the Tr > 1 branch against any measurement (Mathias & Copeman 1983 is not held), the second derivative d2alpha/dT2 in any engine path (no departure reads it today), and any mixing rule.",
-      "seconds": 4.6
+      "claim": "check_cubic_mixing_rule: OK -- SRK + MHV1/MHV2 on methanol + water: ln phi_i of both roots equal this gate's own implementation of Michelsen Eq. 12 and Dahl & Michelsen Eq. 13/A3 to 1e-9 and sum y ln phi equals the closed form Z - 1 - ln(Z-B) - beta I on 6 states; H_R and S_R equal the temperature differences of the engine's own ln phi on the vapour root (one-fluid to 1e-7, MHV1/MHV2 to 2e-6); `vanDerWaalsOneFluid` is byte-identical to no mixingRule word; every rule returns the pure cubic at y = 1; MHV2 returns the fed NRTL gammas to 0.0092 and MHV1 to 0.0290 in ln gamma (one-fluid kij = 0: 0.42); P_bubble of three measured points equals an independent solve to 1e-5; eleven refusals each by name, and a pure beta outside 10-13 is announced; the same departures and pure limit hold on the fitted Mathias-Copeman alpha (a_i from the alpha feeds the rule). NOT CHECKED: any measured diagram, H_R of the liquid root, Peng-Robinson.",
+      "seconds": 5.0
     }
   }
 }

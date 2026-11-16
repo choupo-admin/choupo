@@ -6,10 +6,10 @@
   "runtime": "not recorded; runTests does not time per case and this script does not run the corpus"
  },
  "counts": {
-  "cases": 1875,
+  "cases": 1876,
   "witnesses": 16,
   "validationOp": 6,
-  "anchored": 28
+  "anchored": 29
  },
  "cases": {
   "data/curation/batches/henry_sander": {
@@ -24226,6 +24226,22 @@
    "roles": [],
    "hasGolden": true
   },
+  "tutorials/props/molecular/mhv01_methanol_water_100C": {
+   "application": "choupoProps",
+   "ops": [
+    "propertyPoint"
+   ],
+   "thermo": {
+    "formulation": "gammaPhi",
+    "activityModels": [
+     "NRTL"
+    ]
+   },
+   "roles": [
+    "anchored"
+   ],
+   "hasGolden": true
+  },
   "tutorials/props/molecular/mixrules01_natural_gas": {
    "application": "choupoProps",
    "ops": [
@@ -31654,6 +31670,7 @@
     "tutorials/props/molecular/eval_nrtl_pinned",
     "tutorials/props/molecular/exergy01_air_dead_state",
     "tutorials/props/molecular/flash01_operating_line",
+    "tutorials/props/molecular/mhv01_methanol_water_100C",
     "tutorials/props/molecular/mixrules01_natural_gas",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
     "tutorials/props/molecular/pairLookup01_catalogue_ladder",
@@ -33730,6 +33747,7 @@
     "tutorials/props/molecular/cosmoSAC03_ethanol_water_predictive",
     "tutorials/props/molecular/eval_nrtl_catalogue",
     "tutorials/props/molecular/eval_nrtl_pinned",
+    "tutorials/props/molecular/mhv01_methanol_water_100C",
     "tutorials/props/molecular/nrtl01_ethanol_water_package",
     "tutorials/props/scan/hxy01_ethanol_water_1atm",
     "tutorials/props/scan/pxy01_ethanol_water_70C",
@@ -36606,6 +36624,7 @@
     "tutorials/props/molecular/alpha01_water_methanol_psat",
     "tutorials/props/molecular/entropy01_air_ledger",
     "tutorials/props/molecular/envelope04_water_benzene_two_liquids",
+    "tutorials/props/molecular/mhv01_methanol_water_100C",
     "tutorials/props/molecular/pcsaft01_pure_nhexane",
     "tutorials/props/molecular/pcsaft02_states_crosscheck",
     "tutorials/props/molecular/pcsaft03_association_pure",

@@ -354,6 +354,9 @@ const PROPS_MODEL_DEST: Record<string, ModelDest> = {
   MathiasCopeman: { guide: "theory", dest: "sec:cubic-alpha-mc" }, // per-component cubic alpha, fitted to the record's own Psat law (C408 slice 0)
   Peneloux:     { guide: "theory", dest: "sec:peneloux" },
   JhaveriYoungren: { guide: "theory", dest: "sec:peneloux" }, // the PR shift (C408 a)  // volume translation of SRK/PR (C408 a)
+  vanDerWaalsOneFluid: { guide: "theory", dest: "sec:cubic-mixing-rule" }, // the cubic's default mixing rule (C408 b)
+  MHV1:         { guide: "theory", dest: "sec:cubic-mixing-rule" },  // zero-pressure excess-Gibbs rule, Michelsen 1990 (C408 b)
+  MHV2:         { guide: "theory", dest: "sec:cubic-mixing-rule" },  // second order, Dahl & Michelsen 1990 (C408 b)
   // -- vapour pressure (VaporPressureModel.cpp) ---------------------------
   Antoine:       { guide: "theory", dest: "ch:vap" },     // log10 P = A - B/(C+T)
   AmbroseWalton: { guide: "theory", dest: "ch:vap" },     // corresponding-states, needs Tc/Pc/omega

@@ -1,0 +1,171 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- methanol + water, one pair, four ways.
+
+  THE SYSTEM is the gammaPhi package of the catalogue's NRTL pair
+  (methanol-water: regressed by Choupo on isobaric bubble temperatures, 297-361 K,
+  15-95 kPa, an ideal-gas vapour, the catalogue's own vapour-pressure records).
+
+  THE VARIANTS keep the pair and change what the equation of state does with it:
+
+    mhv1       SRK, mixingRule MHV1: the cubic matched to the pair's G^E at ZERO
+               pressure, q1 = -0.593 (Michelsen, Fluid Phase Equilib. 60 (1990)
+               213, p. 216; Poling Table 5-1, p. 5.17).
+    mhv2       SRK, mixingRule MHV2: q1 = -0.478, q2 = -0.0047 (Dahl & Michelsen,
+               AIChE J. 36 (1990) 1829, p. 1831; Poling Table 5-1 and its note a).
+    oneFluid   SRK, vanDerWaalsOneFluid, kij = 0 (announced): no G^E reaches the
+               cubic.  The rule is the one every phiPhi case ran until C408 (b).
+
+  THE ALPHA FUNCTION.  mhv1, mhv2 and oneFluid declare `alphaFunction MathiasCopeman;`:
+  the per-component three-constant form of Poling et al. Table 4-7, fitted BY CURATION
+  to each record's own vapour-pressure law (C408 slice 0), so the cubic's pure
+  vapour pressures are the records' own.  mhv1Soave and mhv2Soave are the same
+  rules on the plain Soave alpha (water's SRK vapour pressure at 100 C is 8.8 % low)
+  and show what the alpha function is worth.
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters
+            {
+                methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+            }
+        }
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+variants
+{
+    mhv1
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV1;
+                alphaFunction MathiasCopeman;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    mhv2
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV2;
+                alphaFunction MathiasCopeman;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    oneFluid
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule vanDerWaalsOneFluid;
+                alphaFunction MathiasCopeman;
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    mhv1Soave
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV1;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    mhv2Soave
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV2;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+}

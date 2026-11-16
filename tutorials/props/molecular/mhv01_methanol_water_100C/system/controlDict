@@ -1,0 +1,11 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+application   choupoProps;
+description   "Can a cubic equation of state be fed a low-pressure excess-Gibbs model?  Methanol + water at 100 C, twelve measured bubble points (Griswold and Wong 1952, as printed in Poling et al. Table 8-46), asked four ways: the gamma-phi package the catalogue pair was fitted in, and SRK with the MHV1, MHV2 and van der Waals one-fluid mixing rules.";
+verbosity     2;
