@@ -2672,6 +2672,16 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
 
         // G5: a REAL vapour phi rides the same EoS wiring as gammaPhi.
         const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        //  A volume translation is a declared choice of the phiPhi cubic; a
+        //  gammaPhi / diluteSolution vapour slot has no home for it, and
+        //  ignoring it in silence would be a lie (C408 (a) round 2, VT-10).
+        if (eq->subDict("vapour")->found("volumeTranslation")
+            || eq->found("volumeTranslation"))
+            throw std::runtime_error("thermophysicalPropertySystem: a"
+                " `volumeTranslation` under a gammaPhi / diluteSolution"
+                " vapour is not read -- the shift is a declared choice of"
+                " the phiPhi cubic: use `formulation phiPhi; equationOfState"
+                " { model SRK|PengRobinson; volumeTranslation { ... } }`");
         auto eosDict = std::make_shared<Dictionary>("equationOfState");
         eosDict->insert("model", vap);
         auto idealAct = std::make_shared<Dictionary>("activityModel");
@@ -2814,6 +2824,16 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
                                  v2->entryValue("binaryPairsBase"));
 
         const std::string vap = eq->subDict("vapour")->lookupWord("fugacityModel");
+        //  A volume translation is a declared choice of the phiPhi cubic; a
+        //  gammaPhi / diluteSolution vapour slot has no home for it, and
+        //  ignoring it in silence would be a lie (C408 (a) round 2, VT-10).
+        if (eq->subDict("vapour")->found("volumeTranslation")
+            || eq->found("volumeTranslation"))
+            throw std::runtime_error("thermophysicalPropertySystem: a"
+                " `volumeTranslation` under a gammaPhi / diluteSolution"
+                " vapour is not read -- the shift is a declared choice of"
+                " the phiPhi cubic: use `formulation phiPhi; equationOfState"
+                " { model SRK|PengRobinson; volumeTranslation { ... } }`");
         auto eosDict = std::make_shared<Dictionary>("equationOfState");
         eosDict->insert("model", vap);
 

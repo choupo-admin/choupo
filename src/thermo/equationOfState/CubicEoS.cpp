@@ -351,11 +351,10 @@ void CubicEoS::announcePseudo(bool liquid) const
 //  Fluid Phase Equilib. 8, 7-23).  The EoS volume is a "pseudo volume" v~
 //  (Eq. 3, p. 8) and the TRUE volume is
 //      v = v~ - c ,   c = sum_i x_i c_i                       (Eq. 6, p. 9)
-//  Fugacity coefficients are NOT touched: phi~_i = phi_i exp(c_i P/RT)
-//  (p. 8) multiplies both phases' phi_i by the same factor at equal (T, P),
-//  so every K-value, flash and equilibrium is exactly the untranslated EoS's
-//  (Eq. 2 and the unnumbered result p. 9) -- phi() / phiLiquid() below read
-//  no shift.  Z follows the volume (Z = P v / RT), so Z, molarVolume and
+//  Fugacity coefficients carry the factor exp(-c_i P/RT) (see phiAt): the
+//  same factor in both phases at equal (T, P), so every K-value, flash and
+//  equilibrium is the untranslated EoS's (Eq. 2 and the unnumbered result
+//  p. 9), while reactions and Gibbs minimisation see ONE translated fluid.  Z follows the volume (Z = P v / RT), so Z, molarVolume and
 //  H_residual stay ONE coherent state.
 scalar CubicEoS::volumeShift(const sVector& y) const
 {
@@ -369,12 +368,15 @@ std::string CubicEoS::volumeTranslationNote() const
 {
     if (cShift_.empty()) return "";
     std::ostringstream o;
-    o << "volumeTranslation Peneloux: v = v_" << name_
+    o << "volumeTranslation " << (name_ == "PR" ? "JhaveriYoungren" : "Peneloux")
+      << ": v = v_" << name_
       << " - sum x_i c_i; c_i [cm3/mol] =";
     for (std::size_t i = 0; i < n_; ++i)
         o << (i ? ", " : " ") << cNames_[i] << " " << std::setprecision(5)
           << cShift_[i] * 1.0e6;
-    o << "; phi, K-values and flashes unchanged; H^R lowered by P c";
+    o << "; ln phi_i lowered by c_i P/RT in both phases (K-values and flashes"
+         " unchanged); the vapour-root H^R lowered by P c (the liquid-phase"
+         " enthalpy of a phiPhi package is not the EoS's: DEV.md 4c C410)";
     return o.str();
 }
 
@@ -436,10 +438,20 @@ sVector CubicEoS::phiAt(scalar T, scalar P, const sVector& y, bool liquid) const
             sumA += y[j] * aij[i][j];
 
         const scalar bi_over_b = pure_[i].b / b_mix;
-        const scalar lnphi = bi_over_b * (Zr - 1.0)
+        scalar lnphi = bi_over_b * (Zr - 1.0)
                            - ln_ZmB
                            - (A / (SmE * B)) * (2.0 * sumA / a_mix - bi_over_b)
                              * lnI;
+        //  THE TRANSLATED FLUID IS ONE FLUID (C408 (a), round 2, VT-08):
+        //  ln phi_i(translated) = ln phi_i - c_i P/RT, in BOTH roots
+        //  (Peneloux 1982 p. 8, read the other way; Jhaveri & Youngren 1988
+        //  Eq. 13: phi~ = phi exp(-c P/RT)).  The term is component-wise and
+        //  equal in the two phases at equal (T, P), so K = phi_L/phi_V and
+        //  every flash are unchanged (to round-off); a reaction's K sees
+        //  exp(-sum nu_i c_i P/RT), and G = H - T S closes with the shifted
+        //  H^R below.
+        if (!cShift_.empty())
+            lnphi -= cShift_[i] * P / (constant::R * T);
         phi[i] = std::exp(lnphi);
     }
     return phi;
@@ -536,9 +548,9 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
         " `missingZRA YamadaGunn;` (Z_RA = 0.29056 - 0.08775 w, announced)";
 
     const std::string remedyPR =
-        "`components { <name> { s <value>; | shiftTable1 <row>; | family"
+        "`volumeTranslation { model JhaveriYoungren; components { <name> { s <value>; | shiftTable1 <row>; | family"
         " <nAlkane|nAlkylcyclohexane|nAlkylbenzene>; | cShift <m3/mol>;"
-        " source \"...\"; } }` (Jhaveri & Youngren 1988, Eq. 17-18, Tables"
+        " source \"...\"; } } }` (Jhaveri & Youngren 1988, Eq. 17-18, Tables"
         " 1-2: Table 1 covers methane to n-hexane, Eq. 18 the n-alkanes,"
         " n-alkylcyclohexanes and n-alkylbenzenes heavier than n-hexane)";
 
@@ -549,10 +561,21 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
         throw std::runtime_error(head + "written as a bare word -- the shift"
             " needs data the standard records do not carry (no Z_RA); " + remedy);
     }
+    //  Each shift under its OWN name (VT-14): Peneloux for SRK (Eq. 8),
+    //  JhaveriYoungren for PR (c = s b, Eq. 17); the wrong one is refused.
     const std::string vtModel = vt->lookupWordOrDefault("model", "");
-    if (vtModel != "Peneloux")
+    const std::string want = pengRobinson ? "JhaveriYoungren" : "Peneloux";
+    const std::string other = pengRobinson ? "Peneloux" : "JhaveriYoungren";
+    if (vtModel == other)
+        throw std::runtime_error(head + "model '" + vtModel + "' is the shift"
+            " of the " + (pengRobinson ? "Redlich-Kwong-Soave" : "Peng-Robinson")
+            + " cubic; " + model + " takes `model " + want + ";`");
+    if (vtModel != want)
         throw std::runtime_error(head + "model '" + vtModel + "' is not"
-            " implemented -- registered: Peneloux (Peneloux, Rauzy & Freze 1982)");
+            " implemented -- " + model + " takes `model " + want + ";` ("
+            + (pengRobinson ? "Jhaveri & Youngren 1988" :
+                              "Peneloux, Rauzy & Freze 1982") + ")");
+    const std::string lbl = want;
 
     const std::string miss = vt->lookupWordOrDefault("missingZRA", "");
     if (!miss.empty() && miss != "YamadaGunn")
@@ -567,6 +590,17 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
     if (vt->found("components")) cd = vt->subDict("components");
 
     const std::size_t n = comps.size();
+    if (cd)
+        for (const auto& key : cd->keys())
+        {
+            bool known = false;
+            for (const auto& cp : comps) known = known || cp.name() == key;
+            if (!known)
+                throw std::runtime_error(head + "`components` declares '" + key
+                    + "', which is not a component of this system -- a shift"
+                      " for a component that is absent would be ignored in"
+                      " silence; remove it or add the component");
+        }
     std::vector<scalar> c(n, 0.0);
     for (std::size_t i = 0; i < n; ++i)
     {
@@ -665,11 +699,17 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
                             + "': family '" + fam + "' is not a row of"
                               " Jhaveri & Youngren Table 2 (nAlkane,"
                               " nAlkylcyclohexane, nAlkylbenzene)");
+                    //  "Heavier than n-hexane" (Table 2 title): M of C6H14 is
+                    //  86.17536 kg/kmol (Perry 9th ed., Table 2-32, p. 2-96);
+                    //  the next hydrocarbon above it is >= 14 heavier, so a
+                    //  margin of 1 absorbs a record's rounding of hexane
+                    //  itself (the catalogue's n-hexane is 86.178).
+                    constexpr scalar M_NHEXANE = 86.17536;
                     const scalar M = comp.MW();
-                    if (!(M > 86.18))
+                    if (!(M > M_NHEXANE + 1.0))
                         throw std::runtime_error(head + "component '" + nm
                             + "': MW = " + std::to_string(M) + " is not"
-                              " heavier than n-hexane (86.18); Table 2 covers"
+                              " heavier than n-hexane (86.17536); Table 2 covers"
                               " only the hydrocarbons heavier than hexane --"
                               " use `shiftTable1` or a declared `s`");
                     sv = 1.0 - it->second.first / std::pow(M, it->second.second);
@@ -704,16 +744,18 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
         if (thermoAnnounce()
             && AdvisoryLog::instance().add("thermo", "info",
                    model + " volumeTranslation " + nm, msg.str()))
-            std::cout << "[eos] " << model << " volumeTranslation Peneloux: "
+            std::cout << "[eos] " << model << " volumeTranslation " << lbl << ": "
                       << msg.str() << "\n";
     }
-    const std::string gen = model + " volumeTranslation Peneloux is ON ("
+    const std::string gen = model + " volumeTranslation " + lbl + " is ON ("
         + std::string(pengRobinson ? "Jhaveri & Youngren 1988 shift for PR"
                                    : "Peneloux 1982 shift for SRK")
-        + "): v = v_"
-        + model + " - sum x_i c_i (Eq. 6); phi, K-values and every flash are"
-          " the untranslated " + model + "'s (Eq. 2-4, p. 8-9); H^R is lowered"
-          " by P c (derived from the paper's fugacity relation); S^R unchanged";
+        + "): v = v_" + model + " - sum x_i c_i; ONE translated fluid: ln phi_i"
+          " lowered by c_i P/RT in both phases (K-values and every flash are"
+          " the untranslated " + model + "'s, to round-off; a reaction sees"
+          " exp(-sum nu_i c_i P/RT)); the vapour-root H^R is lowered by P c, S^R"
+          " unchanged (the liquid-phase enthalpy of a phiPhi package is not the"
+          " EoS's: DEV.md 4c C410)";
     if (thermoAnnounce()
         && AdvisoryLog::instance().add("thermo", "info",
                model + " volumeTranslation", gen))
