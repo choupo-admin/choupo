@@ -30,6 +30,7 @@ import hashlib
 import json
 import re
 import shutil
+import case_records   # noqa: E402  (C413: a probe copy of a pinned case is materialised)
 import subprocess
 import sys
 import tempfile
@@ -77,7 +78,8 @@ def make_case(tmp, name, src, *, real_formulas=False, no_reaction=False,
                 out.append(nm)        # transient instants; the authored 0/ stays
         return out
 
-    shutil.copytree(src, case, ignore=ignore)
+    case_records.copytree(src, case, ignore=ignore)
+    case_records.unpin(case)          # a probe copy of a pinned case behaves as the unsealed case it is
     if real_formulas:
         a = case / "constant" / "components" / "compA.dat"
         b = case / "constant" / "components" / "compB.dat"
@@ -230,7 +232,7 @@ def main():
         canon = {}
         for dt in ("0.5", "0.25"):
             c = Path(tmp) / ("canon" + dt.replace(".", "_"))
-            shutil.copytree(CANON, c)
+            case_records.copytree(CANON, c)
             cd = c / "system" / "controlDict"
             cd.write_text(re.sub(r"^deltaT\s+\S+;", "deltaT %s;" % dt,
                                  cd.read_text(), flags=re.M))
@@ -307,7 +309,7 @@ def main():
         #  enthalpy difference, because dh_liq/dT IS Cp_liq by construction
         #  (ThermoPackage::speciesPhaseEnthalpy).
         cvar = Path(tmp) / "canonTdep"
-        shutil.copytree(CANON, cvar)
+        case_records.copytree(CANON, cvar)
         eth = cvar / "constant" / "components" / "ethanol.dat"
         txt = eth.read_text()
         txt = re.sub(r"(liquidHeatCapacity\s*\{[^}]*?coefficients\s*)\([^)]*\)",

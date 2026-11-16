@@ -68,6 +68,7 @@ import json
 import os
 import re
 import shutil
+import case_records   # noqa: E402  (C413: a probe copy of a pinned case is materialised)
 import subprocess
 import sys
 import tempfile
@@ -106,7 +107,7 @@ def fail(arm, msg):
 
 def copy_case(tmp, name):
     d = Path(tmp) / name
-    shutil.copytree(CASE, d, ignore=shutil.ignore_patterns("converged", "postProcessing",
+    case_records.copytree(CASE, d, ignore=shutil.ignore_patterns("converged", "postProcessing",
                                                            "reports", "log.*", "*.csv"))
     return d
 
@@ -144,7 +145,7 @@ def arm_a(tmp):
       feedMolPerM3 {{ {s} 10; }} J_v ( {' '.join('%.6e' % v for v in jv[s])} ); k_film 10;
       polarisation {{ suctionCorrection GeraldesAfonso2006; ionCoupling electroneutral; }} }}""")
     gen = Path(tmp) / "synthetic_gen"
-    shutil.copytree(d, gen)
+    case_records.copytree(d, gen)
     (gen / REC).unlink()
     (gen / "system/propsDict").write_text("operations\n(\n" + "\n".join(ops) + "\n);\n")
     rc, out = run(PROPS, gen)
@@ -303,7 +304,7 @@ def arm_e(tmp):
         if r.returncode != 0 or not (d / f"log.{binary}").exists():
             fail("e", f"runCase <case> {mode} exited {r.returncode} or wrote no log.{binary}")
     single = Path(tmp) / "e_single"
-    shutil.copytree(ROOT / "tutorials/steady/membranes/membrane10_dspmde_divalent", single,
+    case_records.copytree(ROOT / "tutorials/steady/membranes/membrane10_dspmde_divalent", single,
                     ignore=shutil.ignore_patterns("converged", "postProcessing", "reports", "log.*"))
     r = subprocess.run([str(ROOT / "bin/runCase"), str(single), "props"], capture_output=True,
                        text=True, env=env, timeout=300)

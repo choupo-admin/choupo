@@ -211,6 +211,7 @@ Exit 0 = every probe reproduces its hand calculation.
 import json
 import re
 import shutil
+import case_records   # noqa: E402  (C413: a probe copy of a pinned case is materialised)
 import subprocess
 import sys
 import tempfile
@@ -247,7 +248,7 @@ def result_json(out: str) -> dict:
 
 
 def copy_probe(src: Path, dst: Path):
-    shutil.copytree(src, dst)
+    case_records.copytree(src, dst)
     #  The probe is not testing the seal, and a modified record would
     #  legitimately diverge from it (check_lumped_cp_note's precedent).
     for junk in ("converged", "reports", "design", "log.choupoSolve",
@@ -582,7 +583,7 @@ def _block_at(txt: str, k: int) -> str:
 def copy_case(src: Path, dst: Path):
     """The case AS SHIPPED (its seal included -- A7 and A8 edit no record),
     minus the run outputs a previous run left behind."""
-    shutil.copytree(src, dst)
+    case_records.copytree(src, dst)
     for junk in ("converged", "reports", "design", "iterations",
                  "log.choupoSolve"):
         tgt = dst / junk

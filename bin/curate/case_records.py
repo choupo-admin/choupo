@@ -136,6 +136,32 @@ def copy_constant(case, dest):
     return dst
 
 
+def materialise(dst):
+    """A COPY of a case that references the catalogue, made self-sufficient for a probe: every
+    pinned record the copy does not carry is copied in from the catalogue (the copy then holds
+    what the sealed case it replaced held).  The manifest is left for the probe to keep, edit or
+    drop.  `dst` is a case directory or a `constant/` directory."""
+    dst = Path(dst)
+    const = dst if (dst / "propertyManifest").exists() or dst.name == "constant" else dst / "constant"
+    man = const / "propertyManifest"
+    if not man.is_file():
+        return
+    for sub, val in read_manifest(man)["pins"].items():
+        if sub.endswith("/") or val.startswith("relevant:") or val == "absent":
+            continue
+        tgt = const / sub
+        if not tgt.exists() and (STD / sub).is_file():
+            tgt.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(STD / sub, tgt)
+
+
+def copytree(src, dst, *args, **kw):
+    """shutil.copytree for a probe: the copy is materialised (see materialise())."""
+    out = shutil.copytree(src, dst, *args, **kw)
+    materialise(dst)
+    return out
+
+
 def unpin(case_copy):
     """A probe copy of a case that references the catalogue behaves as the UNSEALED
     case it is once its manifest is gone (reads the catalogue under CHOUPO_HOME)."""

@@ -122,6 +122,7 @@ import json
 import os
 import math
 import re
+import case_records   # noqa: E402  (C413: the case's record, or the catalogue's once it references it)
 import subprocess
 import sys
 import tempfile
@@ -450,8 +451,8 @@ def arm_k():
          "-o", str(PKG_PROBE)], capture_output=True, text=True)
     if p.returncode != 0:
         return ["(k) the package probe did not compile:\n" + p.stderr[-800:]], []
-    comp = (WITNESS / "constant" / "components" / "aceticAcid.dat").read_text()
-    chem = (WITNESS / "constant" / "chemistry" / "aceticAcid-dissolution.dat").read_text()
+    comp = case_records.record_path(WITNESS, "components/aceticAcid.dat").read_text()
+    chem = case_records.record_path(WITNESS, "chemistry/aceticAcid-dissolution.dat").read_text()
     A, B, C = _coeffs(comp, "vaporPressure")
     cpg = _coeffs(comp, "idealGasHeatCapacity")
     cpl = _coeffs(comp, "liquidHeatCapacity")

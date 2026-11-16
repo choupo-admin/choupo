@@ -92,6 +92,7 @@ import json
 import math
 import os
 import re
+import case_records   # noqa: E402  (C413: the case's record, or the catalogue's once it references it)
 import shutil
 import subprocess
 import sys
@@ -196,7 +197,7 @@ def run(case):
 
 # ---------------------------------------------------- independent thermo
 def record(name):
-    txt = (DONOR / "constant" / "components" / f"{name}.dat").read_text()
+    txt = case_records.record_path(DONOR, f"components/{name}.dat").read_text()
     txt = re.sub(r"//[^\n]*", "", txt)
     hf = float(re.search(r"dHf_298\s+([-+0-9.eE]+)", txt).group(1))
     s0 = float(re.search(r"s_298\s+([-+0-9.eE]+)", txt).group(1))

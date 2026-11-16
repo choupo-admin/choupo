@@ -80,6 +80,7 @@ import json
 import os
 import re
 import shutil
+import case_records   # noqa: E402  (C413)
 import subprocess
 import sys
 import tempfile
@@ -325,7 +326,7 @@ def main():
             vf = "constant/experiments/schulz2018_0p10bar_liquidViscosity.dat"
             edit(c, vf, "system      ( pXylene oXylene );", "system      ( pXylene ethylBenzene );")
             edit(c, vf, "solvent     oXylene;", "solvent     ethylBenzene;")
-            edit(c, "constant/propertyManifest", "sealed             true;", "sealed             false;")
+            case_records.unpin(c)     # the copy is unsealed: a pinned case probed as the unsealed case it is (C413)
             return c
         rc0, out0 = run(ethylbenzene_pair("pairIdeal", "ideal"))
         rc, out = run(ethylbenzene_pair("nonIdealLiquid", "UNIFAC"))
