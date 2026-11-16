@@ -77,3 +77,6 @@ provenance
     estimateDate  "2026-07-09";
     status        "ESTIMATE -- only s_298 gap remains; Psat & Vliq by corr.-states; review before use";
 }
+
+variationOf phenol;
+variationReason "Choupo Component: phenol (Joback group-contribution ESTIMATE) Generated: 2026-07-09 by choupoProps estimateComponent Method: Joback & Reid (1987); omega by Lee-Kesler (Tb,Tc,Pc).";

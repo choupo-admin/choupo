@@ -123,3 +123,6 @@ validation
         origin      "declared before the fit, by ONE rule applied to all five C16 systems: the held-out set's largest stated expanded uncertainty (U95 = 0.11 K) plus the catalogue vapour-pressure model's own error at that set's pure endpoints (methanol -0.045 K, acetone +0.024 K; measured with no pair involved), as a percentage of the held-out mean T (330.21 K) = 0.0469 %, rounded UP to two significant figures";
     }
 }
+
+variationOf acetone-methanol;
+variationReason "NRTL binary interaction parameters acetone(i) + methanol(j) REGRESSED BY CHOUPO to measured bubble temperatures (DEV.md C16, record docs/design/binary-pairs-from-open-measurements.md).";

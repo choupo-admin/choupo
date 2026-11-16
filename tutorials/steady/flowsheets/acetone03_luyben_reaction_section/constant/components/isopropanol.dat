@@ -38,3 +38,6 @@ standardThermochemistry
     dHf_298   -262760.0;      // J/mol ideal-gas [origin=predictive method=joback]
     s_298     314.22;      // J/(mol K) absolute [origin=derived method=joback+element-entropies] reproduces Joback dGf=-164880.0
 }
+
+variationOf isopropanol;
+variationReason "Choupo Component: isopropanol (C3H8O, CAS 67-63-0) GROUP-ESTIMATE TIER -- UNVERIFIED.";
