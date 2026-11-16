@@ -41,7 +41,7 @@ import case_records  # noqa: E402
 #  The tree it reads (for `bin/integrate --plan`, DEV.md 4c C394): every case's constant/ records and dicts.
 SCAN_ROOTS = ("tutorials", "data/curation")
 
-HELD_CEILING = 1982       # measured at the flip of 537 cases (C413 slice 2); only ever LOWER it
+HELD_CEILING = 1666       # C413 slice 3a (water): 1982 - 304 re-pointed - 12 declared; only ever LOWER it
 
 SUBS = ("components", "species", "chemistry", "parameters", "assets",
         "utilities", "adsorbents", "mixtures")

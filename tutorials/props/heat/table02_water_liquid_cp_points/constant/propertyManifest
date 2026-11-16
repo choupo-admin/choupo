@@ -26,6 +26,5 @@ propertyManifest
     }
     held
     {
-        "components/water.dat"  "b6840bd58a4f48e49be1e7a6376423eb55514c51c09c5ea7b2861cadcb3b9071";
     }
 }

@@ -21,8 +21,4 @@ propertyManifest
     pins
     {
     }
-    held
-    {
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
-    }
 }

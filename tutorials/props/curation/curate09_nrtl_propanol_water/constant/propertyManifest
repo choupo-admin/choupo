@@ -21,6 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:547a384505722e26dbab886045a02da3dc6eeb64ff5ae038276f56ef9db4dc19";
         "parameters/Henry/1Propanol-water.dat"  "9795532df5ad92245a3672b9900e3eaeba209f32bce5b743310b54e82f4e38d7";
         "parameters/NRTL/1Propanol-water.dat"  "cbe1793efbc9112a3211e8947938005204ad8365cff033f8339b36e0a3efda81";
@@ -31,6 +32,5 @@ propertyManifest
     held
     {
         "components/1Propanol.dat"  "c964d7a44b9335ec39b77584095dac5935998f8ccd1f814a9dbe51801adf4389";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
     }
 }

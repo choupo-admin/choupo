@@ -20,6 +20,7 @@ propertyManifest
 {
     pins
     {
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/Pitzer/pairs/H-Cl.dat"  "0ffb7b1f76cd201d5e1fa56dee83074e259939f6826ce1e3362f1b2d23d94c1a";
         "parameters/Pitzer/pairs/K-Br.dat"  "d7cb63528a0d46bfdcbdc12a2998e6f7a8e6f14d3a947a585a0a1e21e48ef299";
@@ -31,7 +32,6 @@ propertyManifest
     }
     held
     {
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Br.dat"  "f3ce778e2bc82b365e543f599c89b2621f2bfae5fa0c38631e228f95dcfe7018";
         "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
         "species/H.dat"  "f8bc7c69e327342f330a3541a9d33d6c985e1b10b22553472a14b3ae69fee9d5";

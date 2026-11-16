@@ -21,6 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:c15ba34e8b27495cbbcd20d85154bdff10c166ed001f9eae6d8af9315bdc2ca0";
         "parameters/Henry/CH4-water.dat"  "6bc2d4d3828fd1d518cd72bf204a7bd3c4eb1b544bb05dd5aa8ed83202b6ea27";
         "parameters/Henry/CO-water.dat"  "7e5772418f164af708f397b91073253f5a13cf0f806777414e5d4cfa63506e97";
@@ -39,7 +40,6 @@ propertyManifest
         "components/H2.dat"  "8555cf19b12947973821a056cfa08c01ab55a40ee34b2cccd71cb59fbcf5ac47";
         "components/N2.dat"  "f4f5cfe7fc5efcff9cc8f8ee46391d0820292c1484e1f47650cc4ed20503b02e";
         "components/O2.dat"  "6850e4f03a213b1dbef53b58ee21c70a3f258e96f9d448416164702df8a60783";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/CO3.dat"  "8c3ab7bea60287e783d729e7949053a2823cae7c8e90a0aa42b6f064c71cefc5";
         "species/H.dat"  "b54ddc7856310a583aa7985bf44f680c35b5f5a8335bfbf564eda4ae4404b05c";
         "species/HCO3.dat"  "e26d6cf66d147c0dc581d26a1fae3eb79807a969ab2740f92242ce139f6e3cee";

@@ -313,3 +313,6 @@ cosmo
         );
     }
 }
+
+variationOf water;
+variationReason "the case's own water record carries the COSMO-SAC sigma-profile sets the lesson selects between (LVPP-HFTZVP-2018 and the VT-2005 entry); the catalogue record holds neither.";

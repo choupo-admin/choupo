@@ -21,6 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:b5509a44f117c0fc315bbde1a2f0196cdb3926add081cc8b02385d7c35fed142";
         "parameters/Henry/methanol-water.dat"  "054ff87b724b4dceab73ab2c5a0ae65fea700b6a5965cebb67bafc4c6891ca5d";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
@@ -30,7 +31,6 @@ propertyManifest
     held
     {
         "components/methanol.dat"  "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "parameters/NRTL/methanol-water.dat"  "ee3e8ada642cd4716503188c6a29b973cee6b5dde9072c8804f82b8292bdf6d3";
     }
 }

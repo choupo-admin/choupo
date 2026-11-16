@@ -21,6 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e283b2accc6766f773f5aab0b7e673a6ac5cd2df307ea9850e0dd7e090ec552d";
         "parameters/Henry/CO-water.dat"  "7e5772418f164af708f397b91073253f5a13cf0f806777414e5d4cfa63506e97";
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";
@@ -38,7 +39,6 @@ propertyManifest
         "components/dimethylEther.dat"  "4680403c2fc43f79bb7cdd2cb0cca5b7e8ad5a65a6819ceb4eb49834390b4c6b";
         "components/methanol.dat"  "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
         "components/methylAcetate.dat"  "984a3255e049d782ee122f64c337e80aee21d6e71f0e494d074cd23318bb6fa4";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Acetate.dat"  "81f63ea80715810b03ba3eb410dc28ce155cecc8646ad1fde345051c08a9efe4";
         "species/H.dat"  "90961ff87d2ad611e0cfdb04652d16d0ad0fd07c3ed80a649037f56a032ee81b";
         "species/OH.dat"  "ff41dbce484799f20632f7b669b1c654f40291c0088a6af709eb126e6f80818e";

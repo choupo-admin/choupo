@@ -28,7 +28,6 @@ propertyManifest
     held
     {
         "components/ethanol.dat"  "9713f39bd1fc5a050def1cdd9aefb357a74f7498e220892d44742564eacdb9a2";
-        "components/water.dat"  "3b0fb06e75b7dc434f89ad0319c796ee0402406907b90fecd8b75914054dbfed";
         "parameters/NRTL/ethanol-water.dat"  "49c5d699d093cfeb13ecf110a8ae5a5b54a9dbd21c67e2bb8f31308a7194319e";
     }
 }

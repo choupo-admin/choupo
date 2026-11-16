@@ -21,6 +21,7 @@ propertyManifest
     pins
     {
         "components/NaOH.dat"  "76ba64b9b1ecb8487caa6b74ff9090de2170f66fb9cf56be3958e492b2f07710";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/Pitzer/pairs/Na-OH.dat"  "57979e4c042841cda719760e43d8b17c94f9c8a64dee630d2ee30ff0de5d88e2";
         "parameters/solution/"  "relevant:c230bd52bb5226b2fc760817e521760bf18be1e1cb1f1f2348ca204186869952";
@@ -28,7 +29,6 @@ propertyManifest
     }
     held
     {
-        "components/water.dat"  "010dfc0918735fd9131ce5b33afa805e2ee27fcab73ac48af769b8fb484b9d21";
         "species/Na.dat"  "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
         "species/OH.dat"  "1e10a60052593606401aa5bb2088c7bc85e429702ebe6bf94f780c5393ea6d5f";
     }

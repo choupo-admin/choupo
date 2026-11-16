@@ -24,6 +24,7 @@ propertyManifest
         "components/NaOH.dat"  "76ba64b9b1ecb8487caa6b74ff9090de2170f66fb9cf56be3958e492b2f07710";
         "components/glucose.dat"  "db72cbe9d5a7e163c13152cb5e1bb33de8edf242703b689ac814fb5bdc0d432e";
         "components/sucrose.dat"  "0f672de68a751fafd5257f7c55a79aa9203ea02d8d641a03b44b506c12d96901";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/OlssonNaOH/NaOH-water.dat"  "a698331767f4cfaf1b462b41f9cf02c61b4e19ddb6cba7878654bd8275387306";
         "parameters/Pitzer/pairs/Na-OH.dat"  "57979e4c042841cda719760e43d8b17c94f9c8a64dee630d2ee30ff0de5d88e2";
@@ -33,7 +34,6 @@ propertyManifest
     }
     held
     {
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Na.dat"  "5762461aed546e6519b0702da00e3474648e4d2f0c62c5bad477e41dce103e99";
         "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";
     }

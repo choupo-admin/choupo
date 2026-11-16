@@ -24,6 +24,7 @@ propertyManifest
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
         "components/CaCl2.dat"  "a90e4f66ce68b02208f2862f69537530fdaa313804c9fa5074fc2a7576a1ba0a";
         "components/NaCl.dat"  "3d1ba703a92e85049fb8855689a78a3b17a3fca04d365b36bae0c31b9c233575";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
         "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
         "parameters/Helmholtz/Span2000.dat"  "ff57a1c162fb3e3d2b93332832d5472106b988a43db93d6537f5a1e8751dd032";
@@ -36,7 +37,6 @@ propertyManifest
     held
     {
         "components/MgSO4.dat"  "d6ba05f85d1fc54990ef101e04246ec753f0364560334c5861b5af4024a804e1";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Ca.dat"  "c6f5ad61836cfab29439b5c351cb63f3fb7605fc62e1089478514143b323296a";
         "species/Cl.dat"  "05431d588a289813130ec9921081101da89bfea7f621d9e34b1798827f035bd4";
         "species/Mg.dat"  "f56ae3ac64f985179fc52a4ec3234dfab4da3e433aa6b86de1512c983891112d";

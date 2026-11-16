@@ -21,6 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:bba9f83cc42e9897d6e44df4c750943a486f61583f71cfc72b70bd5d72543b62";
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
@@ -30,7 +31,6 @@ propertyManifest
     held
     {
         "components/aceticAcid.dat"  "0e231feba1502b6a0c763290b63985629230091fd2dbf35f25432fcc94e61678";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Acetate.dat"  "81f63ea80715810b03ba3eb410dc28ce155cecc8646ad1fde345051c08a9efe4";
         "species/H.dat"  "4e92d2bb435b9e5380178d63e6ec12ca75e23d96e906623edaed07901bd1b9a5";
         "species/OH.dat"  "b57ad1c6ff6b54320f763b6f683dce92482d33317ad38750c7804e093406fd9d";

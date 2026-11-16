@@ -22,6 +22,7 @@ propertyManifest
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
         "components/NaCl.dat"  "3d1ba703a92e85049fb8855689a78a3b17a3fca04d365b36bae0c31b9c233575";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:551d791c6b7f3fb7e33d7b9da3a9477d5f21867c7d48e860de04e321c7e62d02";
         "parameters/Henry/ethanol-water.dat"  "8d6c542980e2dd37de73fd7fcc8d4e3b6538ccdaf208ec21180ba6dcbc7cf8d8";
         "parameters/Pitzer/pairs/Na-Cl.dat"  "ea4de8611a8302f074a0353a7737ad5306c335df6ba427f61325d7cc8267635c";
@@ -31,7 +32,6 @@ propertyManifest
     held
     {
         "components/ethanol.dat"  "a4f8756bb96958ab663694a9b4fe55a720ea3938dc784d4eaeef692022c082a5";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
         "species/Na.dat"  "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
     }

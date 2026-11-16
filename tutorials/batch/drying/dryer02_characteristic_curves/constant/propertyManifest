@@ -21,6 +21,7 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:824d28e1a4eddb741b1d32e56f79aa1f8d719c38e7cb5347e46715e4b7b9e2a9";
         "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
         "parameters/solution/"  "relevant:a9ce5ad8d484e42a7994be6c8e226fb3bbe3026821df2e2094e01b3dc58f733a";
@@ -30,6 +31,5 @@ propertyManifest
     {
         "components/N2.dat"  "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
         "components/sucrose.dat"  "b66d2116a93f98919b9686eb4de9526b12981ef0eb8e836479d1c76ab57aac0c";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
     }
 }

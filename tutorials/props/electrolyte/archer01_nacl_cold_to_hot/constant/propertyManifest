@@ -20,13 +20,13 @@ propertyManifest
 {
     pins
     {
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/Pitzer/pairs/Na-Cl.dat"  "ea4de8611a8302f074a0353a7737ad5306c335df6ba427f61325d7cc8267635c";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
     held
     {
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Cl.dat"  "6e57ccd286bc6a6828d28ebc7e7311b5f56e8f4ef55772e8a0f81879932c609a";
         "species/Na.dat"  "94e3dcbc2956cc7dcd2977501823fb951b1b10a24da8cc8c7e5936ebfe715916";
     }

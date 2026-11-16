@@ -154,3 +154,6 @@ cosmo
         );
     }
 }
+
+variationOf water;
+variationReason "the case's own water record carries a synthetic teaching sigma profile for the COSMO-SAC walkthrough, which the catalogue record does not hold.";

@@ -22,6 +22,7 @@ propertyManifest
     {
         "assets/CMX_AMX.dat"  "4a12e9fa8288cbbf0ac0063867a0c5466b50b996b7624d3ba01a75f8519662ec";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
@@ -29,7 +30,6 @@ propertyManifest
     {
         "components/Cl.dat"  "8107d390dc01d1d0bccdd5e108432b68898d2193fef538c72265af5850fd38e5";
         "components/H.dat"  "f81d9ddf5c6692c9a503ee18f2116e709b2c3e5bab2a9fd2ccd62b3182ca4983";
-        "components/water.dat"  "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
         "species/Ca.dat"  "c6f5ad61836cfab29439b5c351cb63f3fb7605fc62e1089478514143b323296a";
         "species/Cl.dat"  "05431d588a289813130ec9921081101da89bfea7f621d9e34b1798827f035bd4";
         "species/H.dat"  "90961ff87d2ad611e0cfdb04652d16d0ad0fd07c3ed80a649037f56a032ee81b";
