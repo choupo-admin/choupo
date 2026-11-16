@@ -22,6 +22,9 @@ propertyManifest
     {
         "assets/SS304.dat"  "fb39ed984805c9e3315dbe002f67394d7864ce918c99fcaf3a7ffeb28b6a7280";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
+        "components/O2.dat"  "27e9c81dbbc53cf3a3cdbd7bbe1dbad0dc2292fb93a397f065ac5eec815e7656";
+        "components/oXylene.dat"  "d1148c226e409f4a3e5eba0b7eaf27bfbd2e3306c38b2eb84d025ced76ca32c8";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:d9649bd1e484590efcff7efeb6b6d5014ff1ab66175586bb1857b4b3b5356980";
         "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
@@ -29,11 +32,5 @@ propertyManifest
         "parameters/Henry/oXylene-water.dat"  "ad9ea588c7b1095b27ee3841c59b1118a726c73619b0f59b109abe145417c12b";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
-    }
-    held
-    {
-        "components/N2.dat"  "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
-        "components/O2.dat"  "601481feda24f388e3fe70ad700b2dce1bb9b8954fa83550c2065764d2bdb4a4";
-        "components/oXylene.dat"  "a8ffc32a52cd609309dfebd10675e693ad9127c62d05bf6ddf8603f0a78620a2";
     }
 }

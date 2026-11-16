@@ -23,6 +23,8 @@ propertyManifest
         "assets/NF270.dat"  "bcf6399b2a14e4765e3725872e57d7e55a355b25fd4dd146f4f5a98607be0c46";
         "assets/NF270_dspmde.dat"  "09ee7be95e70442fb7528a27893c634af62e614ca731d5725a5317a1c2cc8b32";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/MgSO4.dat"  "d477057332cfe5d4b0d2b0e6dcd488eab02d7048056fa25b8a241d43eeb957f2";
+        "components/Na2SO4.dat"  "0c03010c27c0dc2dbeb12b111f928fcf9f637322ae39a6e5f668eb65292175a2";
         "components/NaCl.dat"  "3d1ba703a92e85049fb8855689a78a3b17a3fca04d365b36bae0c31b9c233575";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
@@ -36,10 +38,5 @@ propertyManifest
         "species/Mg.dat"  "0282a568e26f8b6cff18f134b4f56ead2833df3aa18fc7c1799db09f756fad17";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
         "species/SO4.dat"  "352fd2de8769dede4cacfd3f2535b652f73e8028630fd08fa5541f3e778ffcf4";
-    }
-    held
-    {
-        "components/MgSO4.dat"  "d6ba05f85d1fc54990ef101e04246ec753f0364560334c5861b5af4024a804e1";
-        "components/Na2SO4.dat"  "29e18502adc415ee3f4f4a672cc99253b9fc916da5f98985be157d145f13e253";
     }
 }

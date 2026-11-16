@@ -21,6 +21,9 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
+        "components/methanol.dat"  "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
+        "components/methylAcetate.dat"  "ac6884a5f63cf720c4718c836407d1ca937f5e1bdabe26e5aa0d79896931c1ac";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:5debd552f823f8b387a2464f30778a10cc1a2e2ffb89a31a41e88119c4b39db6";
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";
@@ -33,9 +36,6 @@ propertyManifest
     }
     held
     {
-        "components/aceticAcid.dat"  "3c92ae24536c51076072c0860a477ba59522684ab70b0b35717bfb6ce4aee8f3";
-        "components/methanol.dat"  "fafb7a7d5bd0f74a0765fb32cf85e9886c66973a0cf2e270913774811c08207d";
-        "components/methylAcetate.dat"  "991ef47b9b6e66ff9bfeba06e8b09d4218c9e52506c4b98d6f21fe49360f6c44";
         "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

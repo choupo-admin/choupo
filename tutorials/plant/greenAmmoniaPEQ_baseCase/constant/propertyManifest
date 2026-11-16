@@ -24,6 +24,10 @@ propertyManifest
         "assets/SS316.dat"  "343dbf4db1c3d53822af46cb83ed92c204a187b58cedffc591458ca54dde59c6";
         "assets/carbonSteel.dat"  "196804da7ded750b7a7503cfa911d1e02a3b47edd19225c7d43dfb6faf4d096e";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/Ar.dat"  "45ae611efbb8395728ce427a54595a255f34eed650bae5a7df9aab72422aec3e";
+        "components/H2.dat"  "879162454da7c142677b0029de8484c451f251e8a5e9f1cdb1794522535ae9be";
+        "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
+        "components/NH3.dat"  "38336e39e62a4c91ff0e408597e8ff2f92282188d74c2c5775f7ab61246c11ac";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:5992bd62d78ab24864672ee363bfc91c7aa75020955428cea7a6174863534619";
         "parameters/Henry/Ar-water.dat"  "9592cfb34c30ff2b94c3b394bbfd70a38ce25b03d36876f3577e85e17041ff50";
@@ -38,12 +42,5 @@ propertyManifest
         "utilities/refrigerationNH3.dat"  "5aa7fc4c2d2a59f291ef19c2522dc0f448d45eb7ad9fb70dda4d9a65847cead0";
         "utilities/steamHP.dat"  "b003944bdafd1314bea227202e26974f7c31903c94d2527c55ac41ce2222bbe6";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
-    }
-    held
-    {
-        "components/Ar.dat"  "2bad699ad4c18829562d86da122315be950509cd6b792720ed84fab66bc254e4";
-        "components/H2.dat"  "fe0299c795d55634ada486d5e47f8bd4f4d88558d1632047799b3ae61b15654d";
-        "components/N2.dat"  "7e6582084ef1ab054d8667e396350041160ace04d890120aefdcbd7ca9803034";
-        "components/NH3.dat"  "a030cc619977b01bf9c28ca040b8a123efa9a07a37c3d9fbd56ff2a6dbbf0999";
     }
 }

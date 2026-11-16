@@ -21,7 +21,12 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
+        "components/H2.dat"  "879162454da7c142677b0029de8484c451f251e8a5e9f1cdb1794522535ae9be";
+        "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
         "components/NH3.dat"  "38336e39e62a4c91ff0e408597e8ff2f92282188d74c2c5775f7ab61246c11ac";
+        "components/O2.dat"  "27e9c81dbbc53cf3a3cdbd7bbe1dbad0dc2292fb93a397f065ac5eec815e7656";
+        "components/glucose.dat"  "db72cbe9d5a7e163c13152cb5e1bb33de8edf242703b689ac814fb5bdc0d432e";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:95154cbf1bca2991214edf509a5e410b7401bb79a799588f06dc0e8802ce8b98";
         "parameters/Henry/CO2-water.dat"  "84d20cd1fc73ff097ce640d0f6b4b9ad5cc51c9aa11d0ab05af8c64743b6c9ff";
@@ -32,13 +37,5 @@ propertyManifest
         "parameters/Henry/NH3-water.dat"  "5428033d18389bed599de4cb755a48d08b32f30282cde835422b2447b9bea983";
         "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/CO2.dat"  "cd0fa4b6611e5f9bd1ca0e0c30b412cbf28138a559acbcfda31a51cdcee5bff3";
-        "components/H2.dat"  "a1dfad6211458c5c2cf05b7abd38fa7e7ef1604f53ef8fcc94128090979e6707";
-        "components/N2.dat"  "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
-        "components/O2.dat"  "601481feda24f388e3fe70ad700b2dce1bb9b8954fa83550c2065764d2bdb4a4";
-        "components/glucose.dat"  "b4478e2a03675bbbda319aa5a4ab2e95a33a5b1e71abbc16c6438d2932d1fad3";
     }
 }

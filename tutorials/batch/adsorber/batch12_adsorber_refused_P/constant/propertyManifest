@@ -23,7 +23,6 @@ propertyManifest
     }
     held
     {
-        "components/CO2.dat"  "1d561315a8b84763d571926096d68867a5a891a70a9e9845195562f432b33fa1";
         "parameters/adsorption/equilibria/zeolite13X/CO2.dat"  "9470a9de1e19cf01e4f69db780e1036004f9afd5e5183a13ee9599753a072b7e";
     }
 }

@@ -21,10 +21,4 @@ propertyManifest
     pins
     {
     }
-    held
-    {
-        "components/aceticAcid.dat"  "8fd3648e5f3fbc692f9caecef243f8f339fb947ac622bf5e35d16219f48df6b4";
-        "components/ethanol.dat"  "31f4c8fb850b2e34dc718acce40ecd9457bcc9fdcf7d705fafbefbf94b197a05";
-        "components/ethylAcetate.dat"  "4c3ef463ed77d535cf6092273ffad32f769470e095f0a1a08b3e8be3eaf667ef";
-    }
 }

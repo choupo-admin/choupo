@@ -20,12 +20,9 @@ propertyManifest
 {
     pins
     {
+        "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/benzene.dat"  "5037fc4b4aad8243202d5645341749d6566ea53c1448044154178a8aa09e8d14";
-        "components/ethanol.dat"  "340fc0ea762c03110403518409fb6d26531eabb39fa0aaca5eff1fbdf4112ad4";
     }
 }

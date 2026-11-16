@@ -21,11 +21,4 @@ propertyManifest
     pins
     {
     }
-    held
-    {
-        "components/K2SO4.dat"  "524a9ce1e78d5ee5a81f97085bbcc8646ef659aac59a84e6467479543eca9632";
-        "components/KCl.dat"  "f889963778554094e22a3a685661fbc53c5bfbaad8ced34a6c734f31a48d60fa";
-        "components/Na2SO4.dat"  "053712c69805696ac2138ad070fcb7bdbf7dfde19a84a94f36ad435238b98660";
-        "components/NaCl.dat"  "02541748bc7a1b912d9a29fdb066711712c9b58ea463324424c8798de82e6d52";
-    }
 }

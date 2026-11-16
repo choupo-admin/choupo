@@ -21,17 +21,14 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/toluene.dat"  "3d2dfe6041bce1d2848f311fde6bc5f30cde6366c157316fe0d0014ab4868cc1";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:f6a05c6778a98d49f7a1032ec1c3477ef9a969a84b89c8e7eee476495ea539d0";
         "parameters/Henry/benzene-water.dat"  "05e43d5e3c5519eb87d76a87f911fe82c098010afdf0dfed0d70fe7283e92846";
         "parameters/Henry/ethanol-water.dat"  "8d6c542980e2dd37de73fd7fcc8d4e3b6538ccdaf208ec21180ba6dcbc7cf8d8";
         "parameters/Henry/toluene-water.dat"  "88ca1cc08901abfb0205080b66e500647e2c5fea68e714e65cd5a7b069853433";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/benzene.dat"  "5037fc4b4aad8243202d5645341749d6566ea53c1448044154178a8aa09e8d14";
-        "components/ethanol.dat"  "340fc0ea762c03110403518409fb6d26531eabb39fa0aaca5eff1fbdf4112ad4";
-        "components/toluene.dat"  "2f8c57b8dae2c4ee0627618dd83a75d58315e1478559d6e4aabe5812eefec9e4";
     }
 }

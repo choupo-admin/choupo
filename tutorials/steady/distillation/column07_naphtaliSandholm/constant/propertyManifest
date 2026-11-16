@@ -21,15 +21,12 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/isopentane.dat"  "885a6b60a876ca173e2d6726527a7be386a2cc8d7b7ee84f0392813628d6602d";
+        "components/nButane.dat"  "9b3d8f069543ab999813ddf645e3d144243160dc01793117fb4fd97da616f104";
+        "components/nPentane.dat"  "f49faee42db9f7776129d0c3a8fa26b8d5b8eccf3f2088c41f94bfa407f9f7a8";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/refrigerationNH3.dat"  "5aa7fc4c2d2a59f291ef19c2522dc0f448d45eb7ad9fb70dda4d9a65847cead0";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
-    }
-    held
-    {
-        "components/isopentane.dat"  "fc81dbd8546b45e106eff05820c3fc71660187b0fd0b3c01a50fd3f2575a004a";
-        "components/nButane.dat"  "897b35aa7da302731e5662e953ba85bcd45ff83147bea7ad51e96aa1c186aa23";
-        "components/nPentane.dat"  "7ad5b2fa22a15df4cde95afe2b2531784727072841d38e886a5b5305bfba1480";
     }
 }

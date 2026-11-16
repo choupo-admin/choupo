@@ -22,6 +22,9 @@ propertyManifest
     {
         "assets/SS316.dat"  "343dbf4db1c3d53822af46cb83ed92c204a187b58cedffc591458ca54dde59c6";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
+        "components/O2.dat"  "27e9c81dbbc53cf3a3cdbd7bbe1dbad0dc2292fb93a397f065ac5eec815e7656";
+        "components/acetone.dat"  "977debb88dcb18c4b3a58417ff9ee758e107808d0b57c4c69166a5553d06b84a";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:920c84617ff128a12841448d5e917c7c5ebba05bf9ef7a43a3052b6ab3aa2179";
         "parameters/Henry/N2-water.dat"  "6e597edbafb3f88076dac89a14cfa53d85b9bc2df19cc088d9b8171fdc5fd765";
@@ -34,11 +37,5 @@ propertyManifest
         "utilities/refrigerationNH3.dat"  "5aa7fc4c2d2a59f291ef19c2522dc0f448d45eb7ad9fb70dda4d9a65847cead0";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
         "utilities/steamMP.dat"  "c2f8ae3dd0fe947ae48d1093dcf7f461fa8e354df23bfd46dd3882765889a8a1";
-    }
-    held
-    {
-        "components/N2.dat"  "8a10295e2eb81dece508460c79cc11bc597110e4bb447b800bb273c32411a91b";
-        "components/O2.dat"  "601481feda24f388e3fe70ad700b2dce1bb9b8954fa83550c2065764d2bdb4a4";
-        "components/acetone.dat"  "e79971eb4b0b83af1212ea7a2be71a27685f009edac150a9585086d4b3da7fdc";
     }
 }

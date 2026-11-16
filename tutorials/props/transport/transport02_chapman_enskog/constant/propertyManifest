@@ -29,13 +29,4 @@ propertyManifest
         "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
-    held
-    {
-        "components/Ar.dat"  "33e8d0b6e1911d26343a1088757ecd2669303aca5b0e0143a85efc27b815343c";
-        "components/CH4.dat"  "98d2502066a95b0fb68e82ffe874eaac146957431ad2c9352c4e35e9b597f4be";
-        "components/CO2.dat"  "4cc6ca8b7ee81004d466454fe4de7291767e0aa60e3c5b602c4e6f8e9cd2b13f";
-        "components/H2.dat"  "8733a5df7793354d68470812a35e573097990483a4bc0d3db040d1ca0f9c40d6";
-        "components/N2.dat"  "440d3b78f6130da903ad81959253b1f4da75f2bbe90cd837c09d60d83923febd";
-        "components/O2.dat"  "8f147dbcee80eb728ceba77f8a3aa817285f8eb928951f15973b2476b1c55f2f";
-    }
 }

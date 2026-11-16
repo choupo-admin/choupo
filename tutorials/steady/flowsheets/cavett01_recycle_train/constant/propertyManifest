@@ -21,6 +21,22 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/CH4.dat"  "043479100702ebb4d4877777dd3ec967330328fe991421dc1acc86c8cf355e05";
+        "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
+        "components/H2S.dat"  "26486489c7dbf1a189e3ddacb834d09474422050bcc71054540265e6971b1b8b";
+        "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
+        "components/ethane.dat"  "1356244319932d4ca08a2e38ada13b5a3e6462889c84aeafa7a8e919d1fe05fb";
+        "components/isoButane.dat"  "aeed413305d87b77d2973e6a66aba0f967f964f44e5dc197591e51e7d66601ce";
+        "components/isopentane.dat"  "885a6b60a876ca173e2d6726527a7be386a2cc8d7b7ee84f0392813628d6602d";
+        "components/nButane.dat"  "9b3d8f069543ab999813ddf645e3d144243160dc01793117fb4fd97da616f104";
+        "components/nDecane.dat"  "231641d2e5208c8b62b89650e88cd45ad8770aee4b02ed17bf4e7a6a1f255aac";
+        "components/nHeptane.dat"  "d9e6e6bed3a47d8b106d6f68b547ef3eedab0948c8c89fd94dd37f5027c87756";
+        "components/nHexane.dat"  "88e1dbd9a2a87f3b5f72e8ca4c956afa7145e4eaf0a942c158eda2610871d205";
+        "components/nNonane.dat"  "d1033aed5403051e0ea2994070d9472c39227ba86b59c5dd5f84cbf35c9d5374";
+        "components/nOctane.dat"  "6ba99cd0e05ccefbf8f270645a23650ee015e3dbd7ce70dfdc0a65c5f3a1b1b3";
+        "components/nPentane.dat"  "f49faee42db9f7776129d0c3a8fa26b8d5b8eccf3f2088c41f94bfa407f9f7a8";
+        "components/nUndecane.dat"  "f731025474507ddb4ba891429781683cbd67bff7bb70de9734adf71fc5eaa341";
+        "components/propane.dat"  "26ffaecf82749edb18ccb34a3f18acb0ca45e55e1b461bf94d871ef0ab81358e";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
@@ -28,22 +44,6 @@ propertyManifest
     held
     {
         "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-        "components/CH4.dat"  "41062168b2cb495697cfaa24de499219dc5718304a4687c2bcd794e9ac926533";
-        "components/CO2.dat"  "c81f081004bfb226e45d33057a0d268e60e31aa02cd90d1893333897c0555986";
-        "components/H2S.dat"  "c452898088c3e8356f6f1961ef2727706c72b53d2fcc249169f14caa4439aafd";
-        "components/N2.dat"  "f4f5cfe7fc5efcff9cc8f8ee46391d0820292c1484e1f47650cc4ed20503b02e";
-        "components/ethane.dat"  "722756bddffcca3e189318b41e3d16daf5daeb11a9f9111d621b8fc2b23ef33c";
-        "components/isoButane.dat"  "65acb96753f1cb8a3c0d12c109fc265062c2bdea0204ca8d8c314b62490c089b";
-        "components/isopentane.dat"  "fc81dbd8546b45e106eff05820c3fc71660187b0fd0b3c01a50fd3f2575a004a";
-        "components/nButane.dat"  "897b35aa7da302731e5662e953ba85bcd45ff83147bea7ad51e96aa1c186aa23";
-        "components/nDecane.dat"  "cc02ff4a3850d88fadae47b0cb1a78dea783d2bffd328d9d1506e6fd90dfcbe8";
-        "components/nHeptane.dat"  "1213f33fbda82b98c55f6fff26565b29d72743079ea4f8bb567597c07eb11823";
-        "components/nHexane.dat"  "afc6cb6bfdfbc919feb57753e30a06f4469712f217b641a5a5ce8ca0504e43d5";
-        "components/nNonane.dat"  "d416921ad9597a206d0a04a7dbb27b90e4c0edb11e91d31483dac4e24aeb36e4";
-        "components/nOctane.dat"  "274997fc57d8dddb5dfab92c0adb3670cfa3c9c408d79ca1fc677eb8ce05f752";
-        "components/nPentane.dat"  "7ad5b2fa22a15df4cde95afe2b2531784727072841d38e886a5b5305bfba1480";
-        "components/nUndecane.dat"  "a4ae9d66ba7f29ac9c167e99e5ab6ac3b1526b9cc227066d7990870b22247b69";
-        "components/propane.dat"  "fb98a95280f54755ec48104788e700b444b7b3d4f41d6e68d6bedca040396064";
         "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

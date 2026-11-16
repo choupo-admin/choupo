@@ -59,3 +59,6 @@ provenance
     source   synthetic;
     reason   "numerical stand-in for an algorithm audit; no physical primary exists";
 }
+
+variationOf compB;
+variationReason "the case's own synthetic stand-in component: its numerical parameters are this case's, not the catalogue stand-in's (a numerical test species with no physical primary).";

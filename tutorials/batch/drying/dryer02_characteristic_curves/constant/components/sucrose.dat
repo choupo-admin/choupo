@@ -81,3 +81,6 @@ sorption
     C    6.0;       
     K    0.96;      
 }
+
+variationOf sucrose;
+variationReason "the case's own sucrose sample: it adds a sorption block (Xm, C, K) fitted to this case's product, which is sample-specific and does not belong in the catalogue.";

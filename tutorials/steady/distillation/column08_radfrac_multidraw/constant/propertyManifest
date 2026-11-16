@@ -21,16 +21,13 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/nButane.dat"  "9b3d8f069543ab999813ddf645e3d144243160dc01793117fb4fd97da616f104";
+        "components/nHexane.dat"  "88e1dbd9a2a87f3b5f72e8ca4c956afa7145e4eaf0a942c158eda2610871d205";
+        "components/nPentane.dat"  "f49faee42db9f7776129d0c3a8fa26b8d5b8eccf3f2088c41f94bfa407f9f7a8";
+        "components/propane.dat"  "26ffaecf82749edb18ccb34a3f18acb0ca45e55e1b461bf94d871ef0ab81358e";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
         "utilities/steamHP.dat"  "b003944bdafd1314bea227202e26974f7c31903c94d2527c55ac41ce2222bbe6";
-    }
-    held
-    {
-        "components/nButane.dat"  "897b35aa7da302731e5662e953ba85bcd45ff83147bea7ad51e96aa1c186aa23";
-        "components/nHexane.dat"  "afc6cb6bfdfbc919feb57753e30a06f4469712f217b641a5a5ce8ca0504e43d5";
-        "components/nPentane.dat"  "7ad5b2fa22a15df4cde95afe2b2531784727072841d38e886a5b5305bfba1480";
-        "components/propane.dat"  "fb98a95280f54755ec48104788e700b444b7b3d4f41d6e68d6bedca040396064";
     }
 }

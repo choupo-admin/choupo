@@ -70,3 +70,6 @@ provenance
     source   "McBride, Zehe & Gordon, NASA Glenn Coefficients for Calculating Thermodynamic Properties of Individual Species, NASA/TP-2002-211556 (2002)";
     licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
 }
+
+variationOf O2;
+variationReason "the case's own record carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue's polynomial stops at 1500 K.";

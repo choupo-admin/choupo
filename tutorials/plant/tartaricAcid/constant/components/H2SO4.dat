@@ -47,3 +47,6 @@ provenance
 }
 
 role    nonvolatile;
+
+variationOf H2SO4;
+variationReason "the case's own record carries the COSMO-SAC sigma-profile set(s) its lesson uses; the catalogue record holds none.";

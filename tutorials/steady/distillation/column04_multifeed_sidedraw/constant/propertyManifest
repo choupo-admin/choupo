@@ -21,15 +21,12 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
+        "components/oXylene.dat"  "d1148c226e409f4a3e5eba0b7eaf27bfbd2e3306c38b2eb84d025ced76ca32c8";
+        "components/toluene.dat"  "3d2dfe6041bce1d2848f311fde6bc5f30cde6366c157316fe0d0014ab4868cc1";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
         "utilities/steamMP.dat"  "c2f8ae3dd0fe947ae48d1093dcf7f461fa8e354df23bfd46dd3882765889a8a1";
-    }
-    held
-    {
-        "components/benzene.dat"  "fc2553d14921006c2f99ace92603068940c0fca540e71e18ef4aaaa4d0f9aaf3";
-        "components/oXylene.dat"  "a4bbb3d6a51d11d0551959ffd829ffe36aec85741152e7d84cd0c6beb68531d1";
-        "components/toluene.dat"  "2f8c57b8dae2c4ee0627618dd83a75d58315e1478559d6e4aabe5812eefec9e4";
     }
 }

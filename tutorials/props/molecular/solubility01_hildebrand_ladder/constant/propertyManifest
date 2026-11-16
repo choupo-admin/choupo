@@ -20,6 +20,12 @@ propertyManifest
 {
     pins
     {
+        "components/acetone.dat"  "977debb88dcb18c4b3a58417ff9ee758e107808d0b57c4c69166a5553d06b84a";
+        "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
+        "components/cyclohexane.dat"  "1c27782a4a7f9db4d5b5b9f3d67991a1865569b0f9089a066ec225d82f966ae1";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/nHexane.dat"  "88e1dbd9a2a87f3b5f72e8ca4c956afa7145e4eaf0a942c158eda2610871d205";
+        "components/toluene.dat"  "3d2dfe6041bce1d2848f311fde6bc5f30cde6366c157316fe0d0014ab4868cc1";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:1c881f4ef9fe29386cb8760335d6506a772610e85f6a9b7e135fd5f4dec14f34";
         "parameters/Henry/acetone-water.dat"  "59eb9457c480a6eadb0f48caa20b3e74230c87d69806a000772e23797f7a0843";
@@ -29,14 +35,5 @@ propertyManifest
         "parameters/Henry/nHexane-water.dat"  "4c6279037f2c5f3f30243864e504032b1ba41080ac5d711f18c9e54c4b9d585c";
         "parameters/Henry/toluene-water.dat"  "88ca1cc08901abfb0205080b66e500647e2c5fea68e714e65cd5a7b069853433";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/acetone.dat"  "e79971eb4b0b83af1212ea7a2be71a27685f009edac150a9585086d4b3da7fdc";
-        "components/benzene.dat"  "b8a586d23e8f38eb0b5c0f9534f7057eb2d4059de464edbdc18995094fdca93e";
-        "components/cyclohexane.dat"  "6f57b6ee7356428daa748404b1343309e762255b70baf430d387550ae4683431";
-        "components/ethanol.dat"  "f2710ae8622b1abc118f9a68c47702e2e2324453ed27c71e0760eb23d799c481";
-        "components/nHexane.dat"  "43880946bf7394379147ea46119961e161682f5f265cb5e74b04a645fa24b3f0";
-        "components/toluene.dat"  "f66debfbcd493c4c7c4636809e784a1e07a6c482c3baed13ba34dce12ae63f79";
     }
 }

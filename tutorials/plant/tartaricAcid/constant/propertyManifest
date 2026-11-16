@@ -34,8 +34,4 @@ propertyManifest
         "species/Ca.dat"  "89b69a4594eee78e2de09dce31c19515881d4012c15578bcb767a8cd5d0f5de1";
         "species/Tart.dat"  "cfe40acd421b4051eab9c8e0c90a22df12ee5152443444d9f72323a806ea437e";
     }
-    held
-    {
-        "components/H2SO4.dat"  "bcb9318ab9897fb3e8f464c2a3fb9d6bef701b5cb76a467d78593eaf969b694f";
-    }
 }

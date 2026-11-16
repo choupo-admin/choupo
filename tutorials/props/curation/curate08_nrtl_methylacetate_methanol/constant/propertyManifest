@@ -21,15 +21,12 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/methanol.dat"  "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
+        "components/methylAcetate.dat"  "ac6884a5f63cf720c4718c836407d1ca937f5e1bdabe26e5aa0d79896931c1ac";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/NRTL/methanol-methylAcetate.dat"  "fc35c6eaad568944c12e56346f17f5342e21f4555e54efc2d86cff5214371ab3";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
         "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/methanol.dat"  "687725d9dfbbd996959983f08041d099f4b76c6b1a639d19d9a43a0209f04ab6";
-        "components/methylAcetate.dat"  "984a3255e049d782ee122f64c337e80aee21d6e71f0e494d074cd23318bb6fa4";
     }
 }

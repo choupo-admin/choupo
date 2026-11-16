@@ -50,3 +50,6 @@ idealGasHeatCapacity
     coefficients  (29.35   -9.378e-4   9.747e-6   -4.187e-9);
     Trange        (250  1500);
 }
+
+variationOf NO;
+variationReason "the case's own record carries the flame-range ideal-gas heat capacity (NASA-9, 200-6000 K, NASA/TP-2002-211556) that the combustion chemistry needs; the catalogue's polynomial stops at 1500 K.";

@@ -21,13 +21,13 @@ propertyManifest
     pins
     {
         "assets/zeolite13X.dat"  "d80777a73464270ddd4a7702e537d4eac38db41934c11131aaf87fea46faa30b";
+        "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/adsorption/equilibria/zeolite13X/"  "relevant:778e2facea1e7953890fd224729d73b3da2829d7cc752a7605b367fa4ed8f6a9";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
     held
     {
-        "components/CO2.dat"  "1d561315a8b84763d571926096d68867a5a891a70a9e9845195562f432b33fa1";
         "parameters/adsorption/equilibria/zeolite13X/CO2.dat"  "9470a9de1e19cf01e4f69db780e1036004f9afd5e5183a13ee9599753a072b7e";
     }
 }

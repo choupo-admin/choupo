@@ -23,6 +23,9 @@ propertyManifest
         "assets/SS304.dat"  "fb39ed984805c9e3315dbe002f67394d7864ce918c99fcaf3a7ffeb28b6a7280";
         "assets/SS316.dat"  "343dbf4db1c3d53822af46cb83ed92c204a187b58cedffc591458ca54dde59c6";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/ethylAcetate.dat"  "bc72ebbb53e2e8c242561346cb2069e5cefafb4d9a663243d8b64caeb49a2095";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
         "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
@@ -37,9 +40,6 @@ propertyManifest
     }
     held
     {
-        "components/aceticAcid.dat"  "3c92ae24536c51076072c0860a477ba59522684ab70b0b35717bfb6ce4aee8f3";
-        "components/ethanol.dat"  "1db414b216101a40565c68af1324a6d2fa54c479369cf8f41e612f158eb89ef8";
-        "components/ethylAcetate.dat"  "997e15ad9babc1e75d0bcaeae502daa05216777043e4f94e484500d3b3675d85";
         "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

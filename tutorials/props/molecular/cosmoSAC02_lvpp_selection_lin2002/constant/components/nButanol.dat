@@ -109,3 +109,6 @@ cosmo
         );
     }
 }
+
+variationOf nButanol;
+variationReason "the case's own record carries the COSMO-SAC sigma-profile set(s) its lesson uses; the catalogue record holds none.";

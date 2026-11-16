@@ -21,15 +21,12 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/ethylAcetate.dat"  "bc72ebbb53e2e8c242561346cb2069e5cefafb4d9a663243d8b64caeb49a2095";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/NRTL/ethanol-ethylAcetate.dat"  "0bb441685265fd0cf68826bf6aa08bf65afb57150a518def5625e81e21244832";
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
         "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/ethanol.dat"  "f2710ae8622b1abc118f9a68c47702e2e2324453ed27c71e0760eb23d799c481";
-        "components/ethylAcetate.dat"  "4faa49d150d41d6e24527cf3a028f1705068d903407d67194fe6caa4731b4d1c";
     }
 }

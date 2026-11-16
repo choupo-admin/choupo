@@ -20,13 +20,10 @@ propertyManifest
 {
     pins
     {
+        "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:bba9f83cc42e9897d6e44df4c750943a486f61583f71cfc72b70bd5d72543b62";
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/aceticAcid.dat"  "3c92ae24536c51076072c0860a477ba59522684ab70b0b35717bfb6ce4aee8f3";
     }
 }

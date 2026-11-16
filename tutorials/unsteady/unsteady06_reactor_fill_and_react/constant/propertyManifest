@@ -21,12 +21,9 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/2Butanol.dat"  "42eddfbd4c0717f6be5628bb94a55ed1e5ceb23ae3b2f30826048fe0ee966e43";
+        "components/2Methyl1Propanol.dat"  "6136d178bb4e2ee483ef4d7e2d7d71f28a1114c909f99932261ad519e240c598";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/2Butanol.dat"  "ad0f4e4cb272e208c3a8ee83b570fe72b60cd9ab1b2dd9a7d6011dbd28c4995b";
-        "components/2Methyl1Propanol.dat"  "b1bfb84671b4f35f758f186af86d16cfe056fb1a54d6f2b5e2867328630848b3";
     }
 }

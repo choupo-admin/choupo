@@ -108,3 +108,6 @@ sorption
     C    6.0;       // GAB energy constant
     K    0.96;      // GAB multilayer factor
 }
+
+variationOf sucrose;
+variationReason "the case's own sucrose sample: it adds a sorption block (Xm, C, K) fitted to this case's product, which is sample-specific and does not belong in the catalogue.";

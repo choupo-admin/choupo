@@ -21,14 +21,11 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/isopropanol.dat"  "1a2156c8e624e26eede80bd6934137831af09d8cd4443457b2fc568c622bfe4e";
+        "components/methanol.dat"  "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:b5509a44f117c0fc315bbde1a2f0196cdb3926add081cc8b02385d7c35fed142";
         "parameters/Henry/methanol-water.dat"  "054ff87b724b4dceab73ab2c5a0ae65fea700b6a5965cebb67bafc4c6891ca5d";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/isopropanol.dat"  "1de8ec8f029b916d93c856a3a8ef8c3d518a1da267531efa6eceda4b7be0db80";
-        "components/methanol.dat"  "f5f0b2b3c983c7b4045618dca85e2da157cef021d9d93ceee0ea9a84b214cc82";
     }
 }

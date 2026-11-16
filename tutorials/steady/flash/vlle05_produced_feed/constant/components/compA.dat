@@ -55,3 +55,6 @@ standardThermochemistry
     dHf_298   0.0;
     s_298     200.0;
 }
+
+variationOf compA;
+variationReason "the case's own synthetic stand-in component: its numerical parameters are this case's, not the catalogue stand-in's (a numerical test species with no physical primary).";

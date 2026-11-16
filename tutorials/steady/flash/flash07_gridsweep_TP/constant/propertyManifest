@@ -21,9 +21,4 @@ propertyManifest
     pins
     {
     }
-    held
-    {
-        "components/benzene.dat"  "5037fc4b4aad8243202d5645341749d6566ea53c1448044154178a8aa09e8d14";
-        "components/toluene.dat"  "2f8c57b8dae2c4ee0627618dd83a75d58315e1478559d6e4aabe5812eefec9e4";
-    }
 }

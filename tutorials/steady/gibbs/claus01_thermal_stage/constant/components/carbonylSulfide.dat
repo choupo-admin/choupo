@@ -109,3 +109,6 @@ standardThermochemistry
     dHf_298    -138398.5580;            
     s_298      231.5848;           
 }
+
+variationOf carbonylSulfide;
+variationReason "the case's own record carries the standard-state formation datum (dHf_298, s_298) the Claus furnace's Gibbs equilibrium needs; the catalogue record carries none.";

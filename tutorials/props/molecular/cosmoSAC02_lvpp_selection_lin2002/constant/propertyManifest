@@ -20,8 +20,21 @@ propertyManifest
 {
     pins
     {
+        "components/14Dioxane.dat"  "aede3c35fa6da3606f4448a548b0b8f5d0f58b83ebeb3ac3c42ffb1ceaca5d11";
+        "components/1Hexene.dat"  "533020237bb6a3b04e4dd6babaf3c9b5a37595e363ada1d7882cf6228cadb996";
         "components/1Nitropropane.dat"  "3c33f10d97b811dddb3bc5e52aa1f0b822626a53fda8b100366670cb7c8ca1dc";
+        "components/1Propanol.dat"  "057efedc0c5aec4a201a96626b0f276557801cc5de2c9ae6265b634933e96f03";
+        "components/Dichloroethane.dat"  "0a48de29840603f2145df9cf4115b1db6d3c85a3361a045f53b8ce4d8ab4dbb5";
+        "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
+        "components/acetone.dat"  "977debb88dcb18c4b3a58417ff9ee758e107808d0b57c4c69166a5553d06b84a";
+        "components/acetonitrile.dat"  "398dc590046321dd24fc101560dfdac682a699a47b127824c614b64fe1413da8";
         "components/aniline.dat"  "0a7fc469db9d1387baa178e9db6e956886278acf98b3d645bb97c5d5b8d00d7f";
+        "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
+        "components/butanal.dat"  "aefb4ac1374c727ad7d2649c53195d67ff4b444d92b10e4ea9a6cdc90d07bd6a";
+        "components/carbonTetrachloride.dat"  "20b3131d0521937c5e1499eb31cb3eb38a3c9a985c130e91f8813530a2c577cd";
+        "components/chloroform.dat"  "8d4c40da97a824309c7d0bc3599865bf84354f893b5d943193dd5f6a9702cf07";
+        "components/cyclohexane.dat"  "1c27782a4a7f9db4d5b5b9f3d67991a1865569b0f9089a066ec225d82f966ae1";
+        "components/diethylEther.dat"  "adb9c5bb0e4137e016d8ad4a898ee08ebae90cda4330398da3737b5051cd78e4";
         "components/ethylamine.dat"  "5964336b5a3ce2fa9a59721916176f1f2de7f5b00230d5abeb9274c1a07a524b";
         "components/nitroethane.dat"  "eff8aaaaf038d0cb4a819d2505e5af436f278d4cba40579717907ddfbb100880";
         "components/nitromethane.dat"  "120af509fc4e5c5fba7b2235dd57bdea6a4072b691ef69e03945c2fb97b5bd90";
@@ -60,34 +73,5 @@ propertyManifest
         "parameters/Henry/pyridine-water.dat"  "a68b45401c2461c69b05c4f9c0a9ba02100fe7149587ffb40c7fe92cc3b1140f";
         "parameters/Henry/tetrahydrofuran-water.dat"  "15da218e6a09dc878248c8cc8c0a54f339bd5d8966bae7f3cefad24b0f6acfed";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/14Dioxane.dat"  "33ad21dd0aa4bddeac6734ad71906717c263d90dd0a868662a48ef3e22aafc98";
-        "components/1Hexene.dat"  "653642c95941017103bae0b8d6886b3f408d26598d30cc31dccccf3bbfed858c";
-        "components/1Propanol.dat"  "677578f200aa35807276922d5bc51b330a1336b19e3da3c6d2aa1f642fc16c1c";
-        "components/Dichloroethane.dat"  "ba02e8b3f6499c5571a7fb5ab9ea0c560ef1db3dc604186fa6108e61ca7ff2f5";
-        "components/aceticAcid.dat"  "a675708f76210e32019d79062be552ecf30a883f2dad8b0c6817f38a740f966c";
-        "components/acetone.dat"  "7cb8771677973125783f24ca9365cc229a8a344003bc1896c06404f4670717a5";
-        "components/acetonitrile.dat"  "6bf2a55b8cf4c013cb4b9998ffee32b981017af473f039714cd4536f58d46b9f";
-        "components/benzene.dat"  "94bf64d2425a723011217eebe4d0c25f6ef3368ee40bf4c5ab194928ddc032cb";
-        "components/butanal.dat"  "b95d4dcd47e08064a8703c1fd731ce6b54901bd7a79a7313946275bfa401db9f";
-        "components/carbonTetrachloride.dat"  "d54c47c0843de73ce61bea572a1ee65fb4db433626d6080f424d94235c58fda9";
-        "components/chloroform.dat"  "7cb8f2b79cad0b5ea72c7ec906f2a65d0d8c39478f5acbc40a1309b5e3ea4935";
-        "components/cyclohexane.dat"  "30ab51542e570ac0a07f6838652f6937fc63a071c3004a19c61e055457253da8";
-        "components/diethylEther.dat"  "f44720378a89a7cc0a37373627eda58fd81edeb42f3499fc1683d910a4cea54d";
-        "components/ethanol.dat"  "9713f39bd1fc5a050def1cdd9aefb357a74f7498e220892d44742564eacdb9a2";
-        "components/ethylAcetate.dat"  "ac400264e1a77656586fb8627c4d9f37018b3879c716b9770fba3721342663f5";
-        "components/methylAcetate.dat"  "8daaabfc00987a030a4324c496d7e25e5915a77d7c036da66c2f4f4b7346cb15";
-        "components/methylEthylKetone.dat"  "89cbf3c00a1154413206967126793239765c59e61ee4f2a8ac74899d990faddd";
-        "components/nButane.dat"  "b1e495b667fe52cf235343512c53f3a2cef6383e377052fbcd86ca4597ca3a2a";
-        "components/nButanol.dat"  "a462bf8ebea1da54db64f8a9b25c711a27a005e93cb1a1e0edda7028961967d0";
-        "components/nHeptane.dat"  "91f9d06783fcc58bd053b67b2820d6f6d9e1828a1e564cca223b2fffb66cc06e";
-        "components/nHexane.dat"  "b391a02ad49d137701f6b8f944721da5326844baeed666e40a3669ad0cb0f54f";
-        "components/nOctane.dat"  "354a1d0d51bf17e6501847a81724bc7fd85f0535bd9bd7871794d04a0dffe7b5";
-        "components/nPentane.dat"  "14e02493509a3363857d32baddc162dc026435b98274b8a12472453b5d78d694";
-        "components/pyridine.dat"  "a0001e7bbb9216997422682182f07618a60b4cde2887c6b3617800da5b78314e";
-        "components/tetrahydrofuran.dat"  "b633485a1530fbce2ea54dbf94e8faaf87ca5f2ab20e7373f330bb259e2a9737";
-        "components/triethylamine.dat"  "1c3d28b71a432f728bd49fdaae10724e41dbacb081f93b9e46fcdf2d5701db3c";
     }
 }

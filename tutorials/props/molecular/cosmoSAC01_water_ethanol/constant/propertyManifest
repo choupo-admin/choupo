@@ -27,11 +27,4 @@ propertyManifest
         "parameters/Henry/toluene-water.dat"  "88ca1cc08901abfb0205080b66e500647e2c5fea68e714e65cd5a7b069853433";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
-    held
-    {
-        "components/acetone.dat"  "10709c233b6e3a1fad2d3432d2a91a3bc6ae1a2c5d4d0dd738f543e82c59840e";
-        "components/ethanol.dat"  "5ef03990067f73c8859eca91f13ba8066d84840e7b04fbcca3bf00a0fac4c772";
-        "components/nHexane.dat"  "ca60b0379c50251ecd191f9500e157223310c65ad32c4dee9fdbccca06d8ec10";
-        "components/toluene.dat"  "390e7835ddcdc5f6b7d394bda981b91df35f1b5b8e813fef88b44a157e507025";
-    }
 }

@@ -20,12 +20,9 @@ propertyManifest
 {
     pins
     {
+        "components/acetone.dat"  "977debb88dcb18c4b3a58417ff9ee758e107808d0b57c4c69166a5553d06b84a";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/Joback.dat"  "41adb40acbc35cf4687e40f5f2ba2f48fd7b8d892b6c8a62bc91148505d0d497";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/acetone.dat"  "bfb97aa1a5e1941afce19dbf96c7a1935c678e5181648fef59f6a166f0853cc7";
     }
 }

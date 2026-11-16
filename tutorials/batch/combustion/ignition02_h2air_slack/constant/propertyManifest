@@ -37,8 +37,5 @@ propertyManifest
     }
     held
     {
-        "components/H2.dat"  "0fbb1f457bb526fec991cd87146fd5b4116796fcc10ffc9399cd2980caced861";
-        "components/N2.dat"  "ae5a3ee8fc811babc3d74cdd70cf6bc96ec887c8697f7b4d8dfc223bac99b35a";
-        "components/O2.dat"  "bb3cc4a022008167a9e206858f459bda2da40e59a2b8eda34f9485489e666859";
     }
 }

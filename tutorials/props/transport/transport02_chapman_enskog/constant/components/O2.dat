@@ -85,3 +85,6 @@ lennardJones
         licence  publicDomain;    // US government work (NASA), 17 U.S.C. 105
     }
 }
+
+variationOf O2;
+variationReason "the case's own record adds the Lennard-Jones block (Svehla 1962, NASA TR R-132) that Chapman-Enskog gas viscosity needs; the catalogue record carries none.";

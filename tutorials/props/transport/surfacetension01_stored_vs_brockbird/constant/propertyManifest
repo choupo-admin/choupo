@@ -21,15 +21,12 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/1Propanol.dat"  "057efedc0c5aec4a201a96626b0f276557801cc5de2c9ae6265b634933e96f03";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/methanol.dat"  "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
+        "components/nHexane.dat"  "88e1dbd9a2a87f3b5f72e8ca4c956afa7145e4eaf0a942c158eda2610871d205";
         "components/triethanolamine.dat"  "1ca2e4f0b37663b773dc2884f6ec3bc73936f738ae9788fa0aae4d9d73d64384";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/1Propanol.dat"  "ffaec1033412f65b679296ff760de62387876ae01ed1bf7e18e7f02084b71853";
-        "components/ethanol.dat"  "31f4c8fb850b2e34dc718acce40ecd9457bcc9fdcf7d705fafbefbf94b197a05";
-        "components/methanol.dat"  "0fe250324162c1845284256c7c8e0a7b0d9cb189d83bfdd0ac9b280a728adf68";
-        "components/nHexane.dat"  "36b3e6bf0143265bc38b1e4d5580d638746a7ccde06e405cabd761d33cd232e4";
     }
 }

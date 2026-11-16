@@ -20,6 +20,8 @@ propertyManifest
 {
     pins
     {
+        "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:d5b1083c2ce4f07483dcf6c5d780800f3a8eaaabcbaff027601bcf2f6b4e7f09";
         "parameters/Henry/CO2-water.dat"  "84d20cd1fc73ff097ce640d0f6b4b9ad5cc51c9aa11d0ab05af8c64743b6c9ff";
@@ -29,7 +31,5 @@ propertyManifest
     held
     {
         "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-        "components/CO2.dat"  "c81f081004bfb226e45d33057a0d268e60e31aa02cd90d1893333897c0555986";
-        "components/ethanol.dat"  "a4f8756bb96958ab663694a9b4fe55a720ea3938dc784d4eaeef692022c082a5";
     }
 }

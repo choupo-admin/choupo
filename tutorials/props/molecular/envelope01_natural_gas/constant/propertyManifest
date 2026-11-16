@@ -21,14 +21,11 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/CH4.dat"  "043479100702ebb4d4877777dd3ec967330328fe991421dc1acc86c8cf355e05";
+        "components/ethane.dat"  "1356244319932d4ca08a2e38ada13b5a3e6462889c84aeafa7a8e919d1fe05fb";
+        "components/nButane.dat"  "9b3d8f069543ab999813ddf645e3d144243160dc01793117fb4fd97da616f104";
+        "components/propane.dat"  "26ffaecf82749edb18ccb34a3f18acb0ca45e55e1b461bf94d871ef0ab81358e";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/CH4.dat"  "727abcc9b811c38924085816c22748c95ee9be2d702823ba930ff99a17780281";
-        "components/ethane.dat"  "13ca5831e46c8f2a42335020eca9cd55301bbd41b1bdbf4f8bd86b93e5436b99";
-        "components/nButane.dat"  "8c896f1ba030fb592e688814f32efff803ea47f47c1a768fd94beb358d2e5201";
-        "components/propane.dat"  "000dd57b7f46ece67bd647113709a7d50535c415f9c650154d7406445a5e476a";
     }
 }

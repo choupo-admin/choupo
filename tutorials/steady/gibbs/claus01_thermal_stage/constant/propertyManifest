@@ -21,9 +21,17 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/CO.dat"  "b911352c6ddabd07a2489c99df1767338dbedd95e7704ade0fcfbb4c9e371056";
+        "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
+        "components/CS2.dat"  "0d82b949bcefe48cfba49557f3935f4f60c395e439a31bdd54857d7a6d06dbfe";
+        "components/H2.dat"  "879162454da7c142677b0029de8484c451f251e8a5e9f1cdb1794522535ae9be";
+        "components/H2S.dat"  "26486489c7dbf1a189e3ddacb834d09474422050bcc71054540265e6971b1b8b";
+        "components/N2.dat"  "89834e7bdadc120e039062b0c02040531c9f6c65176c2091faa380e13db810ab";
+        "components/O2.dat"  "27e9c81dbbc53cf3a3cdbd7bbe1dbad0dc2292fb93a397f065ac5eec815e7656";
         "components/S.dat"  "ccdc6a9a970f6d1f72a29f6d3d0394fcdf09fabbc953973c6ca5baf42b5837e6";
         "components/S2.dat"  "45cca213724ae7bce590965eb2d5c94ca9bbd66c958520d2fa20458aacc09d70";
         "components/SO.dat"  "5dc4c3532eb0339117998d2600b870d993448d18453d0a5c276255849a9cb962";
+        "components/SO2.dat"  "2a5898bb587b2502c9ef369d19a75899620733a9dea053241896af77dc06c050";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:242b6c7aef215b40c32227bd61678940b8de451366cd61236630baa8fffdce5c";
         "parameters/Henry/CO-water.dat"  "7e5772418f164af708f397b91073253f5a13cf0f806777414e5d4cfa63506e97";
@@ -37,17 +45,5 @@ propertyManifest
         "parameters/Henry/carbonylSulfide-water.dat"  "d0249b15d366b70a17e5179b4d4f3a26149c74d419cf576ad6d6f4ff67229f70";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
-    }
-    held
-    {
-        "components/CO.dat"  "9b97d088c4945b8e2bc2e38d56450712878bf8285e3ccd95d9fe26ce3633a4a8";
-        "components/CO2.dat"  "cd0fa4b6611e5f9bd1ca0e0c30b412cbf28138a559acbcfda31a51cdcee5bff3";
-        "components/CS2.dat"  "fd8de3212fc719d3d208a73d5ba2cd900cfb1f13e5145a04e362218b2e397cef";
-        "components/H2.dat"  "a1dfad6211458c5c2cf05b7abd38fa7e7ef1604f53ef8fcc94128090979e6707";
-        "components/H2S.dat"  "2f07d86fd6020faf99842164a6d51df6f154f78375e7f5e5265f5b01c03b31bd";
-        "components/N2.dat"  "c19dd8dd0645bd00ac9b92d016bc4b269685b1b7ec065350fbf37b463658648d";
-        "components/O2.dat"  "ce610d95e092cb279655854de5866cef10a3eed1479fef829a8bd848b50099ca";
-        "components/SO2.dat"  "fe74515cab7d9f92d161777723107a6d34918d47633a86a580bcbab66d560b84";
-        "components/carbonylSulfide.dat"  "fd52a1af443464f7c13f079631c8214c9e3cf22a4cb068e29e0ce6dc31ab6fc7";
     }
 }

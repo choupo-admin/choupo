@@ -27,6 +27,5 @@ propertyManifest
     }
     held
     {
-        "components/compB.dat"  "b986cc9939d2fc54541efa900d5f636ebe6a003edb9cce198adb6a77047dbcaf";
     }
 }

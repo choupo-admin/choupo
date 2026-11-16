@@ -100,3 +100,6 @@ cosmo
 }
 
 role        solute;
+
+variationOf acetone;
+variationReason "the case declares this component a solute for its absorber (`role solute`); the catalogue record leaves the role unset.";

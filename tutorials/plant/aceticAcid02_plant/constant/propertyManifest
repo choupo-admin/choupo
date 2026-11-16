@@ -22,6 +22,11 @@ propertyManifest
     {
         "assets/SS316.dat"  "343dbf4db1c3d53822af46cb83ed92c204a187b58cedffc591458ca54dde59c6";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/CO.dat"  "b911352c6ddabd07a2489c99df1767338dbedd95e7704ade0fcfbb4c9e371056";
+        "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
+        "components/dimethylEther.dat"  "a95c7e25e904fba7d32f196754ea4753ce50d24882f196ccd352d9fa13b92e76";
+        "components/methanol.dat"  "fe171e983f8f1653cb9e6f98ebf26c04cf63f9f2e8a96ca65016247058054cd2";
+        "components/methylAcetate.dat"  "ac6884a5f63cf720c4718c836407d1ca937f5e1bdabe26e5aa0d79896931c1ac";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Helmholtz/IAPWS95.dat"  "90905732d2876811da5bbd679749aca5880bd07fc05af9d08178149330efdfe1";
         "parameters/Helmholtz/SetzmannWagner1991.dat"  "2d75e1bff7b606847ff65b4854ca906f0f653cabb28036d87d7330109cf49b10";
@@ -42,13 +47,5 @@ propertyManifest
         "utilities/steamHP.dat"  "b003944bdafd1314bea227202e26974f7c31903c94d2527c55ac41ce2222bbe6";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
         "utilities/steamMP.dat"  "c2f8ae3dd0fe947ae48d1093dcf7f461fa8e354df23bfd46dd3882765889a8a1";
-    }
-    held
-    {
-        "components/CO.dat"  "9b97d088c4945b8e2bc2e38d56450712878bf8285e3ccd95d9fe26ce3633a4a8";
-        "components/aceticAcid.dat"  "50e8cda79ab2d7eaf0b9bef41e92fc18f14cd33967cb407a47f312a594989309";
-        "components/dimethylEther.dat"  "af552ed112be4fc34e108b39142a1742cbc5f34b79048522c6674e80206cb8f7";
-        "components/methanol.dat"  "c1594cf811340cfcb59fef5db506eab7d90b2f49092eb90a147b7351984b3234";
-        "components/methylAcetate.dat"  "984a3255e049d782ee122f64c337e80aee21d6e71f0e494d074cd23318bb6fa4";
     }
 }

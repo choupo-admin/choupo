@@ -27,8 +27,5 @@ propertyManifest
     }
     held
     {
-        "components/compA.dat"  "c80451e69d028ea3850f5494ca6307f51e7333e711b89df7bf5225f00b59a28e";
-        "components/compB.dat"  "6b220e0ca3374f55a9c68c2ae86129d8fb92e798ed34a045ac08917b088c7d83";
-        "components/compC.dat"  "7825c508299f72bc0cd151227a7035a4983af52e6a16c65fd6b145f2a1d7bf66";
     }
 }

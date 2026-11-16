@@ -22,6 +22,8 @@ propertyManifest
     {
         "assets/zeolite13X.dat"  "d80777a73464270ddd4a7702e537d4eac38db41934c11131aaf87fea46faa30b";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/CO2.dat"  "d3f0aed5182384187b60745f71f93cc3062a4ccc6c5542f6fe6d3d222b22eee0";
+        "components/He.dat"  "3da019298605ee8288d8a78df1d019a59d86bfb40ce920822553400a18ffc7fb";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/adsorption/equilibria/zeolite13X/"  "relevant:778e2facea1e7953890fd224729d73b3da2829d7cc752a7605b367fa4ed8f6a9";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
@@ -29,8 +31,6 @@ propertyManifest
     held
     {
         "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-        "components/CO2.dat"  "c81f081004bfb226e45d33057a0d268e60e31aa02cd90d1893333897c0555986";
-        "components/He.dat"  "e3bd734efc854e1f988301b96acc31f31c0f5669a06c73789913540c433e23d4";
         "parameters/adsorption/equilibria/zeolite13X/CO2.dat"  "dba1a72762e525381c9785acb641cce25871877bf5a228e8954b1741d056241a";
         "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }

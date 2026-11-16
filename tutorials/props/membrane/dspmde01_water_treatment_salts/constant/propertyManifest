@@ -31,6 +31,7 @@ propertyManifest
         "components/NaBr.dat"  "2d66bd335f2d6c27b17325eb894b1db9d28455f6095fb59de8dc2a26d2d979f8";
         "components/NaCl.dat"  "3d1ba703a92e85049fb8855689a78a3b17a3fca04d365b36bae0c31b9c233575";
         "components/NaF.dat"  "915e580c340c5f8f98884dff994e1e4c51088b478a04a5ef17a395f4abe95459";
+        "components/NaNO3.dat"  "fef05bff09a74e7be420d93d0236cb80585277821d285866cbfc63be07f9b611";
         "components/calciumNitrate.dat"  "cd8efd971cf7d26e6e712f03957169d75b5c28aab67a9c80fa231ff36d64b78f";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
@@ -47,9 +48,5 @@ propertyManifest
         "species/NO3.dat"  "1ba0375048a72107ac1f9120e483c06e6085c1aebb7e1294e08558d17ff065b1";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
         "species/SO4.dat"  "352fd2de8769dede4cacfd3f2535b652f73e8028630fd08fa5541f3e778ffcf4";
-    }
-    held
-    {
-        "components/NaNO3.dat"  "76d845b6755f6b863cb5c8521741d8109f9114949a128a71a4a3c84d98eae59d";
     }
 }

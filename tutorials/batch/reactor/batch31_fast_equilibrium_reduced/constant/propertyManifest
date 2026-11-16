@@ -20,13 +20,9 @@ propertyManifest
 {
     pins
     {
+        "components/compB.dat"  "0f756f8d73171fa3d39c422960262aa74cef201e15c17c78e114d8411b1f7638";
+        "components/compC.dat"  "a0e44c4a0f737aff0088497d688c6a7d99d02d537f73bced7d3731e4b8b20d02";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/compA.dat"  "b89b59c1b8a654b9de2680c81dfff1cdba1c28ae1f2638bd0b465ceb7a937888";
-        "components/compB.dat"  "ee541808aa084fa1e8576f49a248a8e000387dff299f5f042d6f21089dc80b25";
-        "components/compC.dat"  "84e7ceb380c3bd65bc1b19527de959261c94f05b1c41c2cf83000d4ec0c9ed7a";
     }
 }

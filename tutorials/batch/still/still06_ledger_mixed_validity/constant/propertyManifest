@@ -21,13 +21,9 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
+        "components/toluene.dat"  "3d2dfe6041bce1d2848f311fde6bc5f30cde6366c157316fe0d0014ab4868cc1";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/benzene.dat"  "c87b638e1216f20a10655baa85da5343c7bfce014ab379ceeaf1d89c017d2eef";
-        "components/compA.dat"  "b89b59c1b8a654b9de2680c81dfff1cdba1c28ae1f2638bd0b465ceb7a937888";
-        "components/toluene.dat"  "9a8ce3bd001e4c1cbf744e6f16671ff58db70f41ed54bfad4528af687a80a54b";
     }
 }

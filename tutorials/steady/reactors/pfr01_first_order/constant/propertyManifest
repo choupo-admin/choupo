@@ -21,6 +21,9 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/aceticAcid.dat"  "d7b882c31c2c0ed0135e15c61ed71815d4b9f15e42eddf71056f01d1d90b5a84";
+        "components/ethanol.dat"  "9cfd836ade9dbe6f2a7b6fbd2836aa94e4ce3b7eefffc85d4693bd1466f4bc7c";
+        "components/ethylAcetate.dat"  "bc72ebbb53e2e8c242561346cb2069e5cefafb4d9a663243d8b64caeb49a2095";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:accfcdfd44d0e16856427d28f96572b098c5fcec4e31162f7f4db1a8a073711f";
         "parameters/Henry/aceticAcid-water.dat"  "2f8bd145544e6613d408306a238adc2980f185e6d805833a684381211c004cad";
@@ -28,11 +31,5 @@ propertyManifest
         "parameters/Henry/ethylAcetate-water.dat"  "790654433c4113c22b84bd0b6b2cc1e3b61f98b40bdb47221ffc64a73551cff8";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
-    }
-    held
-    {
-        "components/aceticAcid.dat"  "3c92ae24536c51076072c0860a477ba59522684ab70b0b35717bfb6ce4aee8f3";
-        "components/ethanol.dat"  "1db414b216101a40565c68af1324a6d2fa54c479369cf8f41e612f158eb89ef8";
-        "components/ethylAcetate.dat"  "997e15ad9babc1e75d0bcaeae502daa05216777043e4f94e484500d3b3675d85";
     }
 }

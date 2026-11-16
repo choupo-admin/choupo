@@ -21,13 +21,10 @@ propertyManifest
     pins
     {
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
+        "components/nButanol.dat"  "d1d94bcafcd69782996c564d7ed953d97b619228aa112a2ecac95bbac8b8471d";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3098e0a2fedb37fb6f8ad185a5c1996e88df4af222a671a990bc3a0d4deba08";
         "parameters/Henry/nButanol-water.dat"  "1b460014cdbd82af4cfb3cac7403e392a0536065129f981ebcdda15dc2921e50";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "components/nButanol.dat"  "494bf52a8ee990ddd0ccd5f78e14847f1ead98fd134892f487765a869d414fbe";
     }
 }

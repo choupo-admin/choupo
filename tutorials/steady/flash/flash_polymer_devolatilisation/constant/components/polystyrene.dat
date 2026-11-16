@@ -60,3 +60,6 @@ provenance
     method        "polymer as a single fixed-average-MW (Mn) pseudo-component; Cp from a per-mass melt specific heat x Mn";
     note          "FIXED-MW LUMP: no molecular-weight distribution (Mn/Mw/PDI), no chain population balance -- true polymer-property methods (Polymers-Plus / segment PC-SAFT) are NOT supported in Choupo.  Use only where a single average MW is an acceptable approximation.";
 }
+
+variationOf polystyrene;
+variationReason "the case's own polymer lump: its fixed average molar mass, density and heat capacity are this sample's, not the catalogue's.";

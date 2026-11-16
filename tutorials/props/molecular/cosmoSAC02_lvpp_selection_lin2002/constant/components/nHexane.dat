@@ -102,3 +102,6 @@ pcsaft
     epsilonK 236.77;
     source   "Gross & Sadowski, Ind. Eng. Chem. Res. 40 (2001) 1244, Table 1";
 }
+
+variationOf nHexane;
+variationReason "the case's own record carries the COSMO-SAC sigma-profile set(s) its lesson uses; the catalogue record holds none.";
