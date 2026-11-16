@@ -1,0 +1,121 @@
+/*--------------------------------*- Choupo -*--------------------------------*\
+|       \|/    C hemicals     |  Choupo: open-source, glass-box simulation    |
+|      \\|//   H eat-transfer |  Version:  Choupo-dev                         |
+|     \\\|///  O perations    |  Website:  https://choupo.org                 |
+|      \\|//   U nits         |  Licence:  GPL-3.0-or-later                   |
+|       \|/    P roperties    |  Tutorial case file -- part of Choupo         |
+|        |     O ptimization  |                                               |
+\*-----------------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------------*\
+  thermoPhysPropDict (v2) -- methanol + water, one pair, four ways.
+
+  THE SYSTEM is the gammaPhi package of the catalogue's NRTL pair
+  (methanol-water: regressed by Choupo on isobaric bubble temperatures, 297-361 K,
+  15-95 kPa, an ideal-gas vapour, the catalogue's own vapour-pressure records).
+
+  THE VARIANTS keep the pair and change what the equation of state does with it:
+
+    mhv1       SRK, mixingRule MHV1: the cubic matched to the pair's G^E at ZERO
+               pressure, q1 = -0.593 (Michelsen, Fluid Phase Equilib. 60 (1990)
+               213, p. 216; Poling Table 5-1, p. 5.17).
+    mhv2       SRK, mixingRule MHV2: q1 = -0.478, q2 = -0.0047 (Dahl & Michelsen,
+               AIChE J. 36 (1990) 1829, p. 1831; Poling Table 5-1 and its note a).
+    oneFluid   SRK, vanDerWaalsOneFluid, kij = 0 (announced): no G^E reaches the
+               cubic.  The rule is the one every phiPhi case ran until C408 (b).
+
+  The SRK alpha function is the plain Soave one the engine carries for every
+  component (Graboski-Daubert slope).  A fitted alpha for water and methanol is a
+  separate, opt-in object (DEV.md 4c C408, slice 0); it joins this case when it
+  lands, and the pure vapour pressures of the cubic then stop being the largest
+  error of the diagram (design record section 2, F2).
+\*---------------------------------------------------------------------------*/
+recordType    thermophysicalPropertySystem;
+schemaVersion 2;
+
+components ( methanol water );
+
+equilibrium
+{
+    formulation gammaPhi;
+    liquid
+    {
+        activityModel
+        {
+            model NRTL;
+            binaryParameters
+            {
+                methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+            }
+        }
+        standardState pureLiquid;
+    }
+    vapour
+    {
+        fugacityModel idealGas;
+    }
+}
+
+variants
+{
+    mhv1
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV1;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    mhv2
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule MHV2;
+                activityModel
+                {
+                    model NRTL;
+                    binaryParameters
+                    {
+                        methanol-water { source "data/standards/parameters/NRTL/methanol-water.dat"; }
+                    }
+                }
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    oneFluid
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+            equationOfState
+            {
+                model      SRK;
+                mixingRule vanDerWaalsOneFluid;
+            }
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+}
