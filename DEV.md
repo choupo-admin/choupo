@@ -3562,6 +3562,19 @@ accepts today, and that is a policy call.
 > none of the printed errors.  Report:
 > docs/reviews/2026-11-15-geraldes2008-errata/REPORT.md.
 
+> **C409 (Vitor, 2026-11-16: "Podes ver se a especiacao esta bem feita e se
+> e preciso usar o Choupo para ainda ficar melhor?", answered "toda a
+> especiacao do Choupo").**  A COMMISSION: an audit by measurement of every
+> shipped case that speciates (aqueous chemistry, electrolytes, wine acids,
+> seawater, scaling, precipitation): equilibrium constants against their
+> cited source at the page, the activity model's validity window against
+> the case's ionic strength, electroneutrality and element closure, the
+> temperature dependence, the solvent (water vs. water + ethanol, C406), and
+> each case's README claims.  Deliverable: docs/reviews/2026-11-16-speciation
+> -audit/REPORT.md with rows SP-xx (S1..S4), each with a reproduction, and a
+> ranked list of what the engine should gain to do it better.  Fixes are
+> separate slices.
+
 > **C408 (Vitor, 2026-11-16: "Ataca ainda hoje o que nos falta de
 > propriedades!  Se precisares de artigos, pede", after the architect's list
 > of what the breadth-first simulators do that Choupo does not).**  A
