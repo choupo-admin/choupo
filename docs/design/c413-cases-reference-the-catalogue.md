@@ -551,17 +551,27 @@ per case it reaches.
 What was built is the section 6 mechanism, with the deviations the build
 forced.  Each is a measurement, not a preference.
 
-1. **A directory scan is pinned as a WHOLE, one line.**  Measured on flash01:
-   with the ledger noting every read, the run parsed 562 catalogue files
-   (486 Henry pairs, 35 assets, 13 solution pairs, 10 utilities, 15
-   adsorption equilibria, 2 components, 1 chemistry record) -- the registries
-   load their whole directory whether or not the case uses a record.  Pinning
-   each file would be 562 lines per case, against the record's two.  A
-   directory the run read whole (every `*.dat`, at least two) is pinned by
-   one line whose key ends in `/` and whose value is the hash of the sorted
-   `<file> <computational hash>` lines (`choupoProps --canonical-hash <dir>`,
-   `records::pinHash`).  A new file in the directory moves exactly that pin.
-   flash01's manifest: 10 lines.
+1. **Pins are what the run CONSUMED, plus the ABSENCES that could change a
+   resolution (round 2, ruling PN-02).**  Measured on flash01: the run parses 562
+   catalogue files (486 Henry pairs, 35 assets, 13 solution pairs, 10 utilities,
+   15 adsorption equilibria, 2 components, 1 chemistry record) because the
+   registries load whole directories, but it uses a handful.  A first build
+   pinned each scanned directory by a hash (10 lines); that made one Henry edit
+   reach every case, the cascade C413 removes, and the form is DELETED.  Now the
+   engine (`PinCheck.cpp`, one home) applies the relevance rule to what was
+   parsed: a Henry or solution pair `A-B` is consumed when A and B are both
+   loaded components; an asset or utility when the case's text names it; an
+   adsorption equilibrium when its adsorbent is named and its species loaded;
+   every record outside those scanned directories when parsed (read by name).
+   For the pair directories, every ordered pair of loaded components that does
+   NOT exist is pinned `absent`, so adding it later is `appeared`.  The same
+   function computes the end check and the importer's proposal (`@ pin` lines of
+   the ledger), so they cannot drift.  flash01's manifest is 7 lines.  Cost to
+   decide before slice 2: absences grow with n(n-1) per directory in the number
+   of loaded components (ed cases with three species: 12 lines; a plant with
+   thirty species: 1740).  An unrelated Henry edit leaves flash01 `pinned`; a
+   benzene-toluene pair that arrives, or a benzene edit, is a drift
+   (`check_shadow_identity`).
 2. **The ledger notes at `Dictionary::fromFile`, not at the resolver seam.**
    Fifteen registries scan `data/standards/` directly; a read log at the seam
    would still be a subset.  `core/ReadLog.H` is the one note; a hash or an
@@ -610,3 +620,21 @@ forced.  Each is a measurement, not a preference.
     (`buildCaseZip`), the WASM rebuild.  The browser build is stale: an old
     engine meets a `pins` manifest as an unclaimed manifest and runs from the
     embedded catalogue (verdict `unsealed`).
+
+### Round 2 (review PN, rulings of 2026-11-16)
+
+PN-01: `--repin` locates the `pins {}` block on the comment-masked text (it used
+the first occurrence of the word, which is in the header comment) and handles
+`absent`.  PN-02: above.  PN-03: the manifest walk is cached per working
+directory, the shadow rule runs once per (record, file), the catalogue identity
+is parsed once; edbatch01 sealed 2.65 s against main's 2.70 s, pinned 2.66 s, and
+the getcwd count equals main's.  PN-04: the three pin gates run before any mode
+branches in `bin/runTests`; flash01 is in FASTSET; a case refused by its pins
+prints the pin's `ERROR:` line instead of "crashed/aborted"; CHOUPO_PINS=refuse
+is set for the cases the suite runs, not for the gates (a gate that makes an
+unsealed fixture out of a sealed ion case tests something else).  PN-05:
+`--pin` refuses a local homonym that is neither deleted, held nor declared.
+PN-06: a held copy is identity-checked; the held announcement no longer says
+"older than the catalogue"; an unsealed case under CHOUPO_PINS=refuse refuses an
+identity-disagreeing shadow.  PN-07: a record that does not parse is refused,
+never hashed as empty; "the run CONTINUES" is not printed under strict.

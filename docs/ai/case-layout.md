@@ -335,17 +335,24 @@ propertyManifest
     {
         "components/benzene.dat"   "<64-hex computational hash>";
         "components/toluene.dat"   "<64-hex computational hash>";
-        "parameters/Henry/"        "<64-hex hash of the directory>";   // a scan that reads a directory WHOLE
+        "parameters/Henry/benzene-toluene.dat"  "absent";    // no such pair, and its arrival would change the case
     }
     held { "components/water.dat"  "<hash of the case's own copy>"; }  // TRANSITIONAL, see below
 }
 ```
 
 * The key is the `data/standards/` path; the value the COMPUTATIONAL hash
-  (comments and unit spellings are cosmetic).  A key ending in `/` pins a
-  directory by the hash of its sorted `name, hash` lines.
+  (comments and unit spellings are cosmetic), or `absent`.  A pin lists what the
+  run CONSUMED: a registry parses a whole directory (562 files for flash01), so a
+  scanned one contributes only the names the case selects -- the Henry and
+  solution pairs among its components, the assets and utilities it names, the
+  adsorption equilibria of a named adsorbent -- and an `absent` line for each such
+  pair that does not exist, so that adding one later is a drift (`appeared`).
+  Editing an unrelated Henry pair moves nothing.
 * `bin/choupo-import --pin <case>` OBSERVES a run (the consumption ledger notes
-  every file the run parsed) and writes the pins, printing each record it adds.
+  every file the run parsed, the engine applies the relevance rule) and writes the
+  pins, printing each record it adds.  It refuses a local homonym that is neither
+  deleted, held nor declared.
   `--pin <case> --from-sealed [--repoint <rel>]...` flips a sealed case: identical
   copies deleted, `--repoint` deletes a stale copy on purpose, any other copy that
   has a catalogue homonym stays in force under `held {}` (read alone, announced

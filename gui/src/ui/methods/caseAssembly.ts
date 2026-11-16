@@ -115,7 +115,7 @@ export const CITES = {
     line: 87, contains: "throw std::runtime_error(registryRefusal::message(" },
   componentFile: { file: "src/thermo/Database.cpp", line: 259,
     contains: 'p / "constant" / "components" / (name + ".dat")' },
-  componentSealed: { file: "src/thermo/Database.cpp", line: 266,
+  componentSealed: { file: "src/thermo/Database.cpp", line: 267,
     contains: "const bool sealed = records::sealed();" },
   solve: { file: MAIN, line: 289,
     contains: "int rc = flowsheet.solve(flowsheetDict, thermo, verbosity);" },
@@ -375,8 +375,9 @@ export const FILE_ROLES: readonly FileRole[] = [
     says: "The PINS. This case does not carry copies of the records it reads: "
       + "benzene and toluene come from the installation catalogue, and this "
       + "file names, one line each, the catalogue record the run was made "
-      + "against, by the hash of its parsed content (a key ending in `/` pins "
-      + "a whole directory a registry scan reads). A run hashes every pin at "
+      + "against, by the hash of its parsed content, plus an `absent` line for each "
+      + "Henry or solution pair among its components that does not exist (its "
+      + "arrival would change the run). A run hashes every pin at "
       + "start, compares what it actually read with the pins at the end, and "
       + "says `pinned` or `drifted` in its result. A sealed case, the other "
       + "form, carries the copies and runs the same on any machine; "

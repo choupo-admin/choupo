@@ -3154,10 +3154,12 @@ diverges and `onDivergence refuse` fires exactly as before.  Gate
 the corpus flips in slice 2).**  "Cases are SELF-CONTAINED" (the 2026-06-11 credo)
 is revised, not repealed: a case now MAY reference the catalogue instead of
 carrying a copy of every record.  Its `constant/propertyManifest` holds `pins` --
-one line per catalogue record the run reads, valued by the COMPUTATIONAL hash
-(a directory a scan reads whole is one line, key ending in `/`) -- and a run
-hashes every pin at start and compares what it parsed with the pins at the end:
-`pinned` | `drifted` (`changed`, `vanished`, `unpinned`), announced by default,
+one line per catalogue record the run CONSUMED (a scanned registry parses a
+whole directory; only the names the case selects are pinned), valued by the
+COMPUTATIONAL hash, plus `absent` for the pairs among its components that do not
+exist -- and a run hashes every pin at start and compares what it consumed with
+the pins at the end: `pinned` | `drifted` (`changed`, `vanished`, `appeared`,
+`unpinned`), announced by default,
 REFUSED under `CHOUPO_PINS=refuse` / `runCase --strict` / `onDivergence refuse;`
 (set by `bin/runTests` in every mode).  The reason is measured: of 6115 copies in
 the shipped tutorials 2080 were older than the record they copied, and one
