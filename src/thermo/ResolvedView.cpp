@@ -440,6 +440,12 @@ void print(std::ostream& os, const std::string& title, const ThermoPackage& pkg,
         if (pkg.hasEos() && viewBuiltFor(form)
             && !pkg.eos().volumeTranslationNote().empty())
             d.push_back(pkg.eos().volumeTranslationNote());
+        //  THE CUBIC'S MIXING RULE (C408 (b)): CHOICE and DATA, "default" when
+        //  the case wrote none; an excess-Gibbs rule lists its constants, their
+        //  source and the pairs of its G^E model with their tier and span.
+        if (pkg.hasEos() && viewBuiltFor(form))
+            for (const auto& line : pkg.eos().mixingRuleLines())
+                d.push_back(line);
         //  The K-value world is a vapour-liquid notion of the gammaPhi and phiPhi
         //  formulations; the package's word defaults to "gammaPhi" for every
         //  other one, so it is printed only where it is the formulation's own
