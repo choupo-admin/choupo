@@ -671,7 +671,11 @@ KNOWN_OPEN_KW = {
     #  NRTL flash with a PC-SAFT flash on one feed; only the NRTL side reads
     #  water's Psat, and the gap between them -- the open debt -- GREW by
     #  11.9 kW (28 %).  Said, not hidden: re-pinned, not paid.
-    "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 54.7522,
+    #  54.7522 -> 53.2092 on 2026-11-17 (C410, the phiPhi liquid on the cubic's
+    #  liquid root): the PC-SAFT side's liquid enthalpy moved with its own
+    #  liquid root, the NRTL side's did not, and the gap between them -- the open
+    #  debt -- SHRANK by 1.5 kW (2.8 %).  Said, not hidden: re-pinned, not paid.
+    "tutorials/steady/flash/flash20_ethanol_water_pcsaft": 53.2092,
     "tutorials/steady/heat/coolingTower01_merkel": 1.5666,
     "tutorials/steady/userops/userOp01_yield_reactor": 2.1701,
 }
