@@ -37,6 +37,8 @@ License
 #include "thermo/activityCoefficient/UNIQUAC.H"
 
 #include <algorithm>
+#include <map>
+#include <memory>
 #include <cmath>
 #include <iomanip>
 #include <iostream>

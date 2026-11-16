@@ -548,13 +548,15 @@ def check_case(case, label=None):
         name = word(block, "name")
         if name not in d.get("kpis", {}) or name not in (d.get("profiles") or {}):
             continue
-        if re.search(r"\bthermo\s*\{", block):
-            #  A per-unit `thermo {}` world: the probe builds the CASE'S
-            #  package, so it would hold this column to a surface it does not
-            #  run on.  Said, never silently passed.
-            results.append(("skip", True, "%s :: %s: a per-unit `thermo {}`"
-                            " override -- the probe builds the case's package,"
-                            " not this unit's world; NOT checked" % (label, name)))
+        if re.search(r"\bthermo\s*(\{|[A-Za-z_][A-Za-z0-9_]*\s*;)", block):
+            #  A per-unit thermo world -- an inline `thermo {}` override or,
+            #  since C402, a named variant `thermo <name>;` -- the probe builds
+            #  the CASE'S package, so it would hold this column to a surface it
+            #  does not run on.  Said, never silently passed.
+            results.append(("skip", True, "%s :: %s: a per-unit thermo world"
+                            " (a `thermo {}` override or a named variant) -- the"
+                            " probe builds the case's package, not this unit's"
+                            " world; NOT checked" % (label, name)))
             continue
         try:
             for arm, ok, msg in check_column(case, name, block, d, info, log):

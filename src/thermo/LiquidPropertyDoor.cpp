@@ -19,6 +19,7 @@
 #include "thermo/liquidProperty/DensityLeaf.H"
 #include "thermo/pureFluid/PureFluidModel.H"
 
+#include <stdexcept>
 #include <cstdio>
 #include <iostream>
 #include <limits>

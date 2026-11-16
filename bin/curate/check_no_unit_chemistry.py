@@ -192,11 +192,7 @@ for root, pats in (("gui/tests", ("*.ts", "*.tsx")), ("gui/src", ("*.ts", "*.tsx
                            f"code example or fixture -- teach `thermo <name>;` and a `variants {{}}` "
                            f"entry (DEV.md 4c C402)")
 #  (c) the engine's readers of a unit's `thermo` sub-dictionary
-PINNED_READERS = {            # file -> number of `subDict("thermo")` sites it may hold
-    "src/unitOperations/flowsheet/Flowsheet.cpp": None,   # reads ONLY the engine's stamped copy (counted below)
-    "src/thermo/PropertyVariants.cpp": 1,                 # fragmentOf: a props operation's own declaration
-    "src/reporting/ModelBoundaryLedger.cpp": 1,           # the engine's stamped copy only (`@selectedVariant`)
-}
+from debt_registry import THERMO_SUBDICT_READERS as PINNED_READERS   # the waivers live in ONE place
 nReaders = 0
 for f in sorted((ROOT / "src").rglob("*.[cHh]*")):
     s = f.read_text(errors="replace")

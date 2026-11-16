@@ -23,7 +23,7 @@ kpi     vessel                 c_ret_elem5      0.00398854276504 1e-4
 kpi     vessel                 c_ret_elem6      0.00464977223146 1e-4
 kpi     vessel                 dP_feed          230000           1e-4
 kpi     vessel                 elements         6                1e-4
-kpi     vessel                 maxSI_calcite_wall 0.244776378612   1e-4
+kpi     vessel                 maxSI_calcite_wall 0.274776378612   1e-4
 kpi     vessel                 maxSI_gypsum_wall -0.745988884321  1e-4
 kpi     vessel                 recovery_elem1   0.107636517638   1e-4
 kpi     vessel                 recovery_elem2   0.209377337435   1e-4
@@ -35,12 +35,12 @@ kpi     vessel                 water_recovery   0.550461396778   1e-4
 stream  feed                   T                298.15           1e-4
 stream  permeate               T                298.15           1e-4
 stream  retentate              T                298.15           1e-4
-kpi     vessel                 LSI_calcite_bulk_end 0.610654032032   1e-4
-kpi     vessel                 LSI_calcite_wall_end 0.901059892645   1e-4
-kpi     vessel                 RSI_calcite_wall_end 5.19788021471    1e-4
-kpi     vessel                 StiffDavis_calcite_wall_end 0.660750996273   1e-4
+kpi     vessel                 LSI_calcite_bulk_end 0.640654032032   1e-4
+kpi     vessel                 LSI_calcite_wall_end 0.931059892645   1e-4
+kpi     vessel                 RSI_calcite_wall_end 5.13788021471    1e-4
+kpi     vessel                 StiffDavis_calcite_wall_end 0.690750996273   1e-4
 kpi     vessel                 mass_closure_rel 1.26685683979e-16 1e-4
-kpi     vessel                 maxLSI_calcite_wall 0.901059892645   1e-4
+kpi     vessel                 maxLSI_calcite_wall 0.931059892645   1e-4
 kpi     vessel                 Gamma_Ca_avg     0.542825049507   1e-4
 kpi     vessel                 Gamma_Cl_avg     0.5410909994     1e-4
 kpi     vessel                 Gamma_HCO3_avg   0.541571561865   1e-4

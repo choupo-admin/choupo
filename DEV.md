@@ -3583,6 +3583,28 @@ accepts today, and that is a policy call.
 > energy closures, --fast 87/0, --gui 49/0 on the merge with main, 98 of the
 > plan's 101 gates (check_regressed_pairs not run: NIST unreachable).
 
+> **THE 2026-11-16 BATCH LANDED** -- seven slices, ONE full sweep alone on
+> the laptop (2245 PASS / 13 FAIL / 1 KNOWN-BROKEN / 9 EXPECTED-FAIL, 1 h 45
+> min, most of it the gates walked one at a time; the parallel gate pool is
+> on `tools/parallel-gates`): water's Psat on the IAPWS equation with 24
+> water pairs refitted and one home for water's saturation curve
+> (`check_water_one_home`); the Mathias-Copeman alpha per component; C402
+> fragments to variants and membranes without legacy; d2 (Wilke-Chang at Tb);
+> MHV1/MHV2 on SRK (methanol + water at 100 C: 4.0 % mean in P against
+> Poling Table 8-46, level with gamma-phi); Lee-Kesler-Ploecker (LK tables
+> reproduced, N2/CH4/Ar at 112 K within 0.5-1.6 %).  The 13 failures, each
+> fixed and re-run alone: four membrane cases whose merged manifest carried
+> IAPWS95 twice (the merge's), their goldens then moved by +0.030 in every
+> calcite log SI (calcite log Ksp -8.450 -> -8.480, landed earlier) and
+> optim04's optimum with them; two Henry pair cards counting the new LKP
+> records; three std includes (WASM dialect); the gate manifest, the origin
+> census, a waiver table moved into debt_registry; the column-consistency
+> gate now skips a unit on a named thermo variant as it skipped an inline
+> override.  Held in the sweep: mass on 302 steady cases, elements on 286
+> (1 pinned), energy on 123, 87 time-integrated closures, 809 boundary
+> first-law quantities pinned.  Open, pinned by name: edwards02 (KNOWN-BROKEN,
+> Edwards's Table 7 is not explained by Psat alone).
+
 > **C414 (architect, 2026-11-16, agreed by Vitor after reading Gall's law
 > together: "Concordo").**  A CONSOLIDATION FREEZE of three to four days
 > after the 2026-11-16 batch lands: no new feature until the three layers
