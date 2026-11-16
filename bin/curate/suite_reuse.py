@@ -754,8 +754,8 @@ def pinned_key_parts(case_abs: Path):
     A sealed case carries its records, so its own files ARE the key; a pinned
     case does not, and a water edit would change its result and none of its
     files until the re-pin.  So its key holds the CURRENT content hash of every
-    catalogue file (or, for a directory pin, of every file in that directory)
-    its manifest pins -- an edit of a pinned record moves the key (the case
+    catalogue file its manifest pins (an `absent` pin is keyed by whether the
+    name exists now) -- an edit of a pinned record moves the key (the case
     runs, and a pin that no longer matches FAILS under CHOUPO_PINS=refuse), an
     edit of a record the case does not pin moves nothing.  None when the
     nearest manifest holds no pins."""
@@ -767,13 +767,9 @@ def pinned_key_parts(case_abs: Path):
         return None
     parts = []
     for sub in sorted(mf["pins"]):
-        f = ROOT / "data" / "standards" / sub.rstrip("/")
-        if sub.endswith("/"):
-            d = (digest([(x.name, H.sha(x)) for x in sorted(f.glob("*.dat"))])
-                 if f.is_dir() else "ABSENT")
-        else:
-            d = H.sha(f) if f.is_file() else "ABSENT"
-        parts.append(("pin:" + sub, d))
+        f = ROOT / "data" / "standards" / sub
+        #  a pinned file's CONTENT; for an `absent` pin its presence is the input
+        parts.append(("pin:" + sub, H.sha(f) if f.is_file() else "ABSENT"))
     return parts
 
 

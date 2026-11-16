@@ -1652,14 +1652,17 @@ def validate_staged_agrees(staged, out):
 _PIN_HEAD = """/*----------------------------------------------------------*\\
   constant/propertyManifest -- the case REFERENCES the catalogue
   (DEV.md 4c C413; context: %s).  Written by
-  bin/choupo-import --pin: ONE line per catalogue record the run reads,
-  keyed by its data/standards/ path (a trailing `/` pins a whole directory a
-  scan reads), valued by the COMPUTATIONAL hash of
-  the record (comments, whitespace and unit spellings are cosmetic).  A run
-  hashes every pin at start and compares the records it parsed against the
-  pins at the end: `pinned` | `drifted` in the result's seal block; strict
-  (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.  Follow a changed
-  record with `bin/choupo-import --repin <record>`.
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and `absent` for a name that does not exist
+  but whose arrival could change a resolution (a Henry or solution pair
+  among the case's components), so that adding it later is a drift.  A
+  registry parses a whole directory; only the names the case selects are
+  pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
   `held` (transitional): a local copy kept IN FORCE, read alone, verified
   against its own hash -- debt that only shrinks (check_case_records).
 \\*----------------------------------------------------------*/
@@ -1686,17 +1689,20 @@ _OUTPUTS = shutil.ignore_patterns("converged", "iterations", "log.*",
 
 def observe_reads(root, caseDir, held):
     """Run the case ONCE in a temporary copy with the consumption ledger and
-    return the standards-relative paths of every catalogue record it PARSED.
-    The copy's manifest holds `held` only (and an empty `pins`), so the held
-    copies are read alone exactly as the pinned case will read them."""
+    return the pin set the ENGINE proposes (`@ pin <sub> <hash|absent>`): the
+    records the run CONSUMED plus the absences that could change a resolution.
+    The relevance rule (a scanned registry parses a whole directory; a case
+    consumes the names it selects) lives in ONE place, the engine, so the
+    importer cannot drift from the check a run makes at its end.  The copy's
+    manifest holds an empty `pins` and the `held` copies, so they are read alone
+    exactly as the pinned case will read them."""
     tmp = Path(tempfile.mkdtemp(prefix="choupo-pin-"))
     work = tmp / "case"
     shutil.copytree(caseDir, work, ignore=_OUTPUTS, symlinks=True)
     man = work / "constant" / "propertyManifest"
     if man.exists():
         man.unlink()
-    if held:
-        man.write_text(pin_manifest_text({}, held, "observation"))
+    man.write_text(pin_manifest_text({}, held, "observation"))
     binary = app_binary(root, work)
     ledger = tmp / "asked.txt"
     env = dict(__import__("os").environ, CHOUPO_HOME=str(root),
@@ -1712,12 +1718,24 @@ def observe_reads(root, caseDir, held):
     if not ledger.exists():
         die("--pin: the engine wrote no consumption ledger -- rebuild with"
             " `make` (the build predates the read log).")
-    reads = set()
+    proposal = {}
     for line in ledger.read_text().splitlines():
-        if line.startswith("@ catalogue "):
-            reads.add(line[len("@ catalogue "):].strip())
+        if line.startswith("@ pin "):
+            sub, _, val = line[len("@ pin "):].strip().rpartition(" ")
+            proposal[sub] = val
     shutil.rmtree(tmp, ignore_errors=True)
-    return reads
+    return proposal
+
+
+_RECORD_SUBS = ("components", "species", "chemistry", "parameters", "assets",
+                "utilities", "adsorbents", "mixtures")
+
+
+def declared_variation(path):
+    t = re.sub(r'/\*.*?\*/', '', path.read_text(errors="replace"), flags=re.S)
+    t = re.sub(r'(?m)^\s*//.*$', '', t)
+    return bool(re.search(r'(?m)^\s*(overlayOf|variationOf|distinctFrom)\s+\S+;', t)
+                and re.search(r'(?m)^\s*variationReason\s+\S', t))
 
 
 def cmd_pin(root, caseDir, from_sealed, repoint=()):
@@ -1748,33 +1766,38 @@ def cmd_pin(root, caseDir, from_sealed, repoint=()):
                 identical.append(rel)
             else:
                 held[rel] = canonical_sha_file(root, local)
+    #  PN-05: a local record that has a catalogue homonym must be DELETED
+    #  (identical), HELD (a sealed copy kept in force) or DECLARED
+    #  (overlayOf / variationOf / distinctFrom with a variationReason).  An
+    #  unclaimed one is none of them, and the manifest this tool would write
+    #  would fail the strict suite -- so it REFUSES, naming each, and writes
+    #  nothing.
+    unclaimed = []
+    for sd in _RECORD_SUBS:
+        for f in sorted((const / sd).rglob("*.dat")) if (const / sd).is_dir() else []:
+            rel = str(f.relative_to(const))
+            if rel in identical or rel in held or not (std / rel).is_file():
+                continue
+            if not declared_variation(f):
+                unclaimed.append(rel)
+    if unclaimed:
+        die("--pin refuses: %d local record(s) share a name with a catalogue record and are"
+            " neither held, deleted nor declared -- the manifest written would fail the strict"
+            " suite and the run's numbers would move silently:\n  %s\n"
+            "Remedy: declare each in its own file (`variationOf <name>;` for a full record,"
+            " `overlayOf <name>;` for a delta, `distinctFrom <name>;` for another species,"
+            " each with a `variationReason \"...\";`), or delete the copy to follow the"
+            " catalogue, then re-run --pin.  Nothing was written."
+            % (len(unclaimed), "\n  ".join(unclaimed)))
     # the observation sees the case as it WILL be: identical copies gone
     tmpcase = Path(tempfile.mkdtemp(prefix="choupo-pinsrc-")) / "case"
     shutil.copytree(caseDir, tmpcase, ignore=_OUTPUTS, symlinks=True)
     for rel in identical:
         (tmpcase / "constant" / rel).unlink()
-    reads = observe_reads(root, tmpcase, held)
+    proposal = observe_reads(root, tmpcase, held)
     shutil.rmtree(tmpcase.parent, ignore_errors=True)
-    reads -= set(held)                         # a held record is read alone
-    pins = {}
-    #  A DIRECTORY SCAN reads every file of its directory whether or not the
-    #  case needs one (flash01: 486 Henry pairs, 35 assets, 10 utilities --
-    #  measured 2026-11-16).  A directory the run read WHOLE (every *.dat in
-    #  it, at least two) is pinned as ONE line, key `<dir>/`, valued by the
-    #  engine's directory hash (choupoProps --canonical-hash <dir>): an edit
-    #  to, or a NEW file in, that directory moves exactly that pin.
-    bydir = {}
-    for rel in reads:
-        bydir.setdefault(str(Path(rel).parent), set()).add(rel)
-    for d, rels in sorted(bydir.items()):
-        alld = {str(Path(d) / f.name) for f in (std / d).glob("*.dat")}
-        if len(alld) >= 2 and rels >= alld:
-            pins[d + "/"] = canonical_sha_file(root, std / d)
-        else:
-            for rel in sorted(rels):
-                f = std / rel
-                if f.is_file():
-                    pins[rel] = canonical_sha_file(root, f)
+    #  a held record is read alone; the engine does not propose it
+    pins = {k: v for k, v in sorted(proposal.items()) if k not in held}
     old = set(mf["pins"])
     added = sorted(set(pins) - old)
     dropped = sorted(old - set(pins))
@@ -1799,32 +1822,59 @@ def cmd_pin(root, caseDir, from_sealed, repoint=()):
         print("  = held %s" % rel)
 
 
+def _mask_comments(txt):
+    """The text with every comment blanked (same length, newlines kept), so a
+    block can be located without the words in a header comment."""
+    def blank(m):
+        return re.sub(r'[^\n]', ' ', m.group(0))
+    txt = re.sub(r'/\*.*?\*/', blank, txt, flags=re.S)
+    return re.sub(r'//[^\n]*', blank, txt)
+
+
+def _block_span(masked, name):
+    """(start, end) of the body of the first `name { ... }` block at the start
+    of a line, in the masked text; None when there is none."""
+    m = re.search(r'(?m)^\s*' + re.escape(name) + r'\s*\{', masked)
+    if not m:
+        return None
+    i, depth = m.end(), 1
+    while i < len(masked) and depth:
+        depth += {"{": 1, "}": -1}.get(masked[i], 0)
+        i += 1
+    return m.end(), i - 1
+
+
 def cmd_repin(root, rel):
     std = root / "data" / "standards"
     f = std / rel
-    if not f.is_file():
-        die("--repin: %s is not a record of the catalogue (%s)" % (rel, f))
-    new = canonical_sha_file(root, f)
-    n = 0
+    #  A record that is gone is pinned as ABSENT; one that has appeared replaces
+    #  an `absent` pin; a changed one gets its new hash.
+    new = canonical_sha_file(root, f) if f.is_file() else "absent"
+    n = changed = 0
     for m in case_records.manifests(root):
         mf = case_records.read_manifest(m)
         if rel not in mf["pins"]:
             continue
+        n += 1
         txt = m.read_text()
-        pat = re.compile(r'("%s"\s+")[0-9a-f]{64}("\s*;)' % re.escape(rel))
-        # only inside `pins {}`: held entries are the case's own copy
-        i = txt.find("pins")
-        j = txt.find("held", i)
-        head, tail = (txt[:j], txt[j:]) if j > 0 else (txt, "")
-        head2 = pat.sub(r"\g<1>%s\g<2>" % new, head)
-        if head2 != head:
-            m.write_text(head2 + tail)
-            n += 1
+        span = _block_span(_mask_comments(txt), "pins")
+        if span is None:
+            die("%s: the manifest holds pins but no `pins {}` block was found" % m)
+        a, b = span
+        pat = re.compile(r'("%s"\s+")([0-9a-f]{64}|absent)("\s*;)' % re.escape(rel))
+        body = txt[a:b]
+        body2, k = pat.subn(lambda mm: mm.group(1) + new + mm.group(3), body)
+        if k != 1:
+            die("%s: could not find the single pin line for %s" % (m, rel))
+        if body2 != body:
+            m.write_text(txt[:a] + body2 + txt[b:])
+            changed += 1
             print("  re-pinned %s in %s" % (rel, m.parent.parent.relative_to(root)))
-    print("choupo-import --repin %s: %d manifest(s) now follow the record"
-          " (hash %s...)" % (rel, n, new[:12]))
-    print("  next: run the cases it reaches (bin/runTests --scope <cases>) and"
-          " read which goldens moved.")
+    print("choupo-import --repin %s: %d manifest(s) pin it, %d rewritten (now %s)"
+          % (rel, n, changed, new if new == "absent" else new[:12] + "..."))
+    if changed:
+        print("  next: run the cases it reaches (bin/runTests --scope <cases>) and"
+              " read which goldens moved.")
 
 
 def cmd_seal_to(root, caseDir, dest):

@@ -22,6 +22,11 @@ shows the refusal is not crying wolf.
              refused under strict.
   UNDECLARED an identical copy beside a pin -- announced, refused under strict
              (the copies may not come back).
+  PIN SCOPE  on a copy of the catalogue: an UNRELATED Henry pair edited leaves
+             flash01 `pinned`; a relevant pair (benzene-toluene) that ARRIVES is
+             `drifted` (appeared) and refused under strict naming `--repin`; a
+             consumed record (benzene) edited is `changed`; one that does not parse
+             is refused, never hashed as empty.
   UNPINNED   a pin removed: the run read a record the manifest does not pin --
              announced as `drifted` (exit 0), refused under strict, naming
              `bin/choupo-import --pin`.
@@ -66,8 +71,8 @@ def make_case(tmp, tag, files=None, man_edit=None):
     return case
 
 
-def run(case, strict):
-    env = dict(os.environ, CHOUPO_HOME=str(ROOT))
+def run(case, strict, home=None):
+    env = dict(os.environ, CHOUPO_HOME=str(home or ROOT))
     env.pop("CHOUPO_PINS", None)
     if strict:
         env["CHOUPO_PINS"] = "refuse"
@@ -193,6 +198,92 @@ def main():
         rc, out = run(make_case(tmp, "changed_s", man_edit=bend_pin), True)
         refuses("CHANGED strict", rc, out, ["components/benzene.dat", "changed", "--repin"])
 
+        # ---- PN-06: an UNSEALED case run strict refuses an identity-disagreeing shadow;
+        #  a HELD copy is identity-checked like any other copy ---------------------
+        def no_manifest(t):
+            return ""
+        ion = {"components/benzene.dat": benzene("C6H6+")}
+        c = make_case(tmp, "unsealed_ion", ion)
+        (c / "constant" / "propertyManifest").unlink()
+        rc, out = run(c, True)
+        refuses("UNSEALED strict, another charge", rc, out, ["DIFFERENT species", "distinctFrom"])
+        c = make_case(tmp, "unsealed_ion2", ion)
+        (c / "constant" / "propertyManifest").unlink()
+        rc, out = run(c, False)
+        if rc != 0 or "[shadow]" not in out:
+            failures.append(f"UNSEALED announce: a legacy unsealed case outside strict is ANNOUNCED"
+                            f" (exit 0, a [shadow] line); got exit {rc}")
+        ionfile = tmp / "ion_benzene.dat"
+        ionfile.write_text(ion["components/benzene.dat"])
+        h = subprocess.run([str(ROOT / "build" / "linux64Gcc" / "choupoProps"), "--canonical-hash",
+                            str(ionfile)], capture_output=True, text=True).stdout.split()[0]
+        def add_held(t):
+            return t.replace("    }\n}", f'    }}\n    held\n    {{\n        "components/benzene.dat"  "{h}";\n    }}\n}}', 1)
+        rc, out = run(make_case(tmp, "held_ion", ion, add_held), False)
+        refuses("HELD copy of another species", rc, out, ["HELD", "DIFFERENT species", "distinctFrom"])
+        if "older than the catalogue" in out:
+            failures.append("PN-06: the held announcement says `older than the catalogue`, which is not"
+                            " said only when it is true")
+
+        # ---- THE PIN SCOPE (PN-02): what the run CONSUMED, plus the absences --------
+        #  A copy of the catalogue the arms may edit (the real one is never touched).
+        home = tmp / "chome"
+        shutil.copytree(ROOT / "data" / "standards", home / "data" / "standards")
+        std = home / "data" / "standards"
+        man = (BASE / "constant" / "propertyManifest").read_text()
+        pinned = set(case_records.read_manifest(BASE / "constant" / "propertyManifest")["pins"])
+        if not any(k.startswith("parameters/Henry/") and "benzene" in k for k in pinned):
+            failures.append("PIN SCOPE: the witness's manifest pins no Henry absence for"
+                            " benzene -- an ABSENT line per relevant pair is the point")
+        if any(k.endswith("/") for k in pinned):
+            failures.append("PIN SCOPE: the manifest still carries a DIRECTORY pin")
+        if any(k.startswith("parameters/Henry/") and "-" in k and k.endswith(".dat")
+               and "absent" not in man for k in pinned):
+            failures.append("PIN SCOPE: Henry pins without `absent`")
+
+        def probe(tag, files, strict=True):
+            for rel, text in files.items():
+                (std / rel).parent.mkdir(parents=True, exist_ok=True)
+                (std / rel).write_text(text)
+            return run(make_case(tmp, tag), strict, home)
+
+        # (i) an UNRELATED Henry pair edited: flash01 must NOT drift
+        unrelated = sorted((std / "parameters" / "Henry").glob("*.dat"))[0]
+        orig = unrelated.read_text()
+        rc, out = probe("henry_unrelated", {
+            f"parameters/Henry/{unrelated.name}": orig + "\ngateProbeKey 1;\n"})
+        s = seal_of(out)
+        if rc != 0 or not s or s.get("verdict") != "pinned":
+            failures.append(f"PIN SCOPE: editing the unrelated Henry pair {unrelated.name} must not"
+                            f" drift flash01 (benzene, toluene); got exit {rc}, seal {s!r}")
+        unrelated.write_text(orig)
+        # (ii) a RELEVANT pair ARRIVES (benzene-toluene): an absence pin fires
+        tmpl = (std / "parameters" / "Henry" / "1122Tetrachloroethane-water.dat").read_text()
+        newpair = re.sub(r"(?m)^solute\s+\S+;", "solute      benzene;", tmpl)
+        newpair = re.sub(r"(?m)^solvent\s+\S+;", "solvent     toluene;", newpair)
+        rc, out = probe("henry_arrives", {"parameters/Henry/benzene-toluene.dat": newpair})
+        refuses("PIN SCOPE: a relevant Henry pair appears", rc, out,
+                ["parameters/Henry/benzene-toluene.dat", "appeared", "--repin"])
+        rc, out = probe("henry_arrives_announce", {}, strict=False)
+        s = seal_of(out)
+        if rc != 0 or not s or s.get("verdict") != "drifted" \
+                or "parameters/Henry/benzene-toluene.dat (appeared)" not in s.get("divergedRecords", []):
+            failures.append("PIN SCOPE: an arrived pair must be `drifted` naming (appeared) in the"
+                            f" result; got exit {rc}, seal {s!r}")
+        (std / "parameters/Henry/benzene-toluene.dat").unlink()
+        # (iii) a CONSUMED record edited (benzene): changed
+        b = (std / "components" / "benzene.dat")
+        borig = b.read_text()
+        rc, out = probe("benzene_edit", {"components/benzene.dat": borig + "\ngateProbeKey 1;\n"})
+        refuses("PIN SCOPE: benzene edited", rc, out,
+                ["components/benzene.dat", "changed", "--repin"])
+        b.write_text(borig)
+        # (iv) an unparseable consumed record is refused, never hashed as empty
+        rc, out = probe("benzene_broken", {"components/benzene.dat": "this is { not a record"})
+        if rc == 0:
+            failures.append("PN-07: an unparseable pinned record must be refused, got exit 0")
+        b.write_text(borig)
+
         # ---- pins AND sealed -----------------------------------------------
         rc, out = run(make_case(tmp, "both", man_edit=lambda t: t.replace(
             "propertyManifest\n{", "propertyManifest\n{\n    sealed true;", 1)), False)
@@ -224,7 +315,10 @@ def main():
         for f in failures:
             print("  -", f)
         return 1
-    print("check_shadow_identity: OK -- on copies of the pinned witness: an undeclared"
+    print("check_shadow_identity: OK -- the pin scope (an unrelated Henry pair edited leaves flash01"
+          " pinned; a relevant pair that ARRIVES is `drifted` (appeared); a consumed record edited is"
+          " `changed`; an unparseable one is refused), an unsealed case run strict and a HELD copy refuse"
+          " another species; and on copies of the pinned witness: an undeclared"
           " homonym of another charge, a `variationOf` whose formula disagrees, a"
           " `distinctFrom` on the same species, a missing variationReason (strict),"
           " an undeclared copy (strict), an unpinned read and a changed pin each REFUSE by"

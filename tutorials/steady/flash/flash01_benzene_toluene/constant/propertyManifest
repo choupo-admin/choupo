@@ -1,14 +1,17 @@
 /*----------------------------------------------------------*\
   constant/propertyManifest -- the case REFERENCES the catalogue
   (DEV.md 4c C413; context: case root).  Written by
-  bin/choupo-import --pin: ONE line per catalogue record the run reads,
-  keyed by its data/standards/ path (a trailing `/` pins a whole directory a
-  scan reads), valued by the COMPUTATIONAL hash of
-  the record (comments, whitespace and unit spellings are cosmetic).  A run
-  hashes every pin at start and compares the records it parsed against the
-  pins at the end: `pinned` | `drifted` in the result's seal block; strict
-  (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.  Follow a changed
-  record with `bin/choupo-import --repin <record>`.
+  bin/choupo-import --pin from an OBSERVED run: one line per catalogue
+  record the run CONSUMED, keyed by its data/standards/ path, valued by
+  the COMPUTATIONAL hash of the record (comments, whitespace and unit
+  spellings are cosmetic) -- and `absent` for a name that does not exist
+  but whose arrival could change a resolution (a Henry or solution pair
+  among the case's components), so that adding it later is a drift.  A
+  registry parses a whole directory; only the names the case selects are
+  pinned.  A run hashes every pin at start and compares what it consumed
+  with the pins at the end: `pinned` | `drifted` in the result's seal
+  block; strict (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.
+  Follow a changed record with `bin/choupo-import --repin <record>`.
   `held` (transitional): a local copy kept IN FORCE, read alone, verified
   against its own hash -- debt that only shrinks (check_case_records).
 \*----------------------------------------------------------*/
@@ -16,15 +19,12 @@ propertyManifest
 {
     pins
     {
-        "assets/"  "6ea38d3dae745de488d9d1a489f275444e3a37691c51f8696194b005f7f1e1d7";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
         "components/benzene.dat"  "d33a713d9e0ca4d840778e4a8abd11516ee4ed8ea2523f71ffab890eeec3c6d2";
         "components/toluene.dat"  "3d2dfe6041bce1d2848f311fde6bc5f30cde6366c157316fe0d0014ab4868cc1";
-        "parameters/Henry/"  "89a42d179ae81088d36187287d8fd441492749824be442155c003dc9044f8e3d";
-        "parameters/adsorption/equilibria/activatedCarbon/"  "f9630b1fbd72bf47986d22d45da7a832c435cf8c1027992420b43996153558cc";
-        "parameters/adsorption/equilibria/zeolite13X/"  "e4804825bcece49d70ded1e5fbb0aff9d15c18715063a1242f3cbc84f6e43439";
-        "parameters/adsorption/equilibria/zeolite5A/"  "1958a4d6b184dd69472099a6d6897b36ef912052bef26441f0824fc6656c2b07";
-        "parameters/solution/"  "9e6283d14fefab6ab6c55d9709f186b57df74ae296e4afe86bab4ce6dddc31d4";
-        "utilities/"  "0414c772398737c53bbaffe4f1f89e7173f89e517a1cf4deb6a16976fed71af1";
+        "parameters/Henry/benzene-toluene.dat"  "absent";
+        "parameters/Henry/toluene-benzene.dat"  "absent";
+        "parameters/solution/benzene-toluene.dat"  "absent";
+        "parameters/solution/toluene-benzene.dat"  "absent";
     }
 }

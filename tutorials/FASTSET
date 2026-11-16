@@ -173,6 +173,7 @@ tutorials/steady/drying/evapDryer02_energy_limited
 tutorials/steady/economics/economics01_esterification_dcf
 tutorials/steady/evaporation/evaporator01_brine
 tutorials/steady/flash/flash15_refused_salt_basis_rank
+tutorials/steady/flash/flash01_benzene_toluene
 tutorials/steady/flowsheets/plant01_two_sectors
 tutorials/steady/gas-solid/gasSolidSplitter04_lognormal_psd
 tutorials/steady/gibbs/gibbs10_ammonia_fugacity

@@ -55,7 +55,7 @@ def _block(txt, name):
     return txt[m.end():i - 1]
 
 
-_PAIR = re.compile(r'"([^"]+)"\s+"?([0-9a-f]{64})"?\s*;')
+_PAIR = re.compile(r'"([^"]+)"\s+"?([0-9a-f]{64}|absent)"?\s*;')
 
 
 def read_manifest(path):
@@ -155,14 +155,13 @@ def pinned_case_dirs(root=None):
 
 
 def cases_pinning(root, sub):
-    """Case directories (relative to root) whose manifest pins `sub` -- the
-    record itself, or the directory a scan reads whole (a key ending in "/")."""
+    """Case directories (relative to root) whose manifest pins `sub` -- as a
+    hash, or as `absent` (a name whose arrival would change the case)."""
     root = Path(root)
     out = []
-    dirkey = sub.rsplit("/", 1)[0] + "/" if "/" in sub else None
     for m in manifests(root):
         mf = read_manifest(m)
-        if sub in mf["pins"] or (dirkey and dirkey in mf["pins"]):
+        if sub in mf["pins"]:
             out.append(str(m.parent.parent.relative_to(root)))
     return sorted(out)
 

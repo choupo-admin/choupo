@@ -8,7 +8,8 @@ COMPUTATIONAL hash of the record (constant/propertyManifest, `pins {}`).  A
 catalogue edit is committed WITH its re-pin (`bin/choupo-import --repin
 <record>`); this gate holds that, STATICALLY, without running a case:
 
-  * every pin names a file that exists in data/standards/ (class `vanished`);
+  * every pin names a file that exists in data/standards/ (class `vanished`),
+    or is `absent` and the file still does not exist (class `appeared`);
   * every pin equals the computational hash of that file (class `changed`);
   * every `held` copy exists in the case and equals its own claimed hash;
   * a manifest holds `pins` OR `sealed true; records`, never both.
@@ -71,14 +72,25 @@ def main():
             f = STD / rel
             if ".." in Path(rel).parts or rel.startswith("/"):
                 bad.append(f"{case}: pin '{rel}' escapes data/standards/")
+            elif want == "absent":
+                if f.exists():
+                    bad.append(f"{case}: pin '{rel}' is ABSENT in the manifest and the record"
+                               f" now EXISTS (a pair or record among the case's components has"
+                               f" appeared) -- `bin/choupo-import --repin {rel}`, then read which"
+                               f" goldens moved")
             elif not f.exists():
                 bad.append(f"{case}: pin '{rel}' VANISHED from the catalogue"
-                           f" -- restore the record, or `bin/choupo-import"
-                           f" --pin {case}` to pin what the case now reads")
-            elif canon(f) != want:
-                bad.append(f"{case}: pin '{rel}' CHANGED (the catalogue record"
-                           f" is no longer the one pinned) -- `bin/choupo-import"
-                           f" --repin {rel}`, then read which goldens moved")
+                           f" -- restore the record (or `bin/choupo-import --repin {rel}` pins"
+                           f" it as absent), then read which goldens moved")
+            else:
+                got = canon(f)
+                if got is None:
+                    bad.append(f"{case}: pin '{rel}' names a record that does not PARSE --"
+                               f" repair the record")
+                elif got != want:
+                    bad.append(f"{case}: pin '{rel}' CHANGED (the catalogue record"
+                               f" is no longer the one pinned) -- `bin/choupo-import --repin {rel}`,"
+                               f" then read which goldens moved")
         for rel, want in sorted(mf["held"].items()):
             nHeld += 1
             f = m.parent / rel
