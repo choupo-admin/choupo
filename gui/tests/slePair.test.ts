@@ -51,6 +51,7 @@ import {
   SLE_ENGINE_SOURCES, SLE_PREDICTIONS, SLE_STEPS,
 } from "../src/ui/methods/slePairLesson.js";
 import { REPO } from "./witnessOutputs.js";
+import { readCaseRecord } from "./caseRecordRead.js";
 import { witnessOutput } from "./witnessRead.js";
 
 const mock = vi.hoisted(() => ({ state: {} as Record<string, unknown> }));
@@ -145,7 +146,7 @@ describe("the transcribed NRTL against the engine", () => {
     const res = JSON.parse(block) as { operationResults: { name: string; diagnostics: Record<string, number> }[] };
     const d = res.operationResults.find((o) => o.name === "g_nrtl")!.diagnostics;
     // the pair the case declares, read from the case's own sealed copy
-    const rec = readFileSync(`${REPO}/${CASE}/constant/parameters/NRTL/ethanol-water.dat`, "utf-8");
+    const rec = readCaseRecord(`${REPO}/${CASE}/constant/parameters/NRTL/ethanol-water.dat`);   // C413: else the catalogue's
     const num = (k: string) => Number(new RegExp(`\\b${k}\\s+(-?[0-9.eE+-]+);`).exec(rec)![1]);
     const g = nrtlLnGamma(298.15, [0.5, 0.5], {
       n: 2, a: [0, num("a_ij"), num("a_ji"), 0], b: [0, num("b_ij"), num("b_ji"), 0],

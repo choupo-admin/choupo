@@ -67,9 +67,10 @@ import { SAFETY_STEPS } from "../src/ui/methods/processSafetyLesson.js";
 import { texParses } from "../src/ui/methods/lessonTex.js";
 import { METHOD_DISCIPLINES, METHOD_TOOLS } from "../src/ui/methods/registry.js";
 import { witnessOutput } from "./witnessRead.js";
+import { readCaseRecord } from "./caseRecordRead.js";
 
 const tree = (rel: string): string =>
-  readFileSync(new URL(`../../${rel}`, import.meta.url), "utf-8");
+  readCaseRecord(new URL(`../../${rel}`, import.meta.url).pathname);   // C413: a case's record, else the catalogue's
 const prose = (s: string): string => s.replace(/\s+/g, " ").trim();
 const rel = (a: number, b: number): number => Math.abs(a - b) / Math.abs(b);
 const PROPS = "system/propsDict";

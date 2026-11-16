@@ -38,12 +38,13 @@ License
 import { readFileSync } from "node:fs";
 
 import { describe, expect, it } from "vitest";
+import { readCaseRecord } from "./caseRecordRead.js";
 
 import { ENTHALPY_STEPS } from "../src/ui/methods/reactionEnthalpyLesson.js";
 import { ENTHALPY_WITNESS, NH3_PER_REACTION } from "../src/ui/methods/ReactionEnthalpyTool.js";
 
 const file = (rel: string): string =>
-  readFileSync(new URL(`../../tutorials/${ENTHALPY_WITNESS}/${rel}`, import.meta.url), "utf-8");
+  readCaseRecord(new URL(`../../tutorials/${ENTHALPY_WITNESS}/${rel}`, import.meta.url).pathname);   // C413
 const GOLDEN = file("expected");
 const golden = (key: string): number => {
   const row = GOLDEN.split("\n").find((l) => l.split(/\s+/)[2] === key);

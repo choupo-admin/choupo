@@ -1,0 +1,60 @@
+// [imported] origin "data/standards/utilities/coolingWater.dat" (Choupo-2608 release) -- owned + sha256-verified by constant/propertyManifest
+/*--------------------------------*- Choupo -*-----------------------*\
+  Utility: cooling water from the plant cooling tower.
+
+  Sources: Sinnott & Towler 6ed (2022) §6.5.3.
+
+  When to use:
+    The first-choice cooling utility on any plant.  Cheapest cooling per
+    GJ rejected (energy is dumped to ambient air via the tower).  Use
+    whenever the process side T > ~40 C so that an LMTD of ~10-20 K is
+    feasible against the 25-35 C tower loop.  For process T < ~25 C
+    switch to `chilledWater`.
+\*---------------------------------------------------------------------------*/
+
+utility     coolingWater;
+tier        cooling;
+mechanism   sensible;                  // 10 K rise; no phase change
+
+components  ( water );
+state       subcooledLiquid;
+P           3.0 bar;                   // header pressure for distribution
+T_in        298.15 K;                  // 25 C tower outlet
+T_out       308.15 K;                  // 35 C return (typical 10 K rise)
+
+// Energy rejected per kg: Cp_water × ΔT for the 10 K rise.
+dutyPerKg   41800.0;                   // J/kg  (4180 × 10)
+
+cost        0.4;                       // €/GJ rejected
+costYear    2022;
+description "Once-through cooling water from the plant tower (25 -> 35 C)";
+
+//  HOW THIS UTILITY'S OWN FLUID IS PRICED (2026-10-07, DEV.md 4c C48).
+//  An exchanger DESIGN (`design {}` in a postDict's shellTubeHX designRules)
+//  needs the cooling water's density, viscosity, conductivity and heat
+//  capacity for its film and its pressure drop, and water is not one of the
+//  case's components -- so the record that says what this utility IS also
+//  says how its fluid is evaluated, once, for every case that names it.  It
+//  is the case grammar of constant/thermoPhysPropDict, built against the
+//  case's own component database (a SEALED case must therefore carry
+//  water.dat -- `bin/choupo-import` grows the seal).  IF97 for water is the
+//  route the corpus's water exchangers already take (hxWorkflow1/2): IAPWS
+//  density and enthalpy, IAPWS R12-08 viscosity, IAPWS R15-11 conductivity.
+//  Nothing here moves any number of a run that does not design an exchanger
+//  against this utility: the block is read only by that design.
+thermophysicalSystem
+{
+    recordType    thermophysicalPropertySystem;
+    schemaVersion 2;
+
+    components    ( water );
+
+    equilibrium
+    {
+        formulation gammaPhi;
+        liquid { activityModel ideal;  standardState pureLiquid; }
+        vapour { fugacityModel idealGas; }
+    }
+
+    pureFluids { water { method IF97; } }
+}
