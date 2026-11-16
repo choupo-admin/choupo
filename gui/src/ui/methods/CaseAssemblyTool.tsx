@@ -267,7 +267,7 @@ export function CaseAssemblyTool(): JSX.Element {
           <Title order={4}>The files of flash01</Title>
           <OriginMark of="assumption" note="the witness case's files, exactly as its author declared them" />
           <Text size="sm" mt={4}>
-            Click a file. You get what it says, the line of the engine that
+            Click a file. You get what it says, the function of the engine that
             reads it and when, and the file itself exactly as it is on disk.
           </Text>
         </Box>
@@ -292,7 +292,7 @@ export function CaseAssemblyTool(): JSX.Element {
           <OriginMark of="engine" note="the lines the engine printed when this page ran flash01 in this browser" />
           <Text size="sm" mt={4}>
             The numbered list is what happens between <Mono>runCase</Mono> and
-            the files a run leaves behind, with the line that does each move;
+            the files a run leaves behind, with the function that does each move;
             a file name opens that file above. Beside it (below it on a
             narrow screen) are the lines the engine printed about its own
             assembly when this page ran flash01 a moment ago.
