@@ -366,7 +366,7 @@ describe("EX-02 against the engine: the two-liquid flag (envelope04, water + ben
     assertNeverJoined(traces, csv);
     const bub = traces.find((t) => t.role === "bubble")!;
     expect(bub.x.every((x) => x === null)).toBe(true);
-    expect(traces.find((t) => t.role === "phantom")!.x).toHaveLength(80);
+    expect(traces.find((t) => t.role === "phantom")!.x).toHaveLength(26);   // the bubble branch ends at 27 bar (CL-01)
     expect(liquidStatement("probed", split.length, probe.length)).toMatch(/Two liquids at the bubble point at 80 of 80 pressures/);
   });
 });
