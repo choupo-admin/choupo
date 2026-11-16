@@ -3583,6 +3583,38 @@ accepts today, and that is a policy call.
 > energy closures, --fast 87/0, --gui 49/0 on the merge with main, 98 of the
 > plan's 101 gates (check_regressed_pairs not run: NIST unreachable).
 
+> **C413 (Vitor, 2026-11-16: "como agora ja temos uma base de compostos
+> bastante alargada, eventualmente podes omitir ter de registar todos os
+> componentes no caso ... so compostos que nao estao na base standard e que
+> precisam de ser registados no caso, ou variacoes do composto"; ACCEPTED by
+> the architect).**  A case REFERENCES the catalogue by default and carries
+> a record only where it differs: a component absent from data/standards,
+> or a deliberate variation of one.  Measured the same day: the tree holds
+> 2370 sealed component copies (6268 sealed records in all); in a sample of
+> 344 copies only 84 equal the catalogue record -- three in four have
+> drifted, so most cases run on data older than the catalogue without
+> saying so, and every catalogue fix (water, 2026-11-16: 373 copies
+> re-sealed, 1182 files in one merge) costs a re-seal and merge conflicts.
+> Reproducibility is kept without copies: the case's manifest pins the sha
+> of every record it resolves, a drift is ANNOUNCED by name at run time and
+> refused under `--strict`, and an exported case (the download) materialises
+> its copies on demand.  This REVISES the 2026-06-11 credo "cases
+> self-contained": the data stays visible (the resolved view names each
+> record and its path), only the duplication goes.  Slices: (1) the resolver
+> and the manifest of pins, the export; (2) migration: a copy identical to
+> the catalogue is deleted, a drifted copy is either re-pointed (its goldens
+> move with a reason) or kept as a declared variation; (3) the gates that
+> count sealed copies.  After the 2026-11-16 batch lands.
+>
+> **C412 (Vitor, 2026-11-16: "Se B usa o mesmo modelo de A, eventualmente
+> escusamos de validar B").**  Test selection by MODEL SIGNATURE, not by
+> file reach: each case gets a signature (models, components, op kinds);
+> a property change runs one representative per signature group plus every
+> case holding a measured anchor; the full sweep runs once per batch, and
+> moves to the CI runner once its 24 platform differences are closed.
+> Tutorials keep growing as teaching material; validation cost stops
+> growing with them.
+
 > **C411 (architect, 2026-11-16, found by an external cross-check that used
 > Choupo as an independent speciation reference).**  DEFECTS in Choupo's
 > aqueous speciation below 0 C and in K(T), to be fixed as one slice after a
