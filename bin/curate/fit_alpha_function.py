@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 Vítor Geraldes
+# SPDX-License-Identifier: GPL-3.0-or-later
 """fit_alpha_function.py -- CURATE a cubic's Mathias-Copeman alpha constants.
 
 DEV.md 4c C408, slice 0 (docs/design/c408-eos-ge-mixing-rules.md, ruling 2).
