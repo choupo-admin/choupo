@@ -57,6 +57,7 @@ from pathlib import Path
 #  The `utility` golden row's rule has ONE Python home (C37 item 2).
 sys.path.insert(0, str(Path(__file__).resolve().parent / "curate"))
 import utility_rows  # noqa: E402
+import case_records  # noqa: E402   (C413: the manifest reader of the pin form)
 
 IMPORTER_VERSION = "3"
 
@@ -1620,14 +1621,261 @@ def validate_staged_agrees(staged, out):
 
 
 # ---------------------------------------------------------------------------
+
+# =============================================================================
+#  C413 -- a case REFERENCES the catalogue: pins, not copies.
+#
+#      choupo-import --pin <case> [--from-sealed [--repoint <rel>]...]
+#      choupo-import --repin <record>            (e.g. components/water.dat)
+#      choupo-import --seal <case> --to <dir>
+#
+#  --pin     OBSERVES the case: it runs it once with the consumption ledger
+#            (CHOUPO_RECORD_LEDGER) and pins, by COMPUTATIONAL hash, every
+#            catalogue record the run PARSED (core/ReadLog.H) -- not an
+#            importer closure guessed by regex, which twice under-staged.
+#            Every record it ADDS to a manifest is printed, so a record that
+#            should not have been read (a radical for an ion) is a diff read.
+#            On a SEALED case it refuses unless --from-sealed: then each copy
+#            computationally identical to the catalogue is deleted and pinned,
+#            each differing copy that has a catalogue homonym is kept IN FORCE
+#            under `held {}` (read alone, announced, hash-verified), and a
+#            copy with no homonym stays local.  The engine never writes
+#            constant/, so a pin is a claim somebody made deliberately.
+#  --repin   rewrites that ONE record's line in every manifest that pins it
+#            (the act of "this case now follows the new record"); commit it
+#            with the catalogue edit, then read which goldens moved.
+#  --seal    --to: the EXPORT -- an exported case is a SEALED case in today's
+#            grammar (copies + `sealed true`), staged and validated with the
+#            catalogue hidden by the transaction below.  Local records the case
+#            already carries are adopted, local overlays merged.
+# =============================================================================
+_PIN_HEAD = """/*----------------------------------------------------------*\\
+  constant/propertyManifest -- the case REFERENCES the catalogue
+  (DEV.md 4c C413; context: %s).  Written by
+  bin/choupo-import --pin: ONE line per catalogue record the run reads,
+  keyed by its data/standards/ path (a trailing `/` pins a whole directory a
+  scan reads), valued by the COMPUTATIONAL hash of
+  the record (comments, whitespace and unit spellings are cosmetic).  A run
+  hashes every pin at start and compares the records it parsed against the
+  pins at the end: `pinned` | `drifted` in the result's seal block; strict
+  (CHOUPO_PINS=refuse, runCase --strict) refuses a drift.  Follow a changed
+  record with `bin/choupo-import --repin <record>`.
+  `held` (transitional): a local copy kept IN FORCE, read alone, verified
+  against its own hash -- debt that only shrinks (check_case_records).
+\\*----------------------------------------------------------*/
+"""
+
+
+def pin_manifest_text(pins, held, ctx):
+    out = [_PIN_HEAD % ctx, "propertyManifest\n{\n", "    pins\n    {\n"]
+    for k in sorted(pins):
+        out.append('        "%s"  "%s";\n' % (k, pins[k]))
+    out.append("    }\n")
+    if held:
+        out.append("    held\n    {\n")
+        for k in sorted(held):
+            out.append('        "%s"  "%s";\n' % (k, held[k]))
+        out.append("    }\n")
+    out.append("}\n")
+    return "".join(out)
+
+
+_OUTPUTS = shutil.ignore_patterns("converged", "iterations", "log.*",
+                                  "postProcessing", "resultJson*", "*.csv.new")
+
+
+def observe_reads(root, caseDir, held):
+    """Run the case ONCE in a temporary copy with the consumption ledger and
+    return the standards-relative paths of every catalogue record it PARSED.
+    The copy's manifest holds `held` only (and an empty `pins`), so the held
+    copies are read alone exactly as the pinned case will read them."""
+    tmp = Path(tempfile.mkdtemp(prefix="choupo-pin-"))
+    work = tmp / "case"
+    shutil.copytree(caseDir, work, ignore=_OUTPUTS, symlinks=True)
+    man = work / "constant" / "propertyManifest"
+    if man.exists():
+        man.unlink()
+    if held:
+        man.write_text(pin_manifest_text({}, held, "observation"))
+    binary = app_binary(root, work)
+    ledger = tmp / "asked.txt"
+    env = dict(__import__("os").environ, CHOUPO_HOME=str(root),
+               CHOUPO_RECORD_LEDGER=str(ledger))
+    env.pop("CHOUPO_PINS", None)
+    r = subprocess.run([str(binary), "."], cwd=str(work), env=env,
+                       capture_output=True, text=True, timeout=900)
+    expectFail = (Path(caseDir) / ".expect-nonconvergence").exists()
+    if r.returncode != 0 and not expectFail:
+        tail = "\n".join((r.stdout + "\n" + r.stderr).splitlines()[-20:])
+        die("--pin: the observation run FAILED (exit %d), nothing was written."
+            "\n--- last lines ---\n%s" % (r.returncode, tail))
+    if not ledger.exists():
+        die("--pin: the engine wrote no consumption ledger -- rebuild with"
+            " `make` (the build predates the read log).")
+    reads = set()
+    for line in ledger.read_text().splitlines():
+        if line.startswith("@ catalogue "):
+            reads.add(line[len("@ catalogue "):].strip())
+    shutil.rmtree(tmp, ignore_errors=True)
+    return reads
+
+
+def cmd_pin(root, caseDir, from_sealed, repoint=()):
+    std = root / "data" / "standards"
+    const = caseDir / "constant"
+    man = const / "propertyManifest"
+    mf = case_records.read_manifest(man)
+    sealedForm = mf["sealed"] or bool(mf["records"])
+    held = dict(mf["held"])
+    identical = []
+    if sealedForm:
+        if not from_sealed:
+            die("%s is a SEALED case (`sealed true; records`).  To flip it to"
+                " pins use `--pin <case> --from-sealed` (copies identical to"
+                " the catalogue are deleted, differing ones kept under"
+                " `held {}`); to export a frozen copy use `--seal <case> --to"
+                " <dir>`." % caseDir)
+        for rel in sorted(mf["records"]):
+            local, cat = const / rel, std / rel
+            if not local.is_file() or not cat.is_file():
+                continue                       # local-only: stays as it is
+            if rel in repoint:
+                #  RE-POINT (the stale copy is deleted, the case now follows the
+                #  catalogue record): a decision about THIS case's numbers, so
+                #  it is named, never inferred.  Read what moves afterwards.
+                identical.append(rel)
+            elif canonical_sha_file(root, local) == canonical_sha_file(root, cat):
+                identical.append(rel)
+            else:
+                held[rel] = canonical_sha_file(root, local)
+    # the observation sees the case as it WILL be: identical copies gone
+    tmpcase = Path(tempfile.mkdtemp(prefix="choupo-pinsrc-")) / "case"
+    shutil.copytree(caseDir, tmpcase, ignore=_OUTPUTS, symlinks=True)
+    for rel in identical:
+        (tmpcase / "constant" / rel).unlink()
+    reads = observe_reads(root, tmpcase, held)
+    shutil.rmtree(tmpcase.parent, ignore_errors=True)
+    reads -= set(held)                         # a held record is read alone
+    pins = {}
+    #  A DIRECTORY SCAN reads every file of its directory whether or not the
+    #  case needs one (flash01: 486 Henry pairs, 35 assets, 10 utilities --
+    #  measured 2026-11-16).  A directory the run read WHOLE (every *.dat in
+    #  it, at least two) is pinned as ONE line, key `<dir>/`, valued by the
+    #  engine's directory hash (choupoProps --canonical-hash <dir>): an edit
+    #  to, or a NEW file in, that directory moves exactly that pin.
+    bydir = {}
+    for rel in reads:
+        bydir.setdefault(str(Path(rel).parent), set()).add(rel)
+    for d, rels in sorted(bydir.items()):
+        alld = {str(Path(d) / f.name) for f in (std / d).glob("*.dat")}
+        if len(alld) >= 2 and rels >= alld:
+            pins[d + "/"] = canonical_sha_file(root, std / d)
+        else:
+            for rel in sorted(rels):
+                f = std / rel
+                if f.is_file():
+                    pins[rel] = canonical_sha_file(root, f)
+    old = set(mf["pins"])
+    added = sorted(set(pins) - old)
+    dropped = sorted(old - set(pins))
+    text = pin_manifest_text(pins, held, "case root")
+    man.write_text(text)
+    for rel in identical:
+        (const / rel).unlink()
+    # empty directories left by the deletions
+    for d in sorted({(const / r).parent for r in identical}, reverse=True):
+        try:
+            d.rmdir()
+        except OSError:
+            pass
+    print("choupo-import --pin %s" % caseDir)
+    print("  pins: %d record(s); held: %d; copies deleted (identical): %d"
+          % (len(pins), len(held), len(identical)))
+    for rel in added:
+        print("  + pin  %s" % rel)
+    for rel in dropped:
+        print("  - pin  %s  (no longer read)" % rel)
+    for rel in sorted(held):
+        print("  = held %s" % rel)
+
+
+def cmd_repin(root, rel):
+    std = root / "data" / "standards"
+    f = std / rel
+    if not f.is_file():
+        die("--repin: %s is not a record of the catalogue (%s)" % (rel, f))
+    new = canonical_sha_file(root, f)
+    n = 0
+    for m in case_records.manifests(root):
+        mf = case_records.read_manifest(m)
+        if rel not in mf["pins"]:
+            continue
+        txt = m.read_text()
+        pat = re.compile(r'("%s"\s+")[0-9a-f]{64}("\s*;)' % re.escape(rel))
+        # only inside `pins {}`: held entries are the case's own copy
+        i = txt.find("pins")
+        j = txt.find("held", i)
+        head, tail = (txt[:j], txt[j:]) if j > 0 else (txt, "")
+        head2 = pat.sub(r"\g<1>%s\g<2>" % new, head)
+        if head2 != head:
+            m.write_text(head2 + tail)
+            n += 1
+            print("  re-pinned %s in %s" % (rel, m.parent.parent.relative_to(root)))
+    print("choupo-import --repin %s: %d manifest(s) now follow the record"
+          " (hash %s...)" % (rel, n, new[:12]))
+    print("  next: run the cases it reaches (bin/runTests --scope <cases>) and"
+          " read which goldens moved.")
+
+
+def cmd_seal_to(root, caseDir, dest):
+    dest = Path(dest).resolve()
+    if dest.exists():
+        die("--seal --to: %s already exists" % dest)
+    shutil.copytree(caseDir, dest, ignore=_OUTPUTS, symlinks=True)
+    man = dest / "constant" / "propertyManifest"
+    mf = case_records.read_manifest(man)
+    if mf["sealed"] or mf["records"]:
+        die("%s is already a sealed case: copy it as it is." % caseDir)
+    if man.exists():
+        man.unlink()
+    extra = []
+    for sd in ("components", "species", "chemistry", "parameters", "assets",
+               "utilities", "adsorbents", "mixtures"):
+        for f in sorted((dest / "constant" / sd).rglob("*.dat")):
+            rel = str(f.relative_to(dest / "constant"))
+            ov = re.search(r'(?m)^\s*overlayOf\b', f.read_text(errors="replace"))
+            extra += ["--merge-overlay" if ov else "--adopt-local", rel]
+    r = subprocess.run([sys.executable, str(Path(__file__).resolve()), str(dest)]
+                       + extra, text=True)
+    if r.returncode != 0:
+        shutil.rmtree(dest, ignore_errors=True)
+        die("--seal --to: the sealing transaction REFUSED (see above); nothing"
+            " was exported.")
+    print("choupo-import --seal: exported a SEALED copy of %s to %s" % (caseDir, dest))
+
 def main():
     args = sys.argv[1:]
     adopt, overwrite, merge_overlay = set(), set(), set()
     pos = []
     i = 0
+    c413 = {}
     while i < len(args):
         a = args[i]
-        if a == "--adopt-local":
+        if a in ("--pin", "--seal"):
+            i += 1
+            c413[a] = args[i]
+        elif a == "--repin":
+            i += 1
+            c413[a] = args[i]
+        elif a == "--to":
+            i += 1
+            c413[a] = args[i]
+        elif a == "--from-sealed":
+            c413[a] = True
+        elif a == "--repoint":
+            i += 1
+            c413.setdefault("--repoint", set()).add(args[i])
+        elif a == "--adopt-local":
             i += 1
             adopt.add(args[i])
         elif a == "--overwrite":
@@ -1641,12 +1889,37 @@ def main():
         else:
             pos.append(a)
         i += 1
+    if c413:
+        root = find_root()
+        if "--repin" in c413:
+            return cmd_repin(root, c413["--repin"])
+        if "--pin" in c413:
+            cd = Path(c413["--pin"]).resolve()
+            if not cd.is_dir():
+                die("not a directory: " + str(cd))
+            return cmd_pin(root, cd, "--from-sealed" in c413,
+                           c413.get("--repoint", ()))
+        if "--seal" in c413:
+            if "--to" not in c413:
+                die("--seal needs `--to <dir>`: an export is a COPY of the"
+                    " case, sealed; sealing in place is `choupo-import <case>`.")
+            cd = Path(c413["--seal"]).resolve()
+            if not cd.is_dir():
+                die("not a directory: " + str(cd))
+            return cmd_seal_to(root, cd, c413["--to"])
+        die("--to / --from-sealed go with --seal / --pin")
     if len(pos) != 1:
         die("usage: choupo-import <caseDir> [--adopt-local <rel>]..."
             " [--overwrite <rel>]... [--merge-overlay <rel>]...")
     caseDir = Path(pos[0]).resolve()
     if not caseDir.is_dir():
         die("not a directory: " + str(caseDir))
+    if case_records.read_manifest(caseDir / "constant" / "propertyManifest")["pins"]:
+        die("%s REFERENCES the catalogue (its manifest holds `pins`): a bare"
+            " `choupo-import <case>` would seal it in place and throw the pins"
+            " away.  To pin what the case reads again use `choupo-import --pin"
+            " <case>`; to export a frozen, self-contained copy use"
+            " `choupo-import --seal <case> --to <dir>`." % caseDir)
     root = find_root()
     std = root / "data" / "standards"
     release = read_release(root)

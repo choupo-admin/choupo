@@ -62,6 +62,10 @@
 #  Options:
 #      -a   append to existing log instead of refusing
 #      -q   quiet (print only the converged-result lines)
+#      --strict   a case that REFERENCES the catalogue (its manifest holds `pins`)
+#                 REFUSES on a drifted pin, a record read and not pinned, or an
+#                 undeclared shadow, instead of announcing it (sets CHOUPO_PINS=
+#                 refuse; bin/runTests sets it in every mode)
 # =============================================================================
 
 set -euo pipefail
@@ -76,6 +80,8 @@ while [ "$#" -gt 0 ]; do
         -f) FRESH=1;  shift ;;   # overwrite the old log: the re-run-a-tutorial flag
         -q) QUIET=1;  shift ;;
         --refresh-from-ancestor) REFRESH=1; shift ;;   # re-project a unit's local run
+        --strict) export CHOUPO_PINS=refuse; shift ;;  # C413: a drifted pin, an unpinned read or an
+                                                       # undeclared shadow REFUSES (the engine reads the env)
         -h|--help)
             sed -n '3,20p' "$0" | sed 's/^# \{0,1\}//'
             exit 0

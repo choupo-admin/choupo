@@ -228,6 +228,17 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 export CHOUPO_HOME="$ROOT"
 export PATH="$ROOT:$ROOT/bin:$PATH"
 
+# --- IN THE TREE, A DRIFTED PIN IS A FAIL (2026-11-16, DEV.md 4c C413) --------
+#  A case that REFERENCES the catalogue pins every record its run reads.  By
+#  default an engine run ANNOUNCES a drifted pin, a record read and not pinned,
+#  or an undeclared shadow (a first-year editing a record learns from the line).
+#  The suite is not a first-year: CHOUPO_PINS=refuse makes the same engine
+#  REFUSE, so a catalogue edit committed without its re-pin
+#  (bin/choupo-import --repin) is a FAILED case, never a line of stderr.  It
+#  binds only cases whose manifest holds `pins`; gates that build their own
+#  fixtures unset it where they test the announcing default.
+export CHOUPO_PINS=refuse
+
 # --- THE CORES (2026-10-25, DEV.md 4c C167) ------------------------------------
 #  Vitor watched the sweep on a ten-core laptop use one core most of the time.
 #  The case walk and every gate ran one after another, so the cores shortened
@@ -8281,6 +8292,50 @@ PYEOF
         fail=$((fail+1))
     fi
     rm -f /tmp/sealgate.$$
+
+    # Pins-fresh gate (2026-11-16, C413): every pin of every case that
+    # REFERENCES the catalogue equals the computational hash of the record it
+    # names, every held copy its own claim -- STATIC, no case is run.  The
+    # pin-form successor of the integrity half of the seal-drift gate above
+    # (which keeps judging the cases that are still sealed).
+    if gate_exec "$ROOT/bin/curate/check_pins_fresh.py" > /tmp/pinsfresh.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "pins-fresh-gate" "$(gate_claim check_pins_fresh /tmp/pinsfresh.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_pins_fresh.py)\n" "pins-fresh-gate"
+        cat /tmp/pinsfresh.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/pinsfresh.$$
+
+    # Case-records gate (2026-11-16, C413): a case that references the
+    # catalogue carries only records of its own -- no copy equal to the
+    # catalogue's, every homonym declared with its reason or held, `held` only
+    # shrinks, no pin for a record read alone, no written path with a homonym.
+    if gate_exec "$ROOT/bin/curate/check_case_records.py" > /tmp/caserec.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "case-records-gate" "$(gate_claim check_case_records /tmp/caserec.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_case_records.py)\n" "case-records-gate"
+        cat /tmp/caserec.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/caserec.$$
+
+    # Shadow-identity gate (2026-11-16, C413): a local record with a catalogue
+    # homonym says what it is and the engine checks the claim against the
+    # identity fields; an unpinned read and a changed pin refuse by name with
+    # their remedy.  Sabotage-verified by its own arms on copies of the pinned
+    # witness.
+    if gate_exec "$ROOT/bin/curate/check_shadow_identity.py" > /tmp/shadowid.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "shadow-identity-gate" "$(gate_claim check_shadow_identity /tmp/shadowid.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_shadow_identity.py)\n" "shadow-identity-gate"
+        cat /tmp/shadowid.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/shadowid.$$
 
     # Release-inventory gate (ChatGPT landing-plan §5): the generated single-
     # source-of-truth counts (generated/releaseInventory.json, consumed by the
