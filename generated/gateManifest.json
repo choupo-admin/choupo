@@ -1853,8 +1853,8 @@
     },
     "check_pins_fresh": {
       "exit": 0,
-      "claim": "check_pins_fresh: OK -- 7 pin(s) in 1 referencing case(s) each equal the computational hash of their data/standards/ record, and 0 held cop(ies) equal their own claims; no manifest holds pins together with a sealed `records`.  NOT CHECKED: that a case reads nothing it does not pin (the run's end check and check_shadow_identity hold that), the sealed cases (check_seal_drift), or that any pinned value is right.",
-      "seconds": 0.9
+      "claim": "check_pins_fresh: OK -- 5 pin(s) in 1 referencing case(s) each equal the computational hash of their data/standards/ record, and 0 held cop(ies) equal their own claims; no manifest holds pins together with a sealed `records`.  NOT CHECKED: the `relevant:` set lines (a relevant pair that arrived needs the case's components: the run's end check holds that, and flash01 is in FASTSET), that a case reads nothing it does not pin (the run's end check and check_shadow_identity hold that), the sealed cases (check_seal_drift), or that any pinned value is right.",
+      "seconds": 1.3
     },
     "check_case_records": {
       "exit": 0,
@@ -1864,7 +1864,7 @@
     "check_shadow_identity": {
       "exit": 0,
       "claim": "check_shadow_identity: OK -- the pin scope (an unrelated Henry pair edited leaves flash01 pinned; a relevant pair that ARRIVES is `drifted` (appeared); a consumed record edited is `changed`; an unparseable one is refused), an unsealed case run strict and a HELD copy refuse another species; and on copies of the pinned witness: an undeclared homonym of another charge, a `variationOf` whose formula disagrees, a `distinctFrom` on the same species, a missing variationReason (strict), an undeclared copy (strict), an unpinned read and a changed pin each REFUSE by name with their remedy (announced as `drifted` in the result when not strict); a declared distinctFrom on another charge and a faithful variationOf run; `pins` beside `sealed` refuses; a pin for a record read alone is named; Cl and HOCl carry their chlorine spelling.  NOT CHECKED: that a declared variation's numbers are right, or any case other than the witness.",
-      "seconds": 0.9
+      "seconds": 1.6
     }
   }
 }
