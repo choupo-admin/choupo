@@ -883,13 +883,13 @@
     },
     "check_seal_verdict": {
       "exit": 0,
-      "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named",
-      "seconds": 0.2
+      "claim": "check_seal_verdict: OK -- the verdict reaches the RESULT (verified / diverged+named / unsealed, and unsealed is never verified); announce is the default and the case declares `onDivergence refuse;` for the archival posture (fires on a moved byte, silent when intact); a junk word refuses named; and for a case that REFERENCES the catalogue (`pins`): verdict pinned, drifted (changed / unpinned, named IN THE RESULT), refused by the environment (CHOUPO_PINS=refuse) or by the case, a junk CHOUPO_PINS word refused, pins beside sealed refused",
+      "seconds": 0.4
     },
     "check_sealed_corpus": {
       "exit": 0,
-      "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (607) or a live-overlay demo exempt by design (4), 0 unsealed; and the 5743 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
-      "seconds": 1.2
+      "claim": "check_sealed_corpus: OK -- every top-level case under tutorials/ carries its .cho marker (so none is invisible to this search) and is either SEALED with a constant/propertyManifest (610), PINNED to the catalogue by its manifest (1, C413) or a live-overlay demo exempt by design (4), 0 unsealed; and the 5784 records those manifests name are each on disk under the case's constant/ AND not ignored by git, so a case runs from what git holds (C378 pilot review, PA-01).  NOT CHECKED: that a named record's content matches the hash its manifest claims (the runtime's seal check and check_seal_drift hold that), that a case reads no record its manifest does not name (a sealed case reading the installation catalogue, review PC-10), or that any sealed value is right.",
+      "seconds": 0.6
     },
     "check_sector_hierarchy": {
       "exit": 0,
@@ -1850,6 +1850,21 @@
       "exit": 0,
       "claim": "check_water_one_home: OK -- water.dat's vapour pressure is Wagner & Pruss Eq. (2.5) as printed, Table 1 reproduced to 3e-7, the engine's Psat equals it to 1e-9 at 5 temperatures, and the H2O(g) = H2O record is the same curve (logK within 4.8e-06, dH its own).  NO case carries the old Antoine law.  NOT CHECKED: the sealed copies' other content (check_seal_drift reports them).",
       "seconds": 0.5
+    },
+    "check_pins_fresh": {
+      "exit": 0,
+      "claim": "check_pins_fresh: OK -- 10 pin(s) in 1 referencing case(s) each equal the computational hash of their data/standards/ record, and 0 held cop(ies) equal their own claims; no manifest holds pins together with a sealed `records`.  NOT CHECKED: that a case reads nothing it does not pin (the run's end check and check_shadow_identity hold that), the sealed cases (check_seal_drift), or that any pinned value is right.",
+      "seconds": 0.9
+    },
+    "check_case_records": {
+      "exit": 0,
+      "claim": "check_case_records: OK -- 1 referencing case(s): no local record equals the catalogue's, every homonym is declared with its reason (or held), 0 held cop(ies) against a ceiling of 0, no pin names a record read alone, and no path a case writes has a catalogue homonym (1878 cases read for it).  NOT CHECKED: that every case has a manifest (check_sealed_corpus), that a declared variation's numbers are right, or the sealed cases' copies (check_seal_drift).",
+      "seconds": 1.4
+    },
+    "check_shadow_identity": {
+      "exit": 0,
+      "claim": "check_shadow_identity: OK -- on copies of the pinned witness: an undeclared homonym of another charge, a `variationOf` whose formula disagrees, a `distinctFrom` on the same species, a missing variationReason (strict), an undeclared copy (strict), an unpinned read and a changed pin each REFUSE by name with their remedy (announced as `drifted` in the result when not strict); a declared distinctFrom on another charge and a faithful variationOf run; `pins` beside `sealed` refuses; a pin for a record read alone is named; Cl and HOCl carry their chlorine spelling.  NOT CHECKED: that a declared variation's numbers are right, or any case other than the witness.",
+      "seconds": 0.6
     }
   }
 }
