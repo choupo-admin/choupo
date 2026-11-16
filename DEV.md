@@ -3630,6 +3630,19 @@ accepts today, and that is a policy call.
 > 10.1021/ie00013a024; Lee 10.1002/aic.690210313; Plocker
 > 10.1021/i260067a020; Kunz 10.1021/je300655b.  Each slice carries rule 4d
 > (guide section, Theory link, catalogue, PDFs) and a measured witness.
+> AMENDED the same day (Vitor: "depois nao te esquecas de tratar da
+> documentacao e talvez os EduTools que falam disto"): every slice ships its
+> guides (rule 4d, already in each brief), and the lessons are read too.  No
+> EduTool teaches the cubic equation of state today; nine cite one in
+> passing (approach-to-equilibrium, reaction enthalpy, declared pathways,
+> element potential, letdown, process safety, reactor ladder, standard
+> state, syngas) and each is checked for a claim a slice makes false.  When
+> Peneloux, the alpha function and MHV1/MHV2 have landed, ONE new EduTool,
+> "the cubic and its corrections": the same mixture priced by the plain
+> cubic, with the volume shift (liquid density against measurement), with
+> the fitted alpha (vapour pressure against the record), and with a G^E rule
+> (gamma against the activity model it carries) -- every number from the
+> engine, every symbol glossed and cited at file:line.
 
 > **C407 (Vitor, 2026-11-15: "Isso e tao facil de fazer!  Achas que vale a
 > pena adiar?!", on the EoS/G^E mixing rules and volume translation).**  A
