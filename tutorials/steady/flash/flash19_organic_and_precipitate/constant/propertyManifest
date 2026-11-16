@@ -91,10 +91,10 @@ propertyManifest
         "chemistry/water-vapour-equilibrium.dat"
         {
             type          imported;
-            sha256        "1e2fb4e578408215405c1f92be96668f552dfe84815e339737455587019928a3";
-            computationalSha256 "4b41d216ede3add0b7cd987f0e8d4f5b0938724e0bef5721aa2719dd6f9184fb";
+            sha256        "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
+            computationalSha256 "5703967e70e86e30fcfb91cc8743e755ce4ffbf44df490505c521c8961178d56";
             origin        "data/standards/chemistry/water-vapour-equilibrium.dat";
-            originSha256  "1127150b975b47357c5ee8866260191042a6b6783835cc0d79aad5caaffaf91a";
+            originSha256  "4f266c1c74767669c5589cde2b1f92f7146c1c885b7784ae9c7cfc625f7f7748";
             release       Choupo-2607;
         }
         "components/CO2.dat"
@@ -146,10 +146,10 @@ propertyManifest
         "components/water.dat"
         {
             type          imported;
-            sha256        "f75389b90fe2f634f0f8e6b6c3449d413b8321f7f8a659332e1fedecb0141e3e";
-            computationalSha256 "3e8c44ab80e0523c199c4f6771e67607ef4d2193ac8f673b1781baeb13b0bd89";
+            sha256        "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
+            computationalSha256 "0c14ffa6a273bc846da0fddef026a0fe60b7f15d98ba4ed709ea372ff9f00328";
             origin        "data/standards/components/water.dat";
-            originSha256  "b41b60d18d8ea63b1f017f2679ab8f12025866ebaa09ff07af34de682e676a04";
+            originSha256  "56220bafede894a8649462007f5e25f4e149de154bc9aedbe309e1ecb992f9ea";
             release       Choupo-2607;
         }
         "parameters/UNIFAC/groups.dat"
