@@ -13,10 +13,11 @@ states, against evaluated liquid densities.
 
 ## What it does
 
-Seven `propertyPoint` operations at 298.15 K and 1.01325 bar, on n-hexane,
+Thirteen `propertyPoint` operations at 298.15 K and 1.01325 bar, on n-hexane,
 n-decane and their equimolar mixture, with the system's plain SRK (kij = 0)
 and with the variants that declare `volumeTranslation Peneloux` on the same
-cubic (`thermo peneloux;`, `thermo penelouxSpencer;`). Two `propertyScan1D`
+cubic (`thermo peneloux;`, `thermo penelouxSpencer;`), and on Peng–Robinson
+plain (`thermo pr;`) and with the Jhaveri–Youngren shift (`thermo prJhaveri;`). Two `propertyScan1D`
 operations scan the bubble temperature of hexane + decane under plain SRK and
 under SRK + Péneloux.
 
@@ -56,6 +57,20 @@ fraction of a per cent; this is a reference, not a measurement).
 | n-decane, Z_RA = 0.2507 (Spencer–Adler) | 195.472 | 238.181 | +21.9 % | 194.628 | **−0.4 %** |
 | 50/50 mixture | 163.417 (ideal mixing) | 192.611 | +17.9 % | 165.609 | +1.3 % |
 
+### The same on Peng–Robinson (Jhaveri & Youngren 1988)
+
+| state | Perry | PR | error | PR + J&Y | error |
+|---|---|---|---|---|---|
+| n-hexane (s = −0.01478, Table 1) | 131.362 | 130.276 | −0.8 % | 131.881 | **+0.4 %** |
+| n-decane (s from Eq. 18, n-alkane: 1 − 2.258/M^0.1823 = 0.0855) | 195.472 | 212.173 | +8.5 % | 195.923 | **+0.2 %** |
+| 50/50 mixture | 163.417 (ideal mixing) | 171.284 | +4.8 % | 163.961 | +0.3 % |
+
+For hexane the shift is NEGATIVE (the PR volume is already slightly too small,
+so the translation increases it by 1.605 cm3/mol); for decane it is positive and
+lowers the volume by 16.250 cm3/mol (c = s·b, b = 190.15 cm3/mol).  The shifts
+touch volume and H_R only: PR's own equilibrium is unchanged by construction
+(J&Y Eq. 13).
+
 Two readings. (1) The shift is a constant per component, so for hexane it is
 17.524 cm3/mol and for decane 36.478 cm3/mol (Z_RA 0.2578); the mixture's volume
 drops by 27.002 cm3/mol, which is exactly 0.5 × 17.524 + 0.5 × 36.478. That is
@@ -87,11 +102,13 @@ own output on every full `bin/runTests`.
   near the critical point (the paper's Fig. 1) and the Z_RA of a polar or
   associating liquid is a worse fit (alcohols 3.8 % against 1.5 % for alkanes,
   Table 2).
-* The Peng–Robinson constant is not in the held literature, so PR accepts only
-  a declared `cShift` and refuses a Z_RA by name.
+* Peng–Robinson takes the shift of Jhaveri and Youngren (1988), c = s·b (Eq. 17), not
+  a Z_RA (refused by name): s from their Table 1 (methane to n-hexane) or from
+  Eq. 18 with Table 2 for the n-alkanes, alkylcyclohexanes and alkylbenzenes heavier
+  than hexane; a component the tables do not cover is refused by name.
 * The liquid density other units read through `ThermoPackage::density` is the
   Rackett route and does not use this shift; the translated volume is the
   equation of state's (`v_molar`, `v_molar_liq`, `Z`).
-* Two anchor rows in `expected` (authored, never re-recorded) hold the
-  translated volumes of hexane and decane (Spencer–Adler Z_RA) to within 2 % of
-  Perry's.
+* Four anchor rows in `expected` (authored, never re-recorded) hold the
+  translated volumes of hexane and decane (SRK with the Spencer–Adler Z_RA, and PR
+  with the Jhaveri–Youngren shift) to within 2 % of Perry's.

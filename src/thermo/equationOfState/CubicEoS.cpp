@@ -35,6 +35,7 @@ License
 #include <cmath>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <set>
 #include <stdexcept>
@@ -494,8 +495,22 @@ scalar CubicEoS::S_residual(scalar T, scalar P, const sVector& y) const
 //          nHexane { ZRA 0.2636; source "Peneloux 1982, Table 1, p. 10"; }
 //          other   { cShift 1.2e-5; source "..."; }   // m3/mol, SRK or PR
 //      }
-//      missingZRA YamadaGunn;              // OPT-IN estimate, announced
+//      missingZRA YamadaGunn;              // OPT-IN estimate, announced (SRK)
 //  }
+//
+//  PENG-ROBINSON takes the shift of Jhaveri & Youngren (SPE Reservoir Eng. 3
+//  (1988) 1033-1040): c_i = s_i b_i (Eq. 17, p. 1034), b_i the PR co-volume,
+//  the dimensionless s_i declared per component as one of
+//      s <value>;                  a declared s (with its source),
+//      shiftTable1 <row>;          Table 1 (p. 1035): methane ethane propane
+//                                  isobutane nButane isopentane nPentane
+//                                  nHexane,
+//      family <nAlkane|nAlkylcyclohexane|nAlkylbenzene>;
+//                                  Eq. 18, s = 1 - d/M^e, Table 2 (p. 1035),
+//                                  M the record's MW; heavier than hexane only,
+//      cShift <m3/mol>;            declared directly.
+//  The family choice is the case's: a record carries no hydrocarbon family.
+//  The Z_RA route of Eq. 8 is the RKS correlation and is refused for PR.
 //
 //  The shift of Eq. 8 (p. 10):  c = 0.40768 (R Tc/Pc) (0.29441 - Z_RA),
 //  fitted by the paper to saturated n-alkane liquid densities at Tr = 0.7
@@ -520,6 +535,13 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
         " `{ cShift <value>; source \"...\"; }`, or opt in to the estimate"
         " `missingZRA YamadaGunn;` (Z_RA = 0.29056 - 0.08775 w, announced)";
 
+    const std::string remedyPR =
+        "`components { <name> { s <value>; | shiftTable1 <row>; | family"
+        " <nAlkane|nAlkylcyclohexane|nAlkylbenzene>; | cShift <m3/mol>;"
+        " source \"...\"; } }` (Jhaveri & Youngren 1988, Eq. 17-18, Tables"
+        " 1-2: Table 1 covers methane to n-hexane, Eq. 18 the n-alkanes,"
+        " n-alkylcyclohexanes and n-alkylbenzenes heavier than n-hexane)";
+
     DictPtr vt;
     try { vt = eosDict->subDict("volumeTranslation"); }
     catch (const std::exception&)
@@ -537,12 +559,9 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
         throw std::runtime_error(head + "missingZRA '" + miss + "' is not"
             " implemented -- registered: YamadaGunn");
     if (pengRobinson && !miss.empty())
-        throw std::runtime_error(head + "the Peneloux constants of Eq. 8 were"
-            " fitted for the Redlich-Kwong-Soave equation and the PR constant"
-            " (Jhaveri & Youngren 1988) is not in the held literature, so no"
-            " Z_RA or Yamada-Gunn estimate is offered for PR; declare the"
-            " shift directly: `components { <name> { cShift <m3/mol>; source"
-            " \"...\"; } }`");
+        throw std::runtime_error(head + "`missingZRA` is the Redlich-Kwong-"
+            "Soave estimate of Eq. 8 and is refused for PR; declare each"
+            " component's Jhaveri-Youngren shift: " + remedyPR);
 
     DictPtr cd;
     if (vt->found("components")) cd = vt->subDict("components");
@@ -562,22 +581,26 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
                 throw std::runtime_error(head + "component '" + nm + "' is"
                     " declared without `source` -- a value is never entered"
                     " without where it was read");
-            const bool hasZ = e->found("ZRA"), hasC = e->found("cShift");
-            if (hasZ == hasC)
+            const bool hasZ = e->found("ZRA"), hasC = e->found("cShift"),
+                       hasS = e->found("s"), hasT = e->found("shiftTable1"),
+                       hasF = e->found("family");
+            if (int(hasZ) + int(hasC) + int(hasS) + int(hasT) + int(hasF) != 1)
                 throw std::runtime_error(head + "component '" + nm + "' must"
-                    " declare exactly one of `ZRA` or `cShift`");
+                    " declare exactly one of " + (pengRobinson
+                    ? std::string("`s`, `shiftTable1`, `family` or `cShift`")
+                    : std::string("`ZRA` or `cShift`")));
             if (hasC)
             {
                 c[i] = e->lookupScalar("cShift");
                 msg << nm << " c = " << c[i] * 1.0e6 << " cm3/mol (declared)";
             }
-            else
+            else if (!pengRobinson)
             {
-                if (pengRobinson)
+                if (!hasZ)
                     throw std::runtime_error(head + "component '" + nm
-                        + "': a Z_RA shift is the RKS correlation (Eq. 8) and"
-                          " is refused for PR; declare `cShift` with its"
-                          " source");
+                        + "': `s`, `shiftTable1` and `family` are the"
+                          " Jhaveri-Youngren shift of Peng-Robinson; SRK takes"
+                          " `ZRA` (Peneloux Eq. 8) or `cShift`");
                 const scalar Z = e->lookupScalar("ZRA");
                 if (!(Z > 0.2 && Z < 0.35))
                     throw std::runtime_error(head + "component '" + nm
@@ -587,6 +610,76 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
                      / (comp.Pc() * 1.0e5) * (0.29441 - Z);
                 msg << nm << " c = " << c[i] * 1.0e6 << " cm3/mol (Z_RA = "
                     << Z << " declared, Eq. 8)";
+            }
+            else
+            {
+                if (hasZ)
+                    throw std::runtime_error(head + "component '" + nm
+                        + "': a Z_RA shift is the RKS correlation (Eq. 8) and"
+                          " is refused for PR; declare " + remedyPR);
+                //  Jhaveri & Youngren 1988: c = s b (Eq. 17), b the PR
+                //  co-volume Omega_b R Tc / Pc (Omega_b = 0.07780, PR.cpp).
+                const scalar b = 0.07780 * constant::R * comp.Tc()
+                               / (comp.Pc() * 1.0e5);
+                scalar sv = 0.0;
+                std::string how;
+                if (hasS)
+                {
+                    sv = e->lookupScalar("s");
+                    how = "s = " + std::to_string(sv) + " declared";
+                }
+                else if (hasT)
+                {
+                    //  Table 1, p. 1035: shift parameter of well-defined
+                    //  hydrocarbons lighter than n-heptane.
+                    static const std::map<std::string, scalar> T1 = {
+                        {"methane", -0.1540}, {"ethane", -0.1002},
+                        {"propane", -0.08501}, {"isobutane", -0.07935},
+                        {"nButane", -0.06413}, {"isopentane", -0.04350},
+                        {"nPentane", -0.04183}, {"nHexane", -0.01478} };
+                    const std::string row = e->lookupWord("shiftTable1");
+                    auto it = T1.find(row);
+                    if (it == T1.end())
+                    {
+                        std::string rows;
+                        for (const auto& kv : T1) rows += " " + kv.first;
+                        throw std::runtime_error(head + "component '" + nm
+                            + "': shiftTable1 '" + row + "' is not a row of"
+                              " Jhaveri & Youngren Table 1 (rows:" + rows
+                            + "); heavier hydrocarbons take `family` (Eq. 18)");
+                    }
+                    sv = it->second;
+                    how = "s = " + std::to_string(sv) + " (Table 1 row " + row + ")";
+                }
+                else
+                {
+                    //  Eq. 18 with Table 2 (p. 1035), M in kg/kmol.
+                    static const std::map<std::string, std::pair<scalar, scalar>> T2 = {
+                        {"nAlkane", {2.258, 0.1823}},
+                        {"nAlkylcyclohexane", {3.004, 0.2324}},
+                        {"nAlkylbenzene", {2.516, 0.2008}} };
+                    const std::string fam = e->lookupWord("family");
+                    auto it = T2.find(fam);
+                    if (it == T2.end())
+                        throw std::runtime_error(head + "component '" + nm
+                            + "': family '" + fam + "' is not a row of"
+                              " Jhaveri & Youngren Table 2 (nAlkane,"
+                              " nAlkylcyclohexane, nAlkylbenzene)");
+                    const scalar M = comp.MW();
+                    if (!(M > 86.18))
+                        throw std::runtime_error(head + "component '" + nm
+                            + "': MW = " + std::to_string(M) + " is not"
+                              " heavier than n-hexane (86.18); Table 2 covers"
+                              " only the hydrocarbons heavier than hexane --"
+                              " use `shiftTable1` or a declared `s`");
+                    sv = 1.0 - it->second.first / std::pow(M, it->second.second);
+                    how = "s = " + std::to_string(sv) + " (Eq. 18, family "
+                        + fam + ", M = " + std::to_string(M) + ")";
+                }
+                c[i] = sv * b;
+                msg << nm << " c = " << c[i] * 1.0e6 << " cm3/mol (" << how
+                    << ", c = s b, b = " << b * 1.0e6
+                    << " cm3/mol, Jhaveri-Youngren Eq. 17)";
             }
             msg << "; source: " << e->lookupWord("source");
         }
@@ -599,6 +692,11 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
                    " Z_RA = 0.29056 - 0.08775 w = " << Z << ", Yamada-Gunn as"
                    " printed in Peneloux 1982 p. 11, normal alkanes only)";
         }
+        else if (pengRobinson)
+            throw std::runtime_error(head + "component '" + nm + "' has no"
+                " Jhaveri-Youngren shift declared (a record carries no"
+                " hydrocarbon family and the table covers only listed"
+                " hydrocarbons); " + remedyPR);
         else
             throw std::runtime_error(head + "component '" + nm + "' has no"
                 " Z_RA (the standard records carry none) and no declared"
@@ -609,7 +707,10 @@ CubicEoS::readVolumeTranslation(const std::string& model, const DictPtr& eosDict
             std::cout << "[eos] " << model << " volumeTranslation Peneloux: "
                       << msg.str() << "\n";
     }
-    const std::string gen = model + " volumeTranslation Peneloux is ON: v = v_"
+    const std::string gen = model + " volumeTranslation Peneloux is ON ("
+        + std::string(pengRobinson ? "Jhaveri & Youngren 1988 shift for PR"
+                                   : "Peneloux 1982 shift for SRK")
+        + "): v = v_"
         + model + " - sum x_i c_i (Eq. 6); phi, K-values and every flash are"
           " the untranslated " + model + "'s (Eq. 2-4, p. 8-9); H^R is lowered"
           " by P c (derived from the paper's fugacity relation); S^R unchanged";

@@ -195,8 +195,8 @@ protected:
     // block of the EoS dict and returns the per-component shifts c_i
     // [m3/mol], or an EMPTY vector when the block is absent (translation OFF,
     // the default: no existing case moves).  Missing data is a named refusal.
-    // `pengRobinson` restricts the block to declared `cShift` (no PR constant
-    // is in the held literature).
+    // `pengRobinson` selects the Jhaveri & Youngren 1988 shift c = s b (Eq. 17)
+    // in place of the Z_RA route of Eq. 8 (a Z_RA is refused for PR).
     static std::vector<scalar>
     readVolumeTranslation(const std::string& model, const DictPtr& eosDict,
                           const std::vector<Component>& comps,

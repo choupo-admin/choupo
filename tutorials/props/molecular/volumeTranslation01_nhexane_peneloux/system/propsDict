@@ -10,7 +10,7 @@
 /*---------------------------------------------------------------------------*\
   volumeTranslation01_nhexane_peneloux --- WHAT A VOLUME TRANSLATION DOES.
 
-  Seven `propertyPoint` operations and two `propertyScan1D` scans: three liquids (n-hexane, n-decane, their
+  Thirteen `propertyPoint` operations (the last six on Peng-Robinson) and two `propertyScan1D` scans: three liquids (n-hexane, n-decane, their
   equimolar mixture) at 298.15 K and 1.01325 bar, each with the system's
   plain SRK and with the variant `peneloux` (`thermo peneloux;`), which
   declares `volumeTranslation Peneloux` on the same cubic.  Read
@@ -65,6 +65,42 @@ operations
         name   mixture50_SRK_Peneloux;
         type   propertyPoint;
         thermo peneloux;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 0.5;  nDecane 0.5; } }
+    }
+    {
+        name   nHexane_PR;
+        type   propertyPoint;
+        thermo pr;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 1.0; } }
+    }
+    {
+        name   nHexane_PR_Jhaveri;
+        type   propertyPoint;
+        thermo prJhaveri;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 1.0; } }
+    }
+    {
+        name   nDecane_PR;
+        type   propertyPoint;
+        thermo pr;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nDecane 1.0; } }
+    }
+    {
+        name   nDecane_PR_Jhaveri;
+        type   propertyPoint;
+        thermo prJhaveri;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nDecane 1.0; } }
+    }
+    {
+        name   mixture50_PR;
+        type   propertyPoint;
+        thermo pr;
+        state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 0.5;  nDecane 0.5; } }
+    }
+    {
+        name   mixture50_PR_Jhaveri;
+        type   propertyPoint;
+        thermo prJhaveri;
         state  { T 298.15 K;  P 1.01325 bar;  composition { nHexane 0.5;  nDecane 0.5; } }
     }
     {

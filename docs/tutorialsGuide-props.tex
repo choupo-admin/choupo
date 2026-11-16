@@ -4773,22 +4773,25 @@ WHAT THIS CASE DOES NOT SAY. It does not say SRK is wrong, and it does not say a
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-1.3) {\textbf{nDecane\_SRK\_PenelouxSpencer}\\[-1pt]{\tiny propertyPoint}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-1.3) {\textbf{mixture50\_SRK}\\[-1pt]{\tiny propertyPoint}};
   \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-2.6) {\textbf{mixture50\_SRK\_Peneloux}\\[-1pt]{\tiny propertyPoint}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{txy\_SRK}\\[-1pt]{\tiny propertyScan1D}};
-  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{txy\_SRK\_Peneloux}\\[-1pt]{\tiny propertyScan1D}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-2.6) {\textbf{nHexane\_PR}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-2.6) {\textbf{nHexane\_PR\_Jhaveri}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (0.0,-3.9) {\textbf{nDecane\_PR}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (3.6,-3.9) {\textbf{nDecane\_PR\_Jhaveri}\\[-1pt]{\tiny propertyPoint}};
+  \node[draw, rounded corners=2pt, align=center, minimum width=3.1cm, minimum height=0.8cm, fill=black!4] at (7.2,-3.9) {\textbf{mixture50\_PR}\\[-1pt]{\tiny propertyPoint}};
 \end{tikzpicture}
 \end{tutscheme}
 \tutwhat{How wrong is the liquid density of SRK, and what does a Peneloux volume translation do about it? n-Hexane, n-decane and their equimolar mixture at 298.15 K and 1.01325 bar, each evaluated twice -- plain SRK and SRK with the Peneloux shift (Peneloux, Rauzy and Freze 1982) -- beside the evaluated liquid density of Perry's Handbook. The shift moves the volume and the enthalpy departure and leaves every fugacity, K-value and flash exactly where plain SRK puts them.}
 \begin{tutnarrative}
 WHAT A VOLUME TRANSLATION DOES.
 
-Seven `propertyPoint` operations and two `propertyScan1D` scans: three liquids (n-hexane, n-decane, their equimolar mixture) at 298.15 K and 1.01325 bar, each with the system's plain SRK and with the variant `peneloux` (`thermo peneloux;`), which declares `volumeTranslation Peneloux` on the same cubic. Read `v\_molar\_liq` (m3/mol) of each and turn it into a density with the molar mass of its record; compare with the evaluated density in the README.
+Thirteen `propertyPoint` operations (the last six on Peng-Robinson) and two `propertyScan1D` scans: three liquids (n-hexane, n-decane, their equimolar mixture) at 298.15 K and 1.01325 bar, each with the system's plain SRK and with the variant `peneloux` (`thermo peneloux;`), which declares `volumeTranslation Peneloux` on the same cubic. Read `v\_molar\_liq` (m3/mol) of each and turn it into a density with the molar mass of its record; compare with the evaluated density in the README.
 
 THE EXERCISE. (1) The SRK liquid volume is too large, by a percentage that grows with the carbon number. (2) The translated volume is lower by c = sum x\_i c\_i, to the digit: v(SRK) - v(SRK+Peneloux) is c, and c of the mixture is the mole-weighted mean of the two pure shifts. (3) H\_R of the vapour-root block moves by exactly -P c; S\_R does not move. (4) What does NOT move is every fugacity coefficient -- `bin/curate/check\_volume\_translation.py` proves it, flash by flash, on the same two packages.
 
 \end{tutnarrative}
 \tutreadme{runCase tutorials/props/molecular/volumeTranslation01\_nhexane\_peneloux}
 \tutreadme{A cubic equation of state fitted to critical constants and vapour pressures gets a liquid's $\ast$volume$\ast$ wrong, by several per cent, and the error grows with the carbon number. P?neloux, Rauzy and Fr?ze (1982) showed that the volume axis of a cubic can be $\ast$translated$\ast$ without moving a single equilibrium condition, so the volume can be corrected for free. This case measures that, in three states, against evaluated liquid densities.}
-\tutreadme{Seven propertyPoint operations at 298.15 K and 1.01325 bar, on n-hexane, n-decane and their equimolar mixture, with the system's plain SRK (kij = 0) and with the variants that declare volumeTranslation Peneloux on the same cubic (thermo peneloux;, thermo penelouxSpencer;). Two propertyScan1D operations scan the bubble temperature of hexane + decane under plain SRK and under SRK + P?neloux.}
+\tutreadme{Thirteen propertyPoint operations at 298.15 K and 1.01325 bar, on n-hexane, n-decane and their equimolar mixture, with the system's plain SRK (kij = 0) and with the variants that declare volumeTranslation Peneloux on the same cubic (thermo peneloux;, thermo penelouxSpencer;), and on Peng--Robinson plain (thermo pr;) and with the Jhaveri--Youngren shift (thermo prJhaveri;). Two propertyScan1D operations scan the bubble temperature of hexane + decane under plain SRK and under SRK + P?neloux.}
 \tutreadme{and the catalogue's records carry no Rackett Z\_RA, so the case declares it, with where it was read: Table 1, p. 10 of the paper. A component with no Z\_RA and no declared shift is refused by name; the Yamada--Gunn estimate is only taken on an explicit missingZRA YamadaGunn;.}
 \tutreadme{Perry's Chemical Engineers' Handbook, 9th ed., Table 2-32 "Densities of Inorganic and Organic Liquids" (DIPPR equation 105, ? = C1 / C2\textasciicircum{}(1 + (1 - T/C3)\textasciicircum{}C4), in mol/dm3; evaluated from measurements, not a measurement of these states):}
 \tutreadme{Cross-check: the CRC Handbook (82nd ed., p. 15-16) prints 0.6548 g/cm3 for hexane at 25 $^\circ$C, 0.2 \% below Perry's value. For the mixture there is no measured volume in the held literature, so the reference is the ideal mixing of the two Perry molar volumes, 163.417 cm3/mol (the excess volume of alkane mixtures is a fraction of a per cent; this is a reference, not a measurement).}
@@ -4807,7 +4810,7 @@ THE EXERCISE. (1) The SRK liquid volume is too large, by a percentage that grows
 \goldrow{diag}{nHexane\_SRK}{gamma}{1.06168405275}
 \goldrow{diag}{nHexane\_SRK}{v\_molar}{0.0229973949169}
 \goldrow{diag}{nHexane\_SRK}{v\_molar\_liq}{0.000146917912035}
-\goldmore{86}
+\goldmore{178}
 \end{tutgolden}
 
 \subsection{powder}

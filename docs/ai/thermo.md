@@ -282,9 +282,13 @@ equationOfState
 The catalogue records carry no Z_RA, so each component declares a `ZRA` or a
 `cShift`, each WITH its `source`; a component with neither is REFUSED by name
 (the message lists the three remedies); the bare word `volumeTranslation
-Peneloux;` is refused for the same reason.  Peng–Robinson accepts `cShift`
-only (the PR constant is not in the held literature; a `ZRA` or `missingZRA`
-is refused by name).  The choice is printed in the run and in the resolved
+Peneloux;` is refused for the same reason.  Peng–Robinson takes the shift of Jhaveri & Youngren 1988, `c = s b` (Eq. 17), per
+component: `s <v>;`, `shiftTable1 <row>;` (Table 1: methane ethane propane
+isobutane nButane isopentane nPentane nHexane), `family <nAlkane|
+nAlkylcyclohexane|nAlkylbenzene>;` (Eq. 18 + Table 2, MW of the record, heavier
+than n-hexane only) or `cShift <m3/mol>;`, each with its `source`; a `ZRA` or
+`missingZRA` is refused for PR by name, as is a component the tables do not
+cover.  The choice is printed in the run and in the resolved
 view (`volumeTranslation Peneloux: v = v_SRK - sum x_i c_i ...`).  Use it as a
 per-op or system variant (`variants { peneloux { equilibrium { ... } } }`,
 `thermo peneloux;`) to compare.  What it changes: `Z`, `v_molar`, `v_molar_liq`,

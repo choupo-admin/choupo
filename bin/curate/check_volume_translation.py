@@ -31,8 +31,8 @@ WHAT THIS GATE CHECKS, every number recomputed and none typed from the engine:
       three remedies.
 
 NOT CHECKED: that the shift improves any density (the case's anchor rows hold
-that against Perry's published values), the PR constant (refused by name, none
-is in the held literature), the liquid density of `ThermoPackage::density`
+that against Perry's published values), the PR shift beyond n-hexane and the
+Table-2 families (refused by name), the liquid density of `ThermoPackage::density`
 (the Rackett route; the translation is on the EoS volumes only).
 """
 import json
@@ -117,6 +117,27 @@ def main() -> int:
         if abs(tr["S_R"] - base["S_R"]) > 1e-12 * max(1.0, abs(base["S_R"])):
             fail.append(f"{tag}: S_R moved ({base['S_R']} -> {tr['S_R']}); entropy departure must not")
 
+    #  (b') Peng-Robinson: Jhaveri & Youngren 1988, c = s b (Eq. 17), s of
+    #  Table 1 (n-hexane, p. 1035) and Eq. 18 + Table 2 (n-alkanes: d 2.258,
+    #  e 0.1823) for n-decane, b = 0.07780 R Tc/Pc; the volume moves by -c
+    #  (c is NEGATIVE for hexane: the volume grows), H_R by -P c, S_R by 0.
+    bPR = lambda n: 0.07780 * R * rec(n, "Tc") / (rec(n, "Pc") * 1e5)
+    sH = -0.01478
+    sD = 1.0 - 2.258 / rec("nDecane", "MW") ** 0.1823
+    cp = {"nHexane": sH * bPR("nHexane"), "nDecane": sD * bPR("nDecane")}
+    for tag, comp in (("nHexane", {"nHexane": 1.0}), ("nDecane", {"nDecane": 1.0}),
+                      ("mixture50", {"nHexane": 0.5, "nDecane": 0.5})):
+        base, tr = d[f"{tag}_PR"], d[f"{tag}_PR_Jhaveri"]
+        cc = sum(x * cp[n] for n, x in comp.items())
+        dv = base["v_molar_liq"] - tr["v_molar_liq"]
+        if abs(dv - cc) > 1e-9 * abs(cc):
+            fail.append(f"PR {tag}: v_liq(PR) - v_liq(PR+J&Y) = {dv:.9e}, Eq. 17/18 give {cc:.9e}")
+        dH = tr["H_R"] - base["H_R"]
+        if abs(dH + base["P"] * cc) > 1e-6 * abs(base["P"] * cc):
+            fail.append(f"PR {tag}: H_R moved by {dH:.9e}, -P c = {-base['P'] * cc:.9e}")
+        if abs(tr["S_R"] - base["S_R"]) > 1e-12 * max(1.0, abs(base["S_R"])):
+            fail.append(f"PR {tag}: S_R moved")
+
     #  (e) the refusal, on a throwaway copy
     tmp = Path(tempfile.mkdtemp(prefix="vt_gate_"))
     try:
@@ -133,6 +154,15 @@ def main() -> int:
                 or "missingZRA YamadaGunn" not in msg:
             fail.append("a component with no Z_RA and no declared shift was not "
                         "refused by name with its remedies")
+        #  (e') PR: a Table-2 family declared for n-hexane (MW 86.18, not
+        #  HEAVIER than hexane) is refused by name.
+        f.write_text(t.replace("nHexane { shiftTable1 nHexane;",
+                               "nHexane { family nAlkane;"))
+        q3 = run(cp)
+        m3 = q3.stdout + q3.stderr
+        if q3.returncode == 0 or "nHexane" not in m3 or "heavier than n-hexane" not in m3:
+            fail.append("PR: a Table-2 family declared for n-hexane was not "
+                        "refused by name")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -143,7 +173,7 @@ def main() -> int:
         return 1
     print("check_volume_translation: OK -- equilibrium byte-identical under the shift (5-point "
           "bubble scan); v_liq and v_vap drop by sum x_i c_i (Eq. 6, Eq. 8) on 3 states "
-          "to 1e-9; H_R moves by -P c, S_R by 0; a component without Z_RA is refused by name.")
+          "to 1e-9; H_R moves by -P c, S_R by 0; PR + Jhaveri-Youngren c = s b (Eq. 17-18) on 3 states likewise; a component without Z_RA, and a Table-2 family on hexane, are refused by name.")
     return 0
 
 

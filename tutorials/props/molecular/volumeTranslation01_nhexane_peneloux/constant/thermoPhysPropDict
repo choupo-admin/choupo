@@ -104,4 +104,50 @@ variants
             vapour { fugacityRoute equationOfState; root vapour; }
         }
     }
+
+    pr                                      // plain Peng-Robinson (PR78), kij = 0
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+
+            equationOfState
+            {
+                model      PengRobinson;
+                mixingRule vanDerWaalsOneFluid;
+            }
+
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
+
+    prJhaveri                               // PR + the shift of Jhaveri and Youngren (1988), c = s b
+    {
+        equilibrium
+        {
+            formulation phiPhi;
+
+            equationOfState
+            {
+                model      PengRobinson;
+                mixingRule vanDerWaalsOneFluid;
+
+                volumeTranslation
+                {
+                    model Peneloux;
+                    components
+                    {
+                        nHexane { shiftTable1 nHexane;
+                                  source "Jhaveri and Youngren 1988, SPE Reservoir Eng. 3, 1033-1040, Table 1 p. 1035 (n-hexane)"; }
+                        nDecane { family nAlkane;
+                                  source "Jhaveri and Youngren 1988, Eq. 18 and Table 2 p. 1035 (n-alkanes: d 2.258, e 0.1823)"; }
+                    }
+                }
+            }
+
+            liquid { fugacityRoute equationOfState; root liquid; }
+            vapour { fugacityRoute equationOfState; root vapour; }
+        }
+    }
 }

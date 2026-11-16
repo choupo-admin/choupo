@@ -10489,11 +10489,44 @@ catalogue's component records carry no $z_{RA}$, so the case declares it,
 with where it was read; a component with neither a declared $z_{RA}$ nor a
 declared shift is refused by name, and the Yamada--Gunn estimate is taken
 only on \code{missingZRA YamadaGunn;} and announced.  For Peng--Robinson the
-constants of Eq.~\eqref{eq:pen-c} were not fitted and the Jhaveri--Youngren
-form is not in the literature held for this project, so only a declared
-\code{cShift} (in m$^3$/mol, with its source) is accepted and a $z_{RA}$ is
-refused.  The choice is printed in the run and in the resolved view of the
+constants of Eq.~\eqref{eq:pen-c} were fitted for Soave's equation, so a
+$z_{RA}$ is refused and the shift of Jhaveri and Youngren is used instead
+(next paragraph).  The choice is printed in the run and in the resolved view of the
 package.
+
+\paragraph{Peng--Robinson: the shift of Jhaveri and Youngren.}  The same
+translation applied to PR was worked out by Jhaveri and Youngren
+\cite{JhaveriYoungren1988}: the phase equilibrium is again that of the
+unmodified two-parameter equation (their Eq.~13,
+$\tilde\varphi_i = \varphi_i\exp(-c_iP/\Rgas T)$, with $\tilde V = V - c$,
+Eq.~10), and $c = \sum c_i z_i$ (Eq.~11).  The shift is expressed as a
+dimensionless multiple of the PR co-volume,
+\begin{equation}
+   c_i \;=\; s_i\,b_i\,,\qquad b_i = 0.07780\,\frac{\Rgas T_{c,i}}{P_{c,i}}
+   \label{eq:jy-c}
+\end{equation}
+(Eq.~17, p.~1034), with $s_i$ negative for the light hydrocarbons --- the
+untranslated PR volume is too small and the translation \emph{increases} it ---
+given by their Table~1 (p.~1035: methane $-0.1540$, ethane $-0.1002$,
+propane $-0.08501$, isobutane $-0.07935$, $n$-butane $-0.06413$,
+isopentane $-0.04350$, $n$-pentane $-0.04183$, $n$-hexane $-0.01478$) and,
+for the $n$-alkanes, $n$-alkylcyclohexanes and $n$-alkylbenzenes heavier than
+$n$-hexane, by
+\begin{equation}
+   s \;=\; 1 - \frac{d}{M^{e}}
+   \label{eq:jy-s}
+\end{equation}
+(Eq.~18; $M$ in kg/kmol; Table~2: $d, e = 2.258, 0.1823$ for the $n$-alkanes,
+$3.004, 0.2324$ for the alkylcyclohexanes, $2.516, 0.2008$ for the
+alkylbenzenes, mean deviation $0.19$--$0.28\,\%$).  The paper fits
+Eq.~\eqref{eq:jy-s} to the molar volume at $60\,^\circ$F and 1 atm.
+Choupo applies it where the case declares it: \code{shiftTable1 <row>;} for a
+Table~1 row, \code{family <nAlkane|nAlkylcyclohexane|nAlkylbenzene>;} for
+Eq.~\eqref{eq:jy-s} (a component record carries no hydrocarbon family, so the
+case says which; a molar mass not heavier than $n$-hexane is refused by name),
+\code{s <value>;} or \code{cShift <m$^3$/mol>;} with a source.  A component
+the tables do not cover is refused by name.  $H^{\mathrm R}$ and $S^{\mathrm R}$
+move as in Eq.~\eqref{eq:pen-H}.
 
 \begin{tutoriallink}
 \begin{lstlisting}
@@ -10527,7 +10560,10 @@ of hexane by $+11.8\,\%$ and of decane by $+21.9\,\%$; with the shift the
 errors are $-1.5\,\%$ (hexane) and, with the Spencer--Adler $z_{RA}$ of
 Table~1, $-0.4\,\%$ (decane).  The paper's adjusted decane value
 ($0.2578$) leaves $+3.2\,\%$: the choice of $z_{RA}$ matters.  The two
-bubble-temperature curves of the case are byte-identical files.
+bubble-temperature curves of the case are byte-identical files.  On
+Peng--Robinson the same state gives hexane $-0.8\,\%$ plain and $+0.4\,\%$
+with Table~1's shift, decane $+8.5\,\%$ plain and $+0.2\,\%$ with
+Eq.~\eqref{eq:jy-s} (family $n$-alkane).
 \end{tutoriallink}
 
 \paragraph{Validity.}  Pure and mixed liquids away from the critical point
@@ -32018,6 +32054,13 @@ Correction for Redlich--Kwong--Soave Volumes'', \emph{Fluid Phase Equilib.},
 \textbf{8}, 7--23 (1982), DOI \texttt{10.1016/0378-3812(82)80002-2}.  The
 volume translation of Section~\ref{sec:peneloux} (Eqs.~3, 6, 8 of the paper)
 implemented in \code{CubicEoS}.
+
+\bibitem{JhaveriYoungren1988} Jhaveri, B. S., \& Youngren, G. K.,
+``Three-Parameter Modification of the Peng--Robinson Equation of State To
+Improve Volumetric Predictions'', \emph{SPE Reservoir Eng.}, \textbf{3}(3),
+1033--1040 (1988), DOI \texttt{10.2118/13118-PA}.  The Peng--Robinson volume
+shift $c_i = s_i b_i$ (Eqs.~10--17) and its correlation $s = 1 - d/M^e$
+(Eq.~18, Tables~1--2) of Section~\ref{sec:peneloux}.
 
 \bibitem{LinSandler2002} Lin, S.-T. \& Sandler, S. I., \emph{Ind. Eng.
 Chem. Res.}\ \textbf{41}, 899, 2002.  The COSMO-SAC variant Choupo
