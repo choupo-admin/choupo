@@ -232,8 +232,8 @@ describe("both branches STOP (envelope03): the stop is reported as a stop, in th
     const { report } = w();
     const [bub, dew] = report.branches;
     expect(bub!.end).toBe("stopped");
-    expect(bub!.stoppedBar).toBeCloseTo(45, 9);
-    expect(bub!.points).toBe(44);
+    expect(bub!.stoppedBar).toBeCloseTo(37, 9);
+    expect(bub!.points).toBe(36);
     expect(dew!.end).toBe("stopped");
     expect(dew!.stoppedBar).toBeCloseTo(47, 9);
     expect(dew!.points).toBe(46);
@@ -243,7 +243,11 @@ describe("both branches STOP (envelope03): the stop is reported as a stop, in th
     const { report } = w();
     for (const b of report.branches) {
       expect(b.sentence).toMatch(new RegExp(`the ${b.branch} branch stopped at`));
-      expect(b.sentence).toMatch(/STOPPING point and not an extremum/);
+      //  The bubble branch ends on the vapour pseudo-root (CL-01), the dew
+      //  branch on the single-valuedness of the march.
+      expect(b.sentence).toMatch(b.branch === "bubble"
+        ? /NO vapour root of the equation of state/
+        : /STOPPING point and not an extremum/);
       expect(branchEndLabel(b)).toMatch(/stopped at \d+\.\d{3} bar/);
     }
     expect(report.method).toMatch(/This trace does NOT close the nose/);
@@ -261,7 +265,7 @@ describe("both branches STOP (envelope03): the stop is reported as a stop, in th
 
   it("the figure's branches are the engine's points, ending BELOW the stopping pressure (never joined, never extended)", () => {
     const { branches, report } = w();
-    expect(branches.bubble).toHaveLength(44);
+    expect(branches.bubble).toHaveLength(36);
     expect(branches.dew).toHaveLength(46);
     expect(branches.bubble[branches.bubble.length - 1]!.P).toBeLessThan(report.branches[0]!.stoppedBar! * 1e5);
     expect(branches.dew[branches.dew.length - 1]!.P).toBeLessThan(report.branches[1]!.stoppedBar! * 1e5);
@@ -275,14 +279,14 @@ describe("both branches STOP (envelope03): the stop is reported as a stop, in th
     expect(traces.filter((t) => t.role === "stop").map((t) => t.name).sort())
       .toEqual(["bubble branch stopped", "dew branch stopped"]);
     const bub = traces.find((t) => t.role === "bubble")!;
-    expect(bub.x).toHaveLength(44);
+    expect(bub.x).toHaveLength(36);
   });
 
   it("the report rendered beside the figure says each stop, the open nose, and no failure", async () => {
     const { EnvelopeReportPanel } = await import("../src/ui/explore/EnvelopeReportPanel.js");
     const html = renderToStaticMarkup(createElement(MantineProvider, null,
       createElement(EnvelopeReportPanel, { report: w().report })));
-    expect(html).toContain("bubble: stopped at 45.000 bar");
+    expect(html).toContain("bubble: stopped at 37.000 bar");
     expect(html).toContain("dew: stopped at 47.000 bar");
     expect(html).toContain("This trace does NOT close the nose");
     expect(html).toContain("never joined");
