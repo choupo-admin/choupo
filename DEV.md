@@ -3562,6 +3562,18 @@ accepts today, and that is a policy call.
 > none of the printed errors.  Report:
 > docs/reviews/2026-11-15-geraldes2008-errata/REPORT.md.
 
+> **C410 (architect, 2026-11-16, found by the C408 (b) design).**  A DEFECT:
+> under phiPhi the liquid enthalpy is not the cubic's -- H_liquid_formation
+> takes no pressure and calls no EoS (ThermoPackage.cpp:1657-1759, :1870) and
+> CubicEoS::H_residual takes the vapour root only (CubicEoS.cpp:417), while
+> the builder (ThermoPackageBuilder.cpp:3062-3066) and the resolved view
+> (ResolvedView.cpp:572) say "the liquid root's departures": a view that
+> disagrees with the computation.  Ruling: the liquid root's departure is
+> right; measure first (phiPhi cases, size of the move), then one slice with
+> every moved row listed.  C408 (b) rulings are in its record
+> (docs/design/c408-eos-ge-mixing-rules.md, "Rulings"): per-component alpha
+> first, then MHV1/MHV2 on SRK.
+
 > **C409 (Vitor, 2026-11-16: "Podes ver se a especiacao esta bem feita e se
 > e preciso usar o Choupo para ainda ficar melhor?", answered "toda a
 > especiacao do Choupo").**  A COMMISSION: an audit by measurement of every
@@ -3570,8 +3582,8 @@ accepts today, and that is a policy call.
 > cited source at the page, the activity model's validity window against
 > the case's ionic strength, electroneutrality and element closure, the
 > temperature dependence, the solvent (water vs. water + ethanol, C406), and
-> each case's README claims.  Deliverable: docs/reviews/2026-11-16-speciation
-> -audit/REPORT.md with rows SP-xx (S1..S4), each with a reproduction, and a
+> each case's README claims.  Deliverable: a review report in docs/reviews
+> with rows SP-xx (S1..S4), each with a reproduction, and a
 > ranked list of what the engine should gain to do it better.  Fixes are
 > separate slices.
 > REDIRECTED the same hour: Vitor then sent the document he meant, the
