@@ -1820,6 +1820,11 @@
       "exit": 0,
       "claim": "check_liquid_diffusivity_declaration: OK -- the witness returns its declared entry exactly (from a file and inline); each of the four rules equals its value by hand to 1e-11 on a binary whose two infinite-dilution values differ 2.5-fold; the default association factor holds by value and by its words; the column's liquid film and a property operation at its state agree to 1e-10 (ruling 7); a `use check` stated viscosity is printed and not used; a stated mixture value leaves a pure constituent to its law; Leffler-Cullinan by hand where it differs from Vignes; one surface tension per tray, left out only at or above Tc; a sector's file read from the sector's constant/, never the root's; 28 refusals each by name, the old `diffusivity { model <word>; }` form among them.  NOT CHECKED: the migrated cases' numbers (their goldens and the byte-identity run), Wilke-Chang's fitness for a pair, Brock-Bird's fitness for a polar liquid (announced, not judged).  C329 B2a: Kooijman & Taylor's Eq. 23 and Wilke's reduction by hand to 1e-11, the Fick matrix within 1e-4 of the paper's Table IV eq 23 row and Gamma the book's Example 4.2.6 to every digit (tau_21 of the book's p. 61; the paper's printed value pinned 0.002 away), the books' misprint measured (0.0974, pairs evaluated i<j; 0.1002 with the printed tau_21), the binary edge equal to Vignes to 1e-12 and the ternary its limit, order-independence, Example 6.1.1's 50.99 and 16.95 mm2/s, seven refusals by name, Gamma and the Fick matrix refused on a phi-phi package, the gas reduction by hand and a pure gas or liquid refused, and the run saying which component takes the change.",
       "seconds": 2.0
+    },
+    "check_volume_translation": {
+      "exit": 0,
+      "claim": "check_volume_translation: OK -- equilibrium byte-identical under the shift (5-point bubble scan); v_liq and v_vap drop by sum x_i c_i (Eq. 6, Eq. 8) on 3 states to 1e-9; H_R moves by -P c, S_R by 0; a component without Z_RA is refused by name.",
+      "seconds": 0.1
     }
   }
 }
