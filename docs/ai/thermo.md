@@ -258,9 +258,10 @@ near-critical splits will be off).  SRK/PR read each component's `Tc`, `Pc`,
 
 A cubic's liquid volume is several per cent too large (SRK n-hexane +11.8 %,
 n-decane +21.9 % at 298 K).  `volumeTranslation` lowers the volume of both
-roots by `c = Σ x_i c_i` and the enthalpy departure by `P c`, and leaves every
-fugacity, K-value and flash exactly as plain SRK (the pseudo-volume argument,
-paper Eq. 2–4; Theory Guide `sec:peneloux`).  OFF unless declared:
+roots by `c = Σ x_i c_i`, the vapour-root enthalpy departure by `P c`, and
+prices ONE translated fluid, `ln φ_i = ln φ_i(cubic) − c_i P/RT` in both roots; the term is
+the same in both phases, so every K-value and flash is plain SRK's (paper Eq. 2–4;
+Theory Guide `sec:peneloux`) while a reaction sees `exp(−Σ ν_i c_i P/RT)`.  OFF unless declared:
 
 ```
 equationOfState
@@ -268,7 +269,7 @@ equationOfState
     model SRK;
     volumeTranslation
     {
-        model Peneloux;
+        model Peneloux;                // PR: model JhaveriYoungren;
         components
         {
             nHexane { ZRA 0.2636;   source "Peneloux 1982, Table 1, p. 10"; }  // c = 0.40768 (R Tc/Pc)(0.29441 - ZRA)
@@ -282,18 +283,19 @@ equationOfState
 The catalogue records carry no Z_RA, so each component declares a `ZRA` or a
 `cShift`, each WITH its `source`; a component with neither is REFUSED by name
 (the message lists the three remedies); the bare word `volumeTranslation
-Peneloux;` is refused for the same reason.  Peng–Robinson takes the shift of Jhaveri & Youngren 1988, `c = s b` (Eq. 17), per
+Peneloux;` is refused for the same reason.  Peng–Robinson takes `model JhaveriYoungren;` (Peneloux for SRK; each is refused under the other cubic): the shift of Jhaveri & Youngren 1988, `c = s b` (Eq. 17), per
 component: `s <v>;`, `shiftTable1 <row>;` (Table 1: methane ethane propane
 isobutane nButane isopentane nPentane nHexane), `family <nAlkane|
 nAlkylcyclohexane|nAlkylbenzene>;` (Eq. 18 + Table 2, MW of the record, heavier
 than n-hexane only) or `cShift <m3/mol>;`, each with its `source`; a `ZRA` or
 `missingZRA` is refused for PR by name, as is a component the tables do not
-cover.  The choice is printed in the run and in the resolved
+cover, a `components` entry for a component not in the system, and a
+`volumeTranslation` under a gammaPhi / diluteSolution `vapour {}` (phiPhi only).  The choice is printed in the run and in the resolved
 view (`volumeTranslation Peneloux: v = v_SRK - sum x_i c_i ...`).  Use it as a
 per-op or system variant (`variants { peneloux { equilibrium { ... } } }`,
 `thermo peneloux;`) to compare.  What it changes: `Z`, `v_molar`, `v_molar_liq`,
 `H_R` of `propertyPoint` and every unit that reads the EoS volume or
-departure.  What it does NOT change: `phi`, K-values, flashes, `S_R`, and the
+departure.  What it does NOT change: K-values, flashes, `S_R`, the liquid-phase enthalpy of a phiPhi package (not the EoS's until DEV.md 4c C410), and the
 Rackett liquid density of `ThermoPackage::density`.  Limits: fitted to
 saturated liquids at T_r = 0.7, useless near the critical point.  Witness:
 `tutorials/props/molecular/volumeTranslation01_nhexane_peneloux`.

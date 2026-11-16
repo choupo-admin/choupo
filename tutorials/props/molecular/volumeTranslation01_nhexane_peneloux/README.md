@@ -17,7 +17,7 @@ Thirteen `propertyPoint` operations at 298.15 K and 1.01325 bar, on n-hexane,
 n-decane and their equimolar mixture, with the system's plain SRK (kij = 0)
 and with the variants that declare `volumeTranslation Peneloux` on the same
 cubic (`thermo peneloux;`, `thermo penelouxSpencer;`), and on Peng–Robinson
-plain (`thermo pr;`) and with the Jhaveri–Youngren shift (`thermo prJhaveri;`). Two `propertyScan1D`
+plain (`thermo pr;`) and with the Jhaveri–Youngren shift (`thermo prJhaveri;`, `model JhaveriYoungren;`). Two `propertyScan1D`
 operations scan the bubble temperature of hexane + decane under plain SRK and
 under SRK + Péneloux.
 
@@ -85,9 +85,12 @@ per cent. The choice of Z_RA is a modelling decision the case makes visible.
 
       cmp txy_SRK.csv txy_SRK_Peneloux.csv && echo identical
 
-  A pseudo-volume leaves φ̃ᵢ = φᵢ exp(cᵢP/RT), the same factor in both phases,
-  so every K-value cancels it (paper, Eq. 2–4, pp. 8–9).
-* **S_R**, to the last digit. **H_R** moves by exactly −P·c: for hexane
+  The translated fluid has ln φᵢ = ln φᵢ(cubic) − cᵢP/RT in both roots (paper p. 8,
+  read the other way; J&Y Eq. 13): the same factor in both phases, so every K-value
+  cancels it (Eq. 2–4, pp. 8–9) — and a reaction does not (it sees exp(−Σνᵢcᵢ P/RT)).
+  `check_volume_translation.py` holds ln φ(on) − ln φ(off) = −cᵢP/RT per component and
+  per root, and G = H − TS, from a probe.
+* **S_R**, to the last digit. **H_R** (vapour root) moves by exactly −P·c: for hexane
   −406.738 → −408.514 J/mol, a difference of −1.776 J/mol = −101325 Pa ×
   17.524 cm3/mol. (The paper prints no enthalpy equation; −P·c is derived from
   its fugacity relation, h = u + P·v with u unchanged. Section "Volume
@@ -106,6 +109,8 @@ own output on every full `bin/runTests`.
   a Z_RA (refused by name): s from their Table 1 (methane to n-hexane) or from
   Eq. 18 with Table 2 for the n-alkanes, alkylcyclohexanes and alkylbenzenes heavier
   than hexane; a component the tables do not cover is refused by name.
+* Under phiPhi the liquid-phase ENTHALPY is not the equation of state's departure
+  (DEV.md 4c C410), so a flash's liquid enthalpy does not move; only the vapour's does.
 * The liquid density other units read through `ThermoPackage::density` is the
   Rackett route and does not use this shift; the translated volume is the
   equation of state's (`v_molar`, `v_molar_liq`, `Z`).

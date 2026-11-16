@@ -10440,7 +10440,12 @@ the true volume is
    v \;=\; \tilde v - c\,,\qquad c \;=\; \sum_i x_i\,c_i
    \label{eq:pen-v}
 \end{equation}
-(Eq.~6, p.~9); the corrected equation is
+(Eq.~6, p.~9).  Notation: Peneloux's tilde marks the \emph{pseudo}-volume,
+the cubic's own; Jhaveri and Youngren's tilde (and bar) marks the
+\emph{translated} volume $V - c$ --- the same translation with the labels
+swapped.  Here $v$ is the true, translated volume, $\tilde v$ the cubic's, and
+$\varphi^{\mathrm{transl}}$ the translated fluid's fugacity coefficient.  The
+corrected equation is
 $P = \Rgas T/(v - b) - a/\bigl((v+c)(v+b+2c)\bigr)$ with $b = \tilde b - c$
 (p.~9).  Dividing the volume by a factor, as Lin and Daubert do, does
 \emph{not} preserve this property; only a translation does.
@@ -10455,8 +10460,9 @@ $n$-alkanes at $T_r=0.7$:
    \label{eq:pen-c}
 \end{equation}
 (Eq.~8, p.~10).  The constants are fitted \emph{for the Redlich--Kwong--Soave
-equation}.  Table~1 (p.~10) prints $z_{RA}$ for the ten alkanes in three
-variants; the variant the paper recommends (``RKSc1'', adjusted $z_{RA}$)
+equation}.  Table~1 (p.~10) prints $z_{RA}$ for the ten alkanes in five
+columns ($z_{RA}$ adjusted, ``RKSc1''; $z_c$, ``RKSc2''; $z_\omega$, ``RKSc3'';
+$z_{RA}$ of Spencer and Adler; $z_{COS}$); the variant the paper recommends (``RKSc1'', adjusted $z_{RA}$)
 gives the lowest mean deviation, $1.47\,\%$ over 49 alkanes (Table~2, p.~12);
 alcohols and other associated liquids do worse ($3.8\,\%$).  The correction
 is useless near the critical point (Fig.~1, p.~11).  A Yamada--Gunn
@@ -10464,13 +10470,26 @@ estimate $z_{RA} = 0.29056 - 0.08775\,\omega$ (printed on p.~11 as the
 ``RKSc3'' route) is valid for normal alkanes only.
 
 \paragraph{What Choupo implements.}  \code{CubicEoS} carries one shift per
-component.  The fugacity coefficients \code{phi} and \code{phiLiquid} read no
-shift: every $K$-value, bubble point, flash and envelope is the plain
-cubic's.  The volumes of \emph{both} roots are lowered by
+component, and the translated fluid is \emph{one} fluid.  Its fugacity
+coefficients, in both roots, are those of the cubic times
+$\exp(-c_iP/\Rgas T)$ (Eq.~\eqref{eq:pen-phi} read the other way;
+Jhaveri--Youngren Eq.~13),
+\begin{equation}
+   \ln\varphi_i^{\mathrm{transl}} \;=\; \ln\varphi_i^{\mathrm{cubic}}
+        - \frac{c_i P}{\Rgas T}\,.
+   \label{eq:pen-lnphi}
+\end{equation}
+Because the term is component-wise and the same in both phases at equal
+$T$ and $P$, every $K$-value, bubble point, flash and envelope is the plain
+cubic's (the bubble-temperature scans of the tutorial are byte-identical);
+but a \emph{reaction} sees $\exp(-\sum_i\nu_i c_iP/\Rgas T)$, which does
+not cancel, so the Gibbs and equilibrium reactors price the translated
+fluid, and $G^{\mathrm R} = H^{\mathrm R} - TS^{\mathrm R}$ closes with the
+shifted $H^{\mathrm R}$ below (held by a gate to $10^{-9}$).  The volumes of
+\emph{both} roots are lowered by
 Eq.~\eqref{eq:pen-v}; $Z$ follows the volume, $Z = Pv/\Rgas T$.  The
-paper prints no enthalpy equation; it follows from its
-Eq.~\eqref{eq:pen-phi} read the other way: the translated fluid has
-$\ln\varphi_i = \ln\tilde\varphi_i - c_iP/\Rgas T$, and
+paper prints no enthalpy equation; it follows from
+Eq.~\eqref{eq:pen-lnphi}: with $\ln\varphi_i = \ln\varphi_i^{\mathrm{cubic}} - c_iP/\Rgas T$,
 $H^{\mathrm R} = -\Rgas T^2\,\partial(\ln\varphi)/\partial T$ at constant $c$
 moves by
 \begin{equation}
@@ -10480,9 +10499,12 @@ moves by
    \label{eq:pen-H}
 \end{equation}
 (equivalently $h = u + Pv$ with $u$ unchanged and $v$ lowered by $c$).
-Because $c$ is linear in composition and mole fractions are conserved, the
-total enthalpy of a flash changes by $-Pc(z)$ whatever the split; it matters
-across a change of pressure and across a model boundary.
+What moves is the equation of state's own departure, i.e.\ the
+\emph{vapour-root} $H^{\mathrm R}$ (by $-P\,c(\mathbf y)$).  Under
+\code{phiPhi} the enthalpy of the \emph{liquid} phase of a package is not the
+cubic's departure (it is the liquid formation enthalpy; DEV.md 4c C410), so
+a flash's liquid enthalpy does \emph{not} move and its total changes by
+$-\beta_V\,P\,c(\mathbf y)$ only, until that is closed.
 
 \paragraph{Declaring it.}  Off unless asked, so no existing case moves.  The
 catalogue's component records carry no $z_{RA}$, so the case declares it,
@@ -10520,7 +10542,9 @@ $n$-hexane, by
 $3.004, 0.2324$ for the alkylcyclohexanes, $2.516, 0.2008$ for the
 alkylbenzenes, mean deviation $0.19$--$0.28\,\%$).  The paper fits
 Eq.~\eqref{eq:jy-s} to the molar volume at $60\,^\circ$F and 1 atm.
-Choupo applies it where the case declares it: \code{shiftTable1 <row>;} for a
+Choupo applies it where the case declares it, under
+\code{model JhaveriYoungren;} (SRK takes \code{model Peneloux;}; each is refused
+under the other cubic): \code{shiftTable1 <row>;} for a
 Table~1 row, \code{family <nAlkane|nAlkylcyclohexane|nAlkylbenzene>;} for
 Eq.~\eqref{eq:jy-s} (a component record carries no hydrocarbon family, so the
 case says which; a molar mass not heavier than $n$-hexane is refused by name),
