@@ -30,8 +30,6 @@ propertyManifest
     }
     held
     {
-        "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
         "parameters/adsorption/equilibria/zeolite13X/CO2.dat"  "dba1a72762e525381c9785acb641cce25871877bf5a228e8954b1741d056241a";
-        "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

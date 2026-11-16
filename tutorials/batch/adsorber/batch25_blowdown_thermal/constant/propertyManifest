@@ -26,8 +26,4 @@ propertyManifest
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
-    held
-    {
-        "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-    }
 }

@@ -20,6 +20,7 @@ propertyManifest
 {
     pins
     {
+        "assets/SW30HR.dat"  "054eb463b31ae348898c2f13d62a29dc34cb103913050ec3e437c4850569bf64";
         "chemistry/aceticAcid-dissolution.dat"  "dda0d284347826e29d2afaaf209393b6e2900a884dccb4115fafe62effcff9ec";
         "components/NaCl.dat"  "3d1ba703a92e85049fb8855689a78a3b17a3fca04d365b36bae0c31b9c233575";
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
@@ -27,9 +28,5 @@ propertyManifest
         "parameters/solution/"  "relevant:84ff6ec62eb925588a0526b35d989867e4b95a6b52cc9c7e77627f7fc67c8a16";
         "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
-    }
-    held
-    {
-        "assets/SW30HR.dat"  "daf7cfc6a36f736a19b495d691ce49107b6036d33f555a716bad1f4df4fccb68";
     }
 }

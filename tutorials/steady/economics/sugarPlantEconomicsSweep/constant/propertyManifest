@@ -39,8 +39,4 @@ propertyManifest
         "parameters/solution/sucrose-water.dat"  "11e8f9216989a7844edb9dc965d153f9cb672a6dc79b5561a6089d23d293640e";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
     }
-    held
-    {
-        "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-    }
 }

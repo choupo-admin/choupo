@@ -10,9 +10,9 @@ diag    txy_unifac_points      n_points         13                 1e-4
 diag    txy_ideal_points       n_emptyCurves    0                  1e-4
 diag    txy_ideal_points       n_failures       0                  1e-4
 diag    txy_ideal_points       n_points         13                 1e-4
-aad     heldout_je200341c      txy_nrtl_points.T_bubble.aadAbs 0.605276307692     1e-4
-aad     heldout_je200341c      txy_nrtl_points.T_bubble.aadRelPct 0.16950008204     1e-4
-aad     heldout_je200341c      txy_nrtl_points.y_eq_methanol.aadAbs 0.0124198888692    1e-4
+aad     heldout_je200341c      txy_nrtl_points.T_bubble.aadAbs 0.572376307692     1e-4
+aad     heldout_je200341c      txy_nrtl_points.T_bubble.aadRelPct 0.16033894817     1e-4
+aad     heldout_je200341c      txy_nrtl_points.y_eq_methanol.aadAbs 0.0123037415615    1e-4
 aad     heldout_je200341c      txy_unifac_points.T_bubble.aadAbs 0.316871461538     1e-4
 aad     heldout_je200341c      txy_unifac_points.T_bubble.aadRelPct 0.0881351667579      1e-4
 aad     heldout_je200341c      txy_unifac_points.y_eq_methanol.aadAbs 0.0117136936       1e-4

@@ -29,8 +29,4 @@ propertyManifest
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "utilities/steamHP.dat"  "b003944bdafd1314bea227202e26974f7c31903c94d2527c55ac41ce2222bbe6";
     }
-    held
-    {
-        "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
-    }
 }

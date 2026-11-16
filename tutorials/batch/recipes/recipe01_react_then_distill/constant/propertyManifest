@@ -31,8 +31,4 @@ propertyManifest
         "parameters/Henry/ethylAcetate-water.dat"  "790654433c4113c22b84bd0b6b2cc1e3b61f98b40bdb47221ffc64a73551cff8";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
-    held
-    {
-        "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
-    }
 }

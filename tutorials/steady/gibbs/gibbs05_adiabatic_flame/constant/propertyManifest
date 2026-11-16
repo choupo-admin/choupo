@@ -37,8 +37,4 @@ propertyManifest
         "parameters/Henry/O2-water.dat"  "7d1943cf41a94ac447b3d7774fef5b62e2e5a7698bee77a48b59dabb022458db";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
-    held
-    {
-        "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-    }
 }

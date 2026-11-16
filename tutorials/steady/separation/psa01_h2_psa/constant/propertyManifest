@@ -36,8 +36,4 @@ propertyManifest
         "parameters/adsorption/equilibria/zeolite5A/N2.dat"  "09583dd7206b42d1327eb86d3aa695df41ad72bdf3be9e01f55e90bfdb7a55c5";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
-    held
-    {
-        "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-    }
 }

@@ -30,8 +30,4 @@ propertyManifest
         "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
     }
-    held
-    {
-        "assets/SW30HR-380.dat"  "eae93255dd5f38371c8856049ec73b3f4c7b2e95055f0e362dd10271be627a25";
-    }
 }

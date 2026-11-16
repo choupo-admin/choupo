@@ -28,8 +28,4 @@ propertyManifest
         "utilities/chilledWater.dat"  "dcab5f38dfc376a9bdff3dbc020d61718cd6c4a73c63a3737cfa35b580affa12";
         "utilities/steamMP.dat"  "c2f8ae3dd0fe947ae48d1093dcf7f461fa8e354df23bfd46dd3882765889a8a1";
     }
-    held
-    {
-        "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-    }
 }

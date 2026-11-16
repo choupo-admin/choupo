@@ -28,10 +28,7 @@ propertyManifest
         "parameters/UNIFAC/groups.dat"  "0eba26d4d340d6207cb1cdef2c1c0e9ea7350d4e3052244185a991ad2bf0df76";
         "parameters/UNIFAC/interactions.dat"  "7d6d947fef01f2305e6cd56630451e82f0eefb39bcaea0c3be1ed5866f5c663a";
         "parameters/UNIFACDortmund/groups.dat"  "d8660b3570328a304160d4d422e353c2b2ace72664f4bfc4555768c0f9e4c732";
+        "parameters/UNIFACDortmund/interactions.dat"  "8a16444c94ffa326ea41f8e72c9b9c6357d7096aae73850c528579c42d6269ea";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-    }
-    held
-    {
-        "parameters/UNIFACDortmund/interactions.dat"  "20a27c6d97cc1e8c6c71a4a23494511ed12f97e3f6b953249662a165d26c7c6d";
     }
 }

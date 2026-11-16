@@ -30,8 +30,4 @@ propertyManifest
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
         "utilities/steamMP.dat"  "c2f8ae3dd0fe947ae48d1093dcf7f461fa8e354df23bfd46dd3882765889a8a1";
     }
-    held
-    {
-        "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
-    }
 }

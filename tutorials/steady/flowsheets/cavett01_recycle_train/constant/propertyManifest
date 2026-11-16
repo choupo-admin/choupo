@@ -39,11 +39,7 @@ propertyManifest
         "components/propane.dat"  "26ffaecf82749edb18ccb34a3f18acb0ca45e55e1b461bf94d871ef0ab81358e";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "utilities/coolingWater.dat"  "caa0cba6b3eb42538c0842ec4c504d553f0bc88b3b15acb3b89519dc4ac69125";
         "utilities/steamLP.dat"  "7e2052ceeea97a83099d676726888de95deb40dafa17527ceb51a393210b78b6";
-    }
-    held
-    {
-        "chemistry/CO2aq-formation.dat"  "a82a2e08950cbd1dc67bba7703de8e6417a30f41860d7605924d231cd654b39b";
-        "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }

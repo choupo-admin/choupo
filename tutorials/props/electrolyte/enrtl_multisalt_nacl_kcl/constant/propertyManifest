@@ -22,14 +22,11 @@ propertyManifest
     {
         "components/water.dat"  "48c5d595561791dd22af8f820e91b4c82844b8cc22541c4f5800322a495a3802";
         "parameters/Henry/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+        "parameters/eNRTL/K-Cl.dat"  "f56768356cb59126540ee3d8dba0b3cde6b2095e15c07fcfc641943e2ab81494";
+        "parameters/eNRTL/Na-Cl.dat"  "fc4d578462cc99393d6c70db2461c14f44c06cd88f8282bc460e7e2dab537e38";
         "parameters/solution/"  "relevant:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
         "species/Cl.dat"  "77c9cffcfc3674c034800724ba22333a585a19fbc6a467df63876e68e73abae6";
         "species/K.dat"  "c4107e1618124ffbc2d59c9c81bee9e5583e39bb912f3e170d447862abfa63e2";
         "species/Na.dat"  "f402eae059145592ac7fcbf4ef1b37f93e0181e3e8278c49f28fd146dee217a9";
-    }
-    held
-    {
-        "parameters/eNRTL/K-Cl.dat"  "27bea3329c65dac0c1899b0c3c6c917830de26628bb3abaf259f48561c64018f";
-        "parameters/eNRTL/Na-Cl.dat"  "d2f8f59e3269ad49344960e4d5adfbb2bb98c2d6bda093889324f688e7717c4a";
     }
 }

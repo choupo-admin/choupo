@@ -31,6 +31,5 @@ propertyManifest
     held
     {
         "components/Cl.dat"  "8b2f6029b7c039f6ebe718fc97e94a51768bfc5c9785856b13d1e973bf2c21f0";
-        "utilities/coolingWater.dat"  "108f0f159a567ae8c9b51f6ddca1da1c1f6a3bb257c3019112fc7bb9325a116e";
     }
 }
