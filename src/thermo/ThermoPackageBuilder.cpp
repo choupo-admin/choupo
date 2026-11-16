@@ -2882,6 +2882,16 @@ static ThermoPackage buildV2Dispatch(const DictPtr& v2, const Database& db,
             " LeeKeslerPloecker (Lee-Kesler with the Ploecker mixing rules).");
     // The vdW-one-fluid mixing rule is the CUBIC combining rule; PC-SAFT
     // has its own (sigma arithmetic, epsilon geometric) -- do not impose it.
+    //  Lee-Kesler-Ploecker carries ONE mixing rule (Ploecker, Knapp & Prausnitz
+    //  1978, Eqs. 9-14); a `mixingRule` key would be ignored in silence, so it
+    //  is refused (PC-SAFT, which also has its own, takes the same word and is
+    //  left as it was).
+    if (model == "LeeKeslerPloecker" && eos->found("mixingRule"))
+        throw std::runtime_error("thermophysicalPropertySystem: phiPhi"
+            " equationOfState LeeKeslerPloecker has ONE mixing rule, the"
+            " Ploecker-Knapp-Prausnitz one-fluid rule (Eqs. 9-14, eta = 0.25,"
+            " kappa from `binaryInteractions`); `mixingRule` is not a key of"
+            " this model -- remove it.");
     if (model != "PCSAFT" && model != "LeeKeslerPloecker" && eos->found("mixingRule")
         && eos->lookupWord("mixingRule") != "vanDerWaalsOneFluid")
         throw std::runtime_error("thermophysicalPropertySystem: the cubic"

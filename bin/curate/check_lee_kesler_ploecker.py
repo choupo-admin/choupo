@@ -66,7 +66,8 @@ WHAT THIS GATE CHECKS (each arm names what it does not).
   (i) THE REFUSALS AND ANNOUNCEMENTS, by running the engine on a throwaway copy:
       hydrogen is refused naming Gunn et al.; kappa <= 0 is refused naming the
       multiplier; a record regressed for another EoS is refused; a pair naming
-      an unknown component is refused; a pair with no kappa is ANNOUNCED BY NAME
+      an unknown component is refused; a `mixingRule` key (the model has one rule) is refused;
+      a pair with no kappa is ANNOUNCED BY NAME
       and appears in the resolved view; an evaluation outside T_r 0.3-4 is
       announced once.
 
@@ -926,6 +927,14 @@ def refusal_problems(wd):
     elif ("no kappa declared for 1 pair(s) (Ar-CH4)" not in out
           or "kappa = 1 (UNDECLARED default, announced): Ar-CH4" not in out):
         bad.append("(i) the undeclared pair Ar-CH4 was not announced by name, in the log and in the resolved view")
+    # R7 a mixing-rule key the model does not have
+    d = fresh("r7", point)
+    tp = (d / "constant/thermoPhysPropDict").read_text()
+    tp = tp.replace("model LeeKeslerPloecker;", "model LeeKeslerPloecker;\n        mixingRule vanDerWaalsOneFluid;")
+    (d / "constant/thermoPhysPropDict").write_text(tp)
+    rc, out = run_case_text(d)
+    if rc == 0 or "ONE mixing rule" not in out:
+        bad.append("(i) a `mixingRule` key under LeeKeslerPloecker was not refused (exit %d)" % rc)
     # R6 outside the window
     d = fresh("r6", "    { name p; type propertyPoint; state { T 600 K; P 5 atm; composition { N2 1.0; } }"
                     " properties ( Z ); }")
@@ -1093,7 +1102,7 @@ def main():
           "G = H - TS closes to 1e-9 on %d states and on the package; ln phi_i equals the mole-number "
           "derivative of n ln phi_M to 1e-6; the pure limit is exact to 1e-12; against Miller, Kidnay & Hiza "
           "(1973) at 112 K the P_bubble AAD is %.2f %% (N2+CH4), %.2f %% (N2+Ar), %.2f %% (ternary); "
-          "hydrogen, kappa <= 0, a pair record for another EoS and an unknown component are refused by name, "
+          "hydrogen, kappa <= 0, a pair record for another EoS, a mixingRule key and an unknown component are refused by name, "
           "an undeclared pair is announced by name, an evaluation outside T_r 0.3-4 is announced.  "
           "NOT CHECKED: strongly polar fluids, hydrogen and helium, the liquid-root enthalpy of a mixture "
           "through the package (the family contract is the vapour root), the physics beyond two measured "

@@ -1830,6 +1830,11 @@
       "exit": 0,
       "claim": "check_unifac_dortmund: OK -- the Dortmund UNIFAC records equal the printed tables where read (112 of 530 Table IV rows and 39 of 85 Table III rows held to the page, both files sha-256 pinned), no later revision is named as a source, a component without its own unifacDortmund block and a main-group pair Table IV does not print are each refused by name, and all 32 values of the paper's Table XI are reproduced within 0.06.  NOT CHECKED: the other Table IV rows beyond the pin, any measurement (Table XI prints predictions), the equations beyond that reproduction.",
       "seconds": 0.1
+    },
+    "check_lee_kesler_ploecker": {
+      "exit": 0,
+      "claim": "check_lee_kesler_ploecker: OK -- the 24 constants of Lee & Kesler Table 1 and the mixing constants equal the page and are sha-pinned (PKP Table A-I's one differing entry, d1 of the simple fluid, is held and not used); the 131 kappa records equal Ploecker et al. Table I (hydrogen rows refused, not shipped) and the typed table agrees with the PDF's OCR layer; 92 entries of LK Tables 5, 7, 9, 11 and Tables 6, 8, 10, 12 at 6 states are reproduced to the printed digits on the printed root, the simple fluid's critical point to the band the printed constants' rounding allows, and the same states through the whole package to 1e-9; an independent Python transcription matches to 1e-9; G = H - TS closes to 1e-9 on 378 states and on the package; ln phi_i equals the mole-number derivative of n ln phi_M to 1e-6; the pure limit is exact to 1e-12; against Miller, Kidnay & Hiza (1973) at 112 K the P_bubble AAD is 1.61 % (N2+CH4), 0.75 % (N2+Ar), 0.48 % (ternary); hydrogen, kappa <= 0, a pair record for another EoS, a mixingRule key and an unknown component are refused by name, an undeclared pair is announced by name, an evaluation outside T_r 0.3-4 is announced.  NOT CHECKED: strongly polar fluids, hydrogen and helium, the liquid-root enthalpy of a mixture through the package (the family contract is the vapour root), the physics beyond two measured systems, the GUI.",
+      "seconds": 3.8
     }
   }
 }

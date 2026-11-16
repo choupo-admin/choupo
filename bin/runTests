@@ -6124,6 +6124,26 @@ PYEOF
     fi
     rm -f /tmp/unifacdort.$$
 
+    # lee-kesler-ploecker gate (2026-11-16, DEV.md 4c C408 (d)).  The Lee-Kesler
+    # equation of state with the Ploecker mixing rules is the two papers: the 24
+    # constants of Lee & Kesler Table 1 are read out of the source and held to the
+    # page (sha-pinned), the 131 kappa records to Ploecker et al. Table I (with
+    # the PDF's OCR layer as a second reading), 92 printed entries of the Tables
+    # 5-12 and Poling's Example 4-1 are reproduced on the printed root, an
+    # independent Python transcription agrees, G = H - TS closes to 1e-9, ln phi_i
+    # equals the mole-number derivative of n ln phi_M, the pure limit is exact, the
+    # engine is held to Miller, Kidnay & Hiza's measured 112 K VLE, and the
+    # refusals run.  Seven sabotages (--selftest, not in the suite) prove it fails.
+    if gate_exec "$ROOT/bin/curate/check_lee_kesler_ploecker.py" > /tmp/lkpgate.$$ 2>&1; then
+        printf "PASS  %-40s  (%s)\n" "lee-kesler-ploecker-gate" "$(head -1 /tmp/lkpgate.$$)"
+        pass=$((pass+1))
+    else
+        printf "FAIL  %-40s  (run bin/curate/check_lee_kesler_ploecker.py)\n" "lee-kesler-ploecker-gate"
+        cat /tmp/lkpgate.$$
+        fail=$((fail+1))
+    fi
+    rm -f /tmp/lkpgate.$$
+
     # hansen-teas gate (2026-08-26).  The Hildebrand parameter is one number
     # and carries no hydrogen bonding -- ethanol and water sit 21.96 MPa^0.5
     # apart and are miscible in all proportions.  The engine now READS the
