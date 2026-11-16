@@ -225,6 +225,8 @@ public:
     scalar  Z         (scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  H_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
     scalar  S_residual(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    scalar  H_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
+    scalar  S_residualLiquid(scalar T_K, scalar P_Pa, const sVector& y) const override;
 
     const std::string& modelName() const override { return name_; }
     std::vector<std::string> requiredComponentProperties() const override
@@ -239,6 +241,9 @@ public:
     scalar verify(int verbosity = 0) const;
 
 private:
+    // One body for both roots (C410): H^R / S^R at the root named.
+    scalar H_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liquid) const;
+    scalar S_residualAt(scalar T_K, scalar P_Pa, const sVector& y, bool liquid) const;
     // ---- pure-component parameters (from each component's pcsaft{} block) ----
     std::size_t         n_;
     std::string         name_ = "PCSAFT";
