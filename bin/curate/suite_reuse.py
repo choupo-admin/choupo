@@ -13,6 +13,10 @@ again only when one of them changes (DEV.md 4c C394, decision 1).
     bin/curate/suite_reuse.py case-plan <root>           one line per curation
                                                          case: dir, key, the
                                                          stored labels or -
+    bin/curate/suite_reuse.py case-plan <root> --explain how each case is keyed:
+                                                         narrow or whole
+    bin/curate/suite_reuse.py verify-reads <case>...     strace the run and hold
+                                                         its reads to the key
     bin/curate/suite_reuse.py key <gate>                 print the key and the
                                                          inputs it covers
     bin/curate/suite_reuse.py --list                     what is keyed, what is
@@ -80,6 +84,29 @@ or a NO SUBJECT is never stored, so it always runs again.  The verdict lives
 under build/reuse/ (ignored, never tracked): a clean checkout has none and
 runs everything.  It is printed `REUSED`, with the key's first twelve
 characters and the date it was taken, and counted apart from PASS.
+
+THE CURATION FITS ARE KEYED NARROWER THAN THE GATES (C414 (3)).  A
+choupoProps fit is keyed on (1) the objects REACHABLE from the choupoProps
+entry objects plus the operations its propsDict names (the operation
+registry's edges to unnamed operations are the one declared cut; the premise
+that makes it sound is machine-checked on every key), hashed by content; (2) for
+the `pairs/` and `components/` kinds, the catalogue records of the components
+it mentions (data/standards, data/local, data/groupEstimative: the files whose
+stem is the name or a pair stem containing it) and both asset trees; for
+`transport_c327`, the three catalogue directories it reads (components,
+species, assets) of both tiers; every other kind (electrolytes, henry,
+batches) keeps the whole data tree; (3) the case's own files and constant/
+cascade, its harness and the platform, as before.  What it does NOT contain,
+and so what never re-runs a fit: a unit operation, a post processor, the
+dynamic driver, another application, a catalogue record of a component the case
+does not mention, a record of another pair.  A case whose operations resolve to
+no object, that also runs the process binary, or whose build shows the premise
+broken, falls back to the whole engine (`case-plan DIR --explain` prints how
+each case is keyed).  `verify-reads` holds the data rule against a strace of
+the real run.  A REUSED line prints the key, the date AND the commit of the
+run it reuses.  Never reused, ever: a FAIL, a SKIP (cannot run), a NO SUBJECT;
+anything in CI or a release (CHOUPO_NO_REUSE); and any run under --scope,
+--fast, --witnesses or a named case.
 
 WHEN NOTHING IS REUSED.  CHOUPO_NO_REUSE=1 (or `bin/runTests --no-reuse`,
 which sets it): the hosted tiers (.github/workflows/ci.yml; sanitize.yml
@@ -748,6 +775,472 @@ def case_harness():
     return digest(pairs), (sorted(seen), files)
 
 
+# --------------------------------------------------------------------------
+#  THE NARROW KEY OF A choupoProps CURATION FIT (DEV.md 4c C414 (3), slice
+#  "fit reuse"; the architect's rulings of 2026-11-16: hashes only, never a
+#  judgement)
+#
+#  The first key of a curation case hashed the WHOLE engine (every object of
+#  the build) and the whole data/standards tree, so a change to a solids unit
+#  or to ANY catalogue record re-ran about 1170 fits whose verdict could not
+#  have moved.  A fit reads very little of either, and the narrow key says
+#  exactly what, from two measurements and one declared premise:
+#
+#  ENGINE.  The objects REACHABLE, through the symbols they define and
+#  reference (`nm`), from the choupoProps entry objects
+#  (src/applications/choupoProps/) plus the objects of the operations the case
+#  NAMES in its system/propsDict -- with ONE edge cut, declared here: the
+#  operation registry (src/propertyOps/PropertyOperation.o) is entered, hashed
+#  and followed for everything EXCEPT its edges to the operation objects, which
+#  it holds only to instantiate a type by name from the case.  The premise that
+#  makes the cut sound is MACHINE-CHECKED on every key: nothing outside the
+#  choupoProps entry objects and the registry itself references
+#  `PropertyOperation::New`, so an operation can enter a run only by being named
+#  in a propsDict; and every named operation must resolve to at least one
+#  object, or the case falls back to the whole engine.  Every other registry
+#  (activity models, equations of state, vapour-pressure models, ...) is
+#  followed in full: a model the case does not use is still keyed, because the
+#  case's dictionaries choose it at run time and the key does not read them.
+#  Hashed by the objects' CONTENT (as the whole-engine key was), so an edit
+#  that changes no machine code changes no key.  What the cut leaves out of a
+#  fit's key is what a fit cannot run: the unit operations (UnitOperation.o is
+#  reached only from the registry's unit-acceptance operation), the post
+#  processors, the dynamic driver, the other applications.
+#  A static initialiser in an unreached object is NOT keyed: the premise is
+#  the project rule that nothing registers itself (CLAUDE.md section 5, no
+#  auto-registration); `verify-reads` and the sabotage tests of the slice hold
+#  what a reach computed this way could miss, by measurement.
+#
+#  DATA (only the `pairs/` and `components/` kinds, whose reads were traced
+#  with strace -f on 2026-11-16 and are re-held by `verify-reads`).  A pair run
+#  reads, outside its own directory, ONLY: (a) data/standards/assets and
+#  data/local/assets, scanned whole at start-up; (b) the records of its
+#  components: data/standards/components/<c>.dat and data/local/components/<c>.dat
+#  (looked up; the case-local copy is what is used), plus -- for a
+#  `components/` case -- data/standards/mixtures/<c>.dat.  The key takes, for
+#  every component NAME the case's own dictionaries or file names mention,
+#  every file under data/standards, data/local and data/groupEstimative whose
+#  stem is that name or a pair stem <a>-<b> that begins or ends with it, and
+#  both asset trees in full.  The record's Psat law is in the record.  A case
+#  of any other kind (electrolytes, henry, batches, transport_c327) keeps the
+#  whole-tree data half: its reads were not narrowed here, and each reads more
+#  (species, chemistry, parameters/<model>/, CATALOGUE.dat) than the rule
+#  above covers.
+# --------------------------------------------------------------------------
+
+REGISTRY_OBJ = "src/propertyOps/PropertyOperation.o"
+REGISTRY_SRC = "src/propertyOps/PropertyOperation.cpp"
+NARROW_DATA_KINDS = ("pairs", "components")
+#  transport_c327 (92 scans, 22 min): its thermoPhysPropDict lists 40
+#  components and the run reads their records, and the species of the ions of
+#  NaNO3, from the catalogue -- traced 2026-11-16.  Not nameable by the rule
+#  above (an ion's record is not named in the case), so its data half is the
+#  three directories it reads, whole.  Named, not generalised: the other
+#  batches/ cases were not traced.
+DIRS_RULE_CASES = {
+    "data/curation/batches/transport_c327":
+        ("components", "species", "assets"),
+}
+_SYM = {}
+
+
+def _sym_cache_file():
+    return STORE / "symcache.json"
+
+
+def sym_graph(b):
+    """{object (relative to the build): (sha, defined, strong, undefined)},
+    cached by the object's content hash."""
+    if _SYM:
+        return _SYM["g"]
+    try:
+        cache = json.loads(_sym_cache_file().read_text())
+    except (OSError, ValueError):
+        cache = {}
+    g, dirty = {}, False
+    for o in sorted((b / "src").rglob("*.o")):
+        rel = o.relative_to(b).as_posix()
+        sha = H.sha(o)
+        c = cache.get(rel)
+        if c and c[0] == sha:
+            g[rel] = tuple(c)
+            continue
+        d_, s_, u_ = [], [], []
+        for line in subprocess.run(["nm", "--defined-only", "-P", str(o)],
+                                   capture_output=True, text=True).stdout.splitlines():
+            p = line.split()
+            if len(p) >= 2 and p[1] in "TDBRVWuiCSG":
+                d_.append(p[0])
+                if p[1] in "TDBR":
+                    s_.append(p[0])
+        for line in subprocess.run(["nm", "-u", "-P", str(o)],
+                                   capture_output=True, text=True).stdout.splitlines():
+            p = line.split()
+            if len(p) >= 2 and p[1] == "U":
+                u_.append(p[0])
+        g[rel] = (sha, d_, s_, u_)
+        cache[rel] = [sha, d_, s_, u_]
+        dirty = True
+    if dirty:
+        STORE.mkdir(parents=True, exist_ok=True)
+        tmp = _sym_cache_file().with_suffix(f".{os.getpid()}.tmp")
+        tmp.write_text(json.dumps(cache))
+        os.replace(tmp, _sym_cache_file())
+    _SYM["g"] = g
+    return g
+
+
+def registry_ops():
+    """{operation type: class} read from PropertyOperation::registerBuiltins."""
+    text = (ROOT / REGISTRY_SRC).read_text(errors="ignore")
+    return dict(re.findall(
+        r'reg\("(\w+)",\s*\[\]\s*\{\s*return std::make_unique<(\w+)>', text))
+
+
+def case_ops(case_dir: Path):
+    """The registered operation types the case's propsDict names (every word
+    of the file that is a registered type, comments included: generous)."""
+    p = case_dir / "system" / "propsDict"
+    if not p.is_file():
+        return None
+    words = set(re.findall(r"[A-Za-z0-9_]+", p.read_text(errors="ignore")))
+    reg = registry_ops()
+    return sorted(w for w in words if w in reg)
+
+
+_REACH = {}
+
+
+def reach(ops):
+    """-> (frozenset of build-relative object paths, None) or (None, reason)."""
+    ops = tuple(ops)
+    if ops in _REACH:
+        return _REACH[ops]
+    _REACH[ops] = _reach(ops)
+    return _REACH[ops]
+
+
+def _reach(ops):
+    b = platform_build()
+    if b is None:
+        return None, "no platform build behind ./choupoProps"
+    g = sym_graph(b)
+    if REGISTRY_OBJ not in g:
+        return None, f"{REGISTRY_OBJ} is not in the build"
+    reg = registry_ops()
+    if not reg:
+        return None, f"no operation registrations read from {REGISTRY_SRC}"
+    defs, strong = {}, {}
+    for o, (_, d_, s_, _u) in g.items():
+        for s in d_:
+            defs.setdefault(s, set()).add(o)
+        for s in s_:
+            strong[(s, o)] = True
+    entry = {o for o in g if o.startswith("src/applications/choupoProps/")}
+    if not entry:
+        return None, "no choupoProps entry objects in the build"
+
+    def objects_of(cls):
+        pre, vt = f"_ZN6Choupo{len(cls)}{cls}", f"_ZTVN6Choupo{len(cls)}{cls}E"
+        r = set()
+        for s, os_ in defs.items():
+            if s.startswith(pre) or s.startswith(vt):
+                r |= {x for x in os_ if strong.get((s, x))}
+        return r
+    opobjs = set()
+    for cls in reg.values():
+        opobjs |= objects_of(cls)
+    #  the machine-checked premise: an operation enters a run only through
+    #  the registry, by a name in the case
+    new_sym = "_ZN6Choupo17PropertyOperation3New"
+    for o, (_, _d, _s, u_) in g.items():
+        if o in entry or o == REGISTRY_OBJ:
+            continue
+        if any(s.startswith(new_sym) for s in u_):
+            return None, (f"PREMISE BROKEN: {o} references "
+                          "PropertyOperation::New, so an operation can enter a "
+                          "run without being named in the case")
+    roots = set(entry)
+    for t in ops:
+        cls = reg.get(t)
+        objs = objects_of(cls) if cls else set()
+        if not objs:
+            return None, (f"operation `{t}` resolves to no object "
+                          f"(class {cls}): the whole engine is keyed")
+        roots |= objs
+    seen, todo = set(roots), list(roots)
+    while todo:
+        o = todo.pop()
+        for s in g[o][3]:
+            for d in defs.get(s, ()):
+                if o == REGISTRY_OBJ and d in opobjs and d not in roots:
+                    continue                       # the cut
+                if d not in seen:
+                    seen.add(d)
+                    todo.append(d)
+    return frozenset(seen), None
+
+
+def engine_objects_digest(objs):
+    """The engine half over a set of build-relative objects: content hashes,
+    the two objects that print the commit keyed on their sources instead, and
+    the compiler / flag stamps."""
+    b = platform_build()
+    pairs = []
+    for rel in sorted(objs):
+        o = b / rel
+        d = o.with_suffix(".d")
+        deps = []
+        if d.is_file():
+            t = d.read_text(errors="ignore").replace("\\\n", " ")
+            first = t.split("\n", 1)[0]
+            deps = first.split(":", 1)[1].split() if ":" in first else []
+        if any(x.endswith("generated/gitVersion.H") for x in deps):
+            for x in deps:
+                if not x.endswith("generated/gitVersion.H"):
+                    pairs.append((rel + "<" + x, H.sha(ROOT / x)))
+        else:
+            pairs.append((rel, H.sha(o)))
+    for s in sorted(b.glob(".stamp-*")):
+        pairs.append(("stamp", s.name))
+    return digest(pairs)
+
+
+def data_root():
+    return Path(os.environ.get("CHOUPO_HOME") or ROOT)
+
+
+_STEMS = {}
+
+
+def stem_index():
+    """({name: [files whose stem is the name, or a pair stem that begins or
+    ends with it]}, {component names}) over data/standards, data/local and
+    data/groupEstimative, paths relative to the data root."""
+    if _STEMS:
+        return _STEMS["idx"], _STEMS["names"]
+    dr = data_root()
+    idx, names, files = {}, set(), []
+    for tree in ("data/standards", "data/groupEstimative", "data/local"):
+        files += [f.relative_to(dr).as_posix() for f in walk_files(dr / tree)]
+    for f in files:
+        stem = Path(f).stem
+        if f.startswith(("data/standards/components/", "data/local/components/",
+                         "data/groupEstimative/")):
+            names.add(stem)
+        keys = {stem}
+        for i, ch in enumerate(stem):
+            if ch == "-":
+                keys.add(stem[:i])
+                keys.add(stem[i + 1:])
+        for k in keys:
+            idx.setdefault(k, []).append(f)
+    _STEMS["idx"], _STEMS["names"] = idx, names
+    return idx, names
+
+
+def case_names(case_files):
+    """Component names a case mentions: the words of its system/ and
+    constant/ text files (the archive extracts and the expected files aside)
+    and the stems of every file it holds."""
+    _, names = stem_index()
+    words = set()
+    for f in case_files:
+        words.add(Path(f).stem)
+        parts = f.split("/")
+        if "archiveExtracts" in parts or parts[-1].startswith("expected"):
+            continue
+        if ("system" in parts or "constant" in parts) and not f.endswith(".csv"):
+            p = ROOT / f
+            try:
+                if p.stat().st_size <= (1 << 20):
+                    words |= set(re.findall(r"[^\s;{}()\[\]\"',]+",
+                                            p.read_text(errors="ignore")))
+            except OSError:
+                pass
+    return sorted(w for w in words if w in names)
+
+
+def narrow_data(case_files):
+    """-> (digest, (names, files)): the narrow data half of a pair or
+    component case."""
+    dr = data_root()
+    idx, _ = stem_index()
+    names = case_names(case_files)
+    files = sorted({f for n in names for f in idx.get(n, [])})
+    pairs = [("root", str(dr))]
+    pairs += [(f, H.sha(dr / f)) for f in files]
+    for a in ("data/standards/assets", "data/local/assets"):
+        pairs.append((a, dir_digest(dr / a)))
+    #  the existence of a component record in each tier is part of the key (a
+    #  record that appears under data/local changes the lookup)
+    for n in names:
+        for t in ("standards", "local"):
+            f = f"data/{t}/components/{n}.dat"
+            pairs.append(("has:" + f, "yes" if (dr / f).is_file() else "no"))
+    return digest(pairs), (names, files)
+
+
+def dirs_data(dirs):
+    """The data half of a DIRS_RULE case: the named catalogue directories of
+    both tiers, hashed whole."""
+    dr = data_root()
+    pairs = [("root", str(dr))]
+    for t in ("standards", "local"):
+        for d in dirs:
+            pairs.append((f"data/{t}/{d}", dir_digest(dr / "data" / t / d)))
+    return digest(pairs)
+
+
+def data_half_for(case_rel, case_files, coarse):
+    """-> (the data part of a narrow case's key, its label)."""
+    if case_rel in DIRS_RULE_CASES:
+        return ("data-dirs", dirs_data(DIRS_RULE_CASES[case_rel])), "data=dirs"
+    if case_kind(case_rel) in NARROW_DATA_KINDS:
+        return ("data-narrow", narrow_data(case_files)[0]), "data=narrow"
+    return ("data", coarse), "data=WHOLE-TREE"
+
+
+def narrow_engine(case_rel):
+    """-> (digest, n_objects, ops) or (None, reason, None)."""
+    cdir = ROOT / case_rel
+    try:
+        app = re.search(r"^\s*application\s+(\w+)\s*;",
+                        (cdir / "system" / "controlDict").read_text(errors="ignore"),
+                        re.M)
+    except OSError:
+        app = None
+    if not app or app.group(1) != "choupoProps":
+        return None, "the case does not run choupoProps", None
+    if (cdir / "system" / "flowsheetDict").is_file():
+        return None, "the case also runs the process binary", None
+    ops = case_ops(cdir)
+    if not ops:
+        return None, "no registered operation read from its propsDict", None
+    objs, why = reach(ops)
+    if objs is None:
+        return None, why, None
+    return engine_objects_digest(objs), len(objs), ops
+
+
+def case_kind(case_rel):
+    parts = case_rel.split("/")
+    return parts[2] if len(parts) > 2 and parts[:2] == ["data", "curation"] else "-"
+
+
+# --------------------------------------------------------------------------
+#  verify-reads: the narrow key held against what a run READS
+#
+#      suite_reuse.py verify-reads <case> [<case> ...]
+#      suite_reuse.py verify-reads --kind pairs --every 40
+#
+#  Runs each case under `strace -f` (the case's own binary, choupoProps),
+#  collects every path the process touches outside the case's own directory,
+#  and checks that each one is inside what the narrow key covers: the two
+#  asset trees, the records the key hashes, the directories a DIRS_RULE case
+#  names, the `constant/` cascade of the case's ancestors, and the build.  A
+#  path outside is a READ THE KEY DOES NOT SEE -- the case would be reused over
+#  an edit of it -- and the command exits 1 naming it.  It needs strace and
+#  runs the fits, so it is a tool for the slice that changes the rule and for
+#  a periodic audit, never part of a sweep.
+# --------------------------------------------------------------------------
+
+def strace_reads(case_rel):
+    """The existing paths a run of the case touches outside its own directory
+    (relative to the data root), or None if it could not run."""
+    dr = data_root()
+    cdir = ROOT / case_rel
+    if (cdir / "constant" / "archiveDatasets").is_file():
+        r = subprocess.run([sys.executable, "-I", str(ROOT / "bin" / "choupo-curate"),
+                            "fetch", str(cdir)], capture_output=True, text=True)
+        if r.returncode != 0:
+            return None
+    fd, tf = tempfile.mkstemp(prefix="reads.")
+    os.close(fd)
+    env = dict(os.environ, CHOUPO_HOME=str(dr))
+    subprocess.run(["strace", "-f", "-e",
+                    "trace=openat,newfstatat,stat,statx,access,faccessat,faccessat2",
+                    "-o", tf, str(ROOT / "choupoProps"), str(cdir)],
+                   cwd=str(ROOT), env=env, stdout=subprocess.DEVNULL,
+                   stderr=subprocess.DEVNULL)
+    out = set()
+    pat = re.compile(r'(?:openat|newfstatat|stat|statx|access|faccessat2?)\([^"]*"([^"]+)"')
+    caseabs = str(cdir.resolve()) + "/"
+    for line in open(tf, errors="ignore"):
+        m = pat.search(line)
+        if not m or "ENOENT" in line:
+            continue
+        p = m.group(1)
+        if not p.startswith("/"):
+            p = os.path.join(str(cdir), p)
+        p = os.path.normpath(p)
+        if (p + "/").startswith(caseabs) or p.startswith(str(ROOT / "build")):
+            continue
+        if p == str(ROOT / "choupoProps"):
+            continue
+        if p.startswith(str(dr) + "/"):
+            out.add(p[len(str(dr)) + 1:])
+    os.unlink(tf)
+    return out
+
+
+def allowed_read(path, case_rel, files, dirs):
+    if path.startswith(("data/standards/assets/", "data/local/assets/")) or \
+            path in ("data/standards/assets", "data/local/assets"):
+        return True
+    if path in files:
+        return True
+    if any(f.startswith(path + "/") for f in files):
+        return True                      # a directory on the way to a record
+    if any(path.startswith(d + "/") or path == d for d in dirs):
+        return True
+    #  the directories above the case and their `constant/` (the cascade)
+    if case_rel.startswith(path + "/") or path == case_rel:
+        return True
+    parts = path.split("/")
+    if "constant" in parts and case_rel.startswith("/".join(parts[:parts.index("constant")])):
+        return True
+    return path in ("data", "data/standards", "data/local",
+                    "data/standards/components", "data/local/components")
+
+
+def verify_reads(argv):
+    cases = []
+    if argv[:1] == ["--kind"]:
+        kind, every = argv[1], int(argv[argv.index("--every") + 1]) if "--every" in argv else 1
+        allc = case_dirs(["data/curation/" + kind])
+        cases = allc[::every]
+    else:
+        cases = [c.rstrip("/") for c in argv]
+    bad_total = 0
+    for c in cases:
+        ne, nn, _ops = narrow_engine(c)
+        if not ne:
+            print(f"SKIP  {c}: not narrow ({nn})")
+            continue
+        files, dirs = set(), []
+        if c in DIRS_RULE_CASES:
+            dirs = [f"data/{t}/{d}" for t in ("standards", "local")
+                    for d in DIRS_RULE_CASES[c]]
+        elif case_kind(c) in NARROW_DATA_KINDS:
+            files = set(narrow_data(git_files([c]) or [])[1][1])
+        else:
+            print(f"SKIP  {c}: whole-tree data half")
+            continue
+        reads = strace_reads(c)
+        if reads is None:
+            print(f"SKIP  {c}: could not run (fetch refused)")
+            continue
+        bad = sorted(p for p in reads if not allowed_read(p, c, files, dirs))
+        if bad:
+            bad_total += 1
+            print(f"FAIL  {c}: {len(bad)} read(s) the key does not see, first {bad[:5]}")
+        else:
+            print(f"OK    {c}: {len(reads)} paths read, all inside the key")
+    H.save()
+    return 1 if bad_total else 0
+
+
 def pinned_key_parts(case_abs: Path):
     """THE KEY OF A CASE THAT REFERENCES THE CATALOGUE (C413).
 
@@ -781,8 +1274,9 @@ def pinned_key_parts(case_abs: Path):
     return parts
 
 
-def case_plan(root_rel):
-    """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>."""
+def case_plan(root_rel, explain=False):
+    """One line per case under root_rel: <dir>\\t<key>\\t<labels|->\\t<date>
+    (or, with explain, <dir>\\t<engine>\\t<data>: how each case is keyed)."""
     if disabled():
         return 2
     eng, n_obj = engine_half()
@@ -792,21 +1286,20 @@ def case_plan(root_rel):
     dat, n_dat = data_half(["data/standards", "data/groupEstimative",
                             "data/README.md"], True)
     har, _ = case_harness()
+    plat = platform_half()
     base = digest([("engine", eng), ("data", dat), ("harness", har),
-                   ("platform", platform_half())])
-    #  The base of a PINNED case: the same, with data/standards reduced to the
-    #  NAMES it holds (a new file in a scanned directory is a read the pins do
-    #  not cover) -- the content of what the case pins is in its own key.
-    base_pin = []
+                   ("platform", plat)])
+    #  The DATA half of a PINNED case (C413): data/standards reduced to the NAMES
+    #  it holds (a new file in a scanned directory is a read the pins do not
+    #  cover); the content of what the case pins is in its own key.
+    pin_data = []
 
-    def pinned_base():
-        if not base_pin:
+    def pinned_data():
+        if not pin_data:
             dat2, _n = data_half(["data/groupEstimative", "data/README.md"], True)
             names = digest([(f, "") for f in (git_files(["data/standards"]) or [])])
-            base_pin.append(digest([("engine", eng), ("data", dat2),
-                                    ("standardsNames", names), ("harness", har),
-                                    ("platform", platform_half())]))
-        return base_pin[0]
+            pin_data.append(digest([("data", dat2), ("standardsNames", names)]))
+        return pin_data[0]
     files = git_files([root_rel]) or []
     #  the case directories: those holding system/controlDict
     cases = sorted({f[:-len("/system/controlDict")] for f in files
@@ -843,11 +1336,27 @@ def case_plan(root_rel):
         #  own constant/ in full (ignored files too, the fetched extracts
         #  aside) and every parent's constant/, present or absent.
         pairs += cascade(ROOT / c)
+        #  THE COMPOSED KEY (C414 (3) + C413).  ENGINE: the narrow reach when the
+        #  case is a choupoProps fit, else the whole engine.  DATA: the case's
+        #  PINS when it has them (exact: the current hash of each pinned file
+        #  and the set lines), else the by-name rule of the narrow fit, else the
+        #  whole tree.  A sealed case's own files are in `pairs` as before.
+        ne, nn, nops = narrow_engine(c)
         pp = pinned_key_parts(ROOT / c)
-        if pp is None:
-            key = digest([("base", base)] + sorted(pairs))
+        engp = ("engine-narrow", ne) if ne else ("engine", eng)
+        if pp is not None:
+            dpart, dlabel = ("data-pinned", pinned_data()), "data=pins"
+        elif ne:
+            dpart, dlabel = data_half_for(c, per[c], dat)
         else:
-            key = digest([("base", pinned_base())] + sorted(pairs) + pp)
+            dpart, dlabel = ("data", dat), "data=WHOLE-TREE"
+        cbase = digest([engp, dpart, ("harness", har), ("platform", plat)])
+        if explain:
+            e = (f"engine=narrow({nn} objects; ops {','.join(nops)})" if ne
+                 else f"engine=WHOLE ({nn})")
+            print(f"{c}\t{e}\t{dlabel}")
+            continue
+        key = digest([("base", cbase)] + sorted(pairs) + (pp or []))
         stored = STORE / "cases" / (c.replace("/", "__") + ".tsv")
         labels, date = "-", "-"
         try:
@@ -942,8 +1451,10 @@ def main(argv):
         return fast_stamp(argv[1:])
     if argv[:1] == ["store"] and len(argv) == 4:
         return store(argv[1], argv[2], argv[3])
-    if argv[:1] == ["case-plan"] and len(argv) == 2:
-        return case_plan(argv[1].rstrip("/"))
+    if argv[:1] == ["verify-reads"]:
+        return verify_reads(argv[1:])
+    if argv[:1] == ["case-plan"] and len(argv) in (2, 3):
+        return case_plan(argv[1].rstrip("/"), explain=argv[2:] == ["--explain"])
     if argv[:1] == ["key"] and len(argv) == 2:
         t0 = time.monotonic()
         key, detail = gate_key(argv[1])
@@ -960,7 +1471,11 @@ def main(argv):
                 print(f"    read, not keyed: {p} -- {why}")
         print("  the curation fits (bin/curate/curation_roots.py), case by "
               "case: about 1260 choupoProps runs, 11534 s of one-core work on "
-              "the 2026-11-14 sweep")
+              "the 2026-11-14 sweep.  Keyed on the objects the case's "
+              "operations can reach, the records of its own components "
+              "(pairs, components; transport_c327: three catalogue "
+              "directories), its own files and cascade; see `case-plan DIR "
+              "--explain`")
         print("NOT KEYED:")
         for g, why in NOT_KEYED.items():
             print(f"  {g}: {why}")
